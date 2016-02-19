@@ -1,0 +1,43 @@
+{
+  "name": "hermes-ui",
+  "license": "LGPL-3.0",
+  "description": "A UI for DDF Catalog",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codice/ddf-ui.git"
+  },
+  "version": "1.0.0",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "jsdom": "^8.0.4",
+    "less": "^2.6.0",
+    "mocha": "^2.4.5",
+    "sinon": "^1.17.3",
+    "squirejs": "^0.2.1",
+    "standard": "^6.0.7",
+    "webpack": "^1.12.13"
+  },
+  "dependencies": {
+    "backbone": "^1.2.3",
+    "backbone.marionette": "^2.4.4",
+    "cesium": "^1.18.0",
+    "jquery": "^2.2.0",
+    "openlayers": "^3.13.1",
+    "q": "^1.4.1",
+    "requirejs": "^2.1.22",
+    "underscore": "^1.8.3"
+  },
+  "scripts": {
+    "pretest": "standard",
+    "less": "lessc css/main.less css/compiled.css",
+    "test": "echo done"
+  },
+  "standard": {
+    "globals": [
+      "define"
+    ],
+    "ignore": [
+      "node"
+    ]
+  }
+}

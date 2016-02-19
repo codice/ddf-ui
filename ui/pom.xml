@@ -66,18 +66,18 @@
                         <configuration>
                             <arguments>build</arguments>
                         </configuration>
-                    </execution>
+                    </execution>-->
                     <execution>
-                        <id>grunt test</id>
+                        <id>npm test</id>
                         <goals>
-                            <goal>grunt</goal>
+                            <goal>npm</goal>
                         </goals>
                         <phase>test</phase>
                         <configuration>
                             <skip>${skipTests}</skip>
                             <arguments>test</arguments>
                         </configuration>
-                    </execution>-->
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -88,7 +88,7 @@
                         <Embed-Dependency>
                         </Embed-Dependency>
                         <Web-ContextPath>/hermes/ui</Web-ContextPath>
-                        <_wab>src/main/webapp</_wab>
+                        <_wab>.</_wab>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
                         </Import-Package>
