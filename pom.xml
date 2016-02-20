@@ -16,22 +16,26 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <name>DDF :: Catalog :: Hermes</name>
     <groupId>ddf.catalog.hermes</groupId>
     <artifactId>hermes</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>DDF :: Catalog :: Hermes</name>
+
     <scm>
         <url>https://github.com/codice/ddf-ui</url>
         <connection>scm:git:https://github.com/codice/ddf-ui.git</connection>
         <developerConnection>scm:git:https://github.com/codice/ddf-ui.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
+
     <modules>
         <module>service</module>
         <module>ui</module>
         <module>app</module>
     </modules>
+
     <build>
         <pluginManagement>
             <plugins>
@@ -49,4 +53,5 @@
             </plugins>
         </pluginManagement>
     </build>
+
 </project>

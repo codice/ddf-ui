@@ -27,7 +27,7 @@
           xmlns="http://karaf.apache.org/xmlns/features/v1.3.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
-    <feature name="hermes" install="manual" version="${project.version}" description="todo">
+    <feature name="hermes" install="manual" version="${project.version}" description="Hermes UI">
         <bundle>mvn:ddf.catalog.hermes/service/${project.version}</bundle>
         <bundle>mvn:ddf.catalog.hermes/ui/${project.version}</bundle>
     </feature>
