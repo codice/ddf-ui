@@ -56,7 +56,7 @@ define([
             model: Workspace.Model
         });
 
-        Workspace.WorkspaceResult = Backbone.AssociatedModel.extend({
+        Workspace.WorkspaceResult = new (Backbone.AssociatedModel.extend({
             relations: [
                 {
                     type: Backbone.Many,
@@ -78,7 +78,7 @@ define([
                 }
                 return resp;
             }
-        });
+        }))();
 
         return Workspace;
 

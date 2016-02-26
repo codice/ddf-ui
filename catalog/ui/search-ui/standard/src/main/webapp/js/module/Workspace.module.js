@@ -86,7 +86,7 @@ define(['application',
                 return WorkspaceModule.types;
             });
 
-            WorkspaceModule.workspaces = new Workspace.WorkspaceResult();
+            WorkspaceModule.workspaces = Workspace.WorkspaceResult;
             WorkspaceModule.workspaces.fetch();
 
             wreqr.reqres.setHandler('workspace:getworkspaces', function () {
