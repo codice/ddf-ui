@@ -12,10 +12,12 @@
  **/
  --}}
 
-<div class="notification-category">
-    {{category}}
+<div class="notification-category clearfix">
+    <span class="notification-category-name">
+        {{category}}
+    </span>
         {{#is closeConfirm true}}
-             <div class="btn-group notificationCategory-remove-area">
+             <div class="notificationCategory-remove-area">
                  <a href="#" class="btn btn-primary" id="removeAll">Remove All</a> <a href="#" class="btn" id="cancelRemove">Cancel</a>
              </div>
         {{else}}

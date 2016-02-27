@@ -267,7 +267,6 @@ define([
     });
 
     Menu.NotificationList = Marionette.CollectionView.extend({
-        className: 'dropdown-width',
         childView: Menu.NotificationItem,
         emptyView: Menu.NotificationEmpty,
 

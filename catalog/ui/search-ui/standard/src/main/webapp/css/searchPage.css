@@ -706,8 +706,7 @@ table.metacard-table {
     color: #eee;
     display: table-cell;
     width: 100%;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding: 10px;
 }
 
 .notification-time-menu {
@@ -750,12 +749,9 @@ table.metacard-table {
 
 .notification-category {
     position: relative;
-    width: 330px;
-    left: -15px;
     font-size: 1.2em;
     font-weight: 700;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding: 10px;
     background: #242424;
     text-align: center;
 }
@@ -1076,8 +1072,7 @@ button.ui-multiselect {
 
 .menu-divider {
     position: relative;
-    left: -15px;
-    width: 330px;
+    width: 100%;
     margin: 0;
     margin-top: 10px;
 }
@@ -1210,13 +1205,13 @@ a.pause:hover, a.pause:focus {
 
 .notificationCategory-close {
     right: 13px;
-    top: 8px;
+    top: 18px;
     position: absolute;
 }
 
 .taskCategory-close {
     right: 13px;
-    top: 8px;
+    top: 18px;
     position: absolute;
 }
 
@@ -1242,9 +1237,13 @@ a.pause:hover, a.pause:focus {
 }
 
 .notificationCategory-remove-area {
-    width: 100%;
     text-align: center;
     background: #242424;
+}
+
+.notification-category-name {
+    padding: 8px 12px;
+    display: inline-block;
 }
 
 .taskCategory-remove-area {
