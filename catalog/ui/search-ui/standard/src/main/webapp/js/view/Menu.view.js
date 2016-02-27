@@ -480,7 +480,7 @@ define([
                 this.tasks.show(new Tasks({model: new MenuItem({
                     id: 'tasks',
                     name: 'Tasks',
-                    classes: 'fa fa-tasks center-icon',
+                    classes: 'fa fa-tasks',
                     iconOnly: iconOnly,
                     dropdown: true,
                     count: true
@@ -556,7 +556,7 @@ define([
             this.notification.show(new Notification({model: new MenuItem({
                 id: 'notification',
                 name: 'Notification',
-                classes: 'fa fa-bell center-icon',
+                classes: 'fa fa-bell',
                 iconOnly: iconOnly,
                 dropdown: true,
                 count: true
@@ -581,7 +581,7 @@ define([
             this.help.show(new Help({model: new MenuItem({
                 id: 'help',
                 name: 'Help',
-                classes: 'fa fa-question-circle center-icon',
+                classes: 'fa fa-question-circle',
                 iconOnly: iconOnly,
                 dropdown: true
             })}));
@@ -590,7 +590,7 @@ define([
                 var ingest = new IngestMenu({model: new MenuItem({
                     id: 'Ingest',
                     name: 'Ingest',
-                    classes: 'fa fa-upload center-icon showModal',
+                    classes: 'fa fa-upload showModal',
                     iconOnly: iconOnly,
                     dropdown: false
                 })});
@@ -600,7 +600,7 @@ define([
             var preferences = new PreferencesMenu({model: new MenuItem({
                 id: 'Preferences',
                 name: 'Preferences',
-                classes: 'fa fa-sliders center-icon showModal',
+                classes: 'fa fa-sliders showModal',
                 iconOnly: iconOnly,
                 dropdown: false,
                 preferences: Application.UserModel.get('user>preferences')
@@ -638,7 +638,7 @@ define([
                         view._widthWhenCollapsed = menu.scrollWidth;
                         menu.classList.add('collapsed');
                         menu.classList.add('is-dropdown');
-                        $(collapsedDropdown).off('click').on('click', function (e) {
+                        $(collapsedDropdown).off('click').on('click', function () {
                             menu.classList.toggle('is-open');
                             if (menu.classList.contains('is-open')) {
                                 $('body').on('click.menubar', function (e) {

@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-/*global define, alert*/
+/*global define*/
 define([
     'marionette',
     'icanhaz',
@@ -24,7 +24,7 @@ define([
 
     ich.addTemplate('workspaceSelectorTemplate', workspaceSelectorTemplate);
 
-    var currentWorkspace = undefined;
+    var currentWorkspace;
 
     var WorkspaceSelectorView = Marionette.ItemView.extend({
         template: 'workspaceSelectorTemplate',
