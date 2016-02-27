@@ -628,18 +628,20 @@ define([
                     if (menu.clientWidth > view._widthWhenCollapsed) {
                         view._collapsed = false;
                         menu.classList.remove('collapsed');
+                        menu.classList.remove('is-dropdown');
+                        $(menu).off('click');
                     }
                 } else {
                     if (menu.scrollWidth !== menu.clientWidth) {
                         view._collapsed = true;
                         view._widthWhenCollapsed = menu.scrollWidth;
                         menu.classList.add('collapsed');
-                        view.$el.find('#collapsed').off('click').on('click', function (e) {
-                            var menu = view.el.querySelector('.menu-items');
+                        menu.classList.add('is-dropdown');
+                        $(menu).off('click').on('click', function (e) {
                             menu.classList.toggle('is-open');
                             if (menu.classList.contains('is-open')) {
                                 $('body').on('click.menubar', function (e) {
-                                    if ($(menu).find(e.target).length === 0) {
+                                    if (e.target !== menu && $(menu).find(e.target).length === 0) {
                                         $('body').off('click.menubar');
                                         menu.classList.remove('is-open');
                                     }
