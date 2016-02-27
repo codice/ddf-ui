@@ -421,6 +421,8 @@ define([
                 this.welcome.show(new Welcome({model: new MenuItem({
                     id: 'signin',
                     name: 'Sign In',
+                    classes: 'fa fa-user',
+                    iconOnly: iconOnly,
                     //change this to true when we can log in or out
                     dropdown: true
                 })}));
@@ -624,6 +626,7 @@ define([
             var view = this;
             view._resizeHandler = _.debounce(function () {
                 var menu = view.el.querySelector('.menu-items');
+                var collapsedDropdown = view.el.querySelector('#collapsed');
                 if (view._collapsed) {
                     if (menu.clientWidth > view._widthWhenCollapsed) {
                         view._collapsed = false;
@@ -637,7 +640,7 @@ define([
                         view._widthWhenCollapsed = menu.scrollWidth;
                         menu.classList.add('collapsed');
                         menu.classList.add('is-dropdown');
-                        $(menu).off('click').on('click', function (e) {
+                        $(collapsedDropdown).off('click').on('click', function (e) {
                             menu.classList.toggle('is-open');
                             if (menu.classList.contains('is-open')) {
                                 $('body').on('click.menubar', function (e) {
