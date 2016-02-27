@@ -24,6 +24,9 @@ define([
             }
             registry[name] = true;
             return namespace + name;
+        },
+        getNamespace: function() {
+            return namespace;
         }
     };
 });

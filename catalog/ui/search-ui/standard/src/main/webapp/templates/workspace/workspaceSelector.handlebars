@@ -11,12 +11,12 @@
  *
  **/
  --}}
-<a id="{{id}}" href="#" class="{{classes}}{{#if dropdown}} dropdown-toggle{{/if}}" {{#if dropdown}} data-toggle="dropdown"{{/if}}>{{#is iconOnly true}}{{else}} {{name}}{{/is}}</a>
-{{#if dropdown}}
-    <ul class="dropdown-menu opens-left">
-
-    </ul>
-{{/if}}
-{{#if count}}
-    <span class="menu-item-overlay" name="countNum"></span>
-{{/if}}
+<button>
+    {{#if currentWorkspace}}
+        Test
+        <i class="fa fa-chevron-down"></i>
+    {{else}}
+        Save Workspace. . .
+        <i class="fa fa-floppy-o"></i>
+    {{/if}}
+</button>

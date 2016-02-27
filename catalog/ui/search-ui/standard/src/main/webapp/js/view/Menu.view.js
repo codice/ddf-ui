@@ -31,13 +31,16 @@ define([
     'js/view/preferences/PreferencesMenu',
     'application',
     'properties',
+    'js/CustomElements',
+    'js/view/WorkspaceSelector.view',
+    'js/model/Workspace',
     'modelbinder',
     'perfectscrollbar',
     'backbonecometd',
     'progressbar'
 ], function(Marionette, ich, menubarTemplate, menubarItemTemplate, Backbone, notificationMenuTemplate,
         notificationCategoryTemplate, wreqr, _, loginTemplate, logoutTemplate,
-        taskTemplate, taskCategoryTemplate, helpTemplate, Cometd, $, IngestMenu, PreferencesMenu, Application, properties) {
+        taskTemplate, taskCategoryTemplate, helpTemplate, Cometd, $, IngestMenu, PreferencesMenu, Application, properties, CustomElements, WorkspaceSelector, Workspace) {
 
     if (!ich.menubarItemTemplate) {
         ich.addTemplate('menubarItemTemplate', menubarItemTemplate);
@@ -58,6 +61,8 @@ define([
     ich.addTemplate('taskCategoryTemplate', taskCategoryTemplate);
 
     ich.addTemplate('helpTemplate', helpTemplate);
+
+    var iconOnly = false;
 
     var Menu = {};
 
@@ -366,14 +371,16 @@ define([
 
     Menu.Bar = Marionette.LayoutView.extend({
         template: 'menubarTemplate',
-        className: 'container-fluid navbar',
+        className: 'navbar',
+        tagName: CustomElements.register('menu-bar'),
         regions: {
             welcome: '#welcome',
             notification: '#notification',
             help: '#help',
             tasks: '#tasks',
             ingest: '#ingest',
-            preferences: '#preferences'
+            preferences: '#preferences',
+            workspaces: '#workspaceSelector'
         },
         onRender: function() {
             var menuBarView = this;
@@ -473,7 +480,7 @@ define([
                     id: 'tasks',
                     name: 'Tasks',
                     classes: 'fa fa-tasks center-icon',
-                    iconOnly: true,
+                    iconOnly: iconOnly,
                     dropdown: true,
                     count: true
                 })}));
@@ -549,7 +556,7 @@ define([
                 id: 'notification',
                 name: 'Notification',
                 classes: 'fa fa-bell center-icon',
-                iconOnly: true,
+                iconOnly: iconOnly,
                 dropdown: true,
                 count: true
             })}));
@@ -575,7 +582,7 @@ define([
                 id: 'help',
                 name: 'Help',
                 classes: 'fa fa-question-circle center-icon',
-                iconOnly: true,
+                iconOnly: iconOnly,
                 dropdown: true
             })}));
 
@@ -584,7 +591,7 @@ define([
                     id: 'Ingest',
                     name: 'Ingest',
                     classes: 'fa fa-upload center-icon showModal',
-                    iconOnly: true,
+                    iconOnly: iconOnly,
                     dropdown: false
                 })});
                 this.ingest.show(ingest);
@@ -594,11 +601,57 @@ define([
                 id: 'Preferences',
                 name: 'Preferences',
                 classes: 'fa fa-sliders center-icon showModal',
-                iconOnly: true,
+                iconOnly: iconOnly,
                 dropdown: false,
                 preferences: Application.UserModel.get('user>preferences')
             })});
             this.preferences.show(preferences);
+
+            var workspaces = new WorkspaceSelector({
+                model: Workspace.WorkspaceResult
+            });
+            this.workspaces.show(workspaces);
+
+            this._turnOnCollapsibleMenu();
+        },
+        _turnOnCollapsibleMenu: function(){
+            this._resizeHandler();
+            $(window).off('resize.menubar').on('resize.menubar', this._resizeHandler);
+        },
+        _collapsed: false,
+        _widthWhenCollapsed: 0,
+        _resizeHandler: function () {
+            var view = this;
+            view._resizeHandler = _.debounce(function () {
+                var menu = view.el.querySelector('.menu-items');
+                if (view._collapsed) {
+                    if (menu.clientWidth > view._widthWhenCollapsed) {
+                        view._collapsed = false;
+                        menu.classList.remove('collapsed');
+                    }
+                } else {
+                    if (menu.scrollWidth !== menu.clientWidth) {
+                        view._collapsed = true;
+                        view._widthWhenCollapsed = menu.scrollWidth;
+                        menu.classList.add('collapsed');
+                        view.$el.find('#collapsed').off('click').on('click', function (e) {
+                            var menu = view.el.querySelector('.menu-items');
+                            menu.classList.toggle('is-open');
+                            if (menu.classList.contains('is-open')) {
+                                $('body').on('click.menubar', function (e) {
+                                    if ($(menu).find(e.target).length === 0) {
+                                        $('body').off('click.menubar');
+                                        menu.classList.remove('is-open');
+                                    }
+                                });
+                            } else {
+                                $('body').off('click.menubar');
+                            }
+                        });
+                    }
+                }
+            }, 250);
+            view._resizeHandler();
         }
     });
 

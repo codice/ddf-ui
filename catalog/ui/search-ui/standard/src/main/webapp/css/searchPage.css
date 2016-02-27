@@ -936,7 +936,7 @@ button.ui-multiselect {
     height: 36px;
     width: 100%;
     position: absolute;
-    z-index: 100;
+    z-index: 101;
     top: 0;
     left: 0;
     display: block;
