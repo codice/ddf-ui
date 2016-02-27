@@ -568,7 +568,6 @@ define([
                 onRender: function() {
                     var HelpView = Marionette.ItemView.extend({
                         template: 'helpTemplate',
-                        className: 'dropdown-width',
                         serializeData: function(){
                              return {
                                 branding: menuBarView.model.get('branding'),
