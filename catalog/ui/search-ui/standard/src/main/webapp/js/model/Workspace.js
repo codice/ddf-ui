@@ -15,9 +15,10 @@ define([
         'backbone',
         'js/model/Metacard',
         'js/model/Query',
+        'js/Common',
         'backboneassociations'
     ],
-    function (Backbone, Metacard, Query) {
+    function (Backbone, Metacard, Query, Common) {
         "use strict";
         var Workspace = {};
 
@@ -49,6 +50,9 @@ define([
                 if(!this.get('metacards')) {
                     this.set({metacards: new Workspace.MetacardList()});
                 }
+                if (!this.get('id')){
+                    this.set('id', Common.generateUUID());
+                }
             }
         });
 
@@ -65,18 +69,46 @@ define([
                     collectionType: Workspace.WorkspaceList
                 }
             ],
+            defaults: {
+                currentWorkspace: undefined
+            },
             url: '/service/workspaces',
             useAjaxSync: false,
             initialize: function() {
                 if(!this.get('workspaces')) {
                     this.set({workspaces: new Workspace.WorkspaceList()});
                 }
+                this.on({
+                   'all': this.setCurrentWorkspace
+                });
             },
             parse: function (resp) {
                 if (resp.data) {
                     return resp.data;
                 }
                 return resp;
+            },
+            clearDeletedWorkspace: function(){
+                var currentWorkspace = this.get('currentWorkspace');
+                if (currentWorkspace && !this.get('workspaces').get(currentWorkspace)){
+                    this.set('currentWorkspace',undefined);
+                }
+            },
+            setCurrentWorkspace: function(){
+                this.clearDeletedWorkspace();
+                var currentWorkspace = this.get('currentWorkspace');
+                var workspaces = this.get('workspaces');
+                if (!currentWorkspace && workspaces.length !==0){
+                    this.set('currentWorkspace',workspaces.models[0].get('id'));
+                }
+            },
+            getCurrentWorkspaceName: function(){
+                var currentWorkspace = this.get('currentWorkspace');
+                if (currentWorkspace){
+                    return this.get('workspaces').get(currentWorkspace).get('name');
+                } else {
+                    return undefined;
+                }
             }
         }))();
 

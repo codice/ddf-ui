@@ -24,24 +24,18 @@ define([
 
     ich.addTemplate('workspaceSelectorTemplate', workspaceSelectorTemplate);
 
-    var currentWorkspace;
-
     var WorkspaceSelectorView = Marionette.ItemView.extend({
         template: 'workspaceSelectorTemplate',
         tagName: CustomElements.register('workspace-selector'),
         modelEvents: {
-            'sync': 'handleSync'
+            'all': 'rerender'
         },
         initialize: function(){
         },
         serializeData: function(){
-            return _.extend(this.model.toJSON(), {currentWorkspace: currentWorkspace});
+            return _.extend(this.model.toJSON(), {currentWorkspace: this.model.getCurrentWorkspaceName()});
         },
-        handleSync: function(){
-            var workspaces = this.model.get('workspaces').models;
-            if (workspaces.length > 0){
-                currentWorkspace = workspaces[0].get('name');
-            }
+        rerender: function(){
             this.render();
         }
     });
