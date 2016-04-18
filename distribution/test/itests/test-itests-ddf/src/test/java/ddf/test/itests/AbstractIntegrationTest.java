@@ -385,8 +385,7 @@ public abstract class AbstractIntegrationTest {
     }
 
     protected Option[] configurePaxExam() {
-        return options(logLevel(LogLevelOption.LogLevel.WARN),
-                useOwnExamBundlesStartLevel(100),
+        return options(logLevel(LogLevelOption.LogLevel.WARN), useOwnExamBundlesStartLevel(100),
                 // increase timeout for CI environment
                 systemTimeout(TimeUnit.MINUTES.toMillis(10)), when(Boolean.getBoolean(
                         "keepRuntimeFolder")).useOptions(keepRuntimeFolder()), cleanCaches(true));
@@ -415,7 +414,9 @@ public abstract class AbstractIntegrationTest {
                         "test-security-common"),
                 mavenBundle("ddf.test.thirdparty", "rest-assured").versionAsInProject(),
                 wrappedBundle(mavenBundle("com.google.guava",
-                        "guava").versionAsInProject()).exports("*;version=18.0"));
+                        "guava").versionAsInProject()).exports("*;version=18.0"),
+                wrappedBundle(mavenBundle("io.fastjson",
+                        "boon").versionAsInProject()).exports("*"));
     }
 
     protected Option[] configureConfigurationPorts() throws URISyntaxException, IOException {
@@ -499,9 +500,10 @@ public abstract class AbstractIntegrationTest {
     }
 
     protected Option[] configureSystemSettings() {
-        return options(when(System.getProperty(AdminConfig.TEST_LOGLEVEL_PROPERTY) != null).useOptions(
-                systemProperty(AdminConfig.TEST_LOGLEVEL_PROPERTY).value(System.getProperty(
-                        AdminConfig.TEST_LOGLEVEL_PROPERTY,
+        return options(when(
+                        System.getProperty(AdminConfig.TEST_LOGLEVEL_PROPERTY) != null).useOptions(
+                        systemProperty(AdminConfig.TEST_LOGLEVEL_PROPERTY).value(System.getProperty(
+                                AdminConfig.TEST_LOGLEVEL_PROPERTY,
                                 ""))),
                 when(Boolean.getBoolean("isDebugEnabled")).useOptions(vmOption(
                         "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005")),
