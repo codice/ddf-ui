@@ -405,8 +405,7 @@ public abstract class AbstractIntegrationTest {
     }
 
     protected Option[] configurePaxExam() {
-        return options(logLevel(LogLevelOption.LogLevel.WARN),
-                useOwnExamBundlesStartLevel(100),
+        return options(logLevel(LogLevelOption.LogLevel.WARN), useOwnExamBundlesStartLevel(100),
                 // increase timeout for CI environment
                 systemTimeout(TimeUnit.MINUTES.toMillis(10)),
                 when(Boolean.getBoolean("keepRuntimeFolder")).useOptions(keepRuntimeFolder()),
@@ -437,6 +436,8 @@ public abstract class AbstractIntegrationTest {
                 mavenBundle("ddf.test.thirdparty", "rest-assured").versionAsInProject(),
                 wrappedBundle(mavenBundle("com.google.guava",
                         "guava").versionAsInProject()).exports("*;version=18.0"),
+                wrappedBundle(mavenBundle("io.fastjson",
+                        "boon").versionAsInProject()).exports("*"),
                 wrappedBundle(mavenBundle().groupId("org.cometd.java").artifactId("cometd-java-client").versionAsInProject()).exports("*;version=3.0.9"),
                 wrappedBundle(mavenBundle().groupId("org.cometd.java").artifactId("bayeux-api").versionAsInProject()).exports("*;version=3.0.9"),
                 wrappedBundle(mavenBundle().groupId("org.cometd.java").artifactId("cometd-java-common").versionAsInProject()).exports("*;version=3.0.9"));
