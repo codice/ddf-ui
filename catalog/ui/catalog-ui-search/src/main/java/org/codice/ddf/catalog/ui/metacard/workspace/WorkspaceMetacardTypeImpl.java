@@ -35,6 +35,8 @@ public class WorkspaceMetacardTypeImpl extends MetacardTypeImpl {
 
     public static final String WORKSPACE_OWNER = "owner";
 
+    public static final String WORKSPACE_IS_ACTIVE = "is.active";
+
     private static final Set<AttributeDescriptor> DESCRIPTORS;
 
     static {
@@ -60,6 +62,13 @@ public class WorkspaceMetacardTypeImpl extends MetacardTypeImpl {
                 false   /* tokenized */,
                 true    /* multivalued */,
                 BasicTypes.XML_TYPE));
+
+        DESCRIPTORS.add(new AttributeDescriptorImpl(WORKSPACE_IS_ACTIVE,
+                false   /* indexed */,
+                true    /* stored */,
+                false   /* tokenized */,
+                false   /* multivalued */,
+                BasicTypes.BOOLEAN_TYPE));
 
     }
 
