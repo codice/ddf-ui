@@ -16,7 +16,11 @@ package org.codice.ddf.catalog.ui.metacard.workspace;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import ddf.catalog.data.Attribute;
+import ddf.catalog.data.Metacard;
 import ddf.catalog.data.impl.MetacardImpl;
 
 public class QueryMetacardImpl extends MetacardImpl {
@@ -27,12 +31,37 @@ public class QueryMetacardImpl extends MetacardImpl {
         setTags(Collections.singleton(QueryMetacardTypeImpl.QUERY_TAG));
     }
 
+    public QueryMetacardImpl(Metacard wrappedMetacard) {
+        super(wrappedMetacard, TYPE);
+        setTags(Collections.singleton(QueryMetacardTypeImpl.QUERY_TAG));
+    }
+
+    public static QueryMetacardImpl from(Metacard metacard) {
+        return new QueryMetacardImpl(metacard);
+    }
+
+    public String getCql() {
+        return (String) getAttribute(QueryMetacardTypeImpl.QUERY_CQL).getValue();
+    }
+
     public void setCql(String cql) {
         setAttribute(QueryMetacardTypeImpl.QUERY_CQL, cql);
     }
 
     public void setEnterprise(Boolean b) {
         setAttribute(QueryMetacardTypeImpl.QUERY_ENTERPRISE, b);
+    }
+
+    public Optional<List<String>> getSources() {
+        Attribute attribute = getAttribute(QueryMetacardTypeImpl.QUERY_SOURCES);
+        if (attribute == null) {
+            return Optional.empty();
+        }
+        return Optional.of(attribute.getValues()
+                .stream()
+                .filter(value -> value instanceof String)
+                .map(String.class::cast)
+                .collect(Collectors.toList()));
     }
 
     public void setSources(List<String> sources) {
