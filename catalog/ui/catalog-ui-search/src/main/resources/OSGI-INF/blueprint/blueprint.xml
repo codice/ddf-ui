@@ -221,6 +221,14 @@
         </argument>
     </bean>
 
+    <service interface="org.codice.ddf.catalog.ui.query.monitor.api.SubscriptionsPersistentStore">
+        <bean class="org.codice.ddf.catalog.ui.query.monitor.impl.SubscriptionsPersistentStoreImpl">
+            <argument ref="persistentStore"/>
+        </bean>
+    </service>
+
+    <reference id="workspacePersistentStore" availability="optional" interface="org.codice.ddf.catalog.ui.query.monitor.api.SubscriptionsPersistentStore"/>
+
     <bean id="emailNotifierService"
           class="org.codice.ddf.catalog.ui.query.monitor.email.EmailNotifier">
 
@@ -245,12 +253,13 @@
                 </argument>
             </bean>
         </argument>
-        <!-- TODO remove TrivialEmailExtractor after testing -->
+        <!-- TODO remove TrivialSubscriptionsPersistenceStore after testing -->
         <argument>
-            <bean class="org.codice.ddf.catalog.ui.query.monitor.email.TrivialEmailExtractor">
+            <bean class="org.codice.ddf.catalog.ui.query.monitor.impl.TrivialSubscriptionsPersistentStore">
                 <argument value="glen.hein@connexta.com"/>
             </bean>
         </argument>
+        <!-- TODO use this after testing: <argument ref="workspacePersistentStore"/> -->
     </bean>
 
     <bean id="workspaceQueryService"

@@ -27,9 +27,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
-import org.codice.ddf.catalog.ui.query.monitor.api.EmailExtractor;
 import org.codice.ddf.catalog.ui.query.monitor.api.MetacardFormatter;
 import org.codice.ddf.catalog.ui.query.monitor.api.QueryUpdateSubscriber;
+import org.codice.ddf.catalog.ui.query.monitor.api.SubscriptionsPersistentStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,11 +42,6 @@ public class EmailNotifier implements QueryUpdateSubscriber {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailNotifier.class);
 
-    /**
-     * The purpose for the EmailExtractor is for mocking up email addresses during testing.
-     */
-    private final EmailExtractor emailExtractor;
-
     private final MetacardFormatter metacardFormatter;
 
     private String bodyTemplate;
@@ -57,51 +52,34 @@ public class EmailNotifier implements QueryUpdateSubscriber {
 
     private String mailHost;
 
-    /**
-     * The {@code bodyTemplate} and {@code subjectTemplate} may contain the tags supported by the
-     * {@code metacardFormatter}.
-     *
-     * @param bodyTemplate      must be non-null
-     * @param subjectTemplate   must be non-null
-     * @param fromEmail         must be non-null
-     * @param mailHost          must be non-null
-     * @param metacardFormatter must be non-null
-     */
-    public EmailNotifier(String bodyTemplate, String subjectTemplate, String fromEmail,
-            String mailHost, MetacardFormatter metacardFormatter) {
-        this(bodyTemplate,
-                subjectTemplate,
-                fromEmail,
-                mailHost,
-                metacardFormatter,
-                WorkspaceMetacardImpl::getOwner);
-    }
+    private SubscriptionsPersistentStore subscriptionsPersistentStore;
 
     /**
      * The {@code bodyTemplate} and {@code subjectTemplate} may contain the tags supported by the
      * {@code metacardFormatter}.
      *
-     * @param bodyTemplate      must be non-null
-     * @param subjectTemplate   must be non-null
-     * @param fromEmail         must be non-null
-     * @param mailHost          must be non-null
-     * @param metacardFormatter must be non-null
-     * @param emailExtractor    must be non-null
+     * @param bodyTemplate             must be non-null
+     * @param subjectTemplate          must be non-null
+     * @param fromEmail                must be non-null
+     * @param mailHost                 must be non-null
+     * @param metacardFormatter        must be non-null
+     * @param subscriptionsPersistentStore must be non-null
      */
     public EmailNotifier(String bodyTemplate, String subjectTemplate, String fromEmail,
-            String mailHost, MetacardFormatter metacardFormatter, EmailExtractor emailExtractor) {
+            String mailHost, MetacardFormatter metacardFormatter,
+            SubscriptionsPersistentStore subscriptionsPersistentStore) {
         notNull(bodyTemplate, "bodyTemplate must be non-null");
         notNull(subjectTemplate, "subjectTemplate must be non-null");
         notNull(fromEmail, "fromEmail must be non-null");
         notNull(mailHost, "mailHost must be non-null");
-        notNull(emailExtractor, "emailExtractor must be non-null");
+        notNull(subscriptionsPersistentStore, "subscriptionsPersistentStore must be non-null");
 
         this.bodyTemplate = bodyTemplate;
         this.subjectTemplate = subjectTemplate;
         this.fromEmail = fromEmail;
         this.mailHost = mailHost;
-        this.emailExtractor = emailExtractor;
         this.metacardFormatter = metacardFormatter;
+        this.subscriptionsPersistentStore = subscriptionsPersistentStore;
     }
 
     /**
@@ -150,12 +128,16 @@ public class EmailNotifier implements QueryUpdateSubscriber {
     @Override
     public void notify(Map<WorkspaceMetacardImpl, Long> workspaceMetacardMap) {
         notNull(workspaceMetacardMap, "workspaceMetacardMap must be non-null");
-        workspaceMetacardMap.forEach(this::sendEmailForWorkspace);
+        workspaceMetacardMap.forEach(this::sendEmailsForWorkspace);
     }
 
-    private void sendEmailForWorkspace(WorkspaceMetacardImpl workspaceMetacard, Long hitCount) {
+    private void sendEmailsForWorkspace(WorkspaceMetacardImpl workspaceMetacard, Long hitCount) {
+        subscriptionsPersistentStore.getEmails(workspaceMetacard.getId())
+                .forEach(email -> sendEmailForWorkspace(workspaceMetacard, hitCount, email));
+    }
 
-        String email = emailExtractor.getEmail(workspaceMetacard);
+    private void sendEmailForWorkspace(WorkspaceMetacardImpl workspaceMetacard, Long hitCount,
+            String email) {
 
         String emailBody = metacardFormatter.format(bodyTemplate, workspaceMetacard, hitCount);
 
@@ -195,11 +177,12 @@ public class EmailNotifier implements QueryUpdateSubscriber {
     @Override
     public String toString() {
         return "EmailNotifier{" +
-                "emailExtractor=" + emailExtractor +
+                "metacardFormatter=" + metacardFormatter +
                 ", bodyTemplate='" + bodyTemplate + '\'' +
                 ", subjectTemplate='" + subjectTemplate + '\'' +
                 ", fromEmail='" + fromEmail + '\'' +
                 ", mailHost='" + mailHost + '\'' +
+                ", subscriptionsPersistentStore=" + subscriptionsPersistentStore +
                 '}';
     }
 }

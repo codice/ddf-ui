@@ -28,6 +28,7 @@ public interface PersistentStore {
     public static final String WORKSPACE_TYPE = "workspace";
     public static final String PREFERENCES_TYPE = "preferences";
     public static final String USER_ATTRIBUTE_TYPE = "attributes";
+    public static final String SUBSCRIPTIONS_TYPE = "subscriptions";
 
     public static final Set<String> PERSISTENCE_TYPES = new HashSet<String>(Arrays.asList(
             METACARD_TYPE,
