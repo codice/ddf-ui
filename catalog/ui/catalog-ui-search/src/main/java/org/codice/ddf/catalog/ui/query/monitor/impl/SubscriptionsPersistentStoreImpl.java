@@ -48,6 +48,12 @@ public class SubscriptionsPersistentStoreImpl extends AbstractSubscriptionsPersi
         this.persistentStore = persistentStore;
     }
 
+    private List<Map<String, Object>> get(String id) throws PersistenceException {
+        List<Map<String, Object>> results = persistentStore.get(TYPE, query(id));
+        assert results.size() <= 1;
+        return results;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public void addEmails(String id, Set<String> emails) {
@@ -56,12 +62,11 @@ public class SubscriptionsPersistentStoreImpl extends AbstractSubscriptionsPersi
         emails.forEach(email -> notBlank(email, "emails in set must be non-blank"));
 
         try {
-            List<Map<String, Object>> results = persistentStore.get(TYPE, query(id));
-
-            assert results.size() <= 1;
+            List<Map<String, Object>> results = get(id);
 
             if (!results.isEmpty()) {
-                PersistentItem item = (PersistentItem) results.get(0);
+                PersistentItem item = convert(results.get(0));
+
                 if (item.containsKey(EMAIL_PROPERTY + PersistentItem.TEXT_SUFFIX)) {
                     Set<String> newValue = new HashSet<>(emails);
                     Object value = item.get(EMAIL_PROPERTY + PersistentItem.TEXT_SUFFIX);
@@ -97,47 +102,55 @@ public class SubscriptionsPersistentStoreImpl extends AbstractSubscriptionsPersi
         return ID + "=" + quote(id);
     }
 
+    private PersistentItem convert(Map<String, Object> map) {
+        PersistentItem item = new PersistentItem();
+
+        item.putAll(map);
+
+        return item;
+    }
+
     @SuppressWarnings("unchecked")
+    private PersistentItem strip(PersistentItem item, Set<String> emails) {
+        Object itemValue = item.get(EMAIL_PROPERTY + PersistentItem.TEXT_SUFFIX);
+        Optional.ofNullable(itemValue)
+                .ifPresent(value -> {
+                    if (value instanceof String) {
+                        String currentEmail = (String) value;
+                        if (emails.contains(currentEmail)) {
+                            item.remove(EMAIL_PROPERTY + PersistentItem.TEXT_SUFFIX);
+                        }
+                    } else if (value instanceof Set) {
+                        Set<Object> currentEmails = (Set) value;
+                        currentEmails.removeAll(emails);
+                        if (currentEmails.isEmpty()) {
+                            item.remove(EMAIL_PROPERTY + PersistentItem.TEXT_SUFFIX);
+                        }
+                    }
+                });
+
+        return item;
+    }
+
+    private void add(String id, PersistentItem item) {
+        try {
+            persistentStore.add(TYPE, item);
+        } catch (PersistenceException e) {
+            LOGGER.warn("unable to delete emails from workspace: id={}", id, e);
+        }
+    }
+
     @Override
     public void removeEmails(String id, Set<String> emails) {
         notBlank(id, "id must be non-blank");
 
         try {
-            List<Map<String, Object>> results = persistentStore.get(TYPE, query(id));
-
-            assert results.size() <= 1;
+            List<Map<String, Object>> results = get(id);
 
             results.stream()
-                    .map(PersistentItem.class::cast)
-                    .map(item -> {
-                        Object itemValue = item.get(EMAIL_PROPERTY + PersistentItem.TEXT_SUFFIX);
-                        Optional.ofNullable(itemValue)
-                                .ifPresent(value -> {
-                                    if (value instanceof String) {
-                                        String currentEmail = (String) value;
-                                        if (emails.contains(currentEmail)) {
-                                            item.remove(
-                                                    EMAIL_PROPERTY + PersistentItem.TEXT_SUFFIX);
-                                        }
-                                    } else if (value instanceof Set) {
-                                        Set<Object> currentEmails = (Set) value;
-                                        currentEmails.removeAll(emails);
-                                        if (currentEmails.isEmpty()) {
-                                            item.remove(
-                                                    EMAIL_PROPERTY + PersistentItem.TEXT_SUFFIX);
-                                        }
-                                    }
-                                });
-
-                        return item;
-                    })
-                    .forEach(item -> {
-                        try {
-                            persistentStore.add(TYPE, item);
-                        } catch (PersistenceException e) {
-                            LOGGER.warn("unable to delete emails from workspace: id={}", id, e);
-                        }
-                    });
+                    .map(this::convert)
+                    .map(item -> strip(item, emails))
+                    .forEach(item -> add(id, item));
 
         } catch (PersistenceException e) {
             LOGGER.warn("unable to delete emails from workspace: id={}", id, e);
@@ -167,9 +180,7 @@ public class SubscriptionsPersistentStoreImpl extends AbstractSubscriptionsPersi
 
         try {
 
-            List<Map<String, Object>> results = persistentStore.get(TYPE, query(id));
-
-            assert results.size() <= 1;
+            List<Map<String, Object>> results = get(id);
 
             List<Object> mapValues = results.stream()
                     .map(PersistentItem::stripSuffixes)
