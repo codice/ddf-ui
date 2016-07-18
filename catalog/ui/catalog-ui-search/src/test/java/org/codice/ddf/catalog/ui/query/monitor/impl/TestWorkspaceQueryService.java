@@ -92,8 +92,8 @@ public class TestWorkspaceQueryService {
         when(workspaceMetacard.getId()).thenReturn(workspaceId);
 
         QueryMetacardImpl queryMetacardWithSource = mock(QueryMetacardImpl.class);
-        when(queryMetacardWithSource.getSources()).thenReturn(Optional.of(Collections.singletonList(
-                "SomeSource")));
+        when(queryMetacardWithSource.getSources()).thenReturn(Collections.singletonList(
+                "SomeSource"));
         when(queryMetacardWithSource.getCql()).thenReturn(ecql);
 
         Attribute id1 = mock(Attribute.class);
@@ -101,7 +101,7 @@ public class TestWorkspaceQueryService {
         when(queryMetacardWithSource.getAttribute(Metacard.ID)).thenReturn(id1);
 
         QueryMetacardImpl queryMetacardWithoutSource = mock(QueryMetacardImpl.class);
-        when(queryMetacardWithoutSource.getSources()).thenReturn(Optional.empty());
+        when(queryMetacardWithoutSource.getSources()).thenReturn(Collections.emptyList());
         when(queryMetacardWithoutSource.getCql()).thenReturn(ecql);
 
         Attribute id2 = mock(Attribute.class);

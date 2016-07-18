@@ -28,7 +28,6 @@ import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
 import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceTransformer;
 import org.codice.ddf.catalog.ui.query.monitor.api.FilterService;
 import org.codice.ddf.catalog.ui.query.monitor.api.SecurityService;
-import org.codice.ddf.catalog.ui.query.monitor.api.WorkspaceMetacardFilter;
 import org.codice.ddf.catalog.ui.query.monitor.api.WorkspaceService;
 import org.opengis.filter.Filter;
 import org.slf4j.Logger;
@@ -59,32 +58,27 @@ public class WorkspaceServiceImpl implements WorkspaceService {
 
     private final SecurityService securityService;
 
-    private final WorkspaceMetacardFilter workspaceMetacardFilter;
-
     /**
      * @param catalogFramework     must be non-null
      * @param filterBuilder        must be non-null
      * @param workspaceTransformer must be non-null
      * @param filterService        must be non-null
      * @param securityService      must be non-null
-     * @param workspaceMetacardFilter must be non-null
      */
     public WorkspaceServiceImpl(CatalogFramework catalogFramework, FilterBuilder filterBuilder,
             WorkspaceTransformer workspaceTransformer, FilterService filterService,
-            SecurityService securityService, WorkspaceMetacardFilter workspaceMetacardFilter) {
+            SecurityService securityService) {
         notNull(catalogFramework, "catalogFramework must be non-null");
         notNull(filterBuilder, "filterBuilder must be non-null");
         notNull(workspaceTransformer, "workspaceTransformer must be non-null");
         notNull(filterService, "filterService must be non-null");
         notNull(securityService, "securityService must be non-null");
-        notNull(workspaceMetacardFilter, "workspaceMetacardFilter must be non-null");
 
         this.catalogFramework = catalogFramework;
         this.filterBuilder = filterBuilder;
         this.workspaceTransformer = workspaceTransformer;
         this.filterService = filterService;
         this.securityService = securityService;
-        this.workspaceMetacardFilter = workspaceMetacardFilter;
     }
 
     @Override
@@ -95,7 +89,6 @@ public class WorkspaceServiceImpl implements WorkspaceService {
                 ", filterBuilder=" + filterBuilder +
                 ", workspaceTransformer=" + workspaceTransformer +
                 ", filterService=" + filterService +
-                ", workspaceMetacardFilter=" + workspaceMetacardFilter +
                 '}';
     }
 
@@ -122,7 +115,6 @@ public class WorkspaceServiceImpl implements WorkspaceService {
                 .map(Result::getMetacard)
                 .filter(WorkspaceMetacardImpl::isWorkspaceMetacard)
                 .map(WorkspaceMetacardImpl::from)
-                .filter(workspaceMetacardFilter::filter)
                 .collect(Collectors.toList());
     }
 

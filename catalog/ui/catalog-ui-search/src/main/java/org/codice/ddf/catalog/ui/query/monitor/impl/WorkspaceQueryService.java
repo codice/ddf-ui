@@ -103,6 +103,32 @@ public class WorkspaceQueryService {
     /**
      * @param queryUpdateSubscriber must be non-null
      * @param workspaceService      must be non-null
+     * @param catalogFramework      must be non-null
+     * @param filterBuilder         must be non-null
+     * @param schedulerSupplier     must be non-null
+     * @param triggerSupplier       must be non-null
+     * @param securityService       must be non-null
+     * @param filterService         must be non-null
+     */
+    public WorkspaceQueryService(QueryUpdateSubscriber queryUpdateSubscriber,
+            WorkspaceService workspaceService, CatalogFramework catalogFramework,
+            FilterBuilder filterBuilder, Supplier<Optional<Scheduler>> schedulerSupplier,
+            Supplier<Trigger> triggerSupplier, SecurityService securityService,
+            FilterService filterService) throws SchedulerException {
+        this(queryUpdateSubscriber,
+                workspaceService,
+                null,
+                catalogFramework,
+                filterBuilder,
+                schedulerSupplier,
+                triggerSupplier,
+                securityService,
+                filterService);
+    }
+
+    /**
+     * @param queryUpdateSubscriber must be non-null
+     * @param workspaceService      must be non-null
      * @param queryService          may be null
      * @param catalogFramework      must be non-null
      * @param filterBuilder         must be non-null
@@ -245,13 +271,11 @@ public class WorkspaceQueryService {
         final Map<String, List<QueryMetacardImpl>> groupedBySource = new HashMap<>();
         for (QueryMetacardImpl queryMetacard : queryMetacards) {
 
-            Optional<List<String>> optionalSources = queryMetacard.getSources();
+            List<String> sources = queryMetacard.getSources();
 
-            if (optionalSources.isPresent()) {
-                optionalSources.get()
-                        .stream()
-                        .forEach(sourceId -> groupedBySource.compute(sourceId,
-                                addToList(queryMetacard)));
+            if (!sources.isEmpty()) {
+                sources.forEach(sourceId -> groupedBySource.compute(sourceId,
+                        addToList(queryMetacard)));
             } else {
                 groupedBySource.compute(UNKNOWN_SOURCE, addToList(queryMetacard));
             }

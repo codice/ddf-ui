@@ -168,39 +168,4 @@ public class WorkspaceMetacardImpl extends MetacardImpl {
         return this;
     }
 
-    /**
-     * Get the active status of the workspace. If the status is not available, then return
-     * {@code defaultStatus}.
-     *
-     * @param defaultStatus default status
-     * @return true if the workspace is active
-     */
-    public Boolean isActive(boolean defaultStatus) {
-        Boolean isActive = requestData(WorkspaceMetacardTypeImpl.WORKSPACE_IS_ACTIVE, Boolean.class);
-        return isActive == null ? defaultStatus : isActive;
-    }
-
-    /**
-     * Set the active status to true.
-     */
-    public void setActive() {
-        setActive(true);
-    }
-
-    /**
-     * Set the active status to false.
-     */
-    public void clearActive() {
-        setActive(false);
-    }
-
-    /**
-     * Set the active status.
-     *
-     * @param value the new status
-     */
-    public void setActive(boolean value) {
-        setAttribute(WorkspaceMetacardTypeImpl.WORKSPACE_IS_ACTIVE, value);
-    }
-
 }

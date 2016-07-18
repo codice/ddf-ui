@@ -1,10 +1,10 @@
 /**
  * Copyright (c) Codice Foundation
- * <p>
+ * <p/>
  * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
  * General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or any later version.
- * <p>
+ * <p/>
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
@@ -16,7 +16,6 @@ package org.codice.ddf.catalog.ui.metacard.workspace;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import ddf.catalog.data.Attribute;
@@ -52,16 +51,20 @@ public class QueryMetacardImpl extends MetacardImpl {
         setAttribute(QueryMetacardTypeImpl.QUERY_ENTERPRISE, b);
     }
 
-    public Optional<List<String>> getSources() {
+    /**
+     * Get a list of the query sources.
+     * @return list of source (always non-null)
+     */
+    public List<String> getSources() {
         Attribute attribute = getAttribute(QueryMetacardTypeImpl.QUERY_SOURCES);
         if (attribute == null) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
-        return Optional.of(attribute.getValues()
+        return attribute.getValues()
                 .stream()
-                .filter(value -> value instanceof String)
+                .filter(String.class::isInstance)
                 .map(String.class::cast)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
     }
 
     public void setSources(List<String> sources) {

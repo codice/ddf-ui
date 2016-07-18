@@ -68,8 +68,7 @@ public class TestWorkspaceServiceImpl {
                 filterBuilder,
                 workspaceTransformer,
                 filterService,
-                securityService,
-                workspaceMetacardFilter);
+                securityService);
     }
 
     private void mockCatalogFrameworkQuery(String id, String subject)

@@ -214,11 +214,6 @@
             </bean>
         </argument>
         <argument ref="securityService"/>
-        <argument>
-            <bean class="org.codice.ddf.catalog.ui.query.monitor.impl.IsActiveWorkspaceMetacardFilter">
-                <argument value="true"/>
-            </bean>
-        </argument>
     </bean>
 
     <service interface="org.codice.ddf.catalog.ui.query.monitor.api.SubscriptionsPersistentStore">
@@ -279,9 +274,6 @@
             </bean>
         </argument>
         <argument ref="queryWorkspaceService"/>
-        <argument>
-            <null/>
-        </argument>
         <argument ref="catalogFramework"/>
         <argument ref="filterBuilder"/>
         <argument>
