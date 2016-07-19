@@ -248,13 +248,7 @@
                 </argument>
             </bean>
         </argument>
-        <!-- TODO remove TrivialSubscriptionsPersistenceStore after testing -->
-        <argument>
-            <bean class="org.codice.ddf.catalog.ui.query.monitor.impl.TrivialSubscriptionsPersistentStore">
-                <argument value="glen.hein@connexta.com"/>
-            </bean>
-        </argument>
-        <!-- TODO use this after testing: <argument ref="workspacePersistentStore"/> -->
+        <argument ref="workspacePersistentStore"/>
     </bean>
 
     <bean id="workspaceQueryService"
@@ -278,13 +272,6 @@
         <argument ref="filterBuilder"/>
         <argument>
             <bean class="org.codice.ddf.catalog.ui.query.monitor.impl.quartz.DefaultScheduler"/>
-        </argument>
-        <argument>
-            <!-- TODO Change to org.codice.ddf.catalog.ui.query.monitor.impl.quartz.DailyAtMidnight for final production -->
-            <bean class="org.codice.ddf.catalog.ui.query.monitor.impl.quartz.CronString">
-                <argument value="0 * * * * ?"/>
-                <argument value="WorkspaceQueryTrigger"/>
-            </bean>
         </argument>
         <argument ref="securityService"/>
         <argument>

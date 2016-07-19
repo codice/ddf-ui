@@ -43,17 +43,17 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.codice.ddf.catalog.ui.metacard.workspace.QueryMetacardImpl;
 import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
 import org.codice.ddf.catalog.ui.query.monitor.api.FilterService;
-import org.codice.ddf.catalog.ui.query.monitor.api.QueryService;
 import org.codice.ddf.catalog.ui.query.monitor.api.QueryUpdateSubscriber;
 import org.codice.ddf.catalog.ui.query.monitor.api.SecurityService;
 import org.codice.ddf.catalog.ui.query.monitor.api.WorkspaceService;
+import org.codice.ddf.catalog.ui.query.monitor.impl.quartz.CronString;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.opengis.filter.And;
 import org.opengis.filter.Filter;
+import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,13 +79,15 @@ public class WorkspaceQueryService {
 
     private static final String UNKNOWN_SOURCE = "unknown";
 
+    private static final String DEFAULT_CRON_STRING = "0 0 0 * * ?";
+
+    private static final String TRIGGER_NAME = "WorkspaceQueryTrigger";
+
     private static WorkspaceQueryService instance = null;
 
     private final QueryUpdateSubscriber queryUpdateSubscriber;
 
     private final WorkspaceService workspaceService;
-
-    private final QueryService queryService;
 
     private final CatalogFramework catalogFramework;
 
@@ -100,47 +102,20 @@ public class WorkspaceQueryService {
 
     private long queryTimeoutMinutes = DEFAULT_QUERY_TIMEOUT_MINUTES;
 
+    private JobDetail jobDetail;
+
     /**
      * @param queryUpdateSubscriber must be non-null
      * @param workspaceService      must be non-null
      * @param catalogFramework      must be non-null
      * @param filterBuilder         must be non-null
      * @param schedulerSupplier     must be non-null
-     * @param triggerSupplier       must be non-null
      * @param securityService       must be non-null
      * @param filterService         must be non-null
      */
     public WorkspaceQueryService(QueryUpdateSubscriber queryUpdateSubscriber,
             WorkspaceService workspaceService, CatalogFramework catalogFramework,
             FilterBuilder filterBuilder, Supplier<Optional<Scheduler>> schedulerSupplier,
-            Supplier<Trigger> triggerSupplier, SecurityService securityService,
-            FilterService filterService) throws SchedulerException {
-        this(queryUpdateSubscriber,
-                workspaceService,
-                null,
-                catalogFramework,
-                filterBuilder,
-                schedulerSupplier,
-                triggerSupplier,
-                securityService,
-                filterService);
-    }
-
-    /**
-     * @param queryUpdateSubscriber must be non-null
-     * @param workspaceService      must be non-null
-     * @param queryService          may be null
-     * @param catalogFramework      must be non-null
-     * @param filterBuilder         must be non-null
-     * @param schedulerSupplier     must be non-null
-     * @param triggerSupplier       must be non-null
-     * @param securityService       must be non-null
-     * @param filterService         must be non-null
-     */
-    public WorkspaceQueryService(QueryUpdateSubscriber queryUpdateSubscriber,
-            WorkspaceService workspaceService, QueryService queryService,
-            CatalogFramework catalogFramework, FilterBuilder filterBuilder,
-            Supplier<Optional<Scheduler>> schedulerSupplier, Supplier<Trigger> triggerSupplier,
             SecurityService securityService, FilterService filterService)
             throws SchedulerException {
 
@@ -149,17 +124,11 @@ public class WorkspaceQueryService {
         notNull(catalogFramework, "catalogFramework must be non-null");
         notNull(filterBuilder, "filterBuilder must be non-null");
         notNull(schedulerSupplier, "scheduleSupplier must be non-null");
-        notNull(triggerSupplier, "triggerSupplier must be non-null");
         notNull(securityService, "securityService must be non-null");
         notNull(filterService, "filterService must be non-null");
 
         this.queryUpdateSubscriber = queryUpdateSubscriber;
         this.workspaceService = workspaceService;
-        if (queryService != null) {
-            this.queryService = queryService;
-        } else {
-            this.queryService = queryMetacard -> true;
-        }
         this.catalogFramework = catalogFramework;
         this.filterBuilder = filterBuilder;
         this.securityService = securityService;
@@ -171,8 +140,10 @@ public class WorkspaceQueryService {
 
         if (schedulerOptional.isPresent()) {
             scheduler = schedulerOptional.get();
-            scheduler.scheduleJob(newJob(QueryJob.class).withIdentity(JOB_IDENTITY)
-                    .build(), triggerSupplier.get());
+            jobDetail = newJob(QueryJob.class).withIdentity(JOB_IDENTITY)
+                    .build();
+            scheduler.scheduleJob(jobDetail,
+                    new CronString(DEFAULT_CRON_STRING, TRIGGER_NAME).get());
             scheduler.start();
         } else {
             LOGGER.warn("unable to get a quartz scheduler object, email notifications will not run");
@@ -182,6 +153,20 @@ public class WorkspaceQueryService {
 
     public static WorkspaceQueryService getInstance() {
         return instance;
+    }
+
+    /**
+     * @param cronString cron string (must be non-null)
+     */
+    @SuppressWarnings("unused")
+    public void setCronString(String cronString) {
+        notNull(cronString, "cronString must be non-null");
+        try {
+            scheduler.deleteJob(jobDetail.getKey());
+            scheduler.scheduleJob(jobDetail, new CronString(cronString, TRIGGER_NAME).get());
+        } catch (SchedulerException e) {
+            LOGGER.warn("unable to set the cron string: cron=[{}]", cronString, e);
+        }
     }
 
     /**
@@ -198,7 +183,7 @@ public class WorkspaceQueryService {
      */
     public void run() {
 
-        LOGGER.debug("running workspace query service");
+        LOGGER.info("running workspace query service");
 
         Map<WorkspaceMetacardImpl, List<QueryMetacardImpl>> queryMetacards =
                 workspaceService.getQueryMetacards();
@@ -251,10 +236,8 @@ public class WorkspaceQueryService {
         List<WorkspaceTask> workspaceTasks = new ArrayList<>();
 
         for (Map.Entry<WorkspaceMetacardImpl, List<QueryMetacardImpl>> workspaceQueryEntry : queryMetacards.entrySet()) {
-            List<QueryMetacardImpl> activeQueryMetacards = filterActiveQueryMetacards(
-                    workspaceQueryEntry.getValue());
             Map<String, List<QueryMetacardImpl>> queryMetacardsGroupedBySource = groupBySource(
-                    activeQueryMetacards);
+                    workspaceQueryEntry.getValue());
             List<QueryRequest> queryRequests =
                     getQueryRequests(queryMetacardsGroupedBySource.values()
                             .stream());
@@ -293,13 +276,6 @@ public class WorkspaceQueryService {
                 return queries;
             }
         };
-    }
-
-    private List<QueryMetacardImpl> filterActiveQueryMetacards(
-            List<QueryMetacardImpl> queryMetacards) {
-        return queryMetacards.stream()
-                .filter(queryService::isActiveStandingQuery)
-                .collect(Collectors.toList());
     }
 
     private List<QueryRequest> getQueryRequests(
@@ -349,7 +325,6 @@ public class WorkspaceQueryService {
         return "WorkspaceQueryService{" +
                 "queryUpdateSubscriber=" + queryUpdateSubscriber +
                 ", workspaceService=" + workspaceService +
-                ", queryService=" + queryService +
                 ", catalogFramework=" + catalogFramework +
                 ", filterBuilder=" + filterBuilder +
                 ", scheduler=" + scheduler +

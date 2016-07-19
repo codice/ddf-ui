@@ -111,6 +111,7 @@ public class EmailNotifier implements QueryUpdateSubscriber {
      */
     @SuppressWarnings("unused")
     public void setSubjectTemplate(String subjectTemplate) {
+        notNull(subjectTemplate, "subjectTemplate must be non-null");
         this.subjectTemplate = subjectTemplate;
     }
 

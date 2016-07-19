@@ -25,16 +25,16 @@ import org.quartz.JobExecutionException;
  */
 public class QueryJob implements Job {
 
-    private static final Lock lock = new ReentrantLock();
+    private static final Lock LOCK = new ReentrantLock();
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        lock.lock();
+        LOCK.lock();
         try {
             WorkspaceQueryService.getInstance()
                     .run();
         } finally {
-            lock.unlock();
+            LOCK.unlock();
         }
     }
 

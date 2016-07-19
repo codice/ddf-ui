@@ -116,10 +116,6 @@
             <version>13.0</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>gt-main</artifactId>
-                    <groupId>org.geotools</groupId>
-                </exclusion>
-                <exclusion>
                     <artifactId>jai_core</artifactId>
                     <groupId>javax.media</groupId>
                 </exclusion>

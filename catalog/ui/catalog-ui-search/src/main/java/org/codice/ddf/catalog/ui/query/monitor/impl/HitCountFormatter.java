@@ -13,6 +13,8 @@
  */
 package org.codice.ddf.catalog.ui.query.monitor.impl;
 
+import java.util.regex.Pattern;
+
 import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
 
 /**
@@ -25,14 +27,7 @@ public class HitCountFormatter extends BaseMetacardFormatter {
     @Override
     protected String doFormat(String template, WorkspaceMetacardImpl workspaceMetacard,
             Long hitCount) {
-
-        String tmp = template;
-
-        while (tmp.contains(HIT_COUNT_TAG)) {
-            tmp = tmp.replace(HIT_COUNT_TAG, hitCount.toString());
-        }
-
-        return tmp;
+        return template.replaceAll(Pattern.quote(HIT_COUNT_TAG), hitCount.toString());
     }
 
     @Override

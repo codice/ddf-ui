@@ -74,5 +74,5 @@
     <Designate pid="org.codice.ddf.ui.search.standard.properties">
         <Object ocdref="org.codice.ddf.ui.search.standard.properties"/>
     </Designate>
-    
+
 </metatype:MetaData>
