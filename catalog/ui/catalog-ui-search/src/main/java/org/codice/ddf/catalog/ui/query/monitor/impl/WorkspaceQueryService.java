@@ -39,6 +39,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.codice.ddf.catalog.ui.metacard.workspace.QueryMetacardImpl;
 import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
@@ -183,9 +184,9 @@ public class WorkspaceQueryService {
      */
     public void run() {
 
-        LOGGER.info("running workspace query service");
+        LOGGER.debug("running workspace query service");
 
-        Map<WorkspaceMetacardImpl, List<QueryMetacardImpl>> queryMetacards =
+        Map<String, Pair<WorkspaceMetacardImpl, List<QueryMetacardImpl>>> queryMetacards =
                 workspaceService.getQueryMetacards();
 
         LOGGER.debug("queryMetacards: size={}", queryMetacards.size());
@@ -194,7 +195,8 @@ public class WorkspaceQueryService {
 
         LOGGER.debug("workspaceTasks: size={}", workspaceTasks.size());
 
-        Map<WorkspaceMetacardImpl, Long> results = executeWorkspaceTasks(workspaceTasks,
+        Map<String, Pair<WorkspaceMetacardImpl, Long>> results = executeWorkspaceTasks(
+                workspaceTasks,
                 queryTimeoutMinutes,
                 TimeUnit.MINUTES);
 
@@ -204,15 +206,16 @@ public class WorkspaceQueryService {
 
     }
 
-    private Map<WorkspaceMetacardImpl, Long> executeWorkspaceTasks(
+    private Map<String, Pair<WorkspaceMetacardImpl, Long>> executeWorkspaceTasks(
             List<WorkspaceTask> workspaceTasks, long timeout, TimeUnit timeoutUnit) {
-        Map<WorkspaceMetacardImpl, Long> results = new ConcurrentHashMap<>();
+        Map<String, Pair<WorkspaceMetacardImpl, Long>> results = new ConcurrentHashMap<>();
 
         workspaceTasks.stream()
                 .map(ForkJoinPool.commonPool()::submit)
                 .map(task -> getTaskResult(task, timeout, timeoutUnit))
                 .filter(Objects::nonNull)
-                .forEach(pair -> results.put(pair.getLeft(), pair.getRight()));
+                .forEach(pair -> results.put(pair.getLeft()
+                        .getId(), new ImmutablePair<>(pair.getLeft(), pair.getRight())));
 
         return results;
     }
@@ -231,18 +234,20 @@ public class WorkspaceQueryService {
     }
 
     private List<WorkspaceTask> createWorkspaceTasks(
-            Map<WorkspaceMetacardImpl, List<QueryMetacardImpl>> queryMetacards) {
+            Map<String, Pair<WorkspaceMetacardImpl, List<QueryMetacardImpl>>> queryMetacards) {
 
         List<WorkspaceTask> workspaceTasks = new ArrayList<>();
 
-        for (Map.Entry<WorkspaceMetacardImpl, List<QueryMetacardImpl>> workspaceQueryEntry : queryMetacards.entrySet()) {
+        for (Map.Entry<String, Pair<WorkspaceMetacardImpl, List<QueryMetacardImpl>>> workspaceQueryEntry : queryMetacards.entrySet()) {
             Map<String, List<QueryMetacardImpl>> queryMetacardsGroupedBySource = groupBySource(
-                    workspaceQueryEntry.getValue());
+                    workspaceQueryEntry.getValue()
+                            .getRight());
             List<QueryRequest> queryRequests =
                     getQueryRequests(queryMetacardsGroupedBySource.values()
                             .stream());
             if (!queryRequests.isEmpty()) {
-                workspaceTasks.add(new WorkspaceTask(workspaceQueryEntry.getKey(), queryRequests));
+                workspaceTasks.add(new WorkspaceTask(workspaceQueryEntry.getValue()
+                        .getLeft(), queryRequests));
             }
         }
 

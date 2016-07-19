@@ -26,6 +26,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
 import org.codice.ddf.catalog.ui.query.monitor.api.MetacardFormatter;
 import org.codice.ddf.catalog.ui.query.monitor.api.QueryUpdateSubscriber;
@@ -58,11 +59,11 @@ public class EmailNotifier implements QueryUpdateSubscriber {
      * The {@code bodyTemplate} and {@code subjectTemplate} may contain the tags supported by the
      * {@code metacardFormatter}.
      *
-     * @param bodyTemplate             must be non-null
-     * @param subjectTemplate          must be non-null
-     * @param fromEmail                must be non-null
-     * @param mailHost                 must be non-null
-     * @param metacardFormatter        must be non-null
+     * @param bodyTemplate                 must be non-null
+     * @param subjectTemplate              must be non-null
+     * @param fromEmail                    must be non-null
+     * @param mailHost                     must be non-null
+     * @param metacardFormatter            must be non-null
      * @param subscriptionsPersistentStore must be non-null
      */
     public EmailNotifier(String bodyTemplate, String subjectTemplate, String fromEmail,
@@ -127,9 +128,12 @@ public class EmailNotifier implements QueryUpdateSubscriber {
     }
 
     @Override
-    public void notify(Map<WorkspaceMetacardImpl, Long> workspaceMetacardMap) {
+    public void notify(Map<String, Pair<WorkspaceMetacardImpl, Long>> workspaceMetacardMap) {
         notNull(workspaceMetacardMap, "workspaceMetacardMap must be non-null");
-        workspaceMetacardMap.forEach(this::sendEmailsForWorkspace);
+
+        workspaceMetacardMap.values()
+                .forEach(pair -> sendEmailsForWorkspace(pair.getLeft(), pair.getRight()));
+
     }
 
     private void sendEmailsForWorkspace(WorkspaceMetacardImpl workspaceMetacard, Long hitCount) {

@@ -15,14 +15,15 @@ package org.codice.ddf.catalog.ui.query.monitor.api;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
 
 public interface QueryUpdateSubscriber {
 
     /**
      *
-     * @param workspaceMetacardMap map of workspaces to query hit count (must be non-null)
+     * @param workspaceMetacardMap map of workspace identifiers to workspace metacards and query hit count (must be non-null)
      */
-    void notify(Map<WorkspaceMetacardImpl, Long> workspaceMetacardMap);
+    void notify(Map<String, Pair<WorkspaceMetacardImpl, Long>> workspaceMetacardMap);
 
 }

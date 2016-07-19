@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.codice.ddf.catalog.ui.metacard.workspace.QueryMetacardImpl;
 import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
 import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceTransformer;
@@ -190,6 +192,22 @@ public class WorkspaceServiceImpl implements WorkspaceService {
                 .map(id -> filterBuilder.allOf(filterService.buildMetacardIdFilter(id),
                         filterService.buildWorkspaceTagFilter()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<String, Pair<WorkspaceMetacardImpl, List<QueryMetacardImpl>>> getQueryMetacards() {
+        Map<String, Pair<WorkspaceMetacardImpl, List<QueryMetacardImpl>>> queryMetacards =
+                new HashMap<>();
+        for (WorkspaceMetacardImpl workspaceMetacard : getWorkspaceMetacards()) {
+            queryMetacards.put(workspaceMetacard.getId(),
+                    new ImmutablePair<>(workspaceMetacard, getQueryMetacards(workspaceMetacard)));
+        }
+        return queryMetacards;
+    }
+
+    @Override
+    public WorkspaceMetacardImpl getWorkspaceMetacard(String workspaceId) {
+        return getWorkspaceMetacards(Collections.singleton(workspaceId)).get(0);
     }
 
 }

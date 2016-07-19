@@ -18,6 +18,7 @@ import static org.apache.commons.lang3.Validate.notNull;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
 import org.codice.ddf.catalog.ui.query.monitor.api.QueryUpdateSubscriber;
 import org.slf4j.Logger;
@@ -42,7 +43,7 @@ public class QueryUpdateSubscriberList implements QueryUpdateSubscriber {
     }
 
     @Override
-    public void notify(Map<WorkspaceMetacardImpl, Long> workspaceMetacardMap) {
+    public void notify(Map<String, Pair<WorkspaceMetacardImpl, Long>> workspaceMetacardMap) {
         notNull(workspaceMetacardMap, "workspaceMetacardMap must be non-null");
         queryUpdateSubscriberList.forEach(subscriber -> {
             try {
