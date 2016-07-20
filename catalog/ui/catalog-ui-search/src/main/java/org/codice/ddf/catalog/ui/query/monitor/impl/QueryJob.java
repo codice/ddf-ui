@@ -13,17 +13,26 @@
  */
 package org.codice.ddf.catalog.ui.query.monitor.impl;
 
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Quartz Job that calls {@link WorkspaceQueryService#run()}.
+ * Quartz Job that calls {@link WorkspaceQueryService#run()}. Requires that a WorkspaceQueryService
+ * be registered as a service reference.
  */
 public class QueryJob implements Job {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueryJob.class);
 
     private static final Lock LOCK = new ReentrantLock();
 
@@ -31,8 +40,7 @@ public class QueryJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         LOCK.lock();
         try {
-            WorkspaceQueryService.getInstance()
-                    .run();
+            getWorkspaceQueryService().ifPresent(WorkspaceQueryService::run);
         } finally {
             LOCK.unlock();
         }
@@ -42,4 +50,19 @@ public class QueryJob implements Job {
     public String toString() {
         return "QueryJob{}";
     }
+
+    private Bundle getBundle() {
+        return FrameworkUtil.getBundle(getClass());
+    }
+
+    private Optional<WorkspaceQueryService> getWorkspaceQueryService() {
+        BundleContext bundleContext = getBundle().getBundleContext();
+        if (bundleContext == null) {
+            LOGGER.warn("unable to get the bundle context");
+            return Optional.empty();
+        }
+        return Optional.of(bundleContext.getService(bundleContext.getServiceReference(
+                WorkspaceQueryService.class)));
+    }
+
 }

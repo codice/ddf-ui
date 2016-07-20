@@ -84,7 +84,8 @@ public class WorkspaceQueryService {
 
     private static final String TRIGGER_NAME = "WorkspaceQueryTrigger";
 
-    private static WorkspaceQueryService instance = null;
+    // TODO
+    //private static WorkspaceQueryService instance = null;
 
     private final QueryUpdateSubscriber queryUpdateSubscriber;
 
@@ -137,7 +138,8 @@ public class WorkspaceQueryService {
 
         Optional<Scheduler> schedulerOptional = schedulerSupplier.get();
 
-        instance = this;
+        // TODO
+        //instance = this;
 
         if (schedulerOptional.isPresent()) {
             scheduler = schedulerOptional.get();
@@ -152,9 +154,13 @@ public class WorkspaceQueryService {
 
     }
 
-    public static WorkspaceQueryService getInstance() {
-        return instance;
-    }
+    ///**
+    // * TODO try to replace this with a call to FrameworkUtils to get the reference!
+    // * @return
+    // */
+    //public static WorkspaceQueryService getInstance() {
+    //    return instance;
+    //}
 
     /**
      * @param cronString cron string (must be non-null)
@@ -184,7 +190,7 @@ public class WorkspaceQueryService {
      */
     public void run() {
 
-        LOGGER.debug("running workspace query service");
+        LOGGER.info("running workspace query service");
 
         Map<String, Pair<WorkspaceMetacardImpl, List<QueryMetacardImpl>>> queryMetacards =
                 workspaceService.getQueryMetacards();
@@ -238,16 +244,14 @@ public class WorkspaceQueryService {
 
         List<WorkspaceTask> workspaceTasks = new ArrayList<>();
 
-        for (Map.Entry<String, Pair<WorkspaceMetacardImpl, List<QueryMetacardImpl>>> workspaceQueryEntry : queryMetacards.entrySet()) {
+        for (Pair<WorkspaceMetacardImpl, List<QueryMetacardImpl>> workspaceQueryPair : queryMetacards.values()) {
             Map<String, List<QueryMetacardImpl>> queryMetacardsGroupedBySource = groupBySource(
-                    workspaceQueryEntry.getValue()
-                            .getRight());
+                    workspaceQueryPair.getRight());
             List<QueryRequest> queryRequests =
                     getQueryRequests(queryMetacardsGroupedBySource.values()
                             .stream());
             if (!queryRequests.isEmpty()) {
-                workspaceTasks.add(new WorkspaceTask(workspaceQueryEntry.getValue()
-                        .getLeft(), queryRequests));
+                workspaceTasks.add(new WorkspaceTask(workspaceQueryPair.getLeft(), queryRequests));
             }
         }
 
@@ -288,14 +292,18 @@ public class WorkspaceQueryService {
 
         final Filter modifiedFilter = filterService.getModifiedDateFilter(getOneDayBack());
 
-        return queriesGroupedBySource.map(queriesForSource -> queriesForSource.stream()
-                .map(this::metacard2Filter)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList()))
+        return queriesGroupedBySource.map(this::queryMetacardsToFilters)
                 .map(filterBuilder::anyOf)
                 .map(filter -> filterBuilder.allOf(modifiedFilter, filter))
                 .map(this::filter2query)
                 .map(this::query2queryRequest)
+                .collect(Collectors.toList());
+    }
+
+    private List<Filter> queryMetacardsToFilters(List<QueryMetacardImpl> queriesForSource) {
+        return queriesForSource.stream()
+                .map(this::metacard2Filter)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 

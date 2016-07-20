@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.codice.ddf.catalog.ui.metacard.workspace.QueryMetacardImpl;
 import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
 import org.codice.ddf.catalog.ui.query.monitor.api.FilterService;
@@ -103,8 +105,7 @@ public class TestWorkspaceQueryService {
         when(workspaceMetacard.getId()).thenReturn(workspaceId);
 
         QueryMetacardImpl queryMetacardWithSource = mock(QueryMetacardImpl.class);
-        when(queryMetacardWithSource.getSources()).thenReturn(Collections.singletonList(
-                "SomeSource"));
+        when(queryMetacardWithSource.getSources()).thenReturn(Collections.singletonList("SomeSource"));
         when(queryMetacardWithSource.getCql()).thenReturn(ecql);
 
         Attribute id1 = mock(Attribute.class);
@@ -116,12 +117,15 @@ public class TestWorkspaceQueryService {
         when(queryMetacardWithoutSource.getCql()).thenReturn(ecql);
 
         Attribute id2 = mock(Attribute.class);
-        when(id1.getValue()).thenReturn("2");
+        when(id2.getValue()).thenReturn("2");
         when(queryMetacardWithoutSource.getAttribute(Metacard.ID)).thenReturn(id2);
 
-        Map<WorkspaceMetacardImpl, List<QueryMetacardImpl>> queryMetacards =
-                Collections.singletonMap(workspaceMetacard,
-                        Arrays.asList(queryMetacardWithSource, queryMetacardWithoutSource));
+        Map<String, Pair<WorkspaceMetacardImpl, List<QueryMetacardImpl>>> queryMetacards =
+                Collections.singletonMap(id2.getValue()
+                                .toString(),
+                        new ImmutablePair<>(workspaceMetacard,
+                                Arrays.asList(queryMetacardWithSource,
+                                        queryMetacardWithoutSource)));
 
         when(workspaceService.getQueryMetacards()).thenReturn(queryMetacards);
 
@@ -141,10 +145,11 @@ public class TestWorkspaceQueryService {
 
         Map queryUpdateSubscriberArgumentRaw = argumentCaptor.getValue();
 
-        Map<WorkspaceMetacardImpl, Long> queryUpdateSubscriberArgument =
-                (Map<WorkspaceMetacardImpl, Long>) queryUpdateSubscriberArgumentRaw;
+        Map<String, Pair<WorkspaceMetacardImpl, Long>> queryUpdateSubscriberArgument =
+                (Map<String, Pair<WorkspaceMetacardImpl, Long>>) queryUpdateSubscriberArgumentRaw;
 
-        assertThat(queryUpdateSubscriberArgument.get(workspaceMetacard), is(hitCount1 + hitCount2));
+        assertThat(queryUpdateSubscriberArgument.get(workspaceId)
+                .getRight(), is(hitCount1 + hitCount2));
     }
 
 }

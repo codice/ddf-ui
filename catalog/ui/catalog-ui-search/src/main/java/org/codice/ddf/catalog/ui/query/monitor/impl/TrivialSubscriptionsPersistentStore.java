@@ -13,6 +13,8 @@
  */
 package org.codice.ddf.catalog.ui.query.monitor.impl;
 
+import static org.apache.commons.lang3.Validate.notBlank;
+
 import java.util.Collections;
 import java.util.Set;
 
@@ -39,5 +41,26 @@ public class TrivialSubscriptionsPersistentStore implements SubscriptionsPersist
     @Override
     public Set<String> getEmails(String id) {
         return Collections.singleton(emailAddress);
+    }
+
+    @Override
+    public final void addEmail(String id, String email) {
+        notBlank(id, "id must be non-blank");
+        notBlank(email, "email must be non-blank");
+
+        addEmails(id, Collections.singleton(email));
+    }
+
+    @Override
+    public final void removeAllEmails(String id) {
+        removeEmails(id, getEmails(id));
+    }
+
+    @Override
+    public final void removeEmail(String id, String email) {
+        notBlank(id, "id must be non-blank");
+        notBlank(email, "email must be non-blank");
+
+        removeEmails(id, Collections.singleton(email));
     }
 }

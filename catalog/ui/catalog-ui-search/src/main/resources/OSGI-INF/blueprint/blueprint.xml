@@ -281,5 +281,6 @@
         </argument>
     </bean>
 
+    <service ref="workspaceQueryService" interface="org.codice.ddf.catalog.ui.query.monitor.impl.WorkspaceQueryService"/>
 
 </blueprint>

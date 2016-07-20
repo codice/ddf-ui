@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
 import org.codice.ddf.catalog.ui.query.monitor.api.QueryUpdateSubscriber;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class TestQueryUpdateSubscriberList {
         QueryUpdateSubscriber childSubscriber = mock(QueryUpdateSubscriber.class);
         QueryUpdateSubscriberList queryUpdateSubscriberList = new QueryUpdateSubscriberList(
                 Collections.singletonList(childSubscriber));
-        Map<WorkspaceMetacardImpl, Long> workspaceMetacardMap = Collections.emptyMap();
+        Map<String, Pair<WorkspaceMetacardImpl, Long>> workspaceMetacardMap = Collections.emptyMap();
         queryUpdateSubscriberList.notify(workspaceMetacardMap);
         verify(childSubscriber).notify(workspaceMetacardMap);
     }
@@ -45,7 +46,7 @@ public class TestQueryUpdateSubscriberList {
      */
     @Test
     public void testExceptions() {
-        Map<WorkspaceMetacardImpl, Long> workspaceMetacardMap = Collections.emptyMap();
+        Map<String, Pair<WorkspaceMetacardImpl, Long>> workspaceMetacardMap = Collections.emptyMap();
 
         QueryUpdateSubscriber childSubscriber1 = mock(QueryUpdateSubscriber.class);
         QueryUpdateSubscriber childSubscriber2 = mock(QueryUpdateSubscriber.class);
