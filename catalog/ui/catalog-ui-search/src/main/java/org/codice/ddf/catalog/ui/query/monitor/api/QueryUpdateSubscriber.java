@@ -21,7 +21,6 @@ import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
 public interface QueryUpdateSubscriber {
 
     /**
-     *
      * @param workspaceMetacardMap map of workspace identifiers to workspace metacards and query hit count (must be non-null)
      */
     void notify(Map<String, Pair<WorkspaceMetacardImpl, Long>> workspaceMetacardMap);

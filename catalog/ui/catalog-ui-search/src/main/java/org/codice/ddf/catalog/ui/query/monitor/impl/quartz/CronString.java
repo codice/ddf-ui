@@ -31,9 +31,8 @@ public class CronString implements Supplier<Trigger> {
     private final String identity;
 
     /**
-     *
      * @param cronString must be non-null
-     * @param identity must be non-null
+     * @param identity   must be non-null
      */
     public CronString(String cronString, String identity) {
         notNull(cronString, "cronString must be non-null");

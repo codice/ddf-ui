@@ -35,7 +35,8 @@ public class TestQueryUpdateSubscriberList {
         QueryUpdateSubscriber childSubscriber = mock(QueryUpdateSubscriber.class);
         QueryUpdateSubscriberList queryUpdateSubscriberList = new QueryUpdateSubscriberList(
                 Collections.singletonList(childSubscriber));
-        Map<String, Pair<WorkspaceMetacardImpl, Long>> workspaceMetacardMap = Collections.emptyMap();
+        Map<String, Pair<WorkspaceMetacardImpl, Long>> workspaceMetacardMap =
+                Collections.emptyMap();
         queryUpdateSubscriberList.notify(workspaceMetacardMap);
         verify(childSubscriber).notify(workspaceMetacardMap);
     }
@@ -46,7 +47,8 @@ public class TestQueryUpdateSubscriberList {
      */
     @Test
     public void testExceptions() {
-        Map<String, Pair<WorkspaceMetacardImpl, Long>> workspaceMetacardMap = Collections.emptyMap();
+        Map<String, Pair<WorkspaceMetacardImpl, Long>> workspaceMetacardMap =
+                Collections.emptyMap();
 
         QueryUpdateSubscriber childSubscriber1 = mock(QueryUpdateSubscriber.class);
         QueryUpdateSubscriber childSubscriber2 = mock(QueryUpdateSubscriber.class);

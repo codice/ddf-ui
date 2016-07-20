@@ -84,9 +84,6 @@ public class WorkspaceQueryService {
 
     private static final String TRIGGER_NAME = "WorkspaceQueryTrigger";
 
-    // TODO
-    //private static WorkspaceQueryService instance = null;
-
     private final QueryUpdateSubscriber queryUpdateSubscriber;
 
     private final WorkspaceService workspaceService;
@@ -138,9 +135,6 @@ public class WorkspaceQueryService {
 
         Optional<Scheduler> schedulerOptional = schedulerSupplier.get();
 
-        // TODO
-        //instance = this;
-
         if (schedulerOptional.isPresent()) {
             scheduler = schedulerOptional.get();
             jobDetail = newJob(QueryJob.class).withIdentity(JOB_IDENTITY)
@@ -153,14 +147,6 @@ public class WorkspaceQueryService {
         }
 
     }
-
-    ///**
-    // * TODO try to replace this with a call to FrameworkUtils to get the reference!
-    // * @return
-    // */
-    //public static WorkspaceQueryService getInstance() {
-    //    return instance;
-    //}
 
     /**
      * @param cronString cron string (must be non-null)
@@ -190,7 +176,7 @@ public class WorkspaceQueryService {
      */
     public void run() {
 
-        LOGGER.info("running workspace query service");
+        LOGGER.debug("running workspace query service");
 
         Map<String, Pair<WorkspaceMetacardImpl, List<QueryMetacardImpl>>> queryMetacards =
                 workspaceService.getQueryMetacards();

@@ -155,10 +155,13 @@ public class SubscriptionsPersistentStoreImpl implements SubscriptionsPersistent
 
     private void add(String id, PersistentItem item) {
         LOCK.lock();
-            try {
-                persistentStore.add(SubscriptionsPersistentStore.SUBSCRIPTIONS_TYPE, item);
-            } catch (PersistenceException e) {
-                LOGGER.warn("unable to add PersistentItem to the PersistentStore: id={} item={}", id, item, e);
+        try {
+            persistentStore.add(SubscriptionsPersistentStore.SUBSCRIPTIONS_TYPE, item);
+        } catch (PersistenceException e) {
+            LOGGER.warn("unable to add PersistentItem to the PersistentStore: id={} item={}",
+                    id,
+                    item,
+                    e);
 
         } finally {
             LOCK.unlock();
@@ -170,17 +173,17 @@ public class SubscriptionsPersistentStoreImpl implements SubscriptionsPersistent
         notBlank(id, "id must be non-blank");
 
         LOCK.lock();
-            try {
-                List<Map<String, Object>> results = get(id);
+        try {
+            List<Map<String, Object>> results = get(id);
 
-                results.stream()
-                        .map(this::convert)
-                        .map(item -> strip(item, emails))
-                        .forEach(item -> add(id, item));
+            results.stream()
+                    .map(this::convert)
+                    .map(item -> strip(item, emails))
+                    .forEach(item -> add(id, item));
 
-            } catch (PersistenceException e) {
-                LOGGER.warn("unable to delete emails from workspace: id={}", id, e);
-            } finally {
+        } catch (PersistenceException e) {
+            LOGGER.warn("unable to delete emails from workspace: id={}", id, e);
+        } finally {
             LOCK.unlock();
         }
     }
@@ -206,31 +209,31 @@ public class SubscriptionsPersistentStoreImpl implements SubscriptionsPersistent
         notBlank(id, "id must be non-blank");
 
         LOCK.lock();
-            try {
+        try {
 
-                List<Map<String, Object>> results = get(id);
+            List<Map<String, Object>> results = get(id);
 
-                List<Object> mapValues = results.stream()
-                        .map(PersistentItem::stripSuffixes)
-                        .filter(result -> result.containsKey(EMAIL_PROPERTY))
-                        .map(result -> result.get(EMAIL_PROPERTY))
-                        .collect(Collectors.toList());
+            List<Object> mapValues = results.stream()
+                    .map(PersistentItem::stripSuffixes)
+                    .filter(result -> result.containsKey(EMAIL_PROPERTY))
+                    .map(result -> result.get(EMAIL_PROPERTY))
+                    .collect(Collectors.toList());
 
-                Set<String> emailsFromSet = streamToStrings(mapValues.stream()
-                        .filter(Set.class::isInstance)
-                        .map(Set.class::cast)
-                        .flatMap(Set::stream));
+            Set<String> emailsFromSet = streamToStrings(mapValues.stream()
+                    .filter(Set.class::isInstance)
+                    .map(Set.class::cast)
+                    .flatMap(Set::stream));
 
-                Set<String> emailsFromString = streamToStrings(mapValues.stream());
+            Set<String> emailsFromString = streamToStrings(mapValues.stream());
 
-                return merge(emailsFromSet, emailsFromString);
-            } catch (PersistenceException e) {
-                LOGGER.warn("unable to get workspace emails: id={}", id, e);
-            } finally {
-                LOCK.unlock();
-            }
+            return merge(emailsFromSet, emailsFromString);
+        } catch (PersistenceException e) {
+            LOGGER.warn("unable to get workspace emails: id={}", id, e);
+        } finally {
+            LOCK.unlock();
+        }
 
-            return Collections.emptySet();
+        return Collections.emptySet();
     }
 
     /**
