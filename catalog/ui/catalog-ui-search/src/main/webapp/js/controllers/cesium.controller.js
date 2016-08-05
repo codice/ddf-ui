@@ -504,7 +504,7 @@ define(['underscore',
                 }
                 mapclustering.setResultLists(this.mapViews);
 
-                if(this.clustering && typeof results !== "undefined") {
+                if(mapclustering.clustering && !_.isUndefined(results)) {
                     mapclustering.cluster();
                 }
             },
@@ -521,7 +521,7 @@ define(['underscore',
                 }
                 mapclustering.setResultLists(this.mapViews);
 
-                if(this.clustering && typeof result !== "undefined") {
+                if(mapclustering.clustering && !_.isUndefined(result)) {
                     mapclustering.cluster();
                 }
             }
