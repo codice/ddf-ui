@@ -52,11 +52,11 @@ define(['marionette',
                     if(!_.isUndefined(view)) {
                         var billboard = view.billboard;
                         if(!_.isUndefined(billboard)) {
-                            var cluster = this.fitsInExistingCluster(billboard, clusters);
+                            var cluster = this.getFittingCluster(billboard, clusters);
 
                             // If the current point fits in an existing cluster add it,
                             // otherwise create a new cluster
-                            if(cluster) {
+                            if(!_.isUndefined(cluster)) {
                                 this.addPointToCluster(cluster, billboard, view);
                             } else {
                                 this.createNewCluster(billboard, view, clusters);
@@ -128,19 +128,15 @@ define(['marionette',
                 });
             }
         },
-        fitsInExistingCluster : function(position, clusters) {
-            var cluster = false;
-            _.each(clusters, function(value) {
-                if(this.isInRadius(this.getRadius(value), position, value)) {
-                    cluster = value;
-                    return false;
-                }
+        getFittingCluster : function(position, clusters) {
+            var result = _.find(clusters, function(value) {
+                return this.isInRadius(this.getRadius(value), position, value);
             }, this);
-            return cluster;
+            return result;
         },
         createNewCluster : function (billboard, view, clusters) {
-            var points = [];
-            var views = [];
+            var points = [billboard.position];
+            var views = [view];
             points.push(billboard.position);
             views.push(view);
             clusters.push({color: view.color, ref : billboard, views : views, position : billboard.position, points: points, radius : DEFAULT_PIXEL_DISTANCE});
