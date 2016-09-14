@@ -73,6 +73,8 @@ define([
                 });
             }, intervalArray);
 
+            intervalArray.sort(this.compare);
+
             return new Property({
                 enum : intervalArray,
                 value: [this.model.get('polling') || false],
@@ -86,13 +88,13 @@ define([
 
             var result = "";
             if(hours > 0) {
-                result += hours + " hours ";
+                result += hours + " hour(s) ";
             }
             if(minutes > 0) {
-                result += minutes + " minutes ";
+                result += minutes + " minute(s) ";
             }
             if(seconds > 0) {
-                result += seconds + " seconds";
+                result += seconds + " second(s)";
             }
 
             return result.trim();
@@ -126,6 +128,15 @@ define([
                 polling: this.propertyInterval.currentView.getCurrentValue()[0]
             });
             store.saveQuery();
+        },
+        compare: function(a, b) {
+            if (a.value < b.value) {
+                return -1;
+            }
+            if (a.value > b.value) {
+                return 1;
+            }
+            return 0;
         }
     });
 });
