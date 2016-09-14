@@ -60,57 +60,19 @@ define([
         },
         getPropertyIntervalEnum: function() {
             var intervalArray;
-            if(properties.scheduleFrequencyList.length == 0) {
-                var halfHour = 30 * 60 * 1000;
-                var hour = 2 * halfHour;
-                intervalArray = [
-                    {
-                        label: 'Never',
-                        value: false
-                    },
-                    {
-                        label: '1/2 Hour',
-                        value: halfHour
-                    },
-                    {
-                        label: '1 Hour',
-                        value: hour
-                    },
-                    {
-                        label: '2 Hours',
-                        value: 2 * hour
-                    },
-                    {
-                        label: '4 Hours',
-                        value: 4 * hour
-                    },
-                    {
-                        label: '8 Hours',
-                        value: 8 * hour
-                    },
-                    {
-                        label: '16 Hours',
-                        value: 16 * hour
-                    },
-                    {
-                        label: 'Day',
-                        value: 24 * hour
-                    }
-                ];
-            } else {
-                intervalArray = [{
-                    label: 'Never',
-                    value: false
-                }];
+            intervalArray = [{
+                label: 'Never',
+                value: false
+            }];
 
-                var that = this;
-                _.each(properties.scheduleFrequencyList, function(property) {
-                    this.push({
-                        label: that.parseTimeFromSeconds(property),
-                        value: property * 1000
-                    });
-                }, intervalArray);
-            }
+            var that = this;
+            _.each(properties.scheduleFrequencyList, function(property) {
+                this.push({
+                    label: that.parseTimeFromSeconds(property),
+                    value: property * 1000
+                });
+            }, intervalArray);
+
             return new Property({
                 enum : intervalArray,
                 value: [this.model.get('polling') || false],
