@@ -148,6 +148,13 @@
             type="String"
             cardinality="10000"
             required="false"/>
+
+        <AD id="scheduleFrequencyList"
+            name="Query Schedule Frequency Lists"
+            description="Custom list of schedule frequencies in seconds.  This will override the frequency list in the query schedule tab.  Leave this empty to use the frequency list on the Catalog UI."
+            type="Long"
+            cardinality="10000"
+            required="false"/>
     </OCD>
 
     <Designate pid="org.codice.ddf.catalog.ui.config">

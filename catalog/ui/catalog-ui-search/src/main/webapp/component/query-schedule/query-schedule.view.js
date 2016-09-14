@@ -20,11 +20,12 @@ define([
     './query-schedule.hbs',
     'js/CustomElements',
     'js/store',
+    'properties',
     'component/property/property.view',
     'component/property/property',
     'component/dropdown/dropdown.view',
     'component/radio/radio.view'
-], function (Marionette, _, $, template, CustomElements, store, PropertyView, Property,
+], function (Marionette, _, $, template, CustomElements, store, properties, PropertyView, Property,
              DropdownView, RadioView) {
 
     return Marionette.LayoutView.extend({
@@ -51,50 +52,88 @@ define([
             }
         },
         setupInterval: function(){
-            var halfHour = 30 * 60 * 1000;
-            var hour = 2 * halfHour;
             this.propertyInterval.show(new PropertyView({
-                model: new Property({
-                    enum: [
-                        {
-                            label: 'Never',
-                            value: false
-                        },
-                        {
-                            label: '1/2 Hour',
-                            value: halfHour
-                        },
-                        {
-                            label: '1 Hour',
-                            value: hour
-                        },
-                        {
-                            label: '2 Hours',
-                            value: 2 * hour
-                        },
-                        {
-                            label: '4 Hours',
-                            value: 4 * hour
-                        },
-                        {
-                            label: '8 Hours',
-                            value: 8 * hour
-                        },
-                        {
-                            label: '16 Hours',
-                            value: 16 * hour
-                        },
-                        {
-                            label: 'Day',
-                            value: 24 * hour
-                        }
-                    ],
-                    value: [this.model.get('polling') || false],
-                    id: 'Frequency'
-                })
+                model: this.getPropertyIntervalEnum()
             }));
             this.propertyInterval.currentView.turnOffEditing();
             this.propertyInterval.currentView.turnOnLimitedWidth();
+        },
+        getPropertyIntervalEnum: function() {
+            var intervalArray;
+            if(properties.scheduleFrequencyList.length == 0) {
+                var halfHour = 30 * 60 * 1000;
+                var hour = 2 * halfHour;
+                intervalArray = [
+                    {
+                        label: 'Never',
+                        value: false
+                    },
+                    {
+                        label: '1/2 Hour',
+                        value: halfHour
+                    },
+                    {
+                        label: '1 Hour',
+                        value: hour
+                    },
+                    {
+                        label: '2 Hours',
+                        value: 2 * hour
+                    },
+                    {
+                        label: '4 Hours',
+                        value: 4 * hour
+                    },
+                    {
+                        label: '8 Hours',
+                        value: 8 * hour
+                    },
+                    {
+                        label: '16 Hours',
+                        value: 16 * hour
+                    },
+                    {
+                        label: 'Day',
+                        value: 24 * hour
+                    }
+                ];
+            } else {
+                intervalArray = [{
+                    label: 'Never',
+                    value: false
+                }];
+
+                var that = this;
+                _.each(properties.scheduleFrequencyList, function(property) {
+                    this.push({
+                        label: that.parseTimeFromSeconds(property),
+                        value: property * 1000
+                    });
+                }, intervalArray);
+            }
+            return new Property({
+                enum : intervalArray,
+                value: [this.model.get('polling') || false],
+                id: 'Frequency'
+            });
+        },
+        parseTimeFromSeconds: function(seconds){
+            var hours   = Math.floor(seconds / 3600);
+            var minutes = Math.floor((seconds - (hours * 3600)) / 60);
+            var seconds = seconds - (hours * 3600) - (minutes * 60);
+
+            var result = "";
+            if(hours > 0) {
+                result += hours + " hours ";
+            }
+            if(minutes > 0) {
+                result += minutes + " minutes ";
+            }
+            if(seconds > 0) {
+                result += seconds + " seconds";
+            }
+
+            return result.trim();
         },
         turnOnEditing: function(){
             this.$el.addClass('is-editing');
