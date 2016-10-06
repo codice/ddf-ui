@@ -223,6 +223,7 @@ public class UpdateOperations {
                             .update(updateStorageRequest);
                     updateStorageResponse.getProperties()
                             .put(CONTENT_PATHS, tmpContentPaths);
+                    updateStorageResponse = historian.version(streamUpdateRequest, updateStorageResponse);
                 } catch (StorageException e) {
                     throw new IngestException(
                             "Could not store content items. Removed created metacards.",
