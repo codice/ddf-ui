@@ -1,19 +1,12 @@
 #### What does this PR do?
 #### Who is reviewing it (please choose AT LEAST two reviewers that need to approve the PR before it can get merged; if a component team is listed, at least one of its members needs to approve)?
 #### Choose 2 committers to review/merge the PR (please choose ONLY two committers from below, delete the rest).
-@beyelerb
-@coyotesqrl
-@figliold
-@jaymcnallie
-@jlcsmith
-@kcwire
-@lessarderic
-@michaelmenousek
-@millerw8
-@mrmateo
+
+@andrewkfiedler
+@djblue
 @pklinef
-@shaundmorris
-@stustison
+@rzwiefel
+
 #### How should this be tested?
 #### Any background context you want to provide?
 #### What are the relevant tickets?
