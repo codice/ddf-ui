@@ -35,6 +35,9 @@ import org.cometd.bayeux.server.ServerSession;
 import org.cometd.server.CometDServlet;
 import org.cometd.server.DefaultSecurityPolicy;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.event.EventAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +79,8 @@ public class CometdEndpoint {
 
     private BundleContext bundleContext;
 
+    private ServiceRegistration cometdServletService;
+
     /**
      * Create a new CometdEndpoint
      *
@@ -115,7 +120,25 @@ public class CometdEndpoint {
         properties.put("org.eclipse.jetty.servlet.SessionPath", "/");
         properties.put("load-on-startup", "1");
         properties.put("async-supported", "true");
-        bundleContext.registerService(Servlet.class, cometdServlet, properties);
+        bundleContext.addServiceListener(new ServiceListener() {
+            public void handleEvent(ServiceEvent event) {
+                if (event.getType() == ServiceEvent.REGISTERED) {
+                    handleRegistered();
+                }
+            }
+
+            @Override
+            public void serviceChanged(ServiceEvent event) {
+                if (bundleContext.getService(event.getServiceReference()) == cometdServlet) {
+                    handleEvent(event);
+                }
+            }
+        });
+        cometdServletService = bundleContext.registerService(Servlet.class, cometdServlet, properties);
+    }
+
+    public void handleRegistered() {
+
         bayeuxServer = (BayeuxServer) cometdServlet.getServletContext()
                 .getAttribute(BayeuxServer.ATTRIBUTE);
 
