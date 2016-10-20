@@ -2507,9 +2507,7 @@ public class TestCatalog extends AbstractIntegrationTest {
                 .body(metacardHistoryQuery)
                 .post(CSW_PATH.getUrl())
                 .then()
-                .body(hasXPath("count(/GetRecordsResponse/SearchResults/metacard)", is("1")),
-                        hasXPath(
-                                "/GetRecordsResponse/SearchResults/metacard/string[@name='metacard.version.action']/value[text()=\"Created-Content\"]"));
+                .body(hasXPath("count(/GetRecordsResponse/SearchResults/metacard)", is("0")));
 
         given().multiPart(tmpFile2)
                 .expect()
@@ -2530,9 +2528,9 @@ public class TestCatalog extends AbstractIntegrationTest {
                 .body(metacardHistoryQuery)
                 .post(CSW_PATH.getUrl())
                 .then()
-                .body(hasXPath("count(/GetRecordsResponse/SearchResults/metacard)", is("2")),
+                .body(hasXPath("count(/GetRecordsResponse/SearchResults/metacard)", is("1")),
                         hasXPath(
-                                "/GetRecordsResponse/SearchResults/metacard/string[@name='metacard.version.action']/value[text()=\"Updated-Content\"]"));
+                                "/GetRecordsResponse/SearchResults/metacard/string[@name='metacard.version.action']/value[text()=\"Versioned-Content\"]"));
 
         properties.put("historyEnabled", false);
         config.update(properties);
