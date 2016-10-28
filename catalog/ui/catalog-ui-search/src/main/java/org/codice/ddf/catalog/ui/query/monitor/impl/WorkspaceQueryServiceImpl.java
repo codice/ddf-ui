@@ -156,10 +156,8 @@ public class WorkspaceQueryServiceImpl implements WorkspaceQueryService {
     @SuppressWarnings("unused")
     public void setCronString(String cronString) {
         notNull(cronString, "cronString must be non-null");
-
-        if (scheduler == null) {
-            return;
-        }
+        notNull(scheduler, "scheduler must be non-null");
+        notNull(jobDetail, "jobDetail must be non-null");
 
         try {
             scheduler.deleteJob(jobDetail.getKey());

@@ -21,11 +21,11 @@
 
         <AD description="Set the subject line template."
             name="Subject" id="subjectTemplate" required="true" type="String"
-            default="[%[attribute=id]] workspace query notice"/>
+            default="Workspace '%[attribute=title]' notification"/>
 
         <AD description="Set the body template."
             name="Body" id="bodyTemplate" required="true" type="String"
-            default="The workspace '%[attribute=id]' contains up to %[hitCount] results."/>
+            default="The workspace '%[attribute=title]' contains up to %[hitCount] results. Log in to see results https://localhost:8993/search/catalog/#workspaces/%[attribute=id]."/>
 
         <AD description="Set the hostname of the mail server."
             name="Mail Server" id="mailHost" required="true" type="String"

@@ -265,8 +265,8 @@
                 update-strategy="container-managed"/>
 
         <argument
-                value="The workspace '%[attribute=title]' (id: %[attribute=id]) contains up to %[hitCount] results."/>
-        <argument value="%[attribute=title] (id: %[attribute=id]): workspace query notice"/>
+                value="The workspace '%[attribute=title]' contains up to %[hitCount] results. Log in to see results https://localhost:8993/search/catalog/#workspaces/%[attribute=id]."/>
+        <argument value="Workspace '%[attribute=title]' notification"/>
         <argument value="donotreply@test.com"/>
         <argument value="localhost"/>
         <argument>
