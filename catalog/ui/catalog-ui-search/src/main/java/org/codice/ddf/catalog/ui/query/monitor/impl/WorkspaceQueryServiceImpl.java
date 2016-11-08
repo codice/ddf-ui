@@ -102,6 +102,8 @@ public class WorkspaceQueryServiceImpl implements WorkspaceQueryService {
 
     private long queryTimeoutMinutes;
 
+    private Integer queryTimeInterval;
+
     private JobDetail jobDetail;
 
     private Subject subject;
@@ -148,6 +150,21 @@ public class WorkspaceQueryServiceImpl implements WorkspaceQueryService {
         } else {
             LOGGER.warn("unable to get a quartz scheduler object, email notifications will not run");
         }
+    }
+
+    public void setQueryTimeInterval(Integer queryTimeInterval) {
+        notNull(queryTimeInterval, "queryTimeInterval must be non-null");
+        if(queryTimeInterval < 0 || queryTimeInterval > 1440) {
+            LOGGER.debug("Invalid query time interval {}.  Defaulting to 1440 (24 hours).", queryTimeInterval);
+            queryTimeInterval = 1440;
+        }
+
+        LOGGER.debug("Setting query time interval : {}", queryTimeInterval);
+        this.queryTimeInterval = queryTimeInterval;
+    }
+
+    public Integer getQueryTimeInterval() {
+        return this.queryTimeInterval;
     }
 
     /**
@@ -309,7 +326,7 @@ public class WorkspaceQueryServiceImpl implements WorkspaceQueryService {
 
     private List<QueryRequest> getQueryRequests(
             Stream<List<QueryMetacardImpl>> queriesGroupedBySource) {
-        final Filter modifiedFilter = filterService.getModifiedDateFilter(getOneDayBack());
+        final Filter modifiedFilter = filterService.getModifiedDateFilter(calculateQueryTimeInterval());
         return queriesGroupedBySource.map(this::queryMetacardsToFilters)
                 .map(filterBuilder::anyOf)
                 .map(filter -> filterBuilder.allOf(modifiedFilter, filter))
@@ -346,9 +363,9 @@ public class WorkspaceQueryServiceImpl implements WorkspaceQueryService {
         }
     }
 
-    private Date getOneDayBack() {
+    private Date calculateQueryTimeInterval() {
         return Date.from(Instant.now()
-                .minus(1, ChronoUnit.DAYS));
+                .minus(queryTimeInterval, ChronoUnit.MINUTES));
     }
 
     private class QueryTask extends RecursiveTask<Long> {
