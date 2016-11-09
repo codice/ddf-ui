@@ -154,13 +154,12 @@ public class WorkspaceQueryServiceImpl implements WorkspaceQueryService {
 
     public void setQueryTimeInterval(Integer queryTimeInterval) {
         notNull(queryTimeInterval, "queryTimeInterval must be non-null");
-        if(queryTimeInterval < 0 || queryTimeInterval > 1440) {
-            LOGGER.debug("Invalid query time interval {}.  Defaulting to 1440 (24 hours).", queryTimeInterval);
-            queryTimeInterval = 1440;
+        if(queryTimeInterval > 0 && queryTimeInterval <= 1440) {
+            LOGGER.debug("Setting query time interval : {}", queryTimeInterval);
+            this.queryTimeInterval = queryTimeInterval;
+        } else if(this.queryTimeInterval == null) {
+            this.queryTimeInterval = 1440;
         }
-
-        LOGGER.debug("Setting query time interval : {}", queryTimeInterval);
-        this.queryTimeInterval = queryTimeInterval;
     }
 
     public Integer getQueryTimeInterval() {
