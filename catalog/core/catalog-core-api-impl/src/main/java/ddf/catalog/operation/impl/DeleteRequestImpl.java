@@ -149,7 +149,7 @@ public class DeleteRequestImpl extends OperationImpl implements DeleteRequest {
      * @see ddf.catalog.operation.DeleteRequest#getAttributeValues()
      */
     @Override
-    public List<Serializable> getAttributeValues() {
+    public List<? extends Serializable> getAttributeValues() {
         return values;
     }
 
