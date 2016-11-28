@@ -62,6 +62,7 @@ replace with next unreleased version
 
 ### BUG FIXES
 
+- [DDF-2557](https://codice.atlassian.net/browse/DDF-2557) CSW (and possibly other sources) fail to resolve the default URIs
 - [DDF-2224](https://codice.atlassian.net/browse/DDF-2224) DDF does not work in offline mode
 - [DDF-2506](https://codice.atlassian.net/browse/DDF-2506) Sorting by distance can take minutes on large indexes
 - [DDF-2459](https://codice.atlassian.net/browse/DDF-2459) Content directory monitor stops finding new files, requiring administrators to refresh configuration settings to trigger updates
@@ -86,7 +87,7 @@ replace with next unreleased version
 	- [Jira view of open Issues](https://codice.atlassian.net/issues/?jql=project%3DDDF%20AND%20issuetype%20%3D%20bug%20%20AND%20status%20%3D%20Open%20AND%20affectedVersion%20%3D%20ddf-2.10.0%20AND%20fixVersion%20!%3D%20ddf-2.10.0%20ORDER%20BY%20priority) affecting this version.
 
 ## 2.9.3
-	Release Date: `unreleased`
+	Release Date: `2016-10-27`
 
 ### NOTES
 

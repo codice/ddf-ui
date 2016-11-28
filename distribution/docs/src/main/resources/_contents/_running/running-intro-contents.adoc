@@ -15,6 +15,35 @@ INSTALLATION_HOME/bin/${ddf-branding-lowercase}
 INSTALLATION_HOME/bin/${branding-lowercase}.bat
 ----
 
+==== Starting ${branding} as a Service
+
+Alternatively, to run ${branding} as a background service, run the `start` script:
+
+.*NIX
+----
+<${branding}_HOME/bin/start
+----
+
+.Windows
+----
+<${branding}_HOME>/bin/start.bat
+----
+
+[NOTE]
+====
+If console access is needed while running as a service, run the `client` script:
+
+.*NIX
+----
+<${branding}_HOME/bin/client
+----
+
+.Windows
+----
+<${branding}_HOME>/bin/client.bat
+----
+====
+
 ==== Stopping ${branding}
 
 There are two options to stop a running instance:
@@ -63,7 +92,7 @@ Because ${branding} is built on top of Apache Karaf, ${branding} can use the Kar
 .Within the ${branding} console
 ----
 ${branding-lowercase}${at-symbol}local> feature:install wrapper
-${branding-lowercase}${at-symbol}local> wrapper:install -s AUTO_START -n ${ddf-branding-lowercase}-d ${ddf-branding-lowercase}-D "${branding} Service"
+${branding-lowercase}${at-symbol}local> wrapper:install -s AUTO_START -n ${ddf-branding-lowercase} -d ${ddf-branding-lowercase} -D "${branding} Service"
 ----
 +
 . (Windows users skip to next step) (All *NIX) If ${branding} was installed to run as a non-root user (recommended,) edit `INSTALLATION_HOME/bin/${branding-lowercase}-service`.
@@ -79,22 +108,31 @@ to:
 +
 .INSTALLATION_HOME/bin/${branding-lowercase}-service
 ----
-RUN_AS_USER=<${ddf-branding-lowercase}-user>
+RUN_AS_USER=<${branding-lowercase}-user>
 ----
 +
 . Set the memory in the wrapper config to match with ${branding} default memory setting.
-.. Add the setting for PermGen space under the JVM Parameters section.
-.. Update heap space to 2048.
 +
 .INSTALLATION_HOME/etc/${branding-lowercase}-wrapper.conf
 [source,java,linenums]
 ----
 #Add the following:
-wrapper.java.additional.11=-Dderby.system.home="..\data\derby"
+wrapper.java.additional.10=-D${ddf-branding-lowercase}.home=%KARAF_HOME%
 wrapper.java.additional.12=-Dderby.storage.fileSyncTransactionLog=true
+wrapper.java.additional.11=-server
 wrapper.java.additional.13=-Dcom.sun.management.jmxremote
+wrapper.java.additional.12=-Djava.security.egd=file:/dev/./urandom
 wrapper.java.additional.14=-Dfile.encoding=UTF8
+wrapper.java.additional.13=-Dkaraf.instances=%KARAF_HOME%/instances
 wrapper.java.additional.15=-D${ddf-branding-lowercase}.home=%${branding}_HOME%
+wrapper.java.additional.14=-Dkaraf.restart.jvm.supported=true
+wrapper.java.additional.15=-Djava.io.tmpdir=%KARAF_HOME%/data/tmp
+wrapper.java.additional.16=-Djava.util.logging.config.file=%KARAF_HOME%/etc/java.util.logging.properties
+wrapper.java.additional.17=-Dfile.encoding=UTF8
+wrapper.java.additional.18=-XX:+UnlockDiagnosticVMOptions
+wrapper.java.additional.19=-XX:+UnsyncloadClass
+wrapper.java.additional.20=-Dderby.system.home=%KARAF_HOME%/data/derby
+wrapper.java.additional.21=-Dderby.storage.fileSyncTransactionLog=true
 
 #Update the following:
 wrapper.java.maxmemory=2048
@@ -104,7 +142,7 @@ wrapper.java.maxmemory=2048
 +
 .INSTALLATION_HOME/etc/${branding-lowercase}-wrapper.conf
 ----
-set.default.${branding}_HOME="%KARAF_HOME%"
+set.default.${branding}_HOME=%KARAF_HOME%
 ----
 +
 . Install the wrapper startup/shutdown scripts.
@@ -114,9 +152,9 @@ set.default.${branding}_HOME="%KARAF_HOME%"
 Run the following command in a console window. The command must be run with elevated permissions.
 +
 ----
-INSTALLATION_HOME/bin/${branding-lowercase}-service.bat install
+INSTALLATION_HOME/bin/${ddf-branding-lowercase}-service.bat install
 ----
-Startup and shutdown settings can then be managed through *Services MMC Start → Control Panel → Administrative Tools → Services*.
+Startup and shutdown settings can then be managed through *Services -> MMC Start -> Control Panel -> Administrative Tools -> Services*.
 +
 *Redhat*
 +
