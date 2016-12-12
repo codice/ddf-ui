@@ -15,7 +15,6 @@ package org.codice.ddf.catalog.ui.metacard.enumerations;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,8 +81,7 @@ public class ExperimentalEnumerationExtractor {
                 .stream()
                 .flatMap(ad -> attributeValidatorRegistry.getValidators(ad.getName())
                         .stream()
-                        .map(av -> av.validate(new AttributeImpl(ad.getName(),
-                                "null"))))
+                        .map(av -> av.validate(new AttributeImpl(ad.getName(), "null"))))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .filter(avr -> !avr.getSuggestedValues()
