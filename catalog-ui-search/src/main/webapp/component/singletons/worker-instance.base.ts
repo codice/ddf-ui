@@ -1,4 +1,3 @@
-{{!--
 /**
  * Copyright (c) Codice Foundation
  *
@@ -10,26 +9,20 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
- --}}
-<div>
-    <div class="loading-bit">
-    </div>
-    <div class="loading-bit">
-    </div>
-    <div class="loading-bit is-critical-animation">
-    </div>
-    <div class="loading-bit">
-    </div>
-    <div class="loading-bit">
-    </div>
-    <div class="loading-bit">
-    </div>
-    <div class="loading-bit">
-    </div>
-    <div class="loading-bit is-critical-animation">
-    </div>
-    <div class="loading-bit">
-    </div>
-    <div class="loading-bit">
-    </div>
-</div>
+export class BaseWorkerInstance {
+    private subscriptions: Array<Function> = []
+    constructor(private worker: Worker) {
+        worker.onmessage = this.onmessage.bind(this)
+    }
+    postMessage({method: String}) {
+        this.worker.postMessage(arguments[0]);
+    }
+    onmessage(event) {
+        this.subscriptions.forEach((subscription) => {
+            subscription(event.data);
+        });
+    }
+    subscribe(callback: Function) {
+        this.subscriptions.push(callback);
+    }
+}
