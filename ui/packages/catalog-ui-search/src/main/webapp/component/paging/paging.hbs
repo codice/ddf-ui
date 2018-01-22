@@ -1,0 +1,44 @@
+{{!--
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation, either
+ * version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details. A copy of the GNU Lesser General Public License is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+ --}}
+{{#if showPreviousServerPage}}
+    <button class="server-previous is-primary">
+        <span class="fa fa-angle-double-left"/>
+        <span>Back</span>
+    </button>
+{{else}}
+    <button class="first is-primary" {{#unless hasPreviousPage}}disabled{{/unless}}>
+        <i class="fa fa-angle-double-left" aria-hidden="true"></i>
+    </button>
+    <button class="previous is-primary" {{#unless hasPreviousPage}}disabled{{/unless}}>
+        <i class="fa fa-angle-left" aria-hidden="true"></i>
+    </button>
+{{/if}}
+
+<span class="status">
+    {{pages}}
+</span>
+
+{{#if showNextServerPage}}
+    <button class="server-next is-primary">
+        <span>More</span>
+        <span class="fa fa-angle-double-right"/>
+    </button>
+{{else}}
+    <button class="next is-primary" {{#unless hasNextPage}}disabled{{/unless}}>
+        <i class="fa fa-angle-right" aria-hidden="true"></i>
+    </button>
+    <button class="last is-primary" {{#unless hasNextPage}}disabled{{/unless}}>
+        <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+    </button>
+{{/if}}

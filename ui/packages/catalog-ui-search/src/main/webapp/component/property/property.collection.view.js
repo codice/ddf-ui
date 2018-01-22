@@ -1,0 +1,289 @@
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+/*global define, alert*/
+define([
+    'marionette',
+    'underscore',
+    'jquery',
+    'js/CustomElements',
+    './property.view',
+    './property.collection',
+    'properties',
+    'component/singletons/metacard-definitions',
+    'component/announcement',
+    'js/Common',
+    'component/singletons/user-instance'
+], function(Marionette, _, $, CustomElements, PropertyView, PropertyCollection, properties, metacardDefinitions,
+        announcement, Common, user) {
+
+    function fallbackComparator(a, b){
+        a = metacardDefinitions.getLabel(a).toLowerCase();
+        b = metacardDefinitions.getLabel(b).toLowerCase();
+        if (a < b){
+            return -1;
+        }
+        if (a > b){
+            return 1;
+        }
+        return 0;
+    }
+
+    return Marionette.CollectionView.extend({
+        tagName: CustomElements.register('property-collection'),
+        childView: PropertyView,
+        updateSort: function(){
+            this.collection.sort();
+        },
+        addProperties: function(attributes){
+            var newAttributes = attributes.filter((attribute) => !this.collection.get(attribute));
+            if (newAttributes.length > 0) {
+                this.collection.add(newAttributes.map((attribute) => {
+                    return {
+                        enumFiltering: true,
+                        enum: metacardDefinitions.enums[attribute],
+                        validation: metacardDefinitions.validation[attribute],
+                        label: properties.attributeAliases[attribute],
+                        readOnly: properties.isReadOnly(attribute),
+                        id: attribute,
+                        type: metacardDefinitions.metacardTypes[attribute].type,
+                        values: {},
+                        initializeToDefault: true,
+                        multivalued: metacardDefinitions.metacardTypes[attribute].multivalued
+                    };
+                }));
+                this.children.findByModel(this.collection.get(newAttributes[0])).el.scrollIntoView();
+            }
+            return newAttributes;
+        },
+        removeProperties: function(attributes){
+            this.collection.remove(attributes);
+        },
+        turnOnLimitedWidth: function() {
+            this.children.forEach(function(childView) {
+                childView.turnOnLimitedWidth();
+            });
+        },
+        turnOnEditing: function() {
+            this.children.forEach(function(childView) {
+                childView.turnOnEditing();
+            });
+        },
+        turnOffEditing: function() {
+            this.children.forEach(function(childView) {
+                childView.turnOffEditing();
+            });
+        },
+        revert: function() {
+            this.children.forEach(function(childView) {
+                if (childView.hasChanged()) {
+                    childView.revert();
+                }
+            });
+        },
+        save: function() {
+            this.children.forEach(function(childView) {
+                childView.save();
+            });
+        },
+        toJSON: function() {
+            return this.children.reduce(function(attributeToVal, childView) {
+                return _.extend(attributeToVal, childView.toJSON());
+            }, {});
+        },
+        toPatchJSON: function(addedAttributes, removedAttributes) {
+            var attributeArray = [];
+            this.children.forEach(function(childView) {
+                var isNew = addedAttributes.indexOf(childView.model.id) >= 0;
+                var attribute = isNew ? childView.toJSON() : childView.toPatchJSON();
+                if (attribute) {
+                    attributeArray.push(attribute);
+                }
+            });
+            removedAttributes.forEach(function(attribute){
+                attributeArray.push({
+                    attribute: attribute,
+                    values: []
+                });
+            });
+            return attributeArray;
+        },
+        clearValidation: function() {
+            this.children.forEach(function(childView) {
+                childView.clearValidation();
+            });
+        },
+        updateValidation: function(validationReport) {
+            var self = this;
+            validationReport.forEach(function(attributeValidationReport) {
+                self.children.filter(function(childView) {
+                    return childView.model.get('id') === attributeValidationReport.attribute;
+                }).forEach(function(childView) {
+                    childView.updateValidation(attributeValidationReport);
+                });
+            });
+        },
+        focus: function() {
+            this.children.first().focus();
+        }
+    }, {
+        //contains methods for generating property collection views from service responses
+        generateSummaryPropertyCollectionView: function(metacards) {
+            var PropertyCollectionView = this.generateCollectionView(metacards);
+            PropertyCollectionView.collection.comparator = function(a, b) {
+                var preferredHeader = user.get('user').get('preferences').get('inspector-summaryOrder');
+                if (preferredHeader.length === 0){
+                    preferredHeader = properties.summaryShow;
+                }
+                var aIndex = preferredHeader.indexOf(a.id);
+                var bIndex = preferredHeader.indexOf(b.id);
+                if (aIndex === -1 && bIndex === -1){
+                    return metacardDefinitions.attributeComparator(a.id, b.id);
+                }
+                if (aIndex === -1){
+                    return 1;
+                }
+                if (bIndex === -1){
+                    return -1;
+                }
+                if (aIndex < bIndex){
+                    return -1;
+                }
+                if (aIndex > bIndex){
+                    return 1;
+                }
+                return 0;
+            }
+            PropertyCollectionView.collection.sort();
+            PropertyCollectionView.listenTo(user.get('user').get('preferences'), 'change:inspector-summaryOrder', PropertyCollectionView.updateSort);
+            return PropertyCollectionView;
+        },
+        generatePropertyCollectionView: function(metacards) {
+            var PropertyCollectionView = this.generateCollectionView(metacards);
+            PropertyCollectionView.collection.comparator = function(a, b) {
+                var preferredHeader = user.get('user').get('preferences').get('inspector-detailsOrder');
+                var aIndex = preferredHeader.indexOf(a.id);
+                var bIndex = preferredHeader.indexOf(b.id);
+                if (aIndex === -1 && bIndex === -1){
+                    return metacardDefinitions.attributeComparator(a.id, b.id);
+                }
+                if (aIndex === -1){
+                    return 1;
+                }
+                if (bIndex === -1){
+                    return -1;
+                }
+                if (aIndex < bIndex){
+                    return -1;
+                }
+                if (aIndex > bIndex){
+                    return 1;
+                }
+                return 0;
+            }
+            PropertyCollectionView.collection.sort();
+            PropertyCollectionView.listenTo(user.get('user').get('preferences'), 'change:inspector-detailsOrder', PropertyCollectionView.updateSort);
+            return PropertyCollectionView;
+        },
+        generateCollectionView: function(metacards){
+            var propertyIntersection = this.determinePropertyIntersection(metacards);
+            var propertyArray = [];
+            propertyIntersection.forEach(function(property) {
+                propertyArray.push({
+                    enumFiltering: true,
+                    enum: metacardDefinitions.enums[property],
+                    validation: metacardDefinitions.validation[property],
+                    label: properties.attributeAliases[property],
+                    readOnly: metacardDefinitions.metacardTypes[property].readOnly,
+                    id: property,
+                    type: metacardDefinitions.metacardTypes[property].type,
+                    values: {},
+                    multivalued: metacardDefinitions.metacardTypes[property].multivalued
+                });
+            });
+            propertyArray.forEach(function(property) {
+                metacards.forEach(function(metacard) {
+                    var value = metacard[property.id];
+                    var isDefined = value !== undefined;
+                    let hasConflictingDefinition = false;
+                    if (isDefined) {
+                        if (!metacardDefinitions.metacardTypes[property.id].multivalued){
+                            if (!Array.isArray(value)){
+                                value = [value];
+                            } else {
+                                hasConflictingDefinition = true;
+                            }
+                        } else if (!Array.isArray(value)){
+                            hasConflictingDefinition = true;
+                            value = [value];
+                        }
+                    } else {
+                        value = [value];
+                    }
+                    var key = isDefined ? value : Common.undefined;
+                    value.sort();
+                    property.value = value;
+                    property.values[key] = property.values[key] || {
+                        value: isDefined ? value : [],
+                        hits: 0,
+                        ids: [],
+                        hasNoValue: !isDefined
+                    };
+                    property.hasConflictingDefinition = hasConflictingDefinition;
+                    property.values[key].ids.push(metacard.id);
+                    property.values[key].hits++;
+                });
+                if (metacards.length > 1) {
+                    property.bulk = true;
+                    if (Object.keys(property.values).length > 1) {
+                        property.value = [];
+                    }
+                }
+            });
+            return new this({
+                collection: new PropertyCollection(propertyArray),
+                reorderOnSort: true
+            });
+        },
+        determinePropertyIntersection: function(metacards) {
+            var metacardTypes = metacards.reduce((types, metacard) => {
+                if (types.indexOf(metacard['metacard-type']) === -1) {
+                    types.push(metacard['metacard-type']);
+                }
+                return types;
+            }, []);
+            var typeIntersection = _.intersection.apply(_, metacardTypes.map((type) => {
+                return Object.keys(metacardDefinitions.metacardDefinitions[type])
+            }));
+            var attributeKeys = metacards.map(function(metacard) {
+                return Object.keys(metacard);
+            });
+            var propertyIntersection = _.intersection(_.union.apply(_, attributeKeys), typeIntersection);
+            propertyIntersection = propertyIntersection.filter(function(property) {
+                if (metacardDefinitions.metacardTypes[property]){
+                    return (!properties.isHidden(property)
+                    && !metacardDefinitions.isHiddenTypeExceptThumbnail(property));
+                } else {
+                    announcement.announce({
+                        title: 'Missing Attribute Definition',
+                        message: 'Could not find information for '+property+' in definitions.  If this problem persists, contact your Administrator.',
+                        type: 'warn'
+                    });
+                    return false;
+                }
+            });
+            return propertyIntersection;
+        }
+    });
+});

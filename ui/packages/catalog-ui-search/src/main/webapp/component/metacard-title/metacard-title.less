@@ -1,0 +1,63 @@
+@{customElementNamespace}metacard-title {
+  .customElement;
+  line-height: @minimumButtonSize;
+  font-size: @largeFontSize;
+  white-space: nowrap;
+
+  > div {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  > .metacard-title {
+    max-width: ~'calc(100% - 1*@{minimumButtonSize} - 30px)';
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 30px;
+    white-space: nowrap;
+  }
+
+  > .metacard-interactions,
+  > .metacard-save,
+  > .metacard-unsave {
+    width: @minimumButtonSize;
+    height: @minimumButtonSize;
+    cursor: pointer;
+    text-align: center;
+    line-height: @minimumButtonSize;
+  }
+
+  > .metacard-unsave {
+    display: none;
+  }
+  > .metacard-save {
+    display: none;
+  }
+}
+
+@{customElementNamespace}metacard-title.is-saved.in-workspace {
+
+  > .metacard-title {
+    max-width: ~'calc(100% - 2*@{minimumButtonSize} - 30px)';
+  }
+
+  > .metacard-unsave {
+    display: inline-block;
+  }
+
+  > .metacard-save {
+    display: none;
+  }
+}
+
+@{customElementNamespace}metacard-title.in-workspace {
+
+  > .metacard-title {
+    max-width: ~'calc(100% - 2*@{minimumButtonSize} - 30px)';
+  }
+
+
+  > .metacard-save {
+    display: inline-block;
+  }
+}

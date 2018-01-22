@@ -1,0 +1,74 @@
+@{customElementNamespace}query-interactions {
+
+  .query-interaction,
+  .interaction-icon,
+  .interaction-text {
+    line-height: @minimumButtonSize;
+    height: @minimumButtonSize;
+  }
+
+  .query-interaction {
+    white-space: nowrap;
+    padding: 0px 10px;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .interaction-icon {
+    text-align: center;
+    width: @minimumButtonSize;
+  }
+
+  .interaction-icon,
+  .interaction-text {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  .interaction-text {
+    width: ~'calc(100% - @{minimumButtonSize})';
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .interaction-feedback {
+    display: none;
+  }
+
+}
+
+@{customElementNamespace}query-interactions.has-results {
+  .interaction-feedback {
+    display: block; 
+  }
+}
+
+.is-feedback-restricted @{customElementNamespace}query-interactions {
+  .interaction-feedback {
+    display: none !important;
+  }
+}
+
+@{customElementNamespace}query-interactions.is-local {
+  .interaction-annotations {
+    display: none !important;
+  }
+}
+
+@{customElementNamespace}query-interactions.is-archive-searchable {
+  .interaction-search-archived {
+    display: none;
+  }
+}
+
+@{customElementNamespace}query-interactions.is-history-searchable {
+  .interaction-search-historical {
+    display: none;
+  }
+}
+
+@{customElementNamespace}query-interactions.is-versioning-enabled {
+  .interaction-versioning {
+    display: none;
+  }
+}
