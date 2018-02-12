@@ -13,23 +13,15 @@
  */
 package org.codice.ddf.catalog.ui.query.monitor.impl;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-
-import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
+import org.junit.Ignore;
 import org.junit.Test;
 
-public class TestHitCountFormatter {
+public class SecurityServiceImplTest {
 
+  /** Just make sure we don't get an exception */
   @Test
-  public void testFormat() {
-    HitCountFormatter hitCountFormatter = new HitCountFormatter();
-    Long hitCount = 1L;
-
-    String result =
-        hitCountFormatter.format("%[hitCount]", mock(WorkspaceMetacardImpl.class), hitCount);
-
-    assertThat(result, is(hitCount.toString()));
+  @Ignore("We actually do get an exception from Security, an NPE with the keystore.")
+  public void testGetSystemSubject() {
+    new SecurityServiceImpl().getSystemSubject();
   }
 }

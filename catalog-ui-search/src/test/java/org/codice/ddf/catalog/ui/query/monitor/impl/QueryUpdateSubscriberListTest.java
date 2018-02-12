@@ -27,7 +27,7 @@ import org.codice.ddf.catalog.ui.query.monitor.api.QueryUpdateSubscriber;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class TestQueryUpdateSubscriberList {
+public class QueryUpdateSubscriberListTest {
 
   @Test
   public void testNotify() {

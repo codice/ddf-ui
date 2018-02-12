@@ -26,7 +26,7 @@ import org.codice.ddf.catalog.ui.query.monitor.api.MetacardFormatter;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestListMetacardFormatter {
+public class ListMetacardFormatterTest {
 
   private MetacardFormatter childFormatter1;
 

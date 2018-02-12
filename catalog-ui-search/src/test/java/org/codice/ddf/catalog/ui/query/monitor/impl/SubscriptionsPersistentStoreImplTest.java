@@ -29,7 +29,7 @@ import org.codice.ddf.persistence.PersistentStore;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestSubscriptionsPersistentStoreImpl {
+public class SubscriptionsPersistentStoreImplTest {
 
   public static final String EMAIL1 = "test@test.com";
 

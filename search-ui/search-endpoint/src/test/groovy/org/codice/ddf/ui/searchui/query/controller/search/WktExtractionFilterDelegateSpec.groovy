@@ -18,7 +18,7 @@ import ddf.catalog.filter.proxy.adapter.GeotoolsFilterAdapterImpl
 import org.geotools.filter.text.ecql.ECQL
 import spock.lang.Specification
 
-class WktExtractionFilterDelegateTest extends Specification {
+class WktExtractionFilterDelegateSpec extends Specification {
 
     def adapter = new GeotoolsFilterAdapterImpl();
 

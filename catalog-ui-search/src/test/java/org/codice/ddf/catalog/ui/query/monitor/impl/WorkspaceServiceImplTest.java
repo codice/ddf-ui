@@ -50,7 +50,7 @@ import org.opengis.filter.And;
 import org.opengis.filter.Filter;
 import org.opengis.filter.Or;
 
-public class TestWorkspaceServiceImpl {
+public class WorkspaceServiceImplTest {
 
   private CatalogFramework catalogFramework;
 

@@ -22,7 +22,7 @@ import ddf.catalog.operation.QueryRequest
 import ddf.catalog.source.solr.SolrCatalogProvider
 import spock.lang.Specification
 
-class FilteringSolrIndexTest extends Specification {
+class FilteringSolrIndexSpec extends Specification {
 
     def provider = Mock(SolrCatalogProvider)
 

@@ -63,7 +63,7 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerContext;
 import org.quartz.SchedulerException;
 
-public class TestWorkspaceQueryService {
+public class WorkspaceQueryServiceTest {
 
   @SuppressWarnings("unchecked")
   @Test

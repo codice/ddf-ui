@@ -11,17 +11,31 @@
  * License is distributed along with this program and can be found at
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
-package org.codice.ddf.catalog.ui.query.monitor.impl;
+package org.codice.ddf.catalog.transformer.html;
 
-import org.junit.Ignore;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
-public class TestSecurityServiceImpl {
+public class RecordViewHelpersTest {
 
-  /** Just make sure we don't get an exception */
   @Test
-  @Ignore("We actually do get an exception from Security, an NPE with the keystore.")
-  public void testGetSystemSubject() {
-    new SecurityServiceImpl().getSystemSubject();
+  public void testBuildMetadata() {
+    String metadata = "<foo><bar></bar></foo>";
+    String newLine = System.getProperty("line.separator");
+    String expected =
+        "<pre>&lt;foo&gt;"
+            + newLine
+            + "    &lt;bar/&gt;"
+            + newLine
+            + "&lt;/foo&gt;"
+            + newLine
+            + "</pre>";
+
+    RecordViewHelpers helpers = new RecordViewHelpers();
+
+    CharSequence actual = helpers.buildMetadata(metadata, null).toString();
+
+    assertEquals(expected, actual);
   }
 }

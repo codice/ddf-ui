@@ -34,7 +34,7 @@ import spock.lang.Specification
 
 import static ddf.catalog.source.solr.SchemaFields.METACARD_TYPE_FIELD_NAME
 
-class FilteringDynamicSchemaResolverTest extends Specification {
+class FilteringDynamicSchemaResolverSpec extends Specification {
 
     public static final String ID_TXT_FIELD = "$Metacard.ID$SchemaFields.TEXT_SUFFIX"
 

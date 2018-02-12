@@ -24,7 +24,7 @@ import java.util.Set;
 import javax.xml.bind.DatatypeConverter;
 import org.junit.Test;
 
-public class TestMetacardValueResolver {
+public class MetacardValueResolverTest {
 
   @Test
   public void testResolveGeometry() {

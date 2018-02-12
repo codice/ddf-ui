@@ -19,7 +19,7 @@ import static org.junit.Assert.assertThat;
 import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
 import org.junit.Test;
 
-public class TestAttributeMetacardFormatter {
+public class AttributeMetacardFormatterTest {
 
   @Test
   public void testFormatNonDefault() {

@@ -11,31 +11,25 @@
  * License is distributed along with this program and can be found at
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
-package org.codice.ddf.catalog.transformer.html;
+package org.codice.ddf.catalog.ui.query.monitor.impl;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
+import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
 import org.junit.Test;
 
-public class TestRecordViewHelpers {
+public class HitCountFormatterTest {
 
   @Test
-  public void testBuildMetadata() {
-    String metadata = "<foo><bar></bar></foo>";
-    String newLine = System.getProperty("line.separator");
-    String expected =
-        "<pre>&lt;foo&gt;"
-            + newLine
-            + "    &lt;bar/&gt;"
-            + newLine
-            + "&lt;/foo&gt;"
-            + newLine
-            + "</pre>";
+  public void testFormat() {
+    HitCountFormatter hitCountFormatter = new HitCountFormatter();
+    Long hitCount = 1L;
 
-    RecordViewHelpers helpers = new RecordViewHelpers();
+    String result =
+        hitCountFormatter.format("%[hitCount]", mock(WorkspaceMetacardImpl.class), hitCount);
 
-    CharSequence actual = helpers.buildMetadata(metadata, null).toString();
-
-    assertEquals(expected, actual);
+    assertThat(result, is(hitCount.toString()));
   }
 }
