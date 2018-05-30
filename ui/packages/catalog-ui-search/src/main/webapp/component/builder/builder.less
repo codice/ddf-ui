@@ -1,58 +1,72 @@
-@{customElementNamespace}editor {
+@{customElementNamespace}builder {
   .customElement;
 
   overflow: hidden;
 
-  .editor-properties {
+  .builder-properties {
     display: inline-block;  // do not change back to block, fixes scrolling / repaint issues in IE10 / IE11
     width: 100%;
     overflow: auto;
     padding: 10px 10px;
-    max-height: ~"calc(100% - 3*@{minimumButtonSize})";
+    max-height: ~"calc(100% - 1*@{minimumButtonSize} - 10px)";
   }
 
-  > .editor-header {
-    text-align: center;
-    > div {
-      display: inline-block;
-      padding: 0px @minimumSpacing;
-    }
-  }
-
-  .editor-footer {
-    margin-top: 20px;
+  .builder-footer {
     height: @minimumButtonSize;
     white-space: nowrap;
+    display: none;
 
     > button {
       height: 100%;
       display: inline-block;
     }
-    > .editor-edit {
+    > .builder-edit {
       width: 100%;
     }
-    > .editor-cancel {
+    > .builder-cancel {
       width: 50%;
       display: none;
     }
-    > .editor-save {
+    > .builder-save {
       width: 50%;
       display: none;
     }
   }
 
-  &.is-editing {
-    .editor-footer {
+  &.is-building {
+    .builder-footer {
+      display: block;
+    }
+  }
 
-      > .editor-edit {
+  &.is-editing {
+    .builder-footer {
+
+      > .builder-edit {
         display: none;
       }
-      > .editor-cancel {
+      > .builder-cancel {
         display: inline-block;
       }
-      > .editor-save {
+      > .builder-save {
         display: inline-block;
       }
+    }
+  }
+
+  .builder-select-available-type {
+    > .builder-select-available-type-text {
+        text-align: center
+    }
+  }
+
+  .builder-select-available-type {
+          display: none;
+  }
+
+  &.is-selecting-available-types {
+    .builder-select-available-type {
+          display: block;
     }
   }
 
@@ -86,15 +100,6 @@
     font-size: @largeFontSize;
     min-height: @minimumButtonSize;
     line-height: @minimumButtonSize;
-  }
-}
-
-.is-editing-restricted @{customElementNamespace}editor:not(.is-owner),
-@{customElementNamespace}editor.is-revision,
-@{customElementNamespace}editor.is-deleted,
-@{customElementNamespace}editor.is-remote {
-  .editor-footer {
-    display: none !important;
   }
 }
 
