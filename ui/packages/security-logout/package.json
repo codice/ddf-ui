@@ -1,5 +1,5 @@
 {
-  "name": "security-servlet-logout",
+  "name": "security-logout",
   "author": "Codice",
   "description": "The security servlet logout module.",
   "version": "2.5.0",
