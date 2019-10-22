@@ -320,6 +320,16 @@
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
+            <groupId>ddf.platform.security</groupId>
+            <artifactId>security-oidc-bundle</artifactId>
+            <version>${ddf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ddf.security.storage</groupId>
+            <artifactId>token-storage-api</artifactId>
+            <version>${ddf.version}</version>
+        </dependency>
+        <dependency>
             <groupId>ddf.platform.util</groupId>
             <artifactId>util-uuidgenerator-api</artifactId>
             <version>${ddf.version}</version>
