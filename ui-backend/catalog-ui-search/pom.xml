@@ -397,6 +397,18 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>ddf.security.storage</groupId>
+            <artifactId>token-storage-impl</artifactId>
+            <version>${ddf.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
             <artifactId>owasp-java-html-sanitizer</artifactId>
             <version>20171016.1</version>
