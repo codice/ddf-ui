@@ -1,0 +1,18 @@
+@{customElementNamespace}input.is-geometry {
+  label {
+    white-space: normal;
+    word-break: break-all;
+  }
+}
+
+@{customElementNamespace}input.is-geometry.is-editing {
+  > .if-editing {
+    position: relative;
+    top: unset;
+    transform: unset;
+  }
+
+  > .if-viewing {
+    display: none;
+  }
+}
