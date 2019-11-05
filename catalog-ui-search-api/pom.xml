@@ -15,9 +15,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>ddf.ui</groupId>
+        <groupId>org.codice.ddf.search</groupId>
         <artifactId>catalog-ui</artifactId>
-        <version>2.21.0-SNAPSHOT</version>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>catalog-ui-search-api</artifactId>
     <name>DDF :: Catalog :: UI :: Catalog UI Search API</name>
@@ -26,17 +26,17 @@
         <dependency>
             <groupId>ddf.catalog.core</groupId>
             <artifactId>catalog-core-api</artifactId>
-            <version>${project.version}</version>
+            <version>${ddf.version}</version>
         </dependency>
         <dependency>
             <groupId>ddf.catalog.core</groupId>
             <artifactId>catalog-core-api-impl</artifactId>
-            <version>${project.version}</version>
+            <version>${ddf.version}</version>
         </dependency>
         <dependency>
             <groupId>ddf.platform.util</groupId>
             <artifactId>platform-util</artifactId>
-            <version>${project.version}</version>
+            <version>${ddf.version}</version>
         </dependency>
     </dependencies>
 
@@ -45,7 +45,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${maven-checkstyle-plugin.version}</version>
+                <version>3.0.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -80,17 +80,17 @@
                                 <rule>
                                     <element>BUNDLE</element>
                                     <limits>
-                                        <limit implementation="org.codice.jacoco.LenientLimit">
+                                        <limit>
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
                                             <minimum>0.33</minimum>
                                         </limit>
-                                        <limit implementation="org.codice.jacoco.LenientLimit">
+                                        <limit>
                                             <counter>BRANCH</counter>
                                             <value>COVEREDRATIO</value>
                                             <minimum>0.28</minimum>
                                         </limit>
-                                        <limit implementation="org.codice.jacoco.LenientLimit">
+                                        <limit>
                                             <counter>COMPLEXITY</counter>
                                             <value>COVEREDRATIO</value>
                                             <minimum>0.29</minimum>
