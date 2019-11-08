@@ -71,10 +71,7 @@
 
     <!-- Command line argument properties for the maven-surefire-plugin -->
     <codice-test.version>0.3</codice-test.version>
-    <!-- TODO (RCZ) - turning off all these arglines makes it work D: -->
-<!--    <surefire.argline.append />-->
-<!--    <surefire.argline>${jacoco.argline} ${surefire.argline.append} -Xmx1024m -Djava.awt.headless=true -noverify</surefire.argline>-->
-<!--    <failsafe.argline>${jacoco.argline}</failsafe.argline>-->
+
 
     <!--Frontend properties-->
     <backbone.modelbinder.version>1.1.0</backbone.modelbinder.version>
@@ -110,7 +107,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
+          <version>3.8.1</version>
           <configuration>
             <compilerId>javac-with-errorprone</compilerId>
             <forceJavacCompilerUse>true</forceJavacCompilerUse>
@@ -140,7 +137,7 @@
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
-          <version>3.5.1</version>
+          <version>4.2.1</version>
           <extensions>true</extensions>
           <configuration>
             <!-- Disabled OBR to increase build speed -->
@@ -153,13 +150,18 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.20.1</version>
+          <version>2.22.2</version>
           <configuration>
-            <argLine>${surefire.argline}</argLine>
+            <forkCount>0</forkCount>
+            <parallel>all</parallel>
+            <threadCount>3</threadCount>
+            <perCoreThreadCount>true</perCoreThreadCount>
+<!--            <useUnlimitedThreads>true</useUnlimitedThreads>-->
             <includes>
               <include>**/*Test.java</include>
               <include>**/*Spec.class</include>
             </includes>
+
           </configuration>
         </plugin>
         <plugin>
@@ -217,6 +219,41 @@
             </execution>
           </executions>
         </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>0.8.4</version>
+          <executions>
+            <execution>
+              <id>default-check</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <configuration>
+                <haltOnFailure>true</haltOnFailure>
+                <rules>
+                  <rule>
+                    <element>BUNDLE</element>
+                    <limits>
+                      <limit>
+                        <counter>INSTRUCTION</counter>
+                        <minimum>0</minimum>
+                      </limit>
+                      <limit>
+                        <counter>BRANCH</counter>
+                        <minimum>0</minimum>
+                      </limit>
+                      <limit>
+                        <counter>COMPLEXITY</counter>
+                        <minimum>0</minimum>
+                      </limit>
+                    </limits>
+                  </rule>
+                </rules>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -225,6 +262,7 @@
         <groupId>com.coveo</groupId>
         <artifactId>fmt-maven-plugin</artifactId>
         <version>2.3.0</version>
+<!--        <version>2.9</version>-->
         <executions>
           <execution>
             <phase>validate</phase>
@@ -237,7 +275,7 @@
       <plugin>
         <groupId>org.codehaus.gmavenplus</groupId>
         <artifactId>gmavenplus-plugin</artifactId>
-        <version>1.5</version>
+        <version>1.7.1</version>
         <executions>
           <execution>
             <goals>
