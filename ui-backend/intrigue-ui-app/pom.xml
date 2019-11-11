@@ -108,6 +108,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.codice.ddf.search</groupId>
+            <artifactId>catalog-ui-oauth</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>ddf.catalog.transformer</groupId>
             <artifactId>catalog-transformer-propertyjson-metacard</artifactId>
             <version>${ddf.version}</version>
