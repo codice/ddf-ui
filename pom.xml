@@ -40,11 +40,7 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>catalog-ui-search-api</module>
-    <module>catalog-ui-enumeration</module>
-    <module>catalog-ui-search</module>
-    <module>intrigue-ui-app</module>
-    <module>zip-splitter</module>
+    <module>backend</module>
     <module>ui</module>
   </modules>
 
@@ -275,7 +271,7 @@
       <plugin>
         <groupId>org.codehaus.gmavenplus</groupId>
         <artifactId>gmavenplus-plugin</artifactId>
-        <version>1.7.1</version>
+        <version>1.5</version>
         <executions>
           <execution>
             <goals>
