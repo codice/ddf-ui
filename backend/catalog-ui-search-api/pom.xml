@@ -16,17 +16,22 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.codice.ddf.search</groupId>
-        <artifactId>catalog-ui</artifactId>
+        <artifactId>backend</artifactId>
         <version>3.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>zip-splitter</artifactId>
-    <name>DDF :: Catalog :: UI :: Splitter :: ZIP</name>
+    <artifactId>catalog-ui-search-api</artifactId>
+    <name>DDF :: Catalog :: UI :: Catalog UI Search API</name>
     <packaging>bundle</packaging>
     <dependencies>
         <dependency>
-            <groupId>org.codice.ddf.search</groupId>
-            <artifactId>catalog-ui-search</artifactId>
-            <version>${project.version}</version>
+            <groupId>ddf.catalog.core</groupId>
+            <artifactId>catalog-core-api</artifactId>
+            <version>${ddf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ddf.catalog.core</groupId>
+            <artifactId>catalog-core-api-impl</artifactId>
+            <version>${ddf.version}</version>
         </dependency>
         <dependency>
             <groupId>ddf.platform.util</groupId>
@@ -38,17 +43,25 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.0.0</version>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>
+                            org.codice.ddf.catalog.ui.metacard.workspace.transformer,
+                            org.codice.ddf.catalog.ui.splitter,
+                            org.codice.ddf.catalog.ui.subscription
+                        </Export-Package>
                         <Embed-Dependency>
+                            catalog-core-api-impl,
                             platform-util
                         </Embed-Dependency>
-                        <Private-Package>
-                            org.codice.ddf.catalog.ui.metacard.impl
-                        </Private-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -70,17 +83,17 @@
                                         <limit>
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.96</minimum>
+                                            <minimum>0.33</minimum>
                                         </limit>
                                         <limit>
                                             <counter>BRANCH</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.96</minimum>
+                                            <minimum>0.28</minimum>
                                         </limit>
                                         <limit>
                                             <counter>COMPLEXITY</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.96</minimum>
+                                            <minimum>0.29</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
@@ -90,5 +103,7 @@
                 </executions>
             </plugin>
         </plugins>
+
     </build>
+
 </project>
