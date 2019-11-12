@@ -148,10 +148,11 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.22.2</version>
           <configuration>
+            <argLine>-Djava.awt.headless=true -noverify</argLine>
             <forkCount>0</forkCount>
-            <parallel>all</parallel>
-            <threadCount>3</threadCount>
-            <perCoreThreadCount>true</perCoreThreadCount>
+<!--            <parallel>all</parallel>-->
+<!--            <threadCount>3</threadCount>-->
+<!--            <perCoreThreadCount>true</perCoreThreadCount>-->
 <!--            <useUnlimitedThreads>true</useUnlimitedThreads>-->
             <includes>
               <include>**/*Test.java</include>
