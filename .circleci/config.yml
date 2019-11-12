@@ -40,8 +40,9 @@ jobs: # a collection of steps
             mkdir -p ~/test-results/junit/
             find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
           when: always
-            - store_test_results:
-                path: ~/test-results
+          
+      - store_test_results:
+          path: ~/test-results
 
 #      - store_artifacts: # store the uberjar as an artifact
 #          # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
