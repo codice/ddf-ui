@@ -13,11 +13,11 @@ jobs: # a collection of steps
 
       - checkout # check out source code to working directory
 
-#      - restore_cache: # restore the saved cache after the first run or if `pom.xml` has changed
-#          keys:
-#            - v1-dependencies-{{ checksum "pom.xml" }}
-#            # fallback to using the latest cache if no exact match is found
-#            - v1-dependencies-
+      - restore_cache: # restore the saved cache after the first run or if `pom.xml` has changed
+          keys:
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
 
 #      - run: mvn dependency:go-offline --no-transfer-progress # gets the project dependencies
 
@@ -29,10 +29,10 @@ jobs: # a collection of steps
           name: Frontend Build
           command: mvn clean install --batch-mode -DbuildEnv=dev -pl ui
 
-#      - save_cache: # saves the project dependencies
-#          paths:
-#            - ~/.m2
-#          key: v1-dependencies-{{ checksum "pom.xml" }}
+      - save_cache: # saves the project dependencies
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "pom.xml" }}
 
       - run:
           name: Save test results
@@ -40,7 +40,7 @@ jobs: # a collection of steps
             mkdir -p ~/test-results/junit/
             find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
           when: always
-          
+
       - store_test_results:
           path: ~/test-results
 
