@@ -21,11 +21,13 @@ jobs: # a collection of steps
 
 #      - run: mvn dependency:go-offline --no-transfer-progress # gets the project dependencies
 
-      - run: mvn clean install --batch-mode  -pl !ui # run the actual tests
+      - run:  # run the actual tests
           name: Backend Build
+          command: mvn clean install --batch-mode  -pl !ui
 
-      - run: mvn clean install --batch-mode -DbuildEnv=dev -pl ui
+      - run:
           name: Frontend Build
+          command: mvn clean install --batch-mode -DbuildEnv=dev -pl ui
 
 #      - save_cache: # saves the project dependencies
 #          paths:
