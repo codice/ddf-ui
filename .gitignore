@@ -5,3 +5,4 @@ node/
 .DS_Store
 .idea/
 pom.xml.versionsBackup
+docs/build
