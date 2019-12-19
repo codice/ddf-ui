@@ -54,7 +54,7 @@
             mvn:org.codice.ddf.search/intrigue-ui-app/${project.version}/config/intrigue-bundle-config
         </configfile>
 
-        <bundle>mvn:ddf.catalog.transformer/catalog-transformer-propertyjson-metacard/${project.version}</bundle>
+        <bundle>mvn:ddf.catalog.transformer/catalog-transformer-propertyjson-metacard/${ddf.version}</bundle>
         <bundle>mvn:org.codice.ddf.search/catalog-ui-search/${project.version}</bundle>
         <bundle>mvn:org.codice.ddf.search/catalog-ui-enumeration/${project.version}</bundle>
         <bundle>mvn:com.google.code.gson/gson/${gson.version}</bundle>

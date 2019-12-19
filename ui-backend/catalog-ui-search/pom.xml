@@ -396,6 +396,11 @@
             <artifactId>catalog-rest-api</artifactId>
             <version>${ddf.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>28.1-jre</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -447,6 +452,7 @@
                             platform-util,
                             tlmatcher,
                             gson-support,
+                            guava,
                             proxy-camel-route,
                             proxy-camel-servlet,
                             quartz,
@@ -480,6 +486,12 @@
                             !org.hibernate.*,
                             !weblogic.jdbc.*,
                             !org.abego.treelayout.*,
+                            !com.google.appengine.*,
+                            !com.google.apphosting.*,
+                            !com.google.common.util.concurrent.internal,
+                            !com.google.common.io.*,
+                            !com.google.errorprone.*,
+                            !org.checkerframework.*,
                             *
                         </Import-Package>
                         <Export-Package>
@@ -502,7 +514,7 @@
                         <configuration>
                             <rules>
                                 <ArtifactSizeEnforcerRule implementation="org.codice.maven.artifactsize.ArtifactSizeEnforcerRule">
-                                    <maxArtifactSize>6_MB</maxArtifactSize>
+                                    <maxArtifactSize>8_MB</maxArtifactSize>
                                 </ArtifactSizeEnforcerRule>
                             </rules>
                         </configuration>
