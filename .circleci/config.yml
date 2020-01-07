@@ -23,11 +23,11 @@ jobs: # a collection of steps
 
       - run:  # run the actual tests
           name: Backend Build
-          command: mvn clean install --batch-mode  -pl !ui
+          command: mvn install --batch-mode  -pl !ui-frontend
 
       - run:
           name: Frontend Build
-          command: mvn clean install --batch-mode -DbuildEnv=dev -pl ui
+          command: mvn install --batch-mode -DbuildEnv=dev -pl ui-frontend
 
       - save_cache: # saves the project dependencies
           paths:
