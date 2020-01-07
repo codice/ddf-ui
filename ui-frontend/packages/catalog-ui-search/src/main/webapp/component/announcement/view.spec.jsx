@@ -14,7 +14,7 @@
  **/
 
 var React = require('react')
-var utils = require('react-addons-test-utils')
+var utils = require('react-dom/test-utils')
 var expect = require('chai').expect
 
 var configureStore = require('./configureStore')
