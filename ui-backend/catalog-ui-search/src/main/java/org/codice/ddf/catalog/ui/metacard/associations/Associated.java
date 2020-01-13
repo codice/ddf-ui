@@ -24,6 +24,7 @@ import ddf.catalog.data.Attribute;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.Result;
 import ddf.catalog.data.impl.AttributeImpl;
+import ddf.catalog.data.impl.UiAttributeImpl;
 import ddf.catalog.federation.FederationException;
 import ddf.catalog.operation.impl.QueryImpl;
 import ddf.catalog.operation.impl.QueryRequestImpl;
@@ -153,7 +154,7 @@ public class Associated {
             .map(util::getStringList)
             .orElseGet(ArrayList::new);
     values.remove(edge.child.get(Metacard.ID).toString());
-    target.setAttribute(AttributeImpl.fromMultipleValues(edge.relation, values));
+    target.setAttribute(UiAttributeImpl.fromMultipleValues(edge.relation, values));
     changedMetacards.put(id, target);
   }
 
@@ -168,7 +169,7 @@ public class Associated {
             .map(util::getStringList)
             .orElseGet(ArrayList::new);
     values.add(edge.child.get(Metacard.ID).toString());
-    target.setAttribute(AttributeImpl.fromMultipleValues(edge.relation, values));
+    target.setAttribute(UiAttributeImpl.fromMultipleValues(edge.relation, values));
     changedMetacards.put(id, target);
   }
 
