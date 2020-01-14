@@ -45,6 +45,7 @@ import ddf.catalog.data.MetacardType;
 import ddf.catalog.data.Result;
 import ddf.catalog.data.impl.AttributeImpl;
 import ddf.catalog.data.impl.MetacardImpl;
+import ddf.catalog.data.impl.UiAttributeImpl;
 import ddf.catalog.data.types.Core;
 import ddf.catalog.filter.AttributeBuilder;
 import ddf.catalog.filter.ContextualExpressionBuilder;
@@ -338,7 +339,7 @@ public class EndpointUtilTest {
 
       if (attribute != null) {
         when(metacardMock.getAttribute(attribute))
-            .thenReturn(AttributeImpl.fromMultipleValues(attribute, new ArrayList<>()));
+            .thenReturn(UiAttributeImpl.fromMultipleValues(attribute, new ArrayList<>()));
       }
       resultMockList.add(resultMock);
     }

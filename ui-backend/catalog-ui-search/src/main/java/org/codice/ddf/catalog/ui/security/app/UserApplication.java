@@ -344,8 +344,7 @@ public class UserApplication implements SparkApplication {
       persistentStore.delete(
           PersistenceType.NOTIFICATION_TYPE.toString(),
           ECQL.toCQL(filterBuilder.anyOf(idsToDelete)));
-      persistentStore.delete(
-          PersistenceType.RESULTS_TYPE.toString(), ECQL.toCQL(filterBuilder.anyOf(idsToDelete)));
+      persistentStore.delete("result_cache", ECQL.toCQL(filterBuilder.anyOf(idsToDelete)));
     } catch (PersistenceException e) {
       LOGGER.debug(
           "PersistenceException while trying to delete persisted notifications with ids {} ",

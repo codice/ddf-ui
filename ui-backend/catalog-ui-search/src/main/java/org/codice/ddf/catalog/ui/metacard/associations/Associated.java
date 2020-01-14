@@ -23,7 +23,6 @@ import ddf.catalog.core.versioning.MetacardVersion;
 import ddf.catalog.data.Attribute;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.Result;
-import ddf.catalog.data.impl.AttributeImpl;
 import ddf.catalog.data.impl.UiAttributeImpl;
 import ddf.catalog.federation.FederationException;
 import ddf.catalog.operation.impl.QueryImpl;

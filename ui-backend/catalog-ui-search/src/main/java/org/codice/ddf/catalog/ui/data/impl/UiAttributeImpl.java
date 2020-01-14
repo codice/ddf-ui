@@ -98,7 +98,8 @@ public class UiAttributeImpl implements Attribute {
    * implements both {@link List} and {@link Serializable}, such as an {@link java.util.ArrayList}.
    * See {@link #UiAttributeImpl(String, List)}.
    */
-  public static UiAttributeImpl fromMultipleValues(String name, List<? extends Serializable> values) {
+  public static UiAttributeImpl fromMultipleValues(
+      String name, List<? extends Serializable> values) {
     return new UiAttributeImpl(name, values);
   }
 
