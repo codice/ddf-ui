@@ -55,7 +55,7 @@ class Keyword extends React.Component {
           const polygon = geometry.coordinates[0]
           this.props.setState({
             hasKeyword: true,
-            locationType: 'latlon',
+            locationType: 'dd',
             polygon,
             polyType: 'polygon',
             value: this.state.value,
@@ -70,7 +70,7 @@ class Keyword extends React.Component {
           )
           this.props.setState({
             hasKeyword: true,
-            locationType: 'latlon',
+            locationType: 'dd',
             polygon,
             polyType: 'multipolygon',
             value: this.state.value,
@@ -87,10 +87,7 @@ class Keyword extends React.Component {
       }
     } catch (e) {
       this.setState(
-        {
-          loading: false,
-          error: this.props.errorMessage || 'Geo feature endpoint unavailable',
-        },
+        { loading: false, error: 'Geo feature endpoint unavailable' },
         () => {
           if (typeof this.props.onError === 'function') {
             this.props.onError(e)
@@ -101,19 +98,13 @@ class Keyword extends React.Component {
   }
   render() {
     const suggester = this.props.suggester || (input => this.suggester(input))
-    const renderLoadingDisplay =
-      this.props.renderLoadingDisplay !== undefined
-        ? this.props.renderLoadingDisplay
-        : true
     const {
       polygon,
-      cursor,
+      setState,
+      setBufferState,
       polygonBufferWidth,
       polygonBufferUnits,
       polyType,
-      loadingMessage,
-      minimumInputLength,
-      placeholder,
     } = this.props
     const { value, loading, error } = this.state
     return (
@@ -121,38 +112,36 @@ class Keyword extends React.Component {
         <AutoComplete
           value={value}
           onChange={option => this.onChange(option)}
-          minimumInputLength={minimumInputLength || 2}
-          placeholder={placeholder || 'Pan to a city, country, or coordinate'}
+          minimumInputLength={2}
+          placeholder="Pan to a region, country, or city"
           suggester={suggester}
         />
-        {loading &&
-          renderLoadingDisplay && (
-            <div style={{ marginTop: 10 }}>
-              {loadingMessage || 'Loading geometry...'}{' '}
-              <span className="fa fa-refresh fa-spin" />
-            </div>
-          )}
-        {!loading && error !== null && <div>{error}</div>}
-        {!loading &&
-          polygon !== undefined &&
-          polyType === 'polygon' && (
-            <Polygon
-              polygon={polygon}
-              cursor={cursor}
-              polygonBufferWidth={polygonBufferWidth}
-              polygonBufferUnits={polygonBufferUnits}
-            />
-          )}
-        {!loading &&
-          polygon !== undefined &&
-          polyType === 'multipolygon' && (
-            <MultiPolygon
-              polygon={polygon}
-              cursor={cursor}
-              polygonBufferWidth={polygonBufferWidth}
-              polygonBufferUnits={polygonBufferUnits}
-            />
-          )}
+        {loading ? (
+          <div style={{ marginTop: 10 }}>
+            Loading geometry... <span className="fa fa-refresh fa-spin" />
+          </div>
+        ) : null}
+        {!loading && error !== null ? <div>{error}</div> : null}
+        {!loading && polygon !== undefined && polyType === 'polygon' ? (
+          <Polygon
+            polygon={polygon}
+            setState={setState}
+            polygonBufferWidth={polygonBufferWidth}
+            polygonBufferUnits={polygonBufferUnits}
+            setBufferState={setBufferState}
+            polyType={polyType}
+          />
+        ) : null}
+        {!loading && polygon !== undefined && polyType === 'multipolygon' ? (
+          <MultiPolygon
+            polygon={polygon}
+            setState={setState}
+            polygonBufferWidth={polygonBufferWidth}
+            polygonBufferUnits={polygonBufferUnits}
+            setBufferState={setBufferState}
+            polyType={polyType}
+          />
+        ) : null}
       </div>
     )
   }
