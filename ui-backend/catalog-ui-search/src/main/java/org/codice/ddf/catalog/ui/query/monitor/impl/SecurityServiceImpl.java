@@ -18,12 +18,12 @@ import ddf.security.Subject;
 import java.io.Serializable;
 import java.util.Map;
 import org.codice.ddf.catalog.ui.query.monitor.api.SecurityService;
-import org.codice.ddf.security.common.Security;
+import org.codice.ddf.catalog.ui.security.IntrigueSecurity;
 
 public class SecurityServiceImpl implements SecurityService {
   @Override
   public Subject getSystemSubject() {
-    return Security.getInstance().getSystemSubject();
+    return IntrigueSecurity.getInstance().getSystemSubject();
   }
 
   @Override

@@ -24,7 +24,6 @@ import ddf.catalog.data.types.Core;
 import ddf.catalog.operation.impl.CreateRequestImpl;
 import ddf.catalog.source.IngestException;
 import ddf.catalog.source.SourceUnavailableException;
-import ddf.security.Subject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -43,9 +42,9 @@ import javax.annotation.Nullable;
 import org.apache.commons.io.IOUtils;
 import org.codice.ddf.catalog.ui.forms.data.AttributeGroupMetacard;
 import org.codice.ddf.catalog.ui.forms.data.QueryTemplateMetacard;
+import org.codice.ddf.catalog.ui.security.IntrigueSecurity;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
 import org.codice.ddf.configuration.AbsolutePathResolver;
-import org.codice.ddf.security.common.Security;
 import org.codice.gsonsupport.GsonTypeAdapters.LongDoubleTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +59,7 @@ import org.slf4j.LoggerFactory;
 public class SearchFormsLoader {
   private static final Logger LOGGER = LoggerFactory.getLogger(SearchFormsLoader.class);
 
-  private static final Security SECURITY = Security.getInstance();
+  private static final IntrigueSecurity SECURITY = IntrigueSecurity.getInstance();
 
   private static final Gson GSON =
       new GsonBuilder()
@@ -123,8 +122,7 @@ public class SearchFormsLoader {
    * @param systemTemplates system templates loaded from config.
    */
   public void bootstrap(List<Metacard> systemTemplates) {
-    Subject systemSubject = SECURITY.runAsAdmin(SECURITY::getSystemSubject);
-    systemSubject.execute(() -> this.createSystemMetacards(systemTemplates));
+    SECURITY.runAsSystemForIntrigue(() -> this.createSystemMetacards(systemTemplates));
   }
 
   public List<Metacard> retrieveSystemTemplateMetacards() {
