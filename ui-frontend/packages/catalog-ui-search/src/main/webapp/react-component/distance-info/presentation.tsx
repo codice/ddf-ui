@@ -19,8 +19,8 @@ const DistanceUtils = require('../../../webapp/js/DistanceUtils.js')
 
 type Props = {
   currentDistance: number
-  left: String
-  top: String
+  left: number
+  top: number
 }
 
 const Root = styled.div<Props>`
