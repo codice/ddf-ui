@@ -345,11 +345,6 @@
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.codice.ddf.spatial</groupId>
-            <artifactId>spatial-csw-common</artifactId>
-            <version>${ddf.version}</version>
-        </dependency>
-        <dependency>
             <groupId>ddf.mime.core</groupId>
             <artifactId>mime-core-api</artifactId>
             <version>${ddf.version}</version>
