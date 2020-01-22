@@ -80,11 +80,13 @@ public class WorkspaceQueryServiceTest {
     Scheduler scheduler = mock(Scheduler.class);
     when(scheduler.getContext()).thenReturn(mock(SchedulerContext.class));
     Supplier<Optional<Scheduler>> schedulerSupplier = () -> Optional.of(scheduler);
+    Subject securityServiceSubject = mock(Subject.class);
+
     SecurityService securityService =
         new SecurityService() {
           @Override
           public Subject getSystemSubject() {
-            return mock(Subject.class);
+            return securityServiceSubject;
           }
 
           @Override
@@ -308,7 +310,9 @@ public class WorkspaceQueryServiceTest {
     workspaceQueryServiceImpl.setCronString("0 0 0 * * ?");
     workspaceQueryServiceImpl.setQueryTimeoutMinutes(5L);
     workspaceQueryServiceImpl.run();
-
+    ArgumentCaptor<Runnable> securitySubjectCaptor = ArgumentCaptor.forClass(Runnable.class);
+    verify(securityServiceSubject).execute(securitySubjectCaptor.capture());
+    securitySubjectCaptor.getValue().run();
     ArgumentCaptor<Map> argumentCaptor = ArgumentCaptor.forClass(Map.class);
     verify(queryUpdateSubscriber).notify(argumentCaptor.capture());
 

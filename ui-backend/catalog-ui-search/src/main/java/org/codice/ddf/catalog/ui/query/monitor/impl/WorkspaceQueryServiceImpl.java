@@ -60,7 +60,6 @@ import org.codice.ddf.catalog.ui.query.monitor.api.SecurityService;
 import org.codice.ddf.catalog.ui.query.monitor.api.WorkspaceQueryService;
 import org.codice.ddf.catalog.ui.query.monitor.api.WorkspaceService;
 import org.codice.ddf.platform.util.ForkJoinPoolFactory;
-import org.codice.ddf.security.common.Security;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.opengis.filter.And;
@@ -81,8 +80,6 @@ public class WorkspaceQueryServiceImpl implements WorkspaceQueryService {
   private static final String UNKNOWN_SOURCE = "unknown";
 
   private static final String TRIGGER_NAME = "WorkspaceQueryTrigger";
-
-  private static final Security SECURITY = Security.getInstance();
 
   private final QueryUpdateSubscriber queryUpdateSubscriber;
 
@@ -213,33 +210,28 @@ public class WorkspaceQueryServiceImpl implements WorkspaceQueryService {
 
   /** Main entry point, should be called by a scheduler. */
   public void run() {
-    SECURITY.runAsAdmin(
-        () -> {
-          Subject runSubject = subject != null ? subject : SECURITY.getSystemSubject();
+    securityService
+        .getSystemSubject()
+        .execute(
+            () -> {
+              LOGGER.trace("running workspace query service");
 
-          return runSubject.execute(
-              () -> {
-                LOGGER.trace("running workspace query service");
+              Map<String, Pair<WorkspaceMetacardImpl, List<QueryMetacardImpl>>> queryMetacards =
+                  workspaceService.getQueryMetacards();
 
-                Map<String, Pair<WorkspaceMetacardImpl, List<QueryMetacardImpl>>> queryMetacards =
-                    workspaceService.getQueryMetacards();
+              LOGGER.debug("queryMetacards: size={}", queryMetacards.size());
 
-                LOGGER.debug("queryMetacards: size={}", queryMetacards.size());
+              List<WorkspaceTask> workspaceTasks = createWorkspaceTasks(queryMetacards);
 
-                List<WorkspaceTask> workspaceTasks = createWorkspaceTasks(queryMetacards);
+              LOGGER.debug("workspaceTasks: size={}", workspaceTasks.size());
 
-                LOGGER.debug("workspaceTasks: size={}", workspaceTasks.size());
+              Map<String, Pair<WorkspaceMetacardImpl, Long>> results =
+                  executeWorkspaceTasks(workspaceTasks, queryTimeoutMinutes, TimeUnit.MINUTES);
 
-                Map<String, Pair<WorkspaceMetacardImpl, Long>> results =
-                    executeWorkspaceTasks(workspaceTasks, queryTimeoutMinutes, TimeUnit.MINUTES);
+              LOGGER.debug("results: {}", results);
 
-                LOGGER.debug("results: {}", results);
-
-                queryUpdateSubscriber.notify(results);
-
-                return null;
-              });
-        });
+              queryUpdateSubscriber.notify(results);
+            });
   }
 
   private Map<String, Pair<WorkspaceMetacardImpl, Long>> executeWorkspaceTasks(

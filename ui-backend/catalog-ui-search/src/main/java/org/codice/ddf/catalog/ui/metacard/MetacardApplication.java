@@ -79,7 +79,6 @@ import ddf.catalog.source.SourceUnavailableException;
 import ddf.catalog.source.UnsupportedQueryException;
 import ddf.catalog.transform.QueryResponseTransformer;
 import ddf.catalog.util.impl.ResultIterable;
-import ddf.security.Subject;
 import ddf.security.SubjectIdentity;
 import ddf.security.SubjectUtils;
 import ddf.security.common.audit.SecurityLogger;
@@ -131,10 +130,10 @@ import org.codice.ddf.catalog.ui.metacard.workspace.transformer.WorkspaceTransfo
 import org.codice.ddf.catalog.ui.metacard.workspace.transformer.impl.AssociatedQueryMetacardsHandler;
 import org.codice.ddf.catalog.ui.query.monitor.api.WorkspaceService;
 import org.codice.ddf.catalog.ui.security.Constants;
+import org.codice.ddf.catalog.ui.security.IntrigueSecurity;
 import org.codice.ddf.catalog.ui.security.accesscontrol.AccessControlSecurityConfiguration;
 import org.codice.ddf.catalog.ui.subscription.SubscriptionsPersistentStore;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
-import org.codice.ddf.security.common.Security;
 import org.codice.gsonsupport.GsonTypeAdapters.DateLongFormatTypeAdapter;
 import org.codice.gsonsupport.GsonTypeAdapters.LongDoubleTypeAdapter;
 import org.opengis.filter.Filter;
@@ -155,7 +154,7 @@ public class MetacardApplication implements SparkApplication {
   private static final Set<Action> DELETE_ACTIONS =
       ImmutableSet.of(Action.DELETED, Action.DELETED_CONTENT);
 
-  private static final Security SECURITY = Security.getInstance();
+  private static final IntrigueSecurity SECURITY = IntrigueSecurity.getInstance();
 
   private static final String ERROR_RESPONSE_TYPE = "error";
 
@@ -1054,11 +1053,7 @@ public class MetacardApplication implements SparkApplication {
    * @return result of the callable func
    */
   private <T> T executeAsSystem(Callable<T> func) {
-    Subject systemSubject = SECURITY.runAsAdmin(SECURITY::getSystemSubject);
-    if (systemSubject == null) {
-      throw new SecurityException("Could not get systemSubject to version metacards.");
-    }
-    return systemSubject.execute(func);
+    return SECURITY.runAsSystemForIntrigue(func);
   }
 
   private Instant getVersionedOnDate(Metacard mc) {
