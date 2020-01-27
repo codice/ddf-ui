@@ -197,9 +197,8 @@ module.exports = function OpenlayersMap(
       findSelected,
       geometryInstance
     )
-    if (isSelected && labelWithSamePosition !== undefined) {
+    if (isSelected && labelWithSamePosition) {
       labelWithSamePosition.setVisible(false)
-      labelWithSamePosition.set('isSelected', false)
     }
     const visible =
       isSelected ||
@@ -786,6 +785,10 @@ module.exports = function OpenlayersMap(
     },
     removeGeometry(geometry) {
       map.removeLayer(geometry)
+      const feature = geometry.getSource().getFeatures()[0]
+      if (feature.getProperties().isLabel) {
+        mapModel.clearLabels()
+      }
     },
     showPolygonShape(locationModel) {
       const polygon = new DrawPolygon.PolygonView({
