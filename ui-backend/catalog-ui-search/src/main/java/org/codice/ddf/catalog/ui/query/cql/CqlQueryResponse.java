@@ -39,8 +39,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.codice.ddf.catalog.ui.query.delegate.SearchTerm;
 import org.codice.ddf.catalog.ui.query.delegate.SearchTermsDelegate;
+import org.codice.ddf.catalog.ui.security.LogSanitizer;
 import org.codice.ddf.catalog.ui.transformer.TransformerDescriptors;
-import org.codice.ddf.log.sanitizer.LogSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
