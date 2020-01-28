@@ -128,11 +128,6 @@ Implementation details
     =============================================================
     -->
 
-    <bean id="authenticationApplication"
-          class="org.codice.ddf.catalog.ui.security.app.AuthenticationApplication">
-        <argument ref="securityAuthenticationService"/>
-    </bean>
-
     <bean id="buildApplication" class="org.codice.ddf.catalog.ui.metacard.BuildApplication">
         <argument ref="endpointUtil"/>
         <argument ref="userCreatableMetacardType"/>
@@ -408,7 +403,6 @@ Implementation details
     <bean id="sparkServlet" class="org.codice.ddf.catalog.ui.SparkServlet">
         <property name="sparkApplications">
             <list>
-                <ref component-id="authenticationApplication"/>
                 <ref component-id="queryApplication"/>
                 <ref component-id="metacardApplication"/>
                 <ref component-id="platformApplication"/>

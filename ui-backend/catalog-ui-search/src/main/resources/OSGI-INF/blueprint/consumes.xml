@@ -73,9 +73,6 @@ Services (OSGi) that catalog-ui-search CONSUMES from DDF
     =============================================================
     -->
 
-    <reference id="securityAuthenticationService"
-               interface="org.codice.ddf.security.rest.authentication.service.AuthenticationService"/>
-
     <reference-list id="userCreatableMetacardType"
                     interface="org.codice.ddf.catalog.ui.metacard.internal.UserCreatableMetacardType"
                     availability="optional"/>

@@ -23,8 +23,6 @@
     </feature>
 
     <feature name="catalog-ui" version="${project.version}" description="Catalog UI">
-        <feature>security-rest-authentication</feature>
-
         <feature>spatial-app</feature>
         <feature>offline-gazetteer</feature>
         <feature>camel-http</feature>
@@ -35,7 +33,6 @@
         <feature>persistence-core</feature>
 
         <feature>catalog-ui-search-api</feature>
-
 
 
         <configfile finalname="${ddf.etc}/org.codice.ddf.catalog.ui.config" override="false">

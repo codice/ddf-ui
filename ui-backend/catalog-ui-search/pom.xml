@@ -275,11 +275,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>ddf.platform.security</groupId>
-            <artifactId>security-rest-authn-service</artifactId>
-            <version>${ddf.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.codice.ddf.spatial</groupId>
             <artifactId>spatial-geocoding-api</artifactId>
             <version>${ddf.version}</version>
@@ -292,11 +287,6 @@
         <dependency>
             <groupId>ddf.platform.security</groupId>
             <artifactId>session-management-service</artifactId>
-            <version>${ddf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ddf.catalog.rest</groupId>
-            <artifactId>catalog-rest-service</artifactId>
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
