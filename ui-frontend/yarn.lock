@@ -1179,9 +1179,9 @@
   dependencies:
     commander "^2.15.1"
 
-"@connexta/ace@*", "@connexta/ace@git://github.com/connexta/ace.git#d58809d4c6e87554482939647f3f8d8c1690178d":
+"@connexta/ace@*", "@connexta/ace@git://github.com/connexta/ace.git#a1174724769757007f97d008370d66927756c8a9":
   version "1.0.0"
-  resolved "git://github.com/connexta/ace.git#d58809d4c6e87554482939647f3f8d8c1690178d"
+  resolved "git://github.com/connexta/ace.git#a1174724769757007f97d008370d66927756c8a9"
   dependencies:
     "@babel/core" "^7.0.0"
     "@storybook/addon-actions" "5.2.3"
@@ -1236,6 +1236,8 @@
     react-dev-utils "5.0.2"
     react-docgen-typescript-loader "^3.1.0"
     react-hot-loader "4.12.6"
+    react-loadable "^5.5.0"
+    react-loadable-ssr-addon "https://github.com/connexta/react-loadable-ssr-addon#fa05f30e1c78b1ab71ebcd6d3f584110022fcf44"
     require-from-string "^2.0.2"
     rimraf "2.6.2"
     script-loader "0.7.2"
@@ -1256,7 +1258,6 @@
     webpack-bundle-analyzer "3.3.2"
     webpack-dev-server "3.2.1"
     webpack-merge "4.1.2"
-    webpack-node-externals "^1.7.2"
     whatwg-fetch "2.0.4"
     worker-loader "1.1.1"
 
@@ -17696,7 +17697,7 @@ prop-types-exact@^1.2.0:
     object.assign "^4.1.0"
     reflect.ownkeys "^0.2.0"
 
-prop-types@15.7.2, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.6, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@15.7.2, prop-types@^15.5.0, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.6, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -18331,6 +18332,17 @@ react-live@1.11.0:
     prismjs "1.6"
     prop-types "^15.5.8"
     unescape "^0.2.0"
+
+"react-loadable-ssr-addon@https://github.com/connexta/react-loadable-ssr-addon#fa05f30e1c78b1ab71ebcd6d3f584110022fcf44":
+  version "0.2.0"
+  resolved "https://github.com/connexta/react-loadable-ssr-addon#fa05f30e1c78b1ab71ebcd6d3f584110022fcf44"
+
+react-loadable@^5.5.0:
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/react-loadable/-/react-loadable-5.5.0.tgz#582251679d3da86c32aae2c8e689c59f1196d8c4"
+  integrity sha512-C8Aui0ZpMd4KokxRdVAm2bQtI03k2RMRNzOB+IipV3yxFTSVICv7WoUr5L9ALB5BmKO1iHgZtWM8EvYG83otdg==
+  dependencies:
+    prop-types "^15.5.0"
 
 react-popper-tooltip@^2.8.3:
   version "2.10.1"
@@ -22830,11 +22842,6 @@ webpack-merge@4.1.2:
   integrity sha512-/0QYwW/H1N/CdXYA2PNPVbsxO3u2Fpz34vs72xm03SRfg6bMNGfMJIQEpQjKRvkG2JvT6oRJFpDtSrwbX8Jzvw==
   dependencies:
     lodash "^4.17.5"
-
-webpack-node-externals@^1.7.2:
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/webpack-node-externals/-/webpack-node-externals-1.7.2.tgz#6e1ee79ac67c070402ba700ef033a9b8d52ac4e3"
-  integrity sha512-ajerHZ+BJKeCLviLUUmnyd5B4RavLF76uv3cs6KNuO8W+HuQaEs0y0L7o40NQxdPy5w0pcv8Ew7yPUAQG0UdCg==
 
 webpack-sources@^1.0.1, webpack-sources@^1.1.0, webpack-sources@^1.4.0, webpack-sources@^1.4.1:
   version "1.4.3"
