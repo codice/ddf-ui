@@ -43,7 +43,7 @@
   },
   "resolutions": {
     "admin-ui/@connexta/atlas/backbone.marionette": "1.8.8",
-    "@connexta/ace": "git://github.com/connexta/ace.git#a1174724769757007f97d008370d66927756c8a9",
+    "@connexta/ace": "git://github.com/connexta/ace.git#862cd8b0293711b8ff96c2b6e57cd3344f93c15b",
     "backbone": "1.1.2",
     "jquery": "3.4.1"
   },
