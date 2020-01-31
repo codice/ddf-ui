@@ -15,6 +15,7 @@ package org.codice.ddf.catalog.ui.query.cql;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -30,7 +31,6 @@ import ddf.catalog.operation.impl.QueryImpl;
 import ddf.catalog.operation.impl.QueryRequestImpl;
 import java.util.Collections;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 
 public class CqlResultImplTest {
 
@@ -58,7 +58,7 @@ public class CqlResultImplTest {
     ResultImpl result = new ResultImpl(metacard);
     result.setDistanceInMeters(input);
     ActionRegistry actionRegistry = mock(ActionRegistry.class);
-    when(actionRegistry.list(ArgumentMatchers.any())).thenReturn(Collections.emptyList());
+    when(actionRegistry.list(any())).thenReturn(Collections.emptyList());
     QueryRequest request =
         new QueryRequestImpl(
             new QueryImpl(filterBuilder.attribute("test").equalTo().text("value")));

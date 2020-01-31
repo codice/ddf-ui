@@ -78,7 +78,6 @@ import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
 import org.codice.ddf.catalog.ui.metacard.EntityTooLargeException;
 import org.codice.ddf.catalog.ui.query.utility.EndpointUtility;
 import org.codice.ddf.catalog.ui.security.LogSanitizer;
-import org.codice.ddf.log.sanitizer.LogSanitizer;
 import org.codice.gsonsupport.GsonTypeAdapters.LongDoubleTypeAdapter;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.FactoryIteratorProvider;

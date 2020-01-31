@@ -16,6 +16,8 @@ package org.codice.ddf.catalog.ui.util;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -35,7 +37,6 @@ import org.codice.ddf.catalog.ui.query.utility.CqlRequest;
 import org.codice.ddf.catalog.ui.query.utility.CqlResult;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 import org.opengis.filter.Filter;
 
 public class CqlQueryUtilTest {
@@ -71,12 +72,11 @@ public class CqlQueryUtilTest {
     actionRegistryMock = mock(ActionRegistry.class);
     responseMock = mock(QueryResponse.class);
 
-    when(filterBuilderMock.attribute(ArgumentMatchers.any())).thenReturn(attributeBuilderMock);
+    when(filterBuilderMock.attribute(any())).thenReturn(attributeBuilderMock);
     when(attributeBuilderMock.is()).thenReturn(attributeBuilderMock);
     when(attributeBuilderMock.like()).thenReturn(contextualExpressionBuilderMock);
-    when(contextualExpressionBuilderMock.text(ArgumentMatchers.anyString())).thenReturn(filterMock);
-    when(catalogFrameworkMock.query(ArgumentMatchers.any(QueryRequestImpl.class)))
-        .thenReturn(responseMock);
+    when(contextualExpressionBuilderMock.text(anyString())).thenReturn(filterMock);
+    when(catalogFrameworkMock.query(any(QueryRequestImpl.class))).thenReturn(responseMock);
     when(configurationApplicationMock.getMaximumUploadSize()).thenReturn(1 << 20);
 
     cqlQueryUtil =
@@ -97,8 +97,7 @@ public class CqlQueryUtilTest {
     long hitCount = 12L;
     when(responseMock.getResults()).thenReturn(Collections.emptyList());
     when(responseMock.getHits()).thenReturn(hitCount);
-    when(catalogFrameworkMock.query(ArgumentMatchers.any(QueryRequestImpl.class)))
-        .thenReturn(responseMock);
+    when(catalogFrameworkMock.query(any(QueryRequestImpl.class))).thenReturn(responseMock);
 
     CqlQueryResponse cqlQueryResponse = cqlQueryUtil.executeCqlQuery(generateCqlRequest(0));
     List<CqlResult> results = cqlQueryResponse.getResults();
