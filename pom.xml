@@ -52,7 +52,7 @@
     <compiler.fork>false</compiler.fork>
 
     <!--Backend properties-->
-    <ddf.version>2.21.0</ddf.version>
+    <ddf.version>2.22.0</ddf.version>
     <ddf.support.version>2.3.16</ddf.support.version>
     <karaf.version>4.2.6</karaf.version>
     <camel.version>2.22.1</camel.version>
