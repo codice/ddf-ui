@@ -3,3 +3,11 @@ target/
 node/
 *.iml
 .DS_Store
+*.project
+*.settings
+*.classpath
+*.metadata
+*.iml
+*.idea
+*.checkstyle
+*.DS_Store
