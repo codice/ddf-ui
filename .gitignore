@@ -11,3 +11,11 @@ docs/build
 *.vscode/
 *.classpath
 *.factorypath
+*.project
+*.settings
+*.classpath
+*.metadata
+*.iml
+*.idea
+*.checkstyle
+*.DS_Store
