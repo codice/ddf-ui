@@ -103,27 +103,6 @@ module.exports = function OpenlayersMap(
   listenToResize()
   setupTooltip(map)
   const drawingTools = setupDrawingTools(map)
-  const labelVectorLayer = setupLabelLayer(map)
-
-  /*
-   * Sets up a new Vector Layer for holding labels with the declutter property.
-   * Declutter is used for making sure the label texts don't overlap on each
-   * other.
-   */
-  function setupLabelLayer(map) {
-    const vectorSource = new Openlayers.source.Vector({
-      features: [],
-    })
-    const vectorLayer = new Openlayers.layer.Vector({
-      source: vectorSource,
-      zIndex: 1,
-      declutter: true,
-    })
-
-    map.addLayer(vectorLayer)
-
-    return vectorLayer
-  }
 
   function setupTooltip(map) {
     map.on('pointermove', e => {
@@ -170,6 +149,97 @@ module.exports = function OpenlayersMap(
 
   function unlistenToResize() {
     wreqr.vent.off('resize', resizeMap)
+  }
+
+  /*
+   * Returns a visible label that is in the same location as the provided label (geometryInstance) if one exists.
+   * If findSelected is true, the function will also check for hidden labels in the same location but are selected.
+   */
+  function findOverlappingLabel(findSelected, geometryInstance) {
+    return _.find(
+      mapModel.get('labels'),
+      label =>
+        label
+          .getSource()
+          .getFeatures()[0]
+          .getGeometry()
+          .getCoordinates()[0] === geometryInstance.getCoordinates()[0] &&
+        label
+          .getSource()
+          .getFeatures()[0]
+          .getGeometry()
+          .getCoordinates()[1] === geometryInstance.getCoordinates()[1] &&
+        ((findSelected && label.get('isSelected')) || label.getVisible())
+    )
+  }
+
+  /*
+      Only shows one label if there are multiple labels in the same location.
+
+      Show the label in the following importance:
+        - it is selected
+        - there is no other label displayed at the same location
+        - it is the label that was found by findOverlappingLabel
+
+      Arguments are:
+        - the label to show/hide (geometry, feature)
+        - if the label is selected
+        - if the search for overlapping label should include hidden selected labels
+      */
+  function showHideLabel({ geometry, feature, findSelected = false }) {
+    const isSelected = geometry.get('isSelected')
+    const geometryInstance = feature.getGeometry()
+    const labelWithSamePosition = findOverlappingLabel(
+      findSelected,
+      geometryInstance
+    )
+    if (
+      isSelected &&
+      labelWithSamePosition &&
+      !labelWithSamePosition.get('isSelected')
+    ) {
+      labelWithSamePosition.setVisible(false)
+    }
+    const otherLabelNotSelected = labelWithSamePosition
+      ? !labelWithSamePosition.get('isSelected')
+      : true
+    const visible =
+      (isSelected && otherLabelNotSelected) ||
+      !labelWithSamePosition ||
+      geometry.get('id') === labelWithSamePosition.get('id')
+    geometry.setVisible(visible)
+  }
+
+  /*
+      Shows a hidden label. Used when deleting a label that is shown.
+      */
+  function showHiddenLabel(geometry) {
+    if (!geometry.getVisible()) {
+      return
+    }
+    const geometryInstance = geometry
+      .getSource()
+      .getFeatures()[0]
+      .getGeometry()
+    const hiddenLabel = _.find(
+      mapModel.get('labels'),
+      label =>
+        label
+          .getSource()
+          .getFeatures()[0]
+          .getGeometry()
+          .getCoordinates()[0] === geometryInstance.getCoordinates()[0] &&
+        label
+          .getSource()
+          .getFeatures()[0]
+          .getGeometry()
+          .getCoordinates()[1] === geometryInstance.getCoordinates()[1] &&
+        label.get('id') !== geometry.get('id') &&
+        !label.getVisible()
+    )
+    if (hiddenLabel) {
+      hiddenLabel.setVisible(true)
+    }
   }
 
   const exposedMethods = _.extend({}, Map, {
@@ -484,9 +554,9 @@ module.exports = function OpenlayersMap(
       return vectorLayer
     },
     /*
-     * Draws a label on the map by adding to the features in the label Vector
-     * Layer.
-     */
+          Adds a label utilizing the passed in point and options.
+          Options are an id and text.
+        */
     addLabel(point, options) {
       const pointObject = convertPointCoordinate(point)
       const feature = new Openlayers.Feature({
@@ -504,19 +574,21 @@ module.exports = function OpenlayersMap(
           }),
         })
       )
-
-      const labelVectorLayerFeatures = labelVectorLayer
-        .getSource()
-        .getFeatures()
-      // creates a new source with the new feature appended to the current list
-      // of features
-      const newVectorSource = new Openlayers.source.Vector({
-        features: [...labelVectorLayerFeatures, feature],
+      const vectorSource = new Openlayers.source.Vector({
+        features: [feature],
       })
-      // updates the vector layer containing the labels with the new source
-      labelVectorLayer.setSource(newVectorSource)
 
-      return labelVectorLayer
+      const vectorLayer = new Openlayers.layer.Vector({
+        source: vectorSource,
+        zIndex: 1,
+        id: options.id,
+        isSelected: false,
+      })
+
+      map.addLayer(vectorLayer)
+      mapModel.addLabel(vectorLayer)
+
+      return vectorLayer
     },
     /*
           Adds a polyline utilizing the passed in line and options.
@@ -667,6 +739,12 @@ module.exports = function OpenlayersMap(
               ),
             })
           )
+
+          geometry.set('isSelected', options.isSelected)
+          showHideLabel({
+            geometry,
+            feature,
+          })
         }
       } else if (geometryInstance.getType() === 'LineString') {
         const styles = [
@@ -728,9 +806,23 @@ module.exports = function OpenlayersMap(
          Updates a passed in geometry to be shown
          */
     showGeometry(geometry) {
-      geometry.setVisible(true)
+      const feature = geometry.getSource().getFeatures()[0]
+      if (feature.getProperties().isLabel) {
+        showHideLabel({
+          geometry,
+          feature,
+          findSelected: true,
+        })
+      } else {
+        geometry.setVisible(true)
+      }
     },
     removeGeometry(geometry) {
+      const feature = geometry.getSource().getFeatures()[0]
+      if (feature.getProperties().isLabel) {
+        mapModel.removeLabel(geometry)
+        showHiddenLabel(geometry)
+      }
       map.removeLayer(geometry)
     },
     showPolygonShape(locationModel) {
