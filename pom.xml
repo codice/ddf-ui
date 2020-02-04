@@ -22,7 +22,7 @@
   <name>DDF :: UI</name>
   <artifactId>catalog-ui</artifactId>
   <groupId>org.codice.ddf.search</groupId>
-  <version>3.0.0-SNAPSHOT</version>
+  <version>3.1.0-SNAPSHOT</version>
 
   <organization>
     <name>Codice Foundation</name>
@@ -40,12 +40,8 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>catalog-ui-search-api</module>
-    <module>catalog-ui-enumeration</module>
-    <module>catalog-ui-search</module>
-    <module>intrigue-ui-app</module>
-    <module>zip-splitter</module>
-    <module>ui</module>
+    <module>ui-backend</module>
+    <module>ui-frontend</module>
   </modules>
 
   <properties>
@@ -54,9 +50,10 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <compiler.fork>false</compiler.fork>
+    <maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
 
     <!--Backend properties-->
-    <ddf.version>2.19.0</ddf.version>
+    <ddf.version>2.22.0</ddf.version>
     <ddf.support.version>2.3.16</ddf.support.version>
     <karaf.version>4.2.6</karaf.version>
     <camel.version>2.22.1</camel.version>
@@ -68,6 +65,8 @@
     <junit.version>4.12</junit.version>
     <mockito-all.version>1.10.19</mockito-all.version>
     <xmlunit.version>1.4</xmlunit.version>
+    <gson.version>2.8.5</gson.version>
+    <commons-math3.version>3.6.1</commons-math3.version>
 
     <!-- Command line argument properties for the maven-surefire-plugin -->
     <codice-test.version>0.3</codice-test.version>
@@ -87,6 +86,13 @@
     <yarn.version>v1.17.3</yarn.version>
   </properties>
 
+    <scm>
+        <url>https://github.com/codice/ddf-ui</url>
+        <connection>scm:git:https://github.com/codice/ddf-ui.git</connection>
+        <developerConnection>scm:git:https://github.com/codice/ddf-ui.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -96,9 +102,28 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>snapshots</id>
+      <url>${snapshots.repository.url}</url>
+    </snapshotRepository>
+    <repository>
+      <id>releases</id>
+      <url>${releases.repository.url}</url>
+    </repository>
+    <site>
+      <id>reports</id>
+      <url>${reports.repository.url}</url>
+    </site>
+  </distributionManagement>
   <build>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>${maven.deploy.plugin.version}</version>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
@@ -150,47 +175,16 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.2</version>
+          <version>3.0.0-M3</version>
           <configuration>
+            <argLine>-Djava.awt.headless=true -noverify</argLine>
             <forkCount>0</forkCount>
-            <parallel>all</parallel>
-            <threadCount>3</threadCount>
-            <perCoreThreadCount>true</perCoreThreadCount>
-<!--            <useUnlimitedThreads>true</useUnlimitedThreads>-->
             <includes>
               <include>**/*Test.java</include>
               <include>**/*Spec.class</include>
             </includes>
 
           </configuration>
-        </plugin>
-        <plugin>
-          <groupId>com.github.eirslett</groupId>
-          <artifactId>frontend-maven-plugin</artifactId>
-          <version>1.6.CODICE</version>
-          <executions>
-            <execution>
-              <id>install node and yarn</id>
-              <goals>
-                <goal>install-node-and-yarn</goal>
-              </goals>
-              <configuration>
-                <nodeVersion>${node.version}</nodeVersion>
-                <yarnVersion>${yarn.version}</yarnVersion>
-                <nodeDownloadRoot>${node.download.root}</nodeDownloadRoot>
-                <yarnDownloadRoot>${yarn.download.root}</yarnDownloadRoot>
-              </configuration>
-            </execution>
-            <execution>
-              <id>yarn install</id>
-              <goals>
-                <goal>yarn</goal>
-              </goals>
-              <configuration>
-                <arguments>install --mutex network</arguments>
-              </configuration>
-            </execution>
-          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -275,7 +269,7 @@
       <plugin>
         <groupId>org.codehaus.gmavenplus</groupId>
         <artifactId>gmavenplus-plugin</artifactId>
-        <version>1.7.1</version>
+        <version>1.5</version>
         <executions>
           <execution>
             <goals>

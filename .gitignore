@@ -1,4 +1,7 @@
 node_modules/
 target/
+node/
 *.iml
 .DS_Store
+.idea/
+pom.xml.versionsBackup

@@ -1,0 +1,50 @@
+version: 2.1 # use CircleCI 2.0
+jobs: # a collection of steps
+  build: # runs not using Workflows must have a `build` job as entry point
+
+    working_directory: ~/repo # directory where steps will run
+
+    docker: # run the steps with Docker
+      - image: circleci/openjdk:8u171-jdk-browsers # ...with this image as the primary container; this is where all `steps` will run
+    environment:
+      MAVEN_OPTS: -Xmx2G
+
+    steps: # a collection of executable commands
+
+      - checkout # check out source code to working directory
+
+      - restore_cache: # restore the saved cache after the first run or if `pom.xml` has changed
+          keys:
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+#      - run: mvn dependency:go-offline --no-transfer-progress # gets the project dependencies
+
+      - run:  # run the actual tests
+          name: Backend Build
+          command: mvn install --batch-mode  -pl !ui-frontend
+
+      - run:
+          name: Frontend Build
+          command: mvn install --batch-mode -DbuildEnv=dev -pl ui-frontend
+
+      - save_cache: # saves the project dependencies
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+
+      - store_test_results:
+          path: ~/test-results
+
+#      - store_artifacts: # store the uberjar as an artifact
+#          # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
+#          path: target/demo-java-spring-0.0.1-SNAPSHOT.jar
+#      # See https://circleci.com/docs/2.0/deployment-integrations/ for deploy examples
