@@ -42,6 +42,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.io.IOUtils;
 import org.codice.ddf.catalog.ui.forms.data.AttributeGroupMetacard;
 import org.codice.ddf.catalog.ui.forms.data.QueryTemplateMetacard;
+import org.codice.ddf.catalog.ui.query.utility.EndpointUtility;
 import org.codice.ddf.catalog.ui.security.IntrigueSecurity;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
 import org.codice.ddf.configuration.AbsolutePathResolver;
@@ -84,7 +85,7 @@ public class SearchFormsLoader {
 
   private final TemplateTransformer transformer;
 
-  private final EndpointUtil endpointUtil;
+  private final EndpointUtility endpointUtil;
 
   public SearchFormsLoader(
       CatalogFramework catalogFramework,
@@ -96,7 +97,7 @@ public class SearchFormsLoader {
   public SearchFormsLoader(
       CatalogFramework catalogFramework,
       TemplateTransformer transformer,
-      EndpointUtil endpointUtil,
+      EndpointUtility endpointUtil,
       @Nullable String formsDirectory,
       @Nullable String formsFileName,
       @Nullable String resultsFileName) {
