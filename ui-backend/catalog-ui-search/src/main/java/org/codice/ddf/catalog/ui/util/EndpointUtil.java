@@ -17,11 +17,9 @@ import static ddf.catalog.Constants.ADDITIONAL_SORT_BYS;
 import static ddf.catalog.util.impl.ResultIterable.resultIterable;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 
-import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import ddf.action.ActionRegistry;
 import ddf.catalog.CatalogFramework;
 import ddf.catalog.data.Attribute;
 import ddf.catalog.data.AttributeDescriptor;
@@ -34,18 +32,14 @@ import ddf.catalog.data.Result;
 import ddf.catalog.data.impl.AttributeImpl;
 import ddf.catalog.data.types.Core;
 import ddf.catalog.federation.FederationException;
-import ddf.catalog.filter.FilterAdapter;
 import ddf.catalog.filter.FilterBuilder;
 import ddf.catalog.filter.impl.SortByImpl;
 import ddf.catalog.impl.filter.GeoToolsFunctionFactory;
-import ddf.catalog.operation.QueryRequest;
 import ddf.catalog.operation.QueryResponse;
 import ddf.catalog.operation.impl.QueryImpl;
 import ddf.catalog.operation.impl.QueryRequestImpl;
-import ddf.catalog.operation.impl.QueryResponseImpl;
 import ddf.catalog.source.SourceUnavailableException;
 import ddf.catalog.source.UnsupportedQueryException;
-import ddf.catalog.util.impl.QueryFunction;
 import ddf.catalog.util.impl.ResultIterable;
 import java.io.IOException;
 import java.io.Serializable;
@@ -82,10 +76,8 @@ import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
 import org.codice.ddf.catalog.ui.metacard.EntityTooLargeException;
-import org.codice.ddf.catalog.ui.query.cql.CqlQueryResponse;
-import org.codice.ddf.catalog.ui.query.cql.CqlRequest;
+import org.codice.ddf.catalog.ui.query.utility.EndpointUtility;
 import org.codice.ddf.catalog.ui.security.LogSanitizer;
-import org.codice.ddf.catalog.ui.transformer.TransformerDescriptors;
 import org.codice.gsonsupport.GsonTypeAdapters.LongDoubleTypeAdapter;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.FactoryIteratorProvider;
@@ -99,7 +91,7 @@ import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
 
-public class EndpointUtil {
+public class EndpointUtil implements EndpointUtility {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EndpointUtil.class);
   public static final String MESSAGE = "message";
@@ -109,10 +101,6 @@ public class EndpointUtil {
   private final CatalogFramework catalogFramework;
 
   private final FilterBuilder filterBuilder;
-
-  private final FilterAdapter filterAdapter;
-
-  private final ActionRegistry actionRegistry;
 
   private final List<InjectableAttribute> injectableAttributes;
 
@@ -146,22 +134,16 @@ public class EndpointUtil {
 
   private List<String> whiteListedMetacardTypes = Collections.emptyList();
 
-  private TransformerDescriptors descriptors;
-
   public EndpointUtil(
       List<MetacardType> metacardTypes,
       CatalogFramework catalogFramework,
       FilterBuilder filterBuilder,
-      FilterAdapter filterAdapter,
-      ActionRegistry actionRegistry,
       List<InjectableAttribute> injectableAttributes,
       AttributeRegistry attributeRegistry,
       ConfigurationApplication config) {
     this.metacardTypes = metacardTypes;
     this.catalogFramework = catalogFramework;
     this.filterBuilder = filterBuilder;
-    this.filterAdapter = filterAdapter;
-    this.actionRegistry = actionRegistry;
     this.injectableAttributes = injectableAttributes;
     this.attributeRegistry = attributeRegistry;
     this.config = config;
@@ -218,6 +200,7 @@ public class EndpointUtil {
     return getJson(result);
   }
 
+  @Override
   public Map<String, Result> getMetacardsByTag(String tagStr) {
     Filter filter = filterBuilder.attribute(Core.METACARD_TAGS).is().like().text(tagStr);
 
@@ -522,72 +505,6 @@ public class EndpointUtil {
     return GSON.toJson(result);
   }
 
-  public CqlQueryResponse executeCqlQuery(CqlRequest cqlRequest)
-      throws UnsupportedQueryException, SourceUnavailableException, FederationException {
-    QueryRequest request = cqlRequest.createQueryRequest(catalogFramework.getId(), filterBuilder);
-    Stopwatch stopwatch = Stopwatch.createStarted();
-
-    List<QueryResponse> responses = Collections.synchronizedList(new ArrayList<>());
-
-    List<Result> results;
-    if (cqlRequest.getCount() == 0) {
-      results = retrieveHitCount(request, responses);
-    } else {
-      results = retrieveResults(cqlRequest, request, responses);
-    }
-
-    QueryResponse response =
-        new QueryResponseImpl(
-            request,
-            results,
-            true,
-            responses
-                .stream()
-                .filter(Objects::nonNull)
-                .map(QueryResponse::getHits)
-                .findFirst()
-                .orElse(-1L),
-            responses
-                .stream()
-                .filter(Objects::nonNull)
-                .map(QueryResponse::getProperties)
-                .findFirst()
-                .orElse(Collections.emptyMap()));
-
-    stopwatch.stop();
-
-    return new CqlQueryResponse(
-        cqlRequest.getId(),
-        request,
-        response,
-        cqlRequest.getSourceResponseString(),
-        stopwatch.elapsed(TimeUnit.MILLISECONDS),
-        cqlRequest.isNormalize(),
-        filterAdapter,
-        actionRegistry,
-        descriptors);
-  }
-
-  private List<Result> retrieveHitCount(QueryRequest request, List<QueryResponse> responses)
-      throws UnsupportedQueryException, SourceUnavailableException, FederationException {
-    QueryResponse queryResponse = catalogFramework.query(request);
-    responses.add(queryResponse);
-    return queryResponse.getResults();
-  }
-
-  private List<Result> retrieveResults(
-      CqlRequest cqlRequest, QueryRequest request, List<QueryResponse> responses) {
-    QueryFunction queryFunction =
-        (queryRequest) -> {
-          QueryResponse queryResponse = catalogFramework.query(queryRequest);
-          responses.add(queryResponse);
-          return queryResponse;
-        };
-    return ResultIterable.resultIterable(queryFunction, request, cqlRequest.getCount())
-        .stream()
-        .collect(Collectors.toList());
-  }
-
   public Map<String, Object> getMetacardMap(Metacard metacard) {
     Set<AttributeDescriptor> attributeDescriptors =
         metacard.getMetacardType().getAttributeDescriptors();
@@ -860,10 +777,5 @@ public class EndpointUtil {
         | FederationException e) {
       return null;
     }
-  }
-
-  @SuppressWarnings("WeakerAccess" /* setter must be public for blueprint access */)
-  public void setDescriptors(TransformerDescriptors descriptors) {
-    this.descriptors = descriptors;
   }
 }
