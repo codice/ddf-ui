@@ -1,0 +1,4 @@
+
+.Data Management
+* xref:viewing-invalid.adoc[Viewing Invalid Metadata]
+* xref:editing-attributes.adoc[Manually Editing Attributes]
