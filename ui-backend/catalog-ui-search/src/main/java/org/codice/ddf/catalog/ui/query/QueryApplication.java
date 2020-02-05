@@ -39,7 +39,7 @@ import org.codice.ddf.catalog.ui.query.suggestion.UtmUpsCoordinateProcessor;
 import org.codice.ddf.catalog.ui.query.utility.CqlQueryResponse;
 import org.codice.ddf.catalog.ui.query.utility.CqlRequest;
 import org.codice.ddf.catalog.ui.query.validate.CqlValidationHandler;
-import org.codice.ddf.catalog.ui.util.CqlQueryUtil;
+import org.codice.ddf.catalog.ui.util.CqlQueriesImpl;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
 import org.codice.ddf.catalog.ui.ws.JsonRpc;
 import org.codice.ddf.spatial.geocoding.Suggestion;
@@ -89,7 +89,7 @@ public class QueryApplication implements SparkApplication, Function {
 
   private EndpointUtil util;
 
-  private CqlQueryUtil cqlQueryUtil;
+  private CqlQueriesImpl cqlQueryUtil;
 
   public QueryApplication(
       CqlTransformHandler cqlTransformHandler,
@@ -231,7 +231,7 @@ public class QueryApplication implements SparkApplication, Function {
     this.util = util;
   }
 
-  public void setCqlQueryUtil(CqlQueryUtil cqlQueryUtil) {
+  public void setCqlQueryUtil(CqlQueriesImpl cqlQueryUtil) {
     this.cqlQueryUtil = cqlQueryUtil;
   }
 }
