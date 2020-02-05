@@ -38,8 +38,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
 import org.codice.ddf.catalog.ui.metacard.transform.CsvTransform;
+import org.codice.ddf.catalog.ui.query.cql.CqlRequestImpl;
 import org.codice.ddf.catalog.ui.query.utility.CqlQueryResponse;
-import org.codice.ddf.catalog.ui.query.utility.CqlRequest;
 import org.codice.ddf.catalog.ui.util.CqlQueriesImpl;
 import org.codice.ddf.catalog.ui.util.CswConstants;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
@@ -122,10 +122,10 @@ public class CqlTransformHandler implements Route {
   public Object handle(Request request, Response response) throws Exception {
     String transformerId = request.params(":transformerId");
     String body = util.safeGetBody(request);
-    CqlRequest cqlRequest;
+    CqlRequestImpl cqlRequest;
 
     try {
-      cqlRequest = GSON.fromJson(body, CqlRequest.class);
+      cqlRequest = GSON.fromJson(body, CqlRequestImpl.class);
     } catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
       LOGGER.debug("Error fetching cql request");
       response.status(HttpStatus.BAD_REQUEST_400);
