@@ -21,9 +21,17 @@ import org.codice.ddf.catalog.ui.query.monitor.api.SecurityService;
 import org.codice.ddf.catalog.ui.security.IntrigueSecurity;
 
 public class SecurityServiceImpl implements SecurityService {
+
+  private final IntrigueSecurity security;
+
+  public SecurityServiceImpl(IntrigueSecurity security) {
+
+    this.security = security;
+  }
+
   @Override
   public Subject getSystemSubject() {
-    return IntrigueSecurity.getInstance().getSystemSubject();
+    return security.getSystemSubject();
   }
 
   @Override

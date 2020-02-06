@@ -55,6 +55,8 @@ Services (OSGi) that catalog-ui-search CONSUMES from DDF
 
     <reference-list id="metacardTypes" interface="ddf.catalog.data.MetacardType"/>
 
+    <reference id="security" interface="org.codice.ddf.security.Security" />
+
     <!-- The following are only used by EndpointUtil / internal configuration classes -->
     <reference-list id="injectableAttributes" interface="ddf.catalog.data.InjectableAttribute"
                     availability="optional"/>

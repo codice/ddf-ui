@@ -59,8 +59,6 @@ import org.slf4j.LoggerFactory;
 public class SearchFormsLoader {
   private static final Logger LOGGER = LoggerFactory.getLogger(SearchFormsLoader.class);
 
-  private static final IntrigueSecurity SECURITY = IntrigueSecurity.getInstance();
-
   private static final Gson GSON =
       new GsonBuilder()
           .disableHtmlEscaping()
@@ -76,6 +74,8 @@ public class SearchFormsLoader {
 
   private final File formsDirectory;
 
+  private final IntrigueSecurity security;
+
   private final String formsFileName;
 
   private final String resultsFileName;
@@ -89,20 +89,23 @@ public class SearchFormsLoader {
   public SearchFormsLoader(
       CatalogFramework catalogFramework,
       TemplateTransformer transformer,
-      EndpointUtil endpointUtil) {
-    this(catalogFramework, transformer, endpointUtil, null, null, null);
+      EndpointUtil endpointUtil,
+      IntrigueSecurity security) {
+    this(catalogFramework, transformer, endpointUtil, security, null, null, null);
   }
 
   public SearchFormsLoader(
       CatalogFramework catalogFramework,
       TemplateTransformer transformer,
       EndpointUtil endpointUtil,
+      IntrigueSecurity security,
       @Nullable String formsDirectory,
       @Nullable String formsFileName,
       @Nullable String resultsFileName) {
     this.catalogFramework = catalogFramework;
     this.transformer = transformer;
     this.endpointUtil = endpointUtil;
+    this.security = security;
     this.formsFileName = (formsFileName == null) ? DEFAULT_FORMS_FILE : formsFileName;
     this.resultsFileName = (resultsFileName == null) ? DEFAULT_RESULTS_FILE : resultsFileName;
     this.formsDirectory =
@@ -122,7 +125,7 @@ public class SearchFormsLoader {
    * @param systemTemplates system templates loaded from config.
    */
   public void bootstrap(List<Metacard> systemTemplates) {
-    SECURITY.runAsSystemForIntrigue(() -> this.createSystemMetacards(systemTemplates));
+    security.runAsSystemForIntrigue(() -> this.createSystemMetacards(systemTemplates));
   }
 
   public List<Metacard> retrieveSystemTemplateMetacards() {

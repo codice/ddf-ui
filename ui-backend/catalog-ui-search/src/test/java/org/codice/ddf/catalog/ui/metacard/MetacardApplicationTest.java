@@ -40,6 +40,7 @@ import java.util.function.Consumer;
 import javax.ws.rs.NotFoundException;
 import org.codice.ddf.catalog.ui.metacard.edit.AttributeChange;
 import org.codice.ddf.catalog.ui.metacard.edit.MetacardChanges;
+import org.codice.ddf.catalog.ui.security.IntrigueSecurity;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -62,6 +63,8 @@ public class MetacardApplicationTest {
 
   private final MetacardApplicationUnderTest app =
       new MetacardApplicationUnderTest(mockFramework, mockUtil);
+
+  private final IntrigueSecurity security = mock(IntrigueSecurity.class);
 
   @Test(expected = NotFoundException.class)
   public void testPatchMetacardsWhenIdNotFound() throws Exception {
@@ -182,7 +185,8 @@ public class MetacardApplicationTest {
           null,
           null,
           null,
-          null);
+          null,
+          security);
     }
 
     private void doPatchMetacards(List<MetacardChanges> metacardChanges) throws Exception {

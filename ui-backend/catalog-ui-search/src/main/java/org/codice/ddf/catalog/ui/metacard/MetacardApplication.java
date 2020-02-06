@@ -154,8 +154,6 @@ public class MetacardApplication implements SparkApplication {
   private static final Set<Action> DELETE_ACTIONS =
       ImmutableSet.of(Action.DELETED, Action.DELETED_CONTENT);
 
-  private static final IntrigueSecurity SECURITY = IntrigueSecurity.getInstance();
-
   private static final String ERROR_RESPONSE_TYPE = "error";
 
   private static final String SUCCESS_RESPONSE_TYPE = "success";
@@ -204,6 +202,8 @@ public class MetacardApplication implements SparkApplication {
 
   private final AssociatedQueryMetacardsHandler queryMetacardsHandler;
 
+  private final IntrigueSecurity security;
+
   public MetacardApplication(
       CatalogFramework catalogFramework,
       FilterBuilder filterBuilder,
@@ -221,7 +221,8 @@ public class MetacardApplication implements SparkApplication {
       SubjectIdentity subjectIdentity,
       AccessControlSecurityConfiguration accessControlSecurityConfiguration,
       WorkspaceService workspaceService,
-      AssociatedQueryMetacardsHandler queryMetacardsHandler) {
+      AssociatedQueryMetacardsHandler queryMetacardsHandler,
+      IntrigueSecurity security) {
     this.catalogFramework = catalogFramework;
     this.filterBuilder = filterBuilder;
     this.util = endpointUtil;
@@ -239,6 +240,7 @@ public class MetacardApplication implements SparkApplication {
     this.accessControlSecurityConfiguration = accessControlSecurityConfiguration;
     this.workspaceService = workspaceService;
     this.queryMetacardsHandler = queryMetacardsHandler;
+    this.security = security;
   }
 
   private String getSubjectEmail() {
@@ -1053,7 +1055,7 @@ public class MetacardApplication implements SparkApplication {
    * @return result of the callable func
    */
   private <T> T executeAsSystem(Callable<T> func) {
-    return SECURITY.runAsSystemForIntrigue(func);
+    return security.runAsSystemForIntrigue(func);
   }
 
   private Instant getVersionedOnDate(Metacard mc) {

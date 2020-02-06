@@ -263,6 +263,11 @@ Implementation details
         <argument ref="accessControlSecurityConfiguration"/>
         <argument ref="queryWorkspaceService"/>
         <argument ref="queryMetacardsHandler"/>
+        <argument ref="intrigueSecurity" />
+    </bean>
+
+    <bean id="intrigueSecurity" class="org.codice.ddf.catalog.ui.security.IntrigueSecurity">
+        <argument ref="security" />
     </bean>
 
     <!--
@@ -440,7 +445,9 @@ Implementation details
     -->
 
     <bean id="securityService"
-          class="org.codice.ddf.catalog.ui.query.monitor.impl.SecurityServiceImpl"/>
+          class="org.codice.ddf.catalog.ui.query.monitor.impl.SecurityServiceImpl">
+        <argument ref="intrigueSecurity" />
+    </bean>
 
     <bean id="queryWorkspaceService"
           class="org.codice.ddf.catalog.ui.query.monitor.impl.WorkspaceServiceImpl">

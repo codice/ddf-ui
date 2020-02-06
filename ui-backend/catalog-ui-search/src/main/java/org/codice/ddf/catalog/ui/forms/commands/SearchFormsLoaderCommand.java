@@ -30,6 +30,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.codice.ddf.catalog.ui.forms.SearchFormsLoader;
 import org.codice.ddf.catalog.ui.forms.TemplateTransformer;
 import org.codice.ddf.catalog.ui.forms.filter.FilterWriter;
+import org.codice.ddf.catalog.ui.security.IntrigueSecurity;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
 import org.codice.ddf.commands.catalog.SubjectCommands;
 import org.osgi.framework.BundleContext;
@@ -48,6 +49,8 @@ public class SearchFormsLoaderCommand extends SubjectCommands implements Action 
   private final AttributeRegistry registry;
 
   private final EndpointUtil endpointUtil;
+
+  private final IntrigueSecurity security;
 
   @Option(
     name = "--formsDirectory",
@@ -71,14 +74,22 @@ public class SearchFormsLoaderCommand extends SubjectCommands implements Action 
   protected String resultsFile = null;
 
   public SearchFormsLoaderCommand() {
-    this(get(CatalogFramework.class), get(AttributeRegistry.class), get(EndpointUtil.class));
+    this(
+        get(CatalogFramework.class),
+        get(AttributeRegistry.class),
+        get(EndpointUtil.class),
+        get(IntrigueSecurity.class));
   }
 
   public SearchFormsLoaderCommand(
-      CatalogFramework catalogFramework, AttributeRegistry registry, EndpointUtil endpointUtil) {
+      CatalogFramework catalogFramework,
+      AttributeRegistry registry,
+      EndpointUtil endpointUtil,
+      IntrigueSecurity security) {
     this.catalogFramework = catalogFramework;
     this.registry = registry;
     this.endpointUtil = endpointUtil;
+    this.security = security;
   }
 
   @Override
@@ -104,7 +115,7 @@ public class SearchFormsLoaderCommand extends SubjectCommands implements Action 
     FilterWriter writer = new FilterWriter(true);
     TemplateTransformer transformer = new TemplateTransformer(writer, registry);
     return new SearchFormsLoader(
-        catalogFramework, transformer, endpointUtil, formsDir, formsFile, resultsFile);
+        catalogFramework, transformer, endpointUtil, security, formsDir, formsFile, resultsFile);
   }
 
   private static <T> T get(Class<T> type) {

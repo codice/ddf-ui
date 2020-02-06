@@ -29,6 +29,7 @@ import java.io.PrintStream;
 import java.net.URL;
 import java.util.Collections;
 import org.codice.ddf.catalog.ui.forms.SearchFormsLoader;
+import org.codice.ddf.catalog.ui.security.IntrigueSecurity;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -51,12 +52,14 @@ public class SearchFormsLoaderCommandTest {
   private static PrintStream realSystemOut;
   private @Mock SearchFormsLoader mockLoader;
 
+  private @Mock IntrigueSecurity security;
+
   private @Mock Metacard mockMetacard1;
 
   private @Mock Metacard mockMetacard2;
 
   private SearchFormsLoaderCommand cmd =
-      new SearchFormsLoaderCommand(null, null, null) {
+      new SearchFormsLoaderCommand(null, null, null, security) {
         @Override
         public SearchFormsLoader generateLoader() {
           return mockLoader;
