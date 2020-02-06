@@ -13,7 +13,7 @@
  *
  **/
 
-const store = require('../../js/store.js')
+const SelectionInterface = require('../selection-interface/selection-interface.model.js')
 const ConfirmationView = require('../confirmation/confirmation.view.js')
 const Dropzone = require('dropzone')
 const OverwritesInstance = require('../singletons/overwrites-instance.js')
@@ -211,7 +211,7 @@ class MetacardOverwrite extends React.Component {
   constructor(props) {
     super(props)
     this.state = defaultState
-    this.model = store.getSelectedResults().first()
+    this.model = SelectionInterface.getSelectedResults().first()
     this.dropzoneElement = React.createRef()
   }
 

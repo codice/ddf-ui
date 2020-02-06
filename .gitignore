@@ -6,3 +6,8 @@ node/
 .idea/
 pom.xml.versionsBackup
 docs/build
+*.project
+*.settings/
+*.vscode/
+*.classpath
+*.factorypath
