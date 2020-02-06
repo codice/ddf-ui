@@ -59,7 +59,7 @@
         <bundle>mvn:org.codice.ddf.search/catalog-ui-oauth/${project.version}</bundle>
         <bundle>mvn:org.codice.ddf.search/catalog-ui-enumeration/${project.version}</bundle>
         <bundle>mvn:com.google.code.gson/gson/${gson.version}</bundle>
-        <bundle>mvn:org.codice.ddf.search/zip-splitter/${project.version}</bundle>
+        <bundle>mvn:org.codice.ddf.search/catalog-ui-splitter/${project.version}</bundle>
         <bundle>mvn:org.apache.commons/commons-math3/${commons-math3.version}</bundle>
     </feature>
 

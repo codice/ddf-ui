@@ -11,7 +11,7 @@
  * License is distributed along with this program and can be found at
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
-package org.codice.ddf.catalog.ui.metacard.impl;
+package org.codice.ddf.catalog.ui.splitter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +29,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.activation.MimeType;
 import org.apache.commons.io.IOUtils;
-import org.codice.ddf.catalog.ui.splitter.StorableResource;
+import org.codice.ddf.catalog.ui.metacard.splitter.AbstractSplitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

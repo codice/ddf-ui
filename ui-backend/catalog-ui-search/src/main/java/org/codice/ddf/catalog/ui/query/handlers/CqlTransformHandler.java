@@ -37,9 +37,11 @@ import javax.ws.rs.core.HttpHeaders;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
-import org.codice.ddf.catalog.ui.metacard.transform.CsvTransform;
+
 import org.codice.ddf.catalog.ui.query.cql.CqlQueryResponse;
 import org.codice.ddf.catalog.ui.query.cql.CqlRequest;
+import org.codice.ddf.catalog.ui.metacard.transformer.CsvTransform;
+
 import org.codice.ddf.catalog.ui.util.CswConstants;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
 import org.codice.gsonsupport.GsonTypeAdapters.DateLongFormatTypeAdapter;

@@ -11,7 +11,7 @@
  * License is distributed along with this program and can be found at
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
-package org.codice.ddf.catalog.ui.metacard.impl;
+package org.codice.ddf.catalog.ui.metacard.splitter;
 
 import com.google.common.collect.ImmutableMap;
 import ddf.catalog.Constants;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 import javax.activation.MimeType;
-import org.codice.ddf.catalog.ui.metacard.internal.ServicePropertiesConstants;
+import org.codice.ddf.catalog.ui.constants.ServicePropertiesConstants;
 import org.codice.ddf.catalog.ui.splitter.Splitter;
 
 public abstract class AbstractSplitter implements Splitter {
