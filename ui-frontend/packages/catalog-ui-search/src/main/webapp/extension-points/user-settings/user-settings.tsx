@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import plugin from '../../plugins/user-settings'
+import plugin from 'plugins/user-settings'
 
 import {
   default as UserSettings,
