@@ -5,9 +5,11 @@ node/
 .DS_Store
 .idea/
 pom.xml.versionsBackup
+pom.xml.releaseBackup
 docs/build
 *.project
 *.settings/
 *.vscode/
 *.classpath
 *.factorypath
+release.properties
