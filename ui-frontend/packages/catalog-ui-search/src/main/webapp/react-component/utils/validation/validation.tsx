@@ -71,9 +71,9 @@ export function validateGeo(
 ) {
   switch (key) {
     case 'lat':
-      return validateDDLatLon(LATITUDE, 90, value)
+      return validateDDLatLon(LATITUDE, value, 90)
     case 'lon':
-      return validateDDLatLon(LONGITUDE, 180, value)
+      return validateDDLatLon(LONGITUDE, value, 180)
     case 'dmsLat':
       return validateDmsLatLon(LATITUDE, value)
     case 'dmsLon':
@@ -199,12 +199,13 @@ function getGeometryErrors(filter: any): Set<string> {
       if (!geometry.coordinates.length || geometry.coordinates.length < 2) {
         errors.add('Line coordinates must be in the form [[x,y],[x,y], ... ]')
       }
-      if (!bufferWidth) {
+      // Can't just check !bufferWidth because of the case of the string "0"
+      if (bufferWidth === undefined || Number(bufferWidth) === 0) {
         errors.add('Line buffer width must be greater than 0')
       }
       break
     case 'Point':
-      if (!bufferWidth) {
+      if (bufferWidth === undefined || Number(bufferWidth) === 0) {
         errors.add('Radius must be greater than 0')
       }
       if (
@@ -236,7 +237,7 @@ function validateLinePolygon(mode: string, currentValue: string) {
   }
 }
 
-function validateDDLatLon(label: string, defaultCoord: number, value: string) {
+function validateDDLatLon(label: string, value: string, defaultCoord: number) {
   let message = ''
   let defaultValue
   if (value !== undefined && value.length === 0) {
