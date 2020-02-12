@@ -124,7 +124,7 @@
         </dependency>
         <dependency>
             <groupId>org.codice.ddf.search</groupId>
-            <artifactId>zip-splitter</artifactId>
+            <artifactId>catalog-ui-splitter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
