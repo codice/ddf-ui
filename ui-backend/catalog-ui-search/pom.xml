@@ -391,6 +391,11 @@
             <artifactId>guava</artifactId>
             <version>28.1-jre</version>
         </dependency>
+        <dependency>
+            <groupId>org.codice.ddf.search</groupId>
+            <artifactId>catalog-ui-splitter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

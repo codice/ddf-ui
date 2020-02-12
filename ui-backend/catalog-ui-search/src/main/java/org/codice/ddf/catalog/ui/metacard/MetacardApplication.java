@@ -122,7 +122,7 @@ import org.codice.ddf.catalog.ui.metacard.notes.NoteConstants;
 import org.codice.ddf.catalog.ui.metacard.notes.NoteMetacard;
 import org.codice.ddf.catalog.ui.metacard.notes.NoteUtil;
 import org.codice.ddf.catalog.ui.metacard.query.data.metacard.QueryMetacardImpl;
-import org.codice.ddf.catalog.ui.metacard.transform.CsvTransformImpl;
+import org.codice.ddf.catalog.ui.metacard.transformer.CsvTransformImpl;
 import org.codice.ddf.catalog.ui.metacard.validation.Validator;
 import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceConstants;
 import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;

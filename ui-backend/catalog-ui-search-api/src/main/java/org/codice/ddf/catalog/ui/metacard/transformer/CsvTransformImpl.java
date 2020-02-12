@@ -11,7 +11,7 @@
  * License is distributed along with this program and can be found at
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
-package org.codice.ddf.catalog.ui.metacard.transform;
+package org.codice.ddf.catalog.ui.metacard.transformer;
 
 import com.google.common.collect.ImmutableList;
 import ddf.catalog.data.AttributeDescriptor;
