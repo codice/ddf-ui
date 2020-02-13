@@ -28,6 +28,8 @@ import javax.security.auth.AuthPermission;
 import javax.security.auth.Subject;
 import org.apache.karaf.jaas.boot.principal.RolePrincipal;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.codice.ddf.security.handler.api.AuthenticationTokenType;
+import org.codice.ddf.security.handler.api.BaseAuthenticationToken;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -184,19 +186,11 @@ public class IntrigueSecurity {
               SecurityManager securityManager = getSecurityManager();
               if (securityManager != null) {
                 try {
-                  cachedSystemSubject =
-                      securityManager.getSubject(
-                          new AuthenticationToken() {
-                            @Override
-                            public Object getPrincipal() {
-                              return certs[0].getSubjectX500Principal();
-                            }
-
-                            @Override
-                            public Object getCredentials() {
-                              return certs;
-                            }
-                          });
+                  BaseAuthenticationToken baseAuthenticationToken =
+                      new BaseAuthenticationToken(certs[0].getSubjectX500Principal(), certs, ip);
+                  baseAuthenticationToken.setType(AuthenticationTokenType.PKI);
+                  baseAuthenticationToken.setAllowGuest(true);
+                  cachedSystemSubject = securityManager.getSubject(baseAuthenticationToken);
                 } catch (SecurityServiceException sse) {
                   LOGGER.warn("Unable to request subject for system user.", sse);
                 }
