@@ -48,6 +48,9 @@
                             !com.google.common.io,
                             *
                         </Import-Package>
+                        <Export-Package>
+                            org.codice.ddf.catalog.ui.splitter.impl
+                        </Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

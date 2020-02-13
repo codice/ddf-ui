@@ -15,7 +15,7 @@
 
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-    <bean id="zipSplitter" class="org.codice.ddf.catalog.ui.splitter.ZipSplitter">
+    <bean id="zipSplitter" class="org.codice.ddf.catalog.ui.splitter.impl.ZipSplitter">
         <argument value="zip-splitter"/>
         <argument>
             <set>

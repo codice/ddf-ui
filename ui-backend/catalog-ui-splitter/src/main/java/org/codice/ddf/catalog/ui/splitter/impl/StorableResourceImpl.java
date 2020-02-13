@@ -11,7 +11,7 @@
  * License is distributed along with this program and can be found at
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
-package org.codice.ddf.catalog.ui.splitter;
+package org.codice.ddf.catalog.ui.splitter.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +21,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import org.apache.commons.io.IOUtils;
+import org.codice.ddf.catalog.ui.splitter.StorableResource;
 import org.codice.ddf.platform.util.TemporaryFileBackedOutputStream;
 
 @NotThreadSafe
