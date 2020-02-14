@@ -55,7 +55,6 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
                             org.codice.ddf.catalog.ui.metacard.workspace.transformer,
-                            org.codice.ddf.catalog.ui.metacard.splitter,
                             org.codice.ddf.catalog.ui.metacard.transformer,
                             org.codice.ddf.catalog.ui.splitter,
                             org.codice.ddf.catalog.ui.subscription,

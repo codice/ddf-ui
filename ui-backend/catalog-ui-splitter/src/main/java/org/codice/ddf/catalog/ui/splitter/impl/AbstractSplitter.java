@@ -11,7 +11,7 @@
  * License is distributed along with this program and can be found at
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
-package org.codice.ddf.catalog.ui.metacard.splitter;
+package org.codice.ddf.catalog.ui.splitter.impl;
 
 import com.google.common.collect.ImmutableMap;
 import ddf.catalog.Constants;

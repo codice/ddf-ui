@@ -51,7 +51,7 @@ import org.codice.ddf.catalog.ui.splitter.Splitter;
 import org.codice.ddf.catalog.ui.splitter.SplitterLocator;
 import org.codice.ddf.catalog.ui.splitter.StopSplitterExecutionException;
 import org.codice.ddf.catalog.ui.splitter.StorableResource;
-import org.codice.ddf.catalog.ui.splitter.StorableResourceImpl;
+import org.codice.ddf.catalog.ui.splitter.impl.StorableResourceImpl;
 import org.codice.ddf.platform.util.TemporaryFileBackedOutputStream;
 import org.codice.ddf.platform.util.uuidgenerator.UuidGenerator;
 import org.codice.ddf.rest.api.CatalogService;

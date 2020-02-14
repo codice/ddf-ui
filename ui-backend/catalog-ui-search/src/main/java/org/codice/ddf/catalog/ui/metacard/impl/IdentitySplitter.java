@@ -23,8 +23,8 @@ import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.mime.MediaTypeRegistry;
-import org.codice.ddf.catalog.ui.metacard.splitter.AbstractSplitter;
 import org.codice.ddf.catalog.ui.splitter.StorableResource;
+import org.codice.ddf.catalog.ui.splitter.impl.AbstractSplitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
