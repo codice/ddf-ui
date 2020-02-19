@@ -158,18 +158,23 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-opengis</artifactId>
-            <version>${opengis.version}</version>
+            <version>20.1</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-cql</artifactId>
-            <version>${opengis.version}</version>
+            <version>20.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jai_core</artifactId>
                     <groupId>javax.media</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.codice.thirdparty</groupId>
+            <artifactId>geotools-suite</artifactId>
+            <version>20.1_2</version>
         </dependency>
         <dependency>
             <groupId>ddf.catalog.transformer</groupId>
@@ -189,7 +194,7 @@
         <dependency>
             <groupId>org.locationtech.spatial4j</groupId>
             <artifactId>spatial4j</artifactId>
-            <version>0.6</version>
+            <version>0.7</version>
         </dependency>
         <dependency>
             <groupId>ddf.catalog.core</groupId>
@@ -283,21 +288,6 @@
             <groupId>org.codice.ddf.spatial</groupId>
             <artifactId>spatial-geocoding-geocoder</artifactId>
             <version>${ddf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codice.thirdparty</groupId>
-            <artifactId>geotools-suite</artifactId>
-            <version>19.1_2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vividsolutions</groupId>
-            <artifactId>jts-core</artifactId>
-            <version>1.14.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vividsolutions</groupId>
-            <artifactId>jts-io</artifactId>
-            <version>1.14.0</version>
         </dependency>
         <dependency>
             <groupId>ddf.platform.security</groupId>
