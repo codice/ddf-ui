@@ -1,6 +1,7 @@
 node_modules/
 target/
 node/
+.idea/
 *.iml
 .DS_Store
 .idea/
