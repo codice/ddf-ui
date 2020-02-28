@@ -34,9 +34,10 @@ const LayerCollectionController = require('../../../../js/controllers/ol.layerCo
 const user = require('../../../singletons/user-instance.js')
 const User = require('../../../../js/model/User.js')
 const wreqr = require('../../../../js/wreqr.js')
+import { validateGeo } from '../../../../react-component/utils/validation'
+
 
 const defaultColor = '#3c6dd5'
-const rulerColor = '#506f85'
 
 const OpenLayerCollectionController = LayerCollectionController.extend({
   initialize() {
@@ -149,97 +150,6 @@ module.exports = function OpenlayersMap(
 
   function unlistenToResize() {
     wreqr.vent.off('resize', resizeMap)
-  }
-
-  /*
-   * Returns a visible label that is in the same location as the provided label (geometryInstance) if one exists.
-   * If findSelected is true, the function will also check for hidden labels in the same location but are selected.
-   */
-  function findOverlappingLabel(findSelected, geometryInstance) {
-    return _.find(
-      mapModel.get('labels'),
-      label =>
-        label
-          .getSource()
-          .getFeatures()[0]
-          .getGeometry()
-          .getCoordinates()[0] === geometryInstance.getCoordinates()[0] &&
-        label
-          .getSource()
-          .getFeatures()[0]
-          .getGeometry()
-          .getCoordinates()[1] === geometryInstance.getCoordinates()[1] &&
-        ((findSelected && label.get('isSelected')) || label.getVisible())
-    )
-  }
-
-  /*
-      Only shows one label if there are multiple labels in the same location.
-
-      Show the label in the following importance:
-        - it is selected
-        - there is no other label displayed at the same location
-        - it is the label that was found by findOverlappingLabel
-
-      Arguments are:
-        - the label to show/hide (geometry, feature)
-        - if the label is selected
-        - if the search for overlapping label should include hidden selected labels
-      */
-  function showHideLabel({ geometry, feature, findSelected = false }) {
-    const isSelected = geometry.get('isSelected')
-    const geometryInstance = feature.getGeometry()
-    const labelWithSamePosition = findOverlappingLabel(
-      findSelected,
-      geometryInstance
-    )
-    if (
-      isSelected &&
-      labelWithSamePosition &&
-      !labelWithSamePosition.get('isSelected')
-    ) {
-      labelWithSamePosition.setVisible(false)
-    }
-    const otherLabelNotSelected = labelWithSamePosition
-      ? !labelWithSamePosition.get('isSelected')
-      : true
-    const visible =
-      (isSelected && otherLabelNotSelected) ||
-      !labelWithSamePosition ||
-      geometry.get('id') === labelWithSamePosition.get('id')
-    geometry.setVisible(visible)
-  }
-
-  /*
-      Shows a hidden label. Used when deleting a label that is shown.
-      */
-  function showHiddenLabel(geometry) {
-    if (!geometry.getVisible()) {
-      return
-    }
-    const geometryInstance = geometry
-      .getSource()
-      .getFeatures()[0]
-      .getGeometry()
-    const hiddenLabel = _.find(
-      mapModel.get('labels'),
-      label =>
-        label
-          .getSource()
-          .getFeatures()[0]
-          .getGeometry()
-          .getCoordinates()[0] === geometryInstance.getCoordinates()[0] &&
-        label
-          .getSource()
-          .getFeatures()[0]
-          .getGeometry()
-          .getCoordinates()[1] === geometryInstance.getCoordinates()[1] &&
-        label.get('id') !== geometry.get('id') &&
-        !label.getVisible()
-    )
-    if (hiddenLabel) {
-      hiddenLabel.setVisible(true)
-    }
   }
 
   const exposedMethods = _.extend({}, Map, {
@@ -421,73 +331,10 @@ module.exports = function OpenlayersMap(
       })
     },
     /*
-     * Calculates the distance (in meters) between the two positions in the given array of
-     * Coordinates.
-     */
-    calculateDistanceBetweenPositions(coords) {
-      const line = new Openlayers.geom.LineString(coords)
-      const sphereLength = Openlayers.Sphere.getLength(line)
-
-      return sphereLength
-    },
-    /*
-     * Draws a marker on the map designating a start/end point for the ruler measurement. The given
-     * coordinates should be an object with 'lat' and 'lon' keys with degrees values. The given
-     * marker label should be a single character or digit that is displayed on the map marker.
-     */
-    addRulerPoint(coordinates, markerLabel) {
-      const { lat, lon } = coordinates
-      const point = [lon, lat]
-      const options = {
-        id: markerLabel,
-        color: rulerColor,
-      }
-
-      return this.addPoint(point, options)
-    },
-    /*
-     * Removes the given point Layer from the map.
-     */
-    removeRulerPoint(pointLayer) {
-      map.removeLayer(pointLayer)
-    },
-    /*
-     * Draws a line on the map between the points in the given array of point Vectors.
-     */
-    addRulerLine(point) {
-      const options = {
-        id: 'ruler-line',
-        title: 'Line for ruler measurement',
-        color: '#506F85',
-      }
-      const startingCoordinates = mapModel.get('startingCoordinates')
-
-      const linePoints = [
-        [startingCoordinates['lon'], startingCoordinates['lat']],
-        [point['lon'], point['lat']],
-      ]
-      this.rulerLine = this.addLine(linePoints, options)
-
-      return this.rulerLine
-    },
-    /*
-     * Update the position of the ruler line
-     */
-    setRulerLine(point) {
-      this.removeRulerLine(this.rulerLine)
-      this.addRulerLine(point)
-    },
-    /*
-     * Removes the given line Layer from the map.
-     */
-    removeRulerLine(line) {
-      map.removeLayer(this.rulerLine)
-    },
-    /*
-        Adds a billboard point utilizing the passed in point and options.
-        Options are a view to relate to, and an id, and a color.
-    */
-    addPointWithText(point, options, useCustomText = false) {
+            Adds a billboard point utilizing the passed in point and options.
+            Options are a view to relate to, and an id, and a color.
+        */
+    addPointWithText(point, options) {
       const pointObject = convertPointCoordinate(point)
       const feature = new Openlayers.Feature({
         geometry: new Openlayers.geom.Point(pointObject),
@@ -499,7 +346,7 @@ module.exports = function OpenlayersMap(
           image: new Openlayers.style.Icon({
             img: DrawingUtility.getCircleWithText({
               fillColor: options.color,
-              text: useCustomText ? options.id : options.id.length,
+              text: options.id.length,
             }),
             imgSize: [44, 44],
           }),
@@ -527,19 +374,32 @@ module.exports = function OpenlayersMap(
       const pointObject = convertPointCoordinate(point)
       const feature = new Openlayers.Feature({
         geometry: new Openlayers.geom.Point(pointObject),
+        name: options.title,
       })
       feature.setId(options.id)
 
+      let x = 39,
+        y = 40
+      if (options.size) {
+        x = options.size.x
+        y = options.size.y
+      }
       feature.setStyle(
         new Openlayers.style.Style({
           image: new Openlayers.style.Icon({
-            img: DrawingUtility.getCircle({
+            img: DrawingUtility.getPin({
               fillColor: options.color,
+              icon: options.icon,
             }),
-            imgSize: [22, 22],
+            imgSize: [x, y],
+            anchor: [x / 2, 0],
+            anchorOrigin: 'bottom-left',
+            anchorXUnits: 'pixels',
+            anchorYUnits: 'pixels',
           }),
         })
       )
+
       const vectorSource = new Openlayers.source.Vector({
         features: [feature],
       })
@@ -550,43 +410,6 @@ module.exports = function OpenlayersMap(
       })
 
       map.addLayer(vectorLayer)
-
-      return vectorLayer
-    },
-    /*
-          Adds a label utilizing the passed in point and options.
-          Options are an id and text.
-        */
-    addLabel(point, options) {
-      const pointObject = convertPointCoordinate(point)
-      const feature = new Openlayers.Feature({
-        geometry: new Openlayers.geom.Point(pointObject),
-        name: options.text,
-        isLabel: true,
-      })
-      feature.setId(options.id)
-
-      feature.setStyle(
-        new Openlayers.style.Style({
-          text: new Openlayers.style.Text({
-            text: options.text,
-            overflow: true,
-          }),
-        })
-      )
-      const vectorSource = new Openlayers.source.Vector({
-        features: [feature],
-      })
-
-      const vectorLayer = new Openlayers.layer.Vector({
-        source: vectorSource,
-        zIndex: 1,
-        id: options.id,
-        isSelected: false,
-      })
-
-      map.addLayer(vectorLayer)
-      mapModel.addLabel(vectorLayer)
 
       return vectorLayer
     },
@@ -697,23 +520,16 @@ module.exports = function OpenlayersMap(
           this.updateGeometry(innerGeometry, options)
         })
       } else {
-        const features = geometry.getSource().getFeatures()
-        features.forEach(feature =>
-          this.setGeometryStyle(geometry, options, feature)
-        )
-      }
-    },
-    setGeometryStyle(geometry, options, feature) {
-      const geometryInstance = feature.getGeometry()
-      if (geometryInstance.getType() === 'Point') {
-        let pointWidth = 39
-        let pointHeight = 40
-        if (options.size) {
-          pointWidth = options.size.x
-          pointHeight = options.size.y
-        }
-        geometry.setZIndex(options.isSelected ? 2 : 1)
-        if (!feature.getProperties().isLabel) {
+        const feature = geometry.getSource().getFeatures()[0]
+        const geometryInstance = feature.getGeometry()
+        if (geometryInstance.constructor === Openlayers.geom.Point) {
+          let x = 39,
+            y = 40
+          if (options.size) {
+            x = options.size.x
+            y = options.size.y
+          }
+          geometry.setZIndex(options.isSelected ? 2 : 1)
           feature.setStyle(
             new Openlayers.style.Style({
               image: new Openlayers.style.Icon({
@@ -722,79 +538,34 @@ module.exports = function OpenlayersMap(
                   strokeColor: options.isSelected ? 'black' : 'white',
                   icon: options.icon,
                 }),
-                imgSize: [pointWidth, pointHeight],
-                anchor: [pointWidth / 2, 0],
+                imgSize: [x, y],
+                anchor: [x / 2, 0],
                 anchorOrigin: 'bottom-left',
                 anchorXUnits: 'pixels',
                 anchorYUnits: 'pixels',
               }),
             })
           )
-        } else {
-          feature.setStyle(
+        } else if (
+          geometryInstance.constructor === Openlayers.geom.LineString
+        ) {
+          const styles = [
             new Openlayers.style.Style({
-              text: this.createTextStyle(
-                feature,
-                map.getView().getResolution()
-              ),
-            })
-          )
-
-          geometry.set('isSelected', options.isSelected)
-          showHideLabel({
-            geometry,
-            feature,
-          })
+              stroke: new Openlayers.style.Stroke({
+                color: options.isSelected ? 'black' : 'white',
+                width: 8,
+              }),
+            }),
+            new Openlayers.style.Style({
+              stroke: new Openlayers.style.Stroke({
+                color: options.color || defaultColor,
+                width: 4,
+              }),
+            }),
+          ]
+          feature.setStyle(styles)
         }
-      } else if (geometryInstance.getType() === 'LineString') {
-        const styles = [
-          new Openlayers.style.Style({
-            stroke: new Openlayers.style.Stroke({
-              color: options.isSelected ? 'black' : 'white',
-              width: 8,
-            }),
-          }),
-          new Openlayers.style.Style({
-            stroke: new Openlayers.style.Stroke({
-              color: options.color || defaultColor,
-              width: 4,
-            }),
-          }),
-        ]
-        feature.setStyle(styles)
       }
-    },
-    createTextStyle(feature, resolution) {
-      const fillColor = '#000000'
-      const outlineColor = '#ffffff'
-      const outlineWidth = 3
-
-      return new Openlayers.style.Text({
-        text: this.getText(feature, resolution),
-        fill: new Openlayers.style.Fill({ color: fillColor }),
-        stroke: new Openlayers.style.Stroke({
-          color: outlineColor,
-          width: outlineWidth,
-        }),
-        offsetX: 20,
-        offsetY: -15,
-        placement: 'point',
-        maxAngle: 45,
-        overflow: true,
-        rotation: 0,
-        textAlign: 'left',
-        padding: [5, 5, 5, 5],
-      })
-    },
-    getText(feature, resolution) {
-      const maxResolution = 1200
-      const text =
-        resolution > maxResolution ? '' : this.trunc(feature.get('name'), 20)
-
-      return text
-    },
-    trunc(str, n) {
-      return str.length > n ? str.substr(0, n - 1) + '...' : str.substr(0)
     },
     /*
          Updates a passed in geometry to be hidden
@@ -806,23 +577,9 @@ module.exports = function OpenlayersMap(
          Updates a passed in geometry to be shown
          */
     showGeometry(geometry) {
-      const feature = geometry.getSource().getFeatures()[0]
-      if (feature.getProperties().isLabel) {
-        showHideLabel({
-          geometry,
-          feature,
-          findSelected: true,
-        })
-      } else {
-        geometry.setVisible(true)
-      }
+      geometry.setVisible(true)
     },
     removeGeometry(geometry) {
-      const feature = geometry.getSource().getFeatures()[0]
-      if (feature.getProperties().isLabel) {
-        mapModel.removeLabel(geometry)
-        showHiddenLabel(geometry)
-      }
       map.removeLayer(geometry)
     },
     showPolygonShape(locationModel) {
@@ -849,7 +606,10 @@ module.exports = function OpenlayersMap(
     showMultiLineShape(locationModel) {
       let lineObject = locationModel
         .get('multiline')
-        .map(line => line.map(coords => convertPointCoordinate(coords)))
+      if (validateGeo('multiline', JSON.stringify(lineObject)).error) {
+        return
+      }
+      lineObject = lineObject.map(line => line.map(coords => convertPointCoordinate(coords)))
 
       let feature = new Openlayers.Feature({
         geometry: new Openlayers.geom.MultiLineString(lineObject),
