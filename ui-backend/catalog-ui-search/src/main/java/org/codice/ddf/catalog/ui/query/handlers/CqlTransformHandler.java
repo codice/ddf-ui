@@ -49,13 +49,13 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
-import org.codice.ddf.catalog.ui.metacard.transformer.CsvTransformImpl;
+import org.codice.ddf.catalog.ui.metacard.transform.CsvTransformImpl;
 import org.codice.ddf.catalog.ui.query.cql.CqlRequestImpl;
 import org.codice.ddf.catalog.ui.query.utility.CqlQueryResponse;
 import org.codice.ddf.catalog.ui.query.utility.CqlRequest;
 import org.codice.ddf.catalog.ui.util.CqlQueriesImpl;
-import org.codice.ddf.catalog.ui.util.CswConstants;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
+import org.codice.ddf.spatial.ogc.csw.catalog.common.CswConstants;
 import org.codice.gsonsupport.GsonTypeAdapters.DateLongFormatTypeAdapter;
 import org.codice.gsonsupport.GsonTypeAdapters.LongDoubleTypeAdapter;
 import org.eclipse.jetty.http.HttpStatus;
@@ -206,11 +206,16 @@ public class CqlTransformHandler implements Route {
         cqlTransformRequest
             .getCqlRequests()
             .stream()
-            .filter(cqlRequest -> cqlRequest.getCql() != null && cqlRequest.getSrc() != null)
+            .filter(
+                cqlRequest ->
+                    cqlRequest.getCql() != null
+                        && (cqlRequest.getSrc() != null
+                            || CollectionUtils.isNotEmpty(cqlRequest.getSrcs())))
             .collect(Collectors.toList());
 
     if (CollectionUtils.isEmpty(cqlRequests)) {
       LOGGER.debug("Cql not found in request");
+      response.status(HttpStatus.BAD_REQUEST_400);
       return ImmutableMap.of("message", "Cql not found in request");
     }
 

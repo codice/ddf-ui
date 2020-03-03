@@ -81,6 +81,28 @@ function getHiddenResults(exportSize: string): string[] {
         .map((result: any) => result.get('id'))
     : []
 }
+function getSearches(
+  exportSize: string,
+  srcs: string[],
+  cql: string,
+  selectionInterface: any
+): any {
+  return exportSize === 'visible'
+    ? srcs.map((src: string) => {
+        const start = getStartIndex(src, exportSize, selectionInterface)
+        return {
+          src,
+          cql,
+          start,
+        }
+      })
+    : [
+        {
+          srcs,
+          cql,
+        },
+      ]
+}
 function getHits(sources: Source[]): number {
   return sources
     .filter(source => source.id !== 'cache')
@@ -167,14 +189,7 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
     columnAliasMap: properties.attributeAliases,
   }
 
-  const searches = srcs.map((src: string) => {
-    const start = getStartIndex(src, exportSize, selectionInterface)
-    return {
-      src,
-      cql,
-      start,
-    }
-  })
+  const searches = getSearches(exportSize, srcs, cql, selectionInterface)
 
   return {
     searches,
