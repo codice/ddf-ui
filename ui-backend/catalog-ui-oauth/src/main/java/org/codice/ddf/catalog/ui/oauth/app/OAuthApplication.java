@@ -44,6 +44,8 @@ import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import javax.servlet.http.HttpSession;
 import org.codice.ddf.configuration.SystemBaseUrl;
@@ -297,7 +299,12 @@ public class OAuthApplication implements SparkApplication {
 
     String redirect = REDIRECT_URL;
     if (redirectUri != null) {
-      redirect = redirect.concat("?" + REDIRECT_URI + "=" + redirectUri);
+      redirect =
+          redirect.concat(
+              "?"
+                  + REDIRECT_URI
+                  + "="
+                  + URLEncoder.encode(redirectUri, StandardCharsets.UTF_8.name()));
     }
 
     AuthorizationGrant grant =
