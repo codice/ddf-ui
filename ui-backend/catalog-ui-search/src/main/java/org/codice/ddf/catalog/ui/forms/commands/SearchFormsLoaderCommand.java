@@ -104,7 +104,7 @@ public class SearchFormsLoaderCommand extends SubjectCommands implements Action 
     FilterWriter writer = new FilterWriter(true);
     TemplateTransformer transformer = new TemplateTransformer(writer, registry);
     return new SearchFormsLoader(
-        catalogFramework, transformer, endpointUtil, formsDir, formsFile, resultsFile);
+        catalogFramework, transformer, endpointUtil, formsDir, formsFile, resultsFile, security);
   }
 
   private static <T> T get(Class<T> type) {

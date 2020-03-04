@@ -32,6 +32,7 @@ import org.codice.ddf.catalog.ui.forms.data.AttributeGroupMetacard;
 import org.codice.ddf.catalog.ui.forms.data.QueryTemplateMetacard;
 import org.codice.ddf.catalog.ui.forms.filter.FilterWriter;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
+import org.codice.ddf.security.Security;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,6 +46,8 @@ public class SearchFormsLoaderTest {
   private @Mock EndpointUtil endpointUtil;
 
   private @Mock AttributeRegistry registry;
+
+  private @Mock Security security;
 
   private static final URL LOADER_RESOURCES_DIR =
       SearchFormsLoaderTest.class.getResource("/forms/loader");
@@ -72,7 +75,7 @@ public class SearchFormsLoaderTest {
   @Test
   public void testEmptyConfigurationDirectory() {
     List<Metacard> metacards =
-        new SearchFormsLoader(catalogFramework, transformer, endpointUtil)
+        new SearchFormsLoader(catalogFramework, transformer, endpointUtil, security)
             .retrieveSystemTemplateMetacards();
     expectedCounts(metacards, 0, 0, 0);
   }
@@ -81,7 +84,7 @@ public class SearchFormsLoaderTest {
   public void testValidConfigurationWithFallbackValues() {
     List<Metacard> metacards =
         new SearchFormsLoader(
-                catalogFramework, transformer, endpointUtil, ROOT + "/valid", null, null)
+                catalogFramework, transformer, endpointUtil, ROOT + "/valid", null, null, security)
             .retrieveSystemTemplateMetacards();
     expectedCounts(metacards, 3, 2, 1);
   }
@@ -95,7 +98,8 @@ public class SearchFormsLoaderTest {
                 endpointUtil,
                 ROOT + "/valid",
                 "forms.json",
-                "results.json")
+                "results.json",
+                security)
             .retrieveSystemTemplateMetacards();
     expectedCounts(metacards, 3, 2, 1);
   }
@@ -109,7 +113,8 @@ public class SearchFormsLoaderTest {
                 endpointUtil,
                 ROOT + "/missing",
                 "forms.json",
-                "results.json")
+                "results.json",
+                security)
             .retrieveSystemTemplateMetacards();
     expectedCounts(metacards, 1, 0, 1);
   }
@@ -123,7 +128,8 @@ public class SearchFormsLoaderTest {
                 endpointUtil,
                 ROOT + "/invalid-structure",
                 null,
-                null)
+                null,
+                security)
             .retrieveSystemTemplateMetacards();
     expectedCounts(metacards, 1, 0, 1);
   }
@@ -132,7 +138,13 @@ public class SearchFormsLoaderTest {
   public void testInvalidEntriesFallbackValues() {
     List<Metacard> metacards =
         new SearchFormsLoader(
-                catalogFramework, transformer, endpointUtil, ROOT + "/invalid-entries", null, null)
+                catalogFramework,
+                transformer,
+                endpointUtil,
+                ROOT + "/invalid-entries",
+                null,
+                null,
+                security)
             .retrieveSystemTemplateMetacards();
     expectedCounts(metacards, 4, 1, 3);
   }

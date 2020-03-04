@@ -130,10 +130,10 @@ import org.codice.ddf.catalog.ui.metacard.workspace.transformer.WorkspaceTransfo
 import org.codice.ddf.catalog.ui.metacard.workspace.transformer.impl.AssociatedQueryMetacardsHandler;
 import org.codice.ddf.catalog.ui.query.monitor.api.WorkspaceService;
 import org.codice.ddf.catalog.ui.security.Constants;
-import org.codice.ddf.catalog.ui.security.IntrigueSecurity;
 import org.codice.ddf.catalog.ui.security.accesscontrol.AccessControlSecurityConfiguration;
 import org.codice.ddf.catalog.ui.subscription.SubscriptionsPersistentStore;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
+import org.codice.ddf.security.Security;
 import org.codice.gsonsupport.GsonTypeAdapters.DateLongFormatTypeAdapter;
 import org.codice.gsonsupport.GsonTypeAdapters.LongDoubleTypeAdapter;
 import org.opengis.filter.Filter;
@@ -153,8 +153,6 @@ public class MetacardApplication implements SparkApplication {
 
   private static final Set<Action> DELETE_ACTIONS =
       ImmutableSet.of(Action.DELETED, Action.DELETED_CONTENT);
-
-  private static final IntrigueSecurity SECURITY = IntrigueSecurity.getInstance();
 
   private static final String ERROR_RESPONSE_TYPE = "error";
 
@@ -204,6 +202,8 @@ public class MetacardApplication implements SparkApplication {
 
   private final AssociatedQueryMetacardsHandler queryMetacardsHandler;
 
+  private final Security security;
+
   public MetacardApplication(
       CatalogFramework catalogFramework,
       FilterBuilder filterBuilder,
@@ -221,7 +221,8 @@ public class MetacardApplication implements SparkApplication {
       SubjectIdentity subjectIdentity,
       AccessControlSecurityConfiguration accessControlSecurityConfiguration,
       WorkspaceService workspaceService,
-      AssociatedQueryMetacardsHandler queryMetacardsHandler) {
+      AssociatedQueryMetacardsHandler queryMetacardsHandler,
+      Security security) {
     this.catalogFramework = catalogFramework;
     this.filterBuilder = filterBuilder;
     this.util = endpointUtil;
@@ -239,6 +240,7 @@ public class MetacardApplication implements SparkApplication {
     this.accessControlSecurityConfiguration = accessControlSecurityConfiguration;
     this.workspaceService = workspaceService;
     this.queryMetacardsHandler = queryMetacardsHandler;
+    this.security = security;
   }
 
   private String getSubjectEmail() {
@@ -1053,7 +1055,7 @@ public class MetacardApplication implements SparkApplication {
    * @return result of the callable func
    */
   private <T> T executeAsSystem(Callable<T> func) {
-    return SECURITY.runAsSystemForIntrigue(func);
+    return security.getSystemSubject().execute(func);
   }
 
   private Instant getVersionedOnDate(Metacard mc) {
