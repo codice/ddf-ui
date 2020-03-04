@@ -13,20 +13,6 @@
  */
 package org.codice.ddf.catalog.ui.metacard.query.data.model;
 
-import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.DETAIL_LEVEL;
-import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.FACETS;
-import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.PHONETICS;
-import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUERY_CQL;
-import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUERY_ENTERPRISE;
-import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUERY_FEDERATION;
-import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUERY_FILTER_TREE;
-import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUERY_POLLING;
-import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUERY_SORTS;
-import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUERY_SOURCES;
-import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUERY_TYPE;
-import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.SCHEDULES;
-import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.SPELLCHECK;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
@@ -36,13 +22,16 @@ import ddf.catalog.data.impl.AttributeImpl;
 import ddf.catalog.data.impl.MetacardImpl;
 import ddf.catalog.data.types.Core;
 import ddf.catalog.data.types.Security;
+import org.codice.ddf.catalog.ui.metacard.query.data.metacard.QueryMetacardImpl;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.codice.ddf.catalog.ui.metacard.query.data.metacard.QueryMetacardImpl;
+
+import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.*;
 
 public class QueryBasic {
 
@@ -76,7 +65,7 @@ public class QueryBasic {
   @SerializedName("enterprise")
   private Boolean enterprise;
 
-  @SerializedName("src")
+  @SerializedName("sources")
   private List<String> sources;
 
   @SerializedName("sorts")
