@@ -13,9 +13,9 @@
  */
 package org.codice.ddf.catalog.ui.metacard.workspace.transformer.impl;
 
-import org.codice.ddf.catalog.ui.metacard.workspace.transformer.WorkspaceKeyTransformation;
-
 import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUERY_SOURCES;
+
+import org.codice.ddf.catalog.ui.metacard.workspace.transformer.WorkspaceKeyTransformation;
 
 public class SrcToQuerySources extends WorkspaceKeyTransformation {
   @Override

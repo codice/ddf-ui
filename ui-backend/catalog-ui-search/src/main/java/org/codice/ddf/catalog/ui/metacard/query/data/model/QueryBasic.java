@@ -13,24 +13,6 @@
  */
 package org.codice.ddf.catalog.ui.metacard.query.data.model;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.SerializedName;
-import ddf.catalog.data.Attribute;
-import ddf.catalog.data.Metacard;
-import ddf.catalog.data.impl.AttributeImpl;
-import ddf.catalog.data.impl.MetacardImpl;
-import ddf.catalog.data.types.Core;
-import ddf.catalog.data.types.Security;
-import org.codice.ddf.catalog.ui.metacard.query.data.metacard.QueryMetacardImpl;
-
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.DETAIL_LEVEL;
 import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.FACETS;
 import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.PHONETICS;
@@ -44,6 +26,23 @@ import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUER
 import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUERY_TYPE;
 import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.SCHEDULES;
 import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.SPELLCHECK;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
+import ddf.catalog.data.Attribute;
+import ddf.catalog.data.Metacard;
+import ddf.catalog.data.impl.AttributeImpl;
+import ddf.catalog.data.impl.MetacardImpl;
+import ddf.catalog.data.types.Core;
+import ddf.catalog.data.types.Security;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import org.codice.ddf.catalog.ui.metacard.query.data.metacard.QueryMetacardImpl;
 
 public class QueryBasic {
 
