@@ -561,7 +561,7 @@ module.exports = Marionette.LayoutView.extend({
     const currentQuery = this.options.selectionInterface.get('currentQuery')
     if (currentQuery) {
       this.handleFilter(
-        CQLUtils.transformCQLToFilter(currentQuery.get('cql')),
+        currentQuery.get('filterTree'),
         currentQuery.get('color')
       )
     }
@@ -589,12 +589,24 @@ module.exports = Marionette.LayoutView.extend({
       const value = filter.value
       switch (filter.type) {
         case 'DWITHIN':
-          if (CQLUtils.isPolygonFilter(value)) {
-            this.handleFilterAsPolygon(value, color, filter.distance)
+          if (
+            CQLUtils.isPolygonFilter(
+              typeof filter.value === 'string' ? filter : filter.value
+            )
+          ) {
+            this.handleFilterAsPolygon(filter, color)
             break
           }
-          if (CQLUtils.isPointRadiusFilter(value)) {
-            pointText = value.value.substring(6)
+          const value =
+            typeof filter.value === 'string'
+              ? filter.value
+              : filter.value.value
+          if (
+            CQLUtils.isPointRadiusFilter(
+              typeof filter.value === 'string' ? filter : filter.value
+            )
+          ) {
+            pointText = value.substring(6)
             pointText = pointText.substring(0, pointText.length - 1)
             const latLon = pointText.split(' ')
             locationModel = new LocationModel({
@@ -605,7 +617,7 @@ module.exports = Marionette.LayoutView.extend({
             })
             this.map.showCircleShape(locationModel)
           } else {
-            pointText = value.value.substring(11)
+            pointText = value.substring(11)
             pointText = pointText.substring(0, pointText.length - 1)
             locationModel = new LocationModel({
               lineWidth: filter.distance,
@@ -620,17 +632,20 @@ module.exports = Marionette.LayoutView.extend({
           }
           break
         case 'INTERSECTS':
-          this.handleFilterAsPolygon(value, color, filter.distance)
+          this.handleFilterAsPolygon(filter, color)
           break
       }
     }
   },
-  handleFilterAsPolygon(value, color, distance) {
-    const filterValue = typeof value === 'string' ? value : value.value
+  handleFilterAsPolygon(filter, color) {
+    const distance = filter.distance
+    const filterValue =
+      typeof filter.value === 'string' ? filter.value : filter.value.value
     const locationModel = new LocationModel({
       polygon: CQLUtils.arrayFromPolygonWkt(filterValue),
       color,
       ...(distance && { polygonBufferWidth: distance }),
+      bbox: filter.geojson && filter.geojson.bbox,
     })
     this.map.showPolygonShape(locationModel)
   },
