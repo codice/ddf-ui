@@ -42,8 +42,6 @@ const Gazetteer = require('../../../react-component/location/gazetteer.js')
 
 import MapSettings from '../../../react-component/map-settings'
 import MapInfo from '../../../react-component/map-info'
-import DistanceInfo from '../../../react-component/distance-info'
-import getDistance from 'geolib/es/getDistance'
 
 function findExtreme({ objArray, property, comparator }) {
   if (objArray.length === 0) {
@@ -239,19 +237,6 @@ module.exports = Marionette.LayoutView.extend({
     )
     this.handleCurrentQuery()
 
-    // listener for when the measurement state changes in map model
-    this.listenTo(
-      this.mapModel,
-      'change:measurementState',
-      this.handleMeasurementStateChange.bind(this)
-    )
-
-    this.listenTo(
-      this.mapModel,
-      'change:mouseLat change:mouseLon',
-      this.updateDistance.bind(this)
-    )
-
     if (this.options.selectionInterface.getSelectedResults().length > 0) {
       this.map.zoomToSelected(
         this.options.selectionInterface.getSelectedResults()
@@ -364,91 +349,6 @@ module.exports = Marionette.LayoutView.extend({
       targetMetacard,
     })
   },
-  /*
-   *  Redraw and recalculate the ruler line and distanceInfo tooltip. Will not redraw while the menu is currently
-   *  displayed updateOnMenu allows updating while the menu is up
-   */
-  updateDistance(updateOnMenu = false) {
-    if (this.mapModel.get('measurementState') === 'START') {
-      const openMenu = this.mapContextMenu.currentView.model.changed.isOpen
-      const lat = this.mapModel.get('mouseLat')
-      const lon = this.mapModel.get('mouseLon')
-
-      if ((updateOnMenu === true || !openMenu) && lat && lon) {
-        // redraw ruler line
-        const mousePoint = { lat, lon }
-        this.map.setRulerLine(mousePoint)
-
-        // update distance info
-        const startingCoordinates = this.mapModel.get('startingCoordinates')
-        const dist = getDistance(
-          { latitude: lat, longitude: lon },
-          {
-            latitude: startingCoordinates['lat'],
-            longitude: startingCoordinates['lon'],
-          }
-        )
-        this.mapModel.setDistanceInfoPosition(event.clientX, event.clientY)
-        this.mapModel.setCurrentDistance(dist)
-      }
-    }
-  },
-  /*
-    Handles drawing or clearing the ruler as needed by the measurement state.
-
-    START indicates that a starting point should be drawn, 
-    so the map clears any previous points drawn and draws a new start point.
-
-    END indicates that an ending point should be drawn,
-    so the map draws an end point and a line, and calculates the distance.
-
-    NONE indicates that the ruler should be cleared.
-  */
-  handleMeasurementStateChange() {
-    const state = this.mapModel.get('measurementState')
-    let point = null
-    switch (state) {
-      case 'START':
-        this.clearRuler()
-        point = this.map.addRulerPoint(this.mapModel.get('coordinateValues'))
-        this.mapModel.addPoint(point)
-        this.mapModel.setStartingCoordinates({
-          lat: this.mapModel.get('coordinateValues')['lat'],
-          lon: this.mapModel.get('coordinateValues')['lon'],
-        })
-        const polyline = this.map.addRulerLine(
-          this.mapModel.get('coordinateValues')
-        )
-        this.mapModel.setLine(polyline)
-        break
-      case 'END':
-        point = this.map.addRulerPoint(this.mapModel.get('coordinateValues'))
-        this.mapModel.addPoint(point)
-        this.map.setRulerLine({
-          lat: this.mapModel.get('coordinateValues')['lat'],
-          lon: this.mapModel.get('coordinateValues')['lon'],
-        })
-        break
-      case 'NONE':
-        this.clearRuler()
-        break
-      default:
-        break
-    }
-  },
-  /*
-    Handles tasks for clearing the ruler, which include removing all points
-    (endpoints of the line) and the line.
-  */
-  clearRuler() {
-    const points = this.mapModel.get('points')
-    points.forEach(point => {
-      this.map.removeRulerPoint(point)
-    })
-    this.mapModel.clearPoints()
-    const line = this.mapModel.removeLine()
-    this.map.removeRulerLine(line)
-  },
   onRightClick(event, mapEvent) {
     event.preventDefault()
     this.$el
@@ -457,7 +357,6 @@ module.exports = Marionette.LayoutView.extend({
       .css('top', event.offsetY)
     this.mapModel.updateClickCoordinates()
     this.mapContextMenu.currentView.model.open()
-    this.updateDistance(true)
   },
   setupRightClickMenu() {
     this.mapContextMenu.show(
@@ -582,12 +481,7 @@ module.exports = Marionette.LayoutView.extend({
       .get('preferences')
       .get('resultFilter')
     if (resultFilter) {
-      this.handleFilter(
-        CQLUtils.transformCQLToFilter(
-          CQLUtils.transformFilterToCQL(resultFilter)
-        ),
-        '#c89600'
-      )
+      this.handleFilter(CQLUtils.transformCQLToFilter(resultFilter), '#c89600')
     }
   },
   handleFilter(filter, color) {
@@ -598,15 +492,14 @@ module.exports = Marionette.LayoutView.extend({
     } else {
       let pointText
       let locationModel
-      const value = filter.value
       switch (filter.type) {
         case 'DWITHIN':
-          if (CQLUtils.isPolygonFilter(value)) {
-            this.handleFilterAsPolygon(value, color, filter.distance)
+          if (CQLUtils.isPolygonFilter(filter.value)) {
+            this.handleFilterAsPolygon(filter.value, color, filter.distance)
             break
           }
-          if (CQLUtils.isPointRadiusFilter(value)) {
-            pointText = value.value.substring(6)
+          if (CQLUtils.isPointRadiusFilter(filter.value)) {
+            pointText = filter.value.value.substring(6)
             pointText = pointText.substring(0, pointText.length - 1)
             const latLon = pointText.split(' ')
             locationModel = new LocationModel({
@@ -616,26 +509,32 @@ module.exports = Marionette.LayoutView.extend({
               color,
             })
             this.map.showCircleShape(locationModel)
-          } else {
-            pointText = value.value.substring(11)
-            pointText = pointText.substring(0, pointText.length - 1)
-            locationModel = new LocationModel({
-              lineWidth: filter.distance,
-              line: pointText
-                .split(',')
-                .map(coordinate =>
-                  coordinate.split(' ').map(value => Number(value))
-                ),
-              color,
-            })
-            this.map.showLineShape(locationModel)
+          } else if (CQLUtils.isLineFilter(filter.value)) {
+            this.handleFilterAsLine(filter, color)
           }
           break
         case 'INTERSECTS':
-          this.handleFilterAsPolygon(value, color, filter.distance)
+          if (CQLUtils.isPolygonFilter(filter.value)) {
+            this.handleFilterAsPolygon(filter.value, color, filter.distance)
+          } else if (CQLUtils.isLineFilter) {
+            this.handleFilterAsLine(filter, color)
+          }
           break
       }
     }
+  },
+  handleFilterAsLine(filter, color) {
+    const pointText = filter.value.value.substring(11, filter.value.value.length - 1)
+    const locationModel = new LocationModel({
+      lineWidth: filter.distance || 0,
+      line: pointText
+        .split(',')
+        .map(coordinate =>
+          coordinate.split(' ').map(value => Number(value))
+        ),
+      color,
+    })
+    this.map.showLineShape(locationModel)
   },
   handleFilterAsPolygon(value, color, distance) {
     const filterValue = typeof value === 'string' ? value : value.value
