@@ -13,15 +13,18 @@
  */
 package org.codice.ddf.catalog.ui.query.monitor.impl;
 
+import org.codice.ddf.security.Security;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mock;
 
 public class SecurityServiceImplTest {
 
+  @Mock Security security;
   /** Just make sure we don't get an exception */
   @Test
   @Ignore("We actually do get an exception from Security, an NPE with the keystore.")
   public void testGetSystemSubject() {
-    new SecurityServiceImpl().getSystemSubject();
+    new SecurityServiceImpl(security).getSystemSubject();
   }
 }

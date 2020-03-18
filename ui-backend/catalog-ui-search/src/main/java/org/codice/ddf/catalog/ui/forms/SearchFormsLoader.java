@@ -43,9 +43,9 @@ import org.apache.commons.io.IOUtils;
 import org.codice.ddf.catalog.ui.forms.data.AttributeGroupMetacard;
 import org.codice.ddf.catalog.ui.forms.data.QueryTemplateMetacard;
 import org.codice.ddf.catalog.ui.query.utility.EndpointUtility;
-import org.codice.ddf.catalog.ui.security.IntrigueSecurity;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
 import org.codice.ddf.configuration.AbsolutePathResolver;
+import org.codice.ddf.security.Security;
 import org.codice.gsonsupport.GsonTypeAdapters.LongDoubleTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +59,6 @@ import org.slf4j.LoggerFactory;
  */
 public class SearchFormsLoader {
   private static final Logger LOGGER = LoggerFactory.getLogger(SearchFormsLoader.class);
-
-  private static final IntrigueSecurity SECURITY = IntrigueSecurity.getInstance();
 
   private static final Gson GSON =
       new GsonBuilder()
@@ -77,6 +75,8 @@ public class SearchFormsLoader {
 
   private final File formsDirectory;
 
+  private final Security security;
+
   private final String formsFileName;
 
   private final String resultsFileName;
@@ -90,8 +90,9 @@ public class SearchFormsLoader {
   public SearchFormsLoader(
       CatalogFramework catalogFramework,
       TemplateTransformer transformer,
-      EndpointUtil endpointUtil) {
-    this(catalogFramework, transformer, endpointUtil, null, null, null);
+      EndpointUtil endpointUtil,
+      Security security) {
+    this(catalogFramework, transformer, endpointUtil, null, null, null, security);
   }
 
   public SearchFormsLoader(
@@ -100,7 +101,8 @@ public class SearchFormsLoader {
       EndpointUtility endpointUtil,
       @Nullable String formsDirectory,
       @Nullable String formsFileName,
-      @Nullable String resultsFileName) {
+      @Nullable String resultsFileName,
+      Security security) {
     this.catalogFramework = catalogFramework;
     this.transformer = transformer;
     this.endpointUtil = endpointUtil;
@@ -110,6 +112,7 @@ public class SearchFormsLoader {
         (formsDirectory == null)
             ? DEFAULT_FORMS_DIRECTORY
             : new File(new AbsolutePathResolver(formsDirectory).getPath());
+    this.security = security;
     LOGGER.debug(
         "Initializing forms loader with directory [{}], forms file name [{}], and results file name [{}]",
         formsDirectory,
@@ -123,7 +126,7 @@ public class SearchFormsLoader {
    * @param systemTemplates system templates loaded from config.
    */
   public void bootstrap(List<Metacard> systemTemplates) {
-    SECURITY.runAsSystemForIntrigue(() -> this.createSystemMetacards(systemTemplates));
+    security.getSystemSubject().execute(() -> this.createSystemMetacards(systemTemplates));
   }
 
   public List<Metacard> retrieveSystemTemplateMetacards() {

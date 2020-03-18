@@ -64,6 +64,8 @@ Services (OSGi) that catalog-ui-search CONSUMES from DDF
     <reference id="resourceBundleLocator"
                interface="ddf.platform.resource.bundle.locator.ResourceBundleLocator"/>
 
+    <reference id="ddfSecurity" interface="org.codice.ddf.security.Security" />
+
     <!--
     =============================================================
     SIMPLE APPS

@@ -41,6 +41,7 @@ import javax.ws.rs.NotFoundException;
 import org.codice.ddf.catalog.ui.metacard.edit.AttributeChange;
 import org.codice.ddf.catalog.ui.metacard.edit.MetacardChanges;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
+import org.codice.ddf.security.Security;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
@@ -182,7 +183,8 @@ public class MetacardApplicationTest {
           null,
           null,
           null,
-          null);
+          null,
+          mock(Security.class));
     }
 
     private void doPatchMetacards(List<MetacardChanges> metacardChanges) throws Exception {
