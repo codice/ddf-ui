@@ -710,7 +710,17 @@ module.exports = Backbone.AssociatedModel.extend({
             usngbbLowerRight: undefined,
           })
         }
+      } else {
+        this.set(
+          { north: undefined, west: undefined },
+          { silent: true }
+        )
       }
+    } else {
+      this.set(
+        { north: undefined, west: undefined },
+        { silent: true }
+      )
     }
 
     if (this.isUtmUpsLowerRightDefined()) {
@@ -738,7 +748,17 @@ module.exports = Backbone.AssociatedModel.extend({
             usngbbLowerRight: undefined,
           })
         }
+      } else {
+        this.set(
+          { south: undefined, east: undefined },
+          { silent: true }
+        )
       }
+    } else {
+      this.set(
+        { south: undefined, east: undefined },
+        { silent: true }
+      )
     }
 
     if (upperLeft === undefined || lowerRight == undefined) {
