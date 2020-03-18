@@ -22,7 +22,7 @@ import com.github.jknack.handlebars.Template;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import ddf.security.Subject;
-import ddf.security.SubjectUtils;
+import ddf.security.impl.SubjectUtils;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
