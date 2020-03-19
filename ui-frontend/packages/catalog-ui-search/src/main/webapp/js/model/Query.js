@@ -223,6 +223,12 @@ Query.Model = PartialAssociatedModel.extend({
       this.dispatch(updateResults(this.get('result').toJSON()))
       this.set('serverPageIndex', serverPageIndex(this.state))
 
+      this.get('result')
+        .get('status')
+        .map(status => {
+          status.set('start', this.getPreviousStartIndexForSource(status.id))
+        })
+
       const totalHits = this.get('result')
         .get('status')
         .reduce((total, status) => {
