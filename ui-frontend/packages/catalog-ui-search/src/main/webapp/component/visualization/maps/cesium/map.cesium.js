@@ -18,7 +18,6 @@ const _ = require('underscore')
 const Map = require('../map')
 const utility = require('./utility')
 const DrawingUtility = require('../DrawingUtility')
-const store = require('../../../../js/store.js')
 const wreqr = require('../../../../js/wreqr.js')
 
 const DrawBBox = require('../../../../js/widgets/cesium.bbox.js')
@@ -32,6 +31,7 @@ const DrawHelper = require('cesium-drawhelper/DrawHelper')
 import CesiumLayerCollectionController from '../../../../js/controllers/cesium.layerCollection.controller'
 const user = require('../../../singletons/user-instance.js')
 const User = require('../../../../js/model/User.js')
+import { Drawing } from '../../../singletons/drawing'
 
 const defaultColor = '#3c6dd5'
 const eyeOffset = new Cesium.Cartesian3(0, 0, 0)
@@ -116,13 +116,13 @@ function createMap(insertionElement) {
   ]
 
   viewer.screenSpaceEventHandler.setInputAction(() => {
-    if (!store.get('content').get('drawing')) {
+    if (!Drawing.isDrawing()) {
       $('body').mousedown()
     }
   }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
 
   viewer.screenSpaceEventHandler.setInputAction(() => {
-    if (!store.get('content').get('drawing')) {
+    if (!Drawing.isDrawing()) {
       $('body').mousedown()
     }
   }, Cesium.ScreenSpaceEventType.RIGHT_DOWN)

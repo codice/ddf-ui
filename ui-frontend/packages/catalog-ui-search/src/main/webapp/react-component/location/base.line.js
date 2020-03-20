@@ -21,6 +21,7 @@ import {
 const { Units } = require('./common')
 const TextField = require('../text-field')
 const _ = require('underscore')
+import Conversion from './conversion'
 
 const coordinatePairRegex = /-?\d{1,3}(\.\d*)?\s-?\d{1,3}(\.\d*)?/g
 
@@ -44,7 +45,7 @@ function convertWkt(value, numCoords) {
   if (!coordinatePairs || coordinatePairs.length < numCoords) {
     return value
   }
-  const coordinates = coordinatePairs.map(coord => coord.replace(' ', ','))
+  const coordinates = coordinatePairs.map((coord) => coord.replace(' ', ','))
   return buildWktString(coordinates)
 }
 
@@ -58,15 +59,17 @@ function convertMultiWkt(isPolygon, value) {
   const numPoints = isPolygon ? 4 : 2
   let shapes = value
     .split(splitter)
-    .map(shape => shape.match(coordinatePairRegex))
+    .map((shape) => shape.match(coordinatePairRegex))
   shapes = shapes
-    .filter(shape => shape !== null && shape.length >= numPoints)
-    .map(shape => shape.map(coordinatePair => coordinatePair.replace(' ', ',')))
+    .filter((shape) => shape !== null && shape.length >= numPoints)
+    .map((shape) =>
+      shape.map((coordinatePair) => coordinatePair.replace(' ', ','))
+    )
   return shapes.length === 0
     ? value
     : shapes.length === 1
-      ? buildWktString(shapes[0])
-      : '[' + shapes.map(shapeCoords => buildWktString(shapeCoords)) + ']'
+    ? buildWktString(shapes[0])
+    : '[' + shapes.map((shapeCoords) => buildWktString(shapeCoords)) + ']'
 }
 
 function getPolygonValue(currentValue, value) {
@@ -90,7 +93,7 @@ function getPolygonValue(currentValue, value) {
   }
 }
 
-const BaseLine = props => {
+const BaseLine = (props) => {
   const {
     label,
     geometryKey,
@@ -107,28 +110,26 @@ const BaseLine = props => {
   const [baseLineError, setBaseLineError] = useState(initialErrorState)
   const [bufferError, setBufferError] = useState(initialErrorState)
 
-  useEffect(
-    () => {
-      const { geometryKey } = props
-      setCurrentValue(
-        typeof props[geometryKey] === 'string'
-          ? props[geometryKey]
-          : JSON.stringify(props[geometryKey])
-      )
-      if (props.drawing) {
-        setBaseLineError(initialErrorState)
-      }
-    },
-    [props.polygon, props.line]
-  )
+  useEffect(() => {
+    const { geometryKey } = props
+    setCurrentValue(
+      typeof props[geometryKey] === 'string'
+        ? props[geometryKey]
+        : JSON.stringify(props[geometryKey])
+    )
+    if (props.drawing) {
+      setBaseLineError(initialErrorState)
+    }
+  }, [props.polygon, props.line])
 
   return (
     <div>
       <div className="input-location">
+        <Conversion value={currentValue} isValid={baseLineError} />
         <TextField
           label={label}
           value={currentValue}
-          onChange={value => {
+          onChange={(value) => {
             value = convertWktString(value.trim())
             if (geometryKey.includes('poly')) {
               value = getPolygonValue(currentValue, value)
@@ -148,7 +149,7 @@ const BaseLine = props => {
         <ErrorComponent errorState={baseLineError} />
         <Units
           value={props[unitKey]}
-          onChange={value => {
+          onChange={(value) => {
             typeof setBufferState === 'function'
               ? setBufferState(unitKey, value)
               : setState({ [unitKey]: value })
@@ -166,12 +167,12 @@ const BaseLine = props => {
             type="number"
             label="Buffer width"
             value={String(props[widthKey])}
-            onChange={value => {
+            onChange={(value) => {
               typeof setBufferState === 'function'
                 ? setBufferState(widthKey, value)
                 : setState({ [widthKey]: value })
             }}
-            onBlur={e => {
+            onBlur={(e) => {
               setBufferError(
                 validateGeo(widthKey, {
                   value: e.target.value,

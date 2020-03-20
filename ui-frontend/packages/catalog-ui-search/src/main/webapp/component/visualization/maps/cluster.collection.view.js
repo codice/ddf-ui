@@ -15,14 +15,13 @@
 
 const Marionette = require('marionette')
 const _ = require('underscore')
-const store = require('../../../js/store.js')
 const ClusterView = require('./cluster.view')
 const Clustering = require('./Clustering')
 const metacardDefinitions = require('../../singletons/metacard-definitions.js')
+import { Drawing } from '../../singletons/drawing'
 
 const ClusterCollectionView = Marionette.CollectionView.extend({
   childView: ClusterView,
-  selectionInterface: store,
   childViewOptions() {
     return {
       map: this.options.map,
@@ -33,9 +32,8 @@ const ClusterCollectionView = Marionette.CollectionView.extend({
   initialize(options) {
     this.isActive = Boolean(options.isActive) || this.isActive
     this.render = _.throttle(this.render, 200)
-    this.onMapLeftClick = _.debounce(this.onMapLeftClick, 30)
-    this.selectionInterface =
-      options.selectionInterface || this.selectionInterface
+    this.options.map.onLeftClick = _.debounce(this.options.map.onLeftClick, 30)
+    this.selectionInterface = options.selectionInterface
     this.options.map.onLeftClick(this.onMapLeftClick.bind(this))
     this.options.map.onMouseMove(this.handleMapHover.bind(this))
     this.listenForCameraChange()
@@ -45,7 +43,7 @@ const ClusterCollectionView = Marionette.CollectionView.extend({
   },
   onRender() {},
   handleMapHover(event, mapEvent) {
-    this.children.forEach(clusterView => {
+    this.children.forEach((clusterView) => {
       clusterView.handleHover(mapEvent.mapTarget)
     })
   },
@@ -53,7 +51,7 @@ const ClusterCollectionView = Marionette.CollectionView.extend({
     if (
       mapEvent.mapTarget &&
       mapEvent.mapTarget !== 'userDrawing' &&
-      !store.get('content').get('drawing')
+      !Drawing.isDrawing()
     ) {
       if (event.shiftKey) {
         this.handleShiftClick(mapEvent.mapTarget)
@@ -114,11 +112,11 @@ const ClusterCollectionView = Marionette.CollectionView.extend({
         this.options.map
       )
       this.collection.set(
-        clusters.map(cluster => ({
+        clusters.map((cluster) => ({
           results: cluster,
 
           id: cluster
-            .map(result => result.id)
+            .map((result) => result.id)
             .sort()
             .toString(),
         })),
@@ -131,7 +129,7 @@ const ClusterCollectionView = Marionette.CollectionView.extend({
   getResultsWithGeometry() {
     return this.selectionInterface
       .getActiveSearchResults()
-      .filter(result => result.hasGeometry())
+      .filter((result) => result.hasGeometry())
   },
   listenForResultsChange() {
     this.listenTo(
@@ -149,7 +147,7 @@ const ClusterCollectionView = Marionette.CollectionView.extend({
     if (
       _.find(
         Object.keys(propertiesModel.changedAttributes()),
-        attribute =>
+        (attribute) =>
           metacardDefinitions.metacardTypes[attribute] &&
           metacardDefinitions.metacardTypes[attribute].type === 'GEOMETRY'
       ) !== undefined

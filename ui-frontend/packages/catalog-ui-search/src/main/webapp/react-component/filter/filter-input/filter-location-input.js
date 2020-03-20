@@ -19,8 +19,8 @@ const LocationOldModel = require('../../../component/location-old/location-old')
 const ShapeUtils = require('../../../js/ShapeUtils.js')
 const CQLUtils = require('../../../js/CQLUtils.js')
 const wreqr = require('../../../js/wreqr.js')
-const store = require('../../../js/store.js')
 const wkx = require('wkx')
+import { Drawing } from '../../../component/singletons/drawing'
 import { deserialize } from '../../../component/location-old/location-serialization'
 
 const typesToDisplays = {
@@ -85,11 +85,8 @@ class LocationInput extends React.Component {
     wreqr.vent.trigger('search:drawend', this.locationModel)
   }
   updateMap = () => {
-    const mode =
-      this.locationModel.get('mode') === 'keyword'
-        ? 'poly'
-        : this.locationModel.get('mode')
-    if (mode !== undefined && store.get('content').get('drawing') !== true) {
+    const mode = this.locationModel.get('mode')
+    if (mode !== undefined && Drawing.isDrawing() !== true) {
       wreqr.vent.trigger('search:' + mode + 'display', this.locationModel)
     }
   }
