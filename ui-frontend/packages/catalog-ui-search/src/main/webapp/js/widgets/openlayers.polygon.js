@@ -101,6 +101,29 @@ Draw.PolygonView = Marionette.View.extend({
     return [coords]
   },
 
+  adjustPoints(geometries) {
+    // Structure of geometries is [geometry, geometry, ... ]
+    geometries.forEach((geometry, outerIndex) => {
+      // Structure of geometry is [coordinatePair, coordinatePair, ... ]
+      geometry.forEach((coordinatePair, innerIndex) => {
+        // Structure of coordinatePair is [x, y]
+        if (innerIndex + 1 < geometry.length) {
+          const east = Number(geometry[innerIndex + 1][0])
+          const west = Number(geometry[innerIndex][0])
+          if (east - west < -180) {
+            geometries[outerIndex][innerIndex + 1][0] = east + 360
+          } else if (east - west > 180) {
+            geometries[outerIndex][innerIndex][0] = west + 360
+          }
+        }
+      })
+      // Ensure that the first and last coordinate are the same
+      geometries[outerIndex][0][0] =
+        geometries[outerIndex][geometry.length - 1][0]
+    })
+    return geometries
+  },
+
   modelToPolygon(model) {
     const coords = model.get('polygon')
     if (
@@ -123,7 +146,7 @@ Draw.PolygonView = Marionette.View.extend({
 
   updatePrimitive(model) {
     const polygon = this.modelToPolygon(model)
-    // make sure the current model has width and height before drawing
+    // Make sure the current model has width and height before drawing
     if (polygon !== undefined) {
       this.drawBorderedPolygon(polygon)
     }
@@ -138,13 +161,19 @@ Draw.PolygonView = Marionette.View.extend({
 
   drawBorderedPolygon(rectangle) {
     if (!rectangle) {
-      // handles case where model changes to empty vars and we don't want to draw anymore
+      // Handles case where model changes to empty vars and we don't want to draw anymore
       return
     }
 
     const coordinates = (Array.isArray(rectangle) && rectangle) || [
       rectangle.getCoordinates(),
     ]
+
+    // Structure of coordinates is [geometries, geometries, ... ]
+    coordinates.forEach(
+      (geometries, index) =>
+        (coordinates[index] = this.adjustPoints(geometries))
+    )
 
     if (this.vectorLayer) {
       this.map.removeLayer(this.vectorLayer)
