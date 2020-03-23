@@ -23,6 +23,7 @@ import FilterAttribute from './filter-attribute'
 import FilterComparator from './filter-comparator'
 import FilterInput from './filter-input'
 import { getAttributeType } from './filterHelper'
+const sources = require('../../component/singletons/sources-instance')
 
 const Root = styled.div`
   width: auto;
@@ -100,6 +101,7 @@ class Filter extends React.Component {
           includedAttributes={this.props.includedAttributes}
           editing={this.props.editing}
           onChange={this.updateAttribute}
+          supportedAttributes={this.getListofSupportedAttributes()}
         />
         <FilterComparator
           comparator={this.state.comparator}
@@ -125,7 +127,23 @@ class Filter extends React.Component {
     this.updateSuggestions()
     this.props.onChange(this.state)
   }
-
+  getListofSupportedAttributes = () => {
+    // if no source is selected and supportedAttributes is present from parent component we want to present all attributes as available
+    const supportedAttributes = this.props.supportedAttributes
+    // if supportedAttributes is not passed down from another parent Component (other than advanced) return empty list
+    if (!supportedAttributes || supportedAttributes.length == 0) {
+      return []
+    }
+    return sources.models
+      .filter(source => supportedAttributes.includes(source.id))
+      .map(
+        sourceSelected =>
+          sourceSelected.attributes.supportedAttributes
+            ? sourceSelected.attributes.supportedAttributes
+            : []
+      )
+      .flat()
+  }
   updateSuggestions = async () => {
     const { attribute } = this.state
     let suggestions = []
