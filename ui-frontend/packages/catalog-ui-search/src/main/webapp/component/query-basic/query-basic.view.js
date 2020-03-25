@@ -35,6 +35,7 @@ import { getFilterErrors } from '../../react-component/utils/validation'
 import query from '../../react-component/utils/query'
 
 const METADATA_CONTENT_TYPE = 'metadata-content-type'
+import { Drawing } from '../singletons/drawing'
 
 function isNested(filter) {
   let nested = false
@@ -254,6 +255,10 @@ function getFilterTree(model) {
     return model.get('filterTree')
   }
   return cql.simplify(cql.read(model.get('cql')))
+}
+
+const turnOffDrawing = () => {
+  wreqr.vent.trigger('search:drawend', Drawing.getDrawModel())
 }
 
 module.exports = Marionette.LayoutView.extend({
