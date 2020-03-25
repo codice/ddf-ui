@@ -30,7 +30,7 @@ type ExportFormat = {
 
 type Result = {
   id: string
-  source: string,
+  source: string
   attributes: string[]
 }
 
