@@ -30,7 +30,7 @@ public class SecurityServiceImpl implements SecurityService {
 
   @Override
   public Subject getSystemSubject() {
-    return security.getSystemSubject();
+    return security.runAsAdmin(() -> security.getSystemSubject());
   }
 
   @Override
