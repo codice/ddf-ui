@@ -86,20 +86,22 @@ public class AccessControlPreIngestPlugin implements PreIngestPlugin {
             .stream()
             .anyMatch(metacard -> StringUtils.isEmpty(AccessControlUtil.getOwner(metacard)));
 
-    if (missingOwner && SubjectUtils.isGuest(ownerSubject)) {
-      throw new StopProcessingException(
-          "Guest user not allowed to create access-controlled resources");
-    }
+    if (missingOwner) {
+      if (SubjectUtils.isGuest(ownerSubject)) {
+        throw new StopProcessingException(
+            "Guest user not allowed to create access-controlled resources");
+      }
 
-    metacards.forEach(
-        metacard -> {
-          String owner =
-              AccessControlUtil.getOwner(metacard) != null
-                  ? AccessControlUtil.getOwner(metacard)
-                  : subjectIdentity.getUniqueIdentifier(ownerSubject);
-          AccessControlUtil.setOwner(metacard, owner);
-          setAccessAdministrator(metacard, owner);
-        });
+      metacards.forEach(
+          metacard -> {
+            String owner =
+                AccessControlUtil.getOwner(metacard) != null
+                    ? AccessControlUtil.getOwner(metacard)
+                    : subjectIdentity.getUniqueIdentifier(ownerSubject);
+            AccessControlUtil.setOwner(metacard, owner);
+            setAccessAdministrator(metacard, owner);
+          });
+    }
 
     return request;
   }
