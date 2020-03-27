@@ -1055,7 +1055,7 @@ public class MetacardApplication implements SparkApplication {
    * @return result of the callable func
    */
   private <T> T executeAsSystem(Callable<T> func) {
-    return security.getSystemSubject().execute(func);
+    return security.runAsAdmin(() -> security.getSystemSubject().execute(func));
   }
 
   private Instant getVersionedOnDate(Metacard mc) {

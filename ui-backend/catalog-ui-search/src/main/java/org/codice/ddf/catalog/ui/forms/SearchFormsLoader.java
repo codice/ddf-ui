@@ -126,7 +126,11 @@ public class SearchFormsLoader {
    * @param systemTemplates system templates loaded from config.
    */
   public void bootstrap(List<Metacard> systemTemplates) {
-    security.getSystemSubject().execute(() -> this.createSystemMetacards(systemTemplates));
+    security.runAsAdmin(
+        () -> {
+          security.getSystemSubject().execute(() -> this.createSystemMetacards(systemTemplates));
+          return null;
+        });
   }
 
   public List<Metacard> retrieveSystemTemplateMetacards() {
