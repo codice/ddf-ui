@@ -46,7 +46,7 @@ const FilterInput = ({
   const Root = type === 'LOCATION' ? LocationRoot : BaseRoot
   return (
     <Root>
-      {determineInput(comparator, type, suggestions, value, onChange)}
+      {determineInput({ comparator, type, suggestions, value, onChange })}
     </Root>
   )
 }

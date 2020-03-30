@@ -12,24 +12,60 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react'
+import * as React from 'react'
+//@ts-ignore
 import BooleanInput from './filter-boolean-input'
+//@ts-ignore
 import LocationInput from './filter-location-input'
+//@ts-ignore
 import { FloatInput, IntegerInput, RangeInput } from './filter-number-inputs'
 import {
   DateInput,
   RelativeTimeInput,
   BetweenTimeInput,
+  //@ts-ignore
 } from './filter-date-inputs'
+//@ts-ignore
 import { TextInput, NearInput, EnumInput } from './filter-text-inputs'
+import extension from '../../../extension-points'
 
-export const determineInput = (
+export type determineInputType = {
+  comparator:
+    | 'BEFORE'
+    | 'AFTER'
+    | 'IS EMPTY'
+    | 'NEAR'
+    | 'BETWEEN'
+    | 'RELATIVE'
+    | 'RANGE'
+    | 'CONTAINS'
+    | 'MATCHCASE'
+    | '='
+    | 'INTERSECTS'
+  type: 'STRING' | 'BOOLEAN' | 'DATE' | 'LOCATION' | 'FLOAT' | 'INTEGER'
+  suggestions: any[]
+  value: string | number
+  onChange: (value: string | number) => void // call this when you change values
+}
+
+export const determineInput = ({
   comparator,
   type,
   suggestions,
   value,
-  onChange
-) => {
+  onChange,
+}: determineInputType) => {
+  // call out to extension, if extension handles it, great, if not fallback to this
+  const componentToReturn = extension.customFilterInput({
+    comparator,
+    type,
+    suggestions,
+    value,
+    onChange,
+  })
+  if (componentToReturn) {
+    return componentToReturn
+  }
   const props = { value, onChange }
   switch (comparator) {
     case 'IS EMPTY':
@@ -41,8 +77,7 @@ export const determineInput = (
     case 'RELATIVE':
       return <RelativeTimeInput {...props} />
     case 'RANGE':
-      props.isInteger = type === 'INTEGER'
-      return <RangeInput {...props} />
+      return <RangeInput {...props} isInteger={type === 'INTEGER'} />
   }
 
   switch (type) {
@@ -59,9 +94,13 @@ export const determineInput = (
   }
 
   if (suggestions && suggestions.length > 0) {
-    props.suggestions = suggestions
-    props.matchCase = ['MATCHCASE', '='].includes(comparator)
-    return <EnumInput {...props} />
+    return (
+      <EnumInput
+        {...props}
+        matchCase={['MATCHCASE', '='].includes(comparator)}
+        suggestions={suggestions}
+      />
+    )
   }
   return <TextInput {...props} />
 }
