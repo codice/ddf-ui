@@ -13,20 +13,19 @@
  *
  **/
 import * as React from 'react'
-//@ts-ignore
-import BooleanInput from './filter-boolean-input'
-//@ts-ignore
-import LocationInput from './filter-location-input'
-//@ts-ignore
-import { FloatInput, IntegerInput, RangeInput } from './filter-number-inputs'
-import {
+const BooleanInput = require('./filter-boolean-input')
+const LocationInput = require('./filter-location-input')
+const {
+  FloatInput,
+  IntegerInput,
+  RangeInput,
+} = require('./filter-number-inputs')
+const {
   DateInput,
   RelativeTimeInput,
   BetweenTimeInput,
-  //@ts-ignore
-} from './filter-date-inputs'
-//@ts-ignore
-import { TextInput, NearInput, EnumInput } from './filter-text-inputs'
+} = require('./filter-date-inputs')
+const { TextInput, NearInput, EnumInput } = require('./filter-text-inputs')
 import extension from '../../../extension-points'
 
 export type determineInputType = {
