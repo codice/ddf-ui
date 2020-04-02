@@ -27,7 +27,6 @@ import { tableExport, Props as TableExportProps } from './table-export'
 import multiSelectActions from './multi-select-actions'
 import userSettings from './user-settings'
 import { determineInputType } from '../react-component/filter/filter-input/filterInputHelper'
-import FilterInput from './filterInput'
 
 export type ExtensionPointsType = {
   routes: {}
@@ -56,7 +55,7 @@ const ExtensionPoints: ExtensionPointsType = {
   tableExport,
   multiSelectActions,
   userSettings,
-  customFilterInput: FilterInput,
+  customFilterInput: () => undefined,
 }
 
 export default ExtensionPoints
