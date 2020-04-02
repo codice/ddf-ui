@@ -26,7 +26,7 @@ import searchInteractions, {
 import { tableExport, Props as TableExportProps } from './table-export'
 import multiSelectActions from './multi-select-actions'
 import userSettings from './user-settings'
-import { determineInputType } from '../react-component/filter/filter-input/filterInputHelper'
+import { DetermineInputType } from '../react-component/filter/filter-input/filterInputHelper'
 
 export type ExtensionPointsType = {
   routes: {}
@@ -40,7 +40,7 @@ export type ExtensionPointsType = {
   tableExport: SFC<TableExportProps>
   multiSelectActions: any[]
   userSettings: React.ReactNode
-  customFilterInput: (props: determineInputType) => React.ReactNode | undefined
+  customFilterInput: (props: DetermineInputType) => React.ReactNode | undefined
 }
 
 const ExtensionPoints: ExtensionPointsType = {

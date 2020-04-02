@@ -28,7 +28,7 @@ const {
 const { TextInput, NearInput, EnumInput } = require('./filter-text-inputs')
 import extension from '../../../extension-points'
 
-export type determineInputType = {
+export type DetermineInputType = {
   comparator:
     | 'BEFORE'
     | 'AFTER'
@@ -53,7 +53,7 @@ export const determineInput = ({
   suggestions,
   value,
   onChange,
-}: determineInputType) => {
+}: DetermineInputType) => {
   // call out to extension, if extension handles it, great, if not fallback to this
   const componentToReturn = extension.customFilterInput({
     comparator,
