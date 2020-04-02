@@ -203,7 +203,7 @@ Query.Model = PartialAssociatedModel.extend({
     this.trigger('resetToDefaults')
   },
   applyDefaults() {
-    this.set(_.pick(this.defaults(), ['sorts', 'federation', 'src']))
+    this.set(_.pick(this.defaults(), ['sorts', 'federation', 'sources']))
   },
   revert() {
     this.trigger('revert')
@@ -250,10 +250,10 @@ Query.Model = PartialAssociatedModel.extend({
 
     switch (data.federation) {
       case 'local':
-        data.src = [Sources.localCatalog]
+        data.sources = [Sources.localCatalog]
         break
       case 'enterprise':
-        data.src = _.pluck(Sources.toJSON(), 'id')
+        data.sources = _.pluck(Sources.toJSON(), 'id')
         break
       case 'selected':
         // already in correct format
@@ -269,7 +269,7 @@ Query.Model = PartialAssociatedModel.extend({
 
     return _.pick(
       data,
-      'src',
+      'sources',
       'start',
       'count',
       'timeout',
@@ -338,7 +338,7 @@ Query.Model = PartialAssociatedModel.extend({
     if (options.resultCountOnly) {
       data.count = 0
     }
-    const sources = data.src
+    const sources = data.sources
     const initialStatus = sources.map(src => ({
       id: src,
     }))
@@ -512,9 +512,9 @@ Query.Model = PartialAssociatedModel.extend({
       }
     })
     if (sourceArr.length > 0) {
-      this.set('src', sourceArr.join(','))
+      this.set('sources', sourceArr.join(','))
     } else {
-      this.set('src', '')
+      this.set('sources', '')
     }
   },
   getId() {
