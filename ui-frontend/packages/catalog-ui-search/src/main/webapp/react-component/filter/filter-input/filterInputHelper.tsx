@@ -13,8 +13,8 @@
  *
  **/
 import * as React from 'react'
-const BooleanInput = require('./filter-boolean-input')
-const LocationInput = require('./filter-location-input')
+const BooleanInput = require('./filter-boolean-input').default
+const LocationInput = require('./filter-location-input').default
 const {
   FloatInput,
   IntegerInput,
