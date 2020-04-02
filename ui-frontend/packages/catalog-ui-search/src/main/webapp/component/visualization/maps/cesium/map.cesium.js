@@ -35,6 +35,7 @@ const User = require('../../../../js/model/User.js')
 
 const defaultColor = '#3c6dd5'
 const eyeOffset = new Cesium.Cartesian3(0, 0, 0)
+const pixelOffset = new Cesium.Cartesian2(0.0, 0)
 
 const rulerColor = new Cesium.Color(0.31, 0.43, 0.52)
 const rulerPointColor = '#506f85'
@@ -573,8 +574,10 @@ module.exports = function CesiumMap(
       const options = {
         id: ' ',
         title: `Selected ruler coordinate`,
-        color: rulerPointColor,
-        icon: null,
+        image: DrawingUtility.getCircle({
+          fillColor: rulerPointColor,
+          icon: null,
+        }),
         view: this,
       }
 
@@ -688,16 +691,29 @@ module.exports = function CesiumMap(
         pointObject.latitude,
         pointObject.altitude
       )
-      let cartesianPosition = map.scene.globe.ellipsoid.cartographicToCartesian(
+      const image =
+        options.image ||
+        DrawingUtility.getPin({
+          fillColor: options.color,
+          icon: options.icon,
+        })
+      const cartesianPosition = map.scene.globe.ellipsoid.cartographicToCartesian(
         cartographicPosition
       )
+
       const billboardRef = billboardCollection.add({
-        image: DrawingUtility.getCircle({
-          fillColor: rulerPointColor,
-          icon: null,
-        }),
+        image: image,
         position: cartesianPosition,
+        id: options.id,
         eyeOffset,
+        pixelOffset,
+        verticalOrigin: options.useVerticalOrigin
+          ? Cesium.VerticalOrigin.BOTTOM
+          : undefined,
+        horizontalOrigin: options.useHorizontalOrigin
+          ? Cesium.HorizontalOrigin.CENTER
+          : undefined,
+        view: options.view,
       })
       //if there is a terrain provider and no altitude has been specified, sample it from the configured terrain provider
       if (!pointObject.altitude && map.scene.terrainProvider) {

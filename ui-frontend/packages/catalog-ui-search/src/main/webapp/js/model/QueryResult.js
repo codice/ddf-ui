@@ -69,12 +69,16 @@ module.exports = Backbone.AssociatedModel.extend({
   initialize() {
     this.refreshData = _.throttle(this.refreshData, 200)
   },
+  getTitle() {
+    return this.get('metacard').get('properties').attributes.title
+  },
   getPreview() {
-    return this.get('actions')
-      .filter(
-        action => action.get('id') === 'catalog.data.metacard.html.preview'
-      )[0]
-      .get('url')
+    const previewAction = this.get('actions').filter(
+      action => action.get('id') === 'catalog.data.metacard.html.preview'
+    )
+    var previewUrl =
+      previewAction.length > 0 ? previewAction[0].get('url') : undefined
+    return previewUrl
   },
   hasPreview() {
     return (

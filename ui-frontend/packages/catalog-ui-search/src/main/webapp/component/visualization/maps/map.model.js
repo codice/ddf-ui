@@ -53,6 +53,11 @@ module.exports = Backbone.AssociatedModel.extend({
       left: 0,
       top: 0,
     },
+    popupMetacard: undefined,
+    popupLocation: {
+      left: 0,
+      bottom: 0,
+    },
     startingCoordinates: undefined,
   },
   /*
@@ -131,6 +136,12 @@ module.exports = Backbone.AssociatedModel.extend({
    */
   setDistanceInfoPosition(left, top) {
     this.set({ distanceInfo: { left, top } })
+  },
+  setPopupMetacard(popupMetacard) {
+    this.set({ popupMetacard })
+  },
+  setPopupLocation(popupLocation) {
+    this.set({ popupLocation })
   },
   isOffMap() {
     return this.get('mouseLat') === undefined

@@ -20,6 +20,7 @@ const _debounce = require('lodash/debounce')
 const wkx = require('wkx')
 const metacardDefinitions = require('../../singletons/metacard-definitions.js')
 const properties = require('../../../js/properties')
+const $ = require('jquery')
 
 const GeometryView = Marionette.ItemView.extend({
   template: false,
@@ -146,6 +147,7 @@ const GeometryView = Marionette.ItemView.extend({
     }
   },
   handlePoint(point) {
+    // todo: make async
     this.geometry.push(
       this.options.map.addPoint(point, {
         id: this.model.id,
@@ -155,7 +157,14 @@ const GeometryView = Marionette.ItemView.extend({
           .get('title'),
         color: this.model.get('metacard').get('color'),
         icon: iconHelper.getFull(this.model),
+        useVerticalOrigin: true,
+        useHorizontalOrigin: true,
         view: this,
+        type: 'click',
+        popup: {
+          title: this.model.getTitle(),
+          preview: this.getPreview(),
+        },
       })
     )
     // adds an additional map element to the geometry for the label
@@ -221,6 +230,25 @@ const GeometryView = Marionette.ItemView.extend({
         this.showGeometry()
       }
     }
+  },
+  getPreview() {
+    const previewUrl = this.model.getPreview()
+    var previewText = ''
+
+    if (previewUrl) {
+      $.ajax({
+        url: previewUrl,
+        success: function(previewHtml) {
+          previewText = previewHtml
+        },
+        error: function(jqXHR, text, error) {
+          console.log(text)
+        },
+        async: false,
+      })
+    }
+
+    return previewText
   },
   showGeometry() {
     this.geometry.forEach(geometry => {

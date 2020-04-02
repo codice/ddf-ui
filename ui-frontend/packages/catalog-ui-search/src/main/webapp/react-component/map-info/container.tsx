@@ -57,8 +57,6 @@ const getAttributes = (map: Backbone.Model) => {
         .get('targetMetacard')
         .get('metacard')
         .get('properties')
-        .get('measurementState')
-        .get('currentDistance')
         .get(attribute)
       return { name: attribute, value }
     })

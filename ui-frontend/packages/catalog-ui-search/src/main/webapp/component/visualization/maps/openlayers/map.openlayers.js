@@ -54,8 +54,9 @@ function createMap(insertionElement) {
     collection: layerPrefs,
   })
   const map = layerCollectionController.makeMap({
-    zoom: 3,
-    minZoom: 1.9,
+    zoom: 2.7,
+    minZoom: 2.3,
+    center: [0, 0],
     element: insertionElement,
   })
 

@@ -26,6 +26,7 @@ const store = require('../../../js/store.js')
 const GeometryCollectionView = require('./geometry.collection.view')
 const ClusterCollectionView = require('./cluster.collection.view')
 const ClusterCollection = require('./cluster.collection')
+const PopupPreviewView = require('./popup.view.js')
 const CQLUtils = require('../../../js/CQLUtils.js')
 const LocationModel = require('../../location-old/location-old.js')
 const user = require('../../singletons/user-instance.js')
@@ -144,6 +145,7 @@ module.exports = Marionette.LayoutView.extend({
     mapContextMenu: '.map-context-menu',
     mapInfo: '.mapInfo',
     distanceInfo: '.distanceInfo',
+    popupPreview: '.popupPreview',
   },
   events: {
     'click .cluster-button': 'toggleClustering',
@@ -262,6 +264,7 @@ module.exports = Marionette.LayoutView.extend({
     this.setupRightClickMenu()
     this.setupMapInfo()
     this.setupDistanceInfo()
+    this.setupPopupPreview()
   },
   zoomToHome() {
     const home = [
@@ -490,6 +493,14 @@ module.exports = Marionette.LayoutView.extend({
 
     this.mapModel.addDistanceInfo(distanceInfoView)
     this.distanceInfo.show(distanceInfoView)
+  },
+  setupPopupPreview() {
+    this.popupPreview.show(
+      new PopupPreviewView({
+        map: this.map,
+        mapModel: this.mapModel,
+      })
+    )
   },
   /*
         Map creation is deferred to this method, so that all resources pertaining to the map can be loaded lazily and
