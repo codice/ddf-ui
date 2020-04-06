@@ -12,24 +12,59 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react'
-import BooleanInput from './filter-boolean-input'
-import LocationInput from './filter-location-input'
-import { FloatInput, IntegerInput, RangeInput } from './filter-number-inputs'
-import {
+import * as React from 'react'
+const BooleanInput = require('./filter-boolean-input').default
+const LocationInput = require('./filter-location-input').default
+const {
+  FloatInput,
+  IntegerInput,
+  RangeInput,
+} = require('./filter-number-inputs')
+const {
   DateInput,
   RelativeTimeInput,
   BetweenTimeInput,
-} from './filter-date-inputs'
-import { TextInput, NearInput, EnumInput } from './filter-text-inputs'
+} = require('./filter-date-inputs')
+const { TextInput, NearInput, EnumInput } = require('./filter-text-inputs')
+import extension from '../../../extension-points'
 
-export const determineInput = (
+export type DetermineInputType = {
+  comparator:
+    | 'BEFORE'
+    | 'AFTER'
+    | 'IS EMPTY'
+    | 'NEAR'
+    | 'BETWEEN'
+    | 'RELATIVE'
+    | 'RANGE'
+    | 'CONTAINS'
+    | 'MATCHCASE'
+    | '='
+    | 'INTERSECTS'
+  type: 'STRING' | 'BOOLEAN' | 'DATE' | 'LOCATION' | 'FLOAT' | 'INTEGER'
+  suggestions: any[]
+  value: string | number
+  onChange: (value: string | number) => void // call this when you change values
+}
+
+export const determineInput = ({
   comparator,
   type,
   suggestions,
   value,
-  onChange
-) => {
+  onChange,
+}: DetermineInputType) => {
+  // call out to extension, if extension handles it, great, if not fallback to this
+  const componentToReturn = extension.customFilterInput({
+    comparator,
+    type,
+    suggestions,
+    value,
+    onChange,
+  })
+  if (componentToReturn) {
+    return componentToReturn
+  }
   const props = { value, onChange }
   switch (comparator) {
     case 'IS EMPTY':
@@ -41,8 +76,7 @@ export const determineInput = (
     case 'RELATIVE':
       return <RelativeTimeInput {...props} />
     case 'RANGE':
-      props.isInteger = type === 'INTEGER'
-      return <RangeInput {...props} />
+      return <RangeInput {...props} isInteger={type === 'INTEGER'} />
   }
 
   switch (type) {
@@ -59,9 +93,13 @@ export const determineInput = (
   }
 
   if (suggestions && suggestions.length > 0) {
-    props.suggestions = suggestions
-    props.matchCase = ['MATCHCASE', '='].includes(comparator)
-    return <EnumInput {...props} />
+    return (
+      <EnumInput
+        {...props}
+        matchCase={['MATCHCASE', '='].includes(comparator)}
+        suggestions={suggestions}
+      />
+    )
   }
   return <TextInput {...props} />
 }
