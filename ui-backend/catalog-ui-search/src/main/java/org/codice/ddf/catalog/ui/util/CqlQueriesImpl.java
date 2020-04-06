@@ -32,6 +32,7 @@ import ddf.catalog.util.impl.ResultIterable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -108,7 +109,18 @@ public class CqlQueriesImpl implements CqlQueries {
                 .filter(Objects::nonNull)
                 .map(QueryResponse::getProperties)
                 .findFirst()
-                .orElse(Collections.emptyMap()));
+                .orElse(Collections.emptyMap()),
+            responses
+                .stream()
+                .filter(Objects::nonNull)
+                .map(QueryResponse::getProcessingDetails)
+                .reduce(
+                    new HashSet<>(),
+                    (left, right) -> {
+                      left.addAll(right);
+                      return left;
+                    }));
+    ;
 
     stopwatch.stop();
 
