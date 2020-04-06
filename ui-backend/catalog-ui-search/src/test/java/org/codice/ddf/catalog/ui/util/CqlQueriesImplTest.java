@@ -14,6 +14,7 @@
 package org.codice.ddf.catalog.ui.util;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
@@ -128,7 +129,7 @@ public class CqlQueriesImplTest {
     CqlQueryResponse cqlQueryResponse = cqlQueryUtil.executeCqlQuery(generateCqlRequest(1));
     Set<ProcessingDetails> details = cqlQueryResponse.getQueryResponse().getProcessingDetails();
     assertThat(details.size(), is(2));
-    assertThat(details.contains(detailsMock1), is(true));
-    assertThat(details.contains(detailsMock2), is(true));
+    assertThat(details, hasItem(detailsMock1));
+    assertThat(details, hasItem(detailsMock2));
   }
 }

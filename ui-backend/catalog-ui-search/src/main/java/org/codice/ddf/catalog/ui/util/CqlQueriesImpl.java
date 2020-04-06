@@ -116,9 +116,9 @@ public class CqlQueriesImpl implements CqlQueries {
                 .map(QueryResponse::getProcessingDetails)
                 .reduce(
                     new HashSet<>(),
-                    (l, r) -> {
-                      l.addAll(r);
-                      return l;
+                    (left, right) -> {
+                      left.addAll(right);
+                      return left;
                     }));
     ;
 
