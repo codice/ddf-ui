@@ -79,10 +79,10 @@ export function validateGeo(key: string, value: any) {
       return validateDmsLatLon(LONGITUDE, value)
     case 'usng':
       return validateUsng(value)
-    case 'utmUpsEasting':
-    case 'utmUpsNorthing':
-    case 'utmUpsZone':
-    case 'utmUpsHemisphere':
+    case 'easting':
+    case 'northing':
+    case 'zoneNumber':
+    case 'hemisphere':
       return validateUtmUps(key, value)
     case 'radius':
     case 'lineWidth':
@@ -270,53 +270,75 @@ function validateLinePolygon(mode: string, currentValue: string) {
   }
 }
 
-function validateBoundingBox(value: any) {
-  let north
-  let south
-  if (value.dms) {
-    const coordinateNorth = parseDmsCoordinate(value.north)
-    const coordinateSouth = parseDmsCoordinate(value.south)
-    north = coordinateNorth
-      ? dmsCoordinateToDD({
-          ...coordinateNorth,
-          direction: value.dmsNorthDirection,
-        })
-      : null
-    south = coordinateSouth
-      ? dmsCoordinateToDD({
-          ...coordinateSouth,
-          direction: value.dmsSouthDirection,
-        })
-      : null
-  } else if (value.usng) {
-    const upperLeftCoord = converter.USNGtoLL(value.upperLeft, true)
-    north = upperLeftCoord.lat
-    const lowerRightCoord = converter.USNGtoLL(value.lowerRight, true)
-    south = lowerRightCoord.lat
-  } else if (value.utmUps) {
-    const upperLeftParts = {
-      easting: parseFloat(value.upperLeft.easting),
-      northing: parseFloat(value.upperLeft.northing),
-      hemisphere: value.upperLeft.hemisphere,
-      northPole: value.upperLeft.hemisphere.toUpperCase() === 'NORTHERN',
-    }
-    north = Number(converter.UTMUPStoLL(upperLeftParts).lat.toFixed(5))
-    const lowerRightParts = {
-      easting: parseFloat(value.lowerRight.easting),
-      northing: parseFloat(value.lowerRight.northing),
-      hemisphere: value.lowerRight.hemisphere,
-      northPole: value.lowerRight.hemisphere.toUpperCase() === 'NORTHERN',
-    }
-    south = Number(converter.UTMUPStoLL(lowerRightParts).lat.toFixed(5))
-  } else {
-    north = Number(value.north)
-    south = Number(value.south)
+function getDdLatitudes(value: any) {
+  return { north: Number(value.north), south: Number(value.south) }
+}
+
+function getDmsLatitudes(value: any) {
+  const coordinateNorth = parseDmsCoordinate(value.north)
+  const coordinateSouth = parseDmsCoordinate(value.south)
+  const north = coordinateNorth
+    ? dmsCoordinateToDD({
+        ...coordinateNorth,
+        direction: value.dmsNorthDirection,
+      })
+    : null
+  const south = coordinateSouth
+    ? dmsCoordinateToDD({
+        ...coordinateSouth,
+        direction: value.dmsSouthDirection,
+      })
+    : null
+  return { north, south }
+}
+
+function getUsngLatitudes(upperLeft: any, lowerRight: any) {
+  const upperLeftCoord = converter.USNGtoLL(upperLeft, true)
+  const lowerRightCoord = converter.USNGtoLL(lowerRight, true)
+  return { north: upperLeftCoord.lat, south: lowerRightCoord.lat }
+}
+
+function getUtmUpsLatitudes(upperLeft: any, lowerRight: any) {
+  const upperLeftParts = {
+    easting: parseFloat(upperLeft.easting),
+    northing: parseFloat(upperLeft.northing),
+    zoneNumber: upperLeft.zoneNumber,
+    hemisphere: upperLeft.hemisphere,
+    northPole: upperLeft.hemisphere.toUpperCase() === 'NORTHERN',
   }
-  if (south >= north) {
+  const lowerRightParts = {
+    easting: parseFloat(lowerRight.easting),
+    northing: parseFloat(lowerRight.northing),
+    zoneNumber: lowerRight.zoneNumber,
+    hemisphere: lowerRight.hemisphere,
+    northPole: lowerRight.hemisphere.toUpperCase() === 'NORTHERN',
+  }
+  upperLeftParts.northing =
+    upperLeftParts.zoneNumber === 0 || upperLeftParts.northPole
+      ? upperLeftParts.northing
+      : upperLeftParts.northing - NORTHING_OFFSET
+  lowerRightParts.northing =
+    lowerRightParts.zoneNumber === 0 || lowerRightParts.northPole
+      ? lowerRightParts.northing
+      : lowerRightParts.northing - NORTHING_OFFSET
+  const north = Number(converter.UTMUPStoLL(upperLeftParts).lat.toFixed(5))
+  const south = Number(converter.UTMUPStoLL(lowerRightParts).lat.toFixed(5))
+  return { north, south }
+}
+
+function validateBoundingBox(value: any) {
+  const { north, south } = value.isDms
+    ? getDmsLatitudes(value)
+    : value.isUsng
+      ? getUsngLatitudes(value.upperLeft, value.lowerRight)
+      : value.isUtmUps
+        ? getUtmUpsLatitudes(value.upperLeft, value.lowerRight)
+        : getDdLatitudes(value)
+  if (south !== null && north !== null && south >= north) {
     return {
       error: true,
       message:
-        value.usng || value.utmUps
+        value.isUsng || value.isUtmUps
           ? 'Upper left coordinate must be located above lower right coordinate'
           : 'North value must be greater than south value',
     }

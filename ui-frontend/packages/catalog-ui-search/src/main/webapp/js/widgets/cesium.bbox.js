@@ -253,9 +253,10 @@ Draw.BboxView = Marionette.View.extend({
   drawBorderedRectangle(rectangle) {
     if (!rectangle) {
       // handles case where model changes to empty vars and we don't want to draw anymore
-
       return
     }
+
+    this.destroyOldPrimitive()
 
     if (
       isNaN(rectangle.north) ||
@@ -264,12 +265,8 @@ Draw.BboxView = Marionette.View.extend({
       isNaN(rectangle.west)
     ) {
       // handles case where model is incomplete and we don't want to draw anymore
-      this.destroyOldPrimitive()
-
       return
     }
-
-    this.destroyOldPrimitive()
 
     const coordinates = [
       [rectangle.east, rectangle.north],
