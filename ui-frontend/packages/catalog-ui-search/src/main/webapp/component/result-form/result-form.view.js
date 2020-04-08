@@ -56,6 +56,7 @@ module.exports = Marionette.LayoutView.extend({
     this.basicAttributeSpecific.show(
       new PropertyView({
         model: new Property({
+          readOnly: this.model.get('isReadOnly'),
           enumFiltering: true,
           showValidationIssues: true,
           enumMulti: true,
@@ -80,6 +81,7 @@ module.exports = Marionette.LayoutView.extend({
     this.basicTitle.show(
       new PropertyView({
         model: new Property({
+          readOnly: this.model.get('isReadOnly'),
           value: [this.model.get('title')],
           id: 'Title',
           placeholder: 'Result Form Title',
@@ -91,6 +93,7 @@ module.exports = Marionette.LayoutView.extend({
     this.basicDescription.show(
       new PropertyView({
         model: new Property({
+          readOnly: this.model.get('isReadOnly'),
           value: [this.model.get('description')],
           id: 'Description',
           placeholder: 'Result Form Description',
