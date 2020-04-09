@@ -19,6 +19,7 @@ const Map = require('../map')
 const utility = require('./utility')
 const DrawingUtility = require('../DrawingUtility')
 const store = require('../../../../js/store.js')
+const wreqr = require('../../../../js/wreqr.js')
 
 const DrawBBox = require('../../../../js/widgets/cesium.bbox.js')
 const DrawCircle = require('../../../../js/widgets/cesium.circle.js')
@@ -101,6 +102,12 @@ function createMap(insertionElement) {
     },
   })
 
+  const requestRender = () => {
+    viewer.scene.requestRender()
+  }
+
+  wreqr.vent.on('map:requestRender', requestRender)
+
   // disable right click drag to zoom (context menu instead);
   viewer.scene.screenSpaceCameraController.zoomEventTypes = [
     Cesium.CameraEventType.WHEEL,
@@ -121,7 +128,10 @@ function createMap(insertionElement) {
 
   setupTerrainProvider(viewer, properties.terrainProvider)
 
-  return viewer
+  return {
+    map: viewer,
+    requestRenderHandler: requestRender,
+  }
 }
 
 function determineIdFromPosition(position, map) {
@@ -195,7 +205,7 @@ module.exports = function CesiumMap(
 ) {
   let overlays = {}
   let shapes = []
-  const map = createMap(insertionElement)
+  const { map, requestRenderHandler } = createMap(insertionElement)
   const drawHelper = new DrawHelper(map)
   const billboardCollection = setupBillboardCollection()
   const labelCollection = setupLabelCollection()
@@ -1021,6 +1031,7 @@ module.exports = function CesiumMap(
       shapes = []
     },
     destroy() {
+      wreqr.vent.off('map:requestRender', requestRenderHandler)
       this.destroyDrawingTools()
       map.destroy()
     },
