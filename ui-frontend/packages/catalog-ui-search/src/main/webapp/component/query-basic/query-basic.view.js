@@ -20,6 +20,7 @@ const $ = require('jquery')
 const template = require('./query-basic.hbs')
 const CustomElements = require('../../js/CustomElements.js')
 const store = require('../../js/store.js')
+const wreqr = require('../../js/wreqr.js')
 const IconHelper = require('../../js/IconHelper.js')
 const PropertyView = require('../property/property.view.js')
 const Property = require('../property/property.js')
@@ -41,6 +42,16 @@ function isNested(filter) {
     nested = nested || subfilter.filters
   })
   return nested
+}
+
+const requestMapRender = () => {
+  // Required to force rendering of the 3D map after drawing is cleared.
+  wreqr.vent.trigger('map:requestRender')
+}
+
+const turnOffDrawing = () => {
+  wreqr.vent.trigger('search:drawend', store.get('content').get('drawingModel'))
+  requestMapRender()
 }
 
 function getMatchTypeAttribute() {
@@ -414,6 +425,11 @@ module.exports = Marionette.LayoutView.extend({
     if (this.filter.anyGeo) {
       currentValue = this.filter.anyGeo[0]
     }
+    const currentView = this.basicLocationSpecific.currentView
+    if (currentView && currentView.model) {
+      this.stopListening(currentView.model)
+    }
+
     this.basicLocationSpecific.show(
       new PropertyView({
         model: new Property({
@@ -422,6 +438,12 @@ module.exports = Marionette.LayoutView.extend({
           type: 'LOCATION',
         }),
       })
+    )
+
+    this.listenTo(
+      this.basicLocationSpecific.currentView.model,
+      'change:value',
+      requestMapRender
     )
   },
   handleTypeValue() {
@@ -433,6 +455,10 @@ module.exports = Marionette.LayoutView.extend({
     const location = this.basicLocation.currentView.model.getValue()[0]
     this.$el.toggleClass('is-location-any', location === 'any')
     this.$el.toggleClass('is-location-specific', location === 'specific')
+    if (location === 'any') {
+      turnOffDrawing()
+      this.setupLocationInput()
+    }
   },
   setupTextMatchInput() {
     this.basicTextMatch.show(
