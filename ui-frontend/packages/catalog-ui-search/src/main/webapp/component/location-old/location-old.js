@@ -194,7 +194,7 @@ module.exports = Backbone.AssociatedModel.extend({
       'change:utmUpsUpperLeftEasting change:utmUpsUpperLeftNorthing change:utmUpsUpperLeftZone change:utmUpsUpperLeftHemisphere change:utmUpsLowerRightEasting change:utmUpsLowerRightNorthing change:utmUpsLowerRightZone change:utmUpsLowerRightHemisphere',
       this.setBboxUtmUps
     )
-    this.listenTo(this, 'EndExtent', this.notDrawing)
+    this.listenTo(this, 'EndExtent', this.drawingOff)
     this.listenTo(this, 'BeginExtent', this.drawingOn)
     if (this.get('color') === undefined && store.get('content').get('query')) {
       this.set(
@@ -208,7 +208,10 @@ module.exports = Backbone.AssociatedModel.extend({
       this.set('color', '#c89600')
     }
   },
-  notDrawing() {
+  drawingOff() {
+    if (this.get('locationType') === 'dms') {
+      this.setBboxDmsFromMap()
+    }
     const prevLocationType = this.get('prevLocationType')
     if (prevLocationType === 'utmUps') {
       this.set('prevLocationType', '')
@@ -689,7 +692,6 @@ module.exports = Backbone.AssociatedModel.extend({
       const upperLeftParts = this.parseUtmUpsUpperLeft()
       if (upperLeftParts !== undefined) {
         upperLeft = this.utmUpstoLL(upperLeftParts)
-
         if (upperLeft !== undefined) {
           this.set({ mapNorth: upperLeft.lat, mapWest: upperLeft.lon })
           this.set(
@@ -697,10 +699,6 @@ module.exports = Backbone.AssociatedModel.extend({
             { silent: true }
           )
         } else {
-          if (upperLeftParts.zoneNumber !== 0) {
-            this.clearUtmUpsUpperLeft(true)
-          }
-          upperLeft = undefined
           this.set({
             mapNorth: undefined,
             mapSouth: undefined,
@@ -721,7 +719,6 @@ module.exports = Backbone.AssociatedModel.extend({
       const lowerRightParts = this.parseUtmUpsLowerRight()
       if (lowerRightParts !== undefined) {
         lowerRight = this.utmUpstoLL(lowerRightParts)
-
         if (lowerRight !== undefined) {
           this.set({ mapSouth: lowerRight.lat, mapEast: lowerRight.lon })
           this.set(
@@ -729,10 +726,6 @@ module.exports = Backbone.AssociatedModel.extend({
             { silent: true }
           )
         } else {
-          if (lowerRightParts.zoneNumber !== 0) {
-            this.clearUtmUpsLowerRight(true)
-          }
-          lowerRight = undefined
           this.set({
             mapNorth: undefined,
             mapSouth: undefined,
@@ -915,7 +908,7 @@ module.exports = Backbone.AssociatedModel.extend({
   // Returns undefined if the latitude is out of range.
   //
   utmUpstoLL(utmUpsParts) {
-    const { hemisphere, zoneNumber, northing, easting } = utmUpsParts
+    const { hemisphere, zoneNumber, northing } = utmUpsParts
     const northernHemisphere = hemisphere === 'NORTHERN'
 
     utmUpsParts = {
@@ -927,22 +920,25 @@ module.exports = Backbone.AssociatedModel.extend({
     utmUpsParts.northing =
       isUps || northernHemisphere ? northing : northing - northingOffset
 
-    const upsValidDistance = distance =>
-      distance >= 800000 && distance <= 3200000
-    if (isUps && (!upsValidDistance(northing) || !upsValidDistance(easting))) {
-      return undefined
+    let lat, lon
+    try {
+      const result = converter.UTMUPStoLL(utmUpsParts)
+      lat = result.lat
+      lon = result.lon % 360
+      if (lon < -180) {
+        lon = lon + 360
+      }
+      if (lon > 180) {
+        lon = lon - 360
+      }
+      if (!this.isLatLonValid(lat, lon)) {
+        return { lat: undefined, lon: undefined }
+      }
+    } catch (err) {
+      return { lat: undefined, lon: undefined }
     }
 
-    let { lat, lon } = converter.UTMUPStoLL(utmUpsParts)
-    lon = lon % 360
-    if (lon < -180) {
-      lon = lon + 360
-    }
-    if (lon > 180) {
-      lon = lon - 360
-    }
-
-    return this.isLatLonValid(lat, lon) ? { lat, lon } : undefined
+    return { lat, lon }
   },
 
   // Return true if the current location type is UTM/UPS, otherwise false.
