@@ -13,10 +13,6 @@
  */
 package org.codice.ddf.catalog.ui.oauth.app;
 
-import static org.codice.ddf.security.token.storage.api.TokenStorage.CLIENT_ID;
-import static org.codice.ddf.security.token.storage.api.TokenStorage.DISCOVERY_URL;
-import static org.codice.ddf.security.token.storage.api.TokenStorage.SECRET;
-import static org.codice.ddf.security.token.storage.api.TokenStorage.SOURCE_ID;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -68,6 +64,10 @@ import spark.Response;
 
 public class OAuthApplicationTest {
 
+  private static final String DISCOVERY_URL = "discovery_url";
+  private static final String CLIENT_ID = "client_id";
+  private static final String SECRET = "client_secret";
+  private static final String SOURCE_ID = "source_id";
   private static final String SESSION_ID = "sessionId";
   private static final String CSW_SOURCE = "CSW";
   private static final String ACCESS_TOKEN_VAL = "myAccessToken";
