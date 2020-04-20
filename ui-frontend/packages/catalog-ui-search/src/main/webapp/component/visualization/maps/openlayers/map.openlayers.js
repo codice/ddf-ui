@@ -93,7 +93,6 @@ function offMap([longitude, latitude]) {
   return latitude < -90 || latitude > 90
 }
 
-<<<<<<< HEAD
 // The extension argument is a function used in panToExtent
 // It allows for customization of the way the map pans to results
 const OpenlayersMap = extension =>
@@ -144,54 +143,6 @@ const OpenlayersMap = extension =>
           notificationEl,
         }),
       }
-=======
-module.exports = function OpenlayersMap(
-  insertionElement,
-  selectionInterface,
-  notificationEl,
-  componentElement,
-  mapModel
-) {
-  let overlays = {}
-  let shapes = []
-  const map = createMap(insertionElement)
-  listenToResize()
-  setupTooltip(map)
-  const drawingTools = setupDrawingTools(map)
-
-  function setupTooltip(map) {
-    map.on('pointermove', e => {
-      const point = unconvertPointCoordinate(e.coordinate)
-      if (!offMap(point)) {
-        mapModel.updateMouseCoordinates({
-          lat: point[1],
-          lon: point[0],
-        })
-      } else {
-        mapModel.clearMouseCoordinates()
-      }
-    })
-  }
-
-  function setupDrawingTools(map) {
-    return {
-      bbox: new DrawBBox.Controller({
-        map,
-        notificationEl,
-      }),
-      circle: new DrawCircle.Controller({
-        map,
-        notificationEl,
-      }),
-      polygon: new DrawPolygon.Controller({
-        map,
-        notificationEl,
-      }),
-      line: new DrawLine.Controller({
-        map,
-        notificationEl,
-      }),
->>>>>>> DDF-UI-165 formatted for consistent positioning over map makers. Color scheme changes with theme
     }
 
     function resizeMap() {
@@ -581,22 +532,12 @@ module.exports = function OpenlayersMap(
           Adds a billboard point utilizing the passed in point and options.
           Options are a view to relate to, and an id, and a color.
         */
-<<<<<<< HEAD
       addPoint(point, options) {
         const pointObject = convertPointCoordinate(point)
         const feature = new Openlayers.Feature({
           geometry: new Openlayers.geom.Point(pointObject),
         })
         feature.setId(options.id)
-=======
-    addPoint(point, options) {
-      const pointObject = convertPointCoordinate(point)
-      const feature = new Openlayers.Feature({
-        geometry: new Openlayers.geom.Point(pointObject),
-        type: options.type,
-      })
-      feature.setId(options.id)
->>>>>>> DDF-UI-165 formatted for consistent positioning over map makers. Color scheme changes with theme
 
         feature.setStyle(
           new Openlayers.style.Style({
