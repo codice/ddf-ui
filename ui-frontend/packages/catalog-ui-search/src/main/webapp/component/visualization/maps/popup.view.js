@@ -40,20 +40,20 @@ const PopupPreviewView = Marionette.ItemView.extend({
     return this.mapModel.get('popupMetacard')
   },
   /**
-          Update the event position in the model, will trigger popup to check if it needs to be shown
-          TODO: add the event position so that its not distance info position
-         */
+    Update the event position in the model, will trigger popup to check if it needs to be shown
+   */
   onLeftClick(event, mapEvent) {
     event.preventDefault()
-    this.$el
-      .find('.map-context-menu')
-      .css('left', event.offsetX)
-      .css('bottom', event.offsetY)
-    this.mapModel.setPopupLocation({
-      left: event.clientX,
-      bottom: event.clientY,
-    })
-    this.mapModel.setPopupMetacard(this.mapModel.get('targetMetacard'))
+    const targetMetacard = this.mapModel.get('targetMetacard')
+    const location = this.getMetacardLocation(targetMetacard)
+    if (location) {
+      this.mapModel.setPopupMetacard(targetMetacard, {
+        left: location[0],
+        top: location[1],
+      })
+    } else {
+      this.mapModel.setPopupMetacard(targetMetacard)
+    }
   },
   /**
    * Methods for moving the popup when there is camera movement
@@ -72,17 +72,28 @@ const PopupPreviewView = Marionette.ItemView.extend({
       window.cancelAnimationFrame(this.popupAnimationFrameId)
     }
   },
+  getMetacardLocation(metacard) {
+    if (metacard) {
+      const location = this.map.getWindowLocationsOfResults([metacard])
+      const [left, top] = location ? location[0] : undefined
+      return [left, top]
+    }
+  },
   startPopupAnimating() {
-    const map = this.map
-    const mapModel = this.mapModel
-    this.popupAnimationFrameId = window.requestAnimationFrame(() => {
-      const location = map.getWindowLocationsOfResults([this.getMetacard()])[0]
-      mapModel.setPopupLocation({
-        left: location[0],
-        top: location[1],
+    if (this.getMetacard()) {
+      const map = this.map
+      const mapModel = this.mapModel
+      this.popupAnimationFrameId = window.requestAnimationFrame(() => {
+        const [left, top] = this.getMetacardLocation(this.getMetacard())
+        if ((left > 0, top > 0)) {
+          mapModel.setPopupLocation({
+            left,
+            top,
+          })
+        }
+        this.startPopupAnimating()
       })
-      this.startPopupAnimating()
-    })
+    }
   },
 })
 

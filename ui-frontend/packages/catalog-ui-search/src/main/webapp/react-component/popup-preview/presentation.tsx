@@ -87,7 +87,9 @@ const render = (props: Props) => {
     <Root {...props} style={{ left: props.left, top: props.top }}>
       <Title>{props.titleText}</Title>
       {props.previewText ? (
-        <Preview>{<PreviewText>{props.previewText}</PreviewText>}</Preview>
+        <Preview>
+          <PreviewText>{props.previewText}</PreviewText>
+        </Preview>
       ) : (
         undefined
       )}

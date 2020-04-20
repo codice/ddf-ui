@@ -40,17 +40,17 @@ const sanitizeHeader = (header: string) => {
 }
 
 const mapPropsToState = (props: Props) => {
-    const { map } = props
-    const metacard = map.get('popupMetacard')
-    const location = map.get('popupLocation')
+  const { map } = props
+  const metacard = map.get('popupMetacard')
+  const location = map.get('popupLocation')
 
-    return {
-      showPopup: metacard !== null && metacard !== undefined,
-      titleText: metacard ? metacard.getTitle() : undefined,
-      left: location.left + 'px',
-      top: location.top - TOP_OFFSET + 'px',
-    }
+  return {
+    showPopup: metacard !== null && metacard !== undefined,
+    titleText: metacard ? metacard.getTitle() : undefined,
+    left: location ? location.left + 'px' : 0,
+    top: location ? location.top - TOP_OFFSET + 'px' : 0,
   }
+}
 
 type Props = {
   map: Backbone.Model
@@ -100,11 +100,7 @@ class PopupPreview extends React.Component<Props, State> {
 
   listenToMap = () => {
     const { listenTo, map } = this.props
-    listenTo(
-      map,
-      'change:popupLocation change:popupMetacard',
-      this.handlePopupChange
-    )
+    listenTo(map, 'change:popupLocation', this.handlePopupChange)
     listenTo(map, 'change:popupMetacard', () => {
       this.setPreviewText(this.props)
     })
@@ -112,11 +108,7 @@ class PopupPreview extends React.Component<Props, State> {
 
   componentWillUnmount() {
     const { stopListening, map } = this.props
-    stopListening(
-      map,
-      'change:popupLocation change:popupMetacard',
-      this.handlePopupChange
-    )
+    stopListening(map, 'change:popupLocation', this.handlePopupChange)
     stopListening(map, 'change:popupMetacard', this.setPreviewText)
   }
 

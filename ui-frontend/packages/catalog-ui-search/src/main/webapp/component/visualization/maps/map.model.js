@@ -137,8 +137,8 @@ module.exports = Backbone.AssociatedModel.extend({
   setDistanceInfoPosition(left, top) {
     this.set({ distanceInfo: { left, top } })
   },
-  setPopupMetacard(popupMetacard) {
-    this.set({ popupMetacard })
+  setPopupMetacard(popupMetacard, popupLocation) {
+    this.set({ popupMetacard, popupLocation })
   },
   setPopupLocation(popupLocation) {
     this.set({ popupLocation })
