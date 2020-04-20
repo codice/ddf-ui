@@ -22,8 +22,7 @@ const PopupPresentation = require('./presentation').default
 
 const STATUS_OK = 200
 
-const LEFT_OFFSET = 250
-const BOTTOM_OFFSET = 180
+const TOP_OFFSET = 60
 
 const br2nl = (str: string) => {
   return str.replace(/<br\s*\/?>/gm, '\n')
@@ -40,6 +39,19 @@ const sanitizeHeader = (header: string) => {
   return header
 }
 
+const mapPropsToState = (props: Props) => {
+    const { map } = props
+    const metacard = map.get('popupMetacard')
+    const location = map.get('popupLocation')
+
+    return {
+      showPopup: metacard !== null && metacard !== undefined,
+      titleText: metacard ? metacard.getTitle() : undefined,
+      left: location.left + 'px',
+      top: location.top - TOP_OFFSET + 'px',
+    }
+  }
+
 type Props = {
   map: Backbone.Model
 } & WithBackboneProps
@@ -53,20 +65,7 @@ type State = {
 class PopupPreview extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
-    this.state = { ...this.mapPropsToState(props), showPopup: false }
-  }
-
-  mapPropsToState = (props: Props) => {
-    const { map } = props
-    const metacard = map.get('popupMetacard')
-    const location = map.get('popupLocation')
-
-    return {
-      showPopup: metacard !== null && metacard !== undefined,
-      titleText: metacard ? metacard.getTitle() : undefined,
-      left: location.left - LEFT_OFFSET + 'px',
-      bottom: location.bottom - BOTTOM_OFFSET + 'px',
-    }
+    this.state = { ...mapPropsToState(props), showPopup: false }
   }
 
   /**
@@ -122,7 +121,7 @@ class PopupPreview extends React.Component<Props, State> {
   }
 
   handlePopupChange = () => {
-    this.setState(this.mapPropsToState(this.props))
+    this.setState(mapPropsToState(this.props))
   }
 
   render() {

@@ -19,7 +19,7 @@ type Props = {
   titleText: string
   previewText: string
   left: number
-  bottom: number
+  top: number
 }
 
 const Root = styled.div<Props>`
@@ -32,7 +32,9 @@ const Root = styled.div<Props>`
   position: absolute;
   text-align: left;
   padding: 4px;
+  max-height: 290px;
   max-width: 50%;
+  transform: translate(-52.5%, -100%);
 
   &::before {
     top: 100%;
@@ -61,15 +63,15 @@ const Title = styled.div`
 const Preview = styled.div`
   position: relative;
   min-width: 200px;
-  min-height: 150px;
   height: 100%;
+  min-height: 15px;
   max-height: 250px;
   padding: 2px;
   white-space: normal;
-  background-color: @backgroundAccentContent;
+  background-color: ${props => props.theme.backgroundContent};
   border: 2px solid;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
   text-overflow: ellipsis;
 `
 
@@ -82,7 +84,7 @@ const PreviewText = styled.p`
 
 const render = (props: Props) => {
   return (
-    <Root {...props} style={{ left: props.left, bottom: props.bottom }}>
+    <Root {...props} style={{ left: props.left, top: props.top }}>
       <Title>{props.titleText}</Title>
       {props.previewText ? (
         <Preview>{<PreviewText>{props.previewText}</PreviewText>}</Preview>

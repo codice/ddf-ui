@@ -72,13 +72,6 @@ const PopupPreviewView = Marionette.ItemView.extend({
       window.cancelAnimationFrame(this.popupAnimationFrameId)
     }
   },
-  /**
-   * Maps give the points location using 'top', but 'bottom' must be used since the
-   * popup grows up from the location of the point
-   */
-  convertTopToBottom(top) {
-    return window.screen.availHeight - top
-  },
   startPopupAnimating() {
     const map = this.map
     const mapModel = this.mapModel
@@ -86,7 +79,7 @@ const PopupPreviewView = Marionette.ItemView.extend({
       const location = map.getWindowLocationsOfResults([this.getMetacard()])[0]
       mapModel.setPopupLocation({
         left: location[0],
-        bottom: this.convertTopToBottom(location[1]),
+        top: location[1],
       })
       this.startPopupAnimating()
     })
