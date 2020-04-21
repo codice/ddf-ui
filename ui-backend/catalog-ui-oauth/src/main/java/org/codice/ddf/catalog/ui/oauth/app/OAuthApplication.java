@@ -18,11 +18,6 @@ import static javax.ws.rs.core.HttpHeaders.LOCATION;
 import static javax.ws.rs.core.MediaType.TEXT_HTML;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.apache.http.HttpStatus.SC_SEE_OTHER;
-import static org.codice.ddf.security.token.storage.api.TokenStorage.CLIENT_ID;
-import static org.codice.ddf.security.token.storage.api.TokenStorage.DISCOVERY_URL;
-import static org.codice.ddf.security.token.storage.api.TokenStorage.SECRET;
-import static org.codice.ddf.security.token.storage.api.TokenStorage.SOURCE_ID;
-import static org.codice.ddf.security.token.storage.api.TokenStorage.STATE;
 import static spark.Spark.get;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -65,6 +60,11 @@ public class OAuthApplication implements SparkApplication {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(OAuthApplication.class);
 
+  private static final String DISCOVERY_URL = "discovery_url";
+  private static final String CLIENT_ID = "client_id";
+  private static final String SECRET = "client_secret";
+  private static final String SOURCE_ID = "source_id";
+  private static final String STATE = "state";
   private static final String CODE = "code";
   private static final String REDIRECT_URI = "redirect_uri";
   private static final String REDIRECT_URL =
