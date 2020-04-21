@@ -47,10 +47,7 @@ const PopupPreviewView = Marionette.ItemView.extend({
     const targetMetacard = this.mapModel.get('targetMetacard')
     const location = this.getMetacardLocation(targetMetacard)
     if (location) {
-      this.mapModel.setPopupMetacard(targetMetacard, {
-        left: location[0],
-        top: location[1],
-      })
+      this.mapModel.setPopupMetacard(targetMetacard, location)
     } else {
       this.mapModel.setPopupMetacard(targetMetacard)
     }
@@ -75,8 +72,8 @@ const PopupPreviewView = Marionette.ItemView.extend({
   getMetacardLocation(metacard) {
     if (metacard) {
       const location = this.map.getWindowLocationsOfResults([metacard])
-      const [left, top] = location ? location[0] : undefined
-      return [left, top]
+      const coordinates = location ? location[0] : undefined
+      return coordinates ? {left: coordinates[0], top: coordinates[1]} : undefined
     }
   },
   startPopupAnimating() {
@@ -84,12 +81,9 @@ const PopupPreviewView = Marionette.ItemView.extend({
       const map = this.map
       const mapModel = this.mapModel
       this.popupAnimationFrameId = window.requestAnimationFrame(() => {
-        const [left, top] = this.getMetacardLocation(this.getMetacard())
-        if ((left > 0, top > 0)) {
-          mapModel.setPopupLocation({
-            left,
-            top,
-          })
+        const location = this.getMetacardLocation(this.getMetacard())
+        if (location && location.left > 0 && location.top > 0) {
+          mapModel.setPopupLocation(location)
         }
         this.startPopupAnimating()
       })
