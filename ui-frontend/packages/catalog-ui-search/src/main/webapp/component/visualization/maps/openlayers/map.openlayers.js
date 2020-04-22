@@ -284,7 +284,9 @@ const OpenlayersMap = extension =>
         })
       },
       onMouseDown(callback) {
-        map.on('mousedown', callback)
+        $(map.getTargetElement()).on('mousedown', e => {
+          callback()
+        })
       },
       onMouseMove(callback) {
         $(map.getTargetElement()).on('mousemove', e => {
