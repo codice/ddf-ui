@@ -19,13 +19,18 @@ const store = require('../../../js/store.js')
 
 import PopupPreview from '../../../react-component/popup-preview'
 
+const DRAG_SENSITIVITY = 10
+
 const PopupPreviewView = Marionette.ItemView.extend({
   selectionInterface: store,
+  drag: 0,
   initialize(options) {
     this.map = options.map
     this.mapModel = options.mapModel
 
-    this.map.onLeftClick(this.onLeftClick.bind(this))
+    this.map.onMouseDown(this.onMouseDown.bind(this))
+    this.map.onMouseMoveInputAction(this.onMouseMove.bind(this))
+    this.map.onLeftClick(this.onMouseUp.bind(this))
 
     this.listenForCameraChange()
   },
@@ -36,20 +41,57 @@ const PopupPreviewView = Marionette.ItemView.extend({
   /**
    * Determine whether the component should be shown
    */
-  getMetacard() {
-    return this.mapModel.get('popupMetacard')
+  getTarget() {
+    return (
+      this.mapModel.get('popupMetacard') ||
+      this.mapModel.get('popupClusterModels')
+    )
+  },
+  /**
+   * Decide if the target references a cluster of metacards
+   */
+  targetIsCluster(targetMetacard, mapTarget) {
+    return !targetMetacard && typeof mapTarget.mapTarget === 'object'
+  },
+  /**
+   * Make popup mutually exclusive for metacards and clusters
+   */
+  setPopupMetacard(targetMetacard, location) {
+    this.mapModel.setPopupClusterModels(undefined)
+    this.mapModel.setPopupMetacard(targetMetacard, location)
+  },
+  /**
+   * Make popup mutually exclusive for metacards and clusters
+   */
+  setPopupClusterModels(models, location) {
+    this.mapModel.setPopupMetacard(undefined)
+    this.mapModel.setPopupClusterModels(models, location)
+  },
+  onMouseDown() {
+    this.drag = 0
+  },
+  onMouseMove() {
+    this.drag += 1
   },
   /**
     Update the event position in the model, will trigger popup to check if it needs to be shown
    */
-  onLeftClick(event, mapEvent) {
-    event.preventDefault()
-    const targetMetacard = this.mapModel.get('targetMetacard')
-    const location = this.getMetacardLocation(targetMetacard)
-    if (location) {
-      this.mapModel.setPopupMetacard(targetMetacard, location)
-    } else {
-      this.mapModel.setPopupMetacard(targetMetacard)
+  onMouseUp(event, mapTarget) {
+    if (DRAG_SENSITIVITY > this.drag) {
+      const targetMetacard = this.mapModel.get('targetMetacard')
+
+      if (!this.targetIsCluster(targetMetacard, mapTarget)) {
+        const location = this.getLocation(targetMetacard)
+        this.setPopupMetacard(targetMetacard, location)
+      } else {
+        // give popup the cluster models
+        const models = this.selectionInterface
+          .getActiveSearchResults()
+          .filter(m => mapTarget.mapTarget.includes(m.id))
+        const location = this.getLocation(models)
+
+        this.setPopupClusterModels(models, location)
+      }
     }
   },
   /**
@@ -60,28 +102,30 @@ const PopupPreviewView = Marionette.ItemView.extend({
     this.map.onCameraMoveEnd(this.handleCameraMoveEnd.bind(this))
   },
   handleCameraMoveStart() {
-    if (this.getMetacard()) {
+    if (this.getTarget()) {
       this.startPopupAnimating()
     }
   },
   handleCameraMoveEnd() {
-    if (this.getMetacard()) {
+    if (this.getTarget()) {
       window.cancelAnimationFrame(this.popupAnimationFrameId)
     }
   },
-  getMetacardLocation(metacard) {
-    if (metacard) {
-      const location = this.map.getWindowLocationsOfResults([metacard])
+  getLocation(target) {
+    if (target) {
+      target = Array.isArray(target) ? target : [target]
+      const location = this.map.getWindowLocationsOfResults(target)
       const coordinates = location ? location[0] : undefined
-      return coordinates ? {left: coordinates[0], top: coordinates[1]} : undefined
+      return coordinates
+        ? { left: coordinates[0], top: coordinates[1] }
+        : undefined
     }
   },
   startPopupAnimating() {
-    if (this.getMetacard()) {
-      const map = this.map
+    if (this.getTarget()) {
       const mapModel = this.mapModel
       this.popupAnimationFrameId = window.requestAnimationFrame(() => {
-        const location = this.getMetacardLocation(this.getMetacard())
+        const location = this.getLocation(this.getTarget())
         if (location && location.left > 0 && location.top > 0) {
           mapModel.setPopupLocation(location)
         }

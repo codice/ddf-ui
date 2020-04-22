@@ -17,6 +17,7 @@ import styled from 'styled-components'
 
 type Props = {
   titleText: string
+  clusterTitles: Array<string>
   previewText: string
   left: number
   top: number
@@ -82,16 +83,44 @@ const PreviewText = styled.p`
   margin-bottom: 15px;
 `
 
+const ClusterList = styled.ul`
+  margin: 1px;
+  padding: 1px;
+  border: 1px solid;
+`
+
+const ClusterTitle = styled.li`
+  font-size: 18px;
+  margin: 0;
+  padding: 2px 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'Open Sans', arial, sans-serif;
+`
+
+const createTitles = (titles: Array<String>) => {
+  const elements = titles.map(function(title) {
+    return <ClusterTitle>{title}</ClusterTitle>
+  })
+  return <ClusterList>{elements}</ClusterList>
+}
+
 const render = (props: Props) => {
+  let title
+  if (props.titleText) {
+    title = <Title>{props.titleText}</Title>
+  } else if (props.clusterTitles) {
+    title = createTitles(props.clusterTitles)
+  }
+
   return (
     <Root {...props} style={{ left: props.left, top: props.top }}>
-      <Title>{props.titleText}</Title>
-      {props.previewText ? (
+      {title}
+      {props.previewText && (
         <Preview>
           <PreviewText>{props.previewText}</PreviewText>
         </Preview>
-      ) : (
-        undefined
       )}
     </Root>
   )

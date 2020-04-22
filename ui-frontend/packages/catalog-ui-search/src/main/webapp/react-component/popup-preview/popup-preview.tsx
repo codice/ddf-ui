@@ -42,11 +42,11 @@ const sanitizeHeader = (header: string) => {
 const mapPropsToState = (props: Props) => {
   const { map } = props
   const metacard = map.get('popupMetacard')
+  const clusterTitles = map.get('popupClusterModels')
   const location = map.get('popupLocation')
 
   return {
-    showPopup: metacard !== null && metacard !== undefined,
-    titleText: metacard ? metacard.getTitle() : undefined,
+    showPopup: metacard !== undefined || clusterTitles !== undefined,
     left: location ? location.left + 'px' : 0,
     top: location ? location.top - TOP_OFFSET + 'px' : 0,
   }
@@ -58,40 +58,20 @@ type Props = {
 
 type State = {
   showPopup: Boolean
-  titleText: String
+  titleText?: String
   previewText?: String
+  clusterTitles?: Array<String>
+}
+
+type Metacard = {
+  getPreview: Function
+  getTitle: Function
 }
 
 class PopupPreview extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = { ...mapPropsToState(props), showPopup: false }
-  }
-
-  /**
-    Gets the previewText from the targetMetacard url
-   */
-  setPreviewText = (props: Props) => {
-    const metacard = props.map.get('popupMetacard')
-
-    if (metacard) {
-      const url = metacard.getPreview()
-
-      if (url) {
-        const xhr = new XMLHttpRequest()
-        xhr.addEventListener('load', () => {
-          if (xhr.status === STATUS_OK) {
-            const responseText = sanitizeHeader(xhr.responseText)
-            this.setState({ previewText: responseText })
-          }
-        })
-
-        xhr.open('GET', url)
-        xhr.send()
-      } else {
-        this.setState({ previewText: undefined })
-      }
-    }
   }
 
   componentDidMount() {
@@ -101,19 +81,65 @@ class PopupPreview extends React.Component<Props, State> {
   listenToMap = () => {
     const { listenTo, map } = this.props
     listenTo(map, 'change:popupLocation', this.handlePopupChange)
-    listenTo(map, 'change:popupMetacard', () => {
-      this.setPreviewText(this.props)
+    listenTo(map, 'change:popupMetacard change:popupClusterModels', () => {
+      this.setPopup(this.props)
     })
   }
 
   componentWillUnmount() {
     const { stopListening, map } = this.props
     stopListening(map, 'change:popupLocation', this.handlePopupChange)
-    stopListening(map, 'change:popupMetacard', this.setPreviewText)
+    stopListening(
+      map,
+      'change:popupMetacard change:popupClusterModels',
+      this.setPopup
+    )
   }
 
   handlePopupChange = () => {
     this.setState(mapPropsToState(this.props))
+  }
+
+  setPopup = (props: Props) => {
+    const metacard = props.map.get('popupMetacard')
+    const clusterModels = props.map.get('popupClusterModels')
+
+    if (metacard) {
+      this.setPreviewText(metacard)
+      this.setState({
+        titleText: metacard.getTitle(),
+        clusterTitles: undefined,
+      })
+    } else if (clusterModels) {
+      // get titles from models without duplicates
+      const targetTitles = clusterModels.map((m: Metacard) => m.getTitle())
+      const clusterTitles: String[] = Array.from(new Set(targetTitles))
+
+      this.setState({ titleText: undefined, previewText: undefined })
+      this.setState({ clusterTitles })
+    }
+  }
+
+  /**
+      Gets the previewText from the targetMetacard url
+     */
+  setPreviewText = (metacard: Metacard) => {
+    const url = metacard.getPreview()
+
+    if (url) {
+      const xhr = new XMLHttpRequest()
+      xhr.addEventListener('load', () => {
+        if (xhr.status === STATUS_OK) {
+          const responseText = sanitizeHeader(xhr.responseText)
+          this.setState({ previewText: responseText })
+        }
+      })
+
+      xhr.open('GET', url)
+      xhr.send()
+    } else {
+      this.setState({ previewText: undefined })
+    }
   }
 
   render() {

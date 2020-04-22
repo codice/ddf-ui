@@ -379,6 +379,16 @@ module.exports = function CesiumMap(
         callback(e)
       })
     },
+    onMouseDown(callback) {
+      map.screenSpaceEventHandler.setInputAction(() => {
+        callback()
+      }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
+    },
+    onMouseMoveInputAction(callback) {
+      map.screenSpaceEventHandler.setInputAction(() => {
+        callback()
+      }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
+    },
     onMouseMove(callback) {
       $(map.scene.canvas).on('mousemove', e => {
         const boundingRect = map.scene.canvas.getBoundingClientRect()

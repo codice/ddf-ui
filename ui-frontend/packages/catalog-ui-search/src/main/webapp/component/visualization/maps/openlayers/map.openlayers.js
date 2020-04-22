@@ -283,6 +283,9 @@ const OpenlayersMap = extension =>
           callback(e)
         })
       },
+      onMouseDown(callback) {
+        map.on('mousedown', callback)
+      },
       onMouseMove(callback) {
         $(map.getTargetElement()).on('mousemove', e => {
           const boundingRect = map.getTargetElement().getBoundingClientRect()
