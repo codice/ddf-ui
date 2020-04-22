@@ -103,6 +103,10 @@ const ClusterTitle = styled.li`
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: 'Open Sans', arial, sans-serif;
+
+  &:hover {
+    background-color: ${props => props.theme.backgroundSlideout};
+  }
 `
 
 // get titles from models without duplicates
