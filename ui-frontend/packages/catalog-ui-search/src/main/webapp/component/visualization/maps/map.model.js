@@ -59,7 +59,7 @@ module.exports = Backbone.AssociatedModel.extend({
       left: 0,
       bottom: 0,
     },
-    popupClusterModels: Array,
+    popupClusterModels: undefined,
   },
   /*
    * Sets the measurement state to the given new state.

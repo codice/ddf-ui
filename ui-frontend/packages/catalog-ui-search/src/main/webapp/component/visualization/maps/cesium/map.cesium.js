@@ -380,7 +380,10 @@ module.exports = function CesiumMap(
       })
     },
     onMouseDown(callback) {
-      map.screenSpaceEventHandler.setInputAction(() => {
+      map.screenSpaceEventHandlerForPopupPreview = new Cesium.ScreenSpaceEventHandler(
+        map.canvas
+      )
+      map.screenSpaceEventHandlerForPopupPreview.setInputAction(() => {
         callback()
       }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
     },

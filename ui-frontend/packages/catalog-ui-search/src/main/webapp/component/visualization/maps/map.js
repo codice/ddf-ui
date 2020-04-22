@@ -24,7 +24,6 @@ const exposedMethods = [
   'onRightClick',
   'onMouseDown',
   'onMouseMove',
-  'onMouseUp',
   'onCameraMoveStart',
   'onCameraMoveEnd',
   'zoomToSelected',
