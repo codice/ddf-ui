@@ -126,9 +126,7 @@ const PopupPreviewView = Marionette.ItemView.extend({
       const mapModel = this.mapModel
       this.popupAnimationFrameId = window.requestAnimationFrame(() => {
         const location = this.getLocation(this.getTarget())
-        if (location && location.left > 0 && location.top > 0) {
-          mapModel.setPopupLocation(location)
-        }
+        mapModel.setPopupLocation(location)
         this.startPopupAnimating()
       })
     }

@@ -46,7 +46,7 @@ const mapPropsToState = (props: Props) => {
   const location = map.get('popupLocation')
 
   return {
-    showPopup: metacard !== undefined || clusterTitles !== undefined,
+    showPopup: location && (metacard || clusterTitles),
     left: location ? location.left + 'px' : 0,
     top: location ? location.top - TOP_OFFSET + 'px' : 0,
   }
