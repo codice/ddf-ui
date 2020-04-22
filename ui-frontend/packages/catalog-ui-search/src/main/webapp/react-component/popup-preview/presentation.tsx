@@ -17,10 +17,16 @@ import styled from 'styled-components'
 
 type Props = {
   titleText: string
-  clusterTitles: Array<string>
   previewText: string
+  clusterModels: Array<Metacard>
+  clusterTitleCallback: Function
   left: number
   top: number
+}
+
+type Metacard = {
+  getPreview: Function
+  getTitle: Function
 }
 
 const Root = styled.div<Props>`
@@ -70,7 +76,7 @@ const Preview = styled.div`
   padding: 2px;
   white-space: normal;
   background-color: ${props => props.theme.backgroundContent};
-  border: 2px solid;
+  border: 1px solid;
   overflow-y: auto;
   overflow-x: auto;
   text-overflow: ellipsis;
@@ -99,9 +105,20 @@ const ClusterTitle = styled.li`
   font-family: 'Open Sans', arial, sans-serif;
 `
 
-const createTitles = (titles: Array<String>) => {
+// get titles from models without duplicates
+const getTitles = (models: Array<Metacard>) => {
+  const targetTitles = models.map((m: Metacard) => m.getTitle())
+  const clusterTitles: String[] = Array.from(new Set(targetTitles))
+  return clusterTitles
+}
+
+const createTitleComponents = (models: Array<Metacard>, callback: Function) => {
+  const titles = getTitles(models)
+
   const elements = titles.map(function(title) {
-    return <ClusterTitle>{title}</ClusterTitle>
+    return (
+      <ClusterTitle onClick={e => callback(title, e)}>{title}</ClusterTitle>
+    )
   })
   return <ClusterList>{elements}</ClusterList>
 }
@@ -110,8 +127,11 @@ const render = (props: Props) => {
   let title
   if (props.titleText) {
     title = <Title>{props.titleText}</Title>
-  } else if (props.clusterTitles) {
-    title = createTitles(props.clusterTitles)
+  } else if (props.clusterModels) {
+    title = createTitleComponents(
+      props.clusterModels,
+      props.clusterTitleCallback
+    )
   }
 
   return (

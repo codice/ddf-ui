@@ -42,11 +42,11 @@ const sanitizeHeader = (header: string) => {
 const mapPropsToState = (props: Props) => {
   const { map } = props
   const metacard = map.get('popupMetacard')
-  const clusterTitles = map.get('popupClusterModels')
+  const clusterModels = map.get('popupClusterModels')
   const location = map.get('popupLocation')
 
   return {
-    showPopup: location && (metacard || clusterTitles),
+    showPopup: location && (metacard || clusterModels),
     left: location ? location.left + 'px' : 0,
     top: location ? location.top - TOP_OFFSET + 'px' : 0,
   }
@@ -60,7 +60,8 @@ type State = {
   showPopup: Boolean
   titleText?: String
   previewText?: String
-  clusterTitles?: Array<String>
+  clusterModels?: Array<Metacard>
+  clusterTitleCallback?: Function
 }
 
 type Metacard = {
@@ -71,7 +72,11 @@ type Metacard = {
 class PopupPreview extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
-    this.state = { ...mapPropsToState(props), showPopup: false }
+    this.state = {
+      ...mapPropsToState(props),
+      showPopup: false,
+      clusterTitleCallback: this.clusterTitleCallback,
+    }
   }
 
   componentDidMount() {
@@ -105,19 +110,22 @@ class PopupPreview extends React.Component<Props, State> {
     const clusterModels = props.map.get('popupClusterModels')
 
     if (metacard) {
-      this.setPreviewText(metacard)
-      this.setState({
-        titleText: metacard.getTitle(),
-        clusterTitles: undefined,
-      })
+      this.setPopupMetacard(metacard)
     } else if (clusterModels) {
-      // get titles from models without duplicates
-      const targetTitles = clusterModels.map((m: Metacard) => m.getTitle())
-      const clusterTitles: String[] = Array.from(new Set(targetTitles))
-
       this.setState({ titleText: undefined, previewText: undefined })
-      this.setState({ clusterTitles })
+      this.setState({ clusterModels })
     }
+  }
+
+  /**
+    Set state values for a single metacard
+   */
+  setPopupMetacard = (metacard: Metacard) => {
+    this.setPreviewText(metacard)
+    this.setState({
+      titleText: metacard.getTitle(),
+      clusterModels: undefined,
+    })
   }
 
   /**
@@ -139,6 +147,18 @@ class PopupPreview extends React.Component<Props, State> {
       xhr.send()
     } else {
       this.setState({ previewText: undefined })
+    }
+  }
+
+  /**
+   *  Switch from cluster to metacard when cluster titles are clicked
+   */
+  clusterTitleCallback = (title: String) => {
+    const metacard = this.state!.clusterModels!.find(
+      m => m.getTitle() === title
+    )
+    if (metacard) {
+      this.setPopupMetacard(metacard)
     }
   }
 
