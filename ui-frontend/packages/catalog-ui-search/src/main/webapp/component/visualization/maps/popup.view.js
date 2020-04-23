@@ -37,8 +37,7 @@ const PopupPreviewView = Marionette.ItemView.extend({
     this.listenForCameraChange()
   },
   template() {
-    this.component = <PopupPreview map={this.mapModel} />
-    return this.component
+    return <PopupPreview map={this.mapModel} />
   },
   /**
    * Determine whether the component should be shown

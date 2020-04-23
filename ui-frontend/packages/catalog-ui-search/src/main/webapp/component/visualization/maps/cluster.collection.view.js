@@ -33,7 +33,7 @@ const ClusterCollectionView = Marionette.CollectionView.extend({
   initialize(options) {
     this.isActive = Boolean(options.isActive) || this.isActive
     this.render = _.throttle(this.render, 200)
-    this.options.map.onLeftClick = _.debounce(this.options.map.onLeftClick, 30)
+    this.onMapLeftClick = _.debounce(this.onMapLeftClick, 30)
     this.selectionInterface =
       options.selectionInterface || this.selectionInterface
     this.options.map.onLeftClick(this.onMapLeftClick.bind(this))
