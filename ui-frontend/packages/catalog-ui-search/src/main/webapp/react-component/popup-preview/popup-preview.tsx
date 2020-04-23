@@ -31,14 +31,11 @@ const br2nl = (str: string) => {
 }
 
 const sanitizeHeader = (header: string) => {
-  if (typeof header === 'string') {
-    const sanitized = sanitize(header, {
-      allowedTags: ['br'],
-      allowedAttributes: [],
-    })
-    return br2nl(sanitized)
-  }
-  return header
+  const sanitized = sanitize(header, {
+    allowedTags: ['br'],
+    allowedAttributes: [],
+  })
+  return br2nl(sanitized)
 }
 
 const mapPropsToState = (props: Props) => {
