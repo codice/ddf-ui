@@ -30,12 +30,13 @@ const br2nl = (str: string) => {
   return str.replace(/<br\s*\/?>/gm, '\n')
 }
 
-const sanitizeHeader = (header: string) => {
+const hasPreview = (header: string) => {
   const sanitized = sanitize(header, {
     allowedTags: ['br'],
     allowedAttributes: [],
   })
-  return br2nl(sanitized)
+
+  return br2nl(sanitized) !== NO_PREVIEW
 }
 
 const mapPropsToState = (props: Props) => {
@@ -58,7 +59,7 @@ type Props = {
 type State = {
   showPopup: Boolean
   titleText?: String
-  previewText?: String
+  previewHtml?: String
   clusterModels?: Array<Metacard>
   clusterTitleCallback?: Function
 }
@@ -114,7 +115,7 @@ class PopupPreview extends React.Component<Props, State> {
     Set state values for a single metacard
    */
   setPopupMetacard = (metacard: Metacard) => {
-    this.setPreviewText(metacard)
+    this.setpreviewHtml(metacard)
     this.setState({
       titleText: metacard.getTitle(),
       clusterModels: undefined,
@@ -125,23 +126,24 @@ class PopupPreview extends React.Component<Props, State> {
    Set state values for a cluster
   */
   setPopupCluster = (clusterModels: Array<Metacard>) => {
-    this.setState({ titleText: undefined, previewText: undefined })
+    this.setState({ titleText: undefined, previewHtml: undefined })
     this.setState({ clusterModels })
   }
 
   /**
-    Gets the previewText from the targetMetacard url
+    Gets the previewHtml from the targetMetacard url
    */
-  setPreviewText = (metacard: Metacard) => {
+  setpreviewHtml = (metacard: Metacard) => {
     const url = metacard.getPreview()
 
     if (url) {
       const xhr = new XMLHttpRequest()
       xhr.addEventListener('load', () => {
         if (xhr.status === STATUS_OK) {
-          var responseText = sanitizeHeader(xhr.responseText)
           this.setState({
-            previewText: responseText !== NO_PREVIEW ? responseText : undefined,
+            previewHtml: hasPreview(xhr.responseText)
+              ? xhr.responseText
+              : undefined,
           })
         }
       })
@@ -149,7 +151,7 @@ class PopupPreview extends React.Component<Props, State> {
       xhr.open('GET', url)
       xhr.send()
     } else {
-      this.setState({ previewText: undefined })
+      this.setState({ previewHtml: undefined })
     }
   }
 

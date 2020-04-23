@@ -19,7 +19,7 @@ import { Metacard } from '.'
 
 type Props = {
   titleText: string
-  previewText: string
+  previewHtml: string
   clusterModels: Array<Metacard>
   clusterTitleCallback: Function
   left: number
@@ -79,11 +79,10 @@ const Preview = styled.div`
   text-overflow: ellipsis;
 `
 
-const PreviewText = styled.p`
+const PreviewHtml = styled.html`
   font-family: 'Open Sans', arial, sans-serif;
   font-size: 14px;
   padding: 2px 4px;
-  margin-bottom: 15px;
 `
 
 const ClusterList = styled.ul`
@@ -138,9 +137,11 @@ const render = (props: Props) => {
   return (
     <Root {...props} style={{ left: props.left, top: props.top }}>
       {title}
-      {props.previewText && (
+      {props.previewHtml && (
         <Preview>
-          <PreviewText>{props.previewText}</PreviewText>
+          <PreviewHtml
+            dangerouslySetInnerHTML={{ __html: props.previewHtml }}
+          />
         </Preview>
       )}
     </Root>
