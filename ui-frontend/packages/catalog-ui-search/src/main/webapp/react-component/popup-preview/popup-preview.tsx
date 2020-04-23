@@ -20,6 +20,8 @@ const sanitize = require('sanitize-html')
 
 const PopupPresentation = require('./presentation').default
 
+const NO_PREVIEW = 'No preview text available.'
+
 const STATUS_OK = 200
 
 const TOP_OFFSET = 60
@@ -138,8 +140,10 @@ class PopupPreview extends React.Component<Props, State> {
       const xhr = new XMLHttpRequest()
       xhr.addEventListener('load', () => {
         if (xhr.status === STATUS_OK) {
-          const responseText = sanitizeHeader(xhr.responseText)
-          this.setState({ previewText: responseText })
+          var responseText = sanitizeHeader(xhr.responseText)
+          this.setState({
+            previewText: responseText !== NO_PREVIEW ? responseText : undefined,
+          })
         }
       })
 

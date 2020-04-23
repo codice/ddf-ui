@@ -283,10 +283,14 @@ const OpenlayersMap = extension =>
           callback(e)
         })
       },
-      onMouseDown(callback) {
+      onMouseTrackingForPopup(downCallback, moveCallback, upCallback) {
         $(map.getTargetElement()).on('mousedown', e => {
-          callback()
+          downCallback()
         })
+        $(map.getTargetElement()).on('mousemove', e => {
+          moveCallback()
+        })
+        this.onLeftClick(upCallback)
       },
       onMouseMove(callback) {
         $(map.getTargetElement()).on('mousemove', e => {

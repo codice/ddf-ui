@@ -28,9 +28,11 @@ const PopupPreviewView = Marionette.ItemView.extend({
     this.map = options.map
     this.mapModel = options.mapModel
 
-    this.map.onMouseDown(this.onMouseDown.bind(this))
-    this.map.onMouseMove(this.onMouseMove.bind(this))
-    this.map.onLeftClick(this.onMouseUp.bind(this))
+    this.map.onMouseTrackingForPopup(
+      this.onMouseDown.bind(this),
+      this.onMouseMove.bind(this),
+      this.onMouseUp.bind(this)
+    )
 
     this.listenForCameraChange()
   },
