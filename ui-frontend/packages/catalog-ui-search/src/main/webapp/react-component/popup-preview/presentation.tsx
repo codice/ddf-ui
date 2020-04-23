@@ -15,6 +15,8 @@
 import * as React from 'react'
 import styled from 'styled-components'
 
+import { Metacard } from '.'
+
 type Props = {
   titleText: string
   previewText: string
@@ -22,11 +24,6 @@ type Props = {
   clusterTitleCallback: Function
   left: number
   top: number
-}
-
-type Metacard = {
-  getPreview: Function
-  getTitle: Function
 }
 
 const Root = styled.div<Props>`

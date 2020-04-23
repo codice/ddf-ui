@@ -12,4 +12,10 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+
+export type Metacard = {
+  getPreview: Function
+  getTitle: Function
+}
+
 export { default } from './popup-preview'

@@ -155,6 +155,8 @@ const GeometryView = Marionette.ItemView.extend({
           .get('title'),
         color: this.model.get('metacard').get('color'),
         icon: iconHelper.getFull(this.model),
+        useVerticalOrigin: true,
+        useHorizontalOrigin: true,
         view: this,
       })
     )

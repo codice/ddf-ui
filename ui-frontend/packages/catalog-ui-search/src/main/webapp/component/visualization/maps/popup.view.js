@@ -72,11 +72,14 @@ const PopupPreviewView = Marionette.ItemView.extend({
   onMouseDown() {
     this.drag = 0
   },
+  /**
+   * Do not hide the popup if the drag is greater than the designated DRAG_SENSITIVITY
+   */
   onMouseMove() {
     this.drag += 1
   },
   /**
-    Update the event position in the model, will trigger popup to check if it needs to be shown
+   * Update the event position in the model, will trigger popup to check if it needs to be shown
    */
   onMouseUp(event, mapTarget) {
     if (DRAG_SENSITIVITY > this.drag) {
@@ -113,6 +116,10 @@ const PopupPreviewView = Marionette.ItemView.extend({
       window.cancelAnimationFrame(this.popupAnimationFrameId)
     }
   },
+  /**
+   * Get the pixel location from a metacard(s)
+   * returns { left, top } relative to the map view
+   */
   getLocation(target) {
     if (target) {
       target = Array.isArray(target) ? target : [target]

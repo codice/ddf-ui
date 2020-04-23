@@ -16,12 +16,12 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 
-const sanitize = require('sanitize-html')
+import { Metacard } from '.'
 
+const sanitize = require('sanitize-html')
 const PopupPresentation = require('./presentation').default
 
 const NO_PREVIEW = 'No preview text available.'
-
 const STATUS_OK = 200
 
 const TOP_OFFSET = 60
@@ -64,11 +64,6 @@ type State = {
   previewText?: String
   clusterModels?: Array<Metacard>
   clusterTitleCallback?: Function
-}
-
-type Metacard = {
-  getPreview: Function
-  getTitle: Function
 }
 
 class PopupPreview extends React.Component<Props, State> {
@@ -114,8 +109,7 @@ class PopupPreview extends React.Component<Props, State> {
     if (metacard) {
       this.setPopupMetacard(metacard)
     } else if (clusterModels) {
-      this.setState({ titleText: undefined, previewText: undefined })
-      this.setState({ clusterModels })
+      this.setPopupCluster(clusterModels)
     }
   }
 
@@ -131,8 +125,16 @@ class PopupPreview extends React.Component<Props, State> {
   }
 
   /**
-      Gets the previewText from the targetMetacard url
-     */
+   Set state values for a cluster
+  */
+  setPopupCluster = (clusterModels: Array<Metacard>) => {
+    this.setState({ titleText: undefined, previewText: undefined })
+    this.setState({ clusterModels })
+  }
+
+  /**
+    Gets the previewText from the targetMetacard url
+   */
   setPreviewText = (metacard: Metacard) => {
     const url = metacard.getPreview()
 

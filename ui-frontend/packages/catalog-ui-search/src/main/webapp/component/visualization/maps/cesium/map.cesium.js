@@ -389,18 +389,7 @@ module.exports = function CesiumMap(
       map.screenSpaceEventHandlerForPopupPreview.setInputAction(() => {
         moveCallback()
       }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
-      map.screenSpaceEventHandlerForPopupPreview.setInputAction(e => {
-        const boundingRect = map.scene.canvas.getBoundingClientRect()
-        upCallback(e, {
-          mapTarget: determineIdFromPosition(
-            {
-              x: e.clientX - boundingRect.left,
-              y: e.clientY - boundingRect.top,
-            },
-            map
-          ),
-        })
-      }, Cesium.ScreenSpaceEventType.LEFT_UP)
+      this.onLeftClick(upCallback)
     },
     onMouseMove(callback) {
       $(map.scene.canvas).on('mousemove', e => {
