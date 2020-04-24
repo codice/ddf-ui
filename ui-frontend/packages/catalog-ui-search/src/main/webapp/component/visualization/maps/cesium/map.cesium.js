@@ -411,11 +411,11 @@ module.exports = function CesiumMap(
       map.scene.camera.moveStart.addEventListener(callback)
     },
     onCameraMoveEnd(callback) {
-    const timeoutCallback = () => {
-                 this.timeoutId = setTimeout(() => {
-                               callback()
-                             }, 300)
-                }
+      const timeoutCallback = () => {
+        this.timeoutId = setTimeout(() => {
+          callback()
+        }, 300)
+      }
       map.scene.camera.moveEnd.addEventListener(timeoutCallback)
     },
     doPanZoom(coords) {

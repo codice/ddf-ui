@@ -304,18 +304,18 @@ const OpenlayersMap = extension =>
         })
       },
       timeoutId: NaN,
-          onCameraMoveStart(callback) {
-            clearTimeout(this.timeoutId)
-            map.on('movestart', callback)
-          },
-          onCameraMoveEnd(callback) {
-            const timeoutCallback = () => {
-             this.timeoutId = setTimeout(() => {
-                           callback()
-                         }, 300)
-            }
-            map.on('moveend', timeoutCallback)
-          },
+      onCameraMoveStart(callback) {
+        clearTimeout(this.timeoutId)
+        map.on('movestart', callback)
+      },
+      onCameraMoveEnd(callback) {
+        const timeoutCallback = () => {
+          this.timeoutId = setTimeout(() => {
+            callback()
+          }, 300)
+        }
+        map.on('moveend', timeoutCallback)
+      },
       doPanZoom(coords) {
         const that = this
         that.zoomOut({ duration: 1000 }, () => {
