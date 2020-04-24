@@ -499,6 +499,7 @@ module.exports = Marionette.LayoutView.extend({
       new PopupPreviewView({
         map: this.map,
         mapModel: this.mapModel,
+        selectionInterface: this.options.selectionInterface,
       })
     )
   },

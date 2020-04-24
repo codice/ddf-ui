@@ -15,12 +15,18 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import styled from 'styled-components'
-
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 
-export type Metacard = {
+export type MetacardType = {
   getPreview: Function
   getTitle: Function
+  id: String
+  toJSON: () => any
+}
+
+export type LocationType = {
+  left: number
+  top: number
 }
 
 const Root = styled.div`
@@ -109,6 +115,8 @@ const STATUS_OK = 200
 
 const TOP_OFFSET = 60
 
+const DRAG_SENSITIVITY = 10
+
 const br2nl = (str: string) => {
   return str.replace(/<br\s*\/?>/gm, '\n')
 }
@@ -123,35 +131,37 @@ const hasPreview = (header: string) => {
 }
 
 type Props = {
-  map: Backbone.Model
+  map: any
+  selectionInterface: {
+    getSelectedResults: () => {
+      models: MetacardType[]
+    } & Array<MetacardType>
+    getActiveSearchResults: () => {
+      models: MetacardType[]
+    } & Array<MetacardType>
+    clearSelectedResults: () => void
+    addSelectedResult: (metacard: MetacardType) => void
+  }
+  mapModel: any
 }
 
-const getLeft = ({ map }: Props) => {
-  const location = map.get('popupLocation')
+const getLeft = (location: undefined | LocationType) => {
   return location ? location.left + 'px' : 0
 }
 
-const getTop = ({ map }: Props) => {
-  const location = map.get('popupLocation')
+const getTop = (location: undefined | LocationType) => {
   return location ? location.top - TOP_OFFSET + 'px' : 0
 }
 
-const getShowPopup = ({ map }: Props) => {
-  const location = map.get('popupLocation')
-  const clusterModels = map.get('popupClusterModels')
-  const metacard = map.get('popupMetacard')
-  return location && (metacard || clusterModels)
-}
-
 const getPreviewHTML = ({
-  map,
+  targetMetacard,
   setPreviewHTML,
 }: {
-  map: any
+  targetMetacard: MetacardType | undefined
   setPreviewHTML: React.Dispatch<React.SetStateAction<string | undefined>>
 }) => {
-  if (map.get('popupMetacard')) {
-    const url = map.get('popupMetacard').getPreview() as string
+  if (targetMetacard) {
+    const url = targetMetacard.getPreview() as string
     const xhr = new XMLHttpRequest()
     xhr.addEventListener('load', () => {
       if (xhr.status === STATUS_OK) {
@@ -168,34 +178,108 @@ const getPreviewHTML = ({
   }
 }
 
+/**
+ * Get the pixel location from a metacard(s)
+ * returns { left, top } relative to the map view
+ */
+const getLocation = (map: any, target: MetacardType[]) => {
+  if (target) {
+    const location = map.getWindowLocationsOfResults(target)
+    const coordinates = location ? location[0] : undefined
+    return coordinates
+      ? { left: coordinates[0], top: coordinates[1] }
+      : undefined
+  }
+}
+
 const HookPopupPreview = (props: Props) => {
-  const { map } = props
-  const forceRender = React.useState(Math.random())[1]
+  const { map, selectionInterface } = props
+  const [location, setLocation] = React.useState(undefined as
+    | undefined
+    | LocationType)
+  const dragRef = React.useRef(0)
+  const [open, setOpen] = React.useState(false)
   const [previewHTML, setPreviewHTML] = React.useState(undefined as
     | undefined
     | string)
   const { listenTo } = useBackbone()
 
+  const getTarget = () => {
+    return selectionInterface.getSelectedResults()
+  }
+
+  let popupAnimationFrameId: any
+  const startPopupAnimating = (map: any) => {
+    if (getTarget().length !== 0) {
+      console.log('animating')
+      popupAnimationFrameId = window.requestAnimationFrame(() => {
+        const location = getLocation(map, getTarget())
+        setLocation(location)
+        startPopupAnimating(map)
+      })
+    }
+  }
+
+  const handleCameraMoveEnd = () => {
+    if (getTarget().length !== 0) {
+      window.cancelAnimationFrame(popupAnimationFrameId)
+    }
+  }
+
   React.useEffect(() => {
     listenTo(
-      map,
-      'change:popupMetacard change:popupClusterModels change:popupLocation',
+      selectionInterface.getSelectedResults(),
+      'reset add remove',
       () => {
-        forceRender(Math.random())
-        getPreviewHTML({ map, setPreviewHTML })
+        if (selectionInterface.getSelectedResults().length === 1) {
+          getPreviewHTML({
+            targetMetacard: selectionInterface.getSelectedResults()[0],
+            setPreviewHTML,
+          })
+        }
+        setLocation(getLocation(map, getTarget()))
+        if (selectionInterface.getSelectedResults().length !== 0) {
+          setOpen(true)
+        }
       }
     )
+    map.onMouseTrackingForPopup(
+      () => {
+        dragRef.current = 0
+      },
+      () => {
+        dragRef.current += 1
+      },
+      (_event: any, mapTarget: any) => {
+        if (DRAG_SENSITIVITY > dragRef.current) {
+          setOpen(mapTarget.mapTarget !== undefined)
+        }
+      }
+    )
+
+    map.onCameraMoveStart(() => {
+      startPopupAnimating(map)
+    })
+    map.onCameraMoveEnd(() => {
+      handleCameraMoveEnd()
+    })
+
+    return () => {
+      window.cancelAnimationFrame(popupAnimationFrameId)
+    }
   }, [])
 
-  if (!getShowPopup(props)) {
+  if (!open) {
     return null
   }
 
   return (
-    <Root style={{ left: getLeft(props), top: getTop(props) }}>
+    <Root style={{ left: getLeft(location), top: getTop(location) }}>
       {(function() {
-        if (map.get('popupMetacard')) {
-          const metacardJSON = map.get('popupMetacard').toJSON()
+        if (selectionInterface.getSelectedResults().length === 1) {
+          const metacardJSON = selectionInterface
+            .getSelectedResults()
+            .models[0].toJSON()
           return (
             <>
               <Title>{metacardJSON.metacard.properties.title}</Title>
@@ -208,22 +292,24 @@ const HookPopupPreview = (props: Props) => {
               )}
             </>
           )
-        } else if (map.get('popupClusterModels')) {
-          const clusterModels = map.get('popupClusterModels')
+        } else if (selectionInterface.getSelectedResults().length > 1) {
           return (
             <ClusterList>
-              {clusterModels.map((clusterModel: any) => {
-                return (
-                  <ClusterTitle
-                    key={clusterModel.id}
-                    onClick={() => {
-                      map.set('popupMetacard', clusterModel)
-                    }}
-                  >
-                    {clusterModel.toJSON().metacard.properties.title}
-                  </ClusterTitle>
-                )
-              })}
+              {selectionInterface
+                .getSelectedResults()
+                .map((clusterModel: any) => {
+                  return (
+                    <ClusterTitle
+                      key={clusterModel.id}
+                      onClick={() => {
+                        selectionInterface.clearSelectedResults()
+                        selectionInterface.addSelectedResult(clusterModel)
+                      }}
+                    >
+                      {clusterModel.toJSON().metacard.properties.title}
+                    </ClusterTitle>
+                  )
+                })}
             </ClusterList>
           )
         }
