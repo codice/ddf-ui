@@ -232,7 +232,7 @@ const HookPopupPreview = (props: Props) => {
       () => {
         if (selectionInterface.getSelectedResults().length === 1) {
           getPreviewHTML({
-            targetMetacard: selectionInterface.getSelectedResults()[0],
+            targetMetacard: selectionInterface.getSelectedResults().models[0],
             setPreviewHTML,
           })
         }
