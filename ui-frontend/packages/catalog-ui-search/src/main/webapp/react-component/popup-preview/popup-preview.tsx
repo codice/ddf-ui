@@ -211,7 +211,6 @@ const HookPopupPreview = (props: Props) => {
   let popupAnimationFrameId: any
   const startPopupAnimating = (map: any) => {
     if (getTarget().length !== 0) {
-      console.log('animating')
       popupAnimationFrameId = window.requestAnimationFrame(() => {
         const location = getLocation(map, getTarget())
         setLocation(location)

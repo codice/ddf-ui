@@ -54,12 +54,6 @@ module.exports = Backbone.AssociatedModel.extend({
       top: 0,
     },
     startingCoordinates: undefined,
-    popupMetacard: undefined,
-    popupLocation: {
-      left: 0,
-      bottom: 0,
-    },
-    popupClusterModels: undefined,
   },
   /*
    * Sets the measurement state to the given new state.
@@ -137,15 +131,6 @@ module.exports = Backbone.AssociatedModel.extend({
    */
   setDistanceInfoPosition(left, top) {
     this.set({ distanceInfo: { left, top } })
-  },
-  setPopupMetacard(popupMetacard, popupLocation) {
-    this.set({ popupMetacard, popupLocation })
-  },
-  setPopupLocation(popupLocation) {
-    this.set({ popupLocation })
-  },
-  setPopupClusterModels(popupClusterModels, popupLocation) {
-    this.set({ popupClusterModels, popupLocation })
   },
   isOffMap() {
     return this.get('mouseLat') === undefined

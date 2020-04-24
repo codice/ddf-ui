@@ -405,11 +405,18 @@ module.exports = function CesiumMap(
         })
       })
     },
+    timeoutId: NaN,
     onCameraMoveStart(callback) {
+      clearTimeout(this.timeoutId)
       map.scene.camera.moveStart.addEventListener(callback)
     },
     onCameraMoveEnd(callback) {
-      map.scene.camera.moveEnd.addEventListener(callback)
+    const timeoutCallback = () => {
+                 this.timeoutId = setTimeout(() => {
+                               callback()
+                             }, 300)
+                }
+      map.scene.camera.moveEnd.addEventListener(timeoutCallback)
     },
     doPanZoom(coords) {
       const cartArray = coords.map(coord =>
