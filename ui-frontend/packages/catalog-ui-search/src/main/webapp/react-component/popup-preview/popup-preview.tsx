@@ -82,7 +82,7 @@ const Preview = styled.div`
   text-overflow: ellipsis;
 `
 
-const PreviewHtml = styled.html`
+const PreviewText = styled.html`
   font-family: 'Open Sans', arial, sans-serif;
   font-size: 14px;
   padding: 2px 4px;
@@ -108,27 +108,12 @@ const ClusterTitle = styled.li`
   }
 `
 
-const sanitize = require('sanitize-html')
-
 const NO_PREVIEW = 'No preview text available.'
 const STATUS_OK = 200
 
 const TOP_OFFSET = 60
 
 const DRAG_SENSITIVITY = 10
-
-const br2nl = (str: string) => {
-  return str.replace(/<br\s*\/?>/gm, '\n')
-}
-
-const hasPreview = (header: string) => {
-  const sanitized = sanitize(header, {
-    allowedTags: ['br'],
-    allowedAttributes: [],
-  })
-
-  return br2nl(sanitized) !== NO_PREVIEW
-}
 
 type Props = {
   map: any
@@ -153,28 +138,33 @@ const getTop = (location: undefined | LocationType) => {
   return location ? location.top - TOP_OFFSET + 'px' : 0
 }
 
-const getPreviewHTML = ({
+const extractPreviewText = (responseHtml: string) => {
+  const htmlElement = document.createElement('html')
+  htmlElement.innerHTML = responseHtml
+  return htmlElement!.querySelector('body')!.innerText
+}
+
+const getPreviewText = ({
   targetMetacard,
-  setPreviewHTML,
+  setPreviewText,
 }: {
   targetMetacard: MetacardType | undefined
-  setPreviewHTML: React.Dispatch<React.SetStateAction<string | undefined>>
+  setPreviewText: React.Dispatch<React.SetStateAction<string | undefined>>
 }) => {
   if (targetMetacard) {
     const url = targetMetacard.getPreview() as string
     const xhr = new XMLHttpRequest()
     xhr.addEventListener('load', () => {
       if (xhr.status === STATUS_OK) {
-        setPreviewHTML(
-          hasPreview(xhr.responseText) ? xhr.responseText : undefined
-        )
+        const previewText = extractPreviewText(xhr.responseText)
+        setPreviewText(previewText !== NO_PREVIEW ? previewText : undefined)
       }
     })
 
     xhr.open('GET', url)
     xhr.send()
   } else {
-    setPreviewHTML(undefined)
+    setPreviewText(undefined)
   }
 }
 
@@ -199,7 +189,7 @@ const HookPopupPreview = (props: Props) => {
     | LocationType)
   const dragRef = React.useRef(0)
   const [open, setOpen] = React.useState(false)
-  const [previewHTML, setPreviewHTML] = React.useState(undefined as
+  const [previewText, setPreviewText] = React.useState(undefined as
     | undefined
     | string)
   const { listenTo } = useBackbone()
@@ -231,9 +221,9 @@ const HookPopupPreview = (props: Props) => {
       'reset add remove',
       () => {
         if (selectionInterface.getSelectedResults().length === 1) {
-          getPreviewHTML({
+          getPreviewText({
             targetMetacard: selectionInterface.getSelectedResults().models[0],
-            setPreviewHTML,
+            setPreviewText,
           })
         }
         setLocation(getLocation(map, getTarget()))
@@ -282,11 +272,9 @@ const HookPopupPreview = (props: Props) => {
           return (
             <>
               <Title>{metacardJSON.metacard.properties.title}</Title>
-              {previewHTML && (
+              {previewText && (
                 <Preview>
-                  <PreviewHtml
-                    dangerouslySetInnerHTML={{ __html: previewHTML }}
-                  />
+                  <PreviewText>{previewText}</PreviewText>
                 </Preview>
               )}
             </>
