@@ -41,7 +41,7 @@ const Root = styled.div`
   padding: 4px;
   max-height: 290px;
   max-width: 50%;
-  transform: translate(-52.5%, -100%);
+  transform: translate(-51.25%, -100%);
 
   &::before {
     top: 100%;
@@ -74,7 +74,6 @@ const Preview = styled.div`
   min-height: 15px;
   max-height: 250px;
   padding: 2px;
-  white-space: normal;
   background-color: ${props => props.theme.backgroundContent};
   border: 1px solid;
   overflow-y: auto;
@@ -82,10 +81,11 @@ const Preview = styled.div`
   text-overflow: ellipsis;
 `
 
-const PreviewText = styled.html`
+const PreviewText = styled.p`
   font-family: 'Open Sans', arial, sans-serif;
   font-size: 14px;
   padding: 2px 4px;
+  white-space: pre-line;
 `
 
 const ClusterList = styled.ul`
@@ -141,7 +141,12 @@ const getTop = (location: undefined | LocationType) => {
 const extractPreviewText = (responseHtml: string) => {
   const htmlElement = document.createElement('html')
   htmlElement.innerHTML = responseHtml
-  return htmlElement!.querySelector('body')!.innerText
+  const bodyElement = htmlElement!.querySelector('body')
+  if (bodyElement) {
+    bodyElement.innerHTML = bodyElement.innerHTML.replace(/<br\s*\/?>/gm, '\n')
+    return bodyElement.innerText
+  }
+  return NO_PREVIEW
 }
 
 const getPreviewText = ({
