@@ -22,6 +22,7 @@ function throwUnimplementedException() {
 const exposedMethods = [
   'onLeftClick',
   'onRightClick',
+  'onMouseDown',
   'onMouseMove',
   'onCameraMoveStart',
   'onCameraMoveEnd',

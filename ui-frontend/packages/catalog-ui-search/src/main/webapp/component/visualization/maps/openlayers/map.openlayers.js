@@ -54,8 +54,9 @@ function createMap(insertionElement) {
     collection: layerPrefs,
   })
   const map = layerCollectionController.makeMap({
-    zoom: 3,
-    minZoom: 1.9,
+    zoom: 2.7,
+    minZoom: 2.3,
+    center: [0, 0],
     element: insertionElement,
   })
 
@@ -282,6 +283,15 @@ const OpenlayersMap = extension =>
           callback(e)
         })
       },
+      onMouseTrackingForPopup(downCallback, moveCallback, upCallback) {
+        $(map.getTargetElement()).on('mousedown', e => {
+          downCallback()
+        })
+        $(map.getTargetElement()).on('mousemove', e => {
+          moveCallback()
+        })
+        this.onLeftClick(upCallback)
+      },
       onMouseMove(callback) {
         $(map.getTargetElement()).on('mousemove', e => {
           const boundingRect = map.getTargetElement().getBoundingClientRect()
@@ -293,11 +303,18 @@ const OpenlayersMap = extension =>
           })
         })
       },
+      timeoutId: NaN,
       onCameraMoveStart(callback) {
+        clearTimeout(this.timeoutId)
         map.on('movestart', callback)
       },
       onCameraMoveEnd(callback) {
-        map.on('moveend', callback)
+        const timeoutCallback = () => {
+          this.timeoutId = setTimeout(() => {
+            callback()
+          }, 300)
+        }
+        map.on('moveend', timeoutCallback)
       },
       doPanZoom(coords) {
         const that = this
