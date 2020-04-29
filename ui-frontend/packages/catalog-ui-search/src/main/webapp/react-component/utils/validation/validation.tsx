@@ -23,6 +23,10 @@ const NORTHING_OFFSET = 10000000
 const LATITUDE = 'latitude'
 const LONGITUDE = 'longitude'
 const DistanceUtils = require('../../../js/DistanceUtils')
+const {
+  parseDmsCoordinate,
+  dmsCoordinateToDD,
+} = require('../../../component/location-new/utils/dms-utils.js')
 
 export function showErrorMessages(errors: any) {
   if (errors.length === 0) {
@@ -75,10 +79,10 @@ export function validateGeo(key: string, value: any) {
       return validateDmsLatLon(LONGITUDE, value)
     case 'usng':
       return validateUsng(value)
-    case 'utmUpsEasting':
-    case 'utmUpsNorthing':
-    case 'utmUpsZone':
-    case 'utmUpsHemisphere':
+    case 'easting':
+    case 'northing':
+    case 'zoneNumber':
+    case 'hemisphere':
       return validateUtmUps(key, value)
     case 'radius':
     case 'lineWidth':
@@ -90,6 +94,8 @@ export function validateGeo(key: string, value: any) {
     case 'multiline':
     case 'multipolygon':
       return validateLinePolygon(key, value)
+    case 'bbox':
+      return validateBoundingBox(value)
     default:
   }
 }
@@ -239,7 +245,8 @@ function getGeometryErrors(filter: any): Set<string> {
       if (
         [east, west, north, south].some(
           direction => direction === '' || direction === undefined
-        )
+        ) ||
+        Number(south) >= Number(north)
       ) {
         errors.add('Bounding box must have valid values')
       }
@@ -261,6 +268,82 @@ function validateLinePolygon(mode: string, currentValue: string) {
   } catch (e) {
     return { error: true, message: 'Not an acceptable value' }
   }
+}
+
+function getDdLatitudes(value: any) {
+  return { north: Number(value.north), south: Number(value.south) }
+}
+
+function getDmsLatitudes(value: any) {
+  const coordinateNorth = parseDmsCoordinate(value.north)
+  const coordinateSouth = parseDmsCoordinate(value.south)
+  const north = coordinateNorth
+    ? dmsCoordinateToDD({
+        ...coordinateNorth,
+        direction: value.dmsNorthDirection,
+      })
+    : null
+  const south = coordinateSouth
+    ? dmsCoordinateToDD({
+        ...coordinateSouth,
+        direction: value.dmsSouthDirection,
+      })
+    : null
+  return { north, south }
+}
+
+function getUsngLatitudes(upperLeft: any, lowerRight: any) {
+  const upperLeftCoord = converter.USNGtoLL(upperLeft, true)
+  const lowerRightCoord = converter.USNGtoLL(lowerRight, true)
+  return { north: upperLeftCoord.lat, south: lowerRightCoord.lat }
+}
+
+function getUtmUpsLatitudes(upperLeft: any, lowerRight: any) {
+  const upperLeftParts = {
+    easting: parseFloat(upperLeft.easting),
+    northing: parseFloat(upperLeft.northing),
+    zoneNumber: upperLeft.zoneNumber,
+    hemisphere: upperLeft.hemisphere,
+    northPole: upperLeft.hemisphere.toUpperCase() === 'NORTHERN',
+  }
+  const lowerRightParts = {
+    easting: parseFloat(lowerRight.easting),
+    northing: parseFloat(lowerRight.northing),
+    zoneNumber: lowerRight.zoneNumber,
+    hemisphere: lowerRight.hemisphere,
+    northPole: lowerRight.hemisphere.toUpperCase() === 'NORTHERN',
+  }
+  upperLeftParts.northing =
+    upperLeftParts.zoneNumber === 0 || upperLeftParts.northPole
+      ? upperLeftParts.northing
+      : upperLeftParts.northing - NORTHING_OFFSET
+  lowerRightParts.northing =
+    lowerRightParts.zoneNumber === 0 || lowerRightParts.northPole
+      ? lowerRightParts.northing
+      : lowerRightParts.northing - NORTHING_OFFSET
+  const north = Number(converter.UTMUPStoLL(upperLeftParts).lat.toFixed(5))
+  const south = Number(converter.UTMUPStoLL(lowerRightParts).lat.toFixed(5))
+  return { north, south }
+}
+
+function validateBoundingBox(value: any) {
+  const { north, south } = value.isDms
+    ? getDmsLatitudes(value)
+    : value.isUsng
+      ? getUsngLatitudes(value.upperLeft, value.lowerRight)
+      : value.isUtmUps
+        ? getUtmUpsLatitudes(value.upperLeft, value.lowerRight)
+        : getDdLatitudes(value)
+  if (south !== null && north !== null && south >= north) {
+    return {
+      error: true,
+      message:
+        value.isUsng || value.isUtmUps
+          ? 'Upper left coordinate must be located above lower right coordinate'
+          : 'North value must be greater than south value',
+    }
+  }
+  return initialErrorState
 }
 
 function validateDDLatLon(label: string, value: string, defaultCoord: number) {
@@ -300,7 +383,7 @@ function validateUsng(value: string) {
     return { error: true, message: 'USNG / MGRS coordinates cannot be empty' }
   }
   if (value === undefined) {
-    return { error: false, message: '' }
+    return initialErrorState
   }
   const result = converter.USNGtoLL(value, true)
   const isInvalid = Number.isNaN(result.lat) || Number.isNaN(result.lon)
@@ -315,43 +398,48 @@ function upsValidDistance(distance: number) {
 }
 
 function validateUtmUps(key: string, value: any) {
-  let { utmUpsEasting, utmUpsNorthing, zoneNumber, hemisphere } = value
+  let { easting, northing, zoneNumber, hemisphere } = value
   const northernHemisphere = hemisphere.toUpperCase() === 'NORTHERN'
   zoneNumber = Number.parseInt(zoneNumber)
   const isUps = zoneNumber === 0
-  let error = { error: false, message: '' }
+  let error = initialErrorState
   // Number('') returns 0, so we can't just blindly cast to number
   // since we want to differentiate '' from 0
-  let easting = utmUpsEasting === '' ? NaN : Number(utmUpsEasting)
-  let northing = utmUpsNorthing === '' ? NaN : Number(utmUpsNorthing)
-  const isNorthingInvalid = isNaN(northing) && utmUpsNorthing !== undefined
-  const isEastingInvalid = isNaN(easting) && utmUpsEasting !== undefined
-  if (!isNaN(easting)) {
-    easting = Number.parseFloat(utmUpsEasting)
+  let utmUpsEasting = easting === '' ? NaN : Number(easting)
+  let utmUpsNorthing = northing === '' ? NaN : Number(northing)
+  const isNorthingInvalid = isNaN(utmUpsNorthing) && northing !== undefined
+  const isEastingInvalid = isNaN(utmUpsEasting) && easting !== undefined
+  if (!isNaN(utmUpsEasting)) {
+    utmUpsEasting = Number.parseFloat(easting)
   } else if (
     key === 'utmUpsEasting' &&
-    utmUpsEasting !== undefined &&
+    easting !== undefined &&
     !isNorthingInvalid
   ) {
     return { error: true, message: 'Easting value is invalid' }
   }
-  if (!isNaN(northing)) {
-    northing = Number.parseFloat(utmUpsNorthing)
-    northing =
-      isUps || northernHemisphere ? northing : northing - NORTHING_OFFSET
+  if (!isNaN(utmUpsNorthing)) {
+    utmUpsNorthing = Number.parseFloat(northing)
+    utmUpsNorthing =
+      isUps || northernHemisphere
+        ? utmUpsNorthing
+        : utmUpsNorthing - NORTHING_OFFSET
   } else if (
     key === 'utmUpsNorthing' &&
-    utmUpsNorthing !== undefined &&
+    northing !== undefined &&
     !isEastingInvalid
   ) {
     return { error: true, message: 'Northing value is invalid' }
   }
-  if (isUps && (!upsValidDistance(northing) || !upsValidDistance(easting))) {
+  if (
+    isUps &&
+    (!upsValidDistance(utmUpsNorthing) || !upsValidDistance(utmUpsEasting))
+  ) {
     return { error: true, message: 'Invalid UPS distance' }
   }
   const utmUpsParts = {
-    easting,
-    northing,
+    easting: utmUpsEasting,
+    northing: utmUpsNorthing,
     zoneNumber,
     hemisphere,
     northPole: northernHemisphere,
@@ -370,8 +458,8 @@ function validateUtmUps(key: string, value: any) {
   // if one or more is undefined, we want to return true
   const isLatLonValid =
     !hasPointError([lon, lat]) ||
-    utmUpsNorthing === undefined ||
-    utmUpsEasting === undefined
+    northing === undefined ||
+    easting === undefined
   if ((isNorthingInvalid && isEastingInvalid) || !isLatLonValid) {
     return { error: true, message: 'Invalid UTM/UPS coordinates' }
   }
@@ -404,7 +492,7 @@ function validateRadiusLineBuffer(key: string, value: any) {
         value.units,
     }
   }
-  return { error: false, message: '' }
+  return initialErrorState
 }
 
 const validateDmsInput = (input: any, placeHolder: string) => {
