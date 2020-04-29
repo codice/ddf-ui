@@ -617,7 +617,7 @@ module.exports = Marionette.LayoutView.extend({
             })
             this.map.showCircleShape(locationModel)
           } else if (CQLUtils.isLineFilter(value)) {
-            this.handleFIlterAsLine(filter, color)
+            this.handleFilterAsLine(filter, color)
           } else {
             pointText = value.value.substring(11)
             pointText = pointText.substring(0, pointText.length - 1)
