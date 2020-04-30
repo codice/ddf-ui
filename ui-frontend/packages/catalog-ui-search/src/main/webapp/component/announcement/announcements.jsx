@@ -41,7 +41,7 @@ var dim = function(Component) {
   }
 }
 
-var Announcment = dim(function(props) {
+var Announcement = dim(function(props) {
   var classes = props.removing ? 'announcement is-dismissed' : 'announcement'
   var height = props.boundingRect.height || 'auto'
 
@@ -62,19 +62,19 @@ var Announcment = dim(function(props) {
   )
 })
 
-var Announcments = function(props) {
+var Announcements = function(props) {
   var dismiss = function(id) {
     return function() {
       props.onDismiss(id)
     }
   }
 
-  var list = props.list.map(function(announcment) {
+  var list = props.list.map(function(announcement) {
     return (
-      <Announcment
-        {...announcment}
-        key={announcment.id}
-        onDismiss={dismiss(announcment.id)}
+      <Announcement
+        {...announcement}
+        key={announcement.id}
+        onDismiss={dismiss(announcement.id)}
       />
     )
   })
@@ -90,4 +90,4 @@ module.exports = connect(
   {
     onDismiss: actions.remove,
   }
-)(Announcments)
+)(Announcements)
