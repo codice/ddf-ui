@@ -32,7 +32,6 @@ import ddf.catalog.operation.impl.UpdateRequestImpl;
 import ddf.catalog.plugin.AccessPlugin;
 import ddf.catalog.plugin.StopProcessingException;
 import ddf.security.SubjectIdentity;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
