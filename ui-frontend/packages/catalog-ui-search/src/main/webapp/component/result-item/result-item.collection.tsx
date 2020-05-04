@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-const childView = require('./result-item.view')
+const defaultChildView = require('./result-item.view')
 import { hot } from 'react-hot-loader'
 import styled from 'styled-components'
 import MarionetteRegionContainer from '../../react-component/marionette-region-container'
@@ -28,6 +28,7 @@ type Props = {
   didYouMeanFields: any[]
   userSpellcheckIsOn: boolean
   model: any
+  resultView?: any
 }
 
 const ResultItemCollection = styled.div`
@@ -159,6 +160,11 @@ class ResultItems extends React.Component<Props, State> {
     model.set('spellcheck', true)
   }
 
+  getChildView() {
+    const { resultView } = this.props
+    return resultView ? resultView : defaultChildView
+  }
+
   render() {
     const {
       results,
@@ -168,6 +174,9 @@ class ResultItems extends React.Component<Props, State> {
       didYouMeanFields,
       model,
     } = this.props
+
+    const childView = this.getChildView()
+
     if (results.length === 0) {
       return (
         <ResultItemCollection className={className}>
@@ -287,6 +296,7 @@ class ResultItems extends React.Component<Props, State> {
 
   createResultItemCollectionView() {
     const { results, selectionInterface, className } = this.props
+    const childView = this.getChildView()
 
     return (
       <ResultItemCollection
