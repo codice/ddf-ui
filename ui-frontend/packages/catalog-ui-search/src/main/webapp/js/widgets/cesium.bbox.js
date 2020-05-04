@@ -217,7 +217,6 @@ Draw.BboxView = Marionette.View.extend({
 
   updatePrimitive(model) {
     const rectangle = this.modelToRectangle(model)
-    // make sure the current model has width and height before drawing
     if (rectangle && !_.isUndefined(rectangle)) {
       this.drawBorderedRectangle(rectangle)
       //only call this if the mouse button isn't pressed, if we try to draw the border while someone is dragging
