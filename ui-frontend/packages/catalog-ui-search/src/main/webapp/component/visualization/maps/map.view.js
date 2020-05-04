@@ -604,6 +604,8 @@ module.exports = Marionette.LayoutView.extend({
               color,
             })
             this.map.showCircleShape(locationModel)
+          } else if (CQLUtils.isLineFilter(value)) {
+            this.handleFilterAsLine(filter, color)
           } else {
             pointText = value.value.substring(11)
             pointText = pointText.substring(0, pointText.length - 1)
@@ -620,10 +622,28 @@ module.exports = Marionette.LayoutView.extend({
           }
           break
         case 'INTERSECTS':
-          this.handleFilterAsPolygon(value, color, filter.distance)
+          if (CQLUtils.isPolygonFilter(filter.value)) {
+            this.handleFilterAsPolygon(filter.value, color, filter.distance)
+          } else if (CQLUtils.isLineFilter) {
+            this.handleFilterAsLine(filter, color)
+          }
           break
       }
     }
+  },
+  handleFilterAsLine(filter, color) {
+    const pointText = filter.value.value.substring(
+      11,
+      filter.value.value.length - 1
+    )
+    const locationModel = new LocationModel({
+      lineWidth: filter.distance || 0,
+      line: pointText
+        .split(',')
+        .map(coordinate => coordinate.split(' ').map(value => Number(value))),
+      color,
+    })
+    this.map.showLineShape(locationModel)
   },
   handleFilterAsPolygon(value, color, distance) {
     const filterValue = typeof value === 'string' ? value : value.value
