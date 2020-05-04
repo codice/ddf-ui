@@ -12,8 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import * as React from 'react'
+import { ItemCheckbox } from '../../selection-checkbox/item-checkbox'
 
-const template = require('./row.hbs')
 const Marionette = require('marionette')
 const CustomElements = require('../../../js/CustomElements.js')
 const metacardDefinitions = require('../../singletons/metacard-definitions.js')
@@ -21,9 +22,7 @@ const user = require('../../singletons/user-instance.js')
 const properties = require('../../../js/properties.js')
 const HoverPreviewDropdown = require('../../dropdown/hover-preview/dropdown.hover-preview.view.js')
 const DropdownModel = require('../../dropdown/dropdown.js')
-const {
-  SelectItemToggle,
-} = require('../../selection-checkbox/selection-checkbox.view.js')
+const HandleBarsHelpers = require('../../../js/HandlebarsHelpers')
 
 module.exports = Marionette.LayoutView.extend({
   className: 'is-tr',
@@ -33,14 +32,75 @@ module.exports = Marionette.LayoutView.extend({
   },
   regions: {
     resultThumbnail: '.is-thumbnail',
-    checkboxContainer: '.checkbox-container',
   },
   attributes() {
     return {
       'data-resultid': this.model.id,
     }
   },
-  template,
+  template({ properties, id }) {
+    return (
+      <React.Fragment>
+        <td>
+          <ItemCheckbox
+            selectionInterface={this.options.selectionInterface}
+            model={this.model}
+          />
+        </td>
+        {properties.filter(property => !property.hidden).map(property => {
+          const alias = HandleBarsHelpers.getAlias(property.property)
+          return (
+            <td
+              data-property={`${property.property}`}
+              className={`${property.class} ${
+                property.hidden ? 'is-hidden-column' : ''
+              }`}
+              data-value={`${property.value}`}
+            >
+              <div>
+                {property.value.map(value => {
+                  console.log(value)
+                  return (
+                    <span data-value={`${value}`} title={`${alias}: ${value}`}>
+                      {value.toString().substring(0, 4) === 'http' ? (
+                        <a
+                          href={`${value}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {HandleBarsHelpers.getAlias(property.property)}
+                        </a>
+                      ) : (
+                        `${value}`
+                      )}
+                    </span>
+                  )
+                })}
+              </div>
+              <div className="for-bold">
+                {property.value.map(value => (
+                  <span data-value={`${value}`}>
+                    {value.toString().substring(0, 4) === 'http' ? (
+                      <a
+                        href={`${value}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {HandleBarsHelpers.getAlias(property.property)}
+                      </a>
+                    ) : (
+                      `${value}`
+                    )}
+                    :{value}
+                  </span>
+                ))}
+              </div>
+            </td>
+          )
+        })}
+      </React.Fragment>
+    )
+  },
   initialize(options) {
     if (!options.selectionInterface) {
       throw 'Selection interface has not been provided'
@@ -78,18 +138,10 @@ module.exports = Marionette.LayoutView.extend({
     this.$el.toggleClass('is-selected', Boolean(isSelected))
   },
   onRender() {
+    this.checkIfDownloadable()
     this.checkIfLinks()
     this.$el.attr(this.attributes())
     this.handleResultThumbnail()
-    this.showCheckboxSelector()
-  },
-  showCheckboxSelector() {
-    this.checkboxContainer.show(
-      new SelectItemToggle({
-        model: this.model,
-        selectionInterface: this.options.selectionInterface,
-      })
-    )
   },
   handleResultThumbnail() {
     if (
@@ -108,6 +160,15 @@ module.exports = Marionette.LayoutView.extend({
         )
       }
     }
+  },
+  checkIfDownloadable() {
+    this.$el.toggleClass(
+      'is-downloadable',
+      this.model
+        .get('metacard')
+        .get('properties')
+        .get('resource-download-url') !== undefined
+    )
   },
   checkIfLinks() {
     this.$el.toggleClass(
@@ -156,15 +217,6 @@ module.exports = Marionette.LayoutView.extend({
                     val !== undefined && val !== ''
                       ? user.getUserReadableDateTime(val)
                       : ''
-                )
-                break
-              case 'LONG':
-              case 'DOUBLE':
-              case 'FLOAT':
-              case 'INTEGER':
-              case 'SHORT':
-                value = value.map(
-                  val => (val !== undefined && val !== '' ? Number(val) : '')
                 )
                 break
               default:
