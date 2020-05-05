@@ -43,7 +43,6 @@ function sync(collection, array) {
 import * as React from 'react'
 const Backbone = require('backbone')
 const Marionette = require('marionette')
-const _ = require('underscore')
 const CustomElements = require('../../js/CustomElements.js')
 const DetailsFilterView = require('../dropdown/details-filter/dropdown.details-filter.view.js')
 const DropdownModel = require('../dropdown/dropdown.js')

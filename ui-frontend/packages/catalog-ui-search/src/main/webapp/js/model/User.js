@@ -507,9 +507,6 @@ User.Response = Backbone.AssociatedModel.extend({
    * For all other types, every policy is enforced.
    */
   canWrite(thing) {
-    if (thing.type !== 'workspace' && properties.isEditingRestricted()) {
-      return false
-    }
     switch (thing.type) {
       case 'workspace':
       case 'metacard-properties':
@@ -518,9 +515,13 @@ User.Response = Backbone.AssociatedModel.extend({
         return this.canWrite(thing.get('metacard').get('properties'))
       case 'query-result.collection':
       default:
-        return !thing.some(subthing => {
-          return !this.canWrite(subthing)
-        })
+        if (this.some !== undefined) {
+          !thing.some(subthing => {
+            return !this.canWrite(subthing)
+          })
+        } else {
+          return new Security(Restrictions.from(thing)).canWrite(this)
+        }
     }
   },
   canShare(metacard) {

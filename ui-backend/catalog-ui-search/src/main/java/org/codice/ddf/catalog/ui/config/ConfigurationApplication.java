@@ -104,8 +104,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   private String terrainEndpoint;
 
-  private Boolean editingEnabled = true;
-
   private Boolean signInEnabled = true;
 
   private Boolean taskEnabled = false;
@@ -535,7 +533,6 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("attributeAliases", attributeAliases.getAliasMap());
     config.put("sourcePollInterval", sourcePollInterval);
     config.put("scheduleFrequencyList", scheduleFrequencyList);
-    config.put("isEditingAllowed", editingEnabled);
     config.put("isCacheDisabled", !cacheEnabled);
     config.put("disableLocalCatalog", !localCatalogEnabled);
     config.put("queryFeedbackEnabled", queryFeedbackEnabled);
@@ -932,14 +929,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setCacheEnabled(Boolean cacheEnabled) {
     this.cacheEnabled = cacheEnabled;
-  }
-
-  public Boolean getEditingEnabled() {
-    return this.editingEnabled;
-  }
-
-  public void setEditingEnabled(Boolean editingEnabled) {
-    this.editingEnabled = editingEnabled;
   }
 
   public void setUnknownErrorBoxEnabled(Boolean unknownErrorBoxEnabled) {

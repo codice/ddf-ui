@@ -132,9 +132,6 @@ const properties = {
   isReadOnly(attribute) {
     return match(this.readOnly, attribute)
   },
-  isEditingRestricted() {
-    return !this.isEditingAllowed
-  },
   hasExperimentalEnabled() {
     return this.isExperimental
   },

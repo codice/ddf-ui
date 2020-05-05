@@ -126,12 +126,6 @@
             type="Boolean"
             default="true"/>
 
-        <AD id="editingEnabled"
-            name="Allow Editing"
-            description="Allow editing capability to be visible in the UI."
-            type="Boolean"
-            default="true"/>
-
         <AD id="webSocketsEnabled"
             name="Enable Web Sockets"
             description="Enables use of Web Sockets"
