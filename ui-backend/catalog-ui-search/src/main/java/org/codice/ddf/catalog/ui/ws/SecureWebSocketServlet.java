@@ -15,7 +15,7 @@ package org.codice.ddf.catalog.ui.ws;
 
 import ddf.security.SecurityConstants;
 import ddf.security.Subject;
-import ddf.security.common.SecurityTokenHolder;
+import ddf.security.common.PrincipalHolder;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import org.eclipse.jetty.websocket.api.Session;
@@ -32,7 +32,9 @@ import org.slf4j.LoggerFactory;
 public class SecureWebSocketServlet extends WebSocketServlet {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SecureWebSocketServlet.class);
+
   private final WebSocket ws;
+
   private final ExecutorService executor;
 
   public SecureWebSocketServlet(ExecutorService executor, WebSocket ws) {
@@ -57,7 +59,7 @@ public class SecureWebSocketServlet extends WebSocketServlet {
             new SocketWrapper(
                 executor,
                 ws,
-                (SecurityTokenHolder)
+                (PrincipalHolder)
                     req.getSession().getAttribute(SecurityConstants.SECURITY_TOKEN_KEY)));
   }
 
@@ -65,10 +67,12 @@ public class SecureWebSocketServlet extends WebSocketServlet {
   public static class SocketWrapper {
 
     private final WebSocket ws;
-    private final ExecutorService executor;
-    private final SecurityTokenHolder securityTokenHolder;
 
-    SocketWrapper(ExecutorService executor, WebSocket ws, SecurityTokenHolder securityTokenHolder) {
+    private final ExecutorService executor;
+
+    private final PrincipalHolder securityTokenHolder;
+
+    SocketWrapper(ExecutorService executor, WebSocket ws, PrincipalHolder securityTokenHolder) {
       this.ws = ws;
       this.executor = executor;
       this.securityTokenHolder = securityTokenHolder;
