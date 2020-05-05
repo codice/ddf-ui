@@ -27,7 +27,7 @@ import com.google.gson.GsonBuilder;
 import ddf.catalog.filter.FilterBuilder;
 import ddf.security.Subject;
 import ddf.security.SubjectIdentity;
-import ddf.security.SubjectUtils;
+import ddf.security.impl.SubjectUtils;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Base64;

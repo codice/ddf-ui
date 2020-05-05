@@ -25,7 +25,7 @@ import ddf.catalog.operation.UpdateRequest;
 import ddf.catalog.plugin.PreIngestPlugin;
 import ddf.catalog.plugin.StopProcessingException;
 import ddf.security.SubjectIdentity;
-import ddf.security.SubjectUtils;
+import ddf.security.impl.SubjectUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
