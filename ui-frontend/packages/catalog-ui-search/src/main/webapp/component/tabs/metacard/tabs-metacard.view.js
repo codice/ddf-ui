@@ -69,6 +69,9 @@ module.exports = TabsView.extend({
     this.determineContent()
   },
   determineContentFromType() {
+    if (this.isDestroyed) {
+      return
+    }
     const activeTabName = this.model.get('activeTab')
     const result = this.selectionInterface.getSelectedResults().first()
     if (

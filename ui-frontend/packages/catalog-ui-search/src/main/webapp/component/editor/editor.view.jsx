@@ -63,7 +63,11 @@ module.exports = Marionette.LayoutView.extend({
       <React.Fragment>
         <div className="editor-header">
           <div className="header-filter" />
-          <div className="header-actions" />
+          <div className="is-addAttribute" />
+          <div className="is-removeAttribute" />
+          <div className="is-rearrangeAttribute" />
+          <div className="is-showAttribute" />
+          <div className="is-hideAttribute" />
         </div>
         <div className="editor-properties" />
         {user.canWrite(this.model) ? (
