@@ -34,10 +34,10 @@ module.exports = TabsView.extend({
     this.determineDisabledContent()
     this.determineAvailableContent()
     TabsView.prototype.initialize.call(this)
-    const debounceDetermineContent = _.debounce(this.handleMetacardChange, 200)
-    const throttleDetermineContent = _.throttle(this.handleMetacardChange, 200)
   },
   onFirstRender() {
+    const debounceDetermineContent = _.debounce(this.handleMetacardChange, 200)
+    const throttleDetermineContent = _.throttle(this.handleMetacardChange, 200)
     this.listenTo(
       this.selectionInterface.getSelectedResults(),
       'update',
