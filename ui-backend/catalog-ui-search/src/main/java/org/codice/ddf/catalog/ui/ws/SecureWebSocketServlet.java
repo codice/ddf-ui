@@ -15,7 +15,7 @@ package org.codice.ddf.catalog.ui.ws;
 
 import ddf.security.SecurityConstants;
 import ddf.security.Subject;
-import ddf.security.common.SecurityTokenHolder;
+import ddf.security.common.PrincipalHolder;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import org.eclipse.jetty.websocket.api.Session;
@@ -57,7 +57,7 @@ public class SecureWebSocketServlet extends WebSocketServlet {
             new SocketWrapper(
                 executor,
                 ws,
-                (SecurityTokenHolder)
+                (PrincipalHolder)
                     req.getSession().getAttribute(SecurityConstants.SECURITY_TOKEN_KEY)));
   }
 
@@ -66,12 +66,12 @@ public class SecureWebSocketServlet extends WebSocketServlet {
 
     private final WebSocket ws;
     private final ExecutorService executor;
-    private final SecurityTokenHolder securityTokenHolder;
+    private final PrincipalHolder principalHolder;
 
-    SocketWrapper(ExecutorService executor, WebSocket ws, SecurityTokenHolder securityTokenHolder) {
+    SocketWrapper(ExecutorService executor, WebSocket ws, PrincipalHolder principalHolder) {
       this.ws = ws;
       this.executor = executor;
-      this.securityTokenHolder = securityTokenHolder;
+      this.principalHolder = principalHolder;
     }
 
     private void runWithUser(Session session, Runnable runnable) {
@@ -124,7 +124,7 @@ public class SecureWebSocketServlet extends WebSocketServlet {
     }
 
     private boolean isUserLoggedIn() {
-      return securityTokenHolder.getPrincipals() != null;
+      return principalHolder.getPrincipals() != null;
     }
   }
 }
