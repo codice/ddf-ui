@@ -122,7 +122,6 @@
   "product": "Intrigue",
   "customFavoriteColor": "#d1d179",
   "typeNameMapping": {},
-  "isEditingAllowed": true,
   "gazetteer": true,
   "showTask": false,
   "exportResultLimit": 1000,

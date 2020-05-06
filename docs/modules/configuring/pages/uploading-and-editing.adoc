@@ -1,16 +1,15 @@
-:title: Configuring User Access to Ingest and Metadata for {catalog-ui}
+:title: Configuring User Access to Ingest for {catalog-ui}
 :type: subConfiguration
 :status: published
 :parent: Configuring {catalog-ui}
 :order: 02
-:summary: Configuring user ability to upload resources and edit existing metadata in {catalog-ui}.
+:summary: Configuring user ability to upload resources 
 
 == {title}
 
-{catalog-ui} lets the administrator control user access to ingest and metadata.
+{catalog-ui} lets the administrator control user access to ingest data
 The administrator can show or hide the uploader, letting them control whether users can ingest resources.
-They can also choose whether or not users can edit existing metadata.
-By default, the uploader is available to users and editing is allowed.
+By default, the uploader is available to users.
 
 .Configuring The Uploader
 Choose to hide or show the uploader.
@@ -23,12 +22,3 @@ Note that hiding the uploader will remove the users' ability to ingest.
 . Select "Show Uploader".
 . Select *Save* to complete.
 
-.Configuring Editing of Metadata
-Allow or restrict the editing of metadata.
-
-. Navigate to the *{admin-console}*.
-. Select the *{ddf-ui}* application.
-. Select the *Configuration* tab.
-. Select *Catalog UI Search*.
-. Select "Allow Editing".
-. Select *Save* to complete.
