@@ -35,10 +35,6 @@ const MetacardPreview = (props: Props) => {
     htmlElement.innerHTML = text
     const bodyElement = htmlElement!.querySelector('body')
     if (bodyElement) {
-      bodyElement.innerHTML = bodyElement.innerHTML.replace(
-        /<br\s*\/?>/gm,
-        '\n'
-      )
       setHtml(text)
     }
   }
@@ -49,10 +45,7 @@ const MetacardPreview = (props: Props) => {
 
   return (
     <>
-      <html
-        dangerouslySetInnerHTML={{ __html: html }}
-        className="is-iframe is-preview"
-      />
+      <div dangerouslySetInnerHTML={{ __html: html }} />
     </>
   )
 }
