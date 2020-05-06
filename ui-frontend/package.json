@@ -18,7 +18,7 @@
     "react-dom": "16.8.6"
   },
   "devDependencies": {
-    "@connexta/ace": "git://github.com/connexta/ace.git#9bf3e7a8dd9306f4e975d62c6f222803b630af79",
+    "@connexta/ace": "git://github.com/connexta/ace.git#11b2b09ed9845f070c4dc14800fc8bcabd00184b",
     "@connexta/eslint-config-connexta": "git://github.com/connexta/eslint-config-connexta.git#105393617ec845b009b682882c95313ba50144b1",
     "@connexta/eslint-plugin-connexta": "git://github.com/connexta/eslint-plugin-connexta.git#9b366b8924c3dbe03aedcfe6d25c8eb3567cc061",
     "bootstrap-sass": "3.4.1",
