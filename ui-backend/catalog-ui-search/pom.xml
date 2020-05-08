@@ -386,6 +386,11 @@
             <artifactId>catalog-ui-splitter</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ddf.security.servlet</groupId>
+            <artifactId>security-servlet-web-socket</artifactId>
+            <version>${ddf.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

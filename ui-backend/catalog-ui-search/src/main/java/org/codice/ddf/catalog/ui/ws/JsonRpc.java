@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import org.codice.ddf.security.servlet.web.socket.WebSocket;
+import org.codice.ddf.security.servlet.web.socket.WebSocketAuthenticationException;
 import org.codice.gsonsupport.GsonTypeAdapters.DateLongFormatTypeAdapter;
 import org.codice.gsonsupport.GsonTypeAdapters.LongDoubleTypeAdapter;
 import org.eclipse.jetty.websocket.api.Session;
