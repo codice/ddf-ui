@@ -16,6 +16,7 @@ package org.codice.ddf.catalog.ui.query.cql;
 import static ddf.catalog.Constants.EXPERIMENTAL_FACET_RESULTS_KEY;
 
 import ddf.action.ActionRegistry;
+import ddf.catalog.Constants;
 import ddf.catalog.data.AttributeDescriptor;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.MetacardType;
@@ -26,6 +27,7 @@ import ddf.catalog.operation.FacetValueCount;
 import ddf.catalog.operation.Query;
 import ddf.catalog.operation.QueryRequest;
 import ddf.catalog.operation.QueryResponse;
+import ddf.catalog.operation.ResultHighlight;
 import ddf.catalog.source.UnsupportedQueryException;
 import ddf.catalog.source.solr.SolrMetacardClientImpl;
 import java.io.Serializable;
@@ -67,6 +69,8 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
   private final List<String> showingResultsForFields, didYouMeanFields;
 
   private final Boolean userSpellcheckIsOn;
+
+  private final List<ResultHighlight> highlights;
 
   // Transient so as not to be serialized to/from JSON
   private final transient QueryResponse queryResponse;
@@ -154,10 +158,14 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
             queryResponse.getProperties().get(SolrMetacardClientImpl.SHOWING_RESULTS_FOR_KEY);
     this.userSpellcheckIsOn =
         (Boolean) queryResponse.getProperties().get(SolrMetacardClientImpl.SPELLCHECK_KEY);
+    this.highlights =
+        (List<ResultHighlight>) queryResponse.getProperties().get(Constants.QUERY_HIGHLIGHT_KEY);
   }
 
   private Map<String, List<FacetValueCount>> getFacetResults(Serializable facetResults) {
-    if (!(facetResults instanceof List)) return Collections.emptyMap();
+    if (!(facetResults instanceof List)) {
+      return Collections.emptyMap();
+    }
     List<Object> list = (List<Object>) facetResults;
     return list.stream()
         .filter(result -> result instanceof FacetAttributeResult)

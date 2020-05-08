@@ -28,7 +28,7 @@ import ddf.catalog.operation.impl.QueryRequestImpl;
 import ddf.catalog.plugin.PreQueryPlugin;
 import ddf.security.Subject;
 import ddf.security.SubjectIdentity;
-import ddf.security.SubjectUtils;
+import ddf.security.impl.SubjectUtils;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
