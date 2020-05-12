@@ -39,6 +39,8 @@ Services (OSGi) that catalog-ui-search PROVIDES to DDF
     <service ref="cqlQueryUtil"
              interface="org.codice.ddf.catalog.ui.query.utility.CqlQueries"/>
 
+    <reference id="subjectOperations" interface="ddf.security.SubjectOperations" />
+
     <!--
     =============================================================
     SIMPLE APPS
@@ -225,6 +227,7 @@ Services (OSGi) that catalog-ui-search PROVIDES to DDF
             <argument ref="subjectIdentity"/>
             <argument ref="accessControlTags"/>
             <argument ref="accessControlSecurityConfiguration"/>
+            <property name="subjectOperations" ref="subjectOperations"/>
         </bean>
     </service>
 
@@ -248,6 +251,7 @@ Services (OSGi) that catalog-ui-search PROVIDES to DDF
     <service interface="ddf.catalog.plugin.PreIngestPlugin">
         <bean class="org.codice.ddf.catalog.ui.security.accesscontrol.AccessControlPreIngestPlugin">
             <argument ref="subjectIdentity"/>
+            <property name="subjectOperations" ref="subjectOperations"/>
         </bean>
     </service>
 
