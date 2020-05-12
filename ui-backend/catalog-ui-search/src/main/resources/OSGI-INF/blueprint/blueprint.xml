@@ -28,6 +28,10 @@ Implementation details
     =============================================================
     -->
 
+    <reference id="securityLogger" interface="ddf.security.audit.SecurityLogger" />
+
+    <reference id="subjectOperations1" interface="ddf.security.SubjectOperations" />
+
     <bean id="metacardActionRegistry" class="ddf.action.impl.ActionRegistryImpl">
         <argument ref="metacardActionProviders"/>
         <argument ref="metacardMultiActionProviders"/>
@@ -150,6 +154,7 @@ Implementation details
         <property name="configurationApplication" ref="configurationApplication"/>
         <property name="smtpClient" ref="smtpClient"/>
         <property name="endpointUtil" ref="endpointUtil"/>
+        <property name="subjectOperations" ref="subjectOperations1" />
     </bean>
 
     <bean id="geoCoderApplication" class="org.codice.ddf.catalog.ui.spatial.GeoCoderApplication">
@@ -170,6 +175,7 @@ Implementation details
         <argument ref="endpointUtil"/>
         <argument ref="subjectIdentity"/>
         <argument ref="filterBuilder"/>
+        <property name="subjectOperations" ref="subjectOperations1" />
     </bean>
 
     <!--
@@ -264,6 +270,8 @@ Implementation details
         <argument ref="queryWorkspaceService"/>
         <argument ref="queryMetacardsHandler"/>
         <argument ref="ddfSecurity" />
+        <property name="subjectOperations" ref="subjectOperations1" />
+        <property name="securityLogger" ref="securityLogger" />
     </bean>
 
     <!--
@@ -339,6 +347,7 @@ Implementation details
                 <entry key="query" value-ref="queryApplication"/>
             </map>
         </argument>
+        <property name="securityLogger" ref="securityLogger" />
     </bean>
 
     <bean id="socketThreadFactory"
@@ -397,6 +406,7 @@ Implementation details
         <argument ref="filterBuilder"/>
         <argument ref="templateTransformer"/>
         <argument ref="endpointUtil"/>
+        <property name="subjectOperations" ref="subjectOperations1" />
     </bean>
 
     <bean id="rootReqSupplier" class="org.codice.ddf.catalog.ui.RootContextRequestSupplier"/>

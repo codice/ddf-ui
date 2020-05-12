@@ -28,7 +28,7 @@ import ddf.catalog.operation.impl.QueryRequestImpl;
 import ddf.catalog.plugin.PreQueryPlugin;
 import ddf.security.Subject;
 import ddf.security.SubjectIdentity;
-import ddf.security.impl.SubjectUtils;
+import ddf.security.SubjectOperations;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -83,6 +83,8 @@ public class AccessControlPreQueryPlugin implements PreQueryPlugin {
   private final AccessControlTags tagSet;
 
   private final AccessControlSecurityConfiguration configuration;
+
+  private SubjectOperations subjectOperations;
 
   public AccessControlPreQueryPlugin(
       FilterBuilder filterBuilder,
@@ -184,7 +186,7 @@ public class AccessControlPreQueryPlugin implements PreQueryPlugin {
   List<String> getSubjectGroups() {
     final Subject subject = (Subject) SecurityUtils.getSubject();
     final List<String> groups =
-        SubjectUtils.getAttribute(subject, configuration.getSystemUserAttribute());
+        subjectOperations.getAttribute(subject, configuration.getSystemUserAttribute());
     LOGGER.debug("Obtained user's groups: {}", groups);
     return groups;
   }
@@ -212,5 +214,9 @@ public class AccessControlPreQueryPlugin implements PreQueryPlugin {
   private Filter isEqualToText(String attribute, String text) {
     LOGGER.trace("Adding \"{}\" = '{}' to filter", attribute, text);
     return filterBuilder.attribute(attribute).is().equalTo().text(text);
+  }
+
+  public void setSubjectOperations(SubjectOperations subjectOperations) {
+    this.subjectOperations = subjectOperations;
   }
 }

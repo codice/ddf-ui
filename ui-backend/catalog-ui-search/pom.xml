@@ -232,11 +232,6 @@
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
-            <groupId>ddf.security.core</groupId>
-            <artifactId>security-core-impl</artifactId>
-            <version>${ddf.version}</version>
-        </dependency>
-        <dependency>
             <groupId>ddf.security.handler</groupId>
             <artifactId>security-handler-impl</artifactId>
             <version>${ddf.version}</version>
@@ -385,6 +380,12 @@
             <groupId>org.codice.ddf.search</groupId>
             <artifactId>catalog-ui-splitter</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ddf.security.core</groupId>
+            <artifactId>security-core-services</artifactId>
+            <scope>test</scope>
+            <version>${ddf.version}</version>
         </dependency>
     </dependencies>
 

@@ -210,7 +210,6 @@ public class SearchFormsSymbolsIT {
 
   @Before
   public void setUp() {
-    when(MOCK_SUBJECT.isGuest()).thenReturn(false);
     when(MOCK_CONFIG.getMaximumUploadSize()).thenReturn(1024);
   }
 

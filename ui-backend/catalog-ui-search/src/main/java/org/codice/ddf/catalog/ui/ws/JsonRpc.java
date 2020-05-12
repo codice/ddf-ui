@@ -15,7 +15,7 @@ package org.codice.ddf.catalog.ui.ws;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import ddf.security.common.audit.SecurityLogger;
+import ddf.security.audit.SecurityLogger;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
@@ -52,6 +52,8 @@ public class JsonRpc implements WebSocket {
           .create();
 
   private final Map<String, Function> methods;
+
+  private SecurityLogger securityLogger;
 
   public JsonRpc(Map<String, Function> methods) {
     this.methods = methods;
@@ -102,7 +104,7 @@ public class JsonRpc implements WebSocket {
   @Override
   public void onError(Session session, Throwable ex) {
     if (ex instanceof WebSocketAuthenticationException) {
-      SecurityLogger.audit("Received WebSockets request for user that is not logged in.");
+      securityLogger.audit("Received WebSockets request for user that is not logged in.");
       handleMessage(
           session,
           ((WebSocketAuthenticationException) ex).getWsMessage(),
@@ -205,6 +207,10 @@ public class JsonRpc implements WebSocket {
     } catch (RuntimeException e) {
       throw new JsonRpcException(id, error(INTERNAL_ERROR, "Internal Error"));
     }
+  }
+
+  public void setSecurityLogger(SecurityLogger securityLogger) {
+    this.securityLogger = securityLogger;
   }
 
   private static class JsonRpcException extends RuntimeException {
