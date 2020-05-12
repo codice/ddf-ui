@@ -157,11 +157,6 @@ public class WorkspaceQueryServiceTest {
           }
 
           @Override
-          public boolean isGuest() {
-            return false;
-          }
-
-          @Override
           public Object getPrincipal() {
             return null;
           }

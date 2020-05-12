@@ -25,7 +25,7 @@ import ddf.catalog.operation.UpdateRequest;
 import ddf.catalog.plugin.PreIngestPlugin;
 import ddf.catalog.plugin.StopProcessingException;
 import ddf.security.SubjectIdentity;
-import ddf.security.impl.SubjectUtils;
+import ddf.security.SubjectOperations;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -40,6 +40,8 @@ import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceConstants;
 public class AccessControlPreIngestPlugin implements PreIngestPlugin {
 
   private final SubjectIdentity subjectIdentity;
+
+  private SubjectOperations subjectOperations;
 
   /**
    * This set is final and not supposed to be added to. This plugin is designed to support backwards
@@ -87,7 +89,7 @@ public class AccessControlPreIngestPlugin implements PreIngestPlugin {
             .anyMatch(metacard -> StringUtils.isEmpty(AccessControlUtil.getOwner(metacard)));
 
     if (missingOwner) {
-      if (SubjectUtils.isGuest(ownerSubject)) {
+      if (subjectOperations.isGuest(ownerSubject)) {
         throw new StopProcessingException(
             "Guest user not allowed to create access-controlled resources");
       }
@@ -125,5 +127,9 @@ public class AccessControlPreIngestPlugin implements PreIngestPlugin {
     metacard.setAttribute(
         new AttributeImpl(
             Security.ACCESS_ADMINISTRATORS, Collections.singletonList(subjectIdentity)));
+  }
+
+  public void setSubjectOperations(SubjectOperations subjectOperations) {
+    this.subjectOperations = subjectOperations;
   }
 }

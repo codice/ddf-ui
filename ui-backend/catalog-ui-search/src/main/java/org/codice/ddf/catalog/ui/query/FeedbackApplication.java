@@ -22,7 +22,7 @@ import com.github.jknack.handlebars.Template;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import ddf.security.Subject;
-import ddf.security.impl.SubjectUtils;
+import ddf.security.SubjectOperations;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
@@ -72,6 +72,8 @@ public class FeedbackApplication implements SparkApplication {
   private String emailDestination;
 
   private EndpointUtil util;
+
+  private SubjectOperations subjectOperations;
 
   @Override
   public void init() {
@@ -290,6 +292,10 @@ public class FeedbackApplication implements SparkApplication {
 
   private String getCurrentUser() {
     Subject subject = (Subject) SecurityUtils.getSubject();
-    return SubjectUtils.getName(subject);
+    return subjectOperations.getName(subject);
+  }
+
+  public void setSubjectOperations(SubjectOperations subjectOperations) {
+    this.subjectOperations = subjectOperations;
   }
 }
