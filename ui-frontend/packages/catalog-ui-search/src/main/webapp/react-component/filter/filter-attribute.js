@@ -16,6 +16,7 @@ import * as React from 'react'
 import styled from 'styled-components'
 import { getFilteredAttributeList } from './filterHelper'
 import EnumInput from '../inputs/enum-input'
+const metacardDefinitions = require('../../component/singletons/metacard-definitions')
 
 const Root = styled.div`
   display: inline-block;
@@ -40,7 +41,7 @@ const FilterAttributeDropdown = ({
           supportedAttributes={supportedAttributes}
         />
       ) : (
-        value
+        metacardDefinitions.getLabel(value)
       )}
     </Root>
   )

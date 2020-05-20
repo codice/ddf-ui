@@ -21,6 +21,8 @@ import com.google.common.annotations.VisibleForTesting;
 import ddf.catalog.CatalogFramework;
 import ddf.catalog.data.AttributeRegistry;
 import ddf.catalog.data.Metacard;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.List;
 import javax.xml.bind.JAXBException;
 import org.apache.karaf.shell.api.action.Action;
@@ -87,7 +89,9 @@ public class SearchFormsLoaderCommand extends SubjectCommands implements Action 
     console.println(ansi().fgBrightCyan().a("Initializing Search Form Template Loader").reset());
     final SearchFormsLoader loader = generateLoader();
 
-    List<Metacard> parsedMetacards = loader.retrieveSystemTemplateMetacards();
+    List<Metacard> parsedMetacards =
+        AccessController.doPrivileged(
+            (PrivilegedAction<List<Metacard>>) () -> loader.retrieveSystemTemplateMetacards());
 
     if (!parsedMetacards.isEmpty()) {
       printColor(GREEN, "Loader initialized, beginning ingestion of system templates.");
