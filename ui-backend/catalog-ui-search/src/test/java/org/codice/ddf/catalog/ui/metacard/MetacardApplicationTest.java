@@ -16,8 +16,8 @@ package org.codice.ddf.catalog.ui.metacard;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -149,7 +149,7 @@ public class MetacardApplicationTest {
   }
 
   private static Instant doParseDate(InvocationOnMock in) {
-    Serializable arg = in.getArgumentAt(0, Serializable.class);
+    Serializable arg = in.getArgument(0);
     if (!(arg instanceof String)) {
       fail("Only testing with string inputs but got something else, " + arg);
     }

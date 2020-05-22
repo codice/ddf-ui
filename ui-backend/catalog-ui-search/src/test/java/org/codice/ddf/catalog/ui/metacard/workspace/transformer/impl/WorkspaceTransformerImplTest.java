@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -213,7 +213,7 @@ public class WorkspaceTransformerImplTest {
 
     final EndpointUtil mockEndpointUtils = Mockito.mock(EndpointUtil.class);
     when(mockEndpointUtils.convertDateEntries(any(Map.Entry.class)))
-        .then(invocation -> invocation.getArgumentAt(0, Map.Entry.class));
+        .then(invocation -> invocation.getArgument(0));
 
     metacard = new MetacardImpl(DUMMY_METACARD_TYPE);
 
