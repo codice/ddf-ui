@@ -54,12 +54,12 @@
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
-            <version>8.2</version>
+            <version>${nimbus.version}</version>
         </dependency>
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>oauth2-oidc-sdk</artifactId>
-            <version>6.18</version>
+            <version>${nimbus.oidc.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.nimbusds</groupId>
@@ -70,7 +70,7 @@
         <dependency>
             <groupId>org.pac4j</groupId>
             <artifactId>pac4j-oidc</artifactId>
-            <version>3.8.2</version>
+            <version>${pac4j.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
