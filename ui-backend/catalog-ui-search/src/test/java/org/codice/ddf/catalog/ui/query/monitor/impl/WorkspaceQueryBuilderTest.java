@@ -23,7 +23,7 @@ import org.codice.ddf.catalog.ui.query.monitor.api.FilterService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opengis.filter.And;
 import org.opengis.filter.Filter;
 import org.opengis.filter.Or;
