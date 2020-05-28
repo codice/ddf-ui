@@ -208,7 +208,10 @@ module.exports = function CesiumMap(
 ) {
   let overlays = {}
   let shapes = []
-  const { map, requestRenderHandler } = createMap(insertionElement, cameraOptions && cameraOptions.cesium)
+  const { map, requestRenderHandler } = createMap(
+    insertionElement,
+    cameraOptions && cameraOptions.cesium
+  )
   const drawHelper = new DrawHelper(map)
   const billboardCollection = setupBillboardCollection()
   const labelCollection = setupLabelCollection()

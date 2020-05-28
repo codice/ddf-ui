@@ -105,17 +105,17 @@ const OpenlayersMap = extension =>
     notificationEl,
     componentElement,
     mapModel,
-  cameraOptions
-) {
-  let overlays = {}
-  let shapes = []
-  const map = createMap(
-    insertionElement,
-    cameraOptions && cameraOptions.openlayers
-  )
-  listenToResize()
-  setupTooltip(map)
-  const drawingTools = setupDrawingTools(map)
+    cameraOptions
+  ) {
+    let overlays = {}
+    let shapes = []
+    const map = createMap(
+      insertionElement,
+      cameraOptions && cameraOptions.openlayers
+    )
+    listenToResize()
+    setupTooltip(map)
+    const drawingTools = setupDrawingTools(map)
 
     function setupTooltip(map) {
       map.on('pointermove', e => {
