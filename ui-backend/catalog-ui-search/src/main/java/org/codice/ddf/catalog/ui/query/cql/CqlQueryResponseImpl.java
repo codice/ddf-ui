@@ -30,6 +30,7 @@ import ddf.catalog.source.UnsupportedQueryException;
 import ddf.catalog.source.solr.SolrMetacardClientImpl;
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -67,6 +68,8 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
   private final List<String> showingResultsForFields, didYouMeanFields;
 
   private final Boolean userSpellcheckIsOn;
+
+  private final Set<String> warnings = new HashSet<>();
 
   // Transient so as not to be serialized to/from JSON
   private final transient QueryResponse queryResponse;
@@ -197,5 +200,9 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
 
   public Status getStatus() {
     return status;
+  }
+
+  public Set<String> getWarnings() {
+    return warnings;
   }
 }
