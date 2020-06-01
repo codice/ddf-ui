@@ -22,6 +22,7 @@ const Common = require('../Common.js')
 require('backbone-associations')
 const QueryResponseSourceStatus = require('./QueryResponseSourceStatus.js')
 const QueryResultCollection = require('./QueryResult.collection.js')
+const announcement = require('../../component/announcement/index')
 
 let rpc = null
 
@@ -209,6 +210,15 @@ module.exports = Backbone.AssociatedModel.extend({
   },
   parse(resp, options) {
     metacardDefinitions.addMetacardDefinitions(resp.types)
+    if (resp.warnings && resp.status && resp.status.id) {
+      _.forEach(resp.warnings, warning => {
+        announcement.announce({
+          title: resp.status.id,
+          message: warning,
+          type: 'error',
+        })
+      })
+    }
     if (resp.results) {
       const queryId = this.getQueryId()
       const color = this.getColor()

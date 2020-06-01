@@ -21,16 +21,16 @@ var Provider = require('react-redux').Provider
 var actions = require('./actions')
 var configureStore = require('./configureStore')
 
-var Announcments = require('./announcements')
+var Announcements = require('./announcements')
 
-var region = $('<div id="announcments">').get(0)
+var region = $('<div id="announcements">').get(0)
 $(window.document.body).append(region)
 
 var store = configureStore()
 
 render(
   <Provider store={store}>
-    <Announcments />
+    <Announcements />
   </Provider>,
   region
 )
