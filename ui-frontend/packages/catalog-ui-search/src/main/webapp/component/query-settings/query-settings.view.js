@@ -27,6 +27,7 @@ const Property = require('../property/property.js')
 const SortItemCollectionView = require('../sort/sort.view.js')
 const Common = require('../../js/Common.js')
 const properties = require('../../js/properties.js')
+const sourcesInstance = require('../../component/singletons/sources-instance')
 const plugin = require('plugins/query-settings')
 const user = require('../singletons/user-instance.js')
 const ResultFormCollection = require('../result-form/result-form-collection-instance')
@@ -154,10 +155,17 @@ module.exports = plugin(
       )
     },
     setupSrcDropdown() {
-      const sources = this.model.get('sources')
+      const sourceIds = sourcesInstance.models.map(src => src.id)
+      const defaultSources = this.model.get('sources')
+      const validDefaultSources =
+        defaultSources && defaultSources.filter(src => sourceIds.includes(src))
+      const hasValidDefaultSources =
+        validDefaultSources && validDefaultSources.length
       this._srcDropdownModel = new DropdownModel({
-        value: sources ? sources : [],
-        federation: this.model.get('federation'),
+        value: validDefaultSources || [],
+        federation: hasValidDefaultSources
+          ? this.model.get('federation')
+          : 'enterprise',
       })
       if (this.getExtensions() !== undefined) {
         return
