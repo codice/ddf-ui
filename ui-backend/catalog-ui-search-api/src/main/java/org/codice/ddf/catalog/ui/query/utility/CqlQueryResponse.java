@@ -16,6 +16,7 @@ package org.codice.ddf.catalog.ui.query.utility;
 import ddf.catalog.operation.QueryResponse;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <b> This code is experimental. While this interface is functional and tested, it may change or be
@@ -32,4 +33,6 @@ public interface CqlQueryResponse {
   String getId();
 
   Status getStatus();
+
+  Set<String> getWarnings();
 }
