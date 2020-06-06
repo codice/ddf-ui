@@ -54,7 +54,7 @@
     <ddf.version>2.24.0</ddf.version>
     <ddf.support.version>2.3.16</ddf.support.version>
     <karaf.version>4.2.6</karaf.version>
-    <camel.version>2.22.1</camel.version>
+    <camel.version>2.22.3</camel.version>
     <tika.thirdparty.bundle.version>1.18.0_5</tika.thirdparty.bundle.version>
     <spark.version>2.5.5</spark.version>
     <opengis.version>20.1</opengis.version>
@@ -204,7 +204,7 @@
               </goals>
               <configuration>
                 <rules>
-                  <ArtifactSizeEnforcerRule implementation="org.codice.maven.artifactsize.ArtifactSizeEnforcerRule" />
+                  <ArtifactSizeEnforcerRule implementation="org.codice.maven.artifactsize.ArtifactSizeEnforcerRule"/>
                 </rules>
               </configuration>
             </execution>
