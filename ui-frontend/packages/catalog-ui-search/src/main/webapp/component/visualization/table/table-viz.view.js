@@ -20,6 +20,8 @@ import {
   Button,
   buttonTypeEnum,
 } from '../../../react-component/presentation/button'
+const user = require('catalog-ui-search/src/main/webapp/component/singletons/user-instance.js')
+const properties = require('catalog-ui-search/src/main/webapp/js/properties.js')
 const Marionette = require('marionette')
 const Backbone = require('backbone')
 const CustomElements = require('../../../js/CustomElements.js')
@@ -49,6 +51,37 @@ const filteredAttributesModel = Backbone.Model.extend({
     filteredAttributes: [],
   },
 })
+
+const defaultTableColumns = properties.defaultTableColumns.map(attr =>
+  attr.toLowerCase()
+)
+
+const setDefaultColumns = filteredAttributes => {
+  const hasSelectedColumns = user
+    .get('user')
+    .get('preferences')
+    .get('hasSelectedColumns')
+  const availableAttributes = filteredAttributes
+    .get('filteredAttributes')
+    .map(attr => attr.toLowerCase())
+  const validDefaultColumns = defaultTableColumns.filter(column =>
+    availableAttributes.includes(column)
+  )
+
+  if (
+    !hasSelectedColumns &&
+    availableAttributes.length &&
+    validDefaultColumns.length
+  ) {
+    const hiddenAttributes = availableAttributes.filter(
+      attr => !defaultTableColumns.includes(attr)
+    )
+    user
+      .get('user')
+      .get('preferences')
+      .set('columnHide', hiddenAttributes)
+  }
+}
 
 module.exports = Marionette.LayoutView.extend({
   tagName: CustomElements.register('table-viz'),
@@ -123,6 +156,8 @@ module.exports = Marionette.LayoutView.extend({
 
     this.filteredAttributes = new filteredAttributesModel()
     this.filterActiveSearchResultsAttributes()
+
+    setDefaultColumns(this.filteredAttributes)
 
     this.listenTo(
       this.options.selectionInterface,
