@@ -29,7 +29,6 @@ import ddf.catalog.operation.QueryRequest;
 import ddf.catalog.operation.QueryResponse;
 import ddf.catalog.operation.ResultHighlight;
 import ddf.catalog.source.UnsupportedQueryException;
-import ddf.catalog.source.solr.SolrMetacardClientImpl;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
@@ -56,6 +55,10 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
   private static final Logger LOGGER = LoggerFactory.getLogger(CqlQueryResponseImpl.class);
 
   private static final SearchTermsDelegate SEARCH_TERMS_DELEGATE = new SearchTermsDelegate();
+
+  public static final String DID_YOU_MEAN = "didYouMean";
+  public static final String SHOWING_RESULTS_FOR = "showingResultsFor";
+  public static final String SPELLCHECK = "spellcheck";
 
   private final List<CqlResult> results;
 
@@ -154,13 +157,10 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
             .collect(Collectors.toList());
 
     this.facets = getFacetResults(queryResponse.getPropertyValue(EXPERIMENTAL_FACET_RESULTS_KEY));
-    this.didYouMeanFields =
-        (List<String>) queryResponse.getProperties().get(SolrMetacardClientImpl.DID_YOU_MEAN_KEY);
+    this.didYouMeanFields = (List<String>) queryResponse.getProperties().get(DID_YOU_MEAN);
     this.showingResultsForFields =
-        (List<String>)
-            queryResponse.getProperties().get(SolrMetacardClientImpl.SHOWING_RESULTS_FOR_KEY);
-    this.userSpellcheckIsOn =
-        (Boolean) queryResponse.getProperties().get(SolrMetacardClientImpl.SPELLCHECK_KEY);
+        (List<String>) queryResponse.getProperties().get(SHOWING_RESULTS_FOR);
+    this.userSpellcheckIsOn = (Boolean) queryResponse.getProperties().get(SPELLCHECK);
     this.highlights =
         (List<ResultHighlight>) queryResponse.getProperties().get(Constants.QUERY_HIGHLIGHT_KEY);
   }
