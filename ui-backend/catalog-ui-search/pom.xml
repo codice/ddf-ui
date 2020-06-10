@@ -388,6 +388,11 @@
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+        <dependency>
             <groupId>ddf.security.servlet</groupId>
             <artifactId>security-servlet-web-socket</artifactId>
             <version>${ddf.version}</version>
