@@ -1,10 +1,11 @@
 @{customElementNamespace}result-row {
   td {
     padding: @minimumSpacing @mediumSpacing;
-    white-space: nowrap;
+    white-space: normal;
     cursor: pointer;
     vertical-align: top; // for IE10
     position: relative;
+    word-wrap: break-word;
   }
 
   td.is-hidden-column {
