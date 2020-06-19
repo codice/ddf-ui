@@ -51,7 +51,7 @@ const requestMapRender = () => {
 }
 
 const turnOffDrawing = () => {
-  wreqr.vent.trigger('search:drawend', store.get('content').get('drawingModel'))
+  wreqr.vent.trigger('search:drawend', Drawing.getDrawModel())
   requestMapRender()
 }
 
@@ -255,10 +255,6 @@ function getFilterTree(model) {
     return model.get('filterTree')
   }
   return cql.simplify(cql.read(model.get('cql')))
-}
-
-const turnOffDrawing = () => {
-  wreqr.vent.trigger('search:drawend', Drawing.getDrawModel())
 }
 
 module.exports = Marionette.LayoutView.extend({

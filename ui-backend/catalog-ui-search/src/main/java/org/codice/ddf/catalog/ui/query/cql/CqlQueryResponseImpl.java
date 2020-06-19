@@ -66,13 +66,13 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
 
   private final Map<String, Map<String, MetacardAttribute>> types;
 
-  private final Status status;
-
   private final Map<String, List<FacetValueCount>> facets;
 
   private final List<String> showingResultsForFields, didYouMeanFields;
 
   private final Boolean userSpellcheckIsOn;
+
+  private final Map<String, Status> statusBySource;
 
   private final List<ResultHighlight> highlights;
 
@@ -86,7 +86,6 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
       QueryRequest request,
       QueryResponse queryResponse,
       String source,
-      long elapsedTime,
       boolean normalize,
       FilterAdapter filterAdapter,
       ActionRegistry actionRegistry,
@@ -94,8 +93,6 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
     this.id = id;
 
     this.queryResponse = queryResponse;
-
-    status = new StatusImpl(queryResponse, source, elapsedTime);
 
     AtomicBoolean logOnceState = new AtomicBoolean(false);
     Consumer<String> logOnce =
@@ -163,6 +160,7 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
     this.userSpellcheckIsOn = (Boolean) queryResponse.getProperties().get(SPELLCHECK);
     this.highlights =
         (List<ResultHighlight>) queryResponse.getProperties().get(Constants.QUERY_HIGHLIGHT_KEY);
+    this.statusBySource = (Map<String, Status>) queryResponse.getProperties().get("statusBySource");
   }
 
   private Map<String, List<FacetValueCount>> getFacetResults(Serializable facetResults) {
@@ -204,10 +202,6 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
 
   public String getId() {
     return id;
-  }
-
-  public Status getStatus() {
-    return status;
   }
 
   public Set<String> getWarnings() {

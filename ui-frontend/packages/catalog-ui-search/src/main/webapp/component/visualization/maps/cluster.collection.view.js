@@ -43,7 +43,7 @@ const ClusterCollectionView = Marionette.CollectionView.extend({
   },
   onRender() {},
   handleMapHover(event, mapEvent) {
-    this.children.forEach((clusterView) => {
+    this.children.forEach(clusterView => {
       clusterView.handleHover(mapEvent.mapTarget)
     })
   },
@@ -112,11 +112,11 @@ const ClusterCollectionView = Marionette.CollectionView.extend({
         this.options.map
       )
       this.collection.set(
-        clusters.map((cluster) => ({
+        clusters.map(cluster => ({
           results: cluster,
 
           id: cluster
-            .map((result) => result.id)
+            .map(result => result.id)
             .sort()
             .toString(),
         })),
@@ -129,7 +129,7 @@ const ClusterCollectionView = Marionette.CollectionView.extend({
   getResultsWithGeometry() {
     return this.selectionInterface
       .getActiveSearchResults()
-      .filter((result) => result.hasGeometry())
+      .filter(result => result.hasGeometry())
   },
   listenForResultsChange() {
     this.listenTo(
@@ -147,7 +147,7 @@ const ClusterCollectionView = Marionette.CollectionView.extend({
     if (
       _.find(
         Object.keys(propertiesModel.changedAttributes()),
-        (attribute) =>
+        attribute =>
           metacardDefinitions.metacardTypes[attribute] &&
           metacardDefinitions.metacardTypes[attribute].type === 'GEOMETRY'
       ) !== undefined

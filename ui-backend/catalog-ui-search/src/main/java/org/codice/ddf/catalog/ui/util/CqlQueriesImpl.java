@@ -22,6 +22,7 @@ import ddf.catalog.data.Result;
 import ddf.catalog.federation.FederationException;
 import ddf.catalog.filter.FilterAdapter;
 import ddf.catalog.filter.FilterBuilder;
+import ddf.catalog.operation.ProcessingDetails;
 import ddf.catalog.operation.QueryRequest;
 import ddf.catalog.operation.QueryResponse;
 import ddf.catalog.operation.impl.QueryResponseImpl;
@@ -29,21 +30,27 @@ import ddf.catalog.source.SourceUnavailableException;
 import ddf.catalog.source.UnsupportedQueryException;
 import ddf.catalog.util.impl.QueryFunction;
 import ddf.catalog.util.impl.ResultIterable;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.codice.ddf.catalog.ui.metacard.transformer.CsvTransformImpl;
 import org.codice.ddf.catalog.ui.query.cql.CqlQueryResponseImpl;
 import org.codice.ddf.catalog.ui.query.cql.CqlRequestImpl;
+import org.codice.ddf.catalog.ui.query.cql.StatusImpl;
 import org.codice.ddf.catalog.ui.query.utility.CqlQueries;
 import org.codice.ddf.catalog.ui.query.utility.CqlQueryResponse;
 import org.codice.ddf.catalog.ui.query.utility.CqlRequest;
 import org.codice.ddf.catalog.ui.query.utility.CsvTransform;
+import org.codice.ddf.catalog.ui.query.utility.Status;
 import org.codice.ddf.catalog.ui.transformer.TransformerDescriptors;
 import org.codice.gsonsupport.GsonTypeAdapters;
 
@@ -58,6 +65,8 @@ public class CqlQueriesImpl implements CqlQueries {
   private ActionRegistry actionRegistry;
 
   private FilterAdapter filterAdapter;
+
+  private static final String METRICS_SOURCE_ELAPSED_PREFIX = "metrics.source.elapsed.";
 
   private static final Gson GSON =
       new GsonBuilder()
@@ -93,6 +102,80 @@ public class CqlQueriesImpl implements CqlQueries {
       results = retrieveResults(cqlRequest, request, responses);
     }
 
+    final List<String> sourceIds = new ArrayList<>();
+    if (request.getSourceIds() != null) {
+      sourceIds.addAll(request.getSourceIds());
+    }
+
+    final Map<String, Serializable> properties =
+        responses
+            .stream()
+            .filter(Objects::nonNull)
+            .map(QueryResponse::getProperties)
+            .findFirst()
+            .orElse(Collections.emptyMap());
+
+    stopwatch.stop();
+
+    final Set<ProcessingDetails> processingDetails =
+        responses
+            .stream()
+            .filter(Objects::nonNull)
+            .map(QueryResponse::getProcessingDetails)
+            .reduce(
+                new HashSet<>(),
+                (l, r) -> {
+                  l.addAll(r);
+                  return l;
+                });
+
+    Map<String, Status> statusBySource = new HashMap<>();
+
+    final long totalElapsedtime = stopwatch.elapsed(TimeUnit.MILLISECONDS);
+
+    // If only one source was provided, construct the status dynamically. Otherwise, use the
+    // properties.
+    if (sourceIds.size() <= 1) {
+      final String id = sourceIds.size() == 1 ? sourceIds.get(0) : "cache";
+      statusBySource.put(
+          id,
+          new StatusImpl(
+              id, results.size(), totalElapsedtime, responses.get(0).getHits(), processingDetails));
+    } else {
+      Map<String, Long> hitsPerSource =
+          (Map<String, Long>) properties.getOrDefault("hitsPerSource", new HashMap<String, Long>());
+
+      Map<String, Long> elapsedPerSource = new HashMap<>();
+      properties.forEach(
+          (key, value) -> {
+            if (key.startsWith(METRICS_SOURCE_ELAPSED_PREFIX)) {
+              String source = key.substring(METRICS_SOURCE_ELAPSED_PREFIX.length());
+              elapsedPerSource.put(source, new Long((Integer) value));
+            }
+          });
+
+      Map<String, Long> countPerSource = new HashMap<>();
+      sourceIds.forEach(id -> countPerSource.put(id, 0L));
+      results
+          .stream()
+          .map(Result::getMetacard)
+          .forEach(
+              metacard -> {
+                final String sourceId = (String) metacard.getSourceId();
+                countPerSource.merge(sourceId, 1L, Long::sum);
+              });
+
+      for (int i = 0; i < sourceIds.size(); i++) {
+        final String id = sourceIds.get(i);
+        long elapsed = elapsedPerSource.getOrDefault(id, 0L);
+        long count = countPerSource.getOrDefault(id, 0L);
+        long hits = hitsPerSource.getOrDefault(id, 0L);
+        statusBySource.put(id, new StatusImpl(id, count, elapsed, hits, processingDetails));
+      }
+    }
+
+    properties.put("statusBySource", (Serializable) statusBySource);
+
     QueryResponse response =
         new QueryResponseImpl(
             request,
@@ -104,32 +187,14 @@ public class CqlQueriesImpl implements CqlQueries {
                 .map(QueryResponse::getHits)
                 .findFirst()
                 .orElse(-1L),
-            responses
-                .stream()
-                .filter(Objects::nonNull)
-                .map(QueryResponse::getProperties)
-                .findFirst()
-                .orElse(Collections.emptyMap()),
-            responses
-                .stream()
-                .filter(Objects::nonNull)
-                .map(QueryResponse::getProcessingDetails)
-                .reduce(
-                    new HashSet<>(),
-                    (left, right) -> {
-                      left.addAll(right);
-                      return left;
-                    }));
-    ;
-
-    stopwatch.stop();
+            properties,
+            processingDetails);
 
     return new CqlQueryResponseImpl(
         cqlRequest.getId(),
         request,
         response,
         cqlRequest.getSourceResponseString(),
-        stopwatch.elapsed(TimeUnit.MILLISECONDS),
         cqlRequest.isNormalize(),
         filterAdapter,
         actionRegistry,
@@ -143,6 +208,13 @@ public class CqlQueriesImpl implements CqlQueries {
     return queryResponse.getResults();
   }
 
+  /**
+   * @param cqlRequest CQL Request (only used for count)
+   * @param request Catalog Query Request
+   * @param responses List of responses to append to.
+   * @return A ResultIterable of results, additionally adding the query response to a mutatable list
+   *     for additional context as we query.
+   */
   private List<Result> retrieveResults(
       CqlRequest cqlRequest, QueryRequest request, List<QueryResponse> responses) {
     QueryFunction queryFunction =
