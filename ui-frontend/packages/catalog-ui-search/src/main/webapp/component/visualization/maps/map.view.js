@@ -23,9 +23,6 @@ const Marionette = require('marionette')
 const CustomElements = require('../../../js/CustomElements.js')
 const LoadingCompanionView = require('../../loading-companion/loading-companion.view.js')
 const store = require('../../../js/store.js')
-const GeometryCollectionView = require('./geometry.collection.view')
-const ClusterCollectionView = require('./cluster.collection.view')
-const ClusterCollection = require('./cluster.collection')
 const PopupPreviewView = require('./popup.view.js')
 const CQLUtils = require('../../../js/CQLUtils.js')
 const LocationModel = require('../../location-old/location-old.js')
@@ -45,6 +42,7 @@ import MapInfo from '../../../react-component/map-info'
 import DistanceInfo from '../../../react-component/distance-info'
 import getDistance from 'geolib/es/getDistance'
 import { Drawing } from '../../singletons/drawing'
+import { GeometriesView } from './react/geometries.view'
 
 function findExtreme({ objArray, property, comparator }) {
   if (objArray.length === 0) {
@@ -151,9 +149,7 @@ module.exports = Marionette.LayoutView.extend({
   events: {
     'click .cluster-button': 'toggleClustering',
   },
-  clusterCollection: undefined,
-  clusterCollectionView: undefined,
-  geometryCollectionView: undefined,
+  geometriesView: undefined,
   map: undefined,
   mapModel: undefined,
   hasLoadedMap: false,
@@ -177,17 +173,10 @@ module.exports = Marionette.LayoutView.extend({
     if (!this.map) {
       throw 'Map has not been set.'
     }
-    this.clusterCollection = new ClusterCollection()
-    this.geometryCollectionView = new GeometryCollectionView({
-      collection: this.options.selectionInterface.getActiveSearchResults(),
-      map: this.map,
+    this.geometriesView = new GeometriesView({
       selectionInterface: this.options.selectionInterface,
-      clusterCollection: this.clusterCollection,
-    })
-    this.clusterCollectionView = new ClusterCollectionView({
-      collection: this.clusterCollection,
       map: this.map,
-      selectionInterface: this.options.selectionInterface,
+      mapView: this
     })
   },
   setupListeners() {
@@ -210,22 +199,6 @@ module.exports = Marionette.LayoutView.extend({
       this.options.selectionInterface,
       'reset:activeSearchResults',
       this.map.removeAllOverlays.bind(this.map)
-    )
-
-    this.listenTo(
-      this.options.selectionInterface.getSelectedResults(),
-      'update',
-      this.map.zoomToSelected.bind(this.map)
-    )
-    this.listenTo(
-      this.options.selectionInterface.getSelectedResults(),
-      'add',
-      this.map.zoomToSelected.bind(this.map)
-    )
-    this.listenTo(
-      this.options.selectionInterface.getSelectedResults(),
-      'remove',
-      this.map.zoomToSelected.bind(this.map)
     )
 
     this.listenTo(
@@ -253,13 +226,6 @@ module.exports = Marionette.LayoutView.extend({
       this.updateDistance.bind(this)
     )
 
-    if (this.options.selectionInterface.getSelectedResults().length > 0) {
-      this.map.zoomToSelected(
-        this.options.selectionInterface.getSelectedResults()
-      )
-    } else {
-      Common.queueExecution(this.zoomToHome.bind(this))
-    }
     this.map.onMouseMove(this.onMapHover.bind(this))
     this.map.onRightClick(this.onRightClick.bind(this))
     this.setupRightClickMenu()
@@ -341,23 +307,31 @@ module.exports = Marionette.LayoutView.extend({
     this.toolbarSettings.show(new MapSettingsView())
   },
   onMapHover(event, mapEvent) {
-    const metacard = this.options.selectionInterface
-      .getActiveSearchResults()
-      .get(mapEvent.mapTarget)
+    const currentQuery = this.options.selectionInterface.get('currentQuery')
+    if (!currentQuery) {
+      return
+    }
+    const result = currentQuery.get('result')
+    if (!result) {
+      return
+    }
+    const metacard = result.get('lazyResults').results[mapEvent.mapTarget]
     this.updateTarget(metacard)
     this.$el.toggleClass(
       'is-hovering',
-      Boolean(mapEvent.mapTarget && mapEvent.mapTarget !== 'userDrawing')
+      Boolean(
+        mapEvent.mapTarget &&
+          mapEvent.mapTarget !== 'userDrawing' &&
+          (mapEvent.mapTarget.constructor === Array ||
+            mapEvent.mapTarget.length > 10) // why ten?  Well, for some reason we don't put 'userDrawing' as the id on openlayers targets, instead we put a random cid from marionette / backbone. Not sure why to be honest.  We have to check if it's an array though, because clusters come back as arrays
+      )
     )
   },
   updateTarget(metacard) {
     let target
     let targetMetacard
     if (metacard) {
-      target = metacard
-        .get('metacard')
-        .get('properties')
-        .get('title')
+      target = metacard.plain.metacard.properties.title
       targetMetacard = metacard
     }
     this.mapModel.set({
@@ -457,7 +431,9 @@ module.exports = Marionette.LayoutView.extend({
       .css('left', event.offsetX)
       .css('top', event.offsetY)
     this.mapModel.updateClickCoordinates()
-    this.mapContextMenu.currentView.model.open()
+    if (this.mapModel.get('mouseLat') !== undefined) {
+      this.mapContextMenu.currentView.model.open()
+    }
     this.updateDistance(true)
   },
   setupRightClickMenu() {
@@ -466,9 +442,6 @@ module.exports = Marionette.LayoutView.extend({
         model: new DropdownModel(),
         mapModel: this.mapModel,
         selectionInterface: this.options.selectionInterface,
-        dropdownCompanionBehaviors: {
-          navigation: {},
-        },
       })
     )
   },
@@ -564,7 +537,7 @@ module.exports = Marionette.LayoutView.extend({
   },
   toggleClustering() {
     this.$el.toggleClass('is-clustering')
-    this.clusterCollectionView.toggleActive()
+    this.geometriesView.toggleClustering()
   },
   handleDrawing() {
     this.$el.toggleClass('is-drawing', Drawing.isDrawing())
@@ -671,14 +644,8 @@ module.exports = Marionette.LayoutView.extend({
     this.map.destroyShapes()
   },
   onDestroy() {
-    if (this.geometryCollectionView) {
-      this.geometryCollectionView.destroy()
-    }
-    if (this.clusterCollectionView) {
-      this.clusterCollectionView.destroy()
-    }
-    if (this.clusterCollection) {
-      this.clusterCollection.reset()
+    if (this.geometriesView) {
+      this.geometriesView.destroy()
     }
     if (this.map) {
       this.map.destroy()

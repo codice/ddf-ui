@@ -115,6 +115,7 @@ module.exports = TabsView.extend({
         })
       )
     }
+    this._clickHandler()
   },
   determineContent() {
     if (this.selectionInterface.getSelectedResults().length === 1) {

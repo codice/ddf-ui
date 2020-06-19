@@ -12,11 +12,21 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+
 import * as React from 'react'
-import { shallow } from 'enzyme'
 
-import { HistogramContainer } from '.'
+const Marionette = require('marionette')
+import LazyInspector from './inspector-lazy'
 
-describe('<HistogramContainer />', () => {
-  it('renders without error', () => shallow(<HistogramContainer />))
+const LazyInspectorView = Marionette.LayoutView.extend({
+  className: 'customElement',
+  template() {
+    return (
+      <React.Fragment>
+        <LazyInspector selectionInterface={this.options.selectionInterface} />
+      </React.Fragment>
+    )
+  },
 })
+
+export default LazyInspectorView

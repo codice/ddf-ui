@@ -36,7 +36,7 @@ const user = require('../../../singletons/user-instance.js')
 const User = require('../../../../js/model/User.js')
 const wreqr = require('../../../../js/wreqr.js')
 import { validateGeo } from '../../../../react-component/utils/validation'
-
+import { ClusterType } from '../react/geometries' 
 const defaultColor = '#3c6dd5'
 const rulerColor = '#506f85'
 
@@ -303,18 +303,28 @@ const OpenlayersMap = extension =>
           })
         })
       },
-      timeoutId: NaN,
+      timeoutIds: [],
       onCameraMoveStart(callback) {
         clearTimeout(this.timeoutId)
-        map.on('movestart', callback)
+        this.timeoutIds.forEach(timeoutId => {
+          clearTimeout(timeoutId)
+        })
+        this.timeoutIds = []
+        map.addEventListener('movestart', callback)
+      },
+      offCameraMoveStart(callback) {
+        map.removeEventListener('movestart', callback)
       },
       onCameraMoveEnd(callback) {
         const timeoutCallback = () => {
-          this.timeoutId = setTimeout(() => {
+          this.timeoutIds.push(setTimeout(() => {
             callback()
-          }, 300)
+          }, 300))
         }
-        map.on('moveend', timeoutCallback)
+        map.addEventListener('moveend', timeoutCallback)
+      },
+      offCameraMoveEnd(callback) {
+        map.removeEventListener('moveend', callback)
       },
       doPanZoom(coords) {
         const that = this
@@ -427,9 +437,9 @@ const OpenlayersMap = extension =>
         }
         overlays = {}
       },
-      getCartographicCenterOfClusterInDegrees(cluster) {
+      getCartographicCenterOfClusterInDegrees(cluster: ClusterType) {
         return utility.calculateCartographicCenterOfGeometriesInDegrees(
-          cluster.get('results').map(result => result)
+          cluster.results
         )
       },
       getWindowLocationsOfResults(results) {
@@ -518,30 +528,61 @@ const OpenlayersMap = extension =>
           geometry: new Openlayers.geom.Point(pointObject),
         })
         feature.setId(options.id)
-
-        feature.setStyle(
-          new Openlayers.style.Style({
-            image: new Openlayers.style.Icon({
-              img: DrawingUtility.getCircleWithText({
-                fillColor: options.color,
-                text: useCustomText ? options.id : options.id.length,
-              }),
-              imgSize: [44, 44],
+  
+        feature.unselectedStyle = new Openlayers.style.Style({
+          image: new Openlayers.style.Icon({
+            img: DrawingUtility.getCircleWithText({
+              fillColor: options.color,
+              text: options.id.length,
             }),
-          })
-        )
-
+            imgSize: [44, 44],
+          }),
+        })
+        feature.partiallySelectedStyle = new Openlayers.style.Style({
+          image: new Openlayers.style.Icon({
+            img: DrawingUtility.getCircleWithText({
+              fillColor: options.color,
+              text: options.id.length,
+              strokeColor: 'black',
+              textColor: 'white',
+            }),
+            imgSize: [44, 44],
+          }),
+        })
+        feature.selectedStyle = new Openlayers.style.Style({
+          image: new Openlayers.style.Icon({
+            img: DrawingUtility.getCircleWithText({
+              fillColor: options.color,
+              text: options.id.length,
+              strokeColor: 'black',
+              textColor: 'black',
+            }),
+            imgSize: [44, 44],
+          }),
+        })
+        switch (options.isSelected) {
+          case 'selected':
+            feature.setStyle(feature.selectedStyle)
+            break
+          case 'partially':
+            feature.setStyle(feature.partiallySelectedStyle)
+            break
+          case 'unselected':
+            feature.setStyle(feature.unselectedStyle)
+            break
+        }
+  
         const vectorSource = new Openlayers.source.Vector({
           features: [feature],
         })
-
+  
         const vectorLayer = new Openlayers.layer.Vector({
           source: vectorSource,
           zIndex: 1,
         })
-
+  
         map.addLayer(vectorLayer)
-
+  
         return vectorLayer
       },
       /*
@@ -552,30 +593,58 @@ const OpenlayersMap = extension =>
         const pointObject = convertPointCoordinate(point)
         const feature = new Openlayers.Feature({
           geometry: new Openlayers.geom.Point(pointObject),
+          name: options.title,
         })
         feature.setId(options.id)
-
-        feature.setStyle(
-          new Openlayers.style.Style({
-            image: new Openlayers.style.Icon({
-              img: DrawingUtility.getCircle({
-                fillColor: options.color,
-              }),
-              imgSize: [22, 22],
+  
+        let x = 39,
+          y = 40
+        if (options.size) {
+          x = options.size.x
+          y = options.size.y
+        }
+        feature.unselectedStyle = new Openlayers.style.Style({
+          image: new Openlayers.style.Icon({
+            img: DrawingUtility.getPin({
+              fillColor: options.color,
+              icon: options.icon,
             }),
-          })
+            imgSize: [x, y],
+            anchor: [x / 2, 0],
+            anchorOrigin: 'bottom-left',
+            anchorXUnits: 'pixels',
+            anchorYUnits: 'pixels',
+          }),
+        })
+        feature.selectedStyle = new Openlayers.style.Style({
+          image: new Openlayers.style.Icon({
+            img: DrawingUtility.getPin({
+              fillColor: options.color,
+              strokeColor: 'black',
+              icon: options.icon,
+            }),
+            imgSize: [x, y],
+            anchor: [x / 2, 0],
+            anchorOrigin: 'bottom-left',
+            anchorXUnits: 'pixels',
+            anchorYUnits: 'pixels',
+          }),
+        })
+        feature.setStyle(
+          options.isSelected ? feature.selectedStyle : feature.unselectedStyle
         )
+  
         const vectorSource = new Openlayers.source.Vector({
           features: [feature],
         })
-
+  
         const vectorLayer = new Openlayers.layer.Vector({
           source: vectorSource,
           zIndex: 1,
         })
-
+  
         map.addLayer(vectorLayer)
-
+  
         return vectorLayer
       },
       /*
@@ -623,40 +692,51 @@ const OpenlayersMap = extension =>
         const lineObject = line.map(coordinate =>
           convertPointCoordinate(coordinate)
         )
-
+  
         const feature = new Openlayers.Feature({
           geometry: new Openlayers.geom.LineString(lineObject),
           name: options.title,
         })
         feature.setId(options.id)
-
-        const styles = [
+        const commonStyle = new Openlayers.style.Style({
+          stroke: new Openlayers.style.Stroke({
+            color: options.color || defaultColor,
+            width: 4,
+          }),
+        })
+        feature.unselectedStyle = [
           new Openlayers.style.Style({
             stroke: new Openlayers.style.Stroke({
               color: 'white',
               width: 8,
             }),
           }),
+          commonStyle,
+        ]
+        feature.selectedStyle = [
           new Openlayers.style.Style({
             stroke: new Openlayers.style.Stroke({
-              color: options.color || defaultColor,
-              width: 4,
+              color: 'black',
+              width: 8,
             }),
           }),
+          commonStyle,
         ]
-
-        feature.setStyle(styles)
-
+  
+        feature.setStyle(
+          options.isSelected ? feature.selectedStyle : feature.unselectedStyle
+        )
+  
         const vectorSource = new Openlayers.source.Vector({
           features: [feature],
         })
-
+  
         const vectorLayer = new Openlayers.layer.Vector({
           source: vectorSource,
         })
-
+  
         map.addLayer(vectorLayer)
-
+  
         return vectorLayer
       },
       /*
@@ -678,19 +758,17 @@ const OpenlayersMap = extension =>
           const geometryInstance = feature.getGeometry()
           if (geometryInstance.constructor === Openlayers.geom.Point) {
             geometry.setZIndex(options.isSelected ? 2 : 1)
-            feature.setStyle(
-              new Openlayers.style.Style({
-                image: new Openlayers.style.Icon({
-                  img: DrawingUtility.getCircleWithText({
-                    fillColor: options.color,
-                    strokeColor: options.outline,
-                    text: options.count,
-                    textColor: options.textFill,
-                  }),
-                  imgSize: [44, 44],
-                }),
-              })
-            )
+            switch (options.isSelected) {
+              case 'selected':
+                feature.setStyle(feature.selectedStyle)
+                break
+              case 'partially':
+                feature.setStyle(feature.partiallySelectedStyle)
+                break
+              case 'unselected':
+                feature.setStyle(feature.unselectedStyle)
+                break
+            }
           } else if (
             geometryInstance.constructor === Openlayers.geom.LineString
           ) {
@@ -722,10 +800,20 @@ const OpenlayersMap = extension =>
             this.updateGeometry(innerGeometry, options)
           })
         } else {
-          const features = geometry.getSource().getFeatures()
-          features.forEach(feature =>
-            this.setGeometryStyle(geometry, options, feature)
-          )
+          const feature = geometry.getSource().getFeatures()[0]
+          const geometryInstance = feature.getGeometry()
+          if (geometryInstance.constructor === Openlayers.geom.Point) {
+            geometry.setZIndex(options.isSelected ? 2 : 1)
+            feature.setStyle(
+              options.isSelected ? feature.selectedStyle : feature.unselectedStyle
+            )
+          } else if (
+            geometryInstance.constructor === Openlayers.geom.LineString
+          ) {
+            feature.setStyle(
+              options.isSelected ? feature.selectedStyle : feature.unselectedStyle
+            )
+          }
         }
       },
       setGeometryStyle(geometry, options, feature) {
