@@ -29,7 +29,6 @@
         <feature>resource-bundle-locator</feature>
         <feature>platform-usng4j</feature>
         <feature>platform-configuration</feature>
-        <feature>platform-email</feature>
         <feature>persistence-core</feature>
 
         <feature>catalog-ui-search-api</feature>
