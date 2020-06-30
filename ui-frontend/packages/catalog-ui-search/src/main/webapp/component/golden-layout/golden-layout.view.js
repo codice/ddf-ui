@@ -24,7 +24,6 @@ const CustomElements = require('../../js/CustomElements.js')
 const GoldenLayout = require('golden-layout')
 const properties = require('../../js/properties.js')
 const Common = require('../../js/Common.js')
-const store = require('../../js/store.js')
 const user = require('../singletons/user-instance.js')
 const VisualizationDropdown = require('../dropdown/visualization-selector/dropdown.visualization-selector.view.js')
 const DropdownModel = require('../dropdown/dropdown.js')
@@ -99,8 +98,8 @@ function getGoldenLayoutSettings() {
     },
     dimensions: {
       borderWidth: 0.5 * parseFloat(theme.minimumSpacing) * fontSize,
-      minItemHeight: minimumScreenSize * fontSize,
-      minItemWidth: minimumScreenSize * fontSize,
+      minItemHeight: 50,
+      minItemWidth: 50,
       headerHeight: parseFloat(theme.minimumButtonSize) * fontSize,
       dragProxyWidth: 300,
       dragProxyHeight: 200,
@@ -198,9 +197,6 @@ module.exports = Marionette.LayoutView.extend({
     toolbar: '> .golden-layout-toolbar',
     widgetDropdown: '> .golden-layout-toolbar .to-add',
   },
-  initialize(options) {
-    this.options.selectionInterface = options.selectionInterface || store
-  },
   updateFontSize() {
     const goldenLayoutSettings = getGoldenLayoutSettings()
     this.goldenLayout.config.dimensions.borderWidth =
@@ -216,6 +212,9 @@ module.exports = Marionette.LayoutView.extend({
     })
   },
   updateSize() {
+    if (this.isDestroyed) {
+      return
+    }
     this.goldenLayout.updateSize()
   },
   showWidgetDropdown() {
@@ -284,6 +283,9 @@ module.exports = Marionette.LayoutView.extend({
       })
   },
   handleGoldenLayoutStateChange(event) {
+    if (this.isDestroyed) {
+      return
+    }
     this.detectIfGoldenLayoutMaximised()
     this.detectIfGoldenLayoutEmpty()
     //https://github.com/deepstreamIO/golden-layout/issues/253
@@ -334,9 +336,13 @@ module.exports = Marionette.LayoutView.extend({
         }
       )
     )
+    this.listenTo(wreqr.vent, 'gl-updateSize', () => {
+      this.updateSize()
+    })
   },
   stopListeningForResize() {
     $(window).off('resize.' + this.cid)
+    this.stopListening(wreqr.vent)
   },
   onDestroy() {
     this.stopListeningForResize()

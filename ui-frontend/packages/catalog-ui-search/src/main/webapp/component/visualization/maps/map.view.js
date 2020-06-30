@@ -22,7 +22,6 @@ const template = require('./map.hbs')
 const Marionette = require('marionette')
 const CustomElements = require('../../../js/CustomElements.js')
 const LoadingCompanionView = require('../../loading-companion/loading-companion.view.js')
-const store = require('../../../js/store.js')
 const PopupPreviewView = require('./popup.view.js')
 const CQLUtils = require('../../../js/CQLUtils.js')
 const LocationModel = require('../../location-old/location-old.js')
@@ -162,7 +161,6 @@ module.exports = Marionette.LayoutView.extend({
     this.listenTo(Drawing, 'change:drawing', this.handleDrawing)
     this.handleDrawing()
     this.setupMouseLeave()
-    this.listenTo(store.get('workspaces'), 'add', this.zoomToHome)
   },
   setupMouseLeave() {
     this.$el.on('mouseleave', () => {
@@ -176,7 +174,7 @@ module.exports = Marionette.LayoutView.extend({
     this.geometriesView = new GeometriesView({
       selectionInterface: this.options.selectionInterface,
       map: this.map,
-      mapView: this
+      mapView: this,
     })
   },
   setupListeners() {

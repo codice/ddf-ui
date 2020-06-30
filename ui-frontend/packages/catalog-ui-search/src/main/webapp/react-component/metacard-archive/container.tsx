@@ -17,7 +17,6 @@ import { hot } from 'react-hot-loader'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import fetch from '../utils/fetch'
 const announcement = require('component/announcement')
-const store = require('../../js/store.js')
 const ResultUtils = require('../../js/ResultUtils.js')
 const ConfirmationView = require('../../component/confirmation/confirmation.view.js')
 import MetacardArchivePresentation from './presentation'
@@ -36,7 +35,7 @@ class MetacardArchive extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
 
-    const selectionInterface = props.selectionInterface || store
+    const selectionInterface = props.selectionInterface
     const collection = selectionInterface.getSelectedResults()
 
     const isDeleted = collection.some((result: any) => {

@@ -18,7 +18,6 @@ const Backbone = require('backbone')
 const Marionette = require('marionette')
 const $ = require('jquery')
 const CustomElements = require('../../js/CustomElements.js')
-const store = require('../../js/store.js')
 const LoadingCompanionView = require('../loading-companion/loading-companion.view.js')
 const AssociationsMenuView = require('../associations-menu/associations-menu.view.js')
 const AssociationCollectionView = require('../association/association.collection.view.js')
@@ -75,7 +74,6 @@ module.exports = Marionette.LayoutView.extend({
     )
   },
   tagName: CustomElements.register('metacard-associations'),
-  selectionInterface: store,
   events: {
     'click > .list-footer .footer-add': 'handleAdd',
     'click > .editor-footer .footer-edit': 'handleEdit',

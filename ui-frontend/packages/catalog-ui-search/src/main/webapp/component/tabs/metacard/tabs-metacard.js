@@ -25,6 +25,13 @@ import MetacardArchive from '../../../react-component/metacard-archive'
 import MetacardActions from '../../../react-component/metacard-actions'
 import MetacardQuality from '../../../react-component/metacard-quality'
 import MetacardHistory from '../../../react-component/metacard-history'
+import Summary from './summary'
+
+const LightWeightSummaryView = Marionette.LayoutView.extend({
+  template() {
+    return <Summary selectionInterface={this.options.selectionInterface} />
+  },
+})
 
 const MetacardOverwriteView = Marionette.LayoutView.extend({
   template() {
@@ -69,7 +76,7 @@ const MetacardHistoryView = Marionette.LayoutView.extend({
 module.exports = Tabs.extend({
   defaults: {
     tabs: {
-      Summary: MetacardBasicView,
+      Summary: LightWeightSummaryView,
       Details: MetacardAdvancedView,
       Preview: MetacardPreviewView,
       History: MetacardHistoryView,

@@ -12,12 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import routes from './routes'
-import navigator, { Props } from './navigator'
 import { SFC } from '../react-component/hoc/utils'
 import { providers, Props as ProviderProps } from './providers'
 import visualizations from './visualizations'
-import queryForms from './query-forms'
 import navigationRight from './navigation-right'
 import metacardInteractions from './metacard-interactions'
 import searchInteractions, {
@@ -29,11 +26,8 @@ import userSettings from './user-settings'
 import { DetermineInputType } from '../react-component/filter/filter-input/filterInputHelper'
 
 export type ExtensionPointsType = {
-  routes: {}
-  navigator: SFC<Props>
   providers: SFC<ProviderProps>
   visualizations: any[]
-  queryForms: any[]
   navigationRight: any[]
   metacardInteractions: any[]
   searchInteractions: SFC<SearchInteractionProps>
@@ -44,11 +38,8 @@ export type ExtensionPointsType = {
 }
 
 const ExtensionPoints: ExtensionPointsType = {
-  routes,
-  navigator,
   providers,
   visualizations,
-  queryForms,
   navigationRight,
   metacardInteractions,
   searchInteractions,

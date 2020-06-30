@@ -23,6 +23,7 @@ type Props = {
   viewOptions?: object
   replaceElement?: boolean
   className?: string
+  manualDestroy?: boolean
   style?: React.CSSProperties
 } & React.HTMLProps<HTMLDivElement> &
   JSX.IntrinsicAttributes
@@ -86,7 +87,7 @@ export default hot(module)(
     }
     componentWillUnmount() {
       clearInterval(this.checkForElement)
-      if (this.region) {
+      if (this.region && !this.props.manualDestroy) {
         this.region.empty()
         this.region.destroy()
       }

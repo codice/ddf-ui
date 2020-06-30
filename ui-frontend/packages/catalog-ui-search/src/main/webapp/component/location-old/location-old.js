@@ -17,7 +17,6 @@
 const _ = require('underscore')
 const Backbone = require('backbone')
 const usngs = require('usng.js')
-const store = require('../../js/store.js')
 const Common = require('../../js/Common.js')
 const dmsUtils = require('../location-new/utils/dms-utils.js')
 const DistanceUtils = require('../../js/DistanceUtils.js')
@@ -160,15 +159,7 @@ module.exports = Backbone.AssociatedModel.extend({
     )
     this.listenTo(this, 'EndExtent', this.drawingOff)
     this.listenTo(this, 'BeginExtent', this.drawingOn)
-    if (this.get('color') === undefined && store.get('content').get('query')) {
-      this.set(
-        'color',
-        store
-          .get('content')
-          .get('query')
-          .get('color')
-      )
-    } else if (this.get('color') === undefined) {
+    if (this.get('color') === undefined) {
       this.set('color', '#c89600')
     }
   },

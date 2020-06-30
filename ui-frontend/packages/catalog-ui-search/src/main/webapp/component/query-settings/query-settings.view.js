@@ -19,7 +19,6 @@ const _ = require('underscore')
 const $ = require('jquery')
 const template = require('./query-settings.hbs')
 const CustomElements = require('../../js/CustomElements.js')
-const store = require('../../js/store.js')
 const DropdownModel = require('../dropdown/dropdown.js')
 const QuerySrcView = require('../dropdown/query-src/dropdown.query-src.view.js')
 const PropertyView = require('../property/property.view.js')
@@ -57,9 +56,6 @@ module.exports = plugin(
     ui: {},
     focus() {},
     initialize() {
-      this.model = this.model._cloneOf
-        ? store.getQueryById(this.model._cloneOf)
-        : this.model
       this.listenTo(
         this.model,
         'change:sortField change:sortOrder change:sources change:federation',
@@ -307,7 +303,6 @@ module.exports = plugin(
       this.saveToModel()
       this.cancel()
       this.model.startSearch()
-      store.setCurrentQuery(this.model)
       this.$el.trigger('closeDropdown.' + CustomElements.getNamespace())
     },
   })

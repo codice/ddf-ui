@@ -16,7 +16,6 @@
 const Marionette = require('marionette')
 const $ = require('jquery')
 const CustomElements = require('../../js/CustomElements.js')
-const store = require('../../js/store.js')
 const Lightbox = require('./Lightbox.js')
 const router = require('../router/router.js')
 const componentName = 'lightbox'
@@ -70,11 +69,6 @@ module.exports = Marionette.LayoutView.extend(
     },
     initialize() {
       $('body').append(this.el)
-      this.listenTo(
-        store.get('workspaces'),
-        'change:currentWorkspace',
-        this.close
-      )
       this.listenForClose()
       this.listenForRoute()
       this.listenForEscape()

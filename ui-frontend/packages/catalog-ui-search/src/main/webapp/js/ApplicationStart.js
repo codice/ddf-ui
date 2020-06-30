@@ -15,9 +15,10 @@
 import { start } from 'imperio'
 
 const $ = require('jquery')
-const app = require('./application.js')
+import App from '../component/app/app'
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
 const properties = require('./properties.js')
-const store = require('./store.js')
 const user = require('../component/singletons/user-instance.js')
 require('./MediaQueries.js')
 require('./Theming.js')
@@ -25,50 +26,15 @@ require('./SystemUsage.js')
 require('../component/singletons/session-auto-renew.js')
 require('./SessionTimeout.js')
 
-const workspaces = store.get('workspaces')
-
-function getWorkspacesOwnedByUser() {
-  return workspaces.filter(
-    workspace =>
-      user.isGuest()
-        ? workspace.get('localStorage') === true
-        : workspace.get('metacard.owner') === user.getUserId()
-  )
-}
-
-function hasEmptyHashAndNoWorkspaces() {
-  return getWorkspacesOwnedByUser().length === 0 && location.hash === ''
-}
-
-function checkForEmptyHashAndOneWorkspace() {
-  if (
-    location.hash === '' &&
-    workspaces.fetched &&
-    getWorkspacesOwnedByUser().length === 1
-  ) {
-    location.hash = '#workspaces/' + getWorkspacesOwnedByUser()[0].id
-  }
-}
-
 function attemptToStart() {
-  checkForEmptyHashAndOneWorkspace()
-  if (workspaces.fetched && user.fetched && !hasEmptyHashAndNoWorkspaces()) {
-    app.App.start({})
+  if (user.fetched) {
+    document.querySelector('#loading').classList.remove('is-open')
+    ReactDOM.render(<App />, document.querySelector('#router'))
     start()
   } else if (!user.fetched) {
     user.once('sync', () => {
       attemptToStart()
     })
-  } else if (!workspaces.fetched) {
-    workspaces.once('sync', () => {
-      attemptToStart()
-    })
-  } else if (hasEmptyHashAndNoWorkspaces()) {
-    workspaces.once('sync', (workspace, resp, options) => {
-      location.hash = '#workspaces/' + workspace.id
-      attemptToStart()
-    })
-    workspaces.createWorkspace()
   }
 }
 

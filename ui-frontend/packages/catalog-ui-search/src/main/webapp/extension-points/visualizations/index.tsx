@@ -12,11 +12,42 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import * as React from 'react'
 import HistogramView from '../../component/visualization/histogram/lazy-histogram.view'
-const TableView = require('../../component/visualization/table/table-viz.view.js')
 import LazyInspectorView from '../../component/visualization/inspector/inspector-lazy.view'
 const LowBandwidthMapView = require('../../component/visualization/low-bandwidth-map/low-bandwidth-map.view.js')
+import ResultsView from '../../component/results-visual'
+const Marionette = require('catalog-ui-search/src/main/webapp/lib/marionette')
+import ResultSelector from '../../component/result-selector/result-selector'
+import { QueryEditor } from '../../component/pages/home/query-editor'
 
+const ResultsViewWrapper = Marionette.LayoutView.extend({
+  className: 'customElement',
+  template() {
+    return (
+      <>
+        <ResultsView selectionInterface={this.options.selectionInterface} />
+      </>
+    )
+  },
+})
+
+const StatusViewWrapper = Marionette.LayoutView.extend({
+  className: 'customElement',
+  template() {
+    return (
+      <>
+        <QueryEditor
+          query={this.options.selectionInterface.getCurrentQuery()}
+        />
+        <ResultSelector
+          selectionInterface={this.options.selectionInterface}
+          model={this.options.selectionInterface.getCurrentQuery()}
+        />
+      </>
+    )
+  },
+})
 export default [
   {
     id: 'openlayers',
@@ -43,15 +74,21 @@ export default [
     view: HistogramView,
   },
   {
-    id: 'table',
-    title: 'Table',
+    id: 'results',
+    title: 'Results',
+    view: ResultsViewWrapper,
     icon: 'fa fa-table',
-    view: TableView,
   },
   {
     id: 'inspector',
     title: 'Inspector',
     icon: 'fa fa-info',
     view: LazyInspectorView,
+  },
+  {
+    id: 'status',
+    title: 'Status',
+    icon: 'fa fa-info',
+    view: StatusViewWrapper,
   },
 ]

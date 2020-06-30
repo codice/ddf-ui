@@ -16,7 +16,6 @@
 const _ = require('underscore')
 const TabsView = require('../tabs.view')
 const MetacardsTabsModel = require('./tabs-metacards')
-const store = require('../../../js/store.js')
 const user = require('../../singletons/user-instance')
 
 function getTypes(results) {
@@ -43,9 +42,8 @@ const MetacardsTabsView = TabsView.extend({
   setDefaultModel() {
     this.model = new MetacardsTabsModel()
   },
-  selectionInterface: store,
   initialize(options) {
-    this.selectionInterface = options.selectionInterface || store
+    this.selectionInterface = options.selectionInterface
     if (options.model === undefined) {
       this.setDefaultModel()
     }
