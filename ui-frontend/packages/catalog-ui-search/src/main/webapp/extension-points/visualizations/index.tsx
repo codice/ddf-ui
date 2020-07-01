@@ -20,6 +20,19 @@ import ResultsView from '../../component/results-visual'
 const Marionette = require('catalog-ui-search/src/main/webapp/lib/marionette')
 import ResultSelector from '../../component/result-selector/result-selector'
 import { QueryEditor } from '../../component/pages/home/query-editor'
+import QueryAddView from '../../component/query-add/query-add'
+import MRC from '../../react-component/marionette-region-container'
+import Button from '@material-ui/core/Button'
+import ExtensionPoints from '../extension-points'
+import Paper from '@material-ui/core/Paper'
+import Grid from '@material-ui/core/Grid'
+
+import { Dropdown } from '@connexta/atlas/atoms/dropdown'
+import { BetterClickAwayListener } from '../../component/better-click-away-listener/better-click-away-listener'
+import CompareArrows from '@material-ui/icons/CompareArrows'
+import PlayArrowIcon from '@material-ui/icons/PlayArrow'
+import Stop from '@material-ui/icons/Stop'
+import MoreVert from '@material-ui/icons/MoreVert'
 
 const ResultsViewWrapper = Marionette.LayoutView.extend({
   className: 'customElement',
@@ -33,17 +46,21 @@ const ResultsViewWrapper = Marionette.LayoutView.extend({
 })
 
 const StatusViewWrapper = Marionette.LayoutView.extend({
-  className: 'customElement',
+  className: 'customElement overflow-auto',
   template() {
     return (
       <>
-        <QueryEditor
+        <MRC
+          view={QueryAddView}
+          viewOptions={{
+            selectionInterface: this.options.selectionInterface,
+            model: this.options.selectionInterface.getCurrentQuery(),
+          }}
+          style={{ height: 'auto' }}
+        />
+        {/* <QueryEditor
           query={this.options.selectionInterface.getCurrentQuery()}
-        />
-        <ResultSelector
-          selectionInterface={this.options.selectionInterface}
-          model={this.options.selectionInterface.getCurrentQuery()}
-        />
+        /> */}
       </>
     )
   },
@@ -57,6 +74,7 @@ export default [
     options: {
       desiredContainer: 'openlayers',
     },
+    singular: true,
   },
   {
     id: 'cesium',
@@ -66,29 +84,79 @@ export default [
     options: {
       desiredContainer: 'cesium',
     },
+    singular: true,
   },
   {
     id: 'histogram',
     title: 'Histogram',
     icon: 'fa fa-bar-chart',
     view: HistogramView,
+    singular: true,
   },
   {
     id: 'results',
     title: 'Results',
     view: ResultsViewWrapper,
     icon: 'fa fa-table',
+    singular: true,
   },
   {
     id: 'inspector',
     title: 'Inspector',
     icon: 'fa fa-info',
     view: LazyInspectorView,
+    singular: true,
   },
   {
     id: 'status',
-    title: 'Status',
+    title: 'Search',
     icon: 'fa fa-info',
     view: StatusViewWrapper,
+    isClosable: false,
+    singular: true,
+    header: ({ selectionInterface }: { selectionInterface: any }) => {
+      return (
+        <ExtensionPoints.providers>
+          <Grid container direction="row" wrap="nowrap">
+            <Grid item className="px-3">
+              <Dropdown
+                content={context => {
+                  return (
+                    <BetterClickAwayListener
+                      onClickAway={() => {
+                        context.deepCloseAndRefocus.bind(context)()
+                      }}
+                    >
+                      <Paper>
+                        <ExtensionPoints.searchInteractions
+                          model={selectionInterface.getCurrentQuery()}
+                          onClose={() => {
+                            context.deepCloseAndRefocus.bind(context)()
+                          }}
+                        />
+                      </Paper>
+                    </BetterClickAwayListener>
+                  )
+                }}
+              >
+                {({ handleClick }) => {
+                  return (
+                    <Button
+                      variant="text"
+                      color="inherit"
+                      onClick={handleClick}
+                      className="px-3"
+                      style={{ height: 'auto', width: 'auto' }}
+                    >
+                      <MoreVert />
+                    </Button>
+                  )
+                }}
+              </Dropdown>
+            </Grid>
+          </Grid>
+        </ExtensionPoints.providers>
+      )
+    },
   },
 ]

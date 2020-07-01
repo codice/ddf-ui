@@ -19,7 +19,6 @@ const template = require('./query-advanced.hbs')
 const CustomElements = require('../../js/CustomElements.js')
 const FilterBuilderView = require('../filter-builder/filter-builder.view.js')
 const cql = require('../../js/cql.js')
-const store = require('../../js/store.js')
 const QuerySettingsView = require('../query-settings/query-settings.view.js')
 const properties = require('../../js/properties.js')
 import { getFilterErrors } from '../../react-component/utils/validation'
@@ -81,9 +80,6 @@ module.exports = Marionette.LayoutView.extend({
     this.$el.toggleClass('is-form', this.options.isForm === true)
   },
   onBeforeShow() {
-    this.model = this.model._cloneOf
-      ? store.getQueryById(this.model._cloneOf)
-      : this.model
     this.querySettings.show(
       new QuerySettingsView({
         model: this.model,

@@ -19,7 +19,6 @@ const memoize = require('lodash/memoize')
 const $ = require('jquery')
 const template = require('./query-basic.hbs')
 const CustomElements = require('../../js/CustomElements.js')
-const store = require('../../js/store.js')
 const wreqr = require('../../js/wreqr.js')
 const IconHelper = require('../../js/IconHelper.js')
 const PropertyView = require('../property/property.view.js')
@@ -279,9 +278,6 @@ module.exports = Marionette.LayoutView.extend({
   ui: {},
   filter: undefined,
   onBeforeShow() {
-    this.model = this.model._cloneOf
-      ? store.getQueryById(this.model._cloneOf)
-      : this.model
     const filter = getFilterTree(this.model)
     const translationToBasicMap = translateFilterToBasicMap(filter)
     this.filter = translationToBasicMap.propertyValueMap

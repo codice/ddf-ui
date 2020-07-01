@@ -14,9 +14,7 @@
  **/
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import ExtensionPoints from '../extension-points'
 const { Menu, MenuItem } = require('../../react-component/menu')
-
 import SearchInteractionsContainer from './search-interactions.container'
 import {
   Props as PresentationProps,
@@ -25,6 +23,7 @@ import {
   SearchFormMenuItem,
   ResetMenuItem,
 } from './search-interactions.presentation'
+import { queryForms } from '../../component/query-add/query-add'
 
 export type SearchInteractionProps = {
   model: any
@@ -36,7 +35,7 @@ const SearchInteractions = (props: SearchInteractionProps) => (
     {(props: PresentationProps) => {
       return (
         <Menu onChange={(formId: string) => props.triggerQueryForm(formId)}>
-          {ExtensionPoints.queryForms.map(form => {
+          {queryForms.map(form => {
             return (
               <SearchFormMenuItem
                 key={form.id}

@@ -16,7 +16,6 @@
 const Marionette = require('marionette')
 const template = require('./query-adhoc.hbs')
 const CustomElements = require('../../js/CustomElements.js')
-const store = require('../../js/store.js')
 const PropertyView = require('../property/property.view.js')
 const properties = require('../../js/properties.js')
 const CQLUtils = require('../../js/CQLUtils.js')
@@ -135,11 +134,6 @@ module.exports = Marionette.LayoutView.extend({
   ui: {},
   focus() {
     this.textField.currentView.focus()
-  },
-  initialize() {
-    this.model = this.model._cloneOf
-      ? store.getQueryById(this.model._cloneOf)
-      : this.model
   },
   onBeforeShow() {
     this.setupTextField()

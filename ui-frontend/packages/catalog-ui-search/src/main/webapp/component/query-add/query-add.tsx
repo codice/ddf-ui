@@ -17,17 +17,19 @@ import * as React from 'react'
 const Marionette = require('marionette')
 const template = require('./query-add.hbs')
 const CustomElements = require('../../js/CustomElements.js')
-const QueryAdvanced = require('../query-advanced/query-advanced.view.js')
 const QueryTitle = require('../query-title/query-title.view.js')
 const Query = require('../../js/model/Query.js')
-const store = require('../../js/store.js')
-const QueryConfirmationView = require('../confirmation/query/confirmation.query.view.js')
 const SearchForm = require('../search-form/search-form')
 const LoadingView = require('../loading/loading.view.js')
 const wreqr = require('../../js/wreqr.js')
 const user = require('../singletons/user-instance.js')
 import ExtensionPoints from '../../extension-points'
 import { showErrorMessages } from '../../react-component/utils/validation'
+import Grid from '@material-ui/core/Grid'
+const QueryAdhoc = require('../../component/query-adhoc/query-adhoc.view.js')
+const QueryBasic = require('../../component/query-basic/query-basic.view.js')
+const QueryAdvanced = require('../../component/query-advanced/query-advanced.view.js')
+const CQLUtils = require('catalog-ui-search/src/main/webapp/js/CQLUtils.js')
 
 const { createAction } = require('imperio')
 
@@ -36,13 +38,52 @@ const { register, unregister } = createAction({
   docs: 'Run a search',
 })
 
-module.exports = Marionette.LayoutView.extend({
-  template,
-  tagName: CustomElements.register('query-add'),
+export const queryForms = [
+  { id: 'text', title: 'Text Search', view: QueryAdhoc },
+  { id: 'basic', title: 'Basic Search', view: QueryBasic },
+  {
+    id: 'advanced',
+    title: 'Advanced Search',
+    view: QueryAdvanced,
+    options: {
+      isForm: false,
+      isFormBuilder: false,
+      isAdd: true,
+    },
+  },
+]
+
+export default Marionette.LayoutView.extend({
+  template() {
+    return (
+      <React.Fragment>
+        <form
+          target="autocomplete"
+          action="/search/catalog/blank.html"
+          style={{ width: '100%', height: '100%' }}
+        >
+          <Grid
+            container
+            direction="column"
+            style={{ width: '100%', height: '100%' }}
+            wrap="nowrap"
+          >
+            <Grid item style={{ width: '100%', display: 'none' }}>
+              <div className="content-title" />
+            </Grid>
+            <Grid item style={{ overflow: 'auto', width: '100%' }}>
+              <div className="content-form" />
+            </Grid>
+          </Grid>
+        </form>
+      </React.Fragment>
+    )
+  },
+  className: 'global-query-add-view',
+  tagName: 'div',
   regions: {
-    queryContent: '> form > .editor-content > .content-form',
-    queryTitle: '> form > .editor-content > .content-title',
-    queryFooter: '> form > .editor-content > .content-footer',
+    queryContent: 'form .content-form',
+    queryTitle: 'form .content-title',
   },
   events: {
     'click .editor-edit': 'edit',
@@ -51,16 +92,19 @@ module.exports = Marionette.LayoutView.extend({
     'click .editor-saveRun': 'saveRun',
   },
   initialize() {
-    this.listenTo(user.getQuerySettings(), 'change:template', querySettings =>
-      this.updateCurrentQuery(querySettings)
+    this.listenTo(
+      user.getQuerySettings(),
+      'change:template',
+      (querySettings: any) => this.updateCurrentQuery(querySettings)
     )
-    this.model = new Query.Model(this.getDefaultQuery())
+    this.model =
+      this.model !== null ? this.model : new Query.Model(this.getDefaultQuery())
     this.listenTo(this.model, 'resetToDefaults change:type', this.reshow)
     this.listenTo(this.model, 'change:filterTree', this.reshow)
     this.listenTo(this.model, 'closeDropdown', this.closeDropdown)
     this.listenForSave()
   },
-  updateCurrentQuery(currentQuerySettings) {
+  updateCurrentQuery(currentQuerySettings: any) {
     if (
       currentQuerySettings.get('type') !== 'custom' &&
       currentQuerySettings.get('type') !== 'text'
@@ -75,31 +119,22 @@ module.exports = Marionette.LayoutView.extend({
     })
   },
   reshow() {
-    this.queryView = undefined
-    const formType = this.model.get('type')
-    this.$el.toggleClass('is-form-builder', formType === 'new-form')
-    switch (formType) {
-      case 'new-form':
-        this.showFormBuilder()
-        break
-      case 'custom':
-        this.showCustom()
-        break
-      case 'text':
-      case 'basic':
-      case 'advanced':
-        this.showForm(
-          ExtensionPoints.queryForms.find(form => form.id === formType)
-        )
-        break
-      default:
-        const queryForm = ExtensionPoints.queryForms.find(
-          form => form.id === formType
-        )
-        if (queryForm) {
-          this.showQueryForm(queryForm)
-        }
-    }
+    setTimeout(() => {
+      this.queryView = undefined
+      const formType = this.model.get('type')
+      switch (formType) {
+        case 'text':
+        case 'basic':
+        case 'advanced':
+          this.showForm(queryForms.find(form => form.id === formType))
+          break
+        default:
+          const queryForm = queryForms.find(form => form.id === formType)
+          if (queryForm) {
+            this.showQueryForm(queryForm)
+          }
+      }
+    }, 0)
   },
   onBeforeShow() {
     this.reshow()
@@ -124,7 +159,7 @@ module.exports = Marionette.LayoutView.extend({
       userDefaultTemplate['querySettings'] &&
       userDefaultTemplate['querySettings'].sorts
     if (sorts) {
-      sorts = sorts.map(sort => ({
+      sorts = sorts.map((sort: any) => ({
         attribute: sort.split(',')[0],
         direction: sort.split(',')[1],
       }))
@@ -164,7 +199,7 @@ module.exports = Marionette.LayoutView.extend({
       })
     )
   },
-  showForm(form) {
+  showForm(form: any) {
     const options = form.options || {}
     this.queryContent.show(
       new form.view({
@@ -173,14 +208,14 @@ module.exports = Marionette.LayoutView.extend({
       })
     )
   },
-  showQueryForm(form) {
+  showQueryForm(form: any) {
     const options = form.options || {}
     const queryFormView = Marionette.LayoutView.extend({
       template: () => (
         <form.view
           model={this.model}
           options={options}
-          onRef={ref => (this.queryView = ref)}
+          onRef={(ref: any) => (this.queryView = ref)}
         />
       ),
     })
@@ -224,9 +259,6 @@ module.exports = Marionette.LayoutView.extend({
       this.$el.trigger('closeDropdown.' + CustomElements.getNamespace())
       return
     }
-    if (store.getCurrentQueries().get(this.model) === undefined) {
-      store.getCurrentQueries().add(this.model)
-    }
     this.cancel()
     this.$el.trigger('closeDropdown.' + CustomElements.getNamespace())
   },
@@ -236,55 +268,31 @@ module.exports = Marionette.LayoutView.extend({
       : this.queryContent.currentView.setDefaultTitle()
   },
   saveRun() {
+    this._updateModel()
+    this.options.selectionInterface.setCurrentQuery(this.model)
+    console.log(this.model.toJSON())
+    this.model.startSearchFromFirstPage()
+  },
+  _updateModel() {
     const queryContentView = this.queryView
       ? this.queryView
       : this.queryContent.currentView
-    const errorMessages = queryContentView.getErrorMessages()
-    if (errorMessages.length !== 0) {
-      showErrorMessages(errorMessages)
-      return
-    }
     queryContentView.save()
     this.queryTitle.currentView.save()
-    if (this.model.get('title') === '') {
-      this.setDefaultTitle()
-    }
-    if (store.getCurrentQueries().canAddQuery()) {
-      store.getCurrentQueries().add(this.model)
-      this.endSave()
-    } else {
-      this.listenTo(
-        QueryConfirmationView.generateConfirmation({}),
-        'change:choice',
-        confirmation => {
-          const choice = confirmation.get('choice')
-          if (choice === true) {
-            const loadingview = new LoadingView()
-            store.get('workspaces').once('sync', (workspace, resp, options) => {
-              loadingview.remove()
-              wreqr.vent.trigger('router:navigate', {
-                fragment: 'workspaces/' + workspace.id,
-                options: {
-                  trigger: true,
-                },
-              })
-            })
-            store.get('workspaces').createWorkspaceWithQuery(this.model)
-          } else if (choice !== false) {
-            store.getCurrentQueries().remove(choice)
-            store.getCurrentQueries().add(this.model)
-            this.model.startSearch()
-            this.endSave()
-          }
-        }
+
+    if (this.model.get('type') === 'text') {
+      this.model.set(
+        'filterTree',
+        CQLUtils.transformCQLToFilter(this.model.get('cql'))
       )
+      if (!this.options.isSaved) {
+        this.model.set('title', this.model.get('filterTree').value)
+      }
+    } else if (!this.options.isSaved && this.model.get('type') !== 'text') {
+      this.model.set('title', this.model.get('filterTree').filters[0].value)
     }
-  },
-  endSave() {
-    store.setCurrentQuery(this.model)
-    this.initialize()
-    this.cancel()
-    this.$el.trigger('closeDropdown.' + CustomElements.getNamespace())
+
+    queryContentView.save()
   },
   listenForSave() {
     this.$el
