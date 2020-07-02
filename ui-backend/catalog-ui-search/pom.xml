@@ -291,8 +291,7 @@
         </dependency>
         <dependency>
             <groupId>ddf.platform.security</groupId>
-            <!-- TODO rename to session-management-api when upgrading to DDF 2.25.x -->
-            <artifactId>session-management-service</artifactId>
+            <artifactId>session-management-api</artifactId>
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
