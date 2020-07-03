@@ -15,16 +15,10 @@
 import metacardDefinitions from '../../component/singletons/metacard-definitions.js'
 import properties from '../../js/properties.js'
 
-export const getFilteredAttributeList = includedAttributes => {
+export const getFilteredAttributeList = () => {
   return metacardDefinitions.sortedMetacardTypes
     .filter(({ id }) => !properties.isHidden(id))
     .filter(({ id }) => !metacardDefinitions.isHiddenType(id))
-    .filter(
-      ({ id }) =>
-        includedAttributes === undefined
-          ? true
-          : includedAttributes.includes(id)
-    )
     .map(({ alias, id }) => ({
       label: alias || id,
       value: id,

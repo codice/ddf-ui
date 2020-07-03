@@ -35,11 +35,18 @@ module.exports = Marionette.LayoutView.extend({
       />
     )
   },
+  onFirstRender() {
+    this.turnOnEditing()
+  },
   attributes() {
     return { 'data-id': this.model.cid }
   },
   delete() {
-    this.model.destroy()
+    if (this.model.collection.length === 1) {
+      this.options.destroyGroup()
+    } else {
+      this.model.destroy()
+    }
   },
   onChange(state) {
     const { attribute, comparator, value } = state

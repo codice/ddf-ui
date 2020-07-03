@@ -116,8 +116,6 @@ module.exports = Marionette.LayoutView.extend({
     this.queryContent.show(
       new QueryAdvanced({
         model: this.model,
-        isForm: true,
-        isFormBuilder: false,
       })
     )
   },

@@ -124,9 +124,6 @@ module.exports = Marionette.LayoutView.extend({
     this.editor.show(
       new QueryAdvanced({
         model: this.model,
-        isForm: true,
-        isFormBuilder: true,
-        isSearchFormEditor: true,
         onSave: () => {
           if (this.model.get('title').trim() !== '') {
             this.updateQuerySettings(collection, id)
@@ -151,7 +148,6 @@ module.exports = Marionette.LayoutView.extend({
     this.queryTitle.show(
       new QueryTitle({
         model: this.model,
-        isSearchFormEditor: true,
       })
     )
   },

@@ -17,7 +17,7 @@ import { hot } from 'react-hot-loader'
 
 import ThemeContainer from '../../react-component/theme'
 import { IntlProvider } from 'react-intl'
-import { ThemeProvider } from '@connexta/atlas/atoms/theme'
+import { Provider as ThemeProvider } from '../../component/theme/theme'
 import { SnackProvider } from '../../component/snack/snack.provider'
 import { DialogProvider } from '@connexta/atlas/atoms/dialog'
 

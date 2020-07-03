@@ -29,7 +29,6 @@ const properties = require('../../js/properties.js')
 const sourcesInstance = require('../../component/singletons/sources-instance')
 const plugin = require('plugins/query-settings')
 const user = require('../singletons/user-instance.js')
-const ResultFormCollection = require('../result-form/result-form-collection-instance')
 import * as React from 'react'
 import RadioComponent from '../../react-component/input-wrappers/radio'
 import { showErrorMessages } from '../../react-component/utils/validation'
@@ -50,7 +49,6 @@ module.exports = plugin(
       spellcheckForm: '.spellcheck-form',
       phoneticsForm: '.phonetics-form',
       settingsSrc: '.settings-src',
-      resultForm: '.result-form',
       extensions: '.query-extensions',
     },
     ui: {},
@@ -61,11 +59,6 @@ module.exports = plugin(
         'change:sortField change:sortOrder change:sources change:federation',
         Common.safeCallback(this.onBeforeShow)
       )
-      this.resultForms = ResultFormCollection.getCollection()
-      this.listenTo(this.resultForms, 'change', this.renderResultForms)
-      this.listenTo(user.getQuerySettings(), 'change:defaultResultFormId', () =>
-        this.renderResultForms()
-      )
     },
     onBeforeShow() {
       this.setupSpellcheck()
@@ -73,55 +66,7 @@ module.exports = plugin(
       this.setupSortFieldDropdown()
       this.setupSrcDropdown()
       this.turnOnEditing()
-      this.renderResultForms()
       this.setupExtensions()
-    },
-    renderResultForms() {
-      // Each item in a dropdown needs a label and value so we add those here
-      let resultFormsForDropdown = this.resultForms.map(resultTemplate => {
-        const resultFormJson = resultTemplate.toJSON()
-        return {
-          ...resultFormJson,
-          label: resultFormJson.title,
-          value: resultFormJson.title,
-        }
-      })
-      resultFormsForDropdown.push({
-        label: 'All Fields',
-        value: 'allFields',
-        id: 'All Fields',
-        descriptors: [],
-        description: 'All Fields',
-      })
-      resultFormsForDropdown = _.uniq(resultFormsForDropdown, 'id')
-      let lastIndex = resultFormsForDropdown.length - 1
-      let defaultResultForm = resultFormsForDropdown.find(
-        form => form.id === user.getQuerySettings().get('defaultResultFormId')
-      )
-      const propertyValue =
-        this.model.get('detail-level') ||
-        (defaultResultForm && defaultResultForm.value) ||
-        (resultFormsForDropdown &&
-          resultFormsForDropdown[lastIndex] &&
-          resultFormsForDropdown[lastIndex].value)
-      let detailLevelProperty = new Property({
-        label: 'Result Form',
-        enum: resultFormsForDropdown,
-        value: [propertyValue],
-        showValidationIssues: false,
-        id: 'Result Form',
-      })
-      this.listenTo(
-        detailLevelProperty,
-        'change:value',
-        this.handleChangeDetailLevel
-      )
-      this.resultForm.show(
-        new PropertyView({
-          model: detailLevelProperty,
-        })
-      )
-      this.resultForm.currentView.turnOnEditing()
     },
     getExtensions() {},
     setupExtensions() {
@@ -263,17 +208,11 @@ module.exports = plugin(
         }
       }
       const sorts = this.settingsSortField.currentView.collection.toJSON()
-      let detailLevel =
-        this.resultForm.currentView &&
-        this.resultForm.currentView.model.get('value')[0]
-      if (detailLevel && detailLevel === 'allFields') {
-        detailLevel = undefined
-      }
       return {
         sources,
         federation,
         sorts,
-        'detail-level': detailLevel,
+        'detail-level': undefined,
         spellcheck,
         phonetics,
       }

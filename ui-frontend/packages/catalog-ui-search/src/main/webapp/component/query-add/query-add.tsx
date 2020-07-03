@@ -46,8 +46,6 @@ export const queryForms = [
     title: 'Advanced Search',
     view: QueryAdvanced,
     options: {
-      isForm: false,
-      isFormBuilder: false,
       isAdd: true,
     },
   },
@@ -194,8 +192,6 @@ export default Marionette.LayoutView.extend({
     this.queryContent.show(
       new QueryAdvanced({
         model: this.model,
-        isForm: true,
-        isFormBuilder: true,
       })
     )
   },
@@ -230,8 +226,6 @@ export default Marionette.LayoutView.extend({
     this.queryContent.show(
       new QueryAdvanced({
         model: this.model,
-        isForm: true,
-        isFormBuilder: false,
       })
     )
   },
@@ -255,10 +249,6 @@ export default Marionette.LayoutView.extend({
       ? this.queryView.save()
       : this.queryContent.currentView.save()
     this.queryTitle.currentView.save()
-    if (this.$el.hasClass('is-form-builder')) {
-      this.$el.trigger('closeDropdown.' + CustomElements.getNamespace())
-      return
-    }
     this.cancel()
     this.$el.trigger('closeDropdown.' + CustomElements.getNamespace())
   },

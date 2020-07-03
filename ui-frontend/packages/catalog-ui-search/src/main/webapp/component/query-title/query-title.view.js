@@ -50,13 +50,9 @@ module.exports = Marionette.LayoutView.extend({
           <span className="button-title">{props.title}</span>
           <span className="is-button fa fa-pencil trigger-edit" />
           <div className="search-interactions">
-            {this.options.isSearchFormEditor !== true && (
-              <Dropdown
-                anchor={<Icon className="is-button fa fa-ellipsis-v" />}
-              >
-                <ExtensionPoints.searchInteractions model={this.model} />
-              </Dropdown>
-            )}
+            <Dropdown anchor={<Icon className="is-button fa fa-ellipsis-v" />}>
+              <ExtensionPoints.searchInteractions model={this.model} />
+            </Dropdown>
           </div>
         </div>
       </React.Fragment>

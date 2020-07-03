@@ -17,47 +17,18 @@ import metacardDefinitions from '../../component/singletons/metacard-definitions
 import * as React from 'react'
 
 import styled from 'styled-components'
-import { GrabCursor } from '../styles/mixins'
-import { Button, buttonTypeEnum } from '../presentation/button'
 import FilterAttribute from './filter-attribute'
 import FilterComparator from './filter-comparator'
 import FilterInput from './filter-input'
-import { getAttributeType } from './filterHelper'
+import { getAttributeType, getFilteredAttributeList } from './filterHelper'
 const sources = require('../../component/singletons/sources-instance')
+import Box from '@material-ui/core/Box'
+import Button from '@material-ui/core/Button'
+import Grid from '@material-ui/core/Grid'
+import Autocomplete from '@material-ui/lab/Autocomplete'
 
-const Root = styled.div`
-  width: auto;
-  height: 100%;
-  display: block;
-  white-space: nowrap;
-  margin: ${({ theme }) =>
-    `${theme.minimumSpacing} 0px ${theme.minimumSpacing} ${
-      theme.minimumSpacing
-    }`};
-  padding: ${({ theme }) =>
-    `${theme.minimumSpacing} 1.5rem ${theme.minimumSpacing} 0px`};
-`
-
-const FilterRearrange = styled.div`
-  ${GrabCursor};
-  display: inline-block;
-  width: ${({ theme }) => `calc(0.75 * ${theme.minimumButtonSize})`};
-  opacity: 0.25;
-  :hover {
-    opacity: 0.5;
-    transition: opacity 0.3s ease-in-out;
-  }
-`
-
-const FilterRemove = styled(Button)`
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: ${({ theme }) => theme.minimumSpacing};
-  width: ${({ theme }) => theme.minimumButtonSize};
-  height: ${({ theme }) => theme.minimumButtonSize};
-  line-height: ${({ theme }) => theme.minimumButtonSize};
-  display: ${({ editing }) => (editing ? 'inline-block' : 'none')};
-`
+import { hot } from 'react-hot-loader'
+import TextField from '@material-ui/core/TextField'
 
 class Filter extends React.Component {
   constructor(props) {
@@ -85,41 +56,59 @@ class Filter extends React.Component {
   }
 
   render() {
+    const attributeList = getFilteredAttributeList()
+    const currentSelectedAttribute = attributeList.find(
+      attrInfo => attrInfo.value === this.state.attribute
+    )
     return (
-      <Root>
-        <FilterRearrange className="filter-rearrange">
-          <span className="cf cf-sort-grabber" />
-        </FilterRearrange>
-        <FilterRemove
-          buttonType={buttonTypeEnum.negative}
-          editing={this.props.editing}
-          onClick={this.props.onRemove}
-          icon="fa fa-minus"
-        />
-        <FilterAttribute
-          value={this.state.attribute}
-          includedAttributes={this.props.includedAttributes}
-          editing={this.props.editing}
-          onChange={this.updateAttribute}
-          supportedAttributes={this.getListofSupportedAttributes()}
-        />
-        <FilterComparator
-          comparator={this.state.comparator}
-          editing={this.props.editing}
-          attribute={this.state.attribute}
-          onChange={comparator => this.setState({ comparator }, this.onChange)}
-        />
-        <FilterInput
-          suggestions={this.state.suggestions}
-          attribute={this.state.attribute}
-          comparator={this.state.comparator}
-          editing={this.props.editing}
-          onChange={value => {
-            this.setState({ value }, () => this.props.onChange(this.state))
-          }}
-          value={this.state.value}
-        />
-      </Root>
+      <Grid
+        container
+        direction="column"
+        alignItems="center"
+        className="w-full p-3"
+      >
+        <Grid item className="w-full">
+          <Autocomplete
+            fullWidth
+            options={attributeList}
+            getOptionLabel={option => option.label}
+            getOptionSelected={option => option.value}
+            onChange={(e, newValue) => {
+              this.updateAttribute(newValue.value)
+            }}
+            disableClearable
+            value={currentSelectedAttribute}
+            renderInput={params => <TextField {...params} variant="outlined" />}
+          />
+        </Grid>
+        <Grid item className="w-full">
+          <FilterComparator
+            comparator={this.state.comparator}
+            editing={this.props.editing}
+            attribute={this.state.attribute}
+            onChange={comparator =>
+              this.setState({ comparator }, this.onChange)
+            }
+          />
+        </Grid>
+        <Grid item className="w-full">
+          <FilterInput
+            suggestions={this.state.suggestions}
+            attribute={this.state.attribute}
+            comparator={this.state.comparator}
+            editing={this.props.editing}
+            onChange={value => {
+              this.setState({ value }, () => this.props.onChange(this.state))
+            }}
+            value={this.state.value}
+          />
+        </Grid>
+        <Grid item className="w-full">
+          <Button onClick={this.props.onRemove} className="ml-auto block">
+            <Box color="primary.main">Remove</Box>
+          </Button>
+        </Grid>
+      </Grid>
     )
   }
 
@@ -178,4 +167,4 @@ class Filter extends React.Component {
   }
 }
 
-export default Filter
+export default hot(module)(Filter)

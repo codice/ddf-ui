@@ -163,10 +163,7 @@ export const Shell = ({
                 }),
               }}
               PaperProps={{
-                style: {
-                  position: 'absolute',
-                },
-                elevation: 4,
+                elevation: 6,
               }}
               open={open}
             >

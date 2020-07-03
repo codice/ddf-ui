@@ -6,9 +6,9 @@ import Paper from '@material-ui/core/Paper'
 import { createCtx } from '@connexta/atlas/typescript/context'
 const wreqr = require('catalog-ui-search/src/main/webapp/js/wreqr.js')
 
-export const AUTO_COLLAPSE_LENGTH = 300
-export const STARTING_LENGTH = 550
-export const COLLAPSED_LENGTH = 75
+export const DEFAULT_AUTO_COLLAPSE_LENGTH = 300
+export const DEFAULT_STARTING_LENGTH = 550
+export const DEFAULT_COLLAPSED_LENGTH = 75
 
 type ResizableGridType = React.ComponentType<
   ResizableProps & {
@@ -35,21 +35,25 @@ type useResizableGridType = {
   setDragging: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export const useResizableGrid = (
-  startingLength?: number
-): useResizableGridType => {
+export const useResizableGrid = ({
+  startingLength,
+  collapsedLength,
+  autoCollapseLength,
+}: {
+  startingLength: number
+  collapsedLength: number
+  autoCollapseLength: number
+}): useResizableGridType => {
   const [closed, setClosed] = React.useState(false)
-  const [length, setLength] = React.useState(startingLength || STARTING_LENGTH)
-  const [lastLength, setLastLength] = React.useState(
-    startingLength || STARTING_LENGTH
-  )
+  const [length, setLength] = React.useState(startingLength)
+  const [lastLength, setLastLength] = React.useState(startingLength)
   const [dragging, setDragging] = React.useState(false)
   React.useEffect(
     () => {
       if (!dragging) {
-        if (length < AUTO_COLLAPSE_LENGTH) {
+        if (length < autoCollapseLength) {
           setClosed(true)
-          setLength(COLLAPSED_LENGTH)
+          setLength(collapsedLength)
         } else {
           setLastLength(length)
           setClosed(false)
@@ -65,9 +69,9 @@ export const useResizableGrid = (
   )
   React.useEffect(
     () => {
-      if (closed && length !== COLLAPSED_LENGTH) {
+      if (closed && length !== collapsedLength) {
         setLastLength(length)
-        setLength(COLLAPSED_LENGTH)
+        setLength(collapsedLength)
       }
     },
     [closed]
@@ -110,6 +114,9 @@ type SplitPaneProps = {
   secondStyle?: React.CSSProperties | undefined
   variant: 'horizontal' | 'vertical'
   children: [React.ReactNode, React.ReactNode]
+  collapsedLength?: number
+  autoCollapseLength?: number
+  startingLength?: number
 }
 
 export const SplitPane = ({
@@ -117,6 +124,9 @@ export const SplitPane = ({
   secondStyle,
   variant,
   children,
+  collapsedLength = DEFAULT_COLLAPSED_LENGTH,
+  autoCollapseLength = DEFAULT_AUTO_COLLAPSE_LENGTH,
+  startingLength = DEFAULT_STARTING_LENGTH,
 }: SplitPaneProps) => {
   const {
     length,
@@ -127,22 +137,9 @@ export const SplitPane = ({
     setLastLength,
     dragging,
     setDragging,
-  } = useResizableGrid()
+  } = useResizableGrid({ collapsedLength, startingLength, autoCollapseLength })
   const [First, Second] = children
 
-  // const MemoFirst = React.useMemo(
-  //   () => {
-  //     return First
-  //   },
-  //   [children]
-  // )
-
-  // const MemoSecond = React.useMemo(
-  //   () => {
-  //     return <Second />
-  //   },
-  //   [Second]
-  // )
   return (
     <UseResizableGridContextProvider
       value={{
@@ -186,7 +183,7 @@ export const SplitPane = ({
                 }
             }
           })()}
-          minWidth={COLLAPSED_LENGTH}
+          minWidth={collapsedLength}
           enable={(() => {
             switch (variant) {
               case 'horizontal':
@@ -250,7 +247,7 @@ export const SplitPane = ({
                 position: 'relative',
                 ...firstStyle,
               }}
-              elevation={24}
+              elevation={0}
             >
               {First}
             </Paper>

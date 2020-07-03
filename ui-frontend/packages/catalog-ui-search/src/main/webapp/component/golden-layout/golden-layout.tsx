@@ -31,7 +31,7 @@ export const GoldenLayout = ({ selectionInterface, width, closed }: Props) => {
   }, [])
 
   return (
-    <Paper className="h-full w-full">
+    <Paper className="h-full w-full" elevation={1}>
       <MRC view={goldenlayoutInstance} style={{ background: 'inherit' }} />
     </Paper>
   )

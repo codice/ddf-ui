@@ -17,7 +17,7 @@ const memoize = require('lodash/memoize')
 const $ = require('jquery')
 const template = require('./query-advanced.hbs')
 const CustomElements = require('../../js/CustomElements.js')
-const FilterBuilderView = require('../filter-builder/filter-builder.view.js')
+import FilterBuilderView from '../filter-builder/filter-builder.tsx'
 const cql = require('../../js/cql.js')
 const QuerySettingsView = require('../query-settings/query-settings.view.js')
 const properties = require('../../js/properties.js')
@@ -76,15 +76,14 @@ module.exports = Marionette.LayoutView.extend({
   },
   ui: {},
   initialize() {
-    this.$el.toggleClass('is-form-builder', this.options.isFormBuilder === true)
-    this.$el.toggleClass('is-form', this.options.isForm === true)
+    // this.intervalId = setInterval(() => {
+    //   this.save()
+    // }, 10000)
   },
   onBeforeShow() {
     this.querySettings.show(
       new QuerySettingsView({
         model: this.model,
-        isForm: this.options.isForm || false,
-        isFormBuilder: this.options.isFormBuilder || false,
       })
     )
 
@@ -124,6 +123,7 @@ module.exports = Marionette.LayoutView.extend({
   },
   onDestroy() {
     unregister(this.action)
+    clearInterval(this.intervalId)
   },
   showAdvanced(filter) {
     this.queryAdvanced.show(
@@ -136,14 +136,11 @@ module.exports = Marionette.LayoutView.extend({
           return fetchSuggestions(id)
         },
         filter,
-        isForm: this.options.isForm || false,
-        isFormBuilder: this.options.isFormBuilder || false,
         supportedAttributes: this.querySettings.currentView.model.attributes
           .src,
       })
     )
 
-    this.queryAdvanced.currentView.turnOffEditing()
     this.edit()
   },
   focus() {
@@ -163,12 +160,6 @@ module.exports = Marionette.LayoutView.extend({
     )
     this.$el.addClass('is-editing')
     this.querySettings.currentView.turnOnEditing()
-    this.queryAdvanced.currentView.turnOnEditing()
-    if (this.options.isForm === true && this.options.isFormBuilder !== true) {
-      this.queryAdvanced.currentView.turnOffEditing()
-      //TODO: https://codice.atlassian.net/browse/DDF-3861 Deal with the oddities in turning off editing in that view
-      //this.querySettings.currentView.turnOffEditing();
-    }
   },
   cancel() {
     fetchSuggestions.cache.clear()
@@ -180,17 +171,10 @@ module.exports = Marionette.LayoutView.extend({
   },
   save() {
     fetchSuggestions.cache.clear()
-    if (!this.options.isSearchFormEditor) {
-      this.$el.removeClass('is-editing')
-    }
     this.querySettings.currentView.saveToModel()
 
-    this.queryAdvanced.currentView.sortCollection()
     this.model.set({
-      cql:
-        this.options.isFormBuilder !== true
-          ? this.queryAdvanced.currentView.transformToCql()
-          : '',
+      cql: this.queryAdvanced.currentView.transformToCql(),
       filterTree: cql.simplify(this.queryAdvanced.currentView.getFilters()),
     })
     if (typeof this.options.onSave === 'function') {
@@ -210,7 +194,6 @@ module.exports = Marionette.LayoutView.extend({
     this.model.set('title', this.model.get('cql'))
   },
   serializeTemplateParameters() {
-    this.queryAdvanced.currentView.sortCollection()
     return {
       filterTree: this.queryAdvanced.currentView.getFilters(),
       filterSettings: this.querySettings.currentView.toJSON(),

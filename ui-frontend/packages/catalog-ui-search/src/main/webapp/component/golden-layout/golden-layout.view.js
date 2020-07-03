@@ -35,6 +35,8 @@ import ExtensionPoints from '../../extension-points'
 import AllOutIcon from '@material-ui/icons/AllOut'
 import MinimizeIcon from '@material-ui/icons/Minimize'
 import CloseIcon from '@material-ui/icons/Close'
+import { providers as Providers } from '../../extension-points/providers'
+
 const treeMap = (obj, fn, path = []) => {
   if (Array.isArray(obj)) {
     return obj.map((v, i) => treeMap(v, fn, path.concat(i)))
@@ -159,7 +161,6 @@ function registerComponent(
         } else {
           container.parent.parent.element.removeClass('is-minimized')
         }
-        console.log('resize')
       })
       container.on('tab', tab => {
         tab.closeElement.off('click').on('click', event => {
@@ -176,7 +177,7 @@ function registerComponent(
         let intervalId = setInterval(() => {
           try {
             ReactDOM.render(
-              <React.Fragment>
+              <Providers>
                 <Grid container direction="row" wrap="nowrap">
                   <Grid item className="px-2">
                     <div>{tab.titleElement.text()}</div>
@@ -214,7 +215,7 @@ function registerComponent(
                     ) : null}
                   </Grid>
                 </Grid>
-              </React.Fragment>,
+              </Providers>,
               tab.element[0]
             )
             clearInterval(intervalId)
@@ -353,11 +354,10 @@ module.exports = Marionette.LayoutView.extend({
       })
     // const root = document.createElement('div')
     // tab.element.append(root)
-    console.log(stack)
     let intervalId = setInterval(() => {
       try {
         ReactDOM.render(
-          <React.Fragment>
+          <Providers>
             <Grid container direction="row" wrap="nowrap">
               <Grid item>
                 <Button
@@ -408,7 +408,7 @@ module.exports = Marionette.LayoutView.extend({
                 ) : null}
               </Grid>
             </Grid>
-          </React.Fragment>,
+          </Providers>,
           stack.header.controlsContainer[0]
         )
         clearInterval(intervalId)
