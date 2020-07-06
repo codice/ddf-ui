@@ -13,21 +13,32 @@
  */
 package org.codice.ddf.catalog.ui.query.utility;
 
-import ddf.catalog.federation.FederationException;
-import ddf.catalog.source.SourceUnavailableException;
-import ddf.catalog.source.UnsupportedQueryException;
+import ddf.catalog.filter.FilterBuilder;
+import ddf.catalog.operation.QueryRequest;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
 import org.codice.ddf.catalog.ui.CqlParseException;
 
-/**
- * <b> This code is experimental. While this interface is functional and tested, it may change or be
- * removed in a future version of the library. </b>
- */
-public interface CqlQueries {
-  CqlQueryResponse executeCqlQuery(CqlRequest cqlRequest)
-      throws UnsupportedQueryException, SourceUnavailableException, FederationException,
-          CqlParseException;
+public interface QueryRequestFactory {
 
-  CqlRequest getCqlRequestFromJson(String jsonBody);
-
-  CsvTransform getCsvTransformFromJson(String jsonBody);
+  QueryRequest build(
+      String localSource,
+      FilterBuilder filterBuilder,
+      List<CqlRequest.Sort> sorts,
+      int start,
+      int count,
+      long timeout,
+      String id,
+      String cql,
+      @Nullable String src,
+      @Nullable List<String> srcs,
+      boolean isExcludeUnnecessaryAttribute,
+      @Nullable String batchId,
+      @Nullable String queryType,
+      boolean isSpellcheck,
+      boolean isPhonetics,
+      @Nullable String cacheId,
+      @Nullable Set<String> facets)
+      throws CqlParseException;
 }

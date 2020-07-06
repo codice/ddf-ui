@@ -17,6 +17,7 @@ import ddf.catalog.filter.FilterBuilder;
 import ddf.catalog.operation.QueryRequest;
 import java.util.List;
 import java.util.Set;
+import org.codice.ddf.catalog.ui.CqlParseException;
 
 /**
  * <b> This code is experimental. While this interface is functional and tested, it may change or be
@@ -80,7 +81,8 @@ public interface CqlRequest {
 
   void setNormalize(boolean normalize);
 
-  QueryRequest createQueryRequest(String localSource, FilterBuilder filterBuilder);
+  QueryRequest createQueryRequest(String localSource, FilterBuilder filterBuilder)
+      throws CqlParseException;
 
   String getSourceResponseString();
 
