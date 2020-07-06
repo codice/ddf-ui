@@ -124,7 +124,7 @@ public class QueryApplication implements SparkApplication, Function {
             res.status(e.getErrorType().getStatusCode());
             return GSON.toJson(ImmutableMap.of(ID_KEY, e.getSourceId(), URL_KEY, e.getUrl()));
           } catch (CqlParseException e) {
-            LOGGER.debug("Unalbe to parse CQL", e);
+            LOGGER.debug("Unable to parse CQL", e);
             halt(400, "Unable to parse CQL filter");
             return null;
           }
