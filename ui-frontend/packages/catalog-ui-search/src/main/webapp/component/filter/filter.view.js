@@ -42,7 +42,7 @@ module.exports = Marionette.LayoutView.extend({
     return { 'data-id': this.model.cid }
   },
   delete() {
-    if (this.model.collection.length === 1) {
+    if (this.model.collection && this.model.collection.length === 1) {
       this.options.destroyGroup()
     } else {
       this.model.destroy()

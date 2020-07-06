@@ -58,18 +58,18 @@ export default Marionette.LayoutView.extend({
         <form
           target="autocomplete"
           action="/search/catalog/blank.html"
-          style={{ width: '100%', height: '100%' }}
+          className="w-full h-full"
         >
           <Grid
             container
             direction="column"
-            style={{ width: '100%', height: '100%' }}
+            className="w-full h-full"
             wrap="nowrap"
           >
             <Grid item style={{ width: '100%', display: 'none' }}>
               <div className="content-title" />
             </Grid>
-            <Grid item style={{ overflow: 'auto', width: '100%' }}>
+            <Grid item className="w-full h-full">
               <div className="content-form" />
             </Grid>
           </Grid>
@@ -77,7 +77,7 @@ export default Marionette.LayoutView.extend({
       </React.Fragment>
     )
   },
-  className: 'global-query-add-view',
+  className: 'global-query-add-view h-full w-full',
   tagName: 'div',
   regions: {
     queryContent: 'form .content-form',

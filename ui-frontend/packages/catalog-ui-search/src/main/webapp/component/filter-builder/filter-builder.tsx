@@ -41,12 +41,12 @@ const FilterCollection = ({
   const { listenTo } = useBackbone()
   const [forceRender, setForceRender] = React.useState(Math.random())
   React.useEffect(() => {
-    listenTo(collection, 'add remove', () => {
+    listenTo(collection, 'add remove reset', () => {
       setForceRender(Math.random())
     })
   }, [])
+
   return collection.map((item: any) => {
-    console.log(item)
     return (
       <MRC
         key={item.cid}
@@ -114,65 +114,130 @@ const OperatorData = [
   },
 ]
 
+const AddGroup = ({ view }: { view: any }) => {
+  const { listenTo } = useBackbone()
+  const [forceRender, setForceRender] = React.useState(Math.random())
+
+  React.useEffect(() => {
+    listenTo(view.collection, 'add remove', () => {
+      setForceRender(Math.random())
+    })
+  }, [])
+
+  return (
+    <>
+      <Grid item>
+        <Button
+          onClick={() => {
+            view.collection.reset([
+              {
+                filters: view.collection.clone(),
+                filterBuilder: true,
+                isResultFilter: view.isResultFilter,
+                operator: view.model.get('operator'),
+              },
+              {
+                isResultFilter: view.isResultFilter,
+              },
+            ])
+            view.model.set('operator', 'AND')
+          }}
+        >
+          <AddIcon /> <Box color="primary.main">And</Box>
+        </Button>
+      </Grid>
+      <Grid item>
+        <Button
+          onClick={() => {
+            view.collection.reset([
+              {
+                filters: view.collection.clone(),
+                filterBuilder: true,
+                isResultFilter: view.isResultFilter,
+                operator: view.model.get('operator'),
+              },
+              {
+                isResultFilter: view.isResultFilter,
+              },
+            ])
+            view.model.set('operator', 'OR')
+          }}
+        >
+          <AddIcon /> <Box color="primary.main">OR</Box>
+        </Button>
+      </Grid>
+    </>
+  )
+}
+
+const ReactPortion = ({ view }: { view: any }) => {
+  const { listenTo } = useBackbone()
+  const [forceRender, setForceRender] = React.useState(Math.random())
+
+  React.useEffect(() => {
+    listenTo(view.collection, 'add remove reset', () => {
+      setForceRender(Math.random())
+    })
+  }, [])
+  console.log(view.model.cid)
+  return (
+    <React.Fragment>
+      <div className="filter-contents global-bracket is-left w-full">
+        <Button
+          onClick={() => {
+            view.printValue()
+          }}
+        >
+          Value
+        </Button>
+        <FilterCollection collection={view.collection} view={view} />
+        {(() => {
+          console.log(view.getFilters())
+          if (view.getFilters().filters.length === 2) {
+            return (
+              <Box className="p-3">
+                <OperatorComponent model={view.model} />
+              </Box>
+            )
+          }
+          return null
+        })()}
+
+        <Grid container direction="row" alignItems="center" className="w-full">
+          {/* <Grid item>
+        <Button
+          variant="text"
+          color="inherit"
+          onClick={() => {
+            this.collection.push({
+              isResultFilter: this.isResultFilter,
+            })
+          }}
+        >
+          <AddIcon /> <Box color="primary.main">Field</Box>
+        </Button>
+      </Grid> */}
+          <AddGroup view={view} />
+          {/* <Grid item className="ml-auto">
+        <Button
+          onClick={() => {
+            this.model.destroy()
+          }}
+        >
+          <Box color="primary.main">Remove</Box>
+        </Button>
+      </Grid> */}
+        </Grid>
+      </div>
+    </React.Fragment>
+  )
+}
+
 export default Marionette.LayoutView.extend({
   template() {
-    return (
-      <React.Fragment>
-        <div className="filter-header">
-          <OperatorComponent model={this.model} />
-        </div>
-        <div className="filter-contents global-bracket is-left w-full">
-          <FilterCollection collection={this.collection} view={this} />
-          <Grid
-            container
-            direction="row"
-            alignItems="center"
-            className="w-full"
-          >
-            <Grid item>
-              <Button
-                variant="text"
-                color="inherit"
-                onClick={() => {
-                  this.collection.push({
-                    isResultFilter: this.isResultFilter,
-                  })
-                }}
-              >
-                <AddIcon /> <Box color="primary.main">Field</Box>
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                onClick={() => {
-                  this.collection.push({
-                    filterBuilder: true,
-                    isResultFilter: this.isResultFilter,
-                  })
-                }}
-              >
-                <AddIcon /> <Box color="primary.main">Group</Box>
-              </Button>
-            </Grid>
-            {/* <Grid item className="ml-auto">
-              <Button
-                onClick={() => {
-                  this.model.destroy()
-                }}
-              >
-                <Box color="primary.main">Remove</Box>
-              </Button>
-            </Grid> */}
-          </Grid>
-        </div>
-      </React.Fragment>
-    )
+    return <ReactPortion view={this} />
   },
   tagName: CustomElements.register('filter-builder'),
-  regions: {
-    filterOperator: '.filter-operator',
-    filterContents: '.contents-filters',
-  },
   initialize() {
     const { filter, isResultFilter = false } = this.options
     if (this.model === undefined) {

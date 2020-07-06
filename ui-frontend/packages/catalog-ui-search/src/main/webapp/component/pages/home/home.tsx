@@ -28,6 +28,23 @@ import ExtensionPoints from '../../../extension-points/extension-points'
 import { BetterClickAwayListener } from '../../better-click-away-listener/better-click-away-listener'
 import MoreVert from '@material-ui/icons/MoreVert'
 import Box from '@material-ui/core/Box'
+import { createGlobalStyle } from 'styled-components'
+
+const GlobalStyle = createGlobalStyle`
+  .global-query-add-view{
+    overflow: auto !important;
+    padding: 20px 40px;
+    width: 100%;
+    height: 100%;
+    .content-form .editor-footer {
+      display: none;
+    }
+    
+    & .result-form {
+      display: none;
+    }    
+  }
+`
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
@@ -196,7 +213,7 @@ export const HomePage = () => {
     <div className="w-full h-full">
       <SplitPane variant="horizontal" collapsedLength={140}>
         <Paper elevation={4} className="h-full">
-          <Grid container>
+          <Grid container className="w-full h-full">
             <Grid
               item
               className="w-full"
@@ -204,16 +221,20 @@ export const HomePage = () => {
             >
               <LeftTop selectionInterface={selectionInterface} />
             </Grid>
-            <Grid item className="w-full h-full">
+            <Grid
+              item
+              className="w-full"
+              style={{ height: `calc(100% - 60px)` }}
+            >
+              <GlobalStyle />
               <MRC
+                className="w-full h-full overflow-hidden"
                 view={QueryAddView}
                 viewOptions={{
                   selectionInterface: selectionInterface,
                   model: selectionInterface.getCurrentQuery(),
                 }}
-                style={{ height: 'auto' }}
               />
-              <QueryEditor query={queryModel} />
             </Grid>
           </Grid>
         </Paper>
