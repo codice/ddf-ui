@@ -65,6 +65,8 @@ Implementation details
         <property name="descriptors" ref="transformerDescriptors"/>
     </bean>
 
+    <service ref="cqlQueryUtil" interface="org.codice.ddf.catalog.ui.query.utility.CqlQueries"/>
+
     <bean id="accessControlSecurityConfiguration"
           class="org.codice.ddf.catalog.ui.security.accesscontrol.AccessControlSecurityConfiguration">
         <cm:managed-properties
@@ -527,5 +529,9 @@ Implementation details
             </bean>
         </argument>
     </bean>
+
+    <bean id="queryFactory" class="org.codice.ddf.catalog.ui.query.cql.QueryRequestFactoryImpl"/>
+
+    <service ref="queryFactory" interface="org.codice.ddf.catalog.ui.query.utility.QueryRequestFactory"/>
 
 </blueprint>

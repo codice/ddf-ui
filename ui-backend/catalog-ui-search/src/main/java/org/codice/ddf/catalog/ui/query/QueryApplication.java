@@ -17,6 +17,7 @@ import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static spark.Spark.before;
 import static spark.Spark.exception;
 import static spark.Spark.get;
+import static spark.Spark.halt;
 import static spark.Spark.post;
 
 import com.google.common.collect.ImmutableMap;
@@ -29,6 +30,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
+import org.codice.ddf.catalog.ui.CqlParseException;
 import org.codice.ddf.catalog.ui.metacard.EntityTooLargeException;
 import org.codice.ddf.catalog.ui.query.cql.CqlRequestImpl;
 import org.codice.ddf.catalog.ui.query.geofeature.FeatureService;
@@ -121,6 +123,10 @@ public class QueryApplication implements SparkApplication, Function {
           } catch (OAuthPluginException e) {
             res.status(e.getErrorType().getStatusCode());
             return GSON.toJson(ImmutableMap.of(ID_KEY, e.getSourceId(), URL_KEY, e.getUrl()));
+          } catch (CqlParseException e) {
+            LOGGER.debug("Unalbe to parse CQL", e);
+            halt(400, "Unable to parse CQL filter");
+            return null;
           }
         });
 
