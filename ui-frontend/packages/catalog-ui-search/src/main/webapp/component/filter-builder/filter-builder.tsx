@@ -65,22 +65,6 @@ const FilterCollection = ({
                 </Grid>
               </Grid>
             ) : null}
-            {/* {item.type !== 'filter' ? (
-          <Grid item className="w-full filter-actions">
-            <Button
-              onClick={() => {
-                if (collection && collection.length === 1) {
-                  view.model.destroy()
-                } else {
-                  item.destroy()
-                }
-              }}
-              className="ml-auto block"
-            >
-              <Box color="primary.main">Remove</Box>
-            </Button>
-          </Grid>
-        ) : null} */}
             {item.type === 'filter' ? (
               <MRC
                 key={item.cid}
@@ -269,32 +253,6 @@ const ReactPortion = ({ view }: { view: any }) => {
     <React.Fragment>
       <div className="filter-contents w-full pb-4">
         <FilterCollection collection={view.collection} view={view} />
-
-        <Grid container direction="row" alignItems="center" className="w-full">
-          {/* <Grid item>
-        <Button
-          variant="text"
-          color="inherit"
-          onClick={() => {
-            this.collection.push({
-              isResultFilter: this.isResultFilter,
-            })
-          }}
-        >
-          <AddIcon /> <Box color="primary.main">Field</Box>
-        </Button>
-      </Grid> */}
-          {/* <AddGroup view={view} /> */}
-          {/* <Grid item className="ml-auto">
-        <Button
-          onClick={() => {
-            this.model.destroy()
-          }}
-        >
-          <Box color="primary.main">Remove</Box>
-        </Button>
-      </Grid> */}
-        </Grid>
       </div>
     </React.Fragment>
   )
