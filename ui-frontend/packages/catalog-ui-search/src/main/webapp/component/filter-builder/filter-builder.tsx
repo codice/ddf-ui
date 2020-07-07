@@ -247,6 +247,22 @@ const ReactPortion = ({ view }: { view: any }) => {
       <div className="filter-contents w-full pb-4">
         <FilterCollection collection={view.collection} view={view} />
       </div>
+      <div>
+        <Button
+          onClick={() => {
+            console.log(view.transformToCql())
+          }}
+        >
+          CQL
+        </Button>
+        <Button
+          onClick={() => {
+            console.log(view.getFilters())
+          }}
+        >
+          CQL Filter Tree
+        </Button>
+      </div>
     </React.Fragment>
   )
 }

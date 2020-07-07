@@ -737,12 +737,12 @@ module.exports = {
     return buildAst(tokenize(cql))
   },
   write(filter) {
-    // uncollapseNOTs(filter)
+    uncollapseNOTs(filter)
     return write(filter)
   },
   simplify(cqlAst) {
     // iterativelySimplify(cqlAst)
-    // collapseNOTs(cqlAst)
+    collapseNOTs(cqlAst)
     // iterativelySimplify(cqlAst)
     return cqlAst
   },
