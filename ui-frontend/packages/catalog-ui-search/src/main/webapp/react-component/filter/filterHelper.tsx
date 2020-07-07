@@ -12,21 +12,23 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+//@ts-ignore
 import metacardDefinitions from '../../component/singletons/metacard-definitions.js'
+//@ts-ignore
 import properties from '../../js/properties.js'
 
 export const getFilteredAttributeList = () => {
   return metacardDefinitions.sortedMetacardTypes
-    .filter(({ id }) => !properties.isHidden(id))
-    .filter(({ id }) => !metacardDefinitions.isHiddenType(id))
-    .map(({ alias, id }) => ({
+    .filter(({ id }: any) => !properties.isHidden(id))
+    .filter(({ id }: any) => !metacardDefinitions.isHiddenType(id))
+    .map(({ alias, id }: any) => ({
       label: alias || id,
       value: id,
       description: (properties.attributeDescriptions || {})[id],
     }))
 }
 
-export const getAttributeType = attribute => {
+export const getAttributeType = (attribute: string): string => {
   const type = metacardDefinitions.metacardTypes[attribute].type
   if (type === 'GEOMETRY') return 'LOCATION'
   if (isIntegerType(type)) return 'INTEGER'
@@ -35,10 +37,10 @@ export const getAttributeType = attribute => {
   return type
 }
 
-const isIntegerType = type => {
+const isIntegerType = (type: string) => {
   return type === 'INTEGER' || type === 'SHORT' || type === 'LONG'
 }
 
-const isFloatType = type => {
+const isFloatType = (type: string) => {
   return type === 'FLOAT' || type === 'DOUBLE'
 }

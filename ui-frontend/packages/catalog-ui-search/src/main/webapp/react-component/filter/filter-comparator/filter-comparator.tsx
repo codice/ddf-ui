@@ -12,33 +12,54 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React, { useState, useEffect } from 'react'
-import { deserializeValue } from './textFilterHelper'
+import React, { useEffect } from 'react'
+import styled from 'styled-components'
+import { getComparators } from './comparatorUtils'
+import MenuItem from '@material-ui/core/MenuItem'
 import TextField from '@material-ui/core/TextField'
 
-const TextInput = props => {
-  const [value, setValue] = useState(deserializeValue(props.value))
+type Props = {
+  attribute: string
+  comparator: string
+  editing: boolean
+  onChange: any
+}
 
+const FilterComparator = ({
+  attribute,
+  comparator,
+  editing,
+  onChange,
+}: Props) => {
   useEffect(
     () => {
-      props.onChange(value)
+      const comparators = getComparators(attribute)
+      if (!comparators.includes(comparator)) {
+        onChange(comparators[0])
+      }
     },
-    [value]
+    [attribute]
   )
 
+  const comparators = getComparators(attribute)
   return (
     <TextField
       fullWidth
-      multiline
-      rowsMax={3}
       variant="outlined"
-      placeholder="Use * for wildcard."
-      value={value}
+      select
+      value={comparator}
       onChange={e => {
-        setValue(e.target.value)
+        console.log(e.target.value)
+        onChange(e.target.value)
       }}
-    />
+    >
+      {comparators.map(comparator => (
+        <MenuItem value={comparator} key={comparator}>
+          {comparator}
+        </MenuItem>
+      ))}
+    </TextField>
   )
 }
 
-export default TextInput
+export default FilterComparator

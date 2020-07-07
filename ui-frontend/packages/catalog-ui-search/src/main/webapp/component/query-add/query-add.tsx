@@ -77,7 +77,7 @@ export default Marionette.LayoutView.extend({
       </React.Fragment>
     )
   },
-  className: 'global-query-add-view h-full w-full',
+  className: 'global-query-add-view h-full w-full overflow-auto',
   tagName: 'div',
   regions: {
     queryContent: 'form .content-form',

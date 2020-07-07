@@ -29,7 +29,6 @@ module.exports = Marionette.LayoutView.extend({
         isValid={this.model.get('isValid')}
         {...this.options}
         editing={this.$el.hasClass('is-editing')}
-        onRemove={() => this.delete()}
         onChange={state => this.onChange(state)}
         supportedAttributes={this.options.supportedAttributes}
       />
@@ -40,13 +39,6 @@ module.exports = Marionette.LayoutView.extend({
   },
   attributes() {
     return { 'data-id': this.model.cid }
-  },
-  delete() {
-    if (this.model.collection && this.model.collection.length === 1) {
-      this.options.destroyGroup()
-    } else {
-      this.model.destroy()
-    }
   },
   onChange(state) {
     const { attribute, comparator, value } = state

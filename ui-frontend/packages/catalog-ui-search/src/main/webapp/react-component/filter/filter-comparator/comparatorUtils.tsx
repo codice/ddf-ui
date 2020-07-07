@@ -33,9 +33,11 @@ const typeToComparators = {
   LOCATION: geometryComparators,
   GEOMETRY: geometryComparators,
   BOOLEAN: booleanComparators,
+} as {
+  [key: string]: string[]
 }
 
-export const getComparators = attribute => {
+export const getComparators = (attribute: string): string[] => {
   let comparators = typeToComparators[getAttributeType(attribute)]
   if (attribute === 'anyGeo' || attribute === 'anyText') {
     comparators = comparators.filter(comparator => comparator !== 'IS EMPTY')

@@ -61,13 +61,8 @@ class Filter extends React.Component {
       attrInfo => attrInfo.value === this.state.attribute
     )
     return (
-      <Grid
-        container
-        direction="column"
-        alignItems="center"
-        className="w-full p-3"
-      >
-        <Grid item className="w-full">
+      <Grid container direction="column" alignItems="center" className="w-full">
+        <Grid item className="w-full pb-2">
           <Autocomplete
             fullWidth
             options={attributeList}
@@ -81,7 +76,7 @@ class Filter extends React.Component {
             renderInput={params => <TextField {...params} variant="outlined" />}
           />
         </Grid>
-        <Grid item className="w-full">
+        <Grid item className="w-full pb-2">
           <FilterComparator
             comparator={this.state.comparator}
             editing={this.props.editing}
@@ -91,7 +86,7 @@ class Filter extends React.Component {
             }
           />
         </Grid>
-        <Grid item className="w-full">
+        <Grid item className="w-full pb-2">
           <FilterInput
             suggestions={this.state.suggestions}
             attribute={this.state.attribute}
@@ -102,11 +97,6 @@ class Filter extends React.Component {
             }}
             value={this.state.value}
           />
-        </Grid>
-        <Grid item className="w-full">
-          <Button onClick={this.props.onRemove} className="ml-auto block">
-            <Box color="primary.main">Remove</Box>
-          </Button>
         </Grid>
       </Grid>
     )

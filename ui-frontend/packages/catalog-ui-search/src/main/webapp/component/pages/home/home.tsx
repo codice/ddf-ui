@@ -33,9 +33,6 @@ import { createGlobalStyle } from 'styled-components'
 const GlobalStyle = createGlobalStyle`
   .global-query-add-view{
     overflow: auto !important;
-    padding: 20px 40px;
-    width: 100%;
-    height: 100%;
     .content-form .editor-footer {
       display: none;
     }

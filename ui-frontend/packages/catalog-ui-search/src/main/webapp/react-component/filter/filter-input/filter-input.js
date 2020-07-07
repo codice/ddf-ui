@@ -17,24 +17,6 @@ import styled from 'styled-components'
 import { getAttributeType } from '../filterHelper'
 import { determineInput } from './filterInputHelper'
 
-const BaseRoot = styled.div`
-  display: inline-block;
-  vertical-align: middle;
-  line-height: ${({ theme }) => theme.minimumButtonSize};
-  margin: auto;
-`
-const LocationRoot = styled(BaseRoot)`
-  padding: ${({ theme }) =>
-    `${theme.minimumSpacing}
-      1.5rem 0px calc(${theme.minimumSpacing} + 0.75*${
-      theme.minimumButtonSize
-    } + ${theme.minimumButtonSize})`};
-
-  min-width: ${({ theme }) => `calc(19*${theme.minimumFontSize})`};
-  margin: 0px !important;
-  display: block !important;
-`
-
 const FilterInput = ({
   comparator,
   value,
@@ -43,11 +25,10 @@ const FilterInput = ({
   onChange,
 }) => {
   const type = getAttributeType(attribute)
-  const Root = type === 'LOCATION' ? LocationRoot : BaseRoot
   return (
-    <Root>
+    <div className="w-full">
       {determineInput({ comparator, type, suggestions, value, onChange })}
-    </Root>
+    </div>
   )
 }
 

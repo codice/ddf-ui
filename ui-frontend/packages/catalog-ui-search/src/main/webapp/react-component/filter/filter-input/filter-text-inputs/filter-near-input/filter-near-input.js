@@ -13,25 +13,10 @@
  *
  **/
 import React, { useState, useEffect } from 'react'
-import styled from 'styled-components'
-import TextField from '../../../../text-field'
 import { deserializeDistance, serialize } from './nearFilterHelper'
 import { deserializeValue } from '../textFilterHelper'
-
-const Label = styled.div`
-  margin: 0px ${({ theme }) => theme.minimumSpacing};
-  display: inline-block;
-`
-
-const Root = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-`
-
-const Input = styled(TextField)`
-  width: ${({ theme }) => `calc(${theme.minimumFontSize} * 8)`};
-`
+import TextField from '@material-ui/core/TextField'
+import Grid from '@material-ui/core/Grid'
 
 const NearInput = props => {
   const [value, setValue] = useState(deserializeValue(props.value))
@@ -45,11 +30,41 @@ const NearInput = props => {
   )
 
   return (
-    <Root>
-      <Input type="text" value={value} onChange={setValue} />
-      <Label>within</Label>
-      <Input type="number" value={distance} onChange={setDistance} />
-    </Root>
+    <Grid
+      container
+      className="w-full"
+      direction="column"
+      alignItems="flex-start"
+      wrap="nowrap"
+    >
+      <Grid item className="w-full">
+        <TextField
+          fullWidth
+          multiline
+          rowsMax={3}
+          variant="outlined"
+          type="text"
+          value={value}
+          onChange={e => {
+            setValue(e.target.value)
+          }}
+        />
+      </Grid>
+      <Grid item className="w-full py-1">
+        <div>within</div>
+      </Grid>
+      <Grid item className="w-full">
+        <TextField
+          fullWidth
+          type="number"
+          variant="outlined"
+          value={distance}
+          onChange={e => {
+            setDistance(e.target.value)
+          }}
+        />
+      </Grid>
+    </Grid>
   )
 }
 

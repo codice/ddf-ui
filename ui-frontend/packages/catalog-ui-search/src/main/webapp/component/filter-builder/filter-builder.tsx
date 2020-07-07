@@ -30,6 +30,7 @@ import AddIcon from '@material-ui/icons/Add'
 import Box from '@material-ui/core/Box'
 
 import MenuItem from '@material-ui/core/MenuItem'
+import Paper from '@material-ui/core/Paper'
 
 const FilterCollection = ({
   collection,
@@ -46,25 +47,125 @@ const FilterCollection = ({
     })
   }, [])
 
-  return collection.map((item: any) => {
-    return (
-      <MRC
-        key={item.cid}
-        view={item.type === 'filter' ? view.filterView : view.constructor}
-        viewOptions={{
-          isChild: true,
-          destroyGroup: () => {
-            view.model.destroy()
-          },
-          model: item,
-          editing: true,
-          suggester: view.options.suggester,
-          includedAttributes: view.options.includedAttributes,
-          supportedAttributes: view.options.supportedAttributes,
-        }}
-      />
-    )
-  })
+  return (
+    <>
+      {collection.map((item: any, index: number) => {
+        return (
+          <>
+            {index > 0 ? (
+              <Grid
+                container
+                direction="row"
+                alignItems="center"
+                justify="center"
+                wrap="nowrap"
+              >
+                <Grid item className="p-4">
+                  <OperatorComponent model={view.model} />
+                </Grid>
+              </Grid>
+            ) : null}
+            {/* {item.type !== 'filter' ? (
+          <Grid item className="w-full filter-actions">
+            <Button
+              onClick={() => {
+                if (collection && collection.length === 1) {
+                  view.model.destroy()
+                } else {
+                  item.destroy()
+                }
+              }}
+              className="ml-auto block"
+            >
+              <Box color="primary.main">Remove</Box>
+            </Button>
+          </Grid>
+        ) : null} */}
+            {item.type === 'filter' ? (
+              <MRC
+                key={item.cid}
+                view={
+                  item.type === 'filter' ? view.filterView : view.constructor
+                }
+                viewOptions={{
+                  isChild: true,
+                  destroyGroup: () => {
+                    view.model.destroy()
+                  },
+                  model: item,
+                  editing: true,
+                  suggester: view.options.suggester,
+                  includedAttributes: view.options.includedAttributes,
+                  supportedAttributes: view.options.supportedAttributes,
+                }}
+              />
+            ) : (
+              <Paper elevation={10} className="p-2 ">
+                <MRC
+                  key={item.cid}
+                  view={
+                    item.type === 'filter' ? view.filterView : view.constructor
+                  }
+                  viewOptions={{
+                    isChild: true,
+                    destroyGroup: () => {
+                      view.model.destroy()
+                    },
+                    model: item,
+                    editing: true,
+                    suggester: view.options.suggester,
+                    includedAttributes: view.options.includedAttributes,
+                    supportedAttributes: view.options.supportedAttributes,
+                  }}
+                />
+              </Paper>
+            )}
+            {item.type === 'filter' ? (
+              <Grid item className="w-full filter-actions">
+                <Grid
+                  container
+                  direction="row"
+                  alignItems="center"
+                  className="w-full"
+                >
+                  {index === collection.length - 1 ? (
+                    <AddGroup view={view} />
+                  ) : null}
+                  <Grid item className="ml-auto">
+                    <Button
+                      onClick={() => {
+                        if (collection && collection.length === 1) {
+                          view.model.destroy()
+                        } else {
+                          item.destroy()
+                        }
+                      }}
+                    >
+                      <Box color="primary.main">Remove</Box>
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Grid>
+            ) : null}
+          </>
+        )
+      })}
+      {collection.length >= 1 && collection.last().type === 'filter' ? (
+        <></>
+      ) : (
+        <>
+          <Grid
+            container
+            direction="row"
+            alignItems="center"
+            className="w-full pt-2"
+          >
+            <AddGroup view={view} />
+          </Grid>
+        </>
+      )}
+    </>
+  )
 }
 
 const OperatorComponent = ({ model }: { model: any }) => {
@@ -83,6 +184,7 @@ const OperatorComponent = ({ model }: { model: any }) => {
         model.set('operator', e.target.value)
       }}
       select
+      variant="outlined"
     >
       {OperatorData.map(operatorInfo => {
         return (
@@ -129,41 +231,24 @@ const AddGroup = ({ view }: { view: any }) => {
       <Grid item>
         <Button
           onClick={() => {
-            view.collection.reset([
-              {
-                filters: view.collection.clone(),
-                filterBuilder: true,
-                isResultFilter: view.isResultFilter,
-                operator: view.model.get('operator'),
-              },
-              {
-                isResultFilter: view.isResultFilter,
-              },
-            ])
-            view.model.set('operator', 'AND')
+            view.collection.push({
+              isResultFilter: view.isResultFilter,
+            })
           }}
         >
-          <AddIcon /> <Box color="primary.main">And</Box>
+          <AddIcon /> <Box color="primary.main">Field</Box>
         </Button>
       </Grid>
       <Grid item>
         <Button
           onClick={() => {
-            view.collection.reset([
-              {
-                filters: view.collection.clone(),
-                filterBuilder: true,
-                isResultFilter: view.isResultFilter,
-                operator: view.model.get('operator'),
-              },
-              {
-                isResultFilter: view.isResultFilter,
-              },
-            ])
-            view.model.set('operator', 'OR')
+            view.collection.push({
+              filterBuilder: true,
+              isResultFilter: view.isResultFilter,
+            })
           }}
         >
-          <AddIcon /> <Box color="primary.main">OR</Box>
+          <AddIcon /> <Box color="primary.main">Group</Box>
         </Button>
       </Grid>
     </>
@@ -182,26 +267,8 @@ const ReactPortion = ({ view }: { view: any }) => {
   console.log(view.model.cid)
   return (
     <React.Fragment>
-      <div className="filter-contents global-bracket is-left w-full">
-        <Button
-          onClick={() => {
-            view.printValue()
-          }}
-        >
-          Value
-        </Button>
+      <div className="filter-contents w-full pb-4">
         <FilterCollection collection={view.collection} view={view} />
-        {(() => {
-          console.log(view.getFilters())
-          if (view.getFilters().filters.length === 2) {
-            return (
-              <Box className="p-3">
-                <OperatorComponent model={view.model} />
-              </Box>
-            )
-          }
-          return null
-        })()}
 
         <Grid container direction="row" alignItems="center" className="w-full">
           {/* <Grid item>
@@ -217,7 +284,7 @@ const ReactPortion = ({ view }: { view: any }) => {
           <AddIcon /> <Box color="primary.main">Field</Box>
         </Button>
       </Grid> */}
-          <AddGroup view={view} />
+          {/* <AddGroup view={view} /> */}
           {/* <Grid item className="ml-auto">
         <Button
           onClick={() => {
