@@ -80,7 +80,7 @@ class MetacardHistory extends React.Component<Props, State> {
     }, 1000)
   }
 
-  clickWorkspace = (event: any) => {
+  onClick = (event: any) => {
     const selectedVersion = event.currentTarget.getAttribute('data-id')
     this.setState({ selectedVersion })
   }
@@ -137,7 +137,7 @@ class MetacardHistory extends React.Component<Props, State> {
     const { history, selectedVersion, loading } = this.state
     return (
       <MetacardHistoryPresentation
-        clickWorkspace={this.clickWorkspace}
+        onClick={this.onClick}
         revertToSelectedVersion={this.revertToSelectedVersion}
         history={history}
         selectedVersion={selectedVersion}

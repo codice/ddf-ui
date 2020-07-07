@@ -105,32 +105,26 @@ const ResultItemView = Marionette.LayoutView.extend({
                 className="header-icon fa fa-history"
                 title="Type: Revision"
                 data-help="Indicates the type of result
-                        (workspace, resource, history, deleted)"
-              />
-              <span
-                className="header-icon fa fa-book"
-                title="Type: Workspace"
-                data-help="Indicates the type of result
-                        (workspace, resource, history, deleted)"
+                        (resource, history, deleted)"
               />
               <span
                 className="header-icon fa fa-file"
                 title="Type: Resource"
                 data-help="Indicates the type of result
-                        (workspace, resource, history, deleted)"
+                        (resource, history, deleted)"
               />
               <span
                 className="header-icon fa fa-trash"
                 title="Type: Deleted"
                 data-help="Indicates the type of result
-                        (workspace, resource, history, deleted)"
+                        (resource, history, deleted)"
               />
 
               <span
                 className={`header-icon result-icon ${data.icon}`}
                 title="Type: Resource"
                 data-help="Indicates the type of result
-                        (workspace, resource, history, deleted)"
+                        (resource, history, deleted)"
               />
               <span
                 className="header-title"
@@ -299,7 +293,6 @@ const ResultItemView = Marionette.LayoutView.extend({
     }
     this.checkDisplayType()
     this.checkTags()
-    this.checkIsInWorkspace()
     this.checkIfDownloadable()
     this.checkIfLinks()
     this.checkIfBlacklisted()
@@ -338,7 +331,6 @@ const ResultItemView = Marionette.LayoutView.extend({
     this.render()
     this.checkDisplayType()
     this.checkTags()
-    this.checkIsInWorkspace()
     this.checkIfBlacklisted()
     this.checkIfDownloadable()
     this.checkIfLinks()
@@ -421,10 +413,6 @@ const ResultItemView = Marionette.LayoutView.extend({
     const isBlacklisted = blacklist.get(id) !== undefined
     this.$el.toggleClass('is-blacklisted', isBlacklisted)
   },
-  checkIsInWorkspace() {
-    const currentWorkspace = store.getCurrentWorkspace()
-    this.$el.toggleClass('in-workspace', Boolean(currentWorkspace))
-  },
   checkIfDownloadable() {
     this.$el.toggleClass(
       'is-downloadable',
@@ -455,7 +443,6 @@ const ResultItemView = Marionette.LayoutView.extend({
     }
   },
   checkTags() {
-    this.$el.toggleClass('is-workspace', this.model.isWorkspace())
     this.$el.toggleClass('is-resource', this.model.isResource())
     this.$el.toggleClass('is-revision', this.model.isRevision())
     this.$el.toggleClass('is-deleted', this.model.isDeleted())

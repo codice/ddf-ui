@@ -22,7 +22,6 @@ const mockDataMap = {
   './internal/user': User.Model.prototype.defaults(),
   './internal/localcatalogid': 'ddf.distribution',
   './internal/forms/result': [],
-  './internal/workspaces': [],
   './internal/catalog/sources': require('./sources.json'),
 }
 

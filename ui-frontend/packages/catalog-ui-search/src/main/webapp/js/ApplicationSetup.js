@@ -21,14 +21,7 @@ import React from 'react'
 //   })
 // }
 
-// eslint-disable-next-line no-extra-semi
-;(function injectStyles() {
-  if (process.env.NODE_ENV !== 'production') {
-    require('../dev/styles/styles.less') // include styles for dev guide components
-  } else {
-    require('../styles/styles.less') // production styles only
-  }
-})()
+require('../styles/styles.less')
 
 const $ = require('jquery')
 $.ajaxSetup({
@@ -95,14 +88,6 @@ let getErrorResponse = function(event, jqxhr, settings, throwError) {
     return {
       title: properties.i18n['sources.polling.error.title'],
       message: properties.i18n['sources.polling.error.message'],
-    }
-  } else if (
-    settings.url.indexOf('./internal/workspaces') > -1 &&
-    settings.type === 'PUT'
-  ) {
-    return {
-      title: 'Error Saving Workspace',
-      message: 'Unable to save workspace on server',
     }
   } else if (jqxhr.responseJSON !== undefined) {
     return { title: 'Error', message: jqxhr.responseJSON.message }

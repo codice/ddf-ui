@@ -186,11 +186,6 @@ export class LazyQueryResult {
   matchesCql(cql: string): boolean {
     return matchesCql(this.plain.metacard, cql)
   }
-  isWorkspace(): boolean {
-    return (
-      this.plain.metacard.properties['metacard-tags'].indexOf('workspace') >= 0
-    )
-  }
   isResource(): boolean {
     return (
       this.plain.metacard.properties['metacard-tags'].indexOf('resource') >= 0

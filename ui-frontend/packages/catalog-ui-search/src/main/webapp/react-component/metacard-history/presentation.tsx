@@ -20,7 +20,7 @@ import { Button, buttonTypeEnum } from '../presentation/button'
 import LoadingCompanion from '../loading-companion'
 
 type Props = {
-  clickWorkspace: (event: any) => void
+  onClick: (event: any) => void
   revertToSelectedVersion: () => void
   history: any
   selectedVersion: any
@@ -112,7 +112,7 @@ const RevertButton = styled(Button)`
 
 const MetacardHistory = (props: Props) => {
   const {
-    clickWorkspace,
+    onClick,
     revertToSelectedVersion,
     history,
     selectedVersion,
@@ -144,7 +144,7 @@ have chosen."
                   'is-selected'}`}
                 data-id={historyItem.id}
                 key={historyItem.id}
-                onClick={clickWorkspace}
+                onClick={onClick}
               >
                 <Version className="metacardHistory-cell">
                   {historyItem.versionNumber}

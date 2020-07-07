@@ -21,9 +21,7 @@ const user = require('../../singletons/user-instance')
 function getTypes(results) {
   const types = {}
   results.forEach(result => {
-    if (result.isWorkspace()) {
-      types.workspace = true
-    } else if (result.isResource()) {
+    if (result.isResource()) {
       types.resource = true
     } else if (result.isRevision()) {
       types.revision = true
@@ -105,7 +103,6 @@ const MetacardsTabsView = TabsView.extend({
     if (this.selectionInterface.getSelectedResults().length > 1) {
       const types = getTypes(this.selectionInterface.getSelectedResults())
       this.$el.toggleClass('is-mixed', types.length > 1)
-      this.$el.toggleClass('is-workspace', types.indexOf('workspace') >= 0)
       this.$el.toggleClass('is-resource', types.indexOf('resource') >= 0)
       this.$el.toggleClass('is-revision', types.indexOf('revision') >= 0)
       this.$el.toggleClass('is-deleted', types.indexOf('deleted') >= 0)

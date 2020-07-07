@@ -15,16 +15,10 @@
 
 import * as React from 'react'
 const Marionette = require('marionette')
-const template = require('./query-add.hbs')
 const CustomElements = require('../../js/CustomElements.js')
 const QueryTitle = require('../query-title/query-title.view.js')
 const Query = require('../../js/model/Query.js')
-const SearchForm = require('../search-form/search-form')
-const LoadingView = require('../loading/loading.view.js')
-const wreqr = require('../../js/wreqr.js')
 const user = require('../singletons/user-instance.js')
-import ExtensionPoints from '../../extension-points'
-import { showErrorMessages } from '../../react-component/utils/validation'
 import Grid from '@material-ui/core/Grid'
 const QueryAdhoc = require('../../component/query-adhoc/query-adhoc.view.js')
 const QueryBasic = require('../../component/query-basic/query-basic.view.js')
@@ -34,7 +28,7 @@ const CQLUtils = require('catalog-ui-search/src/main/webapp/js/CQLUtils.js')
 const { createAction } = require('imperio')
 
 const { register, unregister } = createAction({
-  type: 'workspace/query/START-SEARCH',
+  type: 'query/START-SEARCH',
   docs: 'Run a search',
 })
 
@@ -90,31 +84,12 @@ export default Marionette.LayoutView.extend({
     'click .editor-saveRun': 'saveRun',
   },
   initialize() {
-    this.listenTo(
-      user.getQuerySettings(),
-      'change:template',
-      (querySettings: any) => this.updateCurrentQuery(querySettings)
-    )
     this.model =
       this.model !== null ? this.model : new Query.Model(this.getDefaultQuery())
     this.listenTo(this.model, 'resetToDefaults change:type', this.reshow)
     this.listenTo(this.model, 'change:filterTree', this.reshow)
     this.listenTo(this.model, 'closeDropdown', this.closeDropdown)
     this.listenForSave()
-  },
-  updateCurrentQuery(currentQuerySettings: any) {
-    if (
-      currentQuerySettings.get('type') !== 'custom' &&
-      currentQuerySettings.get('type') !== 'text'
-    ) {
-      return
-    }
-    const searchForm = new SearchForm(currentQuerySettings.get('template'))
-    const sharedAttributes = searchForm.transformToQueryStructure()
-    this.model.set({
-      type: currentQuerySettings.get('type'),
-      ...sharedAttributes,
-    })
   },
   reshow() {
     setTimeout(() => {

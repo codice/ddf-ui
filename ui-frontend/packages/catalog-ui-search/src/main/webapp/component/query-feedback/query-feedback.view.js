@@ -77,10 +77,6 @@ module.exports = Marionette.LayoutView.extend({
           .get('status')
           .toJSON(),
       },
-      workspace: {
-        id: store.getCurrentWorkspace().id,
-        name: store.getCurrentWorkspace().get('title'),
-      },
       comments: this.comments.currentView.model.getValue()[0],
     }
     $.post('./internal/feedback', JSON.stringify(payload))

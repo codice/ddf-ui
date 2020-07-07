@@ -169,8 +169,6 @@ const IconSpan = styled.span`
 const getIconClassName = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   if (lazyResult.isRevision()) {
     return 'fa fa-history'
-  } else if (lazyResult.isWorkspace()) {
-    return 'fa fa-book'
   } else if (lazyResult.isResource()) {
     return IconHelper.getClassByMetacardObject(lazyResult.plain)
   } else if (lazyResult.isDeleted()) {

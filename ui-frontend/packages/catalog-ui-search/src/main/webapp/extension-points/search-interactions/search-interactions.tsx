@@ -14,11 +14,10 @@
  **/
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-const { Menu, MenuItem } = require('../../react-component/menu')
+const { Menu } = require('../../react-component/menu')
 import SearchInteractionsContainer from './search-interactions.container'
 import {
   Props as PresentationProps,
-  CustomSearchFormDropdown,
   Divider,
   SearchFormMenuItem,
   ResetMenuItem,
@@ -45,16 +44,6 @@ const SearchInteractions = (props: SearchInteractionProps) => (
               />
             )
           })}
-          <Divider />
-          <MenuItem
-            key={'formSelector'}
-            value={'formSelector'}
-            title="Change the form used to construct the search."
-            data-help="Change the form used to construct the search."
-            onClick={() => {}}
-          >
-            <CustomSearchFormDropdown model={props.model} />
-          </MenuItem>
           <Divider />
           <ResetMenuItem value="reset" onClick={() => props.triggerReset()} />
         </Menu>

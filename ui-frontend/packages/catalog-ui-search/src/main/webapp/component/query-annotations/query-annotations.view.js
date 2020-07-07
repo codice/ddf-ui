@@ -149,7 +149,6 @@ module.exports = Marionette.LayoutView.extend({
     const annotationObj = {}
     annotationObj.parent = this.model.get('id')
     annotationObj.note = annotation
-    annotationObj.workspace = store.getCurrentWorkspace().id
 
     if (annotation !== '') {
       LoadingCompanionView.beginLoading(this)

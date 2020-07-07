@@ -14,9 +14,7 @@
  **/
 import * as React from 'react'
 import styled from 'styled-components'
-const { Menu, MenuItem } = require('../../react-component/menu')
-const Dropdown = require('../../react-component/dropdown')
-const SearchFormList = require('../../component/search-form-list/search-form-list')
+const { MenuItem } = require('../../react-component/menu')
 const properties = require('../../js/properties')
 
 const formTitle = properties.i18n['form.title'] || 'Form'
@@ -49,23 +47,6 @@ export const Text = styled.div`
   line-height: ${({ theme }) => theme.minimumButtonSize};
   height: ${({ theme }) => theme.minimumButtonSize};
 `
-
-export const CustomSearchFormDropdown = ({ model }: { model: any }) => {
-  return (
-    <Dropdown
-      anchor={
-        <Text>
-          <Icon className="cf cf-search-forms" />
-          Use Another Search {formTitle}
-        </Text>
-      }
-    >
-      <Menu onChange={() => {}}>
-        <SearchFormList model={model} />
-      </Menu>
-    </Dropdown>
-  )
-}
 
 export const SearchFormMenuItem = ({
   value,

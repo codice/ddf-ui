@@ -259,7 +259,6 @@ module.exports = Marionette.LayoutView.extend({
     })
   },
   handleType() {
-    this.$el.toggleClass('is-workspace', this.model.isWorkspace())
     this.$el.toggleClass('is-resource', this.model.isResource())
     this.$el.toggleClass('is-revision', this.model.isRevision())
     this.$el.toggleClass('is-deleted', this.model.isDeleted())

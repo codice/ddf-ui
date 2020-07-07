@@ -574,6 +574,7 @@ function write(filter) {
         let res = '('
         let first = true
         for (let i = 0; i < filter.filters.length; i++) {
+          console.log(res)
           if (first) {
             first = false
           } else {

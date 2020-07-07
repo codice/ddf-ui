@@ -290,9 +290,8 @@ function isGeoFilter(type) {
 }
 
 function transformFilterToCQL(filter) {
-  return this.sanitizeGeometryCql(
-    '(' + cql.write(cql.simplify(cql.read(cql.write(filter)))) + ')'
-  )
+  // todo:  see if we need the extra surrounding parens
+  return this.sanitizeGeometryCql('(' + cql.write(filter) + ')')
 }
 
 function transformCQLToFilter(cqlString) {

@@ -27,7 +27,6 @@ export type Props = {
 
 export type Result = {
   get: (key: any) => any
-  isWorkspace: () => boolean
   isResource: () => boolean
   isRevision: () => boolean
   isDeleted: () => boolean

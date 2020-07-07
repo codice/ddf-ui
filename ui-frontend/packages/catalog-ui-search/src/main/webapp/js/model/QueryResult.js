@@ -93,14 +93,6 @@ module.exports = Backbone.AssociatedModel.extend({
   matchesCql(cql) {
     return filter.matchesCql(this.get('metacard').toJSON(), cql)
   },
-  isWorkspace() {
-    return (
-      this.get('metacard')
-        .get('properties')
-        .get('metacard-tags')
-        .indexOf('workspace') >= 0
-    )
-  },
   isResource() {
     return (
       this.get('metacard')

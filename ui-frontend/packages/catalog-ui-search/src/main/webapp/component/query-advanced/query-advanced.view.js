@@ -57,8 +57,8 @@ const isValidFacetAttribute = (id, type) => {
 const { createAction } = require('imperio')
 
 const { register, unregister } = createAction({
-  type: 'workspace/query/SET-FILTER',
-  docs: 'Set the current advanced query filter in the current workspace.',
+  type: 'query/SET-FILTER',
+  docs: 'Set the current advanced query filter.',
 })
 
 module.exports = Marionette.LayoutView.extend({

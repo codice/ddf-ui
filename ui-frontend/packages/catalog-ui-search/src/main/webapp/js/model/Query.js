@@ -26,7 +26,6 @@ const CQLUtils = require('../CQLUtils.js')
 const user = require('../../component/singletons/user-instance.js')
 const _merge = require('lodash/merge')
 require('backbone-associations')
-import PartialAssociatedModel from '../../js/extensions/backbone.partialAssociatedModel'
 const plugin = require('plugins/query')
 import React from 'react'
 import { readableColor } from 'polished'
@@ -79,7 +78,7 @@ const handleTieredSearchLocalFinish = function(ids) {
   this.startSearch({ results, status })
 }
 
-Query.Model = PartialAssociatedModel.extend({
+Query.Model = Backbone.AssociatedModel.extend({
   relations: [
     {
       type: Backbone.One,
@@ -101,10 +100,10 @@ Query.Model = PartialAssociatedModel.extend({
         data.filterTree = CQLUtils.transformCQLToFilter(data.cql)
       }
     }
-    return PartialAssociatedModel.prototype.set.call(this, data, ...args)
+    return Backbone.Model.prototype.set.call(this, data, ...args)
   },
   toJSON(...args) {
-    const json = PartialAssociatedModel.prototype.toJSON.call(this, ...args)
+    const json = Backbone.Model.prototype.toJSON.call(this, ...args)
     if (typeof json.filterTree === 'object') {
       json.filterTree = JSON.stringify(json.filterTree)
     }
