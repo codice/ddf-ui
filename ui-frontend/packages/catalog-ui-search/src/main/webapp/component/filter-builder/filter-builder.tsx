@@ -51,7 +51,7 @@ const FilterCollection = ({
     <>
       {collection.map((item: any, index: number) => {
         return (
-          <>
+          <React.Fragment key={item.cid}>
             {index > 0 ? (
               <Grid
                 container
@@ -67,15 +67,11 @@ const FilterCollection = ({
             ) : null}
             {item.type === 'filter' ? (
               <MRC
-                key={item.cid}
                 view={
                   item.type === 'filter' ? view.filterView : view.constructor
                 }
                 viewOptions={{
                   isChild: true,
-                  destroyGroup: () => {
-                    view.model.destroy()
-                  },
                   model: item,
                   editing: true,
                   suggester: view.options.suggester,
@@ -92,9 +88,6 @@ const FilterCollection = ({
                   }
                   viewOptions={{
                     isChild: true,
-                    destroyGroup: () => {
-                      view.model.destroy()
-                    },
                     model: item,
                     editing: true,
                     suggester: view.options.suggester,
@@ -118,11 +111,7 @@ const FilterCollection = ({
                   <Grid item className="ml-auto">
                     <Button
                       onClick={() => {
-                        if (collection && collection.length === 1) {
-                          view.model.destroy()
-                        } else {
-                          item.destroy()
-                        }
+                        item.destroy()
                       }}
                     >
                       <Box color="primary.main">Remove</Box>
@@ -131,7 +120,7 @@ const FilterCollection = ({
                 </Grid>
               </Grid>
             ) : null}
-          </>
+          </React.Fragment>
         )
       })}
       {collection.length >= 1 && collection.last().type === 'filter' ? (
@@ -245,7 +234,11 @@ const ReactPortion = ({ view }: { view: any }) => {
 
   React.useEffect(() => {
     listenTo(view.collection, 'add remove reset', () => {
-      setForceRender(Math.random())
+      if (view.collection.length === 0) {
+        view.model.destroy()
+      } else {
+        setForceRender(Math.random())
+      }
     })
   }, [])
   console.log(view.model.cid)
