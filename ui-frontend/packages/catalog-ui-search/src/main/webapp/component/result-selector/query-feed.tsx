@@ -114,7 +114,7 @@ const QueryStatusRow = ({ status }: { status: Status }) => {
       </Cell>
       <Cell className="status-filter">
         <button
-          className="is-button is-primary in-text"
+          className="old-button is-button is-primary in-text"
           title="Locally filter results to this source only."
           onClick={() => {
             user

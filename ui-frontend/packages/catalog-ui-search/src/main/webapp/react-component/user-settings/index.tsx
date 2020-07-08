@@ -21,8 +21,6 @@ export {
   MapSettingsComponent,
   SearchSettingsComponent,
   TimeSettingsComponent,
-  HiddenSettingsComponent,
-  NavigationButton,
   noOp,
 } from './user-settings'
 

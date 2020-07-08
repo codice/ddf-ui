@@ -14,13 +14,11 @@
  **/
 import CreateLocationSearch from '../../react-component/metacard-interactions/location-interaction'
 import ExpandMetacard from '../../react-component/metacard-interactions/expand-interaction'
-import BlacklistToggle from '../../react-component/metacard-interactions/hide-interaction'
 import DownloadProduct from '../../react-component/metacard-interactions/download-interaction'
 import ExportActions from '../../react-component/metacard-interactions/export-interaction'
 import { Divider } from '../../react-component/metacard-interactions/metacard-interactions'
 
 const DefaultItems = [
-  BlacklistToggle,
   ExpandMetacard,
   Divider,
   DownloadProduct,

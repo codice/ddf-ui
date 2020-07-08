@@ -55,7 +55,7 @@ const AddSortContainer = styled.div`
 
 const AddSortButton = (props: { onClick: () => void }) => (
   <button
-    className="is-primary"
+    className="old-button is-primary"
     onClick={props.onClick}
     style={{ width: '100%' }}
   >

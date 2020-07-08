@@ -82,11 +82,14 @@ class SearchSettings extends React.Component<Props, {}> {
           </QuerySettings>
         </div>
         <EditorFooter {...this.props}>
-          <button className="is-negative" onClick={this.triggerCancel}>
+          <button
+            className="old-button is-negative"
+            onClick={this.triggerCancel}
+          >
             <span className="fa fa-times" />
             <span>Cancel</span>
           </button>
-          <button className="is-positive" onClick={this.triggerSave}>
+          <button className="old-button is-positive" onClick={this.triggerSave}>
             <span className="fa fa-floppy-o" />
             <span>Save</span>
           </button>

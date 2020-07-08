@@ -16,7 +16,6 @@ import * as React from 'react'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import { hot } from 'react-hot-loader'
 const user = require('../../component/singletons/user-instance')
-import { isBlacklisted } from './hide-interaction'
 import { Divider } from './metacard-interactions'
 import ExtensionPoints from '../../extension-points'
 
@@ -49,14 +48,12 @@ export type Model = {
 } & Array<any>
 
 type State = {
-  blacklisted: Boolean
   model: any
 }
 
 const mapPropsToState = (props: Props) => {
   return {
     model: props.model,
-    blacklisted: isBlacklisted(props.model),
   }
 }
 
@@ -73,15 +70,6 @@ class MetacardInteractions extends React.Component<Props, State> {
       'change:metacard>properties',
       setState
     )
-
-    this.props.listenTo(
-      user
-        .get('user')
-        .get('preferences')
-        .get('resultBlacklist'),
-      'add remove update reset',
-      () => this.setState({ blacklisted: isBlacklisted(this.props.model) })
-    )
   }
 
   render = () => {
@@ -91,13 +79,7 @@ class MetacardInteractions extends React.Component<Props, State> {
           (Component: any, i: number) => {
             const componentName = Component.toString()
             const key = componentName + '-' + i
-            return (
-              <Component
-                key={key}
-                {...this.props}
-                blacklisted={this.state.blacklisted}
-              />
-            )
+            return <Component key={key} {...this.props} />
           }
         )}
       </>

@@ -92,15 +92,6 @@ function getHiddenFields(): string[] {
     .get('preferences')
     .get('columnHide')
 }
-function getHiddenResults(exportSize: string): string[] {
-  return exportSize === 'visible'
-    ? user
-        .get('user')
-        .get('preferences')
-        .get('resultBlacklist')
-        .map((result: any) => result.get('id'))
-    : []
-}
 function getSearches(
   exportSize: string,
   srcs: string[],
@@ -209,7 +200,6 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
   const cql = selectionInterface.getCurrentQuery().get('cql')
   const srcs = getSrcs(selectionInterface)
   const sorts = getSorts(selectionInterface)
-  const hiddenResults = getHiddenResults(exportSize)
   const args = {
     hiddenFields: hiddenFields.length > 0 ? hiddenFields : [],
     columnOrder: columnOrder.length > 0 ? columnOrder : {},
@@ -222,7 +212,6 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
     searches,
     count,
     sorts,
-    hiddenResults,
     args,
   }
 }

@@ -1,4 +1,4 @@
-button:not(.MuiButtonBase-root),
+button.old-button,
 .composed-button {
   display: inline-block;
   border: none;
@@ -9,7 +9,7 @@ button:not(.MuiButtonBase-root),
   font-size: @mediumFontSize;
   padding: 0px;
   line-height: @minimumButtonSize;
-  height: @minimumButtonSize;
+  min-height: @minimumButtonSize;
   .resetIconLineHeight;
   span {
     font-size: @mediumFontSize;

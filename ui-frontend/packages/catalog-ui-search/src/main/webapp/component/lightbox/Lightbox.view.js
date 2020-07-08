@@ -48,7 +48,10 @@ module.exports = Marionette.LayoutView.extend(
         <React.Fragment>
           <div className="lightbox-container">
             <div className="lightbox-title-bar clearfix">
-              <button title="close" className="lightbox-close is-button">
+              <button
+                title="close"
+                className="old-button lightbox-close is-button"
+              >
                 <span className="fa fa-times" />
               </button>
               <span className="lightbox-title">{this.model.get('title')}</span>

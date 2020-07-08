@@ -24,14 +24,11 @@ type Props = {
   replaceElement?: boolean
   className?: string
   manualDestroy?: boolean
+  defaultStyling?: boolean
   style?: React.CSSProperties
 } & React.HTMLProps<HTMLDivElement> &
   JSX.IntrinsicAttributes
 
-const RegionContainer = styled.div`
-  width: 100%;
-  height: 100%;
-`
 export default hot(module)(
   class MarionetteRegionContainer extends React.Component<Props, {}> {
     constructor(props: Props) {
@@ -93,12 +90,17 @@ export default hot(module)(
       }
     }
     render() {
-      const { className, style, ...otherProps } = this.props
+      const {
+        className,
+        style,
+        defaultStyling = true,
+        ...otherProps
+      } = this.props
       return (
-        <RegionContainer
+        <div
           className={`marionette-region-container ${
             className ? className : ''
-          }`}
+          } ${defaultStyling ? 'w-full h-full' : ''}`}
           ref={this.regionRef as any}
           style={style as any}
           {...otherProps as JSX.IntrinsicAttributes}

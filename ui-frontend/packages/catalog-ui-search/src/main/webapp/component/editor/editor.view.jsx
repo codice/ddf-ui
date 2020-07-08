@@ -72,15 +72,15 @@ module.exports = Marionette.LayoutView.extend({
         <div className="editor-properties" />
         {user.canWrite(this.model) ? (
           <div className="editor-footer">
-            <button className="editor-edit is-primary">
+            <button className="old-button editor-edit is-primary">
               <span className="fa fa-pencil" />
               <span>Edit</span>
             </button>
-            <button className="editor-cancel is-negative">
+            <button className="old-button editor-cancel is-negative">
               <span className="fa fa-times" />
               <span>Cancel</span>
             </button>
-            <button className="editor-save is-positive">
+            <button className="old-button editor-save is-positive">
               <span className="fa fa-floppy-o" />
               <span>Save</span>
             </button>
