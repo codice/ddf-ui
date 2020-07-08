@@ -229,11 +229,10 @@ const matchesRoute = ({
 const App = () => {
   const location = useLocation()
   const history = useHistory()
-  const params = useParams()
   const { listenTo } = useBackbone()
-  let defaultOpen = false
+  let defaultOpen = localStorage.getItem('shell.drawer') || true
 
-  const [open, setOpen] = React.useState(defaultOpen)
+  const [open, setOpen] = React.useState(Boolean(defaultOpen))
   const [withinNav, setWithinNav] = React.useState(false)
 
   function handleDrawerOpen() {
@@ -519,17 +518,18 @@ const App = () => {
   )
 }
 
+/**
+ * You're asking why don't we push this into the above component?
+ *
+ * Main reason is we need to use some context that router provides.  So we need to separate at least the Router component to be above it.
+ */
 const AppComponent = function() {
   return (
     <Providers>
       <CssBaseline />
+      <BootstrapFixGlobalStyle />
       <Router>
-        <Switch>
-          <Route path="/">
-            <App />
-            <BootstrapFixGlobalStyle />
-          </Route>
-        </Switch>
+        <App />
       </Router>
     </Providers>
   )
