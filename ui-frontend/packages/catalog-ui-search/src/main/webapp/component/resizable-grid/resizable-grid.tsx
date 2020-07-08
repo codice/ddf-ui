@@ -212,7 +212,6 @@ export const SplitPane = ({
           })()}
           style={{
             flexShrink: 1,
-            zIndex: 1,
           }}
           onResizeStop={e => {
             setDragging(false)
@@ -234,6 +233,7 @@ export const SplitPane = ({
                 break
             }
           }}
+          className="z-10"
         >
           <Grid
             container

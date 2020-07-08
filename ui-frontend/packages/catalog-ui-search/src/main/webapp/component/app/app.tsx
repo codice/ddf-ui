@@ -10,9 +10,6 @@ import {
   RouteProps,
 } from 'react-router-dom'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import { Shell } from '../shell/shell'
-import { Links } from '../shell/links'
-import { Banner } from '../shell/banner'
 import { default as SearchIcon } from '@material-ui/icons/Search'
 import ImageSearch from '@material-ui/icons/ImageSearch'
 import Subtitles from '@material-ui/icons/Subtitles'
@@ -20,13 +17,13 @@ import Subtitles from '@material-ui/icons/Subtitles'
 import LandingPageIcon from '@material-ui/icons/Home'
 import { providers as Providers } from '../../extension-points/providers'
 const properties = require('catalog-ui-search/src/main/webapp/js/properties.js')
-import NavigationRight from 'catalog-ui-search/src/main/webapp/react-component/navigation-right'
 import SourcesPage from 'catalog-ui-search/src/main/webapp/react-component/sources'
 import SourcesPageIcon from '@material-ui/icons/Cloud'
 import AboutPage from 'catalog-ui-search/src/main/webapp/react-component/about'
 import AboutPageIcon from '@material-ui/icons/Info'
 import Grid from '@material-ui/core/Grid'
 const BackboneRouterModel = require('catalog-ui-search/src/main/webapp/component/router/router.js')
+const UserSettings = require('../user-settings/user-settings.view.js')
 
 import { Location } from 'history'
 const wreqr = require('catalog-ui-search/src/main/webapp/js/wreqr.js')
@@ -35,7 +32,28 @@ import { createGlobalStyle } from 'styled-components'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import MRC from '../../react-component/marionette-region-container'
 import { HomePage } from '../pages/home/home'
+import Paper from '@material-ui/core/Paper'
+import Typography from '@material-ui/core/Typography'
+import Button from '@material-ui/core/Button'
+import Divider from '@material-ui/core/Divider'
+import List from '@material-ui/core/List'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemText from '@material-ui/core/ListItemText'
+import IconButton from '@material-ui/core/IconButton'
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
+import ListItem from '@material-ui/core/ListItem'
+import MenuIcon from '@material-ui/icons/Menu'
+
 const IngestView = require('../ingest/ingest.view')
+
+const drawerWidth = 240
+
+export const handleBase64EncodedImages = (url: string) => {
+  if (url && url.startsWith('data:')) {
+    return url
+  }
+  return `data:image/png;base64,${url}`
+}
 
 const BootstrapFixGlobalStyle = createGlobalStyle`
   /* Only needed because we import 'bootstrap.less' in catalog-ui-search. */
@@ -88,18 +106,6 @@ const BootstrapFixGlobalStyle = createGlobalStyle`
   }
 `
 
-/**
- * Get around styling issues with links until we remove bootstrap, etc.
- */
-const SpecialLink = (
-  props: React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLDivElement>,
-    HTMLDivElement
-  >
-) => {
-  return <div {...props} />
-}
-
 type IndividualRouteType = {
   name: string
   shortName: string
@@ -110,9 +116,9 @@ type IndividualRouteType = {
 
 const RouteInformation = [
   {
-    name: 'Home',
-    shortName: 'Home',
-    Icon: LandingPageIcon,
+    name: 'Search',
+    shortName: 'Search',
+    Icon: SearchIcon,
     navRouteProps: {
       exact: true,
       path: '/home',
@@ -181,22 +187,6 @@ const RouteInformation = [
   },
 ] as IndividualRouteType[]
 
-const getNavRoutes = () => (
-  <Switch>
-    {RouteInformation.map(routeInfo => {
-      return <Route key={routeInfo.name} {...routeInfo.navRouteProps} />
-    })}
-  </Switch>
-)
-
-const getRoutes = () => (
-  <Switch>
-    {RouteInformation.map(routeInfo => {
-      return <Route key={routeInfo.name} {...routeInfo.routeProps} />
-    })}
-  </Switch>
-)
-
 BackboneRouterModel.set({
   name: '',
   path: '',
@@ -241,6 +231,20 @@ const App = () => {
   const history = useHistory()
   const params = useParams()
   const { listenTo } = useBackbone()
+  let defaultOpen = false
+
+  const [open, setOpen] = React.useState(defaultOpen)
+  const [withinNav, setWithinNav] = React.useState(false)
+
+  function handleDrawerOpen() {
+    localStorage.setItem('shell.drawer', 'true')
+    setOpen(true)
+  }
+
+  function handleDrawerClose() {
+    localStorage.setItem('shell.drawer', 'false')
+    setOpen(false)
+  }
 
   React.useEffect(() => {
     /**
@@ -282,71 +286,236 @@ const App = () => {
     }
   })
 
-  const LinksToRender = Links({
-    items: RouteInformation.map(routeInfo => {
-      return {
-        isSelected: matchesRoute({ routeInfo, pathname: location.pathname }),
-        name: routeInfo.name,
-        shortName: routeInfo.shortName,
-        Icon: routeInfo.Icon,
-        WrapperComponent: SpecialLink,
-        wrapperComponentProps: {
-          onClick: () => {
-            if (routeInfo.routeProps.path) {
-              const path =
-                typeof routeInfo.routeProps.path === 'string'
-                  ? routeInfo.routeProps.path
-                  : routeInfo.routeProps.path[0]
-              history.push(path)
-            }
-          },
-        },
-      }
-    }),
-  })
+  // todo add branding in
+  //@ts-ignore
+  const menuIcon, upperLeftLogo, lowerLeftBackground, lowerLeftLogo
 
   return (
-    <Shell
-      productImage={properties.ui.productImage}
-      branding={properties.branding}
-      productName={properties.product}
-      Header={() => {
-        return (
-          <>
-            <Grid container alignItems="center" wrap="nowrap">
-              <Grid item style={{ flexGrow: 1, overflow: 'hidden' }}>
-                {getNavRoutes()}
-              </Grid>
-              <Grid item style={{ marginRight: 'auto' }}>
-                <NavigationRight />
-              </Grid>
-            </Grid>
-          </>
-        )
-      }}
-      Links={LinksToRender}
-      Content={() => {
-        return getRoutes()
-      }}
-      BannerHeader={
-        properties.ui.header ? (
-          <Banner
-            text={properties.ui.header}
-            color={properties.ui.color}
-            background={properties.ui.background}
-          />
-        ) : null
-      }
-      BannerFooter={
-        properties.ui.footer ? (
-          <Banner
-            text={properties.ui.footer}
-            color={properties.ui.color}
-            background={properties.ui.background}
-          />
-        ) : null
-      }
-    />
+    <Grid
+      container
+      className="h-full w-full overflow-hidden"
+      direction="column"
+      justify="space-between"
+      wrap="nowrap"
+    >
+      <Grid item className="w-full">
+        {properties.ui.header ? (
+          <Typography
+            align="center"
+            style={{
+              height: 'auto',
+              background: properties.ui.background,
+              color: properties.ui.color,
+              width: '100%',
+            }}
+          >
+            {properties.ui.header}
+          </Typography>
+        ) : null}
+      </Grid>
+      <Grid item className="w-full h-full relative overflow-hidden">
+        <Grid
+          container
+          direction="row"
+          wrap="nowrap"
+          alignItems="stretch"
+          className="w-full h-full"
+        >
+          <Grid
+            item
+            className={`${
+              open ? 'w-64' : 'w-20'
+            } transition-all duration-200 ease-in-out relative z-10`}
+            onMouseEnter={() => {
+              setWithinNav(true)
+            }}
+            onMouseLeave={() => {
+              setWithinNav(false)
+            }}
+          >
+            <Paper elevation={6} className="h-full">
+              {open ? (
+                <>
+                  <Grid
+                    container
+                    wrap="nowrap"
+                    alignItems="center"
+                    className="w-full h-full overflow-hidden"
+                    style={{
+                      maxHeight: '64px',
+                    }}
+                  >
+                    <Grid
+                      item
+                      className="w-full relative"
+                      style={{
+                        height: upperLeftLogo ? '100%' : 'auto',
+                      }}
+                    >
+                      {upperLeftLogo ? (
+                        <img
+                          className="max-h-full max-w-full absolute left-0 transform -translate-y-1/2 top-1/2"
+                          style={{
+                            padding: '5px 0px',
+                          }}
+                          src={handleBase64EncodedImages(upperLeftLogo)}
+                        />
+                      ) : (
+                        <Grid container direction="column" className="pl-3">
+                          <Grid item>
+                            <Typography>{properties.branding}</Typography>
+                          </Grid>
+                          <Grid item>
+                            <Typography>{properties.product}</Typography>
+                          </Grid>
+                        </Grid>
+                      )}
+                    </Grid>
+                    <Grid item className="ml-auto">
+                      <IconButton
+                        className="h-auto"
+                        onClick={handleDrawerClose}
+                      >
+                        <ChevronLeftIcon />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                </>
+              ) : (
+                <Button
+                  color="inherit"
+                  aria-label="open drawer"
+                  onClick={handleDrawerOpen}
+                  className="w-full h-auto"
+                  style={{
+                    padding: menuIcon ? '0px' : '12px',
+                  }}
+                >
+                  {menuIcon ? (
+                    <>
+                      <img
+                        src={handleBase64EncodedImages(menuIcon)}
+                        style={{ width: '51.42px' }}
+                      />
+                    </>
+                  ) : (
+                    <MenuIcon />
+                  )}
+                </Button>
+              )}
+
+              <Divider />
+              <List className="overflow-hidden ">
+                {RouteInformation.map(routeInfo => {
+                  const isSelected = matchesRoute({
+                    routeInfo,
+                    pathname: location.pathname,
+                  })
+                  return (
+                    <div
+                      key={routeInfo.name}
+                      onClick={() => {
+                        if (routeInfo.routeProps.path) {
+                          const path =
+                            typeof routeInfo.routeProps.path === 'string'
+                              ? routeInfo.routeProps.path
+                              : routeInfo.routeProps.path[0]
+                          history.push(path)
+                        }
+                      }}
+                    >
+                      <ListItem
+                        button
+                        tabIndex={-1}
+                        className={`${
+                          !withinNav && !isSelected ? 'opacity-25' : ''
+                        } relative py-3 hover:opacity-100`}
+                      >
+                        <ListItemIcon>
+                          {routeInfo.Icon ? (
+                            <routeInfo.Icon
+                              className="transition duration-200 ease-in-out"
+                              style={{
+                                transform: open
+                                  ? 'none'
+                                  : 'translateX(2px) translateY(-10px)',
+                              }}
+                            />
+                          ) : null}
+                          <Typography
+                            variant="body2"
+                            className={`${
+                              open ? 'opacity-0' : 'opacity-100'
+                            } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
+                          >
+                            {routeInfo.shortName}
+                          </Typography>
+                        </ListItemIcon>
+                        <ListItemText primary={routeInfo.name} />
+                      </ListItem>
+                    </div>
+                  )
+                })}
+              </List>
+
+              <Divider />
+              <>
+                <div className="h-full overflow-hidden relative">
+                  {lowerLeftBackground ? (
+                    <img
+                      className={
+                        'h-full absolute scale-200 opacity-50 -z-1 transform'
+                      }
+                      src={handleBase64EncodedImages(lowerLeftBackground)}
+                    />
+                  ) : null}
+                  <a
+                    href="../"
+                    className="absolute bottom-0 bg-transparent p-0 left-1/2 transform -translate-x-1/2"
+                  >
+                    <img
+                      style={{
+                        width: open ? `${drawerWidth - 20}px` : '52px',
+                        padding: open ? `20px` : '5px',
+                      }}
+                      src={handleBase64EncodedImages(
+                        lowerLeftLogo || properties.ui.productImage
+                      )}
+                    />
+                  </a>
+                </div>
+              </>
+            </Paper>
+          </Grid>
+          <Grid item className="w-full h-full overflow-hidden relative z-0">
+            <Paper className="w-full h-full">
+              <Switch>
+                {RouteInformation.map(routeInfo => {
+                  return (
+                    <Route key={routeInfo.name} {...routeInfo.routeProps} />
+                  )
+                })}
+              </Switch>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid item style={{ width: '100%' }}>
+        {properties.ui.footer ? (
+          <Typography
+            align="center"
+            style={{
+              height: 'auto',
+              background: properties.ui.background,
+              color: properties.ui.color,
+              width: '100%',
+            }}
+          >
+            {properties.ui.footer}
+          </Typography>
+        ) : null}
+      </Grid>
+    </Grid>
   )
 }
 
