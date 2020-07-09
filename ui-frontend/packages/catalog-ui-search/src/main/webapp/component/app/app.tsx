@@ -7,7 +7,9 @@ import {
   useLocation,
   useHistory,
   useParams,
+  Link,
   RouteProps,
+  LinkProps,
 } from 'react-router-dom'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { default as SearchIcon } from '@material-ui/icons/Search'
@@ -113,6 +115,7 @@ type IndividualRouteType = {
   shortName: string
   Icon: any
   routeProps: RouteProps
+  linkProps: LinkProps
 }
 
 const RouteInformation = [
@@ -126,6 +129,9 @@ const RouteInformation = [
       children: () => {
         return <HomePage />
       },
+    },
+    linkProps: {
+      to: '/home',
     },
   },
   {
@@ -146,6 +152,9 @@ const RouteInformation = [
         )
       },
     },
+    linkProps: {
+      to: '/upload',
+    },
   },
   {
     name: 'Sources',
@@ -157,6 +166,9 @@ const RouteInformation = [
         return <SourcesPage />
       },
     },
+    linkProps: {
+      to: '/sources',
+    },
   },
   {
     name: 'About',
@@ -167,6 +179,9 @@ const RouteInformation = [
       children: () => {
         return <AboutPage />
       },
+    },
+    linkProps: {
+      to: '/about',
     },
   },
 ] as IndividualRouteType[]
@@ -210,13 +225,17 @@ const matchesRoute = ({
   return false
 }
 
+const CustomLink = React.forwardRef((linkProps, ref) => (
+  //@ts-ignore
+  <Link ref={ref} {...linkProps} />
+))
+
 const App = () => {
   const location = useLocation()
   const history = useHistory()
   const { listenTo } = useBackbone()
   let defaultOpen =
     localStorage.getItem('shell.drawer') === 'true' ? true : false
-  console.log(defaultOpen)
   const [navOpen, setNavOpen] = React.useState(defaultOpen)
   const [withinNav, setWithinNav] = React.useState(false)
 
@@ -396,48 +415,39 @@ const App = () => {
                         pathname: location.pathname,
                       })
                       return (
-                        <div
+                        <ListItem
                           key={routeInfo.name}
-                          onClick={() => {
-                            if (routeInfo.routeProps.path) {
-                              const path =
-                                typeof routeInfo.routeProps.path === 'string'
-                                  ? routeInfo.routeProps.path
-                                  : routeInfo.routeProps.path[0]
-                              history.push(path)
-                            }
-                          }}
+                          button
+                          //@ts-ignore
+                          component={CustomLink}
+                          to={routeInfo.linkProps.to}
+                          // tabIndex={-1}
+                          className={`${
+                            !withinNav && !isSelected ? 'opacity-25' : ''
+                          } relative py-3 focus:opacity-100 hover:opacity-100 transition-opacity`}
                         >
-                          <ListItem
-                            button
-                            tabIndex={-1}
-                            className={`${
-                              !withinNav && !isSelected ? 'opacity-25' : ''
-                            } relative py-3 hover:opacity-100 transition-opacity`}
-                          >
-                            <ListItemIcon>
-                              {routeInfo.Icon ? (
-                                <routeInfo.Icon
-                                  className="transition duration-200 ease-in-out"
-                                  style={{
-                                    transform: navOpen
-                                      ? 'none'
-                                      : 'translateX(2px) translateY(-10px)',
-                                  }}
-                                />
-                              ) : null}
-                              <Typography
-                                variant="body2"
-                                className={`${
-                                  navOpen ? 'opacity-0' : 'opacity-100'
-                                } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
-                              >
-                                {routeInfo.shortName}
-                              </Typography>
-                            </ListItemIcon>
-                            <ListItemText primary={routeInfo.name} />
-                          </ListItem>
-                        </div>
+                          <ListItemIcon>
+                            {routeInfo.Icon ? (
+                              <routeInfo.Icon
+                                className="transition duration-200 ease-in-out"
+                                style={{
+                                  transform: navOpen
+                                    ? 'none'
+                                    : 'translateX(2px) translateY(-10px)',
+                                }}
+                              />
+                            ) : null}
+                            <Typography
+                              variant="body2"
+                              className={`${
+                                navOpen ? 'opacity-0' : 'opacity-100'
+                              } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
+                            >
+                              {routeInfo.shortName}
+                            </Typography>
+                          </ListItemIcon>
+                          <ListItemText primary={routeInfo.name} />
+                        </ListItem>
                       )
                     })}
                   </List>
