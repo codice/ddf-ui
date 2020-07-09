@@ -13,6 +13,7 @@
  *
  **/
 import * as React from 'react'
+import { createGlobalStyle } from 'styled-components'
 import ThemeSettings from '../theme-settings'
 import AlertSettings from '../alert-settings'
 import SearchSettings from '../search-settings'
@@ -34,6 +35,15 @@ import { Link } from '../../component/link/link'
 
 type ComponentType = () => JSX.Element
 
+const ThemeGlobalStyle = createGlobalStyle`
+.MuiBackdrop-root {
+  opacity: 0 !important;
+}
+.MuiDrawer-root > .MuiPaper-root {
+  transform: scale(.8) translateY(40%) translateX(-10%) !important;
+}
+`
+
 export const BaseSettings = {
   Settings: {
     component: () => {
@@ -42,7 +52,12 @@ export const BaseSettings = {
   },
   Theme: {
     component: () => {
-      return <ThemeSettings />
+      return (
+        <>
+          <ThemeGlobalStyle />
+          <ThemeSettings />
+        </>
+      )
     },
   },
   Notifications: {

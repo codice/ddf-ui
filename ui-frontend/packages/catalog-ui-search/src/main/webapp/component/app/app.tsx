@@ -48,6 +48,7 @@ import SettingsIcon from '@material-ui/icons/Settings'
 import Drawer from '@material-ui/core/Drawer'
 import queryString from 'query-string'
 import { Link } from '../link/link'
+import { Memo } from '../memo/memo'
 
 const IngestView = require('../ingest/ingest.view')
 
@@ -453,7 +454,7 @@ const App = () => {
                 <Grid item className="mt-auto overflow-hidden w-full">
                   {(() => {
                     const open = Boolean(queryParams['global-settings'])
-
+                    const isTheme = queryParams['global-settings'] === 'Theme'
                     return (
                       <>
                         <ListItem
@@ -502,7 +503,7 @@ const App = () => {
                             )
                           }}
                           PaperProps={{
-                            className: 'min-w-120 max-w-4/5',
+                            className: 'min-w-120 max-w-4/5 ',
                           }}
                         >
                           <UserSettings />

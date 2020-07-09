@@ -91,11 +91,6 @@ const saveAnimationChanges = (animationMode: string) => {
   getPreferences().savePreferences()
 }
 
-const saveHoverPreviewChanges = (hoverValue: string) => {
-  getPreferences().set('hoverPreview', hoverValue)
-  getPreferences().savePreferences()
-}
-
 const saveThemeChanges = (themeValue: string) => {
   getPreferences()
     .get('theme')
@@ -139,17 +134,6 @@ const animationEnum = [
   },
 ]
 
-const hoverEnum = [
-  {
-    label: 'On',
-    value: true,
-  },
-  {
-    label: 'Off',
-    value: false,
-  },
-]
-
 const themeEnum = [
   {
     label: 'Dark',
@@ -175,7 +159,6 @@ class ThemeSettings extends React.Component<
     fontSizeModel: any
     spacingModeModel: any
     animationModel: any
-    hoverPreviewModel: any
     themeModel: any
     customToggle: boolean
     customColors: any[]
@@ -207,13 +190,6 @@ class ThemeSettings extends React.Component<
         enum: animationEnum,
         id: 'Animation',
       }),
-      hoverPreviewModel: new Property({
-        isEditing: true,
-        label: 'Preview Full Image on Hover',
-        value: [user.getHoverPreview()],
-        enum: hoverEnum,
-        id: 'Full Image on Hover',
-      }),
       themeModel: new Property({
         isEditing: true,
         enum: themeEnum,
@@ -232,9 +208,6 @@ class ThemeSettings extends React.Component<
     })
     this.state.animationModel.on('change:value', () => {
       saveAnimationChanges(this.state.animationModel.getValue()[0])
-    })
-    this.state.hoverPreviewModel.on('change:value', () => {
-      saveHoverPreviewChanges(this.state.hoverPreviewModel.getValue()[0])
     })
     this.state.themeModel.on('change:value', () => {
       let themeValue = this.state.themeModel.getValue()[0]
@@ -273,15 +246,6 @@ class ThemeSettings extends React.Component<
           viewOptions={() => {
             return {
               model: this.state.animationModel,
-            }
-          }}
-          replaceElement={false}
-        />
-        <MarionetteRegionContainer
-          view={PropertyView}
-          viewOptions={() => {
-            return {
-              model: this.state.hoverPreviewModel,
             }
           }}
           replaceElement={false}
