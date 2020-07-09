@@ -12,16 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-export {
-  default as BaseUserSettings,
-  SettingsProps,
-  ComponentProps,
-  ThemeSettingsComponent,
-  AlertSettingsComponent,
-  MapSettingsComponent,
-  SearchSettingsComponent,
-  TimeSettingsComponent,
-  noOp,
-} from './user-settings'
+export { default as BaseUserSettings, BaseSettings } from './user-settings'
 
 export { default } from './extensions'

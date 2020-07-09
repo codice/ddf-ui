@@ -7,7 +7,6 @@ import {
   useLocation,
   useHistory,
   useParams,
-  Link,
   RouteProps,
   LinkProps,
 } from 'react-router-dom'
@@ -47,6 +46,8 @@ import ListItem from '@material-ui/core/ListItem'
 import MenuIcon from '@material-ui/icons/Menu'
 import SettingsIcon from '@material-ui/icons/Settings'
 import Drawer from '@material-ui/core/Drawer'
+import queryString from 'query-string'
+import { Link } from '../link/link'
 
 const IngestView = require('../ingest/ingest.view')
 
@@ -70,11 +71,6 @@ const BootstrapFixGlobalStyle = createGlobalStyle`
     text-align: left !important;
     transition: width 200ms cubic-bezier(0, 0, 0.2, 1) 0ms;
     line-height: 11px !important;
-  }
-  
-  /* renormalize */
-  intrigue-slideout, intrigue-confirmation {
-    z-index: 101 !important;
   }
 
   /* So we match Material */
@@ -225,14 +221,10 @@ const matchesRoute = ({
   return false
 }
 
-const CustomLink = React.forwardRef((linkProps, ref) => (
-  //@ts-ignore
-  <Link ref={ref} {...linkProps} />
-))
-
 const App = () => {
   const location = useLocation()
   const history = useHistory()
+  const queryParams = queryString.parse(location.search)
   const { listenTo } = useBackbone()
   let defaultOpen =
     localStorage.getItem('shell.drawer') === 'true' ? true : false
@@ -330,6 +322,12 @@ const App = () => {
             onMouseEnter={() => {
               setWithinNav(true)
             }}
+            onMouseOver={() => {
+              setWithinNav(true)
+            }}
+            onMouseOut={() => {
+              setWithinNav(false)
+            }}
             onMouseLeave={() => {
               setWithinNav(false)
             }}
@@ -418,10 +416,8 @@ const App = () => {
                         <ListItem
                           key={routeInfo.name}
                           button
-                          //@ts-ignore
-                          component={CustomLink}
+                          component={Link}
                           to={routeInfo.linkProps.to}
-                          // tabIndex={-1}
                           className={`${
                             !withinNav && !isSelected ? 'opacity-25' : ''
                           } relative py-3 focus:opacity-100 hover:opacity-100 transition-opacity`}
@@ -456,18 +452,23 @@ const App = () => {
                 </Grid>
                 <Grid item className="mt-auto overflow-hidden w-full">
                   {(() => {
-                    const [open, setOpen] = React.useState(false)
+                    const open = Boolean(queryParams['global-settings'])
+
                     return (
                       <>
                         <ListItem
                           button
-                          tabIndex={-1}
+                          component={Link}
+                          to={{
+                            pathname: `${location.pathname}`,
+                            search: `${queryString.stringify({
+                              ...queryParams,
+                              'global-settings': 'Settings',
+                            })}`,
+                          }}
                           className={`${
                             !withinNav ? 'opacity-25' : ''
-                          } relative py-3 hover:opacity-100 transition-opacity`}
-                          onClick={() => {
-                            setOpen(true)
-                          }}
+                          } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
                         >
                           <ListItemIcon>
                             <SettingsIcon
@@ -493,7 +494,12 @@ const App = () => {
                           anchor="left"
                           open={open}
                           onClose={() => {
-                            setOpen(false)
+                            delete queryParams['global-settings']
+                            history.push(
+                              `${location.pathname}?${queryString.stringify(
+                                queryParams
+                              )}`
+                            )
                           }}
                           PaperProps={{
                             className: 'min-w-120 max-w-4/5',

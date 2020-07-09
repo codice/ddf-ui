@@ -19,28 +19,27 @@ import SearchSettings from '../search-settings'
 const MapSettings = require('../../component/layers/layers.view.js')
 import TimeSettings from '../time-settings'
 
-import styled from 'styled-components'
 import { hot } from 'react-hot-loader'
 import MarionetteRegionContainer from '../marionette-region-container'
 import Button from '@material-ui/core/Button'
 import ChevronLeft from '@material-ui/icons/ChevronLeft'
 import ChevronRight from '@material-ui/icons/ChevronRight'
 
-import Timer from '@material-ui/icons/Timer'
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider'
-import Box from '@material-ui/core/Box'
+import { useLocation, useHistory } from 'react-router-dom'
+import queryString from 'query-string'
+import { Link } from '../../component/link/link'
 
-export type SettingsProps = {
-  children: React.ReactNode[]
-}
-
-export type ComponentProps = {
-  updateComponent?: (component?: React.ReactNode) => void
-}
+type ComponentType = () => JSX.Element
 
 export const BaseSettings = {
+  Settings: {
+    component: () => {
+      return <SettingsScreen />
+    },
+  },
   Theme: {
     component: () => {
       return <ThemeSettings />
@@ -72,44 +71,32 @@ export const BaseSettings = {
   }
 }
 
-const SettingsScreen = ({ setComponent }: { setComponent: any }) => {
+const SettingsScreen = () => {
+  const location = useLocation()
+  const queryParams = queryString.parse(location.search)
   return (
     <Grid container direction="column" className="w-full h-full">
-      {Object.entries(BaseSettings).map(([name, { component }]) => {
-        return (
-          <Grid item className="w-full">
-            <Button
-              fullWidth
-              onClick={() => {
-                setComponent(component)
-              }}
-            >
-              <div className="text-left w-full">{name}</div>
-            </Button>
-          </Grid>
-        )
-      })}
+      {Object.keys(BaseSettings)
+        .filter(name => name !== 'Settings')
+        .map(name => {
+          return (
+            <Grid item className="w-full">
+              <Button
+                component={Link}
+                to={`${location.pathname}?${queryString.stringify({
+                  ...queryParams,
+                  'global-settings': name,
+                })}`}
+                fullWidth
+              >
+                <div className="text-left w-full">{name}</div>
+              </Button>
+            </Grid>
+          )
+        })}
     </Grid>
   )
 }
-
-/**
- * Explicit typing needed on the return (to avoid we'd need to return an object instead of an array)
- */
-function useFunctionAsState<T>(initialFunction: T) {
-  const [state, setState] = React.useState(() => initialFunction)
-
-  return [
-    state as T,
-    (newFunction: T) => {
-      setState(() => newFunction)
-    },
-  ] as [T, (newFunction: T) => void]
-}
-
-type ComponentType = (
-  { setComponent }: { setComponent: (arg0: ComponentType) => void }
-) => JSX.Element
 
 const getName = (setting: ComponentType) => {
   const matchedSetting = Object.entries(BaseSettings).find(entry => {
@@ -121,10 +108,23 @@ const getName = (setting: ComponentType) => {
   return ''
 }
 
+const getComponent = (name: string) => {
+  const matchedSetting = Object.entries(BaseSettings).find(entry => {
+    return entry[0] === name
+  })
+  if (matchedSetting) {
+    return matchedSetting[1].component
+  }
+  return BaseSettings.Settings.component
+}
+
 const UserSettings = () => {
-  const [CurrentSetting, setCurrentSetting] = useFunctionAsState<ComponentType>(
-    SettingsScreen
-  )
+  const location = useLocation()
+  const history = useHistory()
+  const queryParams = queryString.parse(location.search)
+
+  const CurrentSetting = getComponent((queryParams['global-settings'] ||
+    '') as string)
   const name = getName(CurrentSetting)
   return (
     <Grid container direction="column" className="w-full h-full" wrap="nowrap">
@@ -132,17 +132,19 @@ const UserSettings = () => {
         <Grid container direction="row" alignItems="center">
           <Grid item>
             <Button
-              onClick={() => {
-                setCurrentSetting(SettingsScreen)
-              }}
+              component={Link}
+              to={`${location.pathname}?${queryString.stringify({
+                ...queryParams,
+                'global-settings': 'Settings',
+              })}`}
             >
               <Typography variant="h5">
-                {name ? 'Back to ' : null}
+                {name !== 'Settings' ? 'Back to ' : null}
                 Settings
               </Typography>
             </Button>
           </Grid>
-          {name ? (
+          {name !== 'Settings' ? (
             <>
               <Grid item>
                 <ChevronRight />
@@ -158,7 +160,7 @@ const UserSettings = () => {
         <Divider />
       </Grid>
       <Grid item className="w-full h-full p-3">
-        <CurrentSetting setComponent={setCurrentSetting} />
+        <CurrentSetting />
       </Grid>
     </Grid>
   )
