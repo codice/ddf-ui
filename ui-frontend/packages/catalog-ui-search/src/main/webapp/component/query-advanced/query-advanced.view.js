@@ -12,73 +12,37 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import * as React from 'react'
 const Marionette = require('marionette')
 const memoize = require('lodash/memoize')
 const $ = require('jquery')
-const template = require('./query-advanced.hbs')
 const CustomElements = require('../../js/CustomElements.js')
 import FilterBuilderView from '../filter-builder/filter-builder.tsx'
+import FilterBranch from '../filter-builder/filter-branch'
 const cql = require('../../js/cql.js')
 const QuerySettingsView = require('../query-settings/query-settings.view.js')
 const properties = require('../../js/properties.js')
 import { getFilterErrors } from '../../react-component/utils/validation'
 
-import query from '../../react-component/utils/query'
-
-const fetchSuggestions = memoize(async attr => {
-  const json = await query({
-    count: 0,
-    cql: cql.ANYTEXT_WILDCARD,
-    facets: [attr],
-  })
-
-  const suggestions = json.facets[attr]
-
-  if (suggestions === undefined) {
-    return []
-  }
-
-  return suggestions.map(({ value }) => value)
-})
-
-const isValidFacetAttribute = (id, type) => {
-  if (!['STRING', 'INTEGER', 'FLOAT'].includes(type)) {
-    return false
-  }
-  if (id === 'anyText') {
-    return false
-  }
-  if (!properties.attributeSuggestionList.includes(id)) {
-    return false
-  }
-  return true
-}
-
-const { createAction } = require('imperio')
-
-const { register, unregister } = createAction({
-  type: 'query/SET-FILTER',
-  docs: 'Set the current advanced query filter.',
-})
-
 module.exports = Marionette.LayoutView.extend({
-  template,
-  tagName: CustomElements.register('query-advanced'),
-  modelEvents: {},
-  events: {
-    'click .editor-edit': 'edit',
-    'click .editor-cancel': 'cancel',
-    'click .editor-save': 'save',
+  template() {
+    return (
+      <form
+        target="autocomplete"
+        action="/search/catalog/blank.html"
+        novalidate
+      >
+        <div class="editor-properties">
+          <div class="query-advanced" />
+          <div class="query-settings" />
+        </div>
+      </form>
+    )
   },
+  tagName: CustomElements.register('query-advanced'),
   regions: {
     querySettings: '.query-settings',
     queryAdvanced: '.query-advanced',
-  },
-  ui: {},
-  initialize() {
-    // this.intervalId = setInterval(() => {
-    //   this.save()
-    // }, 10000)
   },
   onBeforeShow() {
     this.querySettings.show(
@@ -98,21 +62,6 @@ module.exports = Marionette.LayoutView.extend({
 
     this.showAdvanced(filter)
 
-    this.action = register({
-      el: this.el,
-      params: [
-        {
-          filter: {
-            type: 'ILIKE',
-            property: 'anyText',
-            value: '',
-          },
-        },
-      ],
-      fn: ({ filter }) => {
-        this.showAdvanced(filter)
-      },
-    })
     this.listenTo(
       this.querySettings.currentView.model,
       'change:src',
@@ -120,10 +69,6 @@ module.exports = Marionette.LayoutView.extend({
         this.showAdvanced(this.queryAdvanced.currentView.getFilters())
       }
     )
-  },
-  onDestroy() {
-    unregister(this.action)
-    clearInterval(this.intervalId)
   },
   showAdvanced(filter) {
     this.queryAdvanced.show(
@@ -140,37 +85,8 @@ module.exports = Marionette.LayoutView.extend({
           .src,
       })
     )
-
-    this.edit()
-  },
-  focus() {
-    // eslint-disable-next-line no-undef
-    const tabbable = _.filter(
-      this.$el.find('[tabindex], input, button'),
-      element => element.offsetParent !== null
-    )
-    if (tabbable.length > 0) {
-      $(tabbable[0]).focus()
-    }
-  },
-  edit() {
-    this.$el.toggleClass(
-      'is-empty',
-      this.model.get('comparator') === 'IS EMPTY'
-    )
-    this.$el.addClass('is-editing')
-    this.querySettings.currentView.turnOnEditing()
-  },
-  cancel() {
-    fetchSuggestions.cache.clear()
-    this.$el.removeClass('is-editing')
-    this.onBeforeShow()
-    if (typeof this.options.onCancel === 'function') {
-      this.options.onCancel()
-    }
   },
   save() {
-    fetchSuggestions.cache.clear()
     this.querySettings.currentView.saveToModel()
 
     this.model.set({
@@ -179,24 +95,6 @@ module.exports = Marionette.LayoutView.extend({
     })
     if (typeof this.options.onSave === 'function') {
       this.options.onSave()
-    }
-  },
-  getErrorMessages() {
-    return this.querySettings.currentView
-      .getErrorMessages()
-      .concat(
-        getFilterErrors(
-          this.queryAdvanced.currentView.getFilters().filters || []
-        )
-      )
-  },
-  setDefaultTitle() {
-    this.model.set('title', this.model.get('cql'))
-  },
-  serializeTemplateParameters() {
-    return {
-      filterTree: this.queryAdvanced.currentView.getFilters(),
-      filterSettings: this.querySettings.currentView.toJSON(),
     }
   },
 })

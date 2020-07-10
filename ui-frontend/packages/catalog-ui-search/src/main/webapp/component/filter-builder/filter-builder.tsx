@@ -28,6 +28,8 @@ import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
 import AddIcon from '@material-ui/icons/Add'
 import Box from '@material-ui/core/Box'
+import FilterLeaf from './filter-leaf'
+import FilterBranch from './filter-branch'
 
 import MenuItem from '@material-ui/core/MenuItem'
 import Paper from '@material-ui/core/Paper'
@@ -66,36 +68,9 @@ const FilterCollection = ({
               </Grid>
             ) : null}
             {item.type === 'filter' ? (
-              <MRC
-                view={
-                  item.type === 'filter' ? view.filterView : view.constructor
-                }
-                viewOptions={{
-                  isChild: true,
-                  model: item,
-                  editing: true,
-                  suggester: view.options.suggester,
-                  includedAttributes: view.options.includedAttributes,
-                  supportedAttributes: view.options.supportedAttributes,
-                }}
-              />
+              <FilterLeaf view={view} item={item} />
             ) : (
-              <Paper elevation={10} className="p-2 ">
-                <MRC
-                  key={item.cid}
-                  view={
-                    item.type === 'filter' ? view.filterView : view.constructor
-                  }
-                  viewOptions={{
-                    isChild: true,
-                    model: item,
-                    editing: true,
-                    suggester: view.options.suggester,
-                    includedAttributes: view.options.includedAttributes,
-                    supportedAttributes: view.options.supportedAttributes,
-                  }}
-                />
-              </Paper>
+              <FilterBranch view={view} item={item} />
             )}
             {item.type === 'filter' ? (
               <Grid item className="w-full filter-actions">

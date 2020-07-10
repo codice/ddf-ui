@@ -24,14 +24,7 @@ const QueryAdhoc = require('../../component/query-adhoc/query-adhoc.view.js')
 const QueryBasic = require('../../component/query-basic/query-basic.view.js')
 const QueryAdvanced = require('../../component/query-advanced/query-advanced.view.js')
 const CQLUtils = require('catalog-ui-search/src/main/webapp/js/CQLUtils.js')
-
-const { createAction } = require('imperio')
-
-const { register, unregister } = createAction({
-  type: 'query/START-SEARCH',
-  docs: 'Run a search',
-})
-
+import MRC from '../../react-component/marionette-region-container'
 export const queryForms = [
   { id: 'text', title: 'Text Search', view: QueryAdhoc },
   { id: 'basic', title: 'Basic Search', view: QueryBasic },
@@ -47,6 +40,9 @@ export const queryForms = [
 
 export default Marionette.LayoutView.extend({
   template() {
+    const formType = this.model.get('type')
+    const form = queryForms.find(form => form.id === formType)
+    const options = form.options || {}
     return (
       <React.Fragment>
         <form
@@ -60,11 +56,15 @@ export default Marionette.LayoutView.extend({
             className="w-full h-full"
             wrap="nowrap"
           >
-            <Grid item style={{ width: '100%', display: 'none' }}>
-              <div className="content-title" />
-            </Grid>
             <Grid item className="w-full h-full">
-              <div className="content-form" />
+              <MRC
+                view={
+                  new form.view({
+                    model: this.model,
+                    ...options,
+                  })
+                }
+              />
             </Grid>
           </Grid>
         </form>
@@ -75,149 +75,9 @@ export default Marionette.LayoutView.extend({
   tagName: 'div',
   regions: {
     queryContent: 'form .content-form',
-    queryTitle: 'form .content-title',
-  },
-  events: {
-    'click .editor-edit': 'edit',
-    'click .editor-cancel': 'cancel',
-    'click .editor-save': 'save',
-    'click .editor-saveRun': 'saveRun',
   },
   initialize() {
-    this.model =
-      this.model !== null ? this.model : new Query.Model(this.getDefaultQuery())
-    this.listenTo(this.model, 'resetToDefaults change:type', this.reshow)
-    this.listenTo(this.model, 'change:filterTree', this.reshow)
-    this.listenTo(this.model, 'closeDropdown', this.closeDropdown)
-    this.listenForSave()
-  },
-  reshow() {
-    setTimeout(() => {
-      this.queryView = undefined
-      const formType = this.model.get('type')
-      switch (formType) {
-        case 'text':
-        case 'basic':
-        case 'advanced':
-          this.showForm(queryForms.find(form => form.id === formType))
-          break
-        default:
-          const queryForm = queryForms.find(form => form.id === formType)
-          if (queryForm) {
-            this.showQueryForm(queryForm)
-          }
-      }
-    }, 0)
-  },
-  onBeforeShow() {
-    this.reshow()
-    this.showTitle()
-
-    this.action = register({
-      el: this.el,
-      fn: () => {
-        this.saveRun()
-      },
-    })
-  },
-  onDestroy() {
-    unregister(this.action)
-  },
-  getDefaultQuery() {
-    let userDefaultTemplate = user.getQuerySettings().get('template')
-    if (!userDefaultTemplate) {
-      return {}
-    }
-    let sorts =
-      userDefaultTemplate['querySettings'] &&
-      userDefaultTemplate['querySettings'].sorts
-    if (sorts) {
-      sorts = sorts.map((sort: any) => ({
-        attribute: sort.split(',')[0],
-        direction: sort.split(',')[1],
-      }))
-    }
-    return {
-      type: 'custom',
-      title: userDefaultTemplate['title'],
-      filterTree: userDefaultTemplate['filterTemplate'],
-      src:
-        (userDefaultTemplate['querySettings'] &&
-          userDefaultTemplate['querySettings'].src) ||
-        '',
-      federation:
-        (userDefaultTemplate['querySettings'] &&
-          userDefaultTemplate['querySettings'].federation) ||
-        'enterprise',
-      sorts: sorts || [],
-      'detail-level':
-        (userDefaultTemplate['querySettings'] &&
-          userDefaultTemplate['querySettings']['detail-level']) ||
-        'allFields',
-    }
-  },
-  showTitle() {
-    this.queryTitle.show(
-      new QueryTitle({
-        model: this.model,
-      })
-    )
-  },
-  showFormBuilder() {
-    this.queryContent.show(
-      new QueryAdvanced({
-        model: this.model,
-      })
-    )
-  },
-  showForm(form: any) {
-    const options = form.options || {}
-    this.queryContent.show(
-      new form.view({
-        model: this.model,
-        ...options,
-      })
-    )
-  },
-  showQueryForm(form: any) {
-    const options = form.options || {}
-    const queryFormView = Marionette.LayoutView.extend({
-      template: () => (
-        <form.view
-          model={this.model}
-          options={options}
-          onRef={(ref: any) => (this.queryView = ref)}
-        />
-      ),
-    })
-    this.queryContent.show(new queryFormView({}))
-  },
-  handleEditOnShow() {
-    if (this.$el.hasClass('is-editing')) {
-      this.edit()
-    }
-  },
-  showCustom() {
-    this.queryContent.show(
-      new QueryAdvanced({
-        model: this.model,
-      })
-    )
-  },
-  focus() {
-    if (!this.queryView) {
-      this.queryContent.currentView.focus()
-    }
-  },
-  edit() {
-    this.$el.addClass('is-editing')
-    if (!this.queryView) {
-      this.queryContent.currentView.edit()
-    }
-  },
-  cancel() {
-    this.$el.removeClass('is-editing')
-    this.onBeforeShow()
+    this.listenTo(this.model, 'resetToDefaults change:type', this.render)
   },
   save() {
     this.queryView
@@ -225,17 +85,10 @@ export default Marionette.LayoutView.extend({
       : this.queryContent.currentView.save()
     this.queryTitle.currentView.save()
     this.cancel()
-    this.$el.trigger('closeDropdown.' + CustomElements.getNamespace())
-  },
-  setDefaultTitle() {
-    this.queryView
-      ? this.queryView.setDefaultTitle()
-      : this.queryContent.currentView.setDefaultTitle()
   },
   saveRun() {
     this._updateModel()
     this.options.selectionInterface.setCurrentQuery(this.model)
-    console.log(this.model.toJSON())
     this.model.startSearchFromFirstPage()
   },
   _updateModel() {
@@ -258,15 +111,5 @@ export default Marionette.LayoutView.extend({
     }
 
     queryContentView.save()
-  },
-  listenForSave() {
-    this.$el
-      .off('saveQuery.' + CustomElements.getNamespace())
-      .on('saveQuery.' + CustomElements.getNamespace(), e => {
-        this.saveRun()
-      })
-  },
-  closeDropdown() {
-    this.$el.trigger('closeDropdown.' + CustomElements.getNamespace())
   },
 })
