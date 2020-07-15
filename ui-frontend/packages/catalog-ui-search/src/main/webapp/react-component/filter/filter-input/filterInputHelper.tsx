@@ -13,20 +13,40 @@
  *
  **/
 import * as React from 'react'
-const BooleanInput = require('./filter-boolean-input').default
-const LocationInput = require('./filter-location-input').default
-const {
-  FloatInput,
-  IntegerInput,
-  RangeInput,
-} = require('./filter-number-inputs')
-const {
-  DateInput,
-  RelativeTimeInput,
-  BetweenTimeInput,
-} = require('./filter-date-inputs')
-const { TextInput, NearInput, EnumInput } = require('./filter-text-inputs')
+import LocationInput from './filter-location-input'
+
+import TextField from '@material-ui/core/TextField'
+import MenuItem from '@material-ui/core/MenuItem'
+
 import extension from '../../../extension-points'
+import { DateField } from '../../../component/fields/date'
+import { NearValueType, NearField } from '../../../component/fields/near'
+import { NumberRangeField } from '../../../component/fields/number-range'
+import { NumberField } from '../../../component/fields/number'
+import {
+  DateRangeField,
+  DateRangeValueType,
+  deserialize as deserializeDateRange,
+  serialize as serializeDateRange,
+} from '../../../component/fields/date-range'
+import {
+  DateRelativeField,
+  deserialize as deserializeRelativeDate,
+  serialize as serializeRelativeDate,
+} from '../../../component/fields/date-relative'
+
+type RangeValueType = {
+  lower: number
+  upper: number
+}
+
+type ValueType =
+  | string
+  | number
+  | boolean
+  | RangeValueType
+  | NearValueType
+  | DateRangeValueType
 
 export type DetermineInputType = {
   comparator:
@@ -42,15 +62,13 @@ export type DetermineInputType = {
     | '='
     | 'INTERSECTS'
   type: 'STRING' | 'BOOLEAN' | 'DATE' | 'LOCATION' | 'FLOAT' | 'INTEGER'
-  suggestions: any[]
-  value: string | number
-  onChange: (value: string | number) => void // call this when you change values
+  value: ValueType
+  onChange: (value: ValueType) => void // call this when you change values
 }
 
 export const determineInput = ({
   comparator,
   type,
-  suggestions,
   value,
   onChange,
 }: DetermineInputType) => {
@@ -58,7 +76,6 @@ export const determineInput = ({
   const componentToReturn = extension.customFilterInput({
     comparator,
     type,
-    suggestions,
     value,
     onChange,
   })
@@ -66,40 +83,85 @@ export const determineInput = ({
     return componentToReturn
   }
   const props = { value, onChange }
+  console.log(props)
   switch (comparator) {
     case 'IS EMPTY':
       return null
     case 'NEAR':
-      return <NearInput {...props} />
+      return <NearField value={value as NearValueType} onChange={onChange} />
     case 'BETWEEN':
-      return <BetweenTimeInput {...props} />
+      return (
+        <DateRangeField
+          value={deserializeDateRange(value as string)}
+          onChange={val => {
+            onChange(serializeDateRange(val))
+          }}
+        />
+      )
     case 'RELATIVE':
-      return <RelativeTimeInput {...props} />
+      return (
+        <DateRelativeField
+          value={deserializeRelativeDate(value as string)}
+          onChange={val => {
+            onChange(serializeRelativeDate(val))
+          }}
+        />
+      )
     case 'RANGE':
-      return <RangeInput {...props} isInteger={type === 'INTEGER'} />
+      return (
+        <NumberRangeField
+          value={value as RangeValueType}
+          type={type === 'INTEGER' ? 'integer' : 'float'}
+          onChange={onChange}
+        />
+      )
   }
 
   switch (type) {
     case 'BOOLEAN':
-      return <BooleanInput {...props} />
+      return (
+        <TextField
+          fullWidth
+          select
+          variant="outlined"
+          value={value.toString() === 'true'}
+          onChange={e => {
+            onChange(e.target.value === 'true')
+          }}
+        >
+          <MenuItem value={'false'}>false</MenuItem>
+          <MenuItem value={'true'}>true</MenuItem>
+        </TextField>
+      )
     case 'DATE':
-      return <DateInput {...props} />
+      return <DateField onChange={onChange} value={value as string} />
     case 'LOCATION':
       return <LocationInput {...props} />
     case 'FLOAT':
-      return <FloatInput {...props} />
+      return (
+        <NumberField value={value as string} onChange={onChange} type="float" />
+      )
     case 'INTEGER':
-      return <IntegerInput {...props} />
+      return (
+        <NumberField
+          value={value as string}
+          onChange={onChange}
+          type="integer"
+        />
+      )
   }
 
-  if (suggestions && suggestions.length > 0) {
-    return (
-      <EnumInput
-        {...props}
-        matchCase={['MATCHCASE', '='].includes(comparator)}
-        suggestions={suggestions}
-      />
-    )
-  }
-  return <TextInput {...props} />
+  return (
+    <TextField
+      fullWidth
+      multiline
+      rowsMax={3}
+      variant="outlined"
+      placeholder="Use * for wildcard."
+      value={value || ''}
+      onChange={e => {
+        onChange(e.target.value)
+      }}
+    />
+  )
 }

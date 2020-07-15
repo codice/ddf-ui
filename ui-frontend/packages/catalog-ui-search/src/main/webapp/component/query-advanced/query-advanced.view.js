@@ -51,14 +51,7 @@ module.exports = Marionette.LayoutView.extend({
       })
     )
 
-    let filter
-    if (this.model.get('filterTree') !== undefined) {
-      filter = this.model.get('filterTree')
-    } else if (this.options.isAdd) {
-      filter = cql.read(cql.ANYTEXT_WILDCARD)
-    } else if (this.model.get('cql')) {
-      filter = cql.simplify(cql.read(this.model.get('cql')))
-    }
+    let filter = this.model.get('filterTree')
 
     this.showAdvanced(filter)
 
@@ -81,8 +74,6 @@ module.exports = Marionette.LayoutView.extend({
           return fetchSuggestions(id)
         },
         filter,
-        supportedAttributes: this.querySettings.currentView.model.attributes
-          .src,
       })
     )
   },

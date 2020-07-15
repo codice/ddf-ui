@@ -12,18 +12,12 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import metacardDefinitions from '../../component/singletons/metacard-definitions.js'
 
 import * as React from 'react'
 
-import styled from 'styled-components'
-import FilterAttribute from './filter-attribute'
 import FilterComparator from './filter-comparator'
 import FilterInput from './filter-input'
 import { getAttributeType, getFilteredAttributeList } from './filterHelper'
-const sources = require('../../component/singletons/sources-instance')
-import Box from '@material-ui/core/Box'
-import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 
@@ -45,14 +39,9 @@ class Filter extends React.Component {
     this.state = {
       comparator,
       attribute,
-      suggestions: props.suggestions || [],
       value: props.value !== undefined ? props.value : '',
     }
     props.onChange(this.state)
-  }
-
-  componentDidMount() {
-    this.updateSuggestions()
   }
 
   render() {
@@ -79,7 +68,6 @@ class Filter extends React.Component {
         <Grid item className="w-full pb-2">
           <FilterComparator
             comparator={this.state.comparator}
-            editing={this.props.editing}
             attribute={this.state.attribute}
             onChange={comparator =>
               this.setState({ comparator }, this.onChange)
@@ -88,10 +76,8 @@ class Filter extends React.Component {
         </Grid>
         <Grid item className="w-full pb-2">
           <FilterInput
-            suggestions={this.state.suggestions}
             attribute={this.state.attribute}
             comparator={this.state.comparator}
-            editing={this.props.editing}
             onChange={value => {
               this.setState({ value }, () => this.props.onChange(this.state))
             }}
@@ -103,47 +89,7 @@ class Filter extends React.Component {
   }
 
   onChange = () => {
-    this.updateSuggestions()
     this.props.onChange(this.state)
-  }
-  getListofSupportedAttributes = () => {
-    // if no source is selected and supportedAttributes is present from parent component we want to present all attributes as available
-    const supportedAttributes = this.props.supportedAttributes
-    // if supportedAttributes is not passed down from another parent Component (other than advanced) return empty list
-    if (!supportedAttributes || supportedAttributes.length == 0) {
-      return []
-    }
-    return sources.models
-      .filter(source => supportedAttributes.includes(source.id))
-      .map(
-        sourceSelected =>
-          sourceSelected.attributes.supportedAttributes
-            ? sourceSelected.attributes.supportedAttributes
-            : []
-      )
-      .flat()
-  }
-  updateSuggestions = async () => {
-    const { attribute } = this.state
-    let suggestions = []
-    if (metacardDefinitions.enums[attribute]) {
-      suggestions = metacardDefinitions.enums[attribute].map(suggestion => {
-        return { label: suggestion, value: suggestion }
-      })
-    } else if (this.props.suggester) {
-      suggestions = (await this.props.suggester(
-        metacardDefinitions.metacardTypes[attribute]
-      )).map(suggestion => ({
-        label: suggestion,
-        value: suggestion,
-      }))
-    }
-
-    suggestions.sort((a, b) =>
-      a.label.toLowerCase().localeCompare(b.label.toLowerCase())
-    )
-
-    this.setState({ suggestions })
   }
 
   updateAttribute = attribute => {

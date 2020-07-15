@@ -246,6 +246,7 @@ export default Marionette.LayoutView.extend({
   template() {
     return <ReactPortion view={this} />
   },
+  className: 'pt-3',
   tagName: CustomElements.register('filter-builder'),
   initialize() {
     const { filter, isResultFilter = false } = this.options

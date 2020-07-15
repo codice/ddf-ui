@@ -15,8 +15,6 @@
 
 const Marionette = require('marionette')
 const Tabs = require('../tabs')
-const MetacardBasicView = require('../../editor/metacard-basic/metacard-basic.view.js')
-const MetacardAdvancedView = require('../../editor/metacard-advanced/metacard-advanced.view.js')
 const MetacardAssociationsView = require('../../metacard-associations/metacard-associations.view.js')
 const MetacardPreviewView = require('../../metacard-preview/metacard-preview.view.js')
 import React from 'react'
@@ -77,7 +75,6 @@ module.exports = Tabs.extend({
   defaults: {
     tabs: {
       Summary: LightWeightSummaryView,
-      Details: MetacardAdvancedView,
       Preview: MetacardPreviewView,
       History: MetacardHistoryView,
       Associations: MetacardAssociationsView,

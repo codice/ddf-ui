@@ -50,6 +50,39 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
         z-index: 101 !important;
         pointer-events: all !important;
       }
+      .bp3-popover-wrapper,.bp3-popover-target, .bp3-control-group {
+        width: 100%;
+      }
+      .bp3-control-group {
+        flex-wrap: wrap;
+      }
+      .bp3-control-group > div:first-of-type::after {
+        content: 'and';
+        display:block;
+        position: absolute;
+        left: 14px;
+        bottom: -25px;
+      }
+      .bp3-control-group > div:nth-of-type(2) {
+        margin-top: 30px;
+      }
+      .bp3-input-group input {
+        background: transparent !important; 
+        box-shadow: none !important;
+        font-size: 1.1428571428571428rem !important;
+        padding: 0px !important;
+        height: 1.3125rem !important;
+        line-height: 1.15 !important;
+      }
+      .bp3-popover .bp3-popover-content, .bp3-popover .bp3-popover-content, .bp3-datepicker, .bp3-menu{
+        background: ${props => props.palette.background.paper} !important;
+      }
+      .bp3-popover-arrow {
+        display: none !important;
+      }
+      .bp3-datepicker .DayPicker-Day.DayPicker-Day--selected, .bp3-active {
+        background-color: ${props => props.palette.primary.dark} !important;
+      }
     `
 
 export const Provider = ({ children }: { children: any }) => {
@@ -100,6 +133,18 @@ export const Provider = ({ children }: { children: any }) => {
       tooltip: 101,
     },
   })
+
+  React.useEffect(
+    () => {
+      const htmlElement = document.querySelector('html') as HTMLElement
+      if (styledTheme.theme === 'dark') {
+        htmlElement.classList.add('bp3-dark')
+      } else {
+        htmlElement.classList.remove('bp3-dark')
+      }
+    },
+    [styledTheme.theme]
+  )
   return (
     <>
       <StylesProvider injectFirst>

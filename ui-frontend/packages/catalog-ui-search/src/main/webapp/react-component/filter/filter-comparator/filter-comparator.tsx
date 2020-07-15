@@ -13,7 +13,6 @@
  *
  **/
 import React, { useEffect } from 'react'
-import styled from 'styled-components'
 import { getComparators } from './comparatorUtils'
 import MenuItem from '@material-ui/core/MenuItem'
 import TextField from '@material-ui/core/TextField'
@@ -21,16 +20,10 @@ import TextField from '@material-ui/core/TextField'
 type Props = {
   attribute: string
   comparator: string
-  editing: boolean
   onChange: any
 }
 
-const FilterComparator = ({
-  attribute,
-  comparator,
-  editing,
-  onChange,
-}: Props) => {
+const FilterComparator = ({ attribute, comparator, onChange }: Props) => {
   useEffect(
     () => {
       const comparators = getComparators(attribute)

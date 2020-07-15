@@ -12,6 +12,23 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-export {
-  default,
-} from '../src/main/webapp/react-component/input-wrappers/color'
+import React from 'react'
+import { getAttributeType } from '../filterHelper'
+import { determineInput } from './filterInputHelper'
+
+const FilterInput = ({
+  comparator,
+  value,
+  attribute,
+  suggestions,
+  onChange,
+}: any) => {
+  const type = getAttributeType(attribute)
+  return (
+    <div className="w-full">
+      {determineInput({ comparator, type, suggestions, value, onChange })}
+    </div>
+  )
+}
+
+export default FilterInput

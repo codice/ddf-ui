@@ -12,36 +12,37 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React, { useState, useEffect } from 'react'
-import EnumInput from '../../../../inputs/enum-input'
-import { deserializeValue } from '../textFilterHelper'
+import * as React from 'react'
 import styled from 'styled-components'
+import { getFilteredAttributeList } from './filterHelper'
+import EnumInput from '../inputs/enum-input'
+const metacardDefinitions = require('../../component/singletons/metacard-definitions')
 
 const Root = styled.div`
-  min-width: ${({ theme }) => `calc(19*${theme.minimumFontSize})`};
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: ${({ theme }) => theme.minimumSpacing};
 `
 
-const FilterEnumInput = props => {
-  const [value, setValue] = useState(deserializeValue(props.value))
-
-  useEffect(
-    () => {
-      props.onChange(value)
-    },
-    [value]
-  )
-
+const FilterAttributeDropdown = ({
+  onChange,
+  includedAttributes,
+  editing,
+  value,
+}) => {
   return (
     <Root>
-      <EnumInput
-        allowCustom
-        matchCase={props.matchCase}
-        suggestions={props.suggestions}
-        onChange={setValue}
-        value={value}
-      />
+      {editing ? (
+        <EnumInput
+          value={value}
+          suggestions={getFilteredAttributeList(includedAttributes)}
+          onChange={onChange}
+        />
+      ) : (
+        metacardDefinitions.getLabel(value)
+      )}
     </Root>
   )
 }
 
-export default FilterEnumInput
+export default FilterAttributeDropdown

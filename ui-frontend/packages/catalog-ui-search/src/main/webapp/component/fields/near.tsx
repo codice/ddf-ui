@@ -12,23 +12,22 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React, { useState, useEffect } from 'react'
-import { deserializeDistance, serialize } from './nearFilterHelper'
-import { deserializeValue } from '../textFilterHelper'
+import * as React from 'react'
+
 import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
 
-const NearInput = props => {
-  const [value, setValue] = useState(deserializeValue(props.value))
-  const [distance, setDistance] = useState(deserializeDistance(props.value))
+export type NearValueType = {
+  value: string
+  distance: number
+}
 
-  useEffect(
-    () => {
-      props.onChange(serialize(value, distance))
-    },
-    [value, distance]
-  )
+type NearFieldProps = {
+  value: NearValueType
+  onChange: (val: NearValueType) => void
+}
 
+export const NearField = ({ value, onChange }: NearFieldProps) => {
   return (
     <Grid
       container
@@ -37,35 +36,39 @@ const NearInput = props => {
       alignItems="flex-start"
       wrap="nowrap"
     >
-      <Grid item className="w-full">
+      <Grid item className="w-full pb-2">
         <TextField
           fullWidth
           multiline
           rowsMax={3}
           variant="outlined"
           type="text"
-          value={value}
+          value={value.value}
           onChange={e => {
-            setValue(e.target.value)
+            onChange({
+              ...value,
+              value: e.target.value,
+            })
           }}
         />
       </Grid>
-      <Grid item className="w-full py-1">
-        <div>within</div>
+      <Grid item className="w-full pb-2 pl-2">
+        within
       </Grid>
       <Grid item className="w-full">
         <TextField
           fullWidth
           type="number"
           variant="outlined"
-          value={distance}
+          value={value.distance || '2'}
           onChange={e => {
-            setDistance(e.target.value)
+            onChange({
+              ...value,
+              distance: Math.max(1, parseInt(e.target.value) || 0),
+            })
           }}
         />
       </Grid>
     </Grid>
   )
 }
-
-export default NearInput
