@@ -83,6 +83,10 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .bp3-datepicker .DayPicker-Day.DayPicker-Day--selected, .bp3-active {
         background-color: ${props => props.palette.primary.dark} !important;
       }
+      // for whatever reason they have a height of 0 sometimes, maybe MUI will fix this in v5
+      textarea.MuiInputBase-input {
+        min-height: 21px;
+      }
     `
 
 export const Provider = ({ children }: { children: any }) => {

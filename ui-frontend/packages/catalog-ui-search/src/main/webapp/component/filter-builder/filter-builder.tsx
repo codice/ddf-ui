@@ -204,6 +204,14 @@ const AddGroup = ({ view }: { view: any }) => {
 }
 
 const ReactPortion = ({ view }: { view: any }) => {
+  const { filter, isResultFilter = false } = view.options
+  if (view.model === undefined) {
+    console.log('when does this happen')
+    view.model = deserialize(filter, isResultFilter)
+  }
+  view.isResultFilter = isResultFilter
+  view.collection = view.model.get('filters')
+  view.filterView = FilterView
   const { listenTo } = useBackbone()
   const [forceRender, setForceRender] = React.useState(Math.random())
 
@@ -237,6 +245,13 @@ const ReactPortion = ({ view }: { view: any }) => {
         >
           CQL Filter Tree
         </Button>
+        <Button
+          onClick={() => {
+            console.log(view.model.toJSON())
+          }}
+        >
+          Model
+        </Button>
       </div>
     </React.Fragment>
   )
@@ -244,19 +259,12 @@ const ReactPortion = ({ view }: { view: any }) => {
 
 export default Marionette.LayoutView.extend({
   template() {
-    return <ReactPortion view={this} />
+    return (
+      <div className="pt-3">
+        <ReactPortion view={this} />
+      </div>
+    )
   },
-  className: 'pt-3',
-  tagName: CustomElements.register('filter-builder'),
-  initialize() {
-    const { filter, isResultFilter = false } = this.options
-    if (this.model === undefined) {
-      this.model = deserialize(filter, isResultFilter)
-    }
-    this.isResultFilter = isResultFilter
-    this.collection = this.model.get('filters')
-  },
-  filterView: FilterView,
   printValue() {
     console.log(this.getFilters())
   },
