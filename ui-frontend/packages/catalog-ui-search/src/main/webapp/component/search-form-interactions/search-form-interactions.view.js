@@ -172,7 +172,9 @@ Anyone who has access to this search ${formTitleLowerCase} will subsequently los
               this.options.queryModel.resetToDefaults()
             }
           } else if (id === template.id) {
-            this.handleClearDefault()
+            if (this.options.queryModel) {
+              this.options.queryModel.resetToDefaults()
+            }
             this.options.queryModel.resetToDefaults()
           } else {
             const defaults = {
