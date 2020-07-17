@@ -32,22 +32,23 @@ const comparatorToCQL = {
   RANGE: 'BETWEEN',
 }
 
-export class FilterBuilder {
+export class FilterBuilderClass {
   operator: 'AND' | 'OR' | 'NOT OR' | 'NOT AND'
-  filters: (FilterBuilder | Filter)[]
+  filters: (FilterBuilderClass | FilterClass)[]
+  negated: boolean
   constructor({
     operator = 'AND',
-    filters = [new Filter()],
+    filters = [new FilterClass()],
   }: {
-    operator?: FilterBuilder['operator']
-    filters: FilterBuilder['filters']
-  }) {
+    operator?: FilterBuilderClass['operator']
+    filters?: FilterBuilderClass['filters']
+  } = {}) {
     this.operator = operator
     this.filters = filters
   }
 }
 
-export class Filter {
+export class FilterClass {
   type:
     | 'BEFORE'
     | 'AFTER'
@@ -72,17 +73,24 @@ export class Filter {
         params: [string, number, string]
       }
   value: string | boolean | null
+  negated: boolean | undefined
   constructor({
     type = 'ILIKE',
     property = 'anyText',
     value = '',
   }: {
-    type?: Filter['type']
-    property?: Filter['property']
-    value?: Filter['value']
+    type?: FilterClass['type']
+    property?: FilterClass['property']
+    value?: FilterClass['value']
   } = {}) {
     this.type = type
     this.property = property
     this.value = value
   }
+}
+
+export const isFilterBuilderClass = (
+  filter: FilterBuilderClass | FilterClass
+): filter is FilterBuilderClass => {
+  return (filter as FilterBuilderClass).filters !== undefined
 }

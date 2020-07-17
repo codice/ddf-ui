@@ -16,39 +16,47 @@ import React, { useEffect } from 'react'
 import { getComparators } from './comparatorUtils'
 import MenuItem from '@material-ui/core/MenuItem'
 import TextField from '@material-ui/core/TextField'
+import { FilterClass } from '../../../component/filter-builder/filter.structure'
 
 type Props = {
-  attribute: string
-  comparator: string
-  onChange: any
+  filter: FilterClass
+  setFilter: (filter: FilterClass) => void
 }
 
-const FilterComparator = ({ attribute, comparator, onChange }: Props) => {
+const FilterComparator = ({ filter, setFilter }: Props) => {
   useEffect(
     () => {
-      const comparators = getComparators(attribute)
-      if (!comparators.includes(comparator)) {
-        onChange(comparators[0])
+      const comparators = getComparators(filter.property)
+      if (
+        !comparators.map(comparator => comparator.value).includes(filter.type)
+      ) {
+        setFilter({
+          ...filter,
+          type: comparators[0].value as FilterClass['type'],
+        })
       }
     },
-    [attribute]
+    [filter]
   )
 
-  const comparators = getComparators(attribute)
+  const comparators = getComparators(filter.property)
   return (
     <TextField
       fullWidth
       variant="outlined"
       select
-      value={comparator}
+      value={filter.type}
       onChange={e => {
-        console.log(e.target.value)
-        onChange(e.target.value)
+        const newType = e.target.value as FilterClass['type']
+        setFilter({
+          ...filter,
+          type: newType,
+        })
       }}
     >
       {comparators.map(comparator => (
-        <MenuItem value={comparator} key={comparator}>
-          {comparator}
+        <MenuItem value={comparator.value} key={comparator.label}>
+          {comparator.label}
         </MenuItem>
       ))}
     </TextField>

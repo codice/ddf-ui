@@ -25,7 +25,11 @@ export const getFilteredAttributeList = () => {
       label: alias || id,
       value: id,
       description: (properties.attributeDescriptions || {})[id],
-    }))
+    })) as {
+    label: string
+    value: string
+    description: string | undefined
+  }[]
 }
 
 export const getAttributeType = (attribute: string): string => {

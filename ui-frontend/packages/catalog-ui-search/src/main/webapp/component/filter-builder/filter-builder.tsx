@@ -33,6 +33,7 @@ import FilterBranch from './filter-branch'
 
 import MenuItem from '@material-ui/core/MenuItem'
 import Paper from '@material-ui/core/Paper'
+import { FilterBuilderClass, FilterClass } from './filter.structure'
 
 const FilterCollection = ({
   collection,
@@ -205,6 +206,7 @@ const AddGroup = ({ view }: { view: any }) => {
 
 const ReactPortion = ({ view }: { view: any }) => {
   const { filter, isResultFilter = false } = view.options
+
   if (view.model === undefined) {
     console.log('when does this happen')
     view.model = deserialize(filter, isResultFilter)
@@ -297,3 +299,28 @@ export default Marionette.LayoutView.extend({
     }
   },
 })
+
+type Props = {
+  model: any
+}
+
+const getBaseFilter = ({ model }: { model: any }): FilterBuilderClass => {
+  const filter = model.get('filterTree')
+  if (filter.filters === undefined) {
+    return { operator: 'AND', filters: [filter], negated: false }
+  }
+  return filter
+}
+
+export const FilterBuilderRoot = ({ model }: Props) => {
+  const [filter, setFilter] = React.useState(getBaseFilter({ model }))
+
+  return (
+    <FilterBranch
+      filter={filter}
+      setFilter={update => {
+        setFilter(update)
+      }}
+    />
+  )
+}

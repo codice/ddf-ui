@@ -15,34 +15,31 @@
 
 import * as React from 'react'
 const Marionette = require('marionette')
-const CustomElements = require('../../js/CustomElements.js')
-const QueryTitle = require('../query-title/query-title.view.js')
 const Query = require('../../js/model/Query.js')
 const user = require('../singletons/user-instance.js')
 import Grid from '@material-ui/core/Grid'
-const QueryAdhoc = require('../../component/query-adhoc/query-adhoc.view.js')
 const QueryBasic = require('../../component/query-basic/query-basic.view.js')
-const QueryAdvanced = require('../../component/query-advanced/query-advanced.view.js')
+
+import QueryAdvanced from '../../component/query-advanced/query-advanced'
 const CQLUtils = require('catalog-ui-search/src/main/webapp/js/CQLUtils.js')
 import MRC from '../../react-component/marionette-region-container'
 export const queryForms = [
-  { id: 'text', title: 'Text Search', view: QueryAdhoc },
   { id: 'basic', title: 'Basic Search', view: QueryBasic },
   {
     id: 'advanced',
     title: 'Advanced Search',
     view: QueryAdvanced,
-    options: {
-      isAdd: true,
-    },
   },
 ]
 
 export default Marionette.LayoutView.extend({
   template() {
     const formType = this.model.get('type')
-    const form = queryForms.find(form => form.id === formType)
-    const options = form.options || {}
+    const form = queryForms.find(form => form.id === formType) as {
+      id: string
+      title: string
+      view: any
+    }
     return (
       <React.Fragment>
         <form
@@ -57,14 +54,21 @@ export default Marionette.LayoutView.extend({
             wrap="nowrap"
           >
             <Grid item className="w-full h-full">
-              <MRC
-                view={
-                  new form.view({
-                    model: this.model,
-                    ...options,
-                  })
+              {(() => {
+                if (form.id === 'basic') {
+                  return (
+                    <MRC
+                      view={
+                        new QueryBasic({
+                          model: this.model,
+                        })
+                      }
+                    />
+                  )
+                } else {
+                  return <QueryAdvanced model={this.model} />
                 }
-              />
+              })()}
             </Grid>
           </Grid>
         </form>

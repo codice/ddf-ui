@@ -54,25 +54,10 @@ module.exports = Marionette.LayoutView.extend({
     let filter = this.model.get('filterTree')
 
     this.showAdvanced(filter)
-
-    this.listenTo(
-      this.querySettings.currentView.model,
-      'change:src',
-      function() {
-        this.showAdvanced(this.queryAdvanced.currentView.getFilters())
-      }
-    )
   },
   showAdvanced(filter) {
     this.queryAdvanced.show(
       new FilterBuilderView({
-        suggester: async ({ id, type }) => {
-          if (!isValidFacetAttribute(id, type)) {
-            return []
-          }
-
-          return fetchSuggestions(id)
-        },
         filter,
       })
     )

@@ -12,13 +12,102 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import {
-  geometryComparators,
-  dateComparators,
-  stringComparators,
-  numberComparators,
-  booleanComparators,
-} from '../../../component/filter/comparators'
+
+type ComparatorType = { value: string; label: string }
+export const dateComparators = [
+  {
+    value: 'BEFORE',
+    label: 'BEFORE',
+  },
+  {
+    value: 'AFTER',
+    label: 'AFTER',
+  },
+  {
+    value: 'RELATIVE',
+    label: 'RELATIVE',
+  },
+  {
+    value: 'BETWEEN',
+    label: 'BETWEEN',
+  },
+  {
+    value: 'EMPTY',
+    label: 'EMPTY',
+  },
+] as ComparatorType[]
+export const geometryComparators = [
+  {
+    value: 'INTERSECTS',
+    label: 'INTERSECTS',
+  },
+  {
+    value: 'IS EMPTY',
+    label: 'IS EMPTY',
+  },
+] as ComparatorType[]
+export const stringComparators = [
+  {
+    value: 'ILIKE',
+    label: 'CONTAINS',
+  },
+  {
+    value: 'LIKE',
+    label: 'MATCHCASE',
+  },
+  {
+    value: '=',
+    label: '=',
+  },
+  {
+    value: 'NEAR',
+    label: 'NEAR',
+  },
+  {
+    value: 'IS NULL',
+    label: 'IS EMPTY',
+  },
+] as ComparatorType[]
+export const numberComparators = [
+  {
+    value: '>',
+    label: '>',
+  },
+  {
+    value: '<',
+    label: '<',
+  },
+  {
+    value: '=',
+    label: '=',
+  },
+  {
+    value: '>=',
+    label: '>=',
+  },
+  {
+    value: '<=',
+    label: '<=',
+  },
+  {
+    value: 'RANGE',
+    label: 'RANGE',
+  },
+  {
+    value: 'IS EMPTY',
+    label: 'IS EMPTY',
+  },
+]
+export const booleanComparators = [
+  {
+    value: '=',
+    label: '=',
+  },
+  {
+    value: 'IS EMPTY',
+    label: 'IS EMPTY',
+  },
+] as ComparatorType[]
 
 import { getAttributeType } from '../filterHelper'
 
@@ -34,13 +123,15 @@ const typeToComparators = {
   GEOMETRY: geometryComparators,
   BOOLEAN: booleanComparators,
 } as {
-  [key: string]: string[]
+  [key: string]: { value: string; label: string }[]
 }
 
-export const getComparators = (attribute: string): string[] => {
+export const getComparators = (attribute: string): ComparatorType[] => {
   let comparators = typeToComparators[getAttributeType(attribute)]
   if (attribute === 'anyGeo' || attribute === 'anyText') {
-    comparators = comparators.filter(comparator => comparator !== 'IS EMPTY')
+    comparators = comparators.filter(
+      comparator => comparator.value !== 'IS NULL'
+    )
   }
   return comparators
 }
