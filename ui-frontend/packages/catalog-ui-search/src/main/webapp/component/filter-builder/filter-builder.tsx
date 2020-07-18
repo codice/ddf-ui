@@ -307,9 +307,15 @@ type Props = {
 const getBaseFilter = ({ model }: { model: any }): FilterBuilderClass => {
   const filter = model.get('filterTree')
   if (filter.filters === undefined) {
-    return { operator: 'AND', filters: [filter], negated: false }
+    return new FilterBuilderClass({
+      operator: 'AND',
+      filters: [filter],
+      negated: false,
+    })
   }
-  return filter
+  return new FilterBuilderClass({
+    ...filter,
+  })
 }
 
 export const FilterBuilderRoot = ({ model }: Props) => {

@@ -36,15 +36,42 @@ export class FilterBuilderClass {
   operator: 'AND' | 'OR' | 'NOT OR' | 'NOT AND'
   filters: (FilterBuilderClass | FilterClass)[]
   negated: boolean
-  constructor({
-    operator = 'AND',
-    filters = [new FilterClass()],
-  }: {
-    operator?: FilterBuilderClass['operator']
-    filters?: FilterBuilderClass['filters']
-  } = {}) {
+  id: string
+  parent: FilterBuilderClass | undefined
+  constructor(
+    args: {
+      operator?: FilterBuilderClass['operator']
+      filters?: FilterBuilderClass['filters']
+      negated?: FilterBuilderClass['negated']
+      parent?: FilterBuilderClass['parent']
+    } = {}
+  ) {
+    const {
+      operator = 'AND',
+      filters = [new FilterClass({ parent: this })],
+      negated = false,
+      parent = undefined,
+    } = args
     this.operator = operator
-    this.filters = filters
+    /**
+     * If for some reason filters come in that aren't classed, this will handle it.
+     */
+    this.filters = filters.map(childFilter => {
+      if (isFilterBuilderClass(childFilter)) {
+        return new FilterBuilderClass({
+          ...childFilter,
+          parent: this,
+        })
+      } else {
+        return new FilterClass({
+          ...childFilter,
+          parent: this,
+        })
+      }
+    })
+    this.parent = parent
+    this.negated = negated
+    this.id = Math.random().toString()
   }
 }
 
@@ -74,18 +101,27 @@ export class FilterClass {
       }
   value: string | boolean | null
   negated: boolean | undefined
+  id: string
+  parent: FilterBuilderClass
   constructor({
     type = 'ILIKE',
     property = 'anyText',
     value = '',
+    negated = false,
+    parent,
   }: {
     type?: FilterClass['type']
     property?: FilterClass['property']
     value?: FilterClass['value']
-  } = {}) {
+    negated?: FilterClass['negated']
+    parent: FilterBuilderClass
+  }) {
+    this.parent = parent
     this.type = type
     this.property = property
     this.value = value
+    this.negated = negated
+    this.id = Math.random().toString()
   }
 }
 
