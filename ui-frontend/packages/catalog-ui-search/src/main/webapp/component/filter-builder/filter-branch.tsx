@@ -54,6 +54,65 @@ const ChildFilter = ({
 }: ChildFilterProps) => {
   return (
     <>
+      {!isFilterBuilderClass(filter) ? (
+        <Grid item className="w-full filter-actions">
+          <Grid
+            container
+            direction="row"
+            alignItems="center"
+            className="w-full"
+          >
+            {isFirst ? (
+              <>
+                <Grid item>
+                  <Button
+                    onClick={() => {
+                      setFilter({
+                        ...parentFilter,
+                        filters: parentFilter.filters.concat([
+                          new FilterClass(),
+                        ]),
+                      })
+                    }}
+                  >
+                    <AddIcon />
+                    <Box color="primary.main">Field</Box>
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <Button
+                    onClick={() => {
+                      setFilter({
+                        ...parentFilter,
+                        filters: parentFilter.filters.concat([
+                          new FilterBuilderClass(),
+                        ]),
+                      })
+                    }}
+                  >
+                    <AddIcon />
+                    <Box color="primary.main">Group</Box>
+                  </Button>
+                </Grid>
+              </>
+            ) : null}
+            <Grid item className="ml-auto">
+              <Button
+                onClick={() => {
+                  const newFilters = parentFilter.filters.slice(0)
+                  newFilters.splice(index, 1)
+                  setFilter({
+                    ...parentFilter,
+                    filters: newFilters,
+                  })
+                }}
+              >
+                <Box color="primary.main">Remove</Box>
+              </Button>
+            </Grid>
+          </Grid>
+        </Grid>
+      ) : null}
       {!isFirst ? (
         <Grid
           container
@@ -112,65 +171,6 @@ const ChildFilter = ({
           }}
         />
       )}
-      {!isFilterBuilderClass(filter) ? (
-        <Grid item className="w-full filter-actions">
-          <Grid
-            container
-            direction="row"
-            alignItems="center"
-            className="w-full"
-          >
-            {isLast ? (
-              <>
-                <Grid item>
-                  <Button
-                    onClick={() => {
-                      setFilter({
-                        ...parentFilter,
-                        filters: parentFilter.filters.concat([
-                          new FilterClass({ parent: parentFilter }),
-                        ]),
-                      })
-                    }}
-                  >
-                    <AddIcon />
-                    <Box color="primary.main">Field</Box>
-                  </Button>
-                </Grid>
-                <Grid item>
-                  <Button
-                    onClick={() => {
-                      setFilter({
-                        ...parentFilter,
-                        filters: parentFilter.filters.concat([
-                          new FilterBuilderClass(),
-                        ]),
-                      })
-                    }}
-                  >
-                    <AddIcon />
-                    <Box color="primary.main">Group</Box>
-                  </Button>
-                </Grid>
-              </>
-            ) : null}
-            <Grid item className="ml-auto">
-              <Button
-                onClick={() => {
-                  const newFilters = parentFilter.filters.slice(0)
-                  newFilters.splice(index, 1)
-                  setFilter({
-                    ...parentFilter,
-                    filters: newFilters,
-                  })
-                }}
-              >
-                <Box color="primary.main">Remove</Box>
-              </Button>
-            </Grid>
-          </Grid>
-        </Grid>
-      ) : null}
     </>
   )
 }
@@ -178,9 +178,10 @@ const ChildFilter = ({
 type Props = {
   filter: FilterBuilderClass
   setFilter: (filter: FilterBuilderClass) => void
+  root?: boolean
 }
 
-const FilterBranch = ({ filter, setFilter }: Props) => {
+const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
   const [hover, setHover] = React.useState(false)
   const theme = useTheme()
 
@@ -221,45 +222,8 @@ const FilterBranch = ({ filter, setFilter }: Props) => {
         setHover(false)
       }}
     >
-      <Paper elevation={10} className="p-2 ">
-        <div className="relative">
-          {filter.negated ? (
-            <HoverButton
-              className={`absolute left-0 transform -translate-y-1/2 py-0 px-1 text-xs z-10`}
-              color="primary"
-              variant="contained"
-              onClick={() => {
-                setFilter({
-                  ...filter,
-                  negated: !filter.negated,
-                })
-              }}
-            >
-              {({ hover }) => {
-                if (hover) {
-                  return <>Remove Not</>
-                } else {
-                  return <>NOT</>
-                }
-              }}
-            </HoverButton>
-          ) : (
-            <Button
-              className={`${
-                hover ? 'opacity-100' : 'opacity-0'
-              } focus:opacity-100 transition-opacity duration-200 absolute left-0 transform -translate-y-1/2 py-0 px-1 text-xs z-10`}
-              color="primary"
-              variant="contained"
-              onClick={() => {
-                setFilter({
-                  ...filter,
-                  negated: !filter.negated,
-                })
-              }}
-            >
-              + Not
-            </Button>
-          )}
+      <Paper elevation={root ? 0 : 10} className="px-3 pt-6 pb-2">
+        <div className=" relative">
           <div
             className={`${
               filter.negated ? 'border px-3 py-4 mt-2' : ''
@@ -268,21 +232,8 @@ const FilterBranch = ({ filter, setFilter }: Props) => {
               borderColor: theme.palette.primary.main,
             }}
           >
-            {filter.filters.map((childFilter, index) => {
-              return (
-                <ChildFilter
-                  key={childFilter.id}
-                  parentFilter={filter}
-                  filter={childFilter}
-                  setFilter={setFilter}
-                  index={index}
-                  isFirst={index === 0}
-                  isLast={index === filter.filters.length - 1}
-                />
-              )
-            })}
             {filter.filters.length >= 1 &&
-            !isFilterBuilderClass(filter.filters[filter.filters.length - 1]) ? (
+            !isFilterBuilderClass(filter.filters[0]) ? (
               <></>
             ) : (
               <Grid item className="w-full filter-actions">
@@ -297,9 +248,7 @@ const FilterBranch = ({ filter, setFilter }: Props) => {
                       onClick={() => {
                         setFilter({
                           ...filter,
-                          filters: filter.filters.concat([
-                            new FilterClass({ parent: filter }),
-                          ]),
+                          filters: filter.filters.concat([new FilterClass()]),
                         })
                       }}
                     >
@@ -325,6 +274,60 @@ const FilterBranch = ({ filter, setFilter }: Props) => {
                 </Grid>
               </Grid>
             )}
+            {filter.negated ? (
+              <>
+                <HoverButton
+                  className={`absolute top-0 left-1/2 transform -translate-y-1/2 -translate-x-1/2 py-0 px-1 text-xs z-10`}
+                  color="primary"
+                  variant="contained"
+                  onClick={() => {
+                    setFilter({
+                      ...filter,
+                      negated: !filter.negated,
+                    })
+                  }}
+                >
+                  {({ hover }) => {
+                    if (hover) {
+                      return <>Remove Not</>
+                    } else {
+                      return <>NOT</>
+                    }
+                  }}
+                </HoverButton>
+              </>
+            ) : (
+              <>
+                <Button
+                  className={`${
+                    hover ? 'opacity-25' : 'opacity-0'
+                  } hover:opacity-100 focus:opacity-100 transition-opacity duration-200 absolute top-0 left-1/2 transform -translate-y-1/2 -translate-x-1/2 py-0 px-1 text-xs z-10`}
+                  color="primary"
+                  variant="contained"
+                  onClick={() => {
+                    setFilter({
+                      ...filter,
+                      negated: !filter.negated,
+                    })
+                  }}
+                >
+                  + Not Group
+                </Button>
+              </>
+            )}
+            {filter.filters.map((childFilter, index) => {
+              return (
+                <ChildFilter
+                  key={childFilter.id}
+                  parentFilter={filter}
+                  filter={childFilter}
+                  setFilter={setFilter}
+                  index={index}
+                  isFirst={index === 0}
+                  isLast={index === filter.filters.length - 1}
+                />
+              )
+            })}
           </div>
         </div>
       </Paper>

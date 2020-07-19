@@ -327,6 +327,7 @@ export const FilterBuilderRoot = ({ model }: Props) => {
       setFilter={update => {
         setFilter(update)
       }}
+      root={true}
     />
   )
 }
