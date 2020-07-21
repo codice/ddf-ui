@@ -232,11 +232,6 @@
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
-            <groupId>ddf.security.core</groupId>
-            <artifactId>security-core-impl</artifactId>
-            <version>${ddf.version}</version>
-        </dependency>
-        <dependency>
             <groupId>ddf.security.handler</groupId>
             <artifactId>security-handler-impl</artifactId>
             <version>${ddf.version}</version>
@@ -335,9 +330,9 @@
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.codice.thirdparty</groupId>
-            <artifactId>tika-bundle</artifactId>
-            <version>${tika.thirdparty.bundle.version}</version>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>${tika.version}</version>
         </dependency>
         <dependency>
             <groupId>ddf.platform.usng4j</groupId>
@@ -385,6 +380,22 @@
             <groupId>org.codice.ddf.search</groupId>
             <artifactId>catalog-ui-splitter</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ddf.security.core</groupId>
+            <artifactId>security-core-services</artifactId>
+            <scope>test</scope>
+            <version>${ddf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>ddf.security.servlet</groupId>
+            <artifactId>security-servlet-web-socket</artifactId>
+            <version>${ddf.version}</version>
         </dependency>
     </dependencies>
 

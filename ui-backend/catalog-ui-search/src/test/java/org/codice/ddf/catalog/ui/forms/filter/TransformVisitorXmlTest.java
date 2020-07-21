@@ -17,7 +17,7 @@ import static java.lang.String.format;
 import static junit.framework.TestCase.fail;
 import static org.codice.ddf.catalog.ui.forms.FilterNodeAssertionSupport.forElement;
 import static org.codice.gsonsupport.GsonTypeAdapters.MAP_STRING_TO_OBJECT_TYPE;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
