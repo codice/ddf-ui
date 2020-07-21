@@ -253,9 +253,7 @@ module.exports = Marionette.LayoutView.extend({
     )
 
     if (this.options.selectionInterface.getSelectedResults().length > 0) {
-      this.map.zoomToSelected(
-        this.options.selectionInterface.getSelectedResults()
-      )
+      Common.queueExecution(this.map.zoomToSelected.bind(this.map))
     } else {
       Common.queueExecution(this.zoomToHome.bind(this))
     }
