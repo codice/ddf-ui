@@ -56,8 +56,6 @@ module.exports = Marionette.LayoutView.extend({
       if (isFormBuilder !== true) {
         this.turnOffFieldAdditions()
       }
-      this.turnOffNesting()
-      this.turnOffRootOperator()
     }
   },
   onBeforeShow() {
@@ -185,12 +183,6 @@ module.exports = Marionette.LayoutView.extend({
     this.$el.removeClass('is-editing')
     this.filterOperator.currentView.turnOffEditing()
     this.filterContents.currentView.turnOffEditing()
-  },
-  turnOffNesting() {
-    this.$el.addClass('hide-nesting')
-  },
-  turnOffRootOperator() {
-    this.$el.addClass('hide-root-operator')
   },
   turnOffFieldAdditions() {
     this.$el.addClass('hide-field-button')
