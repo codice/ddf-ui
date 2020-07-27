@@ -20,6 +20,12 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import org.codice.ddf.catalog.ui.CqlParseException;
 
+/**
+ * This is a factory that builds a QueryRequest object based on several query parameters.
+ *
+ * <p><i>This code is experimental. While this interface is functional and tested, it may change or
+ * * be removed in a future version of the library.</i>
+ */
 public interface QueryRequestFactory {
 
   QueryRequest build(
