@@ -545,7 +545,7 @@ module.exports = Marionette.LayoutView.extend({
     const currentQuery = this.options.selectionInterface.get('currentQuery')
     if (currentQuery) {
       this.handleFilter(
-        CQLUtils.transformCQLToFilter(currentQuery.get('cql')),
+        currentQuery.get('filterTree'),
         currentQuery.get('color')
       )
     }
@@ -554,12 +554,7 @@ module.exports = Marionette.LayoutView.extend({
       .get('preferences')
       .get('resultFilter')
     if (resultFilter) {
-      this.handleFilter(
-        CQLUtils.transformCQLToFilter(
-          CQLUtils.transformFilterToCQL(resultFilter)
-        ),
-        '#c89600'
-      )
+      this.handleFilter(resultFilter, '#c89600')
     }
   },
   handleFilter(filter, color) {
@@ -568,50 +563,26 @@ module.exports = Marionette.LayoutView.extend({
         this.handleFilter(subfilter, color)
       })
     } else {
-      let pointText
-      let locationModel
       const value = filter.value
-      switch (filter.type) {
-        case 'DWITHIN':
-          if (CQLUtils.isPolygonFilter(value)) {
-            this.handleFilterAsPolygon(value, color, filter.distance)
-            break
-          }
-          if (CQLUtils.isPointRadiusFilter(value)) {
-            pointText = value.value.substring(6)
-            pointText = pointText.substring(0, pointText.length - 1)
-            const latLon = pointText.split(' ')
-            locationModel = new LocationModel({
-              lat: latLon[1],
-              lon: latLon[0],
-              radius: filter.distance,
-              color,
-            })
-            this.map.showCircleShape(locationModel)
-          } else if (CQLUtils.isLineFilter(value)) {
-            this.handleFilterAsLine(filter, color)
-          } else {
-            pointText = value.value.substring(11)
-            pointText = pointText.substring(0, pointText.length - 1)
-            locationModel = new LocationModel({
-              lineWidth: filter.distance,
-              line: pointText
-                .split(',')
-                .map(coordinate =>
-                  coordinate.split(' ').map(value => Number(value))
-                ),
-              color,
-            })
+      if (filter.type === 'GEOMETRY') {
+        const locationModel = new LocationModel(filter.value)
+        switch (filter.value.type) {
+          case 'LINE':
             this.map.showLineShape(locationModel)
-          }
-          break
-        case 'INTERSECTS':
-          if (CQLUtils.isPolygonFilter(filter.value)) {
-            this.handleFilterAsPolygon(filter.value, color, filter.distance)
-          } else if (CQLUtils.isLineFilter) {
-            this.handleFilterAsLine(filter, color)
-          }
-          break
+            break
+          case 'POLYGON':
+            this.map.showPolygonShape(locationModel)
+            break
+          case 'MULTIPOLYGON':
+            this.map.showPolygonShape(locationModel)
+            break
+          case 'BBOX':
+            this.map.showPolygonShape(locationModel)
+            break
+          case 'POINTRADIUS':
+            this.map.showCircleShape(locationModel)
+            break
+        }
       }
     }
   },

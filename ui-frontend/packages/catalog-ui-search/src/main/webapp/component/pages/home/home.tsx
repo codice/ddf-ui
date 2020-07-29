@@ -10,7 +10,6 @@ const CQLUtils = require('catalog-ui-search/src/main/webapp/js/CQLUtils.js')
 const user = require('catalog-ui-search/src/main/webapp/component/singletons/user-instance.js')
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
-import QueryEditor from './query-editor'
 import QueryAddView from '../../query-add/query-add'
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
@@ -18,30 +17,13 @@ import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import MRC from 'catalog-ui-search/exports/marionette-region-container'
 import { Memo } from '../../memo/memo'
 import ResultSelector from '../../result-selector/result-selector'
-import CompareArrows from '@material-ui/icons/CompareArrows'
-import PlayArrowIcon from '@material-ui/icons/PlayArrow'
-import SearchIcon from '@material-ui/icons/Search'
-import Stop from '@material-ui/icons/Stop'
 import Button from '@material-ui/core/Button'
 import { Dropdown } from '@connexta/atlas/atoms/dropdown'
-import ExtensionPoints from '../../../extension-points/extension-points'
+import SearchInteractions from '../../../extension-points/search-interactions'
 import { BetterClickAwayListener } from '../../better-click-away-listener/better-click-away-listener'
 import MoreVert from '@material-ui/icons/MoreVert'
 import Box from '@material-ui/core/Box'
 import { createGlobalStyle } from 'styled-components'
-
-const GlobalStyle = createGlobalStyle`
-  .global-query-add-view{
-    overflow: auto !important;
-    .content-form .editor-footer {
-      display: none;
-    }
-    
-    & .result-form {
-      display: none;
-    }    
-  }
-`
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
@@ -79,7 +61,7 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
                   }}
                 >
                   <Paper>
-                    <ExtensionPoints.searchInteractions
+                    <SearchInteractions
                       model={selectionInterface.getCurrentQuery()}
                       onClose={() => {
                         context.deepCloseAndRefocus.bind(context)()
@@ -146,7 +128,7 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
                 }}
               >
                 <Paper>
-                  <ExtensionPoints.searchInteractions
+                  <SearchInteractions
                     model={selectionInterface.getCurrentQuery()}
                     onClose={() => {
                       context.deepCloseAndRefocus.bind(context)()
@@ -188,6 +170,23 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   )
 }
 
+const LeftBottom = ({ selectionInterface }: { selectionInterface: any }) => {
+  const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
+
+  return (
+    <>
+      <MRC
+        className={`w-full h-full overflow-hidden ${closed ? 'hidden' : ''}`}
+        view={QueryAddView}
+        viewOptions={{
+          selectionInterface: selectionInterface,
+          model: selectionInterface.getCurrentQuery(),
+        }}
+      />
+    </>
+  )
+}
+
 export const HomePage = () => {
   let urlBasedQuery = location.hash.split('?defaultQuery=')[1]
   if (urlBasedQuery) {
@@ -223,15 +222,7 @@ export const HomePage = () => {
               className="w-full"
               style={{ height: `calc(100% - 60px)` }}
             >
-              <GlobalStyle />
-              <MRC
-                className="w-full h-full overflow-hidden"
-                view={QueryAddView}
-                viewOptions={{
-                  selectionInterface: selectionInterface,
-                  model: selectionInterface.getCurrentQuery(),
-                }}
-              />
+              <LeftBottom selectionInterface={selectionInterface} />
             </Grid>
           </Grid>
         </Paper>

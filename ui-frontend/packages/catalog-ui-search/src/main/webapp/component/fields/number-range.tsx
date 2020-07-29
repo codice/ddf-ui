@@ -14,28 +14,35 @@
  **/
 import * as React from 'react'
 
-import TextField, { TextFieldProps } from '@material-ui/core/TextField'
-import { Omit } from '@material-ui/types'
+import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
-
-type RangeValueType = {
-  lower: number
-  upper: number
-}
+import { ValueTypes } from '../filter-builder/filter.structure'
 
 type NumberRangeFieldProps = {
-  value: RangeValueType
-  onChange: (val: RangeValueType) => void
+  value: ValueTypes['between']
+  onChange: (val: ValueTypes['between']) => void
   type: 'integer' | 'float'
-  TextFieldProps?: Omit<TextFieldProps, 'onChange' | 'value'>
+}
+
+const defaultValue = {
+  start: 0,
+  end: 1,
+} as ValueTypes['between']
+
+const validateShape = ({ value, onChange }: NumberRangeFieldProps) => {
+  if (value.start === undefined || value.end === undefined) {
+    onChange(defaultValue)
+  }
 }
 
 export const NumberRangeField = ({
   value,
   onChange,
   type,
-  TextFieldProps,
 }: NumberRangeFieldProps) => {
+  React.useEffect(() => {
+    validateShape({ value, onChange, type })
+  }, [])
   return (
     <Grid container direction="column">
       <Grid item className="w-full py-1">
@@ -45,7 +52,7 @@ export const NumberRangeField = ({
         <TextField
           fullWidth
           variant="outlined"
-          value={value.lower}
+          value={value.start}
           placeholder="lower bound"
           type="number"
           onChange={e => {
@@ -54,11 +61,10 @@ export const NumberRangeField = ({
                 ? parseInt(e.target.value)
                 : parseFloat(e.target.value)
             onChange({
-              lower: newVal,
-              upper: value.upper,
+              ...value,
+              start: newVal,
             })
           }}
-          {...TextFieldProps}
         />
       </Grid>
       <Grid item className="w-full py-1">
@@ -69,7 +75,7 @@ export const NumberRangeField = ({
           fullWidth
           variant="outlined"
           placeholder="upper bound"
-          value={value.upper}
+          value={value.end}
           type="number"
           onChange={e => {
             const newVal =
@@ -77,11 +83,10 @@ export const NumberRangeField = ({
                 ? parseInt(e.target.value)
                 : parseFloat(e.target.value)
             onChange({
-              lower: value.lower,
-              upper: newVal,
+              ...value,
+              end: newVal,
             })
           }}
-          {...TextFieldProps}
         />
       </Grid>
     </Grid>

@@ -541,17 +541,19 @@ const App = () => {
               </Grid>
             </Paper>
           </Grid>
-          <Grid item className="w-full h-full overflow-hidden relative z-0">
-            <Paper className="w-full h-full">
-              <Switch>
-                {RouteInformation.map(routeInfo => {
-                  return (
-                    <Route key={routeInfo.name} {...routeInfo.routeProps} />
-                  )
-                })}
-              </Switch>
-            </Paper>
-          </Grid>
+          <Memo>
+            <Grid item className="w-full h-full overflow-hidden relative z-0">
+              <Paper className="w-full h-full">
+                <Switch>
+                  {RouteInformation.map(routeInfo => {
+                    return (
+                      <Route key={routeInfo.name} {...routeInfo.routeProps} />
+                    )
+                  })}
+                </Switch>
+              </Paper>
+            </Grid>
+          </Memo>
         </Grid>
       </Grid>
       <Grid item style={{ width: '100%' }}>

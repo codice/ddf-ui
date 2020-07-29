@@ -5,9 +5,13 @@ const $ = require('jquery')
 type DrawingType = Backbone.Model & {
   turnOnDrawing: (model: Backbone.Model) => void
   turnOffDrawing: () => void
+  isFuzzyDrawing: () => boolean
   isDrawing: () => boolean
   getDrawModel: () => Backbone.Model
 }
+
+let lastDrawing = 0
+const DEBOUNCE = 250
 
 export const Drawing = new (Backbone.Model.extend({
   defaults: {
@@ -28,11 +32,18 @@ export const Drawing = new (Backbone.Model.extend({
     $('html').toggleClass('is-drawing', true)
   },
   turnOffDrawing() {
+    lastDrawing = Date.now()
     this.set('drawing', false)
     $('html').toggleClass('is-drawing', false)
   },
+  timeSinceLastDrawing() {
+    return Date.now() - lastDrawing
+  },
   getDrawModel() {
     return this.get('drawingModel')
+  },
+  isFuzzyDrawing() {
+    return this.isDrawing() || this.timeSinceLastDrawing() < DEBOUNCE
   },
   isDrawing() {
     return this.get('drawing')

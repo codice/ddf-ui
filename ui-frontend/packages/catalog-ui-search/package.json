@@ -76,7 +76,8 @@
     "react-router-dom": "5.2.0",
     "sinon": "5.0.7",
     "styled-components": "4.3.2",
-    "tailwindcss": "1.4.6"
+    "tailwindcss": "1.4.6",
+    "utility-types": "3.10.0"
   },
   "dependencies": {
     "@connexta/icons": "git://github.com/connexta/icons.git#v0.0.3",

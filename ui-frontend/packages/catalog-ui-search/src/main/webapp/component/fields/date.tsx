@@ -46,28 +46,46 @@ export const formatDate = (date: Date) => {
 }
 
 export const parseDate = (input?: string) => {
-  const timeZone = getTimeZone()
-  const format = getDateFormat()
-  if (!input) {
+  try {
+    const timeZone = getTimeZone()
+    const format = getDateFormat()
+    if (!input) {
+      return null
+    }
+    const date = moment.tz(
+      input.substring(0, input.length - 1),
+      format,
+      timeZone
+    )
+    if (date.isValid()) {
+      return moment.tz(input, format, timeZone).toDate()
+    }
+    return null
+  } catch (err) {
+    console.log(err)
     return null
   }
-  const date = moment.tz(input.substring(0, input.length - 1), format, timeZone)
-  if (date.isValid()) {
-    return moment.tz(input, format, timeZone).toDate()
-  }
-  return null
 }
 
 type DateFieldProps = {
-  value?: string
-  onChange?: (value: string) => void
+  value: string
+  onChange: (value: string) => void
   /**
    * Override if you absolutely must
    */
   BPDateProps?: IDateInputProps
 }
 
+const validateShape = ({ value, onChange }: DateFieldProps) => {
+  if (parseDate(value) === null) {
+    onChange(new Date().toISOString())
+  }
+}
+
 export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
+  React.useEffect(() => {
+    validateShape({ onChange, value })
+  }, [])
   return (
     <DateInput
       className="MuiOutlinedInput-root MuiOutlinedInput-multiline MuiOutlinedInput-notchedOutline border"

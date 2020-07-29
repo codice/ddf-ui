@@ -18,21 +18,16 @@ import LazyInspectorView from '../../component/visualization/inspector/inspector
 const LowBandwidthMapView = require('../../component/visualization/low-bandwidth-map/low-bandwidth-map.view.js')
 import ResultsView from '../../component/results-visual'
 const Marionette = require('catalog-ui-search/src/main/webapp/lib/marionette')
-import ResultSelector from '../../component/result-selector/result-selector'
-import { QueryEditor } from '../../component/pages/home/query-editor'
-import QueryAddView from '../../component/query-add/query-add'
-import MRC from '../../react-component/marionette-region-container'
-import Button from '@material-ui/core/Button'
-import ExtensionPoints from '../extension-points'
-import Paper from '@material-ui/core/Paper'
-import Grid from '@material-ui/core/Grid'
+// import QueryAddView from '../../component/query-add/query-add'
+// import MRC from '../../react-component/marionette-region-container'
+// import Button from '@material-ui/core/Button'
+// import ExtensionPoints from '../extension-points'
+// import Paper from '@material-ui/core/Paper'
+// import Grid from '@material-ui/core/Grid'
 
-import { Dropdown } from '@connexta/atlas/atoms/dropdown'
-import { BetterClickAwayListener } from '../../component/better-click-away-listener/better-click-away-listener'
-import CompareArrows from '@material-ui/icons/CompareArrows'
-import PlayArrowIcon from '@material-ui/icons/PlayArrow'
-import Stop from '@material-ui/icons/Stop'
-import MoreVert from '@material-ui/icons/MoreVert'
+// import { Dropdown } from '@connexta/atlas/atoms/dropdown'
+// import { BetterClickAwayListener } from '../../component/better-click-away-listener/better-click-away-listener'
+// import MoreVert from '@material-ui/icons/MoreVert'
 
 const ResultsViewWrapper = Marionette.LayoutView.extend({
   className: 'customElement',
@@ -45,26 +40,23 @@ const ResultsViewWrapper = Marionette.LayoutView.extend({
   },
 })
 
-const StatusViewWrapper = Marionette.LayoutView.extend({
-  className: 'customElement overflow-auto',
-  template() {
-    return (
-      <>
-        <MRC
-          view={QueryAddView}
-          viewOptions={{
-            selectionInterface: this.options.selectionInterface,
-            model: this.options.selectionInterface.getCurrentQuery(),
-          }}
-          style={{ height: 'auto' }}
-        />
-        {/* <QueryEditor
-          query={this.options.selectionInterface.getCurrentQuery()}
-        /> */}
-      </>
-    )
-  },
-})
+// const StatusViewWrapper = Marionette.LayoutView.extend({
+//   className: 'customElement overflow-auto',
+//   template() {
+//     return (
+//       <>
+//         <MRC
+//           view={QueryAddView}
+//           viewOptions={{
+//             selectionInterface: this.options.selectionInterface,
+//             model: this.options.selectionInterface.getCurrentQuery(),
+//           }}
+//           style={{ height: 'auto' }}
+//         />
+//       </>
+//     )
+//   },
+// })
 export default [
   {
     id: 'openlayers',
@@ -107,56 +99,56 @@ export default [
     view: LazyInspectorView,
     singular: true,
   },
-  {
-    id: 'status',
-    title: 'Search',
-    icon: 'fa fa-info',
-    view: StatusViewWrapper,
-    isClosable: false,
-    singular: true,
-    header: ({ selectionInterface }: { selectionInterface: any }) => {
-      return (
-        <ExtensionPoints.providers>
-          <Grid container direction="row" wrap="nowrap">
-            <Grid item className="px-3">
-              <Dropdown
-                content={context => {
-                  return (
-                    <BetterClickAwayListener
-                      onClickAway={() => {
-                        context.deepCloseAndRefocus.bind(context)()
-                      }}
-                    >
-                      <Paper>
-                        <ExtensionPoints.searchInteractions
-                          model={selectionInterface.getCurrentQuery()}
-                          onClose={() => {
-                            context.deepCloseAndRefocus.bind(context)()
-                          }}
-                        />
-                      </Paper>
-                    </BetterClickAwayListener>
-                  )
-                }}
-              >
-                {({ handleClick }) => {
-                  return (
-                    <Button
-                      variant="text"
-                      color="inherit"
-                      onClick={handleClick}
-                      className="px-3"
-                      style={{ height: 'auto', width: 'auto' }}
-                    >
-                      <MoreVert />
-                    </Button>
-                  )
-                }}
-              </Dropdown>
-            </Grid>
-          </Grid>
-        </ExtensionPoints.providers>
-      )
-    },
-  },
+  // {
+  //   id: 'status',
+  //   title: 'Search',
+  //   icon: 'fa fa-info',
+  //   view: StatusViewWrapper,
+  //   isClosable: false,
+  //   singular: true,
+  //   header: ({ selectionInterface }: { selectionInterface: any }) => {
+  //     return (
+  //       <ExtensionPoints.providers>
+  //         <Grid container direction="row" wrap="nowrap">
+  //           <Grid item className="px-3">
+  //             <Dropdown
+  //               content={context => {
+  //                 return (
+  //                   <BetterClickAwayListener
+  //                     onClickAway={() => {
+  //                       context.deepCloseAndRefocus.bind(context)()
+  //                     }}
+  //                   >
+  //                     <Paper>
+  //                       <ExtensionPoints.searchInteractions
+  //                         model={selectionInterface.getCurrentQuery()}
+  //                         onClose={() => {
+  //                           context.deepCloseAndRefocus.bind(context)()
+  //                         }}
+  //                       />
+  //                     </Paper>
+  //                   </BetterClickAwayListener>
+  //                 )
+  //               }}
+  //             >
+  //               {({ handleClick }) => {
+  //                 return (
+  //                   <Button
+  //                     variant="text"
+  //                     color="inherit"
+  //                     onClick={handleClick}
+  //                     className="px-3"
+  //                     style={{ height: 'auto', width: 'auto' }}
+  //                   >
+  //                     <MoreVert />
+  //                   </Button>
+  //                 )
+  //               }}
+  //             </Dropdown>
+  //           </Grid>
+  //         </Grid>
+  //       </ExtensionPoints.providers>
+  //     )
+  //   },
+  // },
 ]

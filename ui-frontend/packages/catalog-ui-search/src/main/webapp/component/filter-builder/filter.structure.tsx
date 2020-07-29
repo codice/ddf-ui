@@ -12,6 +12,10 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import moment from 'moment-timezone'
+import { ValuesType } from 'utility-types'
+import { serialize as locationSerialize } from '../location-old/location-serialization'
+import CQLUtils from '../../js/CQLUtils'
 
 const comparatorToCQL = {
   BEFORE: 'BEFORE',
@@ -32,21 +36,42 @@ const comparatorToCQL = {
   RANGE: 'BETWEEN',
 }
 
+export const serialize = {
+  dateRelative: ({ last, unit }: ValueTypes['relative']) => {
+    if (unit === undefined || !parseFloat(last)) {
+      return ''
+    }
+    const prefix = unit === 'm' || unit === 'h' ? 'PT' : 'P'
+    return `RELATIVE(${prefix + last + unit.toUpperCase()})`
+  },
+  dateBetween: (value: ValueTypes['between']) => {
+    const from = moment(value.start)
+    const to = moment(value.end)
+    if (from.isAfter(to)) {
+      return (to.toISOString() || '') + '/' + (from.toISOString() || '')
+    }
+    return (from.toISOString() || '') + '/' + (to.toISOString() || '')
+  },
+  location: (property: string, value: ValueTypes['location']) => {
+    return CQLUtils.generateAnyGeoFilter(property, value)
+  },
+}
+
 export class FilterBuilderClass {
-  operator: 'AND' | 'OR' | 'NOT OR' | 'NOT AND'
+  type: 'AND' | 'OR' | 'NOT OR' | 'NOT AND'
   filters: (FilterBuilderClass | FilterClass)[]
   negated: boolean
   id: string
   constructor({
-    operator = 'AND',
+    type = 'AND',
     filters = [new FilterClass()],
     negated = false,
   }: {
-    operator?: FilterBuilderClass['operator']
+    type?: FilterBuilderClass['type']
     filters?: FilterBuilderClass['filters']
     negated?: FilterBuilderClass['negated']
   } = {}) {
-    this.operator = operator
+    this.type = type
     /**
      * If for some reason filters come in that aren't classed, this will handle it.
      */
@@ -66,10 +91,36 @@ export class FilterBuilderClass {
   }
 }
 
+export type ValueTypes = {
+  proximity: {
+    first: string
+    second: string
+    distance: number
+  }
+  boolean: boolean
+  text: string
+  float: number
+  integer: number
+  relative: {
+    last: string
+    unit: 'm' | 'h' | 'd' | 'M' | 'y'
+  }
+  during: {
+    start: string
+    end: string
+  }
+  between: {
+    start: number
+    end: number
+  }
+  location: any
+}
+
 export class FilterClass {
   type:
     | 'BEFORE'
     | 'AFTER'
+    | 'RELATIVE'
     | '='
     | 'DURING'
     | 'INTERSECTS'
@@ -82,15 +133,11 @@ export class FilterClass {
     | '='
     | '<='
     | '>='
+    | 'DURING'
     | 'BETWEEN'
-  property:
-    | string
-    | {
-        type: 'FILTER_FUNCTION'
-        filterFunctionName: 'proximity'
-        params: [string, number, string]
-      }
-  value: string | boolean | null
+    | 'FILTER FUNCTION proximity'
+  property: string
+  value: string | boolean | null | ValuesType<ValueTypes>
   negated: boolean | undefined
   id: string
   constructor({

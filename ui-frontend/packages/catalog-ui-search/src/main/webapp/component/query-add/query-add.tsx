@@ -75,45 +75,12 @@ export default Marionette.LayoutView.extend({
       </React.Fragment>
     )
   },
-  className: 'global-query-add-view h-full w-full overflow-auto',
+  className: 'h-full w-full overflow-auto',
   tagName: 'div',
   regions: {
     queryContent: 'form .content-form',
   },
-  initialize() {
+  onFirstRender() {
     this.listenTo(this.model, 'resetToDefaults change:type', this.render)
-  },
-  save() {
-    this.queryView
-      ? this.queryView.save()
-      : this.queryContent.currentView.save()
-    this.queryTitle.currentView.save()
-    this.cancel()
-  },
-  saveRun() {
-    this._updateModel()
-    this.options.selectionInterface.setCurrentQuery(this.model)
-    this.model.startSearchFromFirstPage()
-  },
-  _updateModel() {
-    const queryContentView = this.queryView
-      ? this.queryView
-      : this.queryContent.currentView
-    queryContentView.save()
-    this.queryTitle.currentView.save()
-
-    if (this.model.get('type') === 'text') {
-      this.model.set(
-        'filterTree',
-        CQLUtils.transformCQLToFilter(this.model.get('cql'))
-      )
-      if (!this.options.isSaved) {
-        this.model.set('title', this.model.get('filterTree').value)
-      }
-    } else if (!this.options.isSaved && this.model.get('type') !== 'text') {
-      this.model.set('title', this.model.get('filterTree').filters[0].value)
-    }
-
-    queryContentView.save()
   },
 })

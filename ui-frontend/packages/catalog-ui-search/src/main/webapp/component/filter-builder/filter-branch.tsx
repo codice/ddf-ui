@@ -16,6 +16,7 @@ import TextField from '@material-ui/core/TextField'
 import MenuItem from '@material-ui/core/MenuItem'
 import AddIcon from '@material-ui/icons/Add'
 import _ from 'lodash'
+import { Memo } from '../memo/memo'
 const OperatorData = [
   {
     label: 'AND',
@@ -54,65 +55,6 @@ const ChildFilter = ({
 }: ChildFilterProps) => {
   return (
     <>
-      {!isFilterBuilderClass(filter) ? (
-        <Grid item className="w-full filter-actions">
-          <Grid
-            container
-            direction="row"
-            alignItems="center"
-            className="w-full"
-          >
-            {isFirst ? (
-              <>
-                <Grid item>
-                  <Button
-                    onClick={() => {
-                      setFilter({
-                        ...parentFilter,
-                        filters: parentFilter.filters.concat([
-                          new FilterClass(),
-                        ]),
-                      })
-                    }}
-                  >
-                    <AddIcon />
-                    <Box color="primary.main">Field</Box>
-                  </Button>
-                </Grid>
-                <Grid item>
-                  <Button
-                    onClick={() => {
-                      setFilter({
-                        ...parentFilter,
-                        filters: parentFilter.filters.concat([
-                          new FilterBuilderClass(),
-                        ]),
-                      })
-                    }}
-                  >
-                    <AddIcon />
-                    <Box color="primary.main">Group</Box>
-                  </Button>
-                </Grid>
-              </>
-            ) : null}
-            <Grid item className="ml-auto">
-              <Button
-                onClick={() => {
-                  const newFilters = parentFilter.filters.slice(0)
-                  newFilters.splice(index, 1)
-                  setFilter({
-                    ...parentFilter,
-                    filters: newFilters,
-                  })
-                }}
-              >
-                <Box color="primary.main">Remove</Box>
-              </Button>
-            </Grid>
-          </Grid>
-        </Grid>
-      ) : null}
       {!isFirst ? (
         <Grid
           container
@@ -120,16 +62,16 @@ const ChildFilter = ({
           alignItems="center"
           justify="center"
           wrap="nowrap"
+          className="relative"
         >
           <Grid item className="p-4">
             <TextField
-              value={parentFilter.operator}
+              value={parentFilter.type}
               onChange={e => {
-                const newOperator = e.target
-                  .value as FilterBuilderClass['operator']
+                const newOperator = e.target.value as FilterBuilderClass['type']
                 setFilter({
                   ...parentFilter,
-                  operator: newOperator,
+                  type: newOperator,
                 })
               }}
               select
@@ -143,6 +85,20 @@ const ChildFilter = ({
                 )
               })}
             </TextField>
+          </Grid>
+          <Grid item className="ml-auto position absolute right-0">
+            <Button
+              onClick={() => {
+                const newFilters = parentFilter.filters.slice(0)
+                newFilters.splice(index, 1)
+                setFilter({
+                  ...parentFilter,
+                  filters: newFilters,
+                })
+              }}
+            >
+              <Box color="primary.main">Remove</Box>
+            </Button>
           </Grid>
         </Grid>
       ) : null}
@@ -209,16 +165,10 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
 
   return (
     <div
-      onMouseEnter={() => {
-        setHover(true)
-      }}
       onMouseOver={() => {
         setHover(true)
       }}
       onMouseOut={() => {
-        setHover(false)
-      }}
-      onMouseLeave={() => {
         setHover(false)
       }}
     >
@@ -232,48 +182,59 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
               borderColor: theme.palette.primary.main,
             }}
           >
-            {filter.filters.length >= 1 &&
-            !isFilterBuilderClass(filter.filters[0]) ? (
-              <></>
-            ) : (
-              <Grid item className="w-full filter-actions">
-                <Grid
-                  container
-                  direction="row"
-                  alignItems="center"
-                  className="w-full"
-                >
-                  <Grid item>
-                    <Button
-                      onClick={() => {
-                        setFilter({
-                          ...filter,
-                          filters: filter.filters.concat([new FilterClass()]),
-                        })
-                      }}
-                    >
-                      <AddIcon />
-                      <Box color="primary.main">Field</Box>
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      onClick={() => {
-                        setFilter({
-                          ...filter,
-                          filters: filter.filters.concat([
-                            new FilterBuilderClass(),
-                          ]),
-                        })
-                      }}
-                    >
-                      <AddIcon />
-                      <Box color="primary.main">Group</Box>
-                    </Button>
-                  </Grid>
+            <Grid item className="w-full filter-actions">
+              <Grid
+                container
+                direction="row"
+                alignItems="center"
+                className="w-full"
+              >
+                <Grid item>
+                  <Button
+                    onClick={() => {
+                      setFilter({
+                        ...filter,
+                        filters: filter.filters.concat([new FilterClass()]),
+                      })
+                    }}
+                  >
+                    <AddIcon />
+                    <Box color="primary.main">Field</Box>
+                  </Button>
                 </Grid>
+                <Grid item>
+                  <Button
+                    onClick={() => {
+                      setFilter({
+                        ...filter,
+                        filters: filter.filters.concat([
+                          new FilterBuilderClass(),
+                        ]),
+                      })
+                    }}
+                  >
+                    <AddIcon />
+                    <Box color="primary.main">Group</Box>
+                  </Button>
+                </Grid>
+                {filter.filters.length !== 0 ? (
+                  <Grid item className="ml-auto">
+                    <Button
+                      onClick={() => {
+                        const newFilters = filter.filters.slice(0)
+                        newFilters.splice(0, 1)
+                        setFilter({
+                          ...filter,
+                          filters: newFilters,
+                        })
+                      }}
+                    >
+                      <Box color="primary.main">Remove</Box>
+                    </Button>
+                  </Grid>
+                ) : null}
               </Grid>
-            )}
+            </Grid>
             {filter.negated ? (
               <>
                 <HoverButton
@@ -315,19 +276,23 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                 </Button>
               </>
             )}
-            {filter.filters.map((childFilter, index) => {
-              return (
-                <ChildFilter
-                  key={childFilter.id}
-                  parentFilter={filter}
-                  filter={childFilter}
-                  setFilter={setFilter}
-                  index={index}
-                  isFirst={index === 0}
-                  isLast={index === filter.filters.length - 1}
-                />
-              )
-            })}
+            <Memo dependencies={[filter]}>
+              <>
+                {filter.filters.map((childFilter, index) => {
+                  return (
+                    <ChildFilter
+                      key={childFilter.id}
+                      parentFilter={filter}
+                      filter={childFilter}
+                      setFilter={setFilter}
+                      index={index}
+                      isFirst={index === 0}
+                      isLast={index === filter.filters.length - 1}
+                    />
+                  )
+                })}
+              </>
+            </Memo>
           </div>
         </div>
       </Paper>

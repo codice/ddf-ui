@@ -277,6 +277,11 @@ module.exports = Marionette.LayoutView.extend({
   },
   ui: {},
   filter: undefined,
+  onFirstRender() {
+    this.listenTo(this.model, 'update', () => {
+      this.save()
+    })
+  },
   onBeforeShow() {
     const filter = getFilterTree(this.model)
     const translationToBasicMap = translateFilterToBasicMap(filter)
@@ -530,7 +535,7 @@ module.exports = Marionette.LayoutView.extend({
     this.basicSettings.currentView.saveToModel()
 
     const filter = this.constructFilter()
-    const generatedCQL = CQLUtils.transformFilterToCQL(filter)
+    const generatedCQL = cql.write(filter)
     this.model.set({
       filterTree: filter,
       cql: generatedCQL,

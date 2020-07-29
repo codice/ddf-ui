@@ -14,6 +14,7 @@
  **/
 
 type ComparatorType = { value: string; label: string }
+// verified
 export const dateComparators = [
   {
     value: 'BEFORE',
@@ -28,24 +29,26 @@ export const dateComparators = [
     label: 'RELATIVE',
   },
   {
-    value: 'BETWEEN',
+    value: 'DURING',
     label: 'BETWEEN',
   },
   {
-    value: 'EMPTY',
-    label: 'EMPTY',
-  },
-] as ComparatorType[]
-export const geometryComparators = [
-  {
-    value: 'INTERSECTS',
-    label: 'INTERSECTS',
-  },
-  {
-    value: 'IS EMPTY',
+    value: 'IS NULL',
     label: 'IS EMPTY',
   },
 ] as ComparatorType[]
+// verified
+export const geometryComparators = [
+  {
+    value: 'GEOMETRY',
+    label: 'INTERSECTS',
+  },
+  {
+    value: 'IS NULL',
+    label: 'IS EMPTY',
+  },
+] as ComparatorType[]
+// verified
 export const stringComparators = [
   {
     value: 'ILIKE',
@@ -60,7 +63,7 @@ export const stringComparators = [
     label: '=',
   },
   {
-    value: 'NEAR',
+    value: 'FILTER FUNCTION proximity',
     label: 'NEAR',
   },
   {
@@ -68,6 +71,7 @@ export const stringComparators = [
     label: 'IS EMPTY',
   },
 ] as ComparatorType[]
+// verified
 export const numberComparators = [
   {
     value: '>',
@@ -90,21 +94,22 @@ export const numberComparators = [
     label: '<=',
   },
   {
-    value: 'RANGE',
+    value: 'BETWEEN',
     label: 'RANGE',
   },
   {
-    value: 'IS EMPTY',
+    value: 'IS NULL',
     label: 'IS EMPTY',
   },
 ]
+// verified
 export const booleanComparators = [
   {
     value: '=',
     label: '=',
   },
   {
-    value: 'IS EMPTY',
+    value: 'IS NULL',
     label: 'IS EMPTY',
   },
 ] as ComparatorType[]
@@ -128,6 +133,7 @@ const typeToComparators = {
 
 export const getComparators = (attribute: string): ComparatorType[] => {
   let comparators = typeToComparators[getAttributeType(attribute)]
+  // IS NULL checks do not work on these
   if (attribute === 'anyGeo' || attribute === 'anyText') {
     comparators = comparators.filter(
       comparator => comparator.value !== 'IS NULL'

@@ -231,6 +231,7 @@ Query.Model = Backbone.AssociatedModel.extend({
     }
   },
   startSearchFromFirstPage(options) {
+    this.trigger('update')
     this.resetCurrentIndexForSourceGroup()
     this.startSearch(options)
   },

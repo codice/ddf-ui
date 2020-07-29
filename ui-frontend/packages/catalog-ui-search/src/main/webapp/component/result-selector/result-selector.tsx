@@ -2,7 +2,6 @@ import * as React from 'react'
 import MRC from 'catalog-ui-search/exports/marionette-region-container'
 import Spellcheck from '../spellcheck/spellcheck'
 import Grid from '@material-ui/core/Grid'
-const ResultFilterDropdownView = require('catalog-ui-search/src/main/webapp/component/dropdown/result-filter/dropdown.result-filter.view.js')
 const ResultSortDropdownView = require('catalog-ui-search/src/main/webapp/component/dropdown/result-sort/dropdown.result-sort.view.js')
 const DropdownModel = require('catalog-ui-search/src/main/webapp/component/dropdown/dropdown.js')
 import { hot } from 'react-hot-loader'
@@ -10,6 +9,23 @@ import QueryFeed from './query-feed'
 import { useLazyResultsStatusFromSelectionInterface } from 'catalog-ui-search/src/main/webapp/component/selection-interface/hooks'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Paging from './paging'
+import { Dropdown } from '@connexta/atlas/atoms/dropdown'
+import Paper from '@material-ui/core/Paper'
+import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
+import Button from '@material-ui/core/Button'
+import FilterListIcon from '@material-ui/icons/FilterList'
+import ResultFilter from '../result-filter/result-filter'
+import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+const user = require('../singletons/user-instance.js')
+
+const determineHasResultFilter = () => {
+  return (
+    user
+      .get('user')
+      .get('preferences')
+      .get('resultFilter') !== undefined
+  )
+}
 type Props = {
   selectionInterface: any
   model: any
@@ -37,7 +53,16 @@ const ResultSelector = ({ selectionInterface, model }: Props) => {
   const { isSearching } = useLazyResultsStatusFromSelectionInterface({
     selectionInterface,
   })
+  const [hasResultFilter, setHasResultFilter] = React.useState(
+    determineHasResultFilter()
+  )
+  const { listenTo } = useBackbone()
 
+  React.useEffect(() => {
+    listenTo(user.get('user').get('preferences'), 'change:resultFilter', () => {
+      setHasResultFilter(determineHasResultFilter())
+    })
+  }, [])
   return (
     <React.Fragment>
       <Grid
@@ -66,12 +91,28 @@ const ResultSelector = ({ selectionInterface, model }: Props) => {
           <QueryFeed selectionInterface={selectionInterface} />
         </Grid>
         <Grid item style={GridStyles}>
-          <MRC
-            view={ResultFilterDropdownView}
-            viewOptions={{
-              model: new DropdownModel(),
+          <Dropdown
+            content={({ closeAndRefocus }) => {
+              return (
+                <BetterClickAwayListener onClickAway={closeAndRefocus}>
+                  <Paper className="p-3">
+                    <ResultFilter closeDropdown={closeAndRefocus} />
+                  </Paper>
+                </BetterClickAwayListener>
+              )
             }}
-          />
+          >
+            {({ handleClick }) => {
+              return (
+                <Button onClick={handleClick}>
+                  Filter{' '}
+                  <FilterListIcon
+                    color={hasResultFilter ? 'secondary' : 'inherit'}
+                  />
+                </Button>
+              )
+            }}
+          </Dropdown>
         </Grid>
         <Grid item style={GridStyles}>
           <MRC
@@ -84,14 +125,6 @@ const ResultSelector = ({ selectionInterface, model }: Props) => {
 
         <Grid item style={GridStyles}>
           <Paging selectionInterface={selectionInterface} />
-          {/* <MRC
-            className="resultSelector-paging"
-            view={PagingView}
-            viewOptions={{
-              model: collapsedResults,
-              selectionInterface: selectionInterface,
-            }}
-          /> */}
         </Grid>
       </Grid>
     </React.Fragment>

@@ -46,9 +46,15 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .lm_header {
         z-index: 0 !important;
       }
+      .is-drawing [role="tooltip"] {
+        display: none!important;
+      }
       [role="tooltip"] {
         z-index: 101 !important;
         pointer-events: all !important;
+      }
+      .bp3-portal {
+        z-index: 101 !important;
       }
       .bp3-popover-wrapper,.bp3-popover-target, .bp3-control-group {
         width: 100%;

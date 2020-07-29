@@ -16,28 +16,22 @@ import React from 'react'
 import { getAttributeType } from '../filterHelper'
 import LocationInput from './filter-location-input'
 
-import TextField from '@material-ui/core/TextField'
-import MenuItem from '@material-ui/core/MenuItem'
-
 import extension from '../../../extension-points'
 import { DateField } from '../../../component/fields/date'
-import { NearValueType, NearField } from '../../../component/fields/near'
+import { NearField } from '../../../component/fields/near'
+import { TextField } from '../../../component/fields/text'
 import { NumberRangeField } from '../../../component/fields/number-range'
-import { NumberField } from '../../../component/fields/number'
+import { DateRangeField } from '../../../component/fields/date-range'
+import { DateRelativeField } from '../../../component/fields/date-relative'
 import {
-  DateRangeField,
-  DateRangeValueType,
-  deserialize as deserializeDateRange,
-  serialize as serializeDateRange,
-} from '../../../component/fields/date-range'
-import {
-  DateRelativeField,
-  deserialize as deserializeRelativeDate,
-  serialize as serializeRelativeDate,
-} from '../../../component/fields/date-relative'
-import { FilterClass } from '../../../component/filter-builder/filter.structure'
+  FilterClass,
+  ValueTypes,
+} from '../../../component/filter-builder/filter.structure'
+import { IntegerField } from '../../../component/fields/integer'
+import { FloatField } from '../../../component/fields/float'
+import { BooleanField } from '../../../component/fields/boolean'
 
-type Props = {
+export type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
 }
@@ -60,32 +54,33 @@ const FilterInput = ({ filter, setFilter }: Props) => {
     })
   }
   switch (filter.type) {
-    case 'IS EMPTY':
+    case 'IS NULL':
       return null
-    case 'NEAR':
-      return <NearField value={value as NearValueType} onChange={onChange} />
-    case 'BETWEEN':
+    case 'FILTER FUNCTION proximity':
+      return (
+        <NearField
+          value={value as ValueTypes['proximity']}
+          onChange={onChange}
+        />
+      )
+    case 'DURING':
       return (
         <DateRangeField
-          value={deserializeDateRange(value as string)}
-          onChange={val => {
-            onChange(serializeDateRange(val))
-          }}
+          value={value as ValueTypes['during']}
+          onChange={onChange}
         />
       )
     case 'RELATIVE':
       return (
         <DateRelativeField
-          value={deserializeRelativeDate(value as string)}
-          onChange={val => {
-            onChange(serializeRelativeDate(val))
-          }}
+          value={value as ValueTypes['relative']}
+          onChange={onChange}
         />
       )
-    case 'RANGE':
+    case 'BETWEEN':
       return (
         <NumberRangeField
-          value={value as RangeValueType}
+          value={value as ValueTypes['between']}
           type={type === 'INTEGER' ? 'integer' : 'float'}
           onChange={onChange}
         />
@@ -95,50 +90,30 @@ const FilterInput = ({ filter, setFilter }: Props) => {
   switch (type) {
     case 'BOOLEAN':
       return (
-        <TextField
-          fullWidth
-          select
-          variant="outlined"
-          value={value.toString() === 'true'}
-          onChange={e => {
-            onChange(e.target.value === 'true')
-          }}
-        >
-          <MenuItem value={'false'}>false</MenuItem>
-          <MenuItem value={'true'}>true</MenuItem>
-        </TextField>
+        <BooleanField
+          value={value as ValueTypes['boolean']}
+          onChange={onChange}
+        />
       )
     case 'DATE':
       return <DateField onChange={onChange} value={value as string} />
     case 'LOCATION':
-      return <LocationInput {...props} />
+      return <LocationInput value={value} onChange={onChange} />
     case 'FLOAT':
       return (
-        <NumberField value={value as string} onChange={onChange} type="float" />
+        <FloatField value={value as ValueTypes['float']} onChange={onChange} />
       )
     case 'INTEGER':
       return (
-        <NumberField
-          value={value as string}
+        <IntegerField
+          value={value as ValueTypes['integer']}
           onChange={onChange}
-          type="integer"
         />
       )
   }
 
-  return (
-    <TextField
-      fullWidth
-      multiline
-      rowsMax={3}
-      variant="outlined"
-      placeholder="Use * for wildcard."
-      value={value || ''}
-      onChange={e => {
-        onChange(e.target.value)
-      }}
-    />
-  )
+  const textValue = value as string
+  return <TextField value={textValue} onChange={onChange} />
 }
 
 export default FilterInput

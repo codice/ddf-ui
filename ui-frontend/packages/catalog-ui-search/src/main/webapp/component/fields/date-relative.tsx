@@ -3,60 +3,37 @@ import Grid from '@material-ui/core/Grid'
 import TextField from '@material-ui/core/TextField'
 import MenuItem from '@material-ui/core/MenuItem'
 import { NumberField } from './number'
-
-export const serialize = ({ last, unit }: DateRelativeValueType) => {
-  if (unit === undefined || !parseFloat(last)) {
-    return ''
-  }
-  const prefix = unit === 'm' || unit === 'h' ? 'PT' : 'P'
-  return `RELATIVE(${prefix + last + unit.toUpperCase()})`
-}
-
-export const deserialize = (value: string): DateRelativeValueType => {
-  if (typeof value !== 'string') {
-    return {
-      last: '1',
-      unit: 'm',
-    }
-  }
-
-  const match = value.match(/RELATIVE\(Z?([A-Z]*)(\d+\.*\d*)(.)\)/)
-  if (!match) {
-    return {
-      last: '1',
-      unit: 'm',
-    }
-  }
-
-  let [, prefix, last, unit] = match
-  unit = unit.toLowerCase()
-  if (prefix === 'P' && unit === 'm') {
-    //must capitalize months
-    unit = unit.toUpperCase()
-  }
-
-  return {
-    last: parseFloat(last).toString(),
-    unit,
-  }
-}
-
-type DateRelativeValueType = {
-  last: string
-  unit: string
-}
+import { ValueTypes } from '../filter-builder/filter.structure'
 
 type Props = {
-  value?: DateRelativeValueType
-  onChange?: (val: DateRelativeValueType) => void
+  value: ValueTypes['relative']
+  onChange: (val: ValueTypes['relative']) => void
 }
 
 const defaultValue = {
   last: '1',
   unit: 'm',
-} as DateRelativeValueType
+} as ValueTypes['relative']
+
+const validateShape = ({ value, onChange }: Props) => {
+  if (isInvalid({ value, onChange })) {
+    console.log('defaulted to correct shape')
+    onChange(defaultValue)
+  }
+}
+
+const isInvalid = ({ value }: Props) => {
+  return value.last === undefined || value.unit === undefined
+}
 
 export const DateRelativeField = ({ value, onChange }: Props) => {
+  React.useEffect(() => {
+    validateShape({ value, onChange })
+  }, [])
+  if (isInvalid({ value, onChange })) {
+    // for most cases it doesn't matter if we render with invalid, but the select will immediately cause onChange which has some weird side effects
+    return null
+  }
   return (
     <Grid container direction="column" className="w-full">
       <Grid item className="w-full pb-2 pl-2">
@@ -90,14 +67,10 @@ export const DateRelativeField = ({ value, onChange }: Props) => {
               onChange({
                 ...defaultValue,
                 ...value,
-                unit: e.target.value,
+                unit: e.target.value as ValueTypes['relative']['unit'],
               })
           }}
-          {...(value
-            ? {
-                value: value.unit,
-              }
-            : {})}
+          value={value.unit}
         >
           <MenuItem value="m">Minutes</MenuItem>
           <MenuItem value="h">Hours</MenuItem>

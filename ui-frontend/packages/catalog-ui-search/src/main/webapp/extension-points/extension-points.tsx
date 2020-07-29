@@ -17,24 +17,18 @@ import { providers, Props as ProviderProps } from './providers'
 import visualizations from './visualizations'
 import navigationRight from './navigation-right'
 import metacardInteractions from './metacard-interactions'
-import searchInteractions, {
-  SearchInteractionProps,
-} from './search-interactions'
 import { tableExport, Props as TableExportProps } from './table-export'
-import multiSelectActions from './multi-select-actions'
 import userSettings from './user-settings'
-import { DetermineInputType } from '../react-component/filter/filter-input/filterInputHelper'
+import { Props } from '../react-component/filter/filter-input/filter-input'
 
 export type ExtensionPointsType = {
   providers: SFC<ProviderProps>
   visualizations: any[]
   navigationRight: any[]
   metacardInteractions: any[]
-  searchInteractions: SFC<SearchInteractionProps>
   tableExport: SFC<TableExportProps>
-  multiSelectActions: any[]
   userSettings: React.ReactNode
-  customFilterInput: (props: DetermineInputType) => React.ReactNode | undefined
+  customFilterInput: (props: Props) => React.ReactNode | undefined
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -42,9 +36,7 @@ const ExtensionPoints: ExtensionPointsType = {
   visualizations,
   navigationRight,
   metacardInteractions,
-  searchInteractions,
   tableExport,
-  multiSelectActions,
   userSettings,
   customFilterInput: () => undefined,
 }

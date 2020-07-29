@@ -39,6 +39,8 @@ const FilterComparator = ({ filter, setFilter }: Props) => {
     [filter]
   )
 
+  useEffect(() => {}, [filter])
+
   const comparators = getComparators(filter.property)
   return (
     <TextField

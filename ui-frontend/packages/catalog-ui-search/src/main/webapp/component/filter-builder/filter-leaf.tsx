@@ -5,6 +5,7 @@ import { useTheme } from '@material-ui/core'
 import { HoverButton } from '../button/hover'
 import { FilterClass } from './filter.structure'
 import Filter from '../../react-component/filter/filter'
+import { Memo } from '../memo/memo'
 
 type Props = {
   filter: FilterClass
@@ -17,16 +18,10 @@ const FilterLeaf = ({ filter, setFilter }: Props) => {
   return (
     <div
       className="relative"
-      onMouseEnter={() => {
-        setHover(true)
-      }}
       onMouseOver={() => {
         setHover(true)
       }}
       onMouseOut={() => {
-        setHover(false)
-      }}
-      onMouseLeave={() => {
         setHover(false)
       }}
     >
@@ -75,7 +70,9 @@ const FilterLeaf = ({ filter, setFilter }: Props) => {
           borderColor: theme.palette.primary.main,
         }}
       >
-        <Filter filter={filter} setFilter={setFilter} />
+        <Memo dependencies={[filter, setFilter]}>
+          <Filter filter={filter} setFilter={setFilter} />
+        </Memo>
       </div>
     </div>
   )

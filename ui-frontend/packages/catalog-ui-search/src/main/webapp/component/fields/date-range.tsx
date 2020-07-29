@@ -15,43 +15,24 @@
 import * as React from 'react'
 import { DateRangeInput, IDateRangeInputProps } from '@blueprintjs/datetime'
 import { formatDate, parseDate } from './date'
-import moment from 'moment-timezone'
-
-export const serialize = (value: DateRangeValueType) => {
-  const from = moment(value.start)
-  const to = moment(value.end)
-  if (from.isAfter(to)) {
-    return (to.toISOString() || '') + '/' + (from.toISOString() || '')
-  }
-  return (from.toISOString() || '') + '/' + (to.toISOString() || '')
-}
-
-export const deserialize = (value: string): DateRangeValueType => {
-  if (value.includes('/')) {
-    const [start, end] = value.split('/') as [string, string]
-    return {
-      start,
-      end,
-    }
-  }
-  return {
-    start: '',
-    end: '',
-  }
-}
-
-export type DateRangeValueType = {
-  start: string
-  end: string
-}
+import { ValueTypes } from '../filter-builder/filter.structure'
 
 type Props = {
-  value?: DateRangeValueType
-  onChange?: (value: DateRangeValueType) => void
+  value: ValueTypes['during']
+  onChange: (value: ValueTypes['during']) => void
   /**
    * Override if you absolutely must
    */
   BPDateRangeProps?: IDateRangeInputProps
+}
+
+const validateShape = ({ value, onChange }: Props) => {
+  if (value.start === undefined || value.end === undefined) {
+    onChange({
+      start: new Date().toISOString(),
+      end: new Date().toISOString(),
+    })
+  }
 }
 
 export const DateRangeField = ({
@@ -59,6 +40,9 @@ export const DateRangeField = ({
   onChange,
   BPDateRangeProps,
 }: Props) => {
+  React.useEffect(() => {
+    validateShape({ value, onChange, BPDateRangeProps })
+  }, [])
   return (
     <DateRangeInput
       allowSingleDayRange

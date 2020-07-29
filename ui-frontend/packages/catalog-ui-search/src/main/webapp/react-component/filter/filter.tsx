@@ -31,11 +31,12 @@ type Props = {
 }
 
 const Filter = ({ filter, setFilter }: Props) => {
-  const { property, type, value } = filter
+  const { property } = filter
   const attributeList = getFilteredAttributeList()
   const currentSelectedAttribute = attributeList.find(
     attrInfo => attrInfo.value === property
   )
+  console.log('filter rendering')
   return (
     <Grid container direction="column" alignItems="center" className="w-full">
       <Grid item className="w-full pb-2">

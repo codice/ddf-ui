@@ -16,18 +16,34 @@ import * as React from 'react'
 
 import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
-
-export type NearValueType = {
-  value: string
-  distance: number
-}
+import { ValueTypes } from '../filter-builder/filter.structure'
 
 type NearFieldProps = {
-  value: NearValueType
-  onChange: (val: NearValueType) => void
+  value: ValueTypes['proximity']
+  onChange: (val: ValueTypes['proximity']) => void
+}
+
+const defaultValue = {
+  first: '',
+  second: '',
+  distance: 2,
+} as ValueTypes['proximity']
+
+const validateShape = ({ value, onChange }: NearFieldProps) => {
+  if (
+    value.distance === undefined ||
+    value.first === undefined ||
+    value.second === undefined
+  ) {
+    console.log('defaulted to correct shape')
+    onChange(defaultValue)
+  }
 }
 
 export const NearField = ({ value, onChange }: NearFieldProps) => {
+  React.useEffect(() => {
+    validateShape({ value, onChange })
+  }, [])
   return (
     <Grid
       container
@@ -43,11 +59,11 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
           rowsMax={3}
           variant="outlined"
           type="text"
-          value={value.value}
+          value={value.second}
           onChange={e => {
             onChange({
               ...value,
-              value: e.target.value,
+              second: e.target.value,
             })
           }}
         />
@@ -55,16 +71,35 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
       <Grid item className="w-full pb-2 pl-2">
         within
       </Grid>
-      <Grid item className="w-full">
+      <Grid item className="w-full pb-2">
         <TextField
           fullWidth
           type="number"
           variant="outlined"
-          value={value.distance || '2'}
+          value={value.distance}
           onChange={e => {
             onChange({
               ...value,
               distance: Math.max(1, parseInt(e.target.value) || 0),
+            })
+          }}
+        />
+      </Grid>
+      <Grid item className="w-full pb-2 pl-2">
+        of
+      </Grid>
+      <Grid item className="w-full">
+        <TextField
+          fullWidth
+          multiline
+          rowsMax={3}
+          variant="outlined"
+          type="text"
+          value={value.first}
+          onChange={e => {
+            onChange({
+              ...value,
+              first: e.target.value,
             })
           }}
         />

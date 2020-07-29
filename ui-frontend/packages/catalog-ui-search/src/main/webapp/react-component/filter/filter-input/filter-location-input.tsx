@@ -53,13 +53,14 @@ const filterToLocationOldModel = filter => {
   }
 }
 
+// may need to move some of this logic for deserliazing
 class LocationInput extends React.Component {
   locationModel
   constructor(props) {
     super(props)
-    this.locationModel = new LocationOldModel()
+    this.locationModel = new LocationOldModel(props.value)
     this.state = this.locationModel.toJSON()
-    this.deserialize()
+    // this.deserialize()
     this.onChange()
   }
   setModelState() {
@@ -82,6 +83,7 @@ class LocationInput extends React.Component {
   }
   componentWillUnmount() {
     this.locationModel.off('change', this.setModelState)
+    this.locationModel.set(new LocationOldModel().toJSON())
     wreqr.vent.trigger('search:drawend', this.locationModel)
   }
   updateMap = () => {
