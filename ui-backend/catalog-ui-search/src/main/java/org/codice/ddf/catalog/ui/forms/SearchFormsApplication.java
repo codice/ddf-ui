@@ -57,6 +57,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.apache.shiro.SecurityUtils;
+import org.codice.ddf.catalog.ui.events.EventApplication;
+import org.codice.ddf.catalog.ui.events.EventType;
 import org.codice.ddf.catalog.ui.forms.model.pojo.CommonTemplate;
 import org.codice.ddf.catalog.ui.forms.model.pojo.FormTemplate;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
@@ -237,6 +239,8 @@ public class SearchFormsApplication implements SparkApplication {
         "/forms/:id",
         APPLICATION_JSON,
         (req, res) -> {
+          EventApplication.notifyListeners(new EventType("SEARCHFORM"));
+          EventApplication.notifyListeners(new EventType("RESULTFORM"));
           String id = req.params(":id");
           DeleteResponse deleteResponse = catalogFramework.delete(new DeleteRequestImpl(id));
           if (!deleteResponse.getProcessingErrors().isEmpty()) {

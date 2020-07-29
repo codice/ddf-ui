@@ -18,6 +18,7 @@ import { hot } from 'react-hot-loader'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import { Sharing, handleRemoveSharedMetacard } from '../sharing'
 import { Security, Restrictions } from '../utils/security'
+import { EventType } from '../utils/event'
 const user = require('../../component/singletons/user-instance.js')
 const store = require('../../js/store.js')
 const lightboxInstance = require('../../component/lightbox/lightbox.view.instance.js')
@@ -86,7 +87,10 @@ class WorkspaceInteractions extends React.Component<Props, State> {
       (confirmation: any) => {
         if (confirmation.get('choice')) {
           let loadingview = new LoadingView()
-          handleRemoveSharedMetacard(this.props.workspace.id).then(res => {
+          handleRemoveSharedMetacard(
+            this.props.workspace.id,
+            EventType.Workspace
+          ).then(res => {
             if (res.status !== 200) {
               announcement.announce(
                 {
@@ -138,6 +142,7 @@ class WorkspaceInteractions extends React.Component<Props, State> {
         id={this.props.workspace.id}
         lightbox={lightboxInstance}
         onUpdate={this.updateWorkspaceRestrictions}
+        type={EventType.Workspace}
       />
     )
   }

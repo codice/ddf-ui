@@ -36,6 +36,7 @@ import com.google.common.collect.Sets;
 import com.google.common.io.ByteSource;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import ddf.catalog.CatalogFramework;
 import ddf.catalog.content.data.ContentItem;
@@ -115,6 +116,9 @@ import org.apache.shiro.subject.ExecutionException;
 import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
 import org.codice.ddf.catalog.ui.enumeration.ExperimentalEnumerationExtractor;
 import org.codice.ddf.catalog.ui.metacard.associations.Associated;
+import org.codice.ddf.catalog.ui.events.EventApplication;
+import org.codice.ddf.catalog.ui.events.EventType;
+import org.codice.ddf.catalog.ui.events.EventTypeDeserializer;
 import org.codice.ddf.catalog.ui.metacard.edit.AttributeChange;
 import org.codice.ddf.catalog.ui.metacard.edit.MetacardChanges;
 import org.codice.ddf.catalog.ui.metacard.history.HistoryResponse;
@@ -176,6 +180,7 @@ public class MetacardApplication implements SparkApplication {
           .serializeNulls()
           .registerTypeAdapterFactory(LongDoubleTypeAdapter.FACTORY)
           .registerTypeAdapter(Date.class, new DateLongFormatTypeAdapter())
+          .registerTypeAdapter(EventType.class, new EventTypeDeserializer())
           .create();
 
   private final CatalogFramework catalogFramework;
@@ -335,6 +340,17 @@ public class MetacardApplication implements SparkApplication {
         (req, res) -> {
           String body = util.safeGetBody(req);
           List<MetacardChanges> metacardChanges = GSON.fromJson(body, METACARD_CHANGES_LIST_TYPE);
+          metacardChanges.forEach(
+              change -> {
+                EventType type = change.getType();
+                if (type != null) {
+                  EventApplication.notifyListeners(type);
+                } else {
+                  String unknownType =
+                      new Gson().fromJson(body, JsonObject.class).get("type").getAsString();
+                  EventApplication.notifyListeners(unknownType);
+                }
+              });
 
           UpdateResponse updateResponse = patchMetacards(metacardChanges, getSubjectIdentifier());
           if (updateResponse.getProcessingErrors() != null
@@ -616,8 +632,9 @@ public class MetacardApplication implements SparkApplication {
           }
 
           catalogFramework.delete(new DeleteRequestImpl(id));
-
+          
           subscriptions.removeSubscriptions(id);
+          EventApplication.notifyListeners(new EventType("WORKSPACE"));
           return ImmutableMap.of("message", "Successfully deleted.");
         },
         util::getJson);

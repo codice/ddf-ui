@@ -17,6 +17,8 @@ const _ = require('underscore')
 const $ = require('jquery')
 const Backbone = require('backbone')
 const SearchForm = require('./search-form')
+const EventSourceUtil = require('../../js/EventSourceUtil')
+import { EventType } from '../../react-component/utils/event'
 
 const fixFilter = function(filter) {
   if (filter.filters) {
@@ -57,15 +59,23 @@ module.exports = Backbone.AssociatedModel.extend({
     searchForms: [],
   },
   initialize() {
-    if (promiseIsResolved === true) {
-      this.addAllForms()
-      promiseIsResolved = false
-      bootstrapPromise = new templatePromiseSupplier()
+    const getForms = () => {
+      if (promiseIsResolved === true) {
+        this.addAllForms()
+        promiseIsResolved = false
+        bootstrapPromise = new templatePromiseSupplier()
+      }
+      bootstrapPromise.then(() => {
+        this.addAllForms()
+        this.doneLoading()
+      })
     }
-    bootstrapPromise.then(() => {
-      this.addAllForms()
-      this.doneLoading()
+
+    EventSourceUtil.createEventListener(EventType.SearchForm, {
+      onMessage: getForms,
     })
+
+    getForms()
   },
   relations: [
     {
@@ -85,6 +95,17 @@ module.exports = Backbone.AssociatedModel.extend({
   ],
   addAllForms() {
     if (!this.isDestroyed) {
+      const formsToDelete = this.get('searchForms')
+      .map(form => {
+        return cachedTemplates.every(
+          template => template.id !== form.get('id')
+        )
+          ? form
+          : null
+      })
+      .filter(form => form !== null)
+    this.get('searchForms').remove(formsToDelete)
+
       cachedTemplates.forEach((value, index) => {
         this.addSearchForm(
           new SearchForm({

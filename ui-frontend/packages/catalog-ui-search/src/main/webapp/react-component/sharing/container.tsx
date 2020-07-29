@@ -16,6 +16,7 @@ import * as React from 'react'
 import SharingPresentation from './presentation'
 import fetch from '../utils/fetch/index'
 import { Access, Entry, Restrictions, Security } from '../utils/security'
+import { EventType } from '../utils/event'
 
 const user = require('component/singletons/user-instance')
 const common = require('js/Common')
@@ -31,12 +32,14 @@ type Props = {
   id: number
   lightbox: any
   onUpdate?: (attributes: Attribute[]) => void
+  type: EventType
 }
 
 type State = {
   items: Item[]
   modified: string
   isWorkspace: boolean
+  type: EventType
 }
 
 export enum Category {
@@ -52,7 +55,10 @@ export type Item = {
   access: Access
 }
 
-export const handleRemoveSharedMetacard = async (id: number) => {
+export const handleRemoveSharedMetacard = async (
+  id: number,
+  type: EventType
+) => {
   const metacard = await fetchMetacard(id)
   const res = Restrictions.from(metacard)
   const security = new Security(res)
@@ -95,7 +101,7 @@ export const handleRemoveSharedMetacard = async (id: number) => {
         .map(e => e.value),
     },
   ]
-  return handleSave(attributes, id)
+  return handleSave(attributes, id, type)
 }
 
 const fetchMetacard = async (id: number) => {
@@ -104,7 +110,7 @@ const fetchMetacard = async (id: number) => {
   return metacard.metacards[0]
 }
 
-const handleSave = (attributes: any, id: number) => {
+const handleSave = (attributes: any, id: number, type: EventType) => {
   return fetch(`/search/catalog/internal/metacards`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
@@ -112,6 +118,7 @@ const handleSave = (attributes: any, id: number) => {
       {
         ids: [id],
         attributes: attributes,
+        type: type,
       },
     ]),
   })
@@ -125,6 +132,7 @@ export class Sharing extends React.Component<Props, State> {
       items: [],
       modified: '',
       isWorkspace: false,
+      type: props.type,
     }
   }
   componentDidMount = () => {
@@ -151,7 +159,9 @@ export class Sharing extends React.Component<Props, State> {
       this.setState({
         items: groups.concat(individuals),
         modified: metacard['metacard.modified'],
-        isWorkspace: data['metacard-tags'].includes('workspace'),
+        type: data['metacard-tags'].includes('workspace')
+          ? EventType.Workspace
+          : this.state.type,
       })
       this.add()
     })
@@ -167,7 +177,7 @@ export class Sharing extends React.Component<Props, State> {
       e => e.value !== '' && e.category === Category.User
     )
 
-    if (this.state.isWorkspace && guest[0].access === 0) {
+    if (this.state.type === EventType.Workspace && guest[0].access === 0) {
       usersToUnsubscribe = this.getUsersToUnsubscribe(users)
     }
     const attributes = [
@@ -252,7 +262,7 @@ export class Sharing extends React.Component<Props, State> {
   }
 
   doSave = async (attributes: any) => {
-    const res = await handleSave(attributes, this.props.id)
+    const res = await handleSave(attributes, this.props.id, this.props.type)
 
     if (res.status !== 200) {
       throw new Error()

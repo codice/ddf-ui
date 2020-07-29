@@ -40,6 +40,11 @@
             <version>2.2.11</version>
         </dependency>
         <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.jvnet.ogc</groupId>
             <artifactId>filter-v_2_0</artifactId>
             <version>2.6.1</version>
@@ -471,6 +476,7 @@
                         <Export-Package>
                             org.codice.ddf.catalog.ui.metacard.internal,
                             org.codice.ddf.catalog.ui.alias,
+                            org.codice.ddf.catalog.ui.events
                         </Export-Package>
                         <Karaf-Commands>org.codice.ddf.catalog.ui.forms.commands.*</Karaf-Commands>
                     </instructions>

@@ -11,39 +11,37 @@
  * License is distributed along with this program and can be found at
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
-package org.codice.ddf.catalog.ui.metacard.edit;
+package org.codice.ddf.catalog.ui.events;
 
-import java.util.List;
-import org.codice.ddf.catalog.ui.events.EventType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class MetacardChanges {
-  private List<String> ids;
+public class EventType {
 
-  private List<AttributeChange> attributes;
+  private static final Logger LOGGER = LoggerFactory.getLogger(EventType.class);
 
-  private EventType type;
-
-  public List<String> getIds() {
-    return ids;
+  enum BaseEventType {
+    RESULTFORM,
+    SEARCHFORM,
+    WORKSPACE,
+    CLOSE,
+    UNKNOWN;
   }
 
-  public void setIds(List<String> ids) {
-    this.ids = ids;
+  private final String id;
+  private BaseEventType type;
+
+  public EventType(String id) {
+    this.id = id;
+    try {
+      type = BaseEventType.valueOf(id);
+    } catch (IllegalArgumentException ex) {
+      LOGGER.trace("UNKNOWN EVENT SOURCE EVENT TYPE");
+      type = BaseEventType.UNKNOWN;
+    }
   }
 
-  public List<AttributeChange> getAttributes() {
-    return attributes;
-  }
-
-  public void setAttributes(List<AttributeChange> attributes) {
-    this.attributes = attributes;
-  }
-
-  public EventType getType() {
-    return type;
-  }
-
-  public void setType(EventType type) {
-    this.type = type;
+  public String getType() {
+    return type != BaseEventType.UNKNOWN ? type.name() : id;
   }
 }

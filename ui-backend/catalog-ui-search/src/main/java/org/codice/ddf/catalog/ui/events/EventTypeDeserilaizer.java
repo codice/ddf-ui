@@ -11,39 +11,16 @@
  * License is distributed along with this program and can be found at
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
-package org.codice.ddf.catalog.ui.metacard.edit;
+package org.codice.ddf.catalog.ui.events;
 
-import java.util.List;
-import org.codice.ddf.catalog.ui.events.EventType;
+import com.google.gson.*;
+import java.lang.reflect.Type;
 
-public class MetacardChanges {
-  private List<String> ids;
+public class EventTypeDeserializer implements JsonDeserializer<EventType> {
 
-  private List<AttributeChange> attributes;
-
-  private EventType type;
-
-  public List<String> getIds() {
-    return ids;
-  }
-
-  public void setIds(List<String> ids) {
-    this.ids = ids;
-  }
-
-  public List<AttributeChange> getAttributes() {
-    return attributes;
-  }
-
-  public void setAttributes(List<AttributeChange> attributes) {
-    this.attributes = attributes;
-  }
-
-  public EventType getType() {
-    return type;
-  }
-
-  public void setType(EventType type) {
-    this.type = type;
+  @Override
+  public EventType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+      throws JsonParseException {
+    return new EventType(json.getAsString());
   }
 }
