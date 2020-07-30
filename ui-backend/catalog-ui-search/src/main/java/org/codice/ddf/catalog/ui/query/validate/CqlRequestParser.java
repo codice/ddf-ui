@@ -20,6 +20,7 @@ import ddf.catalog.filter.FilterBuilder;
 import ddf.catalog.operation.QueryRequest;
 import java.io.IOException;
 import java.util.Date;
+import org.codice.ddf.catalog.ui.CqlParseException;
 import org.codice.ddf.catalog.ui.query.cql.CqlRequestImpl;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
 import org.codice.gsonsupport.GsonTypeAdapters.DateLongFormatTypeAdapter;
@@ -49,7 +50,7 @@ public class CqlRequestParser {
     this.endpointUtil = endpointUtil;
   }
 
-  public QueryRequest parse(Request request) throws IOException {
+  public QueryRequest parse(Request request) throws IOException, CqlParseException {
     CqlRequestImpl cqlRequest =
         GSON.fromJson(endpointUtil.safeGetBody(request), CqlRequestImpl.class);
     return cqlRequest.createQueryRequest(catalogFramework.getId(), filterBuilder);

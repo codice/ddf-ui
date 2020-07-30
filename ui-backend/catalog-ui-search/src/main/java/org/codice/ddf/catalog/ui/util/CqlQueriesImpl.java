@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import org.codice.ddf.catalog.ui.CqlParseException;
 import org.codice.ddf.catalog.ui.metacard.transformer.CsvTransformImpl;
 import org.codice.ddf.catalog.ui.query.cql.CqlQueryResponseImpl;
 import org.codice.ddf.catalog.ui.query.cql.CqlRequestImpl;
@@ -80,7 +81,8 @@ public class CqlQueriesImpl implements CqlQueries {
 
   @Override
   public CqlQueryResponse executeCqlQuery(CqlRequest cqlRequest)
-      throws UnsupportedQueryException, SourceUnavailableException, FederationException {
+      throws UnsupportedQueryException, SourceUnavailableException, FederationException,
+          CqlParseException {
     QueryRequest request = cqlRequest.createQueryRequest(catalogFramework.getId(), filterBuilder);
     Stopwatch stopwatch = Stopwatch.createStarted();
 

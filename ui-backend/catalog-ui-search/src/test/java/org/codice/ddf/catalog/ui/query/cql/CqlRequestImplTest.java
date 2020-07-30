@@ -25,11 +25,11 @@ import ddf.catalog.operation.QueryRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.codice.ddf.catalog.ui.CqlParseException;
 import org.junit.Before;
 import org.junit.Test;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
-import spark.HaltException;
 
 public class CqlRequestImplTest {
 
@@ -84,7 +84,7 @@ public class CqlRequestImplTest {
   }
 
   @Test
-  public void testMultipleSorts() {
+  public void testMultipleSorts() throws CqlParseException {
     List<CqlRequestImpl.Sort> sorts = new ArrayList<>();
     sorts.add(new CqlRequestImpl.Sort(SORT_PROPERTY, ASC_SORT_ORDER));
     sorts.add(new CqlRequestImpl.Sort("foobar", DESC_SORT_ORDER));
@@ -101,7 +101,7 @@ public class CqlRequestImplTest {
   }
 
   @Test
-  public void testCreateQueryWithLocalSource() {
+  public void testCreateQueryWithLocalSource() throws CqlParseException {
     QueryRequest queryRequest = cqlRequest.createQueryRequest(LOCAL_SOURCE, filterBuilder);
     SortBy sortBy = queryRequest.getQuery().getSortBy();
     assertThat(sortBy.getPropertyName().getPropertyName(), is(SORT_PROPERTY));
@@ -110,7 +110,7 @@ public class CqlRequestImplTest {
   }
 
   @Test
-  public void testCreateQueryWithCacheSource() {
+  public void testCreateQueryWithCacheSource() throws CqlParseException {
     cqlRequest.setSorts(
         Collections.singletonList(new CqlRequestImpl.Sort(SORT_PROPERTY, DESC_SORT_ORDER)));
     cqlRequest.setSrc(CACHE_SOURCE);
@@ -122,39 +122,39 @@ public class CqlRequestImplTest {
   }
 
   @Test(expected = IllegalArgumentException.class)
-  public void testBadSortOrder() {
+  public void testBadSortOrder() throws CqlParseException {
     cqlRequest.setSorts(Collections.singletonList(new CqlRequestImpl.Sort(SORT_PROPERTY, "bad")));
     cqlRequest.createQueryRequest(CACHE_SOURCE, filterBuilder);
   }
 
   @Test
-  public void testBadSortOrderString() {
+  public void testBadSortOrderString() throws CqlParseException {
     cqlRequest.setSorts(Collections.singletonList(new CqlRequestImpl.Sort(SORT_PROPERTY, null)));
     QueryRequest queryRequest = cqlRequest.createQueryRequest(LOCAL_SOURCE, filterBuilder);
     assertDefaultSortBy(queryRequest);
   }
 
   @Test
-  public void testBlankSortOrder() {
+  public void testBlankSortOrder() throws CqlParseException {
     cqlRequest.setSorts(Collections.emptyList());
     QueryRequest queryRequest = cqlRequest.createQueryRequest(LOCAL_SOURCE, filterBuilder);
     assertDefaultSortBy(queryRequest);
   }
 
-  @Test(expected = HaltException.class)
-  public void testBadCql() {
+  @Test(expected = CqlParseException.class)
+  public void testBadCql() throws CqlParseException {
     cqlRequest.setCql(BAD_CQL);
     cqlRequest.createQueryRequest(LOCAL_SOURCE, filterBuilder);
   }
 
   @Test
-  public void testBlankLocalSource() {
+  public void testBlankLocalSource() throws CqlParseException {
     cqlRequest.createQueryRequest("", filterBuilder);
     assertThat(cqlRequest.getSource(), is("source"));
   }
 
   @Test
-  public void testMultipleSources() {
+  public void testMultipleSources() throws CqlParseException {
     ArrayList<String> sources = new ArrayList<>();
     sources.add("local");
     sources.add("source2");
@@ -165,13 +165,13 @@ public class CqlRequestImplTest {
   }
 
   @Test
-  public void testSingleSourceResponseString() {
+  public void testSingleSourceResponseString() throws CqlParseException {
     cqlRequest.createQueryRequest("", filterBuilder);
     assertThat(cqlRequest.getSourceResponseString(), is("source"));
   }
 
   @Test
-  public void testMultipleSourceResponseString() {
+  public void testMultipleSourceResponseString() throws CqlParseException {
     ArrayList<String> sources = new ArrayList<>();
     sources.add("source1");
     sources.add("source2");
@@ -181,7 +181,7 @@ public class CqlRequestImplTest {
   }
 
   @Test
-  public void testLocalSource() {
+  public void testLocalSource() throws CqlParseException {
     cqlRequest.setSrc(LOCAL_SOURCE);
     cqlRequest.createQueryRequest(LOCAL_SOURCE, filterBuilder);
     assertThat(cqlRequest.getSource(), is(LOCAL_SOURCE));
