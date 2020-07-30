@@ -115,10 +115,10 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.ExecutionException;
 import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
 import org.codice.ddf.catalog.ui.enumeration.ExperimentalEnumerationExtractor;
-import org.codice.ddf.catalog.ui.metacard.associations.Associated;
 import org.codice.ddf.catalog.ui.events.EventApplication;
 import org.codice.ddf.catalog.ui.events.EventType;
 import org.codice.ddf.catalog.ui.events.EventTypeDeserializer;
+import org.codice.ddf.catalog.ui.metacard.associations.Associated;
 import org.codice.ddf.catalog.ui.metacard.edit.AttributeChange;
 import org.codice.ddf.catalog.ui.metacard.edit.MetacardChanges;
 import org.codice.ddf.catalog.ui.metacard.history.HistoryResponse;
@@ -632,7 +632,7 @@ public class MetacardApplication implements SparkApplication {
           }
 
           catalogFramework.delete(new DeleteRequestImpl(id));
-          
+
           subscriptions.removeSubscriptions(id);
           EventApplication.notifyListeners(new EventType("WORKSPACE"));
           return ImmutableMap.of("message", "Successfully deleted.");

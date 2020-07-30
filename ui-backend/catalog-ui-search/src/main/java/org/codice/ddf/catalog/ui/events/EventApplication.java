@@ -66,77 +66,77 @@ public class EventApplication implements SparkApplication {
             return "Event Source connection closed";
           } catch (Exception e) {
             LOGGER.error("Event Source configuration error");
-        }
-        res.status(500);
-        return "Event Source configuration error: Server error";
-      });
-}
+          }
+          res.status(500);
+          return "Event Source configuration error: Server error";
+        });
+  }
 
-public static void notifyListeners(EventType type) {
-  ExecutorService es = Executors.newSingleThreadExecutor();
-  es.submit(
-      () -> {
-        try {
-          Thread.sleep(3000);
-        } catch (InterruptedException e) {
-          LOGGER.error("Event Source notification error");
-        }
-      });
-  es.submit(
-      () -> {
-        synchronized (listeners) {
-          listeners
-              .values()
-              .forEach(
-                  (listener) -> {
-                    listener.write("event: " + type.getType() + "\n");
-                    listener.write("data" + HEARTBEAT);
-                    listener.flush();
-                  });
-        }
-      });
-}
+  public static void notifyListeners(EventType type) {
+    ExecutorService es = Executors.newSingleThreadExecutor();
+    es.submit(
+        () -> {
+          try {
+            Thread.sleep(3000);
+          } catch (InterruptedException e) {
+            LOGGER.error("Event Source notification error");
+          }
+        });
+    es.submit(
+        () -> {
+          synchronized (listeners) {
+            listeners
+                .values()
+                .forEach(
+                    (listener) -> {
+                      listener.write("event: " + type.getType() + "\n");
+                      listener.write("data" + HEARTBEAT);
+                      listener.flush();
+                    });
+          }
+        });
+  }
 
-public static void notifyListeners(String type) {
-  ExecutorService es = Executors.newSingleThreadExecutor();
-  es.submit(
-    () -> {
-      try {
-        Thread.sleep(3000);
-      } catch (InterruptedException e) {
-        LOGGER.error("Event Source notification error");
-      }
-    });
-es.submit(
-    () -> {
-      synchronized (listeners) {
-        listeners
-            .values()
-            .forEach(
-                (listener) -> {
-                  listener.write("event: " + type + "\n");
-                  listener.write("data" + HEARTBEAT);
-                  listener.flush();
-                });
-      }
-    });
-}
+  public static void notifyListeners(String type) {
+    ExecutorService es = Executors.newSingleThreadExecutor();
+    es.submit(
+        () -> {
+          try {
+            Thread.sleep(3000);
+          } catch (InterruptedException e) {
+            LOGGER.error("Event Source notification error");
+          }
+        });
+    es.submit(
+        () -> {
+          synchronized (listeners) {
+            listeners
+                .values()
+                .forEach(
+                    (listener) -> {
+                      listener.write("event: " + type + "\n");
+                      listener.write("data" + HEARTBEAT);
+                      listener.flush();
+                    });
+          }
+        });
+  }
 
-public static void notifyListener(String id, EventType type) {
-  ExecutorService es = Executors.newSingleThreadExecutor();
-  es.submit(
-      () -> {
-        try {
-          Thread.sleep(3000);
-        } catch (InterruptedException e) {
-          LOGGER.error("Event Source notification error");
-        }
-      });
-  es.submit(
-      () -> {
-        listeners.get(id).write("event: " + type.getType() + "\n");
-        listeners.get(id).write("data" + HEARTBEAT);
-        listeners.get(id).flush();
-      });
-}
+  public static void notifyListener(String id, EventType type) {
+    ExecutorService es = Executors.newSingleThreadExecutor();
+    es.submit(
+        () -> {
+          try {
+            Thread.sleep(3000);
+          } catch (InterruptedException e) {
+            LOGGER.error("Event Source notification error");
+          }
+        });
+    es.submit(
+        () -> {
+          listeners.get(id).write("event: " + type.getType() + "\n");
+          listeners.get(id).write("data" + HEARTBEAT);
+          listeners.get(id).flush();
+        });
+  }
 }
