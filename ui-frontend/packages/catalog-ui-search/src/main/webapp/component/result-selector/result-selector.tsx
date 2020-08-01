@@ -14,8 +14,11 @@ import Paper from '@material-ui/core/Paper'
 import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
 import Button from '@material-ui/core/Button'
 import FilterListIcon from '@material-ui/icons/FilterList'
+import SortIcon from '@material-ui/icons/Sort'
 import ResultFilter from '../result-filter/result-filter'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import ResultSort from '../../react-component/result-sort'
+
 const user = require('../singletons/user-instance.js')
 
 const determineHasResultFilter = () => {
@@ -26,6 +29,16 @@ const determineHasResultFilter = () => {
       .get('resultFilter') !== undefined
   )
 }
+
+const determineHasResultSort = () => {
+  return (
+    user
+      .get('user')
+      .get('preferences')
+      .get('resultSort') !== undefined
+  )
+}
+
 type Props = {
   selectionInterface: any
   model: any
@@ -56,11 +69,17 @@ const ResultSelector = ({ selectionInterface, model }: Props) => {
   const [hasResultFilter, setHasResultFilter] = React.useState(
     determineHasResultFilter()
   )
+  const [hasResultSort, setHasResultSort] = React.useState(
+    determineHasResultSort()
+  )
   const { listenTo } = useBackbone()
 
   React.useEffect(() => {
     listenTo(user.get('user').get('preferences'), 'change:resultFilter', () => {
       setHasResultFilter(determineHasResultFilter())
+    })
+    listenTo(user.get('user').get('preferences'), 'change:resultSort', () => {
+      setHasResultSort(determineHasResultSort())
     })
   }, [])
   return (
@@ -115,12 +134,26 @@ const ResultSelector = ({ selectionInterface, model }: Props) => {
           </Dropdown>
         </Grid>
         <Grid item style={GridStyles}>
-          <MRC
-            view={ResultSortDropdownView}
-            viewOptions={{
-              model: new DropdownModel(),
+          <Dropdown
+            content={({ closeAndRefocus }) => {
+              return (
+                <BetterClickAwayListener onClickAway={closeAndRefocus}>
+                  <Paper className="p-3">
+                    <ResultSort closeDropdown={closeAndRefocus} />
+                  </Paper>
+                </BetterClickAwayListener>
+              )
             }}
-          />
+          >
+            {({ handleClick }) => {
+              return (
+                <Button onClick={handleClick}>
+                  Sort{' '}
+                  <SortIcon color={hasResultSort ? 'secondary' : 'inherit'} />
+                </Button>
+              )
+            }}
+          </Dropdown>
         </Grid>
 
         <Grid item style={GridStyles}>

@@ -37,10 +37,7 @@ export const getLabel = (value: string) => {
   return label
 }
 
-export const getSortAttributeOptions = (
-  showBestTextOption: boolean,
-  currentSelections: string[]
-) => {
+export const getSortAttributeOptions = (currentSelections: string[]) => {
   const currentAttributes =
     currentSelections && currentSelections.length ? currentSelections : []
   const attributes = metacardDefinitions.sortedMetacardTypes as AttributeType[]
@@ -55,12 +52,11 @@ export const getSortAttributeOptions = (
     }))
 
   const showBestTextValue = 'RELEVANCE'
-  if (showBestTextOption && !currentAttributes.includes(showBestTextValue)) {
-    options.unshift({
-      label: 'Best Text Match',
-      value: showBestTextValue,
-    })
-  }
+  options.unshift({
+    label: 'Best Text Match',
+    value: showBestTextValue,
+  })
+
   return options
 }
 

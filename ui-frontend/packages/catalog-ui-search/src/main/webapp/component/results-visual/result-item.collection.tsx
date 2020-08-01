@@ -75,7 +75,7 @@ const ResultCards = ({ results, mode, setMode, lazyResults }: Props) => {
         </Button>
         <Button
           onClick={() => {
-            Object.values(lazyResults.filteredResults).forEach(lazyResult => {
+            Object.values(lazyResults.results).forEach(lazyResult => {
               lazyResult.setSelected(true)
             })
           }}

@@ -12,6 +12,15 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+
+/**
+ * With the update to having result filter run a real query, this isn't actually used anymore.
+ *
+ * It's possible it might be useful in the future if we add in faceting and need to start filtering on the frontend in complicated ways again,
+ * but I think even in that circumstance we'll end up sending a query to the server rather than doing anything like this on the
+ * client.
+ */
+
 import { ResultType } from '../Types'
 import { FilterType, TruncatingFilterType } from './types'
 

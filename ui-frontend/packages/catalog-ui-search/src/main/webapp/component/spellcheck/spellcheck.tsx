@@ -116,7 +116,7 @@ const Spellcheck = (props: Props) => {
   const lazyResults = useLazyResultsFromSelectionInterface({
     selectionInterface,
   })
-  const results = Object.values(lazyResults.filteredResults)
+  const results = Object.values(lazyResults.results)
   if (results.length === 0) {
     return null
   } else if (model.get('spellcheck')) {

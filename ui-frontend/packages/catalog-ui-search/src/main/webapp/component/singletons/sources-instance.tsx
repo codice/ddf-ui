@@ -14,4 +14,15 @@
  **/
 
 const Sources = require('../../js/model/Sources.js')
-module.exports = new Sources()
+const SourcesInstance = new Sources() as {
+  getHarvested: () => string[]
+  localCatalog: string
+  toJSON: () => {
+    available: boolean
+    contentTypes: { name: string; version: string; value: string }[]
+    id: string
+    local?: boolean
+    version: string
+  }[]
+}
+export default SourcesInstance

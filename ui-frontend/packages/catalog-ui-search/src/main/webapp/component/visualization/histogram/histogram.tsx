@@ -247,9 +247,7 @@ const getPropertyView = ({
     model: new Property({
       showValidationIssues: false,
       enumFiltering: true,
-      enum: calculateAvailableAttributes(
-        Object.values(lazyResults.filteredResults)
-      ),
+      enum: calculateAvailableAttributes(Object.values(lazyResults.results)),
       value: [attributeToBin],
       id: 'Group by',
     }),
@@ -271,7 +269,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
   const [propertyView, setPropertyView] = React.useState(
     getPropertyView({ lazyResults, attributeToBin })
   )
-  const filteredResults = Object.values(lazyResults.filteredResults)
+  const results = Object.values(lazyResults.results)
   React.useEffect(
     () => {
       listenTo(propertyView.model, 'change:value', () => {
@@ -291,21 +289,21 @@ export const Histogram = ({ selectionInterface }: Props) => {
     () => {
       setNoMatchingData(false)
     },
-    [lazyResults.filteredResults, attributeToBin]
+    [lazyResults.results, attributeToBin]
   )
 
   React.useEffect(
     () => {
       setPropertyView(getPropertyView({ lazyResults, attributeToBin }))
     },
-    [lazyResults.filteredResults]
+    [lazyResults.results]
   )
 
   React.useEffect(
     () => {
       showHistogram()
     },
-    [lazyResults.filteredResults, attributeToBin]
+    [lazyResults.results, attributeToBin]
   )
 
   React.useEffect(
@@ -319,7 +317,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
     return [
       {
         x: calculateAttributeArray({
-          results: filteredResults,
+          results,
           attribute: attributeToBin,
         }),
         opacity: 1,
@@ -337,7 +335,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
   }
 
   const determineData = (plot: any) => {
-    const activeResults = filteredResults
+    const activeResults = results
     const xbins = Common.duplicate(plot._fullData[0].xbins)
     if (xbins.size.constructor !== String) {
       xbins.end = xbins.end + xbins.size //https://github.com/plotly/plotly.js/issues/1229
@@ -410,7 +408,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
       if (
         histogramElement.children.length !== 0 &&
         attributeToBin &&
-        filteredResults.length !== 0
+        results.length !== 0
       ) {
         const theme = getTheme(e.get('spacingMode'))
         //@ts-ignore
@@ -426,7 +424,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
       if (
         histogramElement.children.length !== 0 &&
         attributeToBin &&
-        filteredResults.length !== 0
+        results.length !== 0
       ) {
         //@ts-ignore
         histogramElement.layout.font.size = e.get('fontSize')
@@ -454,7 +452,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
 
   const showHistogram = () => {
     if (plotlyRef.current) {
-      if (filteredResults.length > 0 && attributeToBin.length > 0) {
+      if (results.length > 0 && attributeToBin.length > 0) {
         const histogramElement = plotlyRef.current
         const initialData = determineInitialData()
         if (initialData[0].x.length === 0) {
@@ -488,7 +486,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
         histogramElement !== null &&
         histogramElement.children.length !== 0 &&
         attributeToBin &&
-        filteredResults.length > 0
+        results.length > 0
       ) {
         Plotly.deleteTraces(histogramElement, 1)
         Plotly.addTraces(histogramElement, determineData(histogramElement)[1])
@@ -508,7 +506,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
     const attributeToCheck = attributeToBin
     const categories = retrieveCategoriesFromPlotly()
     const validCategories = categories.slice(firstIndex, lastIndex)
-    const activeSearchResults = filteredResults
+    const activeSearchResults = results
     const results = validCategories.reduce(
       (results: any, category: any) => {
         results = results.concat(
@@ -595,7 +593,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
     const attributeToCheck = attributeToBin
     const categories = retrieveCategoriesFromPlotly()
     const results = findMatchesForAttributeValues(
-      filteredResults,
+      results,
       attributeToCheck,
       getValueFromClick(data, categories)
     )
@@ -684,7 +682,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
 
   React.useEffect(() => {}, [])
 
-  if (Object.keys(lazyResults.filteredResults).length === 0) {
+  if (Object.keys(lazyResults.results).length === 0) {
     return <div style={{ padding: '20px' }}>No results found</div>
   }
   return (

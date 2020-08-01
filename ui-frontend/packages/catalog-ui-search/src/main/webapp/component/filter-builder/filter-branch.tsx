@@ -172,7 +172,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
         setHover(false)
       }}
     >
-      <Paper elevation={root ? 0 : 10} className="px-3 pt-6 pb-2">
+      <Paper elevation={root ? 0 : 10} className={root ? '' : 'px-3 pt-6 pb-2'}>
         <div className=" relative">
           <div
             className={`${

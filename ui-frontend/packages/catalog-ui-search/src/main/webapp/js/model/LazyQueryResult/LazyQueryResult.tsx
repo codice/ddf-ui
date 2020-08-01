@@ -17,7 +17,7 @@ const QueryResult = require('../QueryResult.js')
 import { LazyQueryResults } from './LazyQueryResults'
 
 const _ = require('underscore')
-const Sources = require('../../../component/singletons/sources-instance.js')
+import Sources from '../../../component/singletons/sources-instance'
 const metacardDefinitions = require('../../../component/singletons/metacard-definitions.js')
 const properties = require('../../properties.js')
 const TurfMeta = require('@turf/meta')

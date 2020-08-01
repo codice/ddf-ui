@@ -17,7 +17,7 @@ const Marionette = require('marionette')
 const _ = require('underscore')
 const $ = require('jquery')
 const CustomElements = require('../../js/CustomElements.js')
-const sources = require('../singletons/sources-instance.js')
+import sources from '../singletons/sources-instance'
 import React from 'react'
 import { FormattedMessage } from 'react-intl'
 

@@ -17,6 +17,8 @@ import MRC from '../../react-component/marionette-region-container'
 const QuerySettingsView = require('../query-settings/query-settings.view.js')
 import { FilterBuilderRoot } from '../filter-builder/filter-builder'
 import { hot } from 'react-hot-loader'
+import Box from '@material-ui/core/Box'
+import Swath from '../swath/swath'
 type Props = {
   model: any
 }
@@ -30,9 +32,12 @@ export const QueryAdvanced = ({ model }: Props) => {
         noValidate
         className="w-full h-full"
       >
-        <div className="w-full h-full overflow-auto">
+        <div className="w-full h-full overflow-auto px-3 pt-6">
           <div className="query-advanced">
             <FilterBuilderRoot model={model} />
+          </div>
+          <div className="py-5">
+            <Swath className="w-full h-1" />
           </div>
           <div className="query-settings">
             <MRC

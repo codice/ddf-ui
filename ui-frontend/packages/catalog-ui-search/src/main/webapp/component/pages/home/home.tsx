@@ -24,6 +24,7 @@ import { BetterClickAwayListener } from '../../better-click-away-listener/better
 import MoreVert from '@material-ui/icons/MoreVert'
 import Box from '@material-ui/core/Box'
 import { createGlobalStyle } from 'styled-components'
+import Swath from '../../swath/swath'
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
@@ -210,13 +211,10 @@ export const HomePage = () => {
       <SplitPane variant="horizontal" collapsedLength={140}>
         <Paper elevation={4} className="h-full">
           <Grid container className="w-full h-full">
-            <Grid
-              item
-              className="w-full"
-              style={{ borderBottom: '1px solid rgb(36, 53, 64)' }}
-            >
+            <Grid item className="w-full">
               <LeftTop selectionInterface={selectionInterface} />
             </Grid>
+            <Swath className="h-1 w-full" />
             <Grid
               item
               className="w-full"

@@ -96,12 +96,6 @@ export class LazyQueryResults {
   results: {
     [key: string]: LazyQueryResult
   }
-  /**
-   * This is fairly common ask between visuals that use these results, so we keep a copy for repeat access
-   */
-  filteredResults: {
-    [key: string]: LazyQueryResult
-  }
   selectedResults: {
     [key: string]: LazyQueryResult
   }
@@ -180,19 +174,6 @@ export class LazyQueryResults {
       result.setSelected(false)
     })
   }
-  _updateFilteredResults() {
-    this.filteredResults = Object.values(this.results)
-      .filter(result => {
-        return result.isFiltered === false
-      })
-      .reduce(
-        (blob, result) => {
-          blob[result['metacard.id']] = result
-          return blob
-        },
-        {} as { [key: string]: LazyQueryResult }
-      )
-  }
   backboneModel: Backbone.Model
   /**
    * Can contain distance / best text match
@@ -204,36 +185,6 @@ export class LazyQueryResults {
    * (this is a user pref aka client side only)
    */
   ephemeralSorts: QuerySortType[]
-  /**
-   * on the fly filtering (user prefs aka client side only)
-   */
-  ephemeralFilter?: FilterType
-  _updateEphemeralFilter() {
-    this.ephemeralFilter = user.getPreferences().get('resultFilter')
-  }
-  /**
-   * Go through and set isFiltered on results
-   *
-   * This keeps us from needing to resort, and will allow multiselection
-   * to still work.
-   */
-  _refilter() {
-    if (this.ephemeralFilter !== undefined) {
-      let updated = false
-      Object.values(this.results).forEach(result => {
-        updated =
-          result.setFiltered(
-            result.matchesFilters(this.ephemeralFilter as FilterType) === false
-          ) || updated
-      })
-      this._updateFilteredResults()
-    } else {
-      Object.values(this.results).forEach(result => {
-        result.setFiltered(false)
-      })
-      this.filteredResults = this.results
-    }
-  }
   /**
    *  Should really only be set at constructor time (moment a query is done)
    */
@@ -283,7 +234,6 @@ export class LazyQueryResults {
     sources = [],
   }: ConstructorProps = {}) {
     this._updateEphemeralSorts()
-    this._updateEphemeralFilter()
     this.reset({ results, sorts, sources })
 
     this.backboneModel = new Backbone.Model({
@@ -294,18 +244,11 @@ export class LazyQueryResults {
       'change:user>preferences>resultSort',
       () => {
         this._updateEphemeralSorts()
-        this._resort()
-        this._refilter() // needs to be in sync in the sorted map
-        this['_notifySubscribers.filteredResults']()
-      }
-    )
-    this.backboneModel.listenTo(
-      user,
-      'change:user>preferences>resultFilter',
-      () => {
-        this._updateEphemeralFilter()
-        this._refilter()
-        this['_notifySubscribers.filteredResults']()
+        /**
+         * No need to resort because the query will re-execute.  We do need to update things though, so when all sources return we can sort appropriately.
+         */
+        // this._resort()
+        // this['_notifySubscribers.filteredResults']()
       }
     )
   }
@@ -361,6 +304,9 @@ export class LazyQueryResults {
       const lazyResult = new LazyQueryResult(result)
       this.results[lazyResult['metacard.id']] = lazyResult
       lazyResult.parent = this
+      /**
+       * Keep a fast lookup of what results are selected
+       */
       this['subscriptionsToOthers.result.isSelected'].push(
         lazyResult.subscribeTo({
           subscribableThing: 'selected',
@@ -369,6 +315,9 @@ export class LazyQueryResults {
           },
         })
       )
+      /**
+       * When a backbone model is created we want to start listening for updates so the plain object has the same information
+       */
       this['subscriptionsToOthers.result.backboneCreated'].push(
         lazyResult.subscribeTo({
           subscribableThing: 'backboneCreated',
@@ -378,9 +327,11 @@ export class LazyQueryResults {
               'change:metacard>properties refreshdata',
               () => {
                 lazyResult.syncWithBackbone()
-                this._resort()
-                this._refilter()
-                this['_notifySubscribers.filteredResults']()
+                /**
+                 * Commenting this part out for now, as this is an expensive thing and I'm not 100% users would actually expect a result to resort on the fly after updating it.
+                 */
+                // this._resort()
+                // this['_notifySubscribers.filteredResults']()
               }
             )
           },
@@ -388,7 +339,6 @@ export class LazyQueryResults {
       )
     })
     this._resort()
-    this._refilter()
     this['_notifySubscribers.filteredResults']()
   }
   _updateSelectedResults({ lazyResult }: { lazyResult: LazyQueryResult }) {

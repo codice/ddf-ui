@@ -26,7 +26,7 @@ const Property = require('../property/property.js')
 const properties = require('../../js/properties.js')
 const cql = require('../../js/cql.js')
 const metacardDefinitions = require('../singletons/metacard-definitions.js')
-const sources = require('../singletons/sources-instance.js')
+import sources from '../singletons/sources-instance'
 const CQLUtils = require('../../js/CQLUtils.js')
 const QuerySettingsView = require('../query-settings/query-settings.view.js')
 const QueryTimeView = require('../query-time/query-time.view.js')

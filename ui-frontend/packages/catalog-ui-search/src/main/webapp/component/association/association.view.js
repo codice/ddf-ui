@@ -38,7 +38,7 @@ function determineChoices(view) {
     view.options.selectionInterface
       .get('currentQuery')
       .get('result')
-      .get('lazyResults').filteredResults
+      .get('lazyResults').results
   )
     .filter(function(result) {
       return result['metacard.id'] !== currentMetacard.get('metacard').id

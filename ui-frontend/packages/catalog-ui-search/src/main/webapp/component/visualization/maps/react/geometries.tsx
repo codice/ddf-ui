@@ -89,7 +89,7 @@ const Geometries = (props: Props) => {
 
   const IndividualGeometries = React.useMemo(
     () => {
-      return Object.values(lazyResults.filteredResults).map(lazyResult => {
+      return Object.values(lazyResults.results).map(lazyResult => {
         return (
           <Geometry
             key={lazyResult['metacard.id']}
@@ -100,7 +100,7 @@ const Geometries = (props: Props) => {
         )
       })
     },
-    [lazyResults.filteredResults, clusters]
+    [lazyResults.results, clusters]
   )
 
   const Clusters = React.useMemo(
@@ -109,7 +109,7 @@ const Geometries = (props: Props) => {
         return <Cluster key={cluster.id} cluster={cluster} map={map} />
       })
     },
-    [clusters, lazyResults.filteredResults]
+    [clusters, lazyResults.results]
   )
 
   const CalculateClustersMemo = React.useMemo(
@@ -119,12 +119,12 @@ const Geometries = (props: Props) => {
           key="clusters"
           isClustering={isClustering}
           map={map}
-          lazyResults={lazyResults.filteredResults}
+          lazyResults={lazyResults.results}
           setClusters={setClusters}
         />
       )
     },
-    [lazyResults.filteredResults, isClustering]
+    [lazyResults.results, isClustering]
   )
 
   const ZoomToSelectionMemo = React.useMemo(

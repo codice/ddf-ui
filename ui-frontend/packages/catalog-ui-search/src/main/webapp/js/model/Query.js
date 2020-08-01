@@ -18,11 +18,12 @@ const $ = require('jquery')
 const _ = require('underscore')
 const properties = require('../properties.js')
 const QueryResponse = require('./QueryResponse.js')
-const Sources = require('../../component/singletons/sources-instance.js')
+import Sources from '../../component/singletons/sources-instance'
 const Common = require('../Common.js')
 const CacheSourceSelector = require('../CacheSourceSelector.js')
 const announcement = require('../../component/announcement/index.jsx')
 const CQLUtils = require('../CQLUtils.js')
+const cql = require('../cql')
 const user = require('../../component/singletons/user-instance.js')
 const _merge = require('lodash/merge')
 require('backbone-associations')
@@ -32,32 +33,54 @@ import { readableColor } from 'polished'
 import { LazyQueryResults } from './LazyQueryResult/LazyQueryResults'
 const Query = {}
 
-function limitToDeleted(cqlString) {
-  return CQLUtils.transformFilterToCQL({
+function getEphemeralSort() {
+  return user
+    .get('user')
+    .get('preferences')
+    .get('resultSort')
+}
+
+function mixinEphemeralFilter(originalCQL) {
+  const ephermeralFilter = user
+    .get('user')
+    .get('preferences')
+    .get('resultFilter')
+  if (ephermeralFilter) {
+    return {
+      filters: [ephermeralFilter, originalCQL],
+      type: 'AND',
+    }
+  } else {
+    return originalCQL
+  }
+}
+
+function limitToDeleted(cqlFilterTree) {
+  return {
     type: 'AND',
     filters: [
-      CQLUtils.transformCQLToFilter(cqlString),
+      cqlFilterTree,
       {
         property: '"metacard-tags"',
         type: 'ILIKE',
         value: 'deleted',
       },
     ],
-  })
+  }
 }
 
-function limitToHistoric(cqlString) {
-  return CQLUtils.transformFilterToCQL({
+function limitToHistoric(cqlFilterTree) {
+  return {
     type: 'AND',
     filters: [
-      CQLUtils.transformCQLToFilter(cqlString),
+      cqlFilterTree,
       {
         property: '"metacard-tags"',
         type: 'ILIKE',
         value: 'revision',
       },
     ],
-  })
+  }
 }
 
 const handleTieredSearchLocalFinish = function(ids) {
@@ -157,15 +180,34 @@ Query.Model = Backbone.AssociatedModel.extend({
   initialize() {
     _.bindAll.apply(_, [this].concat(_.functions(this))) // underscore bindAll does not take array arg
     this.set('id', this.getId())
-    this.listenTo(this, 'change:cql', () => {
-      this.set('isOutdated', true)
-      this.resetCurrentIndexForSourceGroup()
-    })
+    this.listenTo(
+      this,
+      'change:cql change:sources change:sorts change:spellcheck change:phonetics',
+      () => {
+        this.set('isOutdated', true)
+        // this.resetCurrentIndexForSourceGroup()
+      }
+    )
     this.listenTo(
       user.get('user').get('preferences'),
       'change:resultCount',
       () => {
-        this.resetCurrentIndexForSourceGroup()
+        this.set('isOutdated', true)
+        // this.resetCurrentIndexForSourceGroup()
+      }
+    )
+    this.listenTo(
+      user.get('user').get('preferences'),
+      'change:resultFilter',
+      () => {
+        this.startSearchFromFirstPage()
+      }
+    )
+    this.listenTo(
+      user.get('user').get('preferences'),
+      'change:resultSort',
+      () => {
+        this.startSearchFromFirstPage()
       }
     )
   },
@@ -185,16 +227,22 @@ Query.Model = Backbone.AssociatedModel.extend({
   },
   buildSearchData() {
     const data = this.toJSON()
-    switch (data.federation) {
-      case 'local':
-        data.sources = [Sources.localCatalog]
-        break
-      case 'enterprise':
-        data.sources = _.pluck(Sources.toJSON(), 'id')
-        break
-      case 'selected':
-        // already in correct format
-        break
+    if (data.sources.includes('all')) {
+      data.sources = _.pluck(Sources.toJSON(), 'id')
+    }
+    if (data.sources.includes('local')) {
+      data.sources = data.sources
+        .concat(Sources.getHarvested())
+        .filter(src => src !== 'local')
+    }
+    if (data.sources.includes('remote')) {
+      data.sources = data.sources
+        .concat(
+          _.pluck(Sources.toJSON(), 'id').filter(
+            src => !Sources.getHarvested().includes(src)
+          )
+        )
+        .filter(src => src !== 'remote')
     }
 
     data.count = user
@@ -202,7 +250,7 @@ Query.Model = Backbone.AssociatedModel.extend({
       .get('preferences')
       .get('resultCount')
 
-    data.sorts = this.get('sorts')
+    data.sorts = getEphemeralSort() || this.get('sorts')
 
     return _.pick(
       data,
@@ -292,12 +340,14 @@ Query.Model = Backbone.AssociatedModel.extend({
       })
     }
 
-    let cqlString = data.cql
+    let cqlFilterTree = this.get('filterTree')
     if (options.limitToDeleted) {
-      cqlString = limitToDeleted(cqlString)
+      cqlFilterTree = limitToDeleted(cqlFilterTree)
     } else if (options.limitToHistoric) {
-      cqlString = limitToHistoric(cqlString)
+      cqlFilterTree = limitToHistoric(cqlFilterTree)
     }
+    cqlFilterTree = mixinEphemeralFilter(cqlFilterTree)
+    let cqlString = cql.write(cqlFilterTree)
 
     const selectedSources = data.sources
 

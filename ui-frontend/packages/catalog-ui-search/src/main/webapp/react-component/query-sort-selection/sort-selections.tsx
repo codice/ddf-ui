@@ -24,48 +24,18 @@ import {
   getSortDirectionOptions,
   getLabel,
 } from './sort-selection-helpers'
-
-const SortRoot = styled.div`
-  display: block;
-  width: 100%;
-  overflow: hidden;
-`
-
-const SortItemContainer = styled.div<{ first: boolean; last: boolean }>`
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  position: relative;
-  margin: ${props => {
-    if (props.first && props.last) {
-      return `0 0 ${props.theme.minimumSpacing}`
-    } else if (props.last) {
-      return `${props.theme.minimumSpacing} 0`
-    } else if (props.first) {
-      return
-    } else {
-      return `${props.theme.minimumSpacing} 0 0`
-    }
-  }};
-`
+import Button from '@material-ui/core/Button'
+import AddIcon from '@material-ui/icons/Add'
+import Box from '@material-ui/core/Box'
+import Grid from '@material-ui/core/Grid'
+import Typography from '@material-ui/core/Typography'
 
 const AddSortContainer = styled.div`
   padding: 0px 1.5rem;
 `
 
-const AddSortButton = (props: { onClick: () => void }) => (
-  <button
-    className="old-button is-primary"
-    onClick={props.onClick}
-    style={{ width: '100%' }}
-  >
-    <span className="fa fa-plus" />
-  </button>
-)
-
 type Props = {
   collection: any
-  showBestTextOption: boolean
 }
 
 export type Option = {
@@ -91,7 +61,7 @@ const getCollectionAsJson = (collection: any) => {
   return items
 }
 
-const SortSelections = ({ collection, showBestTextOption }: Props) => {
+const SortSelections = ({ collection }: Props) => {
   if (!collection.length) {
     collection.add({
       attribute: 'title',
@@ -105,7 +75,6 @@ const SortSelections = ({ collection, showBestTextOption }: Props) => {
   )
 
   const sortAttributeOptions = getSortAttributeOptions(
-    showBestTextOption,
     collectionJson.map(item => item.attribute.value)
   )
 
@@ -135,13 +104,13 @@ const SortSelections = ({ collection, showBestTextOption }: Props) => {
   }
 
   return (
-    <SortRoot>
+    <div>
+      <Typography className="pb-2">Sort</Typography>
       {collectionJson.map((sortItem, index) => {
         return (
-          <SortItemContainer
+          <div
             key={sortItem.attribute.value}
-            first={index === 0}
-            last={index === collectionJson.length - 1}
+            className={index > 0 ? 'pt-2' : ''}
           >
             <SortItem
               sortItem={sortItem}
@@ -154,13 +123,22 @@ const SortSelections = ({ collection, showBestTextOption }: Props) => {
               onRemove={removeItem(index)}
               showRemove={index !== 0}
             />
-          </SortItemContainer>
+          </div>
         )
       })}
-      <AddSortContainer>
-        <AddSortButton onClick={addSort} />
-      </AddSortContainer>
-    </SortRoot>
+      <div className="pt-2">
+        <Button fullWidth onClick={addSort}>
+          <Grid container direction="row" alignItems="center" wrap="nowrap">
+            <Grid item>
+              <AddIcon />
+            </Grid>
+            <Grid item>
+              <Box color="primary.main">Sort</Box>
+            </Grid>
+          </Grid>
+        </Button>
+      </div>
+    </div>
   )
 }
 

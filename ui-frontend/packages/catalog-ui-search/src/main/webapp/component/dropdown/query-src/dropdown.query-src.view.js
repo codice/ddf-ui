@@ -15,7 +15,7 @@
 
 const DropdownView = require('../dropdown.view')
 const ComponentView = require('../../query-src/query-src.view.js')
-const sources = require('../../singletons/sources-instance.js')
+import sources from '../../singletons/sources-instance'
 const properties = require('../../../js/properties.js')
 import * as React from 'react'
 import { FormattedMessage } from 'react-intl'
@@ -37,7 +37,9 @@ const renderSourceAvailable = source => (
         <i className="fa fa-exclamation-triangle src-availability" />
       ) : null}
       {renderSourceLocal(source)}
-      <span className="src-title" style={{marginLeft: "5px"}}>{source.id}</span>
+      <span className="src-title" style={{ marginLeft: '5px' }}>
+        {source.id}
+      </span>
     </span>
   </React.Fragment>
 )

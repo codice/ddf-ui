@@ -20,7 +20,7 @@ import {
   Transformer,
 } from '../../react-component/utils/export'
 const user = require('../../component/singletons/user-instance.js')
-const Sources = require('../../component/singletons/sources-instance.js')
+import Sources from '../../component/singletons/sources-instance'
 import {
   exportResultSet,
   ExportCountInfo,

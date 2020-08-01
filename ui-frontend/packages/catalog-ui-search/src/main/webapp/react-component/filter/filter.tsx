@@ -44,7 +44,7 @@ const Filter = ({ filter, setFilter }: Props) => {
           fullWidth
           options={attributeList}
           getOptionLabel={option => option.label}
-          getOptionSelected={option => option.value}
+          getOptionSelected={(option, value) => option.value === value.value}
           onChange={(e, newValue) => {
             const newProperty = newValue.value as FilterClass['property']
             setFilter({

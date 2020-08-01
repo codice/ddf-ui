@@ -34,7 +34,7 @@ function determineNodes(view) {
         view.options.selectionInterface
           .get('currentQuery')
           .get('result')
-          .get('lazyResults').filteredResults
+          .get('lazyResults').results
       ).map(function(result) {
         return {
           id: result['metacard.id'],

@@ -20,19 +20,7 @@ module.exports = Marionette.LayoutView.extend({
   template() {
     return (
       <React.Fragment>
-        <label
-          style={{
-            textAlign: 'left',
-            padding: '0 1.5rem',
-            fontWeight: 'bolder',
-          }}
-        >
-          Sort
-        </label>
-        <SortSelections
-          collection={this.collection}
-          showBestTextOption={this.options.showBestTextOption}
-        />
+        <SortSelections collection={this.collection} />
       </React.Fragment>
     )
   },

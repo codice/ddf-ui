@@ -109,6 +109,7 @@ export const Provider = ({ children }: { children: any }) => {
       },
     },
     typography: {
+      fontFamily: `'Open Sans', arial, sans-serif`,
       h6: {
         fontSize: '1.2rem',
       },
@@ -118,6 +119,11 @@ export const Provider = ({ children }: { children: any }) => {
       },
     },
     overrides: {
+      MuiButton: createStyles({
+        root: {
+          lineHeight: 'inherit', // maybe open a ticket on MUI, seems like the default they use doesn't center text quite right with icons
+        },
+      }),
       MuiCardActionArea: createStyles({
         root: {
           height: 'auto',

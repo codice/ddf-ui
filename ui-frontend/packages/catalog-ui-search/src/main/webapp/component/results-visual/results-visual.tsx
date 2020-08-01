@@ -19,7 +19,7 @@ const ResultsView = ({ selectionInterface }: Props) => {
     selectionInterface,
   })
   const { isSearching } = useStatusOfLazyResults({ lazyResults })
-  const filteredResults = Object.values(lazyResults.filteredResults)
+  const results = Object.values(lazyResults.results)
   return (
     <Grid
       container
@@ -30,12 +30,12 @@ const ResultsView = ({ selectionInterface }: Props) => {
       <Grid item />
       <Grid item style={{ width: '100%', height: '100%' }}>
         {(() => {
-          if (isSearching && filteredResults.length === 0) {
+          if (isSearching && results.length === 0) {
             return <CircularProgress />
           } else if (mode === 'card') {
             return (
               <ResultItemCollection
-                results={filteredResults}
+                results={results}
                 mode={mode}
                 setMode={setMode}
                 lazyResults={lazyResults}
@@ -45,7 +45,7 @@ const ResultsView = ({ selectionInterface }: Props) => {
             return (
               <TableVisual
                 selectionInterface={selectionInterface}
-                results={filteredResults}
+                results={results}
                 lazyResults={lazyResults}
                 mode={mode}
                 setMode={setMode}

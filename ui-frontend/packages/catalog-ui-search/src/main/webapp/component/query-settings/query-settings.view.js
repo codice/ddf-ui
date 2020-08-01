@@ -25,18 +25,17 @@ const Property = require('../property/property.js')
 const SortItemCollectionView = require('../sort/sort.view.js')
 const Common = require('../../js/Common.js')
 const properties = require('../../js/properties.js')
-const sourcesInstance = require('../../component/singletons/sources-instance')
+import sourcesInstance from '../../component/singletons/sources-instance'
 const user = require('../singletons/user-instance.js')
 import * as React from 'react'
 import RadioComponent from '../../react-component/input-wrappers/radio'
 import { showErrorMessages } from '../../react-component/utils/validation'
-
+import SourceSelector from './source-selector'
 module.exports = Marionette.LayoutView.extend({
   template() {
     return (
       <React.Fragment>
-        <div className="editor-header is-header">Settings</div>
-        <div className="editor-properties">
+        <div>
           <div className="spellcheck-form" />
           <div className="phonetics-form" />
           <div
@@ -44,9 +43,10 @@ module.exports = Marionette.LayoutView.extend({
             data-help="Sort by a specific attribute"
           />
           <div
-            className="settings-sorting"
+            className="settings-sorting pb-2"
             data-help="Sort results by relevance, distance, created time, modified time or effective time."
           />
+          <SourceSelector search={this.model} />
           <div
             className="settings-src"
             data-help="Select the specific sources to use when performing the search."
@@ -76,7 +76,7 @@ module.exports = Marionette.LayoutView.extend({
   initialize() {
     this.listenTo(
       this.model,
-      'change:sortField change:sortOrder change:sources change:federation',
+      'change:sortField change:sortOrder change:federation',
       Common.safeCallback(this.onBeforeShow)
     )
   },
@@ -99,7 +99,6 @@ module.exports = Marionette.LayoutView.extend({
     this.settingsSortField.show(
       new SortItemCollectionView({
         collection: new Backbone.Collection(this.model.get('sorts')),
-        showBestTextOption: true,
       })
     )
   },
@@ -202,22 +201,11 @@ module.exports = Marionette.LayoutView.extend({
     this.$el.trigger('closeDropdown.' + CustomElements.getNamespace())
   },
   toJSON() {
-    let federation = this._srcDropdownModel.get('federation')
     const spellcheck = this.model.get('spellcheck')
     const phonetics = this.model.get('phonetics')
-    let sources
-    if (federation === 'selected') {
-      sources = this._srcDropdownModel.get('value')
-      if (sources === undefined || sources.length === 0) {
-        federation = 'local'
-      }
-    }
     const sorts = this.settingsSortField.currentView.collection.toJSON()
     return {
-      sources,
-      federation,
       sorts,
-      'detail-level': undefined,
       spellcheck,
       phonetics,
     }
