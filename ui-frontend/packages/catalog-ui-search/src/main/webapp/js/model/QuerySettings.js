@@ -20,7 +20,7 @@ module.exports = Backbone.Model.extend({
   defaults() {
     const hasDefaultSources =
       properties.defaultSources && properties.defaultSources.length > 0
-    const sources = hasDefaultSources ? properties.defaultSources : undefined
+    const sources = hasDefaultSources ? properties.defaultSources : ['all']
 
     return {
       type: 'text',

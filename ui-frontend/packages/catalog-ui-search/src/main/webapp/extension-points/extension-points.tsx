@@ -15,29 +15,23 @@
 import { SFC } from '../react-component/hoc/utils'
 import { providers, Props as ProviderProps } from './providers'
 import visualizations from './visualizations'
-import navigationRight from './navigation-right'
 import metacardInteractions from './metacard-interactions'
 import { tableExport, Props as TableExportProps } from './table-export'
-import userSettings from './user-settings'
 import { Props } from '../react-component/filter/filter-input/filter-input'
 
 export type ExtensionPointsType = {
   providers: SFC<ProviderProps>
   visualizations: any[]
-  navigationRight: any[]
   metacardInteractions: any[]
   tableExport: SFC<TableExportProps>
-  userSettings: React.ReactNode
   customFilterInput: (props: Props) => React.ReactNode | undefined
 }
 
 const ExtensionPoints: ExtensionPointsType = {
   providers,
   visualizations,
-  navigationRight,
   metacardInteractions,
   tableExport,
-  userSettings,
   customFilterInput: () => undefined,
 }
 

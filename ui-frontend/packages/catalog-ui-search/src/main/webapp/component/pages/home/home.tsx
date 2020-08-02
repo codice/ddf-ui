@@ -218,7 +218,7 @@ export const HomePage = () => {
             <Grid
               item
               className="w-full"
-              style={{ height: `calc(100% - 60px)` }}
+              style={{ height: `calc(100% - 100px)` }}
             >
               <LeftBottom selectionInterface={selectionInterface} />
             </Grid>

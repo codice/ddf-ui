@@ -32,6 +32,7 @@ export const getDateFormat = () => {
 }
 
 import moment from 'moment-timezone'
+import { MuiOutlinedInputBorderClasses } from '../theme/theme'
 
 /**
  * No need to convert timezone since we are already doing it in parseDate
@@ -88,7 +89,7 @@ export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
   }, [])
   return (
     <DateInput
-      className="MuiOutlinedInput-root MuiOutlinedInput-multiline MuiOutlinedInput-notchedOutline border"
+      className={MuiOutlinedInputBorderClasses}
       closeOnSelection={false}
       fill
       formatDate={formatDate}

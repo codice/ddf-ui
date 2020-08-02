@@ -1,9 +1,6 @@
 import * as React from 'react'
-import MRC from 'catalog-ui-search/exports/marionette-region-container'
 import Spellcheck from '../spellcheck/spellcheck'
 import Grid from '@material-ui/core/Grid'
-const ResultSortDropdownView = require('catalog-ui-search/src/main/webapp/component/dropdown/result-sort/dropdown.result-sort.view.js')
-const DropdownModel = require('catalog-ui-search/src/main/webapp/component/dropdown/dropdown.js')
 import { hot } from 'react-hot-loader'
 import QueryFeed from './query-feed'
 import { useLazyResultsStatusFromSelectionInterface } from 'catalog-ui-search/src/main/webapp/component/selection-interface/hooks'
@@ -17,8 +14,7 @@ import FilterListIcon from '@material-ui/icons/FilterList'
 import SortIcon from '@material-ui/icons/Sort'
 import ResultFilter from '../result-filter/result-filter'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-import ResultSort from '../../react-component/result-sort'
-
+import EphemeralSearchSort from '../../react-component/query-sort-selection/ephemeral-search-sort'
 const user = require('../singletons/user-instance.js')
 
 const determineHasResultFilter = () => {
@@ -114,7 +110,7 @@ const ResultSelector = ({ selectionInterface, model }: Props) => {
             content={({ closeAndRefocus }) => {
               return (
                 <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper className="p-3">
+                  <Paper className="p-3" elevation={23}>
                     <ResultFilter closeDropdown={closeAndRefocus} />
                   </Paper>
                 </BetterClickAwayListener>
@@ -138,8 +134,8 @@ const ResultSelector = ({ selectionInterface, model }: Props) => {
             content={({ closeAndRefocus }) => {
               return (
                 <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper className="p-3">
-                    <ResultSort closeDropdown={closeAndRefocus} />
+                  <Paper className="p-3" elevation={23}>
+                    <EphemeralSearchSort closeDropdown={closeAndRefocus} />
                   </Paper>
                 </BetterClickAwayListener>
               )

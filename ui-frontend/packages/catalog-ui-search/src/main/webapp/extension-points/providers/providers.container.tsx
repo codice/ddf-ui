@@ -20,6 +20,7 @@ import { IntlProvider } from 'react-intl'
 import { Provider as ThemeProvider } from '../../component/theme/theme'
 import { SnackProvider } from '../../component/snack/snack.provider'
 import { DialogProvider } from '@connexta/atlas/atoms/dialog'
+import { HashRouter as Router } from 'react-router-dom'
 
 const properties = require('properties')
 
@@ -35,7 +36,9 @@ const ProviderContainer = (props: Props) => {
           <ThemeProvider>
             <SnackProvider>
               <DialogProvider>
-                <>{props.children}</>
+                <Router>
+                  <>{props.children}</>
+                </Router>
               </DialogProvider>
             </SnackProvider>
           </ThemeProvider>

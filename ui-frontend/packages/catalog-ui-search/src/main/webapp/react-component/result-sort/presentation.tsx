@@ -15,11 +15,9 @@
 
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
-import styled from 'styled-components'
-import MarionetteRegionContainer from '../marionette-region-container'
-import { Button, buttonTypeEnum } from '../presentation/button'
-
-const SortItemCollectionView = require('../../component/sort/sort.view.js')
+import SortSelections from '../query-sort-selection/sort-selections'
+import Button from '@material-ui/core/Button'
+import Grid from '@material-ui/core/Grid'
 
 type Props = {
   removeSort: () => void
@@ -28,51 +26,35 @@ type Props = {
   collection: Backbone.Collection<Backbone.Model>
 }
 
-const Root = styled.div<Props>`
-  display: block;
-  padding: ${props => props.theme.minimumSpacing};
-  min-width: 500px;
-
-  .editor-footer {
-    padding-top: ${props => props.theme.minimumSpacing};
-  }
-
-  .footer-remove {
-    display: ${props => (props.hasSort ? `inline-block` : `none`)};
-    width: 50%;
-  }
-
-  .footer-save {
-    display: inline-block;
-    width: ${props => (props.hasSort ? `50%` : `100%`)};
-  }
-`
-
-const render = (props: Props) => {
-  const { removeSort, saveSort, collection } = props
+const render = ({ removeSort, saveSort, hasSort, collection }: Props) => {
   return (
-    <Root {...props}>
-      <MarionetteRegionContainer
-        view={SortItemCollectionView}
-        viewOptions={{
-          collection: collection,
-        }}
-      />
-      <div className="editor-footer">
-        <Button
-          className="footer-remove"
-          buttonType={buttonTypeEnum.negative}
-          text="Remove Sort"
-          onClick={removeSort}
-        />
-        <Button
-          buttonType={buttonTypeEnum.positive}
-          className="footer-save"
-          text="Save Sort"
-          onClick={saveSort}
-        />
-      </div>
-    </Root>
+    <div className="min-w-120">
+      <SortSelections collection={collection} />
+      <Grid container direction="row" alignItems="center" wrap="nowrap">
+        {hasSort ? (
+          <Grid item className="w-full">
+            <Button
+              fullWidth
+              onClick={removeSort}
+              variant="text"
+              color="secondary"
+            >
+              Remove Sort
+            </Button>
+          </Grid>
+        ) : null}
+        <Grid item className="w-full">
+          <Button
+            fullWidth
+            onClick={saveSort}
+            variant="contained"
+            color="primary"
+          >
+            Save Sort
+          </Button>
+        </Grid>
+      </Grid>
+    </div>
   )
 }
 

@@ -16,6 +16,7 @@ import * as React from 'react'
 import { DateRangeInput, IDateRangeInputProps } from '@blueprintjs/datetime'
 import { formatDate, parseDate } from './date'
 import { ValueTypes } from '../filter-builder/filter.structure'
+import { MuiOutlinedInputBorderClasses } from '../theme/theme'
 
 type Props = {
   value: ValueTypes['during']
@@ -48,13 +49,11 @@ export const DateRangeField = ({
       allowSingleDayRange
       endInputProps={{
         fill: true,
-        className:
-          'MuiOutlinedInput-root MuiOutlinedInput-multiline MuiOutlinedInput-notchedOutline border',
+        className: MuiOutlinedInputBorderClasses,
       }}
       startInputProps={{
         fill: true,
-        className:
-          'MuiOutlinedInput-root MuiOutlinedInput-multiline MuiOutlinedInput-notchedOutline border',
+        className: MuiOutlinedInputBorderClasses,
       }}
       className="where"
       closeOnSelection={false}

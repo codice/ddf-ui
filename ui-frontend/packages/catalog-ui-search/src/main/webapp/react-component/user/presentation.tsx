@@ -14,8 +14,8 @@
  **/
 import * as React from 'react'
 import styled from 'styled-components'
-import { Button, buttonTypeEnum } from '../presentation/button'
 import { hot } from 'react-hot-loader'
+import Button from '@material-ui/core/Button'
 
 const Root = styled.div`
   width: 100%;
@@ -57,11 +57,9 @@ export default hot(module)(({ username, isGuest, email, signOut }: Props) => {
       {isGuest ? (
         <div />
       ) : (
-        <Button
-          buttonType={buttonTypeEnum.negative}
-          text="Sign Out"
-          onClick={signOut}
-        />
+        <Button variant="contained" color="secondary" onClick={signOut}>
+          Sign Out
+        </Button>
       )}
     </Root>
   )

@@ -27,7 +27,6 @@ const cql = require('../cql')
 const user = require('../../component/singletons/user-instance.js')
 const _merge = require('lodash/merge')
 require('backbone-associations')
-const plugin = require('plugins/query')
 import React from 'react'
 import { readableColor } from 'polished'
 import { LazyQueryResults } from './LazyQueryResult/LazyQueryResults'
@@ -110,7 +109,7 @@ Query.Model = Backbone.AssociatedModel.extend({
       isTransient: true,
     },
   ],
-  set(data, ...args) {
+  set(data) {
     if (
       typeof data === 'object' &&
       data.filterTree !== undefined &&
@@ -123,10 +122,10 @@ Query.Model = Backbone.AssociatedModel.extend({
         data.filterTree = CQLUtils.transformCQLToFilter(data.cql)
       }
     }
-    return Backbone.Model.prototype.set.call(this, data, ...args)
+    return Backbone.AssociatedModel.prototype.set.apply(this, arguments)
   },
   toJSON(...args) {
-    const json = Backbone.Model.prototype.toJSON.call(this, ...args)
+    const json = Backbone.AssociatedModel.prototype.toJSON.call(this, ...args)
     if (typeof json.filterTree === 'object') {
       json.filterTree = JSON.stringify(json.filterTree)
     }
@@ -300,9 +299,6 @@ Query.Model = Backbone.AssociatedModel.extend({
       })
     })
   },
-  async preQueryPlugin(data) {
-    return data
-  },
   startSearch(options, done) {
     this.set('isOutdated', false)
     if (this.get('cql') === '') {
@@ -377,67 +373,62 @@ Query.Model = Backbone.AssociatedModel.extend({
       search => search.srcs.length > 0
     )
 
-    const currentSearches = this.preQueryPlugin(searchesToRun)
-
-    currentSearches.then(currentSearches => {
-      if (currentSearches.length === 0) {
-        announcement.announce({
-          title: 'Search "' + this.get('title') + '" cannot be run.',
-          message: properties.i18n['search.sources.selected.none.message'],
-          type: 'warn',
-        })
-        this.currentSearches = []
-        return
-      }
-
-      this.currentSearches = currentSearches.map(search => {
-        delete search.sources // This key isn't used on the backend and only serves to confuse those debugging this code.
-
-        // `result` is QueryResponse
-        return result.fetch({
-          customErrorHandling: true,
-          data: JSON.stringify(search),
-          remove: false,
-          dataType: 'json',
-          contentType: 'application/json',
-          method: 'POST',
-          processData: false,
-          timeout: properties.timeout,
-          success(model, response, options) {
-            response.options = options
-          },
-          error(model, response, options) {
-            if (response.status === 401) {
-              const providerUrl = response.responseJSON.url
-              const sourceId = response.responseJSON.id
-
-              const link = React.createElement(
-                'a',
-                {
-                  href: providerUrl,
-                  target: '_blank',
-                  style: {
-                    color: `${props =>
-                      readableColor(props.theme.negativeColor)}`,
-                  },
-                },
-                `Click Here To Authenticate ${sourceId}`
-              )
-              announcement.announce({
-                title: `Source ${sourceId} is Not Authenticated`,
-                message: link,
-                type: 'error',
-              })
-            }
-
-            response.options = options
-          },
-        })
+    if (searchesToRun.length === 0) {
+      announcement.announce({
+        title: 'Search "' + this.get('title') + '" cannot be run.',
+        message: properties.i18n['search.sources.selected.none.message'],
+        type: 'warn',
       })
-      if (typeof done === 'function') {
-        done(this.currentSearches)
-      }
+      this.currentSearches = []
+      return
+    }
+
+    this.currentSearches = searchesToRun.map(search => {
+      delete search.sources // This key isn't used on the backend and only serves to confuse those debugging this code.
+
+      // `result` is QueryResponse
+      return result.fetch({
+        customErrorHandling: true,
+        data: JSON.stringify(search),
+        remove: false,
+        dataType: 'json',
+        contentType: 'application/json',
+        method: 'POST',
+        processData: false,
+        timeout: properties.timeout,
+        success(model, response, options) {
+          response.options = options
+        },
+        error(model, response, options) {
+          if (response.status === 401) {
+            const providerUrl = response.responseJSON.url
+            const sourceId = response.responseJSON.id
+
+            const link = React.createElement(
+              'a',
+              {
+                href: providerUrl,
+                target: '_blank',
+                style: {
+                  color: `${props => readableColor(props.theme.negativeColor)}`,
+                },
+              },
+              `Click Here To Authenticate ${sourceId}`
+            )
+            announcement.announce({
+              title: `Source ${sourceId} is Not Authenticated`,
+              message: link,
+              type: 'error',
+            })
+          }
+
+          response.options = options
+        },
+      })
     })
+    if (typeof done === 'function') {
+      done(this.currentSearches)
+    }
   },
   currentSearches: [],
   cancelCurrentSearches() {
@@ -614,4 +605,4 @@ Query.Model = Backbone.AssociatedModel.extend({
     )
   },
 })
-module.exports = plugin(Query)
+module.exports = Query

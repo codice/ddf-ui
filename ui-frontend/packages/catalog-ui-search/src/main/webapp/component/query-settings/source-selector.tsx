@@ -117,8 +117,6 @@ const SourceSelector = ({ search }: Props) => {
     return !sourcesInstance.getHarvested().includes(availableSource.id)
   })
 
-  console.log(sourcesInstance.toJSON())
-  console.log(sources)
   return (
     <div>
       <Typography className="pb-2">Data Sources</Typography>
@@ -145,7 +143,6 @@ const SourceSelector = ({ search }: Props) => {
         value={sources}
         onChange={e => {
           let newSources = (e.target.value as unknown) as string[]
-          console.log(newSources)
           // these first three if only apply if the value didn't previous exist (user is going from not all to 'all', etc.)
           if (
             (newSources.includes('all') && !sources.includes('all')) ||

@@ -13,7 +13,6 @@
  *
  **/
 import * as React from 'react'
-import styled from 'styled-components'
 // @ts-ignore
 import EnumInput from '../inputs/enum-input'
 import { isDirectionalSort } from './sort-selection-helpers'
@@ -22,7 +21,6 @@ import TextField from '@material-ui/core/TextField'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
-import Box from '@material-ui/core/Box'
 import Swath from '../../component/swath/swath'
 
 type Props = {

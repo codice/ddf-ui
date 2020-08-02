@@ -30,12 +30,14 @@ import Box from '@material-ui/core/Box'
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
 
-const AddSortContainer = styled.div`
-  padding: 0px 1.5rem;
-`
+type SortsType = {
+  attribute: string
+  direction: string
+}[]
 
 type Props = {
-  collection: any
+  value: SortsType
+  onChange: (newVal: SortsType) => void
 }
 
 export type Option = {
@@ -48,59 +50,55 @@ export type SortItemType = {
   direction: string
 }
 
-const getCollectionAsJson = (collection: any) => {
-  const items: SortItemType[] = collection.models.map((model: any) => {
+const getCollectionAsJson = (collection: Props['value']) => {
+  const items: SortItemType[] = collection.map(sort => {
     return {
       attribute: {
-        label: getLabel(model.get('attribute')),
-        value: model.get('attribute'),
+        label: getLabel(sort.attribute),
+        value: sort.attribute,
       },
-      direction: model.get('direction'),
+      direction: sort.direction,
     }
   })
   return items
 }
 
-const SortSelections = ({ collection }: Props) => {
-  if (!collection.length) {
-    collection.add({
+const SortSelections = ({ value, onChange }: Props) => {
+  if (!value.length) {
+    value.push({
       attribute: 'title',
       direction: 'ascending',
     })
+    onChange(value.slice(0))
   }
 
-  const { listenTo } = useBackbone()
-  const [collectionJson, setCollectionJson] = useState<SortItemType[]>(
-    getCollectionAsJson(collection)
-  )
+  const collectionJson = getCollectionAsJson(value)
 
   const sortAttributeOptions = getSortAttributeOptions(
     collectionJson.map(item => item.attribute.value)
   )
 
-  React.useEffect(() => {
-    listenTo(collection, 'add remove change', () => {
-      setCollectionJson(getCollectionAsJson(collection))
-    })
-  }, [])
-
   const updateAttribute = (index: number) => (attribute: string) => {
-    collection.models[index].set('attribute', attribute)
+    value[index].attribute = attribute
+    onChange(value.slice(0))
   }
 
   const updateDirection = (index: number) => (direction: string) => {
-    collection.models[index].set('direction', direction)
+    value[index].direction = direction
+    onChange(value.slice(0))
   }
 
   const removeItem = (index: number) => () => {
-    collection.models[index].destroy()
+    value.splice(index, 1)
+    onChange(value.slice(0))
   }
 
   const addSort = () => {
-    collection.add({
+    value.push({
       attribute: getNextAttribute(collectionJson, sortAttributeOptions),
       direction: 'descending',
     })
+    onChange(value.slice(0))
   }
 
   return (

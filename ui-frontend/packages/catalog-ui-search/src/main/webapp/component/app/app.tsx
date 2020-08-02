@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader/root'
 import {
-  HashRouter as Router,
   Switch,
   Route,
   useLocation,
@@ -13,9 +12,7 @@ import {
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { default as SearchIcon } from '@material-ui/icons/Search'
 import ImageSearch from '@material-ui/icons/ImageSearch'
-import Subtitles from '@material-ui/icons/Subtitles'
 
-import LandingPageIcon from '@material-ui/icons/Home'
 import { providers as Providers } from '../../extension-points/providers'
 const properties = require('catalog-ui-search/src/main/webapp/js/properties.js')
 import SourcesPage from 'catalog-ui-search/src/main/webapp/react-component/sources'
@@ -49,9 +46,15 @@ import Drawer from '@material-ui/core/Drawer'
 import queryString from 'query-string'
 import { Link } from '../link/link'
 import { Memo } from '../memo/memo'
-
+import HelpIcon from '@material-ui/icons/Help'
+import NotificationsIcon from '@material-ui/icons/Notifications'
+import PersonIcon from '@material-ui/icons/Person'
 const IngestView = require('../ingest/ingest.view')
-
+const notifications = require('../singletons/user-notifications.js')
+const userInstance = require('../singletons/user-instance.js')
+import UserNotifications from '../../react-component/user-notifications/user-notifications'
+import UserView from '../../react-component/user'
+const HelpView = require('../help/help.view.js')
 const drawerWidth = 240
 
 export const handleBase64EncodedImages = (url: string) => {
@@ -286,6 +289,20 @@ const App = () => {
   //@ts-ignore
   const menuIcon, upperLeftLogo, lowerLeftBackground, lowerLeftLogo
 
+  React.useEffect(() => {
+    const openHelp = Boolean(queryParams['global-help'])
+
+    HelpView.onClose = () => {
+      delete queryParams['global-help']
+      history.push(`${location.pathname}?${queryString.stringify(queryParams)}`)
+    }
+    if (openHelp && !HelpView.hintOn) {
+      HelpView.toggleHints()
+    } else if (!openHelp && HelpView.hintOn) {
+      HelpView.toggleHints()
+    }
+  })
+
   return (
     <Grid
       container
@@ -452,65 +469,239 @@ const App = () => {
                   <Divider />
                 </Grid>
                 <Grid item className="mt-auto overflow-hidden w-full">
-                  {(() => {
-                    const open = Boolean(queryParams['global-settings'])
-                    const isTheme = queryParams['global-settings'] === 'Theme'
-                    return (
-                      <>
-                        <ListItem
-                          button
-                          component={Link}
-                          to={{
-                            pathname: `${location.pathname}`,
-                            search: `${queryString.stringify({
-                              ...queryParams,
-                              'global-settings': 'Settings',
-                            })}`,
-                          }}
-                          className={`${
-                            !withinNav ? 'opacity-25' : ''
-                          } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
-                        >
-                          <ListItemIcon>
-                            <SettingsIcon
-                              className="transition duration-200 ease-in-out"
-                              style={{
-                                transform: navOpen
-                                  ? 'none'
-                                  : 'translateX(2px) translateY(-10px)',
+                  <Grid
+                    container
+                    className="w-full"
+                    alignItems="center"
+                    direction="column"
+                    wrap="nowrap"
+                  >
+                    <Grid item className="w-full">
+                      <ListItem
+                        button
+                        component={Link}
+                        to={{
+                          pathname: `${location.pathname}`,
+                          search: `${queryString.stringify({
+                            ...queryParams,
+                            'global-help': 'Help',
+                          })}`,
+                        }}
+                        className={`${
+                          !withinNav ? 'opacity-25' : ''
+                        } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
+                      >
+                        <ListItemIcon>
+                          <HelpIcon
+                            className="transition duration-200 ease-in-out"
+                            style={{
+                              transform: navOpen
+                                ? 'none'
+                                : 'translateX(2px) translateY(-10px)',
+                            }}
+                          />
+                          <Typography
+                            variant="body2"
+                            className={`${
+                              navOpen ? 'opacity-0' : 'opacity-100'
+                            } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
+                          >
+                            Help
+                          </Typography>
+                        </ListItemIcon>
+                        <ListItemText primary={'Help'} />
+                      </ListItem>
+                    </Grid>
+                    <Grid item className="w-full">
+                      {(() => {
+                        const open = Boolean(queryParams['global-settings'])
+                        return (
+                          <>
+                            <ListItem
+                              button
+                              component={Link}
+                              to={{
+                                pathname: `${location.pathname}`,
+                                search: `${queryString.stringify({
+                                  ...queryParams,
+                                  'global-settings': 'Settings',
+                                })}`,
                               }}
-                            />
-                            <Typography
-                              variant="body2"
                               className={`${
-                                navOpen ? 'opacity-0' : 'opacity-100'
-                              } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
+                                !withinNav ? 'opacity-25' : ''
+                              } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
                             >
-                              Settings
-                            </Typography>
-                          </ListItemIcon>
-                          <ListItemText primary={'Settings'} />
-                        </ListItem>
-                        <Drawer
-                          anchor="left"
-                          open={open}
-                          onClose={() => {
-                            delete queryParams['global-settings']
-                            history.push(
-                              `${location.pathname}?${queryString.stringify(
-                                queryParams
-                              )}`
-                            )
-                          }}
-                          PaperProps={{
-                            className: 'min-w-120 max-w-4/5 ',
-                          }}
-                        >
-                          <UserSettings />
-                        </Drawer>
-                      </>
-                    )
-                  })()}
+                              <ListItemIcon>
+                                <SettingsIcon
+                                  className="transition duration-200 ease-in-out"
+                                  style={{
+                                    transform: navOpen
+                                      ? 'none'
+                                      : 'translateX(2px) translateY(-10px)',
+                                  }}
+                                />
+                                <Typography
+                                  variant="body2"
+                                  className={`${
+                                    navOpen ? 'opacity-0' : 'opacity-100'
+                                  } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
+                                >
+                                  Settings
+                                </Typography>
+                              </ListItemIcon>
+                              <ListItemText primary={'Settings'} />
+                            </ListItem>
+                            <Drawer
+                              anchor="left"
+                              open={open}
+                              onClose={() => {
+                                delete queryParams['global-settings']
+                                history.push(
+                                  `${location.pathname}?${queryString.stringify(
+                                    queryParams
+                                  )}`
+                                )
+                              }}
+                              PaperProps={{
+                                className: 'min-w-120 max-w-4/5 ',
+                              }}
+                            >
+                              <UserSettings />
+                            </Drawer>
+                          </>
+                        )
+                      })()}
+                    </Grid>
+
+                    <Grid item className="w-full">
+                      {(() => {
+                        const open = Boolean(
+                          queryParams['global-notifications']
+                        )
+
+                        return (
+                          <>
+                            <ListItem
+                              button
+                              component={Link}
+                              to={{
+                                pathname: `${location.pathname}`,
+                                search: `${queryString.stringify({
+                                  ...queryParams,
+                                  'global-notifications': 'Notifications',
+                                })}`,
+                              }}
+                              className={`${
+                                !withinNav ? 'opacity-25' : ''
+                              } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
+                            >
+                              <ListItemIcon>
+                                <NotificationsIcon
+                                  className="transition duration-200 ease-in-out"
+                                  style={{
+                                    transform: navOpen
+                                      ? 'none'
+                                      : 'translateX(2px) translateY(-10px)',
+                                  }}
+                                />
+                                <Typography
+                                  variant="body2"
+                                  className={`${
+                                    navOpen ? 'opacity-0' : 'opacity-100'
+                                  } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
+                                >
+                                  Notices
+                                </Typography>
+                              </ListItemIcon>
+                              <ListItemText primary={'Notifications'} />
+                            </ListItem>
+                            <Drawer
+                              anchor="left"
+                              open={open}
+                              onClose={() => {
+                                delete queryParams['global-notifications']
+                                history.push(
+                                  `${location.pathname}?${queryString.stringify(
+                                    queryParams
+                                  )}`
+                                )
+                              }}
+                              PaperProps={{
+                                className: 'min-w-120 max-w-4/5 ',
+                              }}
+                            >
+                              <UserNotifications />
+                            </Drawer>
+                          </>
+                        )
+                      })()}
+                    </Grid>
+                    <Grid item className="w-full">
+                      {(() => {
+                        const open = Boolean(queryParams['global-user'])
+                        return (
+                          <>
+                            <ListItem
+                              button
+                              component={Link}
+                              to={{
+                                pathname: `${location.pathname}`,
+                                search: `${queryString.stringify({
+                                  ...queryParams,
+                                  'global-user': 'User',
+                                })}`,
+                              }}
+                              className={`${
+                                !withinNav ? 'opacity-25' : ''
+                              } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
+                            >
+                              <ListItemIcon>
+                                <PersonIcon
+                                  className="transition duration-200 ease-in-out"
+                                  style={{
+                                    transform: navOpen
+                                      ? 'none'
+                                      : 'translateX(2px) translateY(-10px)',
+                                  }}
+                                />
+                                <Typography
+                                  variant="body2"
+                                  className={`${
+                                    navOpen ? 'opacity-0' : 'opacity-100'
+                                  } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out max-w-full truncate px-1`}
+                                >
+                                  {userInstance.getUserName()}
+                                </Typography>
+                              </ListItemIcon>
+                              <ListItemText
+                                primaryTypographyProps={{
+                                  className: 'truncate',
+                                }}
+                                primary={`asdfasdfsafsdaafsdfasddfasafdsafdsafdsfadsfads`}
+                              />
+                            </ListItem>
+                            <Drawer
+                              anchor="left"
+                              open={open}
+                              onClose={() => {
+                                delete queryParams['global-user']
+                                history.push(
+                                  `${location.pathname}?${queryString.stringify(
+                                    queryParams
+                                  )}`
+                                )
+                              }}
+                              PaperProps={{
+                                className: 'min-w-120 max-w-4/5 ',
+                              }}
+                            >
+                              <UserView />
+                            </Drawer>
+                          </>
+                        )
+                      })()}
+                    </Grid>
+                  </Grid>
                 </Grid>
                 <Grid item className="w-full">
                   <div className="h-full overflow-hidden relative">
@@ -583,9 +774,7 @@ const AppComponent = function() {
     <Providers>
       <CssBaseline />
       <BootstrapFixGlobalStyle />
-      <Router>
-        <App />
-      </Router>
+      <App />
     </Providers>
   )
 }

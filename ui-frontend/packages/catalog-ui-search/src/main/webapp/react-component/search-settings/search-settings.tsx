@@ -13,161 +13,142 @@
  *
  **/
 import * as React from 'react'
-import withListenTo, { WithBackboneProps } from '../backbone-container'
 const user = require('../../component/singletons/user-instance.js')
 const properties = require('../../js/properties.js')
-const Property = require('../../component/property/property.js')
-const PropertyView = require('../../component/property/property.view.js')
-import MarionetteRegionContainer from '../../react-component/marionette-region-container'
-const QuerySettingsView = require('../../component/query-settings/query-settings.view.js')
+import QuerySettings from '../../component/query-settings/query-settings'
 const QueryModel = require('../../js/model/Query.js')
-const ConfirmationView = require('../../component/confirmation/confirmation.view.js')
 import styled from 'styled-components'
 import { hot } from 'react-hot-loader'
+import Typography from '@material-ui/core/Typography'
+import Grid from '@material-ui/core/Grid'
+import Slider from '@material-ui/core/Slider'
+import Input from '@material-ui/core/Input'
+import Swath from '../../component/swath/swath'
+import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
+import { MuiOutlinedInputBorderClasses } from '../../component/theme/theme'
+import Tooltip from '@material-ui/core/Tooltip'
+import Paper from '@material-ui/core/Paper'
 
 const Root = styled.div`
   overflow: hidden;
   padding: ${props => props.theme.minimumSpacing};
 `
 
-const PropertyResultCount = styled.div`
-  margin-bottom: ${props => props.theme.largeSpacing};
-`
-
-const QuerySettings = styled.div`
-  .editor-header,
-  .editor-footer {
-    display: none;
-  }
-  .editor-properties {
-    padding: 0px;
-  }
-`
-
-const EditorFooter = styled.div<Props>`
-  display: ${props => (props.showFooter ? 'block' : 'none')};
-  button {
-    display: inline-block;
-    width: 50%;
-  }
-`
-
-type Props = {
-  onClose?: () => void
-  model?: any
-  showFooter: boolean
-} & WithBackboneProps
-
-class SearchSettings extends React.Component<Props, {}> {
-  querySettingsView: any
-  propertyView: any
-  constructor(props: Props) {
-    super(props)
-    this.setQuerySettingsView()
-    this.setPropertyView()
-  }
-  render() {
-    return (
-      <Root>
-        <div className="editor-properties">
-          <PropertyResultCount>
-            <MarionetteRegionContainer
-              view={this.propertyView}
-              replaceElement
-            />
-          </PropertyResultCount>
-          <div className="is-header">Defaults</div>
-          <QuerySettings className="property-search-settings">
-            <MarionetteRegionContainer view={this.querySettingsView} />
-          </QuerySettings>
-        </div>
-        <EditorFooter {...this.props}>
-          <button
-            className="old-button is-negative"
-            onClick={this.triggerCancel}
-          >
-            <span className="fa fa-times" />
-            <span>Cancel</span>
-          </button>
-          <button className="old-button is-positive" onClick={this.triggerSave}>
-            <span className="fa fa-floppy-o" />
-            <span>Save</span>
-          </button>
-        </EditorFooter>
-      </Root>
-    )
-  }
-  triggerSave = () => {
-    this.updateResultCountSettings()
-    this.updateSearchSettings()
-    this.props.listenTo(
-      ConfirmationView.generateConfirmation({
-        prompt: 'Do you want to apply the new defaults to this search?',
-        no: 'No',
-        yes: 'Apply',
-      }),
-      'change:choice',
-      (confirmation: any) => {
-        if (confirmation.get('choice')) {
-          this.props.model.applyDefaults()
-        }
-      }
-    )
-    user.savePreferences()
-    if (!!this.props.onClose) {
-      this.props.onClose()
-    }
-  }
-  updateResultCountSettings = () => {
-    user.getPreferences().set({
-      resultCount: this.propertyView.model.getValue()[0],
-    })
-  }
-  updateSearchSettings = () => {
-    user
-      .getPreferences()
-      .get('querySettings')
-      .set(this.querySettingsView.toJSON())
-  }
-  triggerCancel = () => {
-    this.setPropertyView()
-    this.setQuerySettingsView()
-    if (!!this.props.onClose) {
-      this.props.onClose()
-    }
-    this.forceUpdate()
-  }
-  getUserResultCount = () => {
-    return user
-      .get('user')
-      .get('preferences')
-      .get('resultCount')
-  }
-  setPropertyView = () => {
-    this.propertyView = new PropertyView({
-      model: new Property({
-        label: 'Number of Search Results',
-        value: [this.getUserResultCount()],
-        min: 1,
-        max: properties.resultCount,
-        type: 'RANGE',
-        isEditing: true,
-      }),
-    })
-  }
-  setQuerySettingsView = () => {
-    this.querySettingsView = new QuerySettingsView({
-      model: new QueryModel.Model(),
-      inSearchSettings: true,
-    })
-  }
-  componentWillUnmount = () => {
-    if (!this.props.showFooter) {
-      this.updateResultCountSettings()
-      this.updateSearchSettings()
-      user.savePreferences()
-    }
-  }
+const getResultCount = () => {
+  return user
+    .get('user')
+    .get('preferences')
+    .get('resultCount') as number
 }
 
-export default hot(module)(withListenTo(SearchSettings))
+const SearchSettings = () => {
+  const [queryModel] = React.useState(new QueryModel.Model())
+  const [resultCount, setResultCount] = React.useState(getResultCount())
+
+  const { listenTo } = useBackbone()
+  React.useEffect(() => {
+    listenTo(user.get('user').get('preferences'), 'change:resultCount', () => {
+      setResultCount(getResultCount())
+    })
+  }, [])
+  React.useEffect(() => {
+    return () => {
+      const { sorts, phonetics, spellcheck, sources } = queryModel.toJSON()
+      user
+        .getPreferences()
+        .get('querySettings')
+        .set({
+          sorts,
+          phonetics,
+          spellcheck,
+          sources,
+        })
+      user.savePreferences()
+    }
+  }, [])
+
+  return (
+    <Root>
+      <Tooltip
+        placement="right"
+        title={
+          <Paper elevation={23} className="p-3">
+            <Typography variant="h6">For example:</Typography>
+            <Typography>
+              Searching 3 data sources with the current setting could return as
+              many as {resultCount * 3} results in a single page.
+            </Typography>
+          </Paper>
+        }
+      >
+        <div>
+          <Typography id="resultcount-slider" className="pb-2">
+            Results per page per data source
+          </Typography>
+
+          <Grid
+            className={`w-full ${MuiOutlinedInputBorderClasses}`}
+            container
+            alignItems="center"
+            direction="column"
+          >
+            <Grid item className="w-full">
+              <Input
+                fullWidth
+                value={resultCount}
+                margin="dense"
+                onChange={e => {
+                  user.getPreferences().set({
+                    resultCount: Math.min(
+                      parseInt(e.target.value),
+                      properties.resultCount
+                    ),
+                  })
+                }}
+                inputProps={{
+                  className: 'text-center',
+                  step: 10,
+                  min: 1,
+                  max: properties.resultCount,
+                  type: 'number',
+                  'aria-labelledby': 'resultcount-slider',
+                }}
+              />
+            </Grid>
+            <Grid item className="w-full px-10">
+              <Slider
+                value={resultCount}
+                onChange={(_e, newValue) => {
+                  user.getPreferences().set({
+                    resultCount: newValue,
+                  })
+                }}
+                aria-labelledby="input-slider"
+                min={1}
+                max={properties.resultCount}
+                step={10}
+                marks={[
+                  {
+                    value: 1,
+                    label: '1',
+                  },
+                  {
+                    value: properties.resultCount,
+                    label: `${properties.resultCount}`,
+                  },
+                ]}
+              />
+            </Grid>
+          </Grid>
+        </div>
+      </Tooltip>
+      <div className="py-5">
+        <Swath className="w-full h-1" />
+      </div>
+      <Typography variant="h5">Defaults for New Searches</Typography>
+      <QuerySettings model={queryModel} />
+    </Root>
+  )
+}
+
+export default hot(module)(SearchSettings)

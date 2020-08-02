@@ -13,11 +13,9 @@
  *
  **/
 import * as React from 'react'
-import MRC from '../../react-component/marionette-region-container'
-const QuerySettingsView = require('../query-settings/query-settings.view.js')
+import QuerySettings from '../query-settings/query-settings'
 import { FilterBuilderRoot } from '../filter-builder/filter-builder'
 import { hot } from 'react-hot-loader'
-import Box from '@material-ui/core/Box'
 import Swath from '../swath/swath'
 type Props = {
   model: any
@@ -40,13 +38,7 @@ export const QueryAdvanced = ({ model }: Props) => {
             <Swath className="w-full h-1" />
           </div>
           <div className="query-settings">
-            <MRC
-              view={
-                new QuerySettingsView({
-                  model,
-                })
-              }
-            />
+            <QuerySettings model={model} />
           </div>
         </div>
       </form>

@@ -137,7 +137,7 @@ const getPaddingForTheme = ({ theme }: { theme: ThemeInterface }) => {
 
 const SpecialButton = styled(Button)`
   && {
-    height: auto;
+    height: 100%;
     .MuiButton-label {
       display: block;
     }

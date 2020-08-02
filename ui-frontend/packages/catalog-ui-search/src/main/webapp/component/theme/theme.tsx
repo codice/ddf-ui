@@ -25,6 +25,9 @@ const light: Theme = {
   primary: '#3c6dd5',
 }
 
+export const MuiOutlinedInputBorderClasses =
+  'MuiOutlinedInput-root MuiOutlinedInput-multiline MuiOutlinedInput-notchedOutline border'
+
 const GlobalStyles = createGlobalStyle<ThemeInterface>`
       a {
         color: ${props => props.palette.primary.dark};
@@ -37,6 +40,14 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .MuiDrawer-root a {
         color: ${props =>
           props.palette.getContrastText(props.palette.background.paper)};
+      }
+      .MuiTooltip-tooltip {
+        max-width: 50vw;
+        padding: 0px;
+        background-color: none;
+      }
+      .MuiFormControlLabel-labelPlacementStart {
+        margin-left: 0px;
       }
       @media (min-width: 600px) {
         .MuiListItemIcon-root {

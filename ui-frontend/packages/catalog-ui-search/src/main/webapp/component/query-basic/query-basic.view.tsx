@@ -12,12 +12,11 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
+import * as React from 'react'
 const Marionette = require('marionette')
 const _ = require('underscore')
 const memoize = require('lodash/memoize')
 const $ = require('jquery')
-const template = require('./query-basic.hbs')
 const CustomElements = require('../../js/CustomElements.js')
 const wreqr = require('../../js/wreqr.js')
 const IconHelper = require('../../js/IconHelper.js')
@@ -28,9 +27,8 @@ const cql = require('../../js/cql.js')
 const metacardDefinitions = require('../singletons/metacard-definitions.js')
 import sources from '../singletons/sources-instance'
 const CQLUtils = require('../../js/CQLUtils.js')
-const QuerySettingsView = require('../query-settings/query-settings.view.js')
+import QuerySettings from '../query-settings/query-settings'
 const QueryTimeView = require('../query-time/query-time.view.js')
-import { getFilterErrors } from '../../react-component/utils/validation'
 import query from '../../react-component/utils/query'
 
 const METADATA_CONTENT_TYPE = 'metadata-content-type'
@@ -256,8 +254,54 @@ function getFilterTree(model) {
   return cql.simplify(cql.read(model.get('cql')))
 }
 
-module.exports = Marionette.LayoutView.extend({
-  template,
+export default Marionette.LayoutView.extend({
+  template() {
+    return (
+      <>
+        <form
+          target="autocomplete"
+          action="/search/catalog/blank.html"
+          novalidate
+        >
+          <div className="editor-properties">
+            <div
+              className="basic-text"
+              data-help="Search by free text using the
+    grammar of the underlying source.
+    For wildcard searches, use * after or before partial keywords (e.g. *earth*)."
+            />
+            <div
+              className="basic-text-match"
+              data-help="Take casing of characters into account when searching by free text."
+            />
+            <div
+              className="basic-time-details"
+              data-help="Search based on absolute or relative
+    time of the created, modified, or effective date."
+            />
+            <div
+              className="basic-location-details"
+              data-help="Search by latitude/longitude or the USNG
+    using a line, polygon, point-radius, bounding box, or keyword. A keyword can be the name of a region, country, or city."
+            >
+              <div className="basic-location" />
+              <div className="basic-location-specific" />
+            </div>
+            <div
+              className="basic-type-details"
+              data-help="Search for specific content types."
+            >
+              <div className="basic-type" />
+              <div className="basic-type-specific" />
+            </div>
+            <div className="basic-settings">
+              <QuerySettings model={this.model} />
+            </div>
+          </div>
+        </form>
+      </>
+    )
+  },
   tagName: CustomElements.register('query-basic'),
   modelEvents: {},
   events: {
@@ -266,7 +310,6 @@ module.exports = Marionette.LayoutView.extend({
     'click .editor-save': 'save',
   },
   regions: {
-    basicSettings: '.basic-settings',
     basicText: '.basic-text',
     basicTextMatch: '.basic-text-match',
     basicTime: '.basic-time-details',
@@ -287,7 +330,6 @@ module.exports = Marionette.LayoutView.extend({
     const translationToBasicMap = translateFilterToBasicMap(filter)
     this.filter = translationToBasicMap.propertyValueMap
     this.handleDownConversion(translationToBasicMap.downConversion)
-    this.setupSettings()
     this.setupTime()
     this.setupTextInput()
     this.setupTextMatchInput()
@@ -311,13 +353,6 @@ module.exports = Marionette.LayoutView.extend({
     this.handleLocationValue()
     this.handleTypeValue()
     this.edit()
-  },
-  setupSettings() {
-    this.basicSettings.show(
-      new QuerySettingsView({
-        model: this.model,
-      })
-    )
   },
   setupTime() {
     this.basicTime.show(
@@ -532,7 +567,6 @@ module.exports = Marionette.LayoutView.extend({
   },
   save() {
     this.$el.removeClass('is-editing')
-    this.basicSettings.currentView.saveToModel()
 
     const filter = this.constructFilter()
     const generatedCQL = cql.write(filter)
@@ -540,11 +574,6 @@ module.exports = Marionette.LayoutView.extend({
       filterTree: filter,
       cql: generatedCQL,
     })
-  },
-  getErrorMessages() {
-    return this.basicSettings.currentView
-      .getErrorMessages()
-      .concat(getFilterErrors(this.constructFilter().filters))
   },
   constructFilter() {
     const filters = []

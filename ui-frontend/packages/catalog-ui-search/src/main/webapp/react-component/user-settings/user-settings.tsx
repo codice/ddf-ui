@@ -23,13 +23,12 @@ import TimeSettings from '../time-settings'
 import { hot } from 'react-hot-loader'
 import MarionetteRegionContainer from '../marionette-region-container'
 import Button from '@material-ui/core/Button'
-import ChevronLeft from '@material-ui/icons/ChevronLeft'
 import ChevronRight from '@material-ui/icons/ChevronRight'
 
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider'
-import { useLocation, useHistory } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import queryString from 'query-string'
 import { Link } from '../../component/link/link'
 
@@ -72,7 +71,7 @@ export const BaseSettings = {
   },
   'Search Options': {
     component: () => {
-      return <SearchSettings showFooter={false} />
+      return <SearchSettings />
     },
   },
   Time: {
@@ -135,7 +134,6 @@ const getComponent = (name: string) => {
 
 const UserSettings = () => {
   const location = useLocation()
-  const history = useHistory()
   const queryParams = queryString.parse(location.search)
 
   const CurrentSetting = getComponent((queryParams['global-settings'] ||

@@ -18,10 +18,9 @@ const Marionette = require('marionette')
 const Query = require('../../js/model/Query.js')
 const user = require('../singletons/user-instance.js')
 import Grid from '@material-ui/core/Grid'
-const QueryBasic = require('../../component/query-basic/query-basic.view.js')
+import QueryBasic from '../../component/query-basic/query-basic.view'
 
 import QueryAdvanced from '../../component/query-advanced/query-advanced'
-const CQLUtils = require('catalog-ui-search/src/main/webapp/js/CQLUtils.js')
 import MRC from '../../react-component/marionette-region-container'
 export const queryForms = [
   { id: 'basic', title: 'Basic Search', view: QueryBasic },

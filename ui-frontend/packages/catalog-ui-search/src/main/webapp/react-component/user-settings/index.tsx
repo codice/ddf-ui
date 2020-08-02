@@ -13,5 +13,3 @@
  *
  **/
 export { default as BaseUserSettings, BaseSettings } from './user-settings'
-
-export { default } from './extensions'

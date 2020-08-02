@@ -14,4 +14,3 @@
  **/
 export { default, ExtensionPointsType } from './extension-points'
 export { default as metacardInteractions } from './metacard-interactions'
-export { default as userSettings } from './user-settings'
