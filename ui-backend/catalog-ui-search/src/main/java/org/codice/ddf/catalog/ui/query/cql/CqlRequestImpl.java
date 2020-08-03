@@ -13,50 +13,16 @@
  */
 package org.codice.ddf.catalog.ui.query.cql;
 
-import static ddf.catalog.Constants.ADDITIONAL_SORT_BYS;
-import static spark.Spark.halt;
-
-import com.google.common.collect.Sets;
-import ddf.catalog.data.Metacard;
-import ddf.catalog.data.Result;
 import ddf.catalog.filter.FilterBuilder;
-import ddf.catalog.filter.FilterDelegate;
-import ddf.catalog.filter.impl.SortByImpl;
-import ddf.catalog.operation.Query;
 import ddf.catalog.operation.QueryRequest;
-import ddf.catalog.operation.impl.FacetedQueryRequest;
-import ddf.catalog.operation.impl.QueryImpl;
-import ddf.catalog.operation.impl.QueryRequestImpl;
-import ddf.catalog.operation.impl.TermFacetPropertiesImpl;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.codice.ddf.catalog.ui.CqlParseException;
 import org.codice.ddf.catalog.ui.query.utility.CqlRequest;
-import org.geotools.filter.text.cql2.CQLException;
-import org.geotools.filter.text.ecql.ECQL;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
-import org.opengis.filter.sort.SortOrder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CqlRequestImpl implements CqlRequest {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(CqlRequestImpl.class);
-
-  private static final String DEFAULT_SORT_ORDER = "desc";
-
-  private static final String LOCAL_SOURCE = "local";
-
-  private static final String CACHE_SOURCE = "cache";
-
-  private static final String MODE = "mode";
-
-  private static final String UPDATE = "update";
 
   private String id;
 
@@ -80,6 +46,16 @@ public class CqlRequestImpl implements CqlRequest {
 
   private Boolean phonetics;
 
+  private String cacheId;
+
+  private List<Sort> sorts = Collections.emptyList();
+
+  private Set<String> facets = Collections.emptySet();
+
+  private boolean normalize = false;
+
+  private boolean excludeUnnecessaryAttributes = true;
+
   public String getCacheId() {
     return cacheId;
   }
@@ -88,12 +64,6 @@ public class CqlRequestImpl implements CqlRequest {
     this.cacheId = cacheId;
   }
 
-  private String cacheId;
-
-  private List<Sort> sorts = Collections.emptyList();
-
-  private Set<String> facets = Collections.emptySet();
-
   public Set<String> getFacets() {
     return facets;
   }
@@ -101,10 +71,6 @@ public class CqlRequestImpl implements CqlRequest {
   public void setFacets(Set<String> facets) {
     this.facets = facets;
   }
-
-  private boolean normalize = false;
-
-  private boolean excludeUnnecessaryAttributes = true;
 
   public List<String> getSrcs() {
     return srcs;
@@ -202,35 +168,14 @@ public class CqlRequestImpl implements CqlRequest {
     this.normalize = normalize;
   }
 
-  private QueryRequest facetQueryRequest(QueryRequest request) {
-    if (facets.isEmpty()) {
-      return request;
-    }
+  @Override
+  public QueryRequest createQueryRequest(String localSource, FilterBuilder filterBuilder)
+      throws CqlParseException {
 
-    return new FacetedQueryRequest(
-        request.getQuery(),
-        request.isEnterprise(),
-        request.getSourceIds(),
-        request.getProperties(),
-        new TermFacetPropertiesImpl(facets));
-  }
+    QueryRequestBuilder builder =
+        new QueryRequestBuilder(localSource, filterBuilder, sorts, start, count, timeout, id, cql);
 
-  public QueryRequest createQueryRequest(String localSource, FilterBuilder filterBuilder) {
-    List<SortBy> sortBys =
-        sorts
-            .stream()
-            .filter(
-                s ->
-                    StringUtils.isNotEmpty(s.getAttribute())
-                        && StringUtils.isNotEmpty(s.getDirection()))
-            .map(s -> parseSort(s.getAttribute(), s.getDirection()))
-            .collect(Collectors.toList());
-    if (sortBys.isEmpty()) {
-      sortBys.add(new SortByImpl(Result.TEMPORAL, DEFAULT_SORT_ORDER));
-    }
-    Query query =
-        new QueryImpl(createFilter(filterBuilder), start, count, sortBys.get(0), true, timeout);
-
+<<<<<<< HEAD
     QueryRequest queryRequest;
     if (CollectionUtils.isNotEmpty(srcs) && srcs.size() > 1) {
       if (srcs.stream().anyMatch(CACHE_SOURCE::equals)) {
@@ -253,44 +198,34 @@ public class CqlRequestImpl implements CqlRequest {
         queryRequest = new QueryRequestImpl(query, Collections.singleton(source));
         queryRequest.getProperties().put(MODE, UPDATE);
       }
+=======
+    if (src != null) {
+      builder.setSrc(src);
+>>>>>>> origin
     }
 
-    queryRequest = facetQueryRequest(queryRequest);
-
-    if (excludeUnnecessaryAttributes) {
-      queryRequest
-          .getProperties()
-          .put("excludeAttributes", Sets.newHashSet(Metacard.METADATA, "lux"));
+    if (srcs != null) {
+      builder.setSources(srcs);
     }
 
-    if (sortBys.size() > 1) {
-      queryRequest
-          .getProperties()
-          .put(ADDITIONAL_SORT_BYS, sortBys.subList(1, sortBys.size()).toArray(new SortBy[0]));
+    builder.setExcludeUnnecessaryAttributes(excludeUnnecessaryAttributes);
+
+    if (batchId != null) {
+      builder.setBatchId(batchId);
     }
 
-    queryRequest.getProperties().put("requestId", id);
-
-    if (StringUtils.isNotEmpty(batchId)) {
-      queryRequest.getProperties().put("batchId", batchId);
+    if (queryType != null) {
+      builder.setQueryType(queryType);
     }
 
-    if (StringUtils.isNotEmpty(queryType)) {
-      queryRequest.getProperties().put("queryType", queryType);
-    }
-
-    if (spellcheck != null) {
-      queryRequest.getProperties().put("spellcheck", spellcheck);
-    }
-
-    if (phonetics != null) {
-      queryRequest.getProperties().put("phonetics", phonetics);
-    }
+    builder.setSpellcheck(spellcheck);
+    builder.setPhonetics(phonetics);
 
     if (cacheId != null) {
-      queryRequest.getProperties().put("cacheId", cacheId);
+      builder.setCacheId(cacheId);
     }
 
+<<<<<<< HEAD
     return queryRequest;
   }
 
@@ -314,50 +249,22 @@ public class CqlRequestImpl implements CqlRequest {
         srcs.set(i, localSource);
       }
     }
+=======
+    if (facets != null) {
+      builder.setFacets(facets);
+    }
+
+    return builder.build();
+>>>>>>> origin
   }
 
+  @Override
   public String getSourceResponseString() {
     if (!CollectionUtils.isEmpty(srcs)) {
       return String.join(", ", srcs);
     } else {
       return src;
     }
-  }
-
-  private Filter createFilter(FilterBuilder filterBuilder) {
-    Filter filter = null;
-    try {
-      filter = ECQL.toFilter(cql);
-    } catch (CQLException e) {
-      halt(400, "Unable to parse CQL filter");
-    }
-
-    if (filter == null) {
-      LOGGER.debug("Received an empty filter. Using a wildcard contextual filter instead.");
-      filter =
-          filterBuilder.attribute(Metacard.ANY_TEXT).is().like().text(FilterDelegate.WILDCARD_CHAR);
-    }
-
-    return filter;
-  }
-
-  private SortBy parseSort(String sortField, String sortOrder) {
-    SortBy sort;
-    switch (sortOrder.toLowerCase(Locale.getDefault())) {
-      case "ascending":
-      case "asc":
-        sort = new SortByImpl(sortField, SortOrder.ASCENDING);
-        break;
-      case "descending":
-      case "desc":
-        sort = new SortByImpl(sortField, SortOrder.DESCENDING);
-        break;
-      default:
-        throw new IllegalArgumentException(
-            "Incorrect sort order received, must be 'asc', 'ascending', 'desc', or 'descending'");
-    }
-
-    return sort;
   }
 
   public String getSource() {

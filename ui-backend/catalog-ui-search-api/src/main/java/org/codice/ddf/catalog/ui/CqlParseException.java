@@ -11,22 +11,10 @@
  * License is distributed along with this program and can be found at
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
-package org.codice.ddf.catalog.ui.ws;
+package org.codice.ddf.catalog.ui;
 
-/** An exception to represent a security-related error in the {@link SecureWebSocketServlet}. */
-public class WebSocketAuthenticationException extends RuntimeException {
-  private final String wsMessage;
-
-  WebSocketAuthenticationException(String message) {
-    this(message, null);
-  }
-
-  WebSocketAuthenticationException(String message, String wsMessage) {
-    super(message);
-    this.wsMessage = wsMessage;
-  }
-
-  public String getWsMessage() {
-    return wsMessage;
+public class CqlParseException extends Exception {
+  public CqlParseException(Throwable cause) {
+    super(cause);
   }
 }

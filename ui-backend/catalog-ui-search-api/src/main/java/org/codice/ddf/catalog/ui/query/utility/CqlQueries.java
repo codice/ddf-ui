@@ -16,6 +16,7 @@ package org.codice.ddf.catalog.ui.query.utility;
 import ddf.catalog.federation.FederationException;
 import ddf.catalog.source.SourceUnavailableException;
 import ddf.catalog.source.UnsupportedQueryException;
+import org.codice.ddf.catalog.ui.CqlParseException;
 
 /**
  * <b> This code is experimental. While this interface is functional and tested, it may change or be
@@ -23,7 +24,8 @@ import ddf.catalog.source.UnsupportedQueryException;
  */
 public interface CqlQueries {
   CqlQueryResponse executeCqlQuery(CqlRequest cqlRequest)
-      throws UnsupportedQueryException, SourceUnavailableException, FederationException;
+      throws UnsupportedQueryException, SourceUnavailableException, FederationException,
+          CqlParseException;
 
   CqlRequest getCqlRequestFromJson(String jsonBody);
 

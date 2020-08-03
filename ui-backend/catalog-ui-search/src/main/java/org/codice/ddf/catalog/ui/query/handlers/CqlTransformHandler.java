@@ -52,6 +52,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
+import org.codice.ddf.catalog.ui.CqlParseException;
 import org.codice.ddf.catalog.ui.metacard.transformer.CsvTransformImpl;
 import org.codice.ddf.catalog.ui.query.cql.CqlRequestImpl;
 import org.codice.ddf.catalog.ui.query.utility.CqlQueryResponse;
@@ -241,7 +242,8 @@ public class CqlTransformHandler implements Route {
                     cqlQueryResponse = cqlQueryUtil.executeCqlQuery(cqlRequest);
                   } catch (UnsupportedQueryException
                       | SourceUnavailableException
-                      | FederationException e) {
+                      | FederationException
+                      | CqlParseException e) {
                     LOGGER.debug("Error fetching cql request for {}", cqlRequest.getSrc());
                     return null;
                   }
