@@ -51,6 +51,7 @@ export type IndividualRouteType = {
   Icon: any
   routeProps: RouteProps
   linkProps: LinkProps
+  showInNav: boolean
 }
 
 const matchesRoute = ({
@@ -282,7 +283,9 @@ const App = ({
                   <Divider />
                   <Grid item className="flex-shrink-0">
                     <List className="overflow-hidden ">
-                      {RouteInformation.map(routeInfo => {
+                      {RouteInformation.filter(
+                        routeInfo => routeInfo.showInNav
+                      ).map(routeInfo => {
                         const isSelected = matchesRoute({
                           routeInfo,
                           pathname: location.pathname,

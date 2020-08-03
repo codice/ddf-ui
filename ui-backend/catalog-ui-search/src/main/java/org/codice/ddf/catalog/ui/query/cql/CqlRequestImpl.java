@@ -175,7 +175,6 @@ public class CqlRequestImpl implements CqlRequest {
     QueryRequestBuilder builder =
         new QueryRequestBuilder(localSource, filterBuilder, sorts, start, count, timeout, id, cql);
 
-<<<<<<< HEAD
     QueryRequest queryRequest;
     if (CollectionUtils.isNotEmpty(srcs) && srcs.size() > 1) {
       if (srcs.stream().anyMatch(CACHE_SOURCE::equals)) {
@@ -198,10 +197,10 @@ public class CqlRequestImpl implements CqlRequest {
         queryRequest = new QueryRequestImpl(query, Collections.singleton(source));
         queryRequest.getProperties().put(MODE, UPDATE);
       }
-=======
+    }
+    
     if (src != null) {
       builder.setSrc(src);
->>>>>>> origin
     }
 
     if (srcs != null) {
@@ -225,8 +224,11 @@ public class CqlRequestImpl implements CqlRequest {
       builder.setCacheId(cacheId);
     }
 
-<<<<<<< HEAD
-    return queryRequest;
+    if (facets != null) {
+      builder.setFacets(facets);
+    }
+
+    return builder.build();
   }
 
   private String replaceOrDefaultLocalSource(String localSource) {
@@ -249,13 +251,6 @@ public class CqlRequestImpl implements CqlRequest {
         srcs.set(i, localSource);
       }
     }
-=======
-    if (facets != null) {
-      builder.setFacets(facets);
-    }
-
-    return builder.build();
->>>>>>> origin
   }
 
   @Override

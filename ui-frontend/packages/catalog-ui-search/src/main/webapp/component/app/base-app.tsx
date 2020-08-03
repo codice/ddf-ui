@@ -33,6 +33,7 @@ const RouteInformation = [
     linkProps: {
       to: '/home',
     },
+    showInNav: true,
   },
   {
     name: 'Upload',
@@ -55,6 +56,7 @@ const RouteInformation = [
     linkProps: {
       to: '/upload',
     },
+    showInNav: true,
   },
   {
     name: 'Sources',
@@ -69,6 +71,7 @@ const RouteInformation = [
     linkProps: {
       to: '/sources',
     },
+    showInNav: true,
   },
   {
     name: 'About',
@@ -83,6 +86,7 @@ const RouteInformation = [
     linkProps: {
       to: '/about',
     },
+    showInNav: true,
   },
 ] as IndividualRouteType[]
 
