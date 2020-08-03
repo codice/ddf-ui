@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
@@ -10,7 +9,6 @@ import {
 } from '../../../js/model/LazyQueryResult/types'
 import AddIcon from '@material-ui/icons/Add'
 import Box from '@material-ui/core/Box'
-const CQLUtils = require('catalog-ui-search/src/main/webapp/js/CQLUtils.js')
 
 type QueryEditorProps = {
   query: any

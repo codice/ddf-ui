@@ -92,7 +92,6 @@ const defaultGoldenLayoutContent = {
 }
 
 function getGoldenLayoutSettings() {
-  const minimumScreenSize = 20 //20 rem or 320px at base font size
   const fontSize = parseInt(
     user
       .get('user')

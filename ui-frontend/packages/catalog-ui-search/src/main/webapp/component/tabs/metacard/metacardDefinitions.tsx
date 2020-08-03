@@ -3,9 +3,9 @@
  */
 
 import { hot } from 'react-hot-loader'
-const metacardDefinitions = require('catalog-ui-search/src/main/webapp/component/singletons/metacard-definitions')
-const properties = require('catalog-ui-search/src/main/webapp/js/properties.js')
-const HandleBarsHelpers = require('catalog-ui-search/src/main/webapp/js/HandlebarsHelpers.js')
+const metacardDefinitions = require('../../singletons/metacard-definitions')
+const properties = require('../../../js/properties.js')
+const HandleBarsHelpers = require('../../../js/HandlebarsHelpers.js')
 
 type Attributetypes =
   | 'BINARY'

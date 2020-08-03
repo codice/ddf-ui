@@ -1,39 +1,32 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import { useLazyResultsSelectedResultsFromSelectionInterface } from 'catalog-ui-search/src/main/webapp/component/selection-interface/hooks'
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
-const user = require('catalog-ui-search/src/main/webapp/component/singletons/user-instance')
-const properties = require('catalog-ui-search/src/main/webapp/js/properties.js')
-const metacardDefinitions = require('catalog-ui-search/src/main/webapp/component/singletons/metacard-definitions')
-const ShowAttributeView = require('catalog-ui-search/src/main/webapp/component/show-attribute/show-attribute.view')
-import { Dropdown } from '@connexta/atlas/atoms/dropdown'
-import MRC from 'catalog-ui-search/exports/marionette-region-container'
-import Paper from '@material-ui/core/Paper'
-import { BetterClickAwayListener } from '../../../future/components/better-click-away-listener/better-click-away-listener'
-import { useBackbone } from 'catalog-ui-search/src/main/webapp/component/selection-checkbox/useBackbone.hook'
+const user = require('../../singletons/user-instance')
+const properties = require('../../../js/properties.js')
 import TypedMetacardDefs from './metacardDefinitions'
-import { LazyQueryResult } from 'catalog-ui-search/src/main/webapp/js/model/LazyQueryResult/LazyQueryResult'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
 import { Draggable, Droppable, DragDropContext } from 'react-beautiful-dnd'
 import Divider from '@material-ui/core/Divider'
-const Common = require('catalog-ui-search/src/main/webapp/js/Common.js')
+const Common = require('../../../js/Common.js')
 import EditIcon from '@material-ui/icons/Edit'
 import DeleteIcon from '@material-ui/icons/Delete'
 import TextField from '@material-ui/core/TextField'
 import { useDialog } from '@connexta/atlas/atoms/dialog'
 import { KeyboardDateTimePicker } from '@connexta/atlas/atoms/pickers'
-import { getDateTimeFormat } from 'catalog-ui-search/src/main/webapp/component/user/utils'
+import { getDateTimeFormat } from '../../user/utils'
 import useSnack from '../../hooks/useSnack'
 import LinearProgress from '@material-ui/core/LinearProgress'
 const $ = require('jquery')
-const ResultUtils = require('catalog-ui-search/src/main/webapp/js/ResultUtils.js')
+const ResultUtils = require('../../../js/ResultUtils.js')
 import PublishIcon from '@material-ui/icons/Publish'
-const HandleBarsHelpers = require('catalog-ui-search/src/main/webapp/js/HandlebarsHelpers.js')
 import AutoSizer from 'react-virtualized-auto-sizer'
 import { useTheme } from '@material-ui/core'
+import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
+import { useLazyResultsSelectedResultsFromSelectionInterface } from '../../selection-interface/hooks'
+import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 //metacardDefinitions.metacardTypes[attribute].type
 //metacardDefinitions.metacardTypes[attribute].multivalued
 //properties.isReadOnly(attribute)

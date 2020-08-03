@@ -410,10 +410,10 @@ module.exports = function CesiumMap(
     timeoutIds: [],
     onCameraMoveStart(callback) {
       clearTimeout(this.timeoutId)
-        this.timeoutIds.forEach(timeoutId => {
-          clearTimeout(timeoutId)
-        })
-        this.timeoutIds = []
+      this.timeoutIds.forEach(timeoutId => {
+        clearTimeout(timeoutId)
+      })
+      this.timeoutIds = []
       map.scene.camera.moveStart.addEventListener(callback)
     },
     offCameraMoveStart(callback) {
@@ -421,9 +421,11 @@ module.exports = function CesiumMap(
     },
     onCameraMoveEnd(callback) {
       const timeoutCallback = () => {
-        this.timeoutIds.push(setTimeout(() => {
-          callback()
-        }, 300))
+        this.timeoutIds.push(
+          setTimeout(() => {
+            callback()
+          }, 300)
+        )
       }
       map.scene.camera.moveEnd.addEventListener(timeoutCallback)
     },
@@ -1019,7 +1021,9 @@ module.exports = function CesiumMap(
         })
       }
       if (geometry.constructor === Cesium.Billboard) {
-        geometry.image = options.isSelected ? geometry.selectedImage : geometry.unselectedImage
+        geometry.image = options.isSelected
+          ? geometry.selectedImage
+          : geometry.unselectedImage
         geometry.eyeOffset = new Cesium.Cartesian3(
           0,
           0,
@@ -1032,7 +1036,9 @@ module.exports = function CesiumMap(
         })
       } else if (geometry.constructor === Cesium.PolylineCollection) {
         geometry._polylines.forEach(polyline => {
-          polyline.material = options.isSelected ? geometry.selectedMaterial : geometry.unselectedMaterial
+          polyline.material = options.isSelected
+            ? geometry.selectedMaterial
+            : geometry.unselectedMaterial
         })
       } else if (geometry.showWhenSelected) {
         geometry.show = options.isSelected

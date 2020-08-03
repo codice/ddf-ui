@@ -6,7 +6,7 @@ import { Link } from '../../component/link/link'
 import Button from '@material-ui/core/Button'
 import Box from '@material-ui/core/Box'
 import Tooltip from '@material-ui/core/Tooltip'
-import SourcesPage from 'catalog-ui-search/src/main/webapp/react-component/sources'
+import SourcesPage from '../../react-component/sources'
 import Paper from '@material-ui/core/Paper'
 
 const SourcesInfo = () => {

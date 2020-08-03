@@ -122,6 +122,11 @@
                                     <classifier>features</classifier>
                                 </artifact>
                                 <artifact>
+                                    <file>packages/admin/target/kanri.jar</file>
+                                    <type>jar</type>
+                                    <classifier>kanri</classifier>
+                                </artifact>
+                                <artifact>
                                     <file>packages/catalog-ui-search/target/catalog-ui-search.jar</file>
                                     <type>jar</type>
                                     <classifier>catalog-ui-search</classifier>
@@ -207,4 +212,3 @@
         </profile>
     </profiles>
 </project>
-

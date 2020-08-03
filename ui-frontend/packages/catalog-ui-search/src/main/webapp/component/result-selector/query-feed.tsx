@@ -1,16 +1,16 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import { useLazyResultsStatusFromSelectionInterface } from 'catalog-ui-search/src/main/webapp/component/selection-interface/hooks'
 import { Dropdown } from '@connexta/atlas/atoms/dropdown'
 import Paper from '@material-ui/core/Paper'
 import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
-import { Status } from 'catalog-ui-search/src/main/webapp/js/model/LazyQueryResult/status'
 const moment = require('moment')
-const user = require('catalog-ui-search/src/main/webapp/component/singletons/user-instance')
+const user = require('../singletons/user-instance')
 
 import styled from 'styled-components'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
+import { Status } from '../../js/model/LazyQueryResult/status'
+import { useLazyResultsStatusFromSelectionInterface } from '../selection-interface/hooks'
 
 type Props = {
   selectionInterface: any

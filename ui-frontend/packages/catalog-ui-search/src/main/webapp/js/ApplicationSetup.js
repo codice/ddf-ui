@@ -14,13 +14,6 @@
  **/
 import React from 'react'
 
-// if (process.env.NODE_ENV === 'development') {
-//   const whyDidYouRender = require('@welldone-software/why-did-you-render')
-//   whyDidYouRender(React, {
-//     trackAllPureComponents: true,
-//   })
-// }
-
 require('../styles/styles.less')
 
 const $ = require('jquery')
@@ -178,3 +171,17 @@ Marionette.Region.prototype.reset = function() {
 }
 
 require('@connexta/icons/icons/codice.font')
+require('./MediaQueries.js')
+require('./Theming.js')
+require('./SystemUsage.js')
+require('../component/singletons/session-auto-renew.js')
+require('./SessionTimeout.js')
+
+$(window.document).ready(() => {
+  window.document.title = properties.branding + ' ' + properties.product
+  window.document.querySelector('.welcome-branding').textContent =
+    properties.branding
+  window.document.querySelector('.welcome-branding-name').textContent =
+    properties.product
+  window.document.querySelector('#loading').classList.add('show-welcome')
+})

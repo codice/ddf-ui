@@ -16,9 +16,8 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import styled from 'styled-components'
-import { Button, buttonTypeEnum } from '../presentation/button'
 import LoadingCompanion from '../loading-companion'
-
+import Button from '@material-ui/core/Button'
 type Props = {
   handleArchive: () => void
   handleRestore: () => void
@@ -26,18 +25,9 @@ type Props = {
   loading: boolean
 }
 
-const MainText = styled.span`
-  display: block;
-`
-
 const SubText = styled.span`
   display: block;
   font-size: ${props => props.theme.mediumFontSize};
-`
-
-const ArchiveButton = styled(Button)`
-  width: 100%;
-  height: auto;
 `
 
 const render = (props: Props) => {
@@ -45,26 +35,30 @@ const render = (props: Props) => {
   return (
     <LoadingCompanion loading={loading}>
       {!isDeleted ? (
-        <ArchiveButton
-          buttonType={buttonTypeEnum.negative}
+        <Button
+          fullWidth
+          variant="contained"
+          color="secondary"
           onClick={handleArchive}
           data-help="This will remove the item(s) from standard search results.
 To restore archived items, you can click on 'File' in the toolbar,
 and then click 'Restore Archived Items'."
         >
-          <MainText>Archive item(s)</MainText>
-          <SubText>
+          <div className="w-full">Archive item(s)</div>
+          <div>
             WARNING: This will remove the item(s) from standard search results.
-          </SubText>
-        </ArchiveButton>
+          </div>
+        </Button>
       ) : (
-        <ArchiveButton
-          buttonType={buttonTypeEnum.positive}
+        <Button
+          fullWidth
+          variant="contained"
+          color="primary"
           onClick={handleRestore}
           data-help="This will restore the item(s) to standard search results."
         >
-          <MainText>Restore item(s)</MainText>
-        </ArchiveButton>
+          <div>Restore item(s)</div>
+        </Button>
       )}
     </LoadingCompanion>
   )

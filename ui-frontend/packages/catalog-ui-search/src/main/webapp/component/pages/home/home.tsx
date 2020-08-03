@@ -5,17 +5,14 @@ import {
   useResizableGridContext,
 } from '../../resizable-grid/resizable-grid'
 const SelectionInterfaceModel = require('../../selection-interface/selection-interface.model')
-const Query = require('catalog-ui-search/src/main/webapp/js/model/Query.js')
-const CQLUtils = require('catalog-ui-search/src/main/webapp/js/CQLUtils.js')
-const user = require('catalog-ui-search/src/main/webapp/component/singletons/user-instance.js')
+const Query = require('../../../js/model/Query.js')
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import QueryAddView from '../../query-add/query-add'
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 
-import MRC from 'catalog-ui-search/exports/marionette-region-container'
-import { Memo } from '../../memo/memo'
+import MRC from '../../../react-component/marionette-region-container'
 import ResultSelector from '../../result-selector/result-selector'
 import Button from '@material-ui/core/Button'
 import { Dropdown } from '@connexta/atlas/atoms/dropdown'
@@ -23,7 +20,6 @@ import SearchInteractions from '../../../extension-points/search-interactions'
 import { BetterClickAwayListener } from '../../better-click-away-listener/better-click-away-listener'
 import MoreVert from '@material-ui/icons/MoreVert'
 import Box from '@material-ui/core/Box'
-import { createGlobalStyle } from 'styled-components'
 import Swath from '../../swath/swath'
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
@@ -172,7 +168,7 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
 }
 
 const LeftBottom = ({ selectionInterface }: { selectionInterface: any }) => {
-  const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
+  const { closed } = useResizableGridContext()
 
   return (
     <>
@@ -230,8 +226,8 @@ export const HomePage = () => {
           className="w-full h-full"
           wrap="nowrap"
         >
-          <Grid item className="w-full">
-            <Paper elevation={23} className="w-full">
+          <Grid item className="w-full relative z-1">
+            <Paper elevation={2} className="w-full">
               <Grid
                 container
                 direction="row"

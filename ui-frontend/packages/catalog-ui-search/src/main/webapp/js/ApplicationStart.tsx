@@ -12,35 +12,27 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+
+const $ = require('jquery')
+import BaseApp from '../component/app/base-app'
 import * as React from 'react'
-import Router from './presentation'
+import * as ReactDOM from 'react-dom'
+const user = require('../component/singletons/user-instance.js')
+import { providers as Providers } from '../extension-points/providers'
 
-import Navigation from '../navigation'
-import ExtensionPoints from '../../extension-points'
-
-type Props = {
-  navigation: React.ReactNode
-  routeDefinitions: object
-}
-
-const Providers = ExtensionPoints.providers
-
-class RouterContainer extends React.Component<Props, {}> {
-  constructor(props: Props) {
-    super(props)
-  }
-  render() {
-    const navigation = <Navigation {...this.props} />
-    return (
+function attemptToStart() {
+  if (user.fetched) {
+    ReactDOM.render(
       <Providers>
-        <Router
-          nav={navigation}
-          routeDefinitions={this.props.routeDefinitions}
-          {...this.props}
-        />
-      </Providers>
+        <BaseApp />
+      </Providers>,
+      document.querySelector('#router')
     )
+  } else if (!user.fetched) {
+    user.once('sync', () => {
+      attemptToStart()
+    })
   }
 }
 
-export default RouterContainer
+attemptToStart()

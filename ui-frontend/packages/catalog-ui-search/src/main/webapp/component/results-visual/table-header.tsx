@@ -12,16 +12,15 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import Button from '@material-ui/core/Button'
 import Grid, { GridProps } from '@material-ui/core/Grid'
 import { useTheme } from '@material-ui/core/styles'
-import { LazyQueryResults } from 'catalog-ui-search/src/main/webapp/js/model/LazyQueryResult/LazyQueryResults'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 const _ = require('underscore')
 const $ = require('jquery')
-const user = require('catalog-ui-search/src/main/webapp/component/singletons/user-instance.js')
+const user = require('../singletons/user-instance.js')
 require('jquery-ui/ui/widgets/resizable')
 
 export type Header = {

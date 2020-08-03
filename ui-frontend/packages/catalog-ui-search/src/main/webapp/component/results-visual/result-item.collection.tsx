@@ -16,12 +16,12 @@ import * as React from 'react'
 import ResultItem from './result-item'
 import { hot } from 'react-hot-loader'
 import { AutoVariableSizeList } from 'react-window-components'
-import { LazyQueryResult } from 'catalog-ui-search/src/main/webapp/js/model/LazyQueryResult/LazyQueryResult'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
-import { LazyQueryResults } from 'catalog-ui-search/src/main/webapp/js/model/LazyQueryResult/LazyQueryResults'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-const user = require('catalog-ui-search/src/main/webapp/component/singletons/user-instance.js')
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
+const user = require('../singletons/user-instance.js')
 
 type Props = {
   results: LazyQueryResult[]

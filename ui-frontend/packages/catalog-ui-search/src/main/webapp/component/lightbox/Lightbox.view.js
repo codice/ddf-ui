@@ -17,7 +17,6 @@ const Marionette = require('marionette')
 const $ = require('jquery')
 const CustomElements = require('../../js/CustomElements.js')
 const Lightbox = require('./Lightbox.js')
-const router = require('../router/router.js')
 const componentName = 'lightbox'
 import React from 'react'
 import MarionetteRegionContainer from '../../react-component/marionette-region-container'
@@ -73,7 +72,6 @@ module.exports = Marionette.LayoutView.extend(
     initialize() {
       $('body').append(this.el)
       this.listenForClose()
-      this.listenForRoute()
       this.listenForEscape()
     },
     listenForEscape() {
@@ -92,9 +90,6 @@ module.exports = Marionette.LayoutView.extend(
           this.handleEscape()
           break
       }
-    },
-    listenForRoute() {
-      this.listenTo(router, 'change', this.handleRouteChange)
     },
     listenForClose() {
       this.$el.on(

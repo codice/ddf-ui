@@ -243,6 +243,20 @@ public class ConfigurationApplication implements SparkApplication {
   private List<String> defaultSources = Collections.emptyList();
   private List<String> defaultTableColumns = Collections.emptyList();
 
+  private String brandingName;
+
+  private String helpUrl;
+
+  private String landingPageBackgroundSrc;
+
+  private String topLeftLogoSrc;
+
+  private String bottomLeftLogoSrc;
+
+  private String bottomLeftBackgroundSrc;
+
+  private String menuIconSrc;
+
   private Set<String> editorAttributes = Collections.emptySet();
   private Set<String> requiredAttributes = Collections.emptySet();
   private Map<String, Set<String>> attributeEnumMap = Collections.emptyMap();
@@ -588,6 +602,14 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("attributeSuggestionList", attributeSuggestionList);
     config.put("defaultSources", defaultSources);
     config.put("defaultTableColumns", defaultTableColumns);
+    config.put("helpUrl", helpUrl);
+    config.put("landingPageBackgroundSrc", landingPageBackgroundSrc);
+    config.put("topLeftLogoSrc", topLeftLogoSrc);
+    config.put("bottomLeftLogoSrc", bottomLeftLogoSrc);
+    config.put("bottomLeftBackgroundSrc", bottomLeftBackgroundSrc);
+    config.put("menuIconSrc", menuIconSrc);
+    config.put("brandingName", brandingName);
+
     return config;
   }
 
@@ -1349,5 +1371,61 @@ public class ConfigurationApplication implements SparkApplication {
               .map(String::trim)
               .collect(Collectors.toList());
     }
+  }
+
+  public String getHelpUrl() {
+    return helpUrl;
+  }
+
+  public void setHelpUrl(String url) {
+    this.helpUrl = url;
+  }
+
+  public String getBrandingName() {
+    return brandingName;
+  }
+
+  public void setBrandingName(String brandingName) {
+    this.brandingName = brandingName;
+  }
+
+  public String getLandingPageBackgroundSrc() {
+    return landingPageBackgroundSrc;
+  }
+
+  public void setLandingPageBackgroundSrc(String landingPageBackgroundSrc) {
+    this.landingPageBackgroundSrc = landingPageBackgroundSrc;
+  }
+
+  public String getTopLeftLogoSrc() {
+    return topLeftLogoSrc;
+  }
+
+  public void setTopLeftLogoSrc(String topLeftLogoSrc) {
+    this.topLeftLogoSrc = topLeftLogoSrc;
+  }
+
+  public String getBottomLeftLogoSrc() {
+    return bottomLeftLogoSrc;
+  }
+
+  public void setBottomLeftLogoSrc(String bottomLeftLogoSrc) {
+    this.bottomLeftLogoSrc = bottomLeftLogoSrc;
+  }
+
+  public String getBottomLeftBackgroundSrc() {
+    return bottomLeftBackgroundSrc;
+  }
+
+  public void setBottomLeftBackgroundSrc(String bottomLeftBackgroundSrc) {
+    this.bottomLeftBackgroundSrc = bottomLeftBackgroundSrc;
+  }
+
+  public String getMenuIconSrc() {
+    return menuIconSrc;
+  }
+
+  public void setMenuIconSrc(String menuIconSrc) {
+    this.menuIconSrc = menuIconSrc;
   }
 }

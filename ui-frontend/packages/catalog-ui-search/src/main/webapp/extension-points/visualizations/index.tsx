@@ -17,7 +17,7 @@ import HistogramView from '../../component/visualization/histogram/lazy-histogra
 import LazyInspectorView from '../../component/visualization/inspector/inspector-lazy.view'
 const LowBandwidthMapView = require('../../component/visualization/low-bandwidth-map/low-bandwidth-map.view.js')
 import ResultsView from '../../component/results-visual'
-const Marionette = require('catalog-ui-search/src/main/webapp/lib/marionette')
+const Marionette = require('marionette')
 // import QueryAddView from '../../component/query-add/query-add'
 // import MRC from '../../react-component/marionette-region-container'
 // import Button from '@material-ui/core/Button'

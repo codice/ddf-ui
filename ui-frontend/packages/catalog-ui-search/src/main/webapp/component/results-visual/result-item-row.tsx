@@ -15,17 +15,16 @@
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import { useTheme } from '@material-ui/core/styles'
-import { useSelectionOfLazyResult } from 'catalog-ui-search/src/main/webapp/js/model/LazyQueryResult/hooks'
-import { LazyQueryResult } from 'catalog-ui-search/src/main/webapp/js/model/LazyQueryResult/LazyQueryResult'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import { useBackbone } from '../hooks/useBackbone.hook'
-import { CellComponent, Header } from './table-header'
+import { CellComponent } from './table-header'
 import styled from 'styled-components'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import { useSelectionOfLazyResult } from '../../js/model/LazyQueryResult/hooks'
 
-const metacardDefinitions = require('catalog-ui-search/src/main/webapp/component/singletons/metacard-definitions.js')
-const user = require('catalog-ui-search/src/main/webapp/component/singletons/user-instance.js')
-const HandleBarsHelpers = require('catalog-ui-search/src/main/webapp/js/HandlebarsHelpers')
+const metacardDefinitions = require('../singletons/metacard-definitions.js')
+const user = require('../singletons/user-instance.js')
+const HandleBarsHelpers = require('../../js/HandlebarsHelpers')
 
 type Property = {
   class: string

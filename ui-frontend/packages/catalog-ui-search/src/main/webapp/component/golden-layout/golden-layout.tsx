@@ -1,7 +1,7 @@
 import * as React from 'react'
-import MRC from 'catalog-ui-search/exports/marionette-region-container'
+import MRC from '../../react-component/marionette-region-container'
 import Paper from '@material-ui/core/Paper'
-const GoldenLayoutView = require('catalog-ui-search/src/main/webapp/component/golden-layout/golden-layout.view.js')
+const GoldenLayoutView = require('./golden-layout.view.js')
 
 type Props = {
   selectionInterface: any

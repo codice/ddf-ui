@@ -12,12 +12,12 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const metacardDefinitions = require('catalog-ui-search/src/main/webapp/component/singletons/metacard-definitions.js')
-const properties = require('catalog-ui-search/src/main/webapp/js/properties.js')
-const user = require('catalog-ui-search/src/main/webapp/component/singletons/user-instance.js')
+const metacardDefinitions = require('../singletons/metacard-definitions.js')
+const properties = require('../../js/properties.js')
+const user = require('../singletons/user-instance.js')
 const Backbone = require('backbone')
-import { LazyQueryResults } from 'catalog-ui-search/src/main/webapp/js/model/LazyQueryResult/LazyQueryResults'
 import { Header } from './table-header'
+import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 const _ = require('underscore')
 
 const filteredAttributesModel = Backbone.Model.extend({

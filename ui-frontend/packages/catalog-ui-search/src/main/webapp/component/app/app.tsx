@@ -5,31 +5,15 @@ import {
   Route,
   useLocation,
   useHistory,
-  useParams,
   RouteProps,
   LinkProps,
 } from 'react-router-dom'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import { default as SearchIcon } from '@material-ui/icons/Search'
-import ImageSearch from '@material-ui/icons/ImageSearch'
 
-import { providers as Providers } from '../../extension-points/providers'
-const properties = require('catalog-ui-search/src/main/webapp/js/properties.js')
-import SourcesPage from 'catalog-ui-search/src/main/webapp/react-component/sources'
-import SourcesPageIcon from '@material-ui/icons/Cloud'
-import AboutPage from 'catalog-ui-search/src/main/webapp/react-component/about'
-import AboutPageIcon from '@material-ui/icons/Info'
+const properties = require('../../js/properties.js')
+
 import Grid from '@material-ui/core/Grid'
-const BackboneRouterModel = require('catalog-ui-search/src/main/webapp/component/router/router.js')
-import UserSettings from '../../react-component/user-settings/user-settings'
-
-import { Location } from 'history'
-const wreqr = require('catalog-ui-search/src/main/webapp/js/wreqr.js')
 const $ = require('jquery')
-import { createGlobalStyle } from 'styled-components'
-import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-import MRC from '../../react-component/marionette-region-container'
-import { HomePage } from '../pages/home/home'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
@@ -49,14 +33,11 @@ import { Memo } from '../memo/memo'
 import HelpIcon from '@material-ui/icons/Help'
 import NotificationsIcon from '@material-ui/icons/Notifications'
 import PersonIcon from '@material-ui/icons/Person'
-const IngestView = require('../ingest/ingest.view')
-const notifications = require('../singletons/user-notifications.js')
 const userInstance = require('../singletons/user-instance.js')
-import UserNotifications from '../../react-component/user-notifications/user-notifications'
 import UserView from '../../react-component/user'
 const HelpView = require('../help/help.view.js')
-const drawerWidth = 240
-
+import { GlobalStyles } from './global-styles'
+import CancelDrawing from './cancel-drawing'
 export const handleBase64EncodedImages = (url: string) => {
   if (url && url.startsWith('data:')) {
     return url
@@ -64,142 +45,12 @@ export const handleBase64EncodedImages = (url: string) => {
   return `data:image/png;base64,${url}`
 }
 
-const BootstrapFixGlobalStyle = createGlobalStyle`
-  /* Only needed because we import 'bootstrap.less' in catalog-ui-search. */
-  legend {
-    /* Unset all properties */
-    all: unset;
-
-    /* Place back material-ui styling */
-    padding: 0 !important;
-    text-align: left !important;
-    transition: width 200ms cubic-bezier(0, 0, 0.2, 1) 0ms;
-    line-height: 11px !important;
-  }
-
-  /* So we match Material */
-  .navigation-item + .navigation-item {
-    margin-left: 10px;
-  }
-  .navigation-item:not(:last-of-type) {
-    border-radius: 25px; 
-  }
-
-  .inspector-content {
-    transform: none;
-  }
-  .MuiPickersModal-dialogRootWider {
-    min-width: 500px !important;
-  }
-  .MuiPickersBasePicker-pickerView {
-    max-width: none !important;
-  }
-  .MuiDialog-paperWidthSm {
-    max-width: none !important;
-  }
-
-  .no-resource {
-    *[data-id='Overwrite'] {
-      display: none !important;
-    }
-  }
-  .federated {
-    *[data-id='Notes'] {
-      display: none !important;
-    }
-  }
-`
-
-type IndividualRouteType = {
+export type IndividualRouteType = {
   name: string
   shortName: string
   Icon: any
   routeProps: RouteProps
   linkProps: LinkProps
-}
-
-const RouteInformation = [
-  {
-    name: 'Search',
-    shortName: 'Search',
-    Icon: SearchIcon,
-    routeProps: {
-      exact: true,
-      path: ['/home'],
-      children: () => {
-        return <HomePage />
-      },
-    },
-    linkProps: {
-      to: '/home',
-    },
-  },
-  {
-    name: 'Upload',
-    shortName: 'Upload',
-    Icon: ImageSearch,
-    routeProps: {
-      path: '/upload',
-      children: () => {
-        return (
-          <MRC
-            style={{
-              height: '100%',
-              width: '100%',
-            }}
-            view={IngestView}
-          />
-        )
-      },
-    },
-    linkProps: {
-      to: '/upload',
-    },
-  },
-  {
-    name: 'Sources',
-    shortName: 'Sources',
-    Icon: SourcesPageIcon,
-    routeProps: {
-      path: '/sources',
-      children: () => {
-        return <SourcesPage />
-      },
-    },
-    linkProps: {
-      to: '/sources',
-    },
-  },
-  {
-    name: 'About',
-    shortName: 'About',
-    Icon: AboutPageIcon,
-    routeProps: {
-      path: '/about',
-      children: () => {
-        return <AboutPage />
-      },
-    },
-    linkProps: {
-      to: '/about',
-    },
-  },
-] as IndividualRouteType[]
-
-BackboneRouterModel.set({
-  name: '',
-  path: '',
-  args: [''],
-})
-
-/**
- * Backbone based routes use name to see if they're open, so we use this
- */
-const pathnameToName = ({ location }: { location: Location<any> }) => {
-  if (location.pathname.includes('/metacards/')) {
-    return 'openMetacard'
-  }
-  return ''
 }
 
 const matchesRoute = ({
@@ -225,69 +76,33 @@ const matchesRoute = ({
   return false
 }
 
-const App = () => {
+type PermissiveComponentType = (() => JSX.Element) | React.ComponentType<any>
+
+type AppPropsType = {
+  RouteInformation: IndividualRouteType[]
+  NotificationsComponent: PermissiveComponentType
+  SettingsComponent: PermissiveComponentType
+}
+
+/**
+ * If you're not using a custom loading screen,
+ * this handles removing the default one for you on first render
+ * of the app.
+ */
+export const useDefaultWelcome = () => {
+  React.useEffect(() => {
+    const loadingElement = document.querySelector('#loading')
+    if (loadingElement) {
+      loadingElement.classList.remove('is-open')
+    }
+  }, [])
+}
+
+export const useDefaultHelp = () => {
   const location = useLocation()
   const history = useHistory()
+
   const queryParams = queryString.parse(location.search)
-  const { listenTo } = useBackbone()
-  let defaultOpen =
-    localStorage.getItem('shell.drawer') === 'true' ? true : false
-  const [navOpen, setNavOpen] = React.useState(defaultOpen)
-  const [withinNav, setWithinNav] = React.useState(false)
-
-  function handleDrawerOpen() {
-    localStorage.setItem('shell.drawer', 'true')
-    setNavOpen(true)
-  }
-
-  function handleDrawerClose() {
-    localStorage.setItem('shell.drawer', 'false')
-    setNavOpen(false)
-  }
-
-  React.useEffect(() => {
-    /**
-     * Makes it so the old way of updating the route still works with React Router
-     */
-    listenTo(
-      wreqr.vent,
-      'router:navigate',
-      ({ fragment, options }: { fragment: string; options: any }) => {
-        history.push(`/${fragment}`)
-        console.log(fragment)
-        console.log(options)
-      }
-    )
-    /**
-     * Updates the slideouts to not care about cutting things off
-     */
-    const slideouts = document.querySelectorAll('intrigue-slideout')
-    slideouts.forEach(slideout => {
-      slideout.classList.add('is-right')
-    })
-  }, [])
-
-  React.useEffect(() => {
-    /**
-     * Makes it so routes that depend on the backbone router way of doing things still work
-     */
-    if (BackboneRouterModel.toJSON().path !== location.pathname) {
-      const urlParts = location.pathname.split('/')
-      BackboneRouterModel.set({
-        name: pathnameToName({ location }),
-        path: location.pathname,
-        args: [urlParts[urlParts.length - 1]],
-      })
-      setTimeout(() => {
-        $(window).resize()
-        wreqr.vent.trigger('resize')
-      }, 500)
-    }
-  })
-
-  // todo add branding in
-  //@ts-ignore
-  const menuIcon, upperLeftLogo, lowerLeftBackground, lowerLeftLogo
 
   React.useEffect(() => {
     const openHelp = Boolean(queryParams['global-help'])
@@ -302,481 +117,505 @@ const App = () => {
       HelpView.toggleHints()
     }
   })
+}
 
+const App = ({
+  RouteInformation,
+  NotificationsComponent,
+  SettingsComponent,
+}: AppPropsType) => {
+  const location = useLocation()
+  const history = useHistory()
+  const queryParams = queryString.parse(location.search)
+  let defaultOpen =
+    localStorage.getItem('shell.drawer') === 'true' ? true : false
+  const [navOpen, setNavOpen] = React.useState(defaultOpen)
+  const [withinNav, setWithinNav] = React.useState(false)
+
+  function handleDrawerOpen() {
+    localStorage.setItem('shell.drawer', 'true')
+    setNavOpen(true)
+    setTimeout(() => {
+      $(window).resize() // needed for golden layout to resize
+    }, 250)
+  }
+
+  function handleDrawerClose() {
+    localStorage.setItem('shell.drawer', 'false')
+    setNavOpen(false)
+    setTimeout(() => {
+      $(window).resize() // needed for golden layout to resize
+    }, 250)
+  }
   return (
-    <Grid
-      container
-      className="h-full w-full overflow-hidden"
-      direction="column"
-      justify="space-between"
-      wrap="nowrap"
-    >
-      <Grid item className="w-full">
-        {properties.ui.header ? (
-          <Typography
-            align="center"
-            style={{
-              background: properties.ui.background,
-              color: properties.ui.color,
-            }}
-          >
-            {properties.ui.header}
-          </Typography>
-        ) : null}
-      </Grid>
-      <Grid item className="w-full h-full relative overflow-hidden">
-        <Grid
-          container
-          direction="row"
-          wrap="nowrap"
-          alignItems="stretch"
-          className="w-full h-full"
-        >
+    <>
+      {/* Don't move CSSBaseline or GlobalStyles to providers, since we have multiple react roots.   */}
+      <CssBaseline />
+      <GlobalStyles />
+      <CancelDrawing />
+      <Grid
+        container
+        className="h-full w-full overflow-hidden"
+        direction="column"
+        justify="space-between"
+        wrap="nowrap"
+      >
+        <Grid item className="w-full">
+          {properties.ui.header ? (
+            <Typography
+              align="center"
+              style={{
+                background: properties.ui.background,
+                color: properties.ui.color,
+              }}
+            >
+              {properties.ui.header}
+            </Typography>
+          ) : null}
+        </Grid>
+        <Grid item className="w-full h-full relative overflow-hidden">
           <Grid
-            item
-            className={`${
-              navOpen ? 'w-64' : 'w-20'
-            } transition-all duration-200 ease-in-out relative z-10`}
-            onMouseEnter={() => {
-              setWithinNav(true)
-            }}
-            onMouseOver={() => {
-              setWithinNav(true)
-            }}
-            onMouseOut={() => {
-              setWithinNav(false)
-            }}
-            onMouseLeave={() => {
-              setWithinNav(false)
-            }}
+            container
+            direction="row"
+            wrap="nowrap"
+            alignItems="stretch"
+            className="w-full h-full"
           >
-            <Paper elevation={6} className="h-full">
-              <Grid container direction="column" className="h-full w-full">
-                <Grid item className="w-full">
-                  {navOpen ? (
-                    <>
-                      <Grid
-                        container
-                        wrap="nowrap"
-                        alignItems="center"
-                        className="w-full h-full overflow-hidden"
+            <Grid
+              item
+              className={`${
+                navOpen ? 'w-64' : 'w-20'
+              } transition-all duration-200 ease-in-out relative z-10`}
+              onMouseEnter={() => {
+                setWithinNav(true)
+              }}
+              onMouseOver={() => {
+                setWithinNav(true)
+              }}
+              onMouseOut={() => {
+                setWithinNav(false)
+              }}
+              onMouseLeave={() => {
+                setWithinNav(false)
+              }}
+            >
+              <Paper elevation={6} className="h-full">
+                <Grid
+                  container
+                  direction="column"
+                  className="h-full w-full"
+                  wrap="nowrap"
+                >
+                  <Grid item className="w-full h-16 flex-shrink-0">
+                    {navOpen ? (
+                      <>
+                        <Grid
+                          container
+                          wrap="nowrap"
+                          alignItems="center"
+                          className="w-full h-full overflow-hidden"
+                        >
+                          <Grid
+                            item
+                            className="pl-3 py-1 pr-1 w-full relative h-full"
+                          >
+                            {properties.topLeftLogoSrc ? (
+                              <img
+                                className="max-h-full max-w-full absolute left-0 transform -translate-y-1/2 top-1/2"
+                                src={handleBase64EncodedImages(
+                                  properties.topLeftLogoSrc
+                                )}
+                              />
+                            ) : (
+                              <Grid
+                                container
+                                direction="column"
+                                className="pl-3"
+                                justify="center"
+                              >
+                                <Grid item>
+                                  <Typography>{properties.branding}</Typography>
+                                </Grid>
+                                <Grid item>
+                                  <Typography>{properties.product}</Typography>
+                                </Grid>
+                              </Grid>
+                            )}
+                          </Grid>
+                          <Grid item className="ml-auto">
+                            <IconButton
+                              className="h-auto"
+                              onClick={handleDrawerClose}
+                            >
+                              <ChevronLeftIcon />
+                            </IconButton>
+                          </Grid>
+                        </Grid>
+                      </>
+                    ) : (
+                      <Button
+                        color="inherit"
+                        aria-label="open drawer"
+                        onClick={handleDrawerOpen}
+                        className="w-full h-full"
                         style={{
-                          maxHeight: '64px',
+                          padding: properties.menuIconSrc ? '0px' : '12px',
                         }}
                       >
-                        <Grid
-                          item
-                          className="w-full relative"
-                          style={{
-                            height: upperLeftLogo ? '100%' : 'auto',
-                          }}
-                        >
-                          {upperLeftLogo ? (
+                        {properties.menuIconSrc ? (
+                          <>
                             <img
-                              className="max-h-full max-w-full absolute left-0 transform -translate-y-1/2 top-1/2"
-                              style={{
-                                padding: '5px 0px',
-                              }}
-                              src={handleBase64EncodedImages(upperLeftLogo)}
+                              src={handleBase64EncodedImages(
+                                properties.menuIconSrc
+                              )}
+                              style={{ width: '100%', maxHeight: '64px' }}
                             />
-                          ) : (
-                            <Grid container direction="column" className="pl-3">
-                              <Grid item>
-                                <Typography>{properties.branding}</Typography>
-                              </Grid>
-                              <Grid item>
-                                <Typography>{properties.product}</Typography>
-                              </Grid>
-                            </Grid>
-                          )}
-                        </Grid>
-                        <Grid item className="ml-auto">
-                          <IconButton
-                            className="h-auto"
-                            onClick={handleDrawerClose}
-                          >
-                            <ChevronLeftIcon />
-                          </IconButton>
-                        </Grid>
-                      </Grid>
-                    </>
-                  ) : (
-                    <Button
-                      color="inherit"
-                      aria-label="open drawer"
-                      onClick={handleDrawerOpen}
-                      className="w-full h-auto"
-                      style={{
-                        padding: menuIcon ? '0px' : '12px',
-                      }}
-                    >
-                      {menuIcon ? (
-                        <>
-                          <img
-                            src={handleBase64EncodedImages(menuIcon)}
-                            style={{ width: '51.42px' }}
-                          />
-                        </>
-                      ) : (
-                        <MenuIcon />
-                      )}
-                    </Button>
-                  )}
+                          </>
+                        ) : (
+                          <MenuIcon />
+                        )}
+                      </Button>
+                    )}
 
+                    <Divider />
+                  </Grid>
                   <Divider />
-                  <List className="overflow-hidden ">
-                    {RouteInformation.map(routeInfo => {
-                      const isSelected = matchesRoute({
-                        routeInfo,
-                        pathname: location.pathname,
-                      })
-                      return (
+                  <Grid item className="flex-shrink-0">
+                    <List className="overflow-hidden ">
+                      {RouteInformation.map(routeInfo => {
+                        const isSelected = matchesRoute({
+                          routeInfo,
+                          pathname: location.pathname,
+                        })
+                        return (
+                          <ListItem
+                            key={routeInfo.name}
+                            button
+                            component={Link}
+                            to={routeInfo.linkProps.to}
+                            className={`${
+                              !withinNav && !isSelected ? 'opacity-25' : ''
+                            } relative py-3 focus:opacity-100 hover:opacity-100 transition-opacity`}
+                          >
+                            <ListItemIcon>
+                              {routeInfo.Icon ? (
+                                <routeInfo.Icon
+                                  className="transition duration-200 ease-in-out"
+                                  style={{
+                                    transform: navOpen
+                                      ? 'none'
+                                      : 'translateX(2px) translateY(-10px)',
+                                  }}
+                                />
+                              ) : null}
+                              <Typography
+                                variant="body2"
+                                className={`${
+                                  navOpen ? 'opacity-0' : 'opacity-100'
+                                } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
+                              >
+                                {routeInfo.shortName}
+                              </Typography>
+                            </ListItemIcon>
+                            <ListItemText primary={routeInfo.name} />
+                          </ListItem>
+                        )
+                      })}
+                    </List>
+                  </Grid>
+                  <Divider />
+                  <Grid item className="relative h-full overflow-hidden">
+                    {properties.bottomLeftBackgroundSrc ? (
+                      <img
+                        className={`${
+                          withinNav ? 'opacity-100' : 'opacity-50'
+                        } duration-200 ease-in-out transition-all w-auto h-full absolute max-w-none`}
+                        src={handleBase64EncodedImages(
+                          properties.bottomLeftBackgroundSrc
+                        )}
+                      />
+                    ) : null}
+                  </Grid>
+                  <Grid
+                    item
+                    className="mt-auto overflow-hidden w-full flex-shrink-0"
+                  >
+                    <Divider />
+                    <Grid
+                      container
+                      className="w-full"
+                      alignItems="center"
+                      direction="column"
+                      wrap="nowrap"
+                    >
+                      <Grid item className="w-full">
+                        {/** The song and dance around 'a' vs Link has to do with react router not supporting these outside links */}
                         <ListItem
-                          key={routeInfo.name}
                           button
-                          component={Link}
-                          to={routeInfo.linkProps.to}
+                          component={properties.helpUrl ? 'a' : Link}
+                          href={properties.helpUrl}
+                          to={
+                            properties.helpUrl
+                              ? properties.helpurl
+                              : {
+                                  pathname: `${location.pathname}`,
+                                  search: `${queryString.stringify({
+                                    ...queryParams,
+                                    'global-help': 'Help',
+                                  })}`,
+                                }
+                          }
+                          target={properties.helpUrl ? '_blank' : undefined}
                           className={`${
-                            !withinNav && !isSelected ? 'opacity-25' : ''
-                          } relative py-3 focus:opacity-100 hover:opacity-100 transition-opacity`}
+                            !withinNav ? 'opacity-25' : ''
+                          } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
                         >
                           <ListItemIcon>
-                            {routeInfo.Icon ? (
-                              <routeInfo.Icon
-                                className="transition duration-200 ease-in-out"
-                                style={{
-                                  transform: navOpen
-                                    ? 'none'
-                                    : 'translateX(2px) translateY(-10px)',
-                                }}
-                              />
-                            ) : null}
+                            <HelpIcon
+                              className="transition duration-200 ease-in-out"
+                              style={{
+                                transform: navOpen
+                                  ? 'none'
+                                  : 'translateX(2px) translateY(-10px)',
+                              }}
+                            />
                             <Typography
                               variant="body2"
                               className={`${
                                 navOpen ? 'opacity-0' : 'opacity-100'
                               } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
                             >
-                              {routeInfo.shortName}
+                              Help
                             </Typography>
                           </ListItemIcon>
-                          <ListItemText primary={routeInfo.name} />
+                          <ListItemText primary={'Help'} />
                         </ListItem>
-                      )
-                    })}
-                  </List>
-
-                  <Divider />
-                </Grid>
-                <Grid item className="mt-auto overflow-hidden w-full">
-                  <Grid
-                    container
-                    className="w-full"
-                    alignItems="center"
-                    direction="column"
-                    wrap="nowrap"
-                  >
-                    <Grid item className="w-full">
-                      <ListItem
-                        button
-                        component={Link}
-                        to={{
-                          pathname: `${location.pathname}`,
-                          search: `${queryString.stringify({
-                            ...queryParams,
-                            'global-help': 'Help',
-                          })}`,
-                        }}
-                        className={`${
-                          !withinNav ? 'opacity-25' : ''
-                        } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
-                      >
-                        <ListItemIcon>
-                          <HelpIcon
-                            className="transition duration-200 ease-in-out"
-                            style={{
-                              transform: navOpen
-                                ? 'none'
-                                : 'translateX(2px) translateY(-10px)',
-                            }}
-                          />
-                          <Typography
-                            variant="body2"
-                            className={`${
-                              navOpen ? 'opacity-0' : 'opacity-100'
-                            } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
-                          >
-                            Help
-                          </Typography>
-                        </ListItemIcon>
-                        <ListItemText primary={'Help'} />
-                      </ListItem>
-                    </Grid>
-                    <Grid item className="w-full">
-                      {(() => {
-                        const open = Boolean(queryParams['global-settings'])
-                        return (
-                          <>
-                            <ListItem
-                              button
-                              component={Link}
-                              to={{
-                                pathname: `${location.pathname}`,
-                                search: `${queryString.stringify({
-                                  ...queryParams,
-                                  'global-settings': 'Settings',
-                                })}`,
-                              }}
-                              className={`${
-                                !withinNav ? 'opacity-25' : ''
-                              } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
-                            >
-                              <ListItemIcon>
-                                <SettingsIcon
-                                  className="transition duration-200 ease-in-out"
-                                  style={{
-                                    transform: navOpen
-                                      ? 'none'
-                                      : 'translateX(2px) translateY(-10px)',
-                                  }}
-                                />
-                                <Typography
-                                  variant="body2"
-                                  className={`${
-                                    navOpen ? 'opacity-0' : 'opacity-100'
-                                  } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
-                                >
-                                  Settings
-                                </Typography>
-                              </ListItemIcon>
-                              <ListItemText primary={'Settings'} />
-                            </ListItem>
-                            <Drawer
-                              anchor="left"
-                              open={open}
-                              onClose={() => {
-                                delete queryParams['global-settings']
-                                history.push(
-                                  `${location.pathname}?${queryString.stringify(
-                                    queryParams
-                                  )}`
-                                )
-                              }}
-                              PaperProps={{
-                                className: 'min-w-120 max-w-4/5 ',
-                              }}
-                            >
-                              <UserSettings />
-                            </Drawer>
-                          </>
-                        )
-                      })()}
-                    </Grid>
-
-                    <Grid item className="w-full">
-                      {(() => {
-                        const open = Boolean(
-                          queryParams['global-notifications']
-                        )
-
-                        return (
-                          <>
-                            <ListItem
-                              button
-                              component={Link}
-                              to={{
-                                pathname: `${location.pathname}`,
-                                search: `${queryString.stringify({
-                                  ...queryParams,
-                                  'global-notifications': 'Notifications',
-                                })}`,
-                              }}
-                              className={`${
-                                !withinNav ? 'opacity-25' : ''
-                              } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
-                            >
-                              <ListItemIcon>
-                                <NotificationsIcon
-                                  className="transition duration-200 ease-in-out"
-                                  style={{
-                                    transform: navOpen
-                                      ? 'none'
-                                      : 'translateX(2px) translateY(-10px)',
-                                  }}
-                                />
-                                <Typography
-                                  variant="body2"
-                                  className={`${
-                                    navOpen ? 'opacity-0' : 'opacity-100'
-                                  } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
-                                >
-                                  Notices
-                                </Typography>
-                              </ListItemIcon>
-                              <ListItemText primary={'Notifications'} />
-                            </ListItem>
-                            <Drawer
-                              anchor="left"
-                              open={open}
-                              onClose={() => {
-                                delete queryParams['global-notifications']
-                                history.push(
-                                  `${location.pathname}?${queryString.stringify(
-                                    queryParams
-                                  )}`
-                                )
-                              }}
-                              PaperProps={{
-                                className: 'min-w-120 max-w-4/5 ',
-                              }}
-                            >
-                              <UserNotifications />
-                            </Drawer>
-                          </>
-                        )
-                      })()}
-                    </Grid>
-                    <Grid item className="w-full">
-                      {(() => {
-                        const open = Boolean(queryParams['global-user'])
-                        return (
-                          <>
-                            <ListItem
-                              button
-                              component={Link}
-                              to={{
-                                pathname: `${location.pathname}`,
-                                search: `${queryString.stringify({
-                                  ...queryParams,
-                                  'global-user': 'User',
-                                })}`,
-                              }}
-                              className={`${
-                                !withinNav ? 'opacity-25' : ''
-                              } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
-                            >
-                              <ListItemIcon>
-                                <PersonIcon
-                                  className="transition duration-200 ease-in-out"
-                                  style={{
-                                    transform: navOpen
-                                      ? 'none'
-                                      : 'translateX(2px) translateY(-10px)',
-                                  }}
-                                />
-                                <Typography
-                                  variant="body2"
-                                  className={`${
-                                    navOpen ? 'opacity-0' : 'opacity-100'
-                                  } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out max-w-full truncate px-1`}
-                                >
-                                  {userInstance.getUserName()}
-                                </Typography>
-                              </ListItemIcon>
-                              <ListItemText
-                                primaryTypographyProps={{
-                                  className: 'truncate',
+                      </Grid>
+                      <Grid item className="w-full">
+                        {(() => {
+                          const open = Boolean(queryParams['global-settings'])
+                          return (
+                            <>
+                              <ListItem
+                                button
+                                component={Link}
+                                to={{
+                                  pathname: `${location.pathname}`,
+                                  search: `${queryString.stringify({
+                                    ...queryParams,
+                                    'global-settings': 'Settings',
+                                  })}`,
                                 }}
-                                primary={`asdfasdfsafsdaafsdfasddfasafdsafdsafdsfadsfads`}
-                              />
-                            </ListItem>
-                            <Drawer
-                              anchor="left"
-                              open={open}
-                              onClose={() => {
-                                delete queryParams['global-user']
-                                history.push(
-                                  `${location.pathname}?${queryString.stringify(
-                                    queryParams
-                                  )}`
-                                )
-                              }}
-                              PaperProps={{
-                                className: 'min-w-120 max-w-4/5 ',
-                              }}
-                            >
-                              <UserView />
-                            </Drawer>
-                          </>
-                        )
-                      })()}
+                                className={`${
+                                  !withinNav ? 'opacity-25' : ''
+                                } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
+                              >
+                                <ListItemIcon>
+                                  <SettingsIcon
+                                    className="transition duration-200 ease-in-out"
+                                    style={{
+                                      transform: navOpen
+                                        ? 'none'
+                                        : 'translateX(2px) translateY(-10px)',
+                                    }}
+                                  />
+                                  <Typography
+                                    variant="body2"
+                                    className={`${
+                                      navOpen ? 'opacity-0' : 'opacity-100'
+                                    } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
+                                  >
+                                    Settings
+                                  </Typography>
+                                </ListItemIcon>
+                                <ListItemText primary={'Settings'} />
+                              </ListItem>
+                              <Drawer
+                                anchor="left"
+                                open={open}
+                                onClose={() => {
+                                  delete queryParams['global-settings']
+                                  history.push(
+                                    `${
+                                      location.pathname
+                                    }?${queryString.stringify(queryParams)}`
+                                  )
+                                }}
+                                PaperProps={{
+                                  className: 'min-w-120 max-w-4/5 ',
+                                }}
+                              >
+                                <SettingsComponent />
+                              </Drawer>
+                            </>
+                          )
+                        })()}
+                      </Grid>
+
+                      <Grid item className="w-full">
+                        {(() => {
+                          const open = Boolean(
+                            queryParams['global-notifications']
+                          )
+
+                          return (
+                            <>
+                              <ListItem
+                                button
+                                component={Link}
+                                to={{
+                                  pathname: `${location.pathname}`,
+                                  search: `${queryString.stringify({
+                                    ...queryParams,
+                                    'global-notifications': 'Notifications',
+                                  })}`,
+                                }}
+                                className={`${
+                                  !withinNav ? 'opacity-25' : ''
+                                } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
+                              >
+                                <ListItemIcon>
+                                  <NotificationsIcon
+                                    className="transition duration-200 ease-in-out"
+                                    style={{
+                                      transform: navOpen
+                                        ? 'none'
+                                        : 'translateX(2px) translateY(-10px)',
+                                    }}
+                                  />
+                                  <Typography
+                                    variant="body2"
+                                    className={`${
+                                      navOpen ? 'opacity-0' : 'opacity-100'
+                                    } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
+                                  >
+                                    Notices
+                                  </Typography>
+                                </ListItemIcon>
+                                <ListItemText primary={'Notifications'} />
+                              </ListItem>
+                              <Drawer
+                                anchor="left"
+                                open={open}
+                                onClose={() => {
+                                  delete queryParams['global-notifications']
+                                  history.push(
+                                    `${
+                                      location.pathname
+                                    }?${queryString.stringify(queryParams)}`
+                                  )
+                                }}
+                                PaperProps={{
+                                  className: 'min-w-120 max-w-4/5 ',
+                                }}
+                              >
+                                <NotificationsComponent />
+                              </Drawer>
+                            </>
+                          )
+                        })()}
+                      </Grid>
+                      <Grid item className="w-full">
+                        {(() => {
+                          const open = Boolean(queryParams['global-user'])
+                          return (
+                            <>
+                              <ListItem
+                                button
+                                component={Link}
+                                to={{
+                                  pathname: `${location.pathname}`,
+                                  search: `${queryString.stringify({
+                                    ...queryParams,
+                                    'global-user': 'User',
+                                  })}`,
+                                }}
+                                className={`${
+                                  !withinNav ? 'opacity-25' : ''
+                                } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
+                              >
+                                <ListItemIcon>
+                                  <PersonIcon
+                                    className="transition duration-200 ease-in-out"
+                                    style={{
+                                      transform: navOpen
+                                        ? 'none'
+                                        : 'translateX(2px) translateY(-10px)',
+                                    }}
+                                  />
+                                  <Typography
+                                    variant="body2"
+                                    className={`${
+                                      navOpen ? 'opacity-0' : 'opacity-100'
+                                    } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out max-w-full truncate px-1`}
+                                  >
+                                    {userInstance.getUserName()}
+                                  </Typography>
+                                </ListItemIcon>
+                                <ListItemText
+                                  primaryTypographyProps={{
+                                    className: 'truncate',
+                                  }}
+                                  primary={userInstance.getUserName()}
+                                />
+                              </ListItem>
+                              <Drawer
+                                anchor="left"
+                                open={open}
+                                onClose={() => {
+                                  delete queryParams['global-user']
+                                  history.push(
+                                    `${
+                                      location.pathname
+                                    }?${queryString.stringify(queryParams)}`
+                                  )
+                                }}
+                                PaperProps={{
+                                  className: 'min-w-120 max-w-4/5 ',
+                                }}
+                              >
+                                <UserView />
+                              </Drawer>
+                            </>
+                          )
+                        })()}
+                      </Grid>
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item className="w-full">
-                  <div className="h-full overflow-hidden relative">
-                    {lowerLeftBackground ? (
-                      <img
-                        className={
-                          'h-full absolute scale-200 opacity-50 -z-1 transform'
-                        }
-                        src={handleBase64EncodedImages(lowerLeftBackground)}
-                      />
-                    ) : null}
-                    <a
-                      href="../"
-                      className="absolute bottom-0 bg-transparent p-0 left-1/2 transform -translate-x-1/2"
-                    >
-                      <img
-                        style={{
-                          width: navOpen ? `${drawerWidth - 20}px` : '52px',
-                          padding: navOpen ? `20px` : '5px',
-                        }}
-                        src={handleBase64EncodedImages(
-                          lowerLeftLogo || properties.ui.productImage
-                        )}
-                      />
-                    </a>
-                  </div>
-                </Grid>
-              </Grid>
-            </Paper>
-          </Grid>
-          <Memo>
-            <Grid item className="w-full h-full overflow-hidden relative z-0">
-              <Paper className="w-full h-full">
-                <Switch>
-                  {RouteInformation.map(routeInfo => {
-                    return (
-                      <Route key={routeInfo.name} {...routeInfo.routeProps} />
-                    )
-                  })}
-                </Switch>
               </Paper>
             </Grid>
-          </Memo>
+            <Memo>
+              <Grid item className="w-full h-full overflow-hidden relative z-0">
+                <Paper className="w-full h-full">
+                  <Switch>
+                    {RouteInformation.map(routeInfo => {
+                      return (
+                        <Route key={routeInfo.name} {...routeInfo.routeProps} />
+                      )
+                    })}
+                  </Switch>
+                </Paper>
+              </Grid>
+            </Memo>
+          </Grid>
+        </Grid>
+        <Grid item className="w-full">
+          {properties.ui.footer ? (
+            <Typography
+              align="center"
+              style={{
+                background: properties.ui.background,
+                color: properties.ui.color,
+              }}
+            >
+              {properties.ui.footer}
+            </Typography>
+          ) : null}
         </Grid>
       </Grid>
-      <Grid item style={{ width: '100%' }}>
-        {properties.ui.footer ? (
-          <Typography
-            align="center"
-            style={{
-              background: properties.ui.background,
-              color: properties.ui.color,
-            }}
-          >
-            {properties.ui.footer}
-          </Typography>
-        ) : null}
-      </Grid>
-    </Grid>
+    </>
   )
 }
 
-/**
- * You're asking why don't we push this into the above component?
- *
- * Main reason is we need to use some context that router provides.  So we need to separate at least the Router component to be above it.
- */
-const AppComponent = function() {
-  return (
-    <Providers>
-      <CssBaseline />
-      <BootstrapFixGlobalStyle />
-      <App />
-    </Providers>
-  )
-}
-
-export default hot(AppComponent)
+export default hot(App)

@@ -109,7 +109,7 @@ class VisualizationSelector extends React.Component {
                 JSON.stringify(this.props.goldenLayout.toConfig()).includes(
                   `"componentName":"${componentName}"`
                 )
-                  ? 'hidden'
+                  ? '' /** change to hidden to only allow one of each visual */
                   : ''
               }
             >

@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import Button from '@material-ui/core/Button'
-import { useLazyResultsStatusFromSelectionInterface } from 'catalog-ui-search/src/main/webapp/component/selection-interface/hooks'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import { useLazyResultsStatusFromSelectionInterface } from '../selection-interface/hooks'
 
 type Props = {
   selectionInterface: any

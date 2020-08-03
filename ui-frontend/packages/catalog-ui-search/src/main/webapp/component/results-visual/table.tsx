@@ -12,28 +12,27 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import ExtensionPoints from 'catalog-ui-search/src/main/webapp/extension-points'
+import ExtensionPoints from '../../extension-points'
 import * as React from 'react'
-const lightboxInstance = require('catalog-ui-search/src/main/webapp/component/lightbox/lightbox.view.instance.js')
+const lightboxInstance = require('../lightbox/lightbox.view.instance.js')
 import Button from '@material-ui/core/Button'
-const user = require('catalog-ui-search/src/main/webapp/component/singletons/user-instance.js')
-const properties = require('catalog-ui-search/src/main/webapp/js/properties.js')
-const TableVisibility = require('catalog-ui-search/src/main/webapp/component/visualization/table/table-visibility.view')
-const TableRearrange = require('catalog-ui-search/src/main/webapp/component/visualization/table/table-rearrange.view')
+const user = require('../singletons/user-instance.js')
+const TableVisibility = require('../visualization/table/table-visibility.view')
+const TableRearrange = require('../visualization/table/table-rearrange.view')
 import { hot } from 'react-hot-loader'
-import MRC from 'catalog-ui-search/src/main/webapp/react-component/marionette-region-container'
+import MRC from '../../react-component/marionette-region-container'
 import { AutoVariableSizeList } from 'react-window-components'
 import Grid from '@material-ui/core/Grid'
 import styled from 'styled-components'
 import { Header } from './table-header'
 import ResultItemRow from './result-item-row'
 import { useTheme } from '@material-ui/core/styles'
-import { LazyQueryResult } from 'catalog-ui-search/src/main/webapp/js/model/LazyQueryResult/LazyQueryResult'
-import { LazyQueryResults } from 'catalog-ui-search/src/main/webapp/js/model/LazyQueryResult/LazyQueryResults'
 import { getFilteredAttributes, getVisibleHeaders } from './table-header-utils'
 import ViewColumnIcon from '@material-ui/icons/ViewColumn'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 ;(() => {
   const oldHandleSave = TableVisibility.prototype.handleSave
   TableVisibility.prototype.handleSave = function() {

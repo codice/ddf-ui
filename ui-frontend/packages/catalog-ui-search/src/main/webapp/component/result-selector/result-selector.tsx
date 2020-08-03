@@ -3,7 +3,6 @@ import Spellcheck from '../spellcheck/spellcheck'
 import Grid from '@material-ui/core/Grid'
 import { hot } from 'react-hot-loader'
 import QueryFeed from './query-feed'
-import { useLazyResultsStatusFromSelectionInterface } from 'catalog-ui-search/src/main/webapp/component/selection-interface/hooks'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Paging from './paging'
 import { Dropdown } from '@connexta/atlas/atoms/dropdown'
@@ -15,6 +14,7 @@ import SortIcon from '@material-ui/icons/Sort'
 import ResultFilter from '../result-filter/result-filter'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import EphemeralSearchSort from '../../react-component/query-sort-selection/ephemeral-search-sort'
+import { useLazyResultsStatusFromSelectionInterface } from '../selection-interface/hooks'
 const user = require('../singletons/user-instance.js')
 
 const determineHasResultFilter = () => {

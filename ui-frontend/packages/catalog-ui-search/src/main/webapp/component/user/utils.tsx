@@ -1,4 +1,4 @@
-const userInstance = require('catalog-ui-search/src/main/webapp/component/singletons/user-instance')
+const userInstance = require('../singletons/user-instance')
 
 export const DEFAULT_DATE_TIME_FORMAT = 'DD MMMM YYYY h:mm a Z'
 

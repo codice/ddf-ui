@@ -19,7 +19,7 @@ import TextField from '../../text-field'
 import styled from 'styled-components'
 import { getFilteredSuggestions, inputMatchesSuggestions } from './enumHelper'
 import PropTypes from 'prop-types'
-const properties = require('catalog-ui-search/src/main/webapp/js/properties.js')
+const properties = require('../../../js/properties.js')
 
 const TextWrapper = styled.div`
   padding: ${({ theme }) => theme.minimumSpacing};

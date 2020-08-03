@@ -14,22 +14,19 @@
  **/
 
 import * as React from 'react'
-import { readableColor } from 'polished'
 import LazyMetacardInteractions from './lazy-metacard-interactions'
-const IconHelper = require('catalog-ui-search/src/main/webapp/js/IconHelper.js')
-const properties = require('catalog-ui-search/src/main/webapp/js/properties.js')
-const user = require('catalog-ui-search/src/main/webapp/component/singletons/user-instance.js')
-const metacardDefinitions = require('catalog-ui-search/src/main/webapp/component/singletons/metacard-definitions.js')
-const HandleBarsHelpers = require('catalog-ui-search/src/main/webapp/js/HandlebarsHelpers.js')
+const IconHelper = require('../../js/IconHelper.js')
+const properties = require('../../js/properties.js')
+const user = require('../singletons/user-instance.js')
+const metacardDefinitions = require('../singletons/metacard-definitions.js')
+const HandleBarsHelpers = require('../../js/HandlebarsHelpers.js')
 import { Dropdown } from '@connexta/atlas/atoms/dropdown'
 import Button from '@material-ui/core/Button'
 import LinkIcon from '@material-ui/icons/Link'
 import GetAppIcon from '@material-ui/icons/GetApp'
 import Grid from '@material-ui/core/Grid'
-const Common = require('catalog-ui-search/src/main/webapp/js/Common.js')
+const Common = require('../../js/Common.js')
 import { hot } from 'react-hot-loader'
-import { LazyQueryResult } from 'catalog-ui-search/src/main/webapp/js/model/LazyQueryResult/LazyQueryResult'
-import { useSelectionOfLazyResult } from 'catalog-ui-search/src/main/webapp/js/model/LazyQueryResult/hooks'
 import { useTheme, Paper } from '@material-ui/core'
 const LIST_DISPLAY_TYPE = 'List'
 const GRID_DISPLAY_TYPE = 'Grid'
@@ -39,6 +36,8 @@ import MoreIcon from '@material-ui/icons/MoreVert'
 import WarningIcon from '@material-ui/icons/Warning'
 import { ThemeInterface } from '../../react-component/styles/styled-components/theme'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import { useSelectionOfLazyResult } from '../../js/model/LazyQueryResult/hooks'
 const getResultDisplayType = () =>
   (user &&
     user

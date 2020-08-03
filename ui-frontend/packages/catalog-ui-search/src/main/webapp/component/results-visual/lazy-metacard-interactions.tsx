@@ -15,9 +15,9 @@
 
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import MetacardInteractions from 'catalog-ui-search/src/main/webapp/react-component/metacard-interactions'
+import MetacardInteractions from '../../react-component/metacard-interactions'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 const Backbone = require('backbone')
-import { LazyQueryResult } from 'catalog-ui-search/src/main/webapp/js/model/LazyQueryResult/LazyQueryResult'
 
 type Props = {
   lazyResult: LazyQueryResult

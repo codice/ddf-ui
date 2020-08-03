@@ -6,7 +6,8 @@
   "license": "LGPL-3.0",
   "scripts": {
     "prebuild": "mkdirp target",
-    "build": "ace package"
+    "build": "mkdirp target",
+    "postbuild": "ace package"
   },
   "dependencies": {
     "cesium": "1.44",
@@ -17,6 +18,6 @@
   ],
   "context-path": "/search/catalog/cesium/assets",
   "devDependencies": {
-    "@connexta/ace": "*"
+    "@connexta/ace": "git://github.com/connexta/ace.git#60c7481d6372dfd1a2ec661e7de0a0bbde90ff50"
   }
 }

@@ -4,7 +4,8 @@ import { Resizable, ResizableProps } from 're-resizable'
 import styled from 'styled-components'
 import Paper from '@material-ui/core/Paper'
 import { createCtx } from '@connexta/atlas/typescript/context'
-const wreqr = require('catalog-ui-search/src/main/webapp/js/wreqr.js')
+
+const wreqr = require('../../js/wreqr.js')
 
 export const DEFAULT_AUTO_COLLAPSE_LENGTH = 300
 export const DEFAULT_STARTING_LENGTH = 550

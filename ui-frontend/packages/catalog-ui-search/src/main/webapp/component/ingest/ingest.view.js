@@ -18,7 +18,6 @@ const _ = require('underscore')
 const $ = require('jquery')
 const template = require('./ingest.hbs')
 const CustomElements = require('../../js/CustomElements.js')
-const router = require('../router/router.js')
 const IngestDetails = require('../ingest-details/ingest-details.view.js')
 const IngestEditor = require('../ingest-editor/ingest-editor.view.js')
 const properties = require('../../js/properties.js')
@@ -27,26 +26,9 @@ const announcement = require('../announcement/index.jsx')
 module.exports = Marionette.LayoutView.extend({
   template,
   tagName: CustomElements.register('ingest'),
-  modelEvents: {},
-  events: {},
-  ui: {},
   regions: {
     ingestDetails: '.ingest-details',
     ingestEditor: '.ingest-editor',
-  },
-  initialize() {
-    this.listenTo(router, 'change', this.handleRoute)
-  },
-  handleRoute() {
-    if (
-      router.toJSON().name === 'openIngest' &&
-      !properties.isUploadEnabled()
-    ) {
-      router.notFound()
-    }
-  },
-  onRender() {
-    this.handleRoute()
   },
   onBeforeShow() {
     const isEditorShown = properties.editorAttributes.length > 0

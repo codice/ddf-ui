@@ -3,9 +3,9 @@ import { hot } from 'react-hot-loader'
 import ResultItemCollection from './result-item.collection'
 import Grid from '@material-ui/core/Grid'
 import TableVisual from './table'
-import { useLazyResultsFromSelectionInterface } from 'catalog-ui-search/src/main/webapp/component/selection-interface/hooks'
-import { useStatusOfLazyResults } from 'catalog-ui-search/src/main/webapp/js/model/LazyQueryResult/hooks'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
+import { useStatusOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
 
 type Props = {
   selectionInterface: any

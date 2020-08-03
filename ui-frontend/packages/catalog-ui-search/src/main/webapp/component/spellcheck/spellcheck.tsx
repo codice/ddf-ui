@@ -15,7 +15,7 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import styled from 'styled-components'
-import { useLazyResultsFromSelectionInterface } from 'catalog-ui-search/src/main/webapp/component/selection-interface/hooks'
+import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 
 const SHOW_MORE_LENGTH = 2
 

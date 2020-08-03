@@ -16,9 +16,9 @@ const Backbone = require('backbone')
 const _ = require('underscore')
 const $ = require('jquery')
 import Sources from '../../component/singletons/sources-instance'
-const CQLUtils = require('../CQLUtils.js')
 const Common = require('../Common.js')
 const filter = require('../filter.js')
+const cql = require('../cql.js')
 require('backbone-associations')
 
 const Metacard = require('./Metacard.js')
@@ -162,7 +162,7 @@ module.exports = Backbone.AssociatedModel.extend({
       const metacard = this.get('metacard')
       const req = {
         count: 1,
-        cql: CQLUtils.transformFilterToCQL({
+        cql: cql.write({
           type: 'AND',
           filters: [
             {
