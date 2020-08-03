@@ -175,30 +175,6 @@ public class CqlRequestImpl implements CqlRequest {
     QueryRequestBuilder builder =
         new QueryRequestBuilder(localSource, filterBuilder, sorts, start, count, timeout, id, cql);
 
-    QueryRequest queryRequest;
-    if (CollectionUtils.isNotEmpty(srcs) && srcs.size() > 1) {
-      if (srcs.stream().anyMatch(CACHE_SOURCE::equals)) {
-        throw new RuntimeException(
-            "If a cache source is provided, it must be the only source provided.");
-      }
-      parseSrcs(localSource);
-      queryRequest = new QueryRequestImpl(query, srcs);
-      queryRequest.getProperties().put(MODE, UPDATE);
-    } else {
-      if (CollectionUtils.isNotEmpty(srcs) && srcs.size() == 1) {
-        src = srcs.get(0);
-      }
-      // if `src` is blank or 'local', replace with the given parameter.
-      String source = replaceOrDefaultLocalSource(localSource);
-      if (CACHE_SOURCE.equals(source)) {
-        queryRequest = new QueryRequestImpl(query, true);
-        queryRequest.getProperties().put(MODE, CACHE_SOURCE);
-      } else {
-        queryRequest = new QueryRequestImpl(query, Collections.singleton(source));
-        queryRequest.getProperties().put(MODE, UPDATE);
-      }
-    }
-    
     if (src != null) {
       builder.setSrc(src);
     }
@@ -229,28 +205,6 @@ public class CqlRequestImpl implements CqlRequest {
     }
 
     return builder.build();
-  }
-
-  private String replaceOrDefaultLocalSource(String localSource) {
-    if (StringUtils.equalsIgnoreCase(src, LOCAL_SOURCE) || StringUtils.isBlank(src)) {
-      src = localSource;
-    }
-
-    return src;
-  }
-
-  /**
-   * Replace any src in the list of `srcs` that are equal to `local` with the actual local source
-   * name.
-   *
-   * @param localSource The real local source name to use.
-   */
-  private void parseSrcs(String localSource) {
-    for (int i = 0; i < srcs.size(); i++) {
-      if (StringUtils.equalsIgnoreCase(srcs.get(i), LOCAL_SOURCE)) {
-        srcs.set(i, localSource);
-      }
-    }
   }
 
   @Override

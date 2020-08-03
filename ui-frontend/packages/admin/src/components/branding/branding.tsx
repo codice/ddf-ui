@@ -142,8 +142,7 @@ type BrandingPropertiesType = {
   menuIconSrc: string
 }
 
-const brandingConfigurationId =
-  'org.codice.ddf.catalog.ui'
+const brandingConfigurationId = 'org.codice.ddf.catalog.ui'
 
 const BrandingContents = () => {
   const { fetchServices } = useServicesContext()
