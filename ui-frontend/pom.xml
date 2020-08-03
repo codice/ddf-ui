@@ -71,7 +71,7 @@
                             <goal>yarn</goal>
                         </goals>
                         <configuration>
-                            <arguments>install --network-concurrency 1 --frozen-lockfile  --force</arguments>
+                            <arguments>install --network-concurrency 1 --frozen-lockfile</arguments>
                         </configuration>
                     </execution>
                     <execution>
