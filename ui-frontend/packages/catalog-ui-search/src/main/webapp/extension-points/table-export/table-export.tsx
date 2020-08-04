@@ -20,7 +20,7 @@ import {
   Transformer,
 } from '../../react-component/utils/export'
 const user = require('../../component/singletons/user-instance.js')
-const Sources = require('../../component/singletons/sources-instance.js')
+import Sources from '../../component/singletons/sources-instance'
 import {
   exportResultSet,
   ExportCountInfo,
@@ -91,15 +91,6 @@ function getHiddenFields(): string[] {
     .get('user')
     .get('preferences')
     .get('columnHide')
-}
-function getHiddenResults(exportSize: string): string[] {
-  return exportSize === 'visible'
-    ? user
-        .get('user')
-        .get('preferences')
-        .get('resultBlacklist')
-        .map((result: any) => result.get('id'))
-    : []
 }
 function getSearches(
   exportSize: string,
@@ -209,7 +200,6 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
   const cql = selectionInterface.getCurrentQuery().get('cql')
   const srcs = getSrcs(selectionInterface)
   const sorts = getSorts(selectionInterface)
-  const hiddenResults = getHiddenResults(exportSize)
   const args = {
     hiddenFields: hiddenFields.length > 0 ? hiddenFields : [],
     columnOrder: columnOrder.length > 0 ? columnOrder : {},
@@ -222,7 +212,6 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
     searches,
     count,
     sorts,
-    hiddenResults,
     args,
   }
 }

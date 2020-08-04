@@ -62,13 +62,6 @@ module.exports = Marionette.ItemView.extend({
         >
           <div className="interaction-text">Delete</div>
         </div>
-        <div
-          className="query-interaction interaction-duplicate"
-          title="Duplicate"
-          data-help="Create a new search based off this one."
-        >
-          <div className="interaction-text">Duplicate</div>
-        </div>
         <div className="is-divider composed-menu" />
         <div
           className="query-interaction interaction-refresh-result-count"
@@ -143,7 +136,6 @@ module.exports = Marionette.ItemView.extend({
     'click .interaction-refresh-result-count': 'handleRefreshResultCount',
     'click .interaction-stop': 'handleCancel',
     'click .interaction-delete': 'handleDelete',
-    'click .interaction-duplicate': 'handleDuplicate',
     'click .interaction-deleted': 'handleDeleted',
     'click .interaction-historic': 'handleHistoric',
     'click .interaction-feedback': 'handleFeedback',
@@ -204,39 +196,6 @@ module.exports = Marionette.ItemView.extend({
     this.model.startSearch({
       limitToDeleted: true,
     })
-  },
-  handleDuplicate() {
-    const copyAttributes = createDuplicateQuery(this.model.attributes)
-    const newQuery = new this.model.constructor(copyAttributes)
-    if (this.model.collection.canAddQuery()) {
-      this.model.collection.add(newQuery)
-      store.setCurrentQuery(newQuery)
-    } else {
-      this.listenTo(
-        QueryConfirmationView.generateConfirmation({}),
-        'change:choice',
-        confirmation => {
-          const choice = confirmation.get('choice')
-          if (choice === true) {
-            const loadingview = new LoadingView()
-            store.get('workspaces').once('sync', (workspace, resp, options) => {
-              loadingview.remove()
-              wreqr.vent.trigger('router:navigate', {
-                fragment: 'workspaces/' + workspace.id,
-                options: {
-                  trigger: true,
-                },
-              })
-            })
-            store.get('workspaces').createWorkspaceWithQuery(newQuery)
-          } else if (choice !== false) {
-            store.getCurrentQueries().remove(choice)
-            store.getCurrentQueries().add(newQuery)
-            store.setCurrentQuery(newQuery)
-          }
-        }
-      )
-    }
   },
   handleHistoric() {
     this.model.startSearch({

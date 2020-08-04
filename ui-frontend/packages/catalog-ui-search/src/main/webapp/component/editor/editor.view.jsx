@@ -72,15 +72,15 @@ module.exports = Marionette.LayoutView.extend({
         <div className="editor-properties" />
         {user.canWrite(this.model) ? (
           <div className="editor-footer">
-            <button className="editor-edit is-primary">
+            <button className="old-button editor-edit is-primary">
               <span className="fa fa-pencil" />
               <span>Edit</span>
             </button>
-            <button className="editor-cancel is-negative">
+            <button className="old-button editor-cancel is-negative">
               <span className="fa fa-times" />
               <span>Cancel</span>
             </button>
-            <button className="editor-save is-positive">
+            <button className="old-button editor-save is-positive">
               <span className="fa fa-floppy-o" />
               <span>Save</span>
             </button>
@@ -142,9 +142,7 @@ module.exports = Marionette.LayoutView.extend({
     let isOwner = true
     const types = {}
     this.model.forEach(result => {
-      if (result.isWorkspace()) {
-        types.workspace = true
-      } else if (result.isResource()) {
+      if (result.isResource()) {
         types.resource = true
       } else if (result.isRevision()) {
         types.revision = true
@@ -162,7 +160,6 @@ module.exports = Marionette.LayoutView.extend({
       isOwner = isOwner && username === metacardOwner
     })
     this.$el.toggleClass('is-mixed', Object.keys(types).length > 1)
-    this.$el.toggleClass('is-workspace', types.workspace !== undefined)
     this.$el.toggleClass('is-resource', types.resource !== undefined)
     this.$el.toggleClass('is-revision', types.revision !== undefined)
     this.$el.toggleClass('is-deleted', types.deleted !== undefined)

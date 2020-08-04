@@ -28,7 +28,7 @@ const render = ({ cid, placeholder, id, value }: Props) => {
       <div className="if-editing">
         <label>
           <input id={cid} placeholder={placeholder} name={id} type="checkbox" />
-          <button className="checkbox-placeholder is-button">
+          <button className="old-button checkbox-placeholder is-button">
             <span className="is-not-checked fa fa-toggle-off" />
             <span className="is-checked fa fa-toggle-on" />
           </button>

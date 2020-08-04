@@ -15,10 +15,10 @@
 const Backbone = require('backbone')
 const _ = require('underscore')
 const $ = require('jquery')
-const Sources = require('../../component/singletons/sources-instance.js')
-const CQLUtils = require('../CQLUtils.js')
+import Sources from '../../component/singletons/sources-instance'
 const Common = require('../Common.js')
 const filter = require('../filter.js')
+const cql = require('../cql.js')
 require('backbone-associations')
 
 const Metacard = require('./Metacard.js')
@@ -93,14 +93,6 @@ module.exports = Backbone.AssociatedModel.extend({
   matchesCql(cql) {
     return filter.matchesCql(this.get('metacard').toJSON(), cql)
   },
-  isWorkspace() {
-    return (
-      this.get('metacard')
-        .get('properties')
-        .get('metacard-tags')
-        .indexOf('workspace') >= 0
-    )
-  },
   isResource() {
     return (
       this.get('metacard')
@@ -170,7 +162,7 @@ module.exports = Backbone.AssociatedModel.extend({
       const metacard = this.get('metacard')
       const req = {
         count: 1,
-        cql: CQLUtils.transformFilterToCQL({
+        cql: cql.write({
           type: 'AND',
           filters: [
             {

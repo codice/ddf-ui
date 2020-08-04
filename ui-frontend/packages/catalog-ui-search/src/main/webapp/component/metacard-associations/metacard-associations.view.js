@@ -18,7 +18,6 @@ const Backbone = require('backbone')
 const Marionette = require('marionette')
 const $ = require('jquery')
 const CustomElements = require('../../js/CustomElements.js')
-const store = require('../../js/store.js')
 const LoadingCompanionView = require('../loading-companion/loading-companion.view.js')
 const AssociationsMenuView = require('../associations-menu/associations-menu.view.js')
 const AssociationCollectionView = require('../association/association.collection.view.js')
@@ -50,21 +49,21 @@ module.exports = Marionette.LayoutView.extend({
           <React.Fragment>
             <div className="list-footer">
               <div className="footer-text" />
-              <button className="footer-add is-positive">
+              <button className="old-button footer-add is-positive">
                 <span className="fa fa-plus" />
                 <span>&nbsp;Add Association</span>
               </button>
             </div>
             <div className="editor-footer">
-              <button className="footer-edit is-primary">
+              <button className="old-button footer-edit is-primary">
                 <span className="fa fa-pencil" />
                 <span>&nbsp;Edit</span>
               </button>
-              <button className="footer-cancel is-negative">
+              <button className="old-button footer-cancel is-negative">
                 <span className="fa fa-times" />
                 <span>&nbsp;Cancel</span>
               </button>
-              <button className="footer-save is-positive">
+              <button className="old-button footer-save is-positive">
                 <span className="fa fa-floppy-o" />
                 <span>&nbsp;Save</span>
               </button>
@@ -75,7 +74,6 @@ module.exports = Marionette.LayoutView.extend({
     )
   },
   tagName: CustomElements.register('metacard-associations'),
-  selectionInterface: store,
   events: {
     'click > .list-footer .footer-add': 'handleAdd',
     'click > .editor-footer .footer-edit': 'handleEdit',
@@ -261,7 +259,6 @@ module.exports = Marionette.LayoutView.extend({
     })
   },
   handleType() {
-    this.$el.toggleClass('is-workspace', this.model.isWorkspace())
     this.$el.toggleClass('is-resource', this.model.isResource())
     this.$el.toggleClass('is-revision', this.model.isRevision())
     this.$el.toggleClass('is-deleted', this.model.isDeleted())

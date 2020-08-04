@@ -13,219 +13,170 @@
  *
  **/
 import * as React from 'react'
+import { createGlobalStyle } from 'styled-components'
 import ThemeSettings from '../theme-settings'
 import AlertSettings from '../alert-settings'
 import SearchSettings from '../search-settings'
-import HiddenSettings from '../user-blacklist'
 const MapSettings = require('../../component/layers/layers.view.js')
 import TimeSettings from '../time-settings'
 
-import styled from 'styled-components'
-import { Button, buttonTypeEnum } from '../presentation/button'
 import { hot } from 'react-hot-loader'
 import MarionetteRegionContainer from '../marionette-region-container'
+import Button from '@material-ui/core/Button'
+import ChevronRight from '@material-ui/icons/ChevronRight'
 
-export type SettingsProps = {
-  children: React.ReactNode[]
+import Grid from '@material-ui/core/Grid'
+import Typography from '@material-ui/core/Typography'
+import Divider from '@material-ui/core/Divider'
+import { useLocation } from 'react-router-dom'
+import queryString from 'query-string'
+import { Link } from '../../component/link/link'
+
+type ComponentType = () => JSX.Element
+
+const ThemeGlobalStyle = createGlobalStyle`
+.MuiBackdrop-root {
+  opacity: 0 !important;
 }
-
-export type ComponentProps = {
-  updateComponent?: (component?: React.ReactNode) => void
+.MuiDrawer-root > .MuiPaper-root {
+  transform: scale(.8) translateY(40%) translateX(-10%) !important;
 }
-
-export const noOp = () => {}
-
-type State = {
-  component?: JSX.Element
-}
-
-const Root = styled.div<State>`
-  width: 100%;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-  .user-settings-content {
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    height: 100%;
-    width: 100%;
-    overflow: auto;
-    transition: transform ${props => props.theme.coreTransitionTime} ease-in-out;
-    transform: translate(${props => (props.component ? '0%' : '100%')});
-  }
-  .user-settings-navigation {
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    height: 100%;
-    width: 100%;
-    overflow: auto;
-    transition: transform ${props => props.theme.coreTransitionTime} ease-in-out;
-    transform: translate(${props => (props.component ? '-100%' : '0%')});
-  }
 `
 
-const Header = styled.div`
-  margin-top: ${props => props.theme.minimumSpacing};
-  font-size: ${props => props.theme.largeFontSize};
-  font-weight: bolder;
-  padding: 0px ${props => props.theme.mediumSpacing};
-`
-
-export const NavigationButton = styled(Button)`
-  width: 100%;
-  display: block;
-  text-align: left;
-  padding: 0px ${props => props.theme.mediumSpacing};
-`
-
-export const BackButton = styled(Button)`
-  margin-top: ${props => props.theme.minimumSpacing};
-  font-weight: bolder;
-  width: 100%;
-  display: block;
-  text-align: left;
-  padding: 0px ${props => props.theme.mediumSpacing};
-`
-
-export const ThemeSettingsComponent: React.FC<ComponentProps> = ({
-  updateComponent = noOp,
-}) => {
-  return (
-    <NavigationButton
-      buttonType={buttonTypeEnum.neutral}
-      text="Theme"
-      icon="fa fa-paint-brush"
-      onClick={() => {
-        updateComponent(<ThemeSettings />)
-      }}
-    />
-  )
-}
-
-export const AlertSettingsComponent: React.FC<ComponentProps> = ({
-  updateComponent = noOp,
-}) => {
-  return (
-    <NavigationButton
-      buttonType={buttonTypeEnum.neutral}
-      text="Notifications"
-      icon="fa fa-bell"
-      onClick={() => {
-        updateComponent(<AlertSettings />)
-      }}
-    />
-  )
-}
-
-export const MapSettingsComponent: React.FC<ComponentProps> = ({
-  updateComponent = noOp,
-}) => {
-  return (
-    <NavigationButton
-      buttonType={buttonTypeEnum.neutral}
-      text="Map"
-      icon="fa fa-globe"
-      onClick={() => {
-        updateComponent(<MarionetteRegionContainer view={MapSettings} />)
-      }}
-    />
-  )
-}
-
-export const SearchSettingsComponent: React.FC<ComponentProps> = ({
-  updateComponent = noOp,
-}) => {
-  return (
-    <NavigationButton
-      buttonType={buttonTypeEnum.neutral}
-      text="Search Options"
-      icon="fa fa-search"
-      onClick={() => {
-        updateComponent(<SearchSettings showFooter={false} />)
-      }}
-    />
-  )
-}
-
-export const TimeSettingsComponent: React.FC<ComponentProps> = ({
-  updateComponent = noOp,
-}) => {
-  return (
-    <NavigationButton
-      buttonType={buttonTypeEnum.neutral}
-      text="Time"
-      icon="fa fa-clock-o"
-      onClick={() => {
-        updateComponent(<TimeSettings />)
-      }}
-    />
-  )
-}
-
-export const HiddenSettingsComponent: React.FC<ComponentProps> = ({
-  updateComponent = noOp,
-}) => {
-  return (
-    <NavigationButton
-      buttonType={buttonTypeEnum.neutral}
-      text="Hidden"
-      icon="fa fa-eye-slash"
-      onClick={() => {
-        updateComponent(<HiddenSettings />)
-      }}
-    />
-  )
-}
-
-class UserSettings extends React.Component<SettingsProps, State> {
-  constructor(props: SettingsProps) {
-    super(props)
-    this.state = {}
+export const BaseSettings = {
+  Settings: {
+    component: () => {
+      return <SettingsScreen />
+    },
+  },
+  Theme: {
+    component: () => {
+      return (
+        <>
+          <ThemeGlobalStyle />
+          <ThemeSettings />
+        </>
+      )
+    },
+  },
+  Notifications: {
+    component: () => {
+      return <AlertSettings />
+    },
+  },
+  Map: {
+    component: () => {
+      return <MarionetteRegionContainer view={MapSettings} />
+    },
+  },
+  'Search Options': {
+    component: () => {
+      return <SearchSettings />
+    },
+  },
+  Time: {
+    component: () => {
+      return <TimeSettings />
+    },
+  },
+} as {
+  [key: string]: {
+    component: ComponentType
   }
-  updateComponent = (component?: JSX.Element) => {
-    this.setState({
-      component,
-    })
+}
+
+const SettingsScreen = () => {
+  const location = useLocation()
+  const queryParams = queryString.parse(location.search)
+  return (
+    <Grid container direction="column" className="w-full h-full">
+      {Object.keys(BaseSettings)
+        .filter(name => name !== 'Settings')
+        .map(name => {
+          return (
+            <Grid item className="w-full">
+              <Button
+                component={Link}
+                to={`${location.pathname}?${queryString.stringify({
+                  ...queryParams,
+                  'global-settings': name,
+                })}`}
+                fullWidth
+              >
+                <div className="text-left w-full">{name}</div>
+              </Button>
+            </Grid>
+          )
+        })}
+    </Grid>
+  )
+}
+
+const getName = (setting: ComponentType) => {
+  const matchedSetting = Object.entries(BaseSettings).find(entry => {
+    return entry[1].component === setting
+  })
+  if (matchedSetting) {
+    return matchedSetting[0]
   }
-  render() {
-    const { component } = this.state
-    const children = React.Children.map(this.props.children, child => {
-      return React.cloneElement(child as JSX.Element, {
-        updateComponent: this.updateComponent,
-      })
-    })
-    return (
-      <Root component={component}>
-        <div className="user-settings-navigation">
-          <Header>Settings</Header>
-          <div className="is-divider" />
-          {children}
-        </div>
-        <div className="user-settings-content">
-          {children ? (
+  return ''
+}
+
+const getComponent = (name: string) => {
+  const matchedSetting = Object.entries(BaseSettings).find(entry => {
+    return entry[0] === name
+  })
+  if (matchedSetting) {
+    return matchedSetting[1].component
+  }
+  return BaseSettings.Settings.component
+}
+
+const UserSettings = () => {
+  const location = useLocation()
+  const queryParams = queryString.parse(location.search)
+
+  const CurrentSetting = getComponent((queryParams['global-settings'] ||
+    '') as string)
+  const name = getName(CurrentSetting)
+  return (
+    <Grid container direction="column" className="w-full h-full" wrap="nowrap">
+      <Grid item className="w-full p-3">
+        <Grid container direction="row" alignItems="center">
+          <Grid item>
+            <Button
+              component={Link}
+              to={`${location.pathname}?${queryString.stringify({
+                ...queryParams,
+                'global-settings': 'Settings',
+              })}`}
+            >
+              <Typography variant="h5">
+                {name !== 'Settings' ? 'Back to ' : null}
+                Settings
+              </Typography>
+            </Button>
+          </Grid>
+          {name !== 'Settings' ? (
             <>
-              <div className="content-header">
-                <BackButton
-                  buttonType={buttonTypeEnum.neutral}
-                  icon="fa fa-chevron-left"
-                  text="Back to Settings"
-                  onClick={() => {
-                    this.updateComponent()
-                  }}
-                />
-              </div>
-              <div className="is-divider" />
-              <div className="content-settings">{component}</div>
+              <Grid item>
+                <ChevronRight />
+              </Grid>
+              <Grid item>
+                <Typography variant="h5">{name}</Typography>
+              </Grid>
             </>
-          ) : (
-            ''
-          )}
-        </div>
-      </Root>
-    )
-  }
+          ) : null}
+        </Grid>
+      </Grid>
+      <Grid item>
+        <Divider />
+      </Grid>
+      <Grid item className="w-full h-full p-3">
+        <CurrentSetting />
+      </Grid>
+    </Grid>
+  )
 }
 
 export default hot(module)(UserSettings)

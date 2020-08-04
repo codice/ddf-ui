@@ -13,8 +13,4 @@
  *
  **/
 export { default, ExtensionPointsType } from './extension-points'
-export { default as routes } from './routes'
-export { default as navigator } from './navigator'
-export { default as searchInteractions } from './search-interactions'
 export { default as metacardInteractions } from './metacard-interactions'
-export { default as userSettings } from './user-settings'

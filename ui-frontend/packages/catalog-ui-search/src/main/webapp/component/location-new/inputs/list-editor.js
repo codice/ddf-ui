@@ -41,7 +41,7 @@ class ListEditor extends React.Component {
           <Group>
             {child}
             <button
-              className="button-remove is-negative"
+              className="old-button button-remove is-negative"
               onClick={this.handleRemove.bind(this, index)}
             >
               <span className="fa fa-minus" />
@@ -54,7 +54,7 @@ class ListEditor extends React.Component {
       <Component>
         <ul className="list">{listItems}</ul>
         <button
-          className="button-add is-positive"
+          className="old-button button-add is-positive"
           onClick={this.handleAdd.bind(this)}
         >
           <span className="fa fa-plus" />

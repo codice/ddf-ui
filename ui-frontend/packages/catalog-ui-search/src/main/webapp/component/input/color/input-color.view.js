@@ -77,7 +77,7 @@ module.exports = InputView.extend({
     this.$el
       .find('.sp-dd')
       .replaceWith(
-        '<button class="is-primary"><span class="fa fa-caret-down"></span></button>'
+        '<button class="old-button is-primary"><span class="fa fa-caret-down"></span></button>'
       )
   },
   handleReadOnly() {

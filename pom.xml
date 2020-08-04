@@ -87,15 +87,15 @@
     <node.version>v10.16.1</node.version>
     <picocontainer.version>1.3_1</picocontainer.version>
     <underscore.version>1.8.3</underscore.version>
-    <yarn.version>v1.17.3</yarn.version>
+    <yarn.version>v1.22.4</yarn.version>
   </properties>
 
-    <scm>
-        <url>https://github.com/codice/ddf-ui</url>
-        <connection>scm:git:https://github.com/codice/ddf-ui.git</connection>
-        <developerConnection>scm:git:https://github.com/codice/ddf-ui.git</developerConnection>
-        <tag>catalog-ui-3.4.0</tag>
-    </scm>
+  <scm>
+    <url>https://github.com/codice/ddf-ui</url>
+    <connection>scm:git:https://github.com/codice/ddf-ui.git</connection>
+    <developerConnection>scm:git:https://github.com/codice/ddf-ui.git</developerConnection>
+    <tag>catalog-ui-3.4.0</tag>
+  </scm>
 
   <dependencyManagement>
     <dependencies>
@@ -266,7 +266,7 @@
         <groupId>com.coveo</groupId>
         <artifactId>fmt-maven-plugin</artifactId>
         <version>2.3.0</version>
-<!--        <version>2.9</version>-->
+        <!--        <version>2.9</version>-->
         <executions>
           <execution>
             <phase>validate</phase>

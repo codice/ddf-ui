@@ -120,12 +120,7 @@ module.exports = Backbone.Model.extend({
                 if (val === undefined) {
                   return val
                 }
-                return _.omit(
-                  CQLUtils.transformCQLToFilter(
-                    CQLUtils.transformFilterToCQL(val)
-                  ),
-                  ['property']
-                )
+                return _.omit(val, ['property'])
               })
             )
         )

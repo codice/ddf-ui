@@ -2,14 +2,25 @@
   "compilerOptions": {
     "jsx": "react",
     "allowJs": false,
+    "esModuleInterop": true,
     "sourceMap": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "noEmitHelpers": true,
+    "importHelpers": true,
+    "declaration": true,
     "strictNullChecks": true,
-    "lib": ["es6", "dom", "es2017"],
-    "target": "es5"
+    "module": "commonjs",
+    "outDir": "./dist/src/main/webapp",
+    "lib": ["es2015", "dom"],
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "downlevelIteration": true
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

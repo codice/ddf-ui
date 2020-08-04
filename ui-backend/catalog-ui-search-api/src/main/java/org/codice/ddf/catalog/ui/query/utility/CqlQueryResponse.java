@@ -32,7 +32,5 @@ public interface CqlQueryResponse {
 
   String getId();
 
-  Status getStatus();
-
   Set<String> getWarnings();
 }

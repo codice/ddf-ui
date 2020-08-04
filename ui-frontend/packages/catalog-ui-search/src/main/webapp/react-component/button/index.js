@@ -15,7 +15,7 @@
 const React = require('react')
 
 const Button = props => (
-  <button className="is-primary" type="button" {...props} />
+  <button className="old-button is-primary" type="button" {...props} />
 )
 
 module.exports = Button

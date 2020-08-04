@@ -24,48 +24,20 @@ import {
   getSortDirectionOptions,
   getLabel,
 } from './sort-selection-helpers'
+import Button from '@material-ui/core/Button'
+import AddIcon from '@material-ui/icons/Add'
+import Box from '@material-ui/core/Box'
+import Grid from '@material-ui/core/Grid'
+import Typography from '@material-ui/core/Typography'
 
-const SortRoot = styled.div`
-  display: block;
-  width: 100%;
-  overflow: hidden;
-`
-
-const SortItemContainer = styled.div<{ first: boolean; last: boolean }>`
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  position: relative;
-  margin: ${props => {
-    if (props.first && props.last) {
-      return `0 0 ${props.theme.minimumSpacing}`
-    } else if (props.last) {
-      return `${props.theme.minimumSpacing} 0`
-    } else if (props.first) {
-      return
-    } else {
-      return `${props.theme.minimumSpacing} 0 0`
-    }
-  }};
-`
-
-const AddSortContainer = styled.div`
-  padding: 0px 1.5rem;
-`
-
-const AddSortButton = (props: { onClick: () => void }) => (
-  <button
-    className="is-primary"
-    onClick={props.onClick}
-    style={{ width: '100%' }}
-  >
-    <span className="fa fa-plus" />
-  </button>
-)
+type SortsType = {
+  attribute: string
+  direction: string
+}[]
 
 type Props = {
-  collection: any
-  showBestTextOption: boolean
+  value: SortsType
+  onChange: (newVal: SortsType) => void
 }
 
 export type Option = {
@@ -78,70 +50,65 @@ export type SortItemType = {
   direction: string
 }
 
-const getCollectionAsJson = (collection: any) => {
-  const items: SortItemType[] = collection.models.map((model: any) => {
+const getCollectionAsJson = (collection: Props['value']) => {
+  const items: SortItemType[] = collection.map(sort => {
     return {
       attribute: {
-        label: getLabel(model.get('attribute')),
-        value: model.get('attribute'),
+        label: getLabel(sort.attribute),
+        value: sort.attribute,
       },
-      direction: model.get('direction'),
+      direction: sort.direction,
     }
   })
   return items
 }
 
-const SortSelections = ({ collection, showBestTextOption }: Props) => {
-  if (!collection.length) {
-    collection.add({
+const SortSelections = ({ value, onChange }: Props) => {
+  if (!value.length) {
+    value.push({
       attribute: 'title',
       direction: 'ascending',
     })
+    onChange(value.slice(0))
   }
 
-  const { listenTo } = useBackbone()
-  const [collectionJson, setCollectionJson] = useState<SortItemType[]>(
-    getCollectionAsJson(collection)
-  )
+  const collectionJson = getCollectionAsJson(value)
 
   const sortAttributeOptions = getSortAttributeOptions(
-    showBestTextOption,
     collectionJson.map(item => item.attribute.value)
   )
 
-  React.useEffect(() => {
-    listenTo(collection, 'add remove change', () => {
-      setCollectionJson(getCollectionAsJson(collection))
-    })
-  }, [])
-
   const updateAttribute = (index: number) => (attribute: string) => {
-    collection.models[index].set('attribute', attribute)
+    value[index].attribute = attribute
+    onChange(value.slice(0))
   }
 
   const updateDirection = (index: number) => (direction: string) => {
-    collection.models[index].set('direction', direction)
+    value[index].direction = direction
+    onChange(value.slice(0))
   }
 
   const removeItem = (index: number) => () => {
-    collection.models[index].destroy()
+    value.splice(index, 1)
+    onChange(value.slice(0))
   }
 
   const addSort = () => {
-    collection.add({
+    value.push({
       attribute: getNextAttribute(collectionJson, sortAttributeOptions),
       direction: 'descending',
     })
+    onChange(value.slice(0))
   }
 
   return (
-    <SortRoot>
+    <div>
+      <Typography className="pb-2">Sort</Typography>
       {collectionJson.map((sortItem, index) => {
         return (
-          <SortItemContainer
+          <div
             key={sortItem.attribute.value}
-            first={index === 0}
-            last={index === collectionJson.length - 1}
+            className={index > 0 ? 'pt-2' : ''}
           >
             <SortItem
               sortItem={sortItem}
@@ -154,13 +121,22 @@ const SortSelections = ({ collection, showBestTextOption }: Props) => {
               onRemove={removeItem(index)}
               showRemove={index !== 0}
             />
-          </SortItemContainer>
+          </div>
         )
       })}
-      <AddSortContainer>
-        <AddSortButton onClick={addSort} />
-      </AddSortContainer>
-    </SortRoot>
+      <div className="pt-2">
+        <Button fullWidth onClick={addSort}>
+          <Grid container direction="row" alignItems="center" wrap="nowrap">
+            <Grid item>
+              <AddIcon />
+            </Grid>
+            <Grid item>
+              <Box color="primary.main">Sort</Box>
+            </Grid>
+          </Grid>
+        </Button>
+      </div>
+    </div>
   )
 }
 

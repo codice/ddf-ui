@@ -19,7 +19,6 @@ const Marionette = require('marionette')
 const CustomElements = require('../../../js/CustomElements.js')
 const CombinedMapView = require('../combined-map/combined-map.view.js')
 const OpenlayersView = require('../maps/openlayers/openlayers.view.js')
-const router = require('../../router/router.js')
 
 module.exports = Marionette.LayoutView.extend({
   tagName: CustomElements.register('low-bandwidth-map'),
@@ -35,7 +34,7 @@ module.exports = Marionette.LayoutView.extend({
 
   initialize(options) {
     this.options = _.extend({}, options, {
-      lowBandwidth: router.get('lowBandwidth'),
+      lowBandwidth: false,
     })
   },
 

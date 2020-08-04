@@ -16,7 +16,6 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 const _ = require('underscore')
-const store = require('../../js/store.js')
 import MetacardActionsPresentation from './presentation'
 
 type Props = {
@@ -24,7 +23,7 @@ type Props = {
 }
 
 const MetacardActions = (props: Props) => {
-  const selectionInterface = props.selectionInterface || store
+  const selectionInterface = props.selectionInterface
   const model = selectionInterface.getSelectedResults().first()
 
   const exportActions = _.sortBy(

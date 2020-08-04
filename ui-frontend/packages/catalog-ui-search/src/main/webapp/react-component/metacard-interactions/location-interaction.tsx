@@ -14,18 +14,13 @@
  **/
 import * as React from 'react'
 
-const QueryConfirmationView = require('../../component/confirmation/query/confirmation.query.view')
-const LoadingView = require('../../component/loading/loading.view')
-
 import { Geometry } from 'wkx'
-const store = require('../../js/store')
 
 import { MetacardInteraction } from './metacard-interactions'
 import { Props, Model, Result } from '.'
 import { hot } from 'react-hot-loader'
 
 const CqlUtils = require('../../js/CQLUtils')
-const wreqr = require('wreqr')
 const Query = require('../../js/model/Query')
 
 const addFilter = (filterTree: any, filter: any) => {
@@ -70,38 +65,38 @@ const handleCreateSearch = (props: Props) => {
   newQuery.set('filterTree', filterTree)
   newQuery.set('cql', locationString)
 
-  const existingQuery = store.getCurrentQueries()
+  // const existingQuery = store.getCurrentQueries()
 
-  if (existingQuery.canAddQuery()) {
-    existingQuery.add(newQuery)
-    store.setCurrentQuery(newQuery)
-    return
-  }
+  // if (existingQuery.canAddQuery()) {
+  //   existingQuery.add(newQuery)
+  //   store.setCurrentQuery(newQuery)
+  //   return
+  // }
 
-  props.listenTo(
-    QueryConfirmationView.generateConfirmation({}),
-    'change:choice',
-    (confirmation: any) => {
-      const choice = confirmation.get('choice')
-      if (choice === true) {
-        const loadingView = new LoadingView()
-        store.get('workspaces').once('sync', (workspace: any) => {
-          loadingView.remove()
-          wreqr.vent.trigger('router:navigate', {
-            fragment: `workspaces/${workspace.id}`,
-            options: {
-              trigger: true,
-            },
-          })
-        })
-        store.get('workspaces').createWorkspaceWithQuery(newQuery)
-      } else if (choice !== false) {
-        store.getCurrentQueries().remove(choice)
-        store.getCurrentQueries().add(newQuery)
-        store.setCurrentQuery(newQuery)
-      }
-    }
-  )
+  // props.listenTo(
+  //   QueryConfirmationView.generateConfirmation({}),
+  //   'change:choice',
+  //   (confirmation: any) => {
+  //     const choice = confirmation.get('choice')
+  //     if (choice === true) {
+  //       const loadingView = new LoadingView()
+  //       store.get('workspaces').once('sync', (workspace: any) => {
+  //         loadingView.remove()
+  //         wreqr.vent.trigger('router:navigate', {
+  //           fragment: `workspaces/${workspace.id}`,
+  //           options: {
+  //             trigger: true,
+  //           },
+  //         })
+  //       })
+  //       store.get('workspaces').createWorkspaceWithQuery(newQuery)
+  //     } else if (choice !== false) {
+  //       store.getCurrentQueries().remove(choice)
+  //       store.getCurrentQueries().add(newQuery)
+  //       store.setCurrentQuery(newQuery)
+  //     }
+  //   }
+  // )
 }
 
 const getGeoLocations = (model: Model) =>

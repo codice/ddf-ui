@@ -16,7 +16,6 @@
 const _ = require('underscore')
 const TabsView = require('../tabs.view')
 const MetacardTabsModel = require('./tabs-metacard')
-const store = require('../../../js/store.js')
 const properties = require('../../../js/properties.js')
 const user = require('../../singletons/user-instance')
 
@@ -25,9 +24,8 @@ module.exports = TabsView.extend({
   setDefaultModel() {
     this.model = new MetacardTabsModel()
   },
-  selectionInterface: store,
   initialize(options) {
-    this.selectionInterface = options.selectionInterface || store
+    this.selectionInterface = options.selectionInterface
     if (options.model === undefined) {
       this.setDefaultModel()
     }
@@ -84,11 +82,6 @@ module.exports = TabsView.extend({
       ['History', 'Actions', 'Overwrite'].indexOf(activeTabName) >= 0
     ) {
       this.model.set('activeTab', 'Summary')
-    } else if (
-      result.isWorkspace() &&
-      ['History', 'Actions', 'Overwrite', 'Archive'].indexOf(activeTabName) >= 0
-    ) {
-      this.model.set('activeTab', 'Summary')
     }
     if (
       result.isRemote() &&
@@ -115,6 +108,7 @@ module.exports = TabsView.extend({
         })
       )
     }
+    this._clickHandler()
   },
   determineContent() {
     if (this.selectionInterface.getSelectedResults().length === 1) {
@@ -124,7 +118,6 @@ module.exports = TabsView.extend({
   determineAvailableContent() {
     if (this.selectionInterface.getSelectedResults().length === 1) {
       const result = this.selectionInterface.getSelectedResults().first()
-      this.$el.toggleClass('is-workspace', result.isWorkspace())
       this.$el.toggleClass('is-resource', result.isResource())
       this.$el.toggleClass('is-revision', result.isRevision())
       this.$el.toggleClass('is-deleted', result.isDeleted())

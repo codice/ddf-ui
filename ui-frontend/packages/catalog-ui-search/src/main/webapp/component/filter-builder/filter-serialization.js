@@ -120,7 +120,6 @@ const transformFilter = filter => {
 }
 
 const FilterBuilderCollection = Backbone.Collection.extend({
-  comparator: 'sortableOrder',
   model(attrs, { collection }) {
     const sortableOrder = collection.length + 1
 

@@ -20,7 +20,6 @@ const CustomElements = require('../../js/CustomElements.js')
 const template = require('./dropdown.companion.hbs')
 const Common = require('../../js/Common.js')
 const DropdownBehaviorUtility = require('../../behaviors/dropdown.behavior.utility.js')
-const router = require('../router/router.js')
 require('../../behaviors/navigation.behavior.js')
 
 module.exports = Marionette.LayoutView.extend(
@@ -47,7 +46,6 @@ module.exports = Marionette.LayoutView.extend(
         'change:isOpen',
         this.handleOpenChange
       )
-      this.listenForRoute()
       this.listenForClose()
     },
     hasFiltering() {
@@ -291,9 +289,6 @@ module.exports = Marionette.LayoutView.extend(
     },
     stopListeningForOutsideClick() {
       $('body').off('mousedown.' + this.cid)
-    },
-    listenForRoute() {
-      this.listenTo(router, 'change', this.handleRouteChange)
     },
     handleRouteChange() {
       this.close()

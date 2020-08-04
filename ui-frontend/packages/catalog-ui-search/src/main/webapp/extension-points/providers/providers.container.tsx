@@ -17,6 +17,10 @@ import { hot } from 'react-hot-loader'
 
 import ThemeContainer from '../../react-component/theme'
 import { IntlProvider } from 'react-intl'
+import { Provider as ThemeProvider } from '../../component/theme/theme'
+import { SnackProvider } from '../../component/snack/snack.provider'
+import { DialogProvider } from '@connexta/atlas/atoms/dialog'
+import { HashRouter as Router } from 'react-router-dom'
 
 const properties = require('properties')
 
@@ -29,7 +33,15 @@ const ProviderContainer = (props: Props) => {
     <React.Fragment>
       <ThemeContainer>
         <IntlProvider locale={navigator.language} messages={properties.i18n}>
-          <>{props.children}</>
+          <ThemeProvider>
+            <SnackProvider>
+              <DialogProvider>
+                <Router>
+                  <>{props.children}</>
+                </Router>
+              </DialogProvider>
+            </SnackProvider>
+          </ThemeProvider>
         </IntlProvider>
       </ThemeContainer>
     </React.Fragment>

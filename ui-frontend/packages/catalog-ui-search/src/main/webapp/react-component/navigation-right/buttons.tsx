@@ -21,8 +21,6 @@ import { transparentize } from 'polished'
 
 const HelpView = require('../../component/help/help.view.js')
 const UserSettings = require('../../component/user-settings/user-settings.view.js')
-const SlideoutViewInstance = require('../../component/singletons/slideout.view-instance.js')
-const SlideoutRightViewInstance = require('../../component/singletons/slideout.right.view-instance.js')
 const user = require('../../component/singletons/user-instance.js')
 export interface Props {
   username: string
@@ -51,8 +49,8 @@ const UserButton = styled(Button)`
   border-left: solid 1px ${transparentize(0.8, '#ffffff')};
 `
 const toggleAlerts = () => {
-  SlideoutRightViewInstance.updateContent(UserNotifications)
-  SlideoutRightViewInstance.open()
+  // SlideoutRightViewInstance.updateContent(UserNotifications)
+  // SlideoutRightViewInstance.open()
 }
 
 const toggleHelp = () => {
@@ -60,13 +58,13 @@ const toggleHelp = () => {
 }
 
 const toggleUserSettings = () => {
-  SlideoutViewInstance.updateContent(UserSettings)
-  SlideoutViewInstance.open()
+  // SlideoutViewInstance.updateContent(UserSettings)
+  // SlideoutViewInstance.open()
 }
 
 const toggleUser = () => {
-  SlideoutRightViewInstance.updateContent(UserView)
-  SlideoutRightViewInstance.open()
+  // SlideoutRightViewInstance.updateContent(UserView)
+  // SlideoutRightViewInstance.open()
 }
 
 export const Help = () => (

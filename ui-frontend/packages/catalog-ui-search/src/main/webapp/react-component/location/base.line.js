@@ -21,6 +21,7 @@ import {
 const { Units } = require('./common')
 const TextField = require('../text-field')
 const _ = require('underscore')
+import Conversion from './conversion'
 
 const coordinatePairRegex = /-?\d{1,3}(\.\d*)?\s-?\d{1,3}(\.\d*)?/g
 
@@ -125,6 +126,7 @@ const BaseLine = props => {
   return (
     <div>
       <div className="input-location">
+        <Conversion value={currentValue} isValid={baseLineError} />
         <TextField
           label={label}
           value={currentValue}

@@ -53,9 +53,17 @@ const MetacardInfo = styled.div`
 `
 
 const metacardInfo = ({ attributes }: Props) =>
-  attributes.map(({ name, value }: Attribute) => (
-    <MetacardInfo>{formatAttribute({ name, value })}</MetacardInfo>
-  ))
+  attributes.map(({ name, value }: Attribute) => {
+    if (name === 'thumbnail') {
+      return (
+        <div>
+          <img src={value} style={{ maxWidth: '100px', maxHeight: '100px' }} />
+        </div>
+      )
+    } else {
+      return <MetacardInfo>{formatAttribute({ name, value })}</MetacardInfo>
+    }
+  })
 
 /*
    * Formats the current distance value to a string with the appropriate unit of measurement.

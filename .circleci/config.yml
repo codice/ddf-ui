@@ -1,7 +1,6 @@
 version: 2.1 # use CircleCI 2.0
 jobs: # a collection of steps
   build: # runs not using Workflows must have a `build` job as entry point
-
     working_directory: ~/repo # directory where steps will run
 
     docker: # run the steps with Docker
@@ -10,7 +9,6 @@ jobs: # a collection of steps
       MAVEN_OPTS: -Xmx2G
 
     steps: # a collection of executable commands
-
       - checkout # check out source code to working directory
 
       - restore_cache: # restore the saved cache after the first run or if `pom.xml` has changed
@@ -19,15 +17,17 @@ jobs: # a collection of steps
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-#      - run: mvn dependency:go-offline --no-transfer-progress # gets the project dependencies
+      #      - run: mvn dependency:go-offline --no-transfer-progress # gets the project dependencies
 
-      - run:  # run the actual tests
+      - run: # run the actual tests
           name: Backend Build
           command: mvn install --batch-mode  -pl !ui-frontend
+          no_output_timeout: 30m
 
       - run:
           name: Frontend Build
           command: mvn install --batch-mode -DbuildEnv=dev -pl ui-frontend
+          no_output_timeout: 30m
 
       - save_cache: # saves the project dependencies
           paths:
@@ -43,7 +43,6 @@ jobs: # a collection of steps
 
       - store_test_results:
           path: ~/test-results
-
 #      - store_artifacts: # store the uberjar as an artifact
 #          # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
 #          path: target/demo-java-spring-0.0.1-SNAPSHOT.jar

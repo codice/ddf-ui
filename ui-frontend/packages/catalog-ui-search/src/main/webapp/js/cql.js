@@ -17,15 +17,13 @@
  * See license.txt in the OpenLayers distribution or repository for the
  * full text of the license. */
 // jshint ignore: start
+import { serialize } from '../../webapp/component/filter-builder/filter.structure'
+
 const moment = require('moment')
 
 const ANYTEXT_WILDCARD = '"anyText" ILIKE \'%\''
 
-const comparisonClass = 'Comparison',
-  logicalClass = 'Logical',
-  spatialClass = 'Spatial',
-  temporalClass = 'Temporal',
-  timePattern = /((([0-9]{4})(-([0-9]{2})(-([0-9]{2})(T([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?)|^'')/i,
+const timePattern = /((([0-9]{4})(-([0-9]{2})(-([0-9]{2})(T([0-9]{2}):([0-9]{2})(:([0-9]{2})(\.([0-9]+))?)?(Z|(([-+])([0-9]{2}):([0-9]{2})))?)?)?)?)|^'')/i,
   patterns = {
     //Allows for non-standard single-quoted property names
     PROPERTY: /^([_a-zA-Z]\w*|"[^"]+"|'[^']+')/,
@@ -137,30 +135,6 @@ const comparisonClass = 'Comparison',
     RPAREN: 3,
     LOGICAL: 2,
     COMPARISON: 1,
-  },
-  classes = {
-    '=': comparisonClass,
-    '<>': comparisonClass,
-    '<': comparisonClass,
-    '<=': comparisonClass,
-    '>': comparisonClass,
-    '>=': comparisonClass,
-    LIKE: comparisonClass,
-    ILIKE: comparisonClass,
-    BETWEEN: comparisonClass,
-    'IS NULL': comparisonClass,
-    AND: logicalClass,
-    OR: logicalClass,
-    NOT: logicalClass,
-    BBOX: spatialClass,
-    INTERSECTS: spatialClass,
-    DWITHIN: spatialClass,
-    WITHIN: spatialClass,
-    CONTAINS: spatialClass,
-    GEOMETRY: spatialClass,
-    BEFORE: temporalClass,
-    AFTER: temporalClass,
-    DURING: temporalClass,
   },
   // as an improvement, these could be figured out while building the syntax tree
   filterFunctionParamCount = {
@@ -509,133 +483,121 @@ function wrap(property) {
 }
 
 function write(filter) {
-  switch (classes[filter.type]) {
-    case spatialClass:
-      switch (filter.type) {
-        case 'BBOX':
-          const xmin = filter.value[0],
-            ymin = filter.value[1],
-            xmax = filter.value[2],
-            ymax = filter.value[3]
-          return (
-            'BBOX(' +
-            wrap(filter.property) +
-            ',' +
-            xmin +
-            ',' +
-            ymin +
-            ',' +
-            xmax +
-            ',' +
-            ymax +
-            ')'
-          )
-        case 'DWITHIN':
-          return (
-            'DWITHIN(' +
-            wrap(filter.property) +
-            ', ' +
-            write(filter.value) +
-            ', ' +
-            filter.distance +
-            ', meters)'
-          )
-        case 'WITHIN':
-          return (
-            'WITHIN(' + wrap(filter.property) + ', ' + write(filter.value) + ')'
-          )
-        case 'INTERSECTS':
-          return (
-            'INTERSECTS(' +
-            wrap(filter.property) +
-            ', ' +
-            write(filter.value) +
-            ')'
-          )
-        case 'CONTAINS':
-          return (
-            'CONTAINS(' +
-            wrap(filter.property) +
-            ', ' +
-            write(filter.value) +
-            ')'
-          )
-        case 'GEOMETRY':
-          return filter.value
-        default:
-          throw new Error('Unknown spatial filter type: ' + filter.type)
-      }
-    case logicalClass:
-      if (filter.type === 'NOT') {
-        // TODO: deal with precedence of logical operators to
-        // avoid extra parentheses (not urgent)
-        return 'NOT (' + write(filter.filters[0]) + ')'
-      } else {
-        let res = '('
-        let first = true
-        for (let i = 0; i < filter.filters.length; i++) {
-          if (first) {
-            first = false
-          } else {
-            res += ') ' + filter.type + ' ('
-          }
-          res += write(filter.filters[i])
+  switch (filter.type) {
+    // spatialClass
+    case 'BBOX':
+      const xmin = filter.value[0],
+        ymin = filter.value[1],
+        xmax = filter.value[2],
+        ymax = filter.value[3]
+      return (
+        'BBOX(' +
+        wrap(filter.property) +
+        ',' +
+        xmin +
+        ',' +
+        ymin +
+        ',' +
+        xmax +
+        ',' +
+        ymax +
+        ')'
+      )
+    // verified line, polygon, point radius
+    case 'DWITHIN':
+      return `DWITHIN(${wrap(filter.property)}, ${filter.value}, ${
+        filter.distance
+      }, meters)`
+    // unused at the moment
+    case 'WITHIN':
+      return (
+        'WITHIN(' + wrap(filter.property) + ', ' + write(filter.value) + ')'
+      )
+    // verified bbox
+    case 'INTERSECTS':
+      return 'INTERSECTS(' + wrap(filter.property) + ', ' + filter.value + ')'
+    // unused at the moment
+    case 'CONTAINS':
+      return (
+        'CONTAINS(' + wrap(filter.property) + ', ' + write(filter.value) + ')'
+      )
+    // all "geo" filters pass through this first, which serializes them into a form that cql understands
+    // this is only done here on the fly because the transformation involves a loss of information
+    // (such as the units [meters or miles?] and coordinate system [dms or mgrs?])
+    case 'GEOMETRY':
+      return write(serialize.location(filter.property, filter.value))
+    // logicalClass
+    case 'AND':
+    case 'OR':
+      let res = '('
+      let first = true
+      for (let i = 0; i < filter.filters.length; i++) {
+        if (first) {
+          first = false
+        } else {
+          res += ') ' + filter.type + ' ('
         }
-        return res + ')'
+        res += write(filter.filters[i])
       }
-    case comparisonClass:
-      if (filter.type === 'IS NULL') {
-        return `("${filter.property}" ${filter.type})`
-      }
-      if (filter.type === 'BETWEEN') {
-        return (
-          wrap(filter.property) +
-          ' BETWEEN ' +
-          write(filter.lowerBoundary) +
-          ' AND ' +
-          write(filter.upperBoundary)
-        )
-      } else {
-        let property =
-          typeof filter.property === 'object'
-            ? write(filter.property)
-            : wrap(filter.property)
-        return filter.value !== null
-          ? property + ' ' + filter.type + ' ' + write(filter.value)
-          : property + ' ' + filter.type
-      }
-    case temporalClass:
-      switch (filter.type) {
-        case 'BEFORE':
-        case 'AFTER':
-          return (
-            wrap(filter.property) +
-            ' ' +
-            filter.type +
-            ' ' +
-            (filter.value ? filter.value.toString(dateTimeFormat) : "''")
-          )
-        case 'DURING':
-          return (
-            wrap(filter.property) +
-            ' ' +
-            filter.type +
-            ' ' +
-            (filter.from ? filter.from.toString(dateTimeFormat) : "''") +
-            '/' +
-            (filter.to ? filter.to.toString(dateTimeFormat) : "''")
-          )
-      }
+      return res + ')'
+    case 'NOT':
+      // TODO: deal with precedence of logical operators to
+      // avoid extra parentheses (not urgent)
+      return 'NOT (' + write(filter.filters[0]) + ')'
+    // comparisonClass
+    case 'IS NULL':
+      return `("${filter.property}" ${filter.type})`
+    case 'BETWEEN':
+      return (
+        wrap(filter.property) +
+        ' BETWEEN ' +
+        write(Math.min(filter.value.start, filter.value.end)) +
+        ' AND ' +
+        write(Math.max(filter.value.start, filter.value.end))
+      )
+    case '=':
+    case '<>':
+    case '<':
+    case '<=':
+    case '>':
+    case '>=':
+    case 'LIKE':
+    case 'ILIKE':
+      let property =
+        typeof filter.property === 'object'
+          ? write(filter.property)
+          : wrap(filter.property)
+      return filter.value !== null
+        ? property + ' ' + filter.type + ' ' + write(filter.value)
+        : property + ' ' + filter.type
+    // temporalClass
+    case 'RELATIVE':
+      // weird thing I noticed is you have to wrap the value in single quotes, double quotes don't work
+      return `${wrap(filter.property)} = '${serialize.dateRelative(
+        filter.value
+      )}'`
+    case 'BEFORE':
+    case 'AFTER':
+      return (
+        wrap(filter.property) +
+        ' ' +
+        filter.type +
+        ' ' +
+        (filter.value ? filter.value.toString(dateTimeFormat) : "''")
+      )
+    case 'DURING':
+      return `${wrap(filter.property)} ${filter.type} ${filter.value.start}/${
+        filter.value.end
+      }`
+    // filterFunctionClass
+    case 'FILTER FUNCTION proximity':
+      // not sure why we need the = true part but without it the backend fails to parse
+      return `proximity(${write(filter.property)},${write(
+        filter.value.distance
+      )},${write(`${filter.value.first} ${filter.value.second}`)}) = true`
       break
     case undefined:
-      if (filter.type == 'FILTER_FUNCTION') {
-        return (
-          filter.filterFunctionName +
-          '(' +
-          filter.params.map(param => write(param)).join(',') +
-          ')'
-        )
-      } else if (typeof filter === 'string') {
+      if (typeof filter === 'string') {
         return translateUserqlToCql("'" + filter.replace(/'/g, "''") + "'")
       } else if (typeof filter === 'number') {
         return String(filter)
@@ -697,7 +659,7 @@ function uncollapseNOTs(cqlAst, parentNode) {
     cqlAst.filters.forEach(filter => {
       uncollapseNOTs(filter, cqlAst)
     })
-    if (cqlAst.type === 'NOT OR') {
+    if (cqlAst.negated && cqlAst.type === 'OR') {
       cqlAst.type = 'NOT'
       cqlAst.filters = [
         {
@@ -705,12 +667,23 @@ function uncollapseNOTs(cqlAst, parentNode) {
           filters: cqlAst.filters,
         },
       ]
-    } else if (cqlAst.type === 'NOT AND') {
+    } else if (cqlAst.negated && cqlAst.type === 'AND') {
       cqlAst.type = 'NOT'
       cqlAst.filters = [
         {
           type: 'AND',
           filters: cqlAst.filters,
+        },
+      ]
+    }
+  } else {
+    if (cqlAst.negated) {
+      const clonedFieldFilter = JSON.parse(JSON.stringify(cqlAst))
+      cqlAst.type = 'NOT'
+      cqlAst.filters = [
+        {
+          type: 'AND',
+          filters: [clonedFieldFilter],
         },
       ]
     }
@@ -737,13 +710,22 @@ module.exports = {
     return buildAst(tokenize(cql))
   },
   write(filter) {
-    uncollapseNOTs(filter)
-    return write(filter)
+    try {
+      const duplicatedFilter = JSON.parse(JSON.stringify(filter))
+      uncollapseNOTs(duplicatedFilter)
+      return write(duplicatedFilter)
+    } catch (err) {
+      console.log(err)
+      return write({
+        type: 'AND',
+        filters: [],
+      })
+    }
   },
   simplify(cqlAst) {
-    iterativelySimplify(cqlAst)
+    // iterativelySimplify(cqlAst)
     collapseNOTs(cqlAst)
-    iterativelySimplify(cqlAst)
+    // iterativelySimplify(cqlAst)
     return cqlAst
   },
   translateCqlToUserql,

@@ -34,30 +34,24 @@ function getDropdownUpdateMethod(dropdownModel, property, relatedModel) {
 
 function determineChoices(view) {
   const currentMetacard = view.options.currentMetacard
-  let choices = view.options.selectionInterface
-    .getCurrentQuery()
-    .get('result')
-    .get('results')
-    .filter(
-      result => result.get('metacard').id !== currentMetacard.get('metacard').id
-    )
+  let choices = Object.values(
+    view.options.selectionInterface
+      .get('currentQuery')
+      .get('result')
+      .get('lazyResults').results
+  )
+    .filter(function(result) {
+      return result['metacard.id'] !== currentMetacard.get('metacard').id
+    })
     .filter(
       result =>
-        !(
-          result.isWorkspace() ||
-          result.isRevision() ||
-          result.isRemote() ||
-          result.isDeleted()
-        )
+        !(result.isRevision() || result.isRemote() || result.isDeleted())
     )
     .reduce(
       (options, result) => {
         options.push({
-          label: result
-            .get('metacard')
-            .get('properties')
-            .get('title'),
-          value: result.get('metacard').id,
+          label: result.plain.metacard.properties.title,
+          value: result['metacard.id'],
         })
         return options
       },

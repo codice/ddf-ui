@@ -14,9 +14,9 @@
  **/
 /*jshint bitwise: false*/
 const $ = require('jquery')
-const cql = require('./cql.js')
+// const cql = require('./cql.js')
 const DistanceUtils = require('./DistanceUtils.js')
-import { serialize } from '../component/location-old/location-serialization'
+// import { serialize } from '../component/location-old/location-serialization'
 
 function sanitizeForCql(text) {
   return text
@@ -249,7 +249,7 @@ function generateFilter(type, property, value, metacardDefinitions) {
     case 'LOCATION':
     case 'GEOMETRY':
       const geo = generateAnyGeoFilter(property, value)
-      geo.geojson = serialize(value)
+      // geo.geojson = serialize(value)
       return geo
     default:
       const filter = {
@@ -289,15 +289,14 @@ function isGeoFilter(type) {
   return type === 'DWITHIN' || type === 'INTERSECTS'
 }
 
-function transformFilterToCQL(filter) {
-  return this.sanitizeGeometryCql(
-    '(' + cql.write(cql.simplify(cql.read(cql.write(filter)))) + ')'
-  )
-}
+// function transformFilterToCQL(filter) {
+//   // todo:  see if we need the extra surrounding parens
+//   return this.sanitizeGeometryCql('(' + cql.write(filter) + ')')
+// }
 
-function transformCQLToFilter(cqlString) {
-  return cql.simplify(cql.read(cqlString))
-}
+// function transformCQLToFilter(cqlString) {
+//   return cql.simplify(cql.read(cqlString))
+// }
 
 const isPolygonFilter = filter => {
   return geometryFilterContainsString(filter, 'POLYGON')
@@ -387,11 +386,10 @@ module.exports = {
   sanitizeGeometryCql,
   getProperty,
   generateIsEmptyFilter,
+  generateAnyGeoFilter,
   generateFilter,
   generateFilterForFilterFunction,
   isGeoFilter,
-  transformFilterToCQL,
-  transformCQLToFilter,
   isPolygonFilter,
   isLineFilter,
   isPointRadiusFilter,

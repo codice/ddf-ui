@@ -20,7 +20,6 @@ const Query = require('../../js/model/Query.js')
 const QueryResponse = require('../../js/model/QueryResponse.js')
 const QueryResult = require('../../js/model/QueryResult.js')
 const cql = require('../../js/cql.js')
-const router = require('../router/router.js')
 
 module.exports = new (Backbone.AssociatedModel.extend({
   relations: [
@@ -67,11 +66,10 @@ module.exports = new (Backbone.AssociatedModel.extend({
       'update add remove reset',
       this.updateActiveSearchResultsAttributes
     )
-    this.listenTo(router, 'change', this.handleRoute)
     this.handleRoute()
   },
   handleRoute() {
-    if (router.toJSON().name === 'openMetacard') {
+    if ('router.toJSON().name' === 'openMetacard') {
       const metacardId = router.toJSON().args[0]
       const queryForMetacard = new Query.Model({
         cql: cql.write({
@@ -110,12 +108,16 @@ module.exports = new (Backbone.AssociatedModel.extend({
     )
   },
   handleResults() {
-    this.set(
-      'currentMetacard',
-      this.get('currentResult')
-        .get('results')
-        .first()
+    const results = Object.values(
+      this.get('currentResult').get('lazyResults').results
     )
+    const resultToUse = results[0]
+    if (resultToUse) {
+      resultToUse.setSelected(true)
+      this.set('currentMetacard', resultToUse.getBackbone())
+    } else {
+      this.set('currentMetacard', undefined)
+    }
   },
   updateActiveSearchResultsAttributes() {
     const availableAttributes = this.get('activeSearchResults')
@@ -164,6 +166,9 @@ module.exports = new (Backbone.AssociatedModel.extend({
   },
   addSelectedResult(metacard) {
     this.getSelectedResults().add(metacard)
+  },
+  setSelectedResults(results) {
+    this.get('selectedResults').reset(results.models || results)
   },
   removeSelectedResult(metacard) {
     this.getSelectedResults().remove(metacard)

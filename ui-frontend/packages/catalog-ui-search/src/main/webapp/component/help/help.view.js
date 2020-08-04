@@ -135,6 +135,7 @@ module.exports = new (Marionette.LayoutView.extend({
   initialize() {
     $('body').append(this.el)
   },
+  onClose() {},
   onRender() {},
   hintOn: false,
   animationFrameId: undefined,
@@ -144,6 +145,7 @@ module.exports = new (Marionette.LayoutView.extend({
       this.stopListeningForResize()
       this.stopListeningForTyping()
       this.stopListeningForClick()
+      this.onClose()
     } else {
       this.showHints()
       this.listenForResize()
