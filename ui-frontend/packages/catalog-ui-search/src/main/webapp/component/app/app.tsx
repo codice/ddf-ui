@@ -45,14 +45,19 @@ export const handleBase64EncodedImages = (url: string) => {
   return `data:image/png;base64,${url}`
 }
 
-export type IndividualRouteType = {
-  name: string
-  shortName: string
-  Icon: any
-  routeProps: RouteProps
-  linkProps: LinkProps
-  showInNav: boolean
-}
+export type IndividualRouteType =
+  | {
+      name: string
+      shortName: string
+      Icon: any
+      routeProps: RouteProps
+      linkProps: LinkProps
+      showInNav: true
+    }
+  | {
+      routeProps: RouteProps
+      showInNav: false
+    }
 
 const matchesRoute = ({
   routeInfo,
@@ -320,7 +325,12 @@ const App = ({
                                 {routeInfo.shortName}
                               </Typography>
                             </ListItemIcon>
-                            <ListItemText primary={routeInfo.name} />
+                            <ListItemText
+                              primaryTypographyProps={{
+                                className: 'whitespace-no-wrap',
+                              }}
+                              primary={routeInfo.name}
+                            />
                           </ListItem>
                         )
                       })}

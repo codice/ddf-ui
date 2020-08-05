@@ -15,8 +15,28 @@
 
 const Marionette = require('marionette')
 const _ = require('underscore')
-const InputTemplate = require('./input.hbs')
 const CustomElements = require('../../js/CustomElements.js')
+import * as React from 'react'
+import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+
+const LittleInputTemplate = ({ view }: any) => {
+  const data = view.serializeData()
+  const [value, setValue] = React.useState(data.value)
+  const { listenTo } = useBackbone()
+  React.useEffect(() => {
+    listenTo(view.model, 'change:value', () => {
+      setValue(view.serializeData().value)
+    })
+  }, [])
+  return (
+    <div className="if-viewing">
+      <label>
+        <a href={value}>{value}</a>
+        <span>{value}</span>
+      </label>
+    </div>
+  )
+}
 
 const InputView = Marionette.LayoutView.extend({
   className() {
@@ -26,7 +46,20 @@ const InputView = Marionette.LayoutView.extend({
       return 'is-enum'
     }
   },
-  template: InputTemplate,
+  template(data: any) {
+    return (
+      <React.Fragment>
+        <div className="if-editing">
+          <input
+            id={data.cid}
+            placeholder={data.property.placeholder}
+            name={data.property.id}
+          />
+        </div>
+        <LittleInputTemplate view={this} />
+      </React.Fragment>
+    )
+  },
   tagName: CustomElements.register('input'),
   attributes() {
     return {
@@ -88,8 +121,8 @@ const InputView = Marionette.LayoutView.extend({
     this.$el.find('input').val(this.model.getValue())
   },
   toJSON() {
-    const attributeToVal = {}
-    attributeToVal[this.model.getId()] = this.model.getValue()
+    const attributeToVal = {} as any
+    attributeToVal[this.model.getId()] = this.model.getValue() as any
     return attributeToVal
   },
   focus() {

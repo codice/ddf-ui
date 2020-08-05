@@ -14,7 +14,7 @@
  **/
 import React from 'react'
 import styled from 'styled-components'
-import ExtensionPoints from '../../extension-points'
+import { Visualizations } from '../../component/visualization/visualizations'
 
 const CustomElement = styled.div`
   height: 100%;
@@ -51,7 +51,7 @@ const VisualizationText = styled.div`
   vertical-align: middle;
 `
 
-const configs = ExtensionPoints.visualizations.reduce((cfg, viz) => {
+const configs = Visualizations.reduce((cfg, viz) => {
   const { id, title, icon, isClosable = true } = viz
 
   cfg[id] = {

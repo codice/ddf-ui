@@ -82,9 +82,9 @@ module.exports = Backbone.AssociatedModel.extend({
   },
   hasPreview() {
     return (
-      this.get('actions').filter(
-        action => action.get('id') === 'catalog.data.metacard.html.preview'
-      ).length > 0
+      this.get('metacard')
+        .get('properties')
+        .get('ext.extracted.text') !== undefined
     )
   },
   matchesFilters(filters) {
@@ -119,9 +119,11 @@ module.exports = Backbone.AssociatedModel.extend({
   },
   isRemote() {
     return (
-      this.get('metacard')
-        .get('properties')
-        .get('source-id') !== Sources.localCatalog
+      Sources.getHarvested().includes(
+        this.get('metacard')
+          .get('properties')
+          .get('source-id')
+      ) === false
     )
   },
   hasGeometry(attribute) {

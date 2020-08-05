@@ -13,7 +13,6 @@
  *
  **/
 const Marionette = require('marionette')
-
 const hbs = require('@connexta/ace/handlebars')
 
 Marionette.Renderer.render = function(template, data, view) {

@@ -507,7 +507,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
     const categories = retrieveCategoriesFromPlotly()
     const validCategories = categories.slice(firstIndex, lastIndex)
     const activeSearchResults = results
-    const results = validCategories.reduce(
+    const validResults = validCategories.reduce(
       (results: any, category: any) => {
         results = results.concat(
           findMatchesForAttributeValues(
@@ -520,7 +520,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
       },
       [] as LazyQueryResult[]
     ) as LazyQueryResult[]
-    results.forEach(result => {
+    validResults.forEach(result => {
       result.setSelected(true)
     })
   }
@@ -592,13 +592,13 @@ export const Histogram = ({ selectionInterface }: Props) => {
   const handleControlClick = (data: any, alreadySelected: boolean) => {
     const attributeToCheck = attributeToBin
     const categories = retrieveCategoriesFromPlotly()
-    const results = findMatchesForAttributeValues(
+    const matchedResults = findMatchesForAttributeValues(
       results,
       attributeToCheck,
       getValueFromClick(data, categories)
     )
     if (alreadySelected) {
-      results.forEach(result => {
+      matchedResults.forEach(result => {
         result.setSelected(false)
       })
       pointsSelected.current.splice(
@@ -606,7 +606,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
         1
       )
     } else {
-      results.forEach(result => {
+      matchedResults.forEach(result => {
         result.setSelected(true)
       })
       pointsSelected.current.push(getIndexClicked(data))

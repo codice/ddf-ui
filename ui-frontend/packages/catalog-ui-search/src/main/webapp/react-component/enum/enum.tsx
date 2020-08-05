@@ -59,7 +59,7 @@ export default hot(module)(
           )
         }
       }
-      componentWillReceiveProps = (nextProps: Props) => {
+      UNSAFE_componentWillReceiveProps = (nextProps: Props) => {
         if (nextProps.value !== this.props.value) {
           this.state.propertyModel &&
             this.state.propertyModel.setValue([nextProps.value])
