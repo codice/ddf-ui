@@ -69,6 +69,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import javax.ws.rs.NotFoundException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -308,6 +309,26 @@ public class EndpointUtil implements EndpointUtility {
 
   public Map<String, Result> getMetacardsWithTagByAttributes(
       String attributeName, Collection<String> attributeValues, Filter tagFilter) {
+    return getMetacardsWithTagByAttributes(attributeName, attributeValues, tagFilter, null);
+  }
+
+  public Map<String, Result> getMetacardsWithTagByAttributes(
+      String attributeName,
+      Collection<String> attributeValues,
+      String tag,
+      @Nullable Set<String> storeIds) {
+    return getMetacardsWithTagByAttributes(
+        attributeName,
+        attributeValues,
+        filterBuilder.attribute(Core.METACARD_TAGS).is().like().text(tag),
+        storeIds);
+  }
+
+  public Map<String, Result> getMetacardsWithTagByAttributes(
+      String attributeName,
+      Collection<String> attributeValues,
+      Filter tagFilter,
+      @Nullable Set<String> storeIds) {
     if (attributeValues.isEmpty()) {
       return new HashMap<>();
     }
@@ -327,7 +348,7 @@ public class EndpointUtil implements EndpointUtility {
                     false,
                     TimeUnit.SECONDS.toMillis(10)),
                 false,
-                null,
+                storeIds,
                 additionalSort(new HashMap<>(), Core.ID, SortOrder.ASCENDING)));
 
     return resultIterable

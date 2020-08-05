@@ -6,15 +6,15 @@ import Button from '@material-ui/core/Button'
 const user = require('../../singletons/user-instance')
 const properties = require('../../../js/properties.js')
 import TypedMetacardDefs from './metacardDefinitions'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
-import { Draggable, Droppable, DragDropContext } from 'react-beautiful-dnd'
 import Divider from '@material-ui/core/Divider'
 const Common = require('../../../js/Common.js')
-import EditIcon from '@material-ui/icons/Edit'
 import DeleteIcon from '@material-ui/icons/Delete'
 import TextField from '@material-ui/core/TextField'
 import { useDialog } from '@connexta/atlas/atoms/dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import DialogContent from '@material-ui/core/DialogContent'
 import { KeyboardDateTimePicker } from '@connexta/atlas/atoms/pickers'
 import { getDateTimeFormat } from '../../user/utils'
 import useSnack from '../../hooks/useSnack'
@@ -27,6 +27,8 @@ import { useTheme } from '@material-ui/core'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
+import TransferList from './transfer-list'
+import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace'
 //metacardDefinitions.metacardTypes[attribute].type
 //metacardDefinitions.metacardTypes[attribute].multivalued
 //properties.isReadOnly(attribute)
@@ -108,7 +110,6 @@ function getSummaryShown(): string[] {
 type Props = {
   selectionInterface: any
 }
-type Mode = 'normal' | 'adjust'
 
 const ThumbnailInput = ({
   value,
@@ -184,127 +185,124 @@ const ThumbnailInput = ({
   )
 }
 
-const Editor = ({
-  label,
+export const Editor = ({
   attr,
-  value,
   lazyResult,
   onCancel = () => {},
   onSave = () => {},
+  goBack,
 }: {
-  label: string
   attr: string
-  value: any[]
   lazyResult: LazyQueryResult
   onCancel?: () => void
   onSave?: () => void
+  goBack?: () => void
 }) => {
   const [mode, setMode] = React.useState('normal' as 'normal' | 'saving')
-  const [values, setValues] = React.useState(value)
+  const [values, setValues] = React.useState(
+    Array.isArray(lazyResult.plain.metacard.properties[attr])
+      ? lazyResult.plain.metacard.properties[attr]
+      : [lazyResult.plain.metacard.properties[attr]]
+  )
+  const label = TypedMetacardDefs.getAlias({ attr })
   const isMultiValued = TypedMetacardDefs.isMulti({ attr })
   const attrType = TypedMetacardDefs.getType({ attr })
   const addSnack = useSnack()
+
   return (
     <>
-      <Typography
-        variant="h5"
-        style={{ textAlign: 'center', wordBreak: 'break-word' }}
-      >
-        Editing {label} of:
-      </Typography>
-      <Typography
-        variant="h5"
-        style={{ textAlign: 'center', wordBreak: 'break-word' }}
-      >
-        "{lazyResult.plain.metacard.properties.title}"
-      </Typography>
-      <Divider style={{ margin: '10px' }} />
+      {goBack && (
+        <Button
+          variant="text"
+          color="primary"
+          startIcon={<KeyboardBackspaceIcon />}
+          onClick={goBack}
+        >
+          Cancel and return to manage
+        </Button>
+      )}
+      <DialogTitle style={{ textAlign: 'center' }}>
+        Editing {label} of "{lazyResult.plain.metacard.properties.title}"
+      </DialogTitle>
+      <Divider />
+      <DialogContent style={{ minHeight: '30em', minWidth: '60vh' }}>
+        {values.map((val: any, index: number) => {
+          return (
+            <>
+              {index !== 0 ? <Divider style={{ margin: '5px 0px' }} /> : null}
+              {(() => {
+                switch (attrType) {
+                  case 'DATE':
+                    return (
+                      <KeyboardDateTimePicker
+                        disabled={mode === 'saving'}
+                        value={val}
+                        onChange={(e: any) => {
+                          values[index] = e.toISOString()
+                          setValues([...values])
+                        }}
+                        DialogProps={{
+                          disablePortal: true,
+                          style: {
+                            minWidth: '500px',
+                          },
+                        }}
+                        format={getDateTimeFormat()}
+                        fullWidth
+                      />
+                    )
 
-      {values.map((val: any, index: number) => {
-        return (
-          <>
-            {index !== 0 ? <Divider style={{ margin: '5px 0px' }} /> : null}
-            <Grid
-              container
-              direction="row"
-              alignItems="center"
-              wrap="nowrap"
-              style={{ padding: '10px' }}
-            >
-              <Grid item style={{ width: '100%' }}>
-                {(() => {
-                  switch (attrType) {
-                    case 'DATE':
-                      return (
-                        <KeyboardDateTimePicker
-                          disabled={mode === 'saving'}
-                          value={val}
-                          onChange={(e: any) => {
-                            values[index] = e.toISOString()
-                            setValues([...values])
-                          }}
-                          DialogProps={{
-                            disablePortal: true,
-                            style: {
-                              minWidth: '500px',
-                            },
-                          }}
-                          format={getDateTimeFormat()}
-                          fullWidth
-                        />
-                      )
-
-                    case 'BINARY':
-                      return (
-                        <ThumbnailInput
-                          disabled={mode === 'saving'}
-                          value={val}
-                          onChange={update => {
-                            values[index] = update
-                            setValues([...values])
-                          }}
-                        />
-                      )
-                    case 'BOOLEAN':
-                      return (
-                        <Checkbox
-                          disabled={mode === 'saving'}
-                          checked={val}
-                          onChange={e => {
-                            values[index] = e.target.checked
-                            setValues([...values])
-                          }}
-                          color="primary"
-                        />
-                      )
-                    case 'LONG':
-                    case 'DOUBLE':
-                    case 'FLOAT':
-                    case 'INTEGER':
-                    case 'SHORT':
-                      return (
-                        <TextField
-                          disabled={mode === 'saving'}
-                          value={val}
-                          onChange={e => {
-                            values[index] = e.target.value
-                            setValues([...values])
-                          }}
-                          type="number"
-                          fullWidth
-                        />
-                      )
-                    case 'GEOMETRY':
-                      return (
-                        <TextField
-                          disabled={mode === 'saving'}
-                          value={val}
-                          onChange={e => {
-                            values[index] = e.target.value
-                            setValues([...values])
-                          }}
-                          fullWidth
-                          helperText="WKT Syntax is supported for geometries, here are some examples:
+                  case 'BINARY':
+                    return (
+                      <ThumbnailInput
+                        disabled={mode === 'saving'}
+                        value={val}
+                        onChange={update => {
+                          values[index] = update
+                          setValues([...values])
+                        }}
+                      />
+                    )
+                  case 'BOOLEAN':
+                    return (
+                      <Checkbox
+                        disabled={mode === 'saving'}
+                        checked={val}
+                        onChange={e => {
+                          values[index] = e.target.checked
+                          setValues([...values])
+                        }}
+                        color="primary"
+                      />
+                    )
+                  case 'LONG':
+                  case 'DOUBLE':
+                  case 'FLOAT':
+                  case 'INTEGER':
+                  case 'SHORT':
+                    return (
+                      <TextField
+                        disabled={mode === 'saving'}
+                        value={val}
+                        onChange={e => {
+                          values[index] = e.target.value
+                          setValues([...values])
+                        }}
+                        type="number"
+                        fullWidth
+                      />
+                    )
+                  case 'GEOMETRY':
+                    return (
+                      <TextField
+                        disabled={mode === 'saving'}
+                        value={val}
+                        onChange={e => {
+                          values[index] = e.target.value
+                          setValues([...values])
+                        }}
+                        fullWidth
+                        helperText="WKT Syntax is supported for geometries, here are some examples:
                           POINT (50 40)
                           LINESTRING (30 10, 10 30, 40 40)
                           POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))
@@ -312,23 +310,25 @@ const Editor = ({
                           MULTILINESTRING ((10 10, 20 20, 10 40), (40 40, 30 30, 40 20, 30 10))
                           MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))
                           GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6,7 10))"
-                        />
-                      )
-                    default:
-                      return (
-                        <TextField
-                          disabled={mode === 'saving'}
-                          value={val}
-                          onChange={e => {
-                            values[index] = e.target.value
-                            setValues([...values])
-                          }}
-                          fullWidth
-                        />
-                      )
-                  }
-                })()}
-              </Grid>
+                      />
+                    )
+                  default:
+                    return (
+                      <TextField
+                        disabled={mode === 'saving'}
+                        value={val}
+                        onChange={(e: any) => {
+                          values[index] = e.target.value
+                          setValues([...values])
+                        }}
+                        style={{ whiteSpace: 'pre-line', flexGrow: 50 }}
+                        fullWidth
+                        multiline={true}
+                        rowsMax={1000}
+                      />
+                    )
+                }
+              })()}
               {isMultiValued ? (
                 <Grid item>
                   <Button
@@ -342,29 +342,30 @@ const Editor = ({
                   </Button>
                 </Grid>
               ) : null}
-            </Grid>
-          </>
-        )
-      })}
-      <Button
-        disabled={mode === 'saving' || (!isMultiValued && values.length > 0)}
-        onClick={() => {
-          let defaultValue = ''
-          switch (attrType) {
-            case 'DATE':
-              defaultValue = new Date().toISOString()
-              break
-          }
-          setValues([...values, defaultValue])
-        }}
-      >
-        Add New Value
-      </Button>
-      <Divider style={{ margin: '10px' }} />
-      <div style={{ position: 'relative' }}>
+            </>
+          )
+        })}
+        <Button
+          disabled={mode === 'saving' || (!isMultiValued && values.length > 0)}
+          onClick={() => {
+            let defaultValue = ''
+            switch (attrType) {
+              case 'DATE':
+                defaultValue = new Date().toISOString()
+                break
+            }
+            setValues([...values, defaultValue])
+          }}
+        >
+          Add New Value
+        </Button>
+      </DialogContent>
+      <Divider />
+      <DialogActions>
         <Button
           disabled={mode === 'saving'}
           color="secondary"
+          variant="contained"
           onClick={() => {
             onCancel()
           }}
@@ -373,6 +374,7 @@ const Editor = ({
         </Button>
         <Button
           disabled={mode === 'saving'}
+          variant="contained"
           color="primary"
           onClick={() => {
             setMode('saving')
@@ -398,7 +400,9 @@ const Editor = ({
             ]
             setTimeout(() => {
               $.ajax({
-                url: './internal/metacards',
+                url: `./internal/metacards?storeId=${
+                  lazyResult.plain.metacard.properties['source-id']
+                }`,
                 type: 'PATCH',
                 data: JSON.stringify(payload),
                 contentType: 'application/json',
@@ -417,113 +421,19 @@ const Editor = ({
         >
           Save
         </Button>
-        {mode === 'saving' ? (
-          <LinearProgress
-            style={{
-              width: '100%',
-              height: '10px',
-              position: 'absolute',
-              left: '0px',
-              bottom: '0%',
-            }}
-            variant="indeterminate"
-          />
-        ) : null}
-      </div>
-    </>
-  )
-}
-
-const DeleteEditor = ({
-  label,
-  attr,
-  lazyResult,
-  onCancel = () => {},
-  onSave = () => {},
-}: {
-  label: string
-  attr: string
-  lazyResult: LazyQueryResult
-  onCancel?: () => void
-  onSave?: () => void
-}) => {
-  const [mode, setMode] = React.useState('normal' as 'normal' | 'saving')
-  const addSnack = useSnack()
-  return (
-    <>
-      <Typography
-        variant="h5"
-        style={{ textAlign: 'center', wordBreak: 'break-word' }}
-      >
-        Deleting {label} of:
-      </Typography>
-      <Typography
-        variant="h5"
-        style={{ textAlign: 'center', wordBreak: 'break-word' }}
-      >
-        "{lazyResult.plain.metacard.properties.title}"
-      </Typography>
-      <Divider style={{ margin: '10px' }} />
-      <div style={{ position: 'relative' }}>
-        <Button
-          disabled={mode === 'saving'}
-          color="secondary"
-          onClick={() => {
-            onCancel()
+      </DialogActions>
+      {mode === 'saving' ? (
+        <LinearProgress
+          style={{
+            width: '100%',
+            height: '10px',
+            position: 'absolute',
+            left: '0px',
+            bottom: '0%',
           }}
-        >
-          Cancel
-        </Button>
-        <Button
-          disabled={mode === 'saving'}
-          color="primary"
-          onClick={() => {
-            setMode('saving')
-            const payload = [
-              {
-                ids: [lazyResult.plain.metacard.properties.id],
-                attributes: [
-                  {
-                    attribute: attr,
-                    values: [],
-                  },
-                ],
-              },
-            ]
-            setTimeout(() => {
-              $.ajax({
-                url: './internal/metacards',
-                type: 'PATCH',
-                data: JSON.stringify(payload),
-                contentType: 'application/json',
-              })
-                .then((response: any) => {
-                  ResultUtils.updateResults(lazyResult.getBackbone(), response)
-                })
-                .always(() => {
-                  setTimeout(() => {
-                    addSnack('Successfully updated.')
-                    onSave()
-                  }, 1000)
-                })
-            }, 1000)
-          }}
-        >
-          Save
-        </Button>
-        {mode === 'saving' ? (
-          <LinearProgress
-            style={{
-              width: '100%',
-              height: '10px',
-              position: 'absolute',
-              left: '0px',
-              bottom: '0%',
-            }}
-            variant="indeterminate"
-          />
-        ) : null}
-      </div>
+          variant="indeterminate"
+        />
+      ) : null}
     </>
   )
 }
@@ -531,19 +441,17 @@ const DeleteEditor = ({
 const AttributeComponent = ({
   lazyResult,
   attr,
-  mode = 'normal',
   summaryShown = [],
-  canWrite = false,
   filter = '',
   width,
+  forceRender,
 }: {
   attr: string
   lazyResult: LazyQueryResult
-  mode?: Mode
   summaryShown?: string[]
-  canWrite?: boolean
   filter?: string
   width: number
+  forceRender: boolean
 }) => {
   let value = lazyResult.plain.metacard.properties[attr]
   if (value === undefined || value === null) {
@@ -553,237 +461,92 @@ const AttributeComponent = ({
     value = [value]
   }
   let label = TypedMetacardDefs.getAlias({ attr })
-  const dialogContext = useDialog()
-  const isReadonly = TypedMetacardDefs.isReadonly({ attr })
   const isFiltered =
     filter !== '' ? !label.toLowerCase().includes(filter.toLowerCase()) : false
-  const isTiny = width < 500
-  const notApplicable =
-    Boolean(
-      TypedMetacardDefs.getDefinition({
-        type: lazyResult.plain.metacardType,
-      })[attr]
-    ) === false
-  const readOnly = !canWrite || isReadonly || notApplicable
   const MemoItem = React.useMemo(
     () => {
       return (
-        <Grid
-          container
-          direction="row"
-          alignItems="center"
-          wrap={isTiny ? 'wrap' : 'nowrap'}
-          style={{ padding: '3px 4px' }}
-        >
+        <Grid container direction="row" wrap={'nowrap'}>
           <Grid
             item
-            xs={isTiny ? 12 : mode === 'adjust' ? 6 : 4}
-            style={{
-              textAlign: isTiny ? 'left' : 'right',
-              wordBreak: 'break-word',
-              padding: '0px 5px',
-            }}
-          >
-            {mode === 'normal' ? (
-              <>
-                <Typography>{label}</Typography>{' '}
-              </>
-            ) : (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={summaryShown.includes(attr)}
-                    onChange={e => {
-                      if (e.target.checked) {
-                        const clonedSummaryShown = summaryShown.slice()
-                        clonedSummaryShown.push(attr)
-                        user
-                          .get('user')
-                          .get('preferences')
-                          .set('inspector-summaryShown', clonedSummaryShown)
-                        user.savePreferences()
-                      } else {
-                        const clonedSummaryShown = summaryShown.slice()
-                        user
-                          .get('user')
-                          .get('preferences')
-                          .set(
-                            'inspector-summaryShown',
-                            clonedSummaryShown.filter(
-                              shownAttr => shownAttr !== attr
-                            )
-                          )
-                        user.savePreferences()
-                      }
-                    }}
-                    value="checkedB"
-                    color="primary"
-                  />
-                }
-                label={label}
-              />
-            )}
-          </Grid>
-
-          <Grid
-            item
-            xs={isTiny ? 12 : mode === 'adjust' ? 6 : 8}
+            xs={4}
             style={{
               wordBreak: 'break-word',
-              padding: '0px 5px',
-              marginLeft: isTiny ? '10px' : '0px',
+              textOverflow: 'ellipsis',
+              border: '1px solid grey',
               overflow: 'hidden',
+              padding: '10px',
             }}
           >
-            {value.map((val: any, index: number) => {
-              return (
-                <>
-                  {index !== 0 ? (
-                    <Divider style={{ margin: '5px 0px' }} />
-                  ) : null}
-                  <div>
-                    {(() => {
-                      switch (TypedMetacardDefs.getType({ attr })) {
-                        case 'DATE':
-                          return (
-                            <Typography title={Common.getMomentDate(val)}>
-                              {user.getUserReadableDateTime(val)}
-                            </Typography>
-                          )
+            <Typography>{label}</Typography>
+          </Grid>
 
-                        case 'BINARY':
-                          return (
-                            <a
-                              target="_blank"
-                              href={TypedMetacardDefs.getImageSrc({ val })}
-                              style={{ padding: '0px' }}
-                            >
-                              <img
-                                src={TypedMetacardDefs.getImageSrc({ val })}
-                                style={{ maxWidth: '100%', maxHeight: '50vh' }}
-                              />
-                            </a>
-                          )
-                        case 'BOOLEAN':
-                          return (
-                            <Typography>{val ? 'true' : 'false'}</Typography>
-                          )
-                        default:
-                          return <Typography>{val}</Typography>
-                      }
-                    })()}
-                  </div>
-                </>
-              )
-            })}
-          </Grid>
-          <Grid item style={{ marginLeft: 'auto' }}>
-            <Button
-              title={readOnly ? 'Readonly' : ''}
-              disabled={readOnly}
-              style={{
-                pointerEvents: 'all',
-                height: '100%',
-              }}
-              onClick={() => {
-                dialogContext.setProps({
-                  PaperProps: {
-                    style: {
-                      minWidth: 'none',
-                    },
-                  },
-                  open: true,
-                  children: (
-                    <div
-                      style={{
-                        padding: '20px',
-                        width: '80vw',
-                        minWidth: '500px',
-                        minHeight: '60vh',
-                        overflow: 'auto',
-                      }}
-                    >
-                      <Editor
-                        value={value}
-                        attr={attr}
-                        label={label}
-                        lazyResult={lazyResult}
-                        onCancel={() => {
-                          dialogContext.setProps({
-                            open: false,
-                            children: null,
-                          })
-                        }}
-                        onSave={() => {
-                          dialogContext.setProps({
-                            open: false,
-                            children: null,
-                          })
-                        }}
-                      />
-                    </div>
-                  ),
-                })
-              }}
-            >
-              <EditIcon />
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              title={readOnly ? 'Readonly' : ''}
-              style={{
-                pointerEvents: 'all',
-                height: '100%',
-              }}
-              disabled={readOnly}
-              onClick={() => {
-                dialogContext.setProps({
-                  PaperProps: {
-                    style: {
-                      minWidth: 'none',
-                    },
-                  },
-                  open: true,
-                  children: (
-                    <div
-                      style={{
-                        padding: '20px',
-                        width: '80vw',
-                        minWidth: '500px',
-                        minHeight: '60vh',
-                        overflow: 'auto',
-                      }}
-                    >
-                      <DeleteEditor
-                        attr={attr}
-                        label={label}
-                        lazyResult={lazyResult}
-                        onCancel={() => {
-                          dialogContext.setProps({
-                            open: false,
-                            children: null,
-                          })
-                        }}
-                        onSave={() => {
-                          dialogContext.setProps({
-                            open: false,
-                            children: null,
-                          })
-                        }}
-                      />
-                    </div>
-                  ),
-                })
-              }}
-            >
-              <DeleteIcon />
-            </Button>
+          <Grid
+            item
+            md={8}
+            style={{
+              wordBreak: 'break-word',
+              textOverflow: 'ellipsis',
+              border: '1px solid grey',
+              overflow: 'hidden',
+              padding: '10px',
+            }}
+          >
+            <Grid container direction="row">
+              <Grid item>
+                {value.map((val: any, index: number) => {
+                  return (
+                    <>
+                      {index !== 0 ? (
+                        <Divider style={{ margin: '5px 0px' }} />
+                      ) : null}
+                      <div>
+                        {(() => {
+                          switch (TypedMetacardDefs.getType({ attr })) {
+                            case 'DATE':
+                              return (
+                                <Typography title={Common.getMomentDate(val)}>
+                                  {user.getUserReadableDateTime(val)}
+                                </Typography>
+                              )
+
+                            case 'BINARY':
+                              return (
+                                <a
+                                  target="_blank"
+                                  href={TypedMetacardDefs.getImageSrc({ val })}
+                                  style={{ padding: '0px' }}
+                                >
+                                  <img
+                                    src={TypedMetacardDefs.getImageSrc({ val })}
+                                    style={{
+                                      maxWidth: '100%',
+                                      maxHeight: '50vh',
+                                    }}
+                                  />
+                                </a>
+                              )
+                            case 'BOOLEAN':
+                              return (
+                                <Typography>
+                                  {val ? 'true' : 'false'}
+                                </Typography>
+                              )
+                            default:
+                              return <Typography>{val}</Typography>
+                          }
+                        })()}
+                      </div>
+                    </>
+                  )
+                })}
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       )
     },
-    [mode, summaryShown, width]
+    [summaryShown, width, forceRender]
   )
   return (
     <div style={{ display: isFiltered ? 'none' : 'block' }}>{MemoItem}</div>
@@ -792,25 +555,47 @@ const AttributeComponent = ({
 
 let persistantFilter = ''
 
+/* Hidden attributes are simply the opposite of active */
+/* They do not currently exist on the metacard OR are not shown in the summary */
+const getHiddenAttributes = (
+  selection: LazyQueryResult,
+  activeAttributes: string[]
+) => {
+  return Object.values(
+    TypedMetacardDefs.getDefinition({
+      type: selection.plain.metacardType,
+    })
+  )
+    .filter(val => {
+      if (activeAttributes.includes(val.id)) {
+        return false
+      }
+      return true
+    })
+    .filter(val => {
+      return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({
+        attr: val.id,
+      })
+    })
+}
+
 const Summary = ({ selectionInterface }: Props) => {
   const theme = useTheme()
   const selectedResults = useLazyResultsSelectedResultsFromSelectionInterface({
     selectionInterface,
   })
-  const [mode, setMode] = React.useState('normal' as Mode)
-  const [showMode, setShowMode] = React.useState('populated' as
-    | 'populated'
-    | 'all')
+
+  const [forceRender, setForceRender] = React.useState(false)
+  const [expanded, setExpanded] = React.useState(false)
+  /* Special case for when all the attributes are displayed */
+  const [fullyExpanded, setFullyExpanded] = React.useState(false)
   const [filter, setFilter] = React.useState(persistantFilter)
   const [summaryShown, setSummaryShown] = React.useState(getSummaryShown())
   const selection = Object.values(selectedResults)[0] as
     | LazyQueryResult
     | undefined
-  const [canWrite, setCanWrite] = React.useState(
-    selection &&
-      !selection.isRemote() &&
-      (user.canWrite(selection.getBackbone()) as boolean)
-  )
+
+  const dialogContext = useDialog()
 
   const { listenTo } = useBackbone()
   React.useEffect(() => {
@@ -822,9 +607,21 @@ const Summary = ({ selectionInterface }: Props) => {
       }
     )
   }, [])
+  React.useEffect(
+    () => {
+      if (selection) {
+        if (getHiddenAttributes(selection, summaryShown).length === 0) {
+          setFullyExpanded(true)
+        } else {
+          setFullyExpanded(false)
+        }
+      }
+    },
+    [summaryShown]
+  )
   const everythingElse = React.useMemo(
     () => {
-      return selection && mode === 'adjust'
+      return selection && expanded
         ? Object.keys(selection.plain.metacard.properties)
             .filter(attr => {
               return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({ attr })
@@ -834,11 +631,11 @@ const Summary = ({ selectionInterface }: Props) => {
             })
         : []
     },
-    [mode, summaryShown]
+    [expanded, summaryShown]
   )
   const blankEverythingElse = React.useMemo(
     () => {
-      return selection && mode === 'adjust' && showMode === 'all'
+      return selection
         ? Object.values(
             TypedMetacardDefs.getDefinition({
               type: selection.plain.metacardType,
@@ -860,7 +657,7 @@ const Summary = ({ selectionInterface }: Props) => {
             })
         : []
     },
-    [mode, showMode, summaryShown]
+    [expanded, summaryShown]
   )
   return (
     <AutoSizer>
@@ -892,38 +689,57 @@ const Summary = ({ selectionInterface }: Props) => {
               <Grid item>
                 <Button
                   onClick={() => {
-                    if (mode === 'normal') {
-                      setMode('adjust')
-                    } else {
-                      setMode('normal')
-                    }
+                    dialogContext.setProps({
+                      PaperProps: {
+                        style: {
+                          minWidth: 'none',
+                        },
+                      },
+                      open: true,
+                      children: (
+                        <div
+                          style={{
+                            padding: '10px',
+                            minHeight: '60vh',
+                          }}
+                        >
+                          <TransferList
+                            startingLeft={summaryShown}
+                            startingRight={getHiddenAttributes(
+                              selection,
+                              summaryShown
+                            )
+                              .map(attr => {
+                                return attr.id
+                              })
+                              .sort()}
+                            updateActive={(active: string[]) => {
+                              user
+                                .get('user')
+                                .get('preferences')
+                                .set('inspector-summaryShown', active)
+                              user.savePreferences()
+                            }}
+                            lazyResult={selection}
+                            onSave={() => {
+                              // Force re-render after save to update values on page
+                              // This is more reliable than "refreshing" the result which
+                              // is frequently not synched up properly
+                              setForceRender(!forceRender)
+                            }}
+                          />
+                        </div>
+                      ),
+                    })
                   }}
-                  color={mode === 'normal' ? 'default' : 'primary'}
+                  color="primary"
                   size="small"
                   style={{ height: 'auto' }}
                 >
-                  {mode === 'normal' ? 'Adjust Layout' : 'Finish Adjustment'}
+                  Manage Attributes
                 </Button>
               </Grid>
-              <Grid item>
-                {mode === 'adjust' ? (
-                  <Button
-                    onClick={() => {
-                      if (showMode === 'populated') {
-                        setShowMode('all')
-                      } else {
-                        setShowMode('populated')
-                      }
-                    }}
-                    color="primary"
-                    style={{ height: 'auto' }}
-                  >
-                    {showMode === 'populated'
-                      ? 'Show All Fields'
-                      : 'Show Populated Fields'}
-                  </Button>
-                ) : null}
-              </Grid>
+
               <Grid item>
                 <TextField
                   size="small"
@@ -948,67 +764,20 @@ const Summary = ({ selectionInterface }: Props) => {
               </Grid>
             </Grid>
 
-            <DragDropContext
-              onDragEnd={result => {
-                if (result.reason === 'DROP' && result.destination) {
-                  const originalIndex = result.source.index
-                  const destIndex = result.destination.index
-                  const clonedSummaryShown = summaryShown.slice()
-                  clonedSummaryShown.splice(originalIndex, 1)
-                  clonedSummaryShown.splice(destIndex, 0, result.draggableId)
-                  user
-                    .get('user')
-                    .get('preferences')
-                    .set('inspector-summaryShown', clonedSummaryShown)
-                  user.savePreferences()
-                }
-              }}
-            >
-              <Droppable droppableId="test" isDropDisabled={mode !== 'adjust'}>
-                {(droppableProvided, snapshot) => {
-                  return (
-                    <div
-                      {...droppableProvided.droppableProps}
-                      ref={droppableProvided.innerRef}
-                    >
-                      {summaryShown.map((attr, index) => {
-                        return (
-                          <Draggable
-                            draggableId={attr}
-                            index={index}
-                            key={attr}
-                            isDragDisabled={mode !== 'adjust'}
-                          >
-                            {(provided, snapshot) => {
-                              return (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                >
-                                  <AttributeComponent
-                                    lazyResult={selection}
-                                    attr={attr}
-                                    mode={mode}
-                                    summaryShown={summaryShown}
-                                    canWrite={canWrite}
-                                    filter={filter}
-                                    width={width}
-                                  />
-                                </div>
-                              )
-                            }}
-                          </Draggable>
-                        )
-                      })}
-                      {droppableProvided.placeholder}
-                    </div>
-                  )
-                }}
-              </Droppable>
-            </DragDropContext>
+            {summaryShown.map(attr => {
+              return (
+                <AttributeComponent
+                  lazyResult={selection}
+                  attr={attr}
+                  summaryShown={summaryShown}
+                  filter={filter}
+                  width={width}
+                  forceRender={forceRender}
+                />
+              )
+            })}
 
-            {mode === 'adjust' ? (
+            {expanded ? (
               <>
                 {everythingElse.map(attr => {
                   return (
@@ -1016,11 +785,10 @@ const Summary = ({ selectionInterface }: Props) => {
                       lazyResult={selection}
                       key={attr}
                       attr={attr}
-                      mode={mode}
                       summaryShown={summaryShown}
-                      canWrite={canWrite}
                       filter={filter}
                       width={width}
+                      forceRender={forceRender}
                     />
                   )
                 })}
@@ -1030,17 +798,31 @@ const Summary = ({ selectionInterface }: Props) => {
                       key={attr.id}
                       lazyResult={selection}
                       attr={attr.id}
-                      mode={mode}
                       summaryShown={summaryShown}
-                      canWrite={canWrite}
                       filter={filter}
                       width={width}
+                      forceRender={forceRender}
                     />
                   )
                 })}
               </>
             ) : (
               <></>
+            )}
+            {/* If hidden attributes === 0, don't show this button */}
+            {!fullyExpanded && (
+              <div style={{ padding: '10px 0px 0px 10px' }}>
+                <Button
+                  onClick={() => {
+                    setExpanded(!expanded)
+                  }}
+                  size="small"
+                  style={{ height: 'auto' }}
+                  color="primary"
+                >
+                  {expanded ? 'Collapse' : 'See all'}
+                </Button>
+              </div>
             )}
           </div>
         )
