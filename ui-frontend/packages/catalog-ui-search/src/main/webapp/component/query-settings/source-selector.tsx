@@ -131,9 +131,9 @@ const SourceSelector = ({ search }: Props) => {
               <>
                 {selected.map((src, index) => {
                   return (
-                    <>
+                    <React.Fragment key={src}>
                       {index > 0 ? ', ' : ''} {getHumanReadableSourceName(src)}
-                    </>
+                    </React.Fragment>
                   )
                 })}
               </>

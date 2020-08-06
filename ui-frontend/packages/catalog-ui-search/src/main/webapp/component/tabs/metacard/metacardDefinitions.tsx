@@ -5,8 +5,7 @@
 import { hot } from 'react-hot-loader'
 const metacardDefinitions = require('../../singletons/metacard-definitions')
 const properties = require('../../../js/properties.js')
-const HandleBarsHelpers = require('../../../js/HandlebarsHelpers.js')
-
+const Common = require('../../../js/Common.js')
 type Attributetypes =
   | 'BINARY'
   | 'DATE'
@@ -41,7 +40,7 @@ const TypedMetacardDefs = {
     if (typeof val === 'string' && val.substring(0, 4) !== 'http') {
       return val.split('?_=')[0]
     }
-    return HandleBarsHelpers.getImageSrc(val)
+    return Common.getImageSrc(val)
   },
   getDefinition({
     type,

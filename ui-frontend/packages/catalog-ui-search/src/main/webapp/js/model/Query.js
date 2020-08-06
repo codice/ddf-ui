@@ -211,31 +211,18 @@ Query.Model = Backbone.AssociatedModel.extend({
     )
   },
   getSelectedSources() {
-    const federation = this.get('federation')
-    switch (federation) {
-      case 'local':
-        return [Sources.localCatalog]
-        break
-      case 'enterprise':
-        return _.pluck(Sources.toJSON(), 'id')
-        break
-      case 'selected':
-        return this.get('sources')
-        break
+    const selectedSources = this.get('sources')
+    let sourceArray = []
+    if (selectedSources.includes('all')) {
+      sourceArray = _.pluck(Sources.toJSON(), 'id')
     }
-  },
-  buildSearchData() {
-    const data = this.toJSON()
-    if (data.sources.includes('all')) {
-      data.sources = _.pluck(Sources.toJSON(), 'id')
-    }
-    if (data.sources.includes('local')) {
-      data.sources = data.sources
+    if (selectedSources.includes('local')) {
+      sourceArray = sourceArray
         .concat(Sources.getHarvested())
         .filter(src => src !== 'local')
     }
-    if (data.sources.includes('remote')) {
-      data.sources = data.sources
+    if (selectedSources.includes('remote')) {
+      sourceArray = sourceArray
         .concat(
           _.pluck(Sources.toJSON(), 'id').filter(
             src => !Sources.getHarvested().includes(src)
@@ -243,6 +230,11 @@ Query.Model = Backbone.AssociatedModel.extend({
         )
         .filter(src => src !== 'remote')
     }
+    return sourceArray
+  },
+  buildSearchData() {
+    const data = this.toJSON()
+    data.sources = this.getSelectedSources()
 
     data.count = user
       .get('user')

@@ -26,6 +26,7 @@ import MetacardHistory from '../../../react-component/metacard-history'
 import Summary from './summary'
 
 const LightWeightSummaryView = Marionette.LayoutView.extend({
+  className: 'w-full h-full overflow-hidden',
   template() {
     return <Summary selectionInterface={this.options.selectionInterface} />
   },

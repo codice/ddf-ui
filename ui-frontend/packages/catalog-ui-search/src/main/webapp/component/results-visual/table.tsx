@@ -12,8 +12,8 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import ExtensionPoints from '../../extension-points'
 import * as React from 'react'
+import TableExport from '../table-export/table-export'
 const lightboxInstance = require('../lightbox/lightbox.view.instance.js')
 import Button from '@material-ui/core/Button'
 const user = require('../singletons/user-instance.js')
@@ -107,7 +107,10 @@ const TableVisual = ({
     )
     setTimeout(() => {
       lightboxInstance.showContent(
-        <ExtensionPoints.tableExport selectionInterface={selectionInterface} />
+        <TableExport
+          selectionInterface={selectionInterface}
+          filteredAttributes={[]}
+        />
       )
     }, 250)
   }

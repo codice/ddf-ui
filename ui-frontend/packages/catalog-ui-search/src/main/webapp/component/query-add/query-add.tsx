@@ -34,11 +34,12 @@ export const queryForms = [
 export default Marionette.LayoutView.extend({
   template() {
     const formType = this.model.get('type')
-    const form = queryForms.find(form => form.id === formType) as {
-      id: string
-      title: string
-      view: any
-    }
+    const form =
+      (queryForms.find(form => form.id === formType) as {
+        id: string
+        title: string
+        view: any
+      }) || queryForms[0]
     return (
       <React.Fragment>
         <form

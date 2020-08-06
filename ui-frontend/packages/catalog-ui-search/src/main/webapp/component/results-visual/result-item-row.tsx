@@ -24,7 +24,8 @@ import { useSelectionOfLazyResult } from '../../js/model/LazyQueryResult/hooks'
 
 const metacardDefinitions = require('../singletons/metacard-definitions.js')
 const user = require('../singletons/user-instance.js')
-const HandleBarsHelpers = require('../../js/HandlebarsHelpers')
+const Common = require('../../js/Common.js')
+import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 
 type Property = {
   class: string
@@ -67,7 +68,7 @@ const RowComponent = ({
   const isSelected = useSelectionOfLazyResult({ lazyResult })
   // console.log(`rendered: ${index}`)
 
-  const visibleProperties: Property[] = visibleHeaders.map(property => {
+  const visibleProperties: Property[] = visibleHeaders.map((property: any) => {
     let value = lazyResult.plain.metacard.properties[property.id]
     if (value === undefined) {
       value = ''
@@ -80,7 +81,7 @@ const RowComponent = ({
       switch (metacardDefinitions.metacardTypes[property.id].type) {
         case 'DATE':
           value = value.map(
-            val =>
+            (val: any) =>
               val !== undefined && val !== ''
                 ? user.getUserReadableDateTime(val)
                 : ''
@@ -103,7 +104,7 @@ const RowComponent = ({
 
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
 
-  const imgsrc = HandleBarsHelpers.getImageSrc(thumbnail)
+  const imgsrc = Common.getImageSrc(thumbnail)
 
   React.useEffect(() => {
     measure()
@@ -136,7 +137,9 @@ const RowComponent = ({
           }}
         >
           {visibleProperties.map((property, index) => {
-            const alias = HandleBarsHelpers.getAlias(property.property)
+            const alias = TypedMetacardDefs.getAlias({
+              attr: property.property,
+            })
 
             return (
               <CellComponent
@@ -177,7 +180,9 @@ const RowComponent = ({
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                {HandleBarsHelpers.getAlias(property.property)}
+                                {TypedMetacardDefs.getAlias({
+                                  attr: property.property,
+                                })}
                               </a>
                             ) : (
                               `${value}`

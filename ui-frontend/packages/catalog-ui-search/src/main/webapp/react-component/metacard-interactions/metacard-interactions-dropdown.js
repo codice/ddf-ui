@@ -76,7 +76,9 @@ const ContainerView = Marionette.ItemView.extend({
     }
   },
   handleModelUpdates() {
-    this.render()
+    if (!this.isDestroyed) {
+      this.render()
+    }
   },
 })
 

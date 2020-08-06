@@ -16,7 +16,7 @@ import MRC from '../../../react-component/marionette-region-container'
 import ResultSelector from '../../result-selector/result-selector'
 import Button from '@material-ui/core/Button'
 import { Dropdown } from '@connexta/atlas/atoms/dropdown'
-import SearchInteractions from '../../../extension-points/search-interactions'
+import SearchInteractions from '../../search-interactions'
 import { BetterClickAwayListener } from '../../better-click-away-listener/better-click-away-listener'
 import MoreVert from '@material-ui/icons/MoreVert'
 import Box from '@material-ui/core/Box'
@@ -176,7 +176,7 @@ const LeftBottom = ({ selectionInterface }: { selectionInterface: any }) => {
         className={`w-full h-full overflow-hidden ${closed ? 'hidden' : ''}`}
         view={QueryAddView}
         viewOptions={{
-          selectionInterface: selectionInterface,
+          selectionInterface,
           model: selectionInterface.getCurrentQuery(),
         }}
       />

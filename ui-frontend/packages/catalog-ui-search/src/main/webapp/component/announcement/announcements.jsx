@@ -24,7 +24,7 @@ var dim = function(Component) {
       super(props)
       this.state = { rect: {} }
     }
-    componentWillReceiveProps() {
+    UNSAFE_componentWillReceiveProps() {
       this.setState({ rect: this.ref.getBoundingClientRect() })
     }
     render() {

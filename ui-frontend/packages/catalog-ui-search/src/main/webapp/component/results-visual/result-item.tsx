@@ -19,7 +19,8 @@ const IconHelper = require('../../js/IconHelper.js')
 const properties = require('../../js/properties.js')
 const user = require('../singletons/user-instance.js')
 const metacardDefinitions = require('../singletons/metacard-definitions.js')
-const HandleBarsHelpers = require('../../js/HandlebarsHelpers.js')
+import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
+
 import { Dropdown } from '@connexta/atlas/atoms/dropdown'
 import Button from '@material-ui/core/Button'
 import LinkIcon from '@material-ui/icons/Link'
@@ -211,7 +212,7 @@ export const ResultItem = ({
   }
 
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
-  const imgsrc = HandleBarsHelpers.getImageSrc(thumbnail)
+  const imgsrc = Common.getImageSrc(thumbnail)
 
   const DynamicActions = () => {
     return (
@@ -356,8 +357,8 @@ export const ResultItem = ({
               <div>
                 <IconSpan
                   className={getIconClassName({ lazyResult })}
-                  data-help={HandleBarsHelpers.getAlias('title')}
-                  title={`${HandleBarsHelpers.getAlias('title')}: ${
+                  data-help={TypedMetacardDefs.getAlias({ attr: 'title' })}
+                  title={`${TypedMetacardDefs.getAlias({ attr: 'title' })}: ${
                     lazyResult.plain.metacard.properties.title
                   }`}
                 >
@@ -382,10 +383,12 @@ export const ResultItem = ({
                   return (
                     <PropertyComponent
                       key={detail.label}
-                      data-help={HandleBarsHelpers.getAlias(detail.label)}
-                      title={`${HandleBarsHelpers.getAlias(detail.label)}: ${
-                        detail.value
-                      }`}
+                      data-help={TypedMetacardDefs.getAlias({
+                        attr: detail.label,
+                      })}
+                      title={`${TypedMetacardDefs.getAlias({
+                        attr: detail.label,
+                      })}: ${detail.value}`}
                     >
                       <span>{detail.value}</span>
                     </PropertyComponent>
@@ -403,10 +406,12 @@ export const ResultItem = ({
                 )}
                 {showSource() ? (
                   <PropertyComponent
-                    title={`${HandleBarsHelpers.getAlias('source-id')}: ${
-                      lazyResult.plain.metacard.properties['source-id']
-                    }`}
-                    data-help={HandleBarsHelpers.getAlias('source-id')}
+                    title={`${TypedMetacardDefs.getAlias({
+                      attr: 'source-id',
+                    })}: ${lazyResult.plain.metacard.properties['source-id']}`}
+                    data-help={TypedMetacardDefs.getAlias({
+                      attr: 'source-id',
+                    })}
                   >
                     {!lazyResult.isRemote() ? (
                       <React.Fragment>

@@ -35,9 +35,14 @@ import NotificationsIcon from '@material-ui/icons/Notifications'
 import PersonIcon from '@material-ui/icons/Person'
 const userInstance = require('../singletons/user-instance.js')
 import UserView from '../../react-component/user'
+import UserSettings, {
+  SettingsComponentType,
+} from '../../react-component/user-settings/user-settings'
+
 const HelpView = require('../help/help.view.js')
 import { GlobalStyles } from './global-styles'
 import CancelDrawing from './cancel-drawing'
+import { PermissiveComponentType } from '../../typescript'
 export const handleBase64EncodedImages = (url: string) => {
   if (url && url.startsWith('data:')) {
     return url
@@ -45,14 +50,20 @@ export const handleBase64EncodedImages = (url: string) => {
   return `data:image/png;base64,${url}`
 }
 
-export type IndividualRouteType = {
+export type RouteShownInNavType = {
   name: string
   shortName: string
-  Icon: any
+  Icon?: any
   routeProps: RouteProps
   linkProps: LinkProps
-  showInNav: boolean
+  showInNav: true
 }
+
+export type RouteNotShownInNavType = {
+  routeProps: RouteProps
+  showInNav: false
+}
+export type IndividualRouteType = RouteShownInNavType | RouteNotShownInNavType
 
 const matchesRoute = ({
   routeInfo,
@@ -65,24 +76,27 @@ const matchesRoute = ({
     routeInfo.routeProps.path &&
     typeof routeInfo.routeProps.path === 'string'
   ) {
-    return routeInfo.routeProps.path.startsWith(pathname)
+    return (
+      pathname.startsWith(`${routeInfo.routeProps.path}/`) ||
+      pathname.endsWith(`${routeInfo.routeProps.path}`)
+    )
   } else if (
     routeInfo.routeProps.path &&
     routeInfo.routeProps.path.constructor === Array
   ) {
-    return routeInfo.routeProps.path.some(possibleRoute =>
-      possibleRoute.startsWith(pathname)
+    return routeInfo.routeProps.path.some(
+      possibleRoute =>
+        pathname.startsWith(`${possibleRoute}/`) ||
+        pathname.endsWith(`${possibleRoute}`)
     )
   }
   return false
 }
 
-type PermissiveComponentType = (() => JSX.Element) | React.ComponentType<any>
-
 type AppPropsType = {
   RouteInformation: IndividualRouteType[]
   NotificationsComponent: PermissiveComponentType
-  SettingsComponent: PermissiveComponentType
+  SettingsComponents: SettingsComponentType
 }
 
 /**
@@ -123,7 +137,7 @@ export const useDefaultHelp = () => {
 const App = ({
   RouteInformation,
   NotificationsComponent,
-  SettingsComponent,
+  SettingsComponents,
 }: AppPropsType) => {
   const location = useLocation()
   const history = useHistory()
@@ -148,6 +162,23 @@ const App = ({
       $(window).resize() // needed for golden layout to resize
     }, 250)
   }
+
+  React.useEffect(
+    () => {
+      setWithinNav(false)
+    },
+    [location]
+  )
+
+  // todo favicon branding
+  // $(window.document).ready(() => {
+  //   window.document.title = properties.branding + ' ' + properties.product
+  //   const favicon = document.querySelector('#favicon') as HTMLAnchorElement
+  //   favicon.href = brandingInformation.topLeftLogoSrc
+  //   favicon.remove()
+  //   document.head.appendChild(favicon)
+  // })
+
   return (
     <>
       {/* Don't move CSSBaseline or GlobalStyles to providers, since we have multiple react roots.   */}
@@ -189,12 +220,6 @@ const App = ({
               } transition-all duration-200 ease-in-out relative z-10`}
               onMouseEnter={() => {
                 setWithinNav(true)
-              }}
-              onMouseOver={() => {
-                setWithinNav(true)
-              }}
-              onMouseOut={() => {
-                setWithinNav(false)
               }}
               onMouseLeave={() => {
                 setWithinNav(false)
@@ -285,7 +310,7 @@ const App = ({
                     <List className="overflow-hidden ">
                       {RouteInformation.filter(
                         routeInfo => routeInfo.showInNav
-                      ).map(routeInfo => {
+                      ).map((routeInfo: RouteShownInNavType) => {
                         const isSelected = matchesRoute({
                           routeInfo,
                           pathname: location.pathname,
@@ -311,16 +336,32 @@ const App = ({
                                   }}
                                 />
                               ) : null}
-                              <Typography
-                                variant="body2"
-                                className={`${
-                                  navOpen ? 'opacity-0' : 'opacity-100'
-                                } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
-                              >
-                                {routeInfo.shortName}
-                              </Typography>
+                              {routeInfo.Icon ? (
+                                <Typography
+                                  variant="body2"
+                                  className={`${
+                                    navOpen ? 'opacity-0' : 'opacity-100'
+                                  } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
+                                >
+                                  {routeInfo.shortName}
+                                </Typography>
+                              ) : (
+                                <Typography
+                                  variant="body2"
+                                  className={`${
+                                    navOpen ? 'opacity-0' : 'opacity-100'
+                                  } transform -translate-x-1/2 -translate-y-1/2 absolute left-1/2 top-1/2 transition duration-200 ease-in-out`}
+                                >
+                                  {routeInfo.shortName}
+                                </Typography>
+                              )}
                             </ListItemIcon>
-                            <ListItemText primary={routeInfo.name} />
+                            <ListItemText
+                              primaryTypographyProps={{
+                                className: 'whitespace-no-wrap',
+                              }}
+                              primary={routeInfo.name}
+                            />
                           </ListItem>
                         )
                       })}
@@ -448,7 +489,9 @@ const App = ({
                                   className: 'min-w-120 max-w-4/5 ',
                                 }}
                               >
-                                <SettingsComponent />
+                                <UserSettings
+                                  SettingsComponents={SettingsComponents}
+                                />
                               </Drawer>
                             </>
                           )

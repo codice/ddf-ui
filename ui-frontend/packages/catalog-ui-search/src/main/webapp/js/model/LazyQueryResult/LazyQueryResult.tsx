@@ -174,11 +174,7 @@ export class LazyQueryResult {
     )[0].url
   }
   hasPreview(): boolean {
-    return (
-      this.plain.actions.filter(
-        action => action.id === 'catalog.data.metacard.html.preview'
-      ).length > 0
-    )
+    return this.plain.metacard.properties['ext.extracted.text'] !== undefined
   }
   matchesFilters(filters: FilterType): boolean {
     return matchesFilters(this.plain.metacard, filters)
@@ -202,7 +198,11 @@ export class LazyQueryResult {
     )
   }
   isRemote(): boolean {
-    return this.plain.metacard.properties['source-id'] !== Sources.localCatalog
+    return (
+      Sources.getHarvested().includes(
+        this.plain.metacard.properties['source-id']
+      ) === false
+    )
   }
   hasGeometry(attribute?: any): boolean {
     return (

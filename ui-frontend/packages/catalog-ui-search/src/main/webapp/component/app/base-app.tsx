@@ -16,7 +16,7 @@ import AboutPageIcon from '@material-ui/icons/Info'
 import SearchIcon from '@material-ui/icons/Search'
 import ImageSearch from '@material-ui/icons/ImageSearch'
 import UserNotifications from '../../react-component/user-notifications/user-notifications'
-import UserSettings from '../../react-component/user-settings/user-settings'
+import { BaseSettings } from '../../react-component/user-settings/user-settings'
 
 const RouteInformation = [
   {
@@ -100,7 +100,7 @@ const BaseApp = () => {
     <App
       RouteInformation={RouteInformation}
       NotificationsComponent={UserNotifications}
-      SettingsComponent={UserSettings}
+      SettingsComponents={BaseSettings}
     />
   )
 }

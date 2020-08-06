@@ -19,7 +19,7 @@ const _ = require('underscore')
 const $ = require('jquery')
 const template = require('./property.hbs')
 const CustomElements = require('../../js/CustomElements.js')
-const BulkInputView = require('../input/bulk/input-bulk.view.js')
+const BulkInputView = require('../input/bulk/input-bulk.view')
 const Property = require('./property')
 
 module.exports = Marionette.LayoutView.extend(

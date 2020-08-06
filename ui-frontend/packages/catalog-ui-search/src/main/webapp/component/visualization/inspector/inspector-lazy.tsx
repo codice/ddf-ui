@@ -19,7 +19,9 @@ const LazyInspector = ({ selectionInterface }: Props) => {
   const backboneModels = Object.values(selectedResults).map(result => {
     return result.getBackbone()
   })
-  selectionInterface.setSelectedResults(backboneModels)
+  React.useEffect(() => {
+    selectionInterface.setSelectedResults(backboneModels)
+  })
   return (
     <MRC
       key="inspector"
