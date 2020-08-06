@@ -14,7 +14,6 @@
  **/
 import * as React from 'react'
 import * as Marionette from 'backbone.marionette'
-import styled from 'styled-components'
 const intervalToCheck = 20
 import { hot } from 'react-hot-loader'
 
@@ -38,6 +37,9 @@ export default hot(module)(
     region: any
     regionRef = React.createRef()
     showComponentInRegion() {
+      if (this.region.el.parentNode === null) {
+        return // destroyed
+      }
       if (this.props.view._isMarionetteView) {
         this.region.show(this.props.view, {
           replaceElement: this.props.replaceElement,
@@ -94,6 +96,9 @@ export default hot(module)(
         className,
         style,
         defaultStyling = true,
+        replaceElement,
+        view,
+        viewOptions,
         ...otherProps
       } = this.props
       return (

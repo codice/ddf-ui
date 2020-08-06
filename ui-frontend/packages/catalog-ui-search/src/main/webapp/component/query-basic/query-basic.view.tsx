@@ -34,9 +34,9 @@ import query from '../../react-component/utils/query'
 const METADATA_CONTENT_TYPE = 'metadata-content-type'
 import { Drawing } from '../singletons/drawing'
 
-function isNested(filter) {
+function isNested(filter: any) {
   let nested = false
-  filter.filters.forEach(subfilter => {
+  filter.filters.forEach((subfilter: any) => {
     nested = nested || subfilter.filters
   })
   return nested
@@ -67,9 +67,9 @@ const getMatchTypesPresentInResults = memoize(async () => {
   })
   const facets = json.facets[matchTypeAttr] || []
   return facets
-    .map(facet => facet.value)
-    .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
-    .map(value => ({
+    .map((facet: any) => facet.value)
+    .sort((a: any, b: any) => a.toLowerCase().localeCompare(b.toLowerCase()))
+    .map((value: any) => ({
       label: value,
       value,
       class: 'icon ' + IconHelper.getClassByName(value),
@@ -79,22 +79,26 @@ const getMatchTypesPresentInResults = memoize(async () => {
 function getAllValidValuesForMatchTypeAttribute() {
   const matchTypeAttr = getMatchTypeAttribute()
   return metacardDefinitions.enums[matchTypeAttr]
-    ? metacardDefinitions.enums[matchTypeAttr].reduce((enumMap, value) => {
-        enumMap[value] = {
-          label: value,
-          value,
-          class: 'icon ' + IconHelper.getClassByName(value),
-        }
-        return enumMap
-      }, {})
+    ? metacardDefinitions.enums[matchTypeAttr].reduce(
+        (enumMap: any, value: any) => {
+          enumMap[value] = {
+            label: value,
+            value,
+            class: 'icon ' + IconHelper.getClassByName(value),
+          }
+          return enumMap
+        },
+        {}
+      )
     : {}
 }
 
 function getPredefinedMatchTypes() {
   const matchTypesMap = sources
     .toJSON()
-    .flatMap(source => source.contentTypes)
-    .reduce((enumMap, contentType) => {
+    // @ts-ignore
+    .flatMap((source: any) => source.contentTypes)
+    .reduce((enumMap: any, contentType: any) => {
       if (contentType.value && !enumMap[contentType.value]) {
         enumMap[contentType.value] = {
           label: contentType.name,
@@ -126,7 +130,7 @@ const NoMatchTypesView = Marionette.ItemView.extend({
   },
 })
 
-function isTypeLimiter(filter) {
+function isTypeLimiter(filter: any) {
   const typesFound = _.uniq(filter.filters.map(CQLUtils.getProperty))
   const metadataContentTypeSupported = Boolean(
     metacardDefinitions.metacardTypes[METADATA_CONTENT_TYPE]
@@ -143,20 +147,20 @@ function isTypeLimiter(filter) {
 }
 
 // strip extra quotes
-const stripQuotes = property => {
+const stripQuotes = (property: any) => {
   return property.replace(/^"(.+(?="$))"$/, '$1')
 }
 
-function isAnyDate(filter) {
+function isAnyDate(filter: any) {
   if (!filter.filters) {
     return (
       metacardDefinitions.metacardTypes[stripQuotes(filter.property)].type ===
       'DATE'
     )
   }
-  let typesFound = {}
-  let valuesFound = {}
-  filter.filters.forEach(subfilter => {
+  let typesFound = {} as any
+  let valuesFound = {} as any
+  filter.filters.forEach((subfilter: any) => {
     typesFound[subfilter.type] = true
     valuesFound[subfilter.value] = true
   })
@@ -165,7 +169,9 @@ function isAnyDate(filter) {
   if (typesFound.length > 1 || valuesFound.length > 1) {
     return false
   } else {
-    const attributes = filter.filters.map(subfilter => subfilter.property)
+    const attributes = filter.filters.map(
+      (subfilter: any) => subfilter.property
+    )
     return (
       metacardDefinitions.metacardTypes[stripQuotes(attributes[0])].type ===
       'DATE'
@@ -173,10 +179,10 @@ function isAnyDate(filter) {
   }
 }
 
-function handleAnyDateFilter(propertyValueMap, filter) {
+function handleAnyDateFilter(propertyValueMap: any, filter: any) {
   propertyValueMap['anyDate'] = propertyValueMap['anyDate'] || []
   let existingFilter = propertyValueMap['anyDate'].filter(
-    anyDateFilter =>
+    (anyDateFilter: any) =>
       anyDateFilter.type ===
       (filter.filters ? filter.filters[0].type : filter.type)
   )[0]
@@ -188,7 +194,7 @@ function handleAnyDateFilter(propertyValueMap, filter) {
   }
   existingFilter.property = existingFilter.property.concat(
     filter.filters
-      ? filter.filters.map(subfilter => stripQuotes(subfilter.property))
+      ? filter.filters.map((subfilter: any) => stripQuotes(subfilter.property))
       : [stripQuotes(filter.property)]
   )
   existingFilter.type = filter.filters ? filter.filters[0].type : filter.type
@@ -200,8 +206,8 @@ function handleAnyDateFilter(propertyValueMap, filter) {
   }
 }
 
-function translateFilterToBasicMap(filter) {
-  const propertyValueMap = {}
+function translateFilterToBasicMap(filter: any) {
+  const propertyValueMap = {} as any
   let downConversion = false
 
   if (!filter.filters && isAnyDate(filter)) {
@@ -209,7 +215,7 @@ function translateFilterToBasicMap(filter) {
   }
 
   if (filter.filters) {
-    filter.filters.forEach(filter => {
+    filter.filters.forEach((filter: any) => {
       if (!filter.filters && isAnyDate(filter)) {
         handleAnyDateFilter(propertyValueMap, filter)
       } else if (!filter.filters) {
@@ -217,7 +223,7 @@ function translateFilterToBasicMap(filter) {
           propertyValueMap[CQLUtils.getProperty(filter)] || []
         if (
           propertyValueMap[CQLUtils.getProperty(filter)].filter(
-            existingFilter => existingFilter.type === filter.type
+            (existingFilter: any) => existingFilter.type === filter.type
           ).length === 0
         ) {
           propertyValueMap[CQLUtils.getProperty(filter)].push(filter)
@@ -227,7 +233,7 @@ function translateFilterToBasicMap(filter) {
       } else if (!isNested(filter) && isTypeLimiter(filter)) {
         propertyValueMap[CQLUtils.getProperty(filter.filters[0])] =
           propertyValueMap[CQLUtils.getProperty(filter.filters[0])] || []
-        filter.filters.forEach(subfilter => {
+        filter.filters.forEach((subfilter: any) => {
           propertyValueMap[CQLUtils.getProperty(filter.filters[0])].push(
             subfilter
           )
@@ -247,7 +253,7 @@ function translateFilterToBasicMap(filter) {
   }
 }
 
-function getFilterTree(model) {
+function getFilterTree(model: any) {
   if (typeof model.get('filterTree') === 'object') {
     return model.get('filterTree')
   }
@@ -261,7 +267,7 @@ export default Marionette.LayoutView.extend({
         <form
           target="autocomplete"
           action="/search/catalog/blank.html"
-          novalidate
+          noValidate
         >
           <div className="editor-properties">
             <div
@@ -362,9 +368,9 @@ export default Marionette.LayoutView.extend({
       })
     )
   },
-  getFilterValuesForAttribute(attribute) {
+  getFilterValuesForAttribute(attribute: any) {
     return this.filter[attribute]
-      ? this.filter[attribute].map(subfilter => subfilter.value)
+      ? this.filter[attribute].map((subfilter: any) => subfilter.value)
       : []
   },
   getCurrentSpecificTypesValue() {
@@ -534,7 +540,7 @@ export default Marionette.LayoutView.extend({
     )
   },
   turnOffEdit() {
-    this.regionManager.forEach(region => {
+    this.regionManager.forEach((region: any) => {
       if (region.currentView && region.currentView.turnOffEditing) {
         region.currentView.turnOffEditing()
       }
@@ -542,14 +548,14 @@ export default Marionette.LayoutView.extend({
   },
   edit() {
     this.$el.addClass('is-editing')
-    this.regionManager.forEach(region => {
+    this.regionManager.forEach((region: any) => {
       if (region.currentView && region.currentView.turnOnEditing) {
         region.currentView.turnOnEditing()
       }
     })
     const tabbable = _.filter(
       this.$el.find('[tabindex], input, button'),
-      element => element.offsetParent !== null
+      (element: any) => element.offsetParent !== null
     )
     if (tabbable.length > 0) {
       $(tabbable[0]).focus()
@@ -562,7 +568,7 @@ export default Marionette.LayoutView.extend({
     this.$el.removeClass('is-editing')
     this.onBeforeShow()
   },
-  handleDownConversion(downConversion) {
+  handleDownConversion(downConversion: any) {
     this.$el.toggleClass('is-down-converted', downConversion)
   },
   save() {
@@ -584,7 +590,7 @@ export default Marionette.LayoutView.extend({
       filters.push(CQLUtils.generateFilter(matchCase, 'anyText', text))
     }
 
-    this.basicTime.currentView.constructFilter().forEach(timeFilter => {
+    this.basicTime.currentView.constructFilter().forEach((timeFilter: any) => {
       filters.push(timeFilter)
     })
 
@@ -605,11 +611,11 @@ export default Marionette.LayoutView.extend({
         ? this.basicTypeSpecific.currentView.model.getValue()[0]
         : []
     if (types === 'specific' && specificTypes.length !== 0) {
-      const filterAttributeIsSupported = filter => filter !== null
+      const filterAttributeIsSupported = (filter: any) => filter !== null
       const typeFilter = {
         type: 'OR',
         filters: specificTypes
-          .map(specificType => [
+          .map((specificType: any) => [
             CQLUtils.generateFilter(
               'ILIKE',
               METADATA_CONTENT_TYPE,

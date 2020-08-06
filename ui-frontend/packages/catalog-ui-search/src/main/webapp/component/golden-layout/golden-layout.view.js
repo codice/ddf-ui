@@ -31,11 +31,11 @@ const DropdownModel = require('../dropdown/dropdown.js')
 const sanitize = require('sanitize-html')
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
-import ExtensionPoints from '../../extension-points'
 import AllOutIcon from '@material-ui/icons/AllOut'
 import MinimizeIcon from '@material-ui/icons/Minimize'
 import CloseIcon from '@material-ui/icons/Close'
 import { providers as Providers } from '../../extension-points/providers'
+import { Visualizations } from '../visualization/visualizations'
 
 const treeMap = (obj, fn, path = []) => {
   if (Array.isArray(obj)) {
@@ -324,7 +324,7 @@ module.exports = Marionette.LayoutView.extend({
     return sanitizeTree(currentConfig)
   },
   registerGoldenLayoutComponents() {
-    ExtensionPoints.visualizations.forEach(viz => {
+    Visualizations.forEach(viz => {
       registerComponent(this, viz.id, viz.view, viz.options, viz)
     })
   },

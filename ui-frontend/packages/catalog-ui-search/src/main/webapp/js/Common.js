@@ -171,28 +171,6 @@ module.exports = {
       }
     }
   },
-  getFileSizeGuaranteedInt(item) {
-    if (_.isUndefined(item)) {
-      return 'Unknown Size'
-    }
-    const bytes = parseInt(item, 10)
-    if (isNaN(bytes)) {
-      return item
-    }
-    let size,
-      index,
-      type = ['bytes', 'KB', 'MB', 'GB', 'TB']
-    if (bytes === 0) {
-      return '0 bytes'
-    } else {
-      index = Math.floor(Math.log(bytes) / Math.log(1024))
-      if (index > 4) {
-        index = 4
-      }
-      size = (bytes / Math.pow(1024, index)).toFixed(index < 2 ? 0 : 1)
-    }
-    return size + ' ' + type[index]
-  },
   //can be deleted once histogram changes are merged
   getHumanReadableDateTime(date) {
     return moment(date).format(dateTimeFormats['24']['datetimefmt'])

@@ -14,15 +14,15 @@
  **/
 
 const _ = require('underscore')
-const template = require('./input-bulk.hbs')
-const InputView = require('../input.view.js')
+const InputView = require('../input.view')
 const MultivalueView = require('../../multivalue/multivalue.view.js')
 const DropdownView = require('../../dropdown/dropdown.view.js')
 const Common = require('../../../js/Common.js')
 const moment = require('moment')
 const user = require('../../singletons/user-instance.js')
+import * as React from 'react'
 
-function sortNoValueToTop(a, b) {
+function sortNoValueToTop(a: any, b: any) {
   if (a.value === 'bulkDefault') {
     return -1
   }
@@ -46,7 +46,86 @@ function sortNoValueToTop(a, b) {
 
 module.exports = InputView.extend({
   className: 'is-bulk',
-  template,
+  template(data: any) {
+    return (
+      <React.Fragment>
+        <div className="if-editing">
+          <div className="enum-region" />
+        </div>
+        <div className="if-viewing">
+          <label
+            className="value-list-header"
+            data-help="This indicates there are multiple values for this attribute among the results."
+          >
+            (Multiple Values)
+          </label>
+          <div
+            className={`value-list is-list ${
+              data.isThumbnail ? 'is-thumbnail' : ''
+            }`}
+          >
+            {data.values.map((subvalue: any) => {
+              return (
+                <div
+                  className={`list-value ${
+                    subvalue.hasNoValue ? 'hasNoValue' : ''
+                  }`}
+                  data-ids={data.ids}
+                >
+                  <div className="cell-value">
+                    {data.isThumbnail ? (
+                      <React.Fragment>
+                        {subvalue.value.map((subsubvalue: any) => {
+                          return (
+                            <div className="value-subvalue" title={subsubvalue}>
+                              {subsubvalue ? (
+                                <img src={subsubvalue} />
+                              ) : (
+                                subsubvalue
+                              )}
+                            </div>
+                          )
+                        })}
+                      </React.Fragment>
+                    ) : (
+                      <React.Fragment>
+                        {subvalue.value.map((subsubvalue: any) => {
+                          return (
+                            <div className="value-subvalue" title={subsubvalue}>
+                              {subsubvalue &&
+                              subsubvalue.toString().substring(0, 4) ===
+                                'http' ? (
+                                <a href={subsubvalue} target="_blank">
+                                  {subsubvalue}
+                                </a>
+                              ) : (
+                                subsubvalue
+                              )}
+                            </div>
+                          )
+                        })}
+                      </React.Fragment>
+                    )}
+                  </div>
+                  <span
+                    className="cell-hits"
+                    title={`${subvalue.hits} result(s) have this value`}
+                    data-help="This number represents how many results have this value."
+                  >
+                    ({subvalue.hits})
+                  </span>
+                  <span className="cell-validation fa fa-exclamation-triangle is-hidden" />
+                </div>
+              )
+            })}
+          </div>
+        </div>
+        <div className="if-homogeneous if-other">
+          <div className="input-other" />
+        </div>
+      </React.Fragment>
+    )
+  },
   regions: {
     enumRegion: '.enum-region',
     otherInput: '.input-other',
@@ -57,20 +136,27 @@ module.exports = InputView.extend({
       this.enumRegion.currentView.model,
       'change:value',
       function() {
+        // @ts-ignore
         const value = this.enumRegion.currentView.model.get('value')[0]
         switch (value) {
           case 'bulkDefault':
+            // @ts-ignore
             this.model.revert()
             break
           case 'bulkCustom':
+            // @ts-ignore
             this.model.setValue(this.otherInput.currentView.model.getValue())
+            // @ts-ignore
             this.model.set('hasChanged', true)
             break
           default:
+            // @ts-ignore
             this.model.setValue(value)
+            // @ts-ignore
             this.model.set('hasChanged', true)
             break
         }
+        // @ts-ignore
         this.handleChange()
       }
     )
@@ -78,10 +164,14 @@ module.exports = InputView.extend({
       this.otherInput.currentView.model,
       'change:value',
       function() {
+        // @ts-ignore
         this.model.setValue(this.otherInput.currentView.model.getValue())
+        // @ts-ignore
         if (!this.model.isHomogeneous()) {
+          // @ts-ignore
           this.model.set('hasChanged', true)
         }
+        // @ts-ignore
         this.handleChange()
       }
     )
@@ -99,11 +189,11 @@ module.exports = InputView.extend({
     modelJSON.isThumbnail = type === 'thumbnail'
     switch (type) {
       case 'date':
-        modelJSON.values = _.map(modelJSON.values, valueInfo => {
+        modelJSON.values = _.map(modelJSON.values, (valueInfo: any) => {
           if (valueInfo.hasNoValue) {
             valueInfo.value[0] = 'No Value'
           } else {
-            valueInfo.value = valueInfo.value.map(value =>
+            valueInfo.value = valueInfo.value.map((value: any) =>
               user.getUserReadableDateTime(value)
             )
             return valueInfo
@@ -112,11 +202,11 @@ module.exports = InputView.extend({
         })
         break
       case 'thumbnail':
-        modelJSON.values = _.map(modelJSON.values, valueInfo => {
+        modelJSON.values = _.map(modelJSON.values, (valueInfo: any) => {
           if (valueInfo.hasNoValue) {
             valueInfo.value[0] = 'No Value'
           } else {
-            valueInfo.value = valueInfo.value.map(value =>
+            valueInfo.value = valueInfo.value.map((value: any) =>
               Common.getImageSrc(value)
             )
             return valueInfo
@@ -125,7 +215,7 @@ module.exports = InputView.extend({
         })
         break
       default:
-        modelJSON.values = _.map(modelJSON.values, valueInfo => {
+        modelJSON.values = _.map(modelJSON.values, (valueInfo: any) => {
           if (valueInfo.hasNoValue) {
             valueInfo.value[0] = 'No Value'
           }
@@ -149,16 +239,16 @@ module.exports = InputView.extend({
         value: 'bulkCustom',
         help: 'Select this to enter a custom value.',
       },
-    ]
-    _.forEach(this.model.get('values'), valueInfo => {
+    ] as any[]
+    _.forEach(this.model.get('values'), (valueInfo: any) => {
       let value = valueInfo.value
       let label = valueInfo.hasNoValue ? 'No Value' : value
       const type = this.model.getCalculatedType()
       if (!valueInfo.hasNoValue) {
         switch (type) {
           case 'date':
-            label = label.map(text => user.getUserReadableDateTime(text))
-            value = value.map(text => moment(text))
+            label = label.map((text: any) => user.getUserReadableDateTime(text))
+            value = value.map((text: any) => moment(text))
             break
           default:
             break

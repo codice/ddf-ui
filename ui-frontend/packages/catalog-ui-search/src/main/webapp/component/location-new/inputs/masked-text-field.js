@@ -32,7 +32,8 @@ class MaskedTextField extends React.Component {
     if (
       value === undefined ||
       !value.includes('.') ||
-      (((event && event.type === 'input') || this.prevEvent.type === 'input') &&
+      (((event && event.type === 'input') ||
+        (this.prevEvent && this.prevEvent.type === 'input')) &&
         this.prevEvent.target.id === this.props.label)
     ) {
       return value

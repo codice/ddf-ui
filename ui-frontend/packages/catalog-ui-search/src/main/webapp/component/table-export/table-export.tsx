@@ -52,14 +52,14 @@ export function getStartIndex(
   exportSize: any,
   selectionInterface: any
 ) {
-  return exportSize === 'visible'
-    ? selectionInterface
-        .getCurrentQuery()
-        .get('result')
-        .get('status')
-        .find((status: any) => status.id === src)
-        .get('start')
-    : 1
+  const result = selectionInterface.getCurrentQuery().get('result')
+  return 1
+  //todo fix this
+  // return exportSize === 'visible'
+  //   ? Object.values(result.get('lazyResults').status as { [key: string]: any })
+  //       .find((status: any) => status.id === src)
+  //       .get('start')
+  //   : 1
 }
 function getSrcs(selectionInterface: any) {
   const srcs = selectionInterface.getCurrentQuery().get('src')
@@ -71,13 +71,11 @@ export function getSrcCount(
   exportSize: any,
   selectionInterface: any
 ) {
+  const result = selectionInterface.getCurrentQuery().get('result')
   return exportSize === 'visible'
-    ? selectionInterface
-        .getCurrentQuery()
-        .get('result')
-        .get('status')
-        .find((status: any) => status.id === src)
-        .get('count')
+    ? Object.values(result.get('lazyResults').status as {
+        [key: string]: any
+      }).find((status: any) => status.id === src).count
     : count
 }
 function getColumnOrder(): string[] {
@@ -136,8 +134,8 @@ function getExportCount({
   }
   const result = selectionInterface.getCurrentQuery().get('result')
   return exportSize === 'all'
-    ? getHits(result.get('status').toJSON())
-    : result.get('results').length
+    ? getHits(Object.values(result.get('lazyResults').status))
+    : Object.keys(result.get('lazyResults').results).length
 }
 function getSorts(selectionInterface: any) {
   return selectionInterface.getCurrentQuery().get('sorts')
@@ -147,7 +145,7 @@ export const getWarning = (exportCountInfo: ExportCountInfo): string => {
   const result = exportCountInfo.selectionInterface
     .getCurrentQuery()
     .get('result')
-  const totalHits = getHits(result.get('status').toJSON())
+  const totalHits = getHits(Object.values(result.get('lazyResults').status))
   const limitWarning = `You cannot export more than the administrator configured limit of ${
     properties.exportResultLimit
   }.`
