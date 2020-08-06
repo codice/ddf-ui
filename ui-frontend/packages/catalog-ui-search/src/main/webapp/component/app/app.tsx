@@ -45,19 +45,20 @@ export const handleBase64EncodedImages = (url: string) => {
   return `data:image/png;base64,${url}`
 }
 
-export type IndividualRouteType =
-  | {
-      name: string
-      shortName: string
-      Icon: any
-      routeProps: RouteProps
-      linkProps: LinkProps
-      showInNav: true
-    }
-  | {
-      routeProps: RouteProps
-      showInNav: false
-    }
+export type RouteShownInNavType = {
+  name: string
+  shortName: string
+  Icon?: any
+  routeProps: RouteProps
+  linkProps: LinkProps
+  showInNav: true
+}
+
+export type RouteNotShownInNavType = {
+  routeProps: RouteProps
+  showInNav: false
+}
+export type IndividualRouteType = RouteShownInNavType | RouteNotShownInNavType
 
 const matchesRoute = ({
   routeInfo,
@@ -301,7 +302,7 @@ const App = ({
                     <List className="overflow-hidden ">
                       {RouteInformation.filter(
                         routeInfo => routeInfo.showInNav
-                      ).map(routeInfo => {
+                      ).map((routeInfo: RouteShownInNavType) => {
                         const isSelected = matchesRoute({
                           routeInfo,
                           pathname: location.pathname,
@@ -327,14 +328,25 @@ const App = ({
                                   }}
                                 />
                               ) : null}
-                              <Typography
-                                variant="body2"
-                                className={`${
-                                  navOpen ? 'opacity-0' : 'opacity-100'
-                                } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
-                              >
-                                {routeInfo.shortName}
-                              </Typography>
+                              {routeInfo.Icon ? (
+                                <Typography
+                                  variant="body2"
+                                  className={`${
+                                    navOpen ? 'opacity-0' : 'opacity-100'
+                                  } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
+                                >
+                                  {routeInfo.shortName}
+                                </Typography>
+                              ) : (
+                                <Typography
+                                  variant="body2"
+                                  className={`${
+                                    navOpen ? 'opacity-0' : 'opacity-100'
+                                  } transform -translate-x-1/2 -translate-y-1/2 absolute left-1/2 top-1/2 transition duration-200 ease-in-out`}
+                                >
+                                  {routeInfo.shortName}
+                                </Typography>
+                              )}
                             </ListItemIcon>
                             <ListItemText
                               primaryTypographyProps={{
