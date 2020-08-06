@@ -153,6 +153,23 @@ const App = ({
       $(window).resize() // needed for golden layout to resize
     }, 250)
   }
+
+  React.useEffect(
+    () => {
+      setWithinNav(false)
+    },
+    [location]
+  )
+
+  // todo favicon branding
+  // $(window.document).ready(() => {
+  //   window.document.title = properties.branding + ' ' + properties.product
+  //   const favicon = document.querySelector('#favicon') as HTMLAnchorElement
+  //   favicon.href = brandingInformation.topLeftLogoSrc
+  //   favicon.remove()
+  //   document.head.appendChild(favicon)
+  // })
+
   return (
     <>
       {/* Don't move CSSBaseline or GlobalStyles to providers, since we have multiple react roots.   */}
@@ -194,12 +211,6 @@ const App = ({
               } transition-all duration-200 ease-in-out relative z-10`}
               onMouseEnter={() => {
                 setWithinNav(true)
-              }}
-              onMouseOver={() => {
-                setWithinNav(true)
-              }}
-              onMouseOut={() => {
-                setWithinNav(false)
               }}
               onMouseLeave={() => {
                 setWithinNav(false)
