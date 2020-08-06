@@ -76,13 +76,18 @@ const matchesRoute = ({
     routeInfo.routeProps.path &&
     typeof routeInfo.routeProps.path === 'string'
   ) {
-    return routeInfo.routeProps.path.startsWith(pathname)
+    return (
+      pathname.startsWith(`${routeInfo.routeProps.path}/`) ||
+      pathname.endsWith(`${routeInfo.routeProps.path}`)
+    )
   } else if (
     routeInfo.routeProps.path &&
     routeInfo.routeProps.path.constructor === Array
   ) {
-    return routeInfo.routeProps.path.some(possibleRoute =>
-      possibleRoute.startsWith(pathname)
+    return routeInfo.routeProps.path.some(
+      possibleRoute =>
+        pathname.startsWith(`${possibleRoute}/`) ||
+        pathname.endsWith(`${possibleRoute}`)
     )
   }
   return false

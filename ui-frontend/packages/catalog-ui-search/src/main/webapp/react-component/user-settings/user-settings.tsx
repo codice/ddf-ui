@@ -31,7 +31,6 @@ import Divider from '@material-ui/core/Divider'
 import { useLocation } from 'react-router-dom'
 import queryString from 'query-string'
 import { Link } from '../../component/link/link'
-import { PermissiveComponentType } from '../../typescript'
 
 const ThemeGlobalStyle = createGlobalStyle`
 .MuiBackdrop-root {
@@ -42,18 +41,20 @@ const ThemeGlobalStyle = createGlobalStyle`
 }
 `
 
+type IndividualSettingsComponentType = (
+  { SettingsComponents }: { SettingsComponents: SettingsComponentType }
+) => JSX.Element
+
 export type SettingsComponentType = {
   [key: string]: {
-    component: (
-      { SettingsComponents }: { SettingsComponents: SettingsComponentType }
-    ) => React.ReactNode
+    component: IndividualSettingsComponentType
   }
 }
 
 export const BaseSettings = {
   Settings: {
-    component: () => {
-      return <SettingsScreen />
+    component: ({ SettingsComponents }) => {
+      return <SettingsScreen SettingsComponents={SettingsComponents} />
     },
   },
   Theme: {
@@ -88,12 +89,16 @@ export const BaseSettings = {
   },
 } as SettingsComponentType
 
-const SettingsScreen = () => {
+const SettingsScreen = ({
+  SettingsComponents,
+}: {
+  SettingsComponents: SettingsComponentType
+}) => {
   const location = useLocation()
   const queryParams = queryString.parse(location.search)
   return (
     <Grid container direction="column" className="w-full h-full">
-      {Object.keys(BaseSettings)
+      {Object.keys(SettingsComponents)
         .filter(name => name !== 'Settings')
         .map(name => {
           return (
@@ -119,7 +124,7 @@ const getName = ({
   CurrentSetting,
   SettingsComponents,
 }: {
-  CurrentSetting: PermissiveComponentType
+  CurrentSetting: IndividualSettingsComponentType
   SettingsComponents: SettingsComponentType
 }) => {
   const matchedSetting = Object.entries(SettingsComponents).find(entry => {
@@ -131,14 +136,20 @@ const getName = ({
   return ''
 }
 
-const getComponent = (name: string) => {
-  const matchedSetting = Object.entries(BaseSettings).find(entry => {
+const getComponent = ({
+  name,
+  SettingsComponents,
+}: {
+  name: string
+  SettingsComponents: SettingsComponentType
+}) => {
+  const matchedSetting = Object.entries(SettingsComponents).find(entry => {
     return entry[0] === name
   })
   if (matchedSetting) {
     return matchedSetting[1].component
   }
-  return BaseSettings.Settings.component
+  return SettingsComponents.Settings.component
 }
 
 type UserSettingsProps = {
@@ -149,8 +160,10 @@ const UserSettings = ({ SettingsComponents }: UserSettingsProps) => {
   const location = useLocation()
   const queryParams = queryString.parse(location.search)
 
-  const CurrentSetting = getComponent((queryParams['global-settings'] ||
-    '') as string)
+  const CurrentSetting = getComponent({
+    name: (queryParams['global-settings'] || '') as string,
+    SettingsComponents,
+  })
   const name = getName({ CurrentSetting, SettingsComponents })
   return (
     <Grid container direction="column" className="w-full h-full" wrap="nowrap">
