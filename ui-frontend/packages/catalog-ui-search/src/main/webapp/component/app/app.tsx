@@ -35,9 +35,14 @@ import NotificationsIcon from '@material-ui/icons/Notifications'
 import PersonIcon from '@material-ui/icons/Person'
 const userInstance = require('../singletons/user-instance.js')
 import UserView from '../../react-component/user'
+import UserSettings, {
+  SettingsComponentType,
+} from '../../react-component/user-settings/user-settings'
+
 const HelpView = require('../help/help.view.js')
 import { GlobalStyles } from './global-styles'
 import CancelDrawing from './cancel-drawing'
+import { PermissiveComponentType } from '../../typescript'
 export const handleBase64EncodedImages = (url: string) => {
   if (url && url.startsWith('data:')) {
     return url
@@ -83,12 +88,10 @@ const matchesRoute = ({
   return false
 }
 
-type PermissiveComponentType = (() => JSX.Element) | React.ComponentType<any>
-
 type AppPropsType = {
   RouteInformation: IndividualRouteType[]
   NotificationsComponent: PermissiveComponentType
-  SettingsComponent: PermissiveComponentType
+  SettingsComponents: SettingsComponentType
 }
 
 /**
@@ -129,7 +132,7 @@ export const useDefaultHelp = () => {
 const App = ({
   RouteInformation,
   NotificationsComponent,
-  SettingsComponent,
+  SettingsComponents,
 }: AppPropsType) => {
   const location = useLocation()
   const history = useHistory()
@@ -481,7 +484,9 @@ const App = ({
                                   className: 'min-w-120 max-w-4/5 ',
                                 }}
                               >
-                                <SettingsComponent />
+                                <UserSettings
+                                  SettingsComponents={SettingsComponents}
+                                />
                               </Drawer>
                             </>
                           )

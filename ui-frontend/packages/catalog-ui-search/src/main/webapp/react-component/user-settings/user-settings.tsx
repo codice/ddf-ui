@@ -31,8 +31,7 @@ import Divider from '@material-ui/core/Divider'
 import { useLocation } from 'react-router-dom'
 import queryString from 'query-string'
 import { Link } from '../../component/link/link'
-
-type ComponentType = () => JSX.Element
+import { PermissiveComponentType } from '../../typescript'
 
 const ThemeGlobalStyle = createGlobalStyle`
 .MuiBackdrop-root {
@@ -42,6 +41,14 @@ const ThemeGlobalStyle = createGlobalStyle`
   transform: scale(.8) translateY(40%) translateX(-10%) !important;
 }
 `
+
+export type SettingsComponentType = {
+  [key: string]: {
+    component: (
+      { SettingsComponents }: { SettingsComponents: SettingsComponentType }
+    ) => React.ReactNode
+  }
+}
 
 export const BaseSettings = {
   Settings: {
@@ -79,11 +86,7 @@ export const BaseSettings = {
       return <TimeSettings />
     },
   },
-} as {
-  [key: string]: {
-    component: ComponentType
-  }
-}
+} as SettingsComponentType
 
 const SettingsScreen = () => {
   const location = useLocation()
@@ -112,9 +115,15 @@ const SettingsScreen = () => {
   )
 }
 
-const getName = (setting: ComponentType) => {
-  const matchedSetting = Object.entries(BaseSettings).find(entry => {
-    return entry[1].component === setting
+const getName = ({
+  CurrentSetting,
+  SettingsComponents,
+}: {
+  CurrentSetting: PermissiveComponentType
+  SettingsComponents: SettingsComponentType
+}) => {
+  const matchedSetting = Object.entries(SettingsComponents).find(entry => {
+    return entry[1].component === CurrentSetting
   })
   if (matchedSetting) {
     return matchedSetting[0]
@@ -132,13 +141,17 @@ const getComponent = (name: string) => {
   return BaseSettings.Settings.component
 }
 
-const UserSettings = () => {
+type UserSettingsProps = {
+  SettingsComponents: SettingsComponentType
+}
+
+const UserSettings = ({ SettingsComponents }: UserSettingsProps) => {
   const location = useLocation()
   const queryParams = queryString.parse(location.search)
 
   const CurrentSetting = getComponent((queryParams['global-settings'] ||
     '') as string)
-  const name = getName(CurrentSetting)
+  const name = getName({ CurrentSetting, SettingsComponents })
   return (
     <Grid container direction="column" className="w-full h-full" wrap="nowrap">
       <Grid item className="w-full p-3">
@@ -173,7 +186,7 @@ const UserSettings = () => {
         <Divider />
       </Grid>
       <Grid item className="w-full h-full p-3">
-        <CurrentSetting />
+        <CurrentSetting SettingsComponents={SettingsComponents} />
       </Grid>
     </Grid>
   )
