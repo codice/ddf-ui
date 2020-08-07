@@ -38,6 +38,42 @@ const properties = {
   defaultFlytoHeight: 15000.0,
   CQL_DATE_FORMAT: 'YYYY-MM-DD[T]HH:mm:ss[Z]',
   ui: {},
+  basicSearchTemporalSelectionDefault: [
+    'created',
+    'effective',
+    'modified',
+    'metacard.created',
+    'metacard.modified',
+  ],
+  imageryProviders: [
+    {
+      type: 'SI',
+      url: './images/natural_earth_50m.png',
+      parameters: {
+        imageSize: [10800, 5400],
+      },
+      alpha: 1,
+      name: 'Default Layer',
+      show: true,
+      proxyEnabled: true,
+      order: 0,
+    },
+  ],
+  iconConfig: {},
+  i18n: {
+    'sources.unavailable':
+      '{amountDown} {amountDown, plural, one {source is} other {sources are}} currently down',
+    'sources.polling.error.title': 'Error Polling Sources',
+    'search.sources.selected.none.message':
+      'No sources are currently selected. Edit the search and select at least one source.',
+    'sources.available': 'All sources are currently up',
+    'sources.title': 'Sources',
+    'sources.polling.error.message':
+      'Unable to query server for list of active sources',
+    'sources.options.all': 'All Sources',
+    'form.title': 'title',
+  },
+  attributeAliases: {},
   filters: {
     METADATA_CONTENT_TYPE: 'metadata-content-type',
     SOURCE_ID: 'source-id',

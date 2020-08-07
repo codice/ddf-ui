@@ -88,14 +88,16 @@ function metacardStartingTypesWithTemporal() {
   // needed to handle erroneous or currently unknown attributes (they could be picked up after searching a source)
   let metacardStartingTypeWithTemporal = { ...metacardStartingTypes }
 
-  properties.basicSearchTemporalSelectionDefault.forEach(proposedType => {
-    metacardStartingTypeWithTemporal[proposedType] = {
-      id: proposedType,
-      type: 'DATE',
-      alias: properties.attributeAliases[proposedType],
-      hidden: properties.isHidden(proposedType),
-    }
-  })
+  if (properties.basicSearchTemporalSelectionDefault) {
+    properties.basicSearchTemporalSelectionDefault.forEach(proposedType => {
+      metacardStartingTypeWithTemporal[proposedType] = {
+        id: proposedType,
+        type: 'DATE',
+        alias: properties.attributeAliases[proposedType],
+        hidden: properties.isHidden(proposedType),
+      }
+    })
+  }
 
   return metacardStartingTypeWithTemporal
 }

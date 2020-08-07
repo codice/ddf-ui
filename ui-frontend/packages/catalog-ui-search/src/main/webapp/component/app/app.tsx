@@ -283,10 +283,7 @@ const App = ({
                         color="inherit"
                         aria-label="open drawer"
                         onClick={handleDrawerOpen}
-                        className="w-full h-full"
-                        style={{
-                          padding: properties.menuIconSrc ? '0px' : '12px',
-                        }}
+                        className="w-full h-full p-2"
                       >
                         {properties.menuIconSrc ? (
                           <>
@@ -294,7 +291,7 @@ const App = ({
                               src={handleBase64EncodedImages(
                                 properties.menuIconSrc
                               )}
-                              style={{ width: '100%', maxHeight: '64px' }}
+                              className="max-h-16 max-w-full"
                             />
                           </>
                         ) : (
@@ -302,12 +299,10 @@ const App = ({
                         )}
                       </Button>
                     )}
-
-                    <Divider />
                   </Grid>
                   <Divider />
                   <Grid item className="flex-shrink-0">
-                    <List className="overflow-hidden ">
+                    <List className="overflow-hidden p-0">
                       {RouteInformation.filter(
                         routeInfo => routeInfo.showInNav
                       ).map((routeInfo: RouteShownInNavType) => {
