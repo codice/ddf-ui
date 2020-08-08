@@ -4,7 +4,7 @@ import App, {
   useDefaultWelcome,
   useDefaultHelp,
 } from './app'
-import { hot } from 'react-hot-loader'
+import { hot } from 'react-hot-loader/root'
 import MRC from '../../react-component/marionette-region-container'
 const IngestView = require('../ingest/ingest.view')
 import { HomePage } from '../pages/home/home'
@@ -17,6 +17,7 @@ import SearchIcon from '@material-ui/icons/Search'
 import ImageSearch from '@material-ui/icons/ImageSearch'
 import UserNotifications from '../../react-component/user-notifications/user-notifications'
 import { BaseSettings } from '../../react-component/user-settings/user-settings'
+import { providers as Providers } from '../../extension-points/providers'
 
 const RouteInformation = [
   {
@@ -105,4 +106,12 @@ const BaseApp = () => {
   )
 }
 
-export default hot(module)(BaseApp)
+const WrappedWithProviders = () => {
+  return (
+    <Providers>
+      <BaseApp />
+    </Providers>
+  )
+}
+
+export default hot(WrappedWithProviders)

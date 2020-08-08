@@ -82,6 +82,9 @@ export type ThemeColorInterface = {
   backgroundContent: string
   backgroundModal: string
   backgroundSlideout: string
+  primary: string
+  secondary: string
+  palette: 'default' | 'custom'
 }
 
 type Current = {

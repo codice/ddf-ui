@@ -45,37 +45,28 @@ export default Marionette.LayoutView.extend({
         <form
           target="autocomplete"
           action="/search/catalog/blank.html"
-          className="w-full h-full"
+          className="w-full"
         >
-          <Grid
-            container
-            direction="column"
-            className="w-full h-full"
-            wrap="nowrap"
-          >
-            <Grid item className="w-full h-full">
-              {(() => {
-                if (form.id === 'basic') {
-                  return (
-                    <MRC
-                      view={
-                        new QueryBasic({
-                          model: this.model,
-                        })
-                      }
-                    />
-                  )
-                } else {
-                  return <QueryAdvanced model={this.model} />
-                }
-              })()}
-            </Grid>
-          </Grid>
+          {(() => {
+            if (form.id === 'basic') {
+              return (
+                <MRC
+                  view={
+                    new QueryBasic({
+                      model: this.model,
+                    })
+                  }
+                />
+              )
+            } else {
+              return <QueryAdvanced model={this.model} />
+            }
+          })()}
         </form>
       </React.Fragment>
     )
   },
-  className: 'h-full w-full overflow-auto',
+  className: 'w-full',
   tagName: 'div',
   regions: {
     queryContent: 'form .content-form',

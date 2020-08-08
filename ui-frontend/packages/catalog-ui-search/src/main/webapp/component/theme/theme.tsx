@@ -14,15 +14,17 @@ import { lighten as polishedLighten } from 'polished'
 
 type Theme = {
   primary: string
-  secondary?: string
+  secondary: string
 }
 
-const dark: Theme = {
+export const dark: Theme = {
   primary: '#69E1E8',
+  secondary: '#dc004e',
 }
 
-const light: Theme = {
+export const light: Theme = {
   primary: '#3c6dd5',
+  secondary: '#dc004e',
 }
 
 export const MuiOutlinedInputBorderClasses =
@@ -119,7 +121,20 @@ export const Provider = ({ children }: { children: any }) => {
     palette: {
       type: styledTheme.theme === 'dark' ? 'dark' : 'light',
       primary: {
-        main: styledTheme.theme === 'dark' ? dark.primary : light.primary,
+        main:
+          styledTheme.palette === 'custom'
+            ? styledTheme.primary
+            : styledTheme.theme === 'dark'
+              ? dark.primary
+              : light.primary,
+      },
+      secondary: {
+        main:
+          styledTheme.palette === 'custom'
+            ? styledTheme.secondary
+            : styledTheme.theme === 'dark'
+              ? dark.secondary
+              : light.secondary,
       },
       background: {
         paper: paperColor,

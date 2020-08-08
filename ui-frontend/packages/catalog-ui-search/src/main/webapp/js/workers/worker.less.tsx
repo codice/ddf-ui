@@ -37,18 +37,29 @@ import { BaseWorker } from './worker.base'
 
 const Less = require('less')
 const variableRegexPrefix = '@'
-const variableRegexPostfix = '(.*:[^;]*)'
+const variableRegexPostfix = '(.*:[^;]*);'
 
 export class LessWorker extends BaseWorker {
   render(data: any) {
     let newLessStyles = data.less
     for (let key in data.theme) {
-      newLessStyles = newLessStyles.replace(
-        new RegExp(variableRegexPrefix + key + variableRegexPostfix),
-        () => {
-          return '@' + key + ': ' + data.theme[key] + ';'
+      if (!['palette', 'primary', 'secondary'].includes(key)) {
+        try {
+          console.log(
+            newLessStyles.match(
+              new RegExp(variableRegexPrefix + key + variableRegexPostfix)
+            )
+          )
+          newLessStyles = newLessStyles.replace(
+            new RegExp(variableRegexPrefix + key + variableRegexPostfix),
+            () => {
+              return '@' + key + ': ' + data.theme[key] + ';'
+            }
+          )
+        } catch (err) {
+          console.log(err)
         }
-      )
+      }
     }
     Less.render(newLessStyles, (_unused_e: any, result: any) => {
       if (result !== undefined) {

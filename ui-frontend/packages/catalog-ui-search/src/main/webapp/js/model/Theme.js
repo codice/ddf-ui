@@ -134,6 +134,7 @@ module.exports = Backbone.Model.extend({
     const blob = {
       spacingMode: _get(properties, 'spacingMode', 'comfortable'),
       theme: _get(properties, 'theme', 'dark'),
+      palette: 'default',
     }
     colorVariables.forEach(color => {
       blob[color] = _get(properties, color, 'white')

@@ -21,6 +21,7 @@ import { BetterClickAwayListener } from '../../better-click-away-listener/better
 import MoreVert from '@material-ui/icons/MoreVert'
 import Box from '@material-ui/core/Box'
 import Swath from '../../swath/swath'
+import Divider from '@material-ui/core/Divider'
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
@@ -100,7 +101,12 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
     )
   }
   return (
-    <Grid container direction="row" alignItems="center" className="w-full p-4">
+    <Grid
+      container
+      direction="row"
+      alignItems="center"
+      className="w-full max-h-16 h-16 px-2"
+    >
       <Grid item>
         <Button
           variant="text"
@@ -173,7 +179,8 @@ const LeftBottom = ({ selectionInterface }: { selectionInterface: any }) => {
   return (
     <>
       <MRC
-        className={`w-full h-full overflow-hidden ${closed ? 'hidden' : ''}`}
+        className={`w-full pb-64 ${closed ? 'hidden' : ''}`}
+        defaultStyling={false}
         view={QueryAddView}
         viewOptions={{
           selectionInterface,
@@ -205,20 +212,10 @@ export const HomePage = () => {
   return (
     <div className="w-full h-full">
       <SplitPane variant="horizontal" collapsedLength={140}>
-        <Paper elevation={4} className="h-full">
-          <Grid container className="w-full h-full">
-            <Grid item className="w-full">
-              <LeftTop selectionInterface={selectionInterface} />
-            </Grid>
-            <Swath className="h-1 w-full" />
-            <Grid
-              item
-              className="w-full"
-              style={{ height: `calc(100% - 100px)` }}
-            >
-              <LeftBottom selectionInterface={selectionInterface} />
-            </Grid>
-          </Grid>
+        <Paper elevation={4} className="h-full overflow-auto">
+          <LeftTop selectionInterface={selectionInterface} />
+          <Divider />
+          <LeftBottom selectionInterface={selectionInterface} />
         </Paper>
         <Grid
           container
@@ -227,7 +224,7 @@ export const HomePage = () => {
           wrap="nowrap"
         >
           <Grid item className="w-full relative z-1">
-            <Paper elevation={2} className="w-full">
+            <Paper elevation={2} className="w-full min-h-16">
               <Grid
                 container
                 direction="row"
