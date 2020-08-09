@@ -37,16 +37,18 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
         <Grid item>
           <Button
             variant="text"
-            color="inherit"
+            color="primary"
             size="small"
             onClick={() => {
               setClosed(false)
               setLength(lastLength)
             }}
           >
-            <Box color="primary.main">Expand</Box>
-            <KeyboardArrowRightIcon color="inherit" />
-            <KeyboardArrowRightIcon color="inherit" className="-ml-5" />
+            Expand
+            <Box color="text.primary">
+              <KeyboardArrowRightIcon color="inherit" />
+              <KeyboardArrowRightIcon color="inherit" className="-ml-5" />
+            </Box>
           </Button>
         </Grid>
         <Grid item className="mt-3">
@@ -74,12 +76,14 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
               return (
                 <Button
                   variant="text"
-                  color="inherit"
+                  color="primary"
                   size="small"
                   onClick={handleClick}
                 >
-                  <Box color="primary.main">Options</Box>
-                  <MoreVert color="inherit" />
+                  Options
+                  <Box color="text.primary">
+                    <MoreVert />
+                  </Box>
                 </Button>
               )
             }}
@@ -110,15 +114,17 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
       <Grid item>
         <Button
           variant="text"
-          color="inherit"
+          color="primary"
           size="small"
           onClick={() => {
             setClosed(true)
           }}
         >
-          <Box color="primary.main">Collapse</Box>
-          <KeyboardArrowLeftIcon color="inherit" />
-          <KeyboardArrowLeftIcon color="inherit" className="-ml-5" />
+          Collapse
+          <Box color="text.primary">
+            <KeyboardArrowLeftIcon color="inherit" />
+            <KeyboardArrowLeftIcon color="inherit" className="-ml-5" />
+          </Box>
         </Button>
       </Grid>
       <Grid item className="ml-auto">
@@ -146,12 +152,14 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
             return (
               <Button
                 variant="text"
-                color="inherit"
+                color="primary"
                 size="small"
                 onClick={handleClick}
               >
-                <Box color="primary.main">Options</Box>
-                <MoreVert color="inherit" />
+                Options
+                <Box color="text.primary">
+                  <MoreVert color="inherit" />
+                </Box>
               </Button>
             )
           }}
@@ -212,7 +220,7 @@ export const HomePage = () => {
   return (
     <div className="w-full h-full">
       <SplitPane variant="horizontal" collapsedLength={140}>
-        <Paper elevation={4} className="h-full overflow-auto">
+        <Paper elevation={4} className="h-full overflow-auto w-full">
           <LeftTop selectionInterface={selectionInterface} />
           <Divider />
           <LeftBottom selectionInterface={selectionInterface} />
@@ -223,7 +231,7 @@ export const HomePage = () => {
           className="w-full h-full"
           wrap="nowrap"
         >
-          <Grid item className="w-full relative z-1">
+          <Grid item className="w-full relative z-1 pb-2">
             <Paper elevation={2} className="w-full min-h-16">
               <Grid
                 container

@@ -2,7 +2,6 @@ import * as React from 'react'
 import Grid from '@material-ui/core/Grid'
 import { Resizable, ResizableProps } from 're-resizable'
 import styled from 'styled-components'
-import Paper from '@material-ui/core/Paper'
 import { createCtx } from '@connexta/atlas/typescript/context'
 
 const wreqr = require('../../js/wreqr.js')
@@ -64,7 +63,7 @@ export const useResizableGrid = ({
       setTimeout(() => {
         wreqr.vent.trigger('gl-updateSize')
         wreqr.vent.trigger('resize')
-      }, 0)
+      }, 500)
     },
     [length, dragging]
   )
@@ -212,7 +211,7 @@ export const SplitPane = ({
             }
           })()}
           style={{
-            flexShrink: 1,
+            flexShrink: 0,
           }}
           onResizeStop={e => {
             setDragging(false)
@@ -234,25 +233,9 @@ export const SplitPane = ({
                 break
             }
           }}
-          className="z-10"
+          className="z-10 pr-2"
         >
-          <Grid
-            container
-            style={{ height: '100%', width: '100%' }}
-            wrap="nowrap"
-          >
-            <Paper
-              style={{
-                height: '100%',
-                width: '100%',
-                position: 'relative',
-                ...firstStyle,
-              }}
-              elevation={0}
-            >
-              {First}
-            </Paper>
-          </Grid>
+          {First}
         </CustomResizableGrid>
         <Grid
           item

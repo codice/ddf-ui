@@ -43,6 +43,7 @@ const HelpView = require('../help/help.view.js')
 import { GlobalStyles } from './global-styles'
 import CancelDrawing from './cancel-drawing'
 import { PermissiveComponentType } from '../../typescript'
+import Box from '@material-ui/core/Box'
 export const handleBase64EncodedImages = (url: string) => {
   if (url && url.startsWith('data:')) {
     return url
@@ -180,16 +181,16 @@ const App = ({
   // })
 
   return (
-    <>
+    <Box bgcolor="background.default" className="h-full w-full overflow-hidden">
       {/* Don't move CSSBaseline or GlobalStyles to providers, since we have multiple react roots.   */}
       <CssBaseline />
       <GlobalStyles />
       <CancelDrawing />
       <Grid
         container
+        alignItems="center"
         className="h-full w-full overflow-hidden"
         direction="column"
-        justify="space-between"
         wrap="nowrap"
       >
         <Grid item className="w-full">
@@ -205,7 +206,7 @@ const App = ({
             </Typography>
           ) : null}
         </Grid>
-        <Grid item className="w-full h-full relative overflow-hidden">
+        <Grid item className="w-full h-full relative overflow-hidden p-2">
           <Grid
             container
             direction="row"
@@ -217,7 +218,7 @@ const App = ({
               item
               className={`${
                 navOpen ? 'w-64' : 'w-20'
-              } transition-all duration-200 ease-in-out relative z-10`}
+              } transition-all duration-200 ease-in-out relative z-10 mr-2 flex-shrink-0`}
               onMouseEnter={() => {
                 setWithinNav(true)
               }}
@@ -626,19 +627,17 @@ const App = ({
                 </Grid>
               </Paper>
             </Grid>
-            <Memo>
-              <Grid item className="w-full h-full overflow-hidden relative z-0">
-                <Paper className="w-full h-full">
-                  <Switch>
-                    {RouteInformation.map(routeInfo => {
-                      return (
-                        <Route key={routeInfo.name} {...routeInfo.routeProps} />
-                      )
-                    })}
-                  </Switch>
-                </Paper>
-              </Grid>
-            </Memo>
+            <Grid item className="w-full h-full relative z-0 flex-shrink-1">
+              <Memo>
+                <Switch>
+                  {RouteInformation.map((routeInfo: RouteShownInNavType) => {
+                    return (
+                      <Route key={routeInfo.name} {...routeInfo.routeProps} />
+                    )
+                  })}
+                </Switch>
+              </Memo>
+            </Grid>
           </Grid>
         </Grid>
         <Grid item className="w-full">
@@ -655,7 +654,7 @@ const App = ({
           ) : null}
         </Grid>
       </Grid>
-    </>
+    </Box>
   )
 }
 

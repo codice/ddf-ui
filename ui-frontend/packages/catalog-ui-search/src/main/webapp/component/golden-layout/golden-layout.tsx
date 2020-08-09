@@ -1,6 +1,7 @@
 import * as React from 'react'
 import MRC from '../../react-component/marionette-region-container'
 import Paper from '@material-ui/core/Paper'
+import { useResizableGridContext } from '../resizable-grid/resizable-grid'
 const GoldenLayoutView = require('./golden-layout.view.js')
 
 type Props = {
@@ -9,19 +10,23 @@ type Props = {
   closed: boolean
 }
 
-export const GoldenLayout = ({ selectionInterface, width, closed }: Props) => {
+export const GoldenLayout = ({ selectionInterface, width }: Props) => {
   const [goldenlayoutInstance, setGoldenlayoutInstance] = React.useState(
     new GoldenLayoutView({
       selectionInterface,
       configName: 'goldenLayout',
     })
   )
+  const { closed } = useResizableGridContext()
 
   React.useEffect(
     () => {
-      if (goldenlayoutInstance.goldenLayout) goldenlayoutInstance.updateSize()
+      console.log('happens')
+      setTimeout(() => {
+        if (goldenlayoutInstance.goldenLayout) goldenlayoutInstance.updateSize()
+      }, 100)
     },
-    [width, closed]
+    [closed]
   )
 
   React.useEffect(() => {
@@ -31,8 +36,10 @@ export const GoldenLayout = ({ selectionInterface, width, closed }: Props) => {
   }, [])
 
   return (
-    <Paper className="h-full w-full" elevation={1}>
-      <MRC view={goldenlayoutInstance} style={{ background: 'inherit' }} />
-    </Paper>
+    <MRC
+      className="h-full w-full"
+      view={goldenlayoutInstance}
+      style={{ background: 'inherit' }}
+    />
   )
 }

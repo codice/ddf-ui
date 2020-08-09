@@ -15,6 +15,7 @@ import ResultFilter from '../result-filter/result-filter'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import EphemeralSearchSort from '../../react-component/query-sort-selection/ephemeral-search-sort'
 import { useLazyResultsStatusFromSelectionInterface } from '../selection-interface/hooks'
+import Box from '@material-ui/core/Box'
 const user = require('../singletons/user-instance.js')
 
 const determineHasResultFilter = () => {
@@ -119,11 +120,12 @@ const ResultSelector = ({ selectionInterface, model }: Props) => {
           >
             {({ handleClick }) => {
               return (
-                <Button onClick={handleClick}>
-                  Filter{' '}
-                  <FilterListIcon
-                    color={hasResultFilter ? 'secondary' : 'inherit'}
-                  />
+                <Button
+                  onClick={handleClick}
+                  color={hasResultFilter ? 'secondary' : 'inherit'}
+                >
+                  <Box color="text.primary">Filter</Box>
+                  <FilterListIcon />
                 </Button>
               )
             }}
@@ -143,9 +145,12 @@ const ResultSelector = ({ selectionInterface, model }: Props) => {
           >
             {({ handleClick }) => {
               return (
-                <Button onClick={handleClick}>
-                  Sort{' '}
-                  <SortIcon color={hasResultSort ? 'secondary' : 'inherit'} />
+                <Button
+                  onClick={handleClick}
+                  color={hasResultSort ? 'secondary' : 'inherit'}
+                >
+                  <Box color="text.primary">Sort</Box>
+                  <SortIcon />
                 </Button>
               )
             }}

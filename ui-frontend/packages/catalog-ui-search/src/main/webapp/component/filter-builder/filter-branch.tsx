@@ -88,6 +88,7 @@ const ChildFilter = ({
           </Grid>
           <Grid item className="ml-auto position absolute right-0">
             <Button
+              color="primary"
               onClick={() => {
                 const newFilters = parentFilter.filters.slice(0)
                 newFilters.splice(index, 1)
@@ -97,7 +98,7 @@ const ChildFilter = ({
                 })
               }}
             >
-              <Box color="primary.main">Remove</Box>
+              Remove
             </Button>
           </Grid>
         </Grid>
@@ -191,6 +192,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
               >
                 <Grid item>
                   <Button
+                    color="primary"
                     onClick={() => {
                       setFilter({
                         ...filter,
@@ -198,12 +200,15 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                       })
                     }}
                   >
-                    <AddIcon />
-                    <Box color="primary.main">Field</Box>
+                    <Box color="text.primary">
+                      <AddIcon />
+                    </Box>
+                    Field
                   </Button>
                 </Grid>
                 <Grid item>
                   <Button
+                    color="primary"
                     onClick={() => {
                       setFilter({
                         ...filter,
@@ -213,13 +218,16 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                       })
                     }}
                   >
-                    <AddIcon />
-                    <Box color="primary.main">Group</Box>
+                    <Box color="text.primary">
+                      <AddIcon />
+                    </Box>
+                    Group
                   </Button>
                 </Grid>
                 {filter.filters.length !== 0 ? (
                   <Grid item className="ml-auto">
                     <Button
+                      color="primary"
                       onClick={() => {
                         const newFilters = filter.filters.slice(0)
                         newFilters.splice(0, 1)
@@ -229,7 +237,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                         })
                       }}
                     >
-                      <Box color="primary.main">Remove</Box>
+                      Remove
                     </Button>
                   </Grid>
                 ) : null}

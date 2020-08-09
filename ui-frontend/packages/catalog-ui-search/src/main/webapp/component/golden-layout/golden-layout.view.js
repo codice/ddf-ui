@@ -109,7 +109,7 @@ function getGoldenLayoutSettings() {
       responsiveMode: 'none',
     },
     dimensions: {
-      borderWidth: 0.5 * parseFloat(theme.minimumSpacing) * fontSize,
+      borderWidth: 8,
       minItemHeight: 50,
       minItemWidth: 50,
       headerHeight: parseFloat(theme.minimumButtonSize) * fontSize,
@@ -258,7 +258,7 @@ function removeEphemeralState(config) {
 module.exports = Marionette.LayoutView.extend({
   tagName: CustomElements.register('golden-layout'),
   template,
-  className: 'is-minimised',
+  className: 'is-minimised h-full w-full',
   events: {
     'click > .golden-layout-toolbar .to-toggle-size': 'handleToggleSize',
   },
