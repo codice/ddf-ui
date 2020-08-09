@@ -259,11 +259,7 @@ export const HomePage = () => {
             item
             className="w-full h-full overflow-hidden flex-shrink-1 pb-2 pr-2"
           >
-            <GoldenLayout
-              selectionInterface={selectionInterface}
-              width={0}
-              closed={true}
-            />
+            <GoldenLayout selectionInterface={selectionInterface} />
           </Grid>
         </Grid>
       </SplitPane>

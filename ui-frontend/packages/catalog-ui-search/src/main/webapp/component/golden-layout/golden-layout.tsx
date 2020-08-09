@@ -1,16 +1,13 @@
 import * as React from 'react'
 import MRC from '../../react-component/marionette-region-container'
-import Paper from '@material-ui/core/Paper'
 import { useResizableGridContext } from '../resizable-grid/resizable-grid'
 const GoldenLayoutView = require('./golden-layout.view.js')
 
 type Props = {
   selectionInterface: any
-  width: any
-  closed: boolean
 }
 
-export const GoldenLayout = ({ selectionInterface, width }: Props) => {
+export const GoldenLayout = ({ selectionInterface }: Props) => {
   const [goldenlayoutInstance, setGoldenlayoutInstance] = React.useState(
     new GoldenLayoutView({
       selectionInterface,
