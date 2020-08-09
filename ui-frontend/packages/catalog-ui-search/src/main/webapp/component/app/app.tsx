@@ -206,7 +206,7 @@ const App = ({
             </Typography>
           ) : null}
         </Grid>
-        <Grid item className="w-full h-full relative overflow-hidden p-2">
+        <Grid item className="w-full h-full relative overflow-hidden">
           <Grid
             container
             direction="row"
@@ -218,7 +218,7 @@ const App = ({
               item
               className={`${
                 navOpen ? 'w-64' : 'w-20'
-              } transition-all duration-200 ease-in-out relative z-10 mr-2 flex-shrink-0`}
+              } transition-all duration-200 ease-in-out relative z-10 mr-2 flex-shrink-0 pb-2 pt-2 pl-2`}
               onMouseEnter={() => {
                 setWithinNav(true)
               }}
@@ -627,7 +627,10 @@ const App = ({
                 </Grid>
               </Paper>
             </Grid>
-            <Grid item className="w-full h-full relative z-0 flex-shrink-1">
+            <Grid
+              item
+              className="w-full h-full relative z-0 flex-shrink-1 overflow-x-hidden "
+            >
               <Memo>
                 <Switch>
                   {RouteInformation.map((routeInfo: RouteShownInNavType) => {

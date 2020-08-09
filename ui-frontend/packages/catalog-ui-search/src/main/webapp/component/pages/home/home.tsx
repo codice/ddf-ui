@@ -220,18 +220,23 @@ export const HomePage = () => {
   return (
     <div className="w-full h-full">
       <SplitPane variant="horizontal" collapsedLength={140}>
-        <Paper elevation={4} className="h-full overflow-auto w-full">
-          <LeftTop selectionInterface={selectionInterface} />
-          <Divider />
-          <LeftBottom selectionInterface={selectionInterface} />
-        </Paper>
+        <div className="h-full w-full py-2">
+          <Paper elevation={4} className="h-full overflow-auto w-full">
+            <LeftTop selectionInterface={selectionInterface} />
+            <Divider />
+            <LeftBottom selectionInterface={selectionInterface} />
+          </Paper>
+        </div>
         <Grid
           container
           direction="column"
           className="w-full h-full"
           wrap="nowrap"
         >
-          <Grid item className="w-full relative z-1 pb-2">
+          <Grid
+            item
+            className="w-full relative z-1 pb-2 pt-2 pr-2 flex-shrink-0"
+          >
             <Paper elevation={2} className="w-full min-h-16">
               <Grid
                 container
@@ -250,7 +255,10 @@ export const HomePage = () => {
             </Paper>
           </Grid>
 
-          <Grid item className="w-full h-full">
+          <Grid
+            item
+            className="w-full h-full overflow-hidden flex-shrink-1 pb-2 pr-2"
+          >
             <GoldenLayout
               selectionInterface={selectionInterface}
               width={0}
