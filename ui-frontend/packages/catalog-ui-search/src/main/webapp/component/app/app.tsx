@@ -627,9 +627,19 @@ const App = ({
                 </Grid>
               </Paper>
             </Grid>
+            {/**
+             * So this is slightly annoying, but the grid won't properly resize without overflow hidden set.
+             *
+             * That makes handling padding / margins / spacing more complicated in our app, because with overflow hidden set
+             * dropshadows on elements will get cut off.  So we have to let the contents instead dictate their padding, that way
+             * their dropshadows can be seen.
+             *
+             * Folks will probably struggle a bit with it at first, but the css utilities actually make it pretty easy.
+             * Just add pb-2 for the correct bottom spacing, pt-2 for correct top spacing, etc. etc.
+             */}
             <Grid
               item
-              className="w-full h-full relative z-0 flex-shrink-1 overflow-x-hidden "
+              className="w-full h-full relative z-0 flex-shrink-1 overflow-x-hidden" // do not remove this overflow hidden, see comment above for more
             >
               <Memo>
                 <Switch>
