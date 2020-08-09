@@ -30,14 +30,14 @@ export const QueryAdvanced = ({ model }: Props) => {
         noValidate
         className="w-full h-full"
       >
-        <div className="w-full h-full overflow-auto px-3 pt-6">
-          <div className="query-advanced">
+        <div className="w-full h-full px-3 pt-6 overflow-auto">
+          <div className="query-advanced w-full">
             <FilterBuilderRoot model={model} />
           </div>
-          <div className="py-5">
+          <div className="py-5 w-full">
             <Swath className="w-full h-1" />
           </div>
-          <div className="query-settings">
+          <div className="query-settings w-full">
             <QuerySettings model={model} />
           </div>
         </div>
