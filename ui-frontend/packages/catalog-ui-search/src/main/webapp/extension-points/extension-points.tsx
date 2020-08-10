@@ -18,7 +18,6 @@ import { providers, Props as ProviderProps } from './providers'
 import metacardInteractions from './metacard-interactions'
 import { Props } from '../react-component/filter/filter-input/filter-input'
 import { LazyQueryResult } from '../js/model/LazyQueryResult/LazyQueryResult'
-import TestIcon from '@material-ui/icons/Star'
 
 export type ExtensionPointsType = {
   providers: SFC<ProviderProps>
