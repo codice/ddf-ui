@@ -44,13 +44,7 @@ const RouteInformation = [
       path: '/upload',
       children: () => {
         return (
-          <MRC
-            style={{
-              height: '100%',
-              width: '100%',
-            }}
-            view={IngestView}
-          />
+          <MRC className="w-full h-full pb-2 pt-2 pr-2" view={IngestView} />
         )
       },
     },
@@ -66,7 +60,11 @@ const RouteInformation = [
     routeProps: {
       path: '/sources',
       children: () => {
-        return <SourcesPage />
+        return (
+          <div className="w-full h-full pb-2 pt-2 pr-2">
+            <SourcesPage />
+          </div>
+        )
       },
     },
     linkProps: {
@@ -81,7 +79,11 @@ const RouteInformation = [
     routeProps: {
       path: '/about',
       children: () => {
-        return <AboutPage />
+        return (
+          <div className="w-full h-full pb-2 pt-2 pr-2">
+            <AboutPage />
+          </div>
+        )
       },
     },
     linkProps: {
