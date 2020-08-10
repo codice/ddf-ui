@@ -20,12 +20,14 @@ import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 const Backbone = require('backbone')
 
 type Props = {
-  lazyResult: LazyQueryResult
+  lazyResults: LazyQueryResult[]
   onClose: () => void
 }
 
-const LazyMetacardInteractions = ({ lazyResult, onClose }: Props) => {
-  const backboneCollection = new Backbone.Collection([lazyResult.getBackbone()])
+const LazyMetacardInteractions = ({ lazyResults, onClose }: Props) => {
+  const backboneCollection = new Backbone.Collection(
+    lazyResults.map(lazyResult => lazyResult.getBackbone())
+  )
 
   return <MetacardInteractions model={backboneCollection} onClose={onClose} />
 }

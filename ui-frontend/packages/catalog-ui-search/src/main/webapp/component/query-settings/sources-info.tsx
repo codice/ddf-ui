@@ -23,16 +23,17 @@ const SourcesInfo = () => {
         component={Link}
         to="/sources"
         variant="text"
-        color="inherit"
+        color="primary"
         target="_blank"
       >
         <Grid container direction="row" alignItems="center" wrap="nowrap">
           <Grid item>
-            <StorageIcon />
+            <Box color="text.primary">
+              {' '}
+              <StorageIcon />
+            </Box>
           </Grid>
-          <Grid item>
-            <Box color="primary.main">Sources</Box>
-          </Grid>
+          <Grid item>Sources</Grid>
         </Grid>
       </Button>
     </Tooltip>

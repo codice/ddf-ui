@@ -4,7 +4,7 @@ import App, {
   useDefaultWelcome,
   useDefaultHelp,
 } from './app'
-import { hot } from 'react-hot-loader'
+import { hot } from 'react-hot-loader/root'
 import MRC from '../../react-component/marionette-region-container'
 const IngestView = require('../ingest/ingest.view')
 import { HomePage } from '../pages/home/home'
@@ -17,6 +17,7 @@ import SearchIcon from '@material-ui/icons/Search'
 import ImageSearch from '@material-ui/icons/ImageSearch'
 import UserNotifications from '../../react-component/user-notifications/user-notifications'
 import { BaseSettings } from '../../react-component/user-settings/user-settings'
+import { providers as Providers } from '../../extension-points/providers'
 
 const RouteInformation = [
   {
@@ -43,13 +44,7 @@ const RouteInformation = [
       path: '/upload',
       children: () => {
         return (
-          <MRC
-            style={{
-              height: '100%',
-              width: '100%',
-            }}
-            view={IngestView}
-          />
+          <MRC className="w-full h-full pb-2 pt-2 pr-2" view={IngestView} />
         )
       },
     },
@@ -65,7 +60,11 @@ const RouteInformation = [
     routeProps: {
       path: '/sources',
       children: () => {
-        return <SourcesPage />
+        return (
+          <div className="w-full h-full pb-2 pt-2 pr-2">
+            <SourcesPage />
+          </div>
+        )
       },
     },
     linkProps: {
@@ -80,7 +79,11 @@ const RouteInformation = [
     routeProps: {
       path: '/about',
       children: () => {
-        return <AboutPage />
+        return (
+          <div className="w-full h-full pb-2 pt-2 pr-2">
+            <AboutPage />
+          </div>
+        )
       },
     },
     linkProps: {
@@ -105,4 +108,12 @@ const BaseApp = () => {
   )
 }
 
-export default hot(module)(BaseApp)
+const WrappedWithProviders = () => {
+  return (
+    <Providers>
+      <BaseApp />
+    </Providers>
+  )
+}
+
+export default hot(WrappedWithProviders)

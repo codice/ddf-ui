@@ -26,8 +26,6 @@ const GoldenLayout = require('golden-layout')
 const properties = require('../../js/properties.js')
 const Common = require('../../js/Common.js')
 const user = require('../singletons/user-instance.js')
-const VisualizationDropdown = require('../dropdown/visualization-selector/dropdown.visualization-selector.view.js')
-const DropdownModel = require('../dropdown/dropdown.js')
 const sanitize = require('sanitize-html')
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
@@ -65,32 +63,6 @@ const sanitizeTree = tree =>
     return obj
   })
 
-const defaultGoldenLayoutContent = {
-  content: properties.defaultLayout || [
-    {
-      type: 'stack',
-      content: [
-        {
-          type: 'component',
-          componentName: 'status',
-          title: 'Search',
-          isClosable: false,
-        },
-        {
-          type: 'component',
-          componentName: 'cesium',
-          title: '3D Map',
-        },
-        {
-          type: 'component',
-          componentName: 'inspector',
-          title: 'Inspector',
-        },
-      ],
-    },
-  ],
-}
-
 function getGoldenLayoutSettings() {
   const fontSize = parseInt(
     user
@@ -109,7 +81,7 @@ function getGoldenLayoutSettings() {
       responsiveMode: 'none',
     },
     dimensions: {
-      borderWidth: 0.5 * parseFloat(theme.minimumSpacing) * fontSize,
+      borderWidth: 8,
       minItemHeight: 50,
       minItemWidth: 50,
       headerHeight: parseFloat(theme.minimumButtonSize) * fontSize,
@@ -255,16 +227,51 @@ function removeEphemeralState(config) {
   removeActiveTabInformation(config)
 }
 
-module.exports = Marionette.LayoutView.extend({
-  tagName: CustomElements.register('golden-layout'),
-  template,
-  className: 'is-minimised',
-  events: {
-    'click > .golden-layout-toolbar .to-toggle-size': 'handleToggleSize',
+const FALLBACK_GOLDEN_LAYOUT = [
+  {
+    type: 'stack',
+    content: [
+      {
+        type: 'component',
+        componentName: 'cesium',
+        title: '3D Map',
+      },
+      {
+        type: 'component',
+        componentName: 'inspector',
+        title: 'Inspector',
+      },
+    ],
   },
-  regions: {
-    toolbar: '> .golden-layout-toolbar',
-    widgetDropdown: '> .golden-layout-toolbar .to-add',
+]
+
+export const DEFAULT_GOLDEN_LAYOUT_CONTENT = {
+  content: properties.defaultLayout || FALLBACK_GOLDEN_LAYOUT,
+}
+
+export const getStringifiedDefaultLayout = () => {
+  try {
+    return JSON.stringify(DEFAULT_GOLDEN_LAYOUT_CONTENT)
+  } catch (err) {
+    console.warn(err)
+    return JSON.stringify(FALLBACK_GOLDEN_LAYOUT)
+  }
+}
+
+export default Marionette.LayoutView.extend({
+  tagName: CustomElements.register('golden-layout'),
+  template() {
+    return <div className="golden-layout-container w-full h-full" />
+  },
+  className: 'is-minimised h-full w-full',
+  lastConfig: undefined,
+  reconfigureLayout(layout: any) {
+    this.goldenLayout.root.contentItems.forEach((item: any) => {
+      item.remove()
+    })
+    layout.content.forEach((item: any) => {
+      this.goldenLayout.root.addChild(item)
+    })
   },
   updateFontSize() {
     const goldenLayoutSettings = getGoldenLayoutSettings()
@@ -286,12 +293,10 @@ module.exports = Marionette.LayoutView.extend({
     }
     this.goldenLayout.updateSize()
   },
-  showWidgetDropdown() {
-    this.widgetDropdown.show(
-      new VisualizationDropdown({
-        model: new DropdownModel(),
-        goldenLayout: this.goldenLayout,
-      })
+  listenToGoldenLayoutStateChange() {
+    this.goldenLayout.on(
+      'stateChanged',
+      _.debounce(this.handleGoldenLayoutStateChange.bind(this), 200)
     )
   },
   showGoldenLayout() {
@@ -300,10 +305,7 @@ module.exports = Marionette.LayoutView.extend({
       this.el.querySelector('.golden-layout-container')
     )
     this.registerGoldenLayoutComponents()
-    this.goldenLayout.on(
-      'stateChanged',
-      _.debounce(this.handleGoldenLayoutStateChange.bind(this), 200)
-    )
+    this.listenToGoldenLayoutStateChange()
     this.goldenLayout.on('stackCreated', this.handleGoldenLayoutStackCreated)
     this.goldenLayout.on(
       'initialised',
@@ -313,15 +315,28 @@ module.exports = Marionette.LayoutView.extend({
     this.goldenLayout.init()
   },
   getGoldenLayoutConfig() {
-    let currentConfig = user
-      .get('user')
-      .get('preferences')
-      .get(this.options.configName)
+    let currentConfig = undefined
+    if (this.options.layoutResult) {
+      try {
+        currentConfig = JSON.parse(
+          this.options.layoutResult.metacard.properties.layout
+        )
+      } catch (err) {
+        console.warn('issue parsing a saved layout, falling back to default')
+      }
+    } else if (this.options.editLayoutRef) {
+      currentConfig = this.options.editLayoutRef.current
+    } else {
+      currentConfig = user
+        .get('user')
+        .get('preferences')
+        .get(this.options.configName)
+    }
     if (currentConfig === undefined) {
-      currentConfig = defaultGoldenLayoutContent
+      currentConfig = DEFAULT_GOLDEN_LAYOUT_CONTENT
     }
     _merge(currentConfig, getGoldenLayoutSettings())
-    return sanitizeTree(currentConfig)
+    return currentConfig
   },
   registerGoldenLayoutComponents() {
     Visualizations.forEach(viz => {
@@ -418,18 +433,53 @@ module.exports = Marionette.LayoutView.extend({
     if (this.isDestroyed) {
       return
     }
-    this.detectIfGoldenLayoutMaximised()
-    this.detectIfGoldenLayoutEmpty()
-    //https://github.com/deepstreamIO/golden-layout/issues/253
-    if (this.goldenLayout.isInitialised) {
-      const currentConfig = this.goldenLayout.toConfig()
-      removeEphemeralState(currentConfig)
+    if (this.lastConfig === undefined) {
+      // this triggers on init of golden layout
+      this.lastConfig = this.getInstanceConfig()
+      return
+    }
+    wreqr.vent.trigger('resize') // do we need this?
+    if (
+      _.isEqual(
+        removeEphemeralState(this.lastConfig),
+        removeEphemeralState(this.getInstanceConfig())
+      )
+    ) {
+      return
+    }
+    this.lastConfig = this.getInstanceConfig()
+
+    /**
+     * If we have this option, then we're editing a layout in the layout editor.
+     * Otherwise, we're using a layout (or possibly custom) and need to take a change as indication of moving to custom.
+     */
+    if (this.options.editLayoutRef) {
+      this.options.editLayoutRef.current = this.getInstanceConfig()
+    } else {
+      this.detectIfGoldenLayoutMaximised()
+      this.detectIfGoldenLayoutEmpty()
+      //https://github.com/deepstreamIO/golden-layout/issues/253
+      if (this.goldenLayout.isInitialised) {
+        const currentConfig = this.goldenLayout.toConfig()
+        removeEphemeralState(currentConfig)
+        user
+          .get('user')
+          .get('preferences')
+          .set(this.options.configName, currentConfig)
+        wreqr.vent.trigger('resize')
+        //do not add a window resize event, that will cause an endless loop.  If you need something like that, listen to the wreqr resize event.
+      }
       user
         .get('user')
         .get('preferences')
-        .set(this.options.configName, currentConfig)
-      wreqr.vent.trigger('resize')
-      //do not add a window resize event, that will cause an endless loop.  If you need something like that, listen to the wreqr resize event.
+        .set(
+          {
+            layoutId: 'custom',
+          },
+          {
+            internal: true,
+          }
+        )
     }
   },
   setupListeners() {
@@ -445,14 +495,9 @@ module.exports = Marionette.LayoutView.extend({
     )
     this.listenForResize()
   },
-  onRender() {
+  onFirstRender() {
     this.showGoldenLayout()
-    this.showWidgetDropdown()
     this.setupListeners()
-  },
-  handleToggleSize() {
-    this.$el.toggleClass('is-minimised')
-    this.goldenLayout.updateSize()
   },
   listenForResize() {
     $(window).on(
@@ -475,6 +520,10 @@ module.exports = Marionette.LayoutView.extend({
   stopListeningForResize() {
     $(window).off('resize.' + this.cid)
     this.stopListening(wreqr.vent)
+  },
+  getInstanceConfig() {
+    const currentConfig = this.goldenLayout.toConfig()
+    return removeEphemeralState(currentConfig)
   },
   onDestroy() {
     this.stopListeningForResize()

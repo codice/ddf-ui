@@ -12,21 +12,31 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import * as React from 'react'
 import { SFC } from '../react-component/hoc/utils'
 import { providers, Props as ProviderProps } from './providers'
 import metacardInteractions from './metacard-interactions'
 import { Props } from '../react-component/filter/filter-input/filter-input'
+import { LazyQueryResult } from '../js/model/LazyQueryResult/LazyQueryResult'
 
 export type ExtensionPointsType = {
   providers: SFC<ProviderProps>
   metacardInteractions: any[]
   customFilterInput: (props: Props) => React.ReactNode | undefined
+  resultItemTitleAddOn: (
+    { lazyResult }: { lazyResult: LazyQueryResult }
+  ) => JSX.Element | null
+  resultItemRowAddOn: (
+    { lazyResult }: { lazyResult: LazyQueryResult }
+  ) => JSX.Element | null
 }
 
 const ExtensionPoints: ExtensionPointsType = {
   providers,
   metacardInteractions,
   customFilterInput: () => undefined,
+  resultItemTitleAddOn: () => null,
+  resultItemRowAddOn: () => null,
 }
 
 export default ExtensionPoints

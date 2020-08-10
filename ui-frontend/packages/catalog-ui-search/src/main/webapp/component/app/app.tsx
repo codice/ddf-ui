@@ -43,6 +43,7 @@ const HelpView = require('../help/help.view.js')
 import { GlobalStyles } from './global-styles'
 import CancelDrawing from './cancel-drawing'
 import { PermissiveComponentType } from '../../typescript'
+import Box from '@material-ui/core/Box'
 export const handleBase64EncodedImages = (url: string) => {
   if (url && url.startsWith('data:')) {
     return url
@@ -180,16 +181,16 @@ const App = ({
   // })
 
   return (
-    <>
+    <Box bgcolor="background.default" className="h-full w-full overflow-hidden">
       {/* Don't move CSSBaseline or GlobalStyles to providers, since we have multiple react roots.   */}
       <CssBaseline />
       <GlobalStyles />
       <CancelDrawing />
       <Grid
         container
+        alignItems="center"
         className="h-full w-full overflow-hidden"
         direction="column"
-        justify="space-between"
         wrap="nowrap"
       >
         <Grid item className="w-full">
@@ -217,7 +218,7 @@ const App = ({
               item
               className={`${
                 navOpen ? 'w-64' : 'w-20'
-              } transition-all duration-200 ease-in-out relative z-10`}
+              } transition-all duration-200 ease-in-out relative z-10 mr-2 flex-shrink-0 pb-2 pt-2 pl-2`}
               onMouseEnter={() => {
                 setWithinNav(true)
               }}
@@ -283,10 +284,7 @@ const App = ({
                         color="inherit"
                         aria-label="open drawer"
                         onClick={handleDrawerOpen}
-                        className="w-full h-full"
-                        style={{
-                          padding: properties.menuIconSrc ? '0px' : '12px',
-                        }}
+                        className="w-full h-full p-2"
                       >
                         {properties.menuIconSrc ? (
                           <>
@@ -294,7 +292,7 @@ const App = ({
                               src={handleBase64EncodedImages(
                                 properties.menuIconSrc
                               )}
-                              style={{ width: '100%', maxHeight: '64px' }}
+                              className="max-h-16 max-w-full"
                             />
                           </>
                         ) : (
@@ -302,12 +300,10 @@ const App = ({
                         )}
                       </Button>
                     )}
-
-                    <Divider />
                   </Grid>
                   <Divider />
                   <Grid item className="flex-shrink-0">
-                    <List className="overflow-hidden ">
+                    <List className="overflow-hidden p-0">
                       {RouteInformation.filter(
                         routeInfo => routeInfo.showInNav
                       ).map((routeInfo: RouteShownInNavType) => {
@@ -631,19 +627,30 @@ const App = ({
                 </Grid>
               </Paper>
             </Grid>
-            <Memo>
-              <Grid item className="w-full h-full overflow-hidden relative z-0">
-                <Paper className="w-full h-full">
-                  <Switch>
-                    {RouteInformation.map(routeInfo => {
-                      return (
-                        <Route key={routeInfo.name} {...routeInfo.routeProps} />
-                      )
-                    })}
-                  </Switch>
-                </Paper>
-              </Grid>
-            </Memo>
+            {/**
+             * So this is slightly annoying, but the grid won't properly resize without overflow hidden set.
+             *
+             * That makes handling padding / margins / spacing more complicated in our app, because with overflow hidden set
+             * dropshadows on elements will get cut off.  So we have to let the contents instead dictate their padding, that way
+             * their dropshadows can be seen.
+             *
+             * Folks will probably struggle a bit with it at first, but the css utilities actually make it pretty easy.
+             * Just add pb-2 for the correct bottom spacing, pt-2 for correct top spacing, etc. etc.
+             */}
+            <Grid
+              item
+              className="w-full h-full relative z-0 flex-shrink-1 overflow-x-hidden" // do not remove this overflow hidden, see comment above for more
+            >
+              <Memo>
+                <Switch>
+                  {RouteInformation.map((routeInfo: RouteShownInNavType) => {
+                    return (
+                      <Route key={routeInfo.name} {...routeInfo.routeProps} />
+                    )
+                  })}
+                </Switch>
+              </Memo>
+            </Grid>
           </Grid>
         </Grid>
         <Grid item className="w-full">
@@ -660,7 +667,7 @@ const App = ({
           ) : null}
         </Grid>
       </Grid>
-    </>
+    </Box>
   )
 }
 

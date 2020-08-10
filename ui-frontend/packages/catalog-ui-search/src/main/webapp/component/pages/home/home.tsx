@@ -13,14 +13,13 @@ import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 
 import MRC from '../../../react-component/marionette-region-container'
-import ResultSelector from '../../result-selector/result-selector'
 import Button from '@material-ui/core/Button'
 import { Dropdown } from '@connexta/atlas/atoms/dropdown'
 import SearchInteractions from '../../search-interactions'
 import { BetterClickAwayListener } from '../../better-click-away-listener/better-click-away-listener'
 import MoreVert from '@material-ui/icons/MoreVert'
 import Box from '@material-ui/core/Box'
-import Swath from '../../swath/swath'
+import Divider from '@material-ui/core/Divider'
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
@@ -36,16 +35,18 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
         <Grid item>
           <Button
             variant="text"
-            color="inherit"
+            color="primary"
             size="small"
             onClick={() => {
               setClosed(false)
               setLength(lastLength)
             }}
           >
-            <Box color="primary.main">Expand</Box>
-            <KeyboardArrowRightIcon color="inherit" />
-            <KeyboardArrowRightIcon color="inherit" className="-ml-5" />
+            Expand
+            <Box color="text.primary">
+              <KeyboardArrowRightIcon color="inherit" />
+              <KeyboardArrowRightIcon color="inherit" className="-ml-5" />
+            </Box>
           </Button>
         </Grid>
         <Grid item className="mt-3">
@@ -73,12 +74,14 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
               return (
                 <Button
                   variant="text"
-                  color="inherit"
+                  color="primary"
                   size="small"
                   onClick={handleClick}
                 >
-                  <Box color="primary.main">Options</Box>
-                  <MoreVert color="inherit" />
+                  Options
+                  <Box color="text.primary">
+                    <MoreVert />
+                  </Box>
                 </Button>
               )
             }}
@@ -100,19 +103,26 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
     )
   }
   return (
-    <Grid container direction="row" alignItems="center" className="w-full p-4">
+    <Grid
+      container
+      direction="row"
+      alignItems="center"
+      className="w-full max-h-16 h-16 px-2"
+    >
       <Grid item>
         <Button
           variant="text"
-          color="inherit"
+          color="primary"
           size="small"
           onClick={() => {
             setClosed(true)
           }}
         >
-          <Box color="primary.main">Collapse</Box>
-          <KeyboardArrowLeftIcon color="inherit" />
-          <KeyboardArrowLeftIcon color="inherit" className="-ml-5" />
+          Collapse
+          <Box color="text.primary">
+            <KeyboardArrowLeftIcon color="inherit" />
+            <KeyboardArrowLeftIcon color="inherit" className="-ml-5" />
+          </Box>
         </Button>
       </Grid>
       <Grid item className="ml-auto">
@@ -140,12 +150,14 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
             return (
               <Button
                 variant="text"
-                color="inherit"
+                color="primary"
                 size="small"
                 onClick={handleClick}
               >
-                <Box color="primary.main">Options</Box>
-                <MoreVert color="inherit" />
+                Options
+                <Box color="text.primary">
+                  <MoreVert color="inherit" />
+                </Box>
               </Button>
             )
           }}
@@ -173,7 +185,8 @@ const LeftBottom = ({ selectionInterface }: { selectionInterface: any }) => {
   return (
     <>
       <MRC
-        className={`w-full h-full overflow-hidden ${closed ? 'hidden' : ''}`}
+        className={`w-full pb-64 ${closed ? 'hidden' : ''}`}
+        defaultStyling={false}
         view={QueryAddView}
         viewOptions={{
           selectionInterface,
@@ -205,54 +218,16 @@ export const HomePage = () => {
   return (
     <div className="w-full h-full">
       <SplitPane variant="horizontal" collapsedLength={140}>
-        <Paper elevation={4} className="h-full">
-          <Grid container className="w-full h-full">
-            <Grid item className="w-full">
-              <LeftTop selectionInterface={selectionInterface} />
-            </Grid>
-            <Swath className="h-1 w-full" />
-            <Grid
-              item
-              className="w-full"
-              style={{ height: `calc(100% - 100px)` }}
-            >
-              <LeftBottom selectionInterface={selectionInterface} />
-            </Grid>
-          </Grid>
-        </Paper>
-        <Grid
-          container
-          direction="column"
-          className="w-full h-full"
-          wrap="nowrap"
-        >
-          <Grid item className="w-full relative z-1">
-            <Paper elevation={2} className="w-full">
-              <Grid
-                container
-                direction="row"
-                wrap="nowrap"
-                alignItems="center"
-                justify="center"
-              >
-                <Grid item>
-                  <ResultSelector
-                    selectionInterface={selectionInterface}
-                    model={queryModel}
-                  />
-                </Grid>
-              </Grid>
-            </Paper>
-          </Grid>
-
-          <Grid item className="w-full h-full">
-            <GoldenLayout
-              selectionInterface={selectionInterface}
-              width={0}
-              closed={true}
-            />
-          </Grid>
-        </Grid>
+        <div className="h-full w-full py-2">
+          <Paper elevation={4} className="h-full overflow-auto w-full">
+            <LeftTop selectionInterface={selectionInterface} />
+            <Divider />
+            <LeftBottom selectionInterface={selectionInterface} />
+          </Paper>
+        </div>
+        <div className="w-full h-full">
+          <GoldenLayout selectionInterface={selectionInterface} />
+        </div>
       </SplitPane>
     </div>
   )

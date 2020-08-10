@@ -13,7 +13,7 @@
  *
  **/
 import React from 'react'
-
+require('../styles/libraries.less')
 require('../styles/styles.less')
 
 const $ = require('jquery')

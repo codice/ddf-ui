@@ -4,10 +4,11 @@
     display: none;
   }
 
+  .lm_goldenlayout {
+    background: transparent !important;
+  }
+
   .lm_maximised .lm_header,
-  .lm_goldenlayout,
-  .lm_item,
-  .lm_content,
   .lm_items,
   .lm_item_container,
   .lm_content {
@@ -244,7 +245,6 @@
     height: @minimumButtonSize;
     line-height: @minimumButtonSize;
     text-align: center;
-    .dropshadow;
     > * {
       display: inline-block;
     }
@@ -255,12 +255,6 @@
     button {
       padding: 0px @minimumSpacing;
     }
-  }
-
-  > .golden-layout-container {
-    height: ~'calc(100% - @{minimumButtonSize})';
-    background: inherit;
-    overflow: hidden;
   }
 
   > .golden-layout-toolbar {
@@ -341,10 +335,6 @@
       background: inherit;
       .dropshadow;
     }
-  }
-
-  > .golden-layout-container {
-    height: ~'calc(99.5%)';
   }
 }
 

@@ -18,16 +18,10 @@ import BaseApp from '../component/app/base-app'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 const user = require('../component/singletons/user-instance.js')
-import { providers as Providers } from '../extension-points/providers'
 
 function attemptToStart() {
   if (user.fetched) {
-    ReactDOM.render(
-      <Providers>
-        <BaseApp />
-      </Providers>,
-      document.querySelector('#router')
-    )
+    ReactDOM.render(<BaseApp />, document.querySelector('#router'))
   } else if (!user.fetched) {
     user.once('sync', () => {
       attemptToStart()

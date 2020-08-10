@@ -13,12 +13,15 @@
  *
  **/
 
+const Backbone = require('backbone')
 const $ = require('jquery')
 const wreqr = require('./wreqr.js')
 const user = require('../component/singletons/user-instance.js')
 const preferences = user.get('user').get('preferences')
 let lessStyles = require('./uncompiled-less.unless')
 const Common = require('./Common.js')
+
+const backboneModel = new Backbone.Model()
 import { lessWorkerModel } from './../component/singletons/less.worker-instance'
 lessWorkerModel.subscribe(data => {
   if (data.method === 'render') {
@@ -64,9 +67,17 @@ function attemptToStart() {
     handleFontSizeChange()
     handleThemeChange()
     handleAnimationChange()
-    preferences.on('change:fontSize', handleFontSizeChange)
-    preferences.on('change:theme', handleThemeChange)
-    preferences.on('change:animation', handleAnimationChange)
+    backboneModel.listenTo(preferences, 'change:fontSize', handleFontSizeChange)
+    backboneModel.listenTo(preferences.get('theme'), 'change', () => {
+      if (Object.keys(preferences.get('theme').changed).includes('theme')) {
+        handleThemeChange()
+      }
+    })
+    backboneModel.listenTo(
+      preferences,
+      'change:animation',
+      handleAnimationChange
+    )
   } else {
     user.once('sync', () => {
       attemptToStart()

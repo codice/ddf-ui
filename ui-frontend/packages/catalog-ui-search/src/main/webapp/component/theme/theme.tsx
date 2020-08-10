@@ -3,26 +3,40 @@ import {
   createMuiTheme,
   MuiThemeProvider as ThemeProvider,
   darken,
+  getContrastRatio,
   Theme as ThemeInterface,
   createStyles,
   lighten,
   StylesProvider,
+  fade,
 } from '@material-ui/core/styles'
 import { ThemeContext } from 'styled-components'
 import { createGlobalStyle } from 'styled-components'
-import { lighten as polishedLighten } from 'polished'
+import {
+  lighten as polishedLighten,
+  meetsContrastGuidelines,
+  mix,
+} from 'polished'
 
 type Theme = {
   primary: string
-  secondary?: string
+  secondary: string
+  background: string
+  paper: string
 }
 
-const dark: Theme = {
+export const dark: Theme = {
+  background: '#34434c',
+  paper: '#213137',
   primary: '#69E1E8',
+  secondary: '#dc004e',
 }
 
-const light: Theme = {
+export const light: Theme = {
   primary: '#3c6dd5',
+  secondary: '#dc004e',
+  background: '#e3e7e8',
+  paper: '#f3fdff',
 }
 
 export const MuiOutlinedInputBorderClasses =
@@ -54,8 +68,12 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
           margin-left: 8px;
         }
       }
-      .lm_item {
+      .lm_splitter  {
+        background: ${props => props.palette.background.default} !important;
+      }
+      .lm_stack{
         box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
+        background: ${props => props.palette.background.paper} !important;
         border-radius: 4px;
         transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
       }
@@ -112,16 +130,61 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       }
     `
 
+const lightenUntilContrasting = (color: string, background: string): string => {
+  const passes = meetsContrastGuidelines(color, background)
+  if (passes.AA) {
+    return color
+  }
+  return lightenUntilContrasting(lighten(color, 0.1), background)
+}
+
+const darkenUntilContrasting = (color: string, background: string): string => {
+  const passes = meetsContrastGuidelines(color, background)
+  if (passes.AA) {
+    return color
+  }
+  return darkenUntilContrasting(darken(color, 0.1), background)
+}
+
 export const Provider = ({ children }: { children: any }) => {
   const styledTheme = React.useContext(ThemeContext)
-  const paperColor = polishedLighten(0.1, styledTheme.backgroundContent)
+  const darkMode = styledTheme.theme === 'dark'
+  const paperColor = darkMode ? dark.paper : light.paper
+  const backgroundColor = darkMode ? dark.background : light.background
+  const customPalette = styledTheme.palette === 'custom'
+  const primaryMain = customPalette
+    ? styledTheme.primary
+    : darkMode
+      ? dark.primary
+      : light.primary
+  const secondaryMain = customPalette
+    ? styledTheme.secondary
+    : darkMode
+      ? dark.secondary
+      : light.secondary
+  const primaryContrastScores = meetsContrastGuidelines(paperColor, primaryMain)
+  const secondaryContrastScores = meetsContrastGuidelines(
+    paperColor,
+    secondaryMain
+  )
+  const failedContrastPrimaryReplacement = darkMode
+    ? lightenUntilContrasting(primaryMain, paperColor)
+    : darkenUntilContrasting(primaryMain, paperColor)
+  const failedContrastSecondaryReplacement = darkMode
+    ? lightenUntilContrasting(secondaryMain, paperColor)
+    : darkenUntilContrasting(secondaryMain, paperColor)
+
   const theme = createMuiTheme({
     palette: {
-      type: styledTheme.theme === 'dark' ? 'dark' : 'light',
+      type: darkMode ? 'dark' : 'light',
       primary: {
-        main: styledTheme.theme === 'dark' ? dark.primary : light.primary,
+        main: primaryMain,
+      },
+      secondary: {
+        main: secondaryMain,
       },
       background: {
+        default: backgroundColor,
         paper: paperColor,
       },
     },
@@ -140,6 +203,37 @@ export const Provider = ({ children }: { children: any }) => {
         root: {
           lineHeight: 'inherit', // maybe open a ticket on MUI, seems like the default they use doesn't center text quite right with icons
         },
+        ...(primaryContrastScores.AA
+          ? { textPrimary: {} } // weird requirement due to types, need textPrimary here but empty
+          : {
+              textPrimary: {
+                color: failedContrastPrimaryReplacement,
+                '&:hover': {
+                  backgroundColor: fade(failedContrastPrimaryReplacement, 0.1),
+                  // Reset on touch devices, it doesn't add specificity
+                  '@media (hover: none)': {
+                    backgroundColor: 'transparent',
+                  },
+                },
+              },
+            }),
+        ...(secondaryContrastScores.AA
+          ? { textSecondary: {} } // weird requirement due to types, need textPrimary here but empty
+          : {
+              textSecondary: {
+                color: failedContrastSecondaryReplacement,
+                '&:hover': {
+                  backgroundColor: fade(
+                    failedContrastSecondaryReplacement,
+                    0.1
+                  ),
+                  // Reset on touch devices, it doesn't add specificity
+                  '@media (hover: none)': {
+                    backgroundColor: 'transparent',
+                  },
+                },
+              },
+            }),
       }),
       MuiCardActionArea: createStyles({
         root: {
