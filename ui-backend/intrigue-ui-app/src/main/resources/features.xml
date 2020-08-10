@@ -29,11 +29,12 @@
         <feature>resource-bundle-locator</feature>
         <feature>platform-usng4j</feature>
         <feature>platform-configuration</feature>
-        <feature>platform-email</feature>
         <feature>persistence-core</feature>
 
-        <feature>catalog-ui-search-api</feature>
+        <!-- Email feature resides in here-->
+        <feature>security-core-services</feature>
 
+        <feature>catalog-ui-search-api</feature>
 
         <configfile finalname="${ddf.etc}/org.codice.ddf.catalog.ui.config" override="false">
             mvn:org.codice.ddf.search/intrigue-ui-app/${project.version}/properties/catalog-ui-config
