@@ -288,7 +288,7 @@ export const ResultItem = ({
                   <BetterClickAwayListener onClickAway={close}>
                     <Paper>
                       <LazyMetacardInteractions
-                        lazyResult={lazyResult}
+                        lazyResults={[lazyResult]}
                         onClose={() => {
                           close()
                         }}

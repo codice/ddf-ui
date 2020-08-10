@@ -14,13 +14,69 @@ import SortIcon from '@material-ui/icons/Sort'
 import ResultFilter from '../result-filter/result-filter'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import EphemeralSearchSort from '../../react-component/query-sort-selection/ephemeral-search-sort'
-import { useLazyResultsStatusFromSelectionInterface } from '../selection-interface/hooks'
+import {
+  useLazyResultsStatusFromSelectionInterface,
+  useLazyResultsSelectedResultsFromSelectionInterface,
+} from '../selection-interface/hooks'
 import Box from '@material-ui/core/Box'
 //@ts-ignore
 import VisualizationSelector from '../../react-component/visualization-selector/visualization-selector'
 import ViewCompactIcon from '@material-ui/icons/ViewCompact'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 const user = require('../singletons/user-instance.js')
+const MetacardTitleView = require('../metacard-title/metacard-title.view.js')
+import MRC from '../../react-component/marionette-region-container'
+import MoreIcon from '@material-ui/icons/MoreVert'
+
+import LazyMetacardInteractions from '../results-visual/lazy-metacard-interactions'
+const SelectedResults = ({ selectionInterface }: any) => {
+  const selectedResults = useLazyResultsSelectedResultsFromSelectionInterface({
+    selectionInterface,
+  })
+  // return <MRC view={new MetacardTitleView({
+  //   model: this.options.selectionInterface.getSelectedResults(),
+  // })} />
+  const selectedResultsArray = Object.values(selectedResults)
+
+  return (
+    <Dropdown
+      content={({ close }) => {
+        return (
+          <BetterClickAwayListener onClickAway={close}>
+            <Paper>
+              <LazyMetacardInteractions
+                lazyResults={selectedResultsArray}
+                onClose={() => {
+                  close()
+                }}
+              />
+            </Paper>
+          </BetterClickAwayListener>
+        )
+      }}
+    >
+      {({ handleClick }) => {
+        return (
+          <Button
+            className={selectedResultsArray.length === 0 ? '' : ''}
+            color="primary"
+            disabled={selectedResultsArray.length === 0}
+            onClick={handleClick}
+            style={{ height: '100%' }}
+            size="small"
+          >
+            {selectedResultsArray.length} selected
+            <Box
+              color={selectedResultsArray.length === 0 ? '' : 'text.primary'}
+            >
+              <MoreIcon />
+            </Box>
+          </Button>
+        )
+      }}
+    </Dropdown>
+  )
+}
 
 const determineHasResultFilter = () => {
   return (
@@ -90,7 +146,10 @@ const ResultSelector = ({
         <Grid item>
           <QueryFeed selectionInterface={selectionInterface} />
         </Grid>
-        <Grid item className="mx-auto">
+        <Grid item>
+          <SelectedResults selectionInterface={selectionInterface} />
+        </Grid>
+        <Grid item className="pl-2 mx-auto">
           <Paging selectionInterface={selectionInterface} />
         </Grid>
         <Grid item className="ml-auto">
