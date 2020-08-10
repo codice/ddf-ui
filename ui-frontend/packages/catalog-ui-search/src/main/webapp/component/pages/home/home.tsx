@@ -13,14 +13,12 @@ import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 
 import MRC from '../../../react-component/marionette-region-container'
-import ResultSelector from '../../result-selector/result-selector'
 import Button from '@material-ui/core/Button'
 import { Dropdown } from '@connexta/atlas/atoms/dropdown'
 import SearchInteractions from '../../search-interactions'
 import { BetterClickAwayListener } from '../../better-click-away-listener/better-click-away-listener'
 import MoreVert from '@material-ui/icons/MoreVert'
 import Box from '@material-ui/core/Box'
-import Swath from '../../swath/swath'
 import Divider from '@material-ui/core/Divider'
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
@@ -227,41 +225,9 @@ export const HomePage = () => {
             <LeftBottom selectionInterface={selectionInterface} />
           </Paper>
         </div>
-        <Grid
-          container
-          direction="column"
-          className="w-full h-full"
-          wrap="nowrap"
-        >
-          <Grid
-            item
-            className="w-full relative z-1 pb-2 pt-2 pr-2 flex-shrink-0"
-          >
-            <Paper elevation={2} className="w-full min-h-16">
-              <Grid
-                container
-                direction="row"
-                wrap="nowrap"
-                alignItems="center"
-                justify="center"
-              >
-                <Grid item>
-                  <ResultSelector
-                    selectionInterface={selectionInterface}
-                    model={queryModel}
-                  />
-                </Grid>
-              </Grid>
-            </Paper>
-          </Grid>
-
-          <Grid
-            item
-            className="w-full h-full overflow-hidden flex-shrink-1 pb-2 pr-2"
-          >
-            <GoldenLayout selectionInterface={selectionInterface} />
-          </Grid>
-        </Grid>
+        <div className="w-full h-full">
+          <GoldenLayout selectionInterface={selectionInterface} />
+        </div>
       </SplitPane>
     </div>
   )

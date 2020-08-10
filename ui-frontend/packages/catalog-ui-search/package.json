@@ -47,7 +47,7 @@
     "@welldone-software/why-did-you-render": "4.2.2",
     "@blueprintjs/core": "3.29.0",
     "@blueprintjs/datetime": "3.18.3",
-    "@connexta/ace": "git://github.com/connexta/ace.git#ccd31568acb9315328951285a71ad2eeb8e12dd9",
+    "@connexta/ace": "git://github.com/connexta/ace.git#bedc9e7889223f384c045bcd06d8dd11f63efabe",
     "@connexta/atlas": "0.0.60",
     "@material-ui/core": "4.11.0",
     "@material-ui/icons": "4.9.1",
