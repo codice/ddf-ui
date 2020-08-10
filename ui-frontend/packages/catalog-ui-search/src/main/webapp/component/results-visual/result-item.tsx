@@ -39,6 +39,7 @@ import { ThemeInterface } from '../../react-component/styles/styled-components/t
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { useSelectionOfLazyResult } from '../../js/model/LazyQueryResult/hooks'
+import Extensions from '../../extension-points'
 const getResultDisplayType = () =>
   (user &&
     user
@@ -362,8 +363,12 @@ export const ResultItem = ({
                     lazyResult.plain.metacard.properties.title
                   }`}
                 >
-                  {lazyResult.plain.metacard.properties.title}
+                  {lazyResult.plain.metacard.properties.title}{' '}
+                  <Extensions.resultItemTitleAddOn lazyResult={lazyResult} />
                 </IconSpan>
+              </div>
+              <div>
+                <Extensions.resultItemRowAddOn lazyResult={lazyResult} />
               </div>
               <div>
                 {renderThumbnail ? (
