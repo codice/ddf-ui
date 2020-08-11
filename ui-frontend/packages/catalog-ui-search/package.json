@@ -141,6 +141,7 @@
     "react-window-components": "0.0.2",
     "rpc-websockets": "4.0.0",
     "sanitize-html": "1.15.0",
+    "scroll-into-view-if-needed": "^2.2.25",
     "select2": "4.0.3",
     "sortablejs": "1.4.2",
     "spectrum-colorpicker": "1.8.0",
@@ -164,7 +165,7 @@
     "react-dom": "16.10.2",
     "styled-components": "4.3.2",
     "ts-loader": "6.0.4",
-    "typescript": "3.9.3"
+    "typescript": "3.9.7"
   },
   "main": "src/main/webapp/index.tsx",
   "alias": {

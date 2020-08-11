@@ -43,19 +43,27 @@ html.no-animation *:not(.is-critical-animation)::after {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  box-shadow: inset 3px 0 3px -3px rgba(255, 255, 255, 0.3);
+  box-shadow: inset 3px 0 3px -3px rgba(255, 255, 255, 0.05);
 }
 
 :hover::-webkit-scrollbar-track {
-  box-shadow: inset 3px 0 3px -3px rgba(255, 255, 255, 0.5);
+  box-shadow: inset 3px 0 3px -3px rgba(255, 255, 255, 0.1);
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.25);
 }
 
 :hover::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+}
+
+.scrollbars-hide::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+.scrollbars-hide::-webkit-scrollbar {
+  width: 0px;
 }
