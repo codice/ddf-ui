@@ -12,23 +12,20 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import Box from '@material-ui/core/Box'
+import Button from '@material-ui/core/Button'
+import Grid from '@material-ui/core/Grid'
+import Typography from '@material-ui/core/Typography'
+import AddIcon from '@material-ui/icons/Add'
 import * as React from 'react'
-import { useState } from 'react'
 import { hot } from 'react-hot-loader'
-import styled from 'styled-components'
-import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 import SortItem from './sort-item'
 import {
+  getLabel,
   getNextAttribute,
   getSortAttributeOptions,
   getSortDirectionOptions,
-  getLabel,
 } from './sort-selection-helpers'
-import Button from '@material-ui/core/Button'
-import AddIcon from '@material-ui/icons/Add'
-import Box from '@material-ui/core/Box'
-import Grid from '@material-ui/core/Grid'
-import Typography from '@material-ui/core/Typography'
 
 type SortsType = {
   attribute: string
@@ -102,7 +99,9 @@ const SortSelections = ({ value = [], onChange }: Props) => {
   }
   return (
     <div>
-      <Typography className="pb-2">Sort</Typography>
+      <Typography data-id="Sort-changed" className="pb-2">
+        Sort
+      </Typography>
       {collectionJson.map((sortItem, index) => {
         return (
           <div
