@@ -73,6 +73,7 @@ class AutoComplete extends React.Component {
       <Dropdown label={this.props.value || this.props.placeholder}>
         <div style={{ padding: 5 }}>
           <TextField
+            data-id="autocomplete"
             autoFocus
             value={input}
             placeholder={placeholder}
