@@ -8,12 +8,13 @@ import Box from '@material-ui/core/Box'
 import Tooltip from '@material-ui/core/Tooltip'
 import SourcesPage from '../../react-component/sources'
 import Paper from '@material-ui/core/Paper'
+import { Elevations } from '../theme/theme'
 
 const SourcesInfo = () => {
   return (
     <Tooltip
       title={
-        <Paper elevation={23} className="min-w-120">
+        <Paper elevation={Elevations.overlays} className="min-w-120">
           <SourcesPage />
         </Paper>
       }

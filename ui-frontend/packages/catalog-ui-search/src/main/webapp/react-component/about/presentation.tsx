@@ -15,7 +15,6 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { CustomElement } from '../styles/mixins'
-import { ChangeBackground } from '../styles/mixins'
 import { hot } from 'react-hot-loader'
 
 interface Props {
@@ -29,9 +28,7 @@ interface Props {
 }
 
 const Root = styled.div`
-  ${CustomElement} ${props =>
-    ChangeBackground(props.theme.backgroundContent)}
-  overflow: auto;
+  ${CustomElement} overflow: auto;
   padding: ${props => props.theme.minimumSpacing} 0px;
 
   .about-content {

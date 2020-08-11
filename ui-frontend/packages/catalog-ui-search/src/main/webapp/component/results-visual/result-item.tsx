@@ -28,7 +28,7 @@ import GetAppIcon from '@material-ui/icons/GetApp'
 import Grid from '@material-ui/core/Grid'
 const Common = require('../../js/Common.js')
 import { hot } from 'react-hot-loader'
-import { useTheme, Paper } from '@material-ui/core'
+import { useTheme, Paper, Divider, Box } from '@material-ui/core'
 const LIST_DISPLAY_TYPE = 'List'
 const GRID_DISPLAY_TYPE = 'Grid'
 import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
@@ -324,16 +324,14 @@ export const ResultItem = ({
       wrap="nowrap"
       alignItems="stretch"
       alignContent="stretch"
-      style={{
-        border: '1px solid grey',
-        background: isSelected
-          ? theme.palette.type === 'dark'
-            ? 'rgba(50,50,50,1)'
-            : 'rgba(225, 225, 225, 1)'
-          : theme.palette.background.paper,
-      }}
     >
       <Grid item style={{ width: '100%' }}>
+        <div className="pt-3 w-full">
+          <Box
+            className="h-1 w-full"
+            bgcolor={isSelected ? 'secondary.main' : 'divider'}
+          />
+        </div>
         <Grid
           container
           alignItems="stretch"
@@ -345,6 +343,7 @@ export const ResultItem = ({
           <Grid item style={{ width: '100%' }}>
             <SpecialButton
               fullWidth
+              className="py-3 outline-none"
               onClick={event => {
                 if (event.shiftKey) {
                   lazyResult.shiftSelect()
@@ -440,13 +439,10 @@ export const ResultItem = ({
           </Grid>
           <DynamicActions />
         </Grid>
-        <div>
-          <Grid
-            alignItems="center"
-            container
-            direction="row"
-            wrap="nowrap"
-            justify="space-between"
+        <div className="pb-3 w-full">
+          <Box
+            className="h-1 w-full"
+            bgcolor={isSelected ? 'secondary.main' : 'divider'}
           />
         </div>
       </Grid>

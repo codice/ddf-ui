@@ -25,7 +25,10 @@ import Slider from '@material-ui/core/Slider'
 import Input from '@material-ui/core/Input'
 import Swath from '../../component/swath/swath'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
-import { MuiOutlinedInputBorderClasses } from '../../component/theme/theme'
+import {
+  MuiOutlinedInputBorderClasses,
+  Elevations,
+} from '../../component/theme/theme'
 import Tooltip from '@material-ui/core/Tooltip'
 import Paper from '@material-ui/core/Paper'
 
@@ -72,7 +75,7 @@ const SearchSettings = () => {
       <Tooltip
         placement="right"
         title={
-          <Paper elevation={23} className="p-3">
+          <Paper elevation={Elevations.overlays} className="p-3">
             <Typography variant="h6">For example:</Typography>
             <Typography>
               Searching 3 data sources with the current setting could return as

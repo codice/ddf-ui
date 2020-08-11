@@ -14,7 +14,6 @@
  **/
 import * as React from 'react'
 import styled from 'styled-components'
-import { ChangeBackground } from '../styles/mixins/change-background'
 import SourceItem from '../source-item'
 import SourcesSummary from '../sources-summary'
 import { hot } from 'react-hot-loader'
@@ -24,7 +23,6 @@ const Root = styled.div`
   height: 100%;
   width: 100%;
   overflow: hidden;
-  ${props => ChangeBackground(props.theme.backgroundContent)};
 `
 
 const SourcesCenter = styled.div`

@@ -29,6 +29,7 @@ import MRC from '../../react-component/marionette-region-container'
 import MoreIcon from '@material-ui/icons/MoreVert'
 
 import LazyMetacardInteractions from '../results-visual/lazy-metacard-interactions'
+import { Elevations } from '../theme/theme'
 const SelectedResults = ({ selectionInterface }: any) => {
   const selectedResults = useLazyResultsSelectedResultsFromSelectionInterface({
     selectionInterface,
@@ -157,7 +158,7 @@ const ResultSelector = ({
             content={({ closeAndRefocus }) => {
               return (
                 <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper className="p-3" elevation={23}>
+                  <Paper className="p-3" elevation={Elevations.overlays}>
                     <ResultFilter closeDropdown={closeAndRefocus} />
                   </Paper>
                 </BetterClickAwayListener>
@@ -185,7 +186,7 @@ const ResultSelector = ({
             content={({ closeAndRefocus }) => {
               return (
                 <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper className="p-3" elevation={23}>
+                  <Paper className="p-3" elevation={Elevations.overlays}>
                     <EphemeralSearchSort closeDropdown={closeAndRefocus} />
                   </Paper>
                 </BetterClickAwayListener>
@@ -213,7 +214,7 @@ const ResultSelector = ({
             content={({ closeAndRefocus }) => {
               return (
                 <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper className="p-3" elevation={23}>
+                  <Paper className="p-3" elevation={Elevations.overlays}>
                     <VisualizationSelector
                       onClose={closeAndRefocus}
                       goldenLayout={goldenLayoutViewInstance.goldenLayout}

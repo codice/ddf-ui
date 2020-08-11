@@ -21,6 +21,7 @@ import Button from '@material-ui/core/Button'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
+import Divider from '@material-ui/core/Divider'
 const user = require('../singletons/user-instance.js')
 
 type Props = {
@@ -91,8 +92,8 @@ const ResultCards = ({ results, mode, setMode, lazyResults }: Props) => {
           overscanCount={10}
           Item={({ itemRef, item, measure, index, width }) => {
             return (
-              <div ref={itemRef}>
-                {index !== 0 ? <div style={{ height: '10px' }} /> : null}
+              <div ref={itemRef} className="px-3">
+                {index !== -1 ? <></> : null}
                 <ResultItem
                   lazyResult={item}
                   measure={measure}

@@ -17,6 +17,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 import AddIcon from '@material-ui/icons/Add'
 import _ from 'lodash'
 import { Memo } from '../memo/memo'
+import { Elevations } from '../theme/theme'
 const OperatorData = [
   {
     label: 'AND',
@@ -164,6 +165,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
     [filter]
   )
 
+  const EnclosingElement = root ? Box : Paper
   return (
     <div
       onMouseOver={() => {
@@ -173,14 +175,17 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
         setHover(false)
       }}
     >
-      <Paper elevation={root ? 0 : 10} className={root ? '' : 'px-3 pt-6 pb-2'}>
+      <EnclosingElement
+        elevation={Elevations.panels}
+        className={root ? '' : 'px-3 pt-6 pb-2'}
+      >
         <div className=" relative">
           <div
             className={`${
               filter.negated ? 'border px-3 py-4 mt-2' : ''
             } transition-all duration-200`}
             style={{
-              borderColor: theme.palette.primary.main,
+              borderColor: theme.palette.secondary.main,
             }}
           >
             <Grid item className="w-full filter-actions">
@@ -303,7 +308,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
             </Memo>
           </div>
         </div>
-      </Paper>
+      </EnclosingElement>
     </div>
   )
 }

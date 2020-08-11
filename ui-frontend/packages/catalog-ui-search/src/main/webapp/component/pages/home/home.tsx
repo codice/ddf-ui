@@ -20,6 +20,7 @@ import { BetterClickAwayListener } from '../../better-click-away-listener/better
 import MoreVert from '@material-ui/icons/MoreVert'
 import Box from '@material-ui/core/Box'
 import Divider from '@material-ui/core/Divider'
+import { Elevations } from '../../theme/theme'
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
@@ -219,7 +220,10 @@ export const HomePage = () => {
     <div className="w-full h-full">
       <SplitPane variant="horizontal" collapsedLength={140}>
         <div className="h-full w-full py-2">
-          <Paper elevation={4} className="h-full overflow-auto w-full">
+          <Paper
+            elevation={Elevations.panels}
+            className="h-full overflow-auto w-full"
+          >
             <LeftTop selectionInterface={selectionInterface} />
             <Divider />
             <LeftBottom selectionInterface={selectionInterface} />

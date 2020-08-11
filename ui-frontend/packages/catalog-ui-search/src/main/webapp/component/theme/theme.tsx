@@ -22,21 +22,37 @@ type Theme = {
   primary: string
   secondary: string
   background: string
+  navbar: string
+  panels: string
+  overlays: string
   paper: string
 }
 
 export const dark: Theme = {
-  background: '#34434c',
+  background: '#0B1821',
+  navbar: '#475A66',
+  panels: '#3A4A54',
+  overlays: '#475A66',
   paper: '#213137',
   primary: '#69E1E8',
-  secondary: '#dc004e',
+  secondary: '#2196f3',
 }
 
 export const light: Theme = {
   primary: '#3c6dd5',
-  secondary: '#dc004e',
-  background: '#e3e7e8',
+  secondary: '#2196f3',
+  background: '#898989', // elevation 0
+  navbar: '#CECECE', // elevation 8
+  panels: '#E5E5E5', // elevation 6
+  overlays: '#F9F9F9', // elevation 16
   paper: '#f3fdff',
+}
+
+export const Elevations = {
+  navbar: 8,
+  background: 0,
+  panels: 6,
+  overlays: 16,
 }
 
 export const MuiOutlinedInputBorderClasses =
@@ -45,6 +61,9 @@ export const MuiOutlinedInputBorderClasses =
 const GlobalStyles = createGlobalStyle<ThemeInterface>`
       a {
         color: inherit !important;
+      }
+      button.outline-none, a.outline-none {
+        outline: none !important; 
       }
       .MuiToolbar-root a,
       .MuiToolbar-root .MuiBreadcrumbs-separator {
@@ -69,11 +88,17 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
         }
       }
       .lm_splitter  {
-        background: ${props => props.palette.background.default} !important;
+        background: ${props =>
+          props.palette.type === 'dark'
+            ? dark.background
+            : light.background} !important;
       }
       .lm_stack{
         box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
-        background: ${props => props.palette.background.paper} !important;
+        background: ${props =>
+          props.palette.type === 'dark'
+            ? dark.panels
+            : light.panels} !important;
         border-radius: 4px;
         transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
       }
@@ -127,6 +152,42 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       // for whatever reason they have a height of 0 sometimes, maybe MUI will fix this in v5
       textarea.MuiInputBase-input {
         min-height: 21px;
+      }
+      .MuiPaper-elevation0 {
+        background-color: ${props =>
+          props.palette.type === 'dark' ? dark.background : light.background};
+      }
+      .MuiPaper-elevation8 {
+        background-color: ${props =>
+          props.palette.type === 'dark' ? dark.navbar : light.navbar};
+      }
+      .MuiPaper-elevation6 {
+        background-color: ${props =>
+          props.palette.type === 'dark' ? dark.panels : light.panels};
+      }
+      .MuiPaper-elevation16 {
+        background-color: ${props =>
+          props.palette.type === 'dark' ? dark.overlays : light.overlays};
+      }
+      [data-behavior-dropdown] {
+        background-color: ${props =>
+          props.palette.type === 'dark' ? dark.overlays : light.overlays};
+      }
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: ${props =>
+          props.palette.type === 'dark'
+            ? 'rgb(30, 44, 53)'
+            : 'rgb(229, 229, 229)'};
+      }
+      ::-webkit-scrollbar-thumb {
+        background: ${props =>
+          props.palette.type === 'dark'
+            ? 'linear-gradient(-180deg, rgb(229, 229, 229) 0%, rgb(206, 206, 206) 100%)'
+            : 'linear-gradient(-180deg, rgb(153, 153, 153) 0%, rgb(187, 187, 187) 100%)'};
+            border-radius: 4px;
       }
     `
 

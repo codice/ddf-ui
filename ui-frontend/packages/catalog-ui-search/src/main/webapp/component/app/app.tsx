@@ -43,6 +43,7 @@ import CancelDrawing from './cancel-drawing'
 import { PermissiveComponentType } from '../../typescript'
 import Box from '@material-ui/core/Box'
 import scrollIntoView from 'scroll-into-view-if-needed'
+import { Elevations } from '../theme/theme'
 export const handleBase64EncodedImages = (url: string) => {
   if (url && url.startsWith('data:')) {
     return url
@@ -195,7 +196,7 @@ const App = ({
         }
       }, 0)
     },
-    [withinNav]
+    [withinNav, location]
   )
 
   return (
@@ -244,7 +245,7 @@ const App = ({
                 setWithinNav(false)
               }}
             >
-              <Paper elevation={6} className="h-full">
+              <Paper elevation={Elevations.navbar} className="h-full">
                 <Grid
                   container
                   direction="column"
