@@ -321,6 +321,7 @@ function buildAst(tokens) {
         return {
           filters: [operand],
           type: tok.type,
+          negated: true,
         }
       case 'BETWEEN':
         let min, max
