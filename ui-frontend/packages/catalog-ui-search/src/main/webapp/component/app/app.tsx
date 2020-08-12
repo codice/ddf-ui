@@ -267,7 +267,7 @@ const App = ({
                           >
                             {properties.topLeftLogoSrc ? (
                               <img
-                                className="max-h-full max-w-full absolute left-0 transform -translate-y-1/2 top-1/2"
+                                className="max-h-full max-w-full absolute left-0 transform -translate-y-1/2 top-1/2 p-2"
                                 src={handleBase64EncodedImages(
                                   properties.topLeftLogoSrc
                                 )}

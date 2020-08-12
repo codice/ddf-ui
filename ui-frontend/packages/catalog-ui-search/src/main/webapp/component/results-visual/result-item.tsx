@@ -40,6 +40,10 @@ import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { useSelectionOfLazyResult } from '../../js/model/LazyQueryResult/hooks'
 import Extensions from '../../extension-points'
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
+import CheckBoxIcon from '@material-ui/icons/CheckBox'
+import { Elevations } from '../theme/theme'
+import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple'
 const getResultDisplayType = () =>
   (user &&
     user
@@ -144,7 +148,6 @@ const SpecialButton = styled(Button)`
     }
     text-transform: none;
     text-align: left;
-    overflow: hidden;
     word-break: break-word;
     ${props => getPaddingForTheme({ theme: props.theme })};
   }
@@ -178,13 +181,20 @@ const getIconClassName = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   return ''
 }
 
+function clearSelection() {
+  if (window.getSelection) {
+    window.getSelection().removeAllRanges()
+  } else if (document.selection) {
+    document.selection.empty()
+  }
+}
+
 export const ResultItem = ({
   lazyResult,
   measure,
   index,
 }: ResultItemFullProps) => {
   // console.log(`rendered: ${index}`)
-  const theme = useTheme()
   const isSelected = useSelectionOfLazyResult({ lazyResult })
   const [isGallery, setIsGallery] = React.useState(checkResultDisplayType())
   const { listenTo } = useBackbone()
@@ -217,236 +227,345 @@ export const ResultItem = ({
 
   const DynamicActions = () => {
     return (
-      <Grid item>
-        <Grid
-          container
-          direction="row"
-          wrap="nowrap"
-          style={{ height: '100%' }}
-        >
-          <Grid item style={{ height: '100%' }}>
-            {lazyResult.hasErrors() ? (
-              <SmallButton
-                disabled
-                style={{ height: '100%', pointerEvents: 'all' }}
-                size="small"
-                title="Has validation errors."
-                data-help="Indicates the given result has a validation error.
+      <Grid container alignItems="center">
+        <Grid item className="ml-auto">
+          <Grid container direction="row" wrap="nowrap" alignItems="center">
+            <Grid item style={{ height: '100%' }}>
+              {lazyResult.hasErrors() ? (
+                <div
+                  className="h-full"
+                  title="Has validation errors."
+                  data-help="Indicates the given result has a validation error.
                       See the 'Quality' tab of the result for more details."
-              >
-                <WarningIcon />
-              </SmallButton>
-            ) : (
-              ''
-            )}
-          </Grid>
-          <Grid item style={{ height: '100%' }}>
-            {!lazyResult.hasErrors() && lazyResult.hasWarnings() ? (
-              <SmallButton
-                disabled
-                style={{ height: '100%', pointerEvents: 'all' }}
-                size="small"
-                title="Has validation warnings."
-                data-help="Indicates the given result has a validation warning.
+                >
+                  <WarningIcon />
+                </div>
+              ) : (
+                ''
+              )}
+            </Grid>
+            <Grid item style={{ height: '100%' }}>
+              {!lazyResult.hasErrors() && lazyResult.hasWarnings() ? (
+                <div
+                  className="h-full"
+                  title="Has validation warnings."
+                  data-help="Indicates the given result has a validation warning.
                       See the 'Quality' tab of the result for more details."
-              >
-                <WarningIcon />
-              </SmallButton>
-            ) : (
-              ''
-            )}
-          </Grid>
-          <Grid item style={{ height: '100%' }}>
-            {lazyResult.plain.metacard.properties['ext.link'] ? (
-              <SmallButton
-                title={lazyResult.plain.metacard.properties['ext.link']}
-                onClick={e => {
-                  e.stopPropagation()
-                  window.open(lazyResult.plain.metacard.properties['ext.link'])
+                >
+                  <WarningIcon />
+                </div>
+              ) : (
+                ''
+              )}
+            </Grid>
+            <Grid item style={{ height: '100%' }}>
+              {lazyResult.plain.metacard.properties['ext.link'] ? (
+                <SmallButton
+                  title={lazyResult.plain.metacard.properties['ext.link']}
+                  onClick={e => {
+                    e.stopPropagation()
+                    window.open(
+                      lazyResult.plain.metacard.properties['ext.link']
+                    )
+                  }}
+                  style={{ height: '100%' }}
+                  size="small"
+                >
+                  <LinkIcon />
+                </SmallButton>
+              ) : null}
+            </Grid>
+            <Grid item style={{ height: '100%' }}>
+              {lazyResult.isDownloadable() ? (
+                <SmallButton
+                  onClick={e => {
+                    e.stopPropagation()
+                    triggerDownload(e)
+                  }}
+                  style={{ height: '100%' }}
+                  size="small"
+                >
+                  <GetAppIcon />
+                </SmallButton>
+              ) : null}
+            </Grid>
+            <Extensions.resultItemTitleAddOn lazyResult={lazyResult} />
+            <Grid item style={{ height: '100%' }}>
+              <Dropdown
+                content={({ close }) => {
+                  return (
+                    <BetterClickAwayListener onClickAway={close}>
+                      <Paper>
+                        <LazyMetacardInteractions
+                          lazyResults={[lazyResult]}
+                          onClose={() => {
+                            close()
+                          }}
+                        />
+                      </Paper>
+                    </BetterClickAwayListener>
+                  )
                 }}
-                style={{ height: '100%' }}
-                size="small"
               >
-                <LinkIcon />
-              </SmallButton>
-            ) : null}
-          </Grid>
-          <Grid item style={{ height: '100%' }}>
-            {lazyResult.isDownloadable() ? (
-              <SmallButton
-                onClick={triggerDownload}
-                style={{ height: '100%' }}
-                size="small"
-              >
-                <GetAppIcon />
-              </SmallButton>
-            ) : null}
-          </Grid>
-          <Grid item style={{ height: '100%' }}>
-            <Dropdown
-              content={({ close }) => {
-                return (
-                  <BetterClickAwayListener onClickAway={close}>
-                    <Paper>
-                      <LazyMetacardInteractions
-                        lazyResults={[lazyResult]}
-                        onClose={() => {
-                          close()
-                        }}
-                      />
-                    </Paper>
-                  </BetterClickAwayListener>
-                )
-              }}
-            >
-              {({ handleClick }) => {
-                return (
-                  <SmallButton
-                    onClick={handleClick}
-                    style={{ height: '100%' }}
-                    size="small"
-                  >
-                    <MoreIcon />
-                  </SmallButton>
-                )
-              }}
-            </Dropdown>
+                {({ handleClick }) => {
+                  return (
+                    <SmallButton
+                      onClick={e => {
+                        e.stopPropagation()
+                        handleClick(e)
+                      }}
+                      style={{ height: '100%' }}
+                      size="small"
+                    >
+                      <MoreIcon />
+                    </SmallButton>
+                  )
+                }}
+              </Dropdown>
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
     )
   }
-
+  const [isHovering, setIsHovering] = React.useState(false)
+  const [isFocused, setIsFocused] = React.useState(false)
+  const rippleRef = React.useRef<{
+    pulsate: () => void
+    stop: (e: any) => void
+    start: (e: any) => void
+  }>(null)
   return (
-    <Grid
-      container
-      direction="row"
-      wrap="nowrap"
-      alignItems="stretch"
-      alignContent="stretch"
+    <SpecialButton
+      onMouseEnter={() => {
+        setIsHovering(true)
+      }}
+      onMouseOver={() => {
+        setIsHovering(true)
+      }}
+      onMouseLeave={() => {
+        setIsHovering(false)
+      }}
+      onMouseOut={() => {
+        setIsHovering(false)
+      }}
+      onMouseDown={event => {
+        /**
+         * Shift key can cause selections since we set the class to allow text selection,
+         * so the only scenario we want to prevent that in is when shift clicking
+         */
+        if (event.shiftKey) {
+          clearSelection()
+        }
+        /**
+         * Stop the ripple that starts on focus, that's only for navigating by keyboard
+         */
+        setTimeout(() => {
+          if (rippleRef.current) {
+            rippleRef.current.stop(event)
+          }
+        }, 0)
+      }}
+      onClick={event => {
+        event.preventDefault()
+        if (event.shiftKey) {
+          lazyResult.shiftSelect()
+          clearSelection()
+        } else if (event.ctrlKey || event.metaKey) {
+          lazyResult.controlSelect()
+        } else {
+          lazyResult.select()
+        }
+        if (rippleRef.current) {
+          rippleRef.current.start(event)
+        }
+        setTimeout(() => {
+          if (rippleRef.current) {
+            rippleRef.current.stop(event)
+          }
+        }, 200)
+      }}
+      onFocus={e => {
+        if (e.target === e.currentTarget && rippleRef.current) {
+          rippleRef.current.pulsate()
+        }
+      }}
+      onBlur={e => {
+        if (rippleRef.current) {
+          rippleRef.current.stop(e)
+        }
+      }}
+      fullWidth
+      className={`select-text outline-none`}
+      disableFocusRipple
+      disableTouchRipple
     >
-      <Grid item style={{ width: '100%' }}>
-        <div className="pt-3 w-full">
-          <Box
-            className="h-1 w-full"
-            bgcolor={isSelected ? 'secondary.main' : 'divider'}
-          />
-        </div>
-        <Grid
-          container
-          alignItems="stretch"
-          alignContent="stretch"
-          direction="row"
-          justify="space-between"
-          wrap="nowrap"
-        >
-          <Grid item style={{ width: '100%' }}>
-            <SpecialButton
-              fullWidth
-              className="py-3 outline-none"
-              onClick={event => {
-                if (event.shiftKey) {
-                  lazyResult.shiftSelect()
-                } else if (event.ctrlKey || event.metaKey) {
-                  lazyResult.controlSelect()
-                } else {
-                  lazyResult.select()
-                }
-              }}
-            >
-              <div>
-                <IconSpan
-                  className={getIconClassName({ lazyResult })}
-                  data-help={TypedMetacardDefs.getAlias({ attr: 'title' })}
-                  title={`${TypedMetacardDefs.getAlias({ attr: 'title' })}: ${
-                    lazyResult.plain.metacard.properties.title
-                  }`}
-                >
-                  {lazyResult.plain.metacard.properties.title}{' '}
-                  <Extensions.resultItemTitleAddOn lazyResult={lazyResult} />
-                </IconSpan>
-              </div>
-              <div>
-                <Extensions.resultItemRowAddOn lazyResult={lazyResult} />
-              </div>
-              <div>
-                {renderThumbnail ? (
-                  <img
-                    src={imgsrc}
-                    style={{ marginTop: '10px', maxWidth: '100%' }}
-                    onLoad={() => {
-                      measure()
+      <TouchRipple ref={rippleRef} />
+      <div className="pt-3 w-full">
+        <Box
+          className="h-1 w-full"
+          bgcolor={isSelected ? 'secondary.main' : 'divider'}
+        />
+      </div>
+      <Grid
+        container
+        alignItems="stretch"
+        alignContent="stretch"
+        direction="row"
+        justify="space-between"
+        wrap="nowrap"
+      >
+        <Grid item className="w-full relative">
+          <div className="py-3 w-full">
+            <div>
+              <Grid
+                className="w-full"
+                container
+                direction="row"
+                wrap="nowrap"
+                alignItems="center"
+              >
+                <Grid item>
+                  <Button
+                    onClick={event => {
+                      event.stopPropagation()
+                      if (event.shiftKey) {
+                        lazyResult.shiftSelect()
+                      } else {
+                        lazyResult.controlSelect()
+                      }
                     }}
-                    onError={() => {
-                      measure()
+                    className="relative p-2 min-w-0 outline-none h-full"
+                    onFocus={e => {
+                      setIsFocused(true)
                     }}
-                  />
-                ) : null}
-
-                {customDetails.map(detail => {
-                  return (
-                    <PropertyComponent
-                      key={detail.label}
+                    onBlur={e => {
+                      setIsFocused(false)
+                    }}
+                  >
+                    {(() => {
+                      if (isSelected) {
+                        return <CheckBoxIcon />
+                      } else if (!isSelected) {
+                        return (
+                          <CheckBoxOutlineBlankIcon
+                            className={`${
+                              isHovering || isFocused ? '' : ' invisible'
+                            }`}
+                          />
+                        )
+                      }
+                      return null
+                    })()}
+                    <IconSpan
+                      className={`${getIconClassName({
+                        lazyResult,
+                      })} ${
+                        isHovering || isSelected || isFocused ? 'invisible' : ''
+                      } absolute z-10 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
                       data-help={TypedMetacardDefs.getAlias({
-                        attr: detail.label,
+                        attr: 'title',
                       })}
                       title={`${TypedMetacardDefs.getAlias({
-                        attr: detail.label,
-                      })}: ${detail.value}`}
-                    >
-                      <span>{detail.value}</span>
-                    </PropertyComponent>
-                  )
-                })}
-                {showRelevanceScore({ lazyResult }) ? (
+                        attr: 'title',
+                      })}: ${lazyResult.plain.metacard.properties.title}`}
+                    />
+                  </Button>
+                </Grid>
+                <Grid item>
+                  <div className="">
+                    {lazyResult.plain.metacard.properties.title}
+                  </div>
+                </Grid>
+              </Grid>
+            </div>
+            <div>
+              <Extensions.resultItemRowAddOn lazyResult={lazyResult} />
+            </div>
+            <div>
+              {renderThumbnail ? (
+                <img
+                  src={imgsrc}
+                  style={{ marginTop: '10px', maxWidth: '100%' }}
+                  onLoad={() => {
+                    measure()
+                  }}
+                  onError={() => {
+                    measure()
+                  }}
+                />
+              ) : null}
+
+              {customDetails.map(detail => {
+                return (
                   <PropertyComponent
-                    data-help={`Relevance: ${lazyResult.plain.relevance}`}
-                    title={`Relevance: ${lazyResult.plain.relevance}`}
-                  >
-                    <span>{lazyResult.getRoundedRelevance()}</span>
-                  </PropertyComponent>
-                ) : (
-                  ''
-                )}
-                {showSource() ? (
-                  <PropertyComponent
-                    title={`${TypedMetacardDefs.getAlias({
-                      attr: 'source-id',
-                    })}: ${lazyResult.plain.metacard.properties['source-id']}`}
+                    key={detail.label}
                     data-help={TypedMetacardDefs.getAlias({
-                      attr: 'source-id',
+                      attr: detail.label,
                     })}
+                    title={`${TypedMetacardDefs.getAlias({
+                      attr: detail.label,
+                    })}: ${detail.value}`}
                   >
-                    {!lazyResult.isRemote() ? (
-                      <React.Fragment>
-                        <span className="fa fa-home" />
-                        <span style={{ marginLeft: '5px' }}>local</span>
-                      </React.Fragment>
-                    ) : (
-                      <React.Fragment>
-                        <span className="fa fa-cloud" />
-                        <span style={{ marginLeft: '5px' }}>
-                          {lazyResult.plain.metacard.properties['source-id']}
-                        </span>
-                      </React.Fragment>
-                    )}
+                    <span>{detail.value}</span>
                   </PropertyComponent>
-                ) : (
-                  ''
-                )}
-              </div>
-            </SpecialButton>
-          </Grid>
-          <DynamicActions />
+                )
+              })}
+              {showRelevanceScore({ lazyResult }) ? (
+                <PropertyComponent
+                  data-help={`Relevance: ${lazyResult.plain.relevance}`}
+                  title={`Relevance: ${lazyResult.plain.relevance}`}
+                >
+                  <span>{lazyResult.getRoundedRelevance()}</span>
+                </PropertyComponent>
+              ) : (
+                ''
+              )}
+              {showSource() ? (
+                <PropertyComponent
+                  title={`${TypedMetacardDefs.getAlias({
+                    attr: 'source-id',
+                  })}: ${lazyResult.plain.metacard.properties['source-id']}`}
+                  data-help={TypedMetacardDefs.getAlias({
+                    attr: 'source-id',
+                  })}
+                >
+                  {!lazyResult.isRemote() ? (
+                    <React.Fragment>
+                      <span className="fa fa-home" />
+                      <span style={{ marginLeft: '5px' }}>local</span>
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment>
+                      <span className="fa fa-cloud" />
+                      <span style={{ marginLeft: '5px' }}>
+                        {lazyResult.plain.metacard.properties['source-id']}
+                      </span>
+                    </React.Fragment>
+                  )}
+                </PropertyComponent>
+              ) : (
+                ''
+              )}
+            </div>
+          </div>
+          <Paper
+            elevation={Elevations.overlays}
+            className={`absolute z-50 right-0 top-0 focus-within:opacity-100 hover:opacity-100 ${
+              isHovering ? 'opacity-100' : 'opacity-0'
+            } focus-within:opacity-100 transform -translate-y-3/4`}
+          >
+            <DynamicActions />
+          </Paper>
         </Grid>
-        <div className="pb-3 w-full">
-          <Box
-            className="h-1 w-full"
-            bgcolor={isSelected ? 'secondary.main' : 'divider'}
-          />
-        </div>
       </Grid>
-    </Grid>
+      <div className="pb-3 w-full">
+        <Box
+          className="h-1 w-full"
+          bgcolor={isSelected ? 'secondary.main' : 'divider'}
+        />
+      </div>
+    </SpecialButton>
   )
 }
 
