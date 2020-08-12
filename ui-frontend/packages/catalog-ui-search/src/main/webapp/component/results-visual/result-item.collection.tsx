@@ -84,7 +84,7 @@ const ResultCards = ({ results, mode, setMode, lazyResults }: Props) => {
           Select All
         </Button>
       </Grid>
-      <Grid item style={{ height: '100%', width: '100%' }}>
+      <Grid item className="w-full h-full">
         <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
           controlledMeasuring={true}
           items={results}

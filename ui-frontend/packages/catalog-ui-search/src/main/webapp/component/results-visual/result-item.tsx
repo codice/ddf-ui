@@ -41,6 +41,8 @@ import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { useSelectionOfLazyResult } from '../../js/model/LazyQueryResult/hooks'
 import Extensions from '../../extension-points'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
+import CheckIcon from '@material-ui/icons/Check'
+import DoneOutlineIcon from '@material-ui/icons/DoneOutline'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import { Elevations } from '../theme/theme'
 import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple'
@@ -416,7 +418,7 @@ export const ResultItem = ({
         wrap="nowrap"
       >
         <Grid item className="w-full relative">
-          <div className="py-3 w-full">
+          <div className="py-1 w-full">
             <div>
               <Grid
                 className="w-full"
@@ -434,6 +436,7 @@ export const ResultItem = ({
                       } else {
                         lazyResult.controlSelect()
                       }
+                      event.currentTarget.blur()
                     }}
                     className="relative p-2 min-w-0 outline-none h-full"
                     onFocus={e => {
@@ -445,14 +448,29 @@ export const ResultItem = ({
                   >
                     {(() => {
                       if (isSelected) {
-                        return <CheckBoxIcon />
+                        return (
+                          <Box
+                            color="secondary.main"
+                            className={`transform transition duration-200 ease-in-out ${
+                              isHovering || isFocused ? '' : '-translate-x-full'
+                            }`}
+                          >
+                            {isHovering || isFocused ? (
+                              <CheckBoxIcon />
+                            ) : (
+                              <CheckIcon />
+                            )}
+                          </Box>
+                        )
                       } else if (!isSelected) {
                         return (
-                          <CheckBoxOutlineBlankIcon
-                            className={`${
-                              isHovering || isFocused ? '' : ' invisible'
-                            }`}
-                          />
+                          <Box color="secondary.main" className="transform ">
+                            <CheckBoxOutlineBlankIcon
+                              className={`${
+                                isHovering || isFocused ? '' : ' invisible'
+                              }`}
+                            />
+                          </Box>
                         )
                       }
                       return null
@@ -461,8 +479,8 @@ export const ResultItem = ({
                       className={`${getIconClassName({
                         lazyResult,
                       })} ${
-                        isHovering || isSelected || isFocused ? 'invisible' : ''
-                      } absolute z-10 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
+                        isHovering || isFocused ? 'invisible' : ''
+                      } absolute -z-1 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
                       data-help={TypedMetacardDefs.getAlias({
                         attr: 'title',
                       })}
@@ -553,13 +571,13 @@ export const ResultItem = ({
             elevation={Elevations.overlays}
             className={`absolute z-50 right-0 top-0 focus-within:opacity-100 hover:opacity-100 ${
               isHovering ? 'opacity-100' : 'opacity-0'
-            } focus-within:opacity-100 transform -translate-y-3/4`}
+            } focus-within:opacity-100 transform -translate-y-1/2`}
           >
             <DynamicActions />
           </Paper>
         </Grid>
       </Grid>
-      <div className="pb-3 w-full">
+      <div className="pb-1 w-full">
         <Box
           className="h-1 w-full"
           bgcolor={isSelected ? 'secondary.main' : 'divider'}
