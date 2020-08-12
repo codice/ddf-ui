@@ -221,7 +221,6 @@ const TableVisual = ({
           height: '100%',
           width: '100%',
           overflow: 'hidden',
-          background: theme.palette.background.paper,
         }}
       >
         <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
@@ -239,7 +238,7 @@ const TableVisual = ({
           items={results}
           Item={({ itemRef, item, measure, index }) => {
             return (
-              <div ref={itemRef} style={{ background: 'inherit' }}>
+              <div ref={itemRef}>
                 <ResultItemRow
                   lazyResult={item}
                   visibleHeaders={visibleHeaders}

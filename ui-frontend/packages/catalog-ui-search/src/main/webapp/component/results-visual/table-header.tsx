@@ -56,7 +56,6 @@ export const CellComponent = (props: GridProps) => {
         width: '200px',
         maxHeight: '200px',
         textOverflow: 'ellipsis',
-        border: '1px solid gray',
         overflow: 'hidden',
         padding: '10px',
         ...style,
