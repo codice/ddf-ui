@@ -28,6 +28,17 @@ type Theme = {
   paper: string
 }
 
+// // octo colors
+// export const dark: Theme = {
+//   background: '#F38832',
+//   navbar: '#2B3A49',
+//   panels: '#3A4A54',
+//   overlays: '#475A66',
+//   paper: '#213137',
+//   primary: '#589dd5',
+//   secondary: '#589dd5',
+// }
+
 export const dark: Theme = {
   background: '#0B1821',
   navbar: '#475A66',

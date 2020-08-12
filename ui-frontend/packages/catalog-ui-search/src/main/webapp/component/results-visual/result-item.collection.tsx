@@ -22,6 +22,7 @@ import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 import Divider from '@material-ui/core/Divider'
+import Box from '@material-ui/core/Box'
 const user = require('../singletons/user-instance.js')
 
 type Props = {
@@ -93,7 +94,11 @@ const ResultCards = ({ results, mode, setMode, lazyResults }: Props) => {
           Item={({ itemRef, item, measure, index, width }) => {
             return (
               <div ref={itemRef} className="px-3">
-                {index !== -1 ? <></> : null}
+                {index !== -1 ? (
+                  <>
+                    <Box className="h-min w-full" bgcolor={'divider'} />
+                  </>
+                ) : null}
                 <ResultItem
                   lazyResult={item}
                   measure={measure}

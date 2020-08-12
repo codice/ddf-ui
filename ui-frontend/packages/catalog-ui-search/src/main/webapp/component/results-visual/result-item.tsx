@@ -151,7 +151,6 @@ const SpecialButton = styled(Button)`
     text-transform: none;
     text-align: left;
     word-break: break-word;
-    ${props => getPaddingForTheme({ theme: props.theme })};
   }
 `
 
@@ -398,17 +397,15 @@ export const ResultItem = ({
         }
       }}
       fullWidth
-      className={`select-text outline-none`}
+      className={`select-text outline-none px-5`}
       disableFocusRipple
       disableTouchRipple
     >
       <TouchRipple ref={rippleRef} />
-      <div className="pt-3 w-full">
-        <Box
-          className="h-1 w-full"
-          bgcolor={isSelected ? 'secondary.main' : 'divider'}
-        />
-      </div>
+      {/* <Box
+        className="h-1 w-full"
+        bgcolor={isSelected ? 'secondary.main' : 'divider'}
+      /> */}
       <Grid
         container
         alignItems="stretch"
@@ -497,74 +494,76 @@ export const ResultItem = ({
                 </Grid>
               </Grid>
             </div>
-            <div>
-              <Extensions.resultItemRowAddOn lazyResult={lazyResult} />
-            </div>
-            <div>
-              {renderThumbnail ? (
-                <img
-                  src={imgsrc}
-                  style={{ marginTop: '10px', maxWidth: '100%' }}
-                  onLoad={() => {
-                    measure()
-                  }}
-                  onError={() => {
-                    measure()
-                  }}
-                />
-              ) : null}
+            <div className="pl-3">
+              <div>
+                <Extensions.resultItemRowAddOn lazyResult={lazyResult} />
+              </div>
+              <div>
+                {renderThumbnail ? (
+                  <img
+                    src={imgsrc}
+                    style={{ marginTop: '10px', maxWidth: '100%' }}
+                    onLoad={() => {
+                      measure()
+                    }}
+                    onError={() => {
+                      measure()
+                    }}
+                  />
+                ) : null}
 
-              {customDetails.map(detail => {
-                return (
+                {customDetails.map(detail => {
+                  return (
+                    <PropertyComponent
+                      key={detail.label}
+                      data-help={TypedMetacardDefs.getAlias({
+                        attr: detail.label,
+                      })}
+                      title={`${TypedMetacardDefs.getAlias({
+                        attr: detail.label,
+                      })}: ${detail.value}`}
+                    >
+                      <span>{detail.value}</span>
+                    </PropertyComponent>
+                  )
+                })}
+                {showRelevanceScore({ lazyResult }) ? (
                   <PropertyComponent
-                    key={detail.label}
-                    data-help={TypedMetacardDefs.getAlias({
-                      attr: detail.label,
-                    })}
-                    title={`${TypedMetacardDefs.getAlias({
-                      attr: detail.label,
-                    })}: ${detail.value}`}
+                    data-help={`Relevance: ${lazyResult.plain.relevance}`}
+                    title={`Relevance: ${lazyResult.plain.relevance}`}
                   >
-                    <span>{detail.value}</span>
+                    <span>{lazyResult.getRoundedRelevance()}</span>
                   </PropertyComponent>
-                )
-              })}
-              {showRelevanceScore({ lazyResult }) ? (
-                <PropertyComponent
-                  data-help={`Relevance: ${lazyResult.plain.relevance}`}
-                  title={`Relevance: ${lazyResult.plain.relevance}`}
-                >
-                  <span>{lazyResult.getRoundedRelevance()}</span>
-                </PropertyComponent>
-              ) : (
-                ''
-              )}
-              {showSource() ? (
-                <PropertyComponent
-                  title={`${TypedMetacardDefs.getAlias({
-                    attr: 'source-id',
-                  })}: ${lazyResult.plain.metacard.properties['source-id']}`}
-                  data-help={TypedMetacardDefs.getAlias({
-                    attr: 'source-id',
-                  })}
-                >
-                  {!lazyResult.isRemote() ? (
-                    <React.Fragment>
-                      <span className="fa fa-home" />
-                      <span style={{ marginLeft: '5px' }}>local</span>
-                    </React.Fragment>
-                  ) : (
-                    <React.Fragment>
-                      <span className="fa fa-cloud" />
-                      <span style={{ marginLeft: '5px' }}>
-                        {lazyResult.plain.metacard.properties['source-id']}
-                      </span>
-                    </React.Fragment>
-                  )}
-                </PropertyComponent>
-              ) : (
-                ''
-              )}
+                ) : (
+                  ''
+                )}
+                {showSource() ? (
+                  <PropertyComponent
+                    title={`${TypedMetacardDefs.getAlias({
+                      attr: 'source-id',
+                    })}: ${lazyResult.plain.metacard.properties['source-id']}`}
+                    data-help={TypedMetacardDefs.getAlias({
+                      attr: 'source-id',
+                    })}
+                  >
+                    {!lazyResult.isRemote() ? (
+                      <React.Fragment>
+                        <span className="fa fa-home" />
+                        <span style={{ marginLeft: '5px' }}>local</span>
+                      </React.Fragment>
+                    ) : (
+                      <React.Fragment>
+                        <span className="fa fa-cloud" />
+                        <span style={{ marginLeft: '5px' }}>
+                          {lazyResult.plain.metacard.properties['source-id']}
+                        </span>
+                      </React.Fragment>
+                    )}
+                  </PropertyComponent>
+                ) : (
+                  ''
+                )}
+              </div>
             </div>
           </div>
           <Paper
@@ -577,12 +576,10 @@ export const ResultItem = ({
           </Paper>
         </Grid>
       </Grid>
-      <div className="pb-1 w-full">
-        <Box
-          className="h-1 w-full"
-          bgcolor={isSelected ? 'secondary.main' : 'divider'}
-        />
-      </div>
+      {/* <Box
+        className="h-1 w-full"
+        bgcolor={isSelected ? 'secondary.main' : 'divider'}
+      /> */}
     </SpecialButton>
   )
 }
