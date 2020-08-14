@@ -225,6 +225,7 @@ function removeMaximisedInformation(config) {
 function removeEphemeralState(config) {
   removeMaximisedInformation(config)
   removeActiveTabInformation(config)
+  return config
 }
 
 const FALLBACK_GOLDEN_LAYOUT = [

@@ -47,7 +47,7 @@ export const dark: Theme = {
   panels: '#243540', // 243540
   overlays: darken('#365160', 0.1),
   paper: darken('#365160', 0.2),
-  tabs: darken('#243540', 0.1),
+  tabs: darken('#243540', 0.3),
   primary: '#69E1E8',
   secondary: '#2196f3',
 }
@@ -138,6 +138,10 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
         border-bottom-right-radius: 0px !important;
       }
       .lm_tab:not(.lm_active) {
+        color: ${props =>
+          props.palette.type === 'dark'
+            ? props.palette.text.secondary
+            : props.palette.text.secondary} !important;
         background: ${props =>
           props.palette.type === 'dark' ? dark.tabs : light.tabs} !important;
         button {
