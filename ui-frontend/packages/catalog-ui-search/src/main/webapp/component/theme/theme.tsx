@@ -41,10 +41,10 @@ type Theme = {
 
 export const dark: Theme = {
   background: '#0B1821',
-  navbar: '#475A66',
-  panels: '#3A4A54',
-  overlays: '#475A66',
-  paper: '#213137',
+  navbar: darken('#365160', 0.2),
+  panels: '#243540', // 243540
+  overlays: darken('#365160', 0.1),
+  paper: darken('#365160', 0.2),
   primary: '#69E1E8',
   secondary: '#2196f3',
 }
@@ -52,16 +52,17 @@ export const dark: Theme = {
 export const light: Theme = {
   primary: '#3c6dd5',
   secondary: '#2196f3',
-  background: '#898989', // elevation 0
-  navbar: '#CECECE', // elevation 8
-  panels: '#E5E5E5', // elevation 6
-  overlays: '#F9F9F9', // elevation 16
-  paper: '#f3fdff',
+  background: '#E5E5E5', // elevation 0
+  navbar: '#fafbfc', // elevation 8
+  panels: '#FCFCFC', // elevation 6
+  overlays: '#FCFCFC', // elevation 16
+  paper: '#FCFCFC',
 }
 
 export const Elevations = {
   navbar: 8,
   background: 0,
+  paper: 2,
   panels: 6,
   overlays: 16,
 }
@@ -159,7 +160,9 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .bp3-datepicker .DayPicker-Day.DayPicker-Day--selected, .bp3-active {
         background-color: ${props => props.palette.primary.dark} !important;
       }
-      
+      .bp3-table-quadrant, .bp3-table-cell-client, .bp3-table-row-headers {
+        background: inherit !important;
+      }
       // for whatever reason they have a height of 0 sometimes, maybe MUI will fix this in v5
       textarea.MuiInputBase-input {
         min-height: 21px;
@@ -180,12 +183,23 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
         background-color: ${props =>
           props.palette.type === 'dark' ? dark.overlays : light.overlays};
       }
+      .MuiPaper-elevation2 {
+        border-width: 1px;
+        border-style: solid;
+        border-color: ${props =>
+          props.palette.type === 'dark'
+            ? props.palette.divider
+            : props.palette.divider};
+          background-color: ${props =>
+            props.palette.type === 'dark' ? dark.paper : light.paper};
+      }
       [data-behavior-dropdown] {
         background-color: ${props =>
           props.palette.type === 'dark' ? dark.overlays : light.overlays};
       }
       ::-webkit-scrollbar {
         width: 8px;
+        height: 8px;
       }
       ::-webkit-scrollbar-track {
         background: ${props =>
@@ -199,6 +213,19 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
             ? 'linear-gradient(-180deg, rgb(229, 229, 229) 0%, rgb(206, 206, 206) 100%)'
             : 'linear-gradient(-180deg, rgb(153, 153, 153) 0%, rgb(187, 187, 187) 100%)'};
             border-radius: 4px;
+      }
+      .MuiButtonReset {
+        && {
+          height: auto;
+          .MuiButton-label {
+            display: block;
+          }
+          text-transform: none;
+          text-align: left;
+          overflow: hidden;
+          word-break: break-word;
+          padding: 0px;
+        }
       }
     `
 

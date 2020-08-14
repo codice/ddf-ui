@@ -198,7 +198,7 @@ const App = ({
     },
     [withinNav, location]
   )
-
+  console.log('app rendered')
   return (
     <Box bgcolor="background.default" className="h-full w-full overflow-hidden">
       {/* Don't move CSSBaseline or GlobalStyles to providers, since we have multiple react roots.   */}
@@ -323,7 +323,7 @@ const App = ({
                   <Divider />
                   <Grid
                     item
-                    className="overflow-auto p-0 flex-shrink-0 scrollbars-hide"
+                    className="overflow-auto p-0 flex-shrink-0 scrollbars-min"
                     style={{
                       maxHeight: `calc(100% - ${7 * 4}rem)`, //
                     }}

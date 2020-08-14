@@ -13,6 +13,7 @@
  *
  **/
 import React from 'react'
+
 require('../styles/tailwind.css')
 require('../styles/libraries.css')
 require('../styles/styles.less')

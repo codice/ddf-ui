@@ -21,8 +21,13 @@ const ResultsView = ({ selectionInterface }: Props) => {
   const { isSearching } = useStatusOfLazyResults({ lazyResults })
   const results = Object.values(lazyResults.results)
   return (
-    <Grid container direction="column" className="w-full h-full" wrap="nowrap">
-      <Grid className="w-full h-full">
+    <Grid
+      container
+      direction="column"
+      className="w-full h-full bg-inherit"
+      wrap="nowrap"
+    >
+      <Grid className="w-full h-full bg-inherit">
         {(() => {
           if (isSearching && results.length === 0) {
             return <CircularProgress />

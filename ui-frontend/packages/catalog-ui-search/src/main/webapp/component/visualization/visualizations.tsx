@@ -21,7 +21,7 @@ import ResultsView from '../results-visual'
 const Marionette = require('marionette')
 
 const ResultsViewWrapper = Marionette.LayoutView.extend({
-  className: 'customElement',
+  className: 'customElement bg-inherit',
   template() {
     return (
       <>

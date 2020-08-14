@@ -22,7 +22,12 @@ const _ = require('underscore')
 const $ = require('jquery')
 const user = require('../singletons/user-instance.js')
 require('jquery-ui/ui/widgets/resizable')
-
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
+import Button from '@material-ui/core/Button'
+import Box from '@material-ui/core/Box'
+import CheckBoxIcon from '@material-ui/icons/CheckBox'
+import { useSelectionOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
+import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox'
 export type Header = {
   hidden: boolean
   id: string
@@ -108,10 +113,44 @@ const getSortDirectionClass = (attribute: string) => {
   }
 }
 
+const HeaderCheckbox = ({
+  lazyResults,
+}: {
+  lazyResults: HeaderProps['lazyResults']
+}) => {
+  const selection = useSelectionOfLazyResults({
+    lazyResults: Object.values(lazyResults.results),
+  })
+  return (
+    <Button
+      onClick={event => {
+        event.stopPropagation()
+        if (selection === 'selected') {
+          Object.values(lazyResults.results).forEach(lazyResult => {
+            lazyResult.setSelected(false)
+          })
+        } else {
+          Object.values(lazyResults.results).forEach(lazyResult => {
+            lazyResult.setSelected(true)
+          })
+        }
+      }}
+    >
+      {(() => {
+        switch (selection) {
+          case 'partially':
+            return <IndeterminateCheckBoxIcon />
+          case 'selected':
+            return <CheckBoxIcon />
+          case 'unselected':
+            return <CheckBoxOutlineBlankIcon />
+        }
+      })()}
+    </Button>
+  )
+}
+
 export const Header = ({ visibleHeaders, lazyResults }: HeaderProps) => {
-  const [forceRender, setForceRender] = React.useState(Math.random())
-  const { listenTo } = useBackbone()
-  const theme = useTheme()
   const handleSortClick = _.debounce(updateSort, 500, true)
 
   return (
@@ -120,36 +159,56 @@ export const Header = ({ visibleHeaders, lazyResults }: HeaderProps) => {
         container
         direction="row"
         wrap="nowrap"
+        className="bg-inherit"
         style={{
           width: visibleHeaders.length * 200 + 'px',
-          background: 'inherit',
         }}
       >
-        {visibleHeaders.map(header => {
+        <Grid item className="sticky left-0 w-auto z-10 bg-inherit">
+          <CellComponent
+            className="bg-inherit"
+            style={{ width: 'auto', paddingLeft: '0px', paddingRight: '0px' }}
+          >
+            <HeaderCheckbox lazyResults={lazyResults} />
+          </CellComponent>
+        </Grid>
+        {visibleHeaders.map((header, index) => {
+          const last = visibleHeaders.length - 1 === index
           const { label, id, sortable } = header
           return (
             <CellComponent
               key={id}
-              className={`${sortable ? 'is-sortable' : ''}`}
+              className={`relative ${sortable ? 'is-sortable' : ''}`}
               data-propertyid={`${id}`}
               data-propertytext={`${label ? `${label} ${id}` : `${id}`}`}
+              style={{
+                padding: 0,
+                minWidth: last ? '208px' : '200px', // 8px is the scrollbar width and they only affect the body, so we need to account for it in the last header cell
+              }}
             >
-              <button
+              <Box
+                className="w-min h-full absolute left-0 top-0"
+                bgcolor="divider"
+              />
+              <Button
                 disabled={!sortable}
+                className="w-full outline-none is-bold h-full"
                 onClick={() => handleSortClick(id)}
                 style={{ width: '100%' }}
               >
-                <span
-                  className="column-text"
-                  title={`${label ? `${label} ${id}` : `${id}`}`}
-                >
-                  {`${label ? `${label} ${id}` : `${id}`}`}
-                </span>
-                <span
-                  className={getSortDirectionClass(id)}
-                  style={{ paddingLeft: '3px' }}
-                />
-              </button>
+                <div className="w-full text-left">
+                  <span
+                    className="column-text is-bold"
+                    title={`${label ? `${label} ${id}` : `${id}`}`}
+                  >
+                    {`${label ? `${label} ${id}` : `${id}`}`}
+                  </span>
+                  <span
+                    className={getSortDirectionClass(id)}
+                    style={{ paddingLeft: '3px' }}
+                  />
+                </div>
+              </Button>
             </CellComponent>
           )
         })}
