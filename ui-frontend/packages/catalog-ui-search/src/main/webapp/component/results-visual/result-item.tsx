@@ -397,22 +397,18 @@ export const ResultItem = ({
         }
       }}
       fullWidth
-      className={`select-text outline-none px-5 relative`}
+      className={`select-text outline-none px-6 relative`}
       disableFocusRipple
       disableTouchRipple
     >
       <TouchRipple ref={rippleRef} />
       <Box
-        className="absolute left-0 top-0 -z-1 w-full h-full"
+        className="absolute left-0 top-0 z-0 w-full h-full"
         bgcolor="secondary.main"
         style={{
           opacity: isSelected ? 0.05 : 0,
         }}
       />
-      {/* <Box
-        className="h-1 w-full"
-        bgcolor={isSelected ? 'secondary.main' : 'divider'}
-      /> */}
       <Grid
         container
         alignItems="stretch"
@@ -583,10 +579,6 @@ export const ResultItem = ({
           </Paper>
         </Grid>
       </Grid>
-      {/* <Box
-        className="h-1 w-full"
-        bgcolor={isSelected ? 'secondary.main' : 'divider'}
-      /> */}
     </SpecialButton>
   )
 }

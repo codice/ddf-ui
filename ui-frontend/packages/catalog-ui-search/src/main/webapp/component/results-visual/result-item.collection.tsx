@@ -23,6 +23,8 @@ import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 import Divider from '@material-ui/core/Divider'
 import Box from '@material-ui/core/Box'
+import Paper from '@material-ui/core/Paper'
+import { Elevations } from '../theme/theme'
 const user = require('../singletons/user-instance.js')
 
 type Props = {
@@ -85,37 +87,39 @@ const ResultCards = ({ results, mode, setMode, lazyResults }: Props) => {
           Select All
         </Button>
       </Grid>
-      <Grid item className="w-full h-full">
-        <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
-          controlledMeasuring={true}
-          items={results}
-          defaultSize={76}
-          overscanCount={10}
-          Item={({ itemRef, item, measure, index, width }) => {
-            return (
-              <div ref={itemRef} className="px-3">
-                {index !== -1 ? (
-                  <>
-                    <Box className="h-min w-full" bgcolor={'divider'} />
-                  </>
-                ) : null}
-                <ResultItem
-                  lazyResult={item}
-                  measure={measure}
-                  index={index}
-                  width={width}
-                />
-              </div>
-            )
-          }}
-          Empty={() => {
-            return (
-              <div className="result-item-collection-empty">
-                No Results Found
-              </div>
-            )
-          }}
-        />
+      <Grid item className="w-full h-full p-2">
+        <Paper elevation={Elevations.paper} className="w-full h-full ">
+          <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
+            controlledMeasuring={true}
+            items={results}
+            defaultSize={76}
+            overscanCount={10}
+            Item={({ itemRef, item, measure, index, width }) => {
+              return (
+                <div ref={itemRef} className="">
+                  {index !== -1 ? (
+                    <>
+                      <Box className="h-min w-full" bgcolor={'divider'} />
+                    </>
+                  ) : null}
+                  <ResultItem
+                    lazyResult={item}
+                    measure={measure}
+                    index={index}
+                    width={width}
+                  />
+                </div>
+              )
+            }}
+            Empty={() => {
+              return (
+                <div className="result-item-collection-empty">
+                  No Results Found
+                </div>
+              )
+            }}
+          />
+        </Paper>
       </Grid>
     </Grid>
   )
