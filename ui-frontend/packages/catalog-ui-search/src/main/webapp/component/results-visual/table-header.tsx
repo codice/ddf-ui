@@ -13,10 +13,8 @@
  *
  **/
 import Grid, { GridProps } from '@material-ui/core/Grid'
-import { useTheme } from '@material-ui/core/styles'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 const _ = require('underscore')
 const $ = require('jquery')
@@ -123,6 +121,7 @@ const HeaderCheckbox = ({
   })
   return (
     <Button
+      color="secondary"
       onClick={event => {
         event.stopPropagation()
         if (selection === 'selected') {
