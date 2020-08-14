@@ -96,18 +96,24 @@ const ResultCards = ({ results, mode, setMode, lazyResults }: Props) => {
             overscanCount={10}
             Item={({ itemRef, item, measure, index, width }) => {
               return (
-                <div ref={itemRef} className="">
-                  {index !== -1 ? (
+                <div ref={itemRef} className="relative">
+                  {index !== 0 ? (
                     <>
                       <Box className="h-min w-full" bgcolor={'divider'} />
                     </>
                   ) : null}
                   <ResultItem
+                    lazyResults={results}
                     lazyResult={item}
                     measure={measure}
                     index={index}
                     width={width}
                   />
+                  {index === results.length - 1 ? (
+                    <>
+                      <Box className="h-min w-full" bgcolor={'divider'} />
+                    </>
+                  ) : null}
                 </div>
               )
             }}

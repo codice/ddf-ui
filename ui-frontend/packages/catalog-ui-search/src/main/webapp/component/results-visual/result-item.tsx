@@ -106,6 +106,7 @@ const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
 }
 
 type ResultItemBasicProps = {
+  lazyResults: LazyQueryResult[]
   lazyResult: LazyQueryResult
 }
 
@@ -194,6 +195,7 @@ export const ResultItem = ({
   lazyResult,
   measure,
   index,
+  lazyResults,
 }: ResultItemFullProps) => {
   // console.log(`rendered: ${index}`)
   const isSelected = useSelectionOfLazyResult({ lazyResult })
@@ -397,7 +399,7 @@ export const ResultItem = ({
         }
       }}
       fullWidth
-      className={`select-text outline-none px-6 relative`}
+      className={`select-text outline-none px-6`}
       disableFocusRipple
       disableTouchRipple
     >
@@ -417,7 +419,7 @@ export const ResultItem = ({
         justify="space-between"
         wrap="nowrap"
       >
-        <Grid item className="w-full relative">
+        <Grid item className="w-full ">
           <div className="py-1 w-full">
             <div>
               <Grid
@@ -571,9 +573,9 @@ export const ResultItem = ({
           </div>
           <Paper
             elevation={Elevations.overlays}
-            className={`absolute z-50 right-0 top-0 focus-within:opacity-100 hover:opacity-100 ${
+            className={`absolute z-50 right-0 bottom-0 focus-within:opacity-100 hover:opacity-100 ${
               isHovering ? 'opacity-100' : 'opacity-0'
-            } focus-within:opacity-100 transform -translate-y-1/2`}
+            } focus-within:opacity-100 transform translate-y-3/4`}
           >
             <DynamicActions />
           </Paper>
