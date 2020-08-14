@@ -95,7 +95,7 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
               {showThumbnails ? 'Hide Thumbnails' : 'Show Thumbnails'}
             </Button>
           </Grid>
-          <Grid item className="ml-auto">
+          <Grid item className="ml-auto pr-2">
             <Button
               onClick={() => {
                 setMode('card')
@@ -104,12 +104,14 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
                 borderBottom:
                   mode === 'card'
                     ? `1px solid ${theme.palette.secondary.main}`
-                    : 'none',
+                    : '1px solid transparent',
               }}
             >
               <ViewAgendaIcon />
               List
             </Button>
+          </Grid>
+          <Grid item>
             <Button
               onClick={() => {
                 setMode('table')
@@ -118,7 +120,7 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
                 borderBottom:
                   mode === 'table'
                     ? `1px solid ${theme.palette.secondary.main}`
-                    : 'none',
+                    : '1px solid transparent',
               }}
             >
               <TableChartIcon />

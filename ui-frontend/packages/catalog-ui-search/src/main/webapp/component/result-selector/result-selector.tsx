@@ -24,19 +24,15 @@ import VisualizationSelector from '../../react-component/visualization-selector/
 import ViewCompactIcon from '@material-ui/icons/ViewCompact'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 const user = require('../singletons/user-instance.js')
-const MetacardTitleView = require('../metacard-title/metacard-title.view.js')
-import MRC from '../../react-component/marionette-region-container'
 import MoreIcon from '@material-ui/icons/MoreVert'
 
 import LazyMetacardInteractions from '../results-visual/lazy-metacard-interactions'
 import { Elevations } from '../theme/theme'
+import useTheme from '@material-ui/core/styles/useTheme'
 const SelectedResults = ({ selectionInterface }: any) => {
   const selectedResults = useLazyResultsSelectedResultsFromSelectionInterface({
     selectionInterface,
   })
-  // return <MRC view={new MetacardTitleView({
-  //   model: this.options.selectionInterface.getSelectedResults(),
-  // })} />
   const selectedResultsArray = Object.values(selectedResults)
 
   return (
@@ -127,6 +123,7 @@ const ResultSelector = ({
       setHasResultSort(determineHasResultSort())
     })
   }, [])
+  const theme = useTheme()
   return (
     <React.Fragment>
       <Grid container alignItems="center" justify="flex-start" direction="row">
@@ -169,8 +166,13 @@ const ResultSelector = ({
               return (
                 <Button
                   onClick={handleClick}
-                  variant={hasResultFilter ? 'outlined' : 'text'}
-                  color={hasResultFilter ? 'secondary' : 'primary'}
+                  variant="text"
+                  color="primary"
+                  style={{
+                    borderBottom: hasResultFilter
+                      ? `1px solid ${theme.palette.warning.main}`
+                      : '0px',
+                  }}
                 >
                   <Box color="text.primary">
                     <FilterListIcon />
@@ -197,8 +199,13 @@ const ResultSelector = ({
               return (
                 <Button
                   onClick={handleClick}
-                  variant={hasResultSort ? 'outlined' : 'text'}
-                  color={hasResultSort ? 'secondary' : 'primary'}
+                  variant="text"
+                  color="primary"
+                  style={{
+                    borderBottom: hasResultSort
+                      ? `1px solid ${theme.palette.warning.main}`
+                      : '0px',
+                  }}
                 >
                   <Box color="text.primary">
                     <ArrowDownwardIcon />
