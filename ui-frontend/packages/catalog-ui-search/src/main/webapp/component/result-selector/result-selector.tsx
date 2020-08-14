@@ -29,6 +29,7 @@ import MoreIcon from '@material-ui/icons/MoreVert'
 import LazyMetacardInteractions from '../results-visual/lazy-metacard-interactions'
 import { Elevations } from '../theme/theme'
 import useTheme from '@material-ui/core/styles/useTheme'
+import SelectionRipple from '../golden-layout/selection-ripple'
 const SelectedResults = ({ selectionInterface }: any) => {
   const selectedResults = useLazyResultsSelectedResultsFromSelectionInterface({
     selectionInterface,
@@ -55,7 +56,9 @@ const SelectedResults = ({ selectionInterface }: any) => {
       {({ handleClick }) => {
         return (
           <Button
-            className={selectedResultsArray.length === 0 ? '' : ''}
+            className={
+              selectedResultsArray.length === 0 ? 'relative' : 'relative'
+            }
             color="primary"
             disabled={selectedResultsArray.length === 0}
             onClick={handleClick}
@@ -144,7 +147,8 @@ const ResultSelector = ({
         <Grid item>
           <QueryFeed selectionInterface={selectionInterface} />
         </Grid>
-        <Grid item>
+        <Grid item className="relative">
+          <SelectionRipple selectionInterface={selectionInterface} />
           <SelectedResults selectionInterface={selectionInterface} />
         </Grid>
         <Grid item className="pl-2 mx-auto">

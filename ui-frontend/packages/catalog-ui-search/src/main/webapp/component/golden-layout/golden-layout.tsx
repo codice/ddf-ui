@@ -35,11 +35,13 @@ export const GoldenLayout = ({ selectionInterface }: Props) => {
       if (goldenlayoutInstance.goldenLayout) goldenlayoutInstance.updateSize()
     }, 1000)
   }, [])
-
   return (
     <Grid container direction="column" className="w-full h-full" wrap="nowrap">
       <Grid item className="w-full relative z-1 pb-2 pt-2 pr-2 flex-shrink-0">
-        <Paper elevation={Elevations.panels} className="w-full p-3">
+        <Paper
+          elevation={Elevations.panels}
+          className="w-full p-3 overflow-hidden"
+        >
           <ResultSelector
             selectionInterface={selectionInterface}
             model={selectionInterface.getCurrentQuery()}
