@@ -163,11 +163,13 @@ const SmallButton = styled(Button)`
 
 const IconSpan = styled.span`
   && {
+    font-size: 1.4rem;
     font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
   }
   /* stylelint-disable */
   &::before {
     font-family: 'FontAwesome';
+    margin-left: 2px;
     margin-right: 5px;
   }
 `
@@ -482,7 +484,7 @@ export const ResultItem = ({
                         lazyResult,
                       })} ${
                         isHovering || isFocused ? 'invisible' : ''
-                      } absolute -z-1 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
+                      } absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
                       data-help={TypedMetacardDefs.getAlias({
                         attr: 'title',
                       })}
