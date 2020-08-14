@@ -16,6 +16,7 @@ import {
   lighten as polishedLighten,
   meetsContrastGuidelines,
   mix,
+  rgba,
 } from 'polished'
 
 type Theme = {
@@ -26,6 +27,7 @@ type Theme = {
   panels: string
   overlays: string
   paper: string
+  tabs: string
 }
 
 // // octo colors
@@ -45,6 +47,7 @@ export const dark: Theme = {
   panels: '#243540', // 243540
   overlays: darken('#365160', 0.1),
   paper: darken('#365160', 0.2),
+  tabs: darken('#243540', 0.1),
   primary: '#69E1E8',
   secondary: '#2196f3',
 }
@@ -55,6 +58,7 @@ export const light: Theme = {
   background: '#E5E5E5', // elevation 0
   navbar: '#fafbfc', // elevation 8
   panels: '#FCFCFC', // elevation 6
+  tabs: darken('#FCFCFC', 0.05),
   overlays: '#FCFCFC', // elevation 16
   paper: '#FCFCFC',
 }
@@ -116,6 +120,42 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       }
       .lm_header {
         z-index: 0 !important;
+        background: ${props =>
+          props.palette.type === 'dark'
+            ? dark.background
+            : light.background} !important;
+      }
+      .lm_tab.lm_active {
+        background: ${props =>
+          props.palette.type === 'dark'
+            ? dark.panels
+            : light.panels} !important;
+            box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12) !important;
+      }
+      .lm_tab, lm_tabs {
+        border-radius: 4px !important;
+        border-bottom-left-radius: 0px !important;
+        border-bottom-right-radius: 0px !important;
+      }
+      .lm_tab:not(.lm_active) {
+        background: ${props =>
+          props.palette.type === 'dark' ? dark.tabs : light.tabs} !important;
+        button {
+          visibility: hidden;
+        }
+      }
+      .lm_tabs .lm_tab {
+        border: 1px solid fade(@contrastColor, 10%);
+        margin-right: 8px !important;
+        box-shadow: none !important;
+      }
+      .lm_tabs .lm_tab:hover {
+        color: ${props => props.palette.text.primary} !important;
+      }
+      .lm_header,
+      .lm_tabs .lm_tab,
+      .lm_tabdropdown:before {
+        color: ${props => props.palette.text.primary} !important;
       }
       .is-drawing [role="tooltip"] {
         display: none!important;
