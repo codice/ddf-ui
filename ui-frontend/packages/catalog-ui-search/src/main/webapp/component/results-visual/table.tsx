@@ -25,16 +25,17 @@ import { AutoVariableSizeList } from 'react-window-components'
 import Grid from '@material-ui/core/Grid'
 import { Header } from './table-header'
 import ResultItemRow from './result-item-row'
-import { useTheme } from '@material-ui/core/styles'
 import { getFilteredAttributes, getVisibleHeaders } from './table-header-utils'
 import ViewColumnIcon from '@material-ui/icons/ViewColumn'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import Paper from '@material-ui/core/Paper'
 import { Elevations } from '../theme/theme'
 import Divider from '@material-ui/core/Divider'
+import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
+import { useStatusOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
+import { LinearProgress } from '@material-ui/core'
 ;(() => {
   const oldHandleSave = TableVisibility.prototype.handleSave
   TableVisibility.prototype.handleSave = function() {
@@ -53,27 +54,31 @@ import Divider from '@material-ui/core/Divider'
 
 type Props = {
   selectionInterface: any
-  lazyResults: LazyQueryResults
-  results: LazyQueryResult[]
   mode: any
   setMode: any
 }
 
-const TableVisual = ({
-  selectionInterface,
-  results,
-  lazyResults,
-  mode,
-  setMode,
-}: Props) => {
+const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
+  const lazyResults = useLazyResultsFromSelectionInterface({
+    selectionInterface,
+  })
+  const results = Object.values(lazyResults.results)
+
+  const { isSearching, status } = useStatusOfLazyResults({ lazyResults })
   const { listenTo } = useBackbone()
-  const theme = useTheme()
   const headerRef = React.useRef<HTMLDivElement>(null)
   const [filteredAttributes, setFilteredAttributes] = React.useState(
     getFilteredAttributes(lazyResults)
   )
   const [visibleHeaders, setVisibleHeaders] = React.useState(
     getVisibleHeaders(filteredAttributes)
+  )
+
+  React.useEffect(
+    () => {
+      setFilteredAttributes(getFilteredAttributes(lazyResults))
+    },
+    [lazyResults.results]
   )
 
   React.useEffect(() => {
@@ -246,8 +251,16 @@ const TableVisual = ({
                   )
                 }}
                 Empty={() => {
+                  if (Object.values(status).length === 0) {
+                    return (
+                      <div className="p-2">Search has not yet been run.</div>
+                    )
+                  }
+                  if (isSearching) {
+                    return <LinearProgress variant="indeterminate" />
+                  }
                   return (
-                    <div className="result-item-collection-empty">
+                    <div className="result-item-collection-empty p-2">
                       No Results Found
                     </div>
                   )

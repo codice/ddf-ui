@@ -422,7 +422,7 @@ export const ResultItem = ({
         wrap="nowrap"
       >
         <Grid item className="w-full ">
-          <div className="py-1 w-full">
+          <div className="w-full pb-2">
             <div>
               <Grid
                 className="w-full"
