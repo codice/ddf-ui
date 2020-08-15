@@ -181,6 +181,7 @@ const SourceSelector = ({ search }: Props) => {
             setSources(newSources)
           }
         }}
+        size="small"
       >
         <MenuItem value="all">
           <Grid container alignItems="stretch" direction="row" wrap="nowrap">

@@ -47,6 +47,7 @@ const SortItem = ({
       <Grid container direction="row" wrap="nowrap" alignItems="center">
         <Grid item className="w-full">
           <Autocomplete
+            size="small"
             fullWidth
             options={attributeOptions}
             getOptionLabel={option => option.label}
@@ -81,6 +82,7 @@ const SortItem = ({
           </Grid>
           <Grid item className="w-full pl-2">
             <Autocomplete
+              size="small"
               fullWidth
               options={directionOptions}
               getOptionLabel={option => option.label}

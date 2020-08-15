@@ -65,6 +65,7 @@ export const NumberRangeField = ({
               start: newVal,
             })
           }}
+          size="small"
         />
       </Grid>
       <Grid item className="w-full py-1">
@@ -87,6 +88,7 @@ export const NumberRangeField = ({
               end: newVal,
             })
           }}
+          size="small"
         />
       </Grid>
     </Grid>

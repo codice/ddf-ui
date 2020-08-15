@@ -45,6 +45,7 @@ export const BooleanField = ({ value, onChange }: Props) => {
       onChange={e => {
         onChange(e.target.value === 'true')
       }}
+      size="small"
     >
       <MenuItem value={'false'}>false</MenuItem>
       <MenuItem value={'true'}>true</MenuItem>

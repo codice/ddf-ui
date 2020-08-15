@@ -77,6 +77,7 @@ const ChildFilter = ({
               }}
               select
               variant="outlined"
+              size="small"
             >
               {OperatorData.map(operatorInfo => {
                 return (

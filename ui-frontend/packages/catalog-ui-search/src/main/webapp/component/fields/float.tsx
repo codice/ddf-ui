@@ -44,6 +44,7 @@ export const FloatField = ({ value, onChange }: FloatFieldProps) => {
       onChange={e => {
         onChange(parseFloat(e.target.value))
       }}
+      size="small"
     />
   )
 }

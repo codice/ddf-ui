@@ -41,6 +41,7 @@ export const IntegerField = ({ value, onChange }: IntegerFieldProps) => {
       multiline
       rowsMax={3}
       variant="outlined"
+      size="small"
       placeholder="Use * for wildcard."
       value={value}
       onChange={e => {

@@ -66,6 +66,7 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
               second: e.target.value,
             })
           }}
+          size="small"
         />
       </Grid>
       <Grid item className="w-full pb-2 pl-2">
@@ -83,6 +84,7 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
               distance: Math.max(1, parseInt(e.target.value) || 0),
             })
           }}
+          size="small"
         />
       </Grid>
       <Grid item className="w-full pb-2 pl-2">
@@ -102,6 +104,7 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
               first: e.target.value,
             })
           }}
+          size="small"
         />
       </Grid>
     </Grid>
