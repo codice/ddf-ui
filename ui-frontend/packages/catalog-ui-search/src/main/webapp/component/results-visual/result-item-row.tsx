@@ -47,18 +47,24 @@ type ResultItemFullProps = ResultItemBasicProps & {
   index: number
 }
 
-function clearSelection() {
+export function clearSelection() {
   if (window.getSelection) {
+    // @ts-ignore
     window.getSelection().removeAllRanges()
+    // @ts-ignore
   } else if (document.selection) {
+    // @ts-ignore
     document.selection.empty()
   }
 }
 
-function hasSelection(): boolean {
+export function hasSelection(): boolean {
   if (window.getSelection) {
+    // @ts-ignore
     return window.getSelection().toString() !== ''
+    // @ts-ignore
   } else if (document.selection) {
+    // @ts-ignore
     return document.selection.toString() !== ''
   } else {
     return false
