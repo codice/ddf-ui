@@ -42,6 +42,7 @@ const Filter = ({ filter, setFilter }: Props) => {
       <Grid item className="w-full pb-2">
         <Autocomplete
           fullWidth
+          size="small"
           options={attributeList}
           getOptionLabel={option => option.label}
           getOptionSelected={(option, value) => option.value === value.value}

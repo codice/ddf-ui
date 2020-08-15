@@ -46,6 +46,11 @@ export const TextField = ({ value, onChange }: TextFieldProps) => {
       onChange={e => {
         onChange(e.target.value)
       }}
+      onKeyDown={e => {
+        console.log(e.which)
+      }}
+      className="whitespace-normal"
+      size="small"
     />
   )
 }
