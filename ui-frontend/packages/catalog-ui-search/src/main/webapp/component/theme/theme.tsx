@@ -78,7 +78,7 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       a {
         color: inherit !important;
       }
-      button.outline-none, a.outline-none {
+      button.outline-none, a.outline-none, a, button {
         outline: none !important; 
       }
       .MuiToolbar-root a,
@@ -332,6 +332,7 @@ export const Provider = ({ children }: { children: any }) => {
       MuiButton: createStyles({
         root: {
           lineHeight: 'inherit', // maybe open a ticket on MUI, seems like the default they use doesn't center text quite right with icons
+          minWidth: '0px', // usually more annoying than not
         },
         ...(primaryContrastScores.AA
           ? { textPrimary: {} } // weird requirement due to types, need textPrimary here but empty
