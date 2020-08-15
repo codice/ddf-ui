@@ -16,7 +16,7 @@
     "@types/react": "16.9.34",
     "@types/react-dom": "16.9.7",
     "@types/styled-components": "5.1.0",
-    "@connexta/ace": "git://github.com/connexta/ace.git#bedc9e7889223f384c045bcd06d8dd11f63efabe"
+    "@connexta/ace": "git://github.com/connexta/ace.git#6922bcb51d095262480c1a514acdf572118680c2"
   },
   "dependencies": {
     "@connexta/kanri": "0.0.11",
