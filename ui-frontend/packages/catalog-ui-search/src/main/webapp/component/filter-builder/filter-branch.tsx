@@ -65,7 +65,7 @@ const ChildFilter = ({
           wrap="nowrap"
           className="relative"
         >
-          <Grid item className="p-4">
+          <Grid item className="p-2">
             <TextField
               value={parentFilter.type}
               onChange={e => {
@@ -178,7 +178,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
     >
       <EnclosingElement
         elevation={Elevations.panels}
-        className={root ? '' : 'px-3 pt-6 pb-2'}
+        className={root ? '' : 'px-3 py-2'}
       >
         <div className=" relative">
           <div

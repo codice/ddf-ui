@@ -61,7 +61,7 @@ const Filter = ({ filter, setFilter }: Props) => {
       <Grid item className="w-full pb-2">
         <FilterComparator filter={filter} setFilter={setFilter} />
       </Grid>
-      <Grid item className="w-full pb-2">
+      <Grid item className="w-full">
         <FilterInput filter={filter} setFilter={setFilter} />
       </Grid>
     </Grid>
