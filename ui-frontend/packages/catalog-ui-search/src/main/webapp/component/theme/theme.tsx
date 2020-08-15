@@ -258,19 +258,6 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
             : 'linear-gradient(-180deg, rgb(153, 153, 153) 0%, rgb(187, 187, 187) 100%)'};
             border-radius: 4px;
       }
-      .MuiButtonReset {
-        && {
-          height: auto;
-          .MuiButton-label {
-            display: block;
-          }
-          text-transform: none;
-          text-align: left;
-          overflow: hidden;
-          word-break: break-word;
-          padding: 0px;
-        }
-      }
     `
 
 const lightenUntilContrasting = (color: string, background: string): string => {

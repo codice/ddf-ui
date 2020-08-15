@@ -196,94 +196,96 @@ const RowComponent = ({
             disableFocusRipple
             disableRipple
             disableTouchRipple
-            className="MuiButtonReset relative outline-none rounded-none select-text"
+            className="relative outline-none rounded-none select-text p-0 text-left break-words"
           >
-            <Box
-              className="absolute left-0 top-0 -z-1 w-full h-full"
-              bgcolor="secondary.main"
-              style={{
-                opacity: isSelected ? 0.05 : 0,
-              }}
-            />
-            <Grid
-              container
-              direction="row"
-              wrap="nowrap"
-              style={{
-                width: visibleProperties.length * 200 + 'px',
-              }}
-              data-id="wheeeeer"
-            >
-              {visibleProperties.map((property, index) => {
-                const alias = TypedMetacardDefs.getAlias({
-                  attr: property.property,
-                })
+            <div className="w-full">
+              <Box
+                className="absolute left-0 top-0 -z-1 w-full h-full"
+                bgcolor="secondary.main"
+                style={{
+                  opacity: isSelected ? 0.05 : 0,
+                }}
+              />
+              <Grid
+                container
+                direction="row"
+                wrap="nowrap"
+                style={{
+                  width: visibleProperties.length * 200 + 'px',
+                }}
+                data-id="wheeeeer"
+              >
+                {visibleProperties.map((property, index) => {
+                  const alias = TypedMetacardDefs.getAlias({
+                    attr: property.property,
+                  })
 
-                return (
-                  <>
-                    <CellComponent
-                      key={property.property}
-                      data-property={`${property.property}`}
-                      className={`${property.class} ${
-                        property.hidden ? 'is-hidden-column' : ''
-                      } relative`}
-                      data-value={`${property.value}`}
-                    >
-                      <>
-                        <Box
-                          className="w-min h-full absolute left-0 top-0"
-                          bgcolor="divider"
-                        />
-                      </>
-                      {property.property === 'thumbnail' && thumbnail ? (
-                        <img
-                          src={imgsrc}
-                          style={{
-                            maxWidth: '100%',
-                            maxHeight: '100%',
-                          }}
-                          onLoad={() => {
-                            measure()
-                          }}
-                          onError={() => {
-                            measure()
-                          }}
-                        />
-                      ) : (
-                        <React.Fragment>
-                          <div style={{ wordBreak: 'break-word' }}>
-                            {property.value.map((value, index) => {
-                              return (
-                                <span
-                                  key={index}
-                                  data-value={`${value}`}
-                                  title={`${alias}: ${value}`}
-                                >
-                                  {value.toString().substring(0, 4) ===
-                                  'http' ? (
-                                    <a
-                                      href={`${value}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      {TypedMetacardDefs.getAlias({
-                                        attr: property.property,
-                                      })}
-                                    </a>
-                                  ) : (
-                                    `${value}`
-                                  )}
-                                </span>
-                              )
-                            })}
-                          </div>
-                        </React.Fragment>
-                      )}
-                    </CellComponent>
-                  </>
-                )
-              })}
-            </Grid>
+                  return (
+                    <>
+                      <CellComponent
+                        key={property.property}
+                        data-property={`${property.property}`}
+                        className={`${property.class} ${
+                          property.hidden ? 'is-hidden-column' : ''
+                        } relative`}
+                        data-value={`${property.value}`}
+                      >
+                        <>
+                          <Box
+                            className="w-min h-full absolute left-0 top-0"
+                            bgcolor="divider"
+                          />
+                        </>
+                        {property.property === 'thumbnail' && thumbnail ? (
+                          <img
+                            src={imgsrc}
+                            style={{
+                              maxWidth: '100%',
+                              maxHeight: '100%',
+                            }}
+                            onLoad={() => {
+                              measure()
+                            }}
+                            onError={() => {
+                              measure()
+                            }}
+                          />
+                        ) : (
+                          <React.Fragment>
+                            <div style={{ wordBreak: 'break-word' }}>
+                              {property.value.map((value, index) => {
+                                return (
+                                  <span
+                                    key={index}
+                                    data-value={`${value}`}
+                                    title={`${alias}: ${value}`}
+                                  >
+                                    {value.toString().substring(0, 4) ===
+                                    'http' ? (
+                                      <a
+                                        href={`${value}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                      >
+                                        {TypedMetacardDefs.getAlias({
+                                          attr: property.property,
+                                        })}
+                                      </a>
+                                    ) : (
+                                      `${value}`
+                                    )}
+                                  </span>
+                                )
+                              })}
+                            </div>
+                          </React.Fragment>
+                        )}
+                      </CellComponent>
+                    </>
+                  )
+                })}
+              </Grid>
+            </div>
           </Button>
         </Grid>
       </Grid>

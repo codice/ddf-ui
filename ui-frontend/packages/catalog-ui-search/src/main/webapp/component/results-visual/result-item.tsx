@@ -334,7 +334,7 @@ export const ResultItem = ({
     start: (e: any) => void
   }>(null)
   return (
-    <SpecialButton
+    <Button
       onMouseEnter={() => {
         setIsHovering(true)
       }}
@@ -395,175 +395,179 @@ export const ResultItem = ({
         }
       }}
       fullWidth
-      className={`select-text outline-none px-6`}
+      className={`select-text outline-none px-6 text-left break-words`}
       disableFocusRipple
       disableTouchRipple
       disableRipple
     >
-      <TouchRipple ref={rippleRef} />
-      <Box
-        className="absolute left-0 top-0 z-0 w-full h-full"
-        bgcolor="secondary.main"
-        style={{
-          opacity: isSelected ? 0.05 : 0,
-        }}
-      />
-      <div className="w-full pb-2 relative z-0">
-        <Grid
-          className="w-full"
-          container
-          direction="row"
-          wrap="nowrap"
-          alignItems="center"
-        >
-          <Grid item>
-            <Button
-              onClick={event => {
-                event.stopPropagation()
-                if (event.shiftKey) {
-                  lazyResult.shiftSelect()
-                } else {
-                  lazyResult.controlSelect()
-                }
-                event.currentTarget.blur()
-              }}
-              className="relative p-2 min-w-0 outline-none h-full"
-              onFocus={e => {
-                setIsFocused(true)
-              }}
-              onBlur={e => {
-                setIsFocused(false)
-              }}
-            >
-              {(() => {
-                if (isSelected) {
-                  return (
-                    <Box
-                      color="secondary.main"
-                      className={`transform transition duration-200 ease-in-out ${
-                        isHovering || isFocused ? '' : '-translate-x-full'
-                      }`}
-                    >
-                      {isHovering || isFocused ? (
-                        <CheckBoxIcon />
-                      ) : (
-                        <CheckIcon />
-                      )}
-                    </Box>
-                  )
-                } else if (!isSelected) {
-                  return (
-                    <Box color="secondary.main" className="transform ">
-                      <CheckBoxOutlineBlankIcon
-                        className={`${
-                          isHovering || isFocused ? '' : ' invisible'
+      <div className="w-full">
+        <TouchRipple ref={rippleRef} />
+        <Box
+          className="absolute left-0 top-0 z-0 w-full h-full"
+          bgcolor="secondary.main"
+          style={{
+            opacity: isSelected ? 0.05 : 0,
+          }}
+        />
+        <div className="w-full pb-2 relative z-0">
+          <Grid
+            className="w-full"
+            container
+            direction="row"
+            wrap="nowrap"
+            alignItems="center"
+          >
+            <Grid item>
+              <Button
+                onClick={event => {
+                  event.stopPropagation()
+                  if (event.shiftKey) {
+                    lazyResult.shiftSelect()
+                  } else {
+                    lazyResult.controlSelect()
+                  }
+                  event.currentTarget.blur()
+                }}
+                className="relative p-2 min-w-0 outline-none h-full"
+                onFocus={e => {
+                  setIsFocused(true)
+                }}
+                onBlur={e => {
+                  setIsFocused(false)
+                }}
+              >
+                {(() => {
+                  if (isSelected) {
+                    return (
+                      <Box
+                        color="secondary.main"
+                        className={`transform transition duration-200 ease-in-out ${
+                          isHovering || isFocused ? '' : '-translate-x-full'
                         }`}
-                      />
-                    </Box>
-                  )
-                }
-                return null
-              })()}
-              <IconSpan
-                className={`${getIconClassName({
-                  lazyResult,
-                })} ${
-                  isHovering || isFocused ? 'invisible' : ''
-                } absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
-                data-help={TypedMetacardDefs.getAlias({
-                  attr: 'title',
-                })}
-                title={`${TypedMetacardDefs.getAlias({
-                  attr: 'title',
-                })}: ${lazyResult.plain.metacard.properties.title}`}
-              />
-            </Button>
-          </Grid>
-          <Grid item>
-            <div className="">{lazyResult.plain.metacard.properties.title}</div>
-          </Grid>
-        </Grid>
-        <div className="pl-3">
-          <div>
-            <Extensions.resultItemRowAddOn lazyResult={lazyResult} />
-          </div>
-          <div>
-            {renderThumbnail ? (
-              <img
-                src={imgsrc}
-                style={{ marginTop: '10px', maxWidth: '100%' }}
-                onLoad={() => {
-                  measure()
-                }}
-                onError={() => {
-                  measure()
-                }}
-              />
-            ) : null}
-
-            {customDetails.map(detail => {
-              return (
-                <PropertyComponent
-                  key={detail.label}
+                      >
+                        {isHovering || isFocused ? (
+                          <CheckBoxIcon />
+                        ) : (
+                          <CheckIcon />
+                        )}
+                      </Box>
+                    )
+                  } else if (!isSelected) {
+                    return (
+                      <Box color="secondary.main" className="transform ">
+                        <CheckBoxOutlineBlankIcon
+                          className={`${
+                            isHovering || isFocused ? '' : ' invisible'
+                          }`}
+                        />
+                      </Box>
+                    )
+                  }
+                  return null
+                })()}
+                <IconSpan
+                  className={`${getIconClassName({
+                    lazyResult,
+                  })} ${
+                    isHovering || isFocused ? 'invisible' : ''
+                  } absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
                   data-help={TypedMetacardDefs.getAlias({
-                    attr: detail.label,
+                    attr: 'title',
                   })}
                   title={`${TypedMetacardDefs.getAlias({
-                    attr: detail.label,
-                  })}: ${detail.value}`}
+                    attr: 'title',
+                  })}: ${lazyResult.plain.metacard.properties.title}`}
+                />
+              </Button>
+            </Grid>
+            <Grid item>
+              <div className="">
+                {lazyResult.plain.metacard.properties.title}
+              </div>
+            </Grid>
+          </Grid>
+          <div className="pl-3">
+            <div>
+              <Extensions.resultItemRowAddOn lazyResult={lazyResult} />
+            </div>
+            <div>
+              {renderThumbnail ? (
+                <img
+                  src={imgsrc}
+                  style={{ marginTop: '10px', maxWidth: '100%' }}
+                  onLoad={() => {
+                    measure()
+                  }}
+                  onError={() => {
+                    measure()
+                  }}
+                />
+              ) : null}
+
+              {customDetails.map(detail => {
+                return (
+                  <PropertyComponent
+                    key={detail.label}
+                    data-help={TypedMetacardDefs.getAlias({
+                      attr: detail.label,
+                    })}
+                    title={`${TypedMetacardDefs.getAlias({
+                      attr: detail.label,
+                    })}: ${detail.value}`}
+                  >
+                    <span>{detail.value}</span>
+                  </PropertyComponent>
+                )
+              })}
+              {showRelevanceScore({ lazyResult }) ? (
+                <PropertyComponent
+                  data-help={`Relevance: ${lazyResult.plain.relevance}`}
+                  title={`Relevance: ${lazyResult.plain.relevance}`}
                 >
-                  <span>{detail.value}</span>
+                  <span>{lazyResult.getRoundedRelevance()}</span>
                 </PropertyComponent>
-              )
-            })}
-            {showRelevanceScore({ lazyResult }) ? (
-              <PropertyComponent
-                data-help={`Relevance: ${lazyResult.plain.relevance}`}
-                title={`Relevance: ${lazyResult.plain.relevance}`}
-              >
-                <span>{lazyResult.getRoundedRelevance()}</span>
-              </PropertyComponent>
-            ) : (
-              ''
-            )}
-            {showSource() ? (
-              <PropertyComponent
-                title={`${TypedMetacardDefs.getAlias({
-                  attr: 'source-id',
-                })}: ${lazyResult.plain.metacard.properties['source-id']}`}
-                data-help={TypedMetacardDefs.getAlias({
-                  attr: 'source-id',
-                })}
-              >
-                {!lazyResult.isRemote() ? (
-                  <React.Fragment>
-                    <span className="fa fa-home" />
-                    <span style={{ marginLeft: '5px' }}>local</span>
-                  </React.Fragment>
-                ) : (
-                  <React.Fragment>
-                    <span className="fa fa-cloud" />
-                    <span style={{ marginLeft: '5px' }}>
-                      {lazyResult.plain.metacard.properties['source-id']}
-                    </span>
-                  </React.Fragment>
-                )}
-              </PropertyComponent>
-            ) : (
-              ''
-            )}
+              ) : (
+                ''
+              )}
+              {showSource() ? (
+                <PropertyComponent
+                  title={`${TypedMetacardDefs.getAlias({
+                    attr: 'source-id',
+                  })}: ${lazyResult.plain.metacard.properties['source-id']}`}
+                  data-help={TypedMetacardDefs.getAlias({
+                    attr: 'source-id',
+                  })}
+                >
+                  {!lazyResult.isRemote() ? (
+                    <React.Fragment>
+                      <span className="fa fa-home" />
+                      <span style={{ marginLeft: '5px' }}>local</span>
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment>
+                      <span className="fa fa-cloud" />
+                      <span style={{ marginLeft: '5px' }}>
+                        {lazyResult.plain.metacard.properties['source-id']}
+                      </span>
+                    </React.Fragment>
+                  )}
+                </PropertyComponent>
+              ) : (
+                ''
+              )}
+            </div>
           </div>
         </div>
+        <Paper
+          elevation={Elevations.overlays}
+          className={`absolute z-50 right-0 bottom-0 focus-within:opacity-100 hover:opacity-100 ${
+            isHovering ? 'opacity-100' : 'opacity-0'
+          } focus-within:opacity-100 transform translate-y-3/4`}
+        >
+          <DynamicActions />
+        </Paper>
       </div>
-      <Paper
-        elevation={Elevations.overlays}
-        className={`absolute z-50 right-0 bottom-0 focus-within:opacity-100 hover:opacity-100 ${
-          isHovering ? 'opacity-100' : 'opacity-0'
-        } focus-within:opacity-100 transform translate-y-3/4`}
-      >
-        <DynamicActions />
-      </Paper>
-    </SpecialButton>
+    </Button>
   )
 }
 
