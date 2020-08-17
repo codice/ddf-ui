@@ -24,24 +24,17 @@ type Props = {
 export const QueryAdvanced = ({ model }: Props) => {
   return (
     <div className="w-full h-full">
-      <form
-        target="autocomplete"
-        action="/search/catalog/blank.html"
-        noValidate
-        className="w-full h-full"
-      >
-        <div className="w-full h-full px-2 pt-2 overflow-auto">
-          <div className="query-advanced w-full">
-            <FilterBuilderRoot model={model} />
-          </div>
-          <div className="py-5 w-full">
-            <Swath className="w-full h-1" />
-          </div>
-          <div className="query-settings w-full">
-            <QuerySettings model={model} />
-          </div>
+      <div className="w-full h-full px-2 pt-2 overflow-auto">
+        <div className="query-advanced w-full">
+          <FilterBuilderRoot model={model} />
         </div>
-      </form>
+        <div className="py-5 w-full">
+          <Swath className="w-full h-1" />
+        </div>
+        <div className="query-settings w-full">
+          <QuerySettings model={model} />
+        </div>
+      </div>
     </div>
   )
 }

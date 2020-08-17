@@ -45,11 +45,6 @@ export class LessWorker extends BaseWorker {
     for (let key in data.theme) {
       if (!['palette', 'primary', 'secondary'].includes(key)) {
         try {
-          console.log(
-            newLessStyles.match(
-              new RegExp(variableRegexPrefix + key + variableRegexPostfix)
-            )
-          )
           newLessStyles = newLessStyles.replace(
             new RegExp(variableRegexPrefix + key + variableRegexPostfix),
             () => {

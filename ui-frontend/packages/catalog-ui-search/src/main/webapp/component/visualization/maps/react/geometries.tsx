@@ -82,9 +82,7 @@ const Geometries = (props: Props) => {
       }
     }
     map.onLeftClick(handleLeftClick)
-    return () => {
-      console.log('cleanup')
-    }
+    return () => {}
   }, [])
 
   const IndividualGeometries = React.useMemo(

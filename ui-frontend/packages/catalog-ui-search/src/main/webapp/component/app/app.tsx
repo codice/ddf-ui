@@ -187,9 +187,9 @@ const App = ({
   React.useEffect(
     () => {
       setTimeout(() => {
-        const currentRoute = document.querySelector('[data-currentRoute]')
-        if (currentRoute && !withinNav) {
-          scrollIntoView(currentRoute, {
+        const currentroute = document.querySelector('[data-currentroute]')
+        if (currentroute && !withinNav) {
+          scrollIntoView(currentroute, {
             behavior: 'smooth',
             scrollMode: 'if-needed',
           })
@@ -198,7 +198,6 @@ const App = ({
     },
     [withinNav, location]
   )
-  console.log('app rendered')
   return (
     <Box bgcolor="background.default" className="h-full w-full overflow-hidden">
       {/* Don't move CSSBaseline or GlobalStyles to providers, since we have multiple react roots.   */}
@@ -337,6 +336,7 @@ const App = ({
                       })
                       return (
                         <ExpandingButton
+                          key={routeInfo.linkProps.to}
                           component={Link}
                           to={routeInfo.linkProps.to}
                           className={`${
@@ -349,7 +349,7 @@ const App = ({
                           unexpandedText={routeInfo.shortName}
                           {...(isSelected
                             ? {
-                                ['data-currentRoute']: true,
+                                ['data-currentroute']: true,
                               }
                             : {})}
                         />

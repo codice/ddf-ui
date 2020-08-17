@@ -264,47 +264,41 @@ export default Marionette.LayoutView.extend({
   template() {
     return (
       <>
-        <form
-          target="autocomplete"
-          action="/search/catalog/blank.html"
-          noValidate
-        >
-          <div className="editor-properties">
-            <div
-              className="basic-text"
-              data-help="Search by free text using the
+        <div className="editor-properties">
+          <div
+            className="basic-text"
+            data-help="Search by free text using the
     grammar of the underlying source.
     For wildcard searches, use * after or before partial keywords (e.g. *earth*)."
-            />
-            <div
-              className="basic-text-match"
-              data-help="Take casing of characters into account when searching by free text."
-            />
-            <div
-              className="basic-time-details"
-              data-help="Search based on absolute or relative
+          />
+          <div
+            className="basic-text-match"
+            data-help="Take casing of characters into account when searching by free text."
+          />
+          <div
+            className="basic-time-details"
+            data-help="Search based on absolute or relative
     time of the created, modified, or effective date."
-            />
-            <div
-              className="basic-location-details"
-              data-help="Search by latitude/longitude or the USNG
+          />
+          <div
+            className="basic-location-details"
+            data-help="Search by latitude/longitude or the USNG
     using a line, polygon, point-radius, bounding box, or keyword. A keyword can be the name of a region, country, or city."
-            >
-              <div className="basic-location" />
-              <div className="basic-location-specific" />
-            </div>
-            <div
-              className="basic-type-details"
-              data-help="Search for specific content types."
-            >
-              <div className="basic-type" />
-              <div className="basic-type-specific" />
-            </div>
-            <div className="basic-settings">
-              <QuerySettings model={this.model} />
-            </div>
+          >
+            <div className="basic-location" />
+            <div className="basic-location-specific" />
           </div>
-        </form>
+          <div
+            className="basic-type-details"
+            data-help="Search for specific content types."
+          >
+            <div className="basic-type" />
+            <div className="basic-type-specific" />
+          </div>
+          <div className="basic-settings">
+            <QuerySettings model={this.model} />
+          </div>
+        </div>
       </>
     )
   },

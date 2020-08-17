@@ -35,7 +35,6 @@ const validateShape = ({ value, onChange }: NearFieldProps) => {
     value.first === undefined ||
     value.second === undefined
   ) {
-    console.log('defaulted to correct shape')
     onChange(defaultValue)
   }
 }

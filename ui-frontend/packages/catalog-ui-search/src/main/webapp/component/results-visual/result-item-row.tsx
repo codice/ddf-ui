@@ -126,7 +126,7 @@ const RowComponent = ({
   React.useEffect(() => {
     measure()
   })
-  console.log('row rendered:' + index)
+  // console.log('row rendered:' + index)
   return (
     <React.Fragment>
       <Grid
@@ -221,67 +221,65 @@ const RowComponent = ({
                   })
 
                   return (
-                    <>
-                      <CellComponent
-                        key={property.property}
-                        data-property={`${property.property}`}
-                        className={`${property.class} ${
-                          property.hidden ? 'is-hidden-column' : ''
-                        } relative`}
-                        data-value={`${property.value}`}
-                      >
-                        <>
-                          <Box
-                            className="w-min h-full absolute left-0 top-0"
-                            bgcolor="divider"
-                          />
-                        </>
-                        {property.property === 'thumbnail' && thumbnail ? (
-                          <img
-                            src={imgsrc}
-                            style={{
-                              maxWidth: '100%',
-                              maxHeight: '100%',
-                            }}
-                            onLoad={() => {
-                              measure()
-                            }}
-                            onError={() => {
-                              measure()
-                            }}
-                          />
-                        ) : (
-                          <React.Fragment>
-                            <div style={{ wordBreak: 'break-word' }}>
-                              {property.value.map((value, index) => {
-                                return (
-                                  <span
-                                    key={index}
-                                    data-value={`${value}`}
-                                    title={`${alias}: ${value}`}
-                                  >
-                                    {value.toString().substring(0, 4) ===
-                                    'http' ? (
-                                      <a
-                                        href={`${value}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                      >
-                                        {TypedMetacardDefs.getAlias({
-                                          attr: property.property,
-                                        })}
-                                      </a>
-                                    ) : (
-                                      `${value}`
-                                    )}
-                                  </span>
-                                )
-                              })}
-                            </div>
-                          </React.Fragment>
-                        )}
-                      </CellComponent>
-                    </>
+                    <CellComponent
+                      key={property.property}
+                      data-property={`${property.property}`}
+                      className={`${property.class} ${
+                        property.hidden ? 'is-hidden-column' : ''
+                      } relative`}
+                      data-value={`${property.value}`}
+                    >
+                      <>
+                        <Box
+                          className="w-min h-full absolute left-0 top-0"
+                          bgcolor="divider"
+                        />
+                      </>
+                      {property.property === 'thumbnail' && thumbnail ? (
+                        <img
+                          src={imgsrc}
+                          style={{
+                            maxWidth: '100%',
+                            maxHeight: '100%',
+                          }}
+                          onLoad={() => {
+                            measure()
+                          }}
+                          onError={() => {
+                            measure()
+                          }}
+                        />
+                      ) : (
+                        <React.Fragment>
+                          <div style={{ wordBreak: 'break-word' }}>
+                            {property.value.map((value, index) => {
+                              return (
+                                <span
+                                  key={index}
+                                  data-value={`${value}`}
+                                  title={`${alias}: ${value}`}
+                                >
+                                  {value.toString().substring(0, 4) ===
+                                  'http' ? (
+                                    <a
+                                      href={`${value}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      {TypedMetacardDefs.getAlias({
+                                        attr: property.property,
+                                      })}
+                                    </a>
+                                  ) : (
+                                    `${value}`
+                                  )}
+                                </span>
+                              )
+                            })}
+                          </div>
+                        </React.Fragment>
+                      )}
+                    </CellComponent>
                   )
                 })}
               </Grid>

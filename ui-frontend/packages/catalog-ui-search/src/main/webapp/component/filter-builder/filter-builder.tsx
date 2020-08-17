@@ -42,12 +42,11 @@ export const FilterBuilderRoot = ({ model }: Props) => {
   const [filter, setFilter] = React.useState(getBaseFilter({ model }))
   React.useEffect(
     () => {
-      model.set('cql', cql.write(filter))
-      model.set('filterTree', filter)
+      // model.set('cql', cql.write(filter))
+      // model.set('filterTree', filter)
     },
     [filter]
   )
-  console.log(filter)
   return (
     <FilterBranch
       filter={filter}

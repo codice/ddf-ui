@@ -16,7 +16,6 @@ export const BetterClickAwayListener = (props: ClickAwayListenerProps) => {
         /**
          * Should we be doing a querySelectorAll and seeing if anything on the page contains the element?  I feel like this could fail in certain instances.
          */
-        console.log(`Drawing: ${Drawing.isDrawing()}`)
         if (Drawing.isFuzzyDrawing()) {
           return
         }

@@ -57,7 +57,10 @@ const SortItem = ({
               updateAttribute(newProperty)
             }}
             disableClearable
-            value={sortItem.attribute}
+            value={attributeOptions.find(
+              attributeOption =>
+                attributeOption.value === sortItem.attribute.value
+            )}
             renderInput={params => <TextField {...params} variant="outlined" />}
           />
         </Grid>

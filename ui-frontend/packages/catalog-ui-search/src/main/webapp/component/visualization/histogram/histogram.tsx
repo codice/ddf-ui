@@ -642,7 +642,6 @@ export const Histogram = ({ selectionInterface }: Props) => {
   }
 
   const plotlyClickHandler = (data: any) => {
-    console.log('heeee')
     const indexClicked = getIndexClicked(data)
     const alreadySelected = pointsSelected.current.indexOf(indexClicked) >= 0
     if (shiftKey.current) {

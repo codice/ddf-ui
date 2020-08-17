@@ -56,12 +56,16 @@ const metacardInfo = ({ attributes }: Props) =>
   attributes.map(({ name, value }: Attribute) => {
     if (name === 'thumbnail') {
       return (
-        <div>
+        <div key={name}>
           <img src={value} style={{ maxWidth: '100px', maxHeight: '100px' }} />
         </div>
       )
     } else {
-      return <MetacardInfo>{formatAttribute({ name, value })}</MetacardInfo>
+      return (
+        <MetacardInfo key={name}>
+          {formatAttribute({ name, value })}
+        </MetacardInfo>
+      )
     }
   })
 

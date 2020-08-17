@@ -22,7 +22,6 @@ export const GoldenLayout = ({ selectionInterface }: Props) => {
 
   React.useEffect(
     () => {
-      console.log('happens')
       setTimeout(() => {
         if (goldenlayoutInstance.goldenLayout) goldenlayoutInstance.updateSize()
       }, 100)

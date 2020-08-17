@@ -43,12 +43,6 @@ type Sort = {
   direction: 'ascending' | 'descending'
 }
 
-export const RowComponent = (
-  props: React.AllHTMLAttributes<HTMLDivElement>
-) => {
-  return <div {...props} style={{ whiteSpace: 'nowrap' }} />
-}
-
 export const CellComponent = (props: GridProps) => {
   const { style, ...otherProps } = props
   return (

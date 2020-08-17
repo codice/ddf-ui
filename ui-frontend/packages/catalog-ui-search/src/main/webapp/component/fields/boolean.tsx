@@ -27,7 +27,6 @@ const defaultValue = false
 
 const validateShape = ({ value, onChange }: Props) => {
   if (typeof value !== 'boolean') {
-    console.log('defaulted to correct shape')
     onChange(defaultValue)
   }
 }

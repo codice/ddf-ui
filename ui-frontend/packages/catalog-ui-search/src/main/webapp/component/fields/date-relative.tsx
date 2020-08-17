@@ -17,7 +17,6 @@ const defaultValue = {
 
 const validateShape = ({ value, onChange }: Props) => {
   if (isInvalid({ value, onChange })) {
-    console.log('defaulted to correct shape')
     onChange(defaultValue)
   }
 }

@@ -230,6 +230,11 @@ const MultiSelectActions = ({
   )
 }
 
+// fake event to pass ripple.stop
+const fakeEvent = {
+  type: '',
+} as any
+
 export const ResultItem = ({
   lazyResult,
   measure,
@@ -391,6 +396,7 @@ export const ResultItem = ({
   }>(null)
   return (
     <Button
+      component="div" // we have to use a div since there are buttons inside this (invalid to nest buttons)
       onMouseEnter={() => {
         setIsHovering(true)
       }}
@@ -416,7 +422,7 @@ export const ResultItem = ({
          */
         setTimeout(() => {
           if (rippleRef.current) {
-            rippleRef.current.stop(event)
+            rippleRef.current.stop(fakeEvent)
           }
         }, 0)
       }}
@@ -436,7 +442,7 @@ export const ResultItem = ({
         }
         setTimeout(() => {
           if (rippleRef.current) {
-            rippleRef.current.stop(event)
+            rippleRef.current.stop(fakeEvent)
           }
         }, 200)
       }}
