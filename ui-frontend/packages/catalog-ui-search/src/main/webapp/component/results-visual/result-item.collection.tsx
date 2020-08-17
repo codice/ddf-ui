@@ -154,6 +154,7 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
                   <ResultItem
                     lazyResults={results}
                     lazyResult={item}
+                    selectionInterface={selectionInterface}
                     measure={measure}
                     index={index}
                     width={width}

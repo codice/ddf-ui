@@ -47,6 +47,7 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import { Elevations } from '../theme/theme'
 import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple'
 import { clearSelection, hasSelection } from './result-item-row'
+import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
 const getResultDisplayType = () =>
   (user &&
     user
@@ -109,6 +110,7 @@ const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
 type ResultItemBasicProps = {
   lazyResults: LazyQueryResult[]
   lazyResult: LazyQueryResult
+  selectionInterface: any
 }
 
 type ResultItemFullProps = ResultItemBasicProps & {
@@ -144,18 +146,6 @@ const getPaddingForTheme = ({ theme }: { theme: ThemeInterface }) => {
   }
 }
 
-const SpecialButton = styled(Button)`
-  && {
-    height: 100%;
-    .MuiButton-label {
-      display: block;
-    }
-    text-transform: none;
-    text-align: left;
-    word-break: break-word;
-  }
-`
-
 const SmallButton = styled(Button)`
   && {
     ${props => getPaddingForTheme({ theme: props.theme })};
@@ -186,13 +176,69 @@ const getIconClassName = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   return ''
 }
 
+const MultiSelectActions = ({
+  selectionInterface,
+}: {
+  selectionInterface: any
+}) => {
+  const selectedResults = useLazyResultsSelectedResultsFromSelectionInterface({
+    selectionInterface,
+  })
+  const selectedResultsArray = Object.values(selectedResults)
+  return (
+    <Dropdown
+      content={({ close }) => {
+        return (
+          <BetterClickAwayListener onClickAway={close}>
+            <Paper>
+              <LazyMetacardInteractions
+                lazyResults={selectedResultsArray}
+                onClose={() => {
+                  close()
+                }}
+              />
+            </Paper>
+          </BetterClickAwayListener>
+        )
+      }}
+    >
+      {({ handleClick }) => {
+        return (
+          <Button
+            className={
+              selectedResultsArray.length === 0 ? 'relative' : 'relative'
+            }
+            color="primary"
+            disabled={selectedResultsArray.length === 0}
+            onClick={e => {
+              e.stopPropagation()
+              handleClick(e)
+            }}
+            style={{ height: '100%' }}
+            size="small"
+          >
+            {selectedResultsArray.length} selected
+            <Box
+              color={selectedResultsArray.length === 0 ? '' : 'text.primary'}
+            >
+              <MoreIcon />
+            </Box>
+          </Button>
+        )
+      }}
+    </Dropdown>
+  )
+}
+
 export const ResultItem = ({
   lazyResult,
   measure,
   index,
+  selectionInterface,
   lazyResults,
 }: ResultItemFullProps) => {
   // console.log(`rendered: ${index}`)
+
   const isSelected = useSelectionOfLazyResult({ lazyResult })
   const [isGallery, setIsGallery] = React.useState(checkResultDisplayType())
   const { listenTo } = useBackbone()
@@ -225,104 +271,114 @@ export const ResultItem = ({
 
   const DynamicActions = () => {
     return (
-      <Grid container alignItems="center">
-        <Grid item className="ml-auto">
-          <Grid container direction="row" wrap="nowrap" alignItems="center">
-            <Grid item style={{ height: '100%' }}>
-              {lazyResult.hasErrors() ? (
-                <div
-                  className="h-full"
-                  title="Has validation errors."
-                  data-help="Indicates the given result has a validation error.
+      <Grid container direction="column" alignItems="flex-end">
+        <Grid item>
+          <Grid container alignItems="center">
+            <Grid item className="ml-auto">
+              <Grid container direction="row" wrap="nowrap" alignItems="center">
+                <Grid item style={{ height: '100%' }}>
+                  {lazyResult.hasErrors() ? (
+                    <div
+                      className="h-full"
+                      title="Has validation errors."
+                      data-help="Indicates the given result has a validation error.
                       See the 'Quality' tab of the result for more details."
-                >
-                  <WarningIcon />
-                </div>
-              ) : (
-                ''
-              )}
-            </Grid>
-            <Grid item style={{ height: '100%' }}>
-              {!lazyResult.hasErrors() && lazyResult.hasWarnings() ? (
-                <div
-                  className="h-full"
-                  title="Has validation warnings."
-                  data-help="Indicates the given result has a validation warning.
+                    >
+                      <WarningIcon />
+                    </div>
+                  ) : (
+                    ''
+                  )}
+                </Grid>
+                <Grid item style={{ height: '100%' }}>
+                  {!lazyResult.hasErrors() && lazyResult.hasWarnings() ? (
+                    <div
+                      className="h-full"
+                      title="Has validation warnings."
+                      data-help="Indicates the given result has a validation warning.
                       See the 'Quality' tab of the result for more details."
-                >
-                  <WarningIcon />
-                </div>
-              ) : (
-                ''
-              )}
-            </Grid>
-            <Grid item style={{ height: '100%' }}>
-              {lazyResult.plain.metacard.properties['ext.link'] ? (
-                <SmallButton
-                  title={lazyResult.plain.metacard.properties['ext.link']}
-                  onClick={e => {
-                    e.stopPropagation()
-                    window.open(
-                      lazyResult.plain.metacard.properties['ext.link']
-                    )
-                  }}
-                  style={{ height: '100%' }}
-                  size="small"
-                >
-                  <LinkIcon />
-                </SmallButton>
-              ) : null}
-            </Grid>
-            <Grid item style={{ height: '100%' }}>
-              {lazyResult.isDownloadable() ? (
-                <SmallButton
-                  onClick={e => {
-                    e.stopPropagation()
-                    triggerDownload(e)
-                  }}
-                  style={{ height: '100%' }}
-                  size="small"
-                >
-                  <GetAppIcon />
-                </SmallButton>
-              ) : null}
-            </Grid>
-            <Extensions.resultItemTitleAddOn lazyResult={lazyResult} />
-            <Grid item style={{ height: '100%' }}>
-              <Dropdown
-                content={({ close }) => {
-                  return (
-                    <BetterClickAwayListener onClickAway={close}>
-                      <Paper>
-                        <LazyMetacardInteractions
-                          lazyResults={[lazyResult]}
-                          onClose={() => {
-                            close()
-                          }}
-                        />
-                      </Paper>
-                    </BetterClickAwayListener>
-                  )
-                }}
-              >
-                {({ handleClick }) => {
-                  return (
+                    >
+                      <WarningIcon />
+                    </div>
+                  ) : (
+                    ''
+                  )}
+                </Grid>
+                <Grid item style={{ height: '100%' }}>
+                  {lazyResult.plain.metacard.properties['ext.link'] ? (
                     <SmallButton
+                      title={lazyResult.plain.metacard.properties['ext.link']}
                       onClick={e => {
                         e.stopPropagation()
-                        handleClick(e)
+                        window.open(
+                          lazyResult.plain.metacard.properties['ext.link']
+                        )
                       }}
                       style={{ height: '100%' }}
                       size="small"
                     >
-                      <MoreIcon />
+                      <LinkIcon />
                     </SmallButton>
-                  )
-                }}
-              </Dropdown>
+                  ) : null}
+                </Grid>
+                <Grid item style={{ height: '100%' }}>
+                  {lazyResult.isDownloadable() ? (
+                    <SmallButton
+                      onClick={e => {
+                        e.stopPropagation()
+                        triggerDownload(e)
+                      }}
+                      style={{ height: '100%' }}
+                      size="small"
+                    >
+                      <GetAppIcon />
+                    </SmallButton>
+                  ) : null}
+                </Grid>
+                <Extensions.resultItemTitleAddOn lazyResult={lazyResult} />
+                <Grid item style={{ height: '100%' }}>
+                  <Dropdown
+                    content={({ close }) => {
+                      return (
+                        <BetterClickAwayListener onClickAway={close}>
+                          <Paper>
+                            <LazyMetacardInteractions
+                              lazyResults={[lazyResult]}
+                              onClose={() => {
+                                close()
+                              }}
+                            />
+                          </Paper>
+                        </BetterClickAwayListener>
+                      )
+                    }}
+                  >
+                    {({ handleClick }) => {
+                      return (
+                        <SmallButton
+                          onClick={e => {
+                            e.stopPropagation()
+                            handleClick(e)
+                          }}
+                          style={{ height: '100%' }}
+                          size="small"
+                        >
+                          <MoreIcon />
+                        </SmallButton>
+                      )
+                    }}
+                  </Dropdown>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
+        {/* <Grid item className="py-2 w-full">
+          <Divider className="w-full h-1" />
+        </Grid>
+        <Grid item className="pt-2">
+          <MultiSelectActions selectionInterface={selectionInterface} />
+        </Grid> */}
       </Grid>
     )
   }
@@ -559,8 +615,11 @@ export const ResultItem = ({
           </div>
         </div>
         <Paper
+          onClick={e => {
+            e.stopPropagation()
+          }}
           elevation={Elevations.overlays}
-          className={`absolute z-50 right-0 bottom-0 focus-within:opacity-100 hover:opacity-100 ${
+          className={`absolute z-50 right-0 bottom-0 focus-within:opacity-100 hover:opacity-100 p-2 cursor-auto ${
             isHovering ? 'opacity-100' : 'opacity-0'
           } focus-within:opacity-100 transform translate-y-3/4`}
         >
