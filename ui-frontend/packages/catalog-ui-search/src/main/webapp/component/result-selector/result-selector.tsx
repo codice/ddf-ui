@@ -56,9 +56,9 @@ const SelectedResults = ({ selectionInterface }: any) => {
       {({ handleClick }) => {
         return (
           <Button
-            className={
-              selectedResultsArray.length === 0 ? 'relative' : 'relative'
-            }
+            className={`relative ${
+              selectedResultsArray.length === 0 ? 'invisible' : ''
+            }`}
             color="primary"
             disabled={selectedResultsArray.length === 0}
             onClick={handleClick}

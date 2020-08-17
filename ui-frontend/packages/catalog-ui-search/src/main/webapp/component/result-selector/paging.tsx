@@ -39,14 +39,17 @@ const Paging = ({ selectionInterface }: Props) => {
     return null
   }
 
+  const isPreviousDisabled =
+    isOutdated ||
+    selectionInterface.get('currentQuery').hasPreviousServerPage() === false
+  const isNextDisabled =
+    isOutdated ||
+    selectionInterface.get('currentQuery').hasNextServerPage() === false
   return (
     <>
       <Button
-        disabled={
-          isOutdated ||
-          selectionInterface.get('currentQuery').hasPreviousServerPage() ===
-            false
-        }
+        className={`${isPreviousDisabled ? 'invisible' : ''}`}
+        disabled={isPreviousDisabled}
         onClick={() => {
           selectionInterface.get('currentQuery').getPreviousServerPage()
         }}
@@ -54,10 +57,8 @@ const Paging = ({ selectionInterface }: Props) => {
         Prev Page
       </Button>
       <Button
-        disabled={
-          isOutdated ||
-          selectionInterface.get('currentQuery').hasNextServerPage() === false
-        }
+        className={`${isPreviousDisabled && isNextDisabled ? 'invisible' : ''}`}
+        disabled={isNextDisabled}
         onClick={() => {
           selectionInterface.get('currentQuery').getNextServerPage()
         }}
