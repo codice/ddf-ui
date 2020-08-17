@@ -1029,6 +1029,9 @@ module.exports = function CesiumMap(
         shape.destroy()
       })
       shapes = []
+      if (this.map && this.map.scene) {
+        this.map.scene.requestRender()
+      }
     },
     destroy() {
       wreqr.vent.off('map:requestRender', requestRenderHandler)
