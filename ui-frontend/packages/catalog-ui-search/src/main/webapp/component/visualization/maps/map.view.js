@@ -518,7 +518,7 @@ module.exports = Marionette.LayoutView.extend({
     this.loadMap().then(Map => {
       this.createMap(Map)
       this.hasLoadedMap = true
-      this.onMapLoaded(this.map.getOpenLayersMap())
+      this.onMapLoaded(this.map.getMap())
     })
   },
   startLoading() {

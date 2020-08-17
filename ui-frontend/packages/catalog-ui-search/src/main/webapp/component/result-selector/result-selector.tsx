@@ -144,10 +144,10 @@ const ResultSelector = ({
             model={model}
           />
         </Grid>
-        <Grid item>
+        <Grid item className="relative z-10">
           <QueryFeed selectionInterface={selectionInterface} />
         </Grid>
-        <Grid item className="relative">
+        <Grid item className="relative z-0">
           <SelectionRipple selectionInterface={selectionInterface} />
           <SelectedResults selectionInterface={selectionInterface} />
         </Grid>
