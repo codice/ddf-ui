@@ -11,6 +11,8 @@ import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import { Status } from '../../js/model/LazyQueryResult/status'
 import { useLazyResultsStatusFromSelectionInterface } from '../selection-interface/hooks'
+import Tooltip from '@material-ui/core/Tooltip'
+import { Elevations } from '../theme/theme'
 
 type Props = {
   selectionInterface: any
@@ -43,12 +45,26 @@ const CellValue = (props: CellValueProps) => {
   } = props
   return (
     <React.Fragment>
-      {(message || (warnings && warnings.length > 0)) && (
-        <span
-          className="fa fa-warning"
-          title={message || warnings}
-          style={{ paddingRight: '5px' }}
-        />
+      {(!successful || message || (warnings && warnings.length > 0)) && (
+        <Tooltip
+          title={
+            <Paper elevation={Elevations.overlays} className="p-2">
+              {(() => {
+                if (message) {
+                  return message
+                } else if (warnings.length > 0) {
+                  return warnings.map(warning => (
+                    <div key={warning}>{warning}</div>
+                  ))
+                } else {
+                  return 'Something went wrong searching this source.'
+                }
+              })()}
+            </Paper>
+          }
+        >
+          <span className="fa fa-warning" style={{ paddingRight: '5px' }} />
+        </Tooltip>
       )}
       {alwaysShowValue || (!message && hasReturned && successful)
         ? value

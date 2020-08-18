@@ -13,7 +13,9 @@
  *
  **/
 import React from 'react'
-require('../styles/libraries.less')
+
+require('../styles/tailwind.css')
+require('../styles/libraries.css')
 require('../styles/styles.less')
 
 const $ = require('jquery')

@@ -55,6 +55,7 @@ const FilterComparator = ({ filter, setFilter }: Props) => {
           type: newType,
         })
       }}
+      size="small"
     >
       {comparators.map(comparator => (
         <MenuItem value={comparator.value} key={comparator.label}>

@@ -21,13 +21,23 @@ import Button from '@material-ui/core/Button'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
+import Divider from '@material-ui/core/Divider'
+import Box from '@material-ui/core/Box'
+import Paper from '@material-ui/core/Paper'
+import { Elevations, dark, light } from '../theme/theme'
+import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
+import { useStatusOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
+import { LinearProgress, useTheme } from '@material-ui/core'
+import ViewAgendaIcon from '@material-ui/icons/ViewAgenda'
+import TableChartIcon from '@material-ui/icons/TableChart'
+import { HeaderCheckbox } from './table-header'
+
 const user = require('../singletons/user-instance.js')
 
 type Props = {
-  results: LazyQueryResult[]
   mode: any
   setMode: any
-  lazyResults: LazyQueryResults
+  selectionInterface: any
 }
 
 const getShowThumbnails = () => {
@@ -39,7 +49,13 @@ const getShowThumbnails = () => {
   )
 }
 
-const ResultCards = ({ results, mode, setMode, lazyResults }: Props) => {
+const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
+  const lazyResults = useLazyResultsFromSelectionInterface({
+    selectionInterface,
+  })
+  const results = Object.values(lazyResults.results)
+  const theme = useTheme()
+  const { isSearching, status } = useStatusOfLazyResults({ lazyResults })
   const [showThumbnails, setShowThumbnails] = React.useState(
     getShowThumbnails()
   )
@@ -50,66 +66,122 @@ const ResultCards = ({ results, mode, setMode, lazyResults }: Props) => {
     })
   }, [])
   return (
-    <Grid
-      container
-      style={{ height: '100%', width: '100%' }}
-      direction="column"
-      wrap="nowrap"
-    >
-      <Grid item>
-        <Button
-          onClick={() => {
-            setMode(mode === 'card' ? 'table' : 'card')
-          }}
+    <Grid container className="w-full h-full" direction="column" wrap="nowrap">
+      <Grid item className="w-full">
+        <Grid
+          container
+          className="w-full pt-2 px-2"
+          direction="row"
+          alignItems="center"
         >
-          Switch to {mode === 'card' ? 'Table' : 'Card'} View
-        </Button>
-        <Button
-          onClick={() => {
-            const prefs = user.get('user').get('preferences')
-            prefs.set('resultDisplay', showThumbnails ? 'List' : 'Grid')
-            prefs.savePreferences()
-          }}
-        >
-          {showThumbnails ? 'Hide Thumbnails' : 'Show Thumbnails'}
-        </Button>
-        <Button
-          onClick={() => {
-            Object.values(lazyResults.results).forEach(lazyResult => {
-              lazyResult.setSelected(true)
-            })
-          }}
-        >
-          Select All
-        </Button>
+          <Grid item className="pl-6">
+            <HeaderCheckbox
+              lazyResults={lazyResults}
+              buttonProps={{
+                style: {
+                  minWidth: 0,
+                },
+              }}
+            />
+          </Grid>
+          <Grid item className="pl-16">
+            <Button
+              onClick={() => {
+                const prefs = user.get('user').get('preferences')
+                prefs.set('resultDisplay', showThumbnails ? 'List' : 'Grid')
+                prefs.savePreferences()
+              }}
+            >
+              {showThumbnails ? 'Hide Thumbnails' : 'Show Thumbnails'}
+            </Button>
+          </Grid>
+          <Grid item className="ml-auto pr-2">
+            <Button
+              onClick={() => {
+                setMode('card')
+              }}
+              style={{
+                borderBottom:
+                  mode === 'card'
+                    ? `1px solid ${theme.palette.secondary.main}`
+                    : '1px solid transparent',
+              }}
+            >
+              <ViewAgendaIcon />
+              List
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              onClick={() => {
+                setMode('table')
+              }}
+              style={{
+                borderBottom:
+                  mode === 'table'
+                    ? `1px solid ${theme.palette.secondary.main}`
+                    : '1px solid transparent',
+              }}
+            >
+              <TableChartIcon />
+              Table
+            </Button>
+          </Grid>
+        </Grid>
       </Grid>
-      <Grid item style={{ height: '100%', width: '100%' }}>
-        <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
-          controlledMeasuring={true}
-          items={results}
-          defaultSize={76}
-          overscanCount={10}
-          Item={({ itemRef, item, measure, index, width }) => {
-            return (
-              <div ref={itemRef}>
-                {index !== 0 ? <div style={{ height: '10px' }} /> : null}
-                <ResultItem
-                  lazyResult={item}
-                  measure={measure}
-                  index={index}
-                  width={width}
-                />
-              </div>
-            )
-          }}
-          Empty={() => {
-            return (
-              <div className="result-item-collection-empty">
-                No Results Found
-              </div>
-            )
-          }}
-        />
+      <Box
+        className="w-full h-min my-2"
+        style={{
+          background:
+            theme.palette.type === 'dark' ? dark.background : light.background,
+        }}
+      />
+      <Grid item className="w-full h-full p-2">
+        <Paper elevation={Elevations.paper} className="w-full h-full ">
+          <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
+            controlledMeasuring={true}
+            items={results}
+            defaultSize={76}
+            overscanCount={10}
+            Item={({ itemRef, item, measure, index, width }) => {
+              return (
+                <div ref={itemRef} className="relative">
+                  {index !== 0 ? (
+                    <>
+                      <Box className="h-min w-full" bgcolor={'divider'} />
+                    </>
+                  ) : null}
+                  <ResultItem
+                    lazyResults={results}
+                    lazyResult={item}
+                    selectionInterface={selectionInterface}
+                    measure={measure}
+                    index={index}
+                    width={width}
+                  />
+                  {index === results.length - 1 ? (
+                    <>
+                      <Box className="h-min w-full" bgcolor={'divider'} />
+                    </>
+                  ) : null}
+                </div>
+              )
+            }}
+            Empty={() => {
+              if (Object.values(status).length === 0) {
+                return <div className="p-2">Search has not yet been run.</div>
+              }
+              if (isSearching) {
+                return <LinearProgress variant="indeterminate" />
+              }
+              return (
+                <div className="result-item-collection-empty p-2">
+                  No Results Found
+                </div>
+              )
+            }}
+          />
+        </Paper>
       </Grid>
     </Grid>
   )

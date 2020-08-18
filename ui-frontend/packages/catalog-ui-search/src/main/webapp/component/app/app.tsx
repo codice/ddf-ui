@@ -17,10 +17,8 @@ const $ = require('jquery')
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
+import ExpandingButton from '../button/expanding-button'
 import Divider from '@material-ui/core/Divider'
-import List from '@material-ui/core/List'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import ListItemText from '@material-ui/core/ListItemText'
 import IconButton from '@material-ui/core/IconButton'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ListItem from '@material-ui/core/ListItem'
@@ -44,6 +42,8 @@ import { GlobalStyles } from './global-styles'
 import CancelDrawing from './cancel-drawing'
 import { PermissiveComponentType } from '../../typescript'
 import Box from '@material-ui/core/Box'
+import scrollIntoView from 'scroll-into-view-if-needed'
+import { Elevations } from '../theme/theme'
 export const handleBase64EncodedImages = (url: string) => {
   if (url && url.startsWith('data:')) {
     return url
@@ -180,6 +180,24 @@ const App = ({
   //   document.head.appendChild(favicon)
   // })
 
+  /**
+   * Keep the current route visible to the user since it's useful info.
+   * This also ensures it's visible upon first load of the page.
+   */
+  React.useEffect(
+    () => {
+      setTimeout(() => {
+        const currentroute = document.querySelector('[data-currentroute]')
+        if (currentroute && !withinNav) {
+          scrollIntoView(currentroute, {
+            behavior: 'smooth',
+            scrollMode: 'if-needed',
+          })
+        }
+      }, 0)
+    },
+    [withinNav, location]
+  )
   return (
     <Box bgcolor="background.default" className="h-full w-full overflow-hidden">
       {/* Don't move CSSBaseline or GlobalStyles to providers, since we have multiple react roots.   */}
@@ -226,7 +244,7 @@ const App = ({
                 setWithinNav(false)
               }}
             >
-              <Paper elevation={6} className="h-full">
+              <Paper elevation={Elevations.navbar} className="h-full">
                 <Grid
                   container
                   direction="column"
@@ -248,7 +266,7 @@ const App = ({
                           >
                             {properties.topLeftLogoSrc ? (
                               <img
-                                className="max-h-full max-w-full absolute left-0 transform -translate-y-1/2 top-1/2"
+                                className="max-h-full max-w-full absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 top-1/2 p-4"
                                 src={handleBase64EncodedImages(
                                   properties.topLeftLogoSrc
                                 )}
@@ -302,327 +320,218 @@ const App = ({
                     )}
                   </Grid>
                   <Divider />
-                  <Grid item className="flex-shrink-0">
-                    <List className="overflow-hidden p-0">
-                      {RouteInformation.filter(
-                        routeInfo => routeInfo.showInNav
-                      ).map((routeInfo: RouteShownInNavType) => {
-                        const isSelected = matchesRoute({
-                          routeInfo,
-                          pathname: location.pathname,
-                        })
-                        return (
-                          <ListItem
-                            key={routeInfo.name}
-                            button
-                            component={Link}
-                            to={routeInfo.linkProps.to}
-                            className={`${
-                              !withinNav && !isSelected ? 'opacity-25' : ''
-                            } relative py-3 focus:opacity-100 hover:opacity-100 transition-opacity`}
-                          >
-                            <ListItemIcon>
-                              {routeInfo.Icon ? (
-                                <routeInfo.Icon
-                                  className="transition duration-200 ease-in-out"
-                                  style={{
-                                    transform: navOpen
-                                      ? 'none'
-                                      : 'translateX(2px) translateY(-10px)',
-                                  }}
-                                />
-                              ) : null}
-                              {routeInfo.Icon ? (
-                                <Typography
-                                  variant="body2"
-                                  className={`${
-                                    navOpen ? 'opacity-0' : 'opacity-100'
-                                  } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
-                                >
-                                  {routeInfo.shortName}
-                                </Typography>
-                              ) : (
-                                <Typography
-                                  variant="body2"
-                                  className={`${
-                                    navOpen ? 'opacity-0' : 'opacity-100'
-                                  } transform -translate-x-1/2 -translate-y-1/2 absolute left-1/2 top-1/2 transition duration-200 ease-in-out`}
-                                >
-                                  {routeInfo.shortName}
-                                </Typography>
-                              )}
-                            </ListItemIcon>
-                            <ListItemText
-                              primaryTypographyProps={{
-                                className: 'whitespace-no-wrap',
-                              }}
-                              primary={routeInfo.name}
-                            />
-                          </ListItem>
-                        )
-                      })}
-                    </List>
+                  <Grid
+                    item
+                    className="overflow-auto p-0 flex-shrink-0 scrollbars-min"
+                    style={{
+                      maxHeight: `calc(100% - ${7 * 4}rem)`, //
+                    }}
+                  >
+                    {RouteInformation.filter(
+                      routeInfo => routeInfo.showInNav
+                    ).map((routeInfo: RouteShownInNavType) => {
+                      const isSelected = matchesRoute({
+                        routeInfo,
+                        pathname: location.pathname,
+                      })
+                      return (
+                        <ExpandingButton
+                          key={routeInfo.linkProps.to}
+                          component={Link}
+                          to={routeInfo.linkProps.to}
+                          className={`${
+                            !withinNav && !isSelected ? 'opacity-25' : ''
+                          } focus:opacity-100 hover:opacity-100 transition-opacity`}
+                          Icon={routeInfo.Icon ? routeInfo.Icon : undefined}
+                          expanded={navOpen}
+                          iconPosition="start"
+                          expandedText={routeInfo.name}
+                          unexpandedText={routeInfo.shortName}
+                          {...(isSelected
+                            ? {
+                                ['data-currentroute']: true,
+                              }
+                            : {})}
+                        />
+                      )
+                    })}
                   </Grid>
                   <Divider />
-                  <Grid item className="relative h-full overflow-hidden">
+                  <Grid
+                    item
+                    className="relative overflow-hidden flex-shrink-1 h-full min-w-full"
+                  >
                     {properties.bottomLeftBackgroundSrc ? (
                       <img
                         className={`${
                           withinNav ? 'opacity-100' : 'opacity-50'
-                        } duration-200 ease-in-out transition-all w-auto h-full absolute max-w-none`}
+                        } duration-200 ease-in-out transition-all w-auto h-full absolute max-w-none m-auto min-h-80`}
                         src={handleBase64EncodedImages(
                           properties.bottomLeftBackgroundSrc
                         )}
                       />
                     ) : null}
                   </Grid>
+                  <Divider />
                   <Grid
                     item
-                    className="mt-auto overflow-hidden w-full flex-shrink-0"
+                    className="mt-auto overflow-hidden w-full flex-shrink-0 flex-grow-0"
                   >
-                    <Divider />
-                    <Grid
-                      container
-                      className="w-full"
-                      alignItems="center"
-                      direction="column"
-                      wrap="nowrap"
-                    >
-                      <Grid item className="w-full">
-                        {/** The song and dance around 'a' vs Link has to do with react router not supporting these outside links */}
-                        <ListItem
-                          button
-                          component={properties.helpUrl ? 'a' : Link}
-                          href={properties.helpUrl}
-                          to={
-                            properties.helpUrl
-                              ? properties.helpurl
-                              : {
-                                  pathname: `${location.pathname}`,
-                                  search: `${queryString.stringify({
-                                    ...queryParams,
-                                    'global-help': 'Help',
-                                  })}`,
-                                }
-                          }
-                          target={properties.helpUrl ? '_blank' : undefined}
-                          className={`${
-                            !withinNav ? 'opacity-25' : ''
-                          } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
-                        >
-                          <ListItemIcon>
-                            <HelpIcon
-                              className="transition duration-200 ease-in-out"
-                              style={{
-                                transform: navOpen
-                                  ? 'none'
-                                  : 'translateX(2px) translateY(-10px)',
-                              }}
+                    {/** The song and dance around 'a' vs Link has to do with react router not supporting these outside links */}
+                    <ExpandingButton
+                      component={properties.helpUrl ? 'a' : Link}
+                      href={properties.helpUrl}
+                      to={
+                        properties.helpUrl
+                          ? properties.helpurl
+                          : {
+                              pathname: `${location.pathname}`,
+                              search: `${queryString.stringify({
+                                ...queryParams,
+                                'global-help': 'Help',
+                              })}`,
+                            }
+                      }
+                      target={properties.helpUrl ? '_blank' : undefined}
+                      className={`${
+                        !withinNav ? 'opacity-25' : ''
+                      }  hover:opacity-100 focus:opacity-100 transition-opacity`}
+                      Icon={HelpIcon}
+                      iconPosition="start"
+                      expandedText="Help"
+                      unexpandedText="Help"
+                      expanded={navOpen}
+                    />
+                    {(() => {
+                      const open = Boolean(queryParams['global-settings'])
+                      return (
+                        <>
+                          <ExpandingButton
+                            component={Link}
+                            to={{
+                              pathname: `${location.pathname}`,
+                              search: `${queryString.stringify({
+                                ...queryParams,
+                                'global-settings': 'Settings',
+                              })}`,
+                            }}
+                            className={`${
+                              !withinNav ? 'opacity-25' : ''
+                            } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
+                            Icon={SettingsIcon}
+                            iconPosition="start"
+                            expandedText="Settings"
+                            unexpandedText="Settings"
+                            expanded={navOpen}
+                          />
+                          <Drawer
+                            anchor="left"
+                            open={open}
+                            onClose={() => {
+                              delete queryParams['global-settings']
+                              history.push(
+                                `${location.pathname}?${queryString.stringify(
+                                  queryParams
+                                )}`
+                              )
+                            }}
+                            PaperProps={{
+                              className: 'min-w-120 max-w-4/5 ',
+                            }}
+                          >
+                            <UserSettings
+                              SettingsComponents={SettingsComponents}
                             />
-                            <Typography
-                              variant="body2"
-                              className={`${
-                                navOpen ? 'opacity-0' : 'opacity-100'
-                              } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
-                            >
-                              Help
-                            </Typography>
-                          </ListItemIcon>
-                          <ListItemText primary={'Help'} />
-                        </ListItem>
-                      </Grid>
-                      <Grid item className="w-full">
-                        {(() => {
-                          const open = Boolean(queryParams['global-settings'])
-                          return (
-                            <>
-                              <ListItem
-                                button
-                                component={Link}
-                                to={{
-                                  pathname: `${location.pathname}`,
-                                  search: `${queryString.stringify({
-                                    ...queryParams,
-                                    'global-settings': 'Settings',
-                                  })}`,
-                                }}
-                                className={`${
-                                  !withinNav ? 'opacity-25' : ''
-                                } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
-                              >
-                                <ListItemIcon>
-                                  <SettingsIcon
-                                    className="transition duration-200 ease-in-out"
-                                    style={{
-                                      transform: navOpen
-                                        ? 'none'
-                                        : 'translateX(2px) translateY(-10px)',
-                                    }}
-                                  />
-                                  <Typography
-                                    variant="body2"
-                                    className={`${
-                                      navOpen ? 'opacity-0' : 'opacity-100'
-                                    } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
-                                  >
-                                    Settings
-                                  </Typography>
-                                </ListItemIcon>
-                                <ListItemText primary={'Settings'} />
-                              </ListItem>
-                              <Drawer
-                                anchor="left"
-                                open={open}
-                                onClose={() => {
-                                  delete queryParams['global-settings']
-                                  history.push(
-                                    `${
-                                      location.pathname
-                                    }?${queryString.stringify(queryParams)}`
-                                  )
-                                }}
-                                PaperProps={{
-                                  className: 'min-w-120 max-w-4/5 ',
-                                }}
-                              >
-                                <UserSettings
-                                  SettingsComponents={SettingsComponents}
-                                />
-                              </Drawer>
-                            </>
-                          )
-                        })()}
-                      </Grid>
+                          </Drawer>
+                        </>
+                      )
+                    })()}
 
-                      <Grid item className="w-full">
-                        {(() => {
-                          const open = Boolean(
-                            queryParams['global-notifications']
-                          )
+                    {(() => {
+                      const open = Boolean(queryParams['global-notifications'])
 
-                          return (
-                            <>
-                              <ListItem
-                                button
-                                component={Link}
-                                to={{
-                                  pathname: `${location.pathname}`,
-                                  search: `${queryString.stringify({
-                                    ...queryParams,
-                                    'global-notifications': 'Notifications',
-                                  })}`,
-                                }}
-                                className={`${
-                                  !withinNav ? 'opacity-25' : ''
-                                } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
-                              >
-                                <ListItemIcon>
-                                  <NotificationsIcon
-                                    className="transition duration-200 ease-in-out"
-                                    style={{
-                                      transform: navOpen
-                                        ? 'none'
-                                        : 'translateX(2px) translateY(-10px)',
-                                    }}
-                                  />
-                                  <Typography
-                                    variant="body2"
-                                    className={`${
-                                      navOpen ? 'opacity-0' : 'opacity-100'
-                                    } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
-                                  >
-                                    Notices
-                                  </Typography>
-                                </ListItemIcon>
-                                <ListItemText primary={'Notifications'} />
-                              </ListItem>
-                              <Drawer
-                                anchor="left"
-                                open={open}
-                                onClose={() => {
-                                  delete queryParams['global-notifications']
-                                  history.push(
-                                    `${
-                                      location.pathname
-                                    }?${queryString.stringify(queryParams)}`
-                                  )
-                                }}
-                                PaperProps={{
-                                  className: 'min-w-120 max-w-4/5 ',
-                                }}
-                              >
-                                <NotificationsComponent />
-                              </Drawer>
-                            </>
-                          )
-                        })()}
-                      </Grid>
-                      <Grid item className="w-full">
-                        {(() => {
-                          const open = Boolean(queryParams['global-user'])
-                          return (
-                            <>
-                              <ListItem
-                                button
-                                component={Link}
-                                to={{
-                                  pathname: `${location.pathname}`,
-                                  search: `${queryString.stringify({
-                                    ...queryParams,
-                                    'global-user': 'User',
-                                  })}`,
-                                }}
-                                className={`${
-                                  !withinNav ? 'opacity-25' : ''
-                                } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
-                              >
-                                <ListItemIcon>
-                                  <PersonIcon
-                                    className="transition duration-200 ease-in-out"
-                                    style={{
-                                      transform: navOpen
-                                        ? 'none'
-                                        : 'translateX(2px) translateY(-10px)',
-                                    }}
-                                  />
-                                  <Typography
-                                    variant="body2"
-                                    className={`${
-                                      navOpen ? 'opacity-0' : 'opacity-100'
-                                    } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out max-w-full truncate px-1`}
-                                  >
-                                    {userInstance.getUserName()}
-                                  </Typography>
-                                </ListItemIcon>
-                                <ListItemText
-                                  primaryTypographyProps={{
-                                    className: 'truncate',
-                                  }}
-                                  primary={userInstance.getUserName()}
-                                />
-                              </ListItem>
-                              <Drawer
-                                anchor="left"
-                                open={open}
-                                onClose={() => {
-                                  delete queryParams['global-user']
-                                  history.push(
-                                    `${
-                                      location.pathname
-                                    }?${queryString.stringify(queryParams)}`
-                                  )
-                                }}
-                                PaperProps={{
-                                  className: 'min-w-120 max-w-4/5 ',
-                                }}
-                              >
-                                <UserView />
-                              </Drawer>
-                            </>
-                          )
-                        })()}
-                      </Grid>
-                    </Grid>
+                      return (
+                        <>
+                          <ExpandingButton
+                            component={Link}
+                            to={{
+                              pathname: `${location.pathname}`,
+                              search: `${queryString.stringify({
+                                ...queryParams,
+                                'global-notifications': 'Notifications',
+                              })}`,
+                            }}
+                            className={`${
+                              !withinNav ? 'opacity-25' : ''
+                            } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
+                            iconPosition="start"
+                            Icon={NotificationsIcon}
+                            expandedText="Notifications"
+                            unexpandedText="Notices"
+                            expanded={navOpen}
+                          />
+                          <Drawer
+                            anchor="left"
+                            open={open}
+                            onClose={() => {
+                              delete queryParams['global-notifications']
+                              history.push(
+                                `${location.pathname}?${queryString.stringify(
+                                  queryParams
+                                )}`
+                              )
+                            }}
+                            PaperProps={{
+                              className: 'min-w-120 max-w-4/5 ',
+                            }}
+                          >
+                            <NotificationsComponent />
+                          </Drawer>
+                        </>
+                      )
+                    })()}
+                    {(() => {
+                      const open = Boolean(queryParams['global-user'])
+                      return (
+                        <>
+                          <ExpandingButton
+                            component={Link}
+                            to={{
+                              pathname: `${location.pathname}`,
+                              search: `${queryString.stringify({
+                                ...queryParams,
+                                'global-user': 'User',
+                              })}`,
+                            }}
+                            className={`${
+                              !withinNav ? 'opacity-25' : ''
+                            } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
+                            Icon={PersonIcon}
+                            iconPosition="start"
+                            expandedText={userInstance.getUserName()}
+                            unexpandedText={userInstance.getUserName()}
+                            expanded={navOpen}
+                          />
+                          <Drawer
+                            anchor="left"
+                            open={open}
+                            onClose={() => {
+                              delete queryParams['global-user']
+                              history.push(
+                                `${location.pathname}?${queryString.stringify(
+                                  queryParams
+                                )}`
+                              )
+                            }}
+                            PaperProps={{
+                              className: 'min-w-120 max-w-4/5 ',
+                            }}
+                          >
+                            <UserView />
+                          </Drawer>
+                        </>
+                      )
+                    })()}
                   </Grid>
                 </Grid>
               </Paper>

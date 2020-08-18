@@ -24,18 +24,16 @@ import VisualizationSelector from '../../react-component/visualization-selector/
 import ViewCompactIcon from '@material-ui/icons/ViewCompact'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 const user = require('../singletons/user-instance.js')
-const MetacardTitleView = require('../metacard-title/metacard-title.view.js')
-import MRC from '../../react-component/marionette-region-container'
 import MoreIcon from '@material-ui/icons/MoreVert'
 
 import LazyMetacardInteractions from '../results-visual/lazy-metacard-interactions'
+import { Elevations } from '../theme/theme'
+import useTheme from '@material-ui/core/styles/useTheme'
+import SelectionRipple from '../golden-layout/selection-ripple'
 const SelectedResults = ({ selectionInterface }: any) => {
   const selectedResults = useLazyResultsSelectedResultsFromSelectionInterface({
     selectionInterface,
   })
-  // return <MRC view={new MetacardTitleView({
-  //   model: this.options.selectionInterface.getSelectedResults(),
-  // })} />
   const selectedResultsArray = Object.values(selectedResults)
 
   return (
@@ -58,7 +56,9 @@ const SelectedResults = ({ selectionInterface }: any) => {
       {({ handleClick }) => {
         return (
           <Button
-            className={selectedResultsArray.length === 0 ? '' : ''}
+            className={`relative ${
+              selectedResultsArray.length === 0 ? 'invisible' : ''
+            }`}
             color="primary"
             disabled={selectedResultsArray.length === 0}
             onClick={handleClick}
@@ -126,6 +126,7 @@ const ResultSelector = ({
       setHasResultSort(determineHasResultSort())
     })
   }, [])
+  const theme = useTheme()
   return (
     <React.Fragment>
       <Grid container alignItems="center" justify="flex-start" direction="row">
@@ -143,10 +144,11 @@ const ResultSelector = ({
             model={model}
           />
         </Grid>
-        <Grid item>
+        <Grid item className="relative z-10">
           <QueryFeed selectionInterface={selectionInterface} />
         </Grid>
-        <Grid item>
+        <Grid item className="relative z-0">
+          <SelectionRipple selectionInterface={selectionInterface} />
           <SelectedResults selectionInterface={selectionInterface} />
         </Grid>
         <Grid item className="pl-2 mx-auto">
@@ -157,7 +159,7 @@ const ResultSelector = ({
             content={({ closeAndRefocus }) => {
               return (
                 <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper className="p-3" elevation={23}>
+                  <Paper className="p-3" elevation={Elevations.overlays}>
                     <ResultFilter closeDropdown={closeAndRefocus} />
                   </Paper>
                 </BetterClickAwayListener>
@@ -168,8 +170,13 @@ const ResultSelector = ({
               return (
                 <Button
                   onClick={handleClick}
-                  variant={hasResultFilter ? 'outlined' : 'text'}
-                  color={hasResultFilter ? 'secondary' : 'primary'}
+                  variant="text"
+                  color="primary"
+                  style={{
+                    borderBottom: hasResultFilter
+                      ? `1px solid ${theme.palette.warning.main}`
+                      : '0px',
+                  }}
                 >
                   <Box color="text.primary">
                     <FilterListIcon />
@@ -185,7 +192,7 @@ const ResultSelector = ({
             content={({ closeAndRefocus }) => {
               return (
                 <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper className="p-3" elevation={23}>
+                  <Paper className="p-3" elevation={Elevations.overlays}>
                     <EphemeralSearchSort closeDropdown={closeAndRefocus} />
                   </Paper>
                 </BetterClickAwayListener>
@@ -196,8 +203,13 @@ const ResultSelector = ({
               return (
                 <Button
                   onClick={handleClick}
-                  variant={hasResultSort ? 'outlined' : 'text'}
-                  color={hasResultSort ? 'secondary' : 'primary'}
+                  variant="text"
+                  color="primary"
+                  style={{
+                    borderBottom: hasResultSort
+                      ? `1px solid ${theme.palette.warning.main}`
+                      : '0px',
+                  }}
                 >
                   <Box color="text.primary">
                     <ArrowDownwardIcon />
@@ -213,7 +225,7 @@ const ResultSelector = ({
             content={({ closeAndRefocus }) => {
               return (
                 <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper className="p-3" elevation={23}>
+                  <Paper className="p-3" elevation={Elevations.overlays}>
                     <VisualizationSelector
                       onClose={closeAndRefocus}
                       goldenLayout={goldenLayoutViewInstance.goldenLayout}

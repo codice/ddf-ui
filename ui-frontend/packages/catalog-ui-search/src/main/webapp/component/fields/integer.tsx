@@ -26,7 +26,6 @@ const defaultValue = 0
 
 const validateShape = ({ value, onChange }: IntegerFieldProps) => {
   if (typeof value !== 'number') {
-    console.log('defaulted to correct shape')
     onChange(defaultValue)
   }
 }
@@ -41,6 +40,7 @@ export const IntegerField = ({ value, onChange }: IntegerFieldProps) => {
       multiline
       rowsMax={3}
       variant="outlined"
+      size="small"
       placeholder="Use * for wildcard."
       value={value}
       onChange={e => {

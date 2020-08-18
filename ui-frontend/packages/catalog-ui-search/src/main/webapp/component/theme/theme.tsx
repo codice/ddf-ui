@@ -16,35 +16,70 @@ import {
   lighten as polishedLighten,
   meetsContrastGuidelines,
   mix,
+  rgba,
 } from 'polished'
 
 type Theme = {
   primary: string
   secondary: string
   background: string
+  navbar: string
+  panels: string
+  overlays: string
   paper: string
+  tabs: string
 }
 
+// // octo colors
+// export const dark: Theme = {
+//   background: '#F38832',
+//   navbar: '#2B3A49',
+//   panels: '#3A4A54',
+//   overlays: '#475A66',
+//   paper: '#213137',
+//   primary: '#589dd5',
+//   secondary: '#589dd5',
+// }
+
 export const dark: Theme = {
-  background: '#34434c',
-  paper: '#213137',
+  background: '#0B1821',
+  navbar: darken('#365160', 0.2),
+  panels: '#243540', // 243540
+  overlays: darken('#365160', 0.1),
+  paper: darken('#365160', 0.2),
+  tabs: darken('#243540', 0.3),
   primary: '#69E1E8',
-  secondary: '#dc004e',
+  secondary: '#2196f3',
 }
 
 export const light: Theme = {
   primary: '#3c6dd5',
-  secondary: '#dc004e',
-  background: '#e3e7e8',
-  paper: '#f3fdff',
+  secondary: '#2196f3',
+  background: '#E5E5E5', // elevation 0
+  navbar: '#fafbfc', // elevation 8
+  panels: '#FCFCFC', // elevation 6
+  tabs: darken('#FCFCFC', 0.05),
+  overlays: '#FCFCFC', // elevation 16
+  paper: '#FCFCFC',
+}
+
+export const Elevations = {
+  navbar: 8,
+  background: 0,
+  paper: 2,
+  panels: 6,
+  overlays: 16,
 }
 
 export const MuiOutlinedInputBorderClasses =
-  'MuiOutlinedInput-root MuiOutlinedInput-multiline MuiOutlinedInput-notchedOutline border'
+  'MuiOutlinedInput-root MuiOutlinedInput-multiline MuiOutlinedInput-inputMarginDense MuiOutlinedInput-notchedOutline border'
 
 const GlobalStyles = createGlobalStyle<ThemeInterface>`
       a {
         color: inherit !important;
+      }
+      *.outline-none, a.outline-none, a, button{
+        outline: none !important; 
       }
       .MuiToolbar-root a,
       .MuiToolbar-root .MuiBreadcrumbs-separator {
@@ -69,16 +104,62 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
         }
       }
       .lm_splitter  {
-        background: ${props => props.palette.background.default} !important;
+        background: ${props =>
+          props.palette.type === 'dark'
+            ? dark.background
+            : light.background} !important;
       }
       .lm_stack{
         box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
-        background: ${props => props.palette.background.paper} !important;
+        background: ${props =>
+          props.palette.type === 'dark'
+            ? dark.panels
+            : light.panels} !important;
         border-radius: 4px;
         transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
       }
       .lm_header {
         z-index: 0 !important;
+        background: ${props =>
+          props.palette.type === 'dark'
+            ? dark.background
+            : light.background} !important;
+      }
+      .lm_tab.lm_active {
+        background: ${props =>
+          props.palette.type === 'dark'
+            ? dark.panels
+            : light.panels} !important;
+            box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12) !important;
+      }
+      .lm_tab, lm_tabs {
+        border-radius: 4px !important;
+        border-bottom-left-radius: 0px !important;
+        border-bottom-right-radius: 0px !important;
+      }
+      .lm_tab:not(.lm_active) {
+        color: ${props =>
+          props.palette.type === 'dark'
+            ? props.palette.text.secondary
+            : props.palette.text.secondary} !important;
+        background: ${props =>
+          props.palette.type === 'dark' ? dark.tabs : light.tabs} !important;
+        button {
+          visibility: hidden;
+        }
+      }
+      .lm_tabs .lm_tab {
+        border: 1px solid fade(@contrastColor, 10%);
+        margin-right: 8px !important;
+        box-shadow: none !important;
+      }
+      .lm_tabs .lm_tab:hover {
+        color: ${props => props.palette.text.primary} !important;
+      }
+      .lm_header,
+      .lm_tabs .lm_tab,
+      .lm_tabdropdown:before {
+        color: ${props => props.palette.text.primary} !important;
       }
       .is-drawing [role="tooltip"] {
         display: none!important;
@@ -123,10 +204,59 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .bp3-datepicker .DayPicker-Day.DayPicker-Day--selected, .bp3-active {
         background-color: ${props => props.palette.primary.dark} !important;
       }
-      
+      .bp3-table-quadrant, .bp3-table-cell-client, .bp3-table-row-headers {
+        background: inherit !important;
+      }
       // for whatever reason they have a height of 0 sometimes, maybe MUI will fix this in v5
       textarea.MuiInputBase-input {
         min-height: 21px;
+      }
+      .MuiPaper-elevation0 {
+        background-color: ${props =>
+          props.palette.type === 'dark' ? dark.background : light.background};
+      }
+      .MuiPaper-elevation8 {
+        background-color: ${props =>
+          props.palette.type === 'dark' ? dark.navbar : light.navbar};
+      }
+      .MuiPaper-elevation6 {
+        background-color: ${props =>
+          props.palette.type === 'dark' ? dark.panels : light.panels};
+      }
+      .MuiPaper-elevation16 {
+        background-color: ${props =>
+          props.palette.type === 'dark' ? dark.overlays : light.overlays};
+      }
+      .MuiPaper-elevation2 {
+        border-width: 1px;
+        border-style: solid;
+        border-color: ${props =>
+          props.palette.type === 'dark'
+            ? props.palette.divider
+            : props.palette.divider};
+          background-color: ${props =>
+            props.palette.type === 'dark' ? dark.paper : light.paper};
+      }
+      [data-behavior-dropdown] {
+        background-color: ${props =>
+          props.palette.type === 'dark' ? dark.overlays : light.overlays};
+      }
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: ${props =>
+          props.palette.type === 'dark'
+            ? 'rgb(30, 44, 53)'
+            : 'rgb(229, 229, 229)'};
+      }
+      ::-webkit-scrollbar-thumb {
+        background: ${props =>
+          props.palette.type === 'dark'
+            ? 'linear-gradient(-180deg, rgb(229, 229, 229) 0%, rgb(206, 206, 206) 100%)'
+            : 'linear-gradient(-180deg, rgb(153, 153, 153) 0%, rgb(187, 187, 187) 100%)'};
+            border-radius: 4px;
       }
     `
 
@@ -202,6 +332,7 @@ export const Provider = ({ children }: { children: any }) => {
       MuiButton: createStyles({
         root: {
           lineHeight: 'inherit', // maybe open a ticket on MUI, seems like the default they use doesn't center text quite right with icons
+          minWidth: '0px', // usually more annoying than not
         },
         ...(primaryContrastScores.AA
           ? { textPrimary: {} } // weird requirement due to types, need textPrimary here but empty

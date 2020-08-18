@@ -1,3 +1,18 @@
+.bg-inherit {
+  background: inherit !important;
+}
+.w-min {
+  width: 0.0625rem;
+}
+.h-min {
+  height: 0.0625rem;
+}
+.h-14 {
+  height: 3.5rem;
+}
+.h-18 {
+  height: 4.5rem;
+}
 .left-1\/2 {
   left: 50%;
 }
@@ -7,8 +22,17 @@
 .\-translate-y-200 {
   --transform-translate-y: -200%;
 }
+.\-translate-y-3\/4 {
+  --transform-translate-y: -75%;
+}
+.\translate-y-3\/4 {
+  --transform-translate-y: 75%;
+}
 .scale-200 {
   transform: scale(2);
+}
+.scale-1000 {
+  transform: scale(10);
 }
 .\-z-1 {
   z-index: -1;
@@ -76,8 +100,23 @@
 .min-h-16 {
   min-height: 4rem;
 }
+.min-h-32 {
+  min-height: 8rem;
+}
+.min-h-48 {
+  min-height: 12rem;
+}
+.min-h-80 {
+  min-height: 20rem;
+}
+.min-h-120 {
+  min-height: 30rem;
+}
 .max-h-16 {
   max-height: 4rem;
+}
+a.outline-none {
+  outline: none !important; // bootstrap styling removal
 }
 @import '../css/searchPage.css';
 @import '../css/style.css';

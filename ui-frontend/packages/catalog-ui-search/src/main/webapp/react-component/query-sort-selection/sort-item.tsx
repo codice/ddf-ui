@@ -41,69 +41,77 @@ const SortItem = ({
   updateDirection,
   onRemove,
   showRemove,
-}: Props) => (
-  <>
-    <div>
-      <Grid container direction="row" wrap="nowrap" alignItems="center">
-        <Grid item className="w-full">
-          <Autocomplete
-            fullWidth
-            options={attributeOptions}
-            getOptionLabel={option => option.label}
-            getOptionSelected={(option, value) => option.value === value.value}
-            onChange={(e, newValue) => {
-              const newProperty = newValue.value
-              updateAttribute(newProperty)
-            }}
-            disableClearable
-            value={sortItem.attribute}
-            renderInput={params => <TextField {...params} variant="outlined" />}
-          />
-        </Grid>
-        {showRemove ? (
-          <Grid item className="pl-2">
-            <Button onClick={onRemove} variant="text" color="primary">
-              Remove
-            </Button>
-          </Grid>
-        ) : null}
-      </Grid>
-      {isDirectionalSort(sortItem.attribute.value) ? (
-        <Grid
-          container
-          alignItems="stretch"
-          direction="row"
-          wrap="nowrap"
-          className="pt-2"
-        >
-          <Grid item>
-            <Swath className="w-1 h-full" />
-          </Grid>
-          <Grid item className="w-full pl-2">
+}: Props) => {
+  return (
+    <>
+      <div>
+        <Grid container direction="row" wrap="nowrap" alignItems="center">
+          <Grid item className="w-full">
             <Autocomplete
+              size="small"
               fullWidth
-              options={directionOptions}
+              options={attributeOptions}
               getOptionLabel={option => option.label}
-              getOptionSelected={(option, value) =>
-                option.value === value.value
-              }
+              getOptionSelected={(option, value) => {
+                return option.value === value.value
+              }}
               onChange={(e, newValue) => {
                 const newProperty = newValue.value
-                updateDirection(newProperty)
+                updateAttribute(newProperty)
               }}
               disableClearable
-              value={directionOptions.find(
-                option => option.value === sortItem.direction
-              )}
+              value={sortItem.attribute}
               renderInput={params => (
                 <TextField {...params} variant="outlined" />
               )}
             />
           </Grid>
+          {showRemove ? (
+            <Grid item className="pl-2">
+              <Button onClick={onRemove} variant="text" color="primary">
+                Remove
+              </Button>
+            </Grid>
+          ) : null}
         </Grid>
-      ) : null}
-    </div>
-  </>
-)
+        {isDirectionalSort(sortItem.attribute.value) ? (
+          <Grid
+            container
+            alignItems="stretch"
+            direction="row"
+            wrap="nowrap"
+            className="pt-2"
+          >
+            <Grid item>
+              <Swath className="w-1 h-full" />
+            </Grid>
+            <Grid item className="w-full pl-2">
+              <Autocomplete
+                size="small"
+                fullWidth
+                options={directionOptions}
+                getOptionLabel={option => option.label}
+                getOptionSelected={(option, value) =>
+                  option.value === value.value
+                }
+                onChange={(e, newValue) => {
+                  const newProperty = newValue.value
+                  updateDirection(newProperty)
+                }}
+                disableClearable
+                value={directionOptions.find(
+                  option => option.value === sortItem.direction
+                )}
+                renderInput={params => (
+                  <TextField {...params} variant="outlined" />
+                )}
+              />
+            </Grid>
+          </Grid>
+        ) : null}
+      </div>
+    </>
+  )
+}
 
 export default SortItem

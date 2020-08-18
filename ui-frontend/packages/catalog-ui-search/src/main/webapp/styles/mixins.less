@@ -175,38 +175,9 @@
       stroke: @contrastColor !important;
     }
   }
-  //specific stylings only for golden-layout (not the component)
-  @{customElementNamespace}golden-layout {
-    .lm_tabs .lm_tab {
-      border: 1px solid fade(@contrastColor, 10%);
-    }
-    .lm_tab.lm_active {
-      color: @contrastColor !important;
-      background: fade(@contrastColor, 0%) !important;
-      border-bottom: none;
-    }
-    .lm_tabs .lm_tab:hover {
-      color: @contrastColor !important;
-    }
-    .lm_header,
-    .lm_tabs .lm_tab,
-    .lm_tabdropdown:before {
-      color: @contrastColor !important;
-    }
-  }
   @{customElementNamespace}tabs {
     .tabs-list {
       border-bottom: 1px solid fade(@contrastColor, 10%);
-    }
-  }
-  @{customElementNamespace}table,
-  .intrigue-table {
-    th + th,
-    td + td {
-      border-left: 1px solid fade(@contrastColor, 5%);
-    }
-    .is-thead > th {
-      border-bottom: 1px solid fade(@contrastColor, 80%);
     }
   }
   @{customElementNamespace}table-visibility,

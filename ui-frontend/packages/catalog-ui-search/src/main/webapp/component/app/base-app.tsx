@@ -18,6 +18,12 @@ import ImageSearch from '@material-ui/icons/ImageSearch'
 import UserNotifications from '../../react-component/user-notifications/user-notifications'
 import { BaseSettings } from '../../react-component/user-settings/user-settings'
 import { providers as Providers } from '../../extension-points/providers'
+import Paper from '@material-ui/core/Paper'
+import { Elevations } from '../theme/theme'
+
+const CommonRouteContainer = ({ children }: { children: JSX.Element }) => {
+  return <div className="py-2 pr-2 w-full h-full">{children}</div>
+}
 
 const RouteInformation = [
   {
@@ -44,7 +50,11 @@ const RouteInformation = [
       path: '/upload',
       children: () => {
         return (
-          <MRC className="w-full h-full pb-2 pt-2 pr-2" view={IngestView} />
+          <div className="w-full h-full pb-2 pt-2 pr-2">
+            <Paper elevation={Elevations.panels} className="w-full h-full">
+              <MRC view={IngestView} />
+            </Paper>
+          </div>
         )
       },
     },
@@ -62,7 +72,9 @@ const RouteInformation = [
       children: () => {
         return (
           <div className="w-full h-full pb-2 pt-2 pr-2">
-            <SourcesPage />
+            <Paper elevation={Elevations.panels} className="w-full h-full">
+              <SourcesPage />
+            </Paper>
           </div>
         )
       },
@@ -81,7 +93,9 @@ const RouteInformation = [
       children: () => {
         return (
           <div className="w-full h-full pb-2 pt-2 pr-2">
-            <AboutPage />
+            <Paper elevation={Elevations.panels} className="w-full h-full">
+              <AboutPage />
+            </Paper>
           </div>
         )
       },

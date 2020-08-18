@@ -100,7 +100,6 @@ const SortSelections = ({ value, onChange }: Props) => {
     })
     onChange(value.slice(0))
   }
-
   return (
     <div>
       <Typography className="pb-2">Sort</Typography>

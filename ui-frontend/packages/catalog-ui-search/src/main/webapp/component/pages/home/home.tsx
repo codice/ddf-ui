@@ -20,6 +20,8 @@ import { BetterClickAwayListener } from '../../better-click-away-listener/better
 import MoreVert from '@material-ui/icons/MoreVert'
 import Box from '@material-ui/core/Box'
 import Divider from '@material-ui/core/Divider'
+import { Elevations } from '../../theme/theme'
+import SearchIcon from '@material-ui/icons/SearchTwoTone'
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
@@ -30,10 +32,11 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
         container
         direction="column"
         alignItems="center"
-        className="w-full p-4"
+        className="w-full py-4 px-2"
       >
-        <Grid item>
+        <Grid item className="w-full">
           <Button
+            fullWidth
             variant="text"
             color="primary"
             size="small"
@@ -42,14 +45,13 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
               setLength(lastLength)
             }}
           >
-            Expand
             <Box color="text.primary">
               <KeyboardArrowRightIcon color="inherit" />
               <KeyboardArrowRightIcon color="inherit" className="-ml-5" />
             </Box>
           </Button>
         </Grid>
-        <Grid item className="mt-3">
+        <Grid item className="mt-3 w-full">
           <Dropdown
             content={context => {
               return (
@@ -73,12 +75,12 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
             {({ handleClick }) => {
               return (
                 <Button
+                  fullWidth
                   variant="text"
                   color="primary"
                   size="small"
                   onClick={handleClick}
                 >
-                  Options
                   <Box color="text.primary">
                     <MoreVert />
                   </Box>
@@ -87,8 +89,9 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
             }}
           </Dropdown>
         </Grid>
-        <Grid item className="mt-3">
+        <Grid item className="mt-3 w-full">
           <Button
+            fullWidth
             variant="contained"
             color="primary"
             size="small"
@@ -96,7 +99,7 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
               selectionInterface.getCurrentQuery().startSearchFromFirstPage()
             }}
           >
-            Search
+            <SearchIcon />
           </Button>
         </Grid>
       </Grid>
@@ -217,9 +220,12 @@ export const HomePage = () => {
   )
   return (
     <div className="w-full h-full">
-      <SplitPane variant="horizontal" collapsedLength={140}>
+      <SplitPane variant="horizontal" collapsedLength={80}>
         <div className="h-full w-full py-2">
-          <Paper elevation={4} className="h-full overflow-auto w-full">
+          <Paper
+            elevation={Elevations.panels}
+            className="h-full overflow-auto w-full"
+          >
             <LeftTop selectionInterface={selectionInterface} />
             <Divider />
             <LeftBottom selectionInterface={selectionInterface} />

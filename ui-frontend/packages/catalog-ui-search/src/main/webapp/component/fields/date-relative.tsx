@@ -17,7 +17,6 @@ const defaultValue = {
 
 const validateShape = ({ value, onChange }: Props) => {
   if (isInvalid({ value, onChange })) {
-    console.log('defaulted to correct shape')
     onChange(defaultValue)
   }
 }
@@ -70,6 +69,7 @@ export const DateRelativeField = ({ value, onChange }: Props) => {
                 unit: e.target.value as ValueTypes['relative']['unit'],
               })
           }}
+          size="small"
           value={value.unit}
         >
           <MenuItem value="m">Minutes</MenuItem>

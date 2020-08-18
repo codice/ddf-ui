@@ -12,6 +12,8 @@ import CloudIcon from '@material-ui/icons/Cloud'
 import WarningIcon from '@material-ui/icons/Warning'
 import Box from '@material-ui/core/Box'
 import CheckIcon from '@material-ui/icons/Check'
+import Chip from '@material-ui/core/Chip'
+import Divider from '@material-ui/core/Divider'
 
 type Props = {
   search: any
@@ -24,15 +26,21 @@ const getHumanReadableSourceName = (sourceId: string) => {
     return 'All'
   } else if (sourceId === 'remote') {
     return (
-      <>
-        Slow (offsite) <CloudIcon />
-      </>
+      <Grid container alignItems="center" direction="row">
+        <Grid item>Slow (offsite)</Grid>{' '}
+        <Grid item>
+          <CloudIcon />
+        </Grid>
+      </Grid>
     )
   } else if (sourceId === 'local') {
     return (
-      <>
-        Fast (onsite) <HomeIcon />
-      </>
+      <Grid container alignItems="center" direction="row">
+        <Grid item>Fast (onsite)</Grid>{' '}
+        <Grid item>
+          <HomeIcon />
+        </Grid>
+      </Grid>
     )
   }
   return sourceId
@@ -128,16 +136,19 @@ const SourceSelector = ({ search }: Props) => {
           multiple: true,
           renderValue: (selected: string[]) => {
             return (
-              <>
+              <Grid container alignItems="center" direction="row">
                 {selected.map((src, index) => {
                   return (
-                    <React.Fragment key={src}>
-                      {index > 0 ? ', ' : ''} {getHumanReadableSourceName(src)}
-                    </React.Fragment>
+                    <Grid item key={src} className="mr-2">
+                      <Chip label={getHumanReadableSourceName(src)} />
+                    </Grid>
                   )
                 })}
-              </>
+              </Grid>
             )
+          },
+          MenuProps: {
+            getContentAnchorEl: null, // makes it so this menu doesn't jump around, see https://stackoverflow.com/questions/48157863/how-to-make-a-dropdown-menu-open-below-the-appbar-using-material-ui && https://github.com/mui-org/material-ui/issues/20755
           },
         }}
         value={sources}
@@ -175,12 +186,13 @@ const SourceSelector = ({ search }: Props) => {
             if (newSources.find(src => isHarvested(src))) {
               newSources = newSources.filter(src => src !== 'local')
             }
-            if (newSources.find(src => !isHarvested(src))) {
+            if (newSources.find(src => src !== 'remote' && !isHarvested(src))) {
               newSources = newSources.filter(src => src !== 'remote')
             }
             setSources(newSources)
           }
         }}
+        size="small"
       >
         <MenuItem value="all">
           <Grid container alignItems="stretch" direction="row" wrap="nowrap">
@@ -224,14 +236,14 @@ const SourceSelector = ({ search }: Props) => {
                     direction="row"
                     wrap="nowrap"
                   >
-                    <Grid item className="pl-2 pr-2">
+                    <Grid item className="pl-2 pr-3">
                       <Swath className="w-1 h-full" />
                     </Grid>
                     <Grid container direction="row" alignItems="center">
                       <Grid item>
                         <Box
                           color={
-                            source.available ? 'text.primary' : 'secondary.main'
+                            source.available ? 'text.primary' : 'warning.main'
                           }
                         >
                           {source.id}
@@ -288,7 +300,7 @@ const SourceSelector = ({ search }: Props) => {
                       <Grid item>
                         <Box
                           color={
-                            source.available ? 'text.primary' : 'secondary.main'
+                            source.available ? 'text.primary' : 'warning.main'
                           }
                         >
                           {source.id}

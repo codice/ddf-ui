@@ -219,8 +219,8 @@ class Dropdown extends React.Component {
   onKeyDown(e) {
     switch (e.code) {
       case 'Enter':
-        e.preventDefault()
         if (document.activeElement === this.ref) {
+          e.preventDefault()
           this.onToggle(true)
         }
         break

@@ -17,6 +17,7 @@ export const NumberField = ({
   return (
     <TextField
       fullWidth
+      size="small"
       variant="outlined"
       value={value}
       type="number"

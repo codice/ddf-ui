@@ -23,16 +23,19 @@ import { hot } from 'react-hot-loader'
 import MRC from '../../react-component/marionette-region-container'
 import { AutoVariableSizeList } from 'react-window-components'
 import Grid from '@material-ui/core/Grid'
-import styled from 'styled-components'
 import { Header } from './table-header'
 import ResultItemRow from './result-item-row'
-import { useTheme } from '@material-ui/core/styles'
 import { getFilteredAttributes, getVisibleHeaders } from './table-header-utils'
 import ViewColumnIcon from '@material-ui/icons/ViewColumn'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import Paper from '@material-ui/core/Paper'
+import { Elevations } from '../theme/theme'
+import Divider from '@material-ui/core/Divider'
+import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
+import { useStatusOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
+import { LinearProgress } from '@material-ui/core'
 ;(() => {
   const oldHandleSave = TableVisibility.prototype.handleSave
   TableVisibility.prototype.handleSave = function() {
@@ -49,35 +52,33 @@ import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
   // }
 })()
 
-const HeaderDiv = styled.div`
-  ::-webkit-scrollbar {
-    display: none;
-  }
-`
-
 type Props = {
   selectionInterface: any
-  lazyResults: LazyQueryResults
-  results: LazyQueryResult[]
   mode: any
   setMode: any
 }
 
-const TableVisual = ({
-  selectionInterface,
-  results,
-  lazyResults,
-  mode,
-  setMode,
-}: Props) => {
+const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
+  const lazyResults = useLazyResultsFromSelectionInterface({
+    selectionInterface,
+  })
+  const results = Object.values(lazyResults.results)
+
+  const { isSearching, status } = useStatusOfLazyResults({ lazyResults })
   const { listenTo } = useBackbone()
-  const theme = useTheme()
   const headerRef = React.useRef<HTMLDivElement>(null)
   const [filteredAttributes, setFilteredAttributes] = React.useState(
     getFilteredAttributes(lazyResults)
   )
   const [visibleHeaders, setVisibleHeaders] = React.useState(
     getVisibleHeaders(filteredAttributes)
+  )
+
+  React.useEffect(
+    () => {
+      setFilteredAttributes(getFilteredAttributes(lazyResults))
+    },
+    [lazyResults.results]
   )
 
   React.useEffect(() => {
@@ -169,7 +170,7 @@ const TableVisual = ({
   return (
     <Grid
       container
-      style={{ height: '100%', width: '100%', background: 'inherit' }}
+      className="w-full h-full bg-inherit"
       direction="column"
       wrap="nowrap"
     >
@@ -200,63 +201,74 @@ const TableVisual = ({
         <Button onClick={openExportModal}>
           <span className="fa fa-share"> Export</span>
         </Button>
-        <Button
-          onClick={() => {
-            Object.values(lazyResults.results).forEach(lazyResult => {
-              lazyResult.setSelected(true)
-            })
-          }}
-        >
-          Select All
-        </Button>
       </Grid>
-      <Grid item style={{ overflow: 'hidden', background: 'inherit' }}>
-        <HeaderDiv style={{ width: 'auto', overflow: 'auto' }} ref={headerRef}>
-          <Header visibleHeaders={visibleHeaders} lazyResults={lazyResults} />
-        </HeaderDiv>
-      </Grid>
-      <Grid
-        item
-        style={{
-          height: '100%',
-          width: '100%',
-          overflow: 'hidden',
-          background: theme.palette.background.paper,
-        }}
-      >
-        <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
-          outerElementProps={{
-            onScroll: e => {
-              if (headerRef.current) {
-                headerRef.current.scrollLeft = e.target.scrollLeft
-              }
-            },
-          }}
-          key={JSON.stringify(visibleHeaders)}
-          defaultSize={76}
-          overscanCount={10}
-          controlledMeasuring={true}
-          items={results}
-          Item={({ itemRef, item, measure, index }) => {
-            return (
-              <div ref={itemRef} style={{ background: 'inherit' }}>
-                <ResultItemRow
-                  lazyResult={item}
+      <Grid item className="overflow-hidden bg-inherit w-full h-full p-2">
+        <Paper elevation={Elevations.paper} className="w-full h-full">
+          <Grid
+            container
+            className="w-full h-full bg-inherit"
+            direction="column"
+            wrap="nowrap"
+          >
+            <Grid item className="overflow-hidden bg-inherit">
+              <div
+                className="w-auto overflow-auto scrollbars-hide bg-inherit"
+                ref={headerRef}
+              >
+                <Header
                   visibleHeaders={visibleHeaders}
-                  measure={measure}
-                  index={index}
+                  lazyResults={lazyResults}
                 />
               </div>
-            )
-          }}
-          Empty={() => {
-            return (
-              <div className="result-item-collection-empty">
-                No Results Found
-              </div>
-            )
-          }}
-        />
+            </Grid>
+            <Grid item>
+              <Divider className="w-full h-min" />
+            </Grid>
+            <Grid item className="w-full h-full overflow-hidden bg-inherit">
+              <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
+                outerElementProps={{
+                  onScroll: e => {
+                    if (headerRef.current) {
+                      headerRef.current.scrollLeft = e.target.scrollLeft
+                    }
+                  },
+                }}
+                key={JSON.stringify(visibleHeaders)}
+                defaultSize={76}
+                overscanCount={10}
+                controlledMeasuring={true}
+                items={results}
+                Item={({ itemRef, item, measure, index }) => {
+                  return (
+                    <div ref={itemRef} className="bg-inherit">
+                      <ResultItemRow
+                        lazyResult={item}
+                        visibleHeaders={visibleHeaders}
+                        measure={measure}
+                        index={index}
+                      />
+                    </div>
+                  )
+                }}
+                Empty={() => {
+                  if (Object.values(status).length === 0) {
+                    return (
+                      <div className="p-2">Search has not yet been run.</div>
+                    )
+                  }
+                  if (isSearching) {
+                    return <LinearProgress variant="indeterminate" />
+                  }
+                  return (
+                    <div className="result-item-collection-empty p-2">
+                      No Results Found
+                    </div>
+                  )
+                }}
+              />
+            </Grid>
+          </Grid>
+        </Paper>
       </Grid>
     </Grid>
   )

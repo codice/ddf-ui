@@ -36,12 +36,12 @@ const Filter = ({ filter, setFilter }: Props) => {
   const currentSelectedAttribute = attributeList.find(
     attrInfo => attrInfo.value === property
   )
-  console.log('filter rendering')
   return (
     <Grid container direction="column" alignItems="center" className="w-full">
       <Grid item className="w-full pb-2">
         <Autocomplete
           fullWidth
+          size="small"
           options={attributeList}
           getOptionLabel={option => option.label}
           getOptionSelected={(option, value) => option.value === value.value}
@@ -60,7 +60,7 @@ const Filter = ({ filter, setFilter }: Props) => {
       <Grid item className="w-full pb-2">
         <FilterComparator filter={filter} setFilter={setFilter} />
       </Grid>
-      <Grid item className="w-full pb-2">
+      <Grid item className="w-full">
         <FilterInput filter={filter} setFilter={setFilter} />
       </Grid>
     </Grid>

@@ -212,7 +212,7 @@ Query.Model = Backbone.AssociatedModel.extend({
   },
   getSelectedSources() {
     const selectedSources = this.get('sources')
-    let sourceArray = []
+    let sourceArray = selectedSources
     if (selectedSources.includes('all')) {
       sourceArray = _.pluck(Sources.toJSON(), 'id')
     }

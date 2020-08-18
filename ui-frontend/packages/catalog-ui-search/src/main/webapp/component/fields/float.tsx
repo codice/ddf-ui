@@ -26,7 +26,6 @@ const defaultValue = 0
 
 const validateShape = ({ value, onChange }: FloatFieldProps) => {
   if (typeof value !== 'number') {
-    console.log('defaulted to correct shape')
     onChange(defaultValue)
   }
 }
@@ -44,6 +43,7 @@ export const FloatField = ({ value, onChange }: FloatFieldProps) => {
       onChange={e => {
         onChange(parseFloat(e.target.value))
       }}
+      size="small"
     />
   )
 }

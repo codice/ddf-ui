@@ -1003,7 +1003,7 @@ export default function(
       })
       shapes = []
     },
-    getOpenLayersMap() {
+    getMap() {
       return map
     },
     destroy() {

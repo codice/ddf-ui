@@ -27,7 +27,6 @@ const defaultValue = false
 
 const validateShape = ({ value, onChange }: Props) => {
   if (typeof value !== 'boolean') {
-    console.log('defaulted to correct shape')
     onChange(defaultValue)
   }
 }
@@ -45,6 +44,7 @@ export const BooleanField = ({ value, onChange }: Props) => {
       onChange={e => {
         onChange(e.target.value === 'true')
       }}
+      size="small"
     >
       <MenuItem value={'false'}>false</MenuItem>
       <MenuItem value={'true'}>true</MenuItem>

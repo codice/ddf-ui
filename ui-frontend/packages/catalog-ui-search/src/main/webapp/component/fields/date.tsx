@@ -63,7 +63,6 @@ export const parseDate = (input?: string) => {
     }
     return null
   } catch (err) {
-    console.log(err)
     return null
   }
 }

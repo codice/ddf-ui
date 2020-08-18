@@ -47,7 +47,7 @@
     "@welldone-software/why-did-you-render": "4.2.2",
     "@blueprintjs/core": "3.29.0",
     "@blueprintjs/datetime": "3.18.3",
-    "@connexta/ace": "git://github.com/connexta/ace.git#bedc9e7889223f384c045bcd06d8dd11f63efabe",
+    "@connexta/ace": "git://github.com/connexta/ace.git#6922bcb51d095262480c1a514acdf572118680c2",
     "@connexta/atlas": "0.0.60",
     "@material-ui/core": "4.11.0",
     "@material-ui/icons": "4.9.1",
@@ -141,10 +141,11 @@
     "react-window-components": "0.0.2",
     "rpc-websockets": "4.0.0",
     "sanitize-html": "1.15.0",
+    "scroll-into-view-if-needed": "^2.2.25",
     "select2": "4.0.3",
     "sortablejs": "1.4.2",
     "spectrum-colorpicker": "1.8.0",
-    "tailwindcss": "1.4.6",
+    "tailwindcss": "1.6.2",
     "terraformer": "1.0.5",
     "terraformer-wkt-parser": "1.1.0",
     "urijs": "1.19.1",
@@ -164,7 +165,7 @@
     "react-dom": "16.10.2",
     "styled-components": "4.3.2",
     "ts-loader": "6.0.4",
-    "typescript": "3.9.3"
+    "typescript": "3.9.7"
   },
   "main": "src/main/webapp/index.tsx",
   "alias": {

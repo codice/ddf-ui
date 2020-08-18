@@ -1121,6 +1121,9 @@ module.exports = function CesiumMap(
       })
       shapes = []
     },
+    getMap() {
+      return map
+    },
     destroy() {
       wreqr.vent.off('map:requestRender', requestRenderHandler)
       this.destroyDrawingTools()

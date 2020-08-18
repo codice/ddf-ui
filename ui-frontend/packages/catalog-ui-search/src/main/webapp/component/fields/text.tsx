@@ -26,7 +26,6 @@ const defaultValue = ''
 
 const validateShape = ({ value, onChange }: TextFieldProps) => {
   if (typeof value !== 'string') {
-    console.log('defaulted to correct shape')
     onChange(defaultValue)
   }
 }
@@ -46,6 +45,8 @@ export const TextField = ({ value, onChange }: TextFieldProps) => {
       onChange={e => {
         onChange(e.target.value)
       }}
+      className="whitespace-normal"
+      size="small"
     />
   )
 }
