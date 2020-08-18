@@ -88,7 +88,9 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.time.Instant;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -339,8 +341,14 @@ public class MetacardApplication implements SparkApplication {
         (req, res) -> {
           String body = util.safeGetBody(req);
           List<MetacardChanges> metacardChanges = GSON.fromJson(body, METACARD_CHANGES_LIST_TYPE);
-
-          UpdateResponse updateResponse = patchMetacards(metacardChanges, getSubjectIdentifier());
+          Set<String> storeIds =
+              Optional.ofNullable(req.queryParams("storeId"))
+                  .map(sourceListCSV -> sourceListCSV.split(","))
+                  .map(Arrays::asList)
+                  .map(list -> list.stream().map(String::trim).collect(Collectors.toSet()))
+                  .orElse(null);
+          UpdateResponse updateResponse =
+              patchMetacards(metacardChanges, getSubjectIdentifier(), storeIds);
           if (updateResponse.getProcessingErrors() != null
               && !updateResponse.getProcessingErrors().isEmpty()) {
             res.status(500);
@@ -1075,12 +1083,13 @@ public class MetacardApplication implements SparkApplication {
   }
 
   protected UpdateResponse patchMetacards(
-      List<MetacardChanges> metacardChanges, String subjectIdentifer)
+      List<MetacardChanges> metacardChanges, String subjectIdentifer, Set<String> storeIds)
       throws SourceUnavailableException, IngestException {
     Set<String> changedIds =
         metacardChanges.stream().flatMap(mc -> mc.getIds().stream()).collect(Collectors.toSet());
 
-    Map<String, Result> results = util.getMetacardsWithTagById(changedIds, "*");
+    Map<String, Result> results =
+        util.getMetacardsWithTagByAttributes(Core.ID, changedIds, "*", storeIds);
 
     for (MetacardChanges changeset : metacardChanges) {
       for (AttributeChange attributeChange : changeset.getAttributes()) {
@@ -1117,8 +1126,16 @@ public class MetacardApplication implements SparkApplication {
         results.values().stream().map(Result::getMetacard).collect(Collectors.toList());
     return catalogFramework.update(
         new UpdateRequestImpl(
-            changedMetacards.stream().map(Metacard::getId).toArray(String[]::new),
-            changedMetacards));
+            changedMetacards
+                .stream()
+                .map(
+                    metacard ->
+                        new AbstractMap.SimpleEntry<Serializable, Metacard>(
+                            metacard.getId(), metacard))
+                .collect(Collectors.toList()),
+            Core.ID,
+            new HashMap<>(),
+            storeIds));
   }
 
   private boolean isChangeTypeDate(AttributeChange attributeChange, Metacard result) {

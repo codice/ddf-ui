@@ -23,6 +23,20 @@ export type ExtensionPointsType = {
   providers: SFC<ProviderProps>
   metacardInteractions: any[]
   customFilterInput: (props: Props) => React.ReactNode | undefined
+  customCanWritePermission: (
+    {
+      attribute,
+      lazyResult,
+      user,
+      editableAttributes,
+    }: {
+      attribute: string
+      lazyResult: LazyQueryResult
+      user: any
+      editableAttributes: string[]
+    }
+  ) => boolean | undefined
+  customEditableAttributes: () => string[]
   resultItemTitleAddOn: (
     { lazyResult }: { lazyResult: LazyQueryResult }
   ) => JSX.Element | null
@@ -35,6 +49,8 @@ const ExtensionPoints: ExtensionPointsType = {
   providers,
   metacardInteractions,
   customFilterInput: () => undefined,
+  customCanWritePermission: () => undefined,
+  customEditableAttributes: () => [],
   resultItemTitleAddOn: () => null,
   resultItemRowAddOn: () => null,
 }

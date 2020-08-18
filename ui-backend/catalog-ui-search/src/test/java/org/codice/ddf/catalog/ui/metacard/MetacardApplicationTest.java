@@ -16,8 +16,7 @@ package org.codice.ddf.catalog.ui.metacard;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -36,6 +35,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import javax.ws.rs.NotFoundException;
 import org.codice.ddf.catalog.ui.metacard.edit.AttributeChange;
@@ -66,7 +66,9 @@ public class MetacardApplicationTest {
 
   @Test(expected = NotFoundException.class)
   public void testPatchMetacardsWhenIdNotFound() throws Exception {
-    doReturn(Collections.emptyMap()).when(mockUtil).getMetacardsWithTagById(any(), eq("*"));
+    doReturn(Collections.emptyMap())
+        .when(mockUtil)
+        .getMetacardsWithTagByAttributes(any(), any(), any(String.class), any());
     app.doPatchMetacards(generateTitleChange());
   }
 
@@ -76,7 +78,7 @@ public class MetacardApplicationTest {
     when(mockFramework.update(requestCaptor.capture())).thenReturn(null);
     doReturn(generateCatalogStateWithTitle())
         .when(mockUtil)
-        .getMetacardsWithTagById(any(), eq("*"));
+        .getMetacardsWithTagByAttributes(any(), any(), any(String.class), any());
 
     app.doPatchMetacards(generateTitleChange());
 
@@ -91,7 +93,7 @@ public class MetacardApplicationTest {
     when(mockFramework.update(requestCaptor.capture())).thenReturn(null);
     doReturn(generateCatalogStateWithCreatedDate())
         .when(mockUtil)
-        .getMetacardsWithTagById(any(), eq("*"));
+        .getMetacardsWithTagByAttributes(any(), any(), any(String.class), any());
     doAnswer(MetacardApplicationTest::doParseDate).when(mockUtil).parseDate(any());
 
     app.doPatchMetacards(generateCreatedDateChange());
@@ -157,7 +159,8 @@ public class MetacardApplicationTest {
   }
 
   /**
-   * Test class that exposes the protected {@link MetacardApplication#patchMetacards(List, String)}.
+   * Test class that exposes the protected {@link MetacardApplication#patchMetacards(List, String,
+   * Set <String>)}.
    *
    * <p>Note the original method returns an UpdateResponse but we're not testing the Catalog
    * Framework's ability to return a good response; we're testing the app's ability to correctly
@@ -188,7 +191,7 @@ public class MetacardApplicationTest {
     }
 
     private void doPatchMetacards(List<MetacardChanges> metacardChanges) throws Exception {
-      patchMetacards(metacardChanges, null);
+      patchMetacards(metacardChanges, null, null);
     }
   }
 }
