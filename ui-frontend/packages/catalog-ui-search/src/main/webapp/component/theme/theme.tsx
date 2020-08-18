@@ -72,13 +72,13 @@ export const Elevations = {
 }
 
 export const MuiOutlinedInputBorderClasses =
-  'MuiOutlinedInput-root MuiOutlinedInput-multiline MuiOutlinedInput-notchedOutline border'
+  'MuiOutlinedInput-root MuiOutlinedInput-multiline MuiOutlinedInput-inputMarginDense MuiOutlinedInput-notchedOutline border'
 
 const GlobalStyles = createGlobalStyle<ThemeInterface>`
       a {
         color: inherit !important;
       }
-      button.outline-none, a.outline-none, a, button {
+      *.outline-none, a.outline-none, a, button{
         outline: none !important; 
       }
       .MuiToolbar-root a,

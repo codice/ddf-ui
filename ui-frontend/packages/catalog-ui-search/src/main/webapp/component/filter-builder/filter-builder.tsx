@@ -19,6 +19,7 @@ import { serialize, deserialize } from './filter-serialization'
 import FilterBranch from './filter-branch'
 
 import { FilterBuilderClass } from './filter.structure'
+import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 
 type Props = {
   model: any
@@ -40,12 +41,37 @@ const getBaseFilter = ({ model }: { model: any }): FilterBuilderClass => {
 
 export const FilterBuilderRoot = ({ model }: Props) => {
   const [filter, setFilter] = React.useState(getBaseFilter({ model }))
+  const { listenTo, stopListening } = useBackbone()
+  const saveCallbackRef = React.useRef(() => {
+    model.set('cql', cql.write(filter))
+    model.set('filterTree', filter)
+  })
   React.useEffect(
     () => {
-      // model.set('cql', cql.write(filter))
-      // model.set('filterTree', filter)
+      saveCallbackRef.current = () => {
+        model.set('cql', cql.write(filter))
+        model.set('filterTree', filter)
+      }
     },
-    [filter]
+    [filter, model]
+  )
+  React.useEffect(() => {
+    return () => {
+      saveCallbackRef.current()
+    }
+  }, [])
+  React.useEffect(
+    () => {
+      const callback = () => {
+        saveCallbackRef.current()
+      }
+      // for perf, only update when necessary
+      listenTo(model, 'update', callback)
+      return () => {
+        stopListening(model, 'update', callback)
+      }
+    },
+    [model, filter]
   )
   return (
     <FilterBranch

@@ -34,14 +34,30 @@ module.exports = Backbone.AssociatedModel.extend({
       warnings: [],
     }
   },
+  checkSourceResponse() {
+    if (this.get('successful') === false) {
+      setTimeout(
+        function() {
+          const currentMessages =
+            this.get('messages') !== undefined ? this.get('messages') : []
+          this.set(
+            'messages',
+            currentMessages.concat('Unexpected response from source')
+          )
+        }.bind(this),
+        0
+      )
+    }
+  },
   initialize() {
     if (this.get('successful') !== undefined) {
-      this.set('hasReturned', true)
+      this.setHasReturned()
     } else {
       this.listenToOnce(this, 'change:successful', this.setHasReturned)
     }
   },
   setHasReturned() {
+    this.checkSourceResponse()
     this.set('hasReturned', true)
   },
   setCacheHasReturned() {
