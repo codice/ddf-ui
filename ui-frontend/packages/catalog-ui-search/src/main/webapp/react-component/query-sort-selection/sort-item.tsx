@@ -53,8 +53,6 @@ const SortItem = ({
               options={attributeOptions}
               getOptionLabel={option => option.label}
               getOptionSelected={(option, value) => {
-                console.log(option)
-                console.log(value)
                 return option.value === value.value
               }}
               onChange={(e, newValue) => {
