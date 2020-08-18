@@ -20,12 +20,19 @@ import { BaseSettings } from '../../react-component/user-settings/user-settings'
 import { providers as Providers } from '../../extension-points/providers'
 import Paper from '@material-ui/core/Paper'
 import { Elevations } from '../theme/theme'
-
-const CommonRouteContainer = ({ children }: { children: JSX.Element }) => {
-  return <div className="py-2 pr-2 w-full h-full">{children}</div>
-}
+import { Redirect } from 'react-router-dom'
 
 const RouteInformation = [
+  {
+    showInNav: false,
+    routeProps: {
+      exact: true,
+      path: '/',
+      children: () => {
+        return <Redirect to="/home" />
+      },
+    },
+  },
   {
     name: 'Search',
     shortName: 'Search',
