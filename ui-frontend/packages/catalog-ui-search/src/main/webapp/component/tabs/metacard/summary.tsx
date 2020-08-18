@@ -364,8 +364,7 @@ export const Editor = ({
       <DialogActions>
         <Button
           disabled={mode === 'saving'}
-          color="secondary"
-          variant="contained"
+          variant="text"
           onClick={() => {
             onCancel()
           }}
