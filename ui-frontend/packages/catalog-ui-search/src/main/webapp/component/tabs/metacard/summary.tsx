@@ -29,6 +29,8 @@ import { useLazyResultsSelectedResultsFromSelectionInterface } from '../../selec
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import TransferList from './transfer-list'
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace'
+import AddIcon from '@material-ui/icons/Add'
+import Box from '@material-ui/core/Box'
 //metacardDefinitions.metacardTypes[attribute].type
 //metacardDefinitions.metacardTypes[attribute].multivalued
 //properties.isReadOnly(attribute)
@@ -228,81 +230,82 @@ export const Editor = ({
       <DialogContent style={{ minHeight: '30em', minWidth: '60vh' }}>
         {values.map((val: any, index: number) => {
           return (
-            <>
+            <Grid container direction="row">
               {index !== 0 ? <Divider style={{ margin: '5px 0px' }} /> : null}
-              {(() => {
-                switch (attrType) {
-                  case 'DATE':
-                    return (
-                      <KeyboardDateTimePicker
-                        disabled={mode === 'saving'}
-                        value={val}
-                        onChange={(e: any) => {
-                          values[index] = e.toISOString()
-                          setValues([...values])
-                        }}
-                        DialogProps={{
-                          disablePortal: true,
-                          style: {
-                            minWidth: '500px',
-                          },
-                        }}
-                        format={getDateTimeFormat()}
-                        fullWidth
-                      />
-                    )
+              <Grid item md={11}>
+                {(() => {
+                  switch (attrType) {
+                    case 'DATE':
+                      return (
+                        <KeyboardDateTimePicker
+                          disabled={mode === 'saving'}
+                          value={val}
+                          onChange={(e: any) => {
+                            values[index] = e.toISOString()
+                            setValues([...values])
+                          }}
+                          DialogProps={{
+                            disablePortal: true,
+                            style: {
+                              minWidth: '500px',
+                            },
+                          }}
+                          format={getDateTimeFormat()}
+                          fullWidth
+                        />
+                      )
 
-                  case 'BINARY':
-                    return (
-                      <ThumbnailInput
-                        disabled={mode === 'saving'}
-                        value={val}
-                        onChange={update => {
-                          values[index] = update
-                          setValues([...values])
-                        }}
-                      />
-                    )
-                  case 'BOOLEAN':
-                    return (
-                      <Checkbox
-                        disabled={mode === 'saving'}
-                        checked={val}
-                        onChange={e => {
-                          values[index] = e.target.checked
-                          setValues([...values])
-                        }}
-                        color="primary"
-                      />
-                    )
-                  case 'LONG':
-                  case 'DOUBLE':
-                  case 'FLOAT':
-                  case 'INTEGER':
-                  case 'SHORT':
-                    return (
-                      <TextField
-                        disabled={mode === 'saving'}
-                        value={val}
-                        onChange={e => {
-                          values[index] = e.target.value
-                          setValues([...values])
-                        }}
-                        type="number"
-                        fullWidth
-                      />
-                    )
-                  case 'GEOMETRY':
-                    return (
-                      <TextField
-                        disabled={mode === 'saving'}
-                        value={val}
-                        onChange={e => {
-                          values[index] = e.target.value
-                          setValues([...values])
-                        }}
-                        fullWidth
-                        helperText="WKT Syntax is supported for geometries, here are some examples:
+                    case 'BINARY':
+                      return (
+                        <ThumbnailInput
+                          disabled={mode === 'saving'}
+                          value={val}
+                          onChange={update => {
+                            values[index] = update
+                            setValues([...values])
+                          }}
+                        />
+                      )
+                    case 'BOOLEAN':
+                      return (
+                        <Checkbox
+                          disabled={mode === 'saving'}
+                          checked={val}
+                          onChange={e => {
+                            values[index] = e.target.checked
+                            setValues([...values])
+                          }}
+                          color="primary"
+                        />
+                      )
+                    case 'LONG':
+                    case 'DOUBLE':
+                    case 'FLOAT':
+                    case 'INTEGER':
+                    case 'SHORT':
+                      return (
+                        <TextField
+                          disabled={mode === 'saving'}
+                          value={val}
+                          onChange={e => {
+                            values[index] = e.target.value
+                            setValues([...values])
+                          }}
+                          type="number"
+                          fullWidth
+                        />
+                      )
+                    case 'GEOMETRY':
+                      return (
+                        <TextField
+                          disabled={mode === 'saving'}
+                          value={val}
+                          onChange={e => {
+                            values[index] = e.target.value
+                            setValues([...values])
+                          }}
+                          fullWidth
+                          helperText="WKT Syntax is supported for geometries, here are some examples:
                           POINT (50 40)
                           LINESTRING (30 10, 10 30, 40 40)
                           POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))
@@ -310,27 +313,28 @@ export const Editor = ({
                           MULTILINESTRING ((10 10, 20 20, 10 40), (40 40, 30 30, 40 20, 30 10))
                           MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))
                           GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6,7 10))"
-                      />
-                    )
-                  default:
-                    return (
-                      <TextField
-                        disabled={mode === 'saving'}
-                        value={val}
-                        onChange={(e: any) => {
-                          values[index] = e.target.value
-                          setValues([...values])
-                        }}
-                        style={{ whiteSpace: 'pre-line', flexGrow: 50 }}
-                        fullWidth
-                        multiline={true}
-                        rowsMax={1000}
-                      />
-                    )
-                }
-              })()}
+                        />
+                      )
+                    default:
+                      return (
+                        <TextField
+                          disabled={mode === 'saving'}
+                          value={val}
+                          onChange={(e: any) => {
+                            values[index] = e.target.value
+                            setValues([...values])
+                          }}
+                          style={{ whiteSpace: 'pre-line', flexGrow: 50 }}
+                          fullWidth
+                          multiline={true}
+                          rowsMax={1000}
+                        />
+                      )
+                  }
+                })()}
+              </Grid>
               {isMultiValued ? (
-                <Grid item>
+                <Grid item md={1}>
                   <Button
                     disabled={mode === 'saving'}
                     onClick={() => {
@@ -342,23 +346,31 @@ export const Editor = ({
                   </Button>
                 </Grid>
               ) : null}
-            </>
+            </Grid>
           )
         })}
-        <Button
-          disabled={mode === 'saving' || (!isMultiValued && values.length > 0)}
-          onClick={() => {
-            let defaultValue = ''
-            switch (attrType) {
-              case 'DATE':
-                defaultValue = new Date().toISOString()
-                break
-            }
-            setValues([...values, defaultValue])
-          }}
-        >
-          Add New Value
-        </Button>
+        {isMultiValued &&
+          values.length > 0 && (
+            <Button
+              disabled={mode === 'saving'}
+              variant="text"
+              color="primary"
+              onClick={() => {
+                let defaultValue = ''
+                switch (attrType) {
+                  case 'DATE':
+                    defaultValue = new Date().toISOString()
+                    break
+                }
+                setValues([...values, defaultValue])
+              }}
+            >
+              <Box color="text.primary">
+                <AddIcon />
+              </Box>
+              Add New Value
+            </Button>
+          )}
       </DialogContent>
       <Divider />
       <DialogActions>
