@@ -32,6 +32,8 @@ import HelpIcon from '@material-ui/icons/Help'
 import NotificationsIcon from '@material-ui/icons/Notifications'
 import PersonIcon from '@material-ui/icons/Person'
 const userInstance = require('../singletons/user-instance.js')
+const notifications = require('../singletons/user-notifications.js')
+
 import UserView from '../../react-component/user'
 import UserSettings, {
   SettingsComponentType,
@@ -44,6 +46,7 @@ import { PermissiveComponentType } from '../../typescript'
 import Box from '@material-ui/core/Box'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { Elevations } from '../theme/theme'
+import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 export const handleBase64EncodedImages = (url: string) => {
   if (url && url.startsWith('data:')) {
     return url
@@ -147,7 +150,10 @@ const App = ({
     localStorage.getItem('shell.drawer') === 'true' ? true : false
   const [navOpen, setNavOpen] = React.useState(defaultOpen)
   const [withinNav, setWithinNav] = React.useState(false)
-
+  const [hasUnseenNotifications, setHasUnseenNotifications] = React.useState(
+    notifications.hasUnseen() as boolean
+  )
+  const { listenTo } = useBackbone()
   function handleDrawerOpen() {
     localStorage.setItem('shell.drawer', 'true')
     setNavOpen(true)
@@ -198,6 +204,11 @@ const App = ({
     },
     [withinNav, location]
   )
+  React.useEffect(() => {
+    listenTo(notifications, 'change add remove reset update', () => {
+      setHasUnseenNotifications(notifications.hasUnseen() as boolean)
+    })
+  }, [])
   return (
     <Box bgcolor="background.default" className="h-full w-full overflow-hidden">
       {/* Don't move CSSBaseline or GlobalStyles to providers, since we have multiple react roots.   */}
@@ -336,7 +347,7 @@ const App = ({
                       })
                       return (
                         <ExpandingButton
-                          key={routeInfo.linkProps.to}
+                          key={routeInfo.linkProps.to.toString()}
                           component={Link}
                           to={routeInfo.linkProps.to}
                           className={`${
@@ -452,24 +463,33 @@ const App = ({
 
                       return (
                         <>
-                          <ExpandingButton
-                            component={Link}
-                            to={{
-                              pathname: `${location.pathname}`,
-                              search: `${queryString.stringify({
-                                ...queryParams,
-                                'global-notifications': 'Notifications',
-                              })}`,
-                            }}
-                            className={`${
-                              !withinNav ? 'opacity-25' : ''
-                            } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
-                            iconPosition="start"
-                            Icon={NotificationsIcon}
-                            expandedText="Notifications"
-                            unexpandedText="Notices"
-                            expanded={navOpen}
-                          />
+                          <Box
+                            color={hasUnseenNotifications ? 'warning.main' : ''}
+                            className={
+                              hasUnseenNotifications ? 'animate-wiggle' : ''
+                            }
+                          >
+                            <ExpandingButton
+                              component={Link}
+                              to={{
+                                pathname: `${location.pathname}`,
+                                search: `${queryString.stringify({
+                                  ...queryParams,
+                                  'global-notifications': 'Notifications',
+                                })}`,
+                              }}
+                              className={`${
+                                !hasUnseenNotifications && !withinNav
+                                  ? 'opacity-25'
+                                  : ''
+                              } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
+                              iconPosition="start"
+                              Icon={NotificationsIcon}
+                              expandedText="Notifications"
+                              unexpandedText="Notices"
+                              expanded={navOpen}
+                            />
+                          </Box>
                           <Drawer
                             anchor="left"
                             open={open}
