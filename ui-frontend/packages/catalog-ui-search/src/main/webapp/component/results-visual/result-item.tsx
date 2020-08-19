@@ -394,6 +394,9 @@ export const ResultItem = ({
     stop: (e: any) => void
     start: (e: any) => void
   }>(null)
+  const ResultItemAddOnInstance = Extensions.resultItemRowAddOn({ lazyResult })
+  const shouldShowRelevance = showRelevanceScore({ lazyResult })
+  const shouldShowSource = showSource()
   return (
     <Button
       component="div" // we have to use a div since there are buttons inside this (invalid to nest buttons)
@@ -548,10 +551,18 @@ export const ResultItem = ({
               </div>
             </Grid>
           </Grid>
-          <div className="pl-3">
-            <div>
-              <Extensions.resultItemRowAddOn lazyResult={lazyResult} />
-            </div>
+          <div
+            className={`pl-3 ${
+              ResultItemAddOnInstance !== null ||
+              renderThumbnail ||
+              customDetails.length > 0 ||
+              shouldShowRelevance ||
+              shouldShowSource
+                ? 'pb-2'
+                : ''
+            }`}
+          >
+            <div>{ResultItemAddOnInstance}</div>
             <div>
               {renderThumbnail ? (
                 <img
@@ -581,7 +592,7 @@ export const ResultItem = ({
                   </PropertyComponent>
                 )
               })}
-              {showRelevanceScore({ lazyResult }) ? (
+              {shouldShowRelevance ? (
                 <PropertyComponent
                   data-help={`Relevance: ${lazyResult.plain.relevance}`}
                   title={`Relevance: ${lazyResult.plain.relevance}`}
@@ -591,7 +602,7 @@ export const ResultItem = ({
               ) : (
                 ''
               )}
-              {showSource() ? (
+              {shouldShowSource ? (
                 <PropertyComponent
                   title={`${TypedMetacardDefs.getAlias({
                     attr: 'source-id',
