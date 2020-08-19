@@ -75,7 +75,7 @@ const MetacardHistoryView = Marionette.LayoutView.extend({
 module.exports = Tabs.extend({
   defaults: {
     tabs: {
-      Summary: LightWeightSummaryView,
+      Details: LightWeightSummaryView,
       Preview: MetacardPreviewView,
       History: MetacardHistoryView,
       Associations: MetacardAssociationsView,

@@ -140,7 +140,12 @@ const SourceSelector = ({ search }: Props) => {
                 {selected.map((src, index) => {
                   return (
                     <Grid item key={src} className="mr-2">
-                      <Chip label={getHumanReadableSourceName(src)} />
+                      <Chip
+                        variant="outlined"
+                        color="secondary"
+                        className="cursor-pointer"
+                        label={getHumanReadableSourceName(src)}
+                      />
                     </Grid>
                   )
                 })}
