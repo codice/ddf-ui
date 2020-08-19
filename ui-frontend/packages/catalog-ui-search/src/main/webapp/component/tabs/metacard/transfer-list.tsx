@@ -40,7 +40,9 @@ import { DarkDivider } from '../../dark-divider/dark-divider'
 import LeftArrowIcon from '@material-ui/icons/ChevronLeft'
 import RightArrowIcon from '@material-ui/icons/ChevronRight'
 import CloseIcon from '@material-ui/icons/Close'
-
+import CheckBoxIcon from '@material-ui/icons/CheckBox'
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
+import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox'
 const user = require('../../singletons/user-instance')
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -169,36 +171,72 @@ const TransferList = ({
     setChecked(not(checked, rightChecked))
   }
 
-  const customList = (
-    title: React.ReactNode,
-    items: string[],
-    lazyResult: LazyQueryResult,
-    updateItems: (arg: string[]) => void,
-    isDnD: boolean // Is drag and drop allowed?
-  ) => {
+  const CustomList = ({
+    title,
+    items,
+    total,
+    lazyResult,
+    updateItems,
+    isDnD,
+  }: {
+    title: React.ReactNode
+    items: string[]
+    total: number
+    lazyResult: LazyQueryResult
+    updateItems: (arg: string[]) => void
+    isDnD: boolean // drag and drop allowed?
+  }) => {
     const [filter, setFilter] = React.useState('')
     const theme = useTheme()
+    const numberChecked = numberOfChecked(items)
+    const isIndeterminate =
+      numberChecked !== items.length && numberChecked !== 0
+    const isCompletelySelected =
+      numberChecked === items.length && items.length !== 0
     return (
       <Paper elevation={Elevations.paper}>
-        <CardHeader
-          className="p-2"
-          avatar={
-            <Checkbox
-              onClick={handleToggleAll(items)}
-              checked={
-                numberOfChecked(items) === items.length && items.length !== 0
-              }
-              indeterminate={
-                numberOfChecked(items) !== items.length &&
-                numberOfChecked(items) !== 0
-              }
+        <Grid
+          container
+          className="p-2 text-xl font-normal relative"
+          direction="row"
+          wrap="nowrap"
+          alignItems="center"
+        >
+          <Grid item className="absolute left-0 top-0 ml-2 mt-min">
+            <Button
               disabled={items.length === 0}
-              inputProps={{ 'aria-label': 'all items selected' }}
-            />
-          }
-          title={title}
-          subheader={`${numberOfChecked(items)}/${items.length} selected`}
-        />
+              onClick={handleToggleAll(items)}
+              color={
+                isIndeterminate || isCompletelySelected
+                  ? 'secondary'
+                  : 'default'
+              }
+            >
+              {(() => {
+                if (isCompletelySelected) {
+                  return (
+                    <>
+                      <CheckBoxIcon />
+                      {numberOfChecked(items)}{' '}
+                    </>
+                  )
+                } else if (isIndeterminate) {
+                  return (
+                    <>
+                      <IndeterminateCheckBoxIcon />
+                      {numberOfChecked(items)}{' '}
+                    </>
+                  )
+                } else {
+                  return <CheckBoxOutlineBlankIcon />
+                }
+              })()}
+            </Button>
+          </Grid>
+          <Grid item className="m-auto ">
+            {title} ({items.length}/{total})
+          </Grid>
+        </Grid>
         <DarkDivider className="w-full h-min" />
         <div className="p-2">
           <TextField
@@ -417,7 +455,7 @@ const TransferList = ({
 
   return (
     <>
-      <div className="text-xl text-center px-2 pb-2 pt-4 font-normal relative">
+      <div className="text-2xl text-center px-2 pb-2 pt-4 font-normal relative">
         Manage Attributes
         <Button
           className="absolute right-0 top-0 mr-1 mt-1"
@@ -444,7 +482,14 @@ const TransferList = ({
           className={classes.root}
         >
           <Grid item>
-            {customList('Active', left, lazyResult, setLeft, true)}
+            <CustomList
+              title="Active"
+              items={left}
+              lazyResult={lazyResult}
+              updateItems={setLeft}
+              isDnD={true}
+              total={left.length + right.length}
+            />
           </Grid>
           <Grid item>
             <Grid container direction="column" alignItems="center">
@@ -469,7 +514,14 @@ const TransferList = ({
             </Grid>
           </Grid>
           <Grid item>
-            {customList('Hidden', right, lazyResult, setRight, false)}
+            <CustomList
+              title="Hidden"
+              items={right}
+              lazyResult={lazyResult}
+              updateItems={setRight}
+              isDnD={false}
+              total={left.length + right.length}
+            />
           </Grid>
         </Grid>
       </DialogContent>

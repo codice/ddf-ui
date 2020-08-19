@@ -20,11 +20,11 @@ const _ = require('underscore')
 const $ = require('jquery')
 const user = require('../singletons/user-instance.js')
 require('jquery-ui/ui/widgets/resizable')
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import Button, { ButtonProps } from '@material-ui/core/Button'
 import Box from '@material-ui/core/Box'
-import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import { useSelectionOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
+import CheckBoxIcon from '@material-ui/icons/CheckBox'
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox'
 export type Header = {
   hidden: boolean
