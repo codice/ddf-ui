@@ -48,6 +48,7 @@ const SortItem = ({
         <Grid container direction="row" wrap="nowrap" alignItems="center">
           <Grid item className="w-full">
             <Autocomplete
+              data-id="sort-type-autocomplete"
               size="small"
               fullWidth
               options={attributeOptions}
@@ -68,7 +69,7 @@ const SortItem = ({
           </Grid>
           {showRemove ? (
             <Grid item className="pl-2">
-              <Button onClick={onRemove} variant="text" color="primary">
+              <Button data-id="remove-button" onClick={onRemove} variant="text" color="primary">
                 Remove
               </Button>
             </Grid>
@@ -87,6 +88,7 @@ const SortItem = ({
             </Grid>
             <Grid item className="w-full pl-2">
               <Autocomplete
+                data-id="sort-order-autocomplete"
                 size="small"
                 fullWidth
                 options={directionOptions}

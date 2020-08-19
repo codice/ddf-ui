@@ -90,8 +90,8 @@ const QueryStatusRow = ({ status }: { status: Status }) => {
   let id = status.id
 
   return (
-    <tr>
-      <Cell>
+    <tr data-id={`source-${id}-row`}>
+      <Cell data-id="source-id-label">
         <CellValue
           value={id}
           hasReturned={hasReturned}
@@ -101,7 +101,7 @@ const QueryStatusRow = ({ status }: { status: Status }) => {
           alwaysShowValue
         />
       </Cell>
-      <Cell>
+      <Cell data-id="available-label">
         <CellValue
           value={status.count}
           hasReturned={hasReturned}
@@ -110,7 +110,7 @@ const QueryStatusRow = ({ status }: { status: Status }) => {
           message={message}
         />
       </Cell>
-      <Cell>
+      <Cell data-id="possible-label">
         <CellValue
           value={status.hits}
           hasReturned={hasReturned}
@@ -119,7 +119,7 @@ const QueryStatusRow = ({ status }: { status: Status }) => {
           message={message}
         />
       </Cell>
-      <Cell>
+      <Cell data-id="time-label">
         <CellValue
           value={status.elapsed / 1000}
           hasReturned={hasReturned}
@@ -130,6 +130,7 @@ const QueryStatusRow = ({ status }: { status: Status }) => {
       </Cell>
       <Cell className="status-filter">
         <button
+          data-id="filter-button"
           className="old-button is-button is-primary in-text"
           title="Locally filter results to this source only."
           onClick={() => {
@@ -236,7 +237,7 @@ const QueryFeed = ({ selectionInterface }: Props) => {
     <>
       <Grid container direction="row" alignItems="center" wrap="nowrap">
         <Grid item>
-          <div title={resultCount} style={{ whiteSpace: 'nowrap' }}>
+          <div data-id="results-count-label" title={resultCount} style={{ whiteSpace: 'nowrap' }}>
             {pending ? (
               <i className="fa fa-circle-o-notch fa-spin is-critical-animation" />
             ) : (
@@ -262,6 +263,7 @@ const QueryFeed = ({ selectionInterface }: Props) => {
             {({ handleClick }) => {
               return (
                 <Button
+                  data-id="heartbeat-button"
                   onClick={handleClick}
                   className="details-view is-button"
                   title="Show the full status for the search."

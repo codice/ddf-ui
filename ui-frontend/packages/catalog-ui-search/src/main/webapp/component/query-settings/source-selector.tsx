@@ -129,6 +129,7 @@ const SourceSelector = ({ search }: Props) => {
     <div>
       <Typography className="pb-2">Data Sources</Typography>
       <TextField
+        data-id="data-sources-select"
         fullWidth
         variant="outlined"
         select
@@ -194,7 +195,7 @@ const SourceSelector = ({ search }: Props) => {
         }}
         size="small"
       >
-        <MenuItem value="all">
+        <MenuItem data-id="all-option" value="all">
           <Grid container alignItems="stretch" direction="row" wrap="nowrap">
             <Grid container direction="row" alignItems="center">
               <Grid item>All</Grid>
@@ -207,7 +208,7 @@ const SourceSelector = ({ search }: Props) => {
           </Grid>
         </MenuItem>
         {availableLocalSources.length > 0 ? (
-          <MenuItem value="local">
+          <MenuItem data-id="onsite-option" value="local">
             <Grid container alignItems="stretch" direction="row" wrap="nowrap">
               <Grid item className="pr-2">
                 <Swath className="w-1 h-full" />
@@ -229,7 +230,7 @@ const SourceSelector = ({ search }: Props) => {
         {availableLocalSources.length > 0
           ? availableLocalSources.map((source: any) => {
               return (
-                <MenuItem key={source.id} value={source.id}>
+                <MenuItem data-id={`source-${source.id}-option`} key={source.id} value={source.id}>
                   <Grid
                     container
                     alignItems="stretch"
@@ -264,7 +265,7 @@ const SourceSelector = ({ search }: Props) => {
             })
           : null}
         {availableRemoteSources.length > 0 ? (
-          <MenuItem value="remote">
+          <MenuItem data-id="offsite-option" value="remote">
             <Grid container alignItems="stretch" direction="row" wrap="nowrap">
               <Grid item className="pr-2">
                 <Swath className="w-1 h-full" />
@@ -286,7 +287,7 @@ const SourceSelector = ({ search }: Props) => {
         {availableRemoteSources.length > 0
           ? availableRemoteSources.map((source: any) => {
               return (
-                <MenuItem key={source.id} value={source.id}>
+                <MenuItem data-id={`source-${source.id}-option`} key={source.id} value={source.id}>
                   <Grid
                     container
                     alignItems="stretch"

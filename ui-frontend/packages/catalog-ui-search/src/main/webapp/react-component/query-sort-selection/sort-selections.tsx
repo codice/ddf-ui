@@ -123,7 +123,7 @@ const SortSelections = ({ value, onChange }: Props) => {
         )
       })}
       <div className="pt-2">
-        <Button color="primary" fullWidth onClick={addSort}>
+        <Button data-id="add-sort-button" color="primary" fullWidth onClick={addSort}>
           <Grid container direction="row" alignItems="center" wrap="nowrap">
             <Grid item>
               <Box color="text.primary">
