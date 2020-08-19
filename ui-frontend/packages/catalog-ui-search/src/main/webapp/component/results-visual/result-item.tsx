@@ -360,7 +360,7 @@ export const ResultItem = ({
                     content={({ close }) => {
                       return (
                         <BetterClickAwayListener onClickAway={close}>
-                          <Paper>
+                          <Paper data-id="interactions-menu">
                             <LazyMetacardInteractions
                               lazyResults={[lazyResult]}
                               onClose={() => {
@@ -375,6 +375,7 @@ export const ResultItem = ({
                     {({ handleClick }) => {
                       return (
                         <SmallButton
+                          data-id="more-vert-button"
                           onClick={e => {
                             e.stopPropagation()
                             handleClick(e)

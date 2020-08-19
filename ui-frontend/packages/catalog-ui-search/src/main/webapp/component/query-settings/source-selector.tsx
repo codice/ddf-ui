@@ -129,6 +129,7 @@ const SourceSelector = ({ search }: Props) => {
     <div>
       <Typography className="pb-2">Data Sources</Typography>
       <TextField
+        data-id="data-sources-select"
         fullWidth
         variant="outlined"
         select
@@ -244,7 +245,7 @@ const SourceSelector = ({ search }: Props) => {
             )
           } else if (
             newSources.length ===
-              availableLocalSources.length + availableRemoteSources.length ||
+            availableLocalSources.length + availableRemoteSources.length ||
             (newSources.includes('local') &&
               newSources.length === availableRemoteSources.length + 1) ||
             (newSources.includes('remote') &&
@@ -286,7 +287,7 @@ const SourceSelector = ({ search }: Props) => {
         }}
         size="small"
       >
-        <MenuItem value="all">
+        <MenuItem data-id="all-option" value="all">
           <Grid container alignItems="stretch" direction="row" wrap="nowrap">
             <Grid container direction="row" alignItems="center">
               <Grid item className="pr-2">
@@ -303,7 +304,7 @@ const SourceSelector = ({ search }: Props) => {
           </Grid>
         </MenuItem>
         {availableLocalSources.length > 0 ? (
-          <MenuItem value="local">
+          <MenuItem data-id="onsite-option" value="local">
             <Grid container alignItems="stretch" direction="row" wrap="nowrap">
               <Grid item className="pr-2">
                 <CheckIcon
@@ -328,47 +329,47 @@ const SourceSelector = ({ search }: Props) => {
         ) : null}
         {availableLocalSources.length > 0
           ? availableLocalSources.map((source: any) => {
-              return (
-                <MenuItem key={source.id} value={source.id}>
-                  <Grid
-                    container
-                    alignItems="stretch"
-                    direction="row"
-                    wrap="nowrap"
-                  >
-                    <Grid item className="pr-2">
-                      <CheckIcon
-                        className={
-                          shouldBeSelected({ srcId: source.id, sources })
-                            ? ''
-                            : 'invisible'
+            return (
+              <MenuItem data-id={`source-${source.id}-option`} key={source.id} value={source.id}>
+                <Grid
+                  container
+                  alignItems="stretch"
+                  direction="row"
+                  wrap="nowrap"
+                >
+                  <Grid item className="pr-2">
+                    <CheckIcon
+                      className={
+                        shouldBeSelected({ srcId: source.id, sources })
+                          ? ''
+                          : 'invisible'
+                      }
+                    />
+                  </Grid>
+                  <Grid item className="pl-2 pr-3">
+                    <Swath className="w-1 h-full" />
+                  </Grid>
+                  <Grid container direction="row" alignItems="center">
+                    <Grid item>
+                      <Box
+                        color={
+                          source.available ? 'text.primary' : 'warning.main'
                         }
-                      />
+                      >
+                        {source.id}
+                      </Box>
                     </Grid>
-                    <Grid item className="pl-2 pr-3">
-                      <Swath className="w-1 h-full" />
-                    </Grid>
-                    <Grid container direction="row" alignItems="center">
-                      <Grid item>
-                        <Box
-                          color={
-                            source.available ? 'text.primary' : 'warning.main'
-                          }
-                        >
-                          {source.id}
-                        </Box>
-                      </Grid>
-                      <Grid item className="pl-2">
-                        {source.available ? null : <WarningIcon />}
-                      </Grid>
+                    <Grid item className="pl-2">
+                      {source.available ? null : <WarningIcon />}
                     </Grid>
                   </Grid>
-                </MenuItem>
-              )
-            })
+                </Grid>
+              </MenuItem>
+            )
+          })
           : null}
         {availableRemoteSources.length > -1 ? (
-          <MenuItem value="remote">
+          <MenuItem data-id="offsite-option" value="remote">
             <Grid container alignItems="stretch" direction="row" wrap="nowrap">
               <Grid item className="pr-2">
                 <CheckIcon
@@ -393,44 +394,44 @@ const SourceSelector = ({ search }: Props) => {
         ) : null}
         {availableRemoteSources.length > 0
           ? availableRemoteSources.map((source: any) => {
-              return (
-                <MenuItem key={source.id} value={source.id}>
-                  <Grid
-                    container
-                    alignItems="stretch"
-                    direction="row"
-                    wrap="nowrap"
-                  >
-                    <Grid item className="pr-2">
-                      <CheckIcon
-                        className={
-                          shouldBeSelected({ srcId: source.id, sources })
-                            ? ''
-                            : 'invisible'
+            return (
+              <MenuItem data-id={`source-${source.id}-option`} key={source.id} value={source.id}>
+                <Grid
+                  container
+                  alignItems="stretch"
+                  direction="row"
+                  wrap="nowrap"
+                >
+                  <Grid item className="pr-2">
+                    <CheckIcon
+                      className={
+                        shouldBeSelected({ srcId: source.id, sources })
+                          ? ''
+                          : 'invisible'
+                      }
+                    />
+                  </Grid>
+                  <Grid item className="pl-2 pr-2">
+                    <Swath className="w-1 h-full" />
+                  </Grid>
+                  <Grid container direction="row" alignItems="center">
+                    <Grid item>
+                      <Box
+                        color={
+                          source.available ? 'text.primary' : 'warning.main'
                         }
-                      />
+                      >
+                        {source.id}
+                      </Box>
                     </Grid>
-                    <Grid item className="pl-2 pr-2">
-                      <Swath className="w-1 h-full" />
-                    </Grid>
-                    <Grid container direction="row" alignItems="center">
-                      <Grid item>
-                        <Box
-                          color={
-                            source.available ? 'text.primary' : 'warning.main'
-                          }
-                        >
-                          {source.id}
-                        </Box>
-                      </Grid>
-                      <Grid item className="pl-2">
-                        {source.available ? null : <WarningIcon />}
-                      </Grid>
+                    <Grid item className="pl-2">
+                      {source.available ? null : <WarningIcon />}
                     </Grid>
                   </Grid>
-                </MenuItem>
-              )
-            })
+                </Grid>
+              </MenuItem>
+            )
+          })
           : null}
       </TextField>
     </div>
