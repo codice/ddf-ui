@@ -513,6 +513,16 @@ const AttributeComponent = ({
                       ) : null}
                       <div>
                         {(() => {
+                          if (attr === 'ext.audio-snippet') {
+                            const mimetype =
+                              lazyResult.plain.metacard.properties[
+                                'ext.audio-snippet-mimetype'
+                              ]
+                            const src = `data:${mimetype};base64,${val}`
+
+                            return <audio controls src={src} />
+                          }
+
                           switch (TypedMetacardDefs.getType({ attr })) {
                             case 'DATE':
                               return (
