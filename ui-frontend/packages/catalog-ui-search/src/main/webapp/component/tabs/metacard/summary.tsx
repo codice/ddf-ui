@@ -479,11 +479,7 @@ const AttributeComponent = ({
   const MemoItem = React.useMemo(
     () => {
       return (
-        <Grid container direction="row" wrap={'nowrap'} className="relative">
-          <Divider
-            orientation="horizontal"
-            className="absolute bottom-0 w-full h-min"
-          />
+        <Grid container direction="row" wrap={'nowrap'}>
           <Grid
             item
             xs={4}
@@ -797,16 +793,24 @@ const Summary = ({ selectionInterface }: Props) => {
             <DarkDivider className="w-full h-min" />
             <Grid item className="flex-shrink-1 overflow-auto p-2">
               <Paper elevation={Elevations.paper}>
-                {summaryShown.map(attr => {
+                {summaryShown.map((attr, index) => {
                   return (
-                    <AttributeComponent
-                      lazyResult={selection}
-                      attr={attr}
-                      summaryShown={summaryShown}
-                      filter={filter}
-                      width={width}
-                      forceRender={forceRender}
-                    />
+                    <div className="relative" key={attr}>
+                      <AttributeComponent
+                        lazyResult={selection}
+                        attr={attr}
+                        summaryShown={summaryShown}
+                        filter={filter}
+                        width={width}
+                        forceRender={forceRender}
+                      />
+                      {index !== 0 ? (
+                        <Divider
+                          orientation="horizontal"
+                          className="absolute top-0 w-full h-min"
+                        />
+                      ) : null}
+                    </div>
                   )
                 })}
 
@@ -814,28 +818,38 @@ const Summary = ({ selectionInterface }: Props) => {
                   <>
                     {everythingElse.map(attr => {
                       return (
-                        <AttributeComponent
-                          lazyResult={selection}
-                          key={attr}
-                          attr={attr}
-                          summaryShown={summaryShown}
-                          filter={filter}
-                          width={width}
-                          forceRender={forceRender}
-                        />
+                        <div key={attr} className="relative">
+                          <AttributeComponent
+                            lazyResult={selection}
+                            attr={attr}
+                            summaryShown={summaryShown}
+                            filter={filter}
+                            width={width}
+                            forceRender={forceRender}
+                          />
+                          <Divider
+                            orientation="horizontal"
+                            className="absolute top-0 w-full h-min"
+                          />
+                        </div>
                       )
                     })}
                     {blankEverythingElse.map(attr => {
                       return (
-                        <AttributeComponent
-                          key={attr.id}
-                          lazyResult={selection}
-                          attr={attr.id}
-                          summaryShown={summaryShown}
-                          filter={filter}
-                          width={width}
-                          forceRender={forceRender}
-                        />
+                        <div key={attr.id} className="relative">
+                          <AttributeComponent
+                            lazyResult={selection}
+                            attr={attr.id}
+                            summaryShown={summaryShown}
+                            filter={filter}
+                            width={width}
+                            forceRender={forceRender}
+                          />
+                          <Divider
+                            orientation="horizontal"
+                            className="absolute top-0 w-full h-min"
+                          />
+                        </div>
                       )
                     })}
                   </>
