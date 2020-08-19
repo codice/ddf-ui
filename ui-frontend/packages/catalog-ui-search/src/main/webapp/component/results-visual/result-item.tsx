@@ -471,7 +471,7 @@ export const ResultItem = ({
             opacity: isSelected ? 0.05 : 0,
           }}
         />
-        <div className="w-full pb-2 relative z-0">
+        <div className="w-full relative z-0">
           <Grid
             className="w-full"
             container
