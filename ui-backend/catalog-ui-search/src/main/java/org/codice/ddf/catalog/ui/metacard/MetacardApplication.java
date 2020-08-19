@@ -108,7 +108,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPOutputStream;
 import javax.ws.rs.NotFoundException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -708,32 +707,15 @@ public class MetacardApplication implements SparkApplication {
 
           BinaryContent content = csvQueryResponseTransformer.transform(response, arguments);
 
-          String acceptEncoding = req.headers("Accept-Encoding");
-          // Very naive way to handle accept encoding, does not respect full spec
-          boolean shouldGzip =
-              StringUtils.isNotBlank(acceptEncoding)
-                  && acceptEncoding.toLowerCase().contains("gzip");
-
           // Respond with content
           res.type("text/csv");
           String attachment =
               String.format("attachment;filename=export-%s.csv", Instant.now().toString());
           res.header("Content-Disposition", attachment);
-          if (shouldGzip) {
-            res.raw().addHeader("Content-Encoding", "gzip");
-          }
 
-          try ( //
-          OutputStream servletOutputStream = res.raw().getOutputStream();
+          try (OutputStream servletOutputStream = res.raw().getOutputStream();
               InputStream resultStream = content.getInputStream()) {
-            if (shouldGzip) {
-              try (OutputStream gzipServletOutputStream =
-                  new GZIPOutputStream(servletOutputStream)) {
-                IOUtils.copy(resultStream, gzipServletOutputStream);
-              }
-            } else {
-              IOUtils.copy(resultStream, servletOutputStream);
-            }
+            IOUtils.copy(resultStream, servletOutputStream);
           }
           return "";
         });

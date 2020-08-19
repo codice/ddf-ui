@@ -15,7 +15,6 @@ package org.codice.ddf.catalog.ui.query;
 
 import static spark.Spark.exception;
 import static spark.Spark.post;
-import static spark.route.RouteOverview.enableRouteOverview;
 
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
@@ -118,8 +117,6 @@ public class FeedbackApplication implements SparkApplication {
           response.body("Error submitting feedback");
           LOGGER.debug("Feedback submission failed", e);
         });
-
-    enableRouteOverview();
   }
 
   public void setConfigurationApplication(ConfigurationApplication configurationApplication) {

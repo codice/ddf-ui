@@ -13,7 +13,6 @@
  */
 package org.codice.ddf.catalog.ui.query.handlers;
 
-import static junit.framework.TestCase.assertNull;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.matchesPattern;
@@ -77,8 +76,6 @@ public class CqlTransformHandlerTest {
           .registerTypeAdapterFactory(LongDoubleTypeAdapter.FACTORY)
           .create();
 
-  private static final String GZIP = "gzip";
-  private static final String NO_GZIP = "";
   private static final String QUERY_PARAM = ":transformerId";
   private static final String RETURN_ID = "kml";
   private static final String OTHER_RETURN_ID = "xml";
@@ -189,9 +186,7 @@ public class CqlTransformHandlerTest {
   }
 
   @Test
-  public void testServiceFoundWithValidResponseAndGzip() throws Exception {
-    when(mockRequest.headers(HttpHeaders.ACCEPT_ENCODING)).thenReturn(GZIP);
-
+  public void testServiceFoundWithValidResponse() throws Exception {
     when(mockRequest.params(QUERY_PARAM)).thenReturn(RETURN_ID);
 
     String res = GSON.toJson(cqlTransformHandler.handle(mockRequest, mockResponse));
@@ -201,24 +196,6 @@ public class CqlTransformHandlerTest {
     assertThat(
         mockResponse.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION),
         matchesPattern(ATTACHMENT_REGEX));
-    assertThat(mockResponse.getHeaders().get(HttpHeaders.CONTENT_ENCODING), is(GZIP));
-    assertThat(mockResponse.type(), is(MIME_TYPE));
-  }
-
-  @Test
-  public void testServiceFoundWithValidResponseNoGzip() throws Exception {
-    when(mockRequest.headers(HttpHeaders.ACCEPT_ENCODING)).thenReturn(NO_GZIP);
-
-    when(mockRequest.params(QUERY_PARAM)).thenReturn(RETURN_ID);
-
-    String res = GSON.toJson(cqlTransformHandler.handle(mockRequest, mockResponse));
-
-    assertThat(res, is(SERVICE_SUCCESS));
-    assertThat(mockResponse.status(), is(HttpStatus.OK_200));
-    assertThat(
-        mockResponse.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION),
-        matchesPattern(ATTACHMENT_REGEX));
-    assertNull(mockResponse.getHeaders().get(HttpHeaders.CONTENT_ENCODING));
     assertThat(mockResponse.type(), is(MIME_TYPE));
   }
 }
