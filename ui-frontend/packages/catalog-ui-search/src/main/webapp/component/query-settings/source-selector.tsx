@@ -202,12 +202,16 @@ const SourceSelector = ({ search }: Props) => {
         <MenuItem value="all">
           <Grid container alignItems="stretch" direction="row" wrap="nowrap">
             <Grid container direction="row" alignItems="center">
-              <Grid item>All</Grid>
-              <Grid item className="pl-2">
-                {shouldBeSelected({ srcId: 'all', sources }) ? (
-                  <CheckIcon />
-                ) : null}
+              <Grid item className="pr-2">
+                <CheckIcon
+                  className={
+                    shouldBeSelected({ srcId: 'all', sources })
+                      ? ''
+                      : 'invisible'
+                  }
+                />
               </Grid>
+              <Grid item>All</Grid>
             </Grid>
           </Grid>
         </MenuItem>
@@ -215,17 +219,21 @@ const SourceSelector = ({ search }: Props) => {
           <MenuItem value="local">
             <Grid container alignItems="stretch" direction="row" wrap="nowrap">
               <Grid item className="pr-2">
+                <CheckIcon
+                  className={
+                    shouldBeSelected({ srcId: 'local', sources })
+                      ? ''
+                      : 'invisible'
+                  }
+                />
+              </Grid>
+              <Grid item className="pr-2">
                 <Swath className="w-1 h-full" />
               </Grid>
               <Grid container direction="row" alignItems="center">
                 <Grid item>Fast (onsite)</Grid>
                 <Grid item className="pl-2">
                   <HomeIcon />
-                </Grid>
-                <Grid item className="pl-2">
-                  {shouldBeSelected({ srcId: 'local', sources }) ? (
-                    <CheckIcon />
-                  ) : null}
                 </Grid>
               </Grid>
             </Grid>
@@ -241,6 +249,15 @@ const SourceSelector = ({ search }: Props) => {
                     direction="row"
                     wrap="nowrap"
                   >
+                    <Grid item className="pr-2">
+                      <CheckIcon
+                        className={
+                          shouldBeSelected({ srcId: source.id, sources })
+                            ? ''
+                            : 'invisible'
+                        }
+                      />
+                    </Grid>
                     <Grid item className="pl-2 pr-3">
                       <Swath className="w-1 h-full" />
                     </Grid>
@@ -257,11 +274,6 @@ const SourceSelector = ({ search }: Props) => {
                       <Grid item className="pl-2">
                         {source.available ? null : <WarningIcon />}
                       </Grid>
-                      <Grid item className="pl-2">
-                        {shouldBeSelected({ srcId: source.id, sources }) ? (
-                          <CheckIcon />
-                        ) : null}
-                      </Grid>
                     </Grid>
                   </Grid>
                 </MenuItem>
@@ -272,17 +284,21 @@ const SourceSelector = ({ search }: Props) => {
           <MenuItem value="remote">
             <Grid container alignItems="stretch" direction="row" wrap="nowrap">
               <Grid item className="pr-2">
+                <CheckIcon
+                  className={
+                    shouldBeSelected({ srcId: 'remote', sources })
+                      ? ''
+                      : 'invisible'
+                  }
+                />
+              </Grid>
+              <Grid item className="pr-2">
                 <Swath className="w-1 h-full" />
               </Grid>
               <Grid container direction="row" alignItems="center">
                 <Grid item>Slow (offsite)</Grid>
                 <Grid item className="pl-2">
                   <CloudIcon />
-                </Grid>
-                <Grid item className="pl-2">
-                  {shouldBeSelected({ srcId: 'remote', sources }) ? (
-                    <CheckIcon />
-                  ) : null}
                 </Grid>
               </Grid>
             </Grid>
@@ -298,6 +314,15 @@ const SourceSelector = ({ search }: Props) => {
                     direction="row"
                     wrap="nowrap"
                   >
+                    <Grid item className="pr-2">
+                      <CheckIcon
+                        className={
+                          shouldBeSelected({ srcId: source.id, sources })
+                            ? ''
+                            : 'invisible'
+                        }
+                      />
+                    </Grid>
                     <Grid item className="pl-2 pr-2">
                       <Swath className="w-1 h-full" />
                     </Grid>
@@ -313,11 +338,6 @@ const SourceSelector = ({ search }: Props) => {
                       </Grid>
                       <Grid item className="pl-2">
                         {source.available ? null : <WarningIcon />}
-                      </Grid>
-                      <Grid item className="pl-2">
-                        {shouldBeSelected({ srcId: source.id, sources }) ? (
-                          <CheckIcon />
-                        ) : null}
                       </Grid>
                     </Grid>
                   </Grid>
