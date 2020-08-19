@@ -39,7 +39,13 @@ const getQueryForId = ({ id }: { id: string }) => {
 
 const MetacardNavRoute = () => {
   const params = useParams<{ id: string; metacardId: string }>()
-  const id = params.metacardId || params.id
+  const [id, setId] = React.useState(params.metacardId || params.id)
+  React.useEffect(
+    () => {
+      setId(params.metacardId || params.id)
+    },
+    [params.metacardId]
+  )
   const [query] = React.useState(getQueryForId({ id }))
   const [selectionInterface] = React.useState(
     new SelectionInterfaceModel({

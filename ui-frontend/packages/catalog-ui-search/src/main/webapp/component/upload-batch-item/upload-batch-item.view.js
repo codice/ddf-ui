@@ -20,9 +20,36 @@ const CustomElements = require('../../js/CustomElements.js')
 const Common = require('../../js/Common.js')
 const user = require('../singletons/user-instance.js')
 const UploadSummaryView = require('../upload-summary/upload-summary.view.js')
+import { Link } from 'react-router-dom'
+import * as React from 'react'
 
 module.exports = Marionette.LayoutView.extend({
-  template,
+  template(data) {
+    return (
+      <React.Fragment>
+        <Link
+          to={`/uploads/${this.model.id}`}
+          style={{ display: 'block', padding: '0px' }}
+        >
+          <div className="upload-details">
+            <div className="details-date is-medium-font">
+              <span className="fa fa-upload" />
+              <span>{data.when}</span>
+            </div>
+            <div className="details-summary" />
+          </div>
+        </Link>
+        <div className="upload-actions">
+          <button className="old-button actions-stop is-negative">
+            <span className="fa fa-stop" />
+          </button>
+          <button className="old-button actions-remove is-negative">
+            <span className="fa fa-minus" />
+          </button>
+        </div>
+      </React.Fragment>
+    )
+  },
   tagName: CustomElements.register('upload-batch-item'),
   modelEvents: {
     'change:finished': 'handleFinished',
@@ -33,7 +60,7 @@ module.exports = Marionette.LayoutView.extend({
     'click > .upload-details': 'expandUpload',
   },
   regions: {
-    uploadDetails: '> .upload-details .details-summary',
+    uploadDetails: ' .upload-details .details-summary',
   },
   onBeforeShow() {
     this.uploadDetails.show(
@@ -59,16 +86,6 @@ module.exports = Marionette.LayoutView.extend({
   },
   stopUpload() {
     this.model.cancel()
-  },
-  expandUpload() {
-    this.$el.trigger('closeDropdown.' + CustomElements.getNamespace())
-    this.$el.trigger('closeSlideout.' + CustomElements.getNamespace())
-    wreqr.vent.trigger('router:navigate', {
-      fragment: 'uploads/' + this.model.id,
-      options: {
-        trigger: true,
-      },
-    })
   },
   serializeData() {
     return {

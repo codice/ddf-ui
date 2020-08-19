@@ -5,6 +5,8 @@ import { useLazyResultsFromSelectionInterface } from '../selection-interface/hoo
 import { GoldenLayout } from '../golden-layout/golden-layout'
 const Query = require('../../js/model/Query.js')
 const SelectionInterfaceModel = require('../selection-interface/selection-interface.model.js')
+const user = require('../singletons/user-instance.js')
+const _ = require('underscore')
 
 const getFilterTreeForId = ({ id }: { id: string }) => {
   return {
@@ -32,8 +34,19 @@ const getQueryForId = ({ id }: { id: string }) => {
 }
 
 const MetacardRoute = () => {
-  const params = useParams<{ id: string; metacardId: string }>()
-  const id = params.metacardId || params.id
+  const params = useParams<{
+    id: string
+    metacardId: string
+    uploadId: string
+  }>()
+
+  const [id, setId] = React.useState(params.metacardId || params.id)
+  React.useEffect(
+    () => {
+      setId(params.metacardId || params.id)
+    },
+    [params.metacardId]
+  )
   const [query] = React.useState(getQueryForId({ id }))
   const [selectionInterface] = React.useState(
     new SelectionInterfaceModel({
@@ -43,11 +56,60 @@ const MetacardRoute = () => {
 
   React.useEffect(
     () => {
-      query.set('filterTree', getFilterTreeForId({ id }))
-      query.cancelCurrentSearches()
-      query.startSearchFromFirstPage()
-      return () => {
+      if (id === undefined && params.uploadId) {
+        const upload = user
+          .get('user')
+          .get('preferences')
+          .get('uploads')
+          .get(params.uploadId)
+        if (upload) {
+          query.set('filterTree', {
+            type: 'OR',
+            filters: _.flatten(
+              upload
+                .get('uploads')
+                .filter(
+                  (file: any) => file.id || file.get('children') !== undefined
+                )
+                .map((file: any) => {
+                  if (file.get('children') !== undefined) {
+                    return file.get('children').map((child: any) => ({
+                      type: '=',
+                      value: child,
+                      property: 'id',
+                    }))
+                  } else {
+                    return {
+                      type: '=',
+                      value: file.id,
+                      property: 'id',
+                    }
+                  }
+                })
+                .concat({
+                  type: '=',
+                  value: '-1',
+                  property: 'id',
+                })
+            ),
+          })
+          query.cancelCurrentSearches()
+          query.startSearchFromFirstPage()
+        }
+      }
+    },
+    [id, params.uploadId]
+  )
+
+  React.useEffect(
+    () => {
+      if (id) {
+        query.set('filterTree', getFilterTreeForId({ id }))
         query.cancelCurrentSearches()
+        query.startSearchFromFirstPage()
+        return () => {
+          query.cancelCurrentSearches()
+        }
       }
     },
     [id]

@@ -351,7 +351,10 @@ export class LazyQueryResults {
   }
   types: MetacardTypes
   addTypes(types: MetacardTypes) {
-    this.types = types
+    this.types = {
+      ...this.types,
+      ...types,
+    }
   }
   getCurrentAttributes() {
     return Object.keys(

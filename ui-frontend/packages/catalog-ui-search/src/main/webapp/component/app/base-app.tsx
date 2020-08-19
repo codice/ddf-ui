@@ -40,7 +40,28 @@ const RouteInformation = [
     showInNav: false,
     routeProps: {
       exact: true,
-      path: '/metacards/:id',
+      path: '/uploads/:uploadId',
+      children: () => {
+        return (
+          <Grid
+            container
+            direction="column"
+            className="w-full h-full"
+            wrap="nowrap"
+          >
+            <Grid item className="w-full h-full z-0 relative overflow-hidden">
+              <MetacardRoute />
+            </Grid>
+          </Grid>
+        )
+      },
+    },
+  },
+  {
+    showInNav: false,
+    routeProps: {
+      exact: true,
+      path: '/metacards/:metacardId',
       children: () => {
         return (
           <Grid
