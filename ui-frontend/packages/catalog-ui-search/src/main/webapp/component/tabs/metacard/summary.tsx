@@ -23,7 +23,7 @@ const $ = require('jquery')
 const ResultUtils = require('../../../js/ResultUtils.js')
 import PublishIcon from '@material-ui/icons/Publish'
 import AutoSizer from 'react-virtualized-auto-sizer'
-import { useTheme } from '@material-ui/core'
+import { useTheme, Paper } from '@material-ui/core'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
@@ -31,6 +31,8 @@ import TransferList from './transfer-list'
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace'
 import AddIcon from '@material-ui/icons/Add'
 import Box from '@material-ui/core/Box'
+import { Elevations, dark, light } from '../../theme/theme'
+import { DarkDivider } from '../../dark-divider/dark-divider'
 //metacardDefinitions.metacardTypes[attribute].type
 //metacardDefinitions.metacardTypes[attribute].multivalued
 //properties.isReadOnly(attribute)
@@ -477,28 +479,34 @@ const AttributeComponent = ({
   const MemoItem = React.useMemo(
     () => {
       return (
-        <Grid container direction="row" wrap={'nowrap'}>
+        <Grid container direction="row" wrap={'nowrap'} className="relative">
+          <Divider
+            orientation="horizontal"
+            className="absolute bottom-0 w-full h-min"
+          />
           <Grid
             item
             xs={4}
             style={{
               wordBreak: 'break-word',
               textOverflow: 'ellipsis',
-              border: '1px solid grey',
               overflow: 'hidden',
               padding: '10px',
             }}
+            className="relative"
           >
             <Typography>{label}</Typography>
+            <Divider
+              orientation="vertical"
+              className="absolute right-0 top-0 w-min h-full"
+            />
           </Grid>
-
           <Grid
             item
             md={8}
             style={{
               wordBreak: 'break-word',
               textOverflow: 'ellipsis',
-              border: '1px solid grey',
               overflow: 'hidden',
               padding: '10px',
             }}
@@ -590,6 +598,8 @@ const getHiddenAttributes = (
     })
 }
 
+let globalExpanded = false // globally track if users want this since they may be clicking between results
+
 const Summary = ({ selectionInterface }: Props) => {
   const theme = useTheme()
   const selectedResults = useLazyResultsSelectedResultsFromSelectionInterface({
@@ -597,7 +607,7 @@ const Summary = ({ selectionInterface }: Props) => {
   })
 
   const [forceRender, setForceRender] = React.useState(false)
-  const [expanded, setExpanded] = React.useState(false)
+  const [expanded, setExpanded] = React.useState(globalExpanded)
   /* Special case for when all the attributes are displayed */
   const [fullyExpanded, setFullyExpanded] = React.useState(false)
   const [filter, setFilter] = React.useState(persistantFilter)
@@ -670,6 +680,12 @@ const Summary = ({ selectionInterface }: Props) => {
     },
     [expanded, summaryShown]
   )
+  React.useEffect(
+    () => {
+      globalExpanded = expanded
+    },
+    [expanded]
+  )
   return (
     <AutoSizer>
       {({ height, width }) => {
@@ -678,123 +694,113 @@ const Summary = ({ selectionInterface }: Props) => {
         }
         const isTiny = width < 500
         return (
-          <div
+          <Grid
+            container
+            direction="column"
+            wrap="nowrap"
+            className="overflow-hidden"
             style={{
               height,
               width,
-              overflow: 'auto',
-              padding: '10px',
             }}
           >
-            <Grid
-              container
-              direction="row"
-              alignItems="center"
-              wrap="nowrap"
-              justify="space-between"
-              style={{
-                padding: '5px 10px',
-                marginBottom: isTiny ? '5px' : '0px',
-              }}
-            >
-              <Grid item>
-                <Button
-                  onClick={() => {
-                    dialogContext.setProps({
-                      PaperProps: {
-                        style: {
-                          minWidth: 'none',
+            <Grid item className="flex-shrink-0">
+              <Grid
+                container
+                direction="row"
+                alignItems="center"
+                wrap="nowrap"
+                justify="space-between"
+                className="p-2"
+                style={{
+                  marginBottom: isTiny ? '5px' : '0px',
+                }}
+              >
+                <Grid item>
+                  <Button
+                    onClick={() => {
+                      dialogContext.setProps({
+                        PaperProps: {
+                          style: {
+                            minWidth: 'none',
+                          },
+                          elevation: Elevations.panels,
                         },
-                      },
-                      open: true,
-                      children: (
-                        <div
-                          style={{
-                            padding: '10px',
-                            minHeight: '60vh',
-                          }}
-                        >
-                          <TransferList
-                            startingLeft={summaryShown}
-                            startingRight={getHiddenAttributes(
-                              selection,
-                              summaryShown
-                            )
-                              .map(attr => {
-                                return attr.id
-                              })
-                              .sort()}
-                            updateActive={(active: string[]) => {
-                              user
-                                .get('user')
-                                .get('preferences')
-                                .set('inspector-summaryShown', active)
-                              user.savePreferences()
+                        open: true,
+                        children: (
+                          <div
+                            style={{
+                              minHeight: '60vh',
                             }}
-                            lazyResult={selection}
-                            onSave={() => {
-                              // Force re-render after save to update values on page
-                              // This is more reliable than "refreshing" the result which
-                              // is frequently not synched up properly
-                              setForceRender(!forceRender)
-                            }}
-                          />
-                        </div>
-                      ),
-                    })
-                  }}
-                  color="primary"
-                  size="small"
-                  style={{ height: 'auto' }}
-                >
-                  Manage Attributes
-                </Button>
-              </Grid>
+                          >
+                            <TransferList
+                              startingLeft={summaryShown}
+                              startingRight={getHiddenAttributes(
+                                selection,
+                                summaryShown
+                              )
+                                .map(attr => {
+                                  return attr.id
+                                })
+                                .sort()}
+                              updateActive={(active: string[]) => {
+                                user
+                                  .get('user')
+                                  .get('preferences')
+                                  .set('inspector-summaryShown', active)
+                                user.savePreferences()
+                              }}
+                              lazyResult={selection}
+                              onSave={() => {
+                                // Force re-render after save to update values on page
+                                // This is more reliable than "refreshing" the result which
+                                // is frequently not synched up properly
+                                setForceRender(!forceRender)
+                              }}
+                            />
+                          </div>
+                        ),
+                      })
+                    }}
+                    color="primary"
+                    size="small"
+                    style={{ height: 'auto' }}
+                  >
+                    Manage Attributes
+                  </Button>
+                </Grid>
 
-              <Grid item>
-                <TextField
-                  size="small"
-                  variant="outlined"
-                  label="Filter"
-                  value={filter}
-                  inputProps={{
-                    style:
-                      filter !== ''
-                        ? {
-                            borderBottom: `1px solid ${
-                              theme.palette.secondary.main
-                            }`,
-                          }
-                        : {},
-                  }}
-                  onChange={e => {
-                    persistantFilter = e.target.value
-                    setFilter(e.target.value)
-                  }}
-                />
+                <Grid item>
+                  <TextField
+                    size="small"
+                    variant="outlined"
+                    label="Filter"
+                    value={filter}
+                    inputProps={{
+                      style:
+                        filter !== ''
+                          ? {
+                              borderBottom: `1px solid ${
+                                theme.palette.secondary.main
+                              }`,
+                            }
+                          : {},
+                    }}
+                    onChange={e => {
+                      persistantFilter = e.target.value
+                      setFilter(e.target.value)
+                    }}
+                  />
+                </Grid>
               </Grid>
             </Grid>
-
-            {summaryShown.map(attr => {
-              return (
-                <AttributeComponent
-                  lazyResult={selection}
-                  attr={attr}
-                  summaryShown={summaryShown}
-                  filter={filter}
-                  width={width}
-                  forceRender={forceRender}
-                />
-              )
-            })}
-
-            {expanded ? (
-              <>
-                {everythingElse.map(attr => {
+            <DarkDivider className="w-full h-min" />
+            <Grid item className="flex-shrink-1 overflow-auto p-2">
+              <Paper elevation={Elevations.paper}>
+                {summaryShown.map(attr => {
                   return (
                     <AttributeComponent
                       lazyResult={selection}
-                      key={attr}
                       attr={attr}
                       summaryShown={summaryShown}
                       filter={filter}
@@ -803,39 +809,59 @@ const Summary = ({ selectionInterface }: Props) => {
                     />
                   )
                 })}
-                {blankEverythingElse.map(attr => {
-                  return (
-                    <AttributeComponent
-                      key={attr.id}
-                      lazyResult={selection}
-                      attr={attr.id}
-                      summaryShown={summaryShown}
-                      filter={filter}
-                      width={width}
-                      forceRender={forceRender}
-                    />
-                  )
-                })}
-              </>
-            ) : (
-              <></>
-            )}
+
+                {expanded ? (
+                  <>
+                    {everythingElse.map(attr => {
+                      return (
+                        <AttributeComponent
+                          lazyResult={selection}
+                          key={attr}
+                          attr={attr}
+                          summaryShown={summaryShown}
+                          filter={filter}
+                          width={width}
+                          forceRender={forceRender}
+                        />
+                      )
+                    })}
+                    {blankEverythingElse.map(attr => {
+                      return (
+                        <AttributeComponent
+                          key={attr.id}
+                          lazyResult={selection}
+                          attr={attr.id}
+                          summaryShown={summaryShown}
+                          filter={filter}
+                          width={width}
+                          forceRender={forceRender}
+                        />
+                      )
+                    })}
+                  </>
+                ) : (
+                  <></>
+                )}
+              </Paper>
+            </Grid>
             {/* If hidden attributes === 0, don't show this button */}
             {!fullyExpanded && (
-              <div style={{ padding: '10px 0px 0px 10px' }}>
-                <Button
-                  onClick={() => {
-                    setExpanded(!expanded)
-                  }}
-                  size="small"
-                  style={{ height: 'auto' }}
-                  color="primary"
-                >
-                  {expanded ? 'Collapse' : 'See all'}
-                </Button>
-              </div>
+              <>
+                <DarkDivider className="w-full h-min" />
+                <Grid item className="flex-shrink-0 p-2">
+                  <Button
+                    onClick={() => {
+                      setExpanded(!expanded)
+                    }}
+                    size="small"
+                    color="primary"
+                  >
+                    {expanded ? 'Collapse' : 'See all'}
+                  </Button>
+                </Grid>
+              </>
             )}
-          </div>
+          </Grid>
         )
       }}
     </AutoSizer>

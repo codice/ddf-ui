@@ -21,6 +21,7 @@ import {
   Typography,
   LinearProgress,
   CircularProgress,
+  Paper,
 } from '@material-ui/core'
 import { useDialog } from '@connexta/atlas/atoms/dialog'
 import TypedMetacardDefs from './metacardDefinitions'
@@ -34,6 +35,12 @@ import {
   Draggable,
 } from 'react-beautiful-dnd'
 import extension from '../../../extension-points'
+import { dark, light, Elevations } from '../../theme/theme'
+import { DarkDivider } from '../../dark-divider/dark-divider'
+import LeftArrowIcon from '@material-ui/icons/ChevronLeft'
+import RightArrowIcon from '@material-ui/icons/ChevronRight'
+import CloseIcon from '@material-ui/icons/Close'
+
 const user = require('../../singletons/user-instance')
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -41,13 +48,9 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       margin: 'auto',
     },
-    cardHeader: {
-      padding: theme.spacing(1, 2),
-    },
     list: {
       width: 400,
       height: 500,
-      backgroundColor: theme.palette.background.paper,
       overflow: 'auto',
     },
     button: {
@@ -174,11 +177,11 @@ const TransferList = ({
     isDnD: boolean // Is drag and drop allowed?
   ) => {
     const [filter, setFilter] = React.useState('')
-
+    const theme = useTheme()
     return (
-      <Card>
+      <Paper elevation={Elevations.paper}>
         <CardHeader
-          className={classes.cardHeader}
+          className="p-2"
           avatar={
             <Checkbox
               onClick={handleToggleAll(items)}
@@ -196,34 +199,36 @@ const TransferList = ({
           title={title}
           subheader={`${numberOfChecked(items)}/${items.length} selected`}
         />
-        <Divider />
-        <TextField
-          size="small"
-          variant="outlined"
-          label="Filter by keyword"
-          fullWidth={true}
-          value={filter}
-          inputProps={{
-            style:
-              filter !== ''
-                ? {
-                    borderBottom: `1px solid ${theme.palette.secondary.main}`,
-                  }
-                : {},
-          }}
-          onChange={e => {
-            setFilter(e.target.value)
-          }}
-        />
-        <Divider />
+        <DarkDivider className="w-full h-min" />
+        <div className="p-2">
+          <TextField
+            size="small"
+            variant="outlined"
+            label="Filter by keyword"
+            fullWidth={true}
+            value={filter}
+            inputProps={{
+              style:
+                filter !== ''
+                  ? {
+                      borderBottom: `1px solid ${theme.palette.secondary.main}`,
+                    }
+                  : {},
+            }}
+            onChange={e => {
+              setFilter(e.target.value)
+            }}
+          />
+        </div>
+        <DarkDivider className="w-full h-min" />
         {mode === 'loading' ? (
           <CircularProgress />
         ) : (
           <List className={classes.list} dense component="div" role="list">
             {isDnD && (
-              <Typography variant="caption">
+              <div className="italic px-4 text-xs font-normal">
                 Click and drag attributes to reorder.
-              </Typography>
+              </div>
             )}
             <DragDropContext
               onDragEnd={(result: DropResult) => {
@@ -283,6 +288,7 @@ const TransferList = ({
                                     key={value}
                                     role="listitem"
                                     button
+                                    className="p-0"
                                     onClick={handleToggle(value)}
                                   >
                                     <ListItemIcon>
@@ -405,16 +411,30 @@ const TransferList = ({
             </DragDropContext>
           </List>
         )}
-      </Card>
+      </Paper>
     )
   }
 
   return (
     <>
-      <DialogTitle style={{ textAlign: 'center' }}>
+      <div className="text-xl text-center px-2 pb-2 pt-4 font-normal relative">
         Manage Attributes
-      </DialogTitle>
-      <Divider />
+        <Button
+          className="absolute right-0 top-0 mr-1 mt-1"
+          variant="text"
+          color="default"
+          size="small"
+          onClick={() => {
+            dialogContext.setProps({
+              open: false,
+              children: null,
+            })
+          }}
+        >
+          <CloseIcon />
+        </Button>
+      </div>
+      <DarkDivider className="w-full h-min" />
       <DialogContent>
         <Grid
           container
@@ -430,23 +450,21 @@ const TransferList = ({
             <Grid container direction="column" alignItems="center">
               <Button
                 variant="outlined"
-                size="small"
                 className={classes.button}
                 onClick={handleCheckedRight}
                 disabled={leftChecked.length === 0}
                 aria-label="move selected right"
               >
-                &gt;
+                <RightArrowIcon />
               </Button>
               <Button
                 variant="outlined"
-                size="small"
                 className={classes.button}
                 onClick={handleCheckedLeft}
                 disabled={rightChecked.length === 0}
                 aria-label="move selected left"
               >
-                &lt;
+                <LeftArrowIcon />
               </Button>
             </Grid>
           </Grid>
@@ -455,9 +473,24 @@ const TransferList = ({
           </Grid>
         </Grid>
       </DialogContent>
-      <Divider />
+      <DarkDivider className="w-full h-min" />
       <DialogActions>
         <Button
+          disabled={mode === 'saving'}
+          onClick={() => {
+            dialogContext.setProps({
+              open: false,
+              children: null,
+            })
+          }}
+          variant="text"
+          color="primary"
+          className="mr-2"
+        >
+          Cancel
+        </Button>
+        <Button
+          className="ml-2"
           disabled={mode === 'saving'}
           onClick={() => {
             setMode('saving')
