@@ -14,7 +14,7 @@ import Box from '@material-ui/core/Box'
 import CheckIcon from '@material-ui/icons/Check'
 import Chip from '@material-ui/core/Chip'
 import Divider from '@material-ui/core/Divider'
-
+import _ from 'lodash'
 type Props = {
   search: any
 }
@@ -158,8 +158,16 @@ const SourceSelector = ({ search }: Props) => {
         }}
         value={sources}
         onChange={e => {
+          // first of all I'm sorry, second of all, order matters in these cases.  Should really just make a state machine out of this.
           let newSources = (e.target.value as unknown) as string[]
           // these first three if only apply if the value didn't previous exist (user is going from not all to 'all', etc.)
+          const newLocalSources = newSources
+            .filter(src => !['all', 'remote', 'local'].includes(src))
+            .filter(src => isHarvested(src))
+          const newRemoteSources = newSources
+            .filter(src => !['all', 'remote', 'local'].includes(src))
+            .filter(src => !isHarvested(src))
+
           if (
             (newSources.includes('all') && !sources.includes('all')) ||
             (newSources.includes('local') &&
@@ -168,6 +176,45 @@ const SourceSelector = ({ search }: Props) => {
               !sources.includes('all'))
           ) {
             setSources(['all'])
+          } else if (sources.includes('all') && newSources.includes('local')) {
+            setSources(['remote'])
+          } else if (sources.includes('all') && newSources.includes('remote')) {
+            setSources(['local'])
+          } else if (sources.includes('all') && newLocalSources.length > 0) {
+            setSources(
+              _.difference(
+                availableLocalSources.map(src => src.id).concat(['remote']),
+                newLocalSources
+              )
+            )
+          } else if (sources.includes('all') && newRemoteSources.length > 0) {
+            setSources(
+              _.difference(
+                availableRemoteSources.map(src => src.id).concat(['local']),
+                newRemoteSources
+              )
+            )
+          } else if (sources.includes('local') && newLocalSources.length > 0) {
+            setSources(
+              _.difference(
+                sources
+                  .filter(src => src !== 'local')
+                  .concat(availableLocalSources.map(src => src.id)),
+                newLocalSources
+              )
+            )
+          } else if (
+            sources.includes('remote') &&
+            newRemoteSources.length > 0
+          ) {
+            setSources(
+              _.difference(
+                sources
+                  .filter(src => src !== 'remote')
+                  .concat(availableRemoteSources.map(src => src.id)),
+                newRemoteSources
+              )
+            )
           } else if (
             newSources.includes('local') &&
             !sources.includes('local')
@@ -183,6 +230,33 @@ const SourceSelector = ({ search }: Props) => {
               ['remote'].concat(
                 newSources.filter(val => isHarvested(val) && val !== 'all')
               )
+            )
+          } else if (
+            newSources.length ===
+              availableLocalSources.length + availableRemoteSources.length ||
+            (newSources.includes('local') &&
+              newSources.length === availableRemoteSources.length + 1) ||
+            (newSources.includes('remote') &&
+              newSources.length === availableLocalSources.length + 1)
+          ) {
+            setSources(['all'])
+          } else if (
+            _.difference(
+              availableLocalSources.map(src => src.id),
+              newSources.filter(src => isHarvested(src))
+            ).length === 0
+          ) {
+            setSources(
+              ['local'].concat(newSources.filter(src => !isHarvested(src)))
+            )
+          } else if (
+            _.difference(
+              availableRemoteSources.map(src => src.id),
+              newSources.filter(src => !isHarvested(src))
+            ).length === 0
+          ) {
+            setSources(
+              ['remote'].concat(newSources.filter(src => isHarvested(src)))
             )
           } else {
             // in these case, we now have to determine if we should remove all, remote, or local based on what is in newSources
