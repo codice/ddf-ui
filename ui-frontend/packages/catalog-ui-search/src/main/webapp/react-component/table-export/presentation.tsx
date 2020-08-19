@@ -15,11 +15,11 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import Enum from '../enum'
-import { Button, buttonTypeEnum } from '../presentation/button'
 import styled from 'styled-components'
 import Number from '../input-wrappers/number'
+import Button from '@material-ui/core/Button'
 const properties = require('../../js/properties.js')
-
+import GetAppIcon from '@material-ui/icons/GetApp'
 const Root = styled.div`
   display: block;
   height: 100%;
@@ -102,15 +102,16 @@ export default hot(module)((props: Props) => {
         </div>
       )}
       <Button
-        buttonType={buttonTypeEnum.primary}
-        icon="fa fa-download"
-        text="Download"
+        variant="contained"
+        color="primary"
         disabled={
           exportSize === 'custom' &&
           customExportCount > properties.exportResultLimit
         }
         onClick={onDownloadClick}
-      />
+      >
+        <GetAppIcon /> Download
+      </Button>
     </Root>
   )
 })

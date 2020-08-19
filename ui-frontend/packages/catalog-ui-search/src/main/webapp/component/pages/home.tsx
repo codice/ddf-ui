@@ -1,26 +1,26 @@
 import * as React from 'react'
-import { GoldenLayout } from '../../golden-layout/golden-layout'
+import { GoldenLayout } from '../golden-layout/golden-layout'
 import {
   SplitPane,
   useResizableGridContext,
-} from '../../resizable-grid/resizable-grid'
-const SelectionInterfaceModel = require('../../selection-interface/selection-interface.model')
-const Query = require('../../../js/model/Query.js')
+} from '../resizable-grid/resizable-grid'
+const SelectionInterfaceModel = require('../selection-interface/selection-interface.model')
+const Query = require('../../js/model/Query.js')
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
-import QueryAddView from '../../query-add/query-add'
+import QueryAddView from '../query-add/query-add'
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 
-import MRC from '../../../react-component/marionette-region-container'
+import MRC from '../../react-component/marionette-region-container'
 import Button from '@material-ui/core/Button'
 import { Dropdown } from '@connexta/atlas/atoms/dropdown'
-import SearchInteractions from '../../search-interactions'
-import { BetterClickAwayListener } from '../../better-click-away-listener/better-click-away-listener'
+import SearchInteractions from '../search-interactions'
+import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
 import MoreVert from '@material-ui/icons/MoreVert'
 import Box from '@material-ui/core/Box'
 import Divider from '@material-ui/core/Divider'
-import { Elevations } from '../../theme/theme'
+import { Elevations } from '../theme/theme'
 import SearchIcon from '@material-ui/icons/SearchTwoTone'
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {

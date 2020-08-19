@@ -17,6 +17,8 @@ import { MetacardInteraction } from './metacard-interactions'
 const router = require('../../component/router/router')
 import { Props } from '.'
 import { hot } from 'react-hot-loader'
+import Button from '@material-ui/core/Button'
+import { Link } from '../../component/link/link'
 const wreqr = require('wreqr')
 
 const ExpandMetacard = (props: Props) => {
@@ -25,16 +27,23 @@ const ExpandMetacard = (props: Props) => {
   if (isRouted || props.model.length > 1) {
     return null
   }
+  let id = props.model
+    .first()
+    .get('metacard')
+    .get('properties')
+    .get('id')
 
   return (
-    <MetacardInteraction
-      text="Expand Metacard View"
-      help={`Takes you to a
-              view that only focuses on this particular result. Bookmarking it will allow
-              you to come back to this result directly.`}
-      icon="fa fa-expand"
-      onClick={() => handleExpand(props)}
-    />
+    <Button
+      fullWidth
+      component={Link}
+      to={`/metacards/${id}`}
+      variant="text"
+      color="primary"
+      target="_blank"
+    >
+      Open Metacard View
+    </Button>
   )
 }
 

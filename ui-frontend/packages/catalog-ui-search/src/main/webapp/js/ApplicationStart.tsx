@@ -18,12 +18,16 @@ import BaseApp from '../component/app/base-app'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 const user = require('../component/singletons/user-instance.js')
-
+import SourcesInstance from '../component/singletons/sources-instance'
 function attemptToStart() {
-  if (user.fetched) {
+  if (user.fetched && SourcesInstance.fetched) {
     ReactDOM.render(<BaseApp />, document.querySelector('#router'))
   } else if (!user.fetched) {
     user.once('sync', () => {
+      attemptToStart()
+    })
+  } else if (!SourcesInstance.fetched) {
+    SourcesInstance.once('sync', () => {
       attemptToStart()
     })
   }

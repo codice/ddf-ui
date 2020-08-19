@@ -27,6 +27,11 @@ function removeLocalCatalogIfNeeded(response, localCatalog) {
   return response
 }
 
+function removeCache(response) {
+  response = _.filter(response, source => source.id !== 'cache')
+  return response
+}
+
 const Types = Backbone.Collection.extend({})
 
 const computeTypes = function(sources) {
@@ -85,9 +90,12 @@ module.exports = Backbone.Collection.extend({
   types() {
     return this._types
   },
+  fetched: false,
   parse(response) {
     response = removeLocalCatalogIfNeeded(response, this.localCatalog)
+    response = removeCache(response)
     this._types.set(computeTypes(response))
+    this.fetched = true
     return response
   },
   getHarvested() {
