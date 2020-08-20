@@ -30,7 +30,9 @@ import {
 import { IntegerField } from '../../../component/fields/integer'
 import { FloatField } from '../../../component/fields/float'
 import { BooleanField } from '../../../component/fields/boolean'
-
+import MetacardDefinitions from '../../../component/tabs/metacard/metacardDefinitions'
+import Autocomplete from '@material-ui/lab/Autocomplete'
+import MuiTextField from '@material-ui/core/TextField'
 export type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
@@ -111,8 +113,24 @@ const FilterInput = ({ filter, setFilter }: Props) => {
         />
       )
   }
-
   const textValue = value as string
+  const enumForAttr = MetacardDefinitions.getEnum({ attr: filter.property })
+  if (enumForAttr) {
+    return (
+      <Autocomplete
+        fullWidth
+        size="small"
+        options={enumForAttr}
+        onChange={(_e, newValue) => {
+          onChange(newValue)
+        }}
+        disableClearable
+        value={textValue}
+        renderInput={params => <MuiTextField {...params} variant="outlined" />}
+      />
+    )
+  }
+
   return <TextField value={textValue} onChange={onChange} />
 }
 
