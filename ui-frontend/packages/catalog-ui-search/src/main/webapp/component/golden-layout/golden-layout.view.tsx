@@ -149,7 +149,7 @@ function registerComponent(
           try {
             ReactDOM.render(
               <Providers>
-                <Grid container direction="row" wrap="nowrap">
+                <Grid data-id={`${name}-tab`} container direction="row" wrap="nowrap">
                   <Grid item className="px-2">
                     <div>{tab.titleElement.text()}</div>
                   </Grid>
@@ -177,6 +177,7 @@ function registerComponent(
                   <Grid item>
                     {tab.closeElement[0].style.display !== 'none' ? (
                       <Button
+                        data-id="close-layout-tab-button"
                         onClick={e => {
                           tab._onCloseClickFn(e)
                         }}
@@ -308,7 +309,7 @@ export default Marionette.LayoutView.extend({
     this.registerGoldenLayoutComponents()
     this.listenToGoldenLayoutStateChange()
     this.goldenLayout.on('stackCreated', this.handleGoldenLayoutStackCreated)
-    this.goldenLayout.on(
+    this.golden
       'initialised',
       this.handleGoldenLayoutInitialised.bind(this)
     )
@@ -390,6 +391,7 @@ export default Marionette.LayoutView.extend({
               </Grid>
               <Grid item>
                 <Button
+                  data-id="minimise-layout-button"
                   onClick={e => {
                     stack.config.prevWidth = stack.getActiveContentItem().container.width
                     stack.config.prevHeight = stack.getActiveContentItem().container.height
@@ -401,6 +403,7 @@ export default Marionette.LayoutView.extend({
               </Grid>
               <Grid item>
                 <Button
+                  data-id="maximise-layout-button"
                   onClick={e => {
                     stack.toggleMaximise()
                   }}
@@ -411,6 +414,7 @@ export default Marionette.LayoutView.extend({
               <Grid item>
                 {stack.header._isClosable() ? (
                   <Button
+                    data-id="close-layout-button"
                     onClick={e => {
                       if (stack.isMaximised) {
                         stack.toggleMaximise()

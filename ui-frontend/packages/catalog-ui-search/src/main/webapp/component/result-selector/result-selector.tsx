@@ -44,7 +44,7 @@ const SelectedResults = ({ selectionInterface }: any) => {
       content={({ close }) => {
         return (
           <BetterClickAwayListener onClickAway={close}>
-            <Paper data-id="interactions-menu">
+            <Paper>
               <LazyMetacardInteractions
                 lazyResults={selectedResultsArray}
                 onClose={() => {
@@ -59,7 +59,7 @@ const SelectedResults = ({ selectionInterface }: any) => {
       {({ handleClick }) => {
         return (
           <Button
-            data-id="more-vert-item"
+            data-id="result-selector-more-vert-button"
             className={`relative ${
               selectedResultsArray.length === 0 ? 'invisible' : ''
             }`}
@@ -216,7 +216,7 @@ const ResultSelector = ({
             {({ handleClick }) => {
               return (
                 <Button
-                  data-id="sort-button"
+                  data-id="results-sort-button"
                   onClick={handleClick}
                   variant="text"
                   color="primary"

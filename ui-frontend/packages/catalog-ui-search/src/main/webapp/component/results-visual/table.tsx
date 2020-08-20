@@ -41,21 +41,21 @@ import useTheme from '@material-ui/core/styles/useTheme'
 import ViewAgendaIcon from '@material-ui/icons/ViewAgenda'
 import TableChartIcon from '@material-ui/icons/TableChart'
 import Box from '@material-ui/core/Box'
-;(() => {
-  const oldHandleSave = TableVisibility.prototype.handleSave
-  TableVisibility.prototype.handleSave = function() {
-    user
-      .get('user')
-      .get('preferences')
-      .set('hasSelectedColumns', true)
-    oldHandleSave.apply(this, arguments)
-  }
-  // const oldDestroy = TableVisibility.prototype.destroy
-  // TableVisibility.prototype.destroy = function() {
-  //   lightboxInstance.model.close()
-  //   oldDestroy.apply(this, arguments)
-  // }
-})()
+  ; (() => {
+    const oldHandleSave = TableVisibility.prototype.handleSave
+    TableVisibility.prototype.handleSave = function () {
+      user
+        .get('user')
+        .get('preferences')
+        .set('hasSelectedColumns', true)
+      oldHandleSave.apply(this, arguments)
+    }
+    // const oldDestroy = TableVisibility.prototype.destroy
+    // TableVisibility.prototype.destroy = function() {
+    //   lightboxInstance.model.close()
+    //   oldDestroy.apply(this, arguments)
+    // }
+  })()
 
 type Props = {
   selectionInterface: any
@@ -187,7 +187,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
           alignItems="center"
         >
           <Grid item className="pl-8">
-            <Button onClick={openRearrangeModel} color="primary">
+            <Button data-id="rearrange-column-button" onClick={openRearrangeModel} color="primary">
               <Box color="text.primary">
                 <span className="fa fa-columns pr-2"> </span>
               </Box>
@@ -195,7 +195,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
             </Button>
           </Grid>
           <Grid item className="pl-8">
-            <Button onClick={openVisibilityModel} color="primary">
+            <Button data-id="hide-show-column-button" onClick={openVisibilityModel} color="primary">
               <Box color="text.primary">
                 <span className="fa fa-eye pr-2"> </span>
               </Box>
@@ -204,6 +204,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
           </Grid>
           <Grid item className="pl-8">
             <Button
+              data-id="reset-to-defaults-button"
               onClick={() => {
                 const prefs = user.get('user').get('preferences')
                 prefs.set('columnHide', [])
@@ -218,7 +219,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
             </Button>
           </Grid>
           <Grid item className="pl-8">
-            <Button onClick={openExportModal} color="primary">
+            <Button data-id="export-table-button" onClick={openExportModal} color="primary">
               <Box color="text.primary">
                 <span className="fa fa-share pr-2"> </span>
               </Box>
@@ -227,6 +228,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
           </Grid>
           <Grid item className="ml-auto pr-2">
             <Button
+              data-id="list-button"
               onClick={() => {
                 setMode('card')
               }}
@@ -243,6 +245,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
           </Grid>
           <Grid item>
             <Button
+              data-id="table-button"
               onClick={() => {
                 setMode('table')
               }}

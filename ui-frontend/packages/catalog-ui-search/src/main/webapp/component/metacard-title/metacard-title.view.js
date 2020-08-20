@@ -24,6 +24,7 @@ module.exports = Marionette.ItemView.extend({
     return (
       <React.Fragment>
         <div
+          data-id="metacard-title-label"
           className="metacard-title"
           data-help="This is the title of the result."
         >

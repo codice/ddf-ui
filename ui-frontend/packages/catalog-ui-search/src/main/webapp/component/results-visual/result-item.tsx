@@ -295,6 +295,7 @@ export const ResultItem = ({
                 <Grid item style={{ height: '100%' }}>
                   {lazyResult.hasErrors() ? (
                     <div
+                      data-id="validation-errors-icon"
                       className="h-full"
                       title="Has validation errors."
                       data-help="Indicates the given result has a validation error.
@@ -303,12 +304,13 @@ export const ResultItem = ({
                       <WarningIcon />
                     </div>
                   ) : (
-                    ''
-                  )}
+                      ''
+                    )}
                 </Grid>
                 <Grid item style={{ height: '100%' }}>
                   {!lazyResult.hasErrors() && lazyResult.hasWarnings() ? (
                     <div
+                      data-id="validation-warnings-icon"
                       className="h-full"
                       title="Has validation warnings."
                       data-help="Indicates the given result has a validation warning.
@@ -317,8 +319,8 @@ export const ResultItem = ({
                       <WarningIcon />
                     </div>
                   ) : (
-                    ''
-                  )}
+                      ''
+                    )}
                 </Grid>
                 <Grid item style={{ height: '100%' }}>
                   {lazyResult.plain.metacard.properties['ext.link'] ? (
@@ -340,6 +342,7 @@ export const ResultItem = ({
                 <Grid item style={{ height: '100%' }}>
                   {lazyResult.isDownloadable() ? (
                     <SmallButton
+                      data-id="download-button"
                       onClick={e => {
                         e.stopPropagation()
                         triggerDownload(e)
@@ -360,7 +363,7 @@ export const ResultItem = ({
                     content={({ close }) => {
                       return (
                         <BetterClickAwayListener onClickAway={close}>
-                          <Paper data-id="interactions-menu">
+                          <Paper>
                             <LazyMetacardInteractions
                               lazyResults={[lazyResult]}
                               onClose={() => {
@@ -375,7 +378,7 @@ export const ResultItem = ({
                     {({ handleClick }) => {
                       return (
                         <SmallButton
-                          data-id="more-vert-button"
+                          data-id="result-item-more-vert-button"
                           onClick={e => {
                             e.stopPropagation()
                             handleClick(e)
@@ -412,6 +415,7 @@ export const ResultItem = ({
   const shouldShowSource = showSource()
   return (
     <Button
+      data-id={`result-item-${index}`}
       component="div" // we have to use a div since there are buttons inside this (invalid to nest buttons)
       onMouseDown={event => {
         /**
@@ -493,6 +497,7 @@ export const ResultItem = ({
           >
             <Grid item>
               <Button
+                data-id="result-item-checkbox"
                 onClick={event => {
                   event.stopPropagation() // this button takes precedence over the enclosing button, and is always additive / subtractive (no deselect of other results)
                   if (event.shiftKey) {
@@ -547,7 +552,7 @@ export const ResultItem = ({
               </Button>
             </Grid>
             <Grid item>
-              <div className="">
+              <div data-id="result-item-title-label" className="">
                 {lazyResult.highlights['title'] ? (
                   <span
                     dangerouslySetInnerHTML={{
@@ -555,26 +560,27 @@ export const ResultItem = ({
                     }}
                   />
                 ) : (
-                  lazyResult.plain.metacard.properties.title
-                )}
+                    lazyResult.plain.metacard.properties.title
+                  )}
               </div>
             </Grid>
           </Grid>
           <div
             className={`pl-3 ${
               ResultItemAddOnInstance !== null ||
-              renderThumbnail ||
-              customDetails.length > 0 ||
-              shouldShowRelevance ||
-              shouldShowSource
+                renderThumbnail ||
+                customDetails.length > 0 ||
+                shouldShowRelevance ||
+                shouldShowSource
                 ? 'pb-2'
                 : ''
-            }`}
+              }`}
           >
             <div>{ResultItemAddOnInstance}</div>
             <div>
               {renderThumbnail ? (
                 <img
+                  data-id="result-item-thumbnail"
                   src={imgsrc}
                   style={{ marginTop: '10px', maxWidth: '100%' }}
                   onLoad={() => {
@@ -606,8 +612,8 @@ export const ResultItem = ({
                           }}
                         />
                       ) : (
-                        detail.value
-                      )}
+                          detail.value
+                        )}
                     </span>
                   </PropertyComponent>
                 )
@@ -648,8 +654,8 @@ export const ResultItem = ({
                   <span>{lazyResult.getRoundedRelevance()}</span>
                 </PropertyComponent>
               ) : (
-                ''
-              )}
+                  ''
+                )}
               {shouldShowSource ? (
                 <PropertyComponent
                   title={`${TypedMetacardDefs.getAlias({
@@ -665,17 +671,17 @@ export const ResultItem = ({
                       <span style={{ marginLeft: '5px' }}>local</span>
                     </React.Fragment>
                   ) : (
-                    <React.Fragment>
-                      <span className="fa fa-cloud" />
-                      <span style={{ marginLeft: '5px' }}>
-                        {lazyResult.plain.metacard.properties['source-id']}
-                      </span>
-                    </React.Fragment>
-                  )}
+                      <React.Fragment>
+                        <span className="fa fa-cloud" />
+                        <span style={{ marginLeft: '5px' }}>
+                          {lazyResult.plain.metacard.properties['source-id']}
+                        </span>
+                      </React.Fragment>
+                    )}
                 </PropertyComponent>
               ) : (
-                ''
-              )}
+                  ''
+                )}
             </div>
           </div>
         </div>

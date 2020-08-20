@@ -44,6 +44,7 @@ const FilterComparator = ({ filter, setFilter }: Props) => {
   const comparators = getComparators(filter.property)
   return (
     <TextField
+      data-id="filter-comparator-select"
       fullWidth
       variant="outlined"
       select
