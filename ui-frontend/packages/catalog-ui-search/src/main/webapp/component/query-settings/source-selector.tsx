@@ -137,18 +137,28 @@ const SourceSelector = ({ search }: Props) => {
           renderValue: (selected: string[]) => {
             return (
               <Grid container alignItems="center" direction="row">
-                {selected.map((src, index) => {
-                  return (
-                    <Grid item key={src} className="mr-2">
-                      <Chip
-                        variant="outlined"
-                        color="secondary"
-                        className="cursor-pointer"
-                        label={getHumanReadableSourceName(src)}
-                      />
-                    </Grid>
-                  )
-                })}
+                {selected
+                  .sort((a, b) => {
+                    return a.toLowerCase().localeCompare(b.toLowerCase()) // case insensitive sort
+                  })
+                  .sort((a, b) => {
+                    if (a === 'local' || a === 'remote') {
+                      return -1 // move these subcategories upwards to front
+                    }
+                    return 0
+                  })
+                  .map((src, index) => {
+                    return (
+                      <Grid item key={src} className="mr-2">
+                        <Chip
+                          variant="outlined"
+                          color="secondary"
+                          className="cursor-pointer"
+                          label={getHumanReadableSourceName(src)}
+                        />
+                      </Grid>
+                    )
+                  })}
               </Grid>
             )
           },

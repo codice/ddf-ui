@@ -94,12 +94,15 @@ module.exports = Backbone.Collection.extend({
   parse(response) {
     response = removeLocalCatalogIfNeeded(response, this.localCatalog)
     response = removeCache(response)
+    response.sort((a, b) => {
+        return a.id.toLowerCase().localeCompare(b.id.toLowerCase()) // case insensitive sort
+      })
     this._types.set(computeTypes(response))
     this.fetched = true
     return response
   },
   getHarvested() {
-    return [this.localCatalog]
+    return [this.localCatalog, 'extra fast']
   },
   determineLocalCatalog() {
     $.get('./internal/localcatalogid').then(data => {
