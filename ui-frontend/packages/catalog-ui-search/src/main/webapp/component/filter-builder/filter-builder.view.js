@@ -81,8 +81,8 @@ module.exports = Marionette.LayoutView.extend({
           label: 'OR',
           value: 'OR',
         },
-        ...(showExtraLabels ? extraLabels : [])
-      ]
+        ...(showExtraLabels ? extraLabels : []),
+      ],
     }
     this.filterOperator.show(
       DropdownView.createSimpleDropdown({
