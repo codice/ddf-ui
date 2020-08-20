@@ -13,7 +13,8 @@ import { Status } from '../../js/model/LazyQueryResult/status'
 import { useLazyResultsStatusFromSelectionInterface } from '../selection-interface/hooks'
 import Tooltip from '@material-ui/core/Tooltip'
 import { Elevations } from '../theme/theme'
-
+import FilterListIcon from '@material-ui/icons/FilterList'
+import Box from '@material-ui/core/Box'
 type Props = {
   selectionInterface: any
 }
@@ -37,7 +38,7 @@ type CellValueProps = {
 const CellValue = (props: CellValueProps) => {
   const {
     value,
-    warnings,
+    warnings = [],
     message,
     alwaysShowValue,
     hasReturned,
@@ -80,7 +81,7 @@ const CellValue = (props: CellValueProps) => {
   )
 }
 
-const QueryStatusRow = ({ status }: { status: Status }) => {
+const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
   let hasReturned = status.hasReturned
   let successful = status.successful
   let message = status.message
@@ -129,32 +130,32 @@ const QueryStatusRow = ({ status }: { status: Status }) => {
         />
       </Cell>
       <Cell className="status-filter">
-        <button
-          className="old-button is-button is-primary in-text"
-          title="Locally filter results to this source only."
-          onClick={() => {
-            user
-              .get('user')
-              .get('preferences')
-              .set('resultFilter', {
-                type: '=',
-                property: 'source-id',
-                value: status.id,
-              })
-            user
-              .get('user')
-              .get('preferences')
-              .savePreferences()
-          }}
-        >
-          <span className="fa fa-filter" />
-        </button>
+        <Tooltip title="Click to search only this source.">
+          <Button
+            onClick={() => {
+              query.set('sources', [status.id])
+              query.startSearchFromFirstPage()
+            }}
+            color="primary"
+          >
+            <Box color="primary.text">
+              <FilterListIcon />
+            </Box>
+            Filter
+          </Button>
+        </Tooltip>
       </Cell>
     </tr>
   )
 }
 
-const QueryStatus = ({ statusBySource }: { statusBySource: Status[] }) => {
+const QueryStatus = ({
+  statusBySource,
+  query,
+}: {
+  statusBySource: Status[]
+  query: any
+}) => {
   return (
     <table>
       <tr>
@@ -174,7 +175,9 @@ const QueryStatus = ({ statusBySource }: { statusBySource: Status[] }) => {
       </tr>
       <tbody className="is-list">
         {statusBySource.map(status => {
-          return <QueryStatusRow key={status.id} status={status} />
+          return (
+            <QueryStatusRow key={status.id} status={status} query={query} />
+          )
         })}
       </tbody>
     </table>
@@ -253,7 +256,10 @@ const QueryFeed = ({ selectionInterface }: Props) => {
               return (
                 <BetterClickAwayListener onClickAway={closeAndRefocus}>
                   <Paper style={{ padding: '20px' }} className="intrigue-table">
-                    <QueryStatus statusBySource={statusBySource} />
+                    <QueryStatus
+                      statusBySource={statusBySource}
+                      query={selectionInterface.getCurrentQuery()}
+                    />
                   </Paper>
                 </BetterClickAwayListener>
               )
