@@ -81,6 +81,13 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       *.outline-none, a.outline-none, a, button{
         outline: none !important; 
       }
+      span.highlight {
+        font-weight: bolder;
+        color: ${props =>
+          props.palette.type === 'dark'
+            ? props.palette.success.main
+            : props.palette.success.dark};
+      }
       .MuiToolbar-root a,
       .MuiToolbar-root .MuiBreadcrumbs-separator {
         color: ${props =>

@@ -934,6 +934,13 @@ export default function(
       })
       shapes.push(polygon)
     },
+    showBboxShape(locationModel) {
+      const polygon = new DrawBBox.BboxView({
+        model: locationModel,
+        map,
+      })
+      shapes.push(polygon)
+    },
     showCircleShape(locationModel) {
       const circle = new DrawCircle.CircleView({
         model: locationModel,

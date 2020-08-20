@@ -43,6 +43,7 @@ Draw.BboxView = Marionette.View.extend({
       'change:mapNorth change:mapSouth change:mapEast change:mapWest',
       this.updateGeometry
     )
+    this.updateGeometry(this.model)
   },
   setModelFromGeometry(geometry) {
     const extent = geometry.getExtent()
@@ -251,6 +252,9 @@ Draw.BboxView = Marionette.View.extend({
     if (this.vectorLayer) {
       this.map.removeLayer(this.vectorLayer)
     }
+  },
+  destroy() {
+    this.destroyPrimitive()
   },
 })
 

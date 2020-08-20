@@ -14,7 +14,7 @@
  **/
 import { ResultType } from '../Types'
 const QueryResult = require('../QueryResult.js')
-import { LazyQueryResults } from './LazyQueryResults'
+import { LazyQueryResults, AttributeHighlights } from './LazyQueryResults'
 
 const _ = require('underscore')
 import Sources from '../../../component/singletons/sources-instance'
@@ -141,11 +141,13 @@ export class LazyQueryResult {
   plain: ResultType
   backbone?: any
   isResourceLocal: boolean
+  highlights: AttributeHighlights
   type: 'query-result';
   ['metacard.id']: string
   isSelected: boolean
   isFiltered: boolean
-  constructor(plain: ResultType) {
+  constructor(plain: ResultType, highlights: AttributeHighlights = {}) {
+    this.highlights = highlights
     this.type = 'query-result'
     this.plain = transformPlain({ plain })
     this.isResourceLocal = false || plain.isResourceLocal

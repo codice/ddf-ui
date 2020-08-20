@@ -1101,6 +1101,13 @@ module.exports = function CesiumMap(
       })
       shapes.push(polygon)
     },
+    showBboxShape(locationModel) {
+      const polygon = new DrawBBox.BboxView({
+        model: locationModel,
+        map,
+      })
+      shapes.push(polygon)
+    },
     showCircleShape(locationModel) {
       const circle = new DrawCircle.CircleView({
         model: locationModel,
@@ -1120,6 +1127,9 @@ module.exports = function CesiumMap(
         shape.destroy()
       })
       shapes = []
+      if (map && map.scene) {
+        map.scene.requestRender()
+      }
     },
     getMap() {
       return map

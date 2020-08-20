@@ -28,7 +28,7 @@ import GetAppIcon from '@material-ui/icons/GetApp'
 import Grid from '@material-ui/core/Grid'
 const Common = require('../../js/Common.js')
 import { hot } from 'react-hot-loader'
-import { useTheme, Paper, Divider, Box } from '@material-ui/core'
+import { useTheme, Paper, Divider, Box, Tooltip } from '@material-ui/core'
 const LIST_DISPLAY_TYPE = 'List'
 const GRID_DISPLAY_TYPE = 'Grid'
 import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
@@ -547,7 +547,15 @@ export const ResultItem = ({
             </Grid>
             <Grid item>
               <div className="">
-                {lazyResult.plain.metacard.properties.title}
+                {lazyResult.highlights['title'] ? (
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: lazyResult.highlights['title'].highlight,
+                    }}
+                  />
+                ) : (
+                  lazyResult.plain.metacard.properties.title
+                )}
               </div>
             </Grid>
           </Grid>
@@ -588,10 +596,49 @@ export const ResultItem = ({
                       attr: detail.label,
                     })}: ${detail.value}`}
                   >
-                    <span>{detail.value}</span>
+                    <span>
+                      {lazyResult.highlights[detail.label] ? (
+                        <span
+                          dangerouslySetInnerHTML={{
+                            __html:
+                              lazyResult.highlights[detail.label].highlight,
+                          }}
+                        />
+                      ) : (
+                        detail.value
+                      )}
+                    </span>
                   </PropertyComponent>
                 )
               })}
+              {Object.keys(lazyResult.highlights)
+                .filter(
+                  attr =>
+                    attr !== 'title' &&
+                    !customDetails.find(
+                      customDetail => customDetail.label === attr
+                    )
+                )
+                .map(extraHighlight => {
+                  const relevantHighlight =
+                    lazyResult.highlights[extraHighlight]
+                  return (
+                    <PropertyComponent
+                      key={relevantHighlight.attribute}
+                      data-help={TypedMetacardDefs.getAlias({
+                        attr: relevantHighlight.attribute,
+                      })}
+                    >
+                      <Tooltip title={relevantHighlight.attribute}>
+                        <span
+                          dangerouslySetInnerHTML={{
+                            __html: relevantHighlight.highlight,
+                          }}
+                        />
+                      </Tooltip>
+                    </PropertyComponent>
+                  )
+                })}
               {shouldShowRelevance ? (
                 <PropertyComponent
                   data-help={`Relevance: ${lazyResult.plain.relevance}`}
