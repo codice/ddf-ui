@@ -724,9 +724,9 @@ module.exports = {
     }
   },
   simplify(cqlAst) {
-    // iterativelySimplify(cqlAst)
+    iterativelySimplify(cqlAst)
     collapseNOTs(cqlAst)
-    // iterativelySimplify(cqlAst)
+    iterativelySimplify(cqlAst)
     return cqlAst
   },
   translateCqlToUserql,
