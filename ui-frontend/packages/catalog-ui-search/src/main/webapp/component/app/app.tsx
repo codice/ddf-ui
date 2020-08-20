@@ -33,6 +33,7 @@ import NotificationsIcon from '@material-ui/icons/Notifications'
 import PersonIcon from '@material-ui/icons/Person'
 const userInstance = require('../singletons/user-instance.js')
 const notifications = require('../singletons/user-notifications.js')
+import SystemUsageModal from '../system-usage/system-usage'
 
 import UserView from '../../react-component/user'
 import UserSettings, {
@@ -215,6 +216,7 @@ const App = ({
       <CssBaseline />
       <GlobalStyles />
       <CancelDrawing />
+      <SystemUsageModal />
       <Grid
         container
         alignItems="center"
