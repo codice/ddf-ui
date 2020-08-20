@@ -24,7 +24,7 @@ module.exports = InputView.extend({
     this.$el.find('input').attr('checked', Boolean(this.model.getValue()))
   },
   events: {
-    'click label': 'triggerCheckboxClick',
+    'click button': 'triggerCheckboxClick',
   },
   triggerCheckboxClick() {
     this.$el.find('input').click()
