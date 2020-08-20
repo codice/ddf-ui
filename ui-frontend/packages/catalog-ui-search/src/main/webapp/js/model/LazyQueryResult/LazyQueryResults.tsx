@@ -27,6 +27,27 @@ export type SearchStatus = {
   [key: string]: Status
 }
 
+export type AttributeHighlight = {
+  highlight: string
+  attribute: string
+  endIndex: string
+  startIndex: string
+}
+
+export type AttributeHighlights = {
+  [key: string]: AttributeHighlight
+}
+
+export type ResponseHighlightType = Array<{
+  id: string
+  highlights: Array<AttributeHighlight>
+}>
+
+// update to store as attr map to highlight details
+type TransformedHighlightsType = {
+  [key: string]: AttributeHighlights
+}
+
 type ConstructorProps = {
   results?: ResultType[]
   sorts?: QuerySortType[]
@@ -299,9 +320,28 @@ export class LazyQueryResults {
   isEmpty() {
     return Object.keys(this.results).length === 0
   }
-  add({ results = [] }: { results?: ResultType[] } = {}) {
+  add({
+    results = [],
+    highlights = [],
+  }: { results?: ResultType[]; highlights?: ResponseHighlightType } = {}) {
+    const highlightMap = highlights.reduce(
+      (blob, highlight) => {
+        blob[highlight.id] = highlight.highlights.reduce(
+          (innerblob, subhighlight) => {
+            innerblob[subhighlight.attribute] = subhighlight
+            return innerblob
+          },
+          {} as { [key: string]: AttributeHighlight }
+        )
+        return blob
+      },
+      {} as TransformedHighlightsType
+    )
     results.forEach(result => {
-      const lazyResult = new LazyQueryResult(result)
+      const lazyResult = new LazyQueryResult(
+        result,
+        highlightMap[result.metacard.properties.id]
+      )
       this.results[lazyResult['metacard.id']] = lazyResult
       lazyResult.parent = this
       /**
@@ -351,7 +391,10 @@ export class LazyQueryResults {
   }
   types: MetacardTypes
   addTypes(types: MetacardTypes) {
-    this.types = types
+    this.types = {
+      ...this.types,
+      ...types,
+    }
   }
   getCurrentAttributes() {
     return Object.keys(

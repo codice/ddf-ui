@@ -30,6 +30,7 @@ import Box from '@material-ui/core/Box'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import CheckIcon from '@material-ui/icons/Check'
+import Divider from '@material-ui/core/Divider'
 type Property = {
   class: string
   hidden: boolean
@@ -138,6 +139,10 @@ const RowComponent = ({
           width: visibleProperties.length * 200 + 'px',
         }}
       >
+        <Divider
+          orientation="horizontal"
+          className="absolute bottom-0 z-20 w-full h-min"
+        />
         <Box
           className="absolute left-0 top-0 z-0 w-full h-full"
           bgcolor="secondary.main"

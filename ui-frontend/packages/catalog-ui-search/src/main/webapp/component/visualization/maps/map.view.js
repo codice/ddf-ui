@@ -209,7 +209,9 @@ module.exports = Marionette.LayoutView.extend({
       'change:currentQuery',
       this.handleCurrentQuery
     )
-    this.handleCurrentQuery()
+    setTimeout(() => {
+      this.handleCurrentQuery()
+    }, 1000)
 
     // listener for when the measurement state changes in map model
     this.listenTo(
@@ -577,7 +579,7 @@ module.exports = Marionette.LayoutView.extend({
             this.map.showPolygonShape(locationModel)
             break
           case 'BBOX':
-            this.map.showPolygonShape(locationModel)
+            this.map.showBboxShape(locationModel)
             break
           case 'POINTRADIUS':
             this.map.showCircleShape(locationModel)

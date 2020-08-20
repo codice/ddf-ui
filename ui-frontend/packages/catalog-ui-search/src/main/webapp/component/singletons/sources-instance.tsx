@@ -24,5 +24,7 @@ const SourcesInstance = new Sources() as {
     local?: boolean
     version: string
   }[]
+  fetched: boolean
+  once: any
 }
 export default SourcesInstance

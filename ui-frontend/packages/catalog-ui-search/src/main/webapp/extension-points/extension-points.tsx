@@ -18,18 +18,14 @@ import { providers, Props as ProviderProps } from './providers'
 import metacardInteractions from './metacard-interactions'
 import { Props } from '../react-component/filter/filter-input/filter-input'
 import { LazyQueryResult } from '../js/model/LazyQueryResult/LazyQueryResult'
+import { ResultType } from '../js/model/Types'
 
 export type ExtensionPointsType = {
   providers: SFC<ProviderProps>
   metacardInteractions: any[]
   customFilterInput: (props: Props) => React.ReactNode | undefined
   customCanWritePermission: (
-    {
-      attribute,
-      lazyResult,
-      user,
-      editableAttributes,
-    }: {
+    props: {
       attribute: string
       lazyResult: LazyQueryResult
       user: any
@@ -43,6 +39,13 @@ export type ExtensionPointsType = {
   resultItemRowAddOn: (
     { lazyResult }: { lazyResult: LazyQueryResult }
   ) => JSX.Element | null
+  layoutDropdown: (
+    props: {
+      goldenLayout: any
+      layoutResult?: ResultType
+      editLayoutRef?: any
+    }
+  ) => JSX.Element | null
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -53,6 +56,7 @@ const ExtensionPoints: ExtensionPointsType = {
   customEditableAttributes: () => [],
   resultItemTitleAddOn: () => null,
   resultItemRowAddOn: () => null,
+  layoutDropdown: () => null,
 }
 
 export default ExtensionPoints

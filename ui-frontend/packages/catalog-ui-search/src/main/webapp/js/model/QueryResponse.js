@@ -147,7 +147,10 @@ module.exports = Backbone.AssociatedModel.extend({
     this.get('lazyResults').updateShowingResultsForFields(
       resp.showingResultsForFields
     )
-    this.get('lazyResults').add({ results: resp.results })
+    this.get('lazyResults').add({
+      results: resp.results,
+      highlights: resp.highlights,
+    })
 
     return {}
   },

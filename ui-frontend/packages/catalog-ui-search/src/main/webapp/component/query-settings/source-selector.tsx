@@ -14,7 +14,7 @@ import Box from '@material-ui/core/Box'
 import CheckIcon from '@material-ui/icons/Check'
 import Chip from '@material-ui/core/Chip'
 import Divider from '@material-ui/core/Divider'
-
+import _ from 'lodash'
 type Props = {
   search: any
 }
@@ -137,13 +137,28 @@ const SourceSelector = ({ search }: Props) => {
           renderValue: (selected: string[]) => {
             return (
               <Grid container alignItems="center" direction="row">
-                {selected.map((src, index) => {
-                  return (
-                    <Grid item key={src} className="mr-2">
-                      <Chip label={getHumanReadableSourceName(src)} />
-                    </Grid>
-                  )
-                })}
+                {selected
+                  .sort((a, b) => {
+                    return a.toLowerCase().localeCompare(b.toLowerCase()) // case insensitive sort
+                  })
+                  .sort((a, b) => {
+                    if (a === 'local' || a === 'remote') {
+                      return -1 // move these subcategories upwards to front
+                    }
+                    return 0
+                  })
+                  .map((src, index) => {
+                    return (
+                      <Grid item key={src} className="mr-2">
+                        <Chip
+                          variant="outlined"
+                          color="secondary"
+                          className="cursor-pointer"
+                          label={getHumanReadableSourceName(src)}
+                        />
+                      </Grid>
+                    )
+                  })}
               </Grid>
             )
           },
@@ -153,8 +168,17 @@ const SourceSelector = ({ search }: Props) => {
         }}
         value={sources}
         onChange={e => {
+          // first of all I'm sorry, second of all, order matters in these cases.  Should really just make a state machine out of this.
+          // https://xstate.js.org/docs/  perhaps?
           let newSources = (e.target.value as unknown) as string[]
           // these first three if only apply if the value didn't previous exist (user is going from not all to 'all', etc.)
+          const newLocalSources = newSources
+            .filter(src => !['all', 'remote', 'local'].includes(src))
+            .filter(src => isHarvested(src))
+          const newRemoteSources = newSources
+            .filter(src => !['all', 'remote', 'local'].includes(src))
+            .filter(src => !isHarvested(src))
+
           if (
             (newSources.includes('all') && !sources.includes('all')) ||
             (newSources.includes('local') &&
@@ -163,6 +187,45 @@ const SourceSelector = ({ search }: Props) => {
               !sources.includes('all'))
           ) {
             setSources(['all'])
+          } else if (sources.includes('all') && newSources.includes('local')) {
+            setSources(['remote'])
+          } else if (sources.includes('all') && newSources.includes('remote')) {
+            setSources(['local'])
+          } else if (sources.includes('all') && newLocalSources.length > 0) {
+            setSources(
+              _.difference(
+                availableLocalSources.map(src => src.id).concat(['remote']),
+                newLocalSources
+              )
+            )
+          } else if (sources.includes('all') && newRemoteSources.length > 0) {
+            setSources(
+              _.difference(
+                availableRemoteSources.map(src => src.id).concat(['local']),
+                newRemoteSources
+              )
+            )
+          } else if (sources.includes('local') && newLocalSources.length > 0) {
+            setSources(
+              _.difference(
+                sources
+                  .filter(src => src !== 'local')
+                  .concat(availableLocalSources.map(src => src.id)),
+                newLocalSources
+              )
+            )
+          } else if (
+            sources.includes('remote') &&
+            newRemoteSources.length > 0
+          ) {
+            setSources(
+              _.difference(
+                sources
+                  .filter(src => src !== 'remote')
+                  .concat(availableRemoteSources.map(src => src.id)),
+                newRemoteSources
+              )
+            )
           } else if (
             newSources.includes('local') &&
             !sources.includes('local')
@@ -178,6 +241,33 @@ const SourceSelector = ({ search }: Props) => {
               ['remote'].concat(
                 newSources.filter(val => isHarvested(val) && val !== 'all')
               )
+            )
+          } else if (
+            newSources.length ===
+              availableLocalSources.length + availableRemoteSources.length ||
+            (newSources.includes('local') &&
+              newSources.length === availableRemoteSources.length + 1) ||
+            (newSources.includes('remote') &&
+              newSources.length === availableLocalSources.length + 1)
+          ) {
+            setSources(['all'])
+          } else if (
+            _.difference(
+              availableLocalSources.map(src => src.id),
+              newSources.filter(src => isHarvested(src))
+            ).length === 0
+          ) {
+            setSources(
+              ['local'].concat(newSources.filter(src => !isHarvested(src)))
+            )
+          } else if (
+            _.difference(
+              availableRemoteSources.map(src => src.id),
+              newSources.filter(src => !isHarvested(src))
+            ).length === 0
+          ) {
+            setSources(
+              ['remote'].concat(newSources.filter(src => isHarvested(src)))
             )
           } else {
             // in these case, we now have to determine if we should remove all, remote, or local based on what is in newSources
@@ -197,12 +287,16 @@ const SourceSelector = ({ search }: Props) => {
         <MenuItem value="all">
           <Grid container alignItems="stretch" direction="row" wrap="nowrap">
             <Grid container direction="row" alignItems="center">
-              <Grid item>All</Grid>
-              <Grid item className="pl-2">
-                {shouldBeSelected({ srcId: 'all', sources }) ? (
-                  <CheckIcon />
-                ) : null}
+              <Grid item className="pr-2">
+                <CheckIcon
+                  className={
+                    shouldBeSelected({ srcId: 'all', sources })
+                      ? ''
+                      : 'invisible'
+                  }
+                />
               </Grid>
+              <Grid item>All</Grid>
             </Grid>
           </Grid>
         </MenuItem>
@@ -210,17 +304,21 @@ const SourceSelector = ({ search }: Props) => {
           <MenuItem value="local">
             <Grid container alignItems="stretch" direction="row" wrap="nowrap">
               <Grid item className="pr-2">
+                <CheckIcon
+                  className={
+                    shouldBeSelected({ srcId: 'local', sources })
+                      ? ''
+                      : 'invisible'
+                  }
+                />
+              </Grid>
+              <Grid item className="pr-2">
                 <Swath className="w-1 h-full" />
               </Grid>
               <Grid container direction="row" alignItems="center">
                 <Grid item>Fast (onsite)</Grid>
                 <Grid item className="pl-2">
                   <HomeIcon />
-                </Grid>
-                <Grid item className="pl-2">
-                  {shouldBeSelected({ srcId: 'local', sources }) ? (
-                    <CheckIcon />
-                  ) : null}
                 </Grid>
               </Grid>
             </Grid>
@@ -236,6 +334,15 @@ const SourceSelector = ({ search }: Props) => {
                     direction="row"
                     wrap="nowrap"
                   >
+                    <Grid item className="pr-2">
+                      <CheckIcon
+                        className={
+                          shouldBeSelected({ srcId: source.id, sources })
+                            ? ''
+                            : 'invisible'
+                        }
+                      />
+                    </Grid>
                     <Grid item className="pl-2 pr-3">
                       <Swath className="w-1 h-full" />
                     </Grid>
@@ -252,11 +359,6 @@ const SourceSelector = ({ search }: Props) => {
                       <Grid item className="pl-2">
                         {source.available ? null : <WarningIcon />}
                       </Grid>
-                      <Grid item className="pl-2">
-                        {shouldBeSelected({ srcId: source.id, sources }) ? (
-                          <CheckIcon />
-                        ) : null}
-                      </Grid>
                     </Grid>
                   </Grid>
                 </MenuItem>
@@ -267,17 +369,21 @@ const SourceSelector = ({ search }: Props) => {
           <MenuItem value="remote">
             <Grid container alignItems="stretch" direction="row" wrap="nowrap">
               <Grid item className="pr-2">
+                <CheckIcon
+                  className={
+                    shouldBeSelected({ srcId: 'remote', sources })
+                      ? ''
+                      : 'invisible'
+                  }
+                />
+              </Grid>
+              <Grid item className="pr-2">
                 <Swath className="w-1 h-full" />
               </Grid>
               <Grid container direction="row" alignItems="center">
                 <Grid item>Slow (offsite)</Grid>
                 <Grid item className="pl-2">
                   <CloudIcon />
-                </Grid>
-                <Grid item className="pl-2">
-                  {shouldBeSelected({ srcId: 'remote', sources }) ? (
-                    <CheckIcon />
-                  ) : null}
                 </Grid>
               </Grid>
             </Grid>
@@ -293,6 +399,15 @@ const SourceSelector = ({ search }: Props) => {
                     direction="row"
                     wrap="nowrap"
                   >
+                    <Grid item className="pr-2">
+                      <CheckIcon
+                        className={
+                          shouldBeSelected({ srcId: source.id, sources })
+                            ? ''
+                            : 'invisible'
+                        }
+                      />
+                    </Grid>
                     <Grid item className="pl-2 pr-2">
                       <Swath className="w-1 h-full" />
                     </Grid>
@@ -308,11 +423,6 @@ const SourceSelector = ({ search }: Props) => {
                       </Grid>
                       <Grid item className="pl-2">
                         {source.available ? null : <WarningIcon />}
-                      </Grid>
-                      <Grid item className="pl-2">
-                        {shouldBeSelected({ srcId: source.id, sources }) ? (
-                          <CheckIcon />
-                        ) : null}
                       </Grid>
                     </Grid>
                   </Grid>

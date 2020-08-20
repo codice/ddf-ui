@@ -30,6 +30,9 @@ import LazyMetacardInteractions from '../results-visual/lazy-metacard-interactio
 import { Elevations } from '../theme/theme'
 import useTheme from '@material-ui/core/styles/useTheme'
 import SelectionRipple from '../golden-layout/selection-ripple'
+import { ResultType } from '../../js/model/Types'
+import Extensions from '../../extension-points'
+
 const SelectedResults = ({ selectionInterface }: any) => {
   const selectedResults = useLazyResultsSelectedResultsFromSelectionInterface({
     selectionInterface,
@@ -100,12 +103,16 @@ type Props = {
   selectionInterface: any
   model: any
   goldenLayoutViewInstance: any
+  layoutResult?: ResultType
+  editLayoutRef?: any
 }
 
 const ResultSelector = ({
   selectionInterface,
   model,
   goldenLayoutViewInstance,
+  layoutResult,
+  editLayoutRef,
 }: Props) => {
   const { isSearching } = useLazyResultsStatusFromSelectionInterface({
     selectionInterface,
@@ -127,6 +134,11 @@ const ResultSelector = ({
     })
   }, [])
   const theme = useTheme()
+  const LayoutDropdown = Extensions.layoutDropdown({
+    goldenLayout: goldenLayoutViewInstance,
+    layoutResult,
+    editLayoutRef,
+  })
   return (
     <React.Fragment>
       <Grid container alignItems="center" justify="flex-start" direction="row">
@@ -226,10 +238,12 @@ const ResultSelector = ({
               return (
                 <BetterClickAwayListener onClickAway={closeAndRefocus}>
                   <Paper className="p-3" elevation={Elevations.overlays}>
-                    <VisualizationSelector
-                      onClose={closeAndRefocus}
-                      goldenLayout={goldenLayoutViewInstance.goldenLayout}
-                    />
+                    {LayoutDropdown || (
+                      <VisualizationSelector
+                        onClose={closeAndRefocus}
+                        goldenLayout={goldenLayoutViewInstance.goldenLayout}
+                      />
+                    )}
                   </Paper>
                 </BetterClickAwayListener>
               )

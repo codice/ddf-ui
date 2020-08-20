@@ -43,6 +43,7 @@ Draw.BboxView = Marionette.View.extend({
       'change:mapNorth change:mapSouth change:mapEast change:mapWest',
       this.updatePrimitive
     )
+    this.updatePrimitive(this.model)
   },
   enableInput() {
     const controller = this.options.map.scene.screenSpaceCameraController
@@ -367,6 +368,9 @@ Draw.BboxView = Marionette.View.extend({
     if (this.primitive && !this.primitive.isDestroyed()) {
       this.options.map.scene.primitives.remove(this.primitive)
     }
+  },
+  destroy() {
+    this.destroyPrimitive()
   },
 })
 

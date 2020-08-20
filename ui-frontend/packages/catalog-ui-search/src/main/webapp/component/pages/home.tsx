@@ -1,27 +1,29 @@
 import * as React from 'react'
-import { GoldenLayout } from '../../golden-layout/golden-layout'
+import { GoldenLayout } from '../golden-layout/golden-layout'
 import {
   SplitPane,
   useResizableGridContext,
-} from '../../resizable-grid/resizable-grid'
-const SelectionInterfaceModel = require('../../selection-interface/selection-interface.model')
-const Query = require('../../../js/model/Query.js')
+} from '../resizable-grid/resizable-grid'
+const SelectionInterfaceModel = require('../selection-interface/selection-interface.model')
+const Query = require('../../js/model/Query.js')
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
-import QueryAddView from '../../query-add/query-add'
+import QueryAddView from '../query-add/query-add'
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 
-import MRC from '../../../react-component/marionette-region-container'
+import MRC from '../../react-component/marionette-region-container'
 import Button from '@material-ui/core/Button'
 import { Dropdown } from '@connexta/atlas/atoms/dropdown'
-import SearchInteractions from '../../search-interactions'
-import { BetterClickAwayListener } from '../../better-click-away-listener/better-click-away-listener'
+import SearchInteractions from '../search-interactions'
+import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
 import MoreVert from '@material-ui/icons/MoreVert'
 import Box from '@material-ui/core/Box'
 import Divider from '@material-ui/core/Divider'
-import { Elevations } from '../../theme/theme'
+import { Elevations } from '../theme/theme'
 import SearchIcon from '@material-ui/icons/SearchTwoTone'
+import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
@@ -201,15 +203,19 @@ const LeftBottom = ({ selectionInterface }: { selectionInterface: any }) => {
 }
 
 export const HomePage = () => {
-  let urlBasedQuery = location.hash.split('?defaultQuery=')[1]
+  const location = useLocation()
+  let urlBasedQuery = location.search.split('?defaultQuery=')[1]
   if (urlBasedQuery) {
-    urlBasedQuery = new Query.Model(
-      JSON.parse(decodeURIComponent(urlBasedQuery))
-    )
-    ;(urlBasedQuery as any).startSearchFromFirstPage()
+    try {
+      urlBasedQuery = new Query.Model(
+        JSON.parse(decodeURIComponent(urlBasedQuery))
+      )
+      ;(urlBasedQuery as any).startSearchFromFirstPage()
+    } catch (err) {
+      console.log(err)
+      urlBasedQuery = ''
+    }
   }
-  const [isSaved, setIsSaved] = React.useState(false)
-
   const [queryModel, setQueryModel] = React.useState(
     urlBasedQuery || new Query.Model()
   )
@@ -218,6 +224,22 @@ export const HomePage = () => {
       currentQuery: queryModel,
     })
   )
+  const history = useHistory()
+  const { listenTo } = useBackbone()
+  React.useEffect(() => {
+    listenTo(queryModel, 'update', () => {
+      // run after the updates
+      setTimeout(() => {
+        const encodedQueryModel = encodeURIComponent(
+          JSON.stringify(queryModel.toJSON())
+        )
+        history.push({
+          pathname: '/home',
+          search: `?defaultQuery=${encodedQueryModel}`,
+        })
+      }, 0)
+    })
+  }, [])
   return (
     <div className="w-full h-full">
       <SplitPane variant="horizontal" collapsedLength={80}>

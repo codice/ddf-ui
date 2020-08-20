@@ -14,10 +14,11 @@
  **/
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import { Button, buttonTypeEnum } from '../presentation/button'
 import styled from 'styled-components'
+import Button from '@material-ui/core/Button'
 const { Menu, MenuItem } = require('../menu')
 const Dropdown = require('../dropdown')
+import GetAppIcon from '@material-ui/icons/GetApp'
 
 const Root = styled.div`
   padding: ${props => props.theme.largeSpacing};
@@ -67,12 +68,13 @@ const ResultsExport = (props: Props) => {
         </Dropdown>
       </div>
       <Button
+        variant="contained"
+        color="primary"
         disabled={downloadDisabled}
-        buttonType={buttonTypeEnum.primary}
-        icon="fa fa-download"
-        text="Download"
         onClick={onDownloadClick}
-      />
+      >
+        <GetAppIcon /> Download
+      </Button>
     </Root>
   )
 }

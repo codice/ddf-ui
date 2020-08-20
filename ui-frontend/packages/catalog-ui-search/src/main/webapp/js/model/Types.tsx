@@ -8,12 +8,6 @@ export type ResultType = {
   relevance: number
   metacardType: string
   id: string
-  highlights: {
-    attribute: string
-    highlight: string
-    startIndex: number
-    endIndex: number
-  }[]
 }
 
 type MetacardType = {

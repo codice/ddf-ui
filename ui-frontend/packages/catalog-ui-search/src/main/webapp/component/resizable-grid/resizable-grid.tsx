@@ -2,7 +2,7 @@ import * as React from 'react'
 import Grid from '@material-ui/core/Grid'
 import { Resizable, ResizableProps } from 're-resizable'
 import styled from 'styled-components'
-import { createCtx } from '@connexta/atlas/typescript/context'
+import { createCtx } from '../../typescript/context'
 
 const wreqr = require('../../js/wreqr.js')
 
@@ -22,7 +22,9 @@ const ResizableGrid = Grid as ResizableGridType
 export const [
   useResizableGridContext,
   UseResizableGridContextProvider,
-] = createCtx<useResizableGridType>()
+] = createCtx<useResizableGridType>({
+  closed: false,
+})
 
 type useResizableGridType = {
   length: number

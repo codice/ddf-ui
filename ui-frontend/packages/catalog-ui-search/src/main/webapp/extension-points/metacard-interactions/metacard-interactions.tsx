@@ -18,12 +18,6 @@ import DownloadProduct from '../../react-component/metacard-interactions/downloa
 import ExportActions from '../../react-component/metacard-interactions/export-interaction'
 import { Divider } from '../../react-component/metacard-interactions/metacard-interactions'
 
-const DefaultItems = [
-  ExpandMetacard,
-  Divider,
-  DownloadProduct,
-  CreateLocationSearch,
-  ExportActions,
-]
+const DefaultItems = [ExpandMetacard, Divider, DownloadProduct, ExportActions]
 
 export default DefaultItems as any[]
