@@ -14,6 +14,7 @@ export const HoverButton = (
   const { children: Children, ...buttonProps } = props
   return (
     <Button
+      data-id="hover-button"
       onMouseEnter={() => {
         setHover(true)
       }}

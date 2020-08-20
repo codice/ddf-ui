@@ -34,6 +34,7 @@ const ContainerView = Marionette.ItemView.extend({
   template() {
     return (
       <Button
+        data-id="metacard-interactions-button"
         className="metacard-interactions is-button"
         title="Provides a list of actions to take on the result."
         data-help="Provides a list of actions to take on the result."

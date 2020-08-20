@@ -50,7 +50,7 @@ type MetacardInteractionProps = {
 
 export const MetacardInteraction = (props: MetacardInteractionProps) => {
   return (
-    <Interaction data-help={props.help} onClick={() => props.onClick(props)}>
+    <Interaction data-id="interaction-container" data-help={props.help} onClick={() => props.onClick(props)}>
       <InteractionIcon className={props.icon} />
       <InteractionText>{props.text}</InteractionText>
       {props.children}

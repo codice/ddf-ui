@@ -69,7 +69,7 @@ const SortItem = ({
           </Grid>
           {showRemove ? (
             <Grid item className="pl-2">
-              <Button data-id="remove-button" onClick={onRemove} variant="text" color="primary">
+              <Button data-id="remove-sort-button" onClick={onRemove} variant="text" color="primary">
                 Remove
               </Button>
             </Grid>

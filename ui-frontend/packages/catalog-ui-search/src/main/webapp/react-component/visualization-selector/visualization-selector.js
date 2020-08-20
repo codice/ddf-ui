@@ -99,6 +99,7 @@ class VisualizationSelector extends React.Component {
         {Object.values(configs).map(
           ({ title, icon, componentName }, index) => (
             <Visualization
+              data-id="visualization-button"
               key={index.toString()}
               ref={x => {
                 this[componentName] = x
