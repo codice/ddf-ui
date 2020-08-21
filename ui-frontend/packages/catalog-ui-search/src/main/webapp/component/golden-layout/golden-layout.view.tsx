@@ -309,7 +309,7 @@ export default Marionette.LayoutView.extend({
     this.registerGoldenLayoutComponents()
     this.listenToGoldenLayoutStateChange()
     this.goldenLayout.on('stackCreated', this.handleGoldenLayoutStackCreated)
-    this.golden
+    this.goldenLayout.on(
       'initialised',
       this.handleGoldenLayoutInitialised.bind(this)
     )
