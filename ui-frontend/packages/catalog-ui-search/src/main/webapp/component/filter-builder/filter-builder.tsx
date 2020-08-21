@@ -73,6 +73,12 @@ export const FilterBuilderRoot = ({ model }: Props) => {
     },
     [model, filter]
   )
+  React.useEffect(
+    () => {
+      setFilter(getBaseFilter({ model }))
+    },
+    [model.get('filterTree')]
+  )
   return (
     <FilterBranch
       filter={filter}
