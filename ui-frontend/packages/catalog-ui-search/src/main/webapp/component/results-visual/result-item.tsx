@@ -387,8 +387,6 @@ export const ResultItem = ({
       </Grid>
     )
   }
-  const [isHovering, setIsHovering] = React.useState(false)
-  const [isFocused, setIsFocused] = React.useState(false)
   const rippleRef = React.useRef<{
     pulsate: () => void
     stop: (e: any) => void
@@ -400,18 +398,6 @@ export const ResultItem = ({
   return (
     <Button
       component="div" // we have to use a div since there are buttons inside this (invalid to nest buttons)
-      onMouseEnter={() => {
-        setIsHovering(true)
-      }}
-      onMouseOver={() => {
-        setIsHovering(true)
-      }}
-      onMouseLeave={() => {
-        setIsHovering(false)
-      }}
-      onMouseOut={() => {
-        setIsHovering(false)
-      }}
       onMouseDown={event => {
         /**
          * Shift key can cause selections since we set the class to allow text selection,
@@ -460,7 +446,7 @@ export const ResultItem = ({
         }
       }}
       fullWidth
-      className={`select-text outline-none px-6 text-left break-words`}
+      className={`select-text outline-none px-6 text-left break-words group`}
       disableFocusRipple
       disableTouchRipple
       disableRipple
@@ -485,45 +471,31 @@ export const ResultItem = ({
             <Grid item>
               <Button
                 onClick={event => {
-                  event.stopPropagation()
+                  event.stopPropagation() // this button takes precedence over the enclosing button, and is always additive / subtractive (no deselect of other results)
                   if (event.shiftKey) {
                     lazyResult.shiftSelect()
                   } else {
                     lazyResult.controlSelect()
                   }
-                  event.currentTarget.blur()
                 }}
-                className="relative p-2 min-w-0 outline-none h-full"
-                onFocus={e => {
-                  setIsFocused(true)
-                }}
-                onBlur={e => {
-                  setIsFocused(false)
-                }}
+                className="relative p-2 min-w-0 outline-none h-full group-1"
               >
                 {(() => {
                   if (isSelected) {
                     return (
                       <Box
                         color="secondary.main"
-                        className={`transform transition duration-200 ease-in-out ${
-                          isHovering || isFocused ? '' : '-translate-x-full'
-                        }`}
+                        className={`transform transition duration-200 ease-in-out -translate-x-full group-1-focus:translate-x-0 group-hover:translate-x-0`}
                       >
-                        {isHovering || isFocused ? (
-                          <CheckBoxIcon />
-                        ) : (
-                          <CheckIcon />
-                        )}
+                        <CheckBoxIcon className="group-hover:block group-1-focus:block hidden" />
+                        <CheckIcon className="group-hover:hidden group-1-focus:hidden block" />
                       </Box>
                     )
                   } else if (!isSelected) {
                     return (
                       <Box color="secondary.main" className="transform ">
                         <CheckBoxOutlineBlankIcon
-                          className={`${
-                            isHovering || isFocused ? '' : ' invisible'
-                          }`}
+                          className={`group-hover:visible group-1-focus:visible invisible`}
                         />
                       </Box>
                     )
@@ -533,9 +505,7 @@ export const ResultItem = ({
                 <IconSpan
                   className={`${getIconClassName({
                     lazyResult,
-                  })} ${
-                    isHovering || isFocused ? 'invisible' : ''
-                  } absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
+                  })} group-1-focus:invisible group-hover:invisible absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
                   data-help={TypedMetacardDefs.getAlias({
                     attr: 'title',
                   })}
@@ -683,9 +653,7 @@ export const ResultItem = ({
             e.stopPropagation()
           }}
           elevation={Elevations.overlays}
-          className={`absolute z-50 right-0 bottom-0 focus-within:opacity-100 hover:opacity-100 p-2 cursor-auto ${
-            isHovering ? 'opacity-100' : 'opacity-0'
-          } focus-within:opacity-100 transform translate-y-3/4`}
+          className={`absolute z-50 right-0 bottom-0 focus-within:opacity-100 group-hover:opacity-100 hover:opacity-100 opacity-0 p-2 cursor-auto focus-within:opacity-100 transform translate-y-3/4`}
         >
           <DynamicActions />
         </Paper>

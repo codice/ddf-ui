@@ -146,6 +146,7 @@
     "sortablejs": "1.4.2",
     "spectrum-colorpicker": "1.8.0",
     "tailwindcss": "1.6.2",
+    "tailwindcss-named-groups": "0.0.2",
     "terraformer": "1.0.5",
     "terraformer-wkt-parser": "1.1.0",
     "urijs": "1.19.1",
