@@ -478,6 +478,7 @@ export const ResultItem = ({
                     lazyResult.controlSelect()
                   }
                 }}
+                focusVisibleClassName="focus-visible"
                 className="relative p-2 min-w-0 outline-none h-full group-1"
               >
                 {(() => {
@@ -485,17 +486,17 @@ export const ResultItem = ({
                     return (
                       <Box
                         color="secondary.main"
-                        className={`transform transition duration-200 ease-in-out -translate-x-full group-1-focus:translate-x-0 group-hover:translate-x-0`}
+                        className={`transform transition duration-200 ease-in-out -translate-x-full group-1-focus-visible:translate-x-0 group-hover:translate-x-0`}
                       >
-                        <CheckBoxIcon className="group-hover:block group-1-focus:block hidden" />
-                        <CheckIcon className="group-hover:hidden group-1-focus:hidden block" />
+                        <CheckBoxIcon className="group-hover:block group-1-focus-visible:block hidden" />
+                        <CheckIcon className="group-hover:hidden group-1-focus-visible:hidden block" />
                       </Box>
                     )
                   } else if (!isSelected) {
                     return (
                       <Box color="secondary.main" className="transform ">
                         <CheckBoxOutlineBlankIcon
-                          className={`group-hover:visible group-1-focus:visible invisible`}
+                          className={`group-hover:visible group-1-focus-visible:visible invisible`}
                         />
                       </Box>
                     )
@@ -505,7 +506,7 @@ export const ResultItem = ({
                 <IconSpan
                   className={`${getIconClassName({
                     lazyResult,
-                  })} group-1-focus:invisible group-hover:invisible absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
+                  })} group-1-focus-visible:invisible group-hover:invisible absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
                   data-help={TypedMetacardDefs.getAlias({
                     attr: 'title',
                   })}
