@@ -654,7 +654,7 @@ export const ResultItem = ({
             e.stopPropagation()
           }}
           elevation={Elevations.overlays}
-          className={`absolute z-50 right-0 bottom-0 focus-within:opacity-100 group-hover:opacity-100 hover:opacity-100 opacity-0 p-2 cursor-auto focus-within:opacity-100 transform translate-y-3/4`}
+          className={`absolute z-50 right-0 bottom-0 focus-within:opacity-100 group-hover:opacity-100 hover:opacity-100 opacity-0 p-2 cursor-auto transform translate-y-3/4`}
         >
           <DynamicActions />
         </Paper>
