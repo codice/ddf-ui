@@ -13,7 +13,7 @@
  *
  **/
 import React from 'react'
-
+require('focus-visible')
 require('../styles/tailwind.css')
 require('../styles/libraries.css')
 require('../styles/styles.less')

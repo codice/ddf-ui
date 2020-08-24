@@ -149,7 +149,7 @@ module.exports = Backbone.AssociatedModel.extend({
     )
     this.get('lazyResults').add({
       results: resp.results,
-      highlights: resp.highlights,
+      highlights: resp.highlights || [], // ensure highlights is not null
     })
 
     return {}

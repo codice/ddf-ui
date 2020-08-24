@@ -44,7 +44,7 @@ function wordStartsWithFilter(words, filter) {
 
 // Note that dot "." cannot be escaped since it's one of the attribute name delimiters AND a regex symbol
 function escapeRegExp(string) {
-  return string.replace(/[*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
+  return string.toString().replace(/[*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
 }
 
 export { matchesFilter, getAppropriateString }

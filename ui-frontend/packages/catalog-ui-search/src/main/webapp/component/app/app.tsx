@@ -139,6 +139,18 @@ export const useDefaultHelp = () => {
   })
 }
 
+const scrollCurrentRouteIntoView = () => {
+  setTimeout(() => {
+    const currentroute = document.querySelector('[data-currentroute]')
+    if (currentroute) {
+      scrollIntoView(currentroute, {
+        behavior: 'smooth',
+        scrollMode: 'if-needed',
+      })
+    }
+  }, 0)
+}
+
 const App = ({
   RouteInformation,
   NotificationsComponent,
@@ -150,7 +162,6 @@ const App = ({
   let defaultOpen =
     localStorage.getItem('shell.drawer') === 'true' ? true : false
   const [navOpen, setNavOpen] = React.useState(defaultOpen)
-  const [withinNav, setWithinNav] = React.useState(false)
   const [hasUnseenNotifications, setHasUnseenNotifications] = React.useState(
     notifications.hasUnseen() as boolean
   )
@@ -171,13 +182,6 @@ const App = ({
     }, 250)
   }
 
-  React.useEffect(
-    () => {
-      setWithinNav(false)
-    },
-    [location]
-  )
-
   // todo favicon branding
   // $(window.document).ready(() => {
   //   window.document.title = properties.branding + ' ' + properties.product
@@ -193,17 +197,9 @@ const App = ({
    */
   React.useEffect(
     () => {
-      setTimeout(() => {
-        const currentroute = document.querySelector('[data-currentroute]')
-        if (currentroute && !withinNav) {
-          scrollIntoView(currentroute, {
-            behavior: 'smooth',
-            scrollMode: 'if-needed',
-          })
-        }
-      }, 0)
+      scrollCurrentRouteIntoView()
     },
-    [withinNav, location]
+    [location]
   )
   React.useEffect(() => {
     listenTo(notifications, 'change add remove reset update', () => {
@@ -249,12 +245,9 @@ const App = ({
               item
               className={`${
                 navOpen ? 'w-64' : 'w-20'
-              } transition-all duration-200 ease-in-out relative z-10 mr-2 flex-shrink-0 pb-2 pt-2 pl-2`}
-              onMouseEnter={() => {
-                setWithinNav(true)
-              }}
+              } transition-all duration-200 ease-in-out relative z-10 mr-2 flex-shrink-0 pb-2 pt-2 pl-2 group`}
               onMouseLeave={() => {
-                setWithinNav(false)
+                scrollCurrentRouteIntoView()
               }}
             >
               <Paper elevation={Elevations.navbar} className="h-full">
@@ -352,14 +345,15 @@ const App = ({
                           key={routeInfo.linkProps.to.toString()}
                           component={Link}
                           to={routeInfo.linkProps.to}
-                          className={`${
-                            !withinNav && !isSelected ? 'opacity-25' : ''
-                          } focus:opacity-100 hover:opacity-100 transition-opacity`}
+                          className={`group-hover:opacity-100 ${
+                            !isSelected ? 'opacity-25' : ''
+                          } focus-visible:opacity-100 hover:opacity-100 transition-opacity`}
                           Icon={routeInfo.Icon ? routeInfo.Icon : undefined}
                           expanded={navOpen}
                           iconPosition="start"
                           expandedText={routeInfo.name}
                           unexpandedText={routeInfo.shortName}
+                          focusVisibleClassName="focus-visible"
                           {...(isSelected
                             ? {
                                 ['data-currentroute']: true,
@@ -376,9 +370,7 @@ const App = ({
                   >
                     {properties.bottomLeftBackgroundSrc ? (
                       <img
-                        className={`${
-                          withinNav ? 'opacity-100' : 'opacity-50'
-                        } duration-200 ease-in-out transition-all w-auto h-full absolute max-w-none m-auto min-h-80`}
+                        className={`group-hover:opacity-100 opacity-50 duration-200 ease-in-out transition-all w-auto h-full absolute max-w-none m-auto min-h-80`}
                         src={handleBase64EncodedImages(
                           properties.bottomLeftBackgroundSrc
                         )}
@@ -406,14 +398,13 @@ const App = ({
                             }
                       }
                       target={properties.helpUrl ? '_blank' : undefined}
-                      className={`${
-                        !withinNav ? 'opacity-25' : ''
-                      }  hover:opacity-100 focus:opacity-100 transition-opacity`}
+                      className={`group-hover:opacity-100 opacity-25  hover:opacity-100 focus-visible:opacity-100 transition-opacity`}
                       Icon={HelpIcon}
                       iconPosition="start"
                       expandedText="Help"
                       unexpandedText="Help"
                       expanded={navOpen}
+                      focusVisibleClassName="focus-visible"
                     />
                     {(() => {
                       const open = Boolean(queryParams['global-settings'])
@@ -428,14 +419,13 @@ const App = ({
                                 'global-settings': 'Settings',
                               })}`,
                             }}
-                            className={`${
-                              !withinNav ? 'opacity-25' : ''
-                            } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
+                            className={`group-hover:opacity-100 opacity-25 relative py-3 hover:opacity-100 focus-visible:opacity-100 transition-opacity`}
                             Icon={SettingsIcon}
                             iconPosition="start"
                             expandedText="Settings"
                             unexpandedText="Settings"
                             expanded={navOpen}
+                            focusVisibleClassName="focus-visible"
                           />
                           <Drawer
                             anchor="left"
@@ -481,15 +471,14 @@ const App = ({
                                 })}`,
                               }}
                               className={`${
-                                !hasUnseenNotifications && !withinNav
-                                  ? 'opacity-25'
-                                  : ''
-                              } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
+                                !hasUnseenNotifications ? 'opacity-25' : ''
+                              } group-hover:opacity-100  relative py-3 hover:opacity-100 focus-visible:opacity-100 transition-opacity`}
                               iconPosition="start"
                               Icon={NotificationsIcon}
                               expandedText="Notifications"
                               unexpandedText="Notices"
                               expanded={navOpen}
+                              focusVisibleClassName="focus-visible"
                             />
                           </Box>
                           <Drawer
@@ -502,6 +491,8 @@ const App = ({
                                   queryParams
                                 )}`
                               )
+                              notifications.setSeen()
+                              userInstance.savePreferences()
                             }}
                             PaperProps={{
                               className: 'min-w-120 max-w-4/5 ',
@@ -525,14 +516,13 @@ const App = ({
                                 'global-user': 'User',
                               })}`,
                             }}
-                            className={`${
-                              !withinNav ? 'opacity-25' : ''
-                            } relative py-3 hover:opacity-100 focus:opacity-100 transition-opacity`}
+                            className={`group-hover:opacity-100 opacity-25 relative py-3 hover:opacity-100 focus-visible:opacity-100 transition-opacity`}
                             Icon={PersonIcon}
                             iconPosition="start"
                             expandedText={userInstance.getUserName()}
                             unexpandedText={userInstance.getUserName()}
                             expanded={navOpen}
+                            focusVisibleClassName="focus-visible"
                           />
                           <Drawer
                             anchor="left"

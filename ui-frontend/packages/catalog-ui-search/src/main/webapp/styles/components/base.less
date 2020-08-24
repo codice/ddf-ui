@@ -39,6 +39,10 @@ html.no-animation *:not(.is-critical-animation)::after {
 .scrollbars-hide::-webkit-scrollbar-thumb {
   background: transparent;
 }
+.scrollbars-hide,
+.scrollbars-min {
+  scrollbar-width: none;
+}
 .scrollbars-hide::-webkit-scrollbar {
   width: 0px;
   height: 0px;
