@@ -187,6 +187,9 @@ const MultiSelectActions = ({
   const selectedResultsArray = Object.values(selectedResults)
   return (
     <Dropdown
+      popperProps={{
+        disablePortal: true,
+      }}
       content={({ close }) => {
         return (
           <BetterClickAwayListener onClickAway={close}>
