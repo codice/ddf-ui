@@ -502,6 +502,8 @@ const App = ({
                                   queryParams
                                 )}`
                               )
+                              notifications.setSeen()
+                              userInstance.savePreferences()
                             }}
                             PaperProps={{
                               className: 'min-w-120 max-w-4/5 ',
