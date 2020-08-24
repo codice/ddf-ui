@@ -252,6 +252,7 @@ const SourceSelector = ({ search }: Props) => {
           ) {
             setSources(['all'])
           } else if (
+            availableLocalSources.length > 0 &&
             _.difference(
               availableLocalSources.map(src => src.id),
               newSources.filter(src => isHarvested(src))
@@ -261,6 +262,7 @@ const SourceSelector = ({ search }: Props) => {
               ['local'].concat(newSources.filter(src => !isHarvested(src)))
             )
           } else if (
+            availableRemoteSources.length > 0 &&
             _.difference(
               availableRemoteSources.map(src => src.id),
               newSources.filter(src => !isHarvested(src))
@@ -365,7 +367,7 @@ const SourceSelector = ({ search }: Props) => {
               )
             })
           : null}
-        {availableRemoteSources.length > 0 ? (
+        {availableRemoteSources.length > -1 ? (
           <MenuItem value="remote">
             <Grid container alignItems="stretch" direction="row" wrap="nowrap">
               <Grid item className="pr-2">
