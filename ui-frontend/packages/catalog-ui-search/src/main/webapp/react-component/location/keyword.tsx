@@ -21,21 +21,21 @@ const Polygon = require('./polygon')
 const MultiPolygon = require('./multipoly')
 
 import defaultFetch from '../utils/fetch'
-import { Suggestion } from './gazetteer'
+import { Suggestion, GeoFeature } from './gazetteer'
 
 type Props = {
   setState: any
   fetch?: any
-  value?: any
-  onError?: (e: any) => void
+  value?: string
+  onError?: (error: any) => void
   suggester?: (input: string) => Promise<Suggestion>
-  geofeature?: (suggestion: any) => any
+  geofeature?: (suggestion: Suggestion) => Promise<GeoFeature>
   errorMessage?: string
-  polygon?: any
+  polygon?: any[]
   polyType?: string
   setBufferState?: any
-  polygonBufferWidth?: any
-  polygonBufferUnits?: any
+  polygonBufferWidth?: string
+  polygonBufferUnits?: string
   loadingMessage?: string
   minimumInputLength?: number
   placeholder?: string

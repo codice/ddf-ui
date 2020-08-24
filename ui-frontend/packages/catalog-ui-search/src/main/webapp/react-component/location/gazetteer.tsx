@@ -135,6 +135,13 @@ export type Suggestion = {
   geo?: any
 }
 
+export type GeoFeature = {
+  type: string
+  geometry: { type: string; coordinates: any[] }
+  properties: any
+  id: string
+}
+
 const Gazetteer = (props: Props) => {
   const fetch = props.fetch || defaultFetch
 
