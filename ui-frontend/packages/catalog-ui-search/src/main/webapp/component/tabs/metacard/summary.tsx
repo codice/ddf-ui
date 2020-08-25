@@ -24,7 +24,7 @@ const ResultUtils = require('../../../js/ResultUtils.js')
 import PublishIcon from '@material-ui/icons/Publish'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import Paper from '@material-ui/core/Paper'
-import useTheme from '@material-ui/core/style/useTheme'
+import useTheme from '@material-ui/core/styles/useTheme'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'

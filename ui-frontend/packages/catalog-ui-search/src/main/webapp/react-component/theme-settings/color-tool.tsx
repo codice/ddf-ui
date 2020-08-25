@@ -3,7 +3,7 @@
  */
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import rgbToHex from '@material-ui/core/styles/rgbToHex'
+import { rgbToHex } from '@material-ui/core/styles'
 import withStyles from '@material-ui/core/styles/withStyles'
 import useTheme from '@material-ui/core/styles/useTheme'
 import colors from './typed-colors'
