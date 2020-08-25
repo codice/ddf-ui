@@ -98,14 +98,14 @@ const SortSelections = ({ value, onChange }: Props) => {
     onChange(value.slice(0))
   }
   return (
-    <div>
+    <div data-id="root-sort-container">
       <Typography data-id="Sort-changed" className="pb-2">
         Sort
       </Typography>
       {collectionJson.map((sortItem, index) => {
         return (
           <div
-            data-id={`results-sort${index}-container`}
+            data-id={`sort-container`}
             key={sortItem.attribute.value}
             className={index > 0 ? 'pt-2' : ''}
           >
@@ -124,7 +124,7 @@ const SortSelections = ({ value, onChange }: Props) => {
         )
       })}
       <div className="pt-2">
-        <Button data-id="add-results-sort-button" color="primary" fullWidth onClick={addSort}>
+        <Button data-id="add-sort-button" color="primary" fullWidth onClick={addSort}>
           <Grid container direction="row" alignItems="center" wrap="nowrap">
             <Grid item>
               <Box color="text.primary">
