@@ -510,10 +510,12 @@ export default Marionette.LayoutView.extend({
           placeholder: 'Text to search for.  Use "*" for wildcard.',
           radio: [
             {
+              id: 'match-case-yes',
               label: 'Yes',
               value: 'LIKE',
             },
             {
+              id: 'match-case-no',
               label: 'No',
               value: 'ILIKE',
             },

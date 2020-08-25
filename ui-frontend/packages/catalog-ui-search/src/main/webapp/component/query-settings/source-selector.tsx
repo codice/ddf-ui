@@ -394,6 +394,7 @@ const SourceSelector = ({ search }: Props) => {
         ) : null}
         {availableRemoteSources.length > 0
           ? availableRemoteSources.map((source: any) => {
+<<<<<<< HEAD
             return (
               <MenuItem data-id={`source-${source.id}-option`} key={source.id} value={source.id}>
                 <Grid
@@ -423,6 +424,22 @@ const SourceSelector = ({ search }: Props) => {
                       >
                         {source.id}
                       </Box>
+=======
+              return (
+                <MenuItem
+                  data-id={`source-${source.id}-option`}
+                  key={source.id}
+                  value={source.id}
+                >
+                  <Grid
+                    container
+                    alignItems="stretch"
+                    direction="row"
+                    wrap="nowrap"
+                  >
+                    <Grid item className="pl-2 pr-2">
+                      <Swath className="w-1 h-full" />
+>>>>>>> additional data-id added
                     </Grid>
                     <Grid item className="pl-2">
                       {source.available ? null : <WarningIcon />}
