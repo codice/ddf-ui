@@ -264,7 +264,7 @@ export default Marionette.LayoutView.extend({
   template() {
     return (
       <>
-        <div className="editor-properties">
+        <div data-id="basic-search-container" className="editor-properties">
           <div
             className="basic-text"
             data-help="Search by free text using the

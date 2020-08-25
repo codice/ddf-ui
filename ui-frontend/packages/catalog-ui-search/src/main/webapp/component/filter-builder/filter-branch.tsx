@@ -177,6 +177,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
       >
         <div className=" relative">
           <div
+            data-id={root ? "root-filter-group-container" : "filter-group-contianer"}
             className={`${
               filter.negated ? 'border px-3 py-4 mt-2' : ''
             } transition-all duration-200`}
