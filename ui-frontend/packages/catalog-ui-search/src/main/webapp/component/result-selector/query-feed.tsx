@@ -237,7 +237,11 @@ const QueryFeed = ({ selectionInterface }: Props) => {
     <>
       <Grid container direction="row" alignItems="center" wrap="nowrap">
         <Grid item>
-          <div data-id="results-count-label" title={resultCount} style={{ whiteSpace: 'nowrap' }}>
+          <div
+            data-id="results-count-label"
+            title={resultCount}
+            style={{ whiteSpace: 'nowrap' }}
+          >
             {pending ? (
               <i className="fa fa-circle-o-notch fa-spin is-critical-animation" />
             ) : (
