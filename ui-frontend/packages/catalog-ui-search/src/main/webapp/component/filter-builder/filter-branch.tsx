@@ -58,7 +58,7 @@ const ChildFilter = ({
     <>
       {!isFirst ? (
         <Grid
-          data-id={`filter-${index}-settings-container`}
+          data-id={`filter-settings-container`}
           container
           direction="row"
           alignItems="center"
