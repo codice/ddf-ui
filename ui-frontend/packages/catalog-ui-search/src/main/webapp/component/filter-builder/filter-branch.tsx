@@ -5,7 +5,7 @@ import Box from '@material-ui/core/Box'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import FilterLeaf from './filter-leaf'
-import { useTheme } from '@material-ui/core/styles'
+import useTheme from '@material-ui/core/styles/useTheme'
 import { HoverButton } from '../button/hover'
 import {
   FilterBuilderClass,

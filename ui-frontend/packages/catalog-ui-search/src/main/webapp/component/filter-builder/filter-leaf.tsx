@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import Button from '@material-ui/core/Button'
-import { useTheme } from '@material-ui/core'
+import useTheme from '@material-ui/core/styles/useTheme'
 import { HoverButton } from '../button/hover'
 import { FilterClass } from './filter.structure'
 import Filter from '../../react-component/filter/filter'

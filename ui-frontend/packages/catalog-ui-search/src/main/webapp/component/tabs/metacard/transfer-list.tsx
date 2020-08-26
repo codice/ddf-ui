@@ -1,7 +1,9 @@
 /* https://material-ui.com/components/transfer-list/ */
 import { hot } from 'react-hot-loader'
 import React from 'react'
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles'
+import makeStyles from '@material-ui/core/styles/makeStyles'
+import Theme from '@material-ui/core/styles/Theme'
+import createStyles from '@material-ui/core/styles/createStyles'
 import Grid from '@material-ui/core/Grid'
 import List from '@material-ui/core/List'
 import Card from '@material-ui/core/Card'

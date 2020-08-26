@@ -3,9 +3,11 @@
  */
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import { rgbToHex, withStyles, useTheme } from '@material-ui/core/styles'
+import { rgbToHex } from '@material-ui/core/styles'
+import withStyles from '@material-ui/core/styles/withStyles'
+import useTheme from '@material-ui/core/styles/useTheme'
 import colors from './typed-colors'
-import { capitalize } from '@material-ui/core/utils'
+import capitalize from '@material-ui/core/utils/capitalize'
 import Grid from '@material-ui/core/Grid'
 import Input from '@material-ui/core/Input'
 import Radio from '@material-ui/core/Radio'

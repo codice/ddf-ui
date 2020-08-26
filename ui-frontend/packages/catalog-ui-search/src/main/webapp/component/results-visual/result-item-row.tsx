@@ -14,7 +14,7 @@
  **/
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
-import { useTheme } from '@material-ui/core/styles'
+import useTheme from '@material-ui/core/styles/useTheme'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { CellComponent } from './table-header'

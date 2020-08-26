@@ -63,7 +63,7 @@ const getCollectionAsJson = (collection: Props['value']) => {
   return items
 }
 
-const SortSelections = ({ value, onChange }: Props) => {
+const SortSelections = ({ value = [], onChange }: Props) => {
   if (!value.length) {
     value.push({
       attribute: 'title',

@@ -35,7 +35,7 @@ import { Elevations } from '../theme/theme'
 import Divider from '@material-ui/core/Divider'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { useStatusOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
-import { LinearProgress } from '@material-ui/core'
+import LinearProgress from '@material-ui/core/LinearProgress'
 ;(() => {
   const oldHandleSave = TableVisibility.prototype.handleSave
   TableVisibility.prototype.handleSave = function() {
