@@ -204,7 +204,7 @@ const ResultSelector = ({
             {({ handleClick }) => {
               return (
                 <Button
-                  data-id="results-sort-button"
+                  data-id="sort-button"
                   onClick={handleClick}
                   variant="text"
                   color="primary"
