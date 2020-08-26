@@ -177,7 +177,7 @@ function registerComponent(
                   <Grid item>
                     {tab.closeElement[0].style.display !== 'none' ? (
                       <Button
-                        data-id="close-layout-tab-button"
+                        data-id="close-tab-button"
                         onClick={e => {
                           tab._onCloseClickFn(e)
                         }}
