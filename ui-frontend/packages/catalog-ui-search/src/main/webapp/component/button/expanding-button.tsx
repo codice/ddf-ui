@@ -42,6 +42,7 @@ const ExpandingButton = ({
   const { className, ...otherButtonProps } = buttonProps
   return (
     <Button
+      data-id={`sidebar-${expandedText.toLowerCase().split(" ").join('-')}-button`}
       fullWidth
       className={`${className} transition-all duration-200 ease-in-out h-16 whitespace-no-wrap max-w-full overflow-hidden relative outline-none ${
         expanded ? '' : 'p-0'
