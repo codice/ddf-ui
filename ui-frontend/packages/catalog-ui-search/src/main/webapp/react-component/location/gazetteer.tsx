@@ -12,15 +12,15 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const React = require('react')
-const Keyword = require('./keyword.js')
-const properties = require('../../js/properties.js')
+import * as React from 'react'
+import defaultFetch from '../utils/fetch'
+import Keyword from './keyword'
+const onlineGazetteer = require('../../js/properties.js').onlineGazetteer
 
-import fetch from '../../react-component/utils/fetch'
-
-const onlineGazetteer = properties.onlineGazetteer
-
-const getLargestBbox = (polygonCoordinates, isMultiPolygon) => {
+export const getLargestBbox = (
+  polygonCoordinates: any[],
+  isMultiPolygon: boolean
+) => {
   let finalMax = { x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER }
   let finalMin = { x: Number.MAX_SAFE_INTEGER, y: Number.MAX_SAFE_INTEGER }
   const boundingBoxLimit = 75
@@ -32,13 +32,13 @@ const getLargestBbox = (polygonCoordinates, isMultiPolygon) => {
   }
   let maxArea = -1
   let currentArea = -1
-  let currentMax
-  let currentMin
+  let currentMax: { x: number; y: number }
+  let currentMin: { x: number; y: number }
   polygonCoordinates.map(rowCoordinates => {
     currentMax = { x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER }
     currentMin = { x: Number.MAX_SAFE_INTEGER, y: Number.MAX_SAFE_INTEGER }
     if (isMultiPolygon) {
-      rowCoordinates[0].map(coordinates => {
+      rowCoordinates[0].map((coordinates: any) => {
         currentMax.x = Math.max(coordinates[0], currentMax.x)
         currentMax.y = Math.max(coordinates[1], currentMax.y)
         currentMin.x = Math.min(coordinates[0], currentMin.x)
@@ -61,7 +61,7 @@ const getLargestBbox = (polygonCoordinates, isMultiPolygon) => {
         )
       })
     } else {
-      rowCoordinates.map(coordinates => {
+      rowCoordinates.map((coordinates: any) => {
         currentMax.x = Math.max(coordinates[0], currentMax.x)
         currentMax.y = Math.max(coordinates[1], currentMax.y)
         currentMin.x = Math.min(coordinates[0], currentMin.x)
@@ -106,13 +106,46 @@ const getLargestBbox = (polygonCoordinates, isMultiPolygon) => {
     : encompassingBoundingBox
 }
 
-class Gazetteer extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {}
-    this.fetch = this.props.fetch || fetch
-  }
-  expandPoint(geo) {
+type Props = {
+  setState: any
+  fetch?: any
+  placeholder?: string
+  loadingMessage?: string
+}
+
+type Place = {
+  boundingbox: string[]
+  class: string
+  display_name: string
+  importance: number
+  lat: string
+  licence: string
+  lon: string
+  osm_id: number
+  osm_type: OsmType
+  place_id: number
+  type: string
+}
+
+type OsmType = 'node' | 'way' | 'relation'
+
+export type Suggestion = {
+  id: string
+  name: string
+  geo?: any
+}
+
+export type GeoFeature = {
+  type: string
+  geometry: { type: string; coordinates: any[] }
+  properties: any
+  id: string
+}
+
+const Gazetteer = (props: Props) => {
+  const fetch = props.fetch || defaultFetch
+
+  const expandPoint = geo => {
     const offset = 0.1
     if (geo.length === 1) {
       const point = geo[0]
@@ -137,35 +170,38 @@ class Gazetteer extends React.Component {
     }
     return geo
   }
-  extractGeo(suggestion) {
+
+  const extractGeo = (suggestion: Suggestion) => {
     return {
       type: 'Feature',
       geometry: {
         type: 'Polygon',
         coordinates: [
-          this.expandPoint(suggestion.geo).map(coord => [coord.lon, coord.lat]),
+          expandPoint(suggestion.geo).map(coord => [coord.lon, coord.lat]),
         ],
       },
       properties: {},
       id: suggestion.id,
     }
   }
-  async suggesterWithLiteralSupport(input) {
-    const res = await this.fetch(
+
+  const suggesterWithLiteralSupport = async (input: string) => {
+    const res = await fetch(
       `./internal/geofeature/suggestions?q=${encodeURIComponent(input)}`
     )
     return await res.json()
   }
-  async geofeatureWithLiteralSupport(suggestion) {
+
+  const geofeatureWithLiteralSupport = async (suggestion: Suggestion) => {
     if (suggestion.id.startsWith('LITERAL')) {
-      return this.extractGeo(suggestion)
+      return extractGeo(suggestion)
     }
     const { id } = suggestion
-    const res = await this.fetch(`./internal/geofeature?id=${id}`)
+    const res = await fetch(`./internal/geofeature?id=${id}`)
     const data = await res.json()
     const finalArea = getLargestBbox(
       data.geometry.coordinates,
-      this.isMultiPolygon(data.geometry.coordinates)
+      isMultiPolygon(data.geometry.coordinates)
     )
     return {
       type: 'Feature',
@@ -184,7 +220,8 @@ class Gazetteer extends React.Component {
       id: data.display_name,
     }
   }
-  getOsmTypeSymbol(type) {
+
+  const getOsmTypeSymbol = (type: OsmType) => {
     switch (type) {
       case 'node':
         return 'N'
@@ -196,27 +233,29 @@ class Gazetteer extends React.Component {
         throw 'Unexpected OSM type ' + type
     }
   }
-  async suggester(input) {
+  const suggester = async (input: string) => {
     const res = await window.fetch(
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
         input
       )}`
     )
     const suggestions = await res.json()
-    return suggestions.map(place => {
+    return suggestions.map((place: Place) => {
       return {
-        id: this.getOsmTypeSymbol(place.osm_type) + ':' + place.osm_id,
+        id: getOsmTypeSymbol(place.osm_type) + ':' + place.osm_id,
         name: place.display_name,
       }
     })
   }
-  isMultiPolygon(coordinates) {
+
+  const isMultiPolygon = (coordinates: any[]) => {
     return (
       coordinates[0][0][0] !== undefined &&
       coordinates[0][0][0][0] !== undefined
     )
   }
-  async geofeature(suggestion) {
+
+  const geofeature = async (suggestion: Suggestion) => {
     const [type, id] = suggestion.id.split(':')
     const res = await window.fetch(
       `https://nominatim.openstreetmap.org/reverse?format=json&osm_type=${type}&osm_id=${id}&polygon_geojson=1`
@@ -232,7 +271,7 @@ class Gazetteer extends React.Component {
     ) {
       const finalArea = getLargestBbox(
         data.geojson.coordinates,
-        this.isMultiPolygon(data.geojson.coordinates)
+        isMultiPolygon(data.geojson.coordinates)
       )
       data.boundingbox[0] = finalArea.minY
       data.boundingbox[1] = finalArea.maxY
@@ -256,28 +295,28 @@ class Gazetteer extends React.Component {
       id: data.display_name,
     }
   }
-  render() {
-    return (
-      <div>
-        {onlineGazetteer ? (
-          <Keyword
-            setState={this.props.setState}
-            suggester={input => this.suggester(input)}
-            geofeature={suggestItem => this.geofeature(suggestItem)}
-          />
-        ) : (
-          <Keyword
-            setState={this.props.setState}
-            suggester={input => this.suggesterWithLiteralSupport(input)}
-            geofeature={suggestItem =>
-              this.geofeatureWithLiteralSupport(suggestItem)
-            }
-          />
-        )}
-      </div>
-    )
-  }
+
+  return (
+    <div>
+      {onlineGazetteer ? (
+        <Keyword
+          setState={props.setState}
+          suggester={suggester}
+          geofeature={geofeature}
+          placeholder={props.placeholder}
+          loadingMessage={props.loadingMessage}
+        />
+      ) : (
+        <Keyword
+          setState={props.setState}
+          suggester={suggesterWithLiteralSupport}
+          geofeature={geofeatureWithLiteralSupport}
+          placeholder={props.placeholder}
+          loadingMessage={props.loadingMessage}
+        />
+      )}
+    </div>
+  )
 }
 
-module.exports = Gazetteer
-module.exports.getLargestBbox = getLargestBbox
+export default Gazetteer

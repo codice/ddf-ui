@@ -13,6 +13,7 @@
  *
  **/
 const React = require('react')
+import Keyword from './keyword'
 
 const CustomElements = require('../../js/CustomElements.js')
 
@@ -25,7 +26,6 @@ const Line = require('./line')
 const Polygon = require('./polygon')
 const PointRadius = require('./point-radius')
 const BoundingBox = require('./bounding-box')
-const Keyword = require('./keyword')
 const plugin = require('plugins/location')
 
 const inputs = plugin({

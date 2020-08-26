@@ -439,7 +439,7 @@ const App = ({
                               )
                             }}
                             PaperProps={{
-                              className: 'min-w-120 max-w-4/5 ',
+                              className: 'min-w-120 w-1/6 max-w-4/5 ',
                             }}
                           >
                             <UserSettings

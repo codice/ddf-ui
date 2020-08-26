@@ -110,24 +110,27 @@ const DropdownArea = props => {
     }
   }, [])
 
-  useEffect(() => {
-    if (ref.current) {
-      let newOffset = offset
-      const { x, width } = ref.current.getBoundingClientRect()
-      const viewport = document.body.getBoundingClientRect()
-      const padding = 20
-      if (x - offset < padding) {
-        newOffset = padding + -1 * (x - offset)
-      } else if (x - offset + width > viewport.width) {
-        newOffset = viewport.width - (x - offset + width) - padding
-      } else {
-        newOffset = 0
+  useEffect(
+    () => {
+      if (ref.current) {
+        let newOffset = offset
+        const { x, width } = ref.current.getBoundingClientRect()
+        const viewport = document.body.getBoundingClientRect()
+        const padding = 20
+        if (x - offset < padding) {
+          newOffset = padding + -1 * (x - offset)
+        } else if (x - offset + width > viewport.width) {
+          newOffset = viewport.width - (x - offset + width) - padding
+        } else {
+          newOffset = 0
+        }
+        if (newOffset !== offset) {
+          setOffset(newOffset)
+        }
       }
-      if (newOffset !== offset) {
-        setOffset(newOffset)
-      }
-    }
-  })
+    },
+    [ref.current]
+  )
 
   const { rect, children, onClose } = props
   const viewport = document.body.getBoundingClientRect()

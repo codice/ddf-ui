@@ -16,6 +16,7 @@
 import wrapNum from '../../../react-component/utils/wrap-num/wrap-num.tsx'
 import * as React from 'react'
 import ZoomToHomeButton from '../../../react-component/button/split-button/zoomToHome.tsx'
+import Gazetteer from '../../../react-component/location/gazetteer'
 
 const wreqr = require('../../../js/wreqr.js')
 const template = require('./map.hbs')
@@ -33,8 +34,6 @@ const MapModel = require('./map.model')
 const properties = require('../../../js/properties.js')
 const Common = require('../../../js/Common.js')
 const announcement = require('../../announcement')
-
-const Gazetteer = require('../../../react-component/location/gazetteer.js')
 
 import MapSettings from '../../../react-component/map-settings'
 import MapInfo from '../../../react-component/map-info'
