@@ -65,19 +65,18 @@ export const FilterBuilderRoot = ({ model }: Props) => {
       const callback = () => {
         saveCallbackRef.current()
       }
+      const callback2 = () => {
+        setFilter(getBaseFilter({ model }))
+      }
       // for perf, only update when necessary
       listenTo(model, 'update', callback)
+      listenTo(model, 'change:filterTree', callback2)
       return () => {
         stopListening(model, 'update', callback)
+        stopListening(model, 'change:filterTree', callback2)
       }
     },
     [model, filter]
-  )
-  React.useEffect(
-    () => {
-      setFilter(getBaseFilter({ model }))
-    },
-    [model.get('filterTree')]
   )
   return (
     <FilterBranch

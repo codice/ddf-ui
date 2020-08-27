@@ -27,14 +27,6 @@ const OperatorData = [
     label: 'OR',
     value: 'OR',
   },
-  {
-    label: 'NOT AND',
-    value: 'NOT AND',
-  },
-  {
-    label: 'NOT OR',
-    value: 'NOT OR',
-  },
 ]
 
 type ChildFilterProps = {
