@@ -43,7 +43,6 @@ export default Marionette.LayoutView.extend({
     return (
       <React.Fragment>
         <form
-          data-id="search-container"
           target="autocomplete"
           action="/search/catalog/blank.html"
           className="w-full"
