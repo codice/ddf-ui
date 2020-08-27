@@ -15,7 +15,7 @@
 import React from 'react'
 require('focus-visible')
 require('../styles/tailwind.css')
-require('../styles/libraries.css')
+require('../styles/libraries.less')
 require('../styles/styles.less')
 
 const $ = require('jquery')

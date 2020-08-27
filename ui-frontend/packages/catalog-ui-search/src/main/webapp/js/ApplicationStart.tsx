@@ -19,8 +19,13 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 const user = require('../component/singletons/user-instance.js')
 import SourcesInstance from '../component/singletons/sources-instance'
+import MetacardDefinitions from '../component/tabs/metacard/metacardDefinitions'
 function attemptToStart() {
-  if (user.fetched && SourcesInstance.fetched) {
+  if (
+    user.fetched &&
+    SourcesInstance.fetched &&
+    MetacardDefinitions.typesFetched()
+  ) {
     ReactDOM.render(<BaseApp />, document.querySelector('#router'))
   } else if (!user.fetched) {
     user.once('sync', () => {
@@ -30,6 +35,10 @@ function attemptToStart() {
     SourcesInstance.once('sync', () => {
       attemptToStart()
     })
+  } else if (!MetacardDefinitions.typesFetched()) {
+    setTimeout(() => {
+      attemptToStart() // we don't have a sync event to listen to, so this will do
+    }, 250)
   }
 }
 

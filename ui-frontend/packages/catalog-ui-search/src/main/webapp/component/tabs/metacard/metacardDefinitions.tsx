@@ -62,6 +62,9 @@ const TypedMetacardDefs = {
   getEnum({ attr }: { attr: string }) {
     return metacardDefinitions.enums[attr] as string[] | undefined
   },
+  typesFetched() {
+    return metacardDefinitions.typesFetched as boolean
+  },
 }
 
 export default hot(module)(TypedMetacardDefs)

@@ -179,9 +179,11 @@ module.exports = new (Backbone.Model.extend({
       this.updateSortedMetacardTypes()
     }
   },
+  typesFetched: false,
   getMetacardTypes() {
     $.get('./internal/metacardtype').then(metacardDefinitions => {
       this.addMetacardDefinitions(metacardDefinitions)
+      this.typesFetched = true
     })
   },
   attributeComparator(a, b) {

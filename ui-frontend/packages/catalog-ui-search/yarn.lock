@@ -1346,9 +1346,9 @@
   dependencies:
     commander "^2.15.1"
 
-"@connexta/ace@git://github.com/connexta/ace.git#6922bcb51d095262480c1a514acdf572118680c2":
+"@connexta/ace@git://github.com/connexta/ace.git#7c2dee5cb3013a4c1b95c9b92acd44e38301b611":
   version "1.0.0"
-  resolved "git://github.com/connexta/ace.git#6922bcb51d095262480c1a514acdf572118680c2"
+  resolved "git://github.com/connexta/ace.git#7c2dee5cb3013a4c1b95c9b92acd44e38301b611"
   dependencies:
     "@babel/core" "^7.0.0"
     "@storybook/addon-actions" "5.2.8"
