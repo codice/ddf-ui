@@ -233,7 +233,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
               style={{
                 borderBottom:
                   mode === 'card'
-                    ? `1px solid ${theme.palette.secondary.main}`
+                    ? `1px solid ${theme.palette.primary.main}`
                     : '1px solid transparent',
               }}
             >
@@ -249,7 +249,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
               style={{
                 borderBottom:
                   mode === 'table'
-                    ? `1px solid ${theme.palette.secondary.main}`
+                    ? `1px solid ${theme.palette.primary.main}`
                     : '1px solid transparent',
               }}
             >

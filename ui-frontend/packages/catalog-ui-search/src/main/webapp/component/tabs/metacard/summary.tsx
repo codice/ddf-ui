@@ -774,9 +774,7 @@ const Summary = ({ selectionInterface }: Props) => {
                 style:
                   filter !== ''
                     ? {
-                        borderBottom: `1px solid ${
-                          theme.palette.secondary.main
-                        }`,
+                        borderBottom: `1px solid ${theme.palette.warning.main}`,
                       }
                     : {},
               }}

@@ -87,7 +87,7 @@ const ResultFilter = ({ closeDropdown }: { closeDropdown: () => void }) => {
         <FilterBranch root={true} filter={filter} setFilter={setFilter} />
       </div>
       <Grid
-        className="w-full"
+        className="w-full pt-2"
         container
         direction="row"
         alignItems="center"

@@ -177,7 +177,7 @@ const CustomList = ({
             style:
               filter !== ''
                 ? {
-                    borderBottom: `1px solid ${theme.palette.secondary.main}`,
+                    borderBottom: `1px solid ${theme.palette.warning.main}`,
                   }
                 : {},
           }}
@@ -574,7 +574,7 @@ const TransferList = ({
             })
           }}
           variant="text"
-          color="primary"
+          color="secondary"
           className="mr-2"
         >
           Cancel
