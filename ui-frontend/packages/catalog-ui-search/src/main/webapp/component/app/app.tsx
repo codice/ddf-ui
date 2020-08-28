@@ -39,7 +39,7 @@ import UserView from '../../react-component/user'
 import UserSettings, {
   SettingsComponentType,
 } from '../../react-component/user-settings/user-settings'
-
+const wreqr = require('../../js/wreqr.js')
 const HelpView = require('../help/help.view.js')
 import { GlobalStyles } from './global-styles'
 import CancelDrawing from './cancel-drawing'
@@ -204,6 +204,9 @@ const App = ({
   React.useEffect(() => {
     listenTo(notifications, 'change add remove reset update', () => {
       setHasUnseenNotifications(notifications.hasUnseen() as boolean)
+    })
+    listenTo(wreqr.vent, 'router:navigate', ({ fragment }: any) => {
+      history.push(`/${fragment}`)
     })
   }, [])
   return (
