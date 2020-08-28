@@ -32,6 +32,9 @@ import LinearProgress from '@material-ui/core/LinearProgress'
 import ViewAgendaIcon from '@material-ui/icons/ViewAgenda'
 import TableChartIcon from '@material-ui/icons/TableChart'
 import { HeaderCheckbox } from './table-header'
+import CheckBoxIcon from '@material-ui/icons/CheckBox'
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
+import { DarkDivider } from '../dark-divider/dark-divider'
 
 const user = require('../singletons/user-instance.js')
 
@@ -77,6 +80,7 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
         >
           <Grid item className="pl-6">
             <HeaderCheckbox
+              showText
               lazyResults={lazyResults}
               buttonProps={{
                 style: {
@@ -85,15 +89,35 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
               }}
             />
           </Grid>
-          <Grid item className="pl-16">
+          <Grid item className="pl-8">
             <Button
               onClick={() => {
                 const prefs = user.get('user').get('preferences')
                 prefs.set('resultDisplay', showThumbnails ? 'List' : 'Grid')
                 prefs.savePreferences()
               }}
+              color="primary"
             >
-              {showThumbnails ? 'Hide Thumbnails' : 'Show Thumbnails'}
+              {(() => {
+                if (showThumbnails) {
+                  return (
+                    <>
+                      <Box color="text.primary">
+                        <CheckBoxIcon />
+                      </Box>
+                      <Box className="pl-2">Thumbnails</Box>
+                    </>
+                  )
+                }
+                return (
+                  <>
+                    <Box color="text.primary">
+                      <CheckBoxOutlineBlankIcon />
+                    </Box>
+                    <Box className="pl-2">Thumbnails</Box>
+                  </>
+                )
+              })()}
             </Button>
           </Grid>
           <Grid item className="ml-auto pr-2">
@@ -104,7 +128,7 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
               style={{
                 borderBottom:
                   mode === 'card'
-                    ? `1px solid ${theme.palette.secondary.main}`
+                    ? `1px solid ${theme.palette.primary.main}`
                     : '1px solid transparent',
               }}
             >
@@ -120,7 +144,7 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
               style={{
                 borderBottom:
                   mode === 'table'
-                    ? `1px solid ${theme.palette.secondary.main}`
+                    ? `1px solid ${theme.palette.primary.main}`
                     : '1px solid transparent',
               }}
             >
@@ -130,13 +154,7 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
           </Grid>
         </Grid>
       </Grid>
-      <Box
-        className="w-full h-min my-2"
-        style={{
-          background:
-            theme.palette.type === 'dark' ? dark.background : light.background,
-        }}
-      />
+      <DarkDivider className="w-full h-min my-2" />
       <Grid item className="w-full h-full p-2">
         <Paper elevation={Elevations.paper} className="w-full h-full ">
           <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>

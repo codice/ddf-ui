@@ -36,6 +36,11 @@ import Divider from '@material-ui/core/Divider'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { useStatusOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
 import LinearProgress from '@material-ui/core/LinearProgress'
+import { DarkDivider } from '../dark-divider/dark-divider'
+import useTheme from '@material-ui/core/styles/useTheme'
+import ViewAgendaIcon from '@material-ui/icons/ViewAgenda'
+import TableChartIcon from '@material-ui/icons/TableChart'
+import Box from '@material-ui/core/Box'
 ;(() => {
   const oldHandleSave = TableVisibility.prototype.handleSave
   TableVisibility.prototype.handleSave = function() {
@@ -63,7 +68,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
     selectionInterface,
   })
   const results = Object.values(lazyResults.results)
-
+  const theme = useTheme()
   const { isSearching, status } = useStatusOfLazyResults({ lazyResults })
   const { listenTo } = useBackbone()
   const headerRef = React.useRef<HTMLDivElement>(null)
@@ -175,33 +180,87 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
       wrap="nowrap"
     >
       <Grid item>
-        <Button
-          onClick={() => {
-            setMode(mode === 'card' ? 'table' : 'card')
-          }}
+        <Grid
+          container
+          className="w-full pt-2 px-2"
+          direction="row"
+          alignItems="center"
         >
-          Switch to {mode === 'card' ? 'Table' : 'Card'} View
-        </Button>
-        <Button onClick={openRearrangeModel}>
-          <span className="fa fa-columns"> Rearrange Column</span>
-        </Button>
-        <Button onClick={openVisibilityModel}>
-          <span className="fa fa-eye"> Hide / Show Columns</span>
-        </Button>
-        <Button
-          onClick={() => {
-            const prefs = user.get('user').get('preferences')
-            prefs.set('columnHide', [])
-            prefs.set('hasSelectedColumns', false)
-          }}
-        >
-          <ViewColumnIcon />
-          Reset Shown to Defaults
-        </Button>
-        <Button onClick={openExportModal}>
-          <span className="fa fa-share"> Export</span>
-        </Button>
+          <Grid item className="pl-8">
+            <Button onClick={openRearrangeModel} color="primary">
+              <Box color="text.primary">
+                <span className="fa fa-columns pr-2"> </span>
+              </Box>
+              Rearrange Column
+            </Button>
+          </Grid>
+          <Grid item className="pl-8">
+            <Button onClick={openVisibilityModel} color="primary">
+              <Box color="text.primary">
+                <span className="fa fa-eye pr-2"> </span>
+              </Box>
+              Hide / Show Columns
+            </Button>
+          </Grid>
+          <Grid item className="pl-8">
+            <Button
+              onClick={() => {
+                const prefs = user.get('user').get('preferences')
+                prefs.set('columnHide', [])
+                prefs.set('hasSelectedColumns', false)
+              }}
+              color="primary"
+            >
+              <Box color="text.primary">
+                <ViewColumnIcon className="pr-2" />
+              </Box>
+              Reset Shown to Defaults
+            </Button>
+          </Grid>
+          <Grid item className="pl-8">
+            <Button onClick={openExportModal} color="primary">
+              <Box color="text.primary">
+                <span className="fa fa-share pr-2"> </span>
+              </Box>
+              Export
+            </Button>
+          </Grid>
+          <Grid item className="ml-auto pr-2">
+            <Button
+              onClick={() => {
+                setMode('card')
+              }}
+              style={{
+                borderBottom:
+                  mode === 'card'
+                    ? `1px solid ${theme.palette.primary.main}`
+                    : '1px solid transparent',
+              }}
+            >
+              <ViewAgendaIcon />
+              List
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              onClick={() => {
+                setMode('table')
+              }}
+              style={{
+                borderBottom:
+                  mode === 'table'
+                    ? `1px solid ${theme.palette.primary.main}`
+                    : '1px solid transparent',
+              }}
+            >
+              <TableChartIcon />
+              Table
+            </Button>
+          </Grid>
+        </Grid>
       </Grid>
+      <DarkDivider className="w-full h-min my-2" />
+
       <Grid item className="overflow-hidden bg-inherit w-full h-full p-2">
         <Paper elevation={Elevations.paper} className="w-full h-full">
           <Grid

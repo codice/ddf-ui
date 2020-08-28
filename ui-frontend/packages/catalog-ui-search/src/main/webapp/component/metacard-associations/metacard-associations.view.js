@@ -26,6 +26,7 @@ const AssociationGraphView = require('../associations-graph/associations-graph.v
 const user = require('../singletons/user-instance')
 
 module.exports = Marionette.LayoutView.extend({
+  className: 'w-full h-full overflow-auto',
   setDefaultModel() {
     this.model = this.selectionInterface.getSelectedResults().first()
   },

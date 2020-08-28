@@ -396,7 +396,7 @@ export const Editor = ({
             try {
               transformedValues =
                 attrType === 'BINARY'
-                  ? values.map(subval => subval.split(',')[1])
+                  ? values.map((subval: any) => subval.split(',')[1])
                   : values
             } catch (err) {
               console.log(err)
@@ -457,14 +457,12 @@ const AttributeComponent = ({
   attr,
   summaryShown = [],
   filter = '',
-  width,
   forceRender,
 }: {
   attr: string
   lazyResult: LazyQueryResult
   summaryShown?: string[]
   filter?: string
-  width: number
   forceRender: boolean
 }) => {
   let value = lazyResult.plain.metacard.properties[attr]
@@ -572,7 +570,7 @@ const AttributeComponent = ({
         </Grid>
       )
     },
-    [summaryShown, width, forceRender]
+    [summaryShown, forceRender]
   )
   return (
     <div style={{ display: isFiltered ? 'none' : 'block' }}>{MemoItem}</div>
@@ -693,203 +691,184 @@ const Summary = ({ selectionInterface }: Props) => {
     },
     [expanded]
   )
+  if (!selection) {
+    return <div>No result selected</div>
+  }
   return (
-    <AutoSizer>
-      {({ height, width }) => {
-        if (!selection) {
-          return <div>No result selected</div>
-        }
-        const isTiny = width < 500
-        return (
-          <Grid
-            container
-            direction="column"
-            wrap="nowrap"
-            className="overflow-hidden"
-            style={{
-              height,
-              width,
-            }}
-          >
-            <Grid item className="flex-shrink-0">
-              <Grid
-                container
-                direction="row"
-                alignItems="center"
-                wrap="nowrap"
-                justify="space-between"
-                className="p-2"
-                style={{
-                  marginBottom: isTiny ? '5px' : '0px',
-                }}
-              >
-                <Grid item>
-                  <Button
-                    onClick={() => {
-                      dialogContext.setProps({
-                        PaperProps: {
-                          style: {
-                            minWidth: 'none',
-                          },
-                          elevation: Elevations.panels,
-                        },
-                        open: true,
-                        children: (
-                          <div
-                            style={{
-                              minHeight: '60vh',
-                            }}
-                          >
-                            <TransferList
-                              startingLeft={summaryShown}
-                              startingRight={getHiddenAttributes(
-                                selection,
-                                summaryShown
-                              )
-                                .map(attr => {
-                                  return attr.id
-                                })
-                                .sort()}
-                              updateActive={(active: string[]) => {
-                                user
-                                  .get('user')
-                                  .get('preferences')
-                                  .set('inspector-summaryShown', active)
-                                user.savePreferences()
-                              }}
-                              lazyResult={selection}
-                              onSave={() => {
-                                // Force re-render after save to update values on page
-                                // This is more reliable than "refreshing" the result which
-                                // is frequently not synched up properly
-                                setForceRender(!forceRender)
-                              }}
-                            />
-                          </div>
-                        ),
-                      })
-                    }}
-                    color="primary"
-                    size="small"
-                    style={{ height: 'auto' }}
-                  >
-                    Manage Attributes
-                  </Button>
-                </Grid>
-
-                <Grid item>
-                  <TextField
-                    size="small"
-                    variant="outlined"
-                    label="Filter"
-                    value={filter}
-                    inputProps={{
-                      style:
-                        filter !== ''
-                          ? {
-                              borderBottom: `1px solid ${
-                                theme.palette.secondary.main
-                              }`,
-                            }
-                          : {},
-                    }}
-                    onChange={e => {
-                      persistantFilter = e.target.value
-                      setFilter(e.target.value)
-                    }}
-                  />
-                </Grid>
-              </Grid>
-            </Grid>
-            <DarkDivider className="w-full h-min" />
-            <Grid item className="flex-shrink-1 overflow-auto p-2">
-              <Paper elevation={Elevations.paper}>
-                {summaryShown.map((attr, index) => {
-                  return (
-                    <div className="relative" key={attr}>
-                      <AttributeComponent
+    <Grid
+      container
+      direction="column"
+      wrap="nowrap"
+      className="overflow-hidden w-full h-full"
+    >
+      <Grid item className="flex-shrink-0">
+        <Grid
+          container
+          direction="row"
+          alignItems="center"
+          wrap="nowrap"
+          justify="space-between"
+          className="p-2"
+        >
+          <Grid item>
+            <Button
+              onClick={() => {
+                dialogContext.setProps({
+                  PaperProps: {
+                    style: {
+                      minWidth: 'none',
+                    },
+                    elevation: Elevations.panels,
+                  },
+                  open: true,
+                  children: (
+                    <div
+                      style={{
+                        minHeight: '60vh',
+                      }}
+                    >
+                      <TransferList
+                        startingLeft={summaryShown}
+                        startingRight={getHiddenAttributes(
+                          selection,
+                          summaryShown
+                        )
+                          .map(attr => {
+                            return attr.id
+                          })
+                          .sort()}
+                        updateActive={(active: string[]) => {
+                          user
+                            .get('user')
+                            .get('preferences')
+                            .set('inspector-summaryShown', active)
+                          user.savePreferences()
+                        }}
                         lazyResult={selection}
-                        attr={attr}
-                        summaryShown={summaryShown}
-                        filter={filter}
-                        width={width}
-                        forceRender={forceRender}
+                        onSave={() => {
+                          // Force re-render after save to update values on page
+                          // This is more reliable than "refreshing" the result which
+                          // is frequently not synched up properly
+                          setForceRender(!forceRender)
+                        }}
                       />
-                      {index !== 0 ? (
-                        <Divider
-                          orientation="horizontal"
-                          className="absolute top-0 w-full h-min"
-                        />
-                      ) : null}
                     </div>
-                  )
-                })}
-
-                {expanded ? (
-                  <>
-                    {everythingElse.map(attr => {
-                      return (
-                        <div key={attr} className="relative">
-                          <AttributeComponent
-                            lazyResult={selection}
-                            attr={attr}
-                            summaryShown={summaryShown}
-                            filter={filter}
-                            width={width}
-                            forceRender={forceRender}
-                          />
-                          <Divider
-                            orientation="horizontal"
-                            className="absolute top-0 w-full h-min"
-                          />
-                        </div>
-                      )
-                    })}
-                    {blankEverythingElse.map(attr => {
-                      return (
-                        <div key={attr.id} className="relative">
-                          <AttributeComponent
-                            lazyResult={selection}
-                            attr={attr.id}
-                            summaryShown={summaryShown}
-                            filter={filter}
-                            width={width}
-                            forceRender={forceRender}
-                          />
-                          <Divider
-                            orientation="horizontal"
-                            className="absolute top-0 w-full h-min"
-                          />
-                        </div>
-                      )
-                    })}
-                  </>
-                ) : (
-                  <></>
-                )}
-              </Paper>
-            </Grid>
-            {/* If hidden attributes === 0, don't show this button */}
-            {!fullyExpanded && (
-              <>
-                <DarkDivider className="w-full h-min" />
-                <Grid item className="flex-shrink-0 p-2">
-                  <Button
-                    onClick={() => {
-                      setExpanded(!expanded)
-                    }}
-                    size="small"
-                    color="primary"
-                  >
-                    {expanded ? 'Collapse' : 'See all'}
-                  </Button>
-                </Grid>
-              </>
-            )}
+                  ),
+                })
+              }}
+              color="primary"
+              size="small"
+              style={{ height: 'auto' }}
+            >
+              Manage Attributes
+            </Button>
           </Grid>
-        )
-      }}
-    </AutoSizer>
+
+          <Grid item>
+            <TextField
+              size="small"
+              variant="outlined"
+              label="Filter"
+              value={filter}
+              inputProps={{
+                style:
+                  filter !== ''
+                    ? {
+                        borderBottom: `1px solid ${theme.palette.warning.main}`,
+                      }
+                    : {},
+              }}
+              onChange={e => {
+                persistantFilter = e.target.value
+                setFilter(e.target.value)
+              }}
+            />
+          </Grid>
+        </Grid>
+      </Grid>
+      <DarkDivider className="w-full h-min" />
+      <Grid item className="flex-shrink-1 overflow-auto p-2">
+        <Paper elevation={Elevations.paper}>
+          {summaryShown.map((attr, index) => {
+            return (
+              <div className="relative" key={attr}>
+                <AttributeComponent
+                  lazyResult={selection}
+                  attr={attr}
+                  summaryShown={summaryShown}
+                  filter={filter}
+                  forceRender={forceRender}
+                />
+                {index !== 0 ? (
+                  <Divider
+                    orientation="horizontal"
+                    className="absolute top-0 w-full h-min"
+                  />
+                ) : null}
+              </div>
+            )
+          })}
+
+          {expanded ? (
+            <>
+              {everythingElse.map(attr => {
+                return (
+                  <div key={attr} className="relative">
+                    <AttributeComponent
+                      lazyResult={selection}
+                      attr={attr}
+                      summaryShown={summaryShown}
+                      filter={filter}
+                      forceRender={forceRender}
+                    />
+                    <Divider
+                      orientation="horizontal"
+                      className="absolute top-0 w-full h-min"
+                    />
+                  </div>
+                )
+              })}
+              {blankEverythingElse.map(attr => {
+                return (
+                  <div key={attr.id} className="relative">
+                    <AttributeComponent
+                      lazyResult={selection}
+                      attr={attr.id}
+                      summaryShown={summaryShown}
+                      filter={filter}
+                      forceRender={forceRender}
+                    />
+                    <Divider
+                      orientation="horizontal"
+                      className="absolute top-0 w-full h-min"
+                    />
+                  </div>
+                )
+              })}
+            </>
+          ) : (
+            <></>
+          )}
+        </Paper>
+      </Grid>
+      {/* If hidden attributes === 0, don't show this button */}
+      {!fullyExpanded && (
+        <>
+          <DarkDivider className="w-full h-min" />
+          <Grid item className="flex-shrink-0 p-2">
+            <Button
+              onClick={() => {
+                setExpanded(!expanded)
+              }}
+              size="small"
+              color="primary"
+            >
+              {expanded ? 'Collapse' : 'See all'}
+            </Button>
+          </Grid>
+        </>
+      )}
+    </Grid>
   )
 }
 

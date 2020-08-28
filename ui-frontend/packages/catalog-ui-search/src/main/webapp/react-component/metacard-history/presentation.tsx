@@ -15,8 +15,8 @@
 
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
+import Button from '@material-ui/core/Button'
 import styled from 'styled-components'
-import { Button, buttonTypeEnum } from '../presentation/button'
 import LoadingCompanion from '../loading-companion'
 
 type Props = {
@@ -100,16 +100,6 @@ const Modified = styled.div`
   text-overflow: ellipsis;
 `
 
-const RevertButton = styled(Button)`
-  margin-top: 10px;
-  width: 100%;
-  text-align: center;
-  height: ${props => props.theme.minimumButtonSize};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
 const MetacardHistory = (props: Props) => {
   const {
     onClick,
@@ -161,12 +151,15 @@ have chosen."
         </Body>
         {selectedVersion &&
           canEdit && (
-            <RevertButton
-              buttonType={buttonTypeEnum.primary}
+            <Button
+              fullWidth
+              className="p-2"
+              variant="contained"
+              color="primary"
               onClick={revertToSelectedVersion}
-              icon="fa fa-undo"
-              text="Revert to Selected Version"
-            />
+            >
+              Revert to selected version
+            </Button>
           )}
       </Root>
     </LoadingCompanion>

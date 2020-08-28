@@ -137,7 +137,7 @@ const CustomList = ({
             disabled={items.length === 0}
             onClick={handleToggleAll(items)}
             color={
-              isIndeterminate || isCompletelySelected ? 'secondary' : 'default'
+              isIndeterminate || isCompletelySelected ? 'default' : 'default'
             }
           >
             {(() => {
@@ -177,7 +177,7 @@ const CustomList = ({
             style:
               filter !== ''
                 ? {
-                    borderBottom: `1px solid ${theme.palette.secondary.main}`,
+                    borderBottom: `1px solid ${theme.palette.warning.main}`,
                   }
                 : {},
           }}
@@ -263,6 +263,7 @@ const CustomList = ({
                                       inputProps={{
                                         'aria-labelledby': labelId,
                                       }}
+                                      color="default"
                                     />
                                   </ListItemIcon>
                                   <ListItemText id={labelId} primary={alias} />
@@ -573,7 +574,7 @@ const TransferList = ({
             })
           }}
           variant="text"
-          color="primary"
+          color="secondary"
           className="mr-2"
         >
           Cancel

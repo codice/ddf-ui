@@ -161,6 +161,7 @@ module.exports = {
       'group-hover',
       'group-focus',
       'focus-visible',
+      'focus-within',
     ],
     rotate: [
       'responsive',

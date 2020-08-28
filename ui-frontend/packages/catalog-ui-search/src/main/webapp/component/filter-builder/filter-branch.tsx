@@ -27,14 +27,6 @@ const OperatorData = [
     label: 'OR',
     value: 'OR',
   },
-  {
-    label: 'NOT AND',
-    value: 'NOT AND',
-  },
-  {
-    label: 'NOT OR',
-    value: 'NOT OR',
-  },
 ]
 
 type ChildFilterProps = {
@@ -186,7 +178,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
               filter.negated ? 'border px-3 py-4 mt-2' : ''
             } transition-all duration-200`}
             style={{
-              borderColor: theme.palette.secondary.main,
+              borderColor: theme.palette.primary.main,
             }}
           >
             <Grid item className="w-full filter-actions">

@@ -37,6 +37,7 @@ function getSrc(previewHtml, textColor) {
 }
 
 module.exports = Marionette.ItemView.extend({
+  className: 'w-full h-full overflow-auto',
   setDefaultModel() {
     this.model = this.selectionInterface.getSelectedResults().first()
   },
