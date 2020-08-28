@@ -13,13 +13,11 @@
  *
  **/
 import * as React from 'react'
-import { MetacardInteraction } from './metacard-interactions'
 const router = require('../../component/router/router')
 import { Props } from '.'
 import { hot } from 'react-hot-loader'
 import Button from '@material-ui/core/Button'
 import { Link } from '../../component/link/link'
-const wreqr = require('wreqr')
 
 const ExpandMetacard = (props: Props) => {
   const isRouted = router && router.toJSON().name === 'openMetacard'
@@ -45,24 +43,6 @@ const ExpandMetacard = (props: Props) => {
       Open Metacard View
     </Button>
   )
-}
-
-const handleExpand = (props: Props) => {
-  props.onClose()
-  let id = props.model
-    .first()
-    .get('metacard')
-    .get('properties')
-    .get('id')
-
-  id = encodeURIComponent(id)
-
-  wreqr.vent.trigger('router:navigate', {
-    fragment: 'metacards/' + id,
-    options: {
-      trigger: true,
-    },
-  })
 }
 
 export default hot(module)(ExpandMetacard)

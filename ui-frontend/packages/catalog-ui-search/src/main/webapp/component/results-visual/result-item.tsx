@@ -237,6 +237,10 @@ const MultiSelectActions = ({
   )
 }
 
+// factored out for easy debugging (can add bg-gray-400 to see trail)
+const diagonalHoverClasses =
+  'absolute z-50 right-0 bottom-100 h-4 transform scale-0 group-hover:scale-100 transition-all absolute z-50 right-0 bottom-100'
+
 // fake event to pass ripple.stop
 const fakeEvent = {
   type: '',
@@ -350,6 +354,9 @@ export const ResultItem = ({
                 <Extensions.resultItemTitleAddOn lazyResult={lazyResult} />
                 <Grid item style={{ height: '100%' }}>
                   <Dropdown
+                    popperProps={{
+                      disablePortal: true,
+                    }}
                     content={({ close }) => {
                       return (
                         <BetterClickAwayListener onClickAway={close}>
@@ -441,6 +448,14 @@ export const ResultItem = ({
             rippleRef.current.stop(fakeEvent)
           }
         }, 200)
+      }}
+      onMouseLeave={() => {
+        try {
+          //@ts-ignore
+          if (document.activeElement) document.activeElement.blur()
+        } catch (err) {
+          console.log(err)
+        }
       }}
       onFocus={e => {
         if (e.target === e.currentTarget && rippleRef.current) {
@@ -656,15 +671,42 @@ export const ResultItem = ({
             </div>
           </div>
         </div>
-        <Paper
-          onClick={e => {
-            e.stopPropagation()
-          }}
-          elevation={Elevations.overlays}
-          className={`absolute z-50 right-0 bottom-0 focus-within:opacity-100 group-hover:opacity-100 hover:opacity-100 opacity-0 p-2 cursor-auto transform translate-y-3/4`}
+        {/* trick to keep the dropdown visible over an arc of the cursor, so users have some leeway if going diagonal to the actions dropdowns **/}
+        <div
+          className={`${diagonalHoverClasses} w-full transform translate-y-1`}
+        />
+        <div
+          className={`${diagonalHoverClasses} w-9/12 transform translate-y-2 `}
+        />
+        <div
+          className={`${diagonalHoverClasses} w-6/12 transform translate-y-3`}
+        />
+        <div
+          className={`${diagonalHoverClasses} w-5/12 transform translate-y-4`}
+        />
+        <div
+          className={`${diagonalHoverClasses} w-4/12 transform translate-y-5`}
+        />
+        <div
+          className={`${diagonalHoverClasses} w-3/12 transform translate-y-6`}
+        />
+        <div
+          className={`${diagonalHoverClasses} w-2/12 transform translate-y-8`}
+        />
+
+        <div
+          className={`absolute z-50 right-0 bottom-0 focus-within:opacity-100 group-hover:opacity-100 hover:opacity-100 opacity-0 cursor-auto transform translate-y-3/4 scale-0 group-hover:scale-100 focus-within:scale-100 transition-all`}
         >
-          <DynamicActions />
-        </Paper>
+          <Paper
+            onClick={e => {
+              e.stopPropagation()
+            }}
+            elevation={Elevations.overlays}
+            className="p-2"
+          >
+            <DynamicActions />
+          </Paper>
+        </div>
       </div>
     </Button>
   )
