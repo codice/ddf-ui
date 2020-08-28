@@ -508,14 +508,12 @@ export const ResultItem = ({
                     return (
                       <>
                         <Box
-                          color="secondary.main"
                           className={`absolute w-full h-full left-0 top-0 opacity-0 transform transition duration-200 ease-in-out -translate-x-full`}
                         >
                           <CheckBoxIcon className="group-1-hover:block group-1-focus-visible:block hidden" />
                           <CheckIcon className="group-1-hover:hidden group-1-focus-visible:hidden block" />
                         </Box>
                         <Box
-                          color="secondary.main"
                           className={`transform transition duration-200 ease-in-out -translate-x-full group-1-focus-visible:translate-x-0 group-1-hover:translate-x-0`}
                         >
                           <CheckBoxIcon className="group-1-hover:block group-1-focus-visible:block hidden" />
@@ -525,7 +523,7 @@ export const ResultItem = ({
                     )
                   } else if (!isSelected) {
                     return (
-                      <Box color="secondary.main" className="transform ">
+                      <Box className="transform ">
                         <CheckBoxOutlineBlankIcon
                           className={`group-1-hover:visible group-1-focus-visible:visible invisible`}
                         />

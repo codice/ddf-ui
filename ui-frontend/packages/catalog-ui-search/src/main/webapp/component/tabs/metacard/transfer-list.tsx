@@ -137,7 +137,7 @@ const CustomList = ({
             disabled={items.length === 0}
             onClick={handleToggleAll(items)}
             color={
-              isIndeterminate || isCompletelySelected ? 'secondary' : 'default'
+              isIndeterminate || isCompletelySelected ? 'default' : 'default'
             }
           >
             {(() => {
@@ -263,6 +263,7 @@ const CustomList = ({
                                       inputProps={{
                                         'aria-labelledby': labelId,
                                       }}
+                                      color="default"
                                     />
                                   </ListItemIcon>
                                   <ListItemText id={labelId} primary={alias} />

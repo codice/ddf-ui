@@ -169,7 +169,6 @@ const RowComponent = ({
                   lazyResult.controlSelect()
                 }
               }}
-              color="secondary"
             >
               {isSelected ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
             </Button>

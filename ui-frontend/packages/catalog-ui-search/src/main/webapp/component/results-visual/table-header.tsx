@@ -106,9 +106,11 @@ const getSortDirectionClass = (attribute: string) => {
 }
 
 export const HeaderCheckbox = ({
+  showText = false,
   lazyResults,
   buttonProps,
 }: {
+  showText?: boolean
   lazyResults: HeaderProps['lazyResults']
   buttonProps?: ButtonProps
 }) => {
@@ -117,7 +119,7 @@ export const HeaderCheckbox = ({
   })
   return (
     <Button
-      color="secondary"
+      color="primary"
       onClick={event => {
         event.stopPropagation()
         if (selection === 'selected') {
@@ -135,11 +137,32 @@ export const HeaderCheckbox = ({
       {(() => {
         switch (selection) {
           case 'partially':
-            return <IndeterminateCheckBoxIcon />
+            return (
+              <>
+                <Box color="text.primary">
+                  <IndeterminateCheckBoxIcon />
+                </Box>
+                {showText ? <Box className="pl-2">Select All</Box> : null}
+              </>
+            )
           case 'selected':
-            return <CheckBoxIcon />
+            return (
+              <>
+                <Box color="text.primary">
+                  <CheckBoxIcon />
+                </Box>
+                {showText ? <Box className="pl-2">Deselect All</Box> : null}
+              </>
+            )
           case 'unselected':
-            return <CheckBoxOutlineBlankIcon />
+            return (
+              <>
+                <Box color="text.primary">
+                  <CheckBoxOutlineBlankIcon />
+                </Box>
+                {showText ? <Box className="pl-2">Select All</Box> : null}
+              </>
+            )
         }
       })()}
     </Button>
