@@ -20,7 +20,7 @@ const LoadingCompanionView = require('../../loading-companion/loading-companion.
 const ResultUtils = require('../../../js/ResultUtils.js')
 
 module.exports = EditorView.extend({
-  className: 'is-metacards-basic',
+  className: 'is-metacards-basic w-full h-full overflow-auto',
   setDefaultModel() {
     this.model = this.selectionInterface.getSelectedResults()
   },

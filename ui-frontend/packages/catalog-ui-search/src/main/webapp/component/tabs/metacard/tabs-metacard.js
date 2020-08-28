@@ -33,7 +33,7 @@ const LightWeightSummaryView = Marionette.LayoutView.extend({
 })
 
 const MetacardOverwriteView = Marionette.LayoutView.extend({
-  className: 'w-full h-full',
+  className: 'w-full h-full overflow-auto',
   template() {
     return (
       <MetacardOverwrite selectionInterface={this.options.selectionInterface} />
@@ -42,7 +42,7 @@ const MetacardOverwriteView = Marionette.LayoutView.extend({
 })
 
 const MetacardArchiveView = Marionette.LayoutView.extend({
-  className: 'w-full h-full',
+  className: 'w-full h-full overflow-auto',
   template() {
     return (
       <MetacardArchive selectionInterface={this.options.selectionInterface} />
@@ -51,7 +51,7 @@ const MetacardArchiveView = Marionette.LayoutView.extend({
 })
 
 const MetacardActionsView = Marionette.LayoutView.extend({
-  className: 'w-full h-full',
+  className: 'w-full h-full overflow-auto',
   template() {
     return (
       <MetacardActions selectionInterface={this.options.selectionInterface} />
@@ -60,7 +60,7 @@ const MetacardActionsView = Marionette.LayoutView.extend({
 })
 
 const MetacardQualityView = Marionette.LayoutView.extend({
-  className: 'w-full h-full',
+  className: 'w-full h-full overflow-auto',
   template() {
     return (
       <MetacardQuality selectionInterface={this.options.selectionInterface} />
@@ -69,7 +69,7 @@ const MetacardQualityView = Marionette.LayoutView.extend({
 })
 
 const MetacardHistoryView = Marionette.LayoutView.extend({
-  className: 'w-full h-full',
+  className: 'w-full h-full overflow-auto',
   template() {
     return (
       <MetacardHistory selectionInterface={this.options.selectionInterface} />

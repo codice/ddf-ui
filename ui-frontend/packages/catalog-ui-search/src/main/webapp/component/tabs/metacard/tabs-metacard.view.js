@@ -76,12 +76,12 @@ module.exports = TabsView.extend({
       result.isRevision() &&
       ['History', 'Actions', 'Overwrite', 'Archive'].indexOf(activeTabName) >= 0
     ) {
-      this.model.set('activeTab', 'Summary')
+      this.model.set('activeTab', 'Details')
     } else if (
       result.isDeleted() &&
       ['History', 'Actions', 'Overwrite'].indexOf(activeTabName) >= 0
     ) {
-      this.model.set('activeTab', 'Summary')
+      this.model.set('activeTab', 'Details')
     }
     if (
       result.isRemote() &&
@@ -89,16 +89,16 @@ module.exports = TabsView.extend({
         activeTabName
       ) >= 0
     ) {
-      this.model.set('activeTab', 'Summary')
+      this.model.set('activeTab', 'Details')
     }
     if (
       !user.canWrite(result) &&
       ['Archive', 'Overwrite'].indexOf(activeTabName) >= 0
     ) {
-      this.model.set('activeTab', 'Summary')
+      this.model.set('activeTab', 'Details')
     }
     if (!result.hasPreview() && ['Preview'].indexOf(activeTabName) >= 0) {
-      this.model.set('activeTab', 'Summary')
+      this.model.set('activeTab', 'Details')
     }
     const activeTab = this.model.getActiveView()
     if (activeTab) {

@@ -20,6 +20,7 @@ const MetacardsBasicView = require('../../editor/metacards-basic/metacards-basic
 import MetacardArchive from '../../../react-component/metacard-archive'
 
 const MetacardArchiveView = Marionette.LayoutView.extend({
+  className: 'w-full h-full overflow-auto',
   template() {
     return (
       <MetacardArchive selectionInterface={this.options.selectionInterface} />
