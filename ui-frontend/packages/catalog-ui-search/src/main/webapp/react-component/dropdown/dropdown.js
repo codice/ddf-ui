@@ -249,7 +249,7 @@ class Dropdown extends React.Component {
     const anchor = this.props.anchor ? (
       React.cloneElement(this.props.anchor, { onClick: () => this.onToggle() })
     ) : (
-      <div onClick={() => this.onToggle()}>
+      <div data-id="dropdown" onClick={() => this.onToggle()}>
         <Text>{this.props.label}</Text>
         <Icon>
           <FontAwesomeIcon icon={faCaretDown} />
