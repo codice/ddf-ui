@@ -86,6 +86,7 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
           </Grid>
           <Grid item className="pl-16">
             <Button
+              data-id="show-hide-thumbnails-button"
               onClick={() => {
                 const prefs = user.get('user').get('preferences')
                 prefs.set('resultDisplay', showThumbnails ? 'List' : 'Grid')

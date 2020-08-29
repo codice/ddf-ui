@@ -27,6 +27,7 @@ const FilterLeaf = ({ filter, setFilter }: Props) => {
     >
       {filter.negated ? (
         <HoverButton
+          data-id="remove-not-button"
           className={`absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 py-0 px-1 text-xs z-10`}
           color="primary"
           variant="contained"
@@ -47,6 +48,7 @@ const FilterLeaf = ({ filter, setFilter }: Props) => {
         </HoverButton>
       ) : (
         <Button
+          data-id="not-field-button"
           className={`${
             hover ? 'opacity-25' : 'opacity-0'
           } hover:opacity-100 focus:opacity-100 transition-opacity duration-200 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 py-0 px-1 text-xs z-10`}

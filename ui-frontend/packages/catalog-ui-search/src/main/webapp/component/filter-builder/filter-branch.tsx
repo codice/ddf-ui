@@ -58,6 +58,7 @@ const ChildFilter = ({
     <>
       {!isFirst ? (
         <Grid
+          data-id={`filter-settings-container`}
           container
           direction="row"
           alignItems="center"
@@ -67,6 +68,7 @@ const ChildFilter = ({
         >
           <Grid item className="p-2">
             <TextField
+              data-id="filter-operator-select"
               value={parentFilter.type}
               onChange={e => {
                 const newOperator = e.target.value as FilterBuilderClass['type']
@@ -90,6 +92,7 @@ const ChildFilter = ({
           </Grid>
           <Grid item className="ml-auto position absolute right-0">
             <Button
+              data-id="remove-child-filter-button"
               color="primary"
               onClick={() => {
                 const newFilters = parentFilter.filters.slice(0)
@@ -182,6 +185,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
       >
         <div className=" relative">
           <div
+            data-id={root ? "root-filter-group-container" : "filter-group-contianer"}
             className={`${
               filter.negated ? 'border px-3 py-4 mt-2' : ''
             } transition-all duration-200`}
@@ -235,7 +239,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                 {filter.filters.length !== 0 ? (
                   <Grid item className="ml-auto">
                     <Button
-                      data-id="remove-child-button"
+                      data-id="remove-first-filter-button"
                       color="primary"
                       onClick={() => {
                         const newFilters = filter.filters.slice(0)
@@ -277,6 +281,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
             ) : (
               <>
                 <Button
+                  data-id="not-group-button"
                   className={`${
                     hover ? 'opacity-25' : 'opacity-0'
                   } hover:opacity-100 focus:opacity-100 transition-opacity duration-200 absolute top-0 left-1/2 transform -translate-y-1/2 -translate-x-1/2 py-0 px-1 text-xs z-10`}

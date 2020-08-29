@@ -98,13 +98,14 @@ const SortSelections = ({ value, onChange }: Props) => {
     onChange(value.slice(0))
   }
   return (
-    <div>
+    <div data-id="root-sort-container">
       <Typography data-id="Sort-changed" className="pb-2">
         Sort
       </Typography>
       {collectionJson.map((sortItem, index) => {
         return (
           <div
+            data-id={`sort-container`}
             key={sortItem.attribute.value}
             className={index > 0 ? 'pt-2' : ''}
           >

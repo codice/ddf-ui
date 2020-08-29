@@ -103,6 +103,7 @@ export default hot(module)(
       } = this.props
       return (
         <div
+          data-id="marionette-region-container"
           className={`marionette-region-container ${
             className ? className : ''
           } ${defaultStyling ? 'w-full h-full' : ''}`}

@@ -105,7 +105,7 @@ const render = (props: Props) => {
       {metacardInfo(props)}
       {distanceInfo(props)}
       <CoordinateInfo>
-        <span>{coordinates}</span>
+        <span data-id="coordinates-label">{coordinates}</span>
       </CoordinateInfo>
     </Root>
   )

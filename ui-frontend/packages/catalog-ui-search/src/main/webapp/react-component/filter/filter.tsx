@@ -40,6 +40,7 @@ const Filter = ({ filter, setFilter }: Props) => {
     <Grid container direction="column" alignItems="center" className="w-full">
       <Grid item className="w-full pb-2">
         <Autocomplete
+          data-id="filter-type-autocomplete"
           fullWidth
           size="small"
           options={attributeList}
@@ -60,7 +61,7 @@ const Filter = ({ filter, setFilter }: Props) => {
       <Grid item className="w-full pb-2">
         <FilterComparator filter={filter} setFilter={setFilter} />
       </Grid>
-      <Grid item className="w-full">
+      <Grid data-id="filter-input" item className="w-full">
         <FilterInput filter={filter} setFilter={setFilter} />
       </Grid>
     </Grid>

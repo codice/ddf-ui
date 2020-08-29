@@ -176,19 +176,21 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
     >
       <Grid item>
         <Button
+          data-id="switch-view-mode"
           onClick={() => {
             setMode(mode === 'card' ? 'table' : 'card')
           }}
         >
           Switch to {mode === 'card' ? 'Table' : 'Card'} View
         </Button>
-        <Button onClick={openRearrangeModel}>
+        <Button data-id="rearrange-column-button" onClick={openRearrangeModel}>
           <span className="fa fa-columns"> Rearrange Column</span>
         </Button>
-        <Button onClick={openVisibilityModel}>
+        <Button data-id="hide-show-column-button" onClick={openVisibilityModel}>
           <span className="fa fa-eye"> Hide / Show Columns</span>
         </Button>
         <Button
+          data-id="reset-to-defaults-button"
           onClick={() => {
             const prefs = user.get('user').get('preferences')
             prefs.set('columnHide', [])
@@ -198,7 +200,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
           <ViewColumnIcon />
           Reset Shown to Defaults
         </Button>
-        <Button onClick={openExportModal}>
+        <Button data-id="export-table-button" onClick={openExportModal}>
           <span className="fa fa-share"> Export</span>
         </Button>
       </Grid>

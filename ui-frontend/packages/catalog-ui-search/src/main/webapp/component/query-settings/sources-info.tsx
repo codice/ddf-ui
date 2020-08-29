@@ -20,6 +20,7 @@ const SourcesInfo = () => {
       }
     >
       <Button
+        data-id="sources-button"
         fullWidth
         component={Link}
         to="/sources"
