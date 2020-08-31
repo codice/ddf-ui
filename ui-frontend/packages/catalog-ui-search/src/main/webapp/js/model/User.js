@@ -35,6 +35,7 @@ const ThemeUtils = require('../ThemeUtils.js')
 const QuerySettings = require('./QuerySettings.js')
 const Oauth = require('./Oauth.js')
 require('backbone-associations')
+import plugin from 'plugins/user'
 
 const User = {}
 
@@ -513,4 +514,4 @@ User.Response = Backbone.AssociatedModel.extend({
   },
 })
 
-module.exports = User
+module.exports = plugin(User)
