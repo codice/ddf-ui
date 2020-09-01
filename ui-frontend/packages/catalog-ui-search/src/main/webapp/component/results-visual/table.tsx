@@ -204,7 +204,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
           </Grid>
           <Grid item className="pl-8">
             <Button
-              data-id="reset-to-defaults-button"
+              data-id="reset-shown-to-defaults-button"
               onClick={() => {
                 const prefs = user.get('user').get('preferences')
                 prefs.set('columnHide', [])

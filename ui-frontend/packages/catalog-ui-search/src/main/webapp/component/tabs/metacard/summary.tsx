@@ -118,7 +118,7 @@ type Props = {
 
 const ThumbnailInput = ({
   value,
-  onChange = () => {},
+  onChange = () => { },
   disabled = false,
 }: {
   value: string
@@ -145,7 +145,7 @@ const ThumbnailInput = ({
               return
             }
             const reader = new FileReader()
-            reader.onload = function(event) {
+            reader.onload = function (event) {
               try {
                 //@ts-ignore
                 onChange(event.target.result)
@@ -193,8 +193,8 @@ const ThumbnailInput = ({
 export const Editor = ({
   attr,
   lazyResult,
-  onCancel = () => {},
-  onSave = () => {},
+  onCancel = () => { },
+  onSave = () => { },
   goBack,
 }: {
   attr: string
@@ -416,7 +416,7 @@ export const Editor = ({
               $.ajax({
                 url: `./internal/metacards?storeId=${
                   lazyResult.plain.metacard.properties['source-id']
-                }`,
+                  }`,
                 type: 'PATCH',
                 data: JSON.stringify(payload),
                 contentType: 'application/json',
@@ -507,7 +507,7 @@ const AttributeComponent = ({
             }}
           >
             <Grid container direction="row">
-              <Grid item>
+              <Grid data-id={`${attr}-value`} item>
                 {value.map((val: any, index: number) => {
                   return (
                     <>
@@ -519,7 +519,7 @@ const AttributeComponent = ({
                           if (attr === 'ext.audio-snippet') {
                             const mimetype =
                               lazyResult.plain.metacard.properties[
-                                'ext.audio-snippet-mimetype'
+                              'ext.audio-snippet-mimetype'
                               ]
                             const src = `data:${mimetype};base64,${val}`
 
@@ -649,12 +649,12 @@ const Summary = ({ selectionInterface }: Props) => {
     () => {
       return selection && expanded
         ? Object.keys(selection.plain.metacard.properties)
-            .filter(attr => {
-              return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({ attr })
-            })
-            .filter(attr => {
-              return !summaryShown.includes(attr)
-            })
+          .filter(attr => {
+            return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({ attr })
+          })
+          .filter(attr => {
+            return !summaryShown.includes(attr)
+          })
         : []
     },
     [expanded, summaryShown]
@@ -663,24 +663,24 @@ const Summary = ({ selectionInterface }: Props) => {
     () => {
       return selection
         ? Object.values(
-            TypedMetacardDefs.getDefinition({
-              type: selection.plain.metacardType,
+          TypedMetacardDefs.getDefinition({
+            type: selection.plain.metacardType,
+          })
+        )
+          .filter(val => {
+            if (summaryShown.includes(val.id)) {
+              return false
+            }
+            if (everythingElse.includes(val.id)) {
+              return false
+            }
+            return true
+          })
+          .filter(val => {
+            return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({
+              attr: val.id,
             })
-          )
-            .filter(val => {
-              if (summaryShown.includes(val.id)) {
-                return false
-              }
-              if (everythingElse.includes(val.id)) {
-                return false
-              }
-              return true
-            })
-            .filter(val => {
-              return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({
-                attr: val.id,
-              })
-            })
+          })
         : []
     },
     [expanded, summaryShown]
@@ -712,6 +712,7 @@ const Summary = ({ selectionInterface }: Props) => {
         >
           <Grid item>
             <Button
+              data-id="manage-attributes-button"
               onClick={() => {
                 dialogContext.setProps({
                   PaperProps: {
@@ -766,6 +767,7 @@ const Summary = ({ selectionInterface }: Props) => {
 
           <Grid item>
             <TextField
+              data-id="summary-filter-input"
               size="small"
               variant="outlined"
               label="Filter"
@@ -774,8 +776,8 @@ const Summary = ({ selectionInterface }: Props) => {
                 style:
                   filter !== ''
                     ? {
-                        borderBottom: `1px solid ${theme.palette.warning.main}`,
-                      }
+                      borderBottom: `1px solid ${theme.palette.warning.main}`,
+                    }
                     : {},
               }}
               onChange={e => {
@@ -847,8 +849,8 @@ const Summary = ({ selectionInterface }: Props) => {
               })}
             </>
           ) : (
-            <></>
-          )}
+              <></>
+            )}
         </Paper>
       </Grid>
       {/* If hidden attributes === 0, don't show this button */}
@@ -857,6 +859,7 @@ const Summary = ({ selectionInterface }: Props) => {
           <DarkDivider className="w-full h-min" />
           <Grid item className="flex-shrink-0 p-2">
             <Button
+              data-id="see-all-collapse-button"
               onClick={() => {
                 setExpanded(!expanded)
               }}

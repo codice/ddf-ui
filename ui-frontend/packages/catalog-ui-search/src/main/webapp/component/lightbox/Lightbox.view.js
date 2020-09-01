@@ -45,7 +45,7 @@ module.exports = Marionette.LayoutView.extend(
       }
       return (
         <React.Fragment>
-          <div className="lightbox-container">
+          <div data-id="dialog-container" className="lightbox-container">
             <div className="lightbox-title-bar clearfix">
               <button
                 title="close"

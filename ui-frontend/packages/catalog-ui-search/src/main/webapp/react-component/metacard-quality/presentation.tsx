@@ -75,15 +75,15 @@ const MetacardValidation = (props: any) => {
         <tbody>
           {metacardValidation.map((validation: any, i: number) => {
             return (
-              <tr key={i}>
-                <td>
+              <tr data-id="metacard-validation-issue-container" key={i}>
+                <td data-id="attribute-value">
                   {validation.attributes.map((attribute: string, j: number) => {
                     return <div key={attribute + j}>{attribute}</div>
                   })}
                 </td>
-                <td>{validation.severity}</td>
+                <td data-id="severity-value" >{validation.severity}</td>
                 {validation.duplicate ? (
-                  <td>
+                  <td data-id="message-value">
                     {validation.duplicate.message[0]}
                     {validation.duplicate.ids.map((id: any, index: number) => {
                       return (
@@ -98,7 +98,7 @@ const MetacardValidation = (props: any) => {
                     {validation.duplicate.message[1]}
                   </td>
                 ) : (
-                  <td>{validation.message}</td>
+                  <td data-id="message-value" >{validation.message}</td>
                 )}
               </tr>
             )
@@ -123,14 +123,14 @@ const AttributeValidation = (props: any) => {
         <tbody>
           {attributeValidation.map((validation: any, i: number) => {
             return (
-              <tr key={i}>
-                <td>{validation.attribute}</td>
-                <td>
+              <tr data-id="attribute-validation-issue-container" key={i}>
+                <td data-id="attribute-value">{validation.attribute}</td>
+                <td data-id="warnings-value">
                   {validation.warnings.map((warning: string, j: number) => {
                     return <div key={warning + j}>{warning}</div>
                   })}
                 </td>
-                <td>
+                <td data-id="errors-value">
                   {validation.errors.map((error: string, j: number) => {
                     return <div key={error + j}>{error}</div>
                   })}

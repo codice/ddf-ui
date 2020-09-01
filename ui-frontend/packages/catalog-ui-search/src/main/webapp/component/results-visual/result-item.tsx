@@ -415,7 +415,7 @@ export const ResultItem = ({
   const shouldShowSource = showSource()
   return (
     <Button
-      data-id={`result-item-${index}`}
+      data-id="result-item-container-button"
       component="div" // we have to use a div since there are buttons inside this (invalid to nest buttons)
       onMouseDown={event => {
         /**
@@ -497,7 +497,7 @@ export const ResultItem = ({
           >
             <Grid item>
               <Button
-                data-id="result-item-checkbox"
+                data-id="select-checkbox"
                 onClick={event => {
                   event.stopPropagation() // this button takes precedence over the enclosing button, and is always additive / subtractive (no deselect of other results)
                   if (event.shiftKey) {
