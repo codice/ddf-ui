@@ -230,7 +230,11 @@ const SourceSelector = ({ search }: Props) => {
         {availableLocalSources.length > 0
           ? availableLocalSources.map((source: any) => {
               return (
-                <MenuItem data-id={`source-${source.id}-option`} key={source.id} value={source.id}>
+                <MenuItem
+                  data-id={`source-${source.id}-option`}
+                  key={source.id}
+                  value={source.id}
+                >
                   <Grid
                     container
                     alignItems="stretch"
@@ -287,7 +291,11 @@ const SourceSelector = ({ search }: Props) => {
         {availableRemoteSources.length > 0
           ? availableRemoteSources.map((source: any) => {
               return (
-                <MenuItem data-id={`source-${source.id}-option`} key={source.id} value={source.id}>
+                <MenuItem
+                  data-id={`source-${source.id}-option`}
+                  key={source.id}
+                  value={source.id}
+                >
                   <Grid
                     container
                     alignItems="stretch"

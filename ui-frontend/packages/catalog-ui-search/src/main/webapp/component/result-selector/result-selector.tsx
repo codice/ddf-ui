@@ -240,7 +240,11 @@ const ResultSelector = ({
           >
             {({ handleClick }) => {
               return (
-                <Button data-id="layout-button" color="primary" onClick={handleClick}>
+                <Button
+                  data-id="layout-button"
+                  color="primary"
+                  onClick={handleClick}
+                >
                   <Box color="text.primary">
                     <ViewCompactIcon />
                   </Box>
