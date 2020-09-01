@@ -236,7 +236,7 @@ const TimelineVisualization = (props: Props) => {
   }
 
   return (
-    <TimelineWrapper ref={rootRef}>
+    <TimelineWrapper data-id="timeline-container" ref={rootRef}>
       <Timeline
         min={new Date('1975-01-01:00:00.000z')}
         max={maxDate}

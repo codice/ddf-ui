@@ -98,6 +98,7 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
           </Grid>
           <Grid item className="ml-auto pr-2">
             <Button
+              data-id="list-button"
               onClick={() => {
                 setMode('card')
               }}
@@ -114,6 +115,7 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
           </Grid>
           <Grid item>
             <Button
+              data-id="table-button"
               onClick={() => {
                 setMode('table')
               }}

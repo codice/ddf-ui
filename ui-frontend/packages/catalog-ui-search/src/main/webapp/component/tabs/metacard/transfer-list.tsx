@@ -176,11 +176,12 @@ const TransferList = ({
     const [filter, setFilter] = React.useState('')
 
     return (
-      <Card>
+      <Card data-id={`${title.toLowerCase()}-container`}>
         <CardHeader
           className={classes.cardHeader}
           avatar={
             <Checkbox
+              data-id={`${title.toLowerCase()}-select-all-checkbox`}
               onClick={handleToggleAll(items)}
               checked={
                 numberOfChecked(items) === items.length && items.length !== 0
@@ -198,6 +199,7 @@ const TransferList = ({
         />
         <Divider />
         <TextField
+          data-id="active-filter-input"
           size="small"
           variant="outlined"
           label="Filter by keyword"
@@ -280,6 +282,7 @@ const TransferList = ({
                                   {...provided.dragHandleProps}
                                 >
                                   <ListItem
+                                    data-id="attribute-container"
                                     key={value}
                                     role="listitem"
                                     button
@@ -287,6 +290,7 @@ const TransferList = ({
                                   >
                                     <ListItemIcon>
                                       <Checkbox
+                                        data-id="select-checkbox"
                                         checked={checked.indexOf(value) !== -1}
                                         tabIndex={-1}
                                         disableRipple
@@ -301,6 +305,7 @@ const TransferList = ({
                                     />
                                     {!isReadonly && (
                                       <Button
+                                        data-id="edit-button"
                                         style={{
                                           pointerEvents: 'all',
                                           height: '100%',
@@ -429,6 +434,7 @@ const TransferList = ({
           <Grid item>
             <Grid container direction="column" alignItems="center">
               <Button
+                data-id="move-right-button"
                 variant="outlined"
                 size="small"
                 className={classes.button}
@@ -439,6 +445,7 @@ const TransferList = ({
                 &gt;
               </Button>
               <Button
+                data-id="move-left-button"
                 variant="outlined"
                 size="small"
                 className={classes.button}
@@ -458,6 +465,7 @@ const TransferList = ({
       <Divider />
       <DialogActions>
         <Button
+          data-id="dialog-save-button"
           disabled={mode === 'saving'}
           onClick={() => {
             setMode('saving')

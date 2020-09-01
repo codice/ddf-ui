@@ -504,7 +504,7 @@ const AttributeComponent = ({
             }}
           >
             <Grid container direction="row">
-              <Grid item>
+              <Grid data-id={`${attr}-value`} item>
                 {value.map((val: any, index: number) => {
                   return (
                     <>
@@ -699,6 +699,7 @@ const Summary = ({ selectionInterface }: Props) => {
             >
               <Grid item>
                 <Button
+                  data-id="manage-attributes-button"
                   onClick={() => {
                     dialogContext.setProps({
                       PaperProps: {
@@ -753,6 +754,7 @@ const Summary = ({ selectionInterface }: Props) => {
 
               <Grid item>
                 <TextField
+                  data-id="summary-filter-input"
                   size="small"
                   variant="outlined"
                   label="Filter"
@@ -824,6 +826,7 @@ const Summary = ({ selectionInterface }: Props) => {
             {!fullyExpanded && (
               <div style={{ padding: '10px 0px 0px 10px' }}>
                 <Button
+                  data-id="see-all-collapse-button"
                   onClick={() => {
                     setExpanded(!expanded)
                   }}

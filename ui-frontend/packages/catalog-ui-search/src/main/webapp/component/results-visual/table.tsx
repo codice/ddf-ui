@@ -190,7 +190,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
           <span className="fa fa-eye"> Hide / Show Columns</span>
         </Button>
         <Button
-          data-id="reset-to-defaults-button"
+          data-id="reset-shown-to-defaults-button"
           onClick={() => {
             const prefs = user.get('user').get('preferences')
             prefs.set('columnHide', [])
@@ -200,7 +200,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
           <ViewColumnIcon />
           Reset Shown to Defaults
         </Button>
-        <Button data-id="export-table-button" onClick={openExportModal}>
+        <Button data-id="export-button" onClick={openExportModal}>
           <span className="fa fa-share"> Export</span>
         </Button>
       </Grid>

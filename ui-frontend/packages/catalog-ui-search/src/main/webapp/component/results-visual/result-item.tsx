@@ -400,7 +400,7 @@ export const ResultItem = ({
   }>(null)
   return (
     <Button
-      data-id={`result-item-${index}`}
+      data-id="result-item-container-button"
       component="div" // we have to use a div since there are buttons inside this (invalid to nest buttons)
       onMouseEnter={() => {
         setIsHovering(true)
@@ -486,7 +486,7 @@ export const ResultItem = ({
           >
             <Grid item>
               <Button
-                data-id="result-item-checkbox"
+                data-id="select-checkbox"
                 onClick={event => {
                   event.stopPropagation()
                   if (event.shiftKey) {
