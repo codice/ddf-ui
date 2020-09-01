@@ -19,6 +19,7 @@ import metacardInteractions from './metacard-interactions'
 import { Props } from '../react-component/filter/filter-input/filter-input'
 import { LazyQueryResult } from '../js/model/LazyQueryResult/LazyQueryResult'
 import { ResultType } from '../js/model/Types'
+import { AuditLog } from './audit-log/audit-log'
 
 export type ExtensionPointsType = {
   providers: SFC<ProviderProps>
@@ -46,6 +47,9 @@ export type ExtensionPointsType = {
       editLayoutRef?: any
     }
   ) => JSX.Element | null
+  postAuditLog: (
+    { action, component, ids }: AuditLog
+  ) => React.ReactNode | undefined
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -57,6 +61,7 @@ const ExtensionPoints: ExtensionPointsType = {
   resultItemTitleAddOn: () => null,
   resultItemRowAddOn: () => null,
   layoutDropdown: () => null,
+  postAuditLog: () => undefined,
 }
 
 export default ExtensionPoints

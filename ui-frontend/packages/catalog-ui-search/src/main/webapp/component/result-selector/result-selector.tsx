@@ -33,6 +33,9 @@ import SelectionRipple from '../golden-layout/selection-ripple'
 import { ResultType } from '../../js/model/Types'
 import Extensions from '../../extension-points'
 
+const postAuditLog = Extensions.postAuditLog
+let selectedIds = new Set<string>()
+
 const SelectedResults = ({ selectionInterface }: any) => {
   const selectedResults = useLazyResultsSelectedResultsFromSelectionInterface({
     selectionInterface,
@@ -57,6 +60,38 @@ const SelectedResults = ({ selectionInterface }: any) => {
       }}
     >
       {({ handleClick }) => {
+        if(postAuditLog !== undefined){
+          let newSelectedIds = new Set<string>()
+          for(let key in selectedResults){
+            newSelectedIds.add(key)
+          }
+
+          let unselectedIds = new Set<string>()
+          if(selectedIds.size > 0){
+            selectedIds.forEach((id: string) => {
+              if(!newSelectedIds.has(id)){
+                unselectedIds.add(id)
+              }
+            })
+            if(unselectedIds.size > 0){
+              postAuditLog({
+                action: 'unselected',
+                component: 'resource',
+                ids: unselectedIds,
+              })
+            }
+          }
+
+          if(newSelectedIds.size > 0){
+            postAuditLog({
+              action: 'selected',
+              component: 'resource',
+              ids: newSelectedIds,
+            })
+            selectedIds = newSelectedIds
+          }
+        }
+        
         return (
           <Button
             className={`relative ${
