@@ -31,6 +31,7 @@ import { Elevations } from '../theme/theme'
 import useTheme from '@material-ui/core/styles/useTheme'
 import SelectionRipple from '../golden-layout/selection-ripple'
 import { ResultType } from '../../js/model/Types'
+import Extensions from '../../extension-points'
 
 const SelectedResults = ({ selectionInterface }: any) => {
   const selectedResults = useLazyResultsSelectedResultsFromSelectionInterface({

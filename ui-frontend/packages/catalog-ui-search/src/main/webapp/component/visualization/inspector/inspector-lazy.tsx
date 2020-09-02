@@ -27,10 +27,7 @@ const LazyInspector = ({ selectionInterface }: Props) => {
     selectionInterface.setSelectedResults(backboneModels)
   })
   const conductAudit = () => {
-    let newSelectedIds = new Set<string>()
-    for (let key in selectedResults) {
-      newSelectedIds.add(key)
-    }
+    let newSelectedIds = new Set(Object.keys(selectedResults))
 
     let unselectedIds = new Set<string>()
     if (selectedIds.size > 0) {
