@@ -62,13 +62,14 @@ const render = (props: PresentationProps) => {
   return (
     <Interactions>
       {warning !== '' && (
-        <Warning data-help="View map layer warnings." title={warning}>
+        <Warning data-id="view-warnings-button" data-help="View map layer warnings." title={warning}>
           <span className=" fa fa-warning" />
         </Warning>
       )}
 
       {isRemovable && (
         <Remove
+          data-id="remove-layer-button"
           data-help="Remove map layer from user preferences."
           title="Remove map layer from user preferences."
           onClick={onRemove}
@@ -78,6 +79,7 @@ const render = (props: PresentationProps) => {
       )}
 
       <Show
+        data-id="visibility-button"
         data-help="Toggle layer visibility."
         title="Toggle layer visibility."
         onClick={updateLayerShow}
