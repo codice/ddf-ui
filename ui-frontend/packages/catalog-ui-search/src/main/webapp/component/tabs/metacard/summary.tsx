@@ -34,6 +34,7 @@ import AddIcon from '@material-ui/icons/Add'
 import Box from '@material-ui/core/Box'
 import { Elevations, dark, light } from '../../theme/theme'
 import { DarkDivider } from '../../dark-divider/dark-divider'
+import { displayHighlightedAttrInFull } from './highlightUtil'
 //metacardDefinitions.metacardTypes[attribute].type
 //metacardDefinitions.metacardTypes[attribute].multivalued
 //properties.isReadOnly(attribute)
@@ -557,7 +558,29 @@ const AttributeComponent = ({
                                 </Typography>
                               )
                             default:
-                              return <Typography>{val}</Typography>
+                              if (
+                                lazyResult.highlights[attr]
+                              ) {
+                                if (attr === 'title') {
+                                  //Special case, title highlights don't get truncated
+                                  return (
+                                    <Typography>
+                                      <span
+                                        dangerouslySetInnerHTML={{
+                                          //@ts-ignore Ignore possible undefined as we null check above
+                                          __html: lazyResult.highlights[attr][0].highlight
+                                        }}
+                                      />
+                                    </Typography>
+                                  )
+                                }
+                                return displayHighlightedAttrInFull(
+                                  lazyResult.highlights[attr],
+                                  val
+                                )
+                              } else {
+                                return <Typography>{val}</Typography>
+                              }
                           }
                         })()}
                       </div>

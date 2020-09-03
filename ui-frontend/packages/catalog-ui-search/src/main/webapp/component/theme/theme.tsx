@@ -83,7 +83,6 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       }
       span.highlight {
         font-weight: bolder;
-        border-bottom: 1px solid;
       }
       .MuiToolbar-root a,
       .MuiToolbar-root .MuiBreadcrumbs-separator {

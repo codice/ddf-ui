@@ -35,7 +35,7 @@ export type AttributeHighlight = {
 }
 
 export type AttributeHighlights = {
-  [key: string]: AttributeHighlight
+  [key: string]: Array<AttributeHighlight>
 }
 
 export type ResponseHighlightType = Array<{
@@ -328,15 +328,16 @@ export class LazyQueryResults {
       (blob, highlight) => {
         blob[highlight.id] = highlight.highlights.reduce(
           (innerblob, subhighlight) => {
-            innerblob[subhighlight.attribute] = subhighlight
+            innerblob[subhighlight.attribute] = highlight.highlights.filter(hl => hl.attribute === subhighlight.attribute)
             return innerblob
           },
-          {} as { [key: string]: AttributeHighlight }
+          {} as { [key: string]: Array<AttributeHighlight> }
         )
         return blob
       },
       {} as TransformedHighlightsType
     )
+
     results.forEach(result => {
       const lazyResult = new LazyQueryResult(
         result,
