@@ -108,7 +108,7 @@ class LayerRearrange extends React.Component<PresentationProps, {}> {
       <Rearrange>
         {RearrangeUp(this.props, this.up)}
         {RearrangeDown(this.props, this.down)}
-        <Drag className="layer-rearrange">
+        <Drag data-id="layer-rearrange-button" className="layer-rearrange">
           <span className="fa fa-arrows-v" />
         </Drag>
       </Rearrange>
