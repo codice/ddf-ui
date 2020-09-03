@@ -337,7 +337,6 @@ export class LazyQueryResults {
       },
       {} as TransformedHighlightsType
     )
-
     results.forEach(result => {
       const lazyResult = new LazyQueryResult(
         result,

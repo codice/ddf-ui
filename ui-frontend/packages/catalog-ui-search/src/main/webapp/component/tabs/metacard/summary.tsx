@@ -567,7 +567,6 @@ const AttributeComponent = ({
                                     <Typography>
                                       <span
                                         dangerouslySetInnerHTML={{
-                                          //@ts-ignore Ignore possible undefined as we null check above
                                           __html: lazyResult.highlights[attr][0].highlight
                                         }}
                                       />
