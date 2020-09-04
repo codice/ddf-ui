@@ -260,7 +260,7 @@ const QueryFeed = ({ selectionInterface }: Props) => {
             content={({ closeAndRefocus }) => {
               return (
                 <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper style={{ padding: '20px' }} className="intrigue-table">
+                  <Paper data-id="query-status-container" style={{ padding: '20px' }} className="intrigue-table">
                     <QueryStatus
                       statusBySource={statusBySource}
                       query={selectionInterface.getCurrentQuery()}

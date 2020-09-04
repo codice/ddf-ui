@@ -191,7 +191,7 @@ function registerComponent(
               tab.element[0]
             )
             clearInterval(intervalId)
-          } catch (err) {}
+          } catch (err) { }
         }, 100)
       })
     }
@@ -341,6 +341,7 @@ export default Marionette.LayoutView.extend({
     return currentConfig
   },
   registerGoldenLayoutComponents() {
+    console.log(Visualizations);
     Visualizations.forEach(viz => {
       registerComponent(this, viz.id, viz.view, viz.options, viz)
     })
@@ -377,6 +378,7 @@ export default Marionette.LayoutView.extend({
             <Grid container direction="row" wrap="nowrap">
               <Grid item>
                 <Button
+                  data-id="maximise-tab-button"
                   onClick={e => {
                     const prevWidth = stack.config.prevWidth || 500
                     const prevHeight = stack.config.prevHeight || 500
@@ -431,7 +433,7 @@ export default Marionette.LayoutView.extend({
           stack.header.controlsContainer[0]
         )
         clearInterval(intervalId)
-      } catch (err) {}
+      } catch (err) { }
     }, 100)
   },
   handleGoldenLayoutStateChange(event) {

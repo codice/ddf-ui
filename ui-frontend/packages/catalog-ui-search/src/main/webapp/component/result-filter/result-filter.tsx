@@ -95,7 +95,7 @@ const ResultFilter = ({ closeDropdown }: { closeDropdown: () => void }) => {
       >
         <Grid item className="w-full">
           <Button
-            data-id="remove-all-filters-button"
+            data-id="remove-all-results-filters-button"
             fullWidth
             variant="text"
             color="secondary"
@@ -109,7 +109,7 @@ const ResultFilter = ({ closeDropdown }: { closeDropdown: () => void }) => {
         </Grid>
         <Grid item className="w-full">
           <Button
-            data-id="save-filters-button"
+            data-id="save-results-filters-button"
             fullWidth
             variant="contained"
             color="primary"

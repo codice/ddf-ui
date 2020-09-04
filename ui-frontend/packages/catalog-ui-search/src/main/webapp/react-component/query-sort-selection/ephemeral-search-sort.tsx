@@ -60,7 +60,7 @@ const PermanentSearchSort = ({ closeDropdown }: Props) => {
       .trigger('change:resultSort')
   }
   return (
-    <div className="min-w-120">
+    <div data-id="results-sort-container" className="min-w-120">
       <div className="pb-2">
         <SortSelections
           value={sorts}
