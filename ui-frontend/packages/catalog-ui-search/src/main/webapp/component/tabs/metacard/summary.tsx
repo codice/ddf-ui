@@ -854,24 +854,26 @@ const Summary = ({ selectionInterface }: Props) => {
         </Paper>
       </Grid>
       {/* If hidden attributes === 0, don't show this button */}
-      {!fullyExpanded && (
-        <>
-          <DarkDivider className="w-full h-min" />
-          <Grid item className="flex-shrink-0 p-2">
-            <Button
-              data-id="see-all-collapse-button"
-              onClick={() => {
-                setExpanded(!expanded)
-              }}
-              size="small"
-              color="primary"
-            >
-              {expanded ? 'Collapse' : 'See all'}
-            </Button>
-          </Grid>
-        </>
-      )}
-    </Grid>
+      {
+        !fullyExpanded && (
+          <>
+            <DarkDivider className="w-full h-min" />
+            <Grid item className="flex-shrink-0 p-2">
+              <Button
+                data-id="see-all-collapse-button"
+                onClick={() => {
+                  setExpanded(!expanded)
+                }}
+                size="small"
+                color="primary"
+              >
+                {expanded ? 'Collapse' : 'See all'}
+              </Button>
+            </Grid>
+          </>
+        )
+      }
+    </Grid >
   )
 }
 
