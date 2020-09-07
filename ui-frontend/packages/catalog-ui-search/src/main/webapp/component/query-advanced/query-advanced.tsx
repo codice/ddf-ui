@@ -24,7 +24,10 @@ type Props = {
 export const QueryAdvanced = ({ model }: Props) => {
   return (
     <div className="w-full h-full">
-      <div data-id="advanced-search-container" className="w-full h-full px-2 pt-2 overflow-auto">
+      <div
+        data-id="advanced-search-container"
+        className="w-full h-full px-2 pt-2 overflow-auto"
+      >
         <div className="query-advanced w-full">
           <FilterBuilderRoot model={model} />
         </div>

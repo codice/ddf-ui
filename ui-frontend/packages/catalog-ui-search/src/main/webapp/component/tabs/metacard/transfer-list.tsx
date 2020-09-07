@@ -124,7 +124,10 @@ const CustomList = ({
   const isCompletelySelected =
     numberChecked === items.length && items.length !== 0
   return (
-    <Paper data-id={`${title.toLowerCase()}-container`} elevation={Elevations.paper}>
+    <Paper
+      data-id={`${title.toLowerCase()}-container`}
+      elevation={Elevations.paper}
+    >
       <Grid
         container
         className="p-2 text-xl font-normal relative"
@@ -179,8 +182,8 @@ const CustomList = ({
             style:
               filter !== ''
                 ? {
-                  borderBottom: `1px solid ${theme.palette.warning.main}`,
-                }
+                    borderBottom: `1px solid ${theme.palette.warning.main}`,
+                  }
                 : {},
           }}
           onChange={e => {
@@ -192,186 +195,186 @@ const CustomList = ({
       {mode === 'loading' ? (
         <CircularProgress />
       ) : (
-          <List className={classes.list} dense component="div" role="list">
-            {isDnD && (
-              <div className="italic px-4 text-xs font-normal">
-                Click and drag attributes to reorder.
-              </div>
-            )}
-            <DragDropContext
-              onDragEnd={(result: DropResult) => {
-                //Put these NO-OPs up front for performance reasons:
-                //1. If the item is dropped outside the list, do nothing
-                //2. If the item is moved into the same place, do nothing
-                if (!result.destination) {
-                  return
-                }
-                if (result.source.index === result.destination.index) {
-                  return
-                }
+        <List className={classes.list} dense component="div" role="list">
+          {isDnD && (
+            <div className="italic px-4 text-xs font-normal">
+              Click and drag attributes to reorder.
+            </div>
+          )}
+          <DragDropContext
+            onDragEnd={(result: DropResult) => {
+              //Put these NO-OPs up front for performance reasons:
+              //1. If the item is dropped outside the list, do nothing
+              //2. If the item is moved into the same place, do nothing
+              if (!result.destination) {
+                return
+              }
+              if (result.source.index === result.destination.index) {
+                return
+              }
 
-                if (result.reason === 'DROP' && result.destination) {
-                  const originalIndex = result.source.index
-                  const destIndex = result.destination.index
-                  const clonedList = items.slice()
-                  clonedList.splice(originalIndex, 1)
-                  clonedList.splice(destIndex, 0, result.draggableId)
-                  updateItems(clonedList)
-                }
-              }}
-            >
-              <Droppable droppableId="test">
-                {provided => {
-                  return (
-                    <div {...provided.droppableProps} ref={provided.innerRef}>
-                      {items.map((value: string, index: number) => {
-                        const labelId = `transfer-list-all-item-${value}-label`
-                        const alias = TypedMetacardDefs.getAlias({
-                          attr: value,
-                        })
-                        const isReadonly = checkIsReadOnly(value)
-                        const isFiltered =
-                          filter !== ''
-                            ? !alias.toLowerCase().includes(filter.toLowerCase())
-                            : false
+              if (result.reason === 'DROP' && result.destination) {
+                const originalIndex = result.source.index
+                const destIndex = result.destination.index
+                const clonedList = items.slice()
+                clonedList.splice(originalIndex, 1)
+                clonedList.splice(destIndex, 0, result.draggableId)
+                updateItems(clonedList)
+              }
+            }}
+          >
+            <Droppable droppableId="test">
+              {provided => {
+                return (
+                  <div {...provided.droppableProps} ref={provided.innerRef}>
+                    {items.map((value: string, index: number) => {
+                      const labelId = `transfer-list-all-item-${value}-label`
+                      const alias = TypedMetacardDefs.getAlias({
+                        attr: value,
+                      })
+                      const isReadonly = checkIsReadOnly(value)
+                      const isFiltered =
+                        filter !== ''
+                          ? !alias.toLowerCase().includes(filter.toLowerCase())
+                          : false
 
-                        return isFiltered ? null : (
-                          <Draggable
-                            draggableId={value}
-                            index={index}
-                            key={value}
-                            isDragDisabled={!isDnD}
-                          >
-                            {provided => {
-                              return (
-                                //@ts-ignore
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
+                      return isFiltered ? null : (
+                        <Draggable
+                          draggableId={value}
+                          index={index}
+                          key={value}
+                          isDragDisabled={!isDnD}
+                        >
+                          {provided => {
+                            return (
+                              //@ts-ignore
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <ListItem
+                                  data-id="attribute-container"
+                                  key={value}
+                                  role="listitem"
+                                  button
+                                  className="p-0"
+                                  onClick={handleToggle(value)}
                                 >
-                                  <ListItem
-                                    data-id="attribute-container"
-                                    key={value}
-                                    role="listitem"
-                                    button
-                                    className="p-0"
-                                    onClick={handleToggle(value)}
-                                  >
-                                    <ListItemIcon>
-                                      <Checkbox
-                                        data-id="select-checkbox"
-                                        checked={checked.indexOf(value) !== -1}
-                                        tabIndex={-1}
-                                        disableRipple
-                                        inputProps={{
-                                          'aria-labelledby': labelId,
-                                        }}
-                                        color="default"
-                                      />
-                                    </ListItemIcon>
-                                    <ListItemText id={labelId} primary={alias} />
-                                    {!isReadonly && (
-                                      <Button
-                                        data-id="edit-button"
-                                        style={{
-                                          pointerEvents: 'all',
-                                          height: '100%',
-                                        }}
-                                        onClick={() => {
-                                          dialogContext.setProps({
-                                            PaperProps: {
-                                              style: {
-                                                minWidth: 'none',
-                                              },
+                                  <ListItemIcon>
+                                    <Checkbox
+                                      data-id="select-checkbox"
+                                      checked={checked.indexOf(value) !== -1}
+                                      tabIndex={-1}
+                                      disableRipple
+                                      inputProps={{
+                                        'aria-labelledby': labelId,
+                                      }}
+                                      color="default"
+                                    />
+                                  </ListItemIcon>
+                                  <ListItemText id={labelId} primary={alias} />
+                                  {!isReadonly && (
+                                    <Button
+                                      data-id="edit-button"
+                                      style={{
+                                        pointerEvents: 'all',
+                                        height: '100%',
+                                      }}
+                                      onClick={() => {
+                                        dialogContext.setProps({
+                                          PaperProps: {
+                                            style: {
+                                              minWidth: 'none',
                                             },
-                                            open: true,
-                                            children: (
-                                              <div
-                                                style={{
-                                                  padding: '10px',
-                                                  minHeight: '30em',
-                                                  minWidth: '60vh',
-                                                }}
-                                              >
-                                                <Editor
-                                                  attr={value}
-                                                  lazyResult={lazyResult}
-                                                  /* Re-open this modal again but with the current state
+                                          },
+                                          open: true,
+                                          children: (
+                                            <div
+                                              style={{
+                                                padding: '10px',
+                                                minHeight: '30em',
+                                                minWidth: '60vh',
+                                              }}
+                                            >
+                                              <Editor
+                                                attr={value}
+                                                lazyResult={lazyResult}
+                                                /* Re-open this modal again but with the current state
                                               This maintains the state so that if we haven't saved,
                                               we can come back to where we were working */
-                                                  goBack={() => {
-                                                    dialogContext.setProps({
-                                                      open: true,
-                                                      children: (
-                                                        <TransferList
-                                                          startingLeft={left}
-                                                          startingRight={right}
-                                                          updateActive={
-                                                            updateActive
-                                                          }
-                                                          lazyResult={lazyResult}
-                                                          onSave={onSave}
-                                                        />
-                                                      ),
-                                                    })
-                                                  }}
-                                                  onCancel={() => {
-                                                    dialogContext.setProps({
-                                                      open: true,
-                                                      children: (
-                                                        <TransferList
-                                                          startingLeft={left}
-                                                          startingRight={right}
-                                                          updateActive={
-                                                            updateActive
-                                                          }
-                                                          lazyResult={lazyResult}
-                                                          onSave={onSave}
-                                                        />
-                                                      ),
-                                                    })
-                                                  }}
-                                                  onSave={() => {
-                                                    dialogContext.setProps({
-                                                      open: true,
-                                                      children: (
-                                                        <TransferList
-                                                          startingLeft={left}
-                                                          startingRight={right}
-                                                          updateActive={
-                                                            updateActive
-                                                          }
-                                                          lazyResult={lazyResult}
-                                                          onSave={onSave}
-                                                        />
-                                                      ),
-                                                    })
-                                                  }}
-                                                />
-                                              </div>
-                                            ),
-                                          })
-                                        }}
-                                      >
-                                        <EditIcon />
-                                      </Button>
-                                    )}
-                                  </ListItem>
-                                </div>
-                              )
-                            }}
-                          </Draggable>
-                        )
-                      })}
-                      {provided.placeholder}
-                    </div>
-                  )
-                }}
-              </Droppable>
-            </DragDropContext>
-          </List>
-        )}
+                                                goBack={() => {
+                                                  dialogContext.setProps({
+                                                    open: true,
+                                                    children: (
+                                                      <TransferList
+                                                        startingLeft={left}
+                                                        startingRight={right}
+                                                        updateActive={
+                                                          updateActive
+                                                        }
+                                                        lazyResult={lazyResult}
+                                                        onSave={onSave}
+                                                      />
+                                                    ),
+                                                  })
+                                                }}
+                                                onCancel={() => {
+                                                  dialogContext.setProps({
+                                                    open: true,
+                                                    children: (
+                                                      <TransferList
+                                                        startingLeft={left}
+                                                        startingRight={right}
+                                                        updateActive={
+                                                          updateActive
+                                                        }
+                                                        lazyResult={lazyResult}
+                                                        onSave={onSave}
+                                                      />
+                                                    ),
+                                                  })
+                                                }}
+                                                onSave={() => {
+                                                  dialogContext.setProps({
+                                                    open: true,
+                                                    children: (
+                                                      <TransferList
+                                                        startingLeft={left}
+                                                        startingRight={right}
+                                                        updateActive={
+                                                          updateActive
+                                                        }
+                                                        lazyResult={lazyResult}
+                                                        onSave={onSave}
+                                                      />
+                                                    ),
+                                                  })
+                                                }}
+                                              />
+                                            </div>
+                                          ),
+                                        })
+                                      }}
+                                    >
+                                      <EditIcon />
+                                    </Button>
+                                  )}
+                                </ListItem>
+                              </div>
+                            )
+                          }}
+                        </Draggable>
+                      )
+                    })}
+                    {provided.placeholder}
+                  </div>
+                )
+              }}
+            </Droppable>
+          </DragDropContext>
+        </List>
+      )}
     </Paper>
   )
 }

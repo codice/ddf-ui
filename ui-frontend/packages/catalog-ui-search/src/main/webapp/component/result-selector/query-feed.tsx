@@ -225,12 +225,12 @@ const QueryFeed = ({ selectionInterface }: Props) => {
     resultCount =
       sourcesThatHaveReturned.length > 0
         ? `${statusBySource
-          .filter(status => status.hasReturned)
-          .filter(status => status.successful)
-          .reduce((amt, status) => {
-            amt = amt + status.hits
-            return amt
-          }, 0)} hits`
+            .filter(status => status.hasReturned)
+            .filter(status => status.successful)
+            .reduce((amt, status) => {
+              amt = amt + status.hits
+              return amt
+            }, 0)} hits`
         : 'Searching...'
     failed = sourcesThatHaveReturned.some(status => !status.successful)
     pending = isSearching
@@ -248,8 +248,8 @@ const QueryFeed = ({ selectionInterface }: Props) => {
             {pending ? (
               <i className="fa fa-circle-o-notch fa-spin is-critical-animation" />
             ) : (
-                ''
-              )}
+              ''
+            )}
             {failed ? <i className="fa fa-warning" /> : ''}
             {resultCount}
           </div>
@@ -260,7 +260,11 @@ const QueryFeed = ({ selectionInterface }: Props) => {
             content={({ closeAndRefocus }) => {
               return (
                 <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper data-id="query-status-container" style={{ padding: '20px' }} className="intrigue-table">
+                  <Paper
+                    data-id="query-status-container"
+                    style={{ padding: '20px' }}
+                    className="intrigue-table"
+                  >
                     <QueryStatus
                       statusBySource={statusBySource}
                       query={selectionInterface.getCurrentQuery()}

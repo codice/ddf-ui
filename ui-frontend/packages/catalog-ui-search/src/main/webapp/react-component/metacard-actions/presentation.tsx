@@ -66,7 +66,7 @@ const ExportActions = (props: any) => {
       <Actions data-id="export-actions-container">
         {exportActions.map((exportAction: any) => {
           return (
-            <ActionLink 
+            <ActionLink
               href={exportAction.url}
               target="_blank"
               key={exportAction.url}

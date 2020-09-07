@@ -28,7 +28,7 @@ module.exports = Marionette.LayoutView.extend(
     tagName: CustomElements.register('property'),
     attributes() {
       return {
-        'data-id': "dropdown-container",
+        'data-id': 'dropdown-container',
         'data-label': this.model.get('label') || this.model.get('id'),
         title: this.model.get('title'),
       }
@@ -214,7 +214,7 @@ module.exports = Marionette.LayoutView.extend(
       const elementsToCheck = this.$el.find(
         '.is-bulk > .if-viewing .list-value'
       )
-      _.forEach(elementsToCheck, function (element) {
+      _.forEach(elementsToCheck, function(element) {
         if (
           $(element)
             .attr('data-ids')

@@ -40,10 +40,19 @@ const render = (props: PresentationProps) => {
   const { show, alpha } = props.visibility
   const { updateLayerAlpha } = props.actions
   return show ? (
-    <AlphaEnabled data-id="alpha-slider" onChange={updateLayerAlpha} value={alpha} />
+    <AlphaEnabled
+      data-id="alpha-slider"
+      onChange={updateLayerAlpha}
+      value={alpha}
+    />
   ) : (
-      <AlphaDisabled data-id="alpha-slider" onChange={updateLayerAlpha} value={alpha} disabled />
-    )
+    <AlphaDisabled
+      data-id="alpha-slider"
+      onChange={updateLayerAlpha}
+      value={alpha}
+      disabled
+    />
+  )
 }
 
 export const LayerAlpha = hot(module)(render)

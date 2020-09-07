@@ -104,7 +104,12 @@ class SplitButton extends React.Component<Props, State> {
     const rootClassName = 'is-split-button ' + className
     return (
       <Root style={style} className={rootClassName}>
-        <DefaultButton data-id="home-button" title={title} type="button" onClick={onSelect}>
+        <DefaultButton
+          data-id="home-button"
+          title={title}
+          type="button"
+          onClick={onSelect}
+        >
           {label}
         </DefaultButton>
         <Icon

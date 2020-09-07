@@ -257,7 +257,10 @@ const RowComponent = ({
                         />
                       ) : (
                         <React.Fragment>
-                          <div data-id={`${property.property}-value`} style={{ wordBreak: 'break-word' }}>
+                          <div
+                            data-id={`${property.property}-value`}
+                            style={{ wordBreak: 'break-word' }}
+                          >
                             {property.value.map((value, index) => {
                               return (
                                 <span

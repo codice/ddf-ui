@@ -62,7 +62,7 @@ const SelectedResults = ({ selectionInterface }: any) => {
             data-id="result-selector-more-vert-button"
             className={`relative ${
               selectedResultsArray.length === 0 ? 'invisible' : ''
-              }`}
+            }`}
             color="primary"
             disabled={selectedResultsArray.length === 0}
             onClick={handleClick}
@@ -147,7 +147,7 @@ const ResultSelector = ({
           variant="query"
           className={`${
             isSearching ? 'opacity-100' : 'opacity-0'
-            } absolute w-full h-1 left-0 bottom-0 transition-opacity`}
+          } absolute w-full h-1 left-0 bottom-0 transition-opacity`}
         />
 
         <Grid item>

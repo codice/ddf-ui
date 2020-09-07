@@ -113,18 +113,18 @@ const ChildFilter = ({
           }}
         />
       ) : (
-          <FilterLeaf
-            filter={filter}
-            setFilter={newChildFilter => {
-              const newFilters = parentFilter.filters.slice(0)
-              newFilters.splice(index, 1, newChildFilter)
-              setFilter({
-                ...parentFilter,
-                filters: newFilters,
-              })
-            }}
-          />
-        )}
+        <FilterLeaf
+          filter={filter}
+          setFilter={newChildFilter => {
+            const newFilters = parentFilter.filters.slice(0)
+            newFilters.splice(index, 1, newChildFilter)
+            setFilter({
+              ...parentFilter,
+              filters: newFilters,
+            })
+          }}
+        />
+      )}
     </>
   )
 }
@@ -177,10 +177,12 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
       >
         <div className=" relative">
           <div
-            data-id={root ? "root-filter-group-container" : "filter-group-contianer"}
+            data-id={
+              root ? 'root-filter-group-container' : 'filter-group-contianer'
+            }
             className={`${
               filter.negated ? 'border px-3 py-4 mt-2' : ''
-              } transition-all duration-200`}
+            } transition-all duration-200`}
             style={{
               borderColor: theme.palette.primary.main,
             }}
@@ -271,25 +273,25 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                 </HoverButton>
               </>
             ) : (
-                <>
-                  <Button
-                    data-id="not-group-button"
-                    className={`${
-                      hover ? 'opacity-25' : 'opacity-0'
-                      } hover:opacity-100 focus:opacity-100 transition-opacity duration-200 absolute top-0 left-1/2 transform -translate-y-1/2 -translate-x-1/2 py-0 px-1 text-xs z-10`}
-                    color="primary"
-                    variant="contained"
-                    onClick={() => {
-                      setFilter({
-                        ...filter,
-                        negated: !filter.negated,
-                      })
-                    }}
-                  >
-                    + Not Group
+              <>
+                <Button
+                  data-id="not-group-button"
+                  className={`${
+                    hover ? 'opacity-25' : 'opacity-0'
+                  } hover:opacity-100 focus:opacity-100 transition-opacity duration-200 absolute top-0 left-1/2 transform -translate-y-1/2 -translate-x-1/2 py-0 px-1 text-xs z-10`}
+                  color="primary"
+                  variant="contained"
+                  onClick={() => {
+                    setFilter({
+                      ...filter,
+                      negated: !filter.negated,
+                    })
+                  }}
+                >
+                  + Not Group
                 </Button>
-                </>
-              )}
+              </>
+            )}
             <Memo dependencies={[filter]}>
               <>
                 {filter.filters.map((childFilter, index) => {

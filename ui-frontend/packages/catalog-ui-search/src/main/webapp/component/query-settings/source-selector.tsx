@@ -245,7 +245,7 @@ const SourceSelector = ({ search }: Props) => {
             )
           } else if (
             newSources.length ===
-            availableLocalSources.length + availableRemoteSources.length ||
+              availableLocalSources.length + availableRemoteSources.length ||
             (newSources.includes('local') &&
               newSources.length === availableRemoteSources.length + 1) ||
             (newSources.includes('remote') &&
@@ -329,44 +329,48 @@ const SourceSelector = ({ search }: Props) => {
         ) : null}
         {availableLocalSources.length > 0
           ? availableLocalSources.map((source: any) => {
-            return (
-              <MenuItem data-id={`source-${source.id}-option`} key={source.id} value={source.id}>
-                <Grid
-                  container
-                  alignItems="stretch"
-                  direction="row"
-                  wrap="nowrap"
+              return (
+                <MenuItem
+                  data-id={`source-${source.id}-option`}
+                  key={source.id}
+                  value={source.id}
                 >
-                  <Grid item className="pr-2">
-                    <CheckIcon
-                      className={
-                        shouldBeSelected({ srcId: source.id, sources })
-                          ? ''
-                          : 'invisible'
-                      }
-                    />
-                  </Grid>
-                  <Grid item className="pl-2 pr-3">
-                    <Swath className="w-1 h-full" />
-                  </Grid>
-                  <Grid container direction="row" alignItems="center">
-                    <Grid item>
-                      <Box
-                        color={
-                          source.available ? 'text.primary' : 'warning.main'
+                  <Grid
+                    container
+                    alignItems="stretch"
+                    direction="row"
+                    wrap="nowrap"
+                  >
+                    <Grid item className="pr-2">
+                      <CheckIcon
+                        className={
+                          shouldBeSelected({ srcId: source.id, sources })
+                            ? ''
+                            : 'invisible'
                         }
-                      >
-                        {source.id}
-                      </Box>
+                      />
                     </Grid>
-                    <Grid item className="pl-2">
-                      {source.available ? null : <WarningIcon />}
+                    <Grid item className="pl-2 pr-3">
+                      <Swath className="w-1 h-full" />
+                    </Grid>
+                    <Grid container direction="row" alignItems="center">
+                      <Grid item>
+                        <Box
+                          color={
+                            source.available ? 'text.primary' : 'warning.main'
+                          }
+                        >
+                          {source.id}
+                        </Box>
+                      </Grid>
+                      <Grid item className="pl-2">
+                        {source.available ? null : <WarningIcon />}
+                      </Grid>
                     </Grid>
                   </Grid>
-                </Grid>
-              </MenuItem>
-            )
-          })
+                </MenuItem>
+              )
+            })
           : null}
         {availableRemoteSources.length > -1 ? (
           <MenuItem data-id="offsite-option" value="remote">
@@ -394,44 +398,48 @@ const SourceSelector = ({ search }: Props) => {
         ) : null}
         {availableRemoteSources.length > 0
           ? availableRemoteSources.map((source: any) => {
-            return (
-              <MenuItem data-id={`source-${source.id}-option`} key={source.id} value={source.id}>
-                <Grid
-                  container
-                  alignItems="stretch"
-                  direction="row"
-                  wrap="nowrap"
+              return (
+                <MenuItem
+                  data-id={`source-${source.id}-option`}
+                  key={source.id}
+                  value={source.id}
                 >
-                  <Grid item className="pr-2">
-                    <CheckIcon
-                      className={
-                        shouldBeSelected({ srcId: source.id, sources })
-                          ? ''
-                          : 'invisible'
-                      }
-                    />
-                  </Grid>
-                  <Grid item className="pl-2 pr-2">
-                    <Swath className="w-1 h-full" />
-                  </Grid>
-                  <Grid container direction="row" alignItems="center">
-                    <Grid item>
-                      <Box
-                        color={
-                          source.available ? 'text.primary' : 'warning.main'
+                  <Grid
+                    container
+                    alignItems="stretch"
+                    direction="row"
+                    wrap="nowrap"
+                  >
+                    <Grid item className="pr-2">
+                      <CheckIcon
+                        className={
+                          shouldBeSelected({ srcId: source.id, sources })
+                            ? ''
+                            : 'invisible'
                         }
-                      >
-                        {source.id}
-                      </Box>
+                      />
                     </Grid>
-                    <Grid item className="pl-2">
-                      {source.available ? null : <WarningIcon />}
+                    <Grid item className="pl-2 pr-2">
+                      <Swath className="w-1 h-full" />
+                    </Grid>
+                    <Grid container direction="row" alignItems="center">
+                      <Grid item>
+                        <Box
+                          color={
+                            source.available ? 'text.primary' : 'warning.main'
+                          }
+                        >
+                          {source.id}
+                        </Box>
+                      </Grid>
+                      <Grid item className="pl-2">
+                        {source.available ? null : <WarningIcon />}
+                      </Grid>
                     </Grid>
                   </Grid>
-                </Grid>
-              </MenuItem>
-            )
-          })
+                </MenuItem>
+              )
+            })
           : null}
       </TextField>
     </div>

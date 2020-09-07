@@ -64,7 +64,7 @@ const FocusModel = Backbone.Model.extend({
 module.exports = Marionette.LayoutView.extend({
   attributes() {
     return {
-      'data-id': "layers-container",
+      'data-id': 'layers-container',
     }
   },
   tagName: CustomElements.register('layers'),

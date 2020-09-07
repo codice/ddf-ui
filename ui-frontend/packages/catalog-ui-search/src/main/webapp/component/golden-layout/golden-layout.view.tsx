@@ -149,7 +149,12 @@ function registerComponent(
           try {
             ReactDOM.render(
               <Providers>
-                <Grid data-id={`${name}-tab`} container direction="row" wrap="nowrap">
+                <Grid
+                  data-id={`${name}-tab`}
+                  container
+                  direction="row"
+                  wrap="nowrap"
+                >
                   <Grid item className="px-2">
                     <div>{tab.titleElement.text()}</div>
                   </Grid>
@@ -191,7 +196,7 @@ function registerComponent(
               tab.element[0]
             )
             clearInterval(intervalId)
-          } catch (err) { }
+          } catch (err) {}
         }, 100)
       })
     }
@@ -341,7 +346,6 @@ export default Marionette.LayoutView.extend({
     return currentConfig
   },
   registerGoldenLayoutComponents() {
-    console.log(Visualizations);
     Visualizations.forEach(viz => {
       registerComponent(this, viz.id, viz.view, viz.options, viz)
     })
@@ -433,7 +437,7 @@ export default Marionette.LayoutView.extend({
           stack.header.controlsContainer[0]
         )
         clearInterval(intervalId)
-      } catch (err) { }
+      } catch (err) {}
     }, 100)
   },
   handleGoldenLayoutStateChange(event) {

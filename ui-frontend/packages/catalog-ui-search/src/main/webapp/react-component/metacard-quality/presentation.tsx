@@ -81,7 +81,7 @@ const MetacardValidation = (props: any) => {
                     return <div key={attribute + j}>{attribute}</div>
                   })}
                 </td>
-                <td data-id="severity-value" >{validation.severity}</td>
+                <td data-id="severity-value">{validation.severity}</td>
                 {validation.duplicate ? (
                   <td data-id="message-value">
                     {validation.duplicate.message[0]}
@@ -98,7 +98,7 @@ const MetacardValidation = (props: any) => {
                     {validation.duplicate.message[1]}
                   </td>
                 ) : (
-                  <td data-id="message-value" >{validation.message}</td>
+                  <td data-id="message-value">{validation.message}</td>
                 )}
               </tr>
             )

@@ -56,28 +56,41 @@ export default hot(module)((props: Props) => {
     <Root>
       <div className="about-content is-large-font">
         <div>
-          <span data-id="branding-label" className="is-bold">{props.branding}</span>
+          <span data-id="branding-label" className="is-bold">
+            {props.branding}
+          </span>
           <span data-id="product-label"> {props.product}</span>
         </div>
         <div className="is-divider" />
         <div className="content-version">
           <div>
             <div className="version-title">Version</div>
-            <div data-id="version-label" className="version-message is-medium-font">
+            <div
+              data-id="version-label"
+              className="version-message is-medium-font"
+            >
               {props.version}
             </div>
           </div>
           <div className="is-divider" />
           <div>
             <div className="version-title">Unique Identifier</div>
-            <div data-id="unique-identifier-label" className="version-message is-medium-font">
+            <div
+              data-id="unique-identifier-label"
+              className="version-message is-medium-font"
+            >
               {`${props.commitHash} ${props.isDirty ? 'with Changes' : ''}`}
             </div>
           </div>
           <div className="is-divider" />
           <div>
             <div className="version-title">Release Date</div>
-            <div data-id="release-date-label" className="version-message is-medium-font">{props.date}</div>
+            <div
+              data-id="release-date-label"
+              className="version-message is-medium-font"
+            >
+              {props.date}
+            </div>
           </div>
         </div>
       </div>

@@ -301,7 +301,9 @@ module.exports = Marionette.LayoutView.extend({
     })
     this.$el
       .find('.cesium-viewer-toolbar')
-      .append('<div data-id="settings-button" class="toolbar-settings is-button"></div>')
+      .append(
+        '<div data-id="settings-button" class="toolbar-settings is-button"></div>'
+      )
     this.addRegion('toolbarSettings', '.toolbar-settings')
     this.toolbarSettings.show(new MapSettingsView())
   },
@@ -507,7 +509,9 @@ module.exports = Marionette.LayoutView.extend({
   addLayers() {
     this.$el
       .find('.cesium-viewer-toolbar')
-      .append('<div data-id="layers-button" class="toolbar-layers is-button"></div>')
+      .append(
+        '<div data-id="layers-button" class="toolbar-layers is-button"></div>'
+      )
     this.addRegion('toolbarLayers', '.toolbar-layers')
     this.toolbarLayers.show(
       new LayersDropdown({

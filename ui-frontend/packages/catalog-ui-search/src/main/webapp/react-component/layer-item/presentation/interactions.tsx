@@ -62,7 +62,11 @@ const render = (props: PresentationProps) => {
   return (
     <Interactions>
       {warning !== '' && (
-        <Warning data-id="view-warnings-button" data-help="View map layer warnings." title={warning}>
+        <Warning
+          data-id="view-warnings-button"
+          data-help="View map layer warnings."
+          title={warning}
+        >
           <span className=" fa fa-warning" />
         </Warning>
       )}
