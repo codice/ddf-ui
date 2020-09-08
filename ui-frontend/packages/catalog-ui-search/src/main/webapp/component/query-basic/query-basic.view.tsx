@@ -13,6 +13,7 @@
  *
  **/
 import * as React from 'react'
+import { hot } from 'react-hot-loader'
 const Marionette = require('marionette')
 const _ = require('underscore')
 const memoize = require('lodash/memoize')
@@ -28,11 +29,20 @@ const metacardDefinitions = require('../singletons/metacard-definitions.js')
 import sources from '../singletons/sources-instance'
 const CQLUtils = require('../../js/CQLUtils.js')
 import QuerySettings from '../query-settings/query-settings'
-const QueryTimeView = require('../query-time/query-time.view.js')
+import QueryTimeReactView, {
+  BasicFilterClass,
+} from '../query-time/query-time.view'
 import query from '../../react-component/utils/query'
 
 const METADATA_CONTENT_TYPE = 'metadata-content-type'
 import { Drawing } from '../singletons/drawing'
+import TextField from '@material-ui/core/TextField'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Checkbox from '@material-ui/core/Checkbox'
+import Autocomplete from '@material-ui/lab/Autocomplete'
+import { FilterClass } from '../filter-builder/filter.structure'
+import Typography from '@material-ui/core/Typography'
+import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 
 function isNested(filter: any) {
   let nested = false
@@ -96,7 +106,7 @@ function getAllValidValuesForMatchTypeAttribute() {
 function getPredefinedMatchTypes() {
   const matchTypesMap = sources
     .toJSON()
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'flatMap' does not exist on type '{ avail... Remove this comment to see the full error message
+    // @ts-ignore
     .flatMap((source: any) => source.contentTypes)
     .reduce((enumMap: any, contentType: any) => {
       if (contentType.value && !enumMap[contentType.value]) {
@@ -207,7 +217,11 @@ function handleAnyDateFilter(propertyValueMap: any, filter: any) {
 }
 
 function translateFilterToBasicMap(filter: any) {
-  const propertyValueMap = {} as any
+  const propertyValueMap = {
+    anyDate: [],
+    anyText: [],
+    anyGeo: [],
+  } as any
   let downConversion = false
 
   if (!filter.filters && isAnyDate(filter)) {
@@ -250,6 +264,13 @@ function translateFilterToBasicMap(filter: any) {
   return {
     propertyValueMap,
     downConversion,
+  } as {
+    propertyValueMap: {
+      anyText: Array<FilterClass>
+      anyDate: Array<BasicFilterClass>
+      anyGeo: Array<FilterClass>
+    }
+    downConversion: boolean
   }
 }
 
@@ -260,49 +281,179 @@ function getFilterTree(model: any) {
   return cql.simplify(cql.read(model.get('cql')))
 }
 
-export default Marionette.LayoutView.extend({
-  template() {
-    return (
-      <>
-        <div data-id="basic-search-container" className="editor-properties">
-          <div
-            className="basic-text"
-            data-help="Search by free text using the
-    grammar of the underlying source.
-    For wildcard searches, use * after or before partial keywords (e.g. *earth*)."
+type CurrentValueType = { text: string; matchcase: boolean; basicTime: any }
+
+type QueryBasicProps = {
+  model: any
+}
+
+const constructFilterFromBasicFilter = ({
+  basicFilter,
+}: {
+  basicFilter: {
+    anyText: Array<FilterClass>
+    anyDate: Array<BasicFilterClass>
+    anyGeo: Array<FilterClass>
+  }
+}) => {
+  const filters = []
+  if (basicFilter.anyText[0].value !== '') {
+    filters.push(basicFilter.anyText[0])
+  }
+
+  if (basicFilter.anyDate[0] !== undefined) {
+    filters.push({
+      type: 'OR',
+      filters: basicFilter.anyDate[0].property.map(property => {
+        return {
+          ...basicFilter.anyDate[0],
+          property,
+        }
+      }),
+    })
+  }
+
+  if (filters.length === 0) {
+    filters.unshift(CQLUtils.generateFilter('ILIKE', 'anyText', '*'))
+  }
+
+  return {
+    type: 'AND',
+    filters,
+  }
+}
+
+const QueryBasic = ({ model }: QueryBasicProps) => {
+  const [basicFilter, setBasicFilter] = React.useState(
+    translateFilterToBasicMap(getFilterTree(model)).propertyValueMap
+  )
+
+  const { listenTo, stopListening } = useBackbone()
+  const saveCallbackRef = React.useRef(() => {
+    model.set('cql', cql.write(constructFilterFromBasicFilter({ basicFilter })))
+    model.set('filterTree', constructFilterFromBasicFilter({ basicFilter }))
+  })
+  React.useEffect(
+    () => {
+      saveCallbackRef.current = () => {
+        model.set(
+          'cql',
+          cql.write(constructFilterFromBasicFilter({ basicFilter }))
+        )
+        model.set('filterTree', constructFilterFromBasicFilter({ basicFilter }))
+      }
+    },
+    [basicFilter, model]
+  )
+  React.useEffect(() => {
+    return () => {
+      saveCallbackRef.current()
+    }
+  }, [])
+  React.useEffect(
+    () => {
+      const callback = () => {
+        saveCallbackRef.current()
+      }
+      const callback2 = () => {
+        setBasicFilter(
+          translateFilterToBasicMap(getFilterTree(model)).propertyValueMap
+        )
+      }
+      // for perf, only update when necessary
+      listenTo(model, 'update', callback)
+      listenTo(model, 'change:filterTree', callback2)
+      return () => {
+        stopListening(model, 'update', callback)
+        stopListening(model, 'change:filterTree', callback2)
+      }
+    },
+    [model, basicFilter]
+  )
+  return (
+    <>
+      <div className="editor-properties px-2 py-3">
+        <div className="">
+          <Typography className="pb-2">Text</Typography>
+          <TextField
+            fullWidth
+            value={basicFilter.anyText ? basicFilter.anyText[0].value : ''}
+            placeholder={`Text to search for. Use "*" for wildcard.`}
+            id="Text"
+            onChange={e => {
+              basicFilter.anyText[0].value = e.target.value
+              setBasicFilter({
+                ...basicFilter,
+              })
+            }}
+            size="small"
+            variant="outlined"
           />
-          <div
-            className="basic-text-match"
-            data-help="Take casing of characters into account when searching by free text."
-          />
-          <div
-            className="basic-time-details"
-            data-help="Search based on absolute or relative
-    time of the created, modified, or effective date."
-          />
-          <div
-            className="basic-location-details"
-            data-help="Search by latitude/longitude or the USNG
-    using a line, polygon, point-radius, bounding box, or keyword. A keyword can be the name of a region, country, or city."
-          >
-            <div className="basic-location" />
-            <div className="basic-location-specific" />
-          </div>
-          <div
-            className="basic-type-details"
-            data-help="Search for specific content types."
-          >
-            <div className="basic-type" />
-            <div className="basic-type-specific" />
-          </div>
-          <div className="basic-settings">
-            <QuerySettings model={this.model} />
-          </div>
         </div>
-      </>
-    )
-  },
-  tagName: CustomElements.register('query-basic'),
+        <div className="pt-2">
+          <FormControlLabel
+            labelPlacement="start"
+            control={
+              <Checkbox
+                color="default"
+                checked={
+                  basicFilter.anyText && basicFilter.anyText[0].type === 'LIKE'
+                }
+                onChange={e => {
+                  basicFilter.anyText[0].type = e.target.checked
+                    ? 'LIKE'
+                    : 'ILIKE'
+                  setBasicFilter({
+                    ...basicFilter,
+                  })
+                }}
+              />
+            }
+            label="Matchcase"
+          />
+        </div>
+        <div className="pt-2">
+          <QueryTimeReactView
+            value={basicFilter.anyDate[0]}
+            onChange={newValue => {
+              basicFilter.anyDate[0] = newValue
+
+              setBasicFilter({
+                ...basicFilter,
+              })
+            }}
+          />
+        </div>
+        <div
+          className="basic-time-details"
+          data-help="Search based on absolute or relative
+    time of the created, modified, or effective date."
+        />
+        <div
+          className="basic-location-details"
+          data-help="Search by latitude/longitude or the USNG
+    using a line, polygon, point-radius, bounding box, or keyword. A keyword can be the name of a region, country, or city."
+        >
+          <div className="basic-location" />
+          <div className="basic-location-specific" />
+        </div>
+        <div
+          className="basic-type-details"
+          data-help="Search for specific content types."
+        >
+          <div className="basic-type" />
+          <div className="basic-type-specific" />
+        </div>
+        <div className="basic-settings">
+          <QuerySettings model={model} />
+        </div>
+      </div>
+    </>
+  )
+}
+
+Marionette.LayoutView.extend({
+  tagName: 'div',
   modelEvents: {},
   events: {
     'click .editor-edit': 'edit',
@@ -310,9 +461,6 @@ export default Marionette.LayoutView.extend({
     'click .editor-save': 'save',
   },
   regions: {
-    basicText: '.basic-text',
-    basicTextMatch: '.basic-text-match',
-    basicTime: '.basic-time-details',
     basicLocation: '.basic-location',
     basicLocationSpecific: '.basic-location-specific',
     basicType: '.basic-type',
@@ -325,15 +473,22 @@ export default Marionette.LayoutView.extend({
       this.save()
     })
   },
-  onBeforeShow() {
+  currentValue: undefined as undefined | CurrentValueType,
+  initialize() {
     const filter = getFilterTree(this.model)
     const translationToBasicMap = translateFilterToBasicMap(filter)
     this.filter = translationToBasicMap.propertyValueMap
     this.handleDownConversion(translationToBasicMap.downConversion)
-    this.setupTime()
-    this.setupTextInput()
-    this.setupTextMatchInput()
-
+    this.currentValue = {
+      text: this.filter.anyText ? this.filter.anyText[0].value : '',
+      matchcase:
+        this.filter.anyText && this.filter.anyText[0].type === 'LIKE'
+          ? true
+          : false,
+      basicTime: this.filter,
+    }
+  },
+  onBeforeShow() {
     this.setupLocation()
     this.setupLocationInput()
     this.setupType()
@@ -353,14 +508,6 @@ export default Marionette.LayoutView.extend({
     this.handleLocationValue()
     this.handleTypeValue()
     this.edit()
-  },
-  setupTime() {
-    this.basicTime.show(
-      new QueryTimeView({
-        model: this.model,
-        filter: this.filter,
-      })
-    )
   },
   getFilterValuesForAttribute(attribute: any) {
     return this.filter[attribute]
@@ -383,7 +530,6 @@ export default Marionette.LayoutView.extend({
     const currentValue = this.getCurrentSpecificTypesValue()
     getMatchTypes()
       .then(enums => this.showBasicTypeSpecific(enums, [currentValue]))
-      // @ts-expect-error ts-migrate(6133) FIXME: 'error' is declared but its value is never read.
       .catch(error => this.showBasicTypeSpecific())
   },
   showBasicTypeSpecific(enums = [], currentValue = [[]]) {
@@ -498,51 +644,6 @@ export default Marionette.LayoutView.extend({
       this.setupLocationInput()
     }
   },
-  setupTextMatchInput() {
-    this.basicTextMatch.show(
-      new PropertyView({
-        model: new Property({
-          value: [
-            this.filter.anyText && this.filter.anyText[0].type === 'LIKE'
-              ? 'LIKE'
-              : 'ILIKE',
-          ],
-          id: 'Match Case',
-          placeholder: 'Text to search for.  Use "*" for wildcard.',
-          radio: [
-            {
-              id: 'match-case-yes',
-              label: 'Yes',
-              value: 'LIKE',
-            },
-            {
-              id: 'match-case-no',
-              label: 'No',
-              value: 'ILIKE',
-            },
-          ],
-        }),
-      })
-    )
-  },
-  setupTextInput() {
-    this.basicText.show(
-      new PropertyView({
-        model: new Property({
-          value: [this.filter.anyText ? this.filter.anyText[0].value : ''],
-          id: 'Text',
-          placeholder: 'Text to search for.  Use "*" for wildcard.',
-        }),
-      })
-    )
-  },
-  turnOffEdit() {
-    this.regionManager.forEach((region: any) => {
-      if (region.currentView && region.currentView.turnOffEditing) {
-        region.currentView.turnOffEditing()
-      }
-    })
-  },
   edit() {
     this.$el.addClass('is-editing')
     this.regionManager.forEach((region: any) => {
@@ -561,10 +662,6 @@ export default Marionette.LayoutView.extend({
   focus() {
     this.basicText.currentView.focus()
   },
-  cancel() {
-    this.$el.removeClass('is-editing')
-    this.onBeforeShow()
-  },
   handleDownConversion(downConversion: any) {
     this.$el.toggleClass('is-down-converted', downConversion)
   },
@@ -580,10 +677,10 @@ export default Marionette.LayoutView.extend({
   },
   constructFilter() {
     const filters = []
-
-    const text = this.basicText.currentView.model.getValue()[0]
+    const currentValue = this.currentValue as CurrentValueType
+    const text = currentValue.text
     if (text !== '') {
-      const matchCase = this.basicTextMatch.currentView.model.getValue()[0]
+      const matchCase = currentValue.matchcase ? 'LIKE' : 'ILIKE'
       filters.push(CQLUtils.generateFilter(matchCase, 'anyText', text))
     }
 
@@ -641,14 +738,6 @@ export default Marionette.LayoutView.extend({
       filters,
     }
   },
-  setDefaultTitle() {
-    const text = this.basicText.currentView.model.getValue()[0]
-    let title
-    if (text === '') {
-      title = this.model.get('cql')
-    } else {
-      title = text
-    }
-    this.model.set('title', title)
-  },
 })
+
+export default hot(module)(QueryBasic)

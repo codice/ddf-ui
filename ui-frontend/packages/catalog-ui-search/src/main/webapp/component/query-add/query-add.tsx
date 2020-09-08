@@ -52,15 +52,7 @@ export default Marionette.LayoutView.extend({
         >
           {(() => {
             if (form.id === 'basic') {
-              return (
-                <MRC
-                  view={
-                    new QueryBasic({
-                      model: this.model,
-                    })
-                  }
-                />
-              )
+              return <QueryBasic model={this.model} />
             } else {
               return <QueryAdvanced model={this.model} />
             }
