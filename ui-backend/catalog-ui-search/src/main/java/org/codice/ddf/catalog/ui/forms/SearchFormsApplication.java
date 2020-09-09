@@ -46,6 +46,7 @@ import ddf.catalog.source.IngestException;
 import ddf.catalog.source.SourceUnavailableException;
 import ddf.catalog.source.UnsupportedQueryException;
 import ddf.security.Subject;
+import ddf.security.SubjectOperations;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Comparator;
@@ -58,6 +59,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.apache.shiro.SecurityUtils;
 import org.codice.ddf.catalog.ui.forms.model.pojo.CommonTemplate;
+import org.codice.ddf.catalog.ui.forms.model.pojo.FormTemplate;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
 import org.codice.gsonsupport.GsonTypeAdapters.DateLongFormatTypeAdapter;
 import org.codice.gsonsupport.GsonTypeAdapters.LongDoubleTypeAdapter;
@@ -86,6 +88,8 @@ public class SearchFormsApplication implements SparkApplication {
   private final EndpointUtil util;
 
   private final Supplier<Subject> subjectSupplier;
+
+  private SubjectOperations subjectOperations;
 
   private static final String RESP_MSG = "message";
 
@@ -124,6 +128,16 @@ public class SearchFormsApplication implements SparkApplication {
    */
   @Override
   public void init() {
+    get(
+        "/forms/query/:id",
+        (req, res) -> {
+          String id = req.params("id");
+
+          Metacard metacard = getMetacardIfExistsOrNull(id);
+          FormTemplate form = transformer.toFormTemplate(metacard);
+          return GSON.toJson(form);
+        });
+
     get(
         "/forms/query",
         (req, res) ->
@@ -304,7 +318,7 @@ public class SearchFormsApplication implements SparkApplication {
   private Map<String, Object> runWhenNotGuest(
       Response res, CheckedSupplier<Map<String, Object>> templateOperation) throws Exception {
     Subject subject = subjectSupplier.get();
-    if (subject.isGuest()) {
+    if (subjectOperations.isGuest(subject)) {
       res.status(403);
       return ImmutableMap.of(RESP_MSG, "Guests cannot perform this action.");
     }
@@ -406,5 +420,9 @@ public class SearchFormsApplication implements SparkApplication {
   @SuppressWarnings("squid:S00112" /* Supplier to mimic Spark's routing API */)
   private interface CheckedSupplier<T> {
     T get() throws Exception;
+  }
+
+  public void setSubjectOperations(SubjectOperations subjectOperations) {
+    this.subjectOperations = subjectOperations;
   }
 }

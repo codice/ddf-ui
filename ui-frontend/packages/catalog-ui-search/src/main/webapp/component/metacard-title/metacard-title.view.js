@@ -72,9 +72,7 @@ module.exports = Marionette.ItemView.extend({
   checkTags() {
     const types = {}
     this.model.forEach(result => {
-      if (result.isWorkspace()) {
-        types.workspace = true
-      } else if (result.isResource()) {
+      if (result.isResource()) {
         types.resource = true
       } else if (result.isRevision()) {
         types.revision = true
@@ -87,7 +85,6 @@ module.exports = Marionette.ItemView.extend({
     })
 
     this.$el.toggleClass('is-mixed', Object.keys(types).length > 1)
-    this.$el.toggleClass('is-workspace', types.workspace !== undefined)
     this.$el.toggleClass('is-resource', types.resource !== undefined)
     this.$el.toggleClass('is-revision', types.revision !== undefined)
     this.$el.toggleClass('is-deleted', types.deleted !== undefined)

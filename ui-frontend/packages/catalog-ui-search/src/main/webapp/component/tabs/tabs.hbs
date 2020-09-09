@@ -14,13 +14,13 @@
 <div class="tabs-list">
     <div class="tabs-expanded">
         {{#each tabTitles}}
-            <button class="tabs-tab is-button" data-id="{{this}}">
-                {{this}}
-            </button>
+        <button class="old-button tabs-tab is-button" data-id="{{this}}">
+            {{this}}
+        </button>
         {{/each}}
-        <button class="tabs-dropdown is-button">
+        <button class="old-button tabs-dropdown is-button">
             {{#each tabTitles}}
-                <span class="tabs-title" data-id="{{this}}">{{this}}</span>
+            <span class="tabs-title" data-id="{{this}}">{{this}}</span>
             {{/each}}
             <span class="hint">More</span>
             <span class="fa fa-chevron-down"></span>
@@ -28,9 +28,9 @@
     </div>
     <div class="tabs-collapsed">
         {{#each tabTitles}}
-            <button class="is-button" data-id="{{this}}">
-                {{this}}
-            </button>
+        <button class="old-button is-button" data-id="{{this}}">
+            {{this}}
+        </button>
         {{/each}}
     </div>
 </div>

@@ -18,9 +18,9 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -48,7 +48,6 @@ import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceConstants;
 import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
 import org.codice.ddf.catalog.ui.metacard.workspace.transformer.impl.WorkspaceTransformerImpl;
 import org.codice.ddf.catalog.ui.query.monitor.api.SecurityService;
-import org.codice.ddf.catalog.ui.query.monitor.api.WorkspaceMetacardFilter;
 import org.codice.ddf.persistence.PersistenceException;
 import org.codice.ddf.persistence.PersistentStore;
 import org.junit.Before;
@@ -57,7 +56,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opengis.filter.Filter;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -79,8 +78,6 @@ public class WorkspaceServiceImplTest {
 
   @Mock private WorkspaceQueryBuilder workspaceQueryBuilder;
 
-  @Mock private WorkspaceMetacardFilter workspaceMetacardFilter;
-
   @Mock(answer = Answers.RETURNS_DEEP_STUBS)
   private FilterBuilder filterBuilder;
 
@@ -88,8 +85,6 @@ public class WorkspaceServiceImplTest {
 
   @Before
   public void setup() {
-    when(workspaceMetacardFilter.filter(any())).thenReturn(true);
-
     workspaceServiceImpl =
         new WorkspaceServiceImpl(
             catalogFramework,
@@ -219,16 +214,9 @@ public class WorkspaceServiceImplTest {
   }
 
   @Test
-  public void testGetEmptyQueryMetacards()
-      throws UnsupportedQueryException, SourceUnavailableException, FederationException {
+  public void testGetEmptyQueryMetacards() {
     WorkspaceMetacardImpl workspace = mock(WorkspaceMetacardImpl.class);
     doReturn("workspaceId").when(workspace).getId();
-
-    List<Result> queryResults = Collections.emptyList();
-
-    doReturn(queryResponse).when(catalogFramework).query(any(QueryRequest.class));
-
-    when(queryResponse.getResults()).thenReturn(queryResults);
 
     List<QueryMetacardImpl> queries = workspaceServiceImpl.getQueryMetacards(workspace);
 
@@ -239,7 +227,6 @@ public class WorkspaceServiceImplTest {
   public void testGetQueryMetacards()
       throws UnsupportedQueryException, SourceUnavailableException, FederationException {
     WorkspaceMetacardImpl workspace = mock(WorkspaceMetacardImpl.class);
-    doReturn("workspaceId").when(workspace).getId();
     doReturn(Arrays.asList("queryId1", "queryId2")).when(workspace).getQueries();
 
     List<Result> queryResults = getMockQueryResults();

@@ -239,6 +239,7 @@ export const Button = ({
   icon,
   text,
   inText,
+  className,
   rootClassName,
   rootStyle,
   ...otherProps
@@ -247,7 +248,7 @@ export const Button = ({
     <Root
       inText={inText}
       buttonType={buttonType}
-      className={rootClassName}
+      className={`${className} ${rootClassName} old-button`}
       // @ts-ignore
       style={rootStyle}
       {...otherProps as JSX.IntrinsicAttributes}

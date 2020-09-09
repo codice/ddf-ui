@@ -28,7 +28,8 @@ import ddf.security.SubjectIdentity;
 import ddf.security.permission.CollectionPermission;
 import ddf.security.permission.KeyValueCollectionPermission;
 import ddf.security.permission.KeyValuePermission;
-import ddf.security.permission.MatchOneCollectionPermission;
+import ddf.security.permission.impl.KeyValuePermissionImpl;
+import ddf.security.permission.impl.MatchOneCollectionPermission;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -89,7 +90,7 @@ public class AccessControlPolicyExtensionTest {
   }
 
   private static KeyValuePermission makePermission(String key, Set<String> values) {
-    return new KeyValuePermission(key, values) {
+    return new KeyValuePermissionImpl(key, values) {
       @Override
       public boolean equals(Object obj) {
         KeyValuePermission permission = (KeyValuePermission) obj;

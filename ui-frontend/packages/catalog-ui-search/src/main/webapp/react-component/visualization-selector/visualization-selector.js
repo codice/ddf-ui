@@ -52,7 +52,7 @@ const VisualizationText = styled.div`
 `
 
 const configs = ExtensionPoints.visualizations.reduce((cfg, viz) => {
-  const { id, title, icon } = viz
+  const { id, title, icon, isClosable = true } = viz
 
   cfg[id] = {
     title,
@@ -60,6 +60,7 @@ const configs = ExtensionPoints.visualizations.reduce((cfg, viz) => {
     componentName: id,
     icon,
     componentState: {},
+    isClosable,
   }
   return cfg
 }, {})
@@ -86,8 +87,13 @@ class VisualizationSelector extends React.Component {
     this.inspector = React.createRef()
     this.histogram = React.createRef()
     this.table = React.createRef()
+    this.props.goldenLayout.on('stateChanged', () => {
+      this.forceUpdate()
+    })
   }
   render() {
+    window._gl = this.props.goldenLayout
+
     return (
       <CustomElement onClick={this.handleChoice.bind(this)}>
         {Object.values(configs).map(
@@ -99,6 +105,13 @@ class VisualizationSelector extends React.Component {
               }}
               onMouseDown={this.handleMouseDown.bind(this, componentName)}
               onMouseUp={this.handleMouseUp.bind(this, componentName)}
+              className={
+                JSON.stringify(this.props.goldenLayout.toConfig()).includes(
+                  `"componentName":"${componentName}"`
+                )
+                  ? '' /** change to hidden to only allow one of each visual */
+                  : ''
+              }
             >
               <VisualizationIcon className={icon} />
               <VisualizationText>{title}</VisualizationText>

@@ -12,15 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import React from 'react'
 
-// eslint-disable-next-line no-extra-semi
-;(function injectStyles() {
-  if (process.env.NODE_ENV !== 'production') {
-    require('../dev/styles/styles.less') // include styles for dev guide components
-  } else {
-    require('../styles/styles.less') // production styles only
-  }
-})()
+require('../styles/styles.less')
 
 const $ = require('jquery')
 $.ajaxSetup({
@@ -49,7 +43,6 @@ require('./requestAnimationFramePolyfill.js')
 require('./HandlebarsHelpers.js')
 require('./ApplicationHelpers.js')
 require('./Autocomplete.js')
-require('./backbone.customFunctions.js')
 require('./extensions/backbone.listenTo.tsx')
 require('./extensions/marionette.onFirstRender.js')
 require('./extensions/marionette.renderer.render.js')
@@ -87,14 +80,6 @@ let getErrorResponse = function(event, jqxhr, settings, throwError) {
     return {
       title: properties.i18n['sources.polling.error.title'],
       message: properties.i18n['sources.polling.error.message'],
-    }
-  } else if (
-    settings.url.indexOf('./internal/workspaces') > -1 &&
-    settings.type === 'PUT'
-  ) {
-    return {
-      title: 'Error Saving Workspace',
-      message: 'Unable to save workspace on server',
     }
   } else if (jqxhr.responseJSON !== undefined) {
     return { title: 'Error', message: jqxhr.responseJSON.message }
@@ -186,3 +171,17 @@ Marionette.Region.prototype.reset = function() {
 }
 
 require('@connexta/icons/icons/codice.font')
+require('./MediaQueries.js')
+require('./Theming.js')
+require('./SystemUsage.js')
+require('../component/singletons/session-auto-renew.js')
+require('./SessionTimeout.js')
+
+$(window.document).ready(() => {
+  window.document.title = properties.branding + ' ' + properties.product
+  window.document.querySelector('.welcome-branding').textContent =
+    properties.branding
+  window.document.querySelector('.welcome-branding-name').textContent =
+    properties.product
+  window.document.querySelector('#loading').classList.add('show-welcome')
+})

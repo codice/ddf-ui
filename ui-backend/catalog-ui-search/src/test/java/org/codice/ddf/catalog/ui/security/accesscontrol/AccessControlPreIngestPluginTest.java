@@ -16,7 +16,7 @@ package org.codice.ddf.catalog.ui.security.accesscontrol;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -33,6 +33,7 @@ import ddf.catalog.operation.impl.OperationTransactionImpl;
 import ddf.catalog.operation.impl.UpdateRequestImpl;
 import ddf.security.SubjectIdentity;
 import ddf.security.assertion.SecurityAssertion;
+import ddf.security.service.impl.SubjectUtils;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
@@ -66,12 +67,16 @@ public class AccessControlPreIngestPluginTest {
     Subject subject = mock(Subject.class);
     when(subject.getPrincipals()).thenReturn(principalCollection);
 
-    return new AccessControlPreIngestPlugin(subjectIdentity) {
-      @Override
-      protected Subject getSubject() {
-        return subject;
-      }
-    };
+    AccessControlPreIngestPlugin accessControlPreIngestPlugin =
+        new AccessControlPreIngestPlugin(subjectIdentity) {
+          @Override
+          protected Subject getSubject() {
+            return subject;
+          }
+        };
+    accessControlPreIngestPlugin.setSubjectOperations(new SubjectUtils());
+
+    return accessControlPreIngestPlugin;
   }
 
   @Test

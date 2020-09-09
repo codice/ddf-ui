@@ -98,7 +98,6 @@ const properties = {
         )
       })
 
-    this.handleEditing()
     this.handleFeedback()
     this.handleExperimental()
     this.handleUpload()
@@ -118,9 +117,6 @@ const properties = {
       this.listTemplates = []
     }
   },
-  handleEditing() {
-    $('html').toggleClass('is-editing-restricted', this.isEditingRestricted())
-  },
   handleFeedback() {
     $('html').toggleClass('is-feedback-restricted', this.isFeedbackRestricted())
   },
@@ -135,9 +131,6 @@ const properties = {
   },
   isReadOnly(attribute) {
     return match(this.readOnly, attribute)
-  },
-  isEditingRestricted() {
-    return !this.isEditingAllowed
   },
   hasExperimentalEnabled() {
     return this.isExperimental

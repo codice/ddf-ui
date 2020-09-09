@@ -28,6 +28,10 @@ Implementation details
     =============================================================
     -->
 
+    <reference id="securityLogger" interface="ddf.security.audit.SecurityLogger" />
+
+    <reference id="subjectOperations1" interface="ddf.security.SubjectOperations" />
+
     <bean id="metacardActionRegistry" class="ddf.action.impl.ActionRegistryImpl">
         <argument ref="metacardActionProviders"/>
         <argument ref="metacardMultiActionProviders"/>
@@ -64,6 +68,8 @@ Implementation details
         <argument ref="metacardActionRegistry"/>
         <property name="descriptors" ref="transformerDescriptors"/>
     </bean>
+
+    <service ref="cqlQueryUtil" interface="org.codice.ddf.catalog.ui.query.utility.CqlQueries"/>
 
     <bean id="accessControlSecurityConfiguration"
           class="org.codice.ddf.catalog.ui.security.accesscontrol.AccessControlSecurityConfiguration">
@@ -128,11 +134,6 @@ Implementation details
     =============================================================
     -->
 
-    <bean id="authenticationApplication"
-          class="org.codice.ddf.catalog.ui.security.app.AuthenticationApplication">
-        <argument ref="securityAuthenticationService"/>
-    </bean>
-
     <bean id="buildApplication" class="org.codice.ddf.catalog.ui.metacard.BuildApplication">
         <argument ref="endpointUtil"/>
         <argument ref="userCreatableMetacardType"/>
@@ -155,6 +156,7 @@ Implementation details
         <property name="configurationApplication" ref="configurationApplication"/>
         <property name="smtpClient" ref="smtpClient"/>
         <property name="endpointUtil" ref="endpointUtil"/>
+        <property name="subjectOperations" ref="subjectOperations1" />
     </bean>
 
     <bean id="geoCoderApplication" class="org.codice.ddf.catalog.ui.spatial.GeoCoderApplication">
@@ -175,6 +177,7 @@ Implementation details
         <argument ref="endpointUtil"/>
         <argument ref="subjectIdentity"/>
         <argument ref="filterBuilder"/>
+        <property name="subjectOperations" ref="subjectOperations1" />
     </bean>
 
     <!--
@@ -269,6 +272,8 @@ Implementation details
         <argument ref="queryWorkspaceService"/>
         <argument ref="queryMetacardsHandler"/>
         <argument ref="ddfSecurity" />
+        <property name="subjectOperations" ref="subjectOperations1" />
+        <property name="securityLogger" ref="securityLogger" />
     </bean>
 
     <!--
@@ -326,6 +331,16 @@ Implementation details
         <argument ref="coordinateSystemTranslator"/>
     </bean>
 
+    <bean id="sourceWarningsFilters" class="org.codice.ddf.platform.util.SortedServiceList"/>
+
+    <reference-list interface="ddf.catalog.security.SourceWarningsFilter" availability="optional">
+        <reference-listener bind-method="bindPlugin" unbind-method="unbindPlugin" ref="sourceWarningsFilters"/>
+    </reference-list>
+
+    <bean id="sourceWarningsFilterManager" class="org.codice.ddf.catalog.ui.query.cql.SourceWarningsFilterManager">
+        <argument ref="sourceWarningsFilters"/>
+    </bean>
+
     <bean id="queryApplication" class="org.codice.ddf.catalog.ui.query.QueryApplication">
         <property name="featureService" ref="featureService"/>
         <property name="endpointUtil" ref="endpointUtil"/>
@@ -336,6 +351,7 @@ Implementation details
         <argument ref="dmsProcessor"/>
         <argument ref="mgrsProcessor"/>
         <argument ref="utmUpsProcessor"/>
+        <argument ref="sourceWarningsFilterManager"/>
     </bean>
 
     <bean id="jsonRpc" class="org.codice.ddf.catalog.ui.ws.JsonRpc">
@@ -344,6 +360,7 @@ Implementation details
                 <entry key="query" value-ref="queryApplication"/>
             </map>
         </argument>
+        <property name="securityLogger" ref="securityLogger" />
     </bean>
 
     <bean id="socketThreadFactory"
@@ -361,7 +378,7 @@ Implementation details
     </bean>
 
     <bean id="socketServlet" destroy-method="destroy"
-          class="org.codice.ddf.catalog.ui.ws.SecureWebSocketServlet">
+          class="org.codice.ddf.security.servlet.web.socket.SecureWebSocketServlet">
         <argument ref="socketThreadPool"/>
         <argument ref="jsonRpc"/>
     </bean>
@@ -402,13 +419,13 @@ Implementation details
         <argument ref="filterBuilder"/>
         <argument ref="templateTransformer"/>
         <argument ref="endpointUtil"/>
+        <property name="subjectOperations" ref="subjectOperations1" />
     </bean>
 
     <bean id="rootReqSupplier" class="org.codice.ddf.catalog.ui.RootContextRequestSupplier"/>
     <bean id="sparkServlet" class="org.codice.ddf.catalog.ui.SparkServlet">
         <property name="sparkApplications">
             <list>
-                <ref component-id="authenticationApplication"/>
                 <ref component-id="queryApplication"/>
                 <ref component-id="metacardApplication"/>
                 <ref component-id="platformApplication"/>
@@ -533,5 +550,9 @@ Implementation details
             </bean>
         </argument>
     </bean>
+
+    <bean id="queryFactory" class="org.codice.ddf.catalog.ui.query.cql.QueryRequestFactoryImpl"/>
+
+    <service ref="queryFactory" interface="org.codice.ddf.catalog.ui.query.utility.QueryRequestFactory"/>
 
 </blueprint>

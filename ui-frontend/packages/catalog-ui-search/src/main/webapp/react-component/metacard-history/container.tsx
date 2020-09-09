@@ -16,11 +16,11 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import fetch from '../utils/fetch'
-const store = require('../../js/store.js')
 const Common = require('../../js/Common.js')
 const ResultUtils = require('../../js/ResultUtils.js')
 const moment = require('moment')
 const announcement = require('component/announcement')
+const user = require('../../component/singletons/user-instance.js')
 import MetacardHistoryPresentation from './presentation'
 
 type Props = {
@@ -37,7 +37,7 @@ class MetacardHistory extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
 
-    const selectionInterface = props.selectionInterface || store
+    const selectionInterface = props.selectionInterface
     this.model = selectionInterface.getSelectedResults().first()
 
     this.state = {
@@ -80,7 +80,7 @@ class MetacardHistory extends React.Component<Props, State> {
     }, 1000)
   }
 
-  clickWorkspace = (event: any) => {
+  onClick = (event: any) => {
     const selectedVersion = event.currentTarget.getAttribute('data-id')
     this.setState({ selectedVersion })
   }
@@ -137,11 +137,12 @@ class MetacardHistory extends React.Component<Props, State> {
     const { history, selectedVersion, loading } = this.state
     return (
       <MetacardHistoryPresentation
-        clickWorkspace={this.clickWorkspace}
+        onClick={this.onClick}
         revertToSelectedVersion={this.revertToSelectedVersion}
         history={history}
         selectedVersion={selectedVersion}
         loading={loading}
+        canEdit={user.canWrite(this.model)}
       />
     )
   }

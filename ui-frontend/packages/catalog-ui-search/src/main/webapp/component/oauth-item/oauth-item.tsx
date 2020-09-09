@@ -133,7 +133,7 @@ const OauthItem = ({ model }: Props) => {
           </TextDiv>
           <ButtonDiv>
             <button
-              className="is-primary"
+              className="old-button is-primary"
               onClick={() => {
                 setTimeout(() => {
                   model.collection.remove(model)

@@ -27,7 +27,7 @@ import com.google.gson.GsonBuilder;
 import ddf.catalog.filter.FilterBuilder;
 import ddf.security.Subject;
 import ddf.security.SubjectIdentity;
-import ddf.security.SubjectUtils;
+import ddf.security.SubjectOperations;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Base64;
@@ -79,6 +79,8 @@ public class UserApplication implements SparkApplication {
 
   private final FilterBuilder filterBuilder;
 
+  private SubjectOperations subjectOperations;
+
   public UserApplication(
       EndpointUtil util,
       PersistentStore persistentStore,
@@ -111,7 +113,7 @@ public class UserApplication implements SparkApplication {
         (req, res) -> {
           Subject subject = (Subject) SecurityUtils.getSubject();
 
-          if (subject.isGuest()) {
+          if (subjectOperations.isGuest(subject)) {
             res.status(401);
             return ImmutableMap.of("message", "Guest cannot save preferences.");
           }
@@ -135,7 +137,7 @@ public class UserApplication implements SparkApplication {
         (req, res) -> {
           Subject subject = (Subject) SecurityUtils.getSubject();
 
-          if (subject.isGuest()) {
+          if (subjectOperations.isGuest(subject)) {
             res.status(401);
             return ImmutableMap.of("message", "Guest cannot save notifications.");
           }
@@ -156,7 +158,7 @@ public class UserApplication implements SparkApplication {
         (req, res) -> {
           Subject subject = (Subject) SecurityUtils.getSubject();
 
-          if (subject.isGuest()) {
+          if (subjectOperations.isGuest(subject)) {
             res.status(401);
             return ImmutableMap.of("message", "Guest cannot save notifications.");
           }
@@ -203,7 +205,7 @@ public class UserApplication implements SparkApplication {
   }
 
   private Set<String> getSubjectRoles(Subject subject) {
-    return new TreeSet<>(SubjectUtils.getAttribute(subject, Constants.ROLES_CLAIM_URI));
+    return new TreeSet<>(subjectOperations.getAttribute(subject, Constants.ROLES_CLAIM_URI));
   }
 
   private Map getSubjectPreferences(Subject subject) {
@@ -287,13 +289,13 @@ public class UserApplication implements SparkApplication {
     Map<String, Object> required =
         ImmutableMap.of(
             "userid", subjectIdentity.getUniqueIdentifier(subject),
-            "username", SubjectUtils.getName(subject),
-            "isGuest", subject.isGuest(),
+            "username", subjectOperations.getName(subject),
+            "isGuest", subjectOperations.isGuest(subject),
             "roles", getSubjectRoles(subject),
             "preferences", getSubjectPreferences(subject));
     // @formatter:on
 
-    String email = SubjectUtils.getEmailAddress(subject);
+    String email = subjectOperations.getEmailAddress(subject);
 
     if (StringUtils.isEmpty(email)) {
       return required;
@@ -351,5 +353,9 @@ public class UserApplication implements SparkApplication {
           ids,
           e);
     }
+  }
+
+  public void setSubjectOperations(SubjectOperations subjectOperations) {
+    this.subjectOperations = subjectOperations;
   }
 }

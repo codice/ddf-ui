@@ -24,6 +24,7 @@ import ddf.security.SubjectIdentity;
 import ddf.security.permission.CollectionPermission;
 import ddf.security.permission.KeyValueCollectionPermission;
 import ddf.security.permission.KeyValuePermission;
+import ddf.security.permission.impl.KeyValueCollectionPermissionImpl;
 import ddf.security.policy.extension.PolicyExtension;
 import java.util.Collections;
 import java.util.List;
@@ -162,7 +163,7 @@ public class AccessControlPolicyExtension implements PolicyExtension {
                   .filter((permission) -> !implied.contains((permission).getKey()))
                   .collect(Collectors.toList());
 
-          return new KeyValueCollectionPermission(match.getAction(), values);
+          return new KeyValueCollectionPermissionImpl(match.getAction(), values);
         };
 
     return filterPermissions.apply(impliedPermissions.get());

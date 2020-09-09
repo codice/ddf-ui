@@ -14,7 +14,6 @@
  **/
 export { default, SearchInteractionProps } from './search-interactions'
 export {
-  CustomSearchFormDropdown,
   Text,
   Divider,
   Icon,

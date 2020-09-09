@@ -12,7 +12,8 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
 const _ = require('underscore')
 const _merge = require('lodash/merge')
 const _debounce = require('lodash/debounce')
@@ -24,12 +25,17 @@ const CustomElements = require('../../js/CustomElements.js')
 const GoldenLayout = require('golden-layout')
 const properties = require('../../js/properties.js')
 const Common = require('../../js/Common.js')
-const store = require('../../js/store.js')
 const user = require('../singletons/user-instance.js')
 const VisualizationDropdown = require('../dropdown/visualization-selector/dropdown.visualization-selector.view.js')
 const DropdownModel = require('../dropdown/dropdown.js')
 const sanitize = require('sanitize-html')
+import Button from '@material-ui/core/Button'
+import Grid from '@material-ui/core/Grid'
 import ExtensionPoints from '../../extension-points'
+import AllOutIcon from '@material-ui/icons/AllOut'
+import MinimizeIcon from '@material-ui/icons/Minimize'
+import CloseIcon from '@material-ui/icons/Close'
+import { providers as Providers } from '../../extension-points/providers'
 
 const treeMap = (obj, fn, path = []) => {
   if (Array.isArray(obj)) {
@@ -66,6 +72,12 @@ const defaultGoldenLayoutContent = {
       content: [
         {
           type: 'component',
+          componentName: 'status',
+          title: 'Search',
+          isClosable: false,
+        },
+        {
+          type: 'component',
           componentName: 'cesium',
           title: '3D Map',
         },
@@ -80,7 +92,6 @@ const defaultGoldenLayoutContent = {
 }
 
 function getGoldenLayoutSettings() {
-  const minimumScreenSize = 20 //20 rem or 320px at base font size
   const fontSize = parseInt(
     user
       .get('user')
@@ -99,8 +110,8 @@ function getGoldenLayoutSettings() {
     },
     dimensions: {
       borderWidth: 0.5 * parseFloat(theme.minimumSpacing) * fontSize,
-      minItemHeight: minimumScreenSize * fontSize,
-      minItemWidth: minimumScreenSize * fontSize,
+      minItemHeight: 50,
+      minItemWidth: 50,
       headerHeight: parseFloat(theme.minimumButtonSize) * fontSize,
       dragProxyWidth: 300,
       dragProxyHeight: 200,
@@ -122,7 +133,8 @@ function registerComponent(
   marionetteView,
   name,
   ComponentView,
-  componentOptions
+  componentOptions,
+  viz
 ) {
   const options = _.extend({}, marionetteView.options, componentOptions)
   marionetteView.goldenLayout.registerComponent(
@@ -142,6 +154,13 @@ function registerComponent(
           })
         }, 0)
       })
+      container.on('resize', () => {
+        if (container.width < 100) {
+          container.parent.parent.element.addClass('is-minimized')
+        } else {
+          container.parent.parent.element.removeClass('is-minimized')
+        }
+      })
       container.on('tab', tab => {
         tab.closeElement.off('click').on('click', event => {
           if (
@@ -152,6 +171,55 @@ function registerComponent(
           }
           tab._onCloseClickFn(event)
         })
+        const root = document.createElement('div')
+        tab.element.append(root)
+        let intervalId = setInterval(() => {
+          try {
+            ReactDOM.render(
+              <Providers>
+                <Grid container direction="row" wrap="nowrap">
+                  <Grid item className="px-2">
+                    <div>{tab.titleElement.text()}</div>
+                  </Grid>
+                  <Grid item>
+                    {viz.header ? (
+                      <viz.header
+                        {..._.extend({}, options, componentState, {
+                          container,
+                        })}
+                      />
+                    ) : null}
+                  </Grid>
+                  {/* <Grid item>
+                    <Button
+                      onClick={e => {
+                        tab.contentItem.container.setSize(
+                          10,
+                          tab.contentItem.container.height
+                        )
+                      }}
+                    >
+                      -
+                    </Button>
+                  </Grid> */}
+                  <Grid item>
+                    {tab.closeElement[0].style.display !== 'none' ? (
+                      <Button
+                        onClick={e => {
+                          tab._onCloseClickFn(e)
+                        }}
+                      >
+                        <CloseIcon />
+                      </Button>
+                    ) : null}
+                  </Grid>
+                </Grid>
+              </Providers>,
+              tab.element[0]
+            )
+            clearInterval(intervalId)
+          } catch (err) {}
+        }, 100)
       })
     }
   )
@@ -198,9 +266,6 @@ module.exports = Marionette.LayoutView.extend({
     toolbar: '> .golden-layout-toolbar',
     widgetDropdown: '> .golden-layout-toolbar .to-add',
   },
-  initialize(options) {
-    this.options.selectionInterface = options.selectionInterface || store
-  },
   updateFontSize() {
     const goldenLayoutSettings = getGoldenLayoutSettings()
     this.goldenLayout.config.dimensions.borderWidth =
@@ -216,6 +281,9 @@ module.exports = Marionette.LayoutView.extend({
     })
   },
   updateSize() {
+    if (this.isDestroyed) {
+      return
+    }
     this.goldenLayout.updateSize()
   },
   showWidgetDropdown() {
@@ -241,6 +309,7 @@ module.exports = Marionette.LayoutView.extend({
       'initialised',
       this.handleGoldenLayoutInitialised.bind(this)
     )
+
     this.goldenLayout.init()
   },
   getGoldenLayoutConfig() {
@@ -256,7 +325,7 @@ module.exports = Marionette.LayoutView.extend({
   },
   registerGoldenLayoutComponents() {
     ExtensionPoints.visualizations.forEach(viz => {
-      registerComponent(this, viz.id, viz.view, viz.options)
+      registerComponent(this, viz.id, viz.view, viz.options, viz)
     })
   },
   detectIfGoldenLayoutMaximised() {
@@ -282,8 +351,73 @@ module.exports = Marionette.LayoutView.extend({
         }
         stack.remove()
       })
+    // const root = document.createElement('div')
+    // tab.element.append(root)
+    let intervalId = setInterval(() => {
+      try {
+        ReactDOM.render(
+          <Providers>
+            <Grid container direction="row" wrap="nowrap">
+              <Grid item>
+                <Button
+                  onClick={e => {
+                    const prevWidth = stack.config.prevWidth || 500
+                    const prevHeight = stack.config.prevHeight || 500
+                    stack.contentItems[0].container.setSize(
+                      prevWidth,
+                      prevHeight
+                    )
+                  }}
+                >
+                  +
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  onClick={e => {
+                    stack.config.prevWidth = stack.getActiveContentItem().container.width
+                    stack.config.prevHeight = stack.getActiveContentItem().container.height
+                    stack.contentItems[0].container.setSize(10, 45)
+                  }}
+                >
+                  <MinimizeIcon />
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  onClick={e => {
+                    stack.toggleMaximise()
+                  }}
+                >
+                  <AllOutIcon />
+                </Button>
+              </Grid>
+              <Grid item>
+                {stack.header._isClosable() ? (
+                  <Button
+                    onClick={e => {
+                      if (stack.isMaximised) {
+                        stack.toggleMaximise()
+                      }
+                      stack.remove()
+                    }}
+                  >
+                    <CloseIcon />
+                  </Button>
+                ) : null}
+              </Grid>
+            </Grid>
+          </Providers>,
+          stack.header.controlsContainer[0]
+        )
+        clearInterval(intervalId)
+      } catch (err) {}
+    }, 100)
   },
   handleGoldenLayoutStateChange(event) {
+    if (this.isDestroyed) {
+      return
+    }
     this.detectIfGoldenLayoutMaximised()
     this.detectIfGoldenLayoutEmpty()
     //https://github.com/deepstreamIO/golden-layout/issues/253
@@ -334,9 +468,13 @@ module.exports = Marionette.LayoutView.extend({
         }
       )
     )
+    this.listenTo(wreqr.vent, 'gl-updateSize', () => {
+      this.updateSize()
+    })
   },
   stopListeningForResize() {
     $(window).off('resize.' + this.cid)
+    this.stopListening(wreqr.vent)
   },
   onDestroy() {
     this.stopListeningForResize()

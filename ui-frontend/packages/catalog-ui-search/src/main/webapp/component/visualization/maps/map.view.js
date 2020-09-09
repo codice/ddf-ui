@@ -22,10 +22,7 @@ const template = require('./map.hbs')
 const Marionette = require('marionette')
 const CustomElements = require('../../../js/CustomElements.js')
 const LoadingCompanionView = require('../../loading-companion/loading-companion.view.js')
-const store = require('../../../js/store.js')
-const GeometryCollectionView = require('./geometry.collection.view')
-const ClusterCollectionView = require('./cluster.collection.view')
-const ClusterCollection = require('./cluster.collection')
+const PopupPreviewView = require('./popup.view.js')
 const CQLUtils = require('../../../js/CQLUtils.js')
 const LocationModel = require('../../location-old/location-old.js')
 const user = require('../../singletons/user-instance.js')
@@ -43,6 +40,8 @@ import MapSettings from '../../../react-component/map-settings'
 import MapInfo from '../../../react-component/map-info'
 import DistanceInfo from '../../../react-component/distance-info'
 import getDistance from 'geolib/es/getDistance'
+import { Drawing } from '../../singletons/drawing'
+import { GeometriesView } from './react/geometries.view'
 
 function findExtreme({ objArray, property, comparator }) {
   if (objArray.length === 0) {
@@ -144,13 +143,12 @@ module.exports = Marionette.LayoutView.extend({
     mapContextMenu: '.map-context-menu',
     mapInfo: '.mapInfo',
     distanceInfo: '.distanceInfo',
+    popupPreview: '.popupPreview',
   },
   events: {
     'click .cluster-button': 'toggleClustering',
   },
-  clusterCollection: undefined,
-  clusterCollectionView: undefined,
-  geometryCollectionView: undefined,
+  geometriesView: undefined,
   map: undefined,
   mapModel: undefined,
   hasLoadedMap: false,
@@ -160,10 +158,9 @@ module.exports = Marionette.LayoutView.extend({
     }
     this.onMapLoaded = options.onMapLoaded || (() => {})
     this.mapModel = new MapModel()
-    this.listenTo(store.get('content'), 'change:drawing', this.handleDrawing)
+    this.listenTo(Drawing, 'change:drawing', this.handleDrawing)
     this.handleDrawing()
     this.setupMouseLeave()
-    this.listenTo(store.get('workspaces'), 'add', this.zoomToHome)
   },
   setupMouseLeave() {
     this.$el.on('mouseleave', () => {
@@ -174,17 +171,10 @@ module.exports = Marionette.LayoutView.extend({
     if (!this.map) {
       throw 'Map has not been set.'
     }
-    this.clusterCollection = new ClusterCollection()
-    this.geometryCollectionView = new GeometryCollectionView({
-      collection: this.options.selectionInterface.getActiveSearchResults(),
-      map: this.map,
+    this.geometriesView = new GeometriesView({
       selectionInterface: this.options.selectionInterface,
-      clusterCollection: this.clusterCollection,
-    })
-    this.clusterCollectionView = new ClusterCollectionView({
-      collection: this.clusterCollection,
       map: this.map,
-      selectionInterface: this.options.selectionInterface,
+      mapView: this,
     })
   },
   setupListeners() {
@@ -207,22 +197,6 @@ module.exports = Marionette.LayoutView.extend({
       this.options.selectionInterface,
       'reset:activeSearchResults',
       this.map.removeAllOverlays.bind(this.map)
-    )
-
-    this.listenTo(
-      this.options.selectionInterface.getSelectedResults(),
-      'update',
-      this.map.zoomToSelected.bind(this.map)
-    )
-    this.listenTo(
-      this.options.selectionInterface.getSelectedResults(),
-      'add',
-      this.map.zoomToSelected.bind(this.map)
-    )
-    this.listenTo(
-      this.options.selectionInterface.getSelectedResults(),
-      'remove',
-      this.map.zoomToSelected.bind(this.map)
     )
 
     this.listenTo(
@@ -250,18 +224,12 @@ module.exports = Marionette.LayoutView.extend({
       this.updateDistance.bind(this)
     )
 
-    if (this.options.selectionInterface.getSelectedResults().length > 0) {
-      this.map.zoomToSelected(
-        this.options.selectionInterface.getSelectedResults()
-      )
-    } else {
-      Common.queueExecution(this.zoomToHome.bind(this))
-    }
     this.map.onMouseMove(this.onMapHover.bind(this))
     this.map.onRightClick(this.onRightClick.bind(this))
     this.setupRightClickMenu()
     this.setupMapInfo()
     this.setupDistanceInfo()
+    this.setupPopupPreview()
   },
   zoomToHome() {
     const home = [
@@ -337,23 +305,31 @@ module.exports = Marionette.LayoutView.extend({
     this.toolbarSettings.show(new MapSettingsView())
   },
   onMapHover(event, mapEvent) {
-    const metacard = this.options.selectionInterface
-      .getActiveSearchResults()
-      .get(mapEvent.mapTarget)
+    const currentQuery = this.options.selectionInterface.get('currentQuery')
+    if (!currentQuery) {
+      return
+    }
+    const result = currentQuery.get('result')
+    if (!result) {
+      return
+    }
+    const metacard = result.get('lazyResults').results[mapEvent.mapTarget]
     this.updateTarget(metacard)
     this.$el.toggleClass(
       'is-hovering',
-      Boolean(mapEvent.mapTarget && mapEvent.mapTarget !== 'userDrawing')
+      Boolean(
+        mapEvent.mapTarget &&
+          mapEvent.mapTarget !== 'userDrawing' &&
+          (mapEvent.mapTarget.constructor === Array ||
+            mapEvent.mapTarget.length > 10) // why ten?  Well, for some reason we don't put 'userDrawing' as the id on openlayers targets, instead we put a random cid from marionette / backbone. Not sure why to be honest.  We have to check if it's an array though, because clusters come back as arrays
+      )
     )
   },
   updateTarget(metacard) {
     let target
     let targetMetacard
     if (metacard) {
-      target = metacard
-        .get('metacard')
-        .get('properties')
-        .get('title')
+      target = metacard.plain.metacard.properties.title
       targetMetacard = metacard
     }
     this.mapModel.set({
@@ -453,7 +429,9 @@ module.exports = Marionette.LayoutView.extend({
       .css('left', event.offsetX)
       .css('top', event.offsetY)
     this.mapModel.updateClickCoordinates()
-    this.mapContextMenu.currentView.model.open()
+    if (this.mapModel.get('mouseLat') !== undefined) {
+      this.mapContextMenu.currentView.model.open()
+    }
     this.updateDistance(true)
   },
   setupRightClickMenu() {
@@ -462,9 +440,6 @@ module.exports = Marionette.LayoutView.extend({
         model: new DropdownModel(),
         mapModel: this.mapModel,
         selectionInterface: this.options.selectionInterface,
-        dropdownCompanionBehaviors: {
-          navigation: {},
-        },
       })
     )
   },
@@ -490,6 +465,15 @@ module.exports = Marionette.LayoutView.extend({
 
     this.mapModel.addDistanceInfo(distanceInfoView)
     this.distanceInfo.show(distanceInfoView)
+  },
+  setupPopupPreview() {
+    this.popupPreview.show(
+      new PopupPreviewView({
+        map: this.map,
+        mapModel: this.mapModel,
+        selectionInterface: this.options.selectionInterface,
+      })
+    )
   },
   /*
         Map creation is deferred to this method, so that all resources pertaining to the map can be loaded lazily and
@@ -551,17 +535,17 @@ module.exports = Marionette.LayoutView.extend({
   },
   toggleClustering() {
     this.$el.toggleClass('is-clustering')
-    this.clusterCollectionView.toggleActive()
+    this.geometriesView.toggleClustering()
   },
   handleDrawing() {
-    this.$el.toggleClass('is-drawing', store.get('content').get('drawing'))
+    this.$el.toggleClass('is-drawing', Drawing.isDrawing())
   },
   handleCurrentQuery() {
     this.removePreviousLocations()
     const currentQuery = this.options.selectionInterface.get('currentQuery')
     if (currentQuery) {
       this.handleFilter(
-        CQLUtils.transformCQLToFilter(currentQuery.get('cql')),
+        currentQuery.get('filterTree'),
         currentQuery.get('color')
       )
     }
@@ -570,12 +554,7 @@ module.exports = Marionette.LayoutView.extend({
       .get('preferences')
       .get('resultFilter')
     if (resultFilter) {
-      this.handleFilter(
-        CQLUtils.transformCQLToFilter(
-          CQLUtils.transformFilterToCQL(resultFilter)
-        ),
-        '#c89600'
-      )
+      this.handleFilter(resultFilter, '#c89600')
     }
   },
   handleFilter(filter, color) {
@@ -584,46 +563,42 @@ module.exports = Marionette.LayoutView.extend({
         this.handleFilter(subfilter, color)
       })
     } else {
-      let pointText
-      let locationModel
       const value = filter.value
-      switch (filter.type) {
-        case 'DWITHIN':
-          if (CQLUtils.isPolygonFilter(value)) {
-            this.handleFilterAsPolygon(value, color, filter.distance)
-            break
-          }
-          if (CQLUtils.isPointRadiusFilter(value)) {
-            pointText = value.value.substring(6)
-            pointText = pointText.substring(0, pointText.length - 1)
-            const latLon = pointText.split(' ')
-            locationModel = new LocationModel({
-              lat: latLon[1],
-              lon: latLon[0],
-              radius: filter.distance,
-              color,
-            })
-            this.map.showCircleShape(locationModel)
-          } else {
-            pointText = value.value.substring(11)
-            pointText = pointText.substring(0, pointText.length - 1)
-            locationModel = new LocationModel({
-              lineWidth: filter.distance,
-              line: pointText
-                .split(',')
-                .map(coordinate =>
-                  coordinate.split(' ').map(value => Number(value))
-                ),
-              color,
-            })
+      if (filter.type === 'GEOMETRY') {
+        const locationModel = new LocationModel(filter.value)
+        switch (filter.value.type) {
+          case 'LINE':
             this.map.showLineShape(locationModel)
-          }
-          break
-        case 'INTERSECTS':
-          this.handleFilterAsPolygon(value, color, filter.distance)
-          break
+            break
+          case 'POLYGON':
+            this.map.showPolygonShape(locationModel)
+            break
+          case 'MULTIPOLYGON':
+            this.map.showPolygonShape(locationModel)
+            break
+          case 'BBOX':
+            this.map.showPolygonShape(locationModel)
+            break
+          case 'POINTRADIUS':
+            this.map.showCircleShape(locationModel)
+            break
+        }
       }
     }
+  },
+  handleFilterAsLine(filter, color) {
+    const pointText = filter.value.value.substring(
+      11,
+      filter.value.value.length - 1
+    )
+    const locationModel = new LocationModel({
+      lineWidth: filter.distance || 0,
+      line: pointText
+        .split(',')
+        .map(coordinate => coordinate.split(' ').map(value => Number(value))),
+      color,
+    })
+    this.map.showLineShape(locationModel)
   },
   handleFilterAsPolygon(value, color, distance) {
     const filterValue = typeof value === 'string' ? value : value.value
@@ -638,14 +613,8 @@ module.exports = Marionette.LayoutView.extend({
     this.map.destroyShapes()
   },
   onDestroy() {
-    if (this.geometryCollectionView) {
-      this.geometryCollectionView.destroy()
-    }
-    if (this.clusterCollectionView) {
-      this.clusterCollectionView.destroy()
-    }
-    if (this.clusterCollection) {
-      this.clusterCollection.reset()
+    if (this.geometriesView) {
+      this.geometriesView.destroy()
     }
     if (this.map) {
       this.map.destroy()

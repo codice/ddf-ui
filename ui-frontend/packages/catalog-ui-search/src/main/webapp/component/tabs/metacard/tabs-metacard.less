@@ -1,6 +1,3 @@
-@{customElementNamespace}tabs.is-metacard.is-workspace {
-}
-
 @{customElementNamespace}tabs.is-metacard.is-resource {
 }
 
@@ -25,17 +22,6 @@
   }
 }
 
-@{customElementNamespace}tabs.is-metacard.is-workspace {
-  > .tabs-list {
-    [data-id='History'],
-    [data-id='Actions'],
-    [data-id='Overwrite'],
-    [data-id='Archive'] {
-      display: none !important;
-    }
-  }
-}
-
 @{customElementNamespace}tabs.is-metacard.is-remote {
   > .tabs-list {
     [data-id='History'],
@@ -43,15 +29,6 @@
     [data-id='Archive'],
     [data-id='Associations'],
     [data-id='Quality'] {
-      display: none !important;
-    }
-  }
-}
-
-.is-editing-restricted @{customElementNamespace}tabs.is-metacard {
-  > .tabs-list {
-    [data-id='Overwrite'],
-    [data-id='Archive'] {
       display: none !important;
     }
   }
@@ -67,10 +44,7 @@
 
 @{customElementNamespace}tabs.is-editing-disabled {
   > .tabs-list {
-    [data-id='History'],
-    [data-id='Associations'],
     [data-id='Archive'],
-    [data-id='Quality'],
     [data-id='Overwrite'] {
       display: none !important;
     }

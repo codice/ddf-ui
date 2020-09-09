@@ -14,6 +14,29 @@
     background: inherit !important;
   }
 
+  .lm_header .lm_controls > div > div:first-of-type {
+    display: none;
+  }
+
+  .lm_item.is-minimized {
+    .lm_header .lm_tabs {
+      display: none;
+    }
+    .lm_header .lm_controls > div > div:not(:first-of-type) {
+      display: none;
+    }
+    .lm_header .lm_controls > div > div:first-of-type {
+      display: block;
+    }
+    .lm_content {
+      display: none;
+    }
+  }
+
+  .lm_header {
+    overflow: hidden;
+  }
+
   .lm_header,
   .lm_items {
     position: relative;
@@ -321,7 +344,7 @@
   }
 
   > .golden-layout-container {
-    height: ~'calc(100%)';
+    height: ~'calc(99.5%)';
   }
 }
 

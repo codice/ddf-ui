@@ -28,7 +28,6 @@ const Alert = require('./Alert')
 const Common = require('../Common.js')
 const UploadBatch = require('./UploadBatch.js')
 const announcement = require('../../component/announcement/index.jsx')
-const BlackListItem = require('./BlacklistItem.js')
 const moment = require('moment-timezone')
 const Theme = require('./Theme.js')
 const ThemeUtils = require('../ThemeUtils.js')
@@ -134,10 +133,10 @@ User.Preferences = Backbone.AssociatedModel.extend({
       alerts: [],
       alertPersistence: true, // persist across sessions by default
       alertExpiration: 2592000000, // 1 month in milliseconds
-      resultBlacklist: [],
       visualization: '3dmap',
       columnHide: [],
       columnOrder: ['title', 'created', 'modified', 'thumbnail'],
+      hasSelectedColumns: false,
       uploads: [],
       oauth: [],
       fontSize: ThemeUtils.getFontSize(_get(properties, 'zoomPercentage', 100)),
@@ -177,11 +176,6 @@ User.Preferences = Backbone.AssociatedModel.extend({
       type: Backbone.Many,
       key: 'oauth',
       relatedModel: Oauth,
-    },
-    {
-      type: Backbone.Many,
-      key: 'resultBlacklist',
-      relatedModel: BlackListItem,
     },
     {
       type: Backbone.One,
@@ -281,9 +275,6 @@ User.Preferences = Backbone.AssociatedModel.extend({
         },
       })
     }
-  },
-  resetBlacklist() {
-    this.set('resultBlacklist', [])
   },
   handleResultCount() {
     this.set(
@@ -499,8 +490,22 @@ User.Response = Backbone.AssociatedModel.extend({
   canRead(metacard) {
     return new Security(Restrictions.from(metacard)).canRead(this)
   },
-  canWrite(metacard) {
-    return new Security(Restrictions.from(metacard)).canWrite(this)
+  canWrite(thing) {
+    switch (thing.type) {
+      case 'metacard-properties':
+        return new Security(Restrictions.from(thing)).canWrite(this)
+      case 'query-result':
+        return this.canWrite(thing.get('metacard').get('properties'))
+      case 'query-result.collection':
+      default:
+        if (this.some !== undefined) {
+          !thing.some(subthing => {
+            return !this.canWrite(subthing)
+          })
+        } else {
+          return new Security(Restrictions.from(thing)).canWrite(this)
+        }
+    }
   },
   canShare(metacard) {
     return new Security(Restrictions.from(metacard)).canShare(this)

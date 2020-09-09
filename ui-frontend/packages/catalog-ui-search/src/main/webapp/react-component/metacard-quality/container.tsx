@@ -16,7 +16,6 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import fetch from '../utils/fetch'
-const store = require('../../js/store.js')
 const announcement = require('component/announcement')
 import MetacardQualityPresentation from './presentation'
 
@@ -34,7 +33,7 @@ class MetacardQuality extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
 
-    const selectionInterface = props.selectionInterface || store
+    const selectionInterface = props.selectionInterface
     this.model = selectionInterface.getSelectedResults().first()
 
     this.state = {

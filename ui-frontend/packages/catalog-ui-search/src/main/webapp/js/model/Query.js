@@ -18,48 +18,68 @@ const $ = require('jquery')
 const _ = require('underscore')
 const properties = require('../properties.js')
 const QueryResponse = require('./QueryResponse.js')
-const ResultSort = require('./ResultSort.js')
-const Sources = require('../../component/singletons/sources-instance.js')
+import Sources from '../../component/singletons/sources-instance'
 const Common = require('../Common.js')
 const CacheSourceSelector = require('../CacheSourceSelector.js')
 const announcement = require('../../component/announcement/index.jsx')
 const CQLUtils = require('../CQLUtils.js')
+const cql = require('../cql')
 const user = require('../../component/singletons/user-instance.js')
 const _merge = require('lodash/merge')
 require('backbone-associations')
-import PartialAssociatedModel from '../../js/extensions/backbone.partialAssociatedModel'
-import UserNotifications from '../../react-component/user-notifications'
-const wreqr = require('../wreqr.js')
-const plugin = require('plugins/query')
-
+import React from 'react'
+import { readableColor } from 'polished'
+import { LazyQueryResults } from './LazyQueryResult/LazyQueryResults'
 const Query = {}
 
-function limitToDeleted(cqlString) {
-  return CQLUtils.transformFilterToCQL({
+function getEphemeralSort() {
+  return user
+    .get('user')
+    .get('preferences')
+    .get('resultSort')
+}
+
+function mixinEphemeralFilter(originalCQL) {
+  const ephermeralFilter = user
+    .get('user')
+    .get('preferences')
+    .get('resultFilter')
+  if (ephermeralFilter) {
+    return {
+      filters: [ephermeralFilter, originalCQL],
+      type: 'AND',
+    }
+  } else {
+    return originalCQL
+  }
+}
+
+function limitToDeleted(cqlFilterTree) {
+  return {
     type: 'AND',
     filters: [
-      CQLUtils.transformCQLToFilter(cqlString),
+      cqlFilterTree,
       {
         property: '"metacard-tags"',
         type: 'ILIKE',
         value: 'deleted',
       },
     ],
-  })
+  }
 }
 
-function limitToHistoric(cqlString) {
-  return CQLUtils.transformFilterToCQL({
+function limitToHistoric(cqlFilterTree) {
+  return {
     type: 'AND',
     filters: [
-      CQLUtils.transformCQLToFilter(cqlString),
+      cqlFilterTree,
       {
         property: '"metacard-tags"',
         type: 'ILIKE',
         value: 'revision',
       },
     ],
-  })
+  }
 }
 
 const handleTieredSearchLocalFinish = function(ids) {
@@ -80,54 +100,7 @@ const handleTieredSearchLocalFinish = function(ids) {
   this.startSearch({ results, status })
 }
 
-const reducer = (state = [{}], action) => {
-  switch (action.type) {
-    case 'CLEAR_PAGES':
-      return [{}]
-    case 'NEXT_PAGE':
-      return state.concat({})
-    case 'PREVIOUS_PAGE':
-      return state.slice(0, -1)
-    case 'UPDATE_RESULTS':
-      const srcs = action.payload.results
-        .map(({ src }) => src)
-        .reduce((counts, src) => {
-          if (counts[src] === undefined) {
-            counts[src] = 0
-          }
-          counts[src] += 1
-          return counts
-        }, {})
-
-      return state.slice(0, -1).concat(srcs)
-    default:
-      return state
-  }
-}
-
-const currentIndexForSource = state => {
-  return state.reduce((counts, page) => {
-    return Object.keys(page).reduce((counts, src) => {
-      const resultCount = page[src]
-
-      if (counts[src] === undefined) {
-        counts[src] = 1
-      }
-      counts[src] += resultCount
-
-      return counts
-    }, counts)
-  }, {})
-}
-
-const serverPageIndex = state => state.length
-
-const previousPage = () => ({ type: 'PREVIOUS_PAGE' })
-const nextPage = () => ({ type: 'NEXT_PAGE' })
-const clearPages = () => ({ type: 'CLEAR_PAGES' })
-const updateResults = payload => ({ type: 'UPDATE_RESULTS', payload })
-
-Query.Model = PartialAssociatedModel.extend({
+Query.Model = Backbone.AssociatedModel.extend({
   relations: [
     {
       type: Backbone.One,
@@ -136,10 +109,7 @@ Query.Model = PartialAssociatedModel.extend({
       isTransient: true,
     },
   ],
-  dispatch(action) {
-    this.state = reducer(this.state, action)
-  },
-  set(data, ...args) {
+  set(data) {
     if (
       typeof data === 'object' &&
       data.filterTree !== undefined &&
@@ -152,10 +122,10 @@ Query.Model = PartialAssociatedModel.extend({
         data.filterTree = CQLUtils.transformCQLToFilter(data.cql)
       }
     }
-    return PartialAssociatedModel.prototype.set.call(this, data, ...args)
+    return Backbone.AssociatedModel.prototype.set.apply(this, arguments)
   },
   toJSON(...args) {
-    const json = PartialAssociatedModel.prototype.toJSON.call(this, ...args)
+    const json = Backbone.AssociatedModel.prototype.toJSON.call(this, ...args)
     if (typeof json.filterTree === 'object') {
       json.filterTree = JSON.stringify(json.filterTree)
     }
@@ -182,7 +152,6 @@ Query.Model = PartialAssociatedModel.extend({
           },
         ],
         result: undefined,
-        serverPageIndex: 1,
         type: 'text',
         isLocal: false,
         isOutdated: false,
@@ -194,16 +163,12 @@ Query.Model = PartialAssociatedModel.extend({
     )
   },
   resetToDefaults(overridenDefaults) {
-    const defaults = _.omit(this.defaults(), [
-      'isLocal',
-      'serverPageIndex',
-      'result',
-    ])
+    const defaults = _.omit(this.defaults(), ['isLocal', 'result'])
     this.set(_merge(defaults, overridenDefaults))
     this.trigger('resetToDefaults')
   },
   applyDefaults() {
-    this.set(_.pick(this.defaults(), ['sorts', 'federation', 'src']))
+    this.set(_.pick(this.defaults(), ['sorts', 'federation', 'sources']))
   },
   revert() {
     this.trigger('revert')
@@ -212,46 +177,71 @@ Query.Model = PartialAssociatedModel.extend({
     return this.get('isLocal')
   },
   initialize() {
-    this.currentIndexForSource = {}
-    this.state = [{}]
-
     _.bindAll.apply(_, [this].concat(_.functions(this))) // underscore bindAll does not take array arg
     this.set('id', this.getId())
-    this.listenTo(this, 'change:cql', () => this.set('isOutdated', true))
-
-    const sync = () => {
-      this.dispatch(updateResults(this.get('result').toJSON()))
-      this.set('serverPageIndex', serverPageIndex(this.state))
-
-      const totalHits = this.get('result')
-        .get('status')
-        .reduce((total, status) => {
-          return total + status.get('hits')
-        }, 0)
-
-      this.set('totalHits', totalHits)
-    }
-
-    this.listenTo(this, 'change:result', () => {
-      if (this.has('result')) {
-        this.listenTo(this.get('result'), 'reset:results', sync)
-        this.listenTo(this.get('result'), 'change', sync)
+    this.listenTo(
+      this,
+      'change:cql change:sources change:sorts change:spellcheck change:phonetics',
+      () => {
+        this.set('isOutdated', true)
+        // this.resetCurrentIndexForSourceGroup()
       }
-    })
+    )
+    this.listenTo(
+      user.get('user').get('preferences'),
+      'change:resultCount',
+      () => {
+        this.set('isOutdated', true)
+        // this.resetCurrentIndexForSourceGroup()
+      }
+    )
+    this.listenTo(
+      user.get('user').get('preferences'),
+      'change:resultFilter',
+      () => {
+        this.startSearchFromFirstPage()
+      }
+    )
+    this.listenTo(
+      user.get('user').get('preferences'),
+      'change:resultSort',
+      () => {
+        this.startSearchFromFirstPage()
+      }
+    )
+  },
+  getSelectedSources() {
+    const federation = this.get('federation')
+    switch (federation) {
+      case 'local':
+        return [Sources.localCatalog]
+        break
+      case 'enterprise':
+        return _.pluck(Sources.toJSON(), 'id')
+        break
+      case 'selected':
+        return this.get('sources')
+        break
+    }
   },
   buildSearchData() {
     const data = this.toJSON()
-
-    switch (data.federation) {
-      case 'local':
-        data.src = [Sources.localCatalog]
-        break
-      case 'enterprise':
-        data.src = _.pluck(Sources.toJSON(), 'id')
-        break
-      case 'selected':
-        // already in correct format
-        break
+    if (data.sources.includes('all')) {
+      data.sources = _.pluck(Sources.toJSON(), 'id')
+    }
+    if (data.sources.includes('local')) {
+      data.sources = data.sources
+        .concat(Sources.getHarvested())
+        .filter(src => src !== 'local')
+    }
+    if (data.sources.includes('remote')) {
+      data.sources = data.sources
+        .concat(
+          _.pluck(Sources.toJSON(), 'id').filter(
+            src => !Sources.getHarvested().includes(src)
+          )
+        )
+        .filter(src => src !== 'remote')
     }
 
     data.count = user
@@ -259,11 +249,11 @@ Query.Model = PartialAssociatedModel.extend({
       .get('preferences')
       .get('resultCount')
 
-    data.sorts = this.get('sorts')
+    data.sorts = getEphemeralSort() || this.get('sorts')
 
     return _.pick(
       data,
-      'src',
+      'sources',
       'start',
       'count',
       'timeout',
@@ -271,8 +261,7 @@ Query.Model = PartialAssociatedModel.extend({
       'sorts',
       'id',
       'spellcheck',
-      'phonetics',
-      'cacheId'
+      'phonetics'
     )
   },
   isOutdated() {
@@ -289,8 +278,8 @@ Query.Model = PartialAssociatedModel.extend({
     }
   },
   startSearchFromFirstPage(options) {
-    this.dispatch(clearPages())
-    this.set('serverPageIndex', serverPageIndex(this.state))
+    this.trigger('update')
+    this.resetCurrentIndexForSourceGroup()
     this.startSearch(options)
   },
   startTieredSearch(ids) {
@@ -310,9 +299,6 @@ Query.Model = PartialAssociatedModel.extend({
       })
     })
   },
-  async preQueryPlugin(data) {
-    return data
-  },
   startSearch(options, done) {
     this.set('isOutdated', false)
     if (this.get('cql') === '') {
@@ -329,167 +315,130 @@ Query.Model = PartialAssociatedModel.extend({
 
     const data = Common.duplicate(this.buildSearchData())
     data.batchId = Common.generateUUID()
-    if (options.resultCountOnly) {
-      data.count = 0
-    }
-    const sources = data.src
-    const initialStatus = sources.map(src => ({
-      id: src,
-    }))
-    let result
-    if (this.get('result') && this.get('result').get('results')) {
-      result = this.get('result')
-      result.setColor(this.getColor())
-      result.setQueryId(this.getId())
-      result.set('selectedResultTemplate', this.get('detail-level'))
-      result.set('merged', true)
-      result.get('queuedResults').reset()
-      result.get('results').reset(options.results || [])
-      result
-        .get('status')
-        .reset(
-          options.status ? options.status.concat(initialStatus) : initialStatus
-        )
+
+    // Data.sources is set in `buildSearchData` based on which sources you have selected.
+    const sources = data.sources
+    let result = this.get('result')
+    if (result) {
+      result.get('lazyResults').reset({
+        sorts: this.get('sorts'),
+        sources,
+      })
     } else {
       result = new QueryResponse({
-        queryId: this.getId(),
-        color: this.getColor(),
-        status: initialStatus,
-        selectedResultTemplate: this.get('detail-level'),
+        lazyResults: new LazyQueryResults({
+          sorts: this.get('sorts'),
+          sources,
+        }),
       })
       this.set({
         result,
       })
     }
 
-    result.set('initiated', Date.now())
-    result.set('resultCountOnly', options.resultCountOnly)
-    ResultSort.sortResults(this.get('sorts'), result.get('results'))
-
-    if (!properties.isCacheDisabled) {
-      sources.unshift('cache')
-    }
-
-    let cqlString = data.cql
+    let cqlFilterTree = this.get('filterTree')
     if (options.limitToDeleted) {
-      cqlString = limitToDeleted(cqlString)
+      cqlFilterTree = limitToDeleted(cqlFilterTree)
     } else if (options.limitToHistoric) {
-      cqlString = limitToHistoric(cqlString)
+      cqlFilterTree = limitToHistoric(cqlFilterTree)
     }
-    const query = this
+    cqlFilterTree = mixinEphemeralFilter(cqlFilterTree)
+    let cqlString = cql.write(cqlFilterTree)
 
-    const currentSearches = this.preQueryPlugin(
-      sources.map(src => ({
+    const selectedSources = data.sources
+
+    const harvestedSources = Sources.getHarvested()
+
+    const isHarvested = id => harvestedSources.includes(id)
+    const isFederated = id => !harvestedSources.includes(id)
+
+    this.currentIndexForSourceGroup = this.nextIndexForSourceGroup
+    const localSearchToRun = {
+      ...data,
+      cql: cqlString,
+      srcs: selectedSources.filter(isHarvested),
+      start: this.currentIndexForSourceGroup.local,
+    }
+
+    const federatedSearchesToRun = selectedSources
+      .filter(isFederated)
+      .map(source => ({
         ...data,
-        src,
-        start: query.getStartIndexForSource(src),
-        // since the "cache" source will return all cached results, need to
-        // limit the cached results to only those from a selected source
-        cql:
-          src === 'cache'
-            ? CacheSourceSelector.trimCacheSources(cqlString, sources)
-            : cqlString,
+        cql: cqlString,
+        srcs: [source],
+        start: this.currentIndexForSourceGroup[source],
       }))
+
+    const searchesToRun = [localSearchToRun, ...federatedSearchesToRun].filter(
+      search => search.srcs.length > 0
     )
 
-    currentSearches.then(currentSearches => {
-      if (currentSearches.length === 0) {
-        announcement.announce({
-          title: 'Search "' + this.get('title') + '" cannot be run.',
-          message: properties.i18n['search.sources.selected.none.message'],
-          type: 'warn',
-        })
-        this.currentSearches = []
-        return
-      }
-
-      this.currentSearches = currentSearches.map(search => {
-        return result.fetch({
-          customErrorHandling: true,
-          data: JSON.stringify(search),
-          remove: false,
-          dataType: 'json',
-          contentType: 'application/json',
-          method: 'POST',
-          processData: false,
-          timeout: properties.timeout,
-          success(model, response, options) {
-            response.options = options
-            if (options.resort === true) {
-              model.get('results').sort()
-            }
-          },
-          error(model, response, options) {
-            if (response.status === 401 || response.status === 412) {
-              const url = response.responseJSON.url
-              const sourceId = response.responseJSON.id
-              const type = response.status === 401 ? 'login' : 'authorize'
-              const when = Date.now()
-              const SlideoutRightViewInstance = require('../../component/singletons/slideout.right.view-instance')
-
-              let preferences = user.get('user').getPreferences()
-              let notifications = preferences.getOauthNotificationIds()
-              if (
-                notifications !== undefined &&
-                notifications.includes(sourceId)
-              ) {
-                let detail = preferences.getOauthNotification(sourceId)
-                if (
-                  type === 'authorize' &&
-                  detail !== undefined &&
-                  detail.attributes.type === 'login'
-                ) {
-                  preferences.removeOauth(detail)
-                  wreqr.vent.trigger('oauth:add', {
-                    when,
-                    type,
-                    sourceId,
-                    url,
-                  })
-                  SlideoutRightViewInstance.updateContent(UserNotifications)
-                  SlideoutRightViewInstance.open()
-                } else {
-                  preferences.removeOauth(detail)
-                  wreqr.vent.trigger('oauth:add', {
-                    when,
-                    type,
-                    sourceId,
-                    url,
-                  })
-                }
-              } else {
-                wreqr.vent.trigger('oauth:add', {
-                  when,
-                  type,
-                  sourceId,
-                  url,
-                })
-                SlideoutRightViewInstance.updateContent(UserNotifications)
-                SlideoutRightViewInstance.open()
-              }
-            }
-
-            const srcStatus = result.get('status').get(search.src)
-            if (srcStatus) {
-              srcStatus.set({
-                successful: false,
-                pending: false,
-              })
-            }
-            response.options = options
-          },
-        })
+    if (searchesToRun.length === 0) {
+      announcement.announce({
+        title: 'Search "' + this.get('title') + '" cannot be run.',
+        message: properties.i18n['search.sources.selected.none.message'],
+        type: 'warn',
       })
-      if (typeof done === 'function') {
-        done(this.currentSearches)
-      }
+      this.currentSearches = []
+      return
+    }
+
+    this.currentSearches = searchesToRun.map(search => {
+      delete search.sources // This key isn't used on the backend and only serves to confuse those debugging this code.
+
+      // `result` is QueryResponse
+      return result.fetch({
+        customErrorHandling: true,
+        data: JSON.stringify(search),
+        remove: false,
+        dataType: 'json',
+        contentType: 'application/json',
+        method: 'POST',
+        processData: false,
+        timeout: properties.timeout,
+        success(model, response, options) {
+          response.options = options
+        },
+        error(model, response, options) {
+          if (response.status === 401) {
+            const providerUrl = response.responseJSON.url
+            const sourceId = response.responseJSON.id
+
+            const link = React.createElement(
+              'a',
+              {
+                href: providerUrl,
+                target: '_blank',
+                style: {
+                  color: `${props => readableColor(props.theme.negativeColor)}`,
+                },
+              },
+              `Click Here To Authenticate ${sourceId}`
+            )
+            announcement.announce({
+              title: `Source ${sourceId} is Not Authenticated`,
+              message: link,
+              type: 'error',
+            })
+          }
+
+          response.options = options
+        },
+      })
     })
+    if (typeof done === 'function') {
+      done(this.currentSearches)
+    }
   },
   currentSearches: [],
   cancelCurrentSearches() {
     this.currentSearches.forEach(request => {
       request.abort('Canceled')
     })
+    const result = this.get('result')
+    if (result) {
+      result.get('lazyResults').cancel()
+    }
     this.currentSearches = []
   },
   clearResults() {
@@ -506,9 +455,9 @@ Query.Model = PartialAssociatedModel.extend({
       }
     })
     if (sourceArr.length > 0) {
-      this.set('src', sourceArr.join(','))
+      this.set('sources', sourceArr.join(','))
     } else {
-      this.set('src', '')
+      this.set('sources', '')
     }
   },
   getId() {
@@ -529,64 +478,131 @@ Query.Model = PartialAssociatedModel.extend({
   color() {
     return this.get('color')
   },
+  getPreviousServerPage() {
+    this.setNextIndexForSourceGroupToPrevPage()
+    this.startSearch()
+  },
+  /**
+   * Much simpler than seeing if a next page exists
+   */
   hasPreviousServerPage() {
-    return serverPageIndex(this.state) > 1
+    return this.pastIndexesForSourceGroup.length > 0
   },
   hasNextServerPage() {
-    const pageSize = user
-      .get('user')
-      .get('preferences')
-      .get('resultCount')
-
-    const totalHits = this.get('totalHits')
-    const currentPage = serverPageIndex(this.state)
-    return currentPage < Math.ceil(totalHits / pageSize)
-  },
-  getPreviousServerPage() {
-    this.dispatch(previousPage())
-    this.set('serverPageIndex', serverPageIndex(this.state))
-    this.startSearch()
-  },
-  getNextServerPage() {
-    this.dispatch(nextPage())
-    this.set('serverPageIndex', serverPageIndex(this.state))
-    this.startSearch()
-  },
-  // get the starting offset (beginning of the server page) for the given source
-  getStartIndexForSource(src) {
-    return currentIndexForSource(this.state)[src] || 1
-  },
-  // if the server page size changes, reset our indices and let them get
-  // recalculated on the next fetch
-  lengthWithDuplicates(resultsCollection) {
-    const lengthWithoutDuplicates = resultsCollection.length
-    const numberOfDuplicates = resultsCollection.reduce((count, result) => {
-      count += result.duplicates ? result.duplicates.length : 0
-      return count
-    }, 0)
-    return lengthWithoutDuplicates + numberOfDuplicates
-  },
-  getResultsRangeLabel(resultsCollection) {
-    const results = resultsCollection.length
-    const hits = _.filter(
-      this.get('result')
-        .get('status')
-        .toJSON(),
-      status => status.id !== 'cache'
-    ).reduce((hits, status) => (status.hits ? hits + status.hits : hits), 0)
-
-    if (results === 0) {
-      return '0 results'
-    } else if (results > hits) {
-      return results + ' results'
+    const currentStatus = this.get('result')
+      ? this.get('result').get('lazyResults').status
+      : {}
+    const harvestedSources = Sources.getHarvested()
+    const isLocal = id => {
+      return harvestedSources.includes(id)
+    }
+    const maxIndexSeenLocal =
+      Object.values(currentStatus)
+        .filter(status => isLocal(status.id))
+        .reduce((amt, status) => {
+          amt = amt + status.count
+          return amt
+        }, 0) + this.currentIndexForSourceGroup.local
+    const maxIndexPossibleLocal = Object.values(currentStatus)
+      .filter(status => isLocal(status.id))
+      .reduce((amt, status) => {
+        amt = amt + status.hits
+        return amt
+      }, 0)
+    if (maxIndexSeenLocal <= maxIndexPossibleLocal) {
+      return true
     }
 
-    const serverPageSize = user.get('user>preferences>resultCount')
-    const startingIndex = serverPageIndex(this.state) * serverPageSize
-    const endingIndex =
-      startingIndex + this.lengthWithDuplicates(resultsCollection)
+    return Object.values(currentStatus)
+      .filter(status => !isLocal(status.id))
+      .some(status => {
+        const maxIndexPossible = status.hits
+        const count = status.count
+        const maxIndexSeen = count + this.currentIndexForSourceGroup[status.id]
+        return maxIndexSeen <= maxIndexPossible
+      })
+  },
+  getNextServerPage() {
+    this.setNextIndexForSourceGroupToNextPage(this.getSelectedSources())
+    this.startSearch()
+  },
+  resetCurrentIndexForSourceGroup() {
+    this.currentIndexForSourceGroup = {}
+    if (this.get('result')) {
+      this.get('result')
+        .get('lazyResults')
+        ._resetSources([])
+    }
+    this.setNextIndexForSourceGroupToNextPage(this.getSelectedSources())
+    this.pastIndexesForSourceGroup = []
+  },
+  currentIndexForSourceGroup: {},
+  pastIndexesForSourceGroup: [],
+  nextIndexForSourceGroup: {},
+  /**
+   * Update the next index to be the prev page
+   */
+  setNextIndexForSourceGroupToPrevPage() {
+    if (this.pastIndexesForSourceGroup.length > 0) {
+      this.nextIndexForSourceGroup = this.pastIndexesForSourceGroup.pop()
+    } else {
+      console.log('this should not happen')
+    }
+  },
+  /**
+   * Update the next index to be the next page
+   */
+  setNextIndexForSourceGroupToNextPage(sources) {
+    this.pastIndexesForSourceGroup.push(this.nextIndexForSourceGroup)
+    this.nextIndexForSourceGroup = this._calculateNextIndexForSourceGroupNextPage(
+      sources
+    )
+  },
+  /**
+   * Get what the next index should be for going forward
+   */
+  _calculateNextIndexForSourceGroupNextPage(sources) {
+    const harvestedSources = Sources.getHarvested()
+    const isLocal = id => {
+      return harvestedSources.includes(id)
+    }
+    const federatedSources = sources.filter(id => {
+      return !isLocal(id)
+    })
+    const currentStatus = this.get('result')
+      ? this.get('result').get('lazyResults').status
+      : {}
 
-    return startingIndex + 1 + '-' + endingIndex + ' of ' + hits
+    const maxLocalStart = Math.max(
+      1,
+      Object.values(currentStatus)
+        .filter(status => isLocal(status.id))
+        .filter(status => status.hits !== undefined)
+        .reduce((blob, status) => {
+          return blob + status.hits
+        }, 0)
+    )
+    return Object.values(currentStatus).reduce(
+      (blob, status) => {
+        if (isLocal(status.id)) {
+          blob['local'] = Math.min(maxLocalStart, blob['local'] + status.count)
+        } else {
+          blob[status.id] = Math.min(
+            status.hits !== undefined ? status.hits : 1,
+            blob[status.id] + status.count
+          )
+        }
+        return blob
+      },
+      {
+        local: 1,
+        ...federatedSources.reduce((blob, id) => {
+          blob[id] = 1
+          return blob
+        }, {}),
+        ...this.currentIndexForSourceGroup,
+      }
+    )
   },
 })
-module.exports = plugin(Query)
+module.exports = Query

@@ -14,7 +14,7 @@
  **/
 import { expect } from 'chai'
 
-const filterHelper = require('./filterHelper.js')
+import filterHelper from './filterHelper'
 
 function testAllSubstrings(
   testFilterString,

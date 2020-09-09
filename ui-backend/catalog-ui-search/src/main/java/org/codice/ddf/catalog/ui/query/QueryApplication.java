@@ -17,20 +17,25 @@ import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static spark.Spark.before;
 import static spark.Spark.exception;
 import static spark.Spark.get;
+import static spark.Spark.halt;
 import static spark.Spark.post;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import ddf.catalog.operation.ProcessingDetails;
 import ddf.catalog.plugin.OAuthPluginException;
 import ddf.catalog.source.UnsupportedQueryException;
 import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
+import org.codice.ddf.catalog.ui.CqlParseException;
 import org.codice.ddf.catalog.ui.metacard.EntityTooLargeException;
 import org.codice.ddf.catalog.ui.query.cql.CqlRequestImpl;
+import org.codice.ddf.catalog.ui.query.cql.SourceWarningsFilterManager;
 import org.codice.ddf.catalog.ui.query.geofeature.FeatureService;
 import org.codice.ddf.catalog.ui.query.handlers.CqlTransformHandler;
 import org.codice.ddf.catalog.ui.query.suggestion.DmsCoordinateProcessor;
@@ -81,6 +86,8 @@ public class QueryApplication implements SparkApplication, Function {
 
   private final UtmUpsCoordinateProcessor utmUpsCoordinateProcessor;
 
+  private final SourceWarningsFilterManager sourceWarningsFilterManager;
+
   private FeatureService featureService;
 
   private CqlTransformHandler cqlTransformHandler;
@@ -97,13 +104,15 @@ public class QueryApplication implements SparkApplication, Function {
       LatLonCoordinateProcessor latLonCoordinateProcessor,
       DmsCoordinateProcessor dmsCoordinateProcessor,
       MgrsCoordinateProcessor mgrsCoordinateProcessor,
-      UtmUpsCoordinateProcessor utmUpsCoordinateProcessor) {
+      UtmUpsCoordinateProcessor utmUpsCoordinateProcessor,
+      SourceWarningsFilterManager sourceWarningsFilterManager) {
     this.latLonCoordinateProcessor = latLonCoordinateProcessor;
     this.dmsCoordinateProcessor = dmsCoordinateProcessor;
     this.mgrsCoordinateProcessor = mgrsCoordinateProcessor;
     this.utmUpsCoordinateProcessor = utmUpsCoordinateProcessor;
     this.cqlTransformHandler = cqlTransformHandler;
     this.cqlValidationHandler = cqlValidationHandler;
+    this.sourceWarningsFilterManager = sourceWarningsFilterManager;
   }
 
   @Override
@@ -117,10 +126,15 @@ public class QueryApplication implements SparkApplication, Function {
           try {
             CqlRequestImpl cqlRequest = GSON.fromJson(util.safeGetBody(req), CqlRequestImpl.class);
             CqlQueryResponse cqlQueryResponse = cqlQueryUtil.executeCqlQuery(cqlRequest);
+            addApplicableWarningsTo(cqlQueryResponse);
             return GSON.toJson(cqlQueryResponse);
           } catch (OAuthPluginException e) {
             res.status(e.getErrorType().getStatusCode());
             return GSON.toJson(ImmutableMap.of(ID_KEY, e.getSourceId(), URL_KEY, e.getUrl()));
+          } catch (CqlParseException e) {
+            LOGGER.debug("Unable to parse CQL", e);
+            halt(400, "Unable to parse CQL filter");
+            return null;
           }
         });
 
@@ -233,5 +247,30 @@ public class QueryApplication implements SparkApplication, Function {
 
   public void setCqlQueryUtil(CqlQueriesImpl cqlQueryUtil) {
     this.cqlQueryUtil = cqlQueryUtil;
+  }
+
+  private void addApplicableWarningsTo(CqlQueryResponse response) {
+    if (response.getQueryResponse() == null) {
+      LOGGER.debug(
+          "could not add warnings to the response {} because the field of the response which would contain the warnings is null",
+          response);
+      return;
+    }
+
+    if (response.getWarnings() == null) {
+      LOGGER.debug(
+          "could not add warnings to the response {} because the application received a null value when it got the response's warnings",
+          response);
+      return;
+    }
+
+    response
+        .getQueryResponse()
+        .getProcessingDetails()
+        .stream()
+        .map(sourceWarningsFilterManager::filterWarningsOf)
+        .map(ProcessingDetails::getWarnings)
+        .filter(Objects::nonNull)
+        .forEach(response.getWarnings()::addAll);
   }
 }

@@ -19,16 +19,12 @@ const Backbone = require('backbone')
 const $ = require('jquery')
 const template = require('./metacard-menu.hbs')
 const CustomElements = require('../../js/CustomElements.js')
-const store = require('../../js/store.js')
 const metacardInstance = require('../metacard/metacard.js')
 const MetacardTitleView = require('../metacard-title/metacard-title.view.js')
 
 module.exports = Marionette.LayoutView.extend({
   template,
   tagName: CustomElements.register('metacard-menu'),
-  events: {
-    'click > .workspace-title': 'goToWorkspace',
-  },
   regions: {
     metacardTitle: '.metacard-title',
   },
@@ -46,27 +42,13 @@ module.exports = Marionette.LayoutView.extend({
       )
     }
   },
-  goToWorkspace(e) {
-    const workspaceId = $(e.currentTarget).attr('data-workspaceid')
-    wreqr.vent.trigger('router:navigate', {
-      fragment: 'workspaces/' + workspaceId,
-      options: {
-        trigger: true,
-      },
-    })
-  },
   serializeData() {
-    const currentWorkspace = store.getCurrentWorkspace()
-    let resultJSON, workspaceJSON
+    let resultJSON
     if (metacardInstance.get('currentMetacard')) {
       resultJSON = metacardInstance.get('currentMetacard').toJSON()
     }
-    if (currentWorkspace) {
-      workspaceJSON = currentWorkspace.toJSON()
-    }
     return {
       result: resultJSON,
-      workspace: workspaceJSON,
     }
   },
 })

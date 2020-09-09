@@ -15,7 +15,7 @@ package org.codice.ddf.catalog.ui.query.monitor.impl;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -154,11 +154,6 @@ public class WorkspaceQueryServiceTest {
           @Override
           public String getName() {
             return "";
-          }
-
-          @Override
-          public boolean isGuest() {
-            return false;
           }
 
           @Override

@@ -19,10 +19,8 @@ const OverwritesInstance = require('../singletons/overwrites-instance.js')
 import React from 'react'
 import styled from 'styled-components'
 import { readableColor } from 'polished'
-import {
-  Button,
-  buttonTypeEnum,
-} from '../../react-component/presentation/button'
+import Button from '@material-ui/core/Button'
+
 import withListenTo from '../../react-component/backbone-container'
 
 const Root = styled.div`
@@ -127,7 +125,8 @@ const OverwriteBack = styled.button`
 
 const Confirm = props => (
   <OverwriteConfirm
-    buttonType={buttonTypeEnum.negative}
+    variant="contained"
+    color="secondary"
     onClick={props.archive}
     data-help="This will overwrite the item content. To restore a previous content, you can click on 'File' in the toolbar, and then click 'Restore Archived Items'."
   >

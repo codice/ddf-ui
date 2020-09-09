@@ -80,8 +80,8 @@ import ddf.catalog.source.UnsupportedQueryException;
 import ddf.catalog.transform.QueryResponseTransformer;
 import ddf.catalog.util.impl.ResultIterable;
 import ddf.security.SubjectIdentity;
-import ddf.security.SubjectUtils;
-import ddf.security.common.audit.SecurityLogger;
+import ddf.security.SubjectOperations;
+import ddf.security.audit.SecurityLogger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -204,6 +204,10 @@ public class MetacardApplication implements SparkApplication {
 
   private final Security security;
 
+  private SubjectOperations subjectOperations;
+
+  private SecurityLogger securityLogger;
+
   public MetacardApplication(
       CatalogFramework catalogFramework,
       FilterBuilder filterBuilder,
@@ -244,11 +248,11 @@ public class MetacardApplication implements SparkApplication {
   }
 
   private String getSubjectEmail() {
-    return SubjectUtils.getEmailAddress(SecurityUtils.getSubject());
+    return subjectOperations.getEmailAddress(SecurityUtils.getSubject());
   }
 
   private List<String> getSubjectRoles() {
-    return SubjectUtils.getAttribute(SecurityUtils.getSubject(), Constants.ROLES_CLAIM_URI);
+    return subjectOperations.getAttribute(SecurityUtils.getSubject(), Constants.ROLES_CLAIM_URI);
   }
 
   private String getSubjectIdentifier() {
@@ -759,7 +763,7 @@ public class MetacardApplication implements SparkApplication {
 
           Metacard note = saveMetacard(noteMetacard);
 
-          SecurityLogger.auditWarn(
+          securityLogger.auditWarn(
               "Attaching an annotation to a resource: resource={} annotation={}",
               SecurityUtils.getSubject(),
               workspaceId,
@@ -813,7 +817,7 @@ public class MetacardApplication implements SparkApplication {
           Attribute attribute = metacard.getAttribute(Core.METACARD_OWNER);
           if (attribute != null
               && attribute.getValue() != null
-              && !attribute.getValue().equals(getSubjectEmail())) {
+              && !attribute.getValue().equals(getSubjectIdentifier())) {
             res.status(401);
             return util.getResponseWrapper(
                 ERROR_RESPONSE_TYPE, "Owner of note metacard is invalid!");
@@ -839,7 +843,7 @@ public class MetacardApplication implements SparkApplication {
           Attribute attribute = metacard.getAttribute(Core.METACARD_OWNER);
           if (attribute != null
               && attribute.getValue() != null
-              && !attribute.getValue().equals(getSubjectEmail())) {
+              && !attribute.getValue().equals(getSubjectIdentifier())) {
             res.status(401);
             return util.getResponseWrapper(
                 ERROR_RESPONSE_TYPE, "Owner of note metacard is invalid!");
@@ -1055,7 +1059,7 @@ public class MetacardApplication implements SparkApplication {
    * @return result of the callable func
    */
   private <T> T executeAsSystem(Callable<T> func) {
-    return security.getSystemSubject().execute(func);
+    return security.runAsAdmin(() -> security.getSystemSubject().execute(func));
   }
 
   private Instant getVersionedOnDate(Metacard mc) {
@@ -1164,6 +1168,14 @@ public class MetacardApplication implements SparkApplication {
     final QueryMetacardImpl queryMetacard = new QueryMetacardImpl();
     transformer.transformIntoMetacard(queryJson, queryMetacard);
     return queryMetacard;
+  }
+
+  public void setSubjectOperations(SubjectOperations subjectOperations) {
+    this.subjectOperations = subjectOperations;
+  }
+
+  public void setSecurityLogger(SecurityLogger securityLogger) {
+    this.securityLogger = securityLogger;
   }
 
   private static class ByteSourceWrapper extends ByteSource {

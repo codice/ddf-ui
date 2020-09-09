@@ -16,9 +16,7 @@
 const Marionette = require('marionette')
 const $ = require('jquery')
 const CustomElements = require('../../js/CustomElements.js')
-const store = require('../../js/store.js')
 const Lightbox = require('./Lightbox.js')
-const router = require('../router/router.js')
 const componentName = 'lightbox'
 import React from 'react'
 import MarionetteRegionContainer from '../../react-component/marionette-region-container'
@@ -49,7 +47,10 @@ module.exports = Marionette.LayoutView.extend(
         <React.Fragment>
           <div className="lightbox-container">
             <div className="lightbox-title-bar clearfix">
-              <button title="close" className="lightbox-close is-button">
+              <button
+                title="close"
+                className="old-button lightbox-close is-button"
+              >
                 <span className="fa fa-times" />
               </button>
               <span className="lightbox-title">{this.model.get('title')}</span>
@@ -70,13 +71,7 @@ module.exports = Marionette.LayoutView.extend(
     },
     initialize() {
       $('body').append(this.el)
-      this.listenTo(
-        store.get('workspaces'),
-        'change:currentWorkspace',
-        this.close
-      )
       this.listenForClose()
-      this.listenForRoute()
       this.listenForEscape()
     },
     listenForEscape() {
@@ -95,9 +90,6 @@ module.exports = Marionette.LayoutView.extend(
           this.handleEscape()
           break
       }
-    },
-    listenForRoute() {
-      this.listenTo(router, 'change', this.handleRouteChange)
     },
     listenForClose() {
       this.$el.on(

@@ -42,7 +42,7 @@ const Root = styled.div<RootProps>`
   .source-name {
     padding: 0px ${props => props.theme.minimumSpacing};
     max-width: calc(100% - ${props => props.theme.minimumButtonSize});
-    word-wrap: break-word;
+    word-break: break-all;
   }
 
   .source-actions {

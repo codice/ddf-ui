@@ -16,7 +16,6 @@
 const Marionette = require('marionette')
 const CustomElements = require('../../js/CustomElements.js')
 const userNotifications = require('../singletons/user-notifications.js')
-const AlertItemView = require('../alert-item/alert-item.view.js')
 const UploadItemView = require('../upload-batch-item/upload-batch-item.view.js')
 const UploadItemModel = require('../../js/model/UploadBatch.js')
 const OauthNotificationView = require('../oauth-item/oauth-item.view.js')
@@ -40,8 +39,6 @@ module.exports = Marionette.CollectionView.extend({
       return UploadItemView
     } else if (model.constructor === OauthModel) {
       return OauthNotificationView
-    } else {
-      return AlertItemView
     }
   },
   filter(model) {

@@ -15,7 +15,6 @@
 
 const $ = require('jquery')
 const EditorView = require('../editor.view')
-const store = require('../../../js/store.js')
 const PropertyCollectionView = require('../../property/property.collection.view.js')
 const LoadingCompanionView = require('../../loading-companion/loading-companion.view.js')
 const ResultUtils = require('../../../js/ResultUtils.js')
@@ -25,7 +24,6 @@ module.exports = EditorView.extend({
   setDefaultModel() {
     this.model = this.selectionInterface.getSelectedResults()
   },
-  selectionInterface: store,
   initialize(options) {
     this.selectionInterface =
       options.selectionInterface || this.selectionInterface

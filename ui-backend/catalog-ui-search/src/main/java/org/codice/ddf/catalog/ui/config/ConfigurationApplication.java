@@ -104,8 +104,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   private String terrainEndpoint;
 
-  private Boolean editingEnabled = true;
-
   private Boolean signInEnabled = true;
 
   private Boolean taskEnabled = false;
@@ -241,6 +239,23 @@ public class ConfigurationApplication implements SparkApplication {
   private List<String> basicSearchTemporalSelectionDefault;
 
   private String basicSearchMatchType;
+
+  private List<String> defaultSources = Collections.emptyList();
+  private List<String> defaultTableColumns = Collections.emptyList();
+
+  private String brandingName;
+
+  private String helpUrl;
+
+  private String landingPageBackgroundSrc;
+
+  private String topLeftLogoSrc;
+
+  private String bottomLeftLogoSrc;
+
+  private String bottomLeftBackgroundSrc;
+
+  private String menuIconSrc;
 
   private Set<String> editorAttributes = Collections.emptySet();
   private Set<String> requiredAttributes = Collections.emptySet();
@@ -535,7 +550,6 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("attributeAliases", attributeAliases.getAliasMap());
     config.put("sourcePollInterval", sourcePollInterval);
     config.put("scheduleFrequencyList", scheduleFrequencyList);
-    config.put("isEditingAllowed", editingEnabled);
     config.put("isCacheDisabled", !cacheEnabled);
     config.put("disableLocalCatalog", !localCatalogEnabled);
     config.put("queryFeedbackEnabled", queryFeedbackEnabled);
@@ -586,6 +600,16 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("useHyphensInUuid", uuidGenerator.useHyphens());
     config.put("i18n", i18n);
     config.put("attributeSuggestionList", attributeSuggestionList);
+    config.put("defaultSources", defaultSources);
+    config.put("defaultTableColumns", defaultTableColumns);
+    config.put("helpUrl", helpUrl);
+    config.put("landingPageBackgroundSrc", landingPageBackgroundSrc);
+    config.put("topLeftLogoSrc", topLeftLogoSrc);
+    config.put("bottomLeftLogoSrc", bottomLeftLogoSrc);
+    config.put("bottomLeftBackgroundSrc", bottomLeftBackgroundSrc);
+    config.put("menuIconSrc", menuIconSrc);
+    config.put("brandingName", brandingName);
+
     return config;
   }
 
@@ -932,14 +956,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setCacheEnabled(Boolean cacheEnabled) {
     this.cacheEnabled = cacheEnabled;
-  }
-
-  public Boolean getEditingEnabled() {
-    return this.editingEnabled;
-  }
-
-  public void setEditingEnabled(Boolean editingEnabled) {
-    this.editingEnabled = editingEnabled;
   }
 
   public void setUnknownErrorBoxEnabled(Boolean unknownErrorBoxEnabled) {
@@ -1321,5 +1337,95 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setBasicSearchMatchType(String basicSearchMatchType) {
     this.basicSearchMatchType = basicSearchMatchType;
+  }
+
+  public List<String> getDefaultSources() {
+    return defaultSources;
+  }
+
+  public void setDefaultSources(List<String> defaultSources) {
+    if (defaultSources == null || defaultSources.isEmpty()) {
+      this.defaultSources = Collections.emptyList();
+    } else {
+      this.defaultSources =
+          defaultSources
+              .stream()
+              .filter(StringUtils::isNotBlank)
+              .map(String::trim)
+              .collect(Collectors.toList());
+    }
+  }
+
+  public List<String> setDefaultTableColumns() {
+    return defaultTableColumns;
+  }
+
+  public void setDefaultTableColumns(List<String> defaultTableColumns) {
+    if (defaultTableColumns == null || defaultTableColumns.isEmpty()) {
+      this.defaultTableColumns = Collections.emptyList();
+    } else {
+      this.defaultTableColumns =
+          defaultTableColumns
+              .stream()
+              .filter(StringUtils::isNotBlank)
+              .map(String::trim)
+              .collect(Collectors.toList());
+    }
+  }
+
+  public String getHelpUrl() {
+    return helpUrl;
+  }
+
+  public void setHelpUrl(String url) {
+    this.helpUrl = url;
+  }
+
+  public String getBrandingName() {
+    return brandingName;
+  }
+
+  public void setBrandingName(String brandingName) {
+    this.brandingName = brandingName;
+  }
+
+  public String getLandingPageBackgroundSrc() {
+    return landingPageBackgroundSrc;
+  }
+
+  public void setLandingPageBackgroundSrc(String landingPageBackgroundSrc) {
+    this.landingPageBackgroundSrc = landingPageBackgroundSrc;
+  }
+
+  public String getTopLeftLogoSrc() {
+    return topLeftLogoSrc;
+  }
+
+  public void setTopLeftLogoSrc(String topLeftLogoSrc) {
+    this.topLeftLogoSrc = topLeftLogoSrc;
+  }
+
+  public String getBottomLeftLogoSrc() {
+    return bottomLeftLogoSrc;
+  }
+
+  public void setBottomLeftLogoSrc(String bottomLeftLogoSrc) {
+    this.bottomLeftLogoSrc = bottomLeftLogoSrc;
+  }
+
+  public String getBottomLeftBackgroundSrc() {
+    return bottomLeftBackgroundSrc;
+  }
+
+  public void setBottomLeftBackgroundSrc(String bottomLeftBackgroundSrc) {
+    this.bottomLeftBackgroundSrc = bottomLeftBackgroundSrc;
+  }
+
+  public String getMenuIconSrc() {
+    return menuIconSrc;
+  }
+
+  public void setMenuIconSrc(String menuIconSrc) {
+    this.menuIconSrc = menuIconSrc;
   }
 }

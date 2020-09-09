@@ -19,13 +19,16 @@ import TextField from '../../text-field'
 import styled from 'styled-components'
 import { getFilteredSuggestions, inputMatchesSuggestions } from './enumHelper'
 import PropTypes from 'prop-types'
+const properties = require('../../../js/properties.js')
 
 const TextWrapper = styled.div`
   padding: ${({ theme }) => theme.minimumSpacing};
 `
 
 const EnumMenuItem = props => (
-  <MenuItem {...props} style={{ paddingLeft: '1.5rem' }} />
+  <span>
+    <MenuItem {...props} style={{ paddingLeft: '1.5rem' }} />
+  </span>
 )
 
 const EnumInput = ({
@@ -43,7 +46,7 @@ const EnumInput = ({
     matchCase
   )
   const displayInput = !inputMatchesSuggestions(input, suggestions, matchCase)
-  return (
+  const attributeDropdown = (
     <Dropdown label={(selected && selected.label) || value}>
       <TextWrapper>
         <TextField
@@ -67,6 +70,11 @@ const EnumInput = ({
         })}
       </Menu>
     </Dropdown>
+  )
+  return (
+    <div>
+      <div>{attributeDropdown}</div>
+    </div>
   )
 }
 

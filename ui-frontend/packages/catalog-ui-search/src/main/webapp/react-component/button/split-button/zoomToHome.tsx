@@ -39,7 +39,11 @@ const Icon = styled.div`
 
 const renderMenu = (onSelect: voidFunc) => {
   return (
-    <Button onClick={onSelect} title="Save Current View as Home Location">
+    <Button
+      className="old-button"
+      onClick={onSelect}
+      title="Save Current View as Home Location"
+    >
       <span>
         Set Home
         <Icon className="cf cf-map-marker" />

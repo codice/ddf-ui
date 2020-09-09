@@ -126,12 +126,6 @@
             type="Boolean"
             default="true"/>
 
-        <AD id="editingEnabled"
-            name="Allow Editing"
-            description="Allow editing capability to be visible in the UI."
-            type="Boolean"
-            default="true"/>
-
         <AD id="webSocketsEnabled"
             name="Enable Web Sockets"
             description="Enables use of Web Sockets"
@@ -344,6 +338,76 @@
             cardinality="100"
             required="false">
         </AD>
+
+        <AD id="defaultSources"
+            name="Default Sources"
+            description="List of default sources for use in queries"
+            type="String"
+            cardinality="1000"
+            required="false">
+        </AD>
+
+        <AD id="defaultTableColumns"
+            name="Default Table Columns"
+            description="List of default columns for the table visualization"
+            type="String"
+            cardinality="1000"
+            required="false">
+        </AD>
+
+        <AD
+                description="The URL for the help documentation."
+                name="Help Docs URL"
+                id="helpUrl"
+                type="String"
+                default="https://codice.org/ddf/docs/documentation.html"/>
+
+        <AD
+                description="The name to display as the branding."
+                name="Branding name"
+                id="brandingName"
+                type="String"
+                default="DDF"/>
+
+        <AD
+                description="The Branding."
+                name="Landing Page Background"
+                id="landingPageBackgroundSrc"
+                type="String"
+                default=""
+                />
+
+         <AD
+                description="The Branding."
+                name="Top Left Logo"
+                id="topLeftLogoSrc"
+                type="String"
+                default=""
+                />
+
+                 <AD
+                description="The Branding."
+                name="Bottom Left Logo"
+                id="bottomLeftLogoSrc"
+                type="String"
+                default=""
+                />
+
+                 <AD
+                description="The Branding."
+                name="Bottom Left Background"
+                id="bottomLeftBackgroundSrc"
+                type="String"
+                default=""
+                />
+
+                <AD
+                description="The Branding."
+                name="Menu Icon"
+                id="menuIconSrc"
+                type="String"
+                default=""
+                />
     </OCD>
 
     <Designate pid="org.codice.ddf.catalog.ui">

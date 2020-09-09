@@ -14,13 +14,18 @@
  **/
 
 const Backbone = require('backbone')
+const properties = require('../properties.js')
 
 module.exports = Backbone.Model.extend({
   defaults() {
+    const hasDefaultSources =
+      properties.defaultSources && properties.defaultSources.length > 0
+    const sources = hasDefaultSources ? properties.defaultSources : ['all']
+
     return {
       type: 'text',
-      src: undefined,
-      federation: 'enterprise',
+      sources,
+      federation: sources ? 'selected' : 'enterprise',
       sorts: [
         {
           attribute: 'modified',
@@ -33,10 +38,16 @@ module.exports = Backbone.Model.extend({
     }
   },
   isTemplate(template) {
+    if (this.get('defaultResultFormId') === template.id) {
+      return true
+    }
     if (this.get('template') !== undefined) {
       return this.get('template').id === template.id
     } else {
       return false
     }
+  },
+  isDefaultTemplate(template) {
+    return this.isTemplate(template) && this.get('template').default
   },
 })

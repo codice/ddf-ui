@@ -15,7 +15,10 @@ package org.codice.ddf.catalog.ui.query.cql;
 
 import ddf.catalog.operation.ProcessingDetails;
 import ddf.catalog.operation.QueryResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.codice.ddf.catalog.ui.query.utility.Status;
 
 public class StatusImpl implements Status {
@@ -30,6 +33,8 @@ public class StatusImpl implements Status {
 
   private final boolean successful;
 
+  private List<String> warnings = new ArrayList<>();
+
   public StatusImpl(QueryResponse response, String source, long elapsedTime) {
     elapsed = elapsedTime;
     id = source;
@@ -37,6 +42,17 @@ public class StatusImpl implements Status {
     count = response.getResults().size();
     hits = response.getHits();
     successful = isSuccessful(response.getProcessingDetails());
+    warnings = getWarnings(response.getProcessingDetails());
+  }
+
+  public StatusImpl(
+      String source, long count, long elapsedTime, long hits, Set<ProcessingDetails> details) {
+    this.id = source;
+    this.count = count;
+    this.hits = hits;
+    this.elapsed = elapsedTime;
+    this.successful = isSuccessful(details);
+    this.warnings = getWarnings(details);
   }
 
   private boolean isSuccessful(final Set<ProcessingDetails> details) {
@@ -46,6 +62,15 @@ public class StatusImpl implements Status {
       }
     }
     return true;
+  }
+
+  private List<String> getWarnings(final Set<ProcessingDetails> details) {
+    return details
+        .stream()
+        .filter(detail -> !detail.hasException())
+        .map(detail -> detail.getWarnings())
+        .flatMap(procesingWarnings -> procesingWarnings.stream())
+        .collect(Collectors.toList());
   }
 
   public long getHits() {

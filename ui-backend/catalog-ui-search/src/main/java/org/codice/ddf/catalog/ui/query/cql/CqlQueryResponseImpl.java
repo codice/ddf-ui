@@ -16,6 +16,7 @@ package org.codice.ddf.catalog.ui.query.cql;
 import static ddf.catalog.Constants.EXPERIMENTAL_FACET_RESULTS_KEY;
 
 import ddf.action.ActionRegistry;
+import ddf.catalog.Constants;
 import ddf.catalog.data.AttributeDescriptor;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.MetacardType;
@@ -26,10 +27,11 @@ import ddf.catalog.operation.FacetValueCount;
 import ddf.catalog.operation.Query;
 import ddf.catalog.operation.QueryRequest;
 import ddf.catalog.operation.QueryResponse;
+import ddf.catalog.operation.ResultHighlight;
 import ddf.catalog.source.UnsupportedQueryException;
-import ddf.catalog.source.solr.SolrMetacardClientImpl;
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -54,19 +56,27 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
 
   private static final SearchTermsDelegate SEARCH_TERMS_DELEGATE = new SearchTermsDelegate();
 
+  public static final String DID_YOU_MEAN = "didYouMean";
+  public static final String SHOWING_RESULTS_FOR = "showingResultsFor";
+  public static final String SPELLCHECK = "spellcheck";
+
   private final List<CqlResult> results;
 
   private final String id;
 
   private final Map<String, Map<String, MetacardAttribute>> types;
 
-  private final Status status;
-
   private final Map<String, List<FacetValueCount>> facets;
 
   private final List<String> showingResultsForFields, didYouMeanFields;
 
   private final Boolean userSpellcheckIsOn;
+
+  private final Map<String, Status> statusBySource;
+
+  private final List<ResultHighlight> highlights;
+
+  private final Set<String> warnings = new HashSet<>();
 
   // Transient so as not to be serialized to/from JSON
   private final transient QueryResponse queryResponse;
@@ -76,7 +86,6 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
       QueryRequest request,
       QueryResponse queryResponse,
       String source,
-      long elapsedTime,
       boolean normalize,
       FilterAdapter filterAdapter,
       ActionRegistry actionRegistry,
@@ -84,8 +93,6 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
     this.id = id;
 
     this.queryResponse = queryResponse;
-
-    status = new StatusImpl(queryResponse, source, elapsedTime);
 
     AtomicBoolean logOnceState = new AtomicBoolean(false);
     Consumer<String> logOnce =
@@ -147,17 +154,19 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
             .collect(Collectors.toList());
 
     this.facets = getFacetResults(queryResponse.getPropertyValue(EXPERIMENTAL_FACET_RESULTS_KEY));
-    this.didYouMeanFields =
-        (List<String>) queryResponse.getProperties().get(SolrMetacardClientImpl.DID_YOU_MEAN_KEY);
+    this.didYouMeanFields = (List<String>) queryResponse.getProperties().get(DID_YOU_MEAN);
     this.showingResultsForFields =
-        (List<String>)
-            queryResponse.getProperties().get(SolrMetacardClientImpl.SHOWING_RESULTS_FOR_KEY);
-    this.userSpellcheckIsOn =
-        (Boolean) queryResponse.getProperties().get(SolrMetacardClientImpl.SPELLCHECK_KEY);
+        (List<String>) queryResponse.getProperties().get(SHOWING_RESULTS_FOR);
+    this.userSpellcheckIsOn = (Boolean) queryResponse.getProperties().get(SPELLCHECK);
+    this.highlights =
+        (List<ResultHighlight>) queryResponse.getProperties().get(Constants.QUERY_HIGHLIGHT_KEY);
+    this.statusBySource = (Map<String, Status>) queryResponse.getProperties().get("statusBySource");
   }
 
   private Map<String, List<FacetValueCount>> getFacetResults(Serializable facetResults) {
-    if (!(facetResults instanceof List)) return Collections.emptyMap();
+    if (!(facetResults instanceof List)) {
+      return Collections.emptyMap();
+    }
     List<Object> list = (List<Object>) facetResults;
     return list.stream()
         .filter(result -> result instanceof FacetAttributeResult)
@@ -195,7 +204,7 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
     return id;
   }
 
-  public Status getStatus() {
-    return status;
+  public Set<String> getWarnings() {
+    return warnings;
   }
 }

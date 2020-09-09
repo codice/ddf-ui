@@ -20,11 +20,12 @@ import { Button, buttonTypeEnum } from '../presentation/button'
 import LoadingCompanion from '../loading-companion'
 
 type Props = {
-  clickWorkspace: (event: any) => void
+  onClick: (event: any) => void
   revertToSelectedVersion: () => void
   history: any
   selectedVersion: any
   loading: boolean
+  canEdit: boolean
 }
 
 const Root = styled.div`
@@ -111,11 +112,12 @@ const RevertButton = styled(Button)`
 
 const MetacardHistory = (props: Props) => {
   const {
-    clickWorkspace,
+    onClick,
     revertToSelectedVersion,
     history,
     selectedVersion,
     loading,
+    canEdit,
   } = props
   return (
     <LoadingCompanion loading={loading}>
@@ -142,7 +144,7 @@ have chosen."
                   'is-selected'}`}
                 data-id={historyItem.id}
                 key={historyItem.id}
-                onClick={clickWorkspace}
+                onClick={onClick}
               >
                 <Version className="metacardHistory-cell">
                   {historyItem.versionNumber}
@@ -157,14 +159,15 @@ have chosen."
             )
           })}
         </Body>
-        {selectedVersion && (
-          <RevertButton
-            buttonType={buttonTypeEnum.primary}
-            onClick={revertToSelectedVersion}
-            icon="fa fa-undo"
-            text="Revert to Selected Version"
-          />
-        )}
+        {selectedVersion &&
+          canEdit && (
+            <RevertButton
+              buttonType={buttonTypeEnum.primary}
+              onClick={revertToSelectedVersion}
+              icon="fa fa-undo"
+              text="Revert to Selected Version"
+            />
+          )}
       </Root>
     </LoadingCompanion>
   )
