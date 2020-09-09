@@ -60,7 +60,7 @@ const PermanentSearchSort = ({ closeDropdown }: Props) => {
       .trigger('change:resultSort')
   }
   return (
-    <div className="min-w-120">
+    <div data-id="results-sort-container" className="min-w-120">
       <div className="pb-2">
         <SortSelections
           value={sorts}
@@ -73,6 +73,7 @@ const PermanentSearchSort = ({ closeDropdown }: Props) => {
         {hasSort ? (
           <Grid item className="w-full">
             <Button
+              data-id="remove-all-results-sorts-button"
               fullWidth
               onClick={removeSort}
               variant="text"
@@ -84,6 +85,7 @@ const PermanentSearchSort = ({ closeDropdown }: Props) => {
         ) : null}
         <Grid item className="w-full">
           <Button
+            data-id="save-results-sorts-button"
             fullWidth
             onClick={saveSort}
             variant="contained"

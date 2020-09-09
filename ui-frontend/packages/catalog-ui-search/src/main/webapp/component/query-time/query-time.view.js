@@ -240,7 +240,7 @@ module.exports = Marionette.LayoutView.extend({
       new PropertyView({
         model: new Property({
           value: [currentValue],
-          id: 'Time Range',
+          id: 'Time-Range',
           enum: [
             {
               label: 'Any',

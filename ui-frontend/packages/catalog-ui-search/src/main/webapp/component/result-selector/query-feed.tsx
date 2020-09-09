@@ -91,8 +91,8 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
   let id = status.id
 
   return (
-    <tr>
-      <Cell>
+    <tr data-id={`source-${id}-row`}>
+      <Cell data-id="source-id-label">
         <CellValue
           value={id}
           hasReturned={hasReturned}
@@ -102,7 +102,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
           alwaysShowValue
         />
       </Cell>
-      <Cell>
+      <Cell data-id="available-label">
         <CellValue
           value={status.count}
           hasReturned={hasReturned}
@@ -111,7 +111,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
           message={message}
         />
       </Cell>
-      <Cell>
+      <Cell data-id="possible-label">
         <CellValue
           value={status.hits}
           hasReturned={hasReturned}
@@ -120,7 +120,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
           message={message}
         />
       </Cell>
-      <Cell>
+      <Cell data-id="time-label">
         <CellValue
           value={status.elapsed / 1000}
           hasReturned={hasReturned}
@@ -132,6 +132,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
       <Cell className="status-filter">
         <Tooltip title="Click to search only this source.">
           <Button
+            data-id="filter-button"
             onClick={() => {
               query.set('sources', [status.id])
               query.startSearchFromFirstPage()
@@ -239,7 +240,11 @@ const QueryFeed = ({ selectionInterface }: Props) => {
     <>
       <Grid container direction="row" alignItems="center" wrap="nowrap">
         <Grid item>
-          <div title={resultCount} style={{ whiteSpace: 'nowrap' }}>
+          <div
+            data-id="results-count-label"
+            title={resultCount}
+            style={{ whiteSpace: 'nowrap' }}
+          >
             {pending ? (
               <i className="fa fa-circle-o-notch fa-spin is-critical-animation" />
             ) : (
@@ -255,7 +260,11 @@ const QueryFeed = ({ selectionInterface }: Props) => {
             content={({ closeAndRefocus }) => {
               return (
                 <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper style={{ padding: '20px' }} className="intrigue-table">
+                  <Paper
+                    data-id="query-status-container"
+                    style={{ padding: '20px' }}
+                    className="intrigue-table"
+                  >
                     <QueryStatus
                       statusBySource={statusBySource}
                       query={selectionInterface.getCurrentQuery()}
@@ -268,6 +277,7 @@ const QueryFeed = ({ selectionInterface }: Props) => {
             {({ handleClick }) => {
               return (
                 <Button
+                  data-id="heartbeat-button"
                   onClick={handleClick}
                   className="details-view is-button"
                   title="Show the full status for the search."

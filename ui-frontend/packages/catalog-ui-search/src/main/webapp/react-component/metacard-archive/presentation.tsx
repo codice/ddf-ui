@@ -36,6 +36,7 @@ const render = (props: Props) => {
     <LoadingCompanion loading={loading}>
       {!isDeleted ? (
         <Button
+          data-id="archive-items-button"
           fullWidth
           variant="contained"
           color="secondary"

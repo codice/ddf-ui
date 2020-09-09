@@ -48,6 +48,7 @@ const Paging = ({ selectionInterface }: Props) => {
   return (
     <>
       <Button
+        data-id="prev-page-button"
         className={`${isPreviousDisabled ? 'invisible' : ''}`}
         disabled={isPreviousDisabled}
         onClick={() => {
@@ -57,6 +58,7 @@ const Paging = ({ selectionInterface }: Props) => {
         Prev Page
       </Button>
       <Button
+        data-id="next-page-button"
         className={`${isPreviousDisabled && isNextDisabled ? 'invisible' : ''}`}
         disabled={isNextDisabled}
         onClick={() => {

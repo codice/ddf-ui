@@ -119,6 +119,7 @@ export const HeaderCheckbox = ({
   })
   return (
     <Button
+      data-id="select-all-checkbox"
       color="primary"
       onClick={event => {
         event.stopPropagation()
@@ -175,6 +176,7 @@ export const Header = ({ visibleHeaders, lazyResults }: HeaderProps) => {
   return (
     <React.Fragment>
       <Grid
+        data-id="table-container"
         container
         direction="row"
         wrap="nowrap"

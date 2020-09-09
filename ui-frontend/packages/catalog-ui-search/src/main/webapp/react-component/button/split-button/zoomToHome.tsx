@@ -40,6 +40,7 @@ const Icon = styled.div`
 const renderMenu = (onSelect: voidFunc) => {
   return (
     <Button
+      data-id="set-home-button"
       className="old-button"
       onClick={onSelect}
       title="Save Current View as Home Location"

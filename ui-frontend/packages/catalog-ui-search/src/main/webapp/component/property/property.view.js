@@ -28,7 +28,7 @@ module.exports = Marionette.LayoutView.extend(
     tagName: CustomElements.register('property'),
     attributes() {
       return {
-        'data-id': this.model.get('id'),
+        'data-id': 'dropdown-container',
         'data-label': this.model.get('label') || this.model.get('id'),
         title: this.model.get('title'),
       }

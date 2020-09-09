@@ -125,6 +125,7 @@ const OverwriteBack = styled.button`
 
 const Confirm = props => (
   <OverwriteConfirm
+    data-id="overwrite-confirm-button"
     variant="contained"
     color="secondary"
     onClick={props.archive}

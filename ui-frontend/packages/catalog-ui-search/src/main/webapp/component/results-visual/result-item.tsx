@@ -295,6 +295,7 @@ export const ResultItem = ({
                 <Grid item style={{ height: '100%' }}>
                   {lazyResult.hasErrors() ? (
                     <div
+                      data-id="validation-errors-icon"
                       className="h-full"
                       title="Has validation errors."
                       data-help="Indicates the given result has a validation error.
@@ -309,6 +310,7 @@ export const ResultItem = ({
                 <Grid item style={{ height: '100%' }}>
                   {!lazyResult.hasErrors() && lazyResult.hasWarnings() ? (
                     <div
+                      data-id="validation-warnings-icon"
                       className="h-full"
                       title="Has validation warnings."
                       data-help="Indicates the given result has a validation warning.
@@ -340,6 +342,7 @@ export const ResultItem = ({
                 <Grid item style={{ height: '100%' }}>
                   {lazyResult.isDownloadable() ? (
                     <SmallButton
+                      data-id="download-button"
                       onClick={e => {
                         e.stopPropagation()
                         triggerDownload(e)
@@ -375,6 +378,7 @@ export const ResultItem = ({
                     {({ handleClick }) => {
                       return (
                         <SmallButton
+                          data-id="result-item-more-vert-button"
                           onClick={e => {
                             e.stopPropagation()
                             handleClick(e)
@@ -411,6 +415,7 @@ export const ResultItem = ({
   const shouldShowSource = showSource()
   return (
     <Button
+      data-id="result-item-container-button"
       component="div" // we have to use a div since there are buttons inside this (invalid to nest buttons)
       onMouseDown={event => {
         /**
@@ -492,6 +497,7 @@ export const ResultItem = ({
           >
             <Grid item>
               <Button
+                data-id="select-checkbox"
                 onClick={event => {
                   event.stopPropagation() // this button takes precedence over the enclosing button, and is always additive / subtractive (no deselect of other results)
                   if (event.shiftKey) {
@@ -546,7 +552,7 @@ export const ResultItem = ({
               </Button>
             </Grid>
             <Grid item>
-              <div className="">
+              <div data-id="result-item-title-label" className="">
                 {lazyResult.highlights['title'] ? (
                   <span
                     dangerouslySetInnerHTML={{
@@ -574,6 +580,7 @@ export const ResultItem = ({
             <div>
               {renderThumbnail ? (
                 <img
+                  data-id="result-item-thumbnail"
                   src={imgsrc}
                   style={{ marginTop: '10px', maxWidth: '100%' }}
                   onLoad={() => {

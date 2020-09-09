@@ -40,9 +40,18 @@ const render = (props: PresentationProps) => {
   const { show, alpha } = props.visibility
   const { updateLayerAlpha } = props.actions
   return show ? (
-    <AlphaEnabled onChange={updateLayerAlpha} value={alpha} />
+    <AlphaEnabled
+      data-id="alpha-slider"
+      onChange={updateLayerAlpha}
+      value={alpha}
+    />
   ) : (
-    <AlphaDisabled onChange={updateLayerAlpha} value={alpha} disabled />
+    <AlphaDisabled
+      data-id="alpha-slider"
+      onChange={updateLayerAlpha}
+      value={alpha}
+      disabled
+    />
   )
 }
 

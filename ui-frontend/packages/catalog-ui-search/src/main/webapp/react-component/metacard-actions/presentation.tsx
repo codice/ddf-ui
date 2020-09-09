@@ -63,7 +63,7 @@ const ExportActions = (props: any) => {
     <>
       <Header>Export as:</Header>
       <Divider />
-      <Actions>
+      <Actions data-id="export-actions-container">
         {exportActions.map((exportAction: any) => {
           return (
             <ActionLink
@@ -89,7 +89,7 @@ const OtherActions = (props: any) => {
     <>
       <Header>Various:</Header>
       <Divider />
-      <Actions>
+      <Actions data-id="various-actions-container">
         {otherActions.map((otherAction: any) => {
           return (
             <ActionLink

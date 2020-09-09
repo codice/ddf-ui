@@ -57,7 +57,7 @@ const ResultsExport = (props: Props) => {
 
   return (
     <Root>
-      <div className="export-option">
+      <div data-id="export-format-select" className="export-option">
         <p>Export Format:</p>
         <Dropdown label={selectedFormat}>
           <Menu value={selectedFormat} onChange={handleExportOptionChange}>
@@ -70,6 +70,7 @@ const ResultsExport = (props: Props) => {
       <Button
         variant="contained"
         color="primary"
+        data-id="download-export-button"
         disabled={downloadDisabled}
         onClick={onDownloadClick}
       >

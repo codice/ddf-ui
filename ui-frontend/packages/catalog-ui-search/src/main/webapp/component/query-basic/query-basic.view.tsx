@@ -264,7 +264,7 @@ export default Marionette.LayoutView.extend({
   template() {
     return (
       <>
-        <div className="editor-properties">
+        <div data-id="basic-search-container" className="editor-properties">
           <div
             className="basic-text"
             data-help="Search by free text using the
@@ -510,10 +510,12 @@ export default Marionette.LayoutView.extend({
           placeholder: 'Text to search for.  Use "*" for wildcard.',
           radio: [
             {
+              id: 'match-case-yes',
               label: 'Yes',
               value: 'LIKE',
             },
             {
+              id: 'match-case-no',
               label: 'No',
               value: 'ILIKE',
             },

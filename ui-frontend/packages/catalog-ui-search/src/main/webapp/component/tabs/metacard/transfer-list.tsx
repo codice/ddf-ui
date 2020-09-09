@@ -124,7 +124,10 @@ const CustomList = ({
   const isCompletelySelected =
     numberChecked === items.length && items.length !== 0
   return (
-    <Paper elevation={Elevations.paper}>
+    <Paper
+      data-id={`${title.toLowerCase()}-container`}
+      elevation={Elevations.paper}
+    >
       <Grid
         container
         className="p-2 text-xl font-normal relative"
@@ -134,6 +137,7 @@ const CustomList = ({
       >
         <Grid item className="absolute left-0 top-0 ml-2 mt-min">
           <Button
+            data-id={`${title.toLowerCase()}-select-all-checkbox`}
             disabled={items.length === 0}
             onClick={handleToggleAll(items)}
             color={
@@ -168,6 +172,7 @@ const CustomList = ({
       <DarkDivider className="w-full h-min" />
       <div className="p-2">
         <TextField
+          data-id="filter-input"
           size="small"
           variant="outlined"
           label="Filter by keyword"
@@ -249,6 +254,7 @@ const CustomList = ({
                                 {...provided.dragHandleProps}
                               >
                                 <ListItem
+                                  data-id="attribute-container"
                                   key={value}
                                   role="listitem"
                                   button
@@ -257,6 +263,7 @@ const CustomList = ({
                                 >
                                   <ListItemIcon>
                                     <Checkbox
+                                      data-id="select-checkbox"
                                       checked={checked.indexOf(value) !== -1}
                                       tabIndex={-1}
                                       disableRipple
@@ -269,6 +276,7 @@ const CustomList = ({
                                   <ListItemText id={labelId} primary={alias} />
                                   {!isReadonly && (
                                     <Button
+                                      data-id="edit-button"
                                       style={{
                                         pointerEvents: 'all',
                                         height: '100%',
@@ -293,8 +301,8 @@ const CustomList = ({
                                                 attr={value}
                                                 lazyResult={lazyResult}
                                                 /* Re-open this modal again but with the current state
-                                            This maintains the state so that if we haven't saved,
-                                            we can come back to where we were working */
+                                              This maintains the state so that if we haven't saved,
+                                              we can come back to where we were working */
                                                 goBack={() => {
                                                   dialogContext.setProps({
                                                     open: true,
@@ -472,6 +480,7 @@ const TransferList = ({
       <div className="text-2xl text-center px-2 pb-2 pt-4 font-normal relative">
         Manage Attributes
         <Button
+          data-id="close-button"
           className="absolute right-0 top-0 mr-1 mt-1"
           variant="text"
           color="default"
@@ -520,6 +529,7 @@ const TransferList = ({
           <Grid item>
             <Grid container direction="column" alignItems="center">
               <Button
+                data-id="move-right-button"
                 variant="outlined"
                 className={classes.button}
                 onClick={handleCheckedRight}
@@ -529,6 +539,7 @@ const TransferList = ({
                 <RightArrowIcon />
               </Button>
               <Button
+                data-id="move-left-button"
                 variant="outlined"
                 className={classes.button}
                 onClick={handleCheckedLeft}
@@ -566,6 +577,7 @@ const TransferList = ({
       <DarkDivider className="w-full h-min" />
       <DialogActions>
         <Button
+          data-id="dialog-save-button"
           disabled={mode === 'saving'}
           onClick={() => {
             dialogContext.setProps({

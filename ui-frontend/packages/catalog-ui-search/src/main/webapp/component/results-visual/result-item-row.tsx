@@ -160,6 +160,7 @@ const RowComponent = ({
           />
           <CellComponent className="" style={{ width: 'auto', padding: '0px' }}>
             <Button
+              data-id="select-checkbox"
               onClick={event => {
                 event.stopPropagation()
 
@@ -176,6 +177,7 @@ const RowComponent = ({
         </Grid>
         <Grid item>
           <Button
+            data-id="result-item-row-container-button"
             onMouseDown={event => {
               /**
                * Shift key can cause selections since we set the class to allow text selection,
@@ -217,7 +219,6 @@ const RowComponent = ({
                 style={{
                   width: visibleProperties.length * 200 + 'px',
                 }}
-                data-id="wheeeeer"
               >
                 {visibleProperties.map((property, index) => {
                   const alias = TypedMetacardDefs.getAlias({
@@ -241,6 +242,7 @@ const RowComponent = ({
                       </>
                       {property.property === 'thumbnail' && thumbnail ? (
                         <img
+                          data-id="thumbnail-value"
                           src={imgsrc}
                           style={{
                             maxWidth: '100%',
@@ -255,7 +257,10 @@ const RowComponent = ({
                         />
                       ) : (
                         <React.Fragment>
-                          <div style={{ wordBreak: 'break-word' }}>
+                          <div
+                            data-id={`${property.property}-value`}
+                            style={{ wordBreak: 'break-word' }}
+                          >
                             {property.value.map((value, index) => {
                               return (
                                 <span

@@ -95,7 +95,10 @@ class VisualizationSelector extends React.Component {
     window._gl = this.props.goldenLayout
 
     return (
-      <CustomElement onClick={this.handleChoice.bind(this)}>
+      <CustomElement
+        data-id="visualization-menu"
+        onClick={this.handleChoice.bind(this)}
+      >
         {Object.values(configs).map(
           ({ title, icon, componentName }, index) => (
             <Visualization
