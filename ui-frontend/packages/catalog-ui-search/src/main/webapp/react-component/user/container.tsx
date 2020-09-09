@@ -32,7 +32,8 @@ class UserContainer extends React.Component<{}, State> {
     }
   }
   signOut() {
-    window.location.href = '../../logout?service=' + window.location.href
+    window.location.href =
+      '../../logout?service=' + encodeURIComponent(window.location.href)
   }
   render() {
     const { username, isGuest, email } = this.state
