@@ -51,6 +51,8 @@ export const GoldenLayout = ({ selectionInterface }: Props) => {
             selectionInterface={selectionInterface}
             model={selectionInterface.getCurrentQuery()}
             goldenLayoutViewInstance={goldenlayoutInstance}
+            layoutResult={goldenlayoutInstance.options.layoutResult}
+            editLayoutRef={goldenlayoutInstance.options.editLayoutRef}
           />
         </Paper>
       </Grid>
