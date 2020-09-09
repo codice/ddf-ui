@@ -23,9 +23,9 @@ export interface Props {
   isGuest: boolean
 }
 
-const unseenNotifications = keyframes`
+const unseenNotifications = (props: any) => keyframes`
   0% {
-    opacity: ${props => props.theme.minimumOpacity};
+    opacity: ${props.theme.minimumOpacity};
   }
   100% {
     opacity: 1;
@@ -75,6 +75,7 @@ const Root = styled.div<Props>`
         }
       `
     }
+    return
   }};
 `
 

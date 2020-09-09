@@ -15,5 +15,5 @@
 export {
   Sharing,
   Item,
-  Category,
+  Category, // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '../src/main/webapp/react-compo... Remove this comment to see the full error message
 } from '../src/main/webapp/react-component/sharing'

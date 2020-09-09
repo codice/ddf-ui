@@ -145,7 +145,7 @@ export type GeoFeature = {
 const Gazetteer = (props: Props) => {
   const fetch = props.fetch || defaultFetch
 
-  const expandPoint = geo => {
+  const expandPoint = (geo: any) => {
     const offset = 0.1
     if (geo.length === 1) {
       const point = geo[0]
@@ -177,7 +177,10 @@ const Gazetteer = (props: Props) => {
       geometry: {
         type: 'Polygon',
         coordinates: [
-          expandPoint(suggestion.geo).map(coord => [coord.lon, coord.lat]),
+          expandPoint(suggestion.geo).map((coord: any) => [
+            coord.lon,
+            coord.lat,
+          ]),
         ],
       },
       properties: {},

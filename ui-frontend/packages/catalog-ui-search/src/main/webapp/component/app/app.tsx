@@ -21,6 +21,7 @@ import ExpandingButton from '../button/expanding-button'
 import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
+// @ts-expect-error ts-migrate(6133) FIXME: 'ListItem' is declared but its value is never read... Remove this comment to see the full error message
 import ListItem from '@material-ui/core/ListItem'
 import MenuIcon from '@material-ui/icons/Menu'
 import SettingsIcon from '@material-ui/icons/Settings'
@@ -346,6 +347,7 @@ const App = ({
                       return (
                         <ExpandingButton
                           key={routeInfo.linkProps.to.toString()}
+                          // @ts-expect-error ts-migrate(2322) FIXME: Type 'null' is not assignable to type 'string | nu... Remove this comment to see the full error message
                           component={Link}
                           to={routeInfo.linkProps.to}
                           className={`group-hover:opacity-100 ${
@@ -387,6 +389,7 @@ const App = ({
                   >
                     {/** The song and dance around 'a' vs Link has to do with react router not supporting these outside links */}
                     <ExpandingButton
+                      // @ts-expect-error ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
                       component={properties.helpUrl ? 'a' : Link}
                       href={properties.helpUrl}
                       to={
@@ -414,6 +417,7 @@ const App = ({
                       return (
                         <>
                           <ExpandingButton
+                            // @ts-expect-error ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
                             component={Link}
                             to={{
                               pathname: `${location.pathname}`,
@@ -465,6 +469,7 @@ const App = ({
                             }
                           >
                             <ExpandingButton
+                              // @ts-expect-error ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
                               component={Link}
                               to={{
                                 pathname: `${location.pathname}`,
@@ -511,6 +516,7 @@ const App = ({
                       return (
                         <>
                           <ExpandingButton
+                            // @ts-expect-error ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
                             component={Link}
                             to={{
                               pathname: `${location.pathname}`,

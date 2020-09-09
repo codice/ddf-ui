@@ -41,11 +41,13 @@ const Filter = ({ filter, setFilter }: Props) => {
       <Grid item className="w-full pb-2">
         <Autocomplete
           data-id="filter-type-autocomplete"
+          // @ts-ignore fullWidth does exist on Autocomplete
           fullWidth
           size="small"
           options={attributeList}
           getOptionLabel={option => option.label}
           getOptionSelected={(option, value) => option.value === value.value}
+          // @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
           onChange={(e, newValue) => {
             const newProperty = newValue.value as FilterClass['property']
             setFilter({

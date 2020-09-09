@@ -15,6 +15,7 @@
 import * as React from 'react'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import { hot } from 'react-hot-loader'
+// @ts-expect-error ts-migrate(6133) FIXME: 'user' is declared but its value is never read.
 const user = require('../../component/singletons/user-instance')
 import { Divider } from './metacard-interactions'
 import ExtensionPoints from '../../extension-points'

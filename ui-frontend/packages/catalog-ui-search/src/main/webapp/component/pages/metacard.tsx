@@ -102,6 +102,7 @@ const MetacardRoute = () => {
   )
 
   React.useEffect(
+    // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
     () => {
       if (id) {
         query.set('filterTree', getFilterTreeForId({ id }))

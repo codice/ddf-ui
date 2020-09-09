@@ -168,6 +168,7 @@ const Root = styled.button<RootProps>`
               determineColorFromProps(props)
             )};`
           }
+          return
         }}
         background: repeating-linear-gradient(
                 45deg,
@@ -249,7 +250,6 @@ export const Button = ({
       inText={inText}
       buttonType={buttonType}
       className={`${className} ${rootClassName} old-button`}
-      // @ts-ignore
       style={rootStyle}
       {...otherProps as JSX.IntrinsicAttributes}
     >

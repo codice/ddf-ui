@@ -27,9 +27,9 @@
     "node": ">=0.10.5"
   },
   "peerDependencies": {
-    "@connexta/atlas": ">=0.0.60",
     "@blueprintjs/core": ">3.0.0",
     "@blueprintjs/datetime": ">3.0.0",
+    "@connexta/atlas": ">=0.0.60",
     "@material-ui/core": ">=4.8.3",
     "@material-ui/icons": ">=4.4.3",
     "@material-ui/lab": ">=4.0.0-alpha.39",
@@ -44,7 +44,6 @@
     "tailwindcss": ">=1.4.0"
   },
   "devDependencies": {
-    "@welldone-software/why-did-you-render": "4.2.2",
     "@blueprintjs/core": "3.29.0",
     "@blueprintjs/datetime": "3.18.3",
     "@connexta/ace": "git://github.com/connexta/ace.git#7c2dee5cb3013a4c1b95c9b92acd44e38301b611",
@@ -62,6 +61,7 @@
     "@types/react-virtualized-auto-sizer": "1.0.0",
     "@types/react-window": "^1.8.1",
     "@types/styled-components": "4.0.3",
+    "@welldone-software/why-did-you-render": "4.2.2",
     "chai": "4.1.1",
     "enzyme": "3.3.0",
     "enzyme-adapter-react-16": "1.5.0",
@@ -78,6 +78,9 @@
     "react-router-dom": "5.2.0",
     "sinon": "5.0.7",
     "styled-components": "4.3.2",
+    "ts-migrate": "^0.1.2",
+    "ts-migrate-plugins": "^0.1.0",
+    "ts-migrate-server": "^0.1.0",
     "utility-types": "3.10.0"
   },
   "dependencies": {
@@ -135,12 +138,12 @@
     "react-redux": "5.0.7",
     "react-spring": "8.0.27",
     "react-text-mask": "5.4.1",
-    "redux": "3.5.2",
-    "redux-thunk": "2.1.0",
     "react-use": "15.1.0",
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "git://github.com/andrewkfiedler/react-window#8a68a2508c79044be33f6f743261b069d7fd9cc1",
     "react-window-components": "0.0.2",
+    "redux": "3.5.2",
+    "redux-thunk": "2.1.0",
     "rpc-websockets": "4.0.0",
     "sanitize-html": "1.15.0",
     "scroll-into-view-if-needed": "^2.2.25",

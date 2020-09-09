@@ -14,7 +14,8 @@
  **/
 import * as React from 'react'
 import { DateInput, IDateInputProps } from '@blueprintjs/datetime'
-//@ts-ignore
+
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '../s... Remove this comment to see the full error message
 import user from '../singletons/user-instance'
 
 export const getTimeZone = () => {
@@ -31,6 +32,7 @@ export const getDateFormat = () => {
     .get('dateTimeFormat')['datetimefmt'] as string
 }
 
+// @ts-ignore Can't find type declarations, but they exist
 import moment from 'moment-timezone'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
 

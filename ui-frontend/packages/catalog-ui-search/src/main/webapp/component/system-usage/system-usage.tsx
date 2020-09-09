@@ -82,7 +82,7 @@ const SystemUsageModal = () => {
                   properties.ui.systemUsageOncePerSession
                 ) {
                   const systemUsage = JSON.parse(
-                    //@ts-ignore
+                    // @ts-expect-error ts-migrate(2345) FIXME: Type 'null' is not assignable to type 'string'.
                     window.sessionStorage.getItem('systemUsage')
                   )
                   systemUsage[user.get('user').get('username')] = 'true'

@@ -46,6 +46,7 @@ export type ExtensionPointsType = {
       editLayoutRef?: any
     }
   ) => JSX.Element | null
+  navigationRight: any[]
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -57,6 +58,7 @@ const ExtensionPoints: ExtensionPointsType = {
   resultItemTitleAddOn: () => null,
   resultItemRowAddOn: () => null,
   layoutDropdown: () => null,
+  navigationRight: [],
 }
 
 export default ExtensionPoints

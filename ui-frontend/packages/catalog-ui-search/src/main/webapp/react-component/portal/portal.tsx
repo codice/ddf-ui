@@ -41,6 +41,8 @@ class Portal extends React.Component<{}, {}> {
   componentWillUnmount() {
     this.wrapper.remove()
   }
+
+  // @ts-ignore
   render() {
     return ReactDOM.createPortal(this.props.children, this.wrapper)
   }

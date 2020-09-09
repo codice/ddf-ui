@@ -12,9 +12,11 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-//@ts-ignore
+
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
 import metacardDefinitions from '../../component/singletons/metacard-definitions.js'
-//@ts-ignore
+
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
 import properties from '../../js/properties.js'
 
 export const getFilteredAttributeList = () => {

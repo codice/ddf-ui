@@ -97,15 +97,16 @@ export class LazyQueryResult {
     callback: () => void
   }) {
     const id = Math.random().toString()
-    // @ts-ignore
+
+    // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
     this[`subscriptionsToMe.${subscribableThing}`][id] = callback
     return () => {
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
       delete this[`subscriptionsToMe.${subscribableThing}`][id]
     }
   }
   _notifySubscribers(subscribableThing: SubscribableType) {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
     const subscribers = this[
       `subscriptionsToMe.${subscribableThing}`
     ] as SubscriptionType

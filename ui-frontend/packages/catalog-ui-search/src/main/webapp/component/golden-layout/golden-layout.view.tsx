@@ -19,6 +19,7 @@ const _merge = require('lodash/merge')
 const _debounce = require('lodash/debounce')
 const $ = require('jquery')
 const wreqr = require('../../js/wreqr.js')
+// @ts-expect-error ts-migrate(6133) FIXME: 'template' is declared but its value is never read... Remove this comment to see the full error message
 const template = require('./golden-layout.hbs')
 const Marionette = require('marionette')
 const CustomElements = require('../../js/CustomElements.js')
@@ -35,25 +36,32 @@ import CloseIcon from '@material-ui/icons/Close'
 import { providers as Providers } from '../../extension-points/providers'
 import { Visualizations } from '../visualization/visualizations'
 
-const treeMap = (obj, fn, path = []) => {
+// @ts-expect-error ts-migrate(7024) FIXME: Function implicitly has return type 'any' because ... Remove this comment to see the full error message
+const treeMap = (obj: any, fn: any, path = []) => {
   if (Array.isArray(obj)) {
+    // @ts-expect-error ts-migrate(2769) FIXME: Argument of type 'number' is not assignable to par... Remove this comment to see the full error message
     return obj.map((v, i) => treeMap(v, fn, path.concat(i)))
   }
 
   if (obj !== null && typeof obj === 'object') {
-    return Object.keys(obj)
-      .map(k => [k, treeMap(obj[k], fn, path.concat(k))])
-      .reduce((o, [k, v]) => {
-        o[k] = v
-        return o
-      }, {})
+    return (
+      Object.keys(obj)
+        // @ts-expect-error ts-migrate(2769) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
+        .map(k => [k, treeMap(obj[k], fn, path.concat(k))])
+        .reduce((o, [k, v]) => {
+          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+          o[k] = v
+          return o
+        }, {})
+    )
   }
 
   return fn(obj, path)
 }
 
-const sanitizeTree = tree =>
-  treeMap(tree, obj => {
+// @ts-expect-error ts-migrate(6133) FIXME: 'sanitizeTree' is declared but its value is never ... Remove this comment to see the full error message
+const sanitizeTree = (tree: any) =>
+  treeMap(tree, (obj: any) => {
     if (typeof obj === 'string') {
       return sanitize(obj, {
         allowedTags: [],
@@ -102,16 +110,16 @@ function getGoldenLayoutSettings() {
 // see https://github.com/deepstreamIO/golden-layout/issues/239 for details on why the setTimeout is necessary
 // The short answer is it mostly has to do with making sure these ComponentViews are able to function normally (set up events, etc.)
 function registerComponent(
-  marionetteView,
-  name,
-  ComponentView,
-  componentOptions,
-  viz
+  marionetteView: any,
+  name: any,
+  ComponentView: any,
+  componentOptions: any,
+  viz: any
 ) {
   const options = _.extend({}, marionetteView.options, componentOptions)
   marionetteView.goldenLayout.registerComponent(
     name,
-    (container, componentState) => {
+    (container: any, componentState: any) => {
       container.on('open', () => {
         setTimeout(() => {
           const componentView = new ComponentView(
@@ -133,8 +141,8 @@ function registerComponent(
           container.parent.parent.element.removeClass('is-minimized')
         }
       })
-      container.on('tab', tab => {
-        tab.closeElement.off('click').on('click', event => {
+      container.on('tab', (tab: any) => {
+        tab.closeElement.off('click').on('click', (event: any) => {
           if (
             tab.header.parent.isMaximised &&
             tab.header.parent.contentItems.length === 1
@@ -203,7 +211,7 @@ function registerComponent(
   )
 }
 
-function isMaximised(contentItem) {
+function isMaximised(contentItem: any) {
   if (contentItem.isMaximised) {
     return true
   } else if (contentItem.contentItems.length === 0) {
@@ -213,7 +221,7 @@ function isMaximised(contentItem) {
   }
 }
 
-function removeActiveTabInformation(config) {
+function removeActiveTabInformation(config: any) {
   if (config.activeItemIndex !== undefined) {
     config.activeItemIndex = 0
   }
@@ -224,11 +232,11 @@ function removeActiveTabInformation(config) {
   }
 }
 
-function removeMaximisedInformation(config) {
+function removeMaximisedInformation(config: any) {
   delete config.maximisedItemId
 }
 
-function removeEphemeralState(config) {
+function removeEphemeralState(config: any) {
   removeMaximisedInformation(config)
   removeActiveTabInformation(config)
   return config
@@ -363,11 +371,12 @@ export default Marionette.LayoutView.extend({
     this.detectIfGoldenLayoutMaximised()
     this.detectIfGoldenLayoutEmpty()
   },
-  handleGoldenLayoutStackCreated(stack) {
+  handleGoldenLayoutStackCreated(stack: any) {
     stack.header.controlsContainer
       .find('.lm_close')
       .off('click')
-      .on('click', event => {
+      // @ts-expect-error ts-migrate(6133) FIXME: 'event' is declared but its value is never read.
+      .on('click', (event: any) => {
         if (stack.isMaximised) {
           stack.toggleMaximise()
         }
@@ -383,6 +392,7 @@ export default Marionette.LayoutView.extend({
               <Grid item>
                 <Button
                   data-id="maximise-tab-button"
+                  // @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
                   onClick={e => {
                     const prevWidth = stack.config.prevWidth || 500
                     const prevHeight = stack.config.prevHeight || 500
@@ -398,6 +408,7 @@ export default Marionette.LayoutView.extend({
               <Grid item>
                 <Button
                   data-id="minimise-layout-button"
+                  // @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
                   onClick={e => {
                     stack.config.prevWidth = stack.getActiveContentItem().container.width
                     stack.config.prevHeight = stack.getActiveContentItem().container.height
@@ -410,6 +421,7 @@ export default Marionette.LayoutView.extend({
               <Grid item>
                 <Button
                   data-id="maximise-layout-button"
+                  // @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
                   onClick={e => {
                     stack.toggleMaximise()
                   }}
@@ -421,6 +433,7 @@ export default Marionette.LayoutView.extend({
                 {stack.header._isClosable() ? (
                   <Button
                     data-id="close-layout-button"
+                    // @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
                     onClick={e => {
                       if (stack.isMaximised) {
                         stack.toggleMaximise()
@@ -440,7 +453,8 @@ export default Marionette.LayoutView.extend({
       } catch (err) {}
     }, 100)
   },
-  handleGoldenLayoutStateChange(event) {
+  // @ts-expect-error ts-migrate(6133) FIXME: 'event' is declared but its value is never read.
+  handleGoldenLayoutStateChange(event: any) {
     if (this.isDestroyed) {
       return
     }
@@ -514,7 +528,8 @@ export default Marionette.LayoutView.extend({
     $(window).on(
       'resize.' + this.cid,
       _debounce(
-        event => {
+        // @ts-expect-error ts-migrate(6133) FIXME: 'event' is declared but its value is never read.
+        (event: any) => {
           this.updateSize()
         },
         100,

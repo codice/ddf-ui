@@ -18,7 +18,7 @@ const properties = require('../../js/properties.js')
 const moment = require('moment')
 
 class AboutContainer extends React.Component {
-  constructor(props: {}) {
+  constructor(props: any) {
     super(props)
   }
   render() {

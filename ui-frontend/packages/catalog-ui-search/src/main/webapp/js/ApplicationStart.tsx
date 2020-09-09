@@ -13,6 +13,7 @@
  *
  **/
 
+// @ts-expect-error ts-migrate(6133) FIXME: '$' is declared but its value is never read.
 const $ = require('jquery')
 import BaseApp from '../component/app/base-app'
 import * as React from 'react'

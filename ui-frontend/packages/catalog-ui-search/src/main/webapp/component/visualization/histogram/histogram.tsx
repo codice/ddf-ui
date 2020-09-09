@@ -107,6 +107,7 @@ function findMatchesForAttributeValues(
   })
 }
 
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
 function checkIfValueIsValid(values: any[], attribute: string, value: any) {
   if (value !== undefined) {
     switch (metacardDefinitions.metacardTypes[attribute].type) {
@@ -388,7 +389,8 @@ export const Histogram = ({ selectionInterface }: Props) => {
       $(histogramElement)
         .find('rect.drag')
         .off('mousedown')
-      //@ts-ignore
+
+      // @ts-expect-error ts-migrate(2339) FIXME: Property '_context' does not exist on type 'HTMLDi... Remove this comment to see the full error message
       if (histogramElement._context) {
         Plotly.Plots.resize(histogramElement)
       }
@@ -411,7 +413,8 @@ export const Histogram = ({ selectionInterface }: Props) => {
         results.length !== 0
       ) {
         const theme = getTheme(e.get('spacingMode'))
-        //@ts-ignore
+
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'layout' does not exist on type 'HTMLDivE... Remove this comment to see the full error message
         histogramElement.layout.margin = theme.margin
       }
     }
@@ -426,7 +429,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
         attributeToBin &&
         results.length !== 0
       ) {
-        //@ts-ignore
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'layout' does not exist on type 'HTMLDivE... Remove this comment to see the full error message
         histogramElement.layout.font.size = e.get('fontSize')
       }
     }
@@ -525,11 +528,13 @@ export const Histogram = ({ selectionInterface }: Props) => {
     })
   }
 
+  // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
   const retrieveCategoriesFromPlotlyForDates = () => {
     if (plotlyRef.current) {
       const histogramElement = plotlyRef.current
       const categories = []
-      //@ts-ignore
+
+      // @ts-expect-error ts-migrate(2339) FIXME: Property '_fullData' does not exist on type 'HTMLD... Remove this comment to see the full error message
       const xbins = histogramElement._fullData[0].xbins
       const min = xbins.start
       const max = xbins.end
@@ -565,7 +570,8 @@ export const Histogram = ({ selectionInterface }: Props) => {
   const retrieveCategoriesFromPlotly = () => {
     if (plotlyRef.current) {
       const histogramElement = plotlyRef.current
-      //@ts-ignore
+
+      // @ts-expect-error ts-migrate(2339) FIXME: Property '_fullLayout' does not exist on type 'HTM... Remove this comment to see the full error message
       const xaxis = histogramElement._fullLayout.xaxis
       switch (xaxis.type) {
         case 'category':
@@ -573,7 +579,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
         case 'date':
           return retrieveCategoriesFromPlotlyForDates()
         default:
-          //@ts-ignore
+          // @ts-expect-error ts-migrate(2339) FIXME: Property '_fullData' does not exist on type 'HTMLD... Remove this comment to see the full error message
           const xbins = histogramElement._fullData[0].xbins
           const min = xbins.start
           const max = xbins.end
@@ -659,7 +665,8 @@ export const Histogram = ({ selectionInterface }: Props) => {
   const listenToHistogram = () => {
     if (plotlyRef.current) {
       const histogramElement = plotlyRef.current
-      //@ts-ignore
+
+      // @ts-expect-error ts-migrate(2339) FIXME: Property '_ev' does not exist on type 'HTMLDivElem... Remove this comment to see the full error message
       histogramElement._ev.addListener('plotly_click', plotlyClickHandler)
     }
   }
