@@ -601,7 +601,8 @@ export const ResultItem = ({
                       {lazyResult.highlights[detail.label] ? (
                         <span
                           dangerouslySetInnerHTML={{
-                            __html: lazyResult.highlights[detail.label][0].highlight
+                            __html:
+                              lazyResult.highlights[detail.label][0].highlight,
                           }}
                         />
                       ) : (

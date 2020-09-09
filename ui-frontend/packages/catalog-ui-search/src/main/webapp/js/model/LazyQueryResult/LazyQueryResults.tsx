@@ -328,7 +328,9 @@ export class LazyQueryResults {
       (blob, highlight) => {
         blob[highlight.id] = highlight.highlights.reduce(
           (innerblob, subhighlight) => {
-            innerblob[subhighlight.attribute] = highlight.highlights.filter(hl => hl.attribute === subhighlight.attribute)
+            innerblob[subhighlight.attribute] = highlight.highlights.filter(
+              hl => hl.attribute === subhighlight.attribute
+            )
             return innerblob
           },
           {} as { [key: string]: Array<AttributeHighlight> }

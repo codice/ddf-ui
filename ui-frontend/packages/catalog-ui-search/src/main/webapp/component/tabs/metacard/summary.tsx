@@ -558,16 +558,16 @@ const AttributeComponent = ({
                                 </Typography>
                               )
                             default:
-                              if (
-                                lazyResult.highlights[attr]
-                              ) {
+                              if (lazyResult.highlights[attr]) {
                                 if (attr === 'title') {
                                   //Special case, title highlights don't get truncated
                                   return (
                                     <Typography>
                                       <span
                                         dangerouslySetInnerHTML={{
-                                          __html: lazyResult.highlights[attr][0].highlight
+                                          __html:
+                                            lazyResult.highlights[attr][0]
+                                              .highlight,
                                         }}
                                       />
                                     </Typography>
