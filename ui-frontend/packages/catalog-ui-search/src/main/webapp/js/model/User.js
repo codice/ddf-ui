@@ -499,7 +499,7 @@ User.Response = Backbone.AssociatedModel.extend({
         return this.canWrite(thing.get('metacard').get('properties'))
       case 'query-result.collection':
       default:
-        if (this.some !== undefined) {
+        if (thing.some !== undefined) {
           !thing.some(subthing => {
             return !this.canWrite(subthing)
           })
