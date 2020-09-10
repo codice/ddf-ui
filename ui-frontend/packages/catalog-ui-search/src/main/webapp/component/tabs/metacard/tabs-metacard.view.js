@@ -130,5 +130,9 @@ module.exports = TabsView.extend({
       'is-preview-disabled',
       !properties.isMetacardPreviewEnabled()
     )
+    this.$el.toggleClass(
+      'is-editing-disabled',
+      !user.canWrite(this.selectionInterface.getSelectedResults().first())
+    )
   },
 })
