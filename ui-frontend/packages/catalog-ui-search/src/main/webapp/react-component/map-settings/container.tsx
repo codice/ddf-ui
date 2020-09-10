@@ -80,4 +80,3 @@ class MapSettings extends React.Component<WithBackboneProps, State> {
 }
 
 export default hot(module)(withListenTo(MapSettings))
-export const testComponent = withListenTo(MapSettings)

@@ -177,6 +177,7 @@ const getPreviewText = ({
  * Get the pixel location from a metacard(s)
  * returns { left, top } relative to the map view
  */
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
 const getLocation = (map: any, target: MetacardType[]) => {
   if (target) {
     const location = map.getWindowLocationsOfResults(target)
@@ -269,6 +270,7 @@ const HookPopupPreview = (props: Props) => {
 
   return (
     <Root style={{ left: getLeft(location), top: getTop(location) }}>
+      {/* @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value. */}
       {(function() {
         if (selectionInterface.getSelectedResults().length === 1) {
           const metacardJSON = selectionInterface

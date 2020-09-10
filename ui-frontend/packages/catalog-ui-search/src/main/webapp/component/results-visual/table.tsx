@@ -303,6 +303,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                 outerElementProps={{
                   onScroll: e => {
                     if (headerRef.current) {
+                      // @ts-expect-error ts-migrate(2339) FIXME: Property 'scrollLeft' does not exist on type 'Even... Remove this comment to see the full error message
                       headerRef.current.scrollLeft = e.target.scrollLeft
                     }
                   },

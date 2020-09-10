@@ -34,9 +34,11 @@ class SourcesSummaryContainer extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'filter' does not exist on type '{ getHar... Remove this comment to see the full error message
       amountDown: sources.filter(function(source: Backbone.Model) {
         return !source.get('available')
       }).length,
+      // @ts-expect-error ts-migrate(2322) FIXME: Property 'sourceActions' is missing in type '{ ava... Remove this comment to see the full error message
       sources: sources.toJSON(),
     }
   }
@@ -45,9 +47,11 @@ class SourcesSummaryContainer extends React.Component<Props, State> {
   }
   handleChange() {
     this.setState({
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'filter' does not exist on type '{ getHar... Remove this comment to see the full error message
       amountDown: sources.filter(function(source: Backbone.Model) {
         return !source.get('available')
       }).length,
+      // @ts-expect-error ts-migrate(2322) FIXME: Type '{ available: boolean; contentTypes: { name: ... Remove this comment to see the full error message
       sources: sources.toJSON(),
     })
   }
@@ -55,6 +59,7 @@ class SourcesSummaryContainer extends React.Component<Props, State> {
     return (
       <Sources
         sources={this.state.sources}
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'fetch' does not exist on type '{ getHarv... Remove this comment to see the full error message
         refreshSources={() => sources.fetch()}
         amountDown={this.state.amountDown}
       />

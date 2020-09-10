@@ -30,6 +30,7 @@ const Root = styled.div<PresentationProps>`
     if (!props.order.isTop) {
       return 'none'
     }
+    return
   }};
 `
 

@@ -20,10 +20,13 @@ import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+// @ts-expect-error ts-migrate(6133) FIXME: 'LazyQueryResults' is declared but its value is ne... Remove this comment to see the full error message
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
+// @ts-expect-error ts-migrate(6133) FIXME: 'Divider' is declared but its value is never read.
 import Divider from '@material-ui/core/Divider'
 import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper'
+// @ts-expect-error ts-migrate(6133) FIXME: 'dark' is declared but its value is never read.
 import { Elevations, dark, light } from '../theme/theme'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { useStatusOfLazyResults } from '../../js/model/LazyQueryResult/hooks'

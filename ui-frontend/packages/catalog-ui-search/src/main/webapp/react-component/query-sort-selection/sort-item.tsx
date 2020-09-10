@@ -13,8 +13,7 @@
  *
  **/
 import * as React from 'react'
-// @ts-ignore
-import EnumInput from '../inputs/enum-input'
+
 import { isDirectionalSort } from './sort-selection-helpers'
 import { SortItemType, Option } from './sort-selections'
 import TextField from '@material-ui/core/TextField'
@@ -50,13 +49,14 @@ const SortItem = ({
             <Autocomplete
               data-id="sort-type-autocomplete"
               size="small"
+              // @ts-ignore fullWidth does exist on Autocomplete
               fullWidth
               options={attributeOptions}
               getOptionLabel={option => option.label}
               getOptionSelected={(option, value) => {
                 return option.value === value.value
               }}
-              onChange={(e, newValue) => {
+              onChange={(_e: any, newValue: Option) => {
                 const newProperty = newValue.value
                 updateAttribute(newProperty)
               }}
@@ -95,13 +95,14 @@ const SortItem = ({
               <Autocomplete
                 data-id="sort-order-autocomplete"
                 size="small"
+                // @ts-ignore fullWidth does exist on Autocomplete
                 fullWidth
                 options={directionOptions}
                 getOptionLabel={option => option.label}
                 getOptionSelected={(option, value) =>
                   option.value === value.value
                 }
-                onChange={(e, newValue) => {
+                onChange={(_e: any, newValue: Option) => {
                   const newProperty = newValue.value
                   updateDirection(newProperty)
                 }}

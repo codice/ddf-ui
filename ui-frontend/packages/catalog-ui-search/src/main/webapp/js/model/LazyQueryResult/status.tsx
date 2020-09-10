@@ -45,7 +45,7 @@ export class Status {
     >
   ) {
     Object.keys(update).forEach(key => {
-      // @ts-ignore
+      // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
       this[key] = update[key]
     })
     this.hasReturned = true

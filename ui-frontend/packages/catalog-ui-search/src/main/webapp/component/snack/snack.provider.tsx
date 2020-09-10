@@ -63,6 +63,7 @@ export function SnackProvider({ children }: any) {
     [currentSnack]
   )
 
+  // @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
   const handleClose = (e: any, reason: string) => {
     if (reason === 'clickaway' && currentSnack.clickawayCloseable) {
       removeCurrentSnack()
@@ -123,6 +124,7 @@ export function SnackProvider({ children }: any) {
                     </Button>
                   )}
                   {closeable && (
+                    // @ts-expect-error ts-migrate(2769) FIXME: Type '(e: any, reason: string) => void' is not ass... Remove this comment to see the full error message
                     <IconButton
                       style={{ padding: '3px' }}
                       color="inherit"

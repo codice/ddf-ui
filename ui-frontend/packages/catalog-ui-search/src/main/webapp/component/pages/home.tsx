@@ -23,6 +23,7 @@ import Divider from '@material-ui/core/Divider'
 import { Elevations } from '../theme/theme'
 import SearchIcon from '@material-ui/icons/SearchTwoTone'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+// @ts-expect-error ts-migrate(6133) FIXME: 'useParams' is declared but its value is never rea... Remove this comment to see the full error message
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
@@ -216,6 +217,7 @@ export const HomePage = () => {
       urlBasedQuery = ''
     }
   }
+  // @ts-expect-error ts-migrate(6133) FIXME: 'setQueryModel' is declared but its value is never... Remove this comment to see the full error message
   const [queryModel, setQueryModel] = React.useState(
     urlBasedQuery || new Query.Model()
   )

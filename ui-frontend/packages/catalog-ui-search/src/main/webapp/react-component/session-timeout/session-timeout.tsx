@@ -45,7 +45,7 @@ const renewSession = () => {
 
 class SessionTimeout extends React.Component<{}, State> {
   interval: any
-  constructor(props: any) {
+  constructor(props: {}) {
     super(props)
     this.state = {
       timeLeft: sessionTimeoutModel.getIdleSeconds(),

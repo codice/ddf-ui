@@ -3,6 +3,7 @@ import {
   createMuiTheme,
   MuiThemeProvider as ThemeProvider,
   darken,
+  // @ts-expect-error ts-migrate(6133) FIXME: 'getContrastRatio' is declared but its value is ne... Remove this comment to see the full error message
   getContrastRatio,
   Theme as ThemeInterface,
   createStyles,
@@ -13,9 +14,12 @@ import {
 import { ThemeContext } from 'styled-components'
 import { createGlobalStyle } from 'styled-components'
 import {
+  // @ts-expect-error ts-migrate(6133) FIXME: 'polishedLighten' is declared but its value is nev... Remove this comment to see the full error message
   lighten as polishedLighten,
   meetsContrastGuidelines,
+  // @ts-expect-error ts-migrate(6133) FIXME: 'mix' is declared but its value is never read.
   mix,
+  // @ts-expect-error ts-migrate(6133) FIXME: 'rgba' is declared but its value is never read.
   rgba,
 } from 'polished'
 
@@ -296,7 +300,10 @@ export const Provider = ({ children }: { children: any }) => {
     : darkMode
       ? dark.secondary
       : light.secondary
-  const primaryContrastScores = meetsContrastGuidelines(paperColor, primaryMain)
+  const primaryContrastScores = meetsContrastGuidelines(
+    paperColor,
+    primaryMain!
+  )
   const secondaryContrastScores = meetsContrastGuidelines(
     paperColor,
     secondaryMain

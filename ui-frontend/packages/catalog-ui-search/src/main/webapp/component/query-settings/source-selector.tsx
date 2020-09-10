@@ -13,6 +13,7 @@ import WarningIcon from '@material-ui/icons/Warning'
 import Box from '@material-ui/core/Box'
 import CheckIcon from '@material-ui/icons/Check'
 import Chip from '@material-ui/core/Chip'
+// @ts-expect-error ts-migrate(6133) FIXME: 'Divider' is declared but its value is never read.
 import Divider from '@material-ui/core/Divider'
 import _ from 'lodash'
 type Props = {
@@ -88,7 +89,9 @@ const shouldBeSelected = ({
  * If it includes 'remote', that that means everything remote.  All other values are singular selections of a source.
  */
 const SourceSelector = ({ search }: Props) => {
+  // @ts-expect-error ts-migrate(6133) FIXME: 'inputRef' is declared but its value is never read... Remove this comment to see the full error message
   const inputRef = React.useRef()
+  // @ts-expect-error ts-migrate(6133) FIXME: 'federation' is declared but its value is never re... Remove this comment to see the full error message
   const [federation, setFederation] = React.useState(search.get(
     'federation'
   ) as 'enterprise' | 'selected' | 'local')
@@ -100,6 +103,7 @@ const SourceSelector = ({ search }: Props) => {
   const defaultSources = search.get('sources') as string[]
   const validDefaultSources =
     defaultSources && defaultSources.filter(src => sourceIds.includes(src))
+  // @ts-expect-error ts-migrate(6133) FIXME: 'hasValidDefaultSources' is declared but its value... Remove this comment to see the full error message
   const hasValidDefaultSources =
     validDefaultSources && validDefaultSources.length
   const { listenTo } = useBackbone()
@@ -142,12 +146,14 @@ const SourceSelector = ({ search }: Props) => {
                   .sort((a, b) => {
                     return a.toLowerCase().localeCompare(b.toLowerCase()) // case insensitive sort
                   })
+                  // @ts-expect-error ts-migrate(6133) FIXME: 'b' is declared but its value is never read.
                   .sort((a, b) => {
                     if (a === 'local' || a === 'remote') {
                       return -1 // move these subcategories upwards to front
                     }
                     return 0
                   })
+                  // @ts-expect-error ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
                   .map((src, index) => {
                     return (
                       <Grid item key={src} className="mr-2">

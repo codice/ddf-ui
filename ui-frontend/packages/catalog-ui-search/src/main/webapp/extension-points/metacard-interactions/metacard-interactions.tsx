@@ -12,6 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+// @ts-expect-error ts-migrate(6133) FIXME: 'CreateLocationSearch' is declared but its value i... Remove this comment to see the full error message
 import CreateLocationSearch from '../../react-component/metacard-interactions/location-interaction'
 import ExpandMetacard from '../../react-component/metacard-interactions/expand-interaction'
 import DownloadProduct from '../../react-component/metacard-interactions/download-interaction'

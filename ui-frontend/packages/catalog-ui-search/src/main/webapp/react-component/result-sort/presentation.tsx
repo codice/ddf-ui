@@ -29,6 +29,7 @@ type Props = {
 const render = ({ removeSort, saveSort, hasSort, collection }: Props) => {
   return (
     <div className="min-w-120">
+      {/* @ts-expect-error ts-migrate(2322) FIXME: Property 'collection' does not exist on type 'Intr... Remove this comment to see the full error message */}
       <SortSelections collection={collection} />
       <Grid container direction="row" alignItems="center" wrap="nowrap">
         {hasSort ? (

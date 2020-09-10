@@ -125,7 +125,7 @@ export const withDropdown = <P extends withContext>(
     return (
       <DropdownContext.Consumer>
         {context => {
-          // @ts-ignore
+          // @ts-expect-error ts-migrate(2322) FIXME: 'Pick<P, Exclude<keyof P, "dropdownContext">> & { ... Remove this comment to see the full error message
           return <Component {...props} dropdownContext={context} />
         }}
       </DropdownContext.Consumer>

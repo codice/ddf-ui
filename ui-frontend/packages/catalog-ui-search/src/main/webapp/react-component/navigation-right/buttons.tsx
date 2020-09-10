@@ -14,12 +14,15 @@
  **/
 import * as React from 'react'
 import { Button, buttonTypeEnum } from '../presentation/button'
+// @ts-expect-error ts-migrate(6133) FIXME: 'UserNotifications' is declared but its value is n... Remove this comment to see the full error message
 import UserNotifications from '../user-notifications'
+// @ts-expect-error ts-migrate(6133) FIXME: 'UserView' is declared but its value is never read... Remove this comment to see the full error message
 import UserView from '../user'
 import styled from 'styled-components'
 import { transparentize } from 'polished'
 
 const HelpView = require('../../component/help/help.view.js')
+// @ts-expect-error ts-migrate(6133) FIXME: 'UserSettings' is declared but its value is never ... Remove this comment to see the full error message
 const UserSettings = require('../../component/user-settings/user-settings.view.js')
 const user = require('../../component/singletons/user-instance.js')
 export interface Props {

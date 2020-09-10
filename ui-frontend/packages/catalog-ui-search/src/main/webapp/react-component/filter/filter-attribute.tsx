@@ -15,6 +15,7 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { getFilteredAttributeList } from './filterHelper'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '../i... Remove this comment to see the full error message
 import EnumInput from '../inputs/enum-input'
 const metacardDefinitions = require('../../component/singletons/metacard-definitions')
 
@@ -29,12 +30,13 @@ const FilterAttributeDropdown = ({
   includedAttributes,
   editing,
   value,
-}) => {
+}: any) => {
   return (
     <Root>
       {editing ? (
         <EnumInput
           value={value}
+          // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
           suggestions={getFilteredAttributeList(includedAttributes)}
           onChange={onChange}
         />

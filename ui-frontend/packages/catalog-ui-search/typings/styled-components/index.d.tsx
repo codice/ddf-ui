@@ -25,5 +25,6 @@ declare module 'styled-components' {
     strings: TemplateStringsArray,
     ...interpolations: FlattenInterpolation<ThemeProps<ThemeInterface>>[]
   ): Keyframes
+  // @ts-ignore Cannot redeclare block-scoped variable
   export const ThemeContext: React.Context<DefaultTheme>
 }

@@ -39,12 +39,14 @@ const after = `
   }
 `
 
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
 const background = (props: any) => {
   if (props.theme.backgroundDropdown !== undefined) {
     return rgba(readableColor(props.theme.backgroundDropdown), 0.1)
   }
 }
 
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
 const foreground = (props: any) => {
   if (props.theme.backgroundDropdown !== undefined) {
     return readableColor(props.theme.backgroundDropdown)
@@ -191,7 +193,7 @@ export class Menu extends React.Component<MenuProps, MenuState> {
         break
     }
   }
-  componentDidUpdate(previousProps: any) {
+  componentDidUpdate(previousProps: MenuProps) {
     if (previousProps.children !== this.props.children) {
       this.setState({ active: this.chooseActive() })
     }
@@ -268,5 +270,4 @@ export const MenuItem = (props: MenuItemProps) => {
   )
 }
 
-// @ts-ignore
 MenuItem.displayName = 'MenuItem'
