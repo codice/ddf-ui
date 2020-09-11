@@ -1146,6 +1146,21 @@ public class MetacardApplication implements SparkApplication {
   }
 
   private List<Result> getMetacardHistory(String id) {
+    Filter resourceFilter = filterBuilder.attribute(Core.ID).is().equalTo().text(id);
+    Metacard resource = null;
+    try {
+      List<Result> results =
+          catalogFramework.query(new QueryRequestImpl(new QueryImpl(resourceFilter))).getResults();
+      if (results.isEmpty()) {
+        LOGGER.trace("Unable to find resource {} inside history endpoint.", id);
+        return new ArrayList<Result>();
+      }
+      resource = results.get(0).getMetacard();
+    } catch (UnsupportedQueryException | SourceUnavailableException | FederationException e) {
+      LOGGER.trace("Unable to query for metacard {} inside history endpoint.", id);
+      throw new RuntimeException();
+    }
+
     Filter historyFilter =
         filterBuilder.attribute(Metacard.TAGS).is().equalTo().text(MetacardVersion.VERSION_TAG);
     Filter idFilter =
@@ -1163,7 +1178,7 @@ public class MetacardApplication implements SparkApplication {
                     SortBy.NATURAL_ORDER,
                     false,
                     TimeUnit.SECONDS.toMillis(10)),
-                false));
+                Collections.singleton(resource.getSourceId())));
     return Lists.newArrayList(resultIterable);
   }
 
