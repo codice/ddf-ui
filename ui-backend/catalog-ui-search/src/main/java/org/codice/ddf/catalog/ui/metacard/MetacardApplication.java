@@ -1147,19 +1147,16 @@ public class MetacardApplication implements SparkApplication {
 
   private List<Result> getMetacardHistory(String id) {
     Filter resourceFilter = filterBuilder.attribute(Core.ID).is().equalTo().text(id);
-    Metacard resource = null;
-    try {
-      List<Result> results =
-          catalogFramework.query(new QueryRequestImpl(new QueryImpl(resourceFilter))).getResults();
-      if (results.isEmpty()) {
-        LOGGER.trace("Unable to find resource {} inside history endpoint.", id);
-        return new ArrayList<Result>();
-      }
-      resource = results.get(0).getMetacard();
-    } catch (UnsupportedQueryException | SourceUnavailableException | FederationException e) {
-      LOGGER.trace("Unable to query for metacard {} inside history endpoint.", id);
-      throw new RuntimeException();
+    List<Result> results =
+        ResultIterable.resultIterable(
+                catalogFramework::query, new QueryRequestImpl(new QueryImpl(resourceFilter)))
+            .stream()
+            .collect(Collectors.toList());
+    if (results.isEmpty()) {
+      LOGGER.trace("Unable to find resource {} inside history endpoint.", id);
+      return new ArrayList<Result>();
     }
+    Metacard resource = results.get(0).getMetacard();
 
     Filter historyFilter =
         filterBuilder.attribute(Metacard.TAGS).is().equalTo().text(MetacardVersion.VERSION_TAG);
