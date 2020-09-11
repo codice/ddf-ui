@@ -1154,7 +1154,7 @@ public class MetacardApplication implements SparkApplication {
             .collect(Collectors.toList());
     if (results.isEmpty()) {
       LOGGER.trace("Unable to find resource {} inside history endpoint.", id);
-      return new ArrayList<Result>();
+      return results;
     }
     Metacard resource = results.get(0).getMetacard();
 
