@@ -142,6 +142,7 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.QueryParamsMap;
 import spark.servlet.SparkApplication;
 
 public class MetacardApplication implements SparkApplication {
@@ -371,7 +372,12 @@ public class MetacardApplication implements SparkApplication {
         "/history/:id",
         (req, res) -> {
           String id = req.params(":id");
-          List<Result> queryResponse = getMetacardHistory(id);
+          QueryParamsMap paramsMap = req.queryMap().get("sourceId");
+          String sourceId = null;
+          if (paramsMap.hasValue()) {
+            sourceId = paramsMap.value();
+          }
+          List<Result> queryResponse = getMetacardHistory(id, sourceId);
           if (queryResponse.isEmpty()) {
             res.status(204);
             return "[]";
@@ -396,10 +402,14 @@ public class MetacardApplication implements SparkApplication {
         (req, res) -> {
           String id = req.params(":id");
           String revertId = req.params(":revertid");
-
+          QueryParamsMap paramsMap = req.queryMap().get("sourceId");
+          String sourceId = null;
+          if (paramsMap.hasValue()) {
+            sourceId = paramsMap.value();
+          }
           Metacard versionMetacard = util.getMetacardById(revertId);
 
-          List<Result> queryResponse = getMetacardHistory(id);
+          List<Result> queryResponse = getMetacardHistory(id, sourceId);
           if (queryResponse == null || queryResponse.isEmpty()) {
             throw new NotFoundException("Could not find metacard with id: " + id);
           }
@@ -1145,25 +1155,14 @@ public class MetacardApplication implements SparkApplication {
         .equals(AttributeType.AttributeFormat.DATE);
   }
 
-  private List<Result> getMetacardHistory(String id) {
-    Filter resourceFilter = filterBuilder.attribute(Core.ID).is().equalTo().text(id);
-    List<Result> results =
-        ResultIterable.resultIterable(
-                catalogFramework::query, new QueryRequestImpl(new QueryImpl(resourceFilter)))
-            .stream()
-            .collect(Collectors.toList());
-    if (results.isEmpty()) {
-      LOGGER.trace("Unable to find resource {} inside history endpoint.", id);
-      return results;
-    }
-    Metacard resource = results.get(0).getMetacard();
-
+  private List<Result> getMetacardHistory(String id, String sourceId) {
     Filter historyFilter =
         filterBuilder.attribute(Metacard.TAGS).is().equalTo().text(MetacardVersion.VERSION_TAG);
     Filter idFilter =
         filterBuilder.attribute(MetacardVersion.VERSION_OF_ID).is().equalTo().text(id);
 
     Filter filter = filterBuilder.allOf(historyFilter, idFilter);
+    Set<String> sources = sourceId != null ? Collections.singleton(sourceId) : null;
     ResultIterable resultIterable =
         resultIterable(
             catalogFramework,
@@ -1175,7 +1174,7 @@ public class MetacardApplication implements SparkApplication {
                     SortBy.NATURAL_ORDER,
                     false,
                     TimeUnit.SECONDS.toMillis(10)),
-                Collections.singleton(resource.getSourceId())));
+                sources));
     return Lists.newArrayList(resultIterable);
   }
 
