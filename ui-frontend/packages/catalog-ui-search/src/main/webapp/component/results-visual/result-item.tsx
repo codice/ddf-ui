@@ -563,7 +563,7 @@ export const ResultItem = ({
                 {lazyResult.highlights['title'] ? (
                   <span
                     dangerouslySetInnerHTML={{
-                      __html: lazyResult.highlights['title'].highlight,
+                      __html: lazyResult.highlights['title'][0].highlight,
                     }}
                   />
                 ) : (
@@ -611,11 +611,12 @@ export const ResultItem = ({
                     })}: ${detail.value}`}
                   >
                     <span>
+                      {/* It's okay to use the first one here since we only ever want to display one, normally you'd want to map over this list */}
                       {lazyResult.highlights[detail.label] ? (
                         <span
                           dangerouslySetInnerHTML={{
                             __html:
-                              lazyResult.highlights[detail.label].highlight,
+                              lazyResult.highlights[detail.label][0].highlight,
                           }}
                         />
                       ) : (
@@ -635,7 +636,7 @@ export const ResultItem = ({
                 )
                 .map(extraHighlight => {
                   const relevantHighlight =
-                    lazyResult.highlights[extraHighlight]
+                    lazyResult.highlights[extraHighlight][0]
                   return (
                     <PropertyComponent
                       key={relevantHighlight.attribute}
