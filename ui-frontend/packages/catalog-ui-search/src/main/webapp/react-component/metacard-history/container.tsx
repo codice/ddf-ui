@@ -54,13 +54,9 @@ class MetacardHistory extends React.Component<Props, State> {
   getSourceId() {
     const metacardSourceId = this.model
       .get('metacard')
-      .get('id')
-      .get('metacard')
       .get('properties')
       .get('source-id')
     const harvestedSourceId = this.model
-      .get('metacard')
-      .get('id')
       .get('metacard')
       .get('properties')
       .get('ext.harvested-from')
