@@ -372,12 +372,12 @@ public class MetacardApplication implements SparkApplication {
         "/history/:id",
         (req, res) -> {
           String id = req.params(":id");
-          QueryParamsMap paramsMap = req.queryMap().get("sourceId");
-          String sourceId = null;
+          QueryParamsMap paramsMap = req.queryMap().get("storeId");
+          String storeId = null;
           if (paramsMap.hasValue()) {
-            sourceId = paramsMap.value();
+            storeId = paramsMap.value();
           }
-          List<Result> queryResponse = getMetacardHistory(id, sourceId);
+          List<Result> queryResponse = getMetacardHistory(id, storeId);
           if (queryResponse.isEmpty()) {
             res.status(204);
             return "[]";
@@ -402,14 +402,14 @@ public class MetacardApplication implements SparkApplication {
         (req, res) -> {
           String id = req.params(":id");
           String revertId = req.params(":revertid");
-          QueryParamsMap paramsMap = req.queryMap().get("sourceId");
-          String sourceId = null;
+          QueryParamsMap paramsMap = req.queryMap().get("storeId");
+          String storeId = null;
           if (paramsMap.hasValue()) {
-            sourceId = paramsMap.value();
+            storeId = paramsMap.value();
           }
           Metacard versionMetacard = util.getMetacardById(revertId);
 
-          List<Result> queryResponse = getMetacardHistory(id, sourceId);
+          List<Result> queryResponse = getMetacardHistory(id, storeId);
           if (queryResponse == null || queryResponse.isEmpty()) {
             throw new NotFoundException("Could not find metacard with id: " + id);
           }
