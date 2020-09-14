@@ -30,11 +30,10 @@
         <feature>platform-usng4j</feature>
         <feature>platform-configuration</feature>
         <feature>persistence-core</feature>
-
         <!-- Email feature resides in here-->
         <feature>security-core-services</feature>
-
         <feature>catalog-ui-search-api</feature>
+        <feature>javalin</feature>
 
         <configfile finalname="${ddf.etc}/org.codice.ddf.catalog.ui.config" override="false">
             mvn:org.codice.ddf.search/intrigue-ui-app/${project.version}/properties/catalog-ui-config
@@ -59,9 +58,18 @@
         <bundle>mvn:com.google.code.gson/gson/${gson.version}</bundle>
         <bundle>mvn:org.codice.ddf.search/catalog-ui-splitter/${project.version}</bundle>
         <bundle>mvn:org.apache.commons/commons-math3/${commons-math3.version}</bundle>
+        <bundle>mvn:org.codice.ddf.search/audit-api/${project.version}</bundle>
+        <bundle>mvn:org.codice.ddf.search/audit-application/${project.version}</bundle>
+        <bundle>mvn:org.codice.ddf.search/audit-logging/${project.version}</bundle>
     </feature>
 
-
+    <feature name="javalin" version="${project.version}" description="Javalin Web Framework">
+        <feature prerequisite="true">wrap</feature>
+        <bundle>wrap:mvn:org.checkerframework/checker-qual/2.0.0$Bundle-Name=checker-qual&amp;Bundle-SymbolicName=checker-qual&amp;Bundle-Version=2.0.0&amp;Export-Package=org.checkerframework.checker.nullness.qual;version="2.0.0"</bundle>
+        <bundle>mvn:org.jetbrains.kotlin/kotlin-osgi-bundle/${kotlin-osgi.version}</bundle>
+        <bundle>mvn:org.codice.thirdparty/javalin/${javalin.thirdparty.bundle.version}</bundle>
+        <bundle>mvn:org.codice.ddf.search/javalin-utils/${project.version}</bundle>
+    </feature>
 
     <feature name="catalog-ui-app" version="${project.version}"
              description="The Search UI is an application that not only provides results in a html format but also provides a convenient, simple querying user interface.\nThe left pane of the Search UI contains basic fields to query the Catalog and other Sources. The right pane consists of a map.\nIt includes both the Catalog UI (3d globe) and Simple Search UI (text page) versions.">
