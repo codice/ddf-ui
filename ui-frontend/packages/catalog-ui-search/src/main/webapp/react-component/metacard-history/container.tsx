@@ -51,15 +51,28 @@ class MetacardHistory extends React.Component<Props, State> {
     this.loadData()
   }
 
+  getSourceId() {
+    const metacardSourceId = this.model
+      .get('metacard')
+      .get('id')
+      .get('metacard')
+      .get('properties')
+      .get('source-id')
+    const harvestedSourceId = this.model
+      .get('metacard')
+      .get('id')
+      .get('metacard')
+      .get('properties')
+      .get('ext.harvested-from')
+    return harvestedSourceId || metacardSourceId
+  }
+
   loadData() {
     setTimeout(async () => {
+      const id = this.model.get('metacard').get('id')
+
       const res = await fetch(
-        `./internal/history/${this.model
-          .get('metacard')
-          .get('id')}?sourceId=${this.model
-          .get('metacard')
-          .get('properties')
-          .get('source-id')}`
+        `./internal/history/${id}?sourceId=${this.getSourceId()}`
       )
 
       if (!res.ok || res.status === 204) {
@@ -93,13 +106,11 @@ class MetacardHistory extends React.Component<Props, State> {
   revertToSelectedVersion = async () => {
     this.setState({ loading: true })
 
+    const id = this.model.get('metacard').get('id')
+    const revertId = this.state.selectedVersion
+
     const res = await fetch(
-      `./internal/history/revert/${this.model.get('metacard').get('id')}/${
-        this.state.selectedVersion
-      }?sourceId=${this.model
-        .get('metacard')
-        .get('properties')
-        .get('source-id')}`
+      `./internal/history/revert/${id}/${revertId}?sourceId=${this.getSourceId()}`
     )
 
     if (!res.ok) {
