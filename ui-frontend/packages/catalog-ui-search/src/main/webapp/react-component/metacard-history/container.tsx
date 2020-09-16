@@ -66,7 +66,6 @@ class MetacardHistory extends React.Component<Props, State> {
   loadData() {
     setTimeout(async () => {
       const id = this.model.get('metacard').get('id')
-
       const res = await fetch(`./internal/history/${id}/${this.getSourceId()}`)
 
       if (!res.ok || res.status === 204) {
