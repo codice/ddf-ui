@@ -23,7 +23,7 @@ type Options = {
 
 const fetch = window.fetch
 
-// @ts-expect-error ts-migrate(2339) FIXME: Property '__global__fetch' does not exist on type ... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(2339) FIXME: Property '__global__fetch' does not exist on type ... Remove this comment to see the full error message
 window.__global__fetch = fetch
 
 // patch global fetch to warn about usage during development
@@ -39,7 +39,7 @@ if (process.env.NODE_ENV !== 'production') {
     )
     console.warn(error)
 
-    // @ts-expect-error ts-migrate(2556) FIXME: Expected 1-2 arguments, but got 0 or more.
+    // @ts-ignore ts-migrate(2556) FIXME: Expected 1-2 arguments, but got 0 or more.
     return fetch(...args)
   }
 }

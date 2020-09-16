@@ -100,7 +100,7 @@ const FilterInput = ({ filter, setFilter }: Props) => {
     case 'DATE':
       return <DateField onChange={onChange} value={value as string} />
     case 'LOCATION':
-      // @ts-expect-error ts-migrate(2769) FIXME: Property 'value' does not exist on type 'Intrinsic... Remove this comment to see the full error message
+      // @ts-ignore ts-migrate(2769) FIXME: Property 'value' does not exist on type 'Intrinsic... Remove this comment to see the full error message
       return <LocationInput value={value} onChange={onChange} />
     case 'FLOAT':
       return (

@@ -14,13 +14,13 @@
  **/
 /*global require*/
 import * as React from 'react'
-// @ts-expect-error ts-migrate(6133) FIXME: 'styled' is declared but its value is never read.
+// @ts-ignore ts-migrate(6133) FIXME: 'styled' is declared but its value is never read.
 import styled from 'styled-components'
-// @ts-expect-error ts-migrate(6133) FIXME: 'MarionetteRegionContainer' is declared but its va... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(6133) FIXME: 'MarionetteRegionContainer' is declared but its va... Remove this comment to see the full error message
 import MarionetteRegionContainer from '../marionette-region-container'
-// @ts-expect-error ts-migrate(6133) FIXME: 'TextField' is declared but its value is never rea... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(6133) FIXME: 'TextField' is declared but its value is never rea... Remove this comment to see the full error message
 import TextField from '@material-ui/core/TextField'
-// @ts-expect-error ts-migrate(6133) FIXME: 'MenuItem' is declared but its value is never read... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(6133) FIXME: 'MenuItem' is declared but its value is never read... Remove this comment to see the full error message
 import MenuItem from '@material-ui/core/MenuItem'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
@@ -29,7 +29,7 @@ const user = require('../../component/singletons/user-instance.js')
 import { hot } from 'react-hot-loader'
 import Grid from '@material-ui/core/Grid'
 import ColorTool from './color-tool'
-// @ts-expect-error ts-migrate(2339) FIXME: Property 'user' does not exist on type 'Window & t... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(2339) FIXME: Property 'user' does not exist on type 'Window & t... Remove this comment to see the full error message
 window.user = user
 
 type ThemeType = {

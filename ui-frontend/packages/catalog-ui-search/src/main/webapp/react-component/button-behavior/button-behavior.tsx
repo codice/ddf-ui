@@ -66,7 +66,7 @@ const handleKeyUp = (event: any) => {
   }
 }
 
-// @ts-expect-error ts-migrate(2322) FIXME: Type 'null' is not assignable to type 'RefObject<H... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(2322) FIXME: Type 'null' is not assignable to type 'RefObject<H... Remove this comment to see the full error message
 const render: React.ComponentType<
   Props & Subtract<React.HTMLAttributes<HTMLDivElement>, Props>
 > = React.forwardRef(

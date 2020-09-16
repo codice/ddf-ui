@@ -48,13 +48,13 @@ type Source = {
 }
 
 export function getStartIndex(
-  // @ts-expect-error ts-migrate(6133) FIXME: 'src' is declared but its value is never read.
+  // @ts-ignore ts-migrate(6133) FIXME: 'src' is declared but its value is never read.
   src: any,
-  // @ts-expect-error ts-migrate(6133) FIXME: 'exportSize' is declared but its value is never re... Remove this comment to see the full error message
+  // @ts-ignore ts-migrate(6133) FIXME: 'exportSize' is declared but its value is never re... Remove this comment to see the full error message
   exportSize: any,
   selectionInterface: any
 ) {
-  // @ts-expect-error ts-migrate(6133) FIXME: 'result' is declared but its value is never read.
+  // @ts-ignore ts-migrate(6133) FIXME: 'result' is declared but its value is never read.
   const result = selectionInterface.getCurrentQuery().get('result')
   return 1
   //todo fix this
