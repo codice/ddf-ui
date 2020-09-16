@@ -18,7 +18,6 @@ const Marionette = require('marionette')
 const _ = require('underscore')
 const memoize = require('lodash/memoize')
 const $ = require('jquery')
-const CustomElements = require('../../js/CustomElements.js')
 const wreqr = require('../../js/wreqr.js')
 const IconHelper = require('../../js/IconHelper.js')
 const PropertyView = require('../property/property.view.js')
@@ -39,7 +38,6 @@ import { Drawing } from '../singletons/drawing'
 import TextField from '@material-ui/core/TextField'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
-import Autocomplete from '@material-ui/lab/Autocomplete'
 import { FilterClass } from '../filter-builder/filter.structure'
 import Typography from '@material-ui/core/Typography'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
