@@ -368,10 +368,11 @@ public class MetacardApplication implements SparkApplication {
         });
 
     get(
-        "/history/:id",
+        "/history/:id/:storeId",
         (req, res) -> {
           String id = req.params(":id");
-          List<Result> queryResponse = getMetacardHistory(id);
+          String storeId = req.params(":storeId");
+          List<Result> queryResponse = getMetacardHistory(id, storeId);
           if (queryResponse.isEmpty()) {
             res.status(204);
             return "[]";
@@ -392,14 +393,14 @@ public class MetacardApplication implements SparkApplication {
         });
 
     get(
-        "/history/revert/:id/:revertid",
+        "/history/revert/:id/:revertid/:storeId",
         (req, res) -> {
           String id = req.params(":id");
           String revertId = req.params(":revertid");
-
+          String storeId = req.params(":storeId");
           Metacard versionMetacard = util.getMetacardById(revertId);
 
-          List<Result> queryResponse = getMetacardHistory(id);
+          List<Result> queryResponse = getMetacardHistory(id, storeId);
           if (queryResponse == null || queryResponse.isEmpty()) {
             throw new NotFoundException("Could not find metacard with id: " + id);
           }
@@ -1145,13 +1146,14 @@ public class MetacardApplication implements SparkApplication {
         .equals(AttributeType.AttributeFormat.DATE);
   }
 
-  private List<Result> getMetacardHistory(String id) {
+  private List<Result> getMetacardHistory(String id, String sourceId) {
     Filter historyFilter =
         filterBuilder.attribute(Metacard.TAGS).is().equalTo().text(MetacardVersion.VERSION_TAG);
     Filter idFilter =
         filterBuilder.attribute(MetacardVersion.VERSION_OF_ID).is().equalTo().text(id);
 
     Filter filter = filterBuilder.allOf(historyFilter, idFilter);
+    Set<String> sources = sourceId != null ? Collections.singleton(sourceId) : null;
     ResultIterable resultIterable =
         resultIterable(
             catalogFramework,
@@ -1163,7 +1165,7 @@ public class MetacardApplication implements SparkApplication {
                     SortBy.NATURAL_ORDER,
                     false,
                     TimeUnit.SECONDS.toMillis(10)),
-                false));
+                sources));
     return Lists.newArrayList(resultIterable);
   }
 
