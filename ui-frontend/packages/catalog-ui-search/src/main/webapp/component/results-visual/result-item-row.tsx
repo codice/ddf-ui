@@ -14,12 +14,12 @@
  **/
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
-// @ts-expect-error ts-migrate(6133) FIXME: 'useTheme' is declared but its value is never read... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(6133) FIXME: 'useTheme' is declared but its value is never read... Remove this comment to see the full error message
 import useTheme from '@material-ui/core/styles/useTheme'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { CellComponent } from './table-header'
-// @ts-expect-error ts-migrate(6133) FIXME: 'styled' is declared but its value is never read.
+// @ts-ignore ts-migrate(6133) FIXME: 'styled' is declared but its value is never read.
 import styled from 'styled-components'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { useSelectionOfLazyResult } from '../../js/model/LazyQueryResult/hooks'
@@ -31,7 +31,7 @@ import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 import Box from '@material-ui/core/Box'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
-// @ts-expect-error ts-migrate(6133) FIXME: 'CheckIcon' is declared but its value is never rea... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(6133) FIXME: 'CheckIcon' is declared but its value is never rea... Remove this comment to see the full error message
 import CheckIcon from '@material-ui/icons/Check'
 import Divider from '@material-ui/core/Divider'
 type Property = {
@@ -53,22 +53,22 @@ type ResultItemFullProps = ResultItemBasicProps & {
 
 export function clearSelection() {
   if (window.getSelection) {
-    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
+    // @ts-ignore ts-migrate(2531) FIXME: Object is possibly 'null'.
     window.getSelection().removeAllRanges()
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'selection' does not exist on type 'Docum... Remove this comment to see the full error message
+    // @ts-ignore ts-migrate(2339) FIXME: Property 'selection' does not exist on type 'Docum... Remove this comment to see the full error message
   } else if (document.selection) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'selection' does not exist on type 'Docum... Remove this comment to see the full error message
+    // @ts-ignore ts-migrate(2339) FIXME: Property 'selection' does not exist on type 'Docum... Remove this comment to see the full error message
     document.selection.empty()
   }
 }
 
 export function hasSelection(): boolean {
   if (window.getSelection) {
-    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
+    // @ts-ignore ts-migrate(2531) FIXME: Object is possibly 'null'.
     return window.getSelection().toString() !== ''
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'selection' does not exist on type 'Docum... Remove this comment to see the full error message
+    // @ts-ignore ts-migrate(2339) FIXME: Property 'selection' does not exist on type 'Docum... Remove this comment to see the full error message
   } else if (document.selection) {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'selection' does not exist on type 'Docum... Remove this comment to see the full error message
+    // @ts-ignore ts-migrate(2339) FIXME: Property 'selection' does not exist on type 'Docum... Remove this comment to see the full error message
     return document.selection.toString() !== ''
   } else {
     return false
@@ -79,11 +79,10 @@ const RowComponent = ({
   lazyResult,
   visibleHeaders,
   measure,
-  // @ts-expect-error ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
+  // @ts-ignore ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
   index,
 }: ResultItemFullProps) => {
   const isSelected = useSelectionOfLazyResult({ lazyResult })
-  // console.log(`rendered: ${index}`)
 
   const visibleProperties: Property[] = React.useMemo(
     () => {
@@ -224,8 +223,7 @@ const RowComponent = ({
                   width: visibleProperties.length * 200 + 'px',
                 }}
               >
-                {/* @ts-expect-error ts-migrate(6133) FIXME: 'index' is declared but its value is never read. */}
-                {visibleProperties.map((property, index) => {
+                {visibleProperties.map(property => {
                   const alias = TypedMetacardDefs.getAlias({
                     attr: property.property,
                   })

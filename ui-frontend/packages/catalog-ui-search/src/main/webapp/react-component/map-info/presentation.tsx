@@ -84,7 +84,7 @@ const getDistanceText = (distance: number) => {
   return distanceText
 }
 
-// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
+// @ts-ignore ts-migrate(7030) FIXME: Not all code paths return a value.
 const distanceInfo = (props: Props) => {
   if (props.measurementState !== 'NONE') {
     return (

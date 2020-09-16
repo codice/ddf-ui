@@ -122,7 +122,7 @@ type SplitPaneProps = {
 }
 
 export const SplitPane = ({
-  // @ts-expect-error ts-migrate(6133) FIXME: 'firstStyle' is declared but its value is never re... Remove this comment to see the full error message
+  // @ts-ignore ts-migrate(6133) FIXME: 'firstStyle' is declared but its value is never re... Remove this comment to see the full error message
   firstStyle,
   secondStyle,
   variant,
@@ -216,7 +216,7 @@ export const SplitPane = ({
           style={{
             flexShrink: 0,
           }}
-          // @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
+          // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
           onResizeStop={e => {
             setDragging(false)
           }}
@@ -227,13 +227,13 @@ export const SplitPane = ({
             switch (variant) {
               case 'horizontal':
                 setLength(
-                  // @ts-expect-error ts-migrate(2339) FIXME: Property 'clientX' does not exist on type 'TouchEv... Remove this comment to see the full error message
+                  // @ts-ignore ts-migrate(2339) FIXME: Property 'clientX' does not exist on type 'TouchEv... Remove this comment to see the full error message
                   e.clientX - e.target.parentElement.getBoundingClientRect().x
                 )
                 break
               case 'vertical':
                 setLength(
-                  // @ts-expect-error ts-migrate(2339) FIXME: Property 'clientY' does not exist on type 'TouchEv... Remove this comment to see the full error message
+                  // @ts-ignore ts-migrate(2339) FIXME: Property 'clientY' does not exist on type 'TouchEv... Remove this comment to see the full error message
                   e.clientY - e.target.parentElement.getBoundingClientRect().y
                 )
                 break

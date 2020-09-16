@@ -2,30 +2,30 @@
 import { hot } from 'react-hot-loader'
 import React from 'react'
 import makeStyles from '@material-ui/core/styles/makeStyles'
-// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '@material-ui/core/styles/Theme... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(2307) FIXME: Cannot find module '@material-ui/core/styles/Theme... Remove this comment to see the full error message
 import Theme from '@material-ui/core/styles/Theme'
 import createStyles from '@material-ui/core/styles/createStyles'
 import Grid from '@material-ui/core/Grid'
 import List from '@material-ui/core/List'
-// @ts-expect-error ts-migrate(6133) FIXME: 'Card' is declared but its value is never read.
+// @ts-ignore ts-migrate(6133) FIXME: 'Card' is declared but its value is never read.
 import Card from '@material-ui/core/Card'
-// @ts-expect-error ts-migrate(6133) FIXME: 'CardHeader' is declared but its value is never re... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(6133) FIXME: 'CardHeader' is declared but its value is never re... Remove this comment to see the full error message
 import CardHeader from '@material-ui/core/CardHeader'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import Checkbox from '@material-ui/core/Checkbox'
 import Button from '@material-ui/core/Button'
-// @ts-expect-error ts-migrate(6133) FIXME: 'Divider' is declared but its value is never read.
+// @ts-ignore ts-migrate(6133) FIXME: 'Divider' is declared but its value is never read.
 import Divider from '@material-ui/core/Divider'
 import {
-  // @ts-expect-error ts-migrate(6133) FIXME: 'DialogTitle' is declared but its value is never r... Remove this comment to see the full error message
+  // @ts-ignore ts-migrate(6133) FIXME: 'DialogTitle' is declared but its value is never r... Remove this comment to see the full error message
   DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
   useTheme,
-  // @ts-expect-error ts-migrate(6133) FIXME: 'Typography' is declared but its value is never re... Remove this comment to see the full error message
+  // @ts-ignore ts-migrate(6133) FIXME: 'Typography' is declared but its value is never re... Remove this comment to see the full error message
   Typography,
   LinearProgress,
   CircularProgress,
@@ -44,7 +44,7 @@ import {
   Draggable,
 } from 'react-beautiful-dnd'
 import extension from '../../../extension-points'
-// @ts-expect-error ts-migrate(6133) FIXME: 'dark' is declared but its value is never read.
+// @ts-ignore ts-migrate(6133) FIXME: 'dark' is declared but its value is never read.
 import { dark, light, Elevations } from '../../theme/theme'
 import { DarkDivider } from '../../dark-divider/dark-divider'
 import LeftArrowIcon from '@material-ui/icons/ChevronLeft'
@@ -132,7 +132,7 @@ const CustomList = ({
     numberChecked === items.length && items.length !== 0
   return (
     <Paper
-      // @ts-expect-error ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
+      // @ts-ignore ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
       data-id={`${title.toLowerCase()}-container`}
       elevation={Elevations.paper}
     >
@@ -145,7 +145,7 @@ const CustomList = ({
       >
         <Grid item className="absolute left-0 top-0 ml-2 mt-min">
           <Button
-            // @ts-expect-error ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
+            // @ts-ignore ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
             data-id={`${title.toLowerCase()}-select-all-checkbox`}
             disabled={items.length === 0}
             onClick={handleToggleAll(items)}

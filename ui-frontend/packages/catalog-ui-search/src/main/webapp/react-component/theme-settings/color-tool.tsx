@@ -162,7 +162,7 @@ function ColorTool(props: any) {
     const hue = event.target.value
     const shade = state[`${name}Shade` as 'primaryShade']
 
-    // @ts-expect-error ts-migrate(7015) FIXME: Element implicitly has an 'any' type because index... Remove this comment to see the full error message
+    // @ts-ignore ts-migrate(7015) FIXME: Element implicitly has an 'any' type because index... Remove this comment to see the full error message
     const color = colors[hue][shades[shade]]
 
     setState({
@@ -177,7 +177,7 @@ function ColorTool(props: any) {
     _event: any,
     shade: string | number
   ) => {
-    // @ts-expect-error ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
+    // @ts-ignore ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
     const color = colors[state[`${name}Hue`]][shades[shade]]
     setState({
       ...state,
@@ -284,7 +284,7 @@ function ColorTool(props: any) {
                 ? shades[state.primaryShade]
                 : shades[state.secondaryShade]
 
-            // @ts-expect-error ts-migrate(7015) FIXME: Element implicitly has an 'any' type because index... Remove this comment to see the full error message
+            // @ts-ignore ts-migrate(7015) FIXME: Element implicitly has an 'any' type because index... Remove this comment to see the full error message
             const backgroundColor = colors[hue][shade] as string
 
             return (

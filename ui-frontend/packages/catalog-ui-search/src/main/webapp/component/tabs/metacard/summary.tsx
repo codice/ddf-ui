@@ -22,7 +22,7 @@ import LinearProgress from '@material-ui/core/LinearProgress'
 const $ = require('jquery')
 const ResultUtils = require('../../../js/ResultUtils.js')
 import PublishIcon from '@material-ui/icons/Publish'
-// @ts-expect-error ts-migrate(6133) FIXME: 'AutoSizer' is declared but its value is never rea... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(6133) FIXME: 'AutoSizer' is declared but its value is never rea... Remove this comment to see the full error message
 import AutoSizer from 'react-virtualized-auto-sizer'
 import Paper from '@material-ui/core/Paper'
 import useTheme from '@material-ui/core/styles/useTheme'
@@ -33,7 +33,7 @@ import TransferList from './transfer-list'
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace'
 import AddIcon from '@material-ui/icons/Add'
 import Box from '@material-ui/core/Box'
-// @ts-expect-error ts-migrate(6133) FIXME: 'dark' is declared but its value is never read.
+// @ts-ignore ts-migrate(6133) FIXME: 'dark' is declared but its value is never read.
 import { Elevations, dark, light } from '../../theme/theme'
 import { DarkDivider } from '../../dark-divider/dark-divider'
 import { displayHighlightedAttrInFull } from './highlightUtil'
@@ -150,7 +150,7 @@ const ThumbnailInput = ({
             const reader = new FileReader()
             reader.onload = function(event) {
               try {
-                // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
+                // @ts-ignore ts-migrate(2531) FIXME: Object is possibly 'null'.
                 onChange(event.target.result)
               } catch (err) {
                 console.log('something wrong with file type')
@@ -160,7 +160,7 @@ const ThumbnailInput = ({
               console.log('error')
             }
 
-            // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
+            // @ts-ignore ts-migrate(2531) FIXME: Object is possibly 'null'.
             reader.readAsDataURL(e.target.files[0])
           }}
         />

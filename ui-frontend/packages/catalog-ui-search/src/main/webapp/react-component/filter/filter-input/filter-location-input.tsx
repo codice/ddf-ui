@@ -22,7 +22,7 @@ const wreqr = require('../../../js/wreqr.js')
 const wkx = require('wkx')
 import { Drawing } from '../../../component/singletons/drawing'
 
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
 import { deserialize } from '../../../component/location-old/location-serialization'
 
 const typesToDisplays = {
@@ -59,11 +59,11 @@ type State = any
 
 // may need to move some of this logic for deserliazing
 class LocationInput extends React.Component<{}, State> {
-  // @ts-expect-error ts-migrate(7008) FIXME: Implicit any
+  // @ts-ignore ts-migrate(7008) FIXME: Implicit any
   locationModel
   constructor(props: {}) {
     super(props)
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'value' does not exist on type '{}'.
+    // @ts-ignore ts-migrate(2339) FIXME: Property 'value' does not exist on type '{}'.
     this.locationModel = new LocationOldModel(props.value)
     this.state = this.locationModel.toJSON()
     // this.deserialize()
@@ -77,15 +77,15 @@ class LocationInput extends React.Component<{}, State> {
     this.locationModel.on('change', this.setModelState, this)
   }
   componentDidMount() {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'listenTo' does not exist on type 'Readon... Remove this comment to see the full error message
+    // @ts-ignore ts-migrate(2339) FIXME: Property 'listenTo' does not exist on type 'Readon... Remove this comment to see the full error message
     this.props.listenTo(
       this.locationModel,
       'change:mapNorth change:mapSouth change:mapEast change:mapWest',
       this.locationModel.setLatLon
     )
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'listenTo' does not exist on type 'Readon... Remove this comment to see the full error message
+    // @ts-ignore ts-migrate(2339) FIXME: Property 'listenTo' does not exist on type 'Readon... Remove this comment to see the full error message
     this.props.listenTo(this.locationModel, 'change', this.updateMap)
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'listenTo' does not exist on type 'Readon... Remove this comment to see the full error message
+    // @ts-ignore ts-migrate(2339) FIXME: Property 'listenTo' does not exist on type 'Readon... Remove this comment to see the full error message
     this.props.listenTo(this.locationModel, 'change:mode', () => {
       this.clearLocation()
     })
@@ -102,7 +102,7 @@ class LocationInput extends React.Component<{}, State> {
     }
   }
   deserialize = () => {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'value' does not exist on type 'Readonly<... Remove this comment to see the full error message
+    // @ts-ignore ts-migrate(2339) FIXME: Property 'value' does not exist on type 'Readonly<... Remove this comment to see the full error message
     const filter = this.props.value
     if (!filter) {
       return
@@ -132,7 +132,7 @@ class LocationInput extends React.Component<{}, State> {
       default:
         wreqr.vent.trigger(
           `search:${
-            // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+            // @ts-ignore ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
             typesToDisplays[filter.type]
           }`,
           this.locationModel
@@ -180,12 +180,12 @@ class LocationInput extends React.Component<{}, State> {
   }
   onChange = () => {
     const value = this.getCurrentValue()
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'onChange' does not exist on type 'Readon... Remove this comment to see the full error message
+    // @ts-ignore ts-migrate(2339) FIXME: Property 'onChange' does not exist on type 'Readon... Remove this comment to see the full error message
     this.props.onChange(value)
   }
   render() {
     const options = {
-      // @ts-expect-error ts-migrate(6133) FIXME: 'drawingType' is declared but its value is never r... Remove this comment to see the full error message
+      // @ts-ignore ts-migrate(6133) FIXME: 'drawingType' is declared but its value is never r... Remove this comment to see the full error message
       onDraw: (drawingType: any) => {
         wreqr.vent.trigger(
           'search:draw' + this.locationModel.get('mode'),
@@ -197,12 +197,12 @@ class LocationInput extends React.Component<{}, State> {
       <LocationView
         state={this.state}
         options={options}
-        // @ts-expect-error ts-migrate(7019) FIXME: Rest parameter 'args' implicitly has an 'any[]' ty... Remove this comment to see the full error message
+        // @ts-ignore ts-migrate(7019) FIXME: Rest parameter 'args' implicitly has an 'any[]' ty... Remove this comment to see the full error message
         setState={(...args) => this.locationModel.set(...args)}
       />
     )
   }
 }
 
-// @ts-expect-error ts-migrate(2345) FIXME: Type 'Readonly<{}> & Readonly<{ children?: ReactNo... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(2345) FIXME: Type 'Readonly<{}> & Readonly<{ children?: ReactNo... Remove this comment to see the full error message
 export default withListenTo(LocationInput)

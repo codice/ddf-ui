@@ -15,7 +15,7 @@
 import * as React from 'react'
 import { DateInput, IDateInputProps } from '@blueprintjs/datetime'
 
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '../s... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../s... Remove this comment to see the full error message
 import user from '../singletons/user-instance'
 
 export const getTimeZone = () => {

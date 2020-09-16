@@ -114,7 +114,7 @@ type ThemesInterface = {
 }
 
 const themes: ThemesInterface = {
-  // @ts-expect-error Missing properties
+  // @ts-ignore Missing properties
   dark: {
     primaryColor: '#32a6ad',
     positiveColor: '#5b963e',
@@ -128,7 +128,7 @@ const themes: ThemesInterface = {
     backgroundModal: '#253540',
     backgroundSlideout: '#435059',
   },
-  // @ts-expect-error Missing properties
+  // @ts-ignore Missing properties
   sea: {
     primaryColor: '#32a6ad',
     positiveColor: '#154e7d',
@@ -142,7 +142,7 @@ const themes: ThemesInterface = {
     backgroundModal: '#e5e6e6',
     backgroundSlideout: '#e5e6e6',
   },
-  // @ts-expect-error Missing properties
+  // @ts-ignore Missing properties
   light: {
     primaryColor: '#3c6dd5',
     positiveColor: '#428442',
@@ -156,7 +156,7 @@ const themes: ThemesInterface = {
     backgroundModal: '#edf9fc',
     backgroundSlideout: '#edf9fc',
   },
-  // @ts-expect-error Missing properties
+  // @ts-ignore Missing properties
   custom: {
     primaryColor: '#3c6dd5',
     positiveColor: '#428442',
@@ -180,7 +180,7 @@ type UserTheme = {
 function updateTheme(userTheme: UserTheme) {
   let relevantColorTheme = themes[userTheme.theme]
   if (userTheme.theme === 'custom') {
-    // @ts-expect-error ts-migrate(2769) FIXME: Property 'theme' is missing in type '{}' but requi... Remove this comment to see the full error message
+    // @ts-ignore ts-migrate(2769) FIXME: Property 'theme' is missing in type '{}' but requi... Remove this comment to see the full error message
     relevantColorTheme = Object.keys(relevantColorTheme).reduce(
       (newMap: UserTheme, key) => {
         newMap[key] =

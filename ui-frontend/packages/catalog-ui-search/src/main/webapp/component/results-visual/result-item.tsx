@@ -28,10 +28,10 @@ import GetAppIcon from '@material-ui/icons/GetApp'
 import Grid from '@material-ui/core/Grid'
 const Common = require('../../js/Common.js')
 import { hot } from 'react-hot-loader'
-// @ts-expect-error ts-migrate(6133) FIXME: 'useTheme' is declared but its value is never read... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(6133) FIXME: 'useTheme' is declared but its value is never read... Remove this comment to see the full error message
 import useTheme from '@material-ui/core/styles/useTheme'
 import Paper from '@material-ui/core/Paper'
-// @ts-expect-error ts-migrate(6133) FIXME: 'Divider' is declared but its value is never read.
+// @ts-ignore ts-migrate(6133) FIXME: 'Divider' is declared but its value is never read.
 import Divider from '@material-ui/core/Divider'
 import Box from '@material-ui/core/Box'
 import Tooltip from '@material-ui/core/Tooltip'
@@ -48,7 +48,7 @@ import { useSelectionOfLazyResult } from '../../js/model/LazyQueryResult/hooks'
 import Extensions from '../../extension-points'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import CheckIcon from '@material-ui/icons/Check'
-// @ts-expect-error ts-migrate(6133) FIXME: 'DoneOutlineIcon' is declared but its value is nev... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(6133) FIXME: 'DoneOutlineIcon' is declared but its value is nev... Remove this comment to see the full error message
 import DoneOutlineIcon from '@material-ui/icons/DoneOutline'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import { Elevations } from '../theme/theme'
@@ -183,7 +183,7 @@ const getIconClassName = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   return ''
 }
 
-// @ts-expect-error ts-migrate(6133) FIXME: 'MultiSelectActions' is declared but its value is ... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(6133) FIXME: 'MultiSelectActions' is declared but its value is ... Remove this comment to see the full error message
 const MultiSelectActions = ({
   selectionInterface,
 }: {
@@ -253,11 +253,11 @@ const fakeEvent = {
 export const ResultItem = ({
   lazyResult,
   measure,
-  // @ts-expect-error ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
+  // @ts-ignore ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
   index,
-  // @ts-expect-error ts-migrate(6133) FIXME: 'selectionInterface' is declared but its value is ... Remove this comment to see the full error message
+  // @ts-ignore ts-migrate(6133) FIXME: 'selectionInterface' is declared but its value is ... Remove this comment to see the full error message
   selectionInterface,
-  // @ts-expect-error ts-migrate(6133) FIXME: 'lazyResults' is declared but its value is never r... Remove this comment to see the full error message
+  // @ts-ignore ts-migrate(6133) FIXME: 'lazyResults' is declared but its value is never r... Remove this comment to see the full error message
   lazyResults,
 }: ResultItemFullProps) => {
   // console.log(`rendered: ${index}`)
@@ -463,7 +463,7 @@ export const ResultItem = ({
       }}
       onMouseLeave={() => {
         try {
-          // @ts-expect-error ts-migrate(2339) FIXME: Property 'blur' does not exist on type 'Element'.
+          // @ts-ignore ts-migrate(2339) FIXME: Property 'blur' does not exist on type 'Element'.
           if (document.activeElement) document.activeElement.blur()
         } catch (err) {
           console.log(err)
