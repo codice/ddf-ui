@@ -43,6 +43,10 @@ import Autocomplete from '@material-ui/lab/Autocomplete'
 import { FilterClass } from '../filter-builder/filter.structure'
 import Typography from '@material-ui/core/Typography'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import MenuItem from '@material-ui/core/MenuItem'
+import FilterInput from '../../react-component/filter/filter-input'
+import Swath from '../swath/swath'
+import Grid from '@material-ui/core/Grid'
 
 function isNested(filter: any) {
   let nested = false
@@ -106,7 +110,8 @@ function getAllValidValuesForMatchTypeAttribute() {
 function getPredefinedMatchTypes() {
   const matchTypesMap = sources
     .toJSON()
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'flatMap' does not exist on type '{ avail... Remove this comment to see the full error message    .flatMap((source: any) => source.contentTypes)
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'flatMap' does not exist on type '{ avail... Remove this comment to see the full error message
+    .flatMap((source: any) => source.contentTypes)
     .reduce((enumMap: any, contentType: any) => {
       if (contentType.value && !enumMap[contentType.value]) {
         enumMap[contentType.value] = {
@@ -260,6 +265,16 @@ function translateFilterToBasicMap(filter: any) {
       propertyValueMap[CQLUtils.getProperty(filter)] || []
     propertyValueMap[CQLUtils.getProperty(filter)].push(filter)
   }
+
+  if (propertyValueMap.anyText.length === 0) {
+    propertyValueMap.anyText.push(
+      new FilterClass({
+        type: 'ILIKE',
+        property: 'anyText',
+        value: '',
+      })
+    )
+  }
   return {
     propertyValueMap,
     downConversion,
@@ -310,6 +325,10 @@ const constructFilterFromBasicFilter = ({
         }
       }),
     })
+  }
+
+  if (basicFilter.anyGeo[0] !== undefined) {
+    filters.push(basicFilter.anyGeo[0])
   }
 
   if (filters.length === 0) {
@@ -423,11 +442,67 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
             }}
           />
         </div>
-        <div
-          className="basic-time-details"
-          data-help="Search based on absolute or relative
-    time of the created, modified, or effective date."
-        />
+        <div className="pt-2">
+          <Typography className="pb-2">Location</Typography>
+
+          <TextField
+            fullWidth
+            variant="outlined"
+            size="small"
+            select
+            value={basicFilter.anyGeo[0] ? 'specific' : 'any'}
+            onChange={e => {
+              if (e.target.value === 'any') {
+                basicFilter.anyGeo.pop()
+                setBasicFilter({
+                  ...basicFilter,
+                })
+              } else {
+                basicFilter.anyGeo.push(
+                  new FilterClass({
+                    type: 'GEOMETRY',
+                    property: 'anyGeo',
+                    value: '',
+                  })
+                )
+                setBasicFilter({
+                  ...basicFilter,
+                })
+              }
+            }}
+          >
+            <MenuItem value="any">Any</MenuItem>
+            <MenuItem value="specific">Specific</MenuItem>
+          </TextField>
+          {basicFilter.anyGeo[0] ? (
+            <Grid
+              container
+              alignItems="stretch"
+              direction="row"
+              wrap="nowrap"
+              className="pt-2"
+            >
+              <Grid item>
+                <Swath className="w-1 h-full" />
+              </Grid>
+              <Grid item className="w-full pl-2">
+                <FilterInput
+                  filter={{
+                    ...basicFilter.anyGeo[0],
+                    property: basicFilter.anyGeo[0].property,
+                  }}
+                  setFilter={(val: any) => {
+                    basicFilter.anyGeo[0] = val
+
+                    setBasicFilter({
+                      ...basicFilter,
+                    })
+                  }}
+                />
+              </Grid>
+            </Grid>
+          ) : null}
+        </div>
         <div
           className="basic-location-details"
           data-help="Search by latitude/longitude or the USNG
