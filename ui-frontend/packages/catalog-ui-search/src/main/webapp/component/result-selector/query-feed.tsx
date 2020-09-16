@@ -4,7 +4,7 @@ import { Dropdown } from '@connexta/atlas/atoms/dropdown'
 import Paper from '@material-ui/core/Paper'
 import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
 const moment = require('moment')
-// @ts-expect-error ts-migrate(6133) FIXME: 'user' is declared but its value is never read.
+// @ts-ignore ts-migrate(6133) FIXME: 'user' is declared but its value is never read.
 const user = require('../singletons/user-instance')
 
 import styled from 'styled-components'
@@ -87,7 +87,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
   let successful = status.successful
   let message = status.message
 
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'warnings' does not exist on type 'Status... Remove this comment to see the full error message
+  // @ts-ignore ts-migrate(2339) FIXME: Property 'warnings' does not exist on type 'Status... Remove this comment to see the full error message
   let warnings = status.warnings
   let id = status.id
 

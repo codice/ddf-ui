@@ -12,8 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+// @ts-nocheck ts-migrate(2307) FIXME: Cannot find module
 export {
   Sharing,
   Item,
-  Category, // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '../src/main/webapp/react-compo... Remove this comment to see the full error message
+  Category,
 } from '../src/main/webapp/react-component/sharing'

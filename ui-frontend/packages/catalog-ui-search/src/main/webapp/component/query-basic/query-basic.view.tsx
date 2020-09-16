@@ -110,7 +110,7 @@ function getAllValidValuesForMatchTypeAttribute() {
 function getPredefinedMatchTypes() {
   const matchTypesMap = sources
     .toJSON()
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'flatMap' does not exist on type '{ avail... Remove this comment to see the full error message
+    // @ts-ignore ts-migrate(2339) FIXME: Property 'flatMap' does not exist on type '{ avail... Remove this comment to see the full error message
     .flatMap((source: any) => source.contentTypes)
     .reduce((enumMap: any, contentType: any) => {
       if (contentType.value && !enumMap[contentType.value]) {
@@ -604,7 +604,7 @@ Marionette.LayoutView.extend({
     const currentValue = this.getCurrentSpecificTypesValue()
     getMatchTypes()
       .then(enums => this.showBasicTypeSpecific(enums, [currentValue]))
-      // @ts-expect-error ts-migrate(6133) FIXME: 'error' is declared but its value is never read.
+      // @ts-ignore ts-migrate(6133) FIXME: 'error' is declared but its value is never read.
       .catch(error => this.showBasicTypeSpecific())
   },
   showBasicTypeSpecific(enums = [], currentValue = [[]]) {

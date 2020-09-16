@@ -15,12 +15,12 @@
 // @ts-ignore Can't find type declarations, but they exist
 import moment from 'moment-timezone'
 import { ValuesType } from 'utility-types'
-// @ts-expect-error ts-migrate(6133) FIXME: 'locationSerialize' is declared but its value is n... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(6133) FIXME: 'locationSerialize' is declared but its value is n... Remove this comment to see the full error message
 import { serialize as locationSerialize } from '../location-old/location-serialization'
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
 import CQLUtils from '../../js/CQLUtils'
 
-// @ts-expect-error ts-migrate(6133) FIXME: 'comparatorToCQL' is declared but its value is nev... Remove this comment to see the full error message
+// @ts-ignore ts-migrate(6133) FIXME: 'comparatorToCQL' is declared but its value is nev... Remove this comment to see the full error message
 const comparatorToCQL = {
   BEFORE: 'BEFORE',
   AFTER: 'AFTER',

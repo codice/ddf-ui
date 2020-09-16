@@ -67,7 +67,7 @@ export function getFilterErrors(filters: any) {
   return Array.from(errors)
 }
 
-// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
+// @ts-ignore ts-migrate(7030) FIXME: Not all code paths return a value.
 export function validateGeo(key: string, value: any) {
   switch (key) {
     case 'lat':

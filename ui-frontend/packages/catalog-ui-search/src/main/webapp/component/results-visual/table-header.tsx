@@ -17,7 +17,7 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 const _ = require('underscore')
-// @ts-expect-error ts-migrate(6133) FIXME: '$' is declared but its value is never read.
+// @ts-ignore ts-migrate(6133) FIXME: '$' is declared but its value is never read.
 const $ = require('jquery')
 const user = require('../singletons/user-instance.js')
 require('jquery-ui/ui/widgets/resizable')
