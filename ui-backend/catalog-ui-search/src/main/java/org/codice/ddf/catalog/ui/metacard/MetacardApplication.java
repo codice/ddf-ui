@@ -142,7 +142,6 @@ import org.opengis.filter.Filter;
 import org.opengis.filter.sort.SortBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spark.QueryParamsMap;
 import spark.servlet.SparkApplication;
 
 public class MetacardApplication implements SparkApplication {
@@ -369,14 +368,10 @@ public class MetacardApplication implements SparkApplication {
         });
 
     get(
-        "/history/:id",
+        "/history/:id/:storeId",
         (req, res) -> {
           String id = req.params(":id");
-          QueryParamsMap paramsMap = req.queryMap().get("storeId");
-          String storeId = null;
-          if (paramsMap.hasValue()) {
-            storeId = paramsMap.value();
-          }
+          String storeId = req.params(":storeId");
           List<Result> queryResponse = getMetacardHistory(id, storeId);
           if (queryResponse.isEmpty()) {
             res.status(204);
@@ -398,15 +393,11 @@ public class MetacardApplication implements SparkApplication {
         });
 
     get(
-        "/history/revert/:id/:revertid",
+        "/history/revert/:id/:revertid/:storeId",
         (req, res) -> {
           String id = req.params(":id");
           String revertId = req.params(":revertid");
-          QueryParamsMap paramsMap = req.queryMap().get("storeId");
-          String storeId = null;
-          if (paramsMap.hasValue()) {
-            storeId = paramsMap.value();
-          }
+          String storeId = req.params(":storeId");
           Metacard versionMetacard = util.getMetacardById(revertId);
 
           List<Result> queryResponse = getMetacardHistory(id, storeId);

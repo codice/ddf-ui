@@ -67,9 +67,7 @@ class MetacardHistory extends React.Component<Props, State> {
     setTimeout(async () => {
       const id = this.model.get('metacard').get('id')
 
-      const res = await fetch(
-        `./internal/history/${id}?storeId=${this.getSourceId()}`
-      )
+      const res = await fetch(`./internal/history/${id}/${this.getSourceId()}`)
 
       if (!res.ok || res.status === 204) {
         this.setState({ history: [], loading: false })
@@ -106,7 +104,7 @@ class MetacardHistory extends React.Component<Props, State> {
     const revertId = this.state.selectedVersion
 
     const res = await fetch(
-      `./internal/history/revert/${id}/${revertId}?storeId=${this.getSourceId()}`
+      `./internal/history/revert/${id}/${revertId}/${this.getSourceId()}`
     )
 
     if (!res.ok) {
