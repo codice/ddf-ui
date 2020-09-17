@@ -24,10 +24,12 @@ import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 import Chip from '@material-ui/core/Chip'
 import Grid from '@material-ui/core/Grid'
 import Swath from '../swath/swath'
-import { Typography } from '@material-ui/core'
+import Typography from '@material-ui/core/Typography'
 const properties = require('../../js/properties.js')
 const metacardDefinitions = require('../singletons/metacard-definitions.js')
 import FilterInput from '../../react-component/filter/filter-input'
+import Checkbox from '@material-ui/core/Checkbox'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
 export interface BasicFilterClass extends Omit<FilterClass, 'property'> {
   property: string[]
 }
@@ -97,31 +99,46 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
   return (
     <>
       <div>
-        <Typography className="pb-2">Time Range</Typography>
-
-        <TextField
-          fullWidth
-          variant="outlined"
-          size="small"
-          select
-          value={value ? value.type : 'any'}
-          onChange={e => {
-            if (e.target.value === 'any') {
-              onChange(undefined)
-            } else {
+        <FormControlLabel
+          labelPlacement="start"
+          control={
+            <Checkbox
+              color="default"
+              checked={value ? true : false}
+              onChange={e => {
+                if (e.target.checked) {
+                  onChange({
+                    ...value,
+                    type: 'AFTER',
+                  })
+                } else {
+                  onChange(undefined)
+                }
+              }}
+            />
+          }
+          label="Time"
+        />
+        {value ? (
+          <TextField
+            fullWidth
+            variant="outlined"
+            size="small"
+            select
+            value={value.type}
+            onChange={e => {
               onChange({
                 ...value,
                 type: e.target.value,
               })
-            }
-          }}
-        >
-          <MenuItem value="any">Any</MenuItem>
-          <MenuItem value="AFTER">After</MenuItem>
-          <MenuItem value="BEFORE">Before</MenuItem>
-          <MenuItem value="DURING">Between</MenuItem>
-          <MenuItem value="RELATIVE">Relative</MenuItem>
-        </TextField>
+            }}
+          >
+            <MenuItem value="AFTER">After</MenuItem>
+            <MenuItem value="BEFORE">Before</MenuItem>
+            <MenuItem value="DURING">Between</MenuItem>
+            <MenuItem value="RELATIVE">Relative</MenuItem>
+          </TextField>
+        ) : null}
       </div>
       {value ? (
         <div>

@@ -455,7 +455,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
     <>
       <div className="editor-properties px-2 py-3">
         <div className="">
-          <Typography className="pb-2">Text</Typography>
+          <Typography className="pb-2">Keyword</Typography>
           <TextField
             fullWidth
             value={basicFilter.anyText ? basicFilter.anyText[0].value : ''}
@@ -471,7 +471,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
             variant="outlined"
           />
         </div>
-        <div className="pt-2">
+        {/* <div className="pt-2">
           <FormControlLabel
             labelPlacement="start"
             control={
@@ -492,7 +492,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
             }
             label="Matchcase"
           />
-        </div>
+        </div> */}
         <div className="pt-2">
           <QueryTimeReactView
             value={basicFilter.anyDate[0]}
@@ -506,37 +506,35 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
           />
         </div>
         <div className="pt-2">
-          <Typography className="pb-2">Location</Typography>
-
-          <TextField
-            fullWidth
-            variant="outlined"
-            size="small"
-            select
-            value={basicFilter.anyGeo[0] ? 'specific' : 'any'}
-            onChange={e => {
-              if (e.target.value === 'any') {
-                basicFilter.anyGeo.pop()
-                setBasicFilter({
-                  ...basicFilter,
-                })
-              } else {
-                basicFilter.anyGeo.push(
-                  new FilterClass({
-                    type: 'GEOMETRY',
-                    property: 'anyGeo',
-                    value: '',
-                  })
-                )
-                setBasicFilter({
-                  ...basicFilter,
-                })
-              }
-            }}
-          >
-            <MenuItem value="any">Any</MenuItem>
-            <MenuItem value="specific">Specific</MenuItem>
-          </TextField>
+          <FormControlLabel
+            labelPlacement="start"
+            control={
+              <Checkbox
+                color="default"
+                checked={Boolean(basicFilter.anyGeo[0])}
+                onChange={e => {
+                  if (!e.target.checked) {
+                    basicFilter.anyGeo.pop()
+                    setBasicFilter({
+                      ...basicFilter,
+                    })
+                  } else {
+                    basicFilter.anyGeo.push(
+                      new FilterClass({
+                        type: 'GEOMETRY',
+                        property: 'anyGeo',
+                        value: '',
+                      })
+                    )
+                    setBasicFilter({
+                      ...basicFilter,
+                    })
+                  }
+                }}
+              />
+            }
+            label="Location"
+          />
           {basicFilter.anyGeo[0] ? (
             <Grid
               container
@@ -566,7 +564,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
             </Grid>
           ) : null}
         </div>
-        <div>
+        <div className="pt-2">
           <FormControlLabel
             labelPlacement="start"
             control={
@@ -581,7 +579,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
                 }}
               />
             }
-            label="Match Types"
+            label="Types"
           />
           {basicFilter.anyType.on ? (
             <Grid
@@ -652,6 +650,9 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
               </Grid>
             </Grid>
           ) : null}
+        </div>
+        <div className="py-5 w-full">
+          <Swath className="w-full h-1" />
         </div>
         <div className="basic-settings">
           <QuerySettings model={model} />
