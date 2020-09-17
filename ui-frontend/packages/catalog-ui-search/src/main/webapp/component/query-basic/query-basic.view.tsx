@@ -393,6 +393,11 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
                 ...basicFilter,
               })
             }}
+            onKeyUp={e => {
+              if (e.which === 13) {
+                model.startSearchFromFirstPage()
+              }
+            }}
             size="small"
             variant="outlined"
           />
