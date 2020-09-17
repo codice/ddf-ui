@@ -14,34 +14,24 @@
  **/
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-const Marionette = require('marionette')
 const _ = require('underscore')
-const memoize = require('lodash/memoize')
-const $ = require('jquery')
-const wreqr = require('../../js/wreqr.js')
 const IconHelper = require('../../js/IconHelper.js')
-const PropertyView = require('../property/property.view.js')
-const Property = require('../property/property.js')
 const properties = require('../../js/properties.js')
 const cql = require('../../js/cql.js')
 const metacardDefinitions = require('../singletons/metacard-definitions.js')
-import sources from '../singletons/sources-instance'
 const CQLUtils = require('../../js/CQLUtils.js')
 import QuerySettings from '../query-settings/query-settings'
 import QueryTimeReactView, {
   BasicFilterClass,
 } from '../query-time/query-time.view'
-import query from '../../react-component/utils/query'
 
 const METADATA_CONTENT_TYPE = 'metadata-content-type'
-import { Drawing } from '../singletons/drawing'
 import TextField from '@material-ui/core/TextField'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
 import { FilterClass } from '../filter-builder/filter.structure'
 import Typography from '@material-ui/core/Typography'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-import MenuItem from '@material-ui/core/MenuItem'
 import FilterInput from '../../react-component/filter/filter-input'
 import Swath from '../swath/swath'
 import Grid from '@material-ui/core/Grid'
@@ -57,39 +47,11 @@ function isNested(filter: any) {
   return nested
 }
 
-const requestMapRender = () => {
-  // Required to force rendering of the 3D map after drawing is cleared.
-  wreqr.vent.trigger('map:requestRender')
-}
-
-const turnOffDrawing = () => {
-  wreqr.vent.trigger('search:drawend', Drawing.getDrawModel())
-  requestMapRender()
-}
-
 function getMatchTypeAttribute() {
   return metacardDefinitions.metacardTypes[properties.basicSearchMatchType]
     ? properties.basicSearchMatchType
     : 'datatype'
 }
-
-const getMatchTypesPresentInResults = memoize(async () => {
-  const matchTypeAttr = getMatchTypeAttribute()
-  const json = await query({
-    count: 0,
-    cql: "anyText ILIKE '*'",
-    facets: [matchTypeAttr],
-  })
-  const facets = json.facets[matchTypeAttr] || []
-  return facets
-    .map((facet: any) => facet.value)
-    .sort((a: any, b: any) => a.toLowerCase().localeCompare(b.toLowerCase()))
-    .map((value: any) => ({
-      label: value,
-      value,
-      class: 'icon ' + IconHelper.getClassByName(value),
-    }))
-})
 
 function getAllValidValuesForMatchTypeAttribute(): {
   [key: string]: {
@@ -100,14 +62,17 @@ function getAllValidValuesForMatchTypeAttribute(): {
 } {
   const matchTypeAttr = getMatchTypeAttribute()
   return metacardDefinitions.enums[matchTypeAttr]
-    ? metacardDefinitions.enums[matchTypeAttr].reduce((blob, value: any) => {
-        blob[value] = {
-          label: value,
-          value,
-          class: 'icon ' + IconHelper.getClassByName(value),
-        }
-        return blob
-      }, {})
+    ? (metacardDefinitions.enums[matchTypeAttr] as Array<string>).reduce(
+        (blob, value: any) => {
+          blob[value] = {
+            label: value,
+            value,
+            class: 'icon ' + IconHelper.getClassByName(value),
+          }
+          return blob
+        },
+        {} as { [key: string]: { label: string; value: string; class: string } }
+      )
     : {}
 }
 
@@ -123,43 +88,6 @@ const determinePropertiesToApplyTo = ({
     }
   })
 }
-
-function getPredefinedMatchTypes() {
-  const matchTypesMap = sources
-    .toJSON()
-    // @ts-ignore ts-migrate(2339) FIXME: Property 'flatMap' does not exist on type '{ avail... Remove this comment to see the full error message
-    .flatMap((source: any) => source.contentTypes)
-    .reduce((enumMap: any, contentType: any) => {
-      if (contentType.value && !enumMap[contentType.value]) {
-        enumMap[contentType.value] = {
-          label: contentType.name,
-          value: contentType.value,
-          class: 'icon ' + IconHelper.getClassByName(contentType.value),
-        }
-      }
-      return enumMap
-    }, getAllValidValuesForMatchTypeAttribute())
-  return Object.values(matchTypesMap)
-}
-
-async function getMatchTypes() {
-  try {
-    const facetedMatchTypes = await getMatchTypesPresentInResults()
-    if (facetedMatchTypes.length > 0) {
-      return Promise.resolve(facetedMatchTypes)
-    }
-    const predefinedMatchTypes = getPredefinedMatchTypes()
-    return Promise.resolve(predefinedMatchTypes)
-  } catch (error) {
-    return Promise.reject(error)
-  }
-}
-
-const NoMatchTypesView = Marionette.ItemView.extend({
-  template() {
-    return `No types found for '${getMatchTypeAttribute()}'.`
-  },
-})
 
 function isTypeLimiter(filter: any) {
   const typesFound = _.uniq(filter.filters.map(CQLUtils.getProperty))
@@ -335,8 +263,6 @@ function getFilterTree(model: any) {
   }
   return cql.simplify(cql.read(model.get('cql')))
 }
-
-type CurrentValueType = { text: string; matchcase: boolean; basicTime: any }
 
 type QueryBasicProps = {
   model: any
@@ -661,294 +587,5 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
     </>
   )
 }
-
-Marionette.LayoutView.extend({
-  tagName: 'div',
-  modelEvents: {},
-  events: {
-    'click .editor-edit': 'edit',
-    'click .editor-cancel': 'cancel',
-    'click .editor-save': 'save',
-  },
-  regions: {
-    basicLocation: '.basic-location',
-    basicLocationSpecific: '.basic-location-specific',
-    basicType: '.basic-type',
-    basicTypeSpecific: '.basic-type-specific',
-  },
-  ui: {},
-  filter: undefined,
-  onFirstRender() {
-    this.listenTo(this.model, 'update', () => {
-      this.save()
-    })
-  },
-  currentValue: undefined as undefined | CurrentValueType,
-  initialize() {
-    const filter = getFilterTree(this.model)
-    const translationToBasicMap = translateFilterToBasicMap(filter)
-    this.filter = translationToBasicMap.propertyValueMap
-    this.handleDownConversion(translationToBasicMap.downConversion)
-    this.currentValue = {
-      text: this.filter.anyText ? this.filter.anyText[0].value : '',
-      matchcase:
-        this.filter.anyText && this.filter.anyText[0].type === 'LIKE'
-          ? true
-          : false,
-      basicTime: this.filter,
-    }
-  },
-  onBeforeShow() {
-    this.setupLocation()
-    this.setupLocationInput()
-    this.setupType()
-    this.setupTypeSpecific()
-
-    this.listenTo(
-      this.basicLocation.currentView.model,
-      'change:value',
-      this.handleLocationValue
-    )
-    this.listenTo(
-      this.basicType.currentView.model,
-      'change:value',
-      this.handleTypeValue
-    )
-
-    this.handleLocationValue()
-    this.handleTypeValue()
-    this.edit()
-  },
-  getFilterValuesForAttribute(attribute: any) {
-    return this.filter[attribute]
-      ? this.filter[attribute].map((subfilter: any) => subfilter.value)
-      : []
-  },
-  getCurrentSpecificTypesValue() {
-    const metadataContentTypeValuesInFilter = this.getFilterValuesForAttribute(
-      METADATA_CONTENT_TYPE
-    )
-    const matchTypeAttributeValuesInFilter = this.getFilterValuesForAttribute(
-      getMatchTypeAttribute()
-    )
-    return _.union(
-      metadataContentTypeValuesInFilter,
-      matchTypeAttributeValuesInFilter
-    )
-  },
-  setupTypeSpecific() {
-    const currentValue = this.getCurrentSpecificTypesValue()
-    getMatchTypes()
-      .then(enums => this.showBasicTypeSpecific(enums, [currentValue]))
-      // @ts-ignore ts-migrate(6133) FIXME: 'error' is declared but its value is never read.
-      .catch(error => this.showBasicTypeSpecific())
-  },
-  showBasicTypeSpecific(enums = [], currentValue = [[]]) {
-    if (this.basicTypeSpecific) {
-      if (enums && enums.length > 0) {
-        this.basicTypeSpecific.show(
-          new PropertyView({
-            model: new Property({
-              enumFiltering: true,
-              showValidationIssues: false,
-              enumMulti: true,
-              enum: enums,
-              value: currentValue,
-              id: 'Types',
-            }),
-          })
-        )
-        this.basicTypeSpecific.currentView.turnOnEditing()
-      } else {
-        this.basicTypeSpecific.show(new NoMatchTypesView())
-      }
-    }
-  },
-  setupType() {
-    let currentValue = 'any'
-    if (
-      this.filter[METADATA_CONTENT_TYPE] ||
-      this.filter[getMatchTypeAttribute()]
-    ) {
-      currentValue = 'specific'
-    }
-    this.basicType.show(
-      new PropertyView({
-        model: new Property({
-          value: [currentValue],
-          id: 'Match Types',
-          radio: [
-            {
-              label: 'Any',
-              value: 'any',
-            },
-            {
-              label: 'Specific',
-              value: 'specific',
-            },
-          ],
-        }),
-      })
-    )
-  },
-  setupLocation() {
-    let currentValue = 'any'
-    if (this.filter.anyGeo) {
-      currentValue = 'specific'
-    }
-    this.basicLocation.show(
-      new PropertyView({
-        model: new Property({
-          value: [currentValue],
-          id: 'Located',
-          radio: [
-            {
-              label: 'Anywhere',
-              value: 'any',
-            },
-            {
-              label: 'Somewhere Specific',
-              value: 'specific',
-            },
-          ],
-        }),
-      })
-    )
-  },
-  setupLocationInput() {
-    let currentValue = ''
-    if (this.filter.anyGeo) {
-      currentValue = this.filter.anyGeo[0]
-    }
-    const currentView = this.basicLocationSpecific.currentView
-    if (currentView && currentView.model) {
-      this.stopListening(currentView.model)
-    }
-
-    this.basicLocationSpecific.show(
-      new PropertyView({
-        model: new Property({
-          value: [currentValue],
-          id: 'Location',
-          type: 'LOCATION',
-        }),
-      })
-    )
-
-    this.listenTo(
-      this.basicLocationSpecific.currentView.model,
-      'change:value',
-      requestMapRender
-    )
-  },
-  handleTypeValue() {
-    const type = this.basicType.currentView.model.getValue()[0]
-    this.$el.toggleClass('is-type-any', type === 'any')
-    this.$el.toggleClass('is-type-specific', type === 'specific')
-  },
-  handleLocationValue() {
-    const location = this.basicLocation.currentView.model.getValue()[0]
-    this.$el.toggleClass('is-location-any', location === 'any')
-    this.$el.toggleClass('is-location-specific', location === 'specific')
-    if (location === 'any') {
-      turnOffDrawing()
-      this.setupLocationInput()
-    }
-  },
-  edit() {
-    this.$el.addClass('is-editing')
-    this.regionManager.forEach((region: any) => {
-      if (region.currentView && region.currentView.turnOnEditing) {
-        region.currentView.turnOnEditing()
-      }
-    })
-    const tabbable = _.filter(
-      this.$el.find('[tabindex], input, button'),
-      (element: any) => element.offsetParent !== null
-    )
-    if (tabbable.length > 0) {
-      $(tabbable[0]).focus()
-    }
-  },
-  focus() {
-    this.basicText.currentView.focus()
-  },
-  handleDownConversion(downConversion: any) {
-    this.$el.toggleClass('is-down-converted', downConversion)
-  },
-  save() {
-    this.$el.removeClass('is-editing')
-
-    const filter = this.constructFilter()
-    const generatedCQL = cql.write(filter)
-    this.model.set({
-      filterTree: filter,
-      cql: generatedCQL,
-    })
-  },
-  constructFilter() {
-    const filters = []
-    const currentValue = this.currentValue as CurrentValueType
-    const text = currentValue.text
-    if (text !== '') {
-      const matchCase = currentValue.matchcase ? 'LIKE' : 'ILIKE'
-      filters.push(CQLUtils.generateFilter(matchCase, 'anyText', text))
-    }
-
-    this.basicTime.currentView.constructFilter().forEach((timeFilter: any) => {
-      filters.push(timeFilter)
-    })
-
-    const locationSpecific = this.basicLocation.currentView.model.getValue()[0]
-    const location = this.basicLocationSpecific.currentView.model.getValue()[0]
-    const locationFilter = CQLUtils.generateFilter(
-      undefined,
-      'anyGeo',
-      location
-    )
-    if (locationSpecific === 'specific' && locationFilter) {
-      filters.push(locationFilter)
-    }
-
-    const types = this.basicType.currentView.model.getValue()[0]
-    const specificTypes =
-      this.basicTypeSpecific.currentView.model !== undefined
-        ? this.basicTypeSpecific.currentView.model.getValue()[0]
-        : []
-    if (types === 'specific' && specificTypes.length !== 0) {
-      const filterAttributeIsSupported = (filter: any) => filter !== null
-      const typeFilter = {
-        type: 'OR',
-        filters: specificTypes
-          .map((specificType: any) => [
-            CQLUtils.generateFilter(
-              'ILIKE',
-              METADATA_CONTENT_TYPE,
-              specificType
-            ),
-            CQLUtils.generateFilter(
-              'ILIKE',
-              getMatchTypeAttribute(),
-              specificType
-            ),
-          ])
-          .flat()
-          .filter(filterAttributeIsSupported),
-      }
-      if (typeFilter.filters.length > 0) {
-        filters.push(typeFilter)
-      }
-    }
-
-    if (filters.length === 0) {
-      filters.unshift(CQLUtils.generateFilter('ILIKE', 'anyText', '*'))
-    }
-
-    return {
-      type: 'AND',
-      filters,
-    }
-  },
-})
 
 export default hot(module)(QueryBasic)
