@@ -328,6 +328,7 @@ const constructFilterFromBasicFilter = ({
 }
 
 const QueryBasic = ({ model }: QueryBasicProps) => {
+  const inputRef = React.useRef<HTMLDivElement>()
   const [basicFilter, setBasicFilter] = React.useState(
     translateFilterToBasicMap(getFilterTree(model)).propertyValueMap
   )
@@ -355,6 +356,19 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
   React.useEffect(() => {
     return () => {
       saveCallbackRef.current()
+    }
+  }, [])
+  /**
+   * Because of how things render, auto focusing to the input is more complicated than I wish.  This ensures it works everytime, whereas autoFocus prop is unreliable
+   */
+  React.useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus()
+      }
+    }, 100)
+    return () => {
+      clearTimeout(timeoutId)
     }
   }, [])
   React.useEffect(
@@ -397,6 +411,9 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
               if (e.which === 13) {
                 model.startSearchFromFirstPage()
               }
+            }}
+            inputProps={{
+              ref: inputRef as any,
             }}
             size="small"
             variant="outlined"
