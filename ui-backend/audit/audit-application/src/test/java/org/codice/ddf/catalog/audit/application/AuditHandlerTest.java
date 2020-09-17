@@ -4,11 +4,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.javalin.Context;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-import io.javalin.Context;
 import org.codice.ddf.catalog.audit.api.AuditException;
 import org.codice.ddf.catalog.audit.api.AuditService;
 import org.codice.junit.DeFinalize;
