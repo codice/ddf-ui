@@ -45,6 +45,9 @@ import MenuItem from '@material-ui/core/MenuItem'
 import FilterInput from '../../react-component/filter/filter-input'
 import Swath from '../swath/swath'
 import Grid from '@material-ui/core/Grid'
+import Chip from '@material-ui/core/Chip'
+import Autocomplete from '@material-ui/lab/Autocomplete'
+import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 
 function isNested(filter: any) {
   let nested = false
@@ -88,21 +91,37 @@ const getMatchTypesPresentInResults = memoize(async () => {
     }))
 })
 
-function getAllValidValuesForMatchTypeAttribute() {
+function getAllValidValuesForMatchTypeAttribute(): {
+  [key: string]: {
+    label: string
+    value: string
+    class: string
+  }
+} {
   const matchTypeAttr = getMatchTypeAttribute()
   return metacardDefinitions.enums[matchTypeAttr]
-    ? metacardDefinitions.enums[matchTypeAttr].reduce(
-        (enumMap: any, value: any) => {
-          enumMap[value] = {
-            label: value,
-            value,
-            class: 'icon ' + IconHelper.getClassByName(value),
-          }
-          return enumMap
-        },
-        {}
-      )
+    ? metacardDefinitions.enums[matchTypeAttr].reduce((blob, value: any) => {
+        blob[value] = {
+          label: value,
+          value,
+          class: 'icon ' + IconHelper.getClassByName(value),
+        }
+        return blob
+      }, {})
     : {}
+}
+
+const determinePropertiesToApplyTo = ({
+  value,
+}: {
+  value: PropertyValueMapType['anyType']['properties']
+}): Array<{ label: string; value: string }> => {
+  return value.map(property => {
+    return {
+      label: TypedMetacardDefs.getAlias({ attr: property }),
+      value: property,
+    }
+  })
 }
 
 function getPredefinedMatchTypes() {
@@ -218,12 +237,27 @@ function handleAnyDateFilter(propertyValueMap: any, filter: any) {
   }
 }
 
+type PropertyValueMapType = {
+  anyText: Array<FilterClass>
+  anyDate: Array<BasicFilterClass>
+  anyGeo: Array<FilterClass>
+  anyType: {
+    on: boolean
+    properties: string[]
+  }
+  [key: string]: any
+}
+
 function translateFilterToBasicMap(filter: any) {
   const propertyValueMap = {
     anyDate: [],
     anyText: [],
     anyGeo: [],
-  } as any
+    anyType: {
+      on: false,
+      properties: [],
+    },
+  } as PropertyValueMapType
   let downConversion = false
 
   if (!filter.filters && isAnyDate(filter)) {
@@ -249,11 +283,17 @@ function translateFilterToBasicMap(filter: any) {
       } else if (!isNested(filter) && isTypeLimiter(filter)) {
         propertyValueMap[CQLUtils.getProperty(filter.filters[0])] =
           propertyValueMap[CQLUtils.getProperty(filter.filters[0])] || []
-        filter.filters.forEach((subfilter: any) => {
-          propertyValueMap[CQLUtils.getProperty(filter.filters[0])].push(
-            subfilter
+        filter.filters
+          .filter(
+            (subfilter: FilterClass) =>
+              CQLUtils.getProperty(subfilter) ===
+              CQLUtils.getProperty(filter.filters[0])
           )
-        })
+          .forEach((subfilter: FilterClass) => {
+            propertyValueMap[CQLUtils.getProperty(filter.filters[0])].push(
+              subfilter
+            )
+          })
       } else {
         downConversion = true
       }
@@ -273,15 +313,18 @@ function translateFilterToBasicMap(filter: any) {
       })
     )
   }
+  // if datatype exists, this maps to "anyType" (we expand to multiple attributes going out, but can look at just datatype when coming in)
+  if (propertyValueMap.datatype) {
+    propertyValueMap.anyType.on = true
+    propertyValueMap.anyType.properties = propertyValueMap.datatype.map(
+      (filter: FilterClass) => filter.value
+    )
+  }
   return {
     propertyValueMap,
     downConversion,
   } as {
-    propertyValueMap: {
-      anyText: Array<FilterClass>
-      anyDate: Array<BasicFilterClass>
-      anyGeo: Array<FilterClass>
-    }
+    propertyValueMap: PropertyValueMapType
     downConversion: boolean
   }
 }
@@ -302,11 +345,7 @@ type QueryBasicProps = {
 const constructFilterFromBasicFilter = ({
   basicFilter,
 }: {
-  basicFilter: {
-    anyText: Array<FilterClass>
-    anyDate: Array<BasicFilterClass>
-    anyGeo: Array<FilterClass>
-  }
+  basicFilter: PropertyValueMapType
 }) => {
   const filters = []
   if (basicFilter.anyText[0].value !== '') {
@@ -329,6 +368,29 @@ const constructFilterFromBasicFilter = ({
     filters.push(basicFilter.anyGeo[0])
   }
 
+  if (basicFilter.anyType.on && basicFilter.anyType.properties.length > 0) {
+    filters.push({
+      type: 'OR',
+      filters: basicFilter.anyType.properties
+        .map(property => {
+          return new FilterClass({
+            property: 'datatype',
+            value: property,
+            type: 'ILIKE',
+          })
+        })
+        .concat(
+          basicFilter.anyType.properties.map(property => {
+            return new FilterClass({
+              property: 'metadata-content-type',
+              value: property,
+              type: 'ILIKE',
+            })
+          })
+        ),
+    })
+  }
+
   if (filters.length === 0) {
     filters.unshift(CQLUtils.generateFilter('ILIKE', 'anyText', '*'))
   }
@@ -342,6 +404,9 @@ const constructFilterFromBasicFilter = ({
 const QueryBasic = ({ model }: QueryBasicProps) => {
   const [basicFilter, setBasicFilter] = React.useState(
     translateFilterToBasicMap(getFilterTree(model)).propertyValueMap
+  )
+  const [typeAttributes] = React.useState(
+    getAllValidValuesForMatchTypeAttribute()
   )
 
   const { listenTo, stopListening } = useBackbone()
@@ -501,20 +566,92 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
             </Grid>
           ) : null}
         </div>
-        <div
-          className="basic-location-details"
-          data-help="Search by latitude/longitude or the USNG
-    using a line, polygon, point-radius, bounding box, or keyword. A keyword can be the name of a region, country, or city."
-        >
-          <div className="basic-location" />
-          <div className="basic-location-specific" />
-        </div>
-        <div
-          className="basic-type-details"
-          data-help="Search for specific content types."
-        >
-          <div className="basic-type" />
-          <div className="basic-type-specific" />
+        <div>
+          <FormControlLabel
+            labelPlacement="start"
+            control={
+              <Checkbox
+                color="default"
+                checked={basicFilter.anyType.on}
+                onChange={e => {
+                  basicFilter.anyType.on = e.target.checked
+                  setBasicFilter({
+                    ...basicFilter,
+                  })
+                }}
+              />
+            }
+            label="Match Types"
+          />
+          {basicFilter.anyType.on ? (
+            <Grid
+              container
+              alignItems="stretch"
+              direction="row"
+              wrap="nowrap"
+              className="pt-2"
+            >
+              <Grid item>
+                <Swath className="w-1 h-full" />
+              </Grid>
+              <Grid item className="w-full pl-2">
+                <Autocomplete
+                  fullWidth
+                  multiple
+                  options={Object.values(typeAttributes)}
+                  disableCloseOnSelect
+                  getOptionLabel={option => option.label}
+                  getOptionSelected={(option, value) =>
+                    option.value === value.value
+                  }
+                  onChange={(e, newValue) => {
+                    basicFilter.anyType.properties = newValue.map(
+                      val => val.value
+                    )
+                    setBasicFilter({
+                      ...basicFilter,
+                    })
+                  }}
+                  size="small"
+                  renderOption={({ label, value }) => {
+                    return (
+                      <>
+                        <div
+                          className={`pr-2 icon ${typeAttributes[value].class}`}
+                        />
+                        {label}
+                      </>
+                    )
+                  }}
+                  renderTags={(tagValue, getTagProps) =>
+                    tagValue.map((option, index) => (
+                      <Chip
+                        variant="outlined"
+                        color="default"
+                        label={
+                          <>
+                            <div
+                              className={`pr-2 icon ${
+                                typeAttributes[option.value].class
+                              }`}
+                            />
+                            {option.label}
+                          </>
+                        }
+                        {...getTagProps({ index })}
+                      />
+                    ))
+                  }
+                  value={determinePropertiesToApplyTo({
+                    value: basicFilter.anyType.properties,
+                  })}
+                  renderInput={params => (
+                    <TextField {...params} variant="outlined" />
+                  )}
+                />
+              </Grid>
+            </Grid>
+          ) : null}
         </div>
         <div className="basic-settings">
           <QuerySettings model={model} />
