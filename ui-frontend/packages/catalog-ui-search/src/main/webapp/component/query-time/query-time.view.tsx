@@ -24,7 +24,6 @@ import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 import Chip from '@material-ui/core/Chip'
 import Grid from '@material-ui/core/Grid'
 import Swath from '../swath/swath'
-import Typography from '@material-ui/core/Typography'
 const properties = require('../../js/properties.js')
 const metacardDefinitions = require('../singletons/metacard-definitions.js')
 import FilterInput from '../../react-component/filter/filter-input'

@@ -550,7 +550,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
                   getOptionSelected={(option, value) =>
                     option.value === value.value
                   }
-                  onChange={(e, newValue) => {
+                  onChange={(_e, newValue) => {
                     basicFilter.anyType.properties = newValue.map(
                       val => val.value
                     )
