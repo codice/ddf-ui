@@ -117,7 +117,26 @@ export type ValueTypes = {
     start: number
     end: number
   }
-  location: any
+  location:
+    | any //POLYGON
+    | {
+        type: 'POLYGON'
+        polygonBufferWidth: number
+        polygonBufferUnits: 'meters'
+        polygon: Array<Array<number>>
+        locationType: 'dd'
+        polyType: 'polygon'
+        mode: 'poly'
+      } //POINTRADIUS
+    | {
+        type: 'POINTRADIUS'
+        radius: number
+        radiusUnits: 'meters'
+        mode: 'circle'
+        lat: number
+        lon: number
+        locationType: 'dd'
+      }
 }
 
 export class FilterClass {
@@ -127,7 +146,6 @@ export class FilterClass {
     | 'RELATIVE'
     | '='
     | 'DURING'
-    | 'INTERSECTS' // remove?  I think we should only use GEOMETRY
     | 'GEOMETRY'
     | 'DWITHIN'
     | 'ILIKE'
