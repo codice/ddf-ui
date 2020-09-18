@@ -127,7 +127,8 @@ export class FilterClass {
     | 'RELATIVE'
     | '='
     | 'DURING'
-    | 'INTERSECTS'
+    | 'INTERSECTS' // remove?  I think we should only use GEOMETRY
+    | 'GEOMETRY'
     | 'DWITHIN'
     | 'ILIKE'
     | 'LIKE'

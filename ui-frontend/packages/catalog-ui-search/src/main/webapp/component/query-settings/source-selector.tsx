@@ -159,7 +159,7 @@ const SourceSelector = ({ search }: Props) => {
                       <Grid item key={src} className="mr-2">
                         <Chip
                           variant="outlined"
-                          color="primary"
+                          color="default"
                           className="cursor-pointer"
                           label={getHumanReadableSourceName(src)}
                         />

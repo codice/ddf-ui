@@ -28,7 +28,11 @@ type Props = {
 }
 
 const validateShape = ({ value, onChange }: Props) => {
-  if (value.start === undefined || value.end === undefined) {
+  if (
+    value === undefined ||
+    value.start === undefined ||
+    value.end === undefined
+  ) {
     onChange({
       start: new Date().toISOString(),
       end: new Date().toISOString(),

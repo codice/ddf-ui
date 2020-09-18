@@ -339,6 +339,11 @@ export const Provider = ({ children }: { children: any }) => {
       },
     },
     overrides: {
+      MuiChip: createStyles({
+        root: {
+          fontSize: '1rem',
+        },
+      }),
       MuiButton: createStyles({
         root: {
           lineHeight: 'inherit', // maybe open a ticket on MUI, seems like the default they use doesn't center text quite right with icons
