@@ -16,6 +16,7 @@ package org.codice.ddf.catalog.audit.application;
 import io.javalin.Context;
 import io.javalin.Handler;
 import java.util.Set;
+import org.apache.http.HttpStatus;
 import org.codice.ddf.catalog.audit.api.AuditException;
 import org.codice.ddf.catalog.audit.api.AuditService;
 import org.jetbrains.annotations.NotNull;
@@ -36,21 +37,16 @@ public class AuditHandler implements Handler {
   public void handle(@NotNull Context context) throws AuditException {
     AuditRequestBasic requestBasic = context.bodyAsClass(AuditRequestBasic.class);
 
-    if (requestBasic != null && requestBasic.isValid()) {
-      try {
-        if (requestBasic.getIds() != null && !requestBasic.getIds().isEmpty()) {
-          Set<String> ids = requestBasic.getIds();
-          auditService.log(
-              requestBasic.getAction(), requestBasic.getComponent(), ids.toArray(new String[0]));
-          context.status(200);
-        }
-      } catch (AuditException e) {
-        LOGGER.error("Unable to log the user's action.", e);
-        context.status(500);
+    try {
+      if (requestBasic.getIds() != null && !requestBasic.getIds().isEmpty()) {
+        Set<String> ids = requestBasic.getIds();
+        auditService.log(
+            requestBasic.getAction(), requestBasic.getComponent(), ids.toArray(new String[0]));
+        context.status(HttpStatus.SC_OK);
       }
-    } else {
-      LOGGER.error("Invalid parameters, request: {}", context.req);
-      context.status(500);
+    } catch (AuditException e) {
+      LOGGER.error("Unable to log the user's action. Error message: {}", e.getLocalizedMessage());
+      context.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
     }
   }
 }

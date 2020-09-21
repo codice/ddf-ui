@@ -15,7 +15,6 @@ package org.codice.ddf.catalog.audit.application;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.Set;
-import org.apache.commons.lang.StringUtils;
 
 public class AuditRequestBasic {
 
@@ -48,9 +47,5 @@ public class AuditRequestBasic {
 
   public Set<String> getIds() {
     return ids;
-  }
-
-  public boolean isValid() {
-    return StringUtils.isNotBlank(action) && StringUtils.isNotBlank(component) && !ids.isEmpty();
   }
 }
