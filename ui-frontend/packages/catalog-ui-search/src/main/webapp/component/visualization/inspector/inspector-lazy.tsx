@@ -1,4 +1,5 @@
-import * as React from 'react'
+import React from 'react'
+import { useEffect } from 'react'
 import { hot } from 'react-hot-loader'
 import { useLazyResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import MRC from '../../../react-component/marionette-region-container'
@@ -26,38 +27,40 @@ const LazyInspector = ({ selectionInterface }: Props) => {
     selectionInterface.setSelectedResults(backboneModels)
   })
 
-  const conductAudit = () => {
-    let newSelectedIds = new Set(Object.keys(selectedResults))
+  useEffect(
+    () => {
+      let newSelectedIds = new Set(Object.keys(selectedResults))
 
-    let unselectedIds = new Set<string>()
-    if (selectedIds.size > 0) {
-      selectedIds.forEach((id: string) => {
-        if (!newSelectedIds.has(id)) {
-          unselectedIds.add(id)
-        }
-      })
-      if (unselectedIds.size > 0) {
-        postAuditLog({
-          action: 'unselected',
-          component: 'resource',
-          ids: unselectedIds,
+      let unselectedIds = new Set<string>()
+      if (selectedIds.size > 0) {
+        selectedIds.forEach((id: string) => {
+          if (!newSelectedIds.has(id)) {
+            unselectedIds.add(id)
+          }
         })
+        if (unselectedIds.size > 0) {
+          postAuditLog({
+            action: 'unselected',
+            component: 'resource',
+            ids: unselectedIds,
+          })
+        }
       }
-    }
 
-    if (newSelectedIds.size > 0) {
-      postAuditLog({
-        action: 'selected',
-        component: 'resource',
-        ids: newSelectedIds,
-      })
-      selectedIds = newSelectedIds
-    }
-  }
+      if (newSelectedIds.size > 0) {
+        postAuditLog({
+          action: 'selected',
+          component: 'resource',
+          ids: newSelectedIds,
+        })
+        selectedIds = newSelectedIds
+      }
+    },
+    [selectedResults]
+  )
 
   return (
     <div>
-      {conductAudit()}
       <MRC
         key="inspector"
         view={InspectorView}

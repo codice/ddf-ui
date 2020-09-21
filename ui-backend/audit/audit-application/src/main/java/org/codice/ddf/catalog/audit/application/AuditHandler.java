@@ -38,12 +38,10 @@ public class AuditHandler implements Handler {
     AuditRequestBasic requestBasic = context.bodyAsClass(AuditRequestBasic.class);
 
     try {
-      if (requestBasic.getIds() != null && !requestBasic.getIds().isEmpty()) {
-        Set<String> ids = requestBasic.getIds();
-        auditService.log(
-            requestBasic.getAction(), requestBasic.getComponent(), ids.toArray(new String[0]));
-        context.status(HttpStatus.SC_OK);
-      }
+      Set<String> ids = requestBasic.getIds();
+      auditService.log(
+          requestBasic.getAction(), requestBasic.getComponent(), ids.toArray(new String[0]));
+      context.status(HttpStatus.SC_OK);
     } catch (AuditException e) {
       LOGGER.error("Unable to log the user's action. Error message: {}", e.getLocalizedMessage());
       context.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
