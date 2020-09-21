@@ -1,12 +1,4 @@
 package org.codice.ddf.catalog.audit.logging;
-
-import ddf.security.audit.SecurityLogger;
-import org.apache.commons.lang.StringUtils;
-import org.codice.ddf.catalog.audit.api.AuditException;
-import org.codice.ddf.catalog.audit.api.AuditService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Copyright (c) Codice Foundation
  *
@@ -20,6 +12,14 @@ import org.slf4j.LoggerFactory;
  * License is distributed along with this program and can be found at
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
+
+import ddf.security.audit.SecurityLogger;
+import org.apache.commons.lang.StringUtils;
+import org.codice.ddf.catalog.audit.api.AuditException;
+import org.codice.ddf.catalog.audit.api.AuditService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class AuditLogger implements AuditService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AuditLogger.class);
