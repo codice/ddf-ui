@@ -1,4 +1,3 @@
-package org.codice.ddf.catalog.audit.logging;
 /**
  * Copyright (c) Codice Foundation
  *
@@ -12,6 +11,7 @@ package org.codice.ddf.catalog.audit.logging;
  * License is distributed along with this program and can be found at
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
+package org.codice.ddf.catalog.audit.logging;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;

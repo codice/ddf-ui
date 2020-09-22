@@ -53,6 +53,8 @@
     <javalin.thirdparty.bundle.version>2.5.0_1</javalin.thirdparty.bundle.version>
     <kotlin-osgi.version>1.2.61</kotlin-osgi.version>
     <maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
+    <guava.version>28.1-jre</guava.version>
+    <errorprone.version>2.2.0</errorprone.version>
 
     <!--Backend properties-->
     <ddf.version>2.26.0</ddf.version>

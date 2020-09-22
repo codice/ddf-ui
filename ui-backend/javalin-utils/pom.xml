@@ -30,7 +30,7 @@
         <dependency>
             <groupId>org.codice.thirdparty</groupId>
             <artifactId>javalin</artifactId>
-            <version>2.5.0_1</version>
+            <version>${javalin.thirdparty.bundle.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -40,12 +40,12 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>28.1-jre</version>
+            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.errorprone</groupId>
             <artifactId>error_prone_annotations</artifactId>
-            <version>2.2.0</version>
+            <version>${errorprone.version}</version>
         </dependency>
         <dependency>
             <groupId>ddf.catalog.core</groupId>
