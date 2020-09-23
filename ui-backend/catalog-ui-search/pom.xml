@@ -123,7 +123,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
+            <version>3.9</version>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>
@@ -291,7 +291,7 @@
         </dependency>
         <dependency>
             <groupId>ddf.platform.security</groupId>
-            <artifactId>session-management-service</artifactId>
+            <artifactId>session-management-api</artifactId>
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
@@ -316,7 +316,7 @@
         </dependency>
         <dependency>
             <groupId>ddf.security.servlet</groupId>
-            <artifactId>security-servlet-logout-service</artifactId>
+            <artifactId>security-servlet-logout-api</artifactId>
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
@@ -394,7 +394,7 @@
         </dependency>
         <dependency>
             <groupId>ddf.security.servlet</groupId>
-            <artifactId>security-servlet-web-socket</artifactId>
+            <artifactId>security-servlet-web-socket-api</artifactId>
             <version>${ddf.version}</version>
         </dependency>
     </dependencies>
@@ -444,7 +444,6 @@
                             handlebars,
                             httpclient,
                             httpcore,
-                            platform-util,
                             tlmatcher,
                             gson-support,
                             guava,
