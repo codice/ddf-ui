@@ -22,13 +22,13 @@ const DrawingController = require('./drawing.controller')
 
 const CAMERA_MAGNITUDE_THRESHOLD = 8000000
 
-const capitalize = value => value.charAt(0).toUpperCase() + value.slice(1)
+const capitalize = (value) => value.charAt(0).toUpperCase() + value.slice(1)
 
-const getCurrentMagnitudeFromView = view => {
+const getCurrentMagnitudeFromView = (view) => {
   return view.map.camera.getMagnitude()
 }
 
-const needsRedraw = view => {
+const needsRedraw = (view) => {
   const currentMagnitude = getCurrentMagnitudeFromView(view)
 
   if (
@@ -58,11 +58,11 @@ class GeometryRenderView extends Marionette.View {
     this.drawGeometry(this.model)
   }
 
-  drawGeometry = model => {
+  drawGeometry = (model) => {
     throw new Error('This method must be overwritten by implementing geometry!')
   }
 
-  constructLinePrimitive = coordinates => {
+  constructLinePrimitive = (coordinates) => {
     const color = this.model.get('color')
 
     return {
@@ -79,7 +79,7 @@ class GeometryRenderView extends Marionette.View {
     }
   }
 
-  constructDottedLinePrimitive = coordinates => {
+  constructDottedLinePrimitive = (coordinates) => {
     const color = this.model.get('color')
 
     return {
@@ -154,7 +154,7 @@ class GeometryController extends DrawingController {
     Object.assign(this, { ...options })
   }
 
-  show = model => {
+  show = (model) => {
     if (!this.enabled) {
       return
     }
@@ -169,11 +169,11 @@ class GeometryController extends DrawingController {
     this.addView(this.createRenderView(model))
   }
 
-  createRenderView = model => {
+  createRenderView = (model) => {
     throw new Error('This method must be implemented by the subclass!')
   }
 
-  draw = model => {
+  draw = (model) => {
     const controller = this
     const toDeg = Cesium.Math.toDegrees
     if (!this.enabled) {
@@ -185,11 +185,11 @@ class GeometryController extends DrawingController {
     }).render()
 
     this.drawHelper[`startDrawing${capitalize(this.geometry)}`]({
-      callback: positions => {
+      callback: (positions) => {
         if (controller.notificationView) {
           controller.notificationView.destroy()
         }
-        const latLonRadPoints = _.map(positions, cartPos => {
+        const latLonRadPoints = _.map(positions, (cartPos) => {
           const latLon = controller.map.scene.globe.ellipsoid.cartesianToCartographic(
             cartPos
           )

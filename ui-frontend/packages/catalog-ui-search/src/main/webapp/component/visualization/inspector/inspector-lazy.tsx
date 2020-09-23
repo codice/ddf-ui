@@ -16,7 +16,7 @@ const LazyInspector = ({ selectionInterface }: Props) => {
   const selectedResults = useSelectedResults({
     lazyResults,
   })
-  const backboneModels = Object.values(selectedResults).map(result => {
+  const backboneModels = Object.values(selectedResults).map((result) => {
     return result.getBackbone()
   })
   React.useEffect(() => {

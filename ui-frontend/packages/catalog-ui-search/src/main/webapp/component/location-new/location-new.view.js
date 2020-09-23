@@ -14,7 +14,7 @@
  **/
 const React = require('react')
 
-const withAdapter = Component =>
+const withAdapter = (Component) =>
   class extends React.Component {
     constructor(props) {
       super(props)

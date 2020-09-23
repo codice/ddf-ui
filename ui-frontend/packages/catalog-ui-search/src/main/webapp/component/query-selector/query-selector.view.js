@@ -27,17 +27,17 @@ import {
 import styled from 'styled-components'
 
 const SearchButton = styled(Button)`
-  line-height: ${props => props.theme.minimumButtonSize};
-  padding: 0px ${props => props.theme.largeSpacing};
+  line-height: ${(props) => props.theme.minimumButtonSize};
+  padding: 0px ${(props) => props.theme.largeSpacing};
 `
 
 const SearchIcon = styled.div`
   display: block;
-  opacity: ${props => props.theme.minimumOpacity};
+  opacity: ${(props) => props.theme.minimumOpacity};
 `
 
 const Span = styled.span`
-  opacity: ${props => props.theme.minimumOpacity};
+  opacity: ${(props) => props.theme.minimumOpacity};
 `
 const namespace = CustomElements.getNamespace()
 
@@ -128,9 +128,7 @@ const QuerySelector = Marionette.LayoutView.extend({
     this.$el.toggleClass('is-empty', this.model.isEmpty())
   },
   triggerQuery() {
-    $('.content-adhoc')
-      .mousedown()
-      .click()
+    $('.content-adhoc').mousedown().click()
   },
 })
 

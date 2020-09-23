@@ -18,7 +18,7 @@ import React from 'react'
 const Parser = require('html-react-parser')
 import ExtensionPoints from '../../extension-points'
 
-Marionette.ItemView.prototype.attachElContent = function(rendering) {
+Marionette.ItemView.prototype.attachElContent = function (rendering) {
   this.triggerMethod('before:react:attach', rendering)
   render(
     <ExtensionPoints.providers>

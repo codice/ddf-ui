@@ -63,7 +63,7 @@ const ChildFilter = ({
             <TextField
               data-id="filter-operator-select"
               value={parentFilter.type}
-              onChange={e => {
+              onChange={(e) => {
                 const newOperator = e.target.value as FilterBuilderClass['type']
                 setFilter({
                   ...parentFilter,
@@ -74,7 +74,7 @@ const ChildFilter = ({
               variant="outlined"
               size="small"
             >
-              {OperatorData.map(operatorInfo => {
+              {OperatorData.map((operatorInfo) => {
                 return (
                   <MenuItem key={operatorInfo.value} value={operatorInfo.value}>
                     {operatorInfo.label}
@@ -104,7 +104,7 @@ const ChildFilter = ({
       {isFilterBuilderClass(filter) ? (
         <FilterBranch
           filter={filter}
-          setFilter={newChildFilter => {
+          setFilter={(newChildFilter) => {
             const newFilters = parentFilter.filters.slice(0)
             newFilters.splice(index, 1, newChildFilter)
             setFilter({
@@ -116,7 +116,7 @@ const ChildFilter = ({
       ) : (
         <FilterLeaf
           filter={filter}
-          setFilter={newChildFilter => {
+          setFilter={(newChildFilter) => {
             const newFilters = parentFilter.filters.slice(0)
             newFilters.splice(index, 1, newChildFilter)
             setFilter({
@@ -143,24 +143,21 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
   /**
    * Any non root branches lacking filters are pruned.
    */
-  React.useEffect(
-    () => {
-      filter.filters.forEach((childFilter, index) => {
-        if (
-          isFilterBuilderClass(childFilter) &&
-          childFilter.filters.length === 0
-        ) {
-          const newFilters = filter.filters.slice(0)
-          newFilters.splice(index, 1)
-          setFilter({
-            ...filter,
-            filters: newFilters,
-          })
-        }
-      })
-    },
-    [filter]
-  )
+  React.useEffect(() => {
+    filter.filters.forEach((childFilter, index) => {
+      if (
+        isFilterBuilderClass(childFilter) &&
+        childFilter.filters.length === 0
+      ) {
+        const newFilters = filter.filters.slice(0)
+        newFilters.splice(index, 1)
+        setFilter({
+          ...filter,
+          filters: newFilters,
+        })
+      }
+    })
+  }, [filter])
 
   const EnclosingElement = root ? Box : Paper
   return (

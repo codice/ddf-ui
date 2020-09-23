@@ -55,7 +55,7 @@ export const NumberRangeField = ({
           value={value.start}
           placeholder="lower bound"
           type="number"
-          onChange={e => {
+          onChange={(e) => {
             const newVal =
               type === 'integer'
                 ? parseInt(e.target.value)
@@ -78,7 +78,7 @@ export const NumberRangeField = ({
           placeholder="upper bound"
           value={value.end}
           type="number"
-          onChange={e => {
+          onChange={(e) => {
             const newVal =
               type === 'integer'
                 ? parseInt(e.target.value)

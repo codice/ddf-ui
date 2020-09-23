@@ -64,39 +64,31 @@ export const useLazyResultsFromSelectionInterface = ({
     })
   )
 
-  React.useEffect(
-    () => {
-      const unsubscribe = lazyResults.subscribeTo({
-        subscribableThing: 'filteredResults',
-        callback: () => {
-          setForceRender(Math.random())
-        },
-      })
-      return () => {
-        unsubscribe()
+  React.useEffect(() => {
+    const unsubscribe = lazyResults.subscribeTo({
+      subscribableThing: 'filteredResults',
+      callback: () => {
+        setForceRender(Math.random())
+      },
+    })
+    return () => {
+      unsubscribe()
+    }
+  }, [lazyResults])
+  React.useEffect(() => {
+    setLazyResults(getLazyResultsFromSelectionInterface({ selectionInterface }))
+    listenToOnce(selectionInterface, 'change:currentQuery>result', () => {
+      const currentQuery = selectionInterface.get('currentQuery')
+      const result = currentQuery.get('result')
+      if (result) {
+        setLazyResults(
+          getLazyResultsFromSelectionInterface({ selectionInterface })
+        )
       }
-    },
-    [lazyResults]
-  )
-  React.useEffect(
-    () => {
-      setLazyResults(
-        getLazyResultsFromSelectionInterface({ selectionInterface })
-      )
-      listenToOnce(selectionInterface, 'change:currentQuery>result', () => {
-        const currentQuery = selectionInterface.get('currentQuery')
-        const result = currentQuery.get('result')
-        if (result) {
-          setLazyResults(
-            getLazyResultsFromSelectionInterface({ selectionInterface })
-          )
-        }
-      })
-      return () => {
-        stopListening(selectionInterface)
-      }
-    },
-    [selectionInterface]
-  )
+    })
+    return () => {
+      stopListening(selectionInterface)
+    }
+  }, [selectionInterface])
   return lazyResults
 }

@@ -21,7 +21,7 @@ export class BaseWorkerInstance {
     this.worker.postMessage(message)
   }
   onmessage(event: any) {
-    this.subscriptions.forEach(subscription => {
+    this.subscriptions.forEach((subscription) => {
       subscription(event.data)
     })
   }

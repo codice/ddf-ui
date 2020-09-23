@@ -12,5 +12,5 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-exports.Serializers = v => v
-exports.Deserializers = v => v
+exports.Serializers = (v) => v
+exports.Deserializers = (v) => v

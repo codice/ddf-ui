@@ -25,7 +25,7 @@ const TextWrapper = styled.div`
   padding: ${({ theme }) => theme.minimumSpacing};
 `
 
-const EnumMenuItem = props => (
+const EnumMenuItem = (props) => (
   <span>
     <MenuItem {...props} style={{ paddingLeft: '1.5rem' }} />
   </span>
@@ -39,7 +39,7 @@ const EnumInput = ({
   value,
 }) => {
   const [input, setInput] = useState('')
-  const selected = suggestions.find(suggestion => suggestion.value === value)
+  const selected = suggestions.find((suggestion) => suggestion.value === value)
   const filteredSuggestions = getFilteredSuggestions(
     input,
     suggestions,
@@ -57,11 +57,10 @@ const EnumInput = ({
         />
       </TextWrapper>
       <Menu value={value} onChange={onChange}>
-        {allowCustom &&
-          displayInput && (
-            <EnumMenuItem value={input}>{input} (custom)</EnumMenuItem>
-          )}
-        {filteredSuggestions.map(suggestion => {
+        {allowCustom && displayInput && (
+          <EnumMenuItem value={input}>{input} (custom)</EnumMenuItem>
+        )}
+        {filteredSuggestions.map((suggestion) => {
           return (
             <EnumMenuItem key={suggestion.value} value={suggestion.value}>
               {suggestion.label}

@@ -30,16 +30,16 @@ type Props = {
 
 const Root = styled.div<Props>`
   font-family: 'Inconsolata', 'Lucida Console', monospace;
-  background: ${props => props.theme.backgroundModal};
+  background: ${(props) => props.theme.backgroundModal};
   display: block;
   width: auto;
   height: auto;
-  font-size: ${props => props.theme.minimumFontSize};
+  font-size: ${(props) => props.theme.minimumFontSize};
   position: absolute;
   left: 0px;
   bottom: 0px;
   text-align: left;
-  padding: ${props => props.theme.minimumSpacing};
+  padding: ${(props) => props.theme.minimumSpacing};
   max-width: 50%;
 `
 const CoordinateInfo = styled.div`
@@ -70,8 +70,8 @@ const metacardInfo = ({ attributes }: Props) =>
   })
 
 /*
-   * Formats the current distance value to a string with the appropriate unit of measurement.
-   */
+ * Formats the current distance value to a string with the appropriate unit of measurement.
+ */
 const getDistanceText = (distance: number) => {
   // use meters when distance is under 1000m and convert to kilometers when ≥1000m
   const distanceText =

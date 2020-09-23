@@ -39,17 +39,14 @@ const Anchor = styled.div`
   flex-direction: row;
 `
 
-const DateInput = props => {
+const DateInput = (props) => {
   const [value, setValue] = useState(moment(props.value || ''))
   const [input, setInput] = useState('')
 
-  useEffect(
-    () => {
-      props.onChange(value)
-      setInput(formatDate(value, props.timeZone, props.format))
-    },
-    [value, props.format, props.timeZone]
-  )
+  useEffect(() => {
+    props.onChange(value)
+    setInput(formatDate(value, props.timeZone, props.format))
+  }, [value, props.format, props.timeZone])
 
   return (
     <Dropdown
@@ -63,7 +60,7 @@ const DateInput = props => {
             value={input}
             type="text"
             placeholder={props.placeholder || props.format}
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           />
           <CalendarButton
             buttonType={buttonTypeEnum.primary}

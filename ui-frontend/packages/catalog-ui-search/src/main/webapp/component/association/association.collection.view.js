@@ -36,13 +36,13 @@ module.exports = Marionette.CollectionView.extend({
   },
   turnOnEditing() {
     this.$el.toggleClass('is-editing', true)
-    this.children.forEach(childView => {
+    this.children.forEach((childView) => {
       childView.turnOnEditing()
     })
   },
   turnOffEditing() {
     this.$el.toggleClass('is-editing', false)
-    this.children.forEach(childView => {
+    this.children.forEach((childView) => {
       childView.turnOffEditing()
     })
   },

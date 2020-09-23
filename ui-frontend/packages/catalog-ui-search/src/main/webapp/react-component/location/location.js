@@ -76,11 +76,11 @@ const DrawButton = ({ onDraw }) => (
 )
 
 const Root = styled.div`
-  height: ${props => (props.isOpen ? 'auto' : props.theme.minimumButtonSize)};
+  height: ${(props) => (props.isOpen ? 'auto' : props.theme.minimumButtonSize)};
 `
 
 const Component = CustomElements.registerReact('location')
-const LocationInput = props => {
+const LocationInput = (props) => {
   const { mode, setState } = props
   const input = inputs[mode] || {}
   const { Component: Input = null } = input
@@ -88,8 +88,11 @@ const LocationInput = props => {
     <Root isOpen={input.label !== undefined}>
       <Component>
         <Dropdown label={input.label || 'Select Location Option'}>
-          <Menu value={mode} onChange={value => setState({ ['mode']: value })}>
-            {Object.keys(inputs).map(key => (
+          <Menu
+            value={mode}
+            onChange={(value) => setState({ ['mode']: value })}
+          >
+            {Object.keys(inputs).map((key) => (
               <MenuItem key={key} value={key}>
                 {inputs[key].label}
               </MenuItem>

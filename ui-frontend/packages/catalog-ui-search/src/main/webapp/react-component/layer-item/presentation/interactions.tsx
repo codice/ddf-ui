@@ -22,16 +22,17 @@ const Interactions = styled.div`
 `
 
 const InteractionsButton = styled.button`
-  ${props => IsButton(props.theme)};
-  ${props => HighlightBehavior({ initialOpacity: props.theme.minimumOpacity })};
-  width: ${props => props.theme.minimumButtonSize};
-  height: ${props => props.theme.minimumButtonSize};
+  ${(props) => IsButton(props.theme)};
+  ${(props) =>
+    HighlightBehavior({ initialOpacity: props.theme.minimumOpacity })};
+  width: ${(props) => props.theme.minimumButtonSize};
+  height: ${(props) => props.theme.minimumButtonSize};
   vertical-align: top;
 `
 
 const Warning = styled(InteractionsButton)`
   display: inline-block;
-  color: ${props => props.theme.warningColor};
+  color: ${(props) => props.theme.warningColor};
   cursor: default;
 `
 /* stylelint-disable block-no-empty */

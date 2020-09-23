@@ -17,11 +17,13 @@ const CQLUtils = require('./CQLUtils.js')
 function buildCacheSourcesCql(sources) {
   return {
     type: 'OR',
-    filters: sources.filter(source => source !== 'cache').map(source => ({
-      property: '"metacard_source"',
-      type: '=',
-      value: source,
-    })),
+    filters: sources
+      .filter((source) => source !== 'cache')
+      .map((source) => ({
+        property: '"metacard_source"',
+        type: '=',
+        value: source,
+      })),
   }
 }
 

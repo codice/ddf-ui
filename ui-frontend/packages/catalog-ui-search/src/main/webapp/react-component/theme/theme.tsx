@@ -184,7 +184,7 @@ function updateTheme(userTheme: UserTheme) {
     relevantColorTheme = Object.keys(relevantColorTheme).reduce(
       (newMap: UserTheme, key) => {
         newMap[key] =
-          userTheme[`custom${key.replace(/^\w/, c => c.toUpperCase())}`]
+          userTheme[`custom${key.replace(/^\w/, (c) => c.toUpperCase())}`]
         return newMap
       },
       {}
@@ -208,12 +208,7 @@ function updateTheme(userTheme: UserTheme) {
 }
 
 function determineScreenSize() {
-  const fontSize = parseInt(
-    user
-      .get('user')
-      .get('preferences')
-      .get('fontSize')
-  )
+  const fontSize = parseInt(user.get('user').get('preferences').get('fontSize'))
   const screenSize = window.innerWidth / fontSize
   return screenSize
 }
@@ -232,13 +227,7 @@ const sharedState: ThemeInterface = {
     return sharedState.screenSize < parseFloat(specifiedSize)
   },
   background: 'black',
-  ...updateTheme(
-    user
-      .get('user')
-      .get('preferences')
-      .get('theme')
-      .getTheme()
-  ),
+  ...updateTheme(user.get('user').get('preferences').get('theme').getTheme()),
 }
 
 function updateMediaQueries() {
@@ -248,25 +237,13 @@ function updateMediaQueries() {
 function updateSharedTheme() {
   _.extend(
     sharedState,
-    updateTheme(
-      user
-        .get('user')
-        .get('preferences')
-        .get('theme')
-        .getTheme()
-    )
+    updateTheme(user.get('user').get('preferences').get('theme').getTheme())
   )
 }
 
 $(window).on(`resize.themeContainer`, _.throttle(updateMediaQueries, 30))
-user
-  .get('user')
-  .get('preferences')
-  .on('change:theme', updateSharedTheme)
-user
-  .get('user')
-  .get('preferences')
-  .on('change:fontSize', updateMediaQueries)
+user.get('user').get('preferences').on('change:theme', updateSharedTheme)
+user.get('user').get('preferences').on('change:fontSize', updateMediaQueries)
 class ThemeContainer extends React.Component<
   WithBackboneProps,
   ThemeInterface

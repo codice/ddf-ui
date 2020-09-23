@@ -53,10 +53,7 @@ module.exports = Backbone.Model.extend({
   },
   handleError(file, response) {
     const message =
-      this.get('result')
-        .get('metacard')
-        .get('properties')
-        .get('title') +
+      this.get('result').get('metacard').get('properties').get('title') +
       ' could not be overwritten by ' +
       file.name +
       response
@@ -67,10 +64,7 @@ module.exports = Backbone.Model.extend({
   },
   handleSuccess(file) {
     const message =
-      this.get('result')
-        .get('metacard')
-        .get('properties')
-        .get('title') +
+      this.get('result').get('metacard').get('properties').get('title') +
       ' has been overwritten by ' +
       file.name
     this.set({

@@ -16,8 +16,8 @@
 const uuid = require('uuid')
 const _ = require('underscore')
 
-const remove = (exports.remove = function(id, timeout) {
-  return function(dispatch) {
+const remove = (exports.remove = function (id, timeout) {
+  return function (dispatch) {
     dispatch({
       type: 'START_REMOVE_ANNOUNCEMENT',
       id,
@@ -32,19 +32,19 @@ const remove = (exports.remove = function(id, timeout) {
   }
 })
 
-exports.announce = function(announcement, timeout) {
+exports.announce = function (announcement, timeout) {
   const id = uuid.v4()
 
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     getState()
       .filter(
-        a =>
+        (a) =>
           a.title === announcement.title &&
           JSON.stringify(a.message) === JSON.stringify(announcement.message) &&
           a.type === announcement.type
       )
-      .map(a => a.id)
-      .forEach(id => {
+      .map((a) => a.id)
+      .forEach((id) => {
         dispatch(remove(id))
       })
 

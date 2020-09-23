@@ -38,7 +38,7 @@ const ModifiedMenuItem = styled(MenuItem)<Props>`
   justify-content: flex-start;
   > .icon {
     text-align: center;
-    width: ${props => props.theme.minimumButtonSize};
+    width: ${(props) => props.theme.minimumButtonSize};
   }
 `
 

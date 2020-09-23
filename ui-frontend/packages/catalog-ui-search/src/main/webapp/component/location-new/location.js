@@ -41,7 +41,7 @@ const Form = ({ children }) => (
   <div className="form-group clearfix">{children}</div>
 )
 
-const LocationInput = props => {
+const LocationInput = (props) => {
   const { mode, valid, error, showErrors, setState } = props
   const input = inputs[mode] || {}
   const { Component = null } = input
@@ -52,7 +52,7 @@ const LocationInput = props => {
         value={mode}
         onChange={setState((draft, value) => (draft.mode = value))}
       >
-        {Object.keys(inputs).map(key => (
+        {Object.keys(inputs).map((key) => (
           <RadioItem key={key} value={key}>
             {inputs[key].label}
           </RadioItem>
@@ -73,8 +73,8 @@ const LocationInput = props => {
 module.exports = ({ state, setState }) => (
   <LocationInput
     {...state}
-    setState={producer => value => {
-      const nextState = produce(state, draft => {
+    setState={(producer) => (value) => {
+      const nextState = produce(state, (draft) => {
         producer(draft, value)
       })
       setState(nextState)

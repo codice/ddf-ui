@@ -13,6 +13,6 @@
  *
  **/
 export const getResultSetCql = (ids: string[]) => {
-  const queries = ids.map(id => `(("id" ILIKE '${id}'))`)
+  const queries = ids.map((id) => `(("id" ILIKE '${id}'))`)
   return `(${queries.join(' OR ')})`
 }

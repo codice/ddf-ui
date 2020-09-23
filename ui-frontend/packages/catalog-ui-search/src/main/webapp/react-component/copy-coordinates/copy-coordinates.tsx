@@ -36,13 +36,13 @@ type Props = {
 
 const Label = styled.div`
   display: inline-box;
-  margin-left: ${props => props.theme.minimumSpacing};
+  margin-left: ${(props) => props.theme.minimumSpacing};
 `
 const Icon = styled.div`
-  margin-left: ${props => props.theme.minimumSpacing};
+  margin-left: ${(props) => props.theme.minimumSpacing};
   display: inline-block;
   text-align: center;
-  width: ${props => props.theme.minimumFontSize};
+  width: ${(props) => props.theme.minimumFontSize};
 `
 
 const CustomDropdown = styled(Dropdown as any)`
@@ -54,7 +54,7 @@ const Text = styled.div`
 `
 
 const Description = styled.div`
-  opacity: ${props => props.theme.minimumOpacity};
+  opacity: ${(props) => props.theme.minimumOpacity};
 `
 
 const generateClipboardHandler = (

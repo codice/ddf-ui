@@ -124,13 +124,13 @@ function dmsToWkt(dms) {
       break
     case 'line':
       if (dms.line.list.length > 0) {
-        dms.line.list.map(point => points.push(dmsPointToWkt(point)))
+        dms.line.list.map((point) => points.push(dmsPointToWkt(point)))
         wkt = new wkx.LineString(points).toWkt()
       }
       break
     case 'polygon':
       if (dms.polygon.list.length > 0) {
-        dms.polygon.list.map(point => points.push(dmsPointToWkt(point)))
+        dms.polygon.list.map((point) => points.push(dmsPointToWkt(point)))
         const p1 = points[0]
         const p2 = points[points.length - 1]
         if (p1.x !== p2.x || p1.y !== p2.y) {

@@ -33,7 +33,7 @@ module.exports = Backbone.Collection.extend({
   updateFilteredVersion(filter) {
     this.amountFiltered = 0
     if (filter) {
-      return this.filter(result => {
+      return this.filter((result) => {
         const passFilter = filterUtility.matchesFilters(
           result.get('metacard').toJSON(),
           filter
@@ -54,7 +54,7 @@ module.exports = Backbone.Collection.extend({
   },
   selectBetween(startIndex, endIndex) {
     const allModels = []
-    this.forEach(model => {
+    this.forEach((model) => {
       allModels.push(model)
     })
     return allModels.slice(startIndex, endIndex)

@@ -23,20 +23,20 @@ const moment = require('moment')
 const cql = require('./cql.js')
 
 // strip extra quotes
-const stripQuotes = value => {
+const stripQuotes = (value) => {
   return value.replace(/^"(.+(?="$))"$/, '$1')
 }
 
-const getDurationFromRelativeValue = value => {
+const getDurationFromRelativeValue = (value) => {
   return value.substring(9, value.length - 1)
 }
 
-const polygonStringToCoordinates = polygonString => {
+const polygonStringToCoordinates = (polygonString) => {
   try {
     return polygonString
       .substring('POLYGON(('.length, polygonString.length - '))'.length)
       .split(',')
-      .map(stringPair => {
+      .map((stringPair) => {
         const pair = stringPair.split(' ')
         return [Number(pair[0]), Number(pair[1])]
       })
@@ -139,7 +139,7 @@ function intersects(terraformerObject, value) {
     case 'Point':
       return terraformerObject.contains(value)
     case 'MultiPoint':
-      value.coordinates.forEach(coordinate => {
+      value.coordinates.forEach((coordinate) => {
         intersected =
           intersected ||
           intersects(terraformerObject, {
@@ -153,7 +153,7 @@ function intersects(terraformerObject, value) {
     case 'Polygon':
       return terraformerObject.intersects(value)
     case 'MultiPolygon':
-      value.coordinates.forEach(coordinate => {
+      value.coordinates.forEach((coordinate) => {
         intersected =
           intersected ||
           intersects(terraformerObject, {
@@ -165,12 +165,12 @@ function intersects(terraformerObject, value) {
     case 'Feature':
       return intersects(terraformerObject, value.geometry)
     case 'FeatureCollection':
-      value.features.forEach(feature => {
+      value.features.forEach((feature) => {
         intersected = intersected || intersects(terraformerObject, feature)
       })
       return intersected
     case 'GeometryCollection':
-      value.geometries.forEach(geometry => {
+      value.geometries.forEach((geometry) => {
         intersected = intersected || intersects(terraformerObject, geometry)
       })
       return intersected
@@ -221,7 +221,7 @@ function matchesLINESTRING(value, filter) {
   }
   const line = pointText
     .split(',')
-    .map(coordinate => coordinate.split(' ').map(value => Number(value)))
+    .map((coordinate) => coordinate.split(' ').map((value) => Number(value)))
   const turfLine = Turf.lineString(line)
   const bufferedLine = Turf.buffer(turfLine, lineWidth, 'meters')
   const polygonToCheck = new Terraformer.Polygon({
@@ -300,21 +300,21 @@ function matchesFilter(metacard, filter) {
       case 'anyText':
         valuesToCheck = Object.keys(metacard.properties)
           .filter(
-            property =>
+            (property) =>
               Boolean(metacardDefinitions.metacardTypes[property]) &&
               metacardDefinitions.metacardTypes[property].type === 'STRING'
           )
-          .map(property => metacard.properties[property])
+          .map((property) => metacard.properties[property])
         break
       case 'anyGeo':
         valuesToCheck = Object.keys(metacard.properties)
           .filter(
-            property =>
+            (property) =>
               Boolean(metacardDefinitions.metacardTypes[property]) &&
               metacardDefinitions.metacardTypes[property].type === 'GEOMETRY'
           )
           .map(
-            property =>
+            (property) =>
               new Terraformer.Primitive(
                 wkx.Geometry.parse(metacard.properties[property]).toGeoJSON()
               )

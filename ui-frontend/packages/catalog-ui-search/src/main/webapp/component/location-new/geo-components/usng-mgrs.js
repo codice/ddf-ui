@@ -20,7 +20,7 @@ const { Units } = require('../../../react-component/location/common.js')
 const ListEditor = require('../inputs/list-editor')
 const { UsngCoordinate } = require('./coordinates')
 
-const Point = props => {
+const Point = (props) => {
   const { usng, setState } = props
   return (
     <UsngCoordinate
@@ -30,7 +30,7 @@ const Point = props => {
   )
 }
 
-const Circle = props => {
+const Circle = (props) => {
   const { usng, setState } = props
   return (
     <div>
@@ -55,7 +55,7 @@ const Circle = props => {
   )
 }
 
-const Line = props => {
+const Line = (props) => {
   const { usng, setState } = props
   const grids = usng.line.list.map((entry, index) => (
     <UsngCoordinate
@@ -78,7 +78,7 @@ const Line = props => {
   )
 }
 
-const Polygon = props => {
+const Polygon = (props) => {
   const { usng, setState } = props
   const grids = usng.polygon.list.map((entry, index) => (
     <UsngCoordinate
@@ -101,7 +101,7 @@ const Polygon = props => {
   )
 }
 
-const BoundingBox = props => {
+const BoundingBox = (props) => {
   const { usng, setState } = props
   return (
     <UsngCoordinate
@@ -111,7 +111,7 @@ const BoundingBox = props => {
   )
 }
 
-const USNG = props => {
+const USNG = (props) => {
   const { usng, setState } = props
 
   const inputs = {

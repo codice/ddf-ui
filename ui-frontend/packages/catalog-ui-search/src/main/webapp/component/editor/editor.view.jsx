@@ -16,7 +16,7 @@
 let filter = ''
 
 function convertArrayToModels(array) {
-  return array.map(key => {
+  return array.map((key) => {
     return {
       id: key,
     }
@@ -24,7 +24,7 @@ function convertArrayToModels(array) {
 }
 
 function getDifference(collection, array) {
-  return collection.filter(model => array.indexOf(model.id) === -1)
+  return collection.filter((model) => array.indexOf(model.id) === -1)
 }
 
 function intersect(collection, array) {
@@ -141,7 +141,7 @@ module.exports = Marionette.LayoutView.extend({
     const username = user.get('user').get('userid')
     let isOwner = true
     const types = {}
-    this.model.forEach(result => {
+    this.model.forEach((result) => {
       if (result.isResource()) {
         types.resource = true
       } else if (result.isRevision()) {
@@ -251,8 +251,8 @@ module.exports = Marionette.LayoutView.extend({
   handleAttributesToRemoveReset(collection, options) {
     this.handleAttributesToRemove()
     const ephemeralAttributesToUnRemove = this.attributesMocked
-      .map(model => model.id)
-      .filter(id => this.attributesRemoved.get(id) === undefined)
+      .map((model) => model.id)
+      .filter((id) => this.attributesRemoved.get(id) === undefined)
     this.editorProperties.currentView.removeProperties(
       ephemeralAttributesToUnRemove
     )
@@ -260,7 +260,7 @@ module.exports = Marionette.LayoutView.extend({
   },
   handleEphemeralReset(collection, options) {
     this.attributesToKeep.add(options.previousModels)
-    const ephemeralAttributes = options.previousModels.map(model => model.id)
+    const ephemeralAttributes = options.previousModels.map((model) => model.id)
     this.editorProperties.currentView.removeProperties(ephemeralAttributes)
     this.generateEditorActions()
   },
@@ -280,7 +280,7 @@ module.exports = Marionette.LayoutView.extend({
     this.handleAttributesToRemove()
   },
   handleAttributesToRemove() {
-    this.editorProperties.currentView.children.forEach(propertyView => {
+    this.editorProperties.currentView.children.forEach((propertyView) => {
       const id = propertyView.model.id
       propertyView.$el.toggleClass(
         'scheduled-for-removal',
@@ -290,7 +290,7 @@ module.exports = Marionette.LayoutView.extend({
     this.handleFilterValue()
   },
   handleAttributesToAdd() {
-    this.editorProperties.currentView.children.forEach(propertyView => {
+    this.editorProperties.currentView.children.forEach((propertyView) => {
       const id = propertyView.model.id
       propertyView.$el.toggleClass(
         'scheduled-for-add',
@@ -312,9 +312,9 @@ module.exports = Marionette.LayoutView.extend({
     this.handleFilterValue()
   },
   isSupposedToBeShown(attribute) {
-    const ephemeralAttributes = this.attributesAdded.map(model => model.id)
-    const attributesToRemove = this.attributesRemoved.map(model => model.id)
-    const attributesToKeep = this.attributesToKeep.map(model => model.id)
+    const ephemeralAttributes = this.attributesAdded.map((model) => model.id)
+    const attributesToRemove = this.attributesRemoved.map((model) => model.id)
+    const attributesToKeep = this.attributesToKeep.map((model) => model.id)
     if (
       attributesToKeep.indexOf(attribute) >= 0 ||
       ephemeralAttributes.indexOf(attribute) >= 0 ||
@@ -344,7 +344,7 @@ module.exports = Marionette.LayoutView.extend({
   },
   handleFilterValue() {
     filter = this.editorFilter.currentView.model.get('value')
-    this.editorProperties.currentView.children.forEach(propertyView => {
+    this.editorProperties.currentView.children.forEach((propertyView) => {
       const identifier =
         propertyView.model.get('label') || propertyView.model.id
       if (
@@ -376,8 +376,8 @@ module.exports = Marionette.LayoutView.extend({
   },
   save() {
     this.$el.removeClass('is-editing')
-    const ephemeralAttributes = this.attributesAdded.map(model => model.id)
-    const attributesToRemove = this.attributesRemoved.map(model => model.id)
+    const ephemeralAttributes = this.attributesAdded.map((model) => model.id)
+    const attributesToRemove = this.attributesRemoved.map((model) => model.id)
     this.afterSave(
       this.editorProperties.currentView.toPatchJSON(
         ephemeralAttributes,

@@ -32,8 +32,8 @@ const Root = styled.div`
   width: 100%;
   height: 100%;
   overflow: auto;
-  font-size: ${props => props.theme.minimumFontSize};
-  padding: ${props => props.theme.minimumSpacing};
+  font-size: ${(props) => props.theme.minimumFontSize};
+  padding: ${(props) => props.theme.minimumSpacing};
 
   .editor-properties {
     overflow: auto;

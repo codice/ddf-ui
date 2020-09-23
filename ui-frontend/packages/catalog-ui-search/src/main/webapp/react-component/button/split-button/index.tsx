@@ -36,34 +36,34 @@ const Root = styled.div`
   overflow: none;
   margin: 0;
   white-space: nowrap;
-  background-color: ${props => props.theme.primaryColor};
+  background-color: ${(props) => props.theme.primaryColor};
 `
 const Menu = styled.div`
   position: absolute;
-  top: ${props => props.theme.minimumButtonSize};
-  padding-top: ${props => props.theme.minimumSpacing};
-  padding-bottom: ${props => props.theme.minimumSpacing};
+  top: ${(props) => props.theme.minimumButtonSize};
+  padding-top: ${(props) => props.theme.minimumSpacing};
+  padding-bottom: ${(props) => props.theme.minimumSpacing};
   margin: 0;
   width: 100%;
   overflow: auto;
-  z-index: ${props => props.theme.zIndexDropdown};
-  background-color: ${props => props.theme.backgroundDropdown};
+  z-index: ${(props) => props.theme.zIndexDropdown};
+  background-color: ${(props) => props.theme.backgroundDropdown};
   opacity: 1 !important;
-  border: 1px solid ${props => props.theme.backgroundModal};
+  border: 1px solid ${(props) => props.theme.backgroundModal};
 `
 
 const DefaultButton = styled.button`
-  padding-right: ${props => props.theme.largeSpacing};
-  padding-left: ${props => props.theme.largeSpacing};
+  padding-right: ${(props) => props.theme.largeSpacing};
+  padding-left: ${(props) => props.theme.largeSpacing};
   margin-left: 0 !important;
   border-right: 1px solid black;
 `
 
 const Icon = styled.button`
   display: inline-block;
-  width: ${props => props.theme.minimumButtonSize};
-  line-height: ${props => props.theme.minimumLineSize};
-  font-size: ${props => props.theme.minimumFontSize};
+  width: ${(props) => props.theme.minimumButtonSize};
+  line-height: ${(props) => props.theme.minimumLineSize};
+  font-size: ${(props) => props.theme.minimumFontSize};
   padding: 0;
   margin: 0;
   margin-left: 0 !important;
@@ -117,7 +117,7 @@ class SplitButton extends React.Component<Props, State> {
         <Icon
           data-id="home-dropdown"
           className="fa fa-chevron-down toggle"
-          onClick={e => this.onToggle(e)}
+          onClick={(e) => this.onToggle(e)}
         />
         {this.state.isOpen ? this.renderMenu(menu) : null}
       </Root>

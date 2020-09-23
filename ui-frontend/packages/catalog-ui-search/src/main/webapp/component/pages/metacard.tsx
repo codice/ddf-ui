@@ -41,12 +41,9 @@ const MetacardRoute = () => {
   }>()
 
   const [id, setId] = React.useState(params.metacardId || params.id)
-  React.useEffect(
-    () => {
-      setId(params.metacardId || params.id)
-    },
-    [params.metacardId]
-  )
+  React.useEffect(() => {
+    setId(params.metacardId || params.id)
+  }, [params.metacardId])
   const [query] = React.useState(getQueryForId({ id }))
   const [selectionInterface] = React.useState(
     new SelectionInterfaceModel({
@@ -54,52 +51,49 @@ const MetacardRoute = () => {
     })
   )
 
-  React.useEffect(
-    () => {
-      if (id === undefined && params.uploadId) {
-        const upload = user
-          .get('user')
-          .get('preferences')
-          .get('uploads')
-          .get(params.uploadId)
-        if (upload) {
-          query.set('filterTree', {
-            type: 'OR',
-            filters: _.flatten(
-              upload
-                .get('uploads')
-                .filter(
-                  (file: any) => file.id || file.get('children') !== undefined
-                )
-                .map((file: any) => {
-                  if (file.get('children') !== undefined) {
-                    return file.get('children').map((child: any) => ({
-                      type: '=',
-                      value: child,
-                      property: 'id',
-                    }))
-                  } else {
-                    return {
-                      type: '=',
-                      value: file.id,
-                      property: 'id',
-                    }
+  React.useEffect(() => {
+    if (id === undefined && params.uploadId) {
+      const upload = user
+        .get('user')
+        .get('preferences')
+        .get('uploads')
+        .get(params.uploadId)
+      if (upload) {
+        query.set('filterTree', {
+          type: 'OR',
+          filters: _.flatten(
+            upload
+              .get('uploads')
+              .filter(
+                (file: any) => file.id || file.get('children') !== undefined
+              )
+              .map((file: any) => {
+                if (file.get('children') !== undefined) {
+                  return file.get('children').map((child: any) => ({
+                    type: '=',
+                    value: child,
+                    property: 'id',
+                  }))
+                } else {
+                  return {
+                    type: '=',
+                    value: file.id,
+                    property: 'id',
                   }
-                })
-                .concat({
-                  type: '=',
-                  value: '-1',
-                  property: 'id',
-                })
-            ),
-          })
-          query.cancelCurrentSearches()
-          query.startSearchFromFirstPage()
-        }
+                }
+              })
+              .concat({
+                type: '=',
+                value: '-1',
+                property: 'id',
+              })
+          ),
+        })
+        query.cancelCurrentSearches()
+        query.startSearchFromFirstPage()
       }
-    },
-    [id, params.uploadId]
-  )
+    }
+  }, [id, params.uploadId])
 
   React.useEffect(
     // @ts-ignore ts-migrate(7030) FIXME: Not all code paths return a value.
@@ -120,7 +114,7 @@ const MetacardRoute = () => {
   })
   const filteredResults = Object.values(lazyResults.results)
 
-  filteredResults.forEach(result => {
+  filteredResults.forEach((result) => {
     result.setSelected(true)
   })
 

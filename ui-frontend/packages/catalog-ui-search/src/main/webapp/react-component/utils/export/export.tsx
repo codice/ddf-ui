@@ -49,23 +49,17 @@ export type DownloadInfo = {
 }
 
 export const getExportResults = (results: any[]) => {
-  return results.map(result => getExportResult(result))
+  return results.map((result) => getExportResult(result))
 }
 
 const getResultId = (result: any) => {
-  const id = result
-    .get('metacard')
-    .get('properties')
-    .get('id')
+  const id = result.get('metacard').get('properties').get('id')
 
   return encodeURIComponent(id)
 }
 
 const getResultSourceId = (result: any) => {
-  const sourceId = result
-    .get('metacard')
-    .get('properties')
-    .get('source-id')
+  const sourceId = result.get('metacard').get('properties').get('source-id')
 
   return encodeURIComponent(sourceId)
 }

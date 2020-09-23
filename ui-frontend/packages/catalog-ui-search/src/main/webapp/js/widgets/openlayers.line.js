@@ -27,7 +27,7 @@ import { validateGeo } from '../../react-component/utils/validation'
 
 function translateFromOpenlayersCoordinates(coords) {
   const coordinates = []
-  _.each(coords, point => {
+  _.each(coords, (point) => {
     point = ol.proj.transform(
       [
         DistanceUtils.coordinateRound(point[0]),
@@ -48,7 +48,7 @@ function translateFromOpenlayersCoordinates(coords) {
 
 function translateToOpenlayersCoordinates(coords) {
   const coordinates = []
-  _.each(coords, item => {
+  _.each(coords, (item) => {
     if (item[0].constructor === Array) {
       coordinates.push(translateToOpenlayersCoordinates(item))
     } else {
@@ -206,12 +206,12 @@ Draw.LineView = Marionette.View.extend({
     })
 
     this.map.addInteraction(this.primitive)
-    this.primitive.on('drawend', sketchFeature => {
+    this.primitive.on('drawend', (sketchFeature) => {
       window.cancelAnimationFrame(that.accurateLineId)
       that.handleRegionStop(sketchFeature)
       that.map.removeInteraction(that.primitive)
     })
-    this.primitive.on('drawstart', sketchFeature => {
+    this.primitive.on('drawstart', (sketchFeature) => {
       that.showAccurateLine(sketchFeature)
     })
   },
@@ -281,7 +281,7 @@ Draw.Controller = DrawingController.extend({
         el: this.notificationEl,
       }).render()
       model.trigger('BeginExtent')
-      this.listenToOnce(model, 'EndExtent', function() {
+      this.listenToOnce(model, 'EndExtent', function () {
         this.notificationView.destroy()
       })
 

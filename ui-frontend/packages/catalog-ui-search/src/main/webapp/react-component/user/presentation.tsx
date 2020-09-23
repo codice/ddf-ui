@@ -30,11 +30,11 @@ const Root = styled.div`
   }
 
   .user-info {
-    padding: ${props => props.theme.mediumSpacing};
+    padding: ${(props) => props.theme.mediumSpacing};
     overflow: auto;
     max-height: calc(
-      100% - ${props => props.theme.minimumButtonSize} -
-        ${props => props.theme.minimumDividerSize}
+      100% - ${(props) => props.theme.minimumButtonSize} -
+        ${(props) => props.theme.minimumDividerSize}
     );
   }
 `

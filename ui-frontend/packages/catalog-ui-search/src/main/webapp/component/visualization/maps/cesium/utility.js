@@ -64,7 +64,7 @@ module.exports = {
       Calculates the center of given geometries (WKT)
     */
   calculateCartesian3CenterOfGeometries(propertyModels) {
-    const allPoints = propertyModels.map(propertyModel =>
+    const allPoints = propertyModels.map((propertyModel) =>
       propertyModel.getPoints()
     )
     return Cesium.BoundingSphere.fromPoints(

@@ -24,8 +24,8 @@ const CustomElement = styled.div`
 
 const Visualization = styled.div`
   cursor: pointer;
-  opacity: ${props => props.theme.minimumOpacity};
-  padding: ${props => props.theme.largeSpacing};
+  opacity: ${(props) => props.theme.minimumOpacity};
+  padding: ${(props) => props.theme.largeSpacing};
   :hover {
     opacity: 1;
   }
@@ -38,13 +38,13 @@ const Visualization = styled.div`
 
 const VisualizationIcon = styled.div`
   text-align: center;
-  width: ${props => props.theme.minimumButtonSize};
+  width: ${(props) => props.theme.minimumButtonSize};
   display: inline-block;
   vertical-align: middle;
 `
 const VisualizationText = styled.div`
-  width: calc(100% - ${props => props.theme.minimumButtonSize});
-  font-size: ${props => props.theme.mediumFontSize};
+  width: calc(100% - ${(props) => props.theme.minimumButtonSize});
+  font-size: ${(props) => props.theme.mediumFontSize};
   overflow: hidden;
   text-overflow: ellipsis;
   display: inline-block;
@@ -65,14 +65,14 @@ const configs = Visualizations.reduce((cfg, viz) => {
   return cfg
 }, {})
 
-const unMaximize = contentItem => {
+const unMaximize = (contentItem) => {
   if (contentItem.isMaximised) {
     contentItem.toggleMaximise()
     return true
   } else if (contentItem.contentItems.length === 0) {
     return false
   } else {
-    return Array.some(contentItem.contentItems, subContentItem => {
+    return Array.some(contentItem.contentItems, (subContentItem) => {
       return unMaximize(subContentItem)
     })
   }
@@ -103,7 +103,7 @@ class VisualizationSelector extends React.Component {
           ({ title, icon, componentName }, index) => (
             <Visualization
               key={index.toString()}
-              ref={x => {
+              ref={(x) => {
                 this[componentName] = x
               }}
               onMouseDown={this.handleMouseDown.bind(this, componentName)}
@@ -128,7 +128,7 @@ class VisualizationSelector extends React.Component {
 
   componentDidMount() {
     this.dragSources = []
-    this.dragSources = Object.keys(configs).map(key =>
+    this.dragSources = Object.keys(configs).map((key) =>
       this.props.goldenLayout.createDragSource(this[key], configs[key])
     )
     this.listenToDragSources()
@@ -145,7 +145,7 @@ class VisualizationSelector extends React.Component {
     })
   }
   listenToDragSources() {
-    this.dragSources.forEach(dragSource => {
+    this.dragSources.forEach((dragSource) => {
       this.listenToDragStart(dragSource)
       this.listenToDragStop(dragSource)
     })

@@ -21,8 +21,8 @@ const _ = require('underscore')
 function match(regexList, attribute) {
   return (
     _.chain(regexList)
-      .map(str => new RegExp(str))
-      .find(regex => regex.exec(attribute))
+      .map((str) => new RegExp(str))
+      .find((regex) => regex.exec(attribute))
       .value() !== undefined
   )
 }
@@ -99,7 +99,7 @@ const properties = {
       dataType: 'json',
       url: './internal/config',
     })
-      .done(data => {
+      .done((data) => {
         props = _.extend(props, data)
 
         $.ajax({
@@ -108,7 +108,7 @@ const properties = {
           dataType: 'json',
           url: './internal/platform/config/ui',
         })
-          .done(uiConfig => {
+          .done((uiConfig) => {
             props.ui = uiConfig
             return props
           })

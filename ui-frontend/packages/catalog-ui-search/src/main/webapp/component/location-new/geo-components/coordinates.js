@@ -18,7 +18,7 @@ const MaskedTextField = require('../inputs/masked-text-field')
 const { latitudeDMSMask, longitudeDMSMask } = require('./masks')
 const { buildDmsString, parseDmsCoordinate } = require('../utils/dms-utils')
 
-const Coordinate = props => {
+const Coordinate = (props) => {
   const { placeholder, value, onChange, children, ...otherProps } = props
   return (
     <div className="coordinate">
@@ -33,7 +33,7 @@ const Coordinate = props => {
   )
 }
 
-const MaskedCoordinate = props => {
+const MaskedCoordinate = (props) => {
   const { placeholder, mask, value, onChange, children, ...otherProps } = props
   return (
     <div className="coordinate">
@@ -49,14 +49,14 @@ const MaskedCoordinate = props => {
   )
 }
 
-const DmsLatitude = props => {
+const DmsLatitude = (props) => {
   return (
     <MaskedCoordinate
       placeholder="dd°mm'ss.sss&quot;"
       mask={latitudeDMSMask}
       placeholderChar="_"
       {...props}
-      onBlur={event => {
+      onBlur={(event) => {
         props.onChange(
           buildDmsString(parseDmsCoordinate(props.value)),
           event.type
@@ -66,14 +66,14 @@ const DmsLatitude = props => {
   )
 }
 
-const DmsLongitude = props => {
+const DmsLongitude = (props) => {
   return (
     <MaskedCoordinate
       placeholder="ddd°mm'ss.sss&quot;"
       mask={longitudeDMSMask}
       placeholderChar="_"
       {...props}
-      onBlur={event => {
+      onBlur={(event) => {
         props.onChange(
           buildDmsString(parseDmsCoordinate(props.value)),
           event.type
@@ -83,7 +83,7 @@ const DmsLongitude = props => {
   )
 }
 
-const DdLatitude = props => {
+const DdLatitude = (props) => {
   return (
     <Coordinate
       placeholder="latitude"
@@ -97,7 +97,7 @@ const DdLatitude = props => {
   )
 }
 
-const DdLongitude = props => {
+const DdLongitude = (props) => {
   return (
     <Coordinate
       placeholder="longitude"
@@ -111,7 +111,7 @@ const DdLongitude = props => {
   )
 }
 
-const UsngCoordinate = props => {
+const UsngCoordinate = (props) => {
   return (
     <div className="coordinate">
       <TextField label="Grid" {...props} />

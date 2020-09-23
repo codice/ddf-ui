@@ -45,39 +45,28 @@ const ClusterView = Marionette.ItemView.extend({
     )
     this.geometry.push(
       this.options.map.addPointWithText(center, {
-        id: this.model.get('results').map(result => result.id),
-        color: this.model
-          .get('results')
-          .first()
-          .get('metacard')
-          .get('color'),
+        id: this.model.get('results').map((result) => result.id),
+        color: this.model.get('results').first().get('metacard').get('color'),
         view: this,
       })
     )
   },
   addConvexHull() {
-    const points = this.model.get('results').map(result =>
-      result
-        .get('metacard')
-        .get('properties')
-        .getPoints()
-    )
-    const data = _.flatten(points, true).map(coord => ({
+    const points = this.model
+      .get('results')
+      .map((result) => result.get('metacard').get('properties').getPoints())
+    const data = _.flatten(points, true).map((coord) => ({
       longitude: coord[0],
       latitude: coord[1],
     }))
-    const convexHull = calculateConvexHull(data).map(coord => [
+    const convexHull = calculateConvexHull(data).map((coord) => [
       coord.longitude,
       coord.latitude,
     ])
     convexHull.push(convexHull[0])
     const geometry = this.options.map.addLine(convexHull, {
-      id: this.model.get('results').map(result => result.id),
-      color: this.model
-        .get('results')
-        .first()
-        .get('metacard')
-        .get('color'),
+      id: this.model.get('results').map((result) => result.id),
+      color: this.model.get('results').first().get('metacard').get('color'),
       view: this,
     })
     this.options.map.hideGeometry(geometry)
@@ -88,7 +77,7 @@ const ClusterView = Marionette.ItemView.extend({
       id &&
       this.model
         .get('results')
-        .map(result => result.id)
+        .map((result) => result.id)
         .toString() === id.toString()
     ) {
       this.options.map.showGeometry(this.geometry[1])
@@ -102,14 +91,14 @@ const ClusterView = Marionette.ItemView.extend({
     const results = this.model.get('results')
     // if there are less selected results, loop over those instead of this model's results
     if (selectedResults.length < results.length) {
-      selectedResults.some(result => {
+      selectedResults.some((result) => {
         if (results.get(result.id)) {
           selected++
         }
         return selected === results.length
       })
     } else {
-      results.forEach(result => {
+      results.forEach((result) => {
         if (selectedResults.get(result.id)) {
           selected++
         }
@@ -141,11 +130,7 @@ const ClusterView = Marionette.ItemView.extend({
   },
   showFullySelected() {
     this.options.map.updateCluster(this.geometry, {
-      color: this.model
-        .get('results')
-        .first()
-        .get('metacard')
-        .get('color'),
+      color: this.model.get('results').first().get('metacard').get('color'),
       isSelected: true,
       count: this.model.get('results').length,
       outline: 'black',
@@ -154,11 +139,7 @@ const ClusterView = Marionette.ItemView.extend({
   },
   showPartiallySelected() {
     this.options.map.updateCluster(this.geometry, {
-      color: this.model
-        .get('results')
-        .first()
-        .get('metacard')
-        .get('color'),
+      color: this.model.get('results').first().get('metacard').get('color'),
       isSelected: false,
       count: this.model.get('results').length,
       outline: 'black',
@@ -167,11 +148,7 @@ const ClusterView = Marionette.ItemView.extend({
   },
   showUnselected() {
     this.options.map.updateCluster(this.geometry, {
-      color: this.model
-        .get('results')
-        .first()
-        .get('metacard')
-        .get('color'),
+      color: this.model.get('results').first().get('metacard').get('color'),
       isSelected: false,
       count: this.model.get('results').length,
       outline: 'white',
@@ -180,7 +157,7 @@ const ClusterView = Marionette.ItemView.extend({
   },
   onDestroy() {
     if (this.geometry) {
-      this.geometry.forEach(geometry => {
+      this.geometry.forEach((geometry) => {
         this.options.map.removeGeometry(geometry)
       })
     }

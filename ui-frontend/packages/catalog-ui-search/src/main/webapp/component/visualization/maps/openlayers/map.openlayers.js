@@ -63,7 +63,7 @@ function createMap(insertionElement) {
 
 function determineIdFromPosition(position, map) {
   const features = []
-  map.forEachFeatureAtPixel(position, feature => {
+  map.forEachFeatureAtPixel(position, (feature) => {
     features.push(feature)
   })
   if (features.length > 0) {
@@ -86,7 +86,7 @@ function offMap([longitude, latitude]) {
 
 // The extension argument is a function used in panToExtent
 // It allows for customization of the way the map pans to results
-export default function(
+export default function (
   insertionElement,
   selectionInterface,
   notificationEl,
@@ -101,7 +101,7 @@ export default function(
   const drawingTools = setupDrawingTools(map)
 
   function setupTooltip(map) {
-    map.on('pointermove', e => {
+    map.on('pointermove', (e) => {
       const point = unconvertPointCoordinate(e.coordinate)
       if (!offMap(point)) {
         mapModel.updateMouseCoordinates({
@@ -154,17 +154,11 @@ export default function(
   function findOverlappingLabel(findSelected, geometryInstance) {
     return _.find(
       mapModel.get('labels'),
-      label =>
-        label
-          .getSource()
-          .getFeatures()[0]
-          .getGeometry()
-          .getCoordinates()[0] === geometryInstance.getCoordinates()[0] &&
-        label
-          .getSource()
-          .getFeatures()[0]
-          .getGeometry()
-          .getCoordinates()[1] === geometryInstance.getCoordinates()[1] &&
+      (label) =>
+        label.getSource().getFeatures()[0].getGeometry().getCoordinates()[0] ===
+          geometryInstance.getCoordinates()[0] &&
+        label.getSource().getFeatures()[0].getGeometry().getCoordinates()[1] ===
+          geometryInstance.getCoordinates()[1] &&
         ((findSelected && label.get('isSelected')) || label.getVisible())
     )
   }
@@ -213,23 +207,14 @@ export default function(
     if (!geometry.getVisible()) {
       return
     }
-    const geometryInstance = geometry
-      .getSource()
-      .getFeatures()[0]
-      .getGeometry()
+    const geometryInstance = geometry.getSource().getFeatures()[0].getGeometry()
     const hiddenLabel = _.find(
       mapModel.get('labels'),
-      label =>
-        label
-          .getSource()
-          .getFeatures()[0]
-          .getGeometry()
-          .getCoordinates()[0] === geometryInstance.getCoordinates()[0] &&
-        label
-          .getSource()
-          .getFeatures()[0]
-          .getGeometry()
-          .getCoordinates()[1] === geometryInstance.getCoordinates()[1] &&
+      (label) =>
+        label.getSource().getFeatures()[0].getGeometry().getCoordinates()[0] ===
+          geometryInstance.getCoordinates()[0] &&
+        label.getSource().getFeatures()[0].getGeometry().getCoordinates()[1] ===
+          geometryInstance.getCoordinates()[1] &&
         label.get('id') !== geometry.get('id') &&
         !label.getVisible()
     )
@@ -258,7 +243,7 @@ export default function(
       drawingTools.bbox.destroy()
     },
     onLeftClick(callback) {
-      $(map.getTargetElement()).on('click', e => {
+      $(map.getTargetElement()).on('click', (e) => {
         const boundingRect = map.getTargetElement().getBoundingClientRect()
         callback(e, {
           mapTarget: determineIdFromPosition(
@@ -269,21 +254,21 @@ export default function(
       })
     },
     onRightClick(callback) {
-      $(map.getTargetElement()).on('contextmenu', e => {
+      $(map.getTargetElement()).on('contextmenu', (e) => {
         callback(e)
       })
     },
     onMouseTrackingForPopup(downCallback, moveCallback, upCallback) {
-      $(map.getTargetElement()).on('mousedown', e => {
+      $(map.getTargetElement()).on('mousedown', (e) => {
         downCallback()
       })
-      $(map.getTargetElement()).on('mousemove', e => {
+      $(map.getTargetElement()).on('mousemove', (e) => {
         moveCallback()
       })
       this.onLeftClick(upCallback)
     },
     onMouseMove(callback) {
-      $(map.getTargetElement()).on('mousemove', e => {
+      $(map.getTargetElement()).on('mousemove', (e) => {
         const boundingRect = map.getTargetElement().getBoundingClientRect()
         callback(e, {
           mapTarget: determineIdFromPosition(
@@ -296,7 +281,7 @@ export default function(
     timeoutIds: [],
     onCameraMoveStart(callback) {
       clearTimeout(this.timeoutId)
-      this.timeoutIds.forEach(timeoutId => {
+      this.timeoutIds.forEach((timeoutId) => {
         clearTimeout(timeoutId)
       })
       this.timeoutIds = []
@@ -336,14 +321,14 @@ export default function(
     },
     panToResults(results) {
       const coordinates = _.flatten(
-        results.map(result => result.getPoints('location')),
+        results.map((result) => result.getPoints('location')),
         true
       )
       this.panToExtent(coordinates)
     },
     panToExtent(coords) {
       if (coords.constructor === Array && coords.length > 0) {
-        const lineObject = coords.map(coordinate =>
+        const lineObject = coords.map((coordinate) =>
           convertPointCoordinate(coordinate)
         )
 
@@ -357,7 +342,7 @@ export default function(
       }
     },
     zoomToExtent(coords, opts = {}) {
-      const lineObject = coords.map(coordinate =>
+      const lineObject = coords.map((coordinate) =>
         convertPointCoordinate(coordinate)
       )
 
@@ -370,7 +355,10 @@ export default function(
       })
     },
     zoomToBoundingBox({ north, east, south, west }) {
-      this.zoomToExtent([[west, south], [east, north]])
+      this.zoomToExtent([
+        [west, south],
+        [east, north],
+      ])
     },
     limit(value, min, max) {
       return Math.min(Math.max(value, min), max)
@@ -395,7 +383,7 @@ export default function(
       this.removeOverlay(metacardId)
 
       const coords = model.getPoints('location')
-      const array = _.map(coords, coord => convertPointCoordinate(coord))
+      const array = _.map(coords, (coord) => convertPointCoordinate(coord))
 
       const polygon = new Openlayers.geom.Polygon([array])
       const extent = polygon.getExtent()
@@ -432,7 +420,7 @@ export default function(
       )
     },
     getWindowLocationsOfResults(results) {
-      return results.map(result => {
+      return results.map((result) => {
         const openlayersCenterOfGeometry = utility.calculateOpenlayersCenterOfGeometry(
           result
         )
@@ -678,7 +666,7 @@ export default function(
           Options are a view to relate to, and an id, and a color.
         */
     addLine(line, options) {
-      const lineObject = line.map(coordinate =>
+      const lineObject = line.map((coordinate) =>
         convertPointCoordinate(coordinate)
       )
 
@@ -739,7 +727,7 @@ export default function(
          */
     updateCluster(geometry, options) {
       if (geometry.constructor === Array) {
-        geometry.forEach(innerGeometry => {
+        geometry.forEach((innerGeometry) => {
           this.updateCluster(innerGeometry, options)
         })
       } else {
@@ -785,7 +773,7 @@ export default function(
         */
     updateGeometry(geometry, options) {
       if (geometry.constructor === Array) {
-        geometry.forEach(innerGeometry => {
+        geometry.forEach((innerGeometry) => {
           this.updateGeometry(innerGeometry, options)
         })
       } else {
@@ -960,8 +948,8 @@ export default function(
       if (validateGeo('multiline', JSON.stringify(lineObject)).error) {
         return
       }
-      lineObject = lineObject.map(line =>
-        line.map(coords => convertPointCoordinate(coords))
+      lineObject = lineObject.map((line) =>
+        line.map((coords) => convertPointCoordinate(coords))
       )
 
       let feature = new Openlayers.Feature({
@@ -998,14 +986,14 @@ export default function(
       return vectorLayer
     },
     destroyShape(cid) {
-      const shapeIndex = shapes.findIndex(shape => cid === shape.model.cid)
+      const shapeIndex = shapes.findIndex((shape) => cid === shape.model.cid)
       if (shapeIndex >= 0) {
         shapes[shapeIndex].destroy()
         shapes.splice(shapeIndex, 1)
       }
     },
     destroyShapes() {
-      shapes.forEach(shape => {
+      shapes.forEach((shape) => {
         shape.destroy()
       })
       shapes = []

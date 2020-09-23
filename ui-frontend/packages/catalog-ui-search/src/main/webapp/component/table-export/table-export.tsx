@@ -76,22 +76,18 @@ export function getSrcCount(
 ) {
   const result = selectionInterface.getCurrentQuery().get('result')
   return exportSize === 'visible'
-    ? Object.values(result.get('lazyResults').status as {
-        [key: string]: any
-      }).find((status: any) => status.id === src).count
+    ? Object.values(
+        result.get('lazyResults').status as {
+          [key: string]: any
+        }
+      ).find((status: any) => status.id === src).count
     : count
 }
 function getColumnOrder(): string[] {
-  return user
-    .get('user')
-    .get('preferences')
-    .get('columnOrder')
+  return user.get('user').get('preferences').get('columnOrder')
 }
 function getHiddenFields(): string[] {
-  return user
-    .get('user')
-    .get('preferences')
-    .get('columnHide')
+  return user.get('user').get('preferences').get('columnHide')
 }
 function getSearches(
   exportSize: string,
@@ -124,7 +120,7 @@ function getSearches(
 }
 function getHits(sources: Source[]): number {
   return sources
-    .filter(source => source.id !== 'cache')
+    .filter((source) => source.id !== 'cache')
     .reduce((hits, source) => (source.hits ? hits + source.hits : hits), 0)
 }
 function getExportCount({
@@ -149,9 +145,7 @@ export const getWarning = (exportCountInfo: ExportCountInfo): string => {
     .getCurrentQuery()
     .get('result')
   const totalHits = getHits(Object.values(result.get('lazyResults').status))
-  const limitWarning = `You cannot export more than the administrator configured limit of ${
-    properties.exportResultLimit
-  }.`
+  const limitWarning = `You cannot export more than the administrator configured limit of ${properties.exportResultLimit}.`
   let warningMessage = ''
   if (exportCount > properties.exportResultLimit) {
     if (exportCountInfo.exportSize === 'custom') {

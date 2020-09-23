@@ -12,7 +12,7 @@ export const BetterClickAwayListener = (props: ClickAwayListenerProps) => {
   return (
     <ClickAwayListener
       {...props}
-      onClickAway={e => {
+      onClickAway={(e) => {
         /**
          * Should we be doing a querySelectorAll and seeing if anything on the page contains the element?  I feel like this could fail in certain instances.
          */

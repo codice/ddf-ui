@@ -24,20 +24,17 @@ type Props = {
 }
 
 const FilterComparator = ({ filter, setFilter }: Props) => {
-  useEffect(
-    () => {
-      const comparators = getComparators(filter.property)
-      if (
-        !comparators.map(comparator => comparator.value).includes(filter.type)
-      ) {
-        setFilter({
-          ...filter,
-          type: comparators[0].value as FilterClass['type'],
-        })
-      }
-    },
-    [filter]
-  )
+  useEffect(() => {
+    const comparators = getComparators(filter.property)
+    if (
+      !comparators.map((comparator) => comparator.value).includes(filter.type)
+    ) {
+      setFilter({
+        ...filter,
+        type: comparators[0].value as FilterClass['type'],
+      })
+    }
+  }, [filter])
 
   useEffect(() => {}, [filter])
 
@@ -49,7 +46,7 @@ const FilterComparator = ({ filter, setFilter }: Props) => {
       variant="outlined"
       select
       value={filter.type}
-      onChange={e => {
+      onChange={(e) => {
         const newType = e.target.value as FilterClass['type']
         setFilter({
           ...filter,
@@ -58,7 +55,7 @@ const FilterComparator = ({ filter, setFilter }: Props) => {
       }}
       size="small"
     >
-      {comparators.map(comparator => (
+      {comparators.map((comparator) => (
         <MenuItem value={comparator.value} key={comparator.label}>
           {comparator.label}
         </MenuItem>

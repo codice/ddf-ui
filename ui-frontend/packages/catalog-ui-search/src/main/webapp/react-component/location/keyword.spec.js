@@ -38,9 +38,9 @@ describe('<Keyword />', () => {
   after(() => {
     unmockProperties()
   })
-  it('should fetch features on select', done => {
+  it('should fetch features on select', (done) => {
     const coordinates = [1, 2, 3]
-    const fetch = async url => {
+    const fetch = async (url) => {
       expect(url).to.equal('./internal/geofeature?id=0')
       return {
         async json() {
@@ -65,7 +65,7 @@ describe('<Keyword />', () => {
     })
     expect(wrapper.state('loading')).to.equal(true)
   })
-  it('should inform user on failure to fetch geofeature', done => {
+  it('should inform user on failure to fetch geofeature', (done) => {
     const onError = () => {
       wrapper.update()
       expect(wrapper.text()).include('Geo feature endpoint unavailable')

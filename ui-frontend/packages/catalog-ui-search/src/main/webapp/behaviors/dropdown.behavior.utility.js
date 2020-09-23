@@ -43,16 +43,13 @@ module.exports = {
   },
   withinAnyDropdownBehavior(clickedElement) {
     return (
-      $('[data-behavior-dropdown]')
-        .find(clickedElement)
-        .addBack(clickedElement).length > 0
+      $('[data-behavior-dropdown]').find(clickedElement).addBack(clickedElement)
+        .length > 0
     )
   },
   withinAnyReactPortal(clickedElement) {
     return (
-      $('react-portal')
-        .find(clickedElement)
-        .addBack(clickedElement).length > 0
+      $('react-portal').find(clickedElement).addBack(clickedElement).length > 0
     )
   },
   withinAnyDropdown(clickedElement) {
@@ -109,11 +106,7 @@ module.exports = {
     )
   },
   withinDOM(clickedElement) {
-    return (
-      $('body')
-        .find(clickedElement)
-        .addBack(clickedElement).length > 0
-    )
+    return $('body').find(clickedElement).addBack(clickedElement).length > 0
   },
   updatePosition($dropdownEl, sourceEl) {
     const clientRect = sourceEl.getBoundingClientRect()

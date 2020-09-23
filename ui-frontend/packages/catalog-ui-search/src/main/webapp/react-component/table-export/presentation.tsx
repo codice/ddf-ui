@@ -27,7 +27,7 @@ const Root = styled.div`
   overflow: auto;
 
   button {
-    margin-top: ${props => props.theme.minimumSpacing};
+    margin-top: ${(props) => props.theme.minimumSpacing};
     width: 100%;
   }
 

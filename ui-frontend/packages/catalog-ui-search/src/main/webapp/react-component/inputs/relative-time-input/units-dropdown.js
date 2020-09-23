@@ -25,23 +25,20 @@ const suggestions = [
   { label: 'Years', value: 'y' },
 ]
 
-const UnitsDropdown = props => {
+const UnitsDropdown = (props) => {
   const [value, setValue] = useState(
-    suggestions.find(suggestion => suggestion.value === props.value) ||
+    suggestions.find((suggestion) => suggestion.value === props.value) ||
       suggestions[0]
   )
 
-  useEffect(
-    () => {
-      props.onChange(value.value)
-    },
-    [value.value]
-  )
+  useEffect(() => {
+    props.onChange(value.value)
+  }, [value.value])
 
   return (
     <Dropdown label={value.label}>
       <Menu value={value.label} onChange={setValue}>
-        {suggestions.map(suggestion => {
+        {suggestions.map((suggestion) => {
           return (
             <MenuItem key={suggestion.value} value={suggestion}>
               {suggestion.label}

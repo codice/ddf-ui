@@ -20,7 +20,7 @@
 // MIT license
 // jshint ignore: start
 // eslint-disable-next-line no-extra-semi
-;(function() {
+;(function () {
   let lastTime = 0
   const vendors = ['ms', 'moz', 'webkit', 'o']
   for (let x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
@@ -31,7 +31,7 @@
   }
 
   if (!window.requestAnimationFrame)
-    window.requestAnimationFrame = function(callback, element) {
+    window.requestAnimationFrame = function (callback, element) {
       const currTime = new Date().getTime()
       const timeToCall = Math.max(0, 16 - (currTime - lastTime))
       const id = window.setTimeout(() => {
@@ -42,7 +42,7 @@
     }
 
   if (!window.cancelAnimationFrame)
-    window.cancelAnimationFrame = function(id) {
+    window.cancelAnimationFrame = function (id) {
       clearTimeout(id)
     }
 })()

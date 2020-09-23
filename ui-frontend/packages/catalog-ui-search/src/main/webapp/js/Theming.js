@@ -23,7 +23,7 @@ const Common = require('./Common.js')
 
 const backboneModel = new Backbone.Model()
 import { lessWorkerModel } from './../component/singletons/less.worker-instance'
-lessWorkerModel.subscribe(data => {
+lessWorkerModel.subscribe((data) => {
   if (data.method === 'render') {
     updateTheme(data.css)
     wreqr.vent.trigger('resize')

@@ -20,7 +20,7 @@ export function addLayer({
   layer: layerId,
 }) {
   const initializedLayers = new Set(initializedLayerOrder)
-  const filtered = allLayerOrder.filter(id => initializedLayers.has(id))
+  const filtered = allLayerOrder.filter((id) => initializedLayers.has(id))
 
   if (filtered.length < initializedLayerOrder.length) {
     throw new Error(
@@ -32,7 +32,9 @@ export function addLayer({
       `addLayer: the two layer orders cannot have different orders`
     )
   }
-  return allLayerOrder.filter(id => id === layerId || initializedLayers.has(id))
+  return allLayerOrder.filter(
+    (id) => id === layerId || initializedLayers.has(id)
+  )
 }
 
 export function shiftLayers({
@@ -40,7 +42,7 @@ export function shiftLayers({
   cur: currentLayerOrder,
 }) {
   const previousLayers = new Set(previousLayerOrder)
-  return currentLayerOrder.filter(id => previousLayers.has(id))
+  return currentLayerOrder.filter((id) => previousLayers.has(id))
 }
 
 export function getShift({ prev: previousLayerOrder, cur: currentLayerOrder }) {
@@ -57,7 +59,7 @@ export function getShift({ prev: previousLayerOrder, cur: currentLayerOrder }) {
   }
 
   const shiftLayerToIndex = ({ layerOrder, layer: layerId, index }) => {
-    const layerIdRemoved = layerOrder.filter(id => id !== layerId)
+    const layerIdRemoved = layerOrder.filter((id) => id !== layerId)
     return [
       ...layerIdRemoved.slice(0, index),
       layerId,

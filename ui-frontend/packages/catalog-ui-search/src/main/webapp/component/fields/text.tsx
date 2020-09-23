@@ -42,7 +42,7 @@ export const TextField = ({ value, onChange }: TextFieldProps) => {
       variant="outlined"
       placeholder="Use * for wildcard."
       value={value || ''}
-      onChange={e => {
+      onChange={(e) => {
         onChange(e.target.value)
       }}
       className="whitespace-normal"

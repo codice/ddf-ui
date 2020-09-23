@@ -23,23 +23,23 @@ module.exports = Marionette.Controller.extend({
     if (typeof this.drawingType === 'undefined') {
       throw 'drawingType needs to be overwritten'
     }
-    this.listenTo(wreqr.vent, `search:${this.drawingType}display`, function(
+    this.listenTo(wreqr.vent, `search:${this.drawingType}display`, function (
       model
     ) {
       this.show(model)
     })
-    this.listenTo(wreqr.vent, `search:draw${this.drawingType}`, function(
+    this.listenTo(wreqr.vent, `search:draw${this.drawingType}`, function (
       model
     ) {
       this.draw(model)
     })
-    this.listenTo(wreqr.vent, 'search:drawstop', function(model) {
+    this.listenTo(wreqr.vent, 'search:drawstop', function (model) {
       this.stop(model)
     })
-    this.listenTo(wreqr.vent, 'search:drawend', function(model) {
+    this.listenTo(wreqr.vent, 'search:drawend', function (model) {
       this.destroyByModel(model)
     })
-    this.listenTo(wreqr.vent, 'search:destroyAllDraw', function(model) {
+    this.listenTo(wreqr.vent, 'search:destroyAllDraw', function (model) {
       this.destroyAll(model)
     })
   },
@@ -51,7 +51,7 @@ module.exports = Marionette.Controller.extend({
   },
   getViewForModel(model) {
     return this.views.filter(
-      view => view.model === model && view.options.map === this.options.map
+      (view) => view.model === model && view.options.map === this.options.map
     )[0]
   },
   removeViewForModel(model) {

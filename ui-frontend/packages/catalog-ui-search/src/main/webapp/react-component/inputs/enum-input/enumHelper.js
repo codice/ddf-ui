@@ -15,7 +15,7 @@
 import { matchesFilter } from '../../../component/select/filterHelper'
 
 export const getFilteredSuggestions = (input, suggestions, matchCase) => {
-  return suggestions.filter(suggestion =>
+  return suggestions.filter((suggestion) =>
     matchesFilter(input, suggestion.label, matchCase)
   )
 }

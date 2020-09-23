@@ -68,7 +68,7 @@ const updateSort = (attribute: string) => {
   const prefResultSort = prefs.get('resultSort') as Sort[]
   const currSort =
     prefResultSort && prefResultSort.length
-      ? prefResultSort.find(sort => sort.attribute === attribute)
+      ? prefResultSort.find((sort) => sort.attribute === attribute)
       : undefined
 
   const sort: Sort[] = [
@@ -88,11 +88,9 @@ const updateSort = (attribute: string) => {
 }
 
 const getSortDirectionClass = (attribute: string) => {
-  const sorts = user
-    .get('user')
-    .get('preferences')
-    .get('resultSort') as Sort[]
-  const matchedSort = sorts && sorts.find(sort => sort.attribute === attribute)
+  const sorts = user.get('user').get('preferences').get('resultSort') as Sort[]
+  const matchedSort =
+    sorts && sorts.find((sort) => sort.attribute === attribute)
   if (matchedSort && matchedSort.direction) {
     if (matchedSort.direction === 'ascending') {
       return 'fa fa-sort-asc'
@@ -122,14 +120,14 @@ export const HeaderCheckbox = ({
     <Button
       data-id="select-all-checkbox"
       color="primary"
-      onClick={event => {
+      onClick={(event) => {
         event.stopPropagation()
         if (selection === 'selected') {
-          Object.values(lazyResults.results).forEach(lazyResult => {
+          Object.values(lazyResults.results).forEach((lazyResult) => {
             lazyResult.setSelected(false)
           })
         } else {
-          Object.values(lazyResults.results).forEach(lazyResult => {
+          Object.values(lazyResults.results).forEach((lazyResult) => {
             lazyResult.setSelected(true)
           })
         }

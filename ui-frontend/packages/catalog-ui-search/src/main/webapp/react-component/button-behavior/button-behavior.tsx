@@ -35,8 +35,8 @@ type Props = {
 const Root = styled.div`
   display: inline-block;
   cursor: pointer;
-  min-height: ${props => props.theme.minimumButtonSize};
-  min-width: ${props => props.theme.minimumButtonSize};
+  min-height: ${(props) => props.theme.minimumButtonSize};
+  min-width: ${(props) => props.theme.minimumButtonSize};
 `
 /**
  * This should be done on keydown, check buttons out in a browser if you're in doubt.
@@ -84,7 +84,7 @@ const render: React.ComponentType<
         className={className}
         onClick={onClick}
         style={style as any}
-        {...otherAttr as any}
+        {...(otherAttr as any)}
       >
         {children}
       </Root>

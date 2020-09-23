@@ -78,10 +78,7 @@ module.exports = Marionette.LayoutView.extend({
     this.$el.toggleClass('is-destroyed', true)
     setTimeout(() => {
       this.model.collection.remove(this.model)
-      user
-        .get('user')
-        .get('preferences')
-        .savePreferences()
+      user.get('user').get('preferences').savePreferences()
     }, 250)
   },
   stopUpload() {

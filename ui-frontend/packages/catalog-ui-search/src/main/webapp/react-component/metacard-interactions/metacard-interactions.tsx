@@ -19,23 +19,23 @@ export const Divider = () => <div className="is-divider composed-menu" />
 
 const InteractionIcon = styled.div`
   text-align: center;
-  width: ${props => props.theme.minimumButtonSize};
+  width: ${(props) => props.theme.minimumButtonSize};
   display: inline-block;
-  line-height: ${props => props.theme.minimumButtonSize};
-  height: ${props => props.theme.minimumButtonSize};
+  line-height: ${(props) => props.theme.minimumButtonSize};
+  height: ${(props) => props.theme.minimumButtonSize};
 `
 
 const InteractionText = styled.div`
-  line-height: ${props => props.theme.minimumButtonSize};
-  height: ${props => props.theme.minimumButtonSize};
+  line-height: ${(props) => props.theme.minimumButtonSize};
+  height: ${(props) => props.theme.minimumButtonSize};
   display: inline-block;
 `
 
 const Interaction = styled.div`
-  line-height: ${props => props.theme.minimumButtonSize};
-  height: ${props => props.theme.minimumButtonSize};
+  line-height: ${(props) => props.theme.minimumButtonSize};
+  height: ${(props) => props.theme.minimumButtonSize};
   white-space: nowrap;
-  padding: ${props => `0px ${props.theme.minimumSpacing}`};
+  padding: ${(props) => `0px ${props.theme.minimumSpacing}`};
   cursor: pointer;
   overflow: hidden;
 `

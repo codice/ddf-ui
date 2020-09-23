@@ -12,17 +12,14 @@ type Props = {
 const ZoomToSelection = ({ lazyResults, map, mapView }: Props) => {
   const selectedResults = useSelectedResults({ lazyResults })
 
-  React.useEffect(
-    () => {
-      const arrayForm = Object.values(selectedResults)
-      if (arrayForm.length > 0) {
-        setTimeout(() => {
-          map.panToResults(Object.values(selectedResults))
-        }, 0)
-      }
-    },
-    [selectedResults]
-  )
+  React.useEffect(() => {
+    const arrayForm = Object.values(selectedResults)
+    if (arrayForm.length > 0) {
+      setTimeout(() => {
+        map.panToResults(Object.values(selectedResults))
+      }, 0)
+    }
+  }, [selectedResults])
   React.useEffect(() => {
     const arrayForm = Object.values(selectedResults)
 

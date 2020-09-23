@@ -23,7 +23,7 @@ const { DdLatitude, DdLongitude } = require('./coordinates')
 const { ddPoint } = require('../models')
 const DistanceUtils = require('../../../js/DistanceUtils')
 
-const Point = props => {
+const Point = (props) => {
   const { dd, setState } = props
   return (
     <Group>
@@ -45,7 +45,7 @@ const Point = props => {
   )
 }
 
-const Circle = props => {
+const Circle = (props) => {
   const { dd, setState } = props
   return (
     <div>
@@ -87,7 +87,7 @@ const Circle = props => {
   )
 }
 
-const Line = props => {
+const Line = (props) => {
   const { dd, setState } = props
   const points = dd.line.list.map((entry, index) => (
     <Group key={index}>
@@ -123,7 +123,7 @@ const Line = props => {
   )
 }
 
-const Polygon = props => {
+const Polygon = (props) => {
   const { dd, setState } = props
   const points = dd.polygon.list.map((entry, index) => (
     <Group key={index}>
@@ -159,7 +159,7 @@ const Polygon = props => {
   )
 }
 
-const BoundingBox = props => {
+const BoundingBox = (props) => {
   const { dd, setState } = props
   return (
     <div>
@@ -199,7 +199,7 @@ const BoundingBox = props => {
   )
 }
 
-const LatLongDD = props => {
+const LatLongDD = (props) => {
   const { dd, setState } = props
 
   const inputs = {

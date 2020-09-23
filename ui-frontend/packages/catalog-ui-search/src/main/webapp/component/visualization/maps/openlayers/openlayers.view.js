@@ -20,7 +20,7 @@ module.exports = MapView.extend({
   className: 'is-openlayers',
   loadMap() {
     const deferred = new $.Deferred()
-    require(['./map.openlayers'], OpenlayersMap => {
+    require(['./map.openlayers'], (OpenlayersMap) => {
       deferred.resolve(OpenlayersMap.default)
     })
     return deferred

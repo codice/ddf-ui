@@ -45,14 +45,14 @@ module.exports = Backbone.AssociatedModel.extend({
       let handled = false
       const promise = rpc
         .call('query', [options.data], options.timeout)
-        .then(res => {
+        .then((res) => {
           if (!handled) {
             handled = true
             options.success(res)
             return [res, 'success']
           }
         })
-        .catch(res => {
+        .catch((res) => {
           if (!handled) {
             handled = true
             res.options = options
@@ -106,10 +106,10 @@ module.exports = Backbone.AssociatedModel.extend({
         promise() {
           const d = $.Deferred()
           promise
-            .then(value => {
+            .then((value) => {
               d.resolve(value)
             })
-            .catch(err => {
+            .catch((err) => {
               d.reject(err)
             })
           return d

@@ -26,8 +26,8 @@ const Root = styled.div<SaveButtonProps>`
   vertical-align: top;
   overflow: hidden;
   height: 100%;
-  width: ${props => (props.isSaved ? '0px' : props.theme.minimumButtonSize)};
-  transition: ${props => {
+  width: ${(props) => (props.isSaved ? '0px' : props.theme.minimumButtonSize)};
+  transition: ${(props) => {
     return `width ${
       props.theme.coreTransitionTime
     } linear ${props.theme.multiple(
@@ -40,32 +40,32 @@ const Root = styled.div<SaveButtonProps>`
 
 const SaveIcon = styled.span<SaveButtonProps>`
   color: inherit;
-  opacity: ${props => (props.isSaved ? 0 : 1)};
-  transform: scale(${props => (props.isSaved ? 2 : 1)});
+  opacity: ${(props) => (props.isSaved ? 0 : 1)};
+  transform: scale(${(props) => (props.isSaved ? 2 : 1)});
   transition: opacity
-      ${props => props.theme.multiple(2, props.theme.coreTransitionTime, 's')}
+      ${(props) => props.theme.multiple(2, props.theme.coreTransitionTime, 's')}
       ease-out 0s,
     transform
-      ${props => props.theme.multiple(2, props.theme.coreTransitionTime, 's')}
+      ${(props) => props.theme.multiple(2, props.theme.coreTransitionTime, 's')}
       ease-out 0s;
 `
 
 const CheckIcon = styled.span<SaveButtonProps>`
   visibility: visible;
   transition: transform
-      ${props => props.theme.multiple(2, props.theme.coreTransitionTime, 's')}
-      ease-out ${props => props.theme.coreTransitionTime},
+      ${(props) => props.theme.multiple(2, props.theme.coreTransitionTime, 's')}
+      ease-out ${(props) => props.theme.coreTransitionTime},
     opacity
-      ${props => props.theme.multiple(2, props.theme.coreTransitionTime, 's')}
-      ease-out ${props => props.theme.coreTransitionTime},
+      ${(props) => props.theme.multiple(2, props.theme.coreTransitionTime, 's')}
+      ease-out ${(props) => props.theme.coreTransitionTime},
     color
-      ${props => props.theme.multiple(2, props.theme.coreTransitionTime, 's')}
+      ${(props) => props.theme.multiple(2, props.theme.coreTransitionTime, 's')}
       ease-out
-      ${props => props.theme.multiple(8, props.theme.coreTransitionTime, 's')};
-  ${props => (!props.isSaved ? 'transition: none;' : '')}
-  color: ${props => (props.isSaved ? 'transparent' : 'inherit')};
-  transform: scale(${props => (props.isSaved ? 1 : 2)});
-  opacity: ${props => (props.isSaved ? 1 : 0)};
+      ${(props) => props.theme.multiple(8, props.theme.coreTransitionTime, 's')};
+  ${(props) => (!props.isSaved ? 'transition: none;' : '')}
+  color: ${(props) => (props.isSaved ? 'transparent' : 'inherit')};
+  transform: scale(${(props) => (props.isSaved ? 1 : 2)});
+  opacity: ${(props) => (props.isSaved ? 1 : 0)};
   margin: auto;
   position: absolute;
   line-height: inherit;

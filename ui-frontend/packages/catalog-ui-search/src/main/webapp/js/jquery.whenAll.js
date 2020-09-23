@@ -14,7 +14,7 @@
  **/
 
 const $ = require('jquery')
-$.whenAll = function() {
+$.whenAll = function () {
   let args = arguments,
     sliceDeferred = [].slice,
     i = 0,
@@ -24,7 +24,7 @@ $.whenAll = function() {
     deferred = $.Deferred()
 
   function resolveFunc(i, reject) {
-    return function(value) {
+    return function (value) {
       rejected = rejected || reject
       args[i] = arguments.length > 1 ? sliceDeferred.call(arguments, 0) : value
       if (!--count) {

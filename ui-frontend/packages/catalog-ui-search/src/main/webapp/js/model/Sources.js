@@ -21,20 +21,20 @@ const $ = require('jquery')
 
 function removeLocalCatalogIfNeeded(response, localCatalog) {
   if (properties.isDisableLocalCatalog()) {
-    response = _.filter(response, source => source.id !== localCatalog)
+    response = _.filter(response, (source) => source.id !== localCatalog)
   }
 
   return response
 }
 
 function removeCache(response) {
-  response = _.filter(response, source => source.id !== 'cache')
+  response = _.filter(response, (source) => source.id !== 'cache')
   return response
 }
 
 const Types = Backbone.Collection.extend({})
 
-const computeTypes = function(sources) {
+const computeTypes = function (sources) {
   if (_.size(properties.typeNameMapping) > 0) {
     return _.map(properties.typeNameMapping, (value, key) => {
       if (_.isArray(value)) {
@@ -46,12 +46,12 @@ const computeTypes = function(sources) {
     })
   } else {
     return _.chain(sources)
-      .map(source => source.contentTypes)
+      .map((source) => source.contentTypes)
       .flatten()
-      .filter(element => element.name !== '')
-      .sortBy(element => element.name.toUpperCase())
-      .uniq(false, type => type.name)
-      .map(element => {
+      .filter((element) => element.name !== '')
+      .sortBy((element) => element.name.toUpperCase())
+      .uniq(false, (type) => type.name)
+      .map((element) => {
         element.value = element.name
         return element
       })
@@ -105,7 +105,7 @@ module.exports = Backbone.Collection.extend({
     return [this.localCatalog]
   },
   determineLocalCatalog() {
-    $.get('./internal/localcatalogid').then(data => {
+    $.get('./internal/localcatalogid').then((data) => {
       this.localCatalog = data['local-catalog-id']
 
       poller

@@ -30,7 +30,7 @@ export default hot(module)((props: Props) => {
       type={Type.number}
       onChange={onChange}
       placeholder={placeholder || 'Enter a numerical input'}
-      {...destructureBaseProps(otherProps) as any}
+      {...(destructureBaseProps(otherProps) as any)}
     />
   )
 })

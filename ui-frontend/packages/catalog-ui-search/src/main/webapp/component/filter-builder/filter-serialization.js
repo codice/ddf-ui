@@ -64,7 +64,7 @@ const cqlToComparator = Object.keys(comparatorToCQL).reduce((mapping, key) => {
   return mapping
 }, {})
 
-const transformFilter = filter => {
+const transformFilter = (filter) => {
   const { type, property } = filter
 
   const value = CQLUtils.isGeoFilter(filter.type) ? filter : filter.value
@@ -142,7 +142,7 @@ const FilterBuilderCollection = Backbone.Collection.extend({
 })
 
 // model->json
-export const serialize = model => {
+export const serialize = (model) => {
   if (model instanceof FilterBuilderModel) {
     const operator = model.get('operator')
     const filters = model.get('filters') || []
@@ -160,7 +160,7 @@ export const serialize = model => {
     }
     return {
       type: operator,
-      filters: filters.map(serialize).filter(filter => filter),
+      filters: filters.map(serialize).filter((filter) => filter),
     }
   }
 
@@ -210,8 +210,8 @@ export const deserialize = (filter = defaultFilter) => {
   return new FilterBuilderModel({
     operator: type,
     filters: new FilterBuilderCollection(
-      filters.map(
-        filter => (filter.filters !== undefined ? deserialize(filter) : filter)
+      filters.map((filter) =>
+        filter.filters !== undefined ? deserialize(filter) : filter
       )
     ),
   })

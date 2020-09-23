@@ -39,7 +39,7 @@ const GeometryView = Marionette.ItemView.extend({
       propertiesModel &&
       _.find(
         Object.keys(propertiesModel.changedAttributes()),
-        attribute =>
+        (attribute) =>
           (metacardDefinitions.metacardTypes[attribute] &&
             metacardDefinitions.metacardTypes[attribute].type === 'GEOMETRY') ||
           attribute === 'id'
@@ -53,7 +53,7 @@ const GeometryView = Marionette.ItemView.extend({
     const geometry = _.flatten(this.model.getGeometries())
     if (geometry.length > 0) {
       this.geometry = []
-      _.forEach(geometry, property => {
+      _.forEach(geometry, (property) => {
         this.handleGeometry(wkx.Geometry.parse(property).toGeoJSON())
       })
       this.updateSelected = _debounce(this.updateSelected, 100, {
@@ -103,7 +103,7 @@ const GeometryView = Marionette.ItemView.extend({
         this.handlePoint(geometry.coordinates)
         break
       case 'Polygon':
-        geometry.coordinates.forEach(polygon => {
+        geometry.coordinates.forEach((polygon) => {
           polygon = this.adjustPoints(geometry.type, polygon)
           this.handlePoint(polygon[0])
           this.handleLine(polygon)
@@ -118,20 +118,20 @@ const GeometryView = Marionette.ItemView.extend({
         this.handleLine(geometry.coordinates)
         break
       case 'MultiLineString':
-        geometry.coordinates.forEach(line => {
+        geometry.coordinates.forEach((line) => {
           line = this.adjustPoints(geometry.type, line)
           this.handlePoint(line[0])
           this.handleLine(line)
         })
         break
       case 'MultiPoint':
-        geometry.coordinates.forEach(point => {
+        geometry.coordinates.forEach((point) => {
           this.handlePoint(point)
         })
         break
       case 'MultiPolygon':
-        geometry.coordinates.forEach(multipolygon => {
-          multipolygon.forEach(polygon => {
+        geometry.coordinates.forEach((multipolygon) => {
+          multipolygon.forEach((polygon) => {
             polygon = this.adjustPoints(geometry.type, polygon)
             this.handlePoint(polygon[0])
             this.handleLine(polygon)
@@ -139,7 +139,7 @@ const GeometryView = Marionette.ItemView.extend({
         })
         break
       case 'GeometryCollection':
-        geometry.geometries.forEach(subgeometry => {
+        geometry.geometries.forEach((subgeometry) => {
           this.handleGeometry(subgeometry)
         })
         break
@@ -149,10 +149,7 @@ const GeometryView = Marionette.ItemView.extend({
     this.geometry.push(
       this.options.map.addPoint(point, {
         id: this.model.id,
-        title: this.model
-          .get('metacard')
-          .get('properties')
-          .get('title'),
+        title: this.model.get('metacard').get('properties').get('title'),
         color: this.model.get('metacard').get('color'),
         icon: iconHelper.getFull(this.model),
         useVerticalOrigin: true,
@@ -180,10 +177,7 @@ const GeometryView = Marionette.ItemView.extend({
       this.options.map.addLine(line, {
         id: this.model.id,
         color: this.model.get('metacard').get('color'),
-        title: this.model
-          .get('metacard')
-          .get('properties')
-          .get('title'),
+        title: this.model.get('metacard').get('properties').get('title'),
         view: this,
       })
     )
@@ -191,7 +185,7 @@ const GeometryView = Marionette.ItemView.extend({
   updateSelected() {
     const selected = this.options.selectionInterface
       .getSelectedResults()
-      .some(function(result) {
+      .some(function (result) {
         return result.id === this.model.id
       }, this)
     if (selected) {
@@ -203,7 +197,7 @@ const GeometryView = Marionette.ItemView.extend({
   updateDisplay(isSelected) {
     if (!this.isClustered && this.isSelected !== isSelected) {
       this.isSelected = isSelected
-      this.geometry.forEach(geometry => {
+      this.geometry.forEach((geometry) => {
         this.options.map.updateGeometry(geometry, {
           color: this.model.get('metacard').get('color'),
           icon: iconHelper.getFull(this.model),
@@ -225,18 +219,18 @@ const GeometryView = Marionette.ItemView.extend({
     }
   },
   showGeometry() {
-    this.geometry.forEach(geometry => {
+    this.geometry.forEach((geometry) => {
       this.options.map.showGeometry(geometry)
     })
   },
   hideGeometry() {
-    this.geometry.forEach(geometry => {
+    this.geometry.forEach((geometry) => {
       this.options.map.hideGeometry(geometry)
     })
   },
   onDestroy() {
     if (this.geometry) {
-      this.geometry.forEach(geometry => {
+      this.geometry.forEach((geometry) => {
         this.options.map.removeGeometry(geometry)
       })
     }

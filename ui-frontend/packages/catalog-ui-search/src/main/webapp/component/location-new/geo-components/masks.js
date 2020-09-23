@@ -16,7 +16,7 @@
 
 const decimalMask = ['.', /\d/, /\d/, /\d/, '"']
 
-const latitudeDMSMask = function(rawValue) {
+const latitudeDMSMask = function (rawValue) {
   const baseMask = [/\d/, /\d/, '°', /\d/, /\d/, "'", /\d/, /\d/]
 
   const pattern = new RegExp(
@@ -32,7 +32,7 @@ const latitudeDMSMask = function(rawValue) {
   return baseMask.concat('"')
 }
 
-const longitudeDMSMask = function(rawValue) {
+const longitudeDMSMask = function (rawValue) {
   const baseMask = [/\d/, /\d/, /\d/, '°', /\d/, /\d/, "'", /\d/, /\d/]
 
   const pattern = new RegExp(

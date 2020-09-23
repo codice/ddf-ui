@@ -67,7 +67,7 @@ stories.add('with menu', () => {
       onOpen={action('onOpen')}
     >
       <Menu value={value} onChange={action('onChange')}>
-        {values.map(value => {
+        {values.map((value) => {
           return <MenuItem value={value} />
         })}
       </Menu>

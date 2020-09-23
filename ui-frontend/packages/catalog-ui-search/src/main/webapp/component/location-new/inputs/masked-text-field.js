@@ -78,15 +78,15 @@ class MaskedTextField extends React.Component {
           <MaskedInput
             value={value}
             keepCharPositions
-            onChange={e => {
+            onChange={(e) => {
               this.props.onChange(e.target.value)
             }}
-            pipe={value => this.padEndWithZeros(value)}
+            pipe={(value) => this.padEndWithZeros(value)}
             render={(setRef, { defaultValue, ...props }) => {
               return (
                 <input
                   id={label}
-                  ref={ref => {
+                  ref={(ref) => {
                     setRef(ref)
                     this.ref = ref
                   }}

@@ -64,7 +64,7 @@ module.exports = Marionette.LayoutView.extend({
     }, 0)
   },
   listenForClick() {
-    $(window).on('click.notification-group', e => {
+    $(window).on('click.notification-group', (e) => {
       this.$el.toggleClass('wait-for-confirmation', false)
       this.unlistenForClick()
     })
@@ -73,7 +73,7 @@ module.exports = Marionette.LayoutView.extend({
     $(window).off('click.notification-group')
   },
   handleConfirm() {
-    this.groupItems.currentView.children.forEach(childView => {
+    this.groupItems.currentView.children.forEach((childView) => {
       childView.removeModel()
     })
   },

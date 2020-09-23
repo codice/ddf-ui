@@ -26,7 +26,7 @@ type Props = {
 
 const LazyMetacardInteractions = ({ lazyResults, onClose }: Props) => {
   const backboneCollection = new Backbone.Collection(
-    lazyResults.map(lazyResult => lazyResult.getBackbone())
+    lazyResults.map((lazyResult) => lazyResult.getBackbone())
   )
 
   return <MetacardInteractions model={backboneCollection} onClose={onClose} />

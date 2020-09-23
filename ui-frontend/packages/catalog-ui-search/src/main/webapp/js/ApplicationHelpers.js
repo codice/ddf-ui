@@ -37,15 +37,15 @@ Backbone.Associations.setSeparator('>')
  * @param options
  * @returns {Q Promise}
  */
-const fetchPromise = function(options) {
+const fetchPromise = function (options) {
   const deferred = Q.defer(),
     modelOrCollection = this
   options = options ? _.clone(options) : {}
 
-  options.success = function() {
+  options.success = function () {
     deferred.resolve.apply(deferred, arguments)
   }
-  options.error = function() {
+  options.error = function () {
     deferred.reject.apply(deferred, arguments)
   }
   modelOrCollection.fetch(options)

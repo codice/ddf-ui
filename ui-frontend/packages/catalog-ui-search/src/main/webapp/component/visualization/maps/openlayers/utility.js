@@ -36,7 +36,7 @@ module.exports = {
   calculateOpenlayersCenterOfGeometry(propertyModel) {
     const lineObject = propertyModel
       .getPoints()
-      .map(coordinate => convertPointCoordinate(coordinate))
+      .map((coordinate) => convertPointCoordinate(coordinate))
     const extent = Openlayers.extent.boundingExtent(lineObject)
     return Openlayers.extent.getCenter(extent)
   },
@@ -54,9 +54,9 @@ module.exports = {
     */
   calculateOpenlayersCenterOfGeometries(propertyModels) {
     const allPoints = _.flatten(
-      propertyModels.map(propertyModel => propertyModel.getPoints()),
+      propertyModels.map((propertyModel) => propertyModel.getPoints()),
       true
-    ).map(coordinate => convertPointCoordinate(coordinate))
+    ).map((coordinate) => convertPointCoordinate(coordinate))
     const extent = Openlayers.extent.boundingExtent(allPoints)
     return Openlayers.extent.getCenter(extent)
   },

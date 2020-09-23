@@ -13,14 +13,14 @@
  *
  **/
 /* loosely based on ISO 8601 time intervals */
-const serialize = time => {
+const serialize = (time) => {
   if (!time || time.unit === undefined || time.last === undefined) {
     return
   }
   const prefix = time.unit === 'm' || time.unit === 'h' ? 'PT' : 'P'
   return `RELATIVE(${prefix + time.last + time.unit.toUpperCase()})`
 }
-const deserialize = value => {
+const deserialize = (value) => {
   if (!value) {
     return
   }

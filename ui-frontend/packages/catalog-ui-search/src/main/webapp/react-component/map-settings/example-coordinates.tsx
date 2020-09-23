@@ -26,7 +26,7 @@ const Root = styled.div`
   display: block;
   width: 100%;
   white-space: nowrap;
-  padding: ${props => props.theme.minimumSpacing};
+  padding: ${(props) => props.theme.minimumSpacing};
   position: relative;
 
   &.example-label,
@@ -47,11 +47,11 @@ const Label = styled.label`
     vertical-align: middle;
     cursor: auto;
     font-weight: bolder;
-    max-width: calc(100% - ${props => props.theme.minimumButtonSize});
+    max-width: calc(100% - ${(props) => props.theme.minimumButtonSize});
     margin: 0px;
     line-height: 1.4;
-    padding: ${props => props.theme.minimumSpacing} 0px;
-    min-height: ${props => props.theme.minimumButtonSize};
+    padding: ${(props) => props.theme.minimumSpacing} 0px;
+    min-height: ${(props) => props.theme.minimumButtonSize};
     overflow: hidden;
     text-overflow: ellipsis;
     word-wrap: normal;

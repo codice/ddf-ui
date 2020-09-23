@@ -25,11 +25,7 @@ const ExpandMetacard = (props: Props) => {
   if (isRouted || props.model.length > 1) {
     return null
   }
-  let id = props.model
-    .first()
-    .get('metacard')
-    .get('properties')
-    .get('id')
+  let id = props.model.first().get('metacard').get('properties').get('id')
 
   return (
     <Button

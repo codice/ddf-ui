@@ -59,7 +59,7 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
           variant="outlined"
           type="text"
           value={value.second}
-          onChange={e => {
+          onChange={(e) => {
             onChange({
               ...value,
               second: e.target.value,
@@ -77,7 +77,7 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
           type="number"
           variant="outlined"
           value={value.distance}
-          onChange={e => {
+          onChange={(e) => {
             onChange({
               ...value,
               distance: Math.max(1, parseInt(e.target.value) || 0),
@@ -97,7 +97,7 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
           variant="outlined"
           type="text"
           value={value.first}
-          onChange={e => {
+          onChange={(e) => {
             onChange({
               ...value,
               first: e.target.value,

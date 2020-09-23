@@ -48,12 +48,7 @@ type Props = {
 }
 
 const getShowThumbnails = () => {
-  return (
-    user
-      .get('user')
-      .get('preferences')
-      .get('resultDisplay') === 'Grid'
-  )
+  return user.get('user').get('preferences').get('resultDisplay') === 'Grid'
 }
 
 const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {

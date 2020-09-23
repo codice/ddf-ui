@@ -22,26 +22,26 @@ const PropertyView = require('../../component/property/property.view')
 
 const Root = styled.div`
   overflow: auto;
-  padding: ${props => props.theme.minimumSpacing};
+  padding: ${(props) => props.theme.minimumSpacing};
 `
 
 const Time = styled.div`
   width: 100%;
   font-weight: bolder;
-  padding-top: ${props => props.theme.minimumSpacing};
-  padding-right: ${props => props.theme.minimumSpacing};
-  padding-bottom: ${props => props.theme.minimumSpacing};
-  padding-left: ${props => props.theme.minimumSpacing};
+  padding-top: ${(props) => props.theme.minimumSpacing};
+  padding-right: ${(props) => props.theme.minimumSpacing};
+  padding-bottom: ${(props) => props.theme.minimumSpacing};
+  padding-left: ${(props) => props.theme.minimumSpacing};
 `
 
 const TimeLabel = styled.div`
-  padding-top: ${props => props.theme.minimumSpacing};
-  padding-bottom: ${props => props.theme.minimumSpacing};
+  padding-top: ${(props) => props.theme.minimumSpacing};
+  padding-bottom: ${(props) => props.theme.minimumSpacing};
 `
 
 const TimeValue = styled.div`
-  padding-top: ${props => props.theme.minimumSpacing};
-  padding-left: ${props => props.theme.minimumSpacing};
+  padding-top: ${(props) => props.theme.minimumSpacing};
+  padding-left: ${(props) => props.theme.minimumSpacing};
 `
 
 type Props = {

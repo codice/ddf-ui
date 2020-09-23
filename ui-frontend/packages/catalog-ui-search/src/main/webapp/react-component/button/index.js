@@ -14,7 +14,7 @@
  **/
 const React = require('react')
 
-const Button = props => (
+const Button = (props) => (
   <button className="old-button is-primary" type="button" {...props} />
 )
 

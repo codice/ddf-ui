@@ -27,7 +27,7 @@ describe('tokenize', () => {
       'Result does not have the proper number of filters'
     ).to.have.lengthOf(5)
 
-    filters.forEach(e => {
+    filters.forEach((e) => {
       switch (e.property) {
         case 'metacard.modified':
         case 'metacard.created':
@@ -60,7 +60,7 @@ describe('tokenize', () => {
       it('throws when parsing an unknown filter function', () => {
         const cqlString = `abcdefg('anyText', 3, 'cat dog')`
 
-        let doParse = function() {
+        let doParse = function () {
           cql.read(cqlString)
         }
         expect(doParse).to.throw('Unsupported filter function: abcdefg')

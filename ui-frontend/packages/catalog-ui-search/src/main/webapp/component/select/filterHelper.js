@@ -39,7 +39,7 @@ function getWords(str, matchcase) {
 }
 
 function wordStartsWithFilter(words, filter) {
-  return words.find(word => word.indexOf(filter) === 0)
+  return words.find((word) => word.indexOf(filter) === 0)
 }
 
 // Note that dot "." cannot be escaped since it's one of the attribute name delimiters AND a regex symbol

@@ -77,15 +77,15 @@ class AutoComplete extends React.Component {
             autoFocus
             value={input}
             placeholder={placeholder}
-            onChange={input => this.onChange(input)}
+            onChange={(input) => this.onChange(input)}
           />
         </div>
         {loading ? <div style={{ padding: '0 5px' }}>Searching...</div> : null}
         <Menu
           value={this.props.value}
-          onChange={option => this.props.onChange(option)}
+          onChange={(option) => this.props.onChange(option)}
         >
-          {suggestions.map(option => (
+          {suggestions.map((option) => (
             <MenuItem key={option.id} value={option}>
               {option.name}
             </MenuItem>

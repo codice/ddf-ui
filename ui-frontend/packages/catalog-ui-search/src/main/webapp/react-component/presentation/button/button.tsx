@@ -112,73 +112,73 @@ type RootProps = {
 }
 
 const Root = styled.button<RootProps>`
-    max-width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: clip;
-    display: inline-block;
-    border: none;
-    padding: ${props =>
-      props.inText ? `0px ${props.theme.minimumSpacing}` : `0px`};
-    margin: ${props =>
-      props.inText ? `0px ${props.theme.minimumSpacing}` : `0px`};
-    border-radius: ${props => props.theme.borderRadius};
-    font-size: ${props =>
-      props.inText ? 'inherit !important' : props.theme.mediumFontSize};
-    line-height: ${props =>
-      props.inText ? 'inherit !important' : props.theme.minimumButtonSize};
-    height: ${props => {
-      if (props.inText) {
-        return 'auto'
-      } else {
-        return props.theme.minimumButtonSize
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  display: inline-block;
+  border: none;
+  padding: ${(props) =>
+    props.inText ? `0px ${props.theme.minimumSpacing}` : `0px`};
+  margin: ${(props) =>
+    props.inText ? `0px ${props.theme.minimumSpacing}` : `0px`};
+  border-radius: ${(props) => props.theme.borderRadius};
+  font-size: ${(props) =>
+    props.inText ? 'inherit !important' : props.theme.mediumFontSize};
+  line-height: ${(props) =>
+    props.inText ? 'inherit !important' : props.theme.minimumButtonSize};
+  height: ${(props) => {
+    if (props.inText) {
+      return 'auto'
+    } else {
+      return props.theme.minimumButtonSize
+    }
+  }};
+  min-width: ${(props) =>
+    props.inText ? '0px !important' : props.theme.minimumButtonSize};
+  min-height: ${(props) =>
+    props.inText ? '0px !important' : props.theme.minimumButtonSize};
+  text-align: center;
+  vertical-align: top;
+  position: relative;
+
+  background: ${(props) => determineBackgroundFromProps(props)};
+  color: ${(props) => determineColorFromProps(props)};
+
+  opacity: ${(props) =>
+    props.fadeUntilHover ? props.theme.minimumOpacity : 1};
+
+  &:hover:not([disabled]),
+  &:focus:not([disabled]) {
+    opacity: 1;
+    background: ${(props) => shadeFromProps(0.9, props)};
+    box-shadow: 0px 0px 2px ${(props) => shadeFromProps(0.9, props)};
+  }
+
+  &:active:not([disabled]) {
+    opacity: 1;
+    background: ${(props) => shadeFromProps(0.7, props)};
+    box-shadow: 0px 0px 2px ${(props) => shadeFromProps(0.7, props)};
+  }
+
+  &:disabled {
+    ${(props) => {
+      if (props.buttonType !== buttonTypeEnum.neutral) {
+        return `text-shadow: 0px 0px 4px ${readableColor(
+          determineColorFromProps(props)
+        )};`
       }
-    }};
-    min-width: ${props =>
-      props.inText ? '0px !important' : props.theme.minimumButtonSize};
-    min-height: ${props =>
-      props.inText ? '0px !important' : props.theme.minimumButtonSize};
-    text-align: center;
-    vertical-align: top;
-    position: relative;
-
-    background: ${props => determineBackgroundFromProps(props)};
-    color: ${props => determineColorFromProps(props)};
-
-    opacity: ${props =>
-      props.fadeUntilHover ? props.theme.minimumOpacity : 1};
-
-    &:hover:not([disabled]),
-    &:focus:not([disabled]) {
-        opacity: 1;
-        background: ${props => shadeFromProps(0.9, props)};
-        box-shadow: 0px 0px 2px ${props => shadeFromProps(0.9, props)};
-    }
-
-    &:active:not([disabled]) {
-        opacity: 1;
-        background: ${props => shadeFromProps(0.7, props)};
-        box-shadow: 0px 0px 2px ${props => shadeFromProps(0.7, props)};
-    }
-
-    &:disabled {
-        ${props => {
-          if (props.buttonType !== buttonTypeEnum.neutral) {
-            return `text-shadow: 0px 0px 4px ${readableColor(
-              determineColorFromProps(props)
-            )};`
-          }
-          return
-        }}
-        background: repeating-linear-gradient(
+      return
+    }}
+    background: repeating-linear-gradient(
                 45deg,
-                ${props => tintFromProps(0.9, props)},
-                ${props => tintFromProps(0.9, props)} 10px,
-                ${props => shadeFromProps(0.9, props)} 10px,
-                ${props => shadeFromProps(0.9, props)} 20px
+                ${(props) => tintFromProps(0.9, props)},
+                ${(props) => tintFromProps(0.9, props)} 10px,
+                ${(props) => shadeFromProps(0.9, props)} 10px,
+                ${(props) => shadeFromProps(0.9, props)} 20px
         );
-        cursor: not-allowed;
-    }
+    cursor: not-allowed;
+  }
 `
 
 type IconProps = {
@@ -187,7 +187,7 @@ type IconProps = {
 
 const Icon = styled.span<IconProps>`
   margin: 0px
-    ${props =>
+    ${(props) =>
       props.text !== undefined && props.text !== ''
         ? props.theme.minimumSpacing
         : '0px'}
@@ -199,7 +199,7 @@ type TextProps = {
 }
 
 const Text = styled.span<TextProps>`
-  font-size: ${props =>
+  font-size: ${(props) =>
     props.inText ? 'inherit !important' : props.theme.mediumFontSize};
 `
 
@@ -251,7 +251,7 @@ export const Button = ({
       buttonType={buttonType}
       className={`${className} ${rootClassName} old-button`}
       style={rootStyle}
-      {...otherProps as JSX.IntrinsicAttributes}
+      {...(otherProps as JSX.IntrinsicAttributes)}
     >
       <>
         {children ? children : ''}

@@ -19,13 +19,13 @@ const listenTo = Backbone.View.prototype.listenTo
  * Overrides listenTo to make it behave as it should.  In other words, not fire after views are destroyed.
  * Call is preferred since it's performance is much faster than apply.
  */
-Backbone.View.prototype.listenTo = function(
+Backbone.View.prototype.listenTo = function (
   obj: any,
   name: string,
   callback: Function
 ) {
   const view = this as any
-  return listenTo.call(view, obj, name, function() {
+  return listenTo.call(view, obj, name, function () {
     if (callback === undefined) {
       console.warn(`Found no callback for listener in ${view.tagName}`)
       return

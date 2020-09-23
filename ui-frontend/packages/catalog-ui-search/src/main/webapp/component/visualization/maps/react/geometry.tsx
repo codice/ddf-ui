@@ -23,10 +23,10 @@ const determineIfClustered = ({
   result: LazyQueryResult
 }) => {
   return Boolean(
-    clusters.find(cluster =>
+    clusters.find((cluster) =>
       Boolean(
         cluster.results.find(
-          clusteredResult =>
+          (clusteredResult) =>
             clusteredResult['metacard.id'] === result['metacard.id']
         )
       )
@@ -39,63 +39,48 @@ const Geometry = ({ lazyResult, map, clusters }: Props) => {
   const geometries = React.useRef([] as any[])
   const isSelected = useSelectionOfLazyResult({ lazyResult })
 
-  useUpdateEffect(
-    () => {
-      updateDisplay(isSelected)
-    },
-    [isSelected, lazyResult.plain]
-  )
+  useUpdateEffect(() => {
+    updateDisplay(isSelected)
+  }, [isSelected, lazyResult.plain])
 
-  React.useEffect(
-    () => {
-      checkIfClustered()
-    },
-    [clusters]
-  )
-  React.useEffect(
-    () => {
-      updateGeometries()
+  React.useEffect(() => {
+    checkIfClustered()
+  }, [clusters])
+  React.useEffect(() => {
+    updateGeometries()
 
-      return () => {
-        // cleanup
-        destroyGeometries()
-      }
-    },
-    [lazyResult.plain]
-  )
+    return () => {
+      // cleanup
+      destroyGeometries()
+    }
+  }, [lazyResult.plain])
 
-  const handlePoint = React.useMemo(
-    () => {
-      return (point: any) => {
-        geometries.current.push(
-          map.addPoint(point, {
-            id: lazyResult['metacard.id'],
-            title: lazyResult.plain.metacard.properties.title,
-            color,
-            icon,
-            isSelected,
-          })
-        )
-      }
-    },
-    [lazyResult.plain]
-  )
+  const handlePoint = React.useMemo(() => {
+    return (point: any) => {
+      geometries.current.push(
+        map.addPoint(point, {
+          id: lazyResult['metacard.id'],
+          title: lazyResult.plain.metacard.properties.title,
+          color,
+          icon,
+          isSelected,
+        })
+      )
+    }
+  }, [lazyResult.plain])
 
-  const handleLine = React.useMemo(
-    () => {
-      return (line: any) => {
-        geometries.current.push(
-          map.addLine(line, {
-            id: lazyResult['metacard.id'],
-            title: lazyResult.plain.metacard.properties.title,
-            color,
-            isSelected,
-          })
-        )
-      }
-    },
-    [lazyResult.plain]
-  )
+  const handleLine = React.useMemo(() => {
+    return (line: any) => {
+      geometries.current.push(
+        map.addLine(line, {
+          id: lazyResult['metacard.id'],
+          title: lazyResult.plain.metacard.properties.title,
+          color,
+          isSelected,
+        })
+      )
+    }
+  }, [lazyResult.plain])
 
   const handleGeometry = React.useMemo(() => {
     return (geometry: any) => {
@@ -141,41 +126,35 @@ const Geometry = ({ lazyResult, map, clusters }: Props) => {
     }
   }, [])
 
-  const checkIfClustered = React.useMemo(
-    () => {
-      return () => {
-        const updateIsClustered = determineIfClustered({
-          clusters,
-          result: lazyResult,
-        })
-        if (isClustered.current !== updateIsClustered) {
-          isClustered.current = updateIsClustered
-          if (isClustered.current) {
-            hideGeometries()
-          } else {
-            showGeometries()
-          }
+  const checkIfClustered = React.useMemo(() => {
+    return () => {
+      const updateIsClustered = determineIfClustered({
+        clusters,
+        result: lazyResult,
+      })
+      if (isClustered.current !== updateIsClustered) {
+        isClustered.current = updateIsClustered
+        if (isClustered.current) {
+          hideGeometries()
+        } else {
+          showGeometries()
         }
       }
-    },
-    [clusters]
-  )
+    }
+  }, [clusters])
 
   const color = React.useMemo(() => {
     return lazyResult.getColor()
   }, [])
 
-  const icon = React.useMemo(
-    () => {
-      return iconHelper.getFullByMetacardObject(lazyResult.plain)
-    },
-    [lazyResult.plain]
-  )
+  const icon = React.useMemo(() => {
+    return iconHelper.getFullByMetacardObject(lazyResult.plain)
+  }, [lazyResult.plain])
 
   const updateDisplay = React.useMemo(() => {
     return _debounce(
       (updateIsSelected: boolean) => {
-        geometries.current.forEach(geometry => {
+        geometries.current.forEach((geometry) => {
           map.updateGeometry(geometry, {
             color,
             icon,
@@ -220,21 +199,21 @@ const Geometry = ({ lazyResult, map, clusters }: Props) => {
 
   const destroyGeometries = React.useMemo(() => {
     return () => {
-      geometries.current.forEach(geometry => {
+      geometries.current.forEach((geometry) => {
         map.removeGeometry(geometry)
       })
     }
   }, [])
   const showGeometries = React.useMemo(() => {
     return () => {
-      geometries.current.forEach(geometry => {
+      geometries.current.forEach((geometry) => {
         map.showGeometry(geometry)
       })
     }
   }, [])
   const hideGeometries = React.useMemo(() => {
     return () => {
-      geometries.current.forEach(geometry => {
+      geometries.current.forEach((geometry) => {
         map.hideGeometry(geometry)
       })
     }

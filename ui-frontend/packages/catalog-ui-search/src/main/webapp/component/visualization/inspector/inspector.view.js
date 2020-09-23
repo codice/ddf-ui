@@ -29,17 +29,17 @@ const Empty = styled.div`
 `
 const Title = styled.div`
   opacity: 1;
-  transition: opacity ${props => props.theme.coreTransitionTime} linear;
+  transition: opacity ${(props) => props.theme.coreTransitionTime} linear;
   transform: translateX(0%);
   text-align: center;
-  padding: 0px ${props => props.theme.minimumSpacing};
+  padding: 0px ${(props) => props.theme.minimumSpacing};
 `
 const Content = styled.div`
   opacity: 1;
-  transition: opacity ${props => props.theme.coreTransitionTime} linear;
+  transition: opacity ${(props) => props.theme.coreTransitionTime} linear;
   transform: translateX(0%);
   display: block;
-  height: calc(100% - ${props => props.theme.minimumButtonSize});
+  height: calc(100% - ${(props) => props.theme.minimumButtonSize});
 `
 
 module.exports = Marionette.LayoutView.extend({

@@ -37,7 +37,7 @@ module.exports = Backbone.AssociatedModel.extend({
   checkSourceResponse() {
     if (this.get('successful') === false) {
       setTimeout(
-        function() {
+        function () {
           const currentMessages =
             this.get('messages') !== undefined ? this.get('messages') : []
           this.set(
@@ -78,12 +78,9 @@ module.exports = Backbone.AssociatedModel.extend({
   updateStatus(results) {
     let top = 0
     let fromcache = 0
-    results.forEach(result => {
+    results.forEach((result) => {
       if (
-        result
-          .get('metacard')
-          .get('properties')
-          .get('source-id') === this.id
+        result.get('metacard').get('properties').get('source-id') === this.id
       ) {
         top++
         if (!result.get('uncached')) {

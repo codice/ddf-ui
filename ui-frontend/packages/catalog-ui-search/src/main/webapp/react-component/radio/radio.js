@@ -18,7 +18,7 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { readableColor, rgba } from 'polished'
 
-const foreground = props => {
+const foreground = (props) => {
   if (props.theme.backgroundDropdown !== undefined) {
     return readableColor(props.theme.backgroundDropdown)
   }
@@ -31,7 +31,7 @@ const background = (props, alpha = 0.4) => {
 }
 
 const Root = styled.div`
-  border-radius: ${props => props.theme.borderRadius};
+  border-radius: ${(props) => props.theme.borderRadius};
   white-space: nowrap;
   background-color: inherit;
   border: 1px solid ${background};
@@ -40,19 +40,19 @@ const Root = styled.div`
 
 const Button = styled.button`
   vertical-align: top;
-  opacity: ${props => props.theme.minimumOpacity};
-  min-width: ${props => props.theme.minimumButtonSize};
-  min-height: ${props => props.theme.minimumButtonSize};
+  opacity: ${(props) => props.theme.minimumOpacity};
+  min-width: ${(props) => props.theme.minimumButtonSize};
+  min-height: ${(props) => props.theme.minimumButtonSize};
   border: none;
-  border-left: ${props =>
+  border-left: ${(props) =>
     !props.first ? '1px solid ' + background(props) : 'none'};
   background-color: inherit;
   padding: 0px 10px;
   box-size: border-box;
   cursor: pointer;
-  font-size: ${props => props.theme.minimumFontSize};
+  font-size: ${(props) => props.theme.minimumFontSize};
   color: ${foreground};
-  ${props =>
+  ${(props) =>
     props.selected
       ? `
     opacity: 1;
@@ -62,7 +62,7 @@ const Button = styled.button`
       : ''};
 `
 
-const Radio = props => {
+const Radio = (props) => {
   const { value, children, onChange } = props
 
   const childrenWithProps = React.Children.map(children, (child, i) => {
@@ -85,7 +85,7 @@ Radio.propTypes = {
   children: PropTypes.node,
 }
 
-const RadioItem = props => {
+const RadioItem = (props) => {
   const { value, first, children, selected, onClick } = props
   return (
     <Button first={first} selected={selected} onClick={() => onClick(value)}>

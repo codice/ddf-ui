@@ -38,7 +38,7 @@ const Root = styled.div<Props>`
 
   .navigation-item {
     display: inline-block;
-    width: ${props => props.theme.minimumButtonSize};
+    width: ${(props) => props.theme.minimumButtonSize};
     height: 100%;
     text-align: center;
     vertical-align: top;
@@ -47,20 +47,21 @@ const Root = styled.div<Props>`
 
   .alerts-badge {
     position: absolute;
-    font-size: ${props => props.theme.minimumFontSize};
+    font-size: ${(props) => props.theme.minimumFontSize};
     top: 35%;
     transform: scale(0) translateY(-50%);
-    transition: transform ${props => props.theme.coreTransitionTime} ease-in-out;
-    color: ${props => props.theme.warningColor};
+    transition: transform ${(props) => props.theme.coreTransitionTime}
+      ease-in-out;
+    color: ${(props) => props.theme.warningColor};
   }
 
   .item-alerts {
-    transition: transform 4 * ${props => props.theme.coreTransitionTime}
+    transition: transform 4 * ${(props) => props.theme.coreTransitionTime}
       ease-in-out;
     transform: scale(1);
   }
 
-  ${props => {
+  ${(props) => {
     if (props.hasUnseenNotifications) {
       return css`
         .item-alerts {

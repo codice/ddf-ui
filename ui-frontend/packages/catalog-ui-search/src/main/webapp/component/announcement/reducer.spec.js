@@ -16,7 +16,7 @@ const expect = require('chai').expect
 const actions = require('./actions')
 const configureStore = require('./configureStore')
 
-const mock = function(type, message) {
+const mock = function (type, message) {
   return {
     title: 'Title',
     type: type || 'error',
@@ -24,8 +24,8 @@ const mock = function(type, message) {
   }
 }
 
-const apply = function(fns) {
-  return function() {
+const apply = function (fns) {
+  return function () {
     fns.shift().apply(null, arguments)
   }
 }
@@ -43,17 +43,17 @@ describe('Announcement reducer', () => {
     expect(state).to.have.lengthOf(1)
   })
 
-  it('should dissmiss if not error', done => {
+  it('should dissmiss if not error', (done) => {
     const store = configureStore()
 
     const events = [
-      function(action) {
+      function (action) {
         expect(store.getState()).to.have.lengthOf(1)
       },
-      function() {
+      function () {
         expect(store.getState()).to.have.lengthOf(1)
       },
-      function(action) {
+      function (action) {
         expect(store.getState()).to.have.lengthOf(0)
         done()
       },
@@ -63,14 +63,14 @@ describe('Announcement reducer', () => {
     store.dispatch(actions.announce(mock('warn'), 1))
   })
 
-  it('should remove an announcement', done => {
+  it('should remove an announcement', (done) => {
     const store = configureStore([mock()])
 
     const events = [
-      function(action) {
+      function (action) {
         expect(store.getState()).to.have.lengthOf(1)
       },
-      function(action) {
+      function (action) {
         expect(store.getState()).to.have.lengthOf(0)
         done()
       },

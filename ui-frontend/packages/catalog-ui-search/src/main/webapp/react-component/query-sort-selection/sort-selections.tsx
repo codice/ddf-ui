@@ -48,7 +48,7 @@ export type SortItemType = {
 }
 
 const getCollectionAsJson = (collection: Props['value']) => {
-  const items: SortItemType[] = collection.map(sort => {
+  const items: SortItemType[] = collection.map((sort) => {
     return {
       attribute: {
         label: getLabel(sort.attribute),
@@ -72,7 +72,7 @@ const SortSelections = ({ value = [], onChange }: Props) => {
   const collectionJson = getCollectionAsJson(value)
 
   const sortAttributeOptions = getSortAttributeOptions(
-    collectionJson.map(item => item.attribute.value)
+    collectionJson.map((item) => item.attribute.value)
   )
 
   const updateAttribute = (index: number) => (attribute: string) => {

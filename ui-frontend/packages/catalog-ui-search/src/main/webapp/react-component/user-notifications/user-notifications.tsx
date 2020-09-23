@@ -24,11 +24,11 @@ const userNotifications = require('../../component/singletons/user-notifications
 type Props = WithBackboneProps
 
 const Empty = styled.div`
-  transition: transform ${props => props.theme.coreTransitionTime} linear;
+  transition: transform ${(props) => props.theme.coreTransitionTime} linear;
   transform: scale(1);
   text-align: center;
-  font-size: ${props => props.theme.largeFontSize};
-  padding: ${props => props.theme.mediumSpacing};
+  font-size: ${(props) => props.theme.largeFontSize};
+  padding: ${(props) => props.theme.mediumSpacing};
 `
 const Root = styled.div`
   height: 100%;
@@ -39,7 +39,7 @@ const Notifications = styled.div`
   height: 100%;
   width: 100%;
   display: block;
-  padding: ${props => props.theme.mediumSpacing};
+  padding: ${(props) => props.theme.mediumSpacing};
 `
 
 const informalName = (daysAgo: any) => {
@@ -51,9 +51,7 @@ const informalName = (daysAgo: any) => {
       return 'Yesterday'
       break
     default:
-      return moment()
-        .subtract(daysAgo, 'days')
-        .format('dddd')
+      return moment().subtract(daysAgo, 'days').format('dddd')
       break
   }
 }
@@ -85,7 +83,7 @@ class UserNotifications extends React.Component<Props, {}> {
     this.props.listenTo(userNotifications, 'add remove update', () =>
       this.setState({})
     )
-    this.notificationGroups = dayRange.map(i => (
+    this.notificationGroups = dayRange.map((i) => (
       <MarionetteRegionContainer
         key={i.toString()}
         view={listPreviousDays(i)}

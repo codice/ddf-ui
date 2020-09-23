@@ -27,10 +27,10 @@ const olUtils = require('../OpenLayersGeometryUtils')
 const DistanceUtils = require('../DistanceUtils.js')
 import { validateGeo } from '../../react-component/utils/validation'
 
-const translateFromOpenlayersCoordinates = coords => {
+const translateFromOpenlayersCoordinates = (coords) => {
   return coords
-    .map(value =>
-      value.map(point => {
+    .map((value) =>
+      value.map((point) => {
         const mappedPoint = ol.proj.transform(
           [
             DistanceUtils.coordinateRound(point[0]),
@@ -84,7 +84,7 @@ Draw.PolygonView = Marionette.View.extend({
     if (setArr.length < 3) {
       return
     }
-    _.each(setArr, item => {
+    _.each(setArr, (item) => {
       coords.push(
         ol.proj.transform(
           [item[0], item[1]],
@@ -137,7 +137,7 @@ Draw.PolygonView = Marionette.View.extend({
 
     const polygons = []
 
-    _.each(multiPolygon, polygon => {
+    _.each(multiPolygon, (polygon) => {
       polygons.push(this.coordsToLineString(polygon))
     })
 
@@ -185,12 +185,12 @@ Draw.PolygonView = Marionette.View.extend({
         this.model.get('polygonBufferUnits')
       ) || 1
 
-    const drawnPolygonSegments = coordinates.map(set => {
+    const drawnPolygonSegments = coordinates.map((set) => {
       return Turf.multiLineString([translateFromOpenlayersCoordinates(set)])
         .geometry.coordinates
     })
 
-    const bufferPolygonSegments = coordinates.map(set => {
+    const bufferPolygonSegments = coordinates.map((set) => {
       const polySegment = Turf.multiLineString([
         translateFromOpenlayersCoordinates(set),
       ])
@@ -198,7 +198,7 @@ Draw.PolygonView = Marionette.View.extend({
         polySegment,
         bufferWidth,
         'meters'
-      ).geometry.coordinates.map(set => {
+      ).geometry.coordinates.map((set) => {
         return Turf.polygon([set])
       })
       return Turf.union(...bufferPolygons).geometry.coordinates
@@ -286,12 +286,12 @@ Draw.PolygonView = Marionette.View.extend({
     })
 
     this.map.addInteraction(this.primitive)
-    this.primitive.on('drawend', sketchFeature => {
+    this.primitive.on('drawend', (sketchFeature) => {
       window.cancelAnimationFrame(that.accuratePolygonId)
       that.handleRegionStop(sketchFeature)
       that.map.removeInteraction(that.primitive)
     })
-    this.primitive.on('drawstart', sketchFeature => {
+    this.primitive.on('drawstart', (sketchFeature) => {
       that.showAccuratePolygon(sketchFeature)
     })
   },
@@ -364,7 +364,7 @@ Draw.Controller = DrawingController.extend({
         el: this.notificationEl,
       }).render()
       polygonModel.trigger('BeginExtent')
-      this.listenToOnce(polygonModel, 'EndExtent', function() {
+      this.listenToOnce(polygonModel, 'EndExtent', function () {
         this.notificationView.destroy()
       })
 

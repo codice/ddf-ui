@@ -23,13 +23,13 @@ const loadingCompanions = []
 
 function getLoadingCompanion(linkedView) {
   return loadingCompanions.filter(
-    loadingCompanion => loadingCompanion.options.element === linkedView.el
+    (loadingCompanion) => loadingCompanion.options.element === linkedView.el
   )[0]
 }
 
 function getElementLoadingCompanion(element) {
   return loadingCompanions.filter(
-    loadingCompanion => loadingCompanion.options.element === element
+    (loadingCompanion) => loadingCompanion.options.element === element
   )[0]
 }
 

@@ -28,7 +28,7 @@ const Message = styled.div`
   max-height: calc(100% - 2.25rem);
   height: auto;
   text-align: center;
-  padding: ${props => props.theme.mediumSpacing};
+  padding: ${(props) => props.theme.mediumSpacing};
 `
 const ButtonStyling = {
   height: '2.75rem',

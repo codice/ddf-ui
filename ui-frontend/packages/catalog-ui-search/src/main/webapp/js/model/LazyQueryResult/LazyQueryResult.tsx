@@ -29,7 +29,7 @@ const debounceTime = 50
 
 function getThumbnailAction(result: ResultType) {
   return result.actions.find(
-    action => action.id === 'catalog.data.metacard.thumbnail'
+    (action) => action.id === 'catalog.data.metacard.thumbnail'
   )
 }
 
@@ -110,7 +110,7 @@ export class LazyQueryResult {
     const subscribers = this[
       `subscriptionsToMe.${subscribableThing}`
     ] as SubscriptionType
-    Object.values(subscribers).forEach(callback => callback())
+    Object.values(subscribers).forEach((callback) => callback())
   }
   ['_notifySubscribers.backboneCreated']() {
     this._notifySubscribers('backboneCreated')
@@ -173,7 +173,7 @@ export class LazyQueryResult {
   }
   getPreview(): string {
     return this.plain.actions.filter(
-      action => action.id === 'catalog.data.metacard.html.preview'
+      (action) => action.id === 'catalog.data.metacard.html.preview'
     )[0].url
   }
   hasPreview(): boolean {
@@ -239,7 +239,7 @@ export class LazyQueryResult {
   }
   getMapActions() {
     return this.plain.actions.filter(
-      action => action.id.indexOf('catalog.data.metacard.map.') === 0
+      (action) => action.id.indexOf('catalog.data.metacard.map.') === 0
     )
   }
   hasMapActions(): boolean {
@@ -248,8 +248,8 @@ export class LazyQueryResult {
   getExportActions() {
     const otherActions = this.getMapActions()
     return this.plain.actions
-      .filter(action => action.title.indexOf('Export') === 0)
-      .filter(action => otherActions.indexOf(action) === -1)
+      .filter((action) => action.title.indexOf('Export') === 0)
+      .filter((action) => otherActions.indexOf(action) === -1)
   }
   hasExportActions(): boolean {
     return this.getExportActions().length > 0
@@ -257,7 +257,7 @@ export class LazyQueryResult {
   getOtherActions() {
     const otherActions = this.getExportActions().concat(this.getMapActions())
     return this.plain.actions.filter(
-      action => otherActions.indexOf(action) === -1
+      (action) => otherActions.indexOf(action) === -1
     )
   }
   hasRelevance() {

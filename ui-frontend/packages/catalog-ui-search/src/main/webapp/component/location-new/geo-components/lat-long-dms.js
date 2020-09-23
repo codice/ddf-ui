@@ -27,7 +27,7 @@ const { Direction } = require('../utils/dms-utils')
 const latitudeDirections = [Direction.North, Direction.South]
 const longitudeDirections = [Direction.East, Direction.West]
 
-const Point = props => {
+const Point = (props) => {
   const { dms, setState } = props
   return (
     <Group>
@@ -63,7 +63,7 @@ const Point = props => {
   )
 }
 
-const Circle = props => {
+const Circle = (props) => {
   const { dms, setState } = props
   return (
     <div>
@@ -118,7 +118,7 @@ const Circle = props => {
   )
 }
 
-const Line = props => {
+const Line = (props) => {
   const { dms, setState } = props
   const points = dms.line.list.map((entry, index) => (
     <Group key={index}>
@@ -168,7 +168,7 @@ const Line = props => {
   )
 }
 
-const Polygon = props => {
+const Polygon = (props) => {
   const { dms, setState } = props
   const points = dms.polygon.list.map((entry, index) => (
     <Group key={index}>
@@ -218,7 +218,7 @@ const Polygon = props => {
   )
 }
 
-const BoundingBox = props => {
+const BoundingBox = (props) => {
   const { dms, setState } = props
   return (
     <div>
@@ -286,7 +286,7 @@ const BoundingBox = props => {
   )
 }
 
-const LatLongDMS = props => {
+const LatLongDMS = (props) => {
   const { dms, setState } = props
 
   const inputs = {

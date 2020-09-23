@@ -24,28 +24,28 @@ export type ExtensionPointsType = {
   providers: SFC<ProviderProps>
   metacardInteractions: any[]
   customFilterInput: (props: Props) => React.ReactNode | undefined
-  customCanWritePermission: (
-    props: {
-      attribute: string
-      lazyResult: LazyQueryResult
-      user: any
-      editableAttributes: string[]
-    }
-  ) => boolean | undefined
+  customCanWritePermission: (props: {
+    attribute: string
+    lazyResult: LazyQueryResult
+    user: any
+    editableAttributes: string[]
+  }) => boolean | undefined
   customEditableAttributes: () => string[]
-  resultItemTitleAddOn: (
-    { lazyResult }: { lazyResult: LazyQueryResult }
-  ) => JSX.Element | null
-  resultItemRowAddOn: (
-    { lazyResult }: { lazyResult: LazyQueryResult }
-  ) => JSX.Element | null
-  layoutDropdown: (
-    props: {
-      goldenLayout: any
-      layoutResult?: ResultType
-      editLayoutRef?: any
-    }
-  ) => JSX.Element | null
+  resultItemTitleAddOn: ({
+    lazyResult,
+  }: {
+    lazyResult: LazyQueryResult
+  }) => JSX.Element | null
+  resultItemRowAddOn: ({
+    lazyResult,
+  }: {
+    lazyResult: LazyQueryResult
+  }) => JSX.Element | null
+  layoutDropdown: (props: {
+    goldenLayout: any
+    layoutResult?: ResultType
+    editLayoutRef?: any
+  }) => JSX.Element | null
   navigationRight: any[]
 }
 

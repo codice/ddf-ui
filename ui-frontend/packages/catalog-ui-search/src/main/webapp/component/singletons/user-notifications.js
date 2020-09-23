@@ -19,18 +19,9 @@ const Backbone = require('backbone')
 
 module.exports = new (Backbone.Collection.extend({
   initialize() {
-    const uploads = user
-      .get('user')
-      .get('preferences')
-      .get('uploads')
-    const alerts = user
-      .get('user')
-      .get('preferences')
-      .get('alerts')
-    const oauth = user
-      .get('user')
-      .get('preferences')
-      .get('oauth')
+    const uploads = user.get('user').get('preferences').get('uploads')
+    const alerts = user.get('user').get('preferences').get('alerts')
+    const oauth = user.get('user').get('preferences').get('oauth')
     this.add(uploads.models)
     this.add(alerts.models)
     this.add(oauth.models)
@@ -45,11 +36,11 @@ module.exports = new (Backbone.Collection.extend({
     return -model.getTimeComparator()
   },
   hasUnseen() {
-    return this.some(notification => notification.get('unseen'))
+    return this.some((notification) => notification.get('unseen'))
   },
   setSeen() {
     const setSeen = []
-    this.forEach(notification => {
+    this.forEach((notification) => {
       notification.set('unseen', false)
       if (notification.get('queryId')) {
         setSeen.push(notification)

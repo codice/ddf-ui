@@ -21,7 +21,7 @@ export const NumberField = ({
       variant="outlined"
       value={value}
       type="number"
-      onChange={e => {
+      onChange={(e) => {
         if (onChange) {
           if (type === 'integer') {
             onChange(parseInt(e.target.value).toString())

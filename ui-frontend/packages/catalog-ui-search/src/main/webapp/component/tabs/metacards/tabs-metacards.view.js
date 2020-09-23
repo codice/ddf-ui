@@ -20,7 +20,7 @@ const user = require('../../singletons/user-instance')
 
 function getTypes(results) {
   const types = {}
-  results.forEach(result => {
+  results.forEach((result) => {
     if (result.isResource()) {
       types.resource = true
     } else if (result.isRevision()) {

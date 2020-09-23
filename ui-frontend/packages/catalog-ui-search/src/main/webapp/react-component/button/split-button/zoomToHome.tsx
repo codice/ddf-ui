@@ -25,16 +25,16 @@ type Props = {
 }
 const Button = styled.button`
   flex: 1;
-  margin-left: ${props => props.theme.mediumSpacing};
-  margin-right: ${props => props.theme.mediumSpacing};
+  margin-left: ${(props) => props.theme.mediumSpacing};
+  margin-right: ${(props) => props.theme.mediumSpacing};
 `
 const Icon = styled.div`
   display: inline-block;
   background-color: inherit;
-  margin-left: ${props => props.theme.minimumSpacing};
-  line-height: ${props => `${props.theme.minimumLineSize} !important`};
+  margin-left: ${(props) => props.theme.minimumSpacing};
+  line-height: ${(props) => `${props.theme.minimumLineSize} !important`};
   text-align: center;
-  font-size: ${props => props.theme.mediumFontSize};
+  font-size: ${(props) => props.theme.mediumFontSize};
 `
 
 const renderMenu = (onSelect: voidFunc) => {

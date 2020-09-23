@@ -7,12 +7,7 @@ import Button from '@material-ui/core/Button'
 const user = require('../../component/singletons/user-instance.js')
 
 const getResultSort = () => {
-  return (
-    user
-      .get('user')
-      .get('preferences')
-      .get('resultSort') || []
-  )
+  return user.get('user').get('preferences').get('resultSort') || []
 }
 
 type Props = {
@@ -32,14 +27,8 @@ const PermanentSearchSort = ({ closeDropdown }: Props) => {
     })
   }, [])
   const removeSort = () => {
-    user
-      .get('user')
-      .get('preferences')
-      .set('resultSort', undefined)
-    user
-      .get('user')
-      .get('preferences')
-      .savePreferences()
+    user.get('user').get('preferences').set('resultSort', undefined)
+    user.get('user').get('preferences').savePreferences()
     closeDropdown()
   }
   const saveSort = () => {
@@ -48,23 +37,17 @@ const PermanentSearchSort = ({ closeDropdown }: Props) => {
       .get('preferences')
       .set('resultSort', sorts.length === 0 ? undefined : sorts)
 
-    user
-      .get('user')
-      .get('preferences')
-      .savePreferences()
+    user.get('user').get('preferences').savePreferences()
     closeDropdown()
     // once again, something is weird with arrays and backbone?
-    user
-      .get('user')
-      .get('preferences')
-      .trigger('change:resultSort')
+    user.get('user').get('preferences').trigger('change:resultSort')
   }
   return (
     <div data-id="results-sort-container" className="min-w-120">
       <div className="pb-2">
         <SortSelections
           value={sorts}
-          onChange={newVal => {
+          onChange={(newVal) => {
             setSorts(newVal)
           }}
         />

@@ -21,7 +21,7 @@ const user = require('../singletons/user-instance.js')
 const Root = styled.div`
   display: block;
   position: relative;
-  height: 3 * ${props => props.theme.minimumButtonSize};
+  height: 3 * ${(props) => props.theme.minimumButtonSize};
   cursor: pointer;
 `
 
@@ -30,16 +30,16 @@ const Div = styled.div`
 `
 
 const DetailDate = styled.div`
-  padding: 0rem ${props => props.theme.minimumSpacing};
-  height: ${props => props.theme.minimumButtonSize};
-  line-height: ${props => props.theme.minimumButtonSize};
+  padding: 0rem ${(props) => props.theme.minimumSpacing};
+  height: ${(props) => props.theme.minimumButtonSize};
+  line-height: ${(props) => props.theme.minimumButtonSize};
   display: flex;
   flex-flow: row wrap;
   justify-content: flex-end;
 `
 
 const Date = styled.span`
-  left: ${props => props.theme.minimumSpacing};
+  left: ${(props) => props.theme.minimumSpacing};
   height: inherit;
   line-height: inherit;
   text-align: right;
@@ -58,7 +58,7 @@ const Content = styled.div`
 `
 
 const TextDiv = styled.div`
-  padding: ${props => props.theme.minimumSpacing} 0rem;
+  padding: ${(props) => props.theme.minimumSpacing} 0rem;
   flex: 2;
 `
 
@@ -69,12 +69,12 @@ const Text = styled.div`
 `
 
 const ButtonDiv = styled.div`
-  padding: ${props => props.theme.minimumSpacing} 0rem;
+  padding: ${(props) => props.theme.minimumSpacing} 0rem;
   flex: 1;
 `
 
 const ButtonText = styled.button`
-  padding: 0rem ${props => props.theme.minimumSpacing};
+  padding: 0rem ${(props) => props.theme.minimumSpacing};
 `
 
 const Remove = styled.div`
@@ -87,10 +87,10 @@ const Remove = styled.div`
 `
 
 const RemoveButton = styled.button`
-  width: ${props => props.theme.minimumButtonSize};
+  width: ${(props) => props.theme.minimumButtonSize};
   height: 100%;
   transform: translateX(0%);
-  transition: transform ${props => props.theme.coreTransitionTime} linear;
+  transition: transform ${(props) => props.theme.coreTransitionTime} linear;
 `
 
 type Props = {
@@ -137,10 +137,7 @@ const OauthItem = ({ model }: Props) => {
               onClick={() => {
                 setTimeout(() => {
                   model.collection.remove(model)
-                  user
-                    .get('user')
-                    .get('preferences')
-                    .savePreferences()
+                  user.get('user').get('preferences').savePreferences()
                 }, 250)
 
                 if (modelJSON.type === 'login') {
@@ -161,10 +158,7 @@ const OauthItem = ({ model }: Props) => {
           onClick={() => {
             setTimeout(() => {
               model.collection.remove(model)
-              user
-                .get('user')
-                .get('preferences')
-                .savePreferences()
+              user.get('user').get('preferences').savePreferences()
             }, 250)
           }}
           style={{ height: '100%' }}

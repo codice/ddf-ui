@@ -42,7 +42,7 @@ class Poller extends React.Component {
     this.id = window.requestAnimationFrame(this.loop)
   }
   render() {
-    return React.Children.map(this.props.children, child => {
+    return React.Children.map(this.props.children, (child) => {
       if (!React.isValidElement(child)) {
         return child
       }
@@ -66,13 +66,13 @@ const getPosition = (viewport, rect, offset) => {
   }
 }
 
-const foreground = props => {
+const foreground = (props) => {
   if (props.theme.backgroundDropdown !== undefined) {
     return readableColor(props.theme.backgroundDropdown)
   }
 }
 
-const background = props => {
+const background = (props) => {
   if (props.theme.backgroundDropdown !== undefined) {
     return rgba(readableColor(props.theme.backgroundDropdown), 0.1)
   }
@@ -80,21 +80,21 @@ const background = props => {
 
 const Area = styled.div`
   position: fixed;
-  z-index: ${props => props.theme.zIndexDropdown};
+  z-index: ${(props) => props.theme.zIndexDropdown};
 
   overflow: auto;
-  border-radius: ${props => props.theme.borderRadius};
+  border-radius: ${(props) => props.theme.borderRadius};
 
   color: ${foreground};
-  background-color: ${props => props.theme.backgroundDropdown};
+  background-color: ${(props) => props.theme.backgroundDropdown};
   box-shadow: 0px 0px 2px 1px rgba(255, 255, 255, 0.4),
     2px 2px 10px 2px rgba(0, 0, 0, 0.4);
   max-width: calc(100vw - 40px);
   max-height: 50vh;
 `
 
-const stopPropagation = e => e.stopPropagation()
-const DropdownArea = props => {
+const stopPropagation = (e) => e.stopPropagation()
+const DropdownArea = (props) => {
   const [offset, setOffset] = useState(0)
   const ref = useRef(null)
   useEffect(() => {
@@ -110,34 +110,31 @@ const DropdownArea = props => {
     }
   }, [])
 
-  useEffect(
-    () => {
-      if (ref.current) {
-        let newOffset = offset
-        const { x, width } = ref.current.getBoundingClientRect()
-        const viewport = document.body.getBoundingClientRect()
-        const padding = 20
-        if (x - offset < padding) {
-          newOffset = padding + -1 * (x - offset)
-        } else if (x - offset + width > viewport.width) {
-          newOffset = viewport.width - (x - offset + width) - padding
-        } else {
-          newOffset = 0
-        }
-        if (newOffset !== offset) {
-          setOffset(newOffset)
-        }
+  useEffect(() => {
+    if (ref.current) {
+      let newOffset = offset
+      const { x, width } = ref.current.getBoundingClientRect()
+      const viewport = document.body.getBoundingClientRect()
+      const padding = 20
+      if (x - offset < padding) {
+        newOffset = padding + -1 * (x - offset)
+      } else if (x - offset + width > viewport.width) {
+        newOffset = viewport.width - (x - offset + width) - padding
+      } else {
+        newOffset = 0
       }
-    },
-    [ref.current]
-  )
+      if (newOffset !== offset) {
+        setOffset(newOffset)
+      }
+    }
+  }, [ref.current])
 
   const { rect, children, onClose } = props
   const viewport = document.body.getBoundingClientRect()
   const style = getPosition(viewport, rect, offset)
   return (
     <Area style={style} ref={ref}>
-      {React.Children.map(children, child => {
+      {React.Children.map(children, (child) => {
         if (!React.isValidElement(child)) {
           return child
         }
@@ -154,22 +151,22 @@ const Icon = styled.div`
   color: white;
   display: inline-block;
   color: #fff;
-  background: ${props => props.theme.primaryColor};
-  width: ${props => props.theme.minimumButtonSize};
-  height: ${props => props.theme.minimumButtonSize};
-  line-height: ${props => props.theme.minimumButtonSize};
+  background: ${(props) => props.theme.primaryColor};
+  width: ${(props) => props.theme.minimumButtonSize};
+  height: ${(props) => props.theme.minimumButtonSize};
+  line-height: ${(props) => props.theme.minimumButtonSize};
   text-align: center;
   box-sizing: border-box;
-  font-size: ${props => props.theme.largeFontSize};
-  border-radius: ${props => props.theme.borderRadius};
+  font-size: ${(props) => props.theme.largeFontSize};
+  border-radius: ${(props) => props.theme.borderRadius};
 `
 
 const Text = styled.div`
   padding: 0px 10px;
   vertical-align: top;
-  width: calc(100% - ${props => props.theme.minimumButtonSize});
-  height: ${props => props.theme.minimumButtonSize};
-  line-height: ${props => props.theme.minimumButtonSize};
+  width: calc(100% - ${(props) => props.theme.minimumButtonSize});
+  height: ${(props) => props.theme.minimumButtonSize};
+  line-height: ${(props) => props.theme.minimumButtonSize};
   display: block;
   display: inline-block;
   text-overflow: ellipsis;
@@ -181,7 +178,7 @@ const Text = styled.div`
   border: 2px solid ${background};
   outline: none;
 
-  border-radius: ${props => props.theme.borderRadius};
+  border-radius: ${(props) => props.theme.borderRadius};
 `
 
 const Component = styled.div`
@@ -199,14 +196,14 @@ class Dropdown extends React.Component {
     this.onKeyDown = this.onKeyDown.bind(this)
     this.el = document.createElement('div')
   }
-  getAction = open => {
+  getAction = (open) => {
     if (open) {
       return this.props.onOpen
     } else {
       return this.props.onClose
     }
   }
-  onToggle = next => {
+  onToggle = (next) => {
     const open = next !== undefined ? next : !this.state.open
     this.setState({ open })
     const fn = this.getAction(open)
@@ -262,7 +259,7 @@ class Dropdown extends React.Component {
 
     return (
       <Component>
-        <div tabIndex="0" ref={ref => (this.ref = ref)}>
+        <div tabIndex="0" ref={(ref) => (this.ref = ref)}>
           {anchor}
           {this.isOpen() ? (
             <div>

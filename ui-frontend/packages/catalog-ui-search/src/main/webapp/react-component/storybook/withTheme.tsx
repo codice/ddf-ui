@@ -41,7 +41,7 @@ const TableData = styled.div<any>`
   padding: 20px;
   box-sizing: border-box;
   flex: 1;
-  background: ${props => props.theme.backgroundContent};
+  background: ${(props) => props.theme.backgroundContent};
 `
 
 const withTheme = (story: Story) => {
@@ -72,10 +72,10 @@ const withTheme = (story: Story) => {
   return (
     <Table>
       <style>{'body {margin: 0;}'}</style>
-      {colors.map(c => {
+      {colors.map((c) => {
         return (
           <TableColumn>
-            {spacing.map(s => {
+            {spacing.map((s) => {
               const theme = themes({ colors: c, spacing: s })
               return (
                 <ThemeProvider theme={theme}>

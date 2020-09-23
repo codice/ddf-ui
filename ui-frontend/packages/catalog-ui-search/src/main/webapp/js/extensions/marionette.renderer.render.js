@@ -15,7 +15,7 @@
 const Marionette = require('marionette')
 const hbs = require('@connexta/ace/handlebars')
 
-Marionette.Renderer.render = function(template, data, view) {
+Marionette.Renderer.render = function (template, data, view) {
   data._view = view
   if (typeof template !== 'function') {
     template = hbs.compile(template) // it seems like this never happens, we should verify (I think webpack is precompiling them all for us)

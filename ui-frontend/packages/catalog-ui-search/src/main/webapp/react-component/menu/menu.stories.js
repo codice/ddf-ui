@@ -31,7 +31,7 @@ stories.add('basic', () => {
 
   return (
     <Menu value={value} onChange={action('onChange')}>
-      {values.map(value => {
+      {values.map((value) => {
         return <MenuItem value={value} />
       })}
     </Menu>
@@ -49,7 +49,7 @@ stories.add('multi', () => {
 
   return (
     <Menu multi value={value} onChange={action('onChange')}>
-      {values.map(value => {
+      {values.map((value) => {
         return <MenuItem value={value} />
       })}
     </Menu>

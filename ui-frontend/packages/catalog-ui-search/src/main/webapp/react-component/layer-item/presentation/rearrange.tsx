@@ -21,15 +21,15 @@ import { PresentationProps, IsButton, HighlightBehavior, GrabCursor } from '.'
 const Rearrange = styled.div``
 
 const RearrangeButton = styled.button`
-  ${props => IsButton(props.theme)};
+  ${(props) => IsButton(props.theme)};
   ${HighlightBehavior({ initialOpacity: 0 })};
   z-index: 1;
   position: absolute;
-  height: calc(0.5 * ${props => props.theme.minimumButtonSize});
-  line-height: calc(0.5 * ${props => props.theme.minimumButtonSize});
+  height: calc(0.5 * ${(props) => props.theme.minimumButtonSize});
+  line-height: calc(0.5 * ${(props) => props.theme.minimumButtonSize});
 `
 const Down = styled(RearrangeButton)`
-  top: calc(100% - 0.5 * ${props => props.theme.minimumButtonSize});
+  top: calc(100% - 0.5 * ${(props) => props.theme.minimumButtonSize});
 `
 const Up = styled(RearrangeButton)`
   top: 0px;
@@ -42,8 +42,9 @@ const RearrangeIcon = styled.span`
 `
 
 const Drag = styled.button`
-  ${props => IsButton(props.theme)};
-  ${props => HighlightBehavior({ initialOpacity: props.theme.minimumOpacity })};
+  ${(props) => IsButton(props.theme)};
+  ${(props) =>
+    HighlightBehavior({ initialOpacity: props.theme.minimumOpacity })};
   ${GrabCursor};
   vertical-align: middle;
   position: absolute;

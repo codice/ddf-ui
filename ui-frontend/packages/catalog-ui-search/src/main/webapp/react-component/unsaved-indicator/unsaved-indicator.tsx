@@ -25,18 +25,16 @@ const Root = styled.span<Props>`
   display: inline-block;
   line-height: inherit;
   vertical-align: top;
-  color: ${props => {
+  color: ${(props) => {
     return props.theme.warningColor
   }};
 
   transition: ${({ theme }) => {
-    return `transform ${theme.coreTransitionTime} ease-out, opacity ${
-      theme.coreTransitionTime
-    } ease-out;`
+    return `transform ${theme.coreTransitionTime} ease-out, opacity ${theme.coreTransitionTime} ease-out;`
   }};
 
-  transform: ${props => `scale(${props.shown ? 1 : 2});`};
-  opacity: ${props => (props.shown ? 1 : 0)};
+  transform: ${(props) => `scale(${props.shown ? 1 : 2});`};
+  opacity: ${(props) => (props.shown ? 1 : 0)};
 `
 
 export default function UnsavedIndicator(props: Props) {

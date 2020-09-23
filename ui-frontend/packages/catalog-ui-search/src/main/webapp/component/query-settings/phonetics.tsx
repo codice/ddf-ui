@@ -25,7 +25,7 @@ const Phonetics = ({ model }: Props) => {
         <Checkbox
           color="default"
           checked={phonetics}
-          onChange={e => {
+          onChange={(e) => {
             model.set('phonetics', e.target.checked)
           }}
         />

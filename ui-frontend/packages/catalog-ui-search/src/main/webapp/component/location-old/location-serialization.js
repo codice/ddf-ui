@@ -15,7 +15,7 @@
 const plugin = require('plugins/location-serialization')
 
 const LineString = {
-  'json->location': json => {
+  'json->location': (json) => {
     const {
       geometry: { coordinates },
       properties: { buffer } = {},
@@ -30,7 +30,7 @@ const LineString = {
       lineUnits: unit,
     }
   },
-  'location->json': location => {
+  'location->json': (location) => {
     const { line = [], lineWidth = 0, lineUnits = 'meters' } = location
 
     return {
@@ -51,7 +51,7 @@ const LineString = {
 }
 
 const MultiLineString = {
-  'json->location': json => {
+  'json->location': (json) => {
     const {
       geometry: { coordinates },
       properties: { buffer } = {},
@@ -66,7 +66,7 @@ const MultiLineString = {
       lineUnits: unit,
     }
   },
-  'location->json': location => {
+  'location->json': (location) => {
     const { multiline = [], lineWidth = 1, lineUnits = 'meters' } = location
 
     return {
@@ -87,7 +87,7 @@ const MultiLineString = {
 }
 
 const Point = {
-  'json->location': json => {
+  'json->location': (json) => {
     const {
       geometry: { coordinates },
       properties: { buffer } = {},
@@ -105,7 +105,7 @@ const Point = {
       radiusUnits: unit,
     }
   },
-  'location->json': location => {
+  'location->json': (location) => {
     const { lat = '', lon = '', radius = 1, radiusUnits = 'meters' } = location
 
     return {
@@ -126,7 +126,7 @@ const Point = {
 }
 
 const Polygon = {
-  'json->location': json => {
+  'json->location': (json) => {
     const {
       geometry: { coordinates },
       properties: { buffer } = {},
@@ -143,7 +143,7 @@ const Polygon = {
       polyType: 'polygon',
     }
   },
-  'location->json': location => {
+  'location->json': (location) => {
     const {
       polygon = [],
       polygonBufferWidth = 0,
@@ -173,7 +173,7 @@ const Polygon = {
 }
 
 const BoundingBox = {
-  'json->location': json => {
+  'json->location': (json) => {
     const {
       properties: { north, east, south, west },
     } = json
@@ -186,7 +186,7 @@ const BoundingBox = {
       west,
     }
   },
-  'location->json': location => {
+  'location->json': (location) => {
     const { north, east, south, west } = location
     return {
       type: 'Feature',
@@ -215,7 +215,7 @@ const BoundingBox = {
 }
 
 const MultiPolygon = {
-  'json->location': json => {
+  'json->location': (json) => {
     const {
       geometry: { coordinates },
       properties: { buffer } = {},
@@ -233,14 +233,14 @@ const MultiPolygon = {
       polyType: 'multipolygon',
     }
   },
-  'location->json': location => {
+  'location->json': (location) => {
     const {
       polygon = [],
       polygonBufferWidth = 0,
       polygonBufferUnits = 'meters',
     } = location
 
-    const coordinates = polygon.map(child => [child])
+    const coordinates = polygon.map((child) => [child])
 
     return {
       type: 'Feature',
@@ -260,7 +260,7 @@ const MultiPolygon = {
 }
 
 const Keyword = {
-  'json->location': json => {
+  'json->location': (json) => {
     const {
       properties: { keywordValue, buffer },
       geometry = {},
@@ -281,7 +281,7 @@ const Keyword = {
       polyType: type === 'Polygon' ? 'polygon' : 'multipolygon',
     }
   },
-  'location->json': location => {
+  'location->json': (location) => {
     const {
       polygon = [],
       polyType,
@@ -291,7 +291,7 @@ const Keyword = {
     } = location
 
     const coordinates =
-      polyType === 'polygon' ? [polygon] : polygon.map(child => [child])
+      polyType === 'polygon' ? [polygon] : polygon.map((child) => [child])
 
     return {
       type: 'Feature',
@@ -330,7 +330,7 @@ const Deserializers = plugin.Deserializers({
   Keyword,
 })
 
-export const serialize = location => {
+export const serialize = (location) => {
   const mode = location.mode
   if (mode) {
     const serializer = Serializers[mode]['location->json']
@@ -340,7 +340,7 @@ export const serialize = location => {
   }
 }
 
-export const deserialize = json => {
+export const deserialize = (json) => {
   if (json) {
     const deserializer = Deserializers[json.properties.type]['json->location']
     if (typeof deserializer === 'function') {

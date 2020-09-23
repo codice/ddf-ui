@@ -45,8 +45,8 @@ module.exports = InputView.extend({
     const self = this
     const img = this.$el.find('img')[0]
     const reader = new FileReader()
-    reader.onload = function(event) {
-      img.onload = function() {
+    reader.onload = function (event) {
+      img.onload = function () {
         self.model.set('value', self.getCurrentValue())
         self.handleEmpty()
         self.resizeButton()
@@ -61,7 +61,7 @@ module.exports = InputView.extend({
     const self = this
     const img = this.$el.find('img')[0]
     const lnk = this.$el.find('a')
-    img.onload = function() {
+    img.onload = function () {
       self.resizeButton()
     }
     if (this.model.getValue() && this.model.getValue().constructor === String) {
@@ -100,7 +100,7 @@ module.exports = InputView.extend({
       .off('resize.' + this.cid)
       .on(
         'resize.' + this.cid,
-        _.throttle(event => {
+        _.throttle((event) => {
           this.resizeButton()
         }, 16)
       )

@@ -183,7 +183,7 @@ Draw.BboxView = Marionette.View.extend({
     const toRad = Cesium.Math.toRadians
     const obj = model.toJSON()
     if (
-      _.every(defaultAttrs, val => _.isUndefined(obj[val])) ||
+      _.every(defaultAttrs, (val) => _.isUndefined(obj[val])) ||
       _.isEmpty(obj)
     ) {
       if (this.options.map.scene && this.options.map.scene.primitives) {
@@ -246,9 +246,12 @@ Draw.BboxView = Marionette.View.extend({
     this.destroyOldPrimitive()
 
     if (
-      [rectangle.north, rectangle.south, rectangle.west, rectangle.east].some(
-        coordinate => isNaN(coordinate)
-      ) ||
+      [
+        rectangle.north,
+        rectangle.south,
+        rectangle.west,
+        rectangle.east,
+      ].some((coordinate) => isNaN(coordinate)) ||
       rectangle.north <= rectangle.south ||
       rectangle.east === rectangle.west
     ) {
@@ -334,7 +337,7 @@ Draw.BboxView = Marionette.View.extend({
         that.buttonPressed = false
         that.handleRegionStop()
       }, Cesium.ScreenSpaceEventType.LEFT_UP)
-      this.mouseHandler.setInputAction(movement => {
+      this.mouseHandler.setInputAction((movement) => {
         that.buttonPressed = true
         that.handleRegionInter(movement)
       }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
@@ -346,7 +349,7 @@ Draw.BboxView = Marionette.View.extend({
     const that = this
 
     // Now wait for start
-    this.mouseHandler.setInputAction(movement => {
+    this.mouseHandler.setInputAction((movement) => {
       that.handleRegionStart(movement)
     }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
   },
@@ -417,7 +420,7 @@ Draw.Controller = DrawingController.extend({
         el: this.options.notificationEl,
       }).render()
       bboxModel.trigger('BeginExtent')
-      this.listenToOnce(bboxModel, 'EndExtent', function() {
+      this.listenToOnce(bboxModel, 'EndExtent', function () {
         this.notificationView.destroy()
       })
 

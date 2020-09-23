@@ -50,7 +50,7 @@ module.exports = Marionette.LayoutView.extend({
   filterMessage(message) {
     return message
       .split(' ')
-      .map(word => properties.attributeAliases[word] || word)
+      .map((word) => properties.attributeAliases[word] || word)
       .join(' ')
   },
   validateAttributes(callback) {
@@ -63,8 +63,8 @@ module.exports = Marionette.LayoutView.extend({
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
     }).then(
-      _.bind(function(response) {
-        response.forEach(attribute => {
+      _.bind(function (response) {
+        response.forEach((attribute) => {
           attribute.errors = attribute.errors.map(this.filterMessage)
           attribute.warnings = attribute.warnings.map(this.filterMessage)
         })

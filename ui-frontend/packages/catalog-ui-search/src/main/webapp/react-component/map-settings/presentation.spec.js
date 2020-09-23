@@ -25,7 +25,7 @@ import {
 } from '../../test/mock-api/mock-properties'
 let MapSettings
 
-const checkDropdown = wrapper => {
+const checkDropdown = (wrapper) => {
   const options = wrapper.childAt(0).props().children[0].props.options
   expect(options[0].value).to.be.equals('degrees')
   expect(options[1].value).to.be.equals('decimal')

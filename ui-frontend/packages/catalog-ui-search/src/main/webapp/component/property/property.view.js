@@ -214,7 +214,7 @@ module.exports = Marionette.LayoutView.extend(
       const elementsToCheck = this.$el.find(
         '.is-bulk > .if-viewing .list-value'
       )
-      _.forEach(elementsToCheck, function(element) {
+      _.forEach(elementsToCheck, function (element) {
         if (
           $(element)
             .attr('data-ids')
@@ -248,11 +248,11 @@ module.exports = Marionette.LayoutView.extend(
       })
     },
     setMessage(elements, message) {
-      _.forEach(elements, el => {
+      _.forEach(elements, (el) => {
         const element = $(el)
         if (element.is('div')) {
           let body = ''
-          message.forEach(element => {
+          message.forEach((element) => {
             body +=
               "<div><span class='fa fa-exclamation-triangle'></span> <span class='validation-message'>" +
               element +
@@ -272,7 +272,7 @@ module.exports = Marionette.LayoutView.extend(
       const elementsToCheck = this.$el.find(
         '.is-bulk > .if-viewing .list-value'
       )
-      _.forEach(elementsToCheck, element => {
+      _.forEach(elementsToCheck, (element) => {
         $validationElement = $(element).find('.cell-validation')
         $validationElement.removeClass('has-warning').removeClass('has-error')
         $validationElement.addClass('is-hidden')

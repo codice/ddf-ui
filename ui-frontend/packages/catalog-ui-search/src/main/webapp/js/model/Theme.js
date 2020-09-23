@@ -120,7 +120,7 @@ const colorModes = {
 }
 
 function sanitizeColors(theme) {
-  colorVariables.forEach(color => {
+  colorVariables.forEach((color) => {
     if (!validTextColour(theme[color])) {
       theme[color] = 'white' // default color
     } else {
@@ -136,7 +136,7 @@ module.exports = Backbone.Model.extend({
       theme: _get(properties, 'theme', 'dark'),
       palette: 'default',
     }
-    colorVariables.forEach(color => {
+    colorVariables.forEach((color) => {
       blob[color] = _get(properties, color, 'white')
     })
     return blob

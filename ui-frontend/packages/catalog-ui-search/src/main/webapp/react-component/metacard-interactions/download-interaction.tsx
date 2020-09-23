@@ -28,10 +28,7 @@ const openValidUrl = (result: Result) => {
 
 const isDownloadable = (model: Model): boolean =>
   model.some((result: Result) =>
-    result
-      .get('metacard')
-      .get('properties')
-      .get('resource-download-url')
+    result.get('metacard').get('properties').get('resource-download-url')
   )
 
 const handleDownload = (model: Model) => {

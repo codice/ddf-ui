@@ -55,7 +55,7 @@ module.exports = Marionette.ItemView.extend({
       dataType: 'html',
       customErrorHandling: true,
     })
-      .then(previewHtml => {
+      .then((previewHtml) => {
         this.previewHtml = previewHtml
       })
       .always(() => {

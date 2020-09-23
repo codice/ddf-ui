@@ -20,7 +20,10 @@ describe('serialize/deserialize line', () => {
     type: 'Feature',
     geometry: {
       type: 'LineString',
-      coordinates: [[-134.388122, 53.795318], [-125.668486, 43.012693]],
+      coordinates: [
+        [-134.388122, 53.795318],
+        [-125.668486, 43.012693],
+      ],
     },
     properties: {
       type: 'LineString',
@@ -33,7 +36,10 @@ describe('serialize/deserialize line', () => {
 
   const deserializedLine = {
     mode: 'line',
-    line: [[-134.388122, 53.795318], [-125.668486, 43.012693]],
+    line: [
+      [-134.388122, 53.795318],
+      [-125.668486, 43.012693],
+    ],
     lineWidth: 1,
     lineUnits: 'meters',
   }
@@ -52,7 +58,10 @@ describe('serialize/deserialize multiline', () => {
     type: 'Feature',
     geometry: {
       type: 'MultiLineString',
-      coordinates: [[-134.388122, 53.795318], [-125.668486, 43.012693]],
+      coordinates: [
+        [-134.388122, 53.795318],
+        [-125.668486, 43.012693],
+      ],
     },
     properties: {
       type: 'MultiLineString',
@@ -65,7 +74,10 @@ describe('serialize/deserialize multiline', () => {
 
   const deserializedMultiLine = {
     mode: 'multiline',
-    multiline: [[-134.388122, 53.795318], [-125.668486, 43.012693]],
+    multiline: [
+      [-134.388122, 53.795318],
+      [-125.668486, 43.012693],
+    ],
     lineWidth: 1,
     lineUnits: 'meters',
   }

@@ -90,11 +90,11 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       }
       .MuiToolbar-root a,
       .MuiToolbar-root .MuiBreadcrumbs-separator {
-        color: ${props =>
+        color: ${(props) =>
           props.palette.getContrastText(props.palette.primary.main)};
       }
       .MuiDrawer-root a {
-        color: ${props =>
+        color: ${(props) =>
           props.palette.getContrastText(props.palette.background.paper)};
       }
       .MuiTooltip-tooltip {
@@ -111,14 +111,14 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
         }
       }
       .lm_splitter  {
-        background: ${props =>
+        background: ${(props) =>
           props.palette.type === 'dark'
             ? dark.background
             : light.background} !important;
       }
       .lm_stack{
         box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
-        background: ${props =>
+        background: ${(props) =>
           props.palette.type === 'dark'
             ? dark.panels
             : light.panels} !important;
@@ -127,13 +127,13 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       }
       .lm_header {
         z-index: 0 !important;
-        background: ${props =>
+        background: ${(props) =>
           props.palette.type === 'dark'
             ? dark.background
             : light.background} !important;
       }
       .lm_tab.lm_active {
-        background: ${props =>
+        background: ${(props) =>
           props.palette.type === 'dark'
             ? dark.panels
             : light.panels} !important;
@@ -145,11 +145,11 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
         border-bottom-right-radius: 0px !important;
       }
       .lm_tab:not(.lm_active) {
-        color: ${props =>
+        color: ${(props) =>
           props.palette.type === 'dark'
             ? props.palette.text.secondary
             : props.palette.text.secondary} !important;
-        background: ${props =>
+        background: ${(props) =>
           props.palette.type === 'dark' ? dark.tabs : light.tabs} !important;
         button {
           visibility: hidden;
@@ -161,12 +161,12 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
         box-shadow: none !important;
       }
       .lm_tabs .lm_tab:hover {
-        color: ${props => props.palette.text.primary} !important;
+        color: ${(props) => props.palette.text.primary} !important;
       }
       .lm_header,
       .lm_tabs .lm_tab,
       .lm_tabdropdown:before {
-        color: ${props => props.palette.text.primary} !important;
+        color: ${(props) => props.palette.text.primary} !important;
       }
       .is-drawing [role="tooltip"] {
         display: none!important;
@@ -203,13 +203,13 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
         line-height: 1.15 !important;
       }
       .bp3-popover .bp3-popover-content, .bp3-popover .bp3-popover-content, .bp3-datepicker, .bp3-menu{
-        background: ${props => props.palette.background.paper} !important;
+        background: ${(props) => props.palette.background.paper} !important;
       }
       .bp3-popover-arrow {
         display: none !important;
       }
       .bp3-datepicker .DayPicker-Day.DayPicker-Day--selected, .bp3-active {
-        background-color: ${props => props.palette.primary.dark} !important;
+        background-color: ${(props) => props.palette.primary.dark} !important;
       }
       .bp3-table-quadrant, .bp3-table-cell-client, .bp3-table-row-headers {
         background: inherit !important;
@@ -219,33 +219,33 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
         min-height: 21px;
       }
       .MuiPaper-elevation0 {
-        background-color: ${props =>
+        background-color: ${(props) =>
           props.palette.type === 'dark' ? dark.background : light.background};
       }
       .MuiPaper-elevation8 {
-        background-color: ${props =>
+        background-color: ${(props) =>
           props.palette.type === 'dark' ? dark.navbar : light.navbar};
       }
       .MuiPaper-elevation6 {
-        background-color: ${props =>
+        background-color: ${(props) =>
           props.palette.type === 'dark' ? dark.panels : light.panels};
       }
       .MuiPaper-elevation16 {
-        background-color: ${props =>
+        background-color: ${(props) =>
           props.palette.type === 'dark' ? dark.overlays : light.overlays};
       }
       .MuiPaper-elevation2 {
         border-width: 1px;
         border-style: solid;
-        border-color: ${props =>
+        border-color: ${(props) =>
           props.palette.type === 'dark'
             ? props.palette.divider
             : props.palette.divider};
-          background-color: ${props =>
+          background-color: ${(props) =>
             props.palette.type === 'dark' ? dark.paper : light.paper};
       }
       [data-behavior-dropdown] {
-        background-color: ${props =>
+        background-color: ${(props) =>
           props.palette.type === 'dark' ? dark.overlays : light.overlays};
       }
       ::-webkit-scrollbar {
@@ -253,13 +253,13 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
         height: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: ${props =>
+        background: ${(props) =>
           props.palette.type === 'dark'
             ? 'rgb(30, 44, 53)'
             : 'rgb(229, 229, 229)'};
       }
       ::-webkit-scrollbar-thumb {
-        background: ${props =>
+        background: ${(props) =>
           props.palette.type === 'dark'
             ? 'linear-gradient(-180deg, rgb(229, 229, 229) 0%, rgb(206, 206, 206) 100%)'
             : 'linear-gradient(-180deg, rgb(153, 153, 153) 0%, rgb(187, 187, 187) 100%)'};
@@ -292,13 +292,13 @@ export const Provider = ({ children }: { children: any }) => {
   const primaryMain = customPalette
     ? styledTheme.primary
     : darkMode
-      ? dark.primary
-      : light.primary
+    ? dark.primary
+    : light.primary
   const secondaryMain = customPalette
     ? styledTheme.secondary
     : darkMode
-      ? dark.secondary
-      : light.secondary
+    ? dark.secondary
+    : light.secondary
   const primaryContrastScores = meetsContrastGuidelines(
     paperColor,
     primaryMain!
@@ -407,17 +407,14 @@ export const Provider = ({ children }: { children: any }) => {
     },
   })
 
-  React.useEffect(
-    () => {
-      const htmlElement = document.querySelector('html') as HTMLElement
-      if (styledTheme.theme === 'dark') {
-        htmlElement.classList.add('bp3-dark')
-      } else {
-        htmlElement.classList.remove('bp3-dark')
-      }
-    },
-    [styledTheme.theme]
-  )
+  React.useEffect(() => {
+    const htmlElement = document.querySelector('html') as HTMLElement
+    if (styledTheme.theme === 'dark') {
+      htmlElement.classList.add('bp3-dark')
+    } else {
+      htmlElement.classList.remove('bp3-dark')
+    }
+  }, [styledTheme.theme])
   return (
     <>
       <StylesProvider injectFirst>

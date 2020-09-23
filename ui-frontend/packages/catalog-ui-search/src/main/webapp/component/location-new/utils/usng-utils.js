@@ -71,13 +71,13 @@ function usngToWkt(usng) {
       break
     case 'line':
       if (usng.line.list.length > 0) {
-        usng.line.list.map(grid => points.push(usngGridToWktPoint(grid)))
+        usng.line.list.map((grid) => points.push(usngGridToWktPoint(grid)))
         wkt = new wkx.LineString(points).toWkt()
       }
       break
     case 'polygon':
       if (usng.polygon.list.length > 0) {
-        usng.polygon.list.map(grid => points.push(usngGridToWktPoint(grid)))
+        usng.polygon.list.map((grid) => points.push(usngGridToWktPoint(grid)))
         const p1 = points[0]
         const p2 = points[points.length - 1]
         if (p1.x !== p2.x || p1.y !== p2.y) {

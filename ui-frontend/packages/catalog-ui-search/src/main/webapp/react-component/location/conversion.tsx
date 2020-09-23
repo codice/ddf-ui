@@ -32,73 +32,64 @@ type Props = {
 
 // can't key off isValid yet because the flag isn't cleared until the user presses X on the validation popup
 export const Conversion = ({ value, isValid }: Props) => {
-  const [deserializedValue, setDeserializedValue] = React.useState(undefined as
-    | undefined
-    | ConvertedValueType)
-  const [usngValue, setUsngValue] = React.useState(undefined as
-    | undefined
-    | USNGValueType)
-  const [dmsValue, setDmsValue] = React.useState(undefined as
-    | undefined
-    | DMSValueType)
-  React.useEffect(
-    () => {
-      if (value) {
-        try {
-          setDeserializedValue(
-            value
-              .split('],')
-              .map((pair: string) => pair.split(','))
-              .map((pair: string[]) => {
-                return {
-                  lon: pair[0].replace(/\[/g, '').replace(/\]/g, ''),
-                  lat: pair[1].replace(/\[/g, '').replace(/\]/g, ''),
-                }
-              })
-          )
-        } catch (err) {
-          console.warn(err)
-          setDeserializedValue(undefined)
-        }
-      } else {
+  const [deserializedValue, setDeserializedValue] = React.useState(
+    undefined as undefined | ConvertedValueType
+  )
+  const [usngValue, setUsngValue] = React.useState(
+    undefined as undefined | USNGValueType
+  )
+  const [dmsValue, setDmsValue] = React.useState(
+    undefined as undefined | DMSValueType
+  )
+  React.useEffect(() => {
+    if (value) {
+      try {
+        setDeserializedValue(
+          value
+            .split('],')
+            .map((pair: string) => pair.split(','))
+            .map((pair: string[]) => {
+              return {
+                lon: pair[0].replace(/\[/g, '').replace(/\]/g, ''),
+                lat: pair[1].replace(/\[/g, '').replace(/\]/g, ''),
+              }
+            })
+        )
+      } catch (err) {
+        console.warn(err)
         setDeserializedValue(undefined)
       }
-    },
-    [value, isValid]
-  )
+    } else {
+      setDeserializedValue(undefined)
+    }
+  }, [value, isValid])
 
-  React.useEffect(
-    () => {
-      if (deserializedValue !== undefined) {
-        setUsngValue(
-          deserializedValue.map(pair => {
-            return converter.LLtoUSNG(pair.lat, pair.lon, usngPrecision)
-          })
-        )
-      } else {
-        setUsngValue(undefined)
-      }
-    },
-    [deserializedValue]
-  )
+  React.useEffect(() => {
+    if (deserializedValue !== undefined) {
+      setUsngValue(
+        deserializedValue.map((pair) => {
+          return converter.LLtoUSNG(pair.lat, pair.lon, usngPrecision)
+        })
+      )
+    } else {
+      setUsngValue(undefined)
+    }
+  }, [deserializedValue])
 
-  React.useEffect(
-    () => {
-      if (deserializedValue !== undefined) {
-        setDmsValue(
-          deserializedValue.map(pair => {
-            return {
-              lat: dmsUtils.ddToDmsCoordinateLat(pair.lat),
-              lon: dmsUtils.ddToDmsCoordinateLon(pair.lon),
-            }
-          })
-        )
-      } else {
-        setDmsValue(undefined)
-      }
-    },
-    [deserializedValue]
-  )
+  React.useEffect(() => {
+    if (deserializedValue !== undefined) {
+      setDmsValue(
+        deserializedValue.map((pair) => {
+          return {
+            lat: dmsUtils.ddToDmsCoordinateLat(pair.lat),
+            lon: dmsUtils.ddToDmsCoordinateLon(pair.lon),
+          }
+        })
+      )
+    } else {
+      setDmsValue(undefined)
+    }
+  }, [deserializedValue])
   return (
     <div>
       <Dropdown

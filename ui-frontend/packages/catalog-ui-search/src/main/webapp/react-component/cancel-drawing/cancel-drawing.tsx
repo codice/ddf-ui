@@ -31,7 +31,7 @@ class CancelDrawingContainer extends React.Component<Props, {}> {
     })
   }
   render() {
-    const children = React.Children.map(this.props.children, child => {
+    const children = React.Children.map(this.props.children, (child) => {
       return React.cloneElement(child as React.ReactElement<any>, {
         ref: this.ref,
       })

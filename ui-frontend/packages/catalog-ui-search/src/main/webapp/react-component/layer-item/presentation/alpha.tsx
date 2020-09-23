@@ -28,7 +28,7 @@ const Alpha = styled.input.attrs({
 `
 
 const AlphaDisabled = styled(Alpha)`
-  ${props => DisabledBehavior(props.theme)};
+  ${(props) => DisabledBehavior(props.theme)};
 `
 
 const AlphaEnabled = styled(Alpha)`

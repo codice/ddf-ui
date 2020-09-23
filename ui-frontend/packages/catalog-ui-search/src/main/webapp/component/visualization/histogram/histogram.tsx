@@ -28,7 +28,7 @@ function getPlotlyDate(date: string) {
 
 function calculateAvailableAttributes(results: LazyQueryResult[]) {
   let availableAttributes = [] as string[]
-  results.forEach(result => {
+  results.forEach((result) => {
     availableAttributes = _.union(
       availableAttributes,
       Object.keys(result.plain.metacard.properties)
@@ -36,11 +36,11 @@ function calculateAvailableAttributes(results: LazyQueryResult[]) {
   })
   return availableAttributes
     .filter(
-      attribute => metacardDefinitions.metacardTypes[attribute] !== undefined
+      (attribute) => metacardDefinitions.metacardTypes[attribute] !== undefined
     )
-    .filter(attribute => !metacardDefinitions.isHiddenType(attribute))
-    .filter(attribute => !properties.isHidden(attribute))
-    .map(attribute => ({
+    .filter((attribute) => !metacardDefinitions.isHiddenType(attribute))
+    .filter((attribute) => !properties.isHidden(attribute))
+    .map((attribute) => ({
       label: metacardDefinitions.metacardTypes[attribute].alias || attribute,
       value: attribute,
     }))
@@ -54,7 +54,7 @@ function calculateAttributeArray({
   attribute: string
 }) {
   const values = [] as string[]
-  results.forEach(result => {
+  results.forEach((result) => {
     if (metacardDefinitions.metacardTypes[attribute].multivalued) {
       const resultValues = result.plain.metacard.properties[attribute]
       if (resultValues && resultValues.forEach) {
@@ -84,7 +84,7 @@ function findMatchesForAttributeValues(
   attribute: string,
   values: any[]
 ) {
-  return results.filter(result => {
+  return results.filter((result) => {
     if (metacardDefinitions.metacardTypes[attribute].multivalued) {
       const resultValues = result.plain.metacard.properties[attribute]
       if (resultValues && resultValues.forEach) {
@@ -271,48 +271,33 @@ export const Histogram = ({ selectionInterface }: Props) => {
     getPropertyView({ lazyResults, attributeToBin })
   )
   const results = Object.values(lazyResults.results)
-  React.useEffect(
-    () => {
-      listenTo(propertyView.model, 'change:value', () => {
-        const newValue = propertyView.model.getValue()[0]
-        if (newValue) {
-          setAttributeToBin(newValue)
-        }
-      })
-      return () => {
-        stopListening(propertyView.model)
+  React.useEffect(() => {
+    listenTo(propertyView.model, 'change:value', () => {
+      const newValue = propertyView.model.getValue()[0]
+      if (newValue) {
+        setAttributeToBin(newValue)
       }
-    },
-    [propertyView]
-  )
+    })
+    return () => {
+      stopListening(propertyView.model)
+    }
+  }, [propertyView])
 
-  React.useEffect(
-    () => {
-      setNoMatchingData(false)
-    },
-    [lazyResults.results, attributeToBin]
-  )
+  React.useEffect(() => {
+    setNoMatchingData(false)
+  }, [lazyResults.results, attributeToBin])
 
-  React.useEffect(
-    () => {
-      setPropertyView(getPropertyView({ lazyResults, attributeToBin }))
-    },
-    [lazyResults.results]
-  )
+  React.useEffect(() => {
+    setPropertyView(getPropertyView({ lazyResults, attributeToBin }))
+  }, [lazyResults.results])
 
-  React.useEffect(
-    () => {
-      showHistogram()
-    },
-    [lazyResults.results, attributeToBin]
-  )
+  React.useEffect(() => {
+    showHistogram()
+  }, [lazyResults.results, attributeToBin])
 
-  React.useEffect(
-    () => {
-      updateHistogram()
-    },
-    [selectedResults]
-  )
+  React.useEffect(() => {
+    updateHistogram()
+  }, [selectedResults])
 
   const determineInitialData = () => {
     return [
@@ -386,9 +371,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
   const handleResize = () => {
     if (plotlyRef.current) {
       const histogramElement = plotlyRef.current
-      $(histogramElement)
-        .find('rect.drag')
-        .off('mousedown')
+      $(histogramElement).find('rect.drag').off('mousedown')
 
       // @ts-ignore ts-migrate(2339) FIXME: Property '_context' does not exist on type 'HTMLDi... Remove this comment to see the full error message
       if (histogramElement._context) {
@@ -523,7 +506,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
       },
       [] as LazyQueryResult[]
     ) as LazyQueryResult[]
-    validResults.forEach(result => {
+    validResults.forEach((result) => {
       result.setSelected(true)
     })
   }
@@ -544,21 +527,13 @@ export const Histogram = ({ selectionInterface }: Props) => {
       while (start < max) {
         const startDate = moment(start).format(plotlyDateFormat)
         const endDate = inMonths
-          ? moment(start)
-              .add(binSize, 'months')
-              .format(plotlyDateFormat)
-          : moment(start)
-              .add(binSize, 'ms')
-              .format(plotlyDateFormat)
+          ? moment(start).add(binSize, 'months').format(plotlyDateFormat)
+          : moment(start).add(binSize, 'ms').format(plotlyDateFormat)
         categories.push([startDate, endDate])
         start = parseInt(
           inMonths
-            ? moment(start)
-                .add(binSize, 'months')
-                .format('x')
-            : moment(start)
-                .add(binSize, 'ms')
-                .format('x')
+            ? moment(start).add(binSize, 'months').format('x')
+            : moment(start).add(binSize, 'ms').format('x')
         )
       }
       return categories
@@ -604,7 +579,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
       getValueFromClick(data, categories)
     )
     if (alreadySelected) {
-      matchedResults.forEach(result => {
+      matchedResults.forEach((result) => {
         result.setSelected(false)
       })
       pointsSelected.current.splice(
@@ -612,7 +587,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
         1
       )
     } else {
-      matchedResults.forEach(result => {
+      matchedResults.forEach((result) => {
         result.setSelected(true)
       })
       pointsSelected.current.push(getIndexClicked(data))

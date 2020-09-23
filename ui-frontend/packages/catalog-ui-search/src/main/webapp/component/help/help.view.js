@@ -64,7 +64,7 @@ function findHighestAncestorTop(element) {
   return traverseAncestors(
     element,
     (currentTop, proposedTop) => Math.max(currentTop, proposedTop),
-    element => element.getBoundingClientRect().top
+    (element) => element.getBoundingClientRect().top
   )
 }
 
@@ -72,7 +72,7 @@ function findHighestAncestorLeft(element) {
   return traverseAncestors(
     element,
     (currentLeft, proposedLeft) => Math.max(currentLeft, proposedLeft),
-    element => element.getBoundingClientRect().left
+    (element) => element.getBoundingClientRect().left
   )
 }
 
@@ -80,7 +80,7 @@ function findLowestAncestorBottom(element) {
   return traverseAncestors(
     element,
     (currentBottom, proposedBottom) => Math.min(currentBottom, proposedBottom),
-    element => element.getBoundingClientRect().bottom
+    (element) => element.getBoundingClientRect().bottom
   )
 }
 
@@ -88,7 +88,7 @@ function findLowestAncestorRight(element) {
   return traverseAncestors(
     element,
     (currentRight, proposedRight) => Math.min(currentRight, proposedRight),
-    element => element.getBoundingClientRect().right
+    (element) => element.getBoundingClientRect().right
   )
 }
 
@@ -98,14 +98,14 @@ function findBlockers() {
   )
     .add(CustomElements.getNamespace() + 'menu-vertical.is-open')
     .add('.is-blocker')
-  return _.map(blockingElements, blockingElement => ({
+  return _.map(blockingElements, (blockingElement) => ({
     boundingRect: blockingElement.getBoundingClientRect(),
     element: blockingElement,
   }))
 }
 
 function isBlocked(element, boundingRect) {
-  return _.some(findBlockers(), blocker => {
+  return _.some(findBlockers(), (blocker) => {
     if (
       blocker.element !== element &&
       $(blocker.element).find(element).length === 0
@@ -205,7 +205,7 @@ module.exports = new (Marionette.LayoutView.extend({
     this.animationFrameId = window.requestAnimationFrame(() => {
       const elements = $elementsWithHints.splice(0, 4)
       if (elements.length > 0) {
-        elements.forEach(element => {
+        elements.forEach((element) => {
           this.paintHint(element)
         })
         this.paintHints($elementsWithHints)
@@ -229,7 +229,7 @@ module.exports = new (Marionette.LayoutView.extend({
   },
   addUntoggleElement() {
     const $untoggleElement = $('.navigation-item.item-help')
-    _.forEach($untoggleElement, element => {
+    _.forEach($untoggleElement, (element) => {
       const $untoggleElementClone = $(element).clone(true)
       this.$el.append($untoggleElementClone)
       const boundingRect = element.getBoundingClientRect()
@@ -251,7 +251,7 @@ module.exports = new (Marionette.LayoutView.extend({
   listenForResize() {
     $(window).on(
       'resize.' + this.cid,
-      _.debounce(event => {
+      _.debounce((event) => {
         this.showHints()
       }, 50)
     )
@@ -260,7 +260,7 @@ module.exports = new (Marionette.LayoutView.extend({
     $(window).off('resize.' + this.cid)
   },
   listenForTyping() {
-    $(window).on('keydown.' + this.cid, event => {
+    $(window).on('keydown.' + this.cid, (event) => {
       let code = event.keyCode
       if (event.charCode && code == 0) code = event.charCode
       switch (code) {

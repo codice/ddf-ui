@@ -89,7 +89,7 @@ DrawCircle.CircleView = Marionette.View.extend({
 
   isModelReset(modelProp) {
     if (
-      _.every(defaultAttrs, val => _.isUndefined(modelProp[val])) ||
+      _.every(defaultAttrs, (val) => _.isUndefined(modelProp[val])) ||
       _.isEmpty(modelProp)
     ) {
       return true
@@ -209,7 +209,7 @@ DrawCircle.CircleView = Marionette.View.extend({
       this.mouseHandler.setInputAction(() => {
         that.handleRegionStop()
       }, Cesium.ScreenSpaceEventType.LEFT_UP)
-      this.mouseHandler.setInputAction(movement => {
+      this.mouseHandler.setInputAction((movement) => {
         that.handleRegionInter(movement)
       }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
     }
@@ -220,7 +220,7 @@ DrawCircle.CircleView = Marionette.View.extend({
     const that = this
 
     // Now wait for start
-    this.mouseHandler.setInputAction(movement => {
+    this.mouseHandler.setInputAction((movement) => {
       that.handleRegionStart(movement)
     }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
   },
@@ -290,7 +290,7 @@ DrawCircle.Controller = DrawingController.extend({
       this.notificationView = new NotificationView({
         el: this.options.notificationEl,
       }).render()
-      this.listenToOnce(circleModel, 'EndExtent', function() {
+      this.listenToOnce(circleModel, 'EndExtent', function () {
         this.notificationView.destroy()
       })
 

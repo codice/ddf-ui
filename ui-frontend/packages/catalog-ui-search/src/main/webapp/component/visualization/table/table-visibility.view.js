@@ -45,15 +45,12 @@ module.exports = Marionette.ItemView.extend({
       .get('user')
       .get('preferences')
       .get('columnOrder')
-    const hiddenColumns = user
-      .get('user')
-      .get('preferences')
-      .get('columnHide')
+    const hiddenColumns = user.get('user').get('preferences').get('columnHide')
     const availableAttributes = this.options.filteredAttributes.get(
       'filteredAttributes'
     )
 
-    return preferredHeader.map(property => ({
+    return preferredHeader.map((property) => ({
       label: properties.attributeAliases[property],
       id: property,
       hidden: hiddenColumns.indexOf(property) >= 0,
@@ -72,7 +69,7 @@ module.exports = Marionette.ItemView.extend({
     const prefs = user.get('user').get('preferences')
     prefs.set(
       'columnHide',
-      _.map(this.$el.find('.is-hidden-column'), element =>
+      _.map(this.$el.find('.is-hidden-column'), (element) =>
         element.getAttribute('data-propertyid')
       )
     )

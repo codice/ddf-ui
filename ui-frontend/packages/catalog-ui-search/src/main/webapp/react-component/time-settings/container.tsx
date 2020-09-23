@@ -88,7 +88,7 @@ const getUserPreferences = (): UserPreferences =>
   user.get('user').get('preferences')
 
 const savePreferences = (model: {}) => {
-  const nullOrUndefinedValues = !Object.values(model).every(value => !!value)
+  const nullOrUndefinedValues = !Object.values(model).every((value) => !!value)
   if (nullOrUndefinedValues) return
 
   const preferences = getUserPreferences()
