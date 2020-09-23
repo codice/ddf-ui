@@ -25,7 +25,7 @@ class AboutContainer extends React.Component {
     return (
       <About
         date={moment(properties.commitDate).format('MMMM Do YYYY')}
-        branding={properties.branding}
+        branding={properties.customBranding}
         isDirty={properties.isDirty}
         commitHash={properties.commitHash}
         commitDate={properties.commitDate}

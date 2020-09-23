@@ -390,10 +390,10 @@ a|* `1800`
 |
 |false
 
-|UI Branding Name
-|uiName
+|UI Product Name
+|product
 |String
-|Specifies a custom UI branding name in the UI.
+|Specifies a custom UI product name in the UI.
 |Intrigue
 |true
 

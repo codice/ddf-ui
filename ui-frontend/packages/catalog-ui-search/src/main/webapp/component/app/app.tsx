@@ -288,7 +288,9 @@ const App = ({
                                 justify="center"
                               >
                                 <Grid item>
-                                  <Typography>{properties.branding}</Typography>
+                                  <Typography>
+                                    {properties.customBranding}
+                                  </Typography>
                                 </Grid>
                                 <Grid item>
                                   <Typography>{properties.product}</Typography>
