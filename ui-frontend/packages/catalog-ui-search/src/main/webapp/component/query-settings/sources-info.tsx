@@ -9,13 +9,18 @@ import Tooltip from '@material-ui/core/Tooltip'
 import SourcesPage from '../../react-component/sources'
 import Paper from '@material-ui/core/Paper'
 import { Elevations } from '../theme/theme'
+import ExtensionPoints from '../../extension-points'
 
 const SourcesInfo = () => {
   return (
     <Tooltip
       title={
         <Paper elevation={Elevations.overlays} className="min-w-120">
-          <SourcesPage />
+          {ExtensionPoints.customSourcesPage ? (
+            <ExtensionPoints.customSourcesPage />
+          ) : (
+            <SourcesPage />
+          )}
         </Paper>
       }
     >
