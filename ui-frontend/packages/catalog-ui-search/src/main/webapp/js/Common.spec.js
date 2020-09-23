@@ -45,7 +45,11 @@ describe('Common', () => {
   })
   describe('wrapMapCoordinatesArray', () => {
     it('wraps as expected', () => {
-      const coordinates = [[-181, -91], [181, 91], [0, 0]]
+      const coordinates = [
+        [-181, -91],
+        [181, 91],
+        [0, 0],
+      ]
       const results = Common.wrapMapCoordinatesArray(coordinates)
       expect(results[0][0]).to.equal(179)
       expect(results[0][1]).to.equal(89)
@@ -59,11 +63,11 @@ describe('Common', () => {
   describe('generateUUID', () => {
     it('has dashes', () => {
       const uuid = Common.generateUUID({ useHyphensInUuid: true })
-      expect(uuid).to.satisfy(value => value.indexOf('-') >= 0)
+      expect(uuid).to.satisfy((value) => value.indexOf('-') >= 0)
     })
     it('does not have dashes', () => {
       const uuid = Common.generateUUID({})
-      expect(uuid).to.satisfy(value => value.indexOf('-') === -1)
+      expect(uuid).to.satisfy((value) => value.indexOf('-') === -1)
     })
   })
   describe('getImageSrc', () => {

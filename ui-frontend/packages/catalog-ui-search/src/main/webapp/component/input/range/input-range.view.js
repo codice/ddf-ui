@@ -53,14 +53,14 @@ module.exports = InputView.extend({
     this.$el
       .find('input[type=range]')
       .off('change.range input.range')
-      .on('change.range input.range', e => {
+      .on('change.range input.range', (e) => {
         const value = this.$el.find('input[type=range]').val()
         this.$el.find('input[type=number]').val(value)
         this.$el.find('.units-value').html(value)
       })
   },
   listenForChange() {
-    this.$el.on('change keyup mouseup', e => {
+    this.$el.on('change keyup mouseup', (e) => {
       switch (e.target.type) {
         case 'range':
           if (e.type === 'mouseup' || e.type === 'keyup') {

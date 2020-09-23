@@ -19,17 +19,13 @@ import { DateInput, IDateInputProps } from '@blueprintjs/datetime'
 import user from '../singletons/user-instance'
 
 export const getTimeZone = () => {
-  return user
-    .get('user')
-    .get('preferences')
-    .get('timeZone') as string
+  return user.get('user').get('preferences').get('timeZone') as string
 }
 
 export const getDateFormat = () => {
-  return user
-    .get('user')
-    .get('preferences')
-    .get('dateTimeFormat')['datetimefmt'] as string
+  return user.get('user').get('preferences').get('dateTimeFormat')[
+    'datetimefmt'
+  ] as string
 }
 
 // @ts-ignore Can't find type declarations, but they exist

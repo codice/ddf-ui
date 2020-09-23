@@ -54,11 +54,11 @@ export function getFilterErrors(filters: any) {
   let geometryErrors = new Set<string>()
   for (let i = 0; i < filters.length; i++) {
     const filter = filters[i]
-    getGeometryErrors(filter).forEach(msg => {
+    getGeometryErrors(filter).forEach((msg) => {
       geometryErrors.add(msg)
     })
   }
-  geometryErrors.forEach(err => {
+  geometryErrors.forEach((err) => {
     errors.add({
       title: 'Invalid geometry filter',
       body: err,
@@ -117,14 +117,14 @@ export function validateListOfPoints(coordinates: any[], mode: string) {
   const numPoints = isLine ? 2 : 4
   if (
     !mode.includes('multi') &&
-    !coordinates.some(coords => coords.length > 2) &&
+    !coordinates.some((coords) => coords.length > 2) &&
     coordinates.length < numPoints
   ) {
     message = `Minimum of ${numPoints} points needed for ${
       isLine ? 'Line' : 'Polygon'
     }`
   }
-  coordinates.forEach(coordinate => {
+  coordinates.forEach((coordinate) => {
     if (coordinate.length > 2) {
       coordinate.forEach((coord: any) => {
         if (hasPointError(coord))
@@ -245,7 +245,7 @@ function getGeometryErrors(filter: any): Set<string> {
       const { east, west, north, south } = filter.geojson.properties
       if (
         [east, west, north, south].some(
-          direction => direction === '' || direction === undefined
+          (direction) => direction === '' || direction === undefined
         ) ||
         Number(south) >= Number(north) ||
         Number(west) === Number(east)
@@ -677,11 +677,11 @@ function getDefaultingErrorMessage(
 }
 
 function getEmptyErrorMessage(label: string) {
-  return `${label.replace(/^\w/, c => c.toUpperCase())} cannot be empty`
+  return `${label.replace(/^\w/, (c) => c.toUpperCase())} cannot be empty`
 }
 
 const Invalid = styled.div`
-  background-color: ${props => props.theme.negativeColor};
+  background-color: ${(props) => props.theme.negativeColor};
   height: 100%;
   display: block;
   overflow: hidden;

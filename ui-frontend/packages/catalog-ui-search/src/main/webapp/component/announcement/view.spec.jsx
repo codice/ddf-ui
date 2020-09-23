@@ -20,7 +20,7 @@ var expect = require('chai').expect
 var configureStore = require('./configureStore')
 var Announcements = require('./announcements.jsx')
 
-var mock = function(type, message) {
+var mock = function (type, message) {
   return {
     id: 0,
     title: 'Title',
@@ -29,8 +29,8 @@ var mock = function(type, message) {
   }
 }
 
-describe('<Announcements/>', function() {
-  it('should render correctly', function() {
+describe('<Announcements/>', function () {
+  it('should render correctly', function () {
     var store = configureStore([mock()])
     var node = utils.renderIntoDocument(<Announcements store={store} />)
     var found = utils.scryRenderedDOMComponentsWithClass(node, 'announcement')

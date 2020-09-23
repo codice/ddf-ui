@@ -12,6 +12,4 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-export {
-  default,
-} from '../src/main/webapp/react-component/marionette-region-container'
+export { default } from '../src/main/webapp/react-component/marionette-region-container'

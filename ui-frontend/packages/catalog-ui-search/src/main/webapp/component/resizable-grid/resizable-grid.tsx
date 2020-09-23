@@ -50,34 +50,28 @@ export const useResizableGrid = ({
   const [length, setLength] = React.useState(startingLength)
   const [lastLength, setLastLength] = React.useState(startingLength)
   const [dragging, setDragging] = React.useState(false)
-  React.useEffect(
-    () => {
-      if (!dragging) {
-        if (length < autoCollapseLength) {
-          setClosed(true)
-          setLength(collapsedLength)
-        } else {
-          setLastLength(length)
-          setClosed(false)
-        }
-      }
-
-      setTimeout(() => {
-        wreqr.vent.trigger('gl-updateSize')
-        wreqr.vent.trigger('resize')
-      }, 500)
-    },
-    [length, dragging]
-  )
-  React.useEffect(
-    () => {
-      if (closed && length !== collapsedLength) {
-        setLastLength(length)
+  React.useEffect(() => {
+    if (!dragging) {
+      if (length < autoCollapseLength) {
+        setClosed(true)
         setLength(collapsedLength)
+      } else {
+        setLastLength(length)
+        setClosed(false)
       }
-    },
-    [closed]
-  )
+    }
+
+    setTimeout(() => {
+      wreqr.vent.trigger('gl-updateSize')
+      wreqr.vent.trigger('resize')
+    }, 500)
+  }, [length, dragging])
+  React.useEffect(() => {
+    if (closed && length !== collapsedLength) {
+      setLastLength(length)
+      setLength(collapsedLength)
+    }
+  }, [closed])
   return {
     length,
     closed,
@@ -217,13 +211,13 @@ export const SplitPane = ({
             flexShrink: 0,
           }}
           // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-          onResizeStop={e => {
+          onResizeStop={(e) => {
             setDragging(false)
           }}
           onResizeStart={() => {
             setDragging(true)
           }}
-          onResize={e => {
+          onResize={(e) => {
             switch (variant) {
               case 'horizontal':
                 setLength(

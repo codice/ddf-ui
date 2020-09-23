@@ -18,12 +18,12 @@ import { hot } from 'react-hot-loader'
 import { PresentationProps, DisabledBehavior } from '.'
 
 const Name = styled.div`
-  line-height: ${props => props.theme.minimumButtonSize};
+  line-height: ${(props) => props.theme.minimumButtonSize};
   overflow: hidden;
   text-overflow: ellipsis;
 `
 const NameDisabled = styled(Name)`
-  ${props => DisabledBehavior(props.theme)};
+  ${(props) => DisabledBehavior(props.theme)};
   cursor: text !important;
 `
 

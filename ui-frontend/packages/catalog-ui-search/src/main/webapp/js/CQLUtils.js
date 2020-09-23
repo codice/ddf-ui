@@ -31,12 +31,12 @@ function sanitizeForCql(text) {
 }
 
 function lineToCQLLine(model) {
-  const cqlLINE = model.map(point => point[0] + ' ' + point[1])
+  const cqlLINE = model.map((point) => point[0] + ' ' + point[1])
   return cqlLINE
 }
 
 function polygonToCQLPolygon(model) {
-  const cqlPolygon = model.map(point => point[0] + ' ' + point[1])
+  const cqlPolygon = model.map((point) => point[0] + ' ' + point[1])
   if (cqlPolygon[0] !== cqlPolygon[cqlPolygon.length - 1]) {
     cqlPolygon.push(cqlPolygon[0])
   }
@@ -44,7 +44,7 @@ function polygonToCQLPolygon(model) {
 }
 
 function polygonToCQLMultiPolygon(model) {
-  return model.map(polygon => polygonToCQLPolygon(polygon))
+  return model.map((polygon) => polygonToCQLPolygon(polygon))
 }
 
 function bboxToCQLPolygon(model) {
@@ -187,7 +187,7 @@ function sanitizeGeometryCql(cqlString) {
     /'POLYGON\(\((-?[0-9]*.?[0-9]* -?[0-9]*.?[0-9]*,?)*\)\)'/g
   )
   if (polygons) {
-    polygons.forEach(polygon => {
+    polygons.forEach((polygon) => {
       cqlString = cqlString.replace(polygon, polygon.replace(/'/g, ''))
     })
   }
@@ -195,7 +195,7 @@ function sanitizeGeometryCql(cqlString) {
   //sanitize multipolygons
   let multipolygons = cqlString.match(/'MULTIPOLYGON\(\(\(.*\)\)\)'/g)
   if (multipolygons) {
-    multipolygons.forEach(multipolygon => {
+    multipolygons.forEach((multipolygon) => {
       cqlString = cqlString.replace(
         multipolygon,
         multipolygon.replace(/'/g, '')
@@ -206,7 +206,7 @@ function sanitizeGeometryCql(cqlString) {
   //sanitize points
   let points = cqlString.match(/'POINT\(-?[0-9]*.?[0-9]* -?[0-9]*.?[0-9]*\)'/g)
   if (points) {
-    points.forEach(point => {
+    points.forEach((point) => {
       cqlString = cqlString.replace(point, point.replace(/'/g, ''))
     })
   }
@@ -216,7 +216,7 @@ function sanitizeGeometryCql(cqlString) {
     /'LINESTRING\((-?[0-9]*.?[0-9]* -?[0-9]*.?[0-9]*.?)*\)'/g
   )
   if (linestrings) {
-    linestrings.forEach(linestring => {
+    linestrings.forEach((linestring) => {
       cqlString = cqlString.replace(linestring, linestring.replace(/'/g, ''))
     })
   }
@@ -298,11 +298,11 @@ function isGeoFilter(type) {
 //   return cql.simplify(cql.read(cqlString))
 // }
 
-const isPolygonFilter = filter => {
+const isPolygonFilter = (filter) => {
   return geometryFilterContainsString(filter, 'POLYGON')
 }
 
-const isLineFilter = filter => {
+const isLineFilter = (filter) => {
   return geometryFilterContainsString(filter, 'LINESTRING')
 }
 
@@ -377,7 +377,7 @@ function arrayFromPolygonWkt(wkt) {
   // Handle MULTIPOLYGON with no internal rings (i.e. holes)
   const polygons = wkt.match(/\(\([^()]+\)\)/g)
   if (polygons) {
-    return polygons.map(polygon => arrayFromPartialWkt(polygon))
+    return polygons.map((polygon) => arrayFromPartialWkt(polygon))
   }
   return []
 }

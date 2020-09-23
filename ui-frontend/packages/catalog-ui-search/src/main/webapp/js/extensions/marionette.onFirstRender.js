@@ -18,7 +18,7 @@ const render = Marionette.ItemView.prototype.render
 /**
  * Overrides render to add a callback for onFirstRender.
  */
-Marionette.ItemView.prototype.render = function() {
+Marionette.ItemView.prototype.render = function () {
   const firstRender = this.isRendered !== true
   render.apply(this, arguments)
   if (firstRender) {

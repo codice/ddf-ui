@@ -27,13 +27,13 @@ const Root = styled.div`
 
 const SourcesCenter = styled.div`
   margin: auto;
-  max-width: ${props => {
+  max-width: ${(props) => {
     return props.theme.screenBelow(props.theme.mediumScreenSize)
       ? '100%'
       : '1200px'
   }};
   padding: 0px
-    ${props =>
+    ${(props) =>
       props.theme.screenBelow(props.theme.mediumScreenSize) ? '20px' : '100px'};
   overflow: auto;
   height: 100%;
@@ -56,7 +56,7 @@ export default hot(module)(({ sources, amountDown, refreshSources }: Props) => {
     <Root>
       <SourcesCenter>
         <SourcesSummary amountDown={amountDown} />
-        {sources.map(source => {
+        {sources.map((source) => {
           return (
             <SourceItem
               key={source.id}

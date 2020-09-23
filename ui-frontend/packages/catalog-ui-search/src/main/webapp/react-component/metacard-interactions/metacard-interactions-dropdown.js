@@ -25,9 +25,9 @@ const Button = styled.button`
   display: 'inline-block';
   text-align: center;
   vertical-align: top;
-  width: ${props => props.theme.minimumButtonSize};
-  height: ${props => props.theme.minimumButtonSize};
-  line-height: ${props => props.theme.minimumButtonSize};
+  width: ${(props) => props.theme.minimumButtonSize};
+  height: ${(props) => props.theme.minimumButtonSize};
+  line-height: ${(props) => props.theme.minimumButtonSize};
 `
 
 const ContainerView = Marionette.ItemView.extend({
@@ -67,10 +67,7 @@ const ContainerView = Marionette.ItemView.extend({
   initialize() {
     if (this.model.length === 1) {
       this.listenTo(
-        this.model
-          .first()
-          .get('metacard')
-          .get('properties'),
+        this.model.first().get('metacard').get('properties'),
         'change',
         this.handleModelUpdates
       )

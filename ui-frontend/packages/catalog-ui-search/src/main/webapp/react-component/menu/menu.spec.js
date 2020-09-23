@@ -52,8 +52,8 @@ describe('<Menu />', () => {
     expect(wrapper.find({ selected: true }).prop('value')).to.equal('two')
   })
 
-  it('should select the right <MenuItem /> on click', done => {
-    const onChange = value => {
+  it('should select the right <MenuItem /> on click', (done) => {
+    const onChange = (value) => {
       expect(value).to.equal('one')
       done()
     }
@@ -90,13 +90,13 @@ describe('<Menu />', () => {
     },
   ]
 
-  const mockEvent = code => ({ code, preventDefault: () => {} })
+  const mockEvent = (code) => ({ code, preventDefault: () => {} })
 
   table.forEach(({ events, state }) => {
     it(`should equal value='${state}' after ${JSON.stringify(
       events
-    )}`, done => {
-      const onChange = value => {
+    )}`, (done) => {
+      const onChange = (value) => {
         expect(value).to.equal(state)
         done()
       }
@@ -111,7 +111,7 @@ describe('<Menu />', () => {
 
       const listener = wrapper.find('DocumentListener').prop('listener')
 
-      events.forEach(event => {
+      events.forEach((event) => {
         listener(mockEvent(event))
       })
 
@@ -132,8 +132,8 @@ describe('<Menu />', () => {
     expect(wrapper.state('active')).to.equal('one')
   })
 
-  it('should support multi', done => {
-    const onChange = value => {
+  it('should support multi', (done) => {
+    const onChange = (value) => {
       expect(value).to.deep.equal(['one', 'two'])
       done()
     }

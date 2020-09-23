@@ -18,6 +18,6 @@ const thunk = require('redux-thunk').default
 
 const reducer = require('./reducer')
 
-module.exports = function(prevState) {
+module.exports = function (prevState) {
   return redux.createStore(reducer, prevState, redux.applyMiddleware(thunk))
 }

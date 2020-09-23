@@ -132,7 +132,7 @@ module.exports = Marionette.LayoutView.extend({
       headers: this.options.extraHeaders,
       sending(file, xhr, formData) {
         _.each(_this.overrides, (values, attribute) => {
-          _.each(values, value => {
+          _.each(values, (value) => {
             formData.append('parse.' + attribute, value)
           })
         })

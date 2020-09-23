@@ -25,7 +25,7 @@ stories.add('basic', () => {
   const minimumInputLength = number('Minimum Input Length', 3)
   const error = boolean('Throw Error', false)
 
-  const suggester = input =>
+  const suggester = (input) =>
     new Promise((resolve, reject) => {
       if (error) {
         return reject('Error!!!')
@@ -33,7 +33,7 @@ stories.add('basic', () => {
 
       setTimeout(() => {
         const suggestions = [input, input + input, input + input + input]
-        resolve(suggestions.map(id => ({ id, name: id })))
+        resolve(suggestions.map((id) => ({ id, name: id })))
       }, timeout)
     })
 

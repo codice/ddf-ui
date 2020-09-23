@@ -32,7 +32,7 @@ const LastInput = styled(TextField)`
 
 const serialize = (last, unit) => ({ last, unit })
 
-const RelativeTime = props => {
+const RelativeTime = (props) => {
   return (
     <div className={props.className}>
       <InputContainer>
@@ -40,14 +40,14 @@ const RelativeTime = props => {
         <LastInput
           type="number"
           value={props.last}
-          onChange={value => props.onChange(serialize(value, props.unit))}
+          onChange={(value) => props.onChange(serialize(value, props.unit))}
         />
       </InputContainer>
       <InputContainer>
         <Label>Units</Label>
         <UnitsDropdown
           value={props.unit}
-          onChange={value => props.onChange(serialize(props.last, value))}
+          onChange={(value) => props.onChange(serialize(props.last, value))}
         />
       </InputContainer>
     </div>

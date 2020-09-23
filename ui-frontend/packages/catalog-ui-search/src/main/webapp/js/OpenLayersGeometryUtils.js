@@ -19,7 +19,7 @@ const properties = require('./properties.js')
 const Common = require('./Common')
 
 module.exports = {
-  getCoordinatesFromGeometry: geometry => {
+  getCoordinatesFromGeometry: (geometry) => {
     const type = geometry.getType()
     switch (type) {
       case 'LineString':
@@ -48,11 +48,11 @@ module.exports = {
         break
     }
   },
-  mapCoordinateToLonLat: point =>
+  mapCoordinateToLonLat: (point) =>
     ol.proj.transform(point, properties.projection, 'EPSG:4326'),
-  lonLatToMapCoordinate: point =>
+  lonLatToMapCoordinate: (point) =>
     ol.proj.transform(point, 'EPSG:4326', properties.projection),
-  wrapCoordinatesFromGeometry: geometry => {
+  wrapCoordinatesFromGeometry: (geometry) => {
     let coordinates = module.exports
       .getCoordinatesFromGeometry(geometry)
       .map(module.exports.mapCoordinateToLonLat)

@@ -29,10 +29,10 @@ const mockDataGlobs = {
   './internal/enumerations': require('./enumerations.json'),
 }
 
-module.exports = url => {
+module.exports = (url) => {
   let data = mockDataMap[url]
   if (data === undefined) {
-    Object.keys(mockDataGlobs).forEach(glob => {
+    Object.keys(mockDataGlobs).forEach((glob) => {
       if (url.startsWith(glob)) {
         data = mockDataGlobs[glob]
       }

@@ -79,7 +79,7 @@ module.exports = Backbone.AssociatedModel.extend({
     })
   },
   removeLabel(label) {
-    _.remove(this.get('labels'), e => e === label)
+    _.remove(this.get('labels'), (e) => e === label)
   },
   /*
    * Sets the line to the given new line. This represents the line on the map

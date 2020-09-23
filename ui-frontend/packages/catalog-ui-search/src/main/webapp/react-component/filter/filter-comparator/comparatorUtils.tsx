@@ -136,7 +136,7 @@ export const getComparators = (attribute: string): ComparatorType[] => {
   // IS NULL checks do not work on these
   if (attribute === 'anyGeo' || attribute === 'anyText') {
     comparators = comparators.filter(
-      comparator => comparator.value !== 'IS NULL'
+      (comparator) => comparator.value !== 'IS NULL'
     )
   }
   return comparators

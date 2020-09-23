@@ -18,11 +18,7 @@ const errorMessages = require('./errors')
 const DistanceUtils = require('../../../js/DistanceUtils')
 
 function convertUserValueToWKT(val) {
-  val = val
-    .split(' (')
-    .join('(')
-    .split(', ')
-    .join(',')
+  val = val.split(' (').join('(').split(', ').join(',')
   val = val
     .split('MULTIPOINT')
     .map((value, index) => {
@@ -46,7 +42,7 @@ function convertUserValueToWKT(val) {
 }
 
 function removeTrailingZeros(wkt) {
-  return wkt.replace(/[-+]?[0-9]*\.?[0-9]+/g, number => Number(number))
+  return wkt.replace(/[-+]?[0-9]*\.?[0-9]+/g, (number) => Number(number))
 }
 
 function checkCoordinateOrder(coordinate) {
@@ -64,22 +60,22 @@ function checkGeometryCoordinateOrdering(geometry) {
       return checkCoordinateOrder(geometry.coordinates)
     case 'LineString':
     case 'MultiPoint':
-      return geometry.coordinates.every(coordinate =>
+      return geometry.coordinates.every((coordinate) =>
         checkCoordinateOrder(coordinate)
       )
     case 'Polygon':
     case 'MultiLineString':
-      return geometry.coordinates.every(line =>
-        line.every(coordinate => checkCoordinateOrder(coordinate))
+      return geometry.coordinates.every((line) =>
+        line.every((coordinate) => checkCoordinateOrder(coordinate))
       )
     case 'MultiPolygon':
-      return geometry.coordinates.every(multipolygon =>
-        multipolygon.every(polygon =>
-          polygon.every(coordinate => checkCoordinateOrder(coordinate))
+      return geometry.coordinates.every((multipolygon) =>
+        multipolygon.every((polygon) =>
+          polygon.every((coordinate) => checkCoordinateOrder(coordinate))
         )
       )
     case 'GeometryCollection':
-      return geometry.geometries.every(subgeometry =>
+      return geometry.geometries.every((subgeometry) =>
         checkGeometryCoordinateOrdering(subgeometry)
       )
   }
@@ -125,14 +121,14 @@ function validateWkt(wkt) {
 }
 
 function createCoordPair(coordinate) {
-  return coordinate.map(val => DistanceUtils.coordinateRound(val)).join(' ')
+  return coordinate.map((val) => DistanceUtils.coordinateRound(val)).join(' ')
 }
 
 function createLineString(coordinates) {
   return (
     '(' +
     coordinates
-      .map(coord => {
+      .map((coord) => {
         return createCoordPair(coord)
       })
       .join(', ') +
@@ -144,7 +140,7 @@ function createMultiLineString(coordinates) {
   return (
     '(' +
     coordinates
-      .map(line => {
+      .map((line) => {
         return createLineString(line)
       })
       .join(', ') +
@@ -156,7 +152,7 @@ function createMultiPolygon(coordinates) {
   return (
     '(' +
     coordinates
-      .map(line => {
+      .map((line) => {
         return createMultiLineString(line)
       })
       .join(', ') +
@@ -189,7 +185,7 @@ function createRoundedWktGeo(geoJson) {
       return (
         geoJson.type.toUpperCase() +
         '(' +
-        geoJson.geometries.map(geo => createRoundedWktGeo(geo)).join(', ') +
+        geoJson.geometries.map((geo) => createRoundedWktGeo(geo)).join(', ') +
         ')'
       )
   }

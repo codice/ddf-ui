@@ -36,7 +36,7 @@ module.exports = InputView.extend({
       .get('property')
       .get('radio')
       .filter(
-        choice =>
+        (choice) =>
           JSON.stringify(choice.value) === JSON.stringify(value) ||
           JSON.stringify(choice) === JSON.stringify(value)
       )[0]
@@ -54,7 +54,7 @@ module.exports = InputView.extend({
         options: this.model
           .get('property')
           .get('radio')
-          .map(value => {
+          .map((value) => {
             if (value.label) {
               return {
                 label: value.label,

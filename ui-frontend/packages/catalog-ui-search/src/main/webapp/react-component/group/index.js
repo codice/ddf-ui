@@ -14,7 +14,7 @@
  **/
 const React = require('react')
 
-const Group = props => (
+const Group = (props) => (
   <div className="input-group" {...props}>
     {props.children}
   </div>

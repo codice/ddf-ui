@@ -125,7 +125,7 @@ describe('Cesium Layer Ordering', () => {
               const newLayerOrder = shiftLayers({ prev, cur })
               checkOrdering({
                 actual: newLayerOrder,
-                expected: cur.filter(layer => previousLayers.has(layer)),
+                expected: cur.filter((layer) => previousLayers.has(layer)),
               })
             })
           })
@@ -142,7 +142,7 @@ describe('Cesium Layer Ordering', () => {
       }) => {
         const METHOD_RAISE = 'raise'
         const shiftLayerToIndex = ({ layerOrder, layer: layerId, index }) => {
-          const layerIdRemoved = layerOrder.filter(id => id !== layerId)
+          const layerIdRemoved = layerOrder.filter((id) => id !== layerId)
           return [
             ...layerIdRemoved.slice(0, index),
             layerId,

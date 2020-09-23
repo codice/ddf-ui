@@ -135,7 +135,7 @@ module.exports = InputView.extend({
     this.listenTo(
       this.enumRegion.currentView.model,
       'change:value',
-      function() {
+      function () {
         // @ts-ignore ts-migrate(2683) FIXME: 'this' implicitly has type 'any' because it does n... Remove this comment to see the full error message
         const value = this.enumRegion.currentView.model.get('value')[0]
         switch (value) {
@@ -166,7 +166,7 @@ module.exports = InputView.extend({
     this.listenTo(
       this.otherInput.currentView.model,
       'change:value',
-      function() {
+      function () {
         // @ts-ignore ts-migrate(2683) FIXME: 'this' implicitly has type 'any' because it does n... Remove this comment to see the full error message
         this.model.setValue(this.otherInput.currentView.model.getValue())
 

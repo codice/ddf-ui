@@ -20,34 +20,34 @@ import { readableColor, rgba } from 'polished'
 
 import Group from '../group'
 
-const foreground = props => {
+const foreground = (props) => {
   if (props.theme.backgroundDropdown !== undefined) {
     return readableColor(props.theme.backgroundDropdown)
   }
 }
 
-const background = props => {
+const background = (props) => {
   if (props.theme.backgroundDropdown !== undefined) {
     return rgba(readableColor(props.theme.backgroundDropdown), 0.1)
   }
 }
 
 const Input = styled.input`
-  padding: 0px ${props => props.theme.minimumSpacing};
+  padding: 0px ${(props) => props.theme.minimumSpacing};
   display: inline-block;
   width: 100%;
   box-sizing: border-box;
   white-space: nowrap;
-  height: ${props => props.theme.minimumButtonSize};
-  line-height: ${props => props.theme.minimumButtonSize};
-  border-radius: ${props => props.theme.borderRadius};
+  height: ${(props) => props.theme.minimumButtonSize};
+  line-height: ${(props) => props.theme.minimumButtonSize};
+  border-radius: ${(props) => props.theme.borderRadius};
   outline: none;
   color: ${foreground};
   border: 2px solid ${background};
   background-color: ${background};
 `
 
-const TextField = props => {
+const TextField = (props) => {
   const { label, addon, value, type = 'text', onChange, ...rest } = props
   return (
     <Group>
@@ -60,7 +60,7 @@ const TextField = props => {
       <Input
         value={value !== undefined ? value : ''}
         type={type}
-        onChange={e => {
+        onChange={(e) => {
           onChange(e.target.value)
         }}
         {...rest}

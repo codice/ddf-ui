@@ -85,21 +85,11 @@ const SelectedResults = ({ selectionInterface }: any) => {
 }
 
 const determineHasResultFilter = () => {
-  return (
-    user
-      .get('user')
-      .get('preferences')
-      .get('resultFilter') !== undefined
-  )
+  return user.get('user').get('preferences').get('resultFilter') !== undefined
 }
 
 const determineHasResultSort = () => {
-  return (
-    user
-      .get('user')
-      .get('preferences')
-      .get('resultSort') !== undefined
-  )
+  return user.get('user').get('preferences').get('resultSort') !== undefined
 }
 
 type Props = {

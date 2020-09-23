@@ -53,7 +53,7 @@ module.exports = Marionette.ItemView.extend(
       const value = this.model.get('value')
       const choices = this.$el.children('[data-value]')
       choices.removeClass('is-selected')
-      _.forEach(choices, choice => {
+      _.forEach(choices, (choice) => {
         if ($(choice).attr('data-value') === JSON.stringify(value)) {
           $(choice).addClass('is-selected')
         }
@@ -67,7 +67,7 @@ module.exports = Marionette.ItemView.extend(
     },
     serializeData() {
       const modelJSON = this.model.toJSON()
-      modelJSON.options.forEach(option => {
+      modelJSON.options.forEach((option) => {
         option.value = JSON.stringify(option.value)
       })
       return modelJSON

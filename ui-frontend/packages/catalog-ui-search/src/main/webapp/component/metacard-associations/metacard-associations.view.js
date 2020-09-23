@@ -104,7 +104,7 @@ module.exports = Marionette.LayoutView.extend({
     this.clearAssociations()
     LoadingCompanionView.beginLoading(this)
     $.get('./internal/associations/' + this.model.get('metacard').get('id'))
-      .then(response => {
+      .then((response) => {
         if (!this.isDestroyed && this.associationsMenu !== undefined) {
           this._originalAssociations = JSON.parse(JSON.stringify(response))
           this._associations = response
@@ -127,7 +127,7 @@ module.exports = Marionette.LayoutView.extend({
   },
   parseAssociations() {
     this.clearAssociations()
-    this._associations.forEach(association => {
+    this._associations.forEach((association) => {
       this._knownMetacards.add([association.parent, association.child])
       this._associationCollection.add({
         parent: association.parent.id,
@@ -222,7 +222,7 @@ module.exports = Marionette.LayoutView.extend({
   handleSave() {
     LoadingCompanionView.beginLoading(this)
     const data = this._associationCollection.toJSON()
-    data.forEach(association => {
+    data.forEach((association) => {
       association.parent = {
         id: association.parent,
       }
@@ -239,7 +239,7 @@ module.exports = Marionette.LayoutView.extend({
       data: JSON.stringify(data),
       method: 'PUT',
       contentType: 'application/json',
-    }).always(response => {
+    }).always((response) => {
       setTimeout(() => {
         if (!this.isDestroyed) {
           this.getAssociations()

@@ -47,7 +47,7 @@ const treeMap = (obj: any, fn: any, path = []) => {
     return (
       Object.keys(obj)
         // @ts-ignore ts-migrate(2769) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
-        .map(k => [k, treeMap(obj[k], fn, path.concat(k))])
+        .map((k) => [k, treeMap(obj[k], fn, path.concat(k))])
         .reduce((o, [k, v]) => {
           // @ts-ignore ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           o[k] = v
@@ -72,17 +72,8 @@ const sanitizeTree = (tree: any) =>
   })
 
 function getGoldenLayoutSettings() {
-  const fontSize = parseInt(
-    user
-      .get('user')
-      .get('preferences')
-      .get('fontSize')
-  )
-  const theme = user
-    .get('user')
-    .get('preferences')
-    .get('theme')
-    .getTheme()
+  const fontSize = parseInt(user.get('user').get('preferences').get('fontSize'))
+  const theme = user.get('user').get('preferences').get('theme').getTheme()
   return {
     settings: {
       showPopoutIcon: false,
@@ -191,7 +182,7 @@ function registerComponent(
                     {tab.closeElement[0].style.display !== 'none' ? (
                       <Button
                         data-id="close-tab-button"
-                        onClick={e => {
+                        onClick={(e) => {
                           tab._onCloseClickFn(e)
                         }}
                       >
@@ -354,7 +345,7 @@ export default Marionette.LayoutView.extend({
     return currentConfig
   },
   registerGoldenLayoutComponents() {
-    Visualizations.forEach(viz => {
+    Visualizations.forEach((viz) => {
       registerComponent(this, viz.id, viz.view, viz.options, viz)
     })
   },
@@ -393,7 +384,7 @@ export default Marionette.LayoutView.extend({
                 <Button
                   data-id="maximise-tab-button"
                   // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-                  onClick={e => {
+                  onClick={(e) => {
                     const prevWidth = stack.config.prevWidth || 500
                     const prevHeight = stack.config.prevHeight || 500
                     stack.contentItems[0].container.setSize(
@@ -409,7 +400,7 @@ export default Marionette.LayoutView.extend({
                 <Button
                   data-id="minimise-layout-button"
                   // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-                  onClick={e => {
+                  onClick={(e) => {
                     stack.config.prevWidth = stack.getActiveContentItem().container.width
                     stack.config.prevHeight = stack.getActiveContentItem().container.height
                     stack.contentItems[0].container.setSize(10, 45)
@@ -422,7 +413,7 @@ export default Marionette.LayoutView.extend({
                 <Button
                   data-id="maximise-layout-button"
                   // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-                  onClick={e => {
+                  onClick={(e) => {
                     stack.toggleMaximise()
                   }}
                 >
@@ -434,7 +425,7 @@ export default Marionette.LayoutView.extend({
                   <Button
                     data-id="close-layout-button"
                     // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-                    onClick={e => {
+                    onClick={(e) => {
                       if (stack.isMaximised) {
                         stack.toggleMaximise()
                       }
@@ -494,17 +485,14 @@ export default Marionette.LayoutView.extend({
         wreqr.vent.trigger('resize')
         //do not add a window resize event, that will cause an endless loop.  If you need something like that, listen to the wreqr resize event.
       }
-      user
-        .get('user')
-        .get('preferences')
-        .set(
-          {
-            layoutId: 'custom',
-          },
-          {
-            internal: true,
-          }
-        )
+      user.get('user').get('preferences').set(
+        {
+          layoutId: 'custom',
+        },
+        {
+          internal: true,
+        }
+      )
     }
   },
   setupListeners() {

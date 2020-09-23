@@ -33,7 +33,7 @@ const Root = styled.div`
 
   input {
     width: 100%;
-    padding-right: ${props => props.theme.minimumButtonSize};
+    padding-right: ${(props) => props.theme.minimumButtonSize};
   }
   button {
     position: absolute;

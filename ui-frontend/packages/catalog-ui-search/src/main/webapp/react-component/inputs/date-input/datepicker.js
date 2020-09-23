@@ -32,7 +32,7 @@ function isSameDay(date1, date2) {
   )
 }
 
-const DateTimePicker = props => {
+const DateTimePicker = (props) => {
   const datePicker = useRef(null)
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const DateTimePicker = props => {
       inline: true,
       defaultDate: value,
     })
-    $(element).on('dp.change', e => {
+    $(element).on('dp.change', (e) => {
       if (isSameDay(e.oldDate, e.date)) {
         props.onChange(e.date)
       } else {

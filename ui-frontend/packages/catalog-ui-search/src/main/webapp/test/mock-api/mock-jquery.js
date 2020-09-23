@@ -22,7 +22,7 @@ const mock = () => {
   const httpRequest = ({ url }) => {
     return Promise.resolve(api(url))
   }
-  $.get = url => httpRequest({ url })
+  $.get = (url) => httpRequest({ url })
   $.post = httpRequest
   $.ajax = httpRequest
 }

@@ -53,17 +53,11 @@ module.exports = {
     if (results.length === undefined) {
       results = [results]
     }
-    const ids = results.map(result => result.get('metacard').id)
-    results.forEach(metacard => {
-      metacard
-        .get('metacard')
-        .get('properties')
-        .set(attributeMap)
-      unsetAttributes.forEach(attribute => {
-        metacard
-          .get('metacard')
-          .get('properties')
-          .unset(attribute)
+    const ids = results.map((result) => result.get('metacard').id)
+    results.forEach((metacard) => {
+      metacard.get('metacard').get('properties').set(attributeMap)
+      unsetAttributes.forEach((attribute) => {
+        metacard.get('metacard').get('properties').unset(attribute)
       })
     })
   },

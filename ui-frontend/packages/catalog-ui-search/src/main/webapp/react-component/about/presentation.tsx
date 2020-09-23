@@ -29,17 +29,17 @@ interface Props {
 
 const Root = styled.div`
   ${CustomElement} overflow: auto;
-  padding: ${props => props.theme.minimumSpacing} 0px;
+  padding: ${(props) => props.theme.minimumSpacing} 0px;
 
   .about-content {
     margin: auto;
-    max-width: ${props => {
+    max-width: ${(props) => {
       return props.theme.screenBelow(props.theme.mediumScreenSize)
         ? '100%'
         : '1200px'
     }};
     padding: 0px
-      ${props =>
+      ${(props) =>
         props.theme.screenBelow(props.theme.mediumScreenSize)
           ? '20px'
           : '100px'};
@@ -47,7 +47,7 @@ const Root = styled.div`
 
   .content-version,
   .version-message {
-    padding: ${props => props.theme.minimumSpacing};
+    padding: ${(props) => props.theme.minimumSpacing};
   }
 `
 

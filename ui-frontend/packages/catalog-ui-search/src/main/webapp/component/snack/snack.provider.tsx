@@ -32,36 +32,30 @@ export function SnackProvider({ children }: any) {
   const [currentSnack, setCurrentSnack] = useState({} as Snack)
 
   const addSnack = (message: string, props: SnackProps = {}) => {
-    setSnacks(snacks => [{ message, ...props }, ...snacks])
+    setSnacks((snacks) => [{ message, ...props }, ...snacks])
   }
 
   // Set current snack to be displayed
-  useEffect(
-    () => {
-      if (snacks.length > 0) {
-        setCurrentSnack(snacks[snacks.length - 1])
-      }
-    },
-    [snacks]
-  )
+  useEffect(() => {
+    if (snacks.length > 0) {
+      setCurrentSnack(snacks[snacks.length - 1])
+    }
+  }, [snacks])
 
   // Remove snack after timeout
-  useEffect(
-    () => {
-      if (currentSnack.message) {
-        const timeout = currentSnack.timeout || AUTO_DISMISS
+  useEffect(() => {
+    if (currentSnack.message) {
+      const timeout = currentSnack.timeout || AUTO_DISMISS
 
-        const timer = setTimeout(() => {
-          removeCurrentSnack()
-        }, timeout)
+      const timer = setTimeout(() => {
+        removeCurrentSnack()
+      }, timeout)
 
-        return () => clearTimeout(timer)
-      }
+      return () => clearTimeout(timer)
+    }
 
-      return
-    },
-    [currentSnack]
-  )
+    return
+  }, [currentSnack])
 
   // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
   const handleClose = (e: any, reason: string) => {
@@ -79,7 +73,7 @@ export function SnackProvider({ children }: any) {
 
   const removeCurrentSnack = () => {
     setCurrentSnack({})
-    setSnacks(snacks => snacks.slice(0, snacks.length - 1))
+    setSnacks((snacks) => snacks.slice(0, snacks.length - 1))
   }
 
   const value = useMemo(() => addSnack, [])

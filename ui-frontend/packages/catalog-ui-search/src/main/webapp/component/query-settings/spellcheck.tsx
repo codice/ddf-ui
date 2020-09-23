@@ -25,7 +25,7 @@ const Spellcheck = ({ model }: Props) => {
         <Checkbox
           color="default"
           checked={spellcheck}
-          onChange={e => {
+          onChange={(e) => {
             model.set('spellcheck', e.target.checked)
           }}
         />

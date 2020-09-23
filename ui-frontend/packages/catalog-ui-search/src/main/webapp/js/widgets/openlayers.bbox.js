@@ -238,10 +238,10 @@ Draw.BboxView = Marionette.View.extend({
       that.handleRegionStop()
       that.map.removeInteraction(that.primitive)
     })
-    this.primitive.on('boxstart', sketchFeature => {
+    this.primitive.on('boxstart', (sketchFeature) => {
       that.startCoordinate = sketchFeature.coordinate
     })
-    this.primitive.on('boxdrag', sketchFeature => {
+    this.primitive.on('boxdrag', (sketchFeature) => {
       const geometryRepresentation = new ol.geom.LineString([
         that.startCoordinate,
         [that.startCoordinate[0], sketchFeature.coordinate[1]],
@@ -313,7 +313,7 @@ Draw.Controller = DrawingController.extend({
         el: this.notificationEl,
       }).render()
       bboxModel.trigger('BeginExtent')
-      this.listenToOnce(bboxModel, 'EndExtent', function() {
+      this.listenToOnce(bboxModel, 'EndExtent', function () {
         this.notificationView.destroy()
       })
 

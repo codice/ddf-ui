@@ -51,7 +51,7 @@ require('./extensions/marionette.ItemView.attachElContent.js')
 require('./extensions/marionette.View.isMarionetteComponent.js')
 require('./extensions/marionette.View.remove.js')
 
-let getShortErrorMessage = function(error) {
+let getShortErrorMessage = function (error) {
   let extraMessage = error instanceof Error ? error.name : String(error)
 
   if (extraMessage.length === 0) {
@@ -66,7 +66,7 @@ let getShortErrorMessage = function(error) {
   return ' - ' + extraMessage
 }
 
-let getErrorResponse = function(event, jqxhr, settings, throwError) {
+let getErrorResponse = function (event, jqxhr, settings, throwError) {
   if (
     jqxhr.getResponseHeader('content-type') === 'application/json' &&
     jqxhr.responseText.startsWith('<') &&
@@ -127,30 +127,30 @@ $(window.document).ajaxError((event, jqxhr, settings, throwError) => {
 
 //in here we drop in any top level patches, etc.
 const toJSON = Backbone.Model.prototype.toJSON
-Backbone.Model.prototype.toJSON = function(options) {
+Backbone.Model.prototype.toJSON = function (options) {
   const originalJSON = toJSON.call(this, options)
   if (options && options.additionalProperties !== undefined) {
     const backboneModel = this
-    options.additionalProperties.forEach(property => {
+    options.additionalProperties.forEach((property) => {
       originalJSON[property] = backboneModel[property]
     })
   }
   return originalJSON
 }
 const clone = Backbone.Model.prototype.clone
-Backbone.Model.prototype.clone = function() {
+Backbone.Model.prototype.clone = function () {
   const cloneRef = clone.call(this)
   cloneRef._cloneOf = this.id || this.cid
   return cloneRef
 }
 const associationsClone = Backbone.AssociatedModel.prototype.clone
-Backbone.AssociatedModel.prototype.clone = function() {
+Backbone.AssociatedModel.prototype.clone = function () {
   const cloneRef = associationsClone.call(this)
   cloneRef._cloneOf = this.id || this.cid
   return cloneRef
 }
 const associationsSet = Backbone.AssociatedModel.prototype.set
-Backbone.AssociatedModel.prototype.set = function(key, value, options) {
+Backbone.AssociatedModel.prototype.set = function (key, value, options) {
   if (typeof key === 'object') {
     options = value
   }
@@ -164,7 +164,7 @@ Backbone.AssociatedModel.prototype.set = function(key, value, options) {
 // monkey-patch Marionette for compatibility with jquery 3+.
 // jquery removed the .selector method, which was used by the original
 // implementation here.
-Marionette.Region.prototype.reset = function() {
+Marionette.Region.prototype.reset = function () {
   this.empty()
   this.el = this.options.el
   delete this.$el

@@ -134,16 +134,10 @@ module.exports = InputView.extend({
     }
   },
   getTimeFormat() {
-    return user
-      .get('user')
-      .get('preferences')
-      .get('dateTimeFormat')['timefmt']
+    return user.get('user').get('preferences').get('dateTimeFormat')['timefmt']
   },
   getTimeZone() {
-    return user
-      .get('user')
-      .get('preferences')
-      .get('timeZone')
+    return user.get('user').get('preferences').get('timeZone')
   },
   getUserReadableTime(time) {
     return moment.tz(time, this.getTimeZone()).format(this.getTimeFormat())

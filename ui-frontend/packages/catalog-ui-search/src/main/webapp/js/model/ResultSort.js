@@ -77,7 +77,7 @@ function checkSortValue(a, b, sorting) {
 }
 
 function doSort(sorting, collection) {
-  collection.comparator = function(a, b) {
+  collection.comparator = function (a, b) {
     let sortValue = 0
     for (let i = 0; i <= sorting.length - 1; i++) {
       const sortField = sorting[i].attribute

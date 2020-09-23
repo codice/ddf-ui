@@ -15,7 +15,7 @@
 
 const Marionette = require('marionette')
 const behaviors = {}
-Marionette.Behaviors.behaviorsLookup = function() {
+Marionette.Behaviors.behaviorsLookup = function () {
   return behaviors
 }
 

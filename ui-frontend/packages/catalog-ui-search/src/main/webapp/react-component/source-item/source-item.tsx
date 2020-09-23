@@ -27,7 +27,7 @@ const Root = styled.div<RootProps>`
   width: 100%;
   height: auto;
   white-space: nowrap;
-  padding: ${props => props.theme.minimumSpacing};
+  padding: ${(props) => props.theme.minimumSpacing};
   overflow: hidden;
 
   .source-name,
@@ -35,25 +35,25 @@ const Root = styled.div<RootProps>`
     white-space: normal;
     display: inline-block;
     vertical-align: top;
-    font-size: ${props => props.theme.largeFontSize};
-    line-height: ${props => props.theme.minimumButtonSize};
+    font-size: ${(props) => props.theme.largeFontSize};
+    line-height: ${(props) => props.theme.minimumButtonSize};
   }
 
   .source-name {
-    padding: 0px ${props => props.theme.minimumSpacing};
-    max-width: calc(100% - ${props => props.theme.minimumButtonSize});
+    padding: 0px ${(props) => props.theme.minimumSpacing};
+    max-width: calc(100% - ${(props) => props.theme.minimumButtonSize});
     word-break: break-all;
   }
 
   .source-actions {
     display: block;
-    padding-left: calc(2 * ${props => props.theme.minimumButtonSize});
+    padding-left: calc(2 * ${(props) => props.theme.minimumButtonSize});
   }
 
   .source-action > button {
     width: 100%;
     text-align: left;
-    padding: 0px ${props => props.theme.minimumSpacing};
+    padding: 0px ${(props) => props.theme.minimumSpacing};
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -73,13 +73,13 @@ const Root = styled.div<RootProps>`
   }
 
   .is-available {
-    display: ${props => (props.available ? 'inline' : 'none')};
-    color: ${props => props.theme.positiveColor};
+    display: ${(props) => (props.available ? 'inline' : 'none')};
+    color: ${(props) => props.theme.positiveColor};
   }
 
   .is-not-available {
-    display: ${props => (props.available ? 'none' : 'inline')};
-    color: ${props => props.theme.warningColor};
+    display: ${(props) => (props.available ? 'none' : 'inline')};
+    color: ${(props) => props.theme.warningColor};
   }
 `
 
@@ -112,7 +112,7 @@ export default hot(module)(
         </div>
         <div className="source-actions">
           {sourceActions !== undefined
-            ? sourceActions.map(sourceAction => {
+            ? sourceActions.map((sourceAction) => {
                 return (
                   <div className="source-action" key={sourceAction.url}>
                     <Button
@@ -120,12 +120,8 @@ export default hot(module)(
                       text={sourceAction.title}
                       buttonType={buttonTypeEnum.neutral}
                       fadeUntilHover
-                      title={`${sourceAction.title}: ${
-                        sourceAction.description
-                      }`}
-                      data-help={`${sourceAction.title}: ${
-                        sourceAction.description
-                      }`}
+                      title={`${sourceAction.title}: ${sourceAction.description}`}
+                      data-help={`${sourceAction.title}: ${sourceAction.description}`}
                       onClick={() => {
                         if (
                           sourceAction.id.startsWith(

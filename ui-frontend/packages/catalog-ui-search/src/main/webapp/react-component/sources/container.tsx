@@ -35,7 +35,7 @@ class SourcesSummaryContainer extends React.Component<Props, State> {
     super(props)
     this.state = {
       // @ts-ignore ts-migrate(2339) FIXME: Property 'filter' does not exist on type '{ getHar... Remove this comment to see the full error message
-      amountDown: sources.filter(function(source: Backbone.Model) {
+      amountDown: sources.filter(function (source: Backbone.Model) {
         return !source.get('available')
       }).length,
       // @ts-ignore ts-migrate(2322) FIXME: Property 'sourceActions' is missing in type '{ ava... Remove this comment to see the full error message
@@ -48,7 +48,7 @@ class SourcesSummaryContainer extends React.Component<Props, State> {
   handleChange() {
     this.setState({
       // @ts-ignore ts-migrate(2339) FIXME: Property 'filter' does not exist on type '{ getHar... Remove this comment to see the full error message
-      amountDown: sources.filter(function(source: Backbone.Model) {
+      amountDown: sources.filter(function (source: Backbone.Model) {
         return !source.get('available')
       }).length,
       // @ts-ignore ts-migrate(2322) FIXME: Type '{ available: boolean; contentTypes: { name: ... Remove this comment to see the full error message

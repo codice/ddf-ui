@@ -24,36 +24,31 @@ const metacardDefinitions = require('../singletons/metacard-definitions.js')
 function determineAttributes(selectionInterface) {
   const types = _.union.apply(
     this,
-    selectionInterface.getSelectedResults().map(result => {
+    selectionInterface.getSelectedResults().map((result) => {
       return [result.get('metacardType')]
     })
   )
   const possibleAttributes = _.intersection.apply(
     this,
-    types.map(type => {
+    types.map((type) => {
       return Object.keys(metacardDefinitions.metacardDefinitions[type])
     })
   )
   const attributes = _.union
     .apply(
       this,
-      selectionInterface.getSelectedResults().map(result => {
-        return Object.keys(
-          result
-            .get('metacard')
-            .get('properties')
-            .toJSON()
-        )
+      selectionInterface.getSelectedResults().map((result) => {
+        return Object.keys(result.get('metacard').get('properties').toJSON())
       })
     )
-    .filter(attribute => possibleAttributes.indexOf(attribute) >= 0)
+    .filter((attribute) => possibleAttributes.indexOf(attribute) >= 0)
   return metacardDefinitions
     .sortMetacardTypes(
       attributes
-        .map(attribute => metacardDefinitions.metacardTypes[attribute])
-        .filter(definition => !definition.hidden && !definition.readOnly)
+        .map((attribute) => metacardDefinitions.metacardTypes[attribute])
+        .filter((definition) => !definition.hidden && !definition.readOnly)
     )
-    .map(definition => ({
+    .map((definition) => ({
       label: definition.alias || definition.id,
       value: definition.id,
     }))

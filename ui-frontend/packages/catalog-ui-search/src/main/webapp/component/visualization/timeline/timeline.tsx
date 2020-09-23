@@ -58,7 +58,7 @@ const getDateAttributes = (results: any) => {
 
 const renderTooltip = (timelineItems: TimelineItem[]) => {
   const itemsToExpand = 5
-  const results = timelineItems.slice(0, itemsToExpand).map(item => {
+  const results = timelineItems.slice(0, itemsToExpand).map((item) => {
     const data = item.data as LazyQueryResult
     const icon = IconHelper.getFullByMetacardObject(data.plain)
     const metacard = data.plain.metacard.properties
@@ -99,16 +99,9 @@ const onCopy = (copiedValue: string) => {
 }
 
 const getDateFormat = () =>
-  user
-    .get('user')
-    .get('preferences')
-    .get('dateTimeFormat')['datetimefmt']
+  user.get('user').get('preferences').get('dateTimeFormat')['datetimefmt']
 
-const getTimeZone = () =>
-  user
-    .get('user')
-    .get('preferences')
-    .get('timeZone')
+const getTimeZone = () => user.get('user').get('preferences').get('timeZone')
 
 const TimelineVisualization = (props: Props) => {
   const { selectionInterface } = props
@@ -171,61 +164,53 @@ const TimelineVisualization = (props: Props) => {
     }
   }, [])
 
-  React.useEffect(
-    () => {
-      if (resized) {
-        setResized(false)
-      }
-    },
-    [resized]
-  )
+  React.useEffect(() => {
+    if (resized) {
+      setResized(false)
+    }
+  }, [resized])
 
-  React.useEffect(
-    () => {
-      const selectedIds = Object.values(selectedResults).map(
-        result => result.plain.metacard.properties.id
-      )
-      const possibleDateAttributes = getDateAttributes(results)
-      const resultData: TimelineItem[] = Object.values(results).map(result => {
-        const metacard = result.plain.metacard.properties
+  React.useEffect(() => {
+    const selectedIds = Object.values(selectedResults).map(
+      (result) => result.plain.metacard.properties.id
+    )
+    const possibleDateAttributes = getDateAttributes(results)
+    const resultData: TimelineItem[] = Object.values(results).map((result) => {
+      const metacard = result.plain.metacard.properties
 
-        const resultDateAttributes: { [key: string]: Date } = {}
-        possibleDateAttributes.forEach((dateAttribute: string) => {
-          resultDateAttributes[dateAttribute] = new Date(
-            metacard[dateAttribute]
-          )
-        })
-
-        const id = metacard.id
-        const resultDataPoint: TimelineItem = {
-          id,
-          selected: selectedIds.includes(id),
-          data: result,
-          attributes: resultDateAttributes,
-        }
-
-        return resultDataPoint
+      const resultDateAttributes: { [key: string]: Date } = {}
+      possibleDateAttributes.forEach((dateAttribute: string) => {
+        resultDateAttributes[dateAttribute] = new Date(metacard[dateAttribute])
       })
 
-      setData(resultData)
-
-      if (Object.keys(possibleDateAttributes).length > 0) {
-        const aliasMap: { [key: string]: string } = {}
-        possibleDateAttributes.forEach((dateAttribute: any) => {
-          aliasMap[dateAttribute] =
-            properties.attributeAliases[dateAttribute] || dateAttribute
-        })
-
-        if (!_.isEqual(aliasMap, dateAttributeAliases)) {
-          setDateAttributeAliases(aliasMap)
-        }
+      const id = metacard.id
+      const resultDataPoint: TimelineItem = {
+        id,
+        selected: selectedIds.includes(id),
+        data: result,
+        attributes: resultDateAttributes,
       }
-    },
-    [results, selectedResults]
-  )
+
+      return resultDataPoint
+    })
+
+    setData(resultData)
+
+    if (Object.keys(possibleDateAttributes).length > 0) {
+      const aliasMap: { [key: string]: string } = {}
+      possibleDateAttributes.forEach((dateAttribute: any) => {
+        aliasMap[dateAttribute] =
+          properties.attributeAliases[dateAttribute] || dateAttribute
+      })
+
+      if (!_.isEqual(aliasMap, dateAttributeAliases)) {
+        setDateAttributeAliases(aliasMap)
+      }
+    }
+  }, [results, selectedResults])
 
   const onSelect = (selectedData: TimelineItem[]) => {
-    const selectedIds = selectedData.map(d => d.id)
+    const selectedIds = selectedData.map((d) => d.id)
     setPause(true)
     lazyResults.selectByIds(selectedIds)
     setPause(false)

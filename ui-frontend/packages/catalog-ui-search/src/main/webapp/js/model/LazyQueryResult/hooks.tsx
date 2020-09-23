@@ -13,20 +13,17 @@ export const useSelectionOfLazyResult = ({
   lazyResult: LazyQueryResult
 }) => {
   const [isSelected, setIsSelected] = React.useState(lazyResult.isSelected)
-  React.useEffect(
-    () => {
-      const unsubscribe = lazyResult.subscribeTo({
-        subscribableThing: 'selected',
-        callback: () => {
-          setIsSelected(lazyResult.isSelected)
-        },
-      })
-      return () => {
-        unsubscribe()
-      }
-    },
-    [lazyResult]
-  )
+  React.useEffect(() => {
+    const unsubscribe = lazyResult.subscribeTo({
+      subscribableThing: 'selected',
+      callback: () => {
+        setIsSelected(lazyResult.isSelected)
+      },
+    })
+    return () => {
+      unsubscribe()
+    }
+  }, [lazyResult])
   return isSelected
 }
 
@@ -40,20 +37,17 @@ export const useFilteredOfLazyResult = ({
   lazyResult: LazyQueryResult
 }) => {
   const [isFiltered, setIsFiltered] = React.useState(lazyResult.isFiltered)
-  React.useEffect(
-    () => {
-      const unsubscribe = lazyResult.subscribeTo({
-        subscribableThing: 'filtered',
-        callback: () => {
-          setIsFiltered(lazyResult.isFiltered)
-        },
-      })
-      return () => {
-        unsubscribe()
-      }
-    },
-    [lazyResult]
-  )
+  React.useEffect(() => {
+    const unsubscribe = lazyResult.subscribeTo({
+      subscribableThing: 'filtered',
+      callback: () => {
+        setIsFiltered(lazyResult.isFiltered)
+      },
+    })
+    return () => {
+      unsubscribe()
+    }
+  }, [lazyResult])
   return isFiltered
 }
 
@@ -95,33 +89,27 @@ export const useSelectionOfLazyResults = ({
     calculateIfSelected() as useSelectionOfLazyResultsReturn
   )
 
-  React.useEffect(
-    () => {
-      cache.current = lazyResults.reduce(
-        (blob, lazyResult) => {
-          blob[lazyResult['metacard.id']] = lazyResult.isSelected
-          return blob
+  React.useEffect(() => {
+    cache.current = lazyResults.reduce((blob, lazyResult) => {
+      blob[lazyResult['metacard.id']] = lazyResult.isSelected
+      return blob
+    }, {} as { [key: string]: boolean })
+    setIsSelected(calculateIfSelected())
+    const unsubscribeCalls = lazyResults.map((lazyResult) => {
+      return lazyResult.subscribeTo({
+        subscribableThing: 'selected',
+        callback: () => {
+          cache.current[lazyResult['metacard.id']] = lazyResult.isSelected
+          debouncedUpdatedIsSelected()
         },
-        {} as { [key: string]: boolean }
-      )
-      setIsSelected(calculateIfSelected())
-      const unsubscribeCalls = lazyResults.map(lazyResult => {
-        return lazyResult.subscribeTo({
-          subscribableThing: 'selected',
-          callback: () => {
-            cache.current[lazyResult['metacard.id']] = lazyResult.isSelected
-            debouncedUpdatedIsSelected()
-          },
-        })
       })
-      return () => {
-        unsubscribeCalls.forEach(unsubscribeCall => {
-          unsubscribeCall()
-        })
-      }
-    },
-    [lazyResults]
-  )
+    })
+    return () => {
+      unsubscribeCalls.forEach((unsubscribeCall) => {
+        unsubscribeCall()
+      })
+    }
+  }, [lazyResults])
   return isSelected
 }
 
@@ -154,23 +142,20 @@ export const useSelectedResults = ({
   const [selectedResults, setSelectedResults] = React.useState(
     getSelectedResultsOfLazyResults({ lazyResults })
   )
-  React.useEffect(
-    () => {
-      if (lazyResults) {
-        const unsubscribeCall = lazyResults.subscribeTo({
-          subscribableThing: 'selectedResults',
-          callback: () => {
-            setSelectedResults(getSelectedResultsOfLazyResults({ lazyResults }))
-          },
-        })
-        return () => {
-          unsubscribeCall()
-        }
+  React.useEffect(() => {
+    if (lazyResults) {
+      const unsubscribeCall = lazyResults.subscribeTo({
+        subscribableThing: 'selectedResults',
+        callback: () => {
+          setSelectedResults(getSelectedResultsOfLazyResults({ lazyResults }))
+        },
+      })
+      return () => {
+        unsubscribeCall()
       }
-      return () => {}
-    },
-    [lazyResults]
-  )
+    }
+    return () => {}
+  }, [lazyResults])
 
   return selectedResults
 }
@@ -198,21 +183,18 @@ export const useStatusOfLazyResults = ({
   const [status, setStatus] = React.useState(
     getStatusFromLazyResults({ lazyResults })
   )
-  React.useEffect(
-    () => {
-      setStatus(getStatusFromLazyResults({ lazyResults }))
-      const unsubscribeCall = lazyResults.subscribeTo({
-        subscribableThing: 'status',
-        callback: () => {
-          setStatus(getStatusFromLazyResults({ lazyResults }))
-        },
-      })
-      return () => {
-        unsubscribeCall()
-      }
-    },
-    [lazyResults]
-  )
+  React.useEffect(() => {
+    setStatus(getStatusFromLazyResults({ lazyResults }))
+    const unsubscribeCall = lazyResults.subscribeTo({
+      subscribableThing: 'status',
+      callback: () => {
+        setStatus(getStatusFromLazyResults({ lazyResults }))
+      },
+    })
+    return () => {
+      unsubscribeCall()
+    }
+  }, [lazyResults])
 
   return status
 }

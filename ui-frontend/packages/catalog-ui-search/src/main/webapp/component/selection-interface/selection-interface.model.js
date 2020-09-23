@@ -76,9 +76,7 @@ module.exports = Backbone.AssociatedModel.extend({
   handleResults() {
     this.set(
       'currentMetacard',
-      this.get('currentResult')
-        .get('results')
-        .first()
+      this.get('currentResult').get('results').first()
     )
   },
   updateActiveSearchResultsAttributes() {
@@ -86,12 +84,7 @@ module.exports = Backbone.AssociatedModel.extend({
       .reduce((currentAvailable, result) => {
         currentAvailable = _.union(
           currentAvailable,
-          Object.keys(
-            result
-              .get('metacard')
-              .get('properties')
-              .toJSON()
-          )
+          Object.keys(result.get('metacard').get('properties').toJSON())
         )
         return currentAvailable
       }, [])

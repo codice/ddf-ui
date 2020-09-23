@@ -93,7 +93,7 @@ const matchesRoute = ({
     // @ts-ignore FIXME TS2339: Property 'some' does not exist on type 'string | string[]
     return routeInfo.routeProps.path.some(
       // @ts-ignore FIXME implicit any
-      possibleRoute =>
+      (possibleRoute) =>
         pathname.startsWith(`${possibleRoute}/`) ||
         pathname.endsWith(`${possibleRoute}`)
     )
@@ -198,12 +198,9 @@ const App = ({
    * Keep the current route visible to the user since it's useful info.
    * This also ensures it's visible upon first load of the page.
    */
-  React.useEffect(
-    () => {
-      scrollCurrentRouteIntoView()
-    },
-    [location]
-  )
+  React.useEffect(() => {
+    scrollCurrentRouteIntoView()
+  }, [location])
   React.useEffect(() => {
     listenTo(notifications, 'change add remove reset update', () => {
       setHasUnseenNotifications(notifications.hasUnseen() as boolean)
@@ -340,7 +337,7 @@ const App = ({
                     }}
                   >
                     {RouteInformation.filter(
-                      routeInfo => routeInfo.showInNav
+                      (routeInfo) => routeInfo.showInNav
                     ).map((routeInfo: RouteShownInNavType) => {
                       const isSelected = matchesRoute({
                         routeInfo,

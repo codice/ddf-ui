@@ -49,7 +49,7 @@ Behaviors.addBehavior(
     */
     generateHandleSpace(dropdown) {
       const clickHandler = this.generateHandleClick(dropdown)
-      return e => {
+      return (e) => {
         let code = e.keyCode
         if (e.charCode && code == 0) code = e.charCode
         switch (code) {
@@ -65,7 +65,7 @@ Behaviors.addBehavior(
     */
     generateHandleEnter(dropdown) {
       const clickHandler = this.generateHandleClick(dropdown)
-      return e => {
+      return (e) => {
         let code = e.keyCode
         if (e.charCode && code == 0) code = e.charCode
         switch (code) {
@@ -76,7 +76,7 @@ Behaviors.addBehavior(
       }
     },
     generateHandleClick(dropdown) {
-      return e => {
+      return (e) => {
         if (e.currentTarget.disabled) {
           return
         }
@@ -88,12 +88,8 @@ Behaviors.addBehavior(
     getPossibleDropdownElements(dropdown) {
       const possibleDropdownElements = this.view.$el.find(dropdown.selector)
       if (possibleDropdownElements.length > 1) {
-        console.warn(`More than 1 possible dropdown element found for selector:\n ${
-          dropdown.selector
-        }
-                \n Update your selector in ${
-                  this.view.el.tagName
-                } be more specific, otherwise you'll run into strange behavior!
+        console.warn(`More than 1 possible dropdown element found for selector:\n ${dropdown.selector}
+                \n Update your selector in ${this.view.el.tagName} be more specific, otherwise you'll run into strange behavior!
             `)
       }
       return possibleDropdownElements
@@ -175,7 +171,7 @@ Behaviors.addBehavior(
       }
     },
     generateHandleKeydown(dropdown) {
-      return event => {
+      return (event) => {
         let code = event.keyCode
         if (event.charCode && code == 0) code = event.charCode
         switch (code) {
@@ -190,7 +186,7 @@ Behaviors.addBehavior(
       }
     },
     generateHandleCloseDropdown(dropdown) {
-      return e => {
+      return (e) => {
         // stop from closing dropdowns higher in the dom
         e.stopPropagation()
         // close
@@ -216,11 +212,11 @@ Behaviors.addBehavior(
     listenForOutsideInteraction() {
       $('body')
         .off(`mousedown.${this.view.cid}`)
-        .on(`mousedown.${this.view.cid}`, event => {
+        .on(`mousedown.${this.view.cid}`, (event) => {
           if (!DropdownBehaviorUtility.drawing(event)) {
             this.options.dropdowns
-              .filter(dropdown => this.isOpen(dropdown))
-              .forEach(dropdown =>
+              .filter((dropdown) => this.isOpen(dropdown))
+              .forEach((dropdown) =>
                 this.checkOutsideClick(dropdown, event.target)
               )
           }
@@ -228,9 +224,8 @@ Behaviors.addBehavior(
     },
     withinDropdown(dropdown, element) {
       return (
-        this.getDropdownElement(dropdown)
-          .find(element)
-          .addBack(element).length > 0
+        this.getDropdownElement(dropdown).find(element).addBack(element)
+          .length > 0
       )
     },
     checkOutsideClick(dropdown, clickedElement) {
@@ -268,8 +263,8 @@ Behaviors.addBehavior(
           `resize.${this.view.cid}`,
           _.throttle(() => {
             this.options.dropdowns
-              .filter(dropdown => this.isOpen(dropdown))
-              .forEach(dropdown => this.updateRendering(dropdown))
+              .filter((dropdown) => this.isOpen(dropdown))
+              .forEach((dropdown) => this.updateRendering(dropdown))
           }, 16)
         )
     },
@@ -289,7 +284,9 @@ Behaviors.addBehavior(
     onDestroy() {
       this.stopListeningForOutsideInteraction()
       this.stopListeningForResize()
-      this.options.dropdowns.forEach(dropdown => this.destroyDropdown(dropdown))
+      this.options.dropdowns.forEach((dropdown) =>
+        this.destroyDropdown(dropdown)
+      )
     },
   })
 )

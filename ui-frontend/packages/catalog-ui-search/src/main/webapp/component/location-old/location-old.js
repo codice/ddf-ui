@@ -221,23 +221,23 @@ module.exports = Backbone.AssociatedModel.extend({
     }
 
     this.repositionLatLonUtmUps(
-      _this => _this.isUtmUpsUpperLeftDefined(),
-      _this => _this.parseUtmUpsUpperLeft(),
+      (_this) => _this.isUtmUpsUpperLeftDefined(),
+      (_this) => _this.parseUtmUpsUpperLeft(),
       (newResult, lat, lon) => {
         newResult.mapNorth = lat
         newResult.mapWest = lon
       },
-      _this => _this.clearUtmUpsUpperLeft(true)
+      (_this) => _this.clearUtmUpsUpperLeft(true)
     )
 
     this.repositionLatLonUtmUps(
-      _this => _this.isUtmUpsLowerRightDefined(),
-      _this => _this.parseUtmUpsLowerRight(),
+      (_this) => _this.isUtmUpsLowerRightDefined(),
+      (_this) => _this.parseUtmUpsLowerRight(),
       (newResult, lat, lon) => {
         newResult.mapSouth = lat
         newResult.mapEast = lon
       },
-      _this => _this.clearUtmUpsLowerRight(true)
+      (_this) => _this.clearUtmUpsLowerRight(true)
     )
   },
 
@@ -291,26 +291,26 @@ module.exports = Backbone.AssociatedModel.extend({
 
       this.setLatLonUtmUps(
         result,
-        _this => _this.isUtmUpsUpperLeftDefined(),
-        _this => _this.parseUtmUpsUpperLeft(),
+        (_this) => _this.isUtmUpsUpperLeftDefined(),
+        (_this) => _this.parseUtmUpsUpperLeft(),
         (result, lat, lon) => {
           result.north = lat
           result.west = lon
         },
-        _this => {
+        (_this) => {
           _this.clearUtmUpsUpperLeft(true)
         }
       )
 
       this.setLatLonUtmUps(
         result,
-        _this => _this.isUtmUpsLowerRightDefined(),
-        _this => _this.parseUtmUpsLowerRight(),
+        (_this) => _this.isUtmUpsLowerRightDefined(),
+        (_this) => _this.parseUtmUpsLowerRight(),
         (result, lat, lon) => {
           result.south = lat
           result.east = lon
         },
-        _this => {
+        (_this) => {
           _this.clearUtmUpsLowerRight(true)
         }
       )
@@ -955,8 +955,8 @@ module.exports = Backbone.AssociatedModel.extend({
       hemisphereRaw === 'Northern'
         ? 'NORTHERN'
         : hemisphereRaw === 'Southern'
-          ? 'SOUTHERN'
-          : undefined
+        ? 'SOUTHERN'
+        : undefined
 
     if (
       !isNaN(easting) &&
@@ -987,8 +987,8 @@ module.exports = Backbone.AssociatedModel.extend({
         utmUps.hemisphere === 'NORTHERN'
           ? 'Northern'
           : utmUps.hemisphere === 'SOUTHERN'
-            ? 'Southern'
-            : undefined,
+          ? 'Southern'
+          : undefined,
     }
   },
 

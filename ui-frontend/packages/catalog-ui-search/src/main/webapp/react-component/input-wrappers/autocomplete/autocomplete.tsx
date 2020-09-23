@@ -43,7 +43,7 @@ export default hot(module)((props: Props) => {
       minimumInputLength={minimumInputLength}
       type={Type.autocomplete}
       onChange={onChange}
-      {...destructureBaseProps(otherProps) as any}
+      {...(destructureBaseProps(otherProps) as any)}
     />
   )
 })

@@ -52,7 +52,7 @@ const cacheBust = (urlString: string) => {
   })
 }
 
-export default function(url: string, { headers, ...opts }: Options = {}) {
+export default function (url: string, { headers, ...opts }: Options = {}) {
   return fetch(cacheBust(url), {
     credentials: 'same-origin',
     cache: 'no-cache',

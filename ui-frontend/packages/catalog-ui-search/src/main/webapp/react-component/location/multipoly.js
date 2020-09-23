@@ -22,6 +22,6 @@ const options = {
   widthKey: 'polygonBufferWidth',
 }
 
-const MultiPolygon = props => <BaseLine {...props} {...options} />
+const MultiPolygon = (props) => <BaseLine {...props} {...options} />
 
 module.exports = MultiPolygon

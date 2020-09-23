@@ -43,7 +43,7 @@ function translateToOpenlayersCoordinate(coord) {
 
 function translateToOpenlayersCoordinates(coords) {
   const coordinates = []
-  _.each(coords, item => {
+  _.each(coords, (item) => {
     coordinates.push(translateToOpenlayersCoordinate(item))
   })
   return coordinates
@@ -65,10 +65,7 @@ Draw.CircleView = Marionette.View.extend({
     const center = translateFromOpenlayersCoordinate(geometry.getCenter())
     const rad =
       geometry.getRadius() *
-      this.map
-        .getView()
-        .getProjection()
-        .getMetersPerUnit()
+      this.map.getView().getProjection().getMetersPerUnit()
 
     this.model.set({
       lat: DistanceUtils.coordinateRound(center[1]),
@@ -88,11 +85,7 @@ Draw.CircleView = Marionette.View.extend({
       DistanceUtils.getDistanceInMeters(
         model.get('radius'),
         model.get('radiusUnits')
-      ) /
-        this.map
-          .getView()
-          .getProjection()
-          .getMetersPerUnit()
+      ) / this.map.getView().getProjection().getMetersPerUnit()
     )
     return rectangle
   },
@@ -134,10 +127,7 @@ Draw.CircleView = Marionette.View.extend({
     const turfCircle = new TurfCircle(
       point,
       rectangle.getRadius() *
-        this.map
-          .getView()
-          .getProjection()
-          .getMetersPerUnit(),
+        this.map.getView().getProjection().getMetersPerUnit(),
       64,
       'meters'
     )
@@ -201,12 +191,12 @@ Draw.CircleView = Marionette.View.extend({
     })
 
     this.map.addInteraction(this.primitive)
-    this.primitive.on('drawend', sketchFeature => {
+    this.primitive.on('drawend', (sketchFeature) => {
       window.cancelAnimationFrame(that.accurateCircleId)
       that.handleRegionStop(sketchFeature)
       that.map.removeInteraction(that.primitive)
     })
-    this.primitive.on('drawstart', sketchFeature => {
+    this.primitive.on('drawstart', (sketchFeature) => {
       that.showAccurateCircle(sketchFeature)
     })
   },
@@ -277,7 +267,7 @@ Draw.Controller = DrawingController.extend({
         el: this.notificationEl,
       }).render()
       model.trigger('BeginExtent')
-      this.listenToOnce(model, 'EndExtent', function() {
+      this.listenToOnce(model, 'EndExtent', function () {
         this.notificationView.destroy()
       })
 

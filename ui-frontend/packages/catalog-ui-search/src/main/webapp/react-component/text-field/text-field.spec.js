@@ -31,8 +31,8 @@ describe('<TextField />', () => {
     expect(wrapper.find('input').prop('value')).to.equal('test')
   })
 
-  it('should update input on change', done => {
-    const onChange = value => {
+  it('should update input on change', (done) => {
+    const onChange = (value) => {
       expect(value).to.equal('test')
       done()
     }

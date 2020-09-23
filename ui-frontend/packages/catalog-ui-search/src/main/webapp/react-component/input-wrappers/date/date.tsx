@@ -30,7 +30,7 @@ export default hot(module)((props: Props) => {
       value={[value]}
       type={Type.date}
       onChange={onChange}
-      {...destructureBaseProps(otherProps) as any}
+      {...(destructureBaseProps(otherProps) as any)}
     />
   )
 })

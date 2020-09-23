@@ -56,11 +56,7 @@ import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple'
 import { clearSelection, hasSelection } from './result-item-row'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
 const getResultDisplayType = () =>
-  (user &&
-    user
-      .get('user')
-      .get('preferences')
-      .get('resultDisplay')) ||
+  (user && user.get('user').get('preferences').get('resultDisplay')) ||
   LIST_DISPLAY_TYPE
 
 type CustomDetailType = {
@@ -155,7 +151,7 @@ const getPaddingForTheme = ({ theme }: { theme: ThemeInterface }) => {
 
 const SmallButton = styled(Button)`
   && {
-    ${props => getPaddingForTheme({ theme: props.theme })};
+    ${(props) => getPaddingForTheme({ theme: props.theme })};
   }
 `
 
@@ -221,7 +217,7 @@ const MultiSelectActions = ({
             }
             color="primary"
             disabled={selectedResultsArray.length === 0}
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation()
               handleClick(e)
             }}
@@ -333,7 +329,7 @@ export const ResultItem = ({
                   {lazyResult.plain.metacard.properties['ext.link'] ? (
                     <SmallButton
                       title={lazyResult.plain.metacard.properties['ext.link']}
-                      onClick={e => {
+                      onClick={(e) => {
                         e.stopPropagation()
                         window.open(
                           lazyResult.plain.metacard.properties['ext.link']
@@ -350,7 +346,7 @@ export const ResultItem = ({
                   {lazyResult.isDownloadable() ? (
                     <SmallButton
                       data-id="download-button"
-                      onClick={e => {
+                      onClick={(e) => {
                         e.stopPropagation()
                         triggerDownload(e)
                       }}
@@ -386,7 +382,7 @@ export const ResultItem = ({
                       return (
                         <SmallButton
                           data-id="result-item-more-vert-button"
-                          onClick={e => {
+                          onClick={(e) => {
                             e.stopPropagation()
                             handleClick(e)
                           }}
@@ -505,7 +501,7 @@ export const ResultItem = ({
             <Grid item>
               <Button
                 data-id="select-checkbox"
-                onClick={event => {
+                onClick={(event) => {
                   event.stopPropagation() // this button takes precedence over the enclosing button, and is always additive / subtractive (no deselect of other results)
                   if (event.shiftKey) {
                     lazyResult.shiftSelect()
@@ -599,7 +595,7 @@ export const ResultItem = ({
                 />
               ) : null}
 
-              {customDetails.map(detail => {
+              {customDetails.map((detail) => {
                 return (
                   <PropertyComponent
                     key={detail.label}
@@ -628,13 +624,13 @@ export const ResultItem = ({
               })}
               {Object.keys(lazyResult.highlights)
                 .filter(
-                  attr =>
+                  (attr) =>
                     attr !== 'title' &&
                     !customDetails.find(
-                      customDetail => customDetail.label === attr
+                      (customDetail) => customDetail.label === attr
                     )
                 )
-                .map(extraHighlight => {
+                .map((extraHighlight) => {
                   const relevantHighlight =
                     lazyResult.highlights[extraHighlight][0]
                   return (
@@ -720,7 +716,7 @@ export const ResultItem = ({
           className={`absolute z-50 right-0 bottom-0 focus-within:opacity-100 group-hover:opacity-100 hover:opacity-100 opacity-0 cursor-auto transform translate-y-3/4 scale-0 group-hover:scale-100 focus-within:scale-100 transition-all`}
         >
           <Paper
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation()
             }}
             elevation={Elevations.overlays}

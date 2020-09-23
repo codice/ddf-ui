@@ -38,7 +38,7 @@ const Root = styled.div`
     text-align: center;
   }
 
-  ${props => {
+  ${(props) => {
     if (props.theme.screenBelow(props.theme.smallScreenSize)) {
       return `
         .metacardHistory-body {
@@ -61,7 +61,7 @@ const Header = styled.div`
 `
 
 const Row = styled.div`
-  transition: padding ${props => props.theme.transitionTime} linear;
+  transition: padding ${(props) => props.theme.transitionTime} linear;
 `
 
 // prettier-ignore
@@ -131,8 +131,9 @@ have chosen."
           {history.map((historyItem: any) => {
             return (
               <Row
-                className={`${selectedVersion === historyItem.id &&
-                  'is-selected'}`}
+                className={`${
+                  selectedVersion === historyItem.id && 'is-selected'
+                }`}
                 data-id={historyItem.id}
                 key={historyItem.id}
                 onClick={onClick}
@@ -150,18 +151,17 @@ have chosen."
             )
           })}
         </Body>
-        {selectedVersion &&
-          canEdit && (
-            <Button
-              fullWidth
-              className="p-2"
-              variant="contained"
-              color="primary"
-              onClick={revertToSelectedVersion}
-            >
-              Revert to selected version
-            </Button>
-          )}
+        {selectedVersion && canEdit && (
+          <Button
+            fullWidth
+            className="p-2"
+            variant="contained"
+            color="primary"
+            onClick={revertToSelectedVersion}
+          >
+            Revert to selected version
+          </Button>
+        )}
       </Root>
     </LoadingCompanion>
   )

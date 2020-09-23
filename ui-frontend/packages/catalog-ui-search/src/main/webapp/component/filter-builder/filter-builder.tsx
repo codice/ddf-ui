@@ -72,39 +72,33 @@ export const FilterBuilderRoot = ({ model }: Props) => {
   const [filter, setFilter] = React.useState(getBaseFilter({ model }))
   const { listenTo, stopListening } = useBackbone()
   const saveCallbackRef = React.useRef(generateSaveCallback(model, filter))
-  React.useEffect(
-    () => {
-      saveCallbackRef.current = generateSaveCallback(model, filter)
-    },
-    [filter, model]
-  )
+  React.useEffect(() => {
+    saveCallbackRef.current = generateSaveCallback(model, filter)
+  }, [filter, model])
   React.useEffect(() => {
     return () => {
       saveCallbackRef.current()
     }
   }, [])
-  React.useEffect(
-    () => {
-      const callback = () => {
-        saveCallbackRef.current()
-      }
-      const callback2 = () => {
-        setFilter(getBaseFilter({ model }))
-      }
-      // for perf, only update when necessary
-      listenTo(model, 'update', callback)
-      listenTo(model, 'change:filterTree', callback2)
-      return () => {
-        stopListening(model, 'update', callback)
-        stopListening(model, 'change:filterTree', callback2)
-      }
-    },
-    [model, filter]
-  )
+  React.useEffect(() => {
+    const callback = () => {
+      saveCallbackRef.current()
+    }
+    const callback2 = () => {
+      setFilter(getBaseFilter({ model }))
+    }
+    // for perf, only update when necessary
+    listenTo(model, 'update', callback)
+    listenTo(model, 'change:filterTree', callback2)
+    return () => {
+      stopListening(model, 'update', callback)
+      stopListening(model, 'change:filterTree', callback2)
+    }
+  }, [model, filter])
   return (
     <FilterBranch
       filter={filter}
-      setFilter={update => {
+      setFilter={(update) => {
         setFilter(update)
       }}
       root={true}

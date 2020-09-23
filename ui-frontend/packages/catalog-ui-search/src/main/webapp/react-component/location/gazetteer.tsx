@@ -34,7 +34,7 @@ export const getLargestBbox = (
   let currentArea = -1
   let currentMax: { x: number; y: number }
   let currentMin: { x: number; y: number }
-  polygonCoordinates.map(rowCoordinates => {
+  polygonCoordinates.map((rowCoordinates) => {
     currentMax = { x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER }
     currentMin = { x: Number.MAX_SAFE_INTEGER, y: Number.MAX_SAFE_INTEGER }
     if (isMultiPolygon) {

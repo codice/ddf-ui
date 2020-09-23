@@ -52,7 +52,7 @@ const SortItem = ({
               // @ts-ignore fullWidth does exist on Autocomplete
               fullWidth
               options={attributeOptions}
-              getOptionLabel={option => option.label}
+              getOptionLabel={(option) => option.label}
               getOptionSelected={(option, value) => {
                 return option.value === value.value
               }}
@@ -62,7 +62,7 @@ const SortItem = ({
               }}
               disableClearable
               value={sortItem.attribute}
-              renderInput={params => (
+              renderInput={(params) => (
                 <TextField {...params} variant="outlined" />
               )}
             />
@@ -98,7 +98,7 @@ const SortItem = ({
                 // @ts-ignore fullWidth does exist on Autocomplete
                 fullWidth
                 options={directionOptions}
-                getOptionLabel={option => option.label}
+                getOptionLabel={(option) => option.label}
                 getOptionSelected={(option, value) =>
                   option.value === value.value
                 }
@@ -108,9 +108,9 @@ const SortItem = ({
                 }}
                 disableClearable
                 value={directionOptions.find(
-                  option => option.value === sortItem.direction
+                  (option) => option.value === sortItem.direction
                 )}
-                renderInput={params => (
+                renderInput={(params) => (
                   <TextField {...params} variant="outlined" />
                 )}
               />

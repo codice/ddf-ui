@@ -109,7 +109,7 @@ export default hot(module)(
           } ${defaultStyling ? 'w-full h-full' : ''}`}
           ref={this.regionRef as any}
           style={style as any}
-          {...otherProps as JSX.IntrinsicAttributes}
+          {...(otherProps as JSX.IntrinsicAttributes)}
         />
       )
     }

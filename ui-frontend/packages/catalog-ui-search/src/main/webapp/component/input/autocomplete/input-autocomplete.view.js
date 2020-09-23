@@ -43,7 +43,7 @@ module.exports = InputView.extend({
         if (!Array.isArray(items)) {
           items = []
         }
-        return items.map(item => ({
+        return items.map((item) => ({
           name: item.name,
           id: item.id,
         }))

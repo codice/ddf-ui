@@ -21,6 +21,6 @@ const options = {
   unitKey: 'lineUnits',
   widthKey: 'lineWidth',
 }
-const Line = props => <BaseLine {...props} {...options} />
+const Line = (props) => <BaseLine {...props} {...options} />
 
 module.exports = Line

@@ -40,7 +40,7 @@ export const FloatField = ({ value, onChange }: FloatFieldProps) => {
       variant="outlined"
       value={value}
       type="number"
-      onChange={e => {
+      onChange={(e) => {
         onChange(parseFloat(e.target.value))
       }}
       size="small"

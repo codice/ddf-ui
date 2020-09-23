@@ -26,7 +26,7 @@ const Root = styled.div<PresentationProps>`
   overflow: hidden;
   position: relative;
   border: 2px solid rgba(255, 255, 255, 0.1);
-  border-top: ${props => {
+  border-top: ${(props) => {
     if (!props.order.isTop) {
       return 'none'
     }
@@ -37,9 +37,9 @@ const Root = styled.div<PresentationProps>`
 const LayerPropertiesRoot = styled.div`
   display: inline-block;
   vertical-align: middle;
-  padding: 0 ${props => props.theme.mediumSpacing};
-  margin-left: ${props => props.theme.minimumButtonSize};
-  width: calc(100% - ${props => props.theme.minimumButtonSize});
+  padding: 0 ${(props) => props.theme.mediumSpacing};
+  margin-left: ${(props) => props.theme.minimumButtonSize};
+  width: calc(100% - ${(props) => props.theme.minimumButtonSize});
   border-left: 2px solid rgba(255, 255, 255, 0.1);
 `
 

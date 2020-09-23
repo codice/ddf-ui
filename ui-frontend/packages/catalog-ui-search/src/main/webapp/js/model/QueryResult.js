@@ -75,16 +75,15 @@ module.exports = Backbone.AssociatedModel.extend({
   },
   getPreview() {
     const previewAction = this.get('actions').filter(
-      action => action.get('id') === 'catalog.data.metacard.html.preview'
+      (action) => action.get('id') === 'catalog.data.metacard.html.preview'
     )
 
     return previewAction.length > 0 ? previewAction[0].get('url') : undefined
   },
   hasPreview() {
     return (
-      this.get('metacard')
-        .get('properties')
-        .get('ext.extracted.text') !== undefined
+      this.get('metacard').get('properties').get('ext.extracted.text') !==
+      undefined
     )
   },
   matchesFilters(filters) {
@@ -120,9 +119,7 @@ module.exports = Backbone.AssociatedModel.extend({
   isRemote() {
     return (
       Sources.getHarvested().includes(
-        this.get('metacard')
-          .get('properties')
-          .get('source-id')
+        this.get('metacard').get('properties').get('source-id')
       ) === false
     )
   },
@@ -141,21 +138,21 @@ module.exports = Backbone.AssociatedModel.extend({
   getOtherActions() {
     const otherActions = this.getExportActions().concat(this.getMapActions())
     return this.get('actions').filter(
-      action => otherActions.indexOf(action) === -1
+      (action) => otherActions.indexOf(action) === -1
     )
   },
   getExportActions() {
     const otherActions = this.getMapActions()
     return this.get('actions')
-      .filter(action => action.get('title').indexOf('Export') === 0)
-      .filter(action => otherActions.indexOf(action) === -1)
+      .filter((action) => action.get('title').indexOf('Export') === 0)
+      .filter((action) => otherActions.indexOf(action) === -1)
   },
   hasMapActions() {
     return this.getMapActions().length > 0
   },
   getMapActions() {
     return this.get('actions').filter(
-      action => action.id.indexOf('catalog.data.metacard.map.') === 0
+      (action) => action.id.indexOf('catalog.data.metacard.map.') === 0
     )
   },
   refreshData() {
@@ -210,7 +207,7 @@ module.exports = Backbone.AssociatedModel.extend({
   parseRefresh(response) {
     const queryId = this.get('metacard').get('queryId')
     const color = this.get('metacard').get('color')
-    _.forEach(response.results, result => {
+    _.forEach(response.results, (result) => {
       delete result.relevance
       result.propertyTypes =
         response.types[result.metacard.properties['metacard-type']]
@@ -220,7 +217,7 @@ module.exports = Backbone.AssociatedModel.extend({
       result.metacard.queryId = queryId
       result.metacard.color = color
       humanizeResourceSize(result)
-      result.actions.forEach(action => (action.queryId = queryId))
+      result.actions.forEach((action) => (action.queryId = queryId))
       const thumbnailAction = _.findWhere(result.actions, {
         id: 'catalog.data.metacard.thumbnail',
       })

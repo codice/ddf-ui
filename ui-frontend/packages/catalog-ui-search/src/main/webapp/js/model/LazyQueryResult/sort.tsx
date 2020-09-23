@@ -78,7 +78,7 @@ function checkSortValue(
 }
 
 export const generateCompareFunction = (sorting: QuerySortType[]) => {
-  return function(a: LazyQueryResult, b: LazyQueryResult) {
+  return function (a: LazyQueryResult, b: LazyQueryResult) {
     let sortValue = 0
     for (let i = 0; i <= sorting.length - 1; i++) {
       const sortField = sorting[i].attribute

@@ -50,9 +50,9 @@ module.exports = Backbone.AssociatedModel.extend({
   },
 
   /*
-     * Return the active input converted to WKT. If the input failed validation, return "INVALID".
-     * If the input is blank, return null.
-     */
+   * Return the active input converted to WKT. If the input failed validation, return "INVALID".
+   * If the input is blank, return null.
+   */
   getValue() {
     if (!this.isValid()) {
       return 'INVALID'

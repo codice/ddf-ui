@@ -92,10 +92,7 @@ module.exports = InputView.extend({
     this.$el.find('input').select()
   },
   getCurrentValue() {
-    const currentValue = this.$el
-      .find('input')
-      .spectrum('get')
-      .toHexString()
+    const currentValue = this.$el.find('input').spectrum('get').toHexString()
     if (currentValue) {
       return currentValue
     } else {

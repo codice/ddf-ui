@@ -228,7 +228,14 @@ describe('CQL Utils', () => {
       const filter = CQLUtils.generateFilter(
         'some type',
         'anyGeo',
-        { type: 'LINE', line: [[1, 1], [2, 2]], lineWidth: 5.0 },
+        {
+          type: 'LINE',
+          line: [
+            [1, 1],
+            [2, 2],
+          ],
+          lineWidth: 5.0,
+        },
         mockMetacardDefinitions
       )
       expect(filter.type).equals('DWITHIN')
@@ -241,7 +248,14 @@ describe('CQL Utils', () => {
       const filter = CQLUtils.generateFilter(
         'some type',
         'anyGeo',
-        { type: 'POLYGON', polygon: [[1, 1], [2, 2], [1, 1]] },
+        {
+          type: 'POLYGON',
+          polygon: [
+            [1, 1],
+            [2, 2],
+            [1, 1],
+          ],
+        },
         mockMetacardDefinitions
       )
       expect(filter.type).equals('INTERSECTS')
@@ -256,8 +270,18 @@ describe('CQL Utils', () => {
         {
           type: 'MULTIPOLYGON',
           polygon: [
-            [[3.0, 50.0], [4.0, 49.0], [4.0, 50.0], [3.0, 50.0]],
-            [[8.0, 55.0], [9.0, 54.0], [9.0, 55.0], [8.0, 55.0]],
+            [
+              [3.0, 50.0],
+              [4.0, 49.0],
+              [4.0, 50.0],
+              [3.0, 50.0],
+            ],
+            [
+              [8.0, 55.0],
+              [9.0, 54.0],
+              [9.0, 55.0],
+              [8.0, 55.0],
+            ],
           ],
         },
         mockMetacardDefinitions
@@ -430,7 +454,12 @@ describe('CQL Utils', () => {
         'MULTIPOLYGON(((3 50, 4 49, 4 50, 3 50)))'
       )
       assertMultiPolygon(multipolygon, [
-        [[3.0, 50.0], [4.0, 49.0], [4.0, 50.0], [3.0, 50.0]],
+        [
+          [3.0, 50.0],
+          [4.0, 49.0],
+          [4.0, 50.0],
+          [3.0, 50.0],
+        ],
       ])
     })
 
@@ -439,8 +468,18 @@ describe('CQL Utils', () => {
         'MULTIPOLYGON(((3 50, 4 49, 4 50, 3 50)), ((8 55, 9 54, 9 55, 8 55)))'
       )
       assertMultiPolygon(multipolygon, [
-        [[3.0, 50.0], [4.0, 49.0], [4.0, 50.0], [3.0, 50.0]],
-        [[8.0, 55.0], [9.0, 54.0], [9.0, 55.0], [8.0, 55.0]],
+        [
+          [3.0, 50.0],
+          [4.0, 49.0],
+          [4.0, 50.0],
+          [3.0, 50.0],
+        ],
+        [
+          [8.0, 55.0],
+          [9.0, 54.0],
+          [9.0, 55.0],
+          [8.0, 55.0],
+        ],
       ])
     })
   })

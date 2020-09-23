@@ -41,7 +41,7 @@ export const BooleanField = ({ value, onChange }: Props) => {
       select
       variant="outlined"
       value={value.toString() === 'true'}
-      onChange={e => {
+      onChange={(e) => {
         onChange(e.target.value === 'true')
       }}
       size="small"

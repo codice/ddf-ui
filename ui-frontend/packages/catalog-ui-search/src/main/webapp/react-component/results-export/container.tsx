@@ -80,7 +80,7 @@ class ResultsExport extends React.Component<Props, State> {
 
   fetchExportOptions = () => {
     fetch(`./internal/transformers/${this.getTransformerType()}`)
-      .then(response => response.json())
+      .then((response) => response.json())
       .then((exportFormats: ExportFormat[]) => {
         return exportFormats.sort(
           (format1: ExportFormat, format2: ExportFormat) => {
@@ -96,7 +96,7 @@ class ResultsExport extends React.Component<Props, State> {
           }
         )
       })
-      .then(exportFormats =>
+      .then((exportFormats) =>
         this.setState({
           exportFormats: exportFormats,
         })
@@ -110,7 +110,7 @@ class ResultsExport extends React.Component<Props, State> {
   getSelectedExportFormatId() {
     const selectedFormat = this.state.selectedFormat
     const format = this.state.exportFormats.find(
-      format => format.displayName === selectedFormat
+      (format) => format.displayName === selectedFormat
     )
 
     if (format !== undefined) {

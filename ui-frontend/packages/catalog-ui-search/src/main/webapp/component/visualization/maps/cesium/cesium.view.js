@@ -34,7 +34,7 @@ module.exports = MapView.extend({
   },
   loadMap() {
     const deferred = new $.Deferred()
-    require(['./map.cesium'], CesiumMap => {
+    require(['./map.cesium'], (CesiumMap) => {
       deferred.resolve(CesiumMap)
     })
     return deferred

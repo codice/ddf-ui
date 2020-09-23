@@ -228,7 +228,7 @@ class BasePropertyWrapper extends React.Component<Props, State> {
         })}
         className={className}
         style={style}
-        {...this.props.htmlProps as any}
+        {...(this.props.htmlProps as any)}
       />
     )
   }

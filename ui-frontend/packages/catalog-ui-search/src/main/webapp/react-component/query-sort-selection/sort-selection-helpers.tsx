@@ -42,11 +42,11 @@ export const getSortAttributeOptions = (currentSelections: string[]) => {
     currentSelections && currentSelections.length ? currentSelections : []
   const attributes = metacardDefinitions.sortedMetacardTypes as AttributeType[]
   const options: Option[] = attributes
-    .filter(type => !properties.isHidden(type.id))
-    .filter(type => !metacardDefinitions.isHiddenTypeExceptThumbnail(type.id))
-    .filter(type => !blacklist.includes(type.id))
-    .filter(type => !currentAttributes.includes(type.id))
-    .map(type => ({
+    .filter((type) => !properties.isHidden(type.id))
+    .filter((type) => !metacardDefinitions.isHiddenTypeExceptThumbnail(type.id))
+    .filter((type) => !blacklist.includes(type.id))
+    .filter((type) => !currentAttributes.includes(type.id))
+    .map((type) => ({
       label: type.alias || type.id,
       value: type.id,
     }))
@@ -114,7 +114,7 @@ export const getNextAttribute = (
   collection: SortItemType[],
   options: Option[]
 ) => {
-  const attributes = collection.map(type => type.attribute.value)
+  const attributes = collection.map((type) => type.attribute.value)
   for (let option of options) {
     if (!attributes.includes(option.value)) {
       return option.value

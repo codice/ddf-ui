@@ -20,6 +20,4 @@ export {
   SearchFormMenuItem,
   ResetMenuItem,
 } from './search-interactions.presentation'
-export {
-  default as SearchInteractionContainer,
-} from './search-interactions.container'
+export { default as SearchInteractionContainer } from './search-interactions.container'

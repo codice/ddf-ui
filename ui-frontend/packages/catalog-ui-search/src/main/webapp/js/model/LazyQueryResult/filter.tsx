@@ -324,21 +324,21 @@ function matchesFilter(
       case 'anyText':
         valuesToCheck = Object.keys(metacard.properties)
           .filter(
-            property =>
+            (property) =>
               Boolean(metacardDefinitions.metacardTypes[property]) &&
               metacardDefinitions.metacardTypes[property].type === 'STRING'
           )
-          .map(property => metacard.properties[property])
+          .map((property) => metacard.properties[property])
         break
       case 'anyGeo':
         valuesToCheck = Object.keys(metacard.properties)
           .filter(
-            property =>
+            (property) =>
               Boolean(metacardDefinitions.metacardTypes[property]) &&
               metacardDefinitions.metacardTypes[property].type === 'GEOMETRY'
           )
           .map(
-            property =>
+            (property) =>
               new Terraformer.Primitive(
                 wkx.Geometry.parse(metacard.properties[property]).toGeoJSON()
               )

@@ -76,7 +76,7 @@ export const DropdownContext = React.createContext({
    * Close all the enclosing dropdowns and refocus
    * on the element that opened the dropdowns
    */
-  deepCloseAndRefocus: function(this: Context) {
+  deepCloseAndRefocus: function (this: Context) {
     if (this.parent().parent() === null) {
       this.closeAndRefocus()
     } else {
@@ -88,7 +88,7 @@ export const DropdownContext = React.createContext({
    * specified and refocus on the element that opened
    * the dropdown
    */
-  depthCloseAndRefocus: function(this: Context, depth: number = 1) {
+  depthCloseAndRefocus: function (this: Context, depth: number = 1) {
     if (this.parent().parent() === null || depth <= 1) {
       this.closeAndRefocus()
     } else {
@@ -124,7 +124,7 @@ export const withDropdown = <P extends withContext>(
   return function dropdownedComponent(props: Subtract<P, withContext>) {
     return (
       <DropdownContext.Consumer>
-        {context => {
+        {(context) => {
           // @ts-ignore ts-migrate(2322) FIXME: 'Pick<P, Exclude<keyof P, "dropdownContext">> & { ... Remove this comment to see the full error message
           return <Component {...props} dropdownContext={context} />
         }}
@@ -136,19 +136,19 @@ export const withDropdown = <P extends withContext>(
 const DropdownWrapper = styled.div<{ open: boolean }>`
   display: block;
   position: absolute;
-  z-index: ${props => props.theme.zIndexDropdown};
+  z-index: ${(props) => props.theme.zIndexDropdown};
   overflow: auto;
-  background: ${props => props.theme.background};
-  padding-top: ${props => props.theme.minimumSpacing};
-  padding-bottom: ${props => props.theme.minimumSpacing};
+  background: ${(props) => props.theme.background};
+  padding-top: ${(props) => props.theme.minimumSpacing};
+  padding-bottom: ${(props) => props.theme.minimumSpacing};
   border-radius: 2px;
   max-width: 90vw;
   max-height: 90vh;
   width: auto;
   height: auto;
-  transition: opacity ${props => props.theme.coreTransitionTime} ease-in-out;
-  opacity: ${props => (props.open ? 1 : 0)};
-  ${props =>
+  transition: opacity ${(props) => props.theme.coreTransitionTime} ease-in-out;
+  opacity: ${(props) => (props.open ? 1 : 0)};
+  ${(props) =>
     props.open
       ? `
   &.is-bottom {
@@ -360,7 +360,7 @@ class Dropdown extends React.Component<Props, State> {
             }}
           >
             <Portal>
-              <ChangeBackground color={theme => theme.backgroundDropdown}>
+              <ChangeBackground color={(theme) => theme.backgroundDropdown}>
                 <DropdownWrapper
                   className={contentClassName}
                   ref={this.dropdownRef as any}

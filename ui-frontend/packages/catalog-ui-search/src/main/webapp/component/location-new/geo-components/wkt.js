@@ -16,7 +16,7 @@ const React = require('react')
 const TextField = require('../../../react-component/text-field/index.js')
 const { roundWktCoords } = require('../utils')
 
-const WKT = props => {
+const WKT = (props) => {
   const { wkt, setState } = props
 
   return (

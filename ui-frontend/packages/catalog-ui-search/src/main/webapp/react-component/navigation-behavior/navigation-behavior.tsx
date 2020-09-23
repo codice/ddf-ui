@@ -31,7 +31,7 @@ const Wrapper = styled.div`
   > *.is-active:not(.composed-menu):not(button),
   .composed-menu > *:not(.composed-menu):hover:not(button),
   .composed-menu > *:not(.composed-menu).is-active:not(button) {
-    background: ${props =>
+    background: ${(props) =>
       transparentize(0.9, readableColor(props.theme.background))};
   }
   > button:not(.composed-menu):hover,
@@ -50,7 +50,7 @@ const Wrapper = styled.div`
     position: absolute;
     top: 0px;
     left: 0px;
-    background: ${props =>
+    background: ${(props) =>
       transparentize(0.9, readableColor(props.theme.background))};
   }
 `
@@ -61,11 +61,7 @@ const expandComposedMenus = (menuItems: any): any => {
   menuItems.forEach((element: any) => {
     if ($(element).hasClass('composed-menu')) {
       expanded = true
-      expandedItems = expandedItems.concat(
-        $(element)
-          .children()
-          .toArray()
-      )
+      expandedItems = expandedItems.concat($(element).children().toArray())
     } else {
       expandedItems.push(element)
     }
@@ -86,9 +82,7 @@ const handleArrowKey = (componentView: any, up: boolean) => {
     menuItems[menuItems.indexOf(currentActive) + (up === true ? -1 : 1)]
   if (potentialNext !== undefined) {
     $(currentActive).removeClass('is-active')
-    $(potentialNext)
-      .addClass('is-active')
-      .focus()
+    $(potentialNext).addClass('is-active').focus()
   } else if (menuItems.indexOf(currentActive) === 0) {
     $(currentActive).removeClass('is-active')
     $(menuItems[menuItems.length - 1])
@@ -96,9 +90,7 @@ const handleArrowKey = (componentView: any, up: boolean) => {
       .focus()
   } else {
     $(currentActive).removeClass('is-active')
-    $(menuItems[0])
-      .addClass('is-active')
-      .focus()
+    $(menuItems[0]).addClass('is-active').focus()
   }
 }
 
@@ -125,9 +117,7 @@ class Dropdown extends React.Component<Props, State> {
   focus = () => {
     const menuItems = this.getMenuItems()
     $(menuItems).removeClass('is-active')
-    $(menuItems[0])
-      .addClass('is-active')
-      .focus()
+    $(menuItems[0]).addClass('is-active').focus()
   }
   getMenuItems = () => {
     return this.getAllPossibleMenuItems().filter(
@@ -163,9 +153,7 @@ class Dropdown extends React.Component<Props, State> {
     )
     if (mouseOver) {
       $(currentActive).removeClass('is-active')
-      $(mouseOver)
-        .addClass('is-active')
-        .focus()
+      $(mouseOver).addClass('is-active').focus()
     }
   }
   handleUpArrow = () => {

@@ -79,7 +79,7 @@ export class FilterBuilderClass {
     /**
      * If for some reason filters come in that aren't classed, this will handle it.
      */
-    this.filters = filters.map(childFilter => {
+    this.filters = filters.map((childFilter) => {
       if (isFilterBuilderClass(childFilter)) {
         return new FilterBuilderClass({
           ...childFilter,

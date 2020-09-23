@@ -16,7 +16,7 @@
 const React = require('react')
 import { Drawing } from '../singletons/drawing'
 
-const withAdapter = Component =>
+const withAdapter = (Component) =>
   class extends React.Component {
     constructor(props) {
       super(props)
@@ -57,7 +57,7 @@ const { Direction } = require('../location-new/utils/dms-utils.js')
 import { deserialize } from './location-serialization'
 const wkx = require('wkx')
 
-const filterToLocationOldModel = filter => {
+const filterToLocationOldModel = (filter) => {
   if (filter === '') return filter
 
   if (typeof filter.geojson === 'object') {
@@ -86,7 +86,7 @@ module.exports = Marionette.LayoutView.extend({
     const props = {
       model: this.model,
       options: {
-        onDraw: drawingType => {
+        onDraw: (drawingType) => {
           wreqr.vent.trigger('search:draw' + this.model.get('mode'), this.model)
         },
       },

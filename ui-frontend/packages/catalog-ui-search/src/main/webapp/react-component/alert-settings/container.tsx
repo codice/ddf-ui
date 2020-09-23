@@ -48,14 +48,8 @@ const onPersistenceChange = (value: Value) => {
 
 const mapBackboneToState = () => {
   return {
-    persistence: user
-      .get('user')
-      .get('preferences')
-      .get('alertPersistence'),
-    expiration: user
-      .get('user')
-      .get('preferences')
-      .get('alertExpiration'),
+    persistence: user.get('user').get('preferences').get('alertPersistence'),
+    expiration: user.get('user').get('preferences').get('alertExpiration'),
   }
 }
 

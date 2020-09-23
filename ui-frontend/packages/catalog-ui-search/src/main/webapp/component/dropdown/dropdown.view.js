@@ -105,9 +105,9 @@ module.exports = Marionette.LayoutView.extend(
       ) {
         return values[0] // otherwise placeholder (click here to select) won't appear
       }
-      return values.map(value => {
+      return values.map((value) => {
         const selection = this.options.list.filter(
-          item => JSON.stringify(item.value) === JSON.stringify(value)
+          (item) => JSON.stringify(item.value) === JSON.stringify(value)
         )
         if (selection.length > 0) {
           return selection[0]
@@ -127,7 +127,7 @@ module.exports = Marionette.LayoutView.extend(
           concatenatedLabel: selections
             ? selections
                 .map(
-                  selection => selection.label || selection.value || selection
+                  (selection) => selection.label || selection.value || selection
                 )
                 .join(' | ')
             : selections,

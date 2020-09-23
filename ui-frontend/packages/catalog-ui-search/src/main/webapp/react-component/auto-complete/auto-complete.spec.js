@@ -26,8 +26,8 @@ const AutoComplete = require('./auto-complete')
 const { shallow } = Enzyme
 
 describe('<AutoComplete />', () => {
-  it('should change value on select', done => {
-    const onChange = value => {
+  it('should change value on select', (done) => {
+    const onChange = (value) => {
       expect(value).to.equal('test')
       done()
     }
@@ -47,8 +47,8 @@ describe('<AutoComplete />', () => {
     expect(wrapper.find('MenuItem').length).to.equal(3)
   })
 
-  it('should fetch suggestions on user input', done => {
-    const suggester = async input => {
+  it('should fetch suggestions on user input', (done) => {
+    const suggester = async (input) => {
       expect(input).to.equal('test')
       expect(wrapper.state('loading')).to.equal(true)
       done()
@@ -58,14 +58,14 @@ describe('<AutoComplete />', () => {
     wrapper.find('TextField').prop('onChange')('test')
   })
 
-  it('should inform user when endpoint is unavailable', done => {
-    const onError = e => {
+  it('should inform user when endpoint is unavailable', (done) => {
+    const onError = (e) => {
       const { loading, error } = wrapper.state()
       expect(loading).to.equal(false)
       expect(error).to.equal('Endpoint unavailable')
       done()
     }
-    const suggester = async input => {
+    const suggester = async (input) => {
       throw new Error('unavailable')
     }
     const wrapper = shallow(

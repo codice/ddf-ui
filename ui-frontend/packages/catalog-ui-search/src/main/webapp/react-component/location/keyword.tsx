@@ -68,7 +68,7 @@ const Keyword = (props: Props) => {
 
   const onChange = async (suggestion: Suggestion) => {
     const geofeatureFunc =
-      props.geofeature || (suggestItem => geofeature(suggestItem))
+      props.geofeature || ((suggestItem) => geofeature(suggestItem))
     setValue(suggestion.name)
     setLoading(true)
     try {

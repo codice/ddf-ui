@@ -18,7 +18,7 @@ var actions = require('./actions')
 var $ = require('jquery')
 var connect = require('react-redux').connect
 
-var dim = function(Component) {
+var dim = function (Component) {
   return class extends React.Component {
     constructor(props) {
       super(props)
@@ -30,7 +30,7 @@ var dim = function(Component) {
     render() {
       return (
         <div
-          ref={ref => {
+          ref={(ref) => {
             this.ref = ref
           }}
         >
@@ -41,7 +41,7 @@ var dim = function(Component) {
   }
 }
 
-var Announcement = dim(function(props) {
+var Announcement = dim(function (props) {
   var classes = props.removing ? 'announcement is-dismissed' : 'announcement'
   var height = props.boundingRect.height || 'auto'
 
@@ -50,7 +50,7 @@ var Announcement = dim(function(props) {
       <div className="announcement-title">{props.title}</div>
       <div className="announcement-message">
         {Array.isArray(props.message)
-          ? props.message.map(submessage => (
+          ? props.message.map((submessage) => (
               <div key={submessage}>{submessage}</div>
             ))
           : props.message}
@@ -62,14 +62,14 @@ var Announcement = dim(function(props) {
   )
 })
 
-var Announcements = function(props) {
-  var dismiss = function(id) {
-    return function() {
+var Announcements = function (props) {
+  var dismiss = function (id) {
+    return function () {
       props.onDismiss(id)
     }
   }
 
-  var list = props.list.map(function(announcement) {
+  var list = props.list.map(function (announcement) {
     return (
       <Announcement
         {...announcement}
@@ -82,7 +82,7 @@ var Announcements = function(props) {
 }
 
 module.exports = connect(
-  function(state) {
+  function (state) {
     return {
       list: state,
     }

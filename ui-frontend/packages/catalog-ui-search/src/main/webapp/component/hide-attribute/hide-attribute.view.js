@@ -24,7 +24,7 @@ const user = require('../singletons/user-instance.js')
 
 function filterAndSort(attributes) {
   return attributes
-    .filter(property => {
+    .filter((property) => {
       if (metacardDefinitions.metacardTypes[property]) {
         return !metacardDefinitions.metacardTypes[property].hidden
       } else {
@@ -38,13 +38,13 @@ function filterAndSort(attributes) {
 function calculateAvailableAttributesFromSelection(selectionInterface) {
   const types = _.union.apply(
     this,
-    selectionInterface.getSelectedResults().map(result => {
+    selectionInterface.getSelectedResults().map((result) => {
       return [result.get('metacardType')]
     })
   )
   const possibleAttributes = _.intersection.apply(
     this,
-    types.map(type => {
+    types.map((type) => {
       return Object.keys(metacardDefinitions.metacardDefinitions[type])
     })
   )
@@ -53,16 +53,11 @@ function calculateAvailableAttributesFromSelection(selectionInterface) {
     .reduce((currentAvailable, result) => {
       currentAvailable = _.union(
         currentAvailable,
-        Object.keys(
-          result
-            .get('metacard')
-            .get('properties')
-            .toJSON()
-        )
+        Object.keys(result.get('metacard').get('properties').toJSON())
       )
       return currentAvailable
     }, [])
-    .filter(attribute => possibleAttributes.indexOf(attribute) >= 0)
+    .filter((attribute) => possibleAttributes.indexOf(attribute) >= 0)
 }
 
 function calculateDetailsAttributes() {
@@ -94,7 +89,7 @@ module.exports = Marionette.LayoutView.extend({
     this.attributeSelector.show(
       new PropertyView({
         model: new Property({
-          enum: totalAttributes.map(attr => {
+          enum: totalAttributes.map((attr) => {
             return {
               label: metacardDefinitions.getLabel(attr),
               value: attr,

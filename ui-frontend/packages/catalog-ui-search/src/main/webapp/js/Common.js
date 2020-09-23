@@ -33,18 +33,18 @@ const timeZones = {
   '-3': 'Etc/GMT+3',
   '-2': 'Etc/GMT+2',
   '-1': 'Etc/GMT+1',
-  '1': 'Etc/GMT-1',
-  '2': 'Etc/GMT-2',
-  '3': 'Etc/GMT-3',
-  '4': 'Etc/GMT-4',
-  '5': 'Etc/GMT-5',
-  '6': 'Etc/GMT-6',
-  '7': 'Etc/GMT-7',
-  '8': 'Etc/GMT-8',
-  '9': 'Etc/GMT-9',
-  '10': 'Etc/GMT-10',
-  '11': 'Etc/GMT-11',
-  '12': 'Etc/GMT-12',
+  1: 'Etc/GMT-1',
+  2: 'Etc/GMT-2',
+  3: 'Etc/GMT-3',
+  4: 'Etc/GMT-4',
+  5: 'Etc/GMT-5',
+  6: 'Etc/GMT-6',
+  7: 'Etc/GMT-7',
+  8: 'Etc/GMT-8',
+  9: 'Etc/GMT-9',
+  10: 'Etc/GMT-10',
+  11: 'Etc/GMT-11',
+  12: 'Etc/GMT-12',
 }
 
 const dateTimeFormats = {
@@ -62,7 +62,7 @@ module.exports = {
     if (window.performance && typeof window.performance.now === 'function') {
       d += performance.now() //use high-precision timer if available
     }
-    const uuid = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const uuid = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
       const r = (d + Math.random() * 16) % 16 | 0
       d = Math.floor(d / 16)
       return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16)
@@ -88,7 +88,7 @@ module.exports = {
     return cql
   },
   setupPopOver($component) {
-    $component.find('[title]').each(function() {
+    $component.find('[title]').each(function () {
       const $element = $(this)
       $element.popover({
         delay: {
@@ -206,7 +206,7 @@ module.exports = {
       requestId: undefined,
     }
     const timeEnd = Date.now() + time
-    const repaint = function() {
+    const repaint = function () {
       callback()
       if (Date.now() < timeEnd) {
         requestDetails.requestId = window.requestAnimationFrame(() => {
@@ -228,15 +228,13 @@ module.exports = {
     return setTimeout(callback, 0)
   },
   escapeHTML(value) {
-    return $('<div>')
-      .text(value)
-      .html()
+    return $('<div>').text(value).html()
   },
   duplicate(reference) {
     return JSON.parse(JSON.stringify(reference))
   },
   safeCallback(callback) {
-    return function() {
+    return function () {
       if (!this.isDestroyed) {
         callback.apply(this, arguments)
       }

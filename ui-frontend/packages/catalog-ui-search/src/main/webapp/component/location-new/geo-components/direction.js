@@ -47,7 +47,7 @@ class Direction extends React.Component {
           className="toggle-input"
           onMouseDown={this.handleMouseDown.bind(this)}
           onKeyPress={this.handleKeyPress.bind(this)}
-          onChange={e => e.stopPropagation()}
+          onChange={(e) => e.stopPropagation()}
         />
       </Component>
     )

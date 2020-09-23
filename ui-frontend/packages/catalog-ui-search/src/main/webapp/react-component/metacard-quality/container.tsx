@@ -56,7 +56,7 @@ class MetacardQuality extends React.Component<Props, State> {
       )
 
       Promise.all([attributeValidationRes, metacardValidationRes]).then(
-        async responses => {
+        async (responses) => {
           const attributeValidation = await this.getData(
             responses[0],
             'Attribute'

@@ -18,7 +18,7 @@ const PermanentSearchSort = ({ model }: Props) => {
   return (
     <SortSelections
       value={sorts}
-      onChange={newVal => {
+      onChange={(newVal) => {
         model.set('sorts', newVal)
         // something to do with this being an array causes the event not to trigger, I think?
         model.trigger('change:sorts')

@@ -35,18 +35,18 @@ const OverwriteConfirm = styled(Button)`
   vertical-align: top !important;
   width: 100%;
   transform: translateX(0%);
-  transition: transform ${props => props.theme.coreTransitionTime} linear;
+  transition: transform ${(props) => props.theme.coreTransitionTime} linear;
   height: auto;
 `
 
 const MainText = styled.span`
   display: block;
-  font-size: ${props => props.theme.largeFontSize};
+  font-size: ${(props) => props.theme.largeFontSize};
 `
 
 const SubText = styled.span`
   display: block;
-  font-size: ${props => props.theme.mediumFontSize};
+  font-size: ${(props) => props.theme.mediumFontSize};
 `
 
 const OverwriteStatus = styled.div`
@@ -55,7 +55,7 @@ const OverwriteStatus = styled.div`
   vertical-align: top !important;
   width: 100%;
   transform: translateX(0%);
-  transition: transform ${props => props.theme.coreTransitionTime} linear;
+  transition: transform ${(props) => props.theme.coreTransitionTime} linear;
   text-align: center;
   position: relative;
   white-space: normal;
@@ -63,7 +63,7 @@ const OverwriteStatus = styled.div`
 `
 
 const OverwriteProgress = styled(OverwriteStatus)`
-  line-height: ${props => props.theme.minimumButtonSize};
+  line-height: ${(props) => props.theme.minimumButtonSize};
 `
 
 const ProgressText = styled.div`
@@ -74,18 +74,18 @@ const ProgressText = styled.div`
   width: 100%;
   height: 100%;
   z-index: 1;
-  font-size: ${props => props.theme.largeFontSize};
-  color: ${props => readableColor(props.theme.backgroundContent)};
+  font-size: ${(props) => props.theme.largeFontSize};
+  color: ${(props) => readableColor(props.theme.backgroundContent)};
 `
 
 const ProgressTextUnder = styled.div`
-  font-size: ${props => props.theme.largeFontSize};
+  font-size: ${(props) => props.theme.largeFontSize};
   visibility: hidden;
 `
 
 const ProgressInfo = styled.div`
-  font-size: ${props => props.theme.mediumFontSize};
-  color: ${props => readableColor(props.theme.backgroundContent)};
+  font-size: ${(props) => props.theme.mediumFontSize};
+  color: ${(props) => readableColor(props.theme.backgroundContent)};
 `
 
 const ProgressBar = styled.div`
@@ -95,35 +95,35 @@ const ProgressBar = styled.div`
   position: absolute;
   width: 0%;
   height: 100%;
-  background: ${props => props.theme.positiveColor};
-  transition: width ${props => props.theme.coreTransitionTime} linear;
+  background: ${(props) => props.theme.positiveColor};
+  transition: width ${(props) => props.theme.coreTransitionTime} linear;
 `
 
 const OverwriteSuccess = styled(OverwriteStatus)`
-  color: ${props => readableColor(props.theme.positiveColor)};
-  background: ${props => props.theme.positiveColor};
+  color: ${(props) => readableColor(props.theme.positiveColor)};
+  background: ${(props) => props.theme.positiveColor};
 `
 
 const OverwriteError = styled(OverwriteStatus)`
-  color: ${props => readableColor(props.theme.negativeColor)};
-  background: ${props => props.theme.negativeColor};
+  color: ${(props) => readableColor(props.theme.negativeColor)};
+  background: ${(props) => props.theme.negativeColor};
 `
 
 const ResultMessage = styled.div`
-  font-size: ${props => props.theme.largeFontSize};
-  margin-left: ${props => props.theme.minimumButtonSize};
+  font-size: ${(props) => props.theme.largeFontSize};
+  margin-left: ${(props) => props.theme.minimumButtonSize};
 `
 
 const OverwriteBack = styled.button`
   position: absolute;
   left: 0px;
   top: 0px;
-  width: ${props => props.theme.minimumButtonSize};
+  width: ${(props) => props.theme.minimumButtonSize};
   height: 100%;
   text-align: center;
 `
 
-const Confirm = props => (
+const Confirm = (props) => (
   <OverwriteConfirm
     data-id="overwrite-confirm-button"
     variant="contained"
@@ -138,7 +138,7 @@ const Confirm = props => (
   </OverwriteConfirm>
 )
 
-const Sending = props => (
+const Sending = (props) => (
   <OverwriteProgress>
     <ProgressTextUnder>
       Uploading File
@@ -158,7 +158,7 @@ const Sending = props => (
   </OverwriteProgress>
 )
 
-const Success = props => (
+const Success = (props) => (
   <OverwriteSuccess>
     <OverwriteBack onClick={props.startOver}>
       <span className="fa fa-chevron-left" />
@@ -167,7 +167,7 @@ const Success = props => (
   </OverwriteSuccess>
 )
 
-const Error = props => (
+const Error = (props) => (
   <OverwriteError>
     <OverwriteBack onClick={props.startOver}>
       <span className="fa fa-chevron-left" />
@@ -189,7 +189,7 @@ const defaultState = {
   message: '',
 }
 
-const mapOverwriteModelToState = overwriteModel => {
+const mapOverwriteModelToState = (overwriteModel) => {
   const currentState = {}
   if (overwriteModel.get('success')) {
     currentState.stage = 'Success'
@@ -275,7 +275,7 @@ class MetacardOverwrite extends React.Component {
         yes: 'Overwrite',
       }),
       'change:choice',
-      confirmation => {
+      (confirmation) => {
         if (confirmation.get('choice')) {
           this.dropzoneElement.current.click()
         }

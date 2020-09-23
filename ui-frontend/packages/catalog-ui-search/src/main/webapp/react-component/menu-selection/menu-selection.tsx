@@ -29,11 +29,11 @@ const ModifiedMenuItem = styled(MenuItem)<Props>`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  font-weight: ${props => (props.isSelected ? 'bolder' : 'inherit')};
+  font-weight: ${(props) => (props.isSelected ? 'bolder' : 'inherit')};
   > .selection-indicator {
-    opacity: ${props => (props.isSelected ? 1 : 0)};
+    opacity: ${(props) => (props.isSelected ? 1 : 0)};
     text-align: center;
-    width: ${props => props.theme.minimumButtonSize};
+    width: ${(props) => props.theme.minimumButtonSize};
   }
 `
 

@@ -62,10 +62,7 @@ const getAttributes = (map: Backbone.Model) => {
 }
 
 const getCoordinateFormat = () =>
-  user
-    .get('user')
-    .get('preferences')
-    .get('coordinateFormat')
+  user.get('user').get('preferences').get('coordinateFormat')
 
 class MapInfo extends React.Component<Props, State> {
   constructor(props: Props) {

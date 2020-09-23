@@ -40,25 +40,17 @@ const user = require('../../component/singletons/user-instance.js')
  * Costly to update, so let them settle on a color first
  */
 const updateTheme = _.debounce((state: any) => {
-  user
-    .get('user')
-    .get('preferences')
-    .get('theme')
-    .set({
-      primary: state.primary,
-      secondary: state.secondary,
-    })
+  user.get('user').get('preferences').get('theme').set({
+    primary: state.primary,
+    secondary: state.secondary,
+  })
 }, 0)
 
 const getDefaults = () => {
   return {
     primary: '#2196f3',
     secondary: '#f50057',
-    ...user
-      .get('user')
-      .get('preferences')
-      .get('theme')
-      .toJSON(),
+    ...user.get('user').get('preferences').get('theme').toJSON(),
   }
 }
 
@@ -134,7 +126,7 @@ function ColorTool(props: any) {
       target: { value: color },
     } = event
 
-    setState(prevState => ({
+    setState((prevState) => ({
       ...prevState,
       [`${name}Input`]: color,
     }))
@@ -151,7 +143,7 @@ function ColorTool(props: any) {
     }
 
     if (isValidColor) {
-      setState(prevState => ({
+      setState((prevState) => ({
         ...prevState,
         [name]: color,
       }))
@@ -187,19 +179,16 @@ function ColorTool(props: any) {
     })
   }
 
-  React.useEffect(
-    () => {
-      updateTheme(state)
-    },
-    [state]
-  )
+  React.useEffect(() => {
+    updateTheme(state)
+  }, [state])
 
   const colorBar = (color: any, intent: string) => {
     const background = theme.palette.augmentColor({ main: color })
 
     return (
       <Grid container className={classes.colorBar}>
-        {['dark', 'main', 'light'].map(key => {
+        {['dark', 'main', 'light'].map((key) => {
           const backgroundColor = background[key as 'light'] as string
           return (
             <Tooltip
@@ -278,7 +267,7 @@ function ColorTool(props: any) {
           <Typography>{shades[intentShade]}</Typography>
         </div>
         <div className={classes.swatch}>
-          {hues.map(hue => {
+          {hues.map((hue) => {
             const shade =
               intent === 'primary'
                 ? shades[state.primaryShade]

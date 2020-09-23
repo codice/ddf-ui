@@ -31,7 +31,7 @@ module.exports = Marionette.CollectionView.extend(
       this.updateProperty()
     },
     getValue() {
-      return this.collection.map(valueModel => valueModel.getValue())
+      return this.collection.map((valueModel) => valueModel.getValue())
     },
     updateProperty() {
       this.model.setValue(this.getValue())
@@ -49,7 +49,7 @@ module.exports = Marionette.CollectionView.extend(
       const valueCollection = new ValueCollection()
       if (propertyModel.get('value').length > 0) {
         valueCollection.add(
-          propertyModel.get('value').map(value => ({
+          propertyModel.get('value').map((value) => ({
             value,
             property: propertyModel,
           }))

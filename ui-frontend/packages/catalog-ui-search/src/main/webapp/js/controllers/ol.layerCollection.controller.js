@@ -33,7 +33,7 @@ const createTile = (
     source: new Source(options),
   })
 
-const OSM = opts => {
+const OSM = (opts) => {
   const { url } = opts
   return createTile(
     {
@@ -44,12 +44,12 @@ const OSM = opts => {
   )
 }
 
-const BM = opts => {
+const BM = (opts) => {
   const imagerySet = opts.imagerySet || opts.url
   return createTile({ ...opts, imagerySet }, ol.source.BingMaps)
 }
 
-const WMS = opts => {
+const WMS = (opts) => {
   const params = opts.params || {
     LAYERS: opts.layers,
     ...opts.parameters,
@@ -57,7 +57,7 @@ const WMS = opts => {
   return createTile({ ...opts, params }, ol.source.TileWMS)
 }
 
-const WMT = async opts => {
+const WMT = async (opts) => {
   const { url, withCredentials } = opts
   const parser = new ol.format.WMTSCapabilities()
 
@@ -95,7 +95,7 @@ const WMT = async opts => {
   return createTile(opts, () => new ol.source.WMTS(options))
 }
 
-const AGM = opts => {
+const AGM = (opts) => {
   // We strip the template part of the url because we will manually format
   // it in the `tileUrlFunction` function.
   const url = opts.url.replace('tile/{z}/{y}/{x}', '')
@@ -106,7 +106,7 @@ const AGM = opts => {
   // reference links:
   //  - https://openlayers.org/en/latest/examples/xyz-esri-4326-512.html
   //  - https://developers.arcgis.com/rest/services-reference/map-tile.htm
-  const tileUrlFunction = tileCoord => {
+  const tileUrlFunction = (tileCoord) => {
     const [z, x, y] = tileCoord
     return `${url}/tile/${z - 1}/${-y - 1}/${x}`
   }
@@ -114,7 +114,7 @@ const AGM = opts => {
   return createTile({ ...opts, tileUrlFunction }, ol.source.XYZ)
 }
 
-const SI = opts => {
+const SI = (opts) => {
   const imageExtent =
     opts.imageExtent || ol.proj.get(properties.projection).getExtent()
   return createTile(
@@ -142,7 +142,7 @@ const Controller = CommonLayerController.extend({
     CommonLayerController.prototype.initialize.apply(this, arguments)
   },
   makeMap(options) {
-    this.collection.forEach(model => {
+    this.collection.forEach((model) => {
       this.addLayer(model)
     })
 
@@ -209,7 +209,7 @@ const Controller = CommonLayerController.extend({
     }
   },
   reIndexLayers() {
-    this.collection.forEach(function(model, index) {
+    this.collection.forEach(function (model, index) {
       const layer = this.layerForCid[model.id]
       if (layer !== undefined) {
         layer.setZIndex(-(index + 1))

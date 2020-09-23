@@ -26,10 +26,10 @@ type Props = {
 }
 
 const Choice = styled(ButtonBehavior)`
-  min-width: ${props => props.theme.minimumScreenSize};
-  min-height: ${props => props.theme.minimumButtonSize};
-  line-height: ${props => props.theme.minimumButtonSize};
-  padding: 0px ${props => props.theme.minimumSpacing};
+  min-width: ${(props) => props.theme.minimumScreenSize};
+  min-height: ${(props) => props.theme.minimumButtonSize};
+  line-height: ${(props) => props.theme.minimumButtonSize};
+  padding: 0px ${(props) => props.theme.minimumSpacing};
 `
 
 const render = (

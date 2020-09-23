@@ -75,7 +75,7 @@ class MetacardArchive extends React.Component<Props, State> {
 
       setTimeout(() => {
         this.setState({ isDeleted: true, loading: false })
-        this.state.collection.forEach(function(result) {
+        this.state.collection.forEach(function (result) {
           result
             .get('metacard')
             .get('properties')

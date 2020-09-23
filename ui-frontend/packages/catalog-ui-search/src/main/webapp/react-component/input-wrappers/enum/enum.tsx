@@ -38,7 +38,7 @@ export default hot(module)((props: Props) => {
       enumCustom={custom}
       type={Type.color}
       onChange={onChange}
-      {...destructureBaseProps(otherProps) as any}
+      {...(destructureBaseProps(otherProps) as any)}
     />
   )
 })

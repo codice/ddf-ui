@@ -35,7 +35,7 @@ render(
   region
 )
 
-exports.announce = function(announcement, timeout) {
+exports.announce = function (announcement, timeout) {
   store.dispatch(actions.announce(announcement, timeout))
 }
 

@@ -205,7 +205,7 @@ const userqlToCql = {
   _: '\\_',
 }
 
-const translateUserqlToCql = str =>
+const translateUserqlToCql = (str) =>
   str.replace(
     /([^*?%_])?([*?%_])/g,
     (_, a = '', b) => a + (a === '\\' ? b : userqlToCql[b])
@@ -217,10 +217,9 @@ const cqlToUserql = {
   _: '?',
 }
 
-const translateCqlToUserql = str =>
-  str.replace(
-    /([^%_])?([%_])/g,
-    (_, a = '', b) => (a === '\\' ? b : a + cqlToUserql[b])
+const translateCqlToUserql = (str) =>
+  str.replace(/([^%_])?([%_])/g, (_, a = '', b) =>
+    a === '\\' ? b : a + cqlToUserql[b]
   )
 
 function buildAst(tokens) {
@@ -615,7 +614,7 @@ function simplifyFilters(cqlAst) {
   for (let i = 0; i < cqlAst.filters.length; i++) {
     if (simplifyAst(cqlAst.filters[i], cqlAst)) {
       const filtersToMerge = cqlAst.filters.splice(i, 1)[0]
-      filtersToMerge.filters.forEach(filter => {
+      filtersToMerge.filters.forEach((filter) => {
         cqlAst.filters.push(filter)
       })
     }
@@ -642,7 +641,7 @@ function simplifyAst(cqlAst, parentNode) {
 
 function collapseNOTs(cqlAst, parentNode) {
   if (cqlAst.filters) {
-    cqlAst.filters.forEach(filter => {
+    cqlAst.filters.forEach((filter) => {
       collapseNOTs(filter, cqlAst)
     })
     if (cqlAst.type === 'NOT') {
@@ -657,7 +656,7 @@ function collapseNOTs(cqlAst, parentNode) {
 
 function uncollapseNOTs(cqlAst, parentNode) {
   if (cqlAst.filters) {
-    cqlAst.filters.forEach(filter => {
+    cqlAst.filters.forEach((filter) => {
       uncollapseNOTs(filter, cqlAst)
     })
     if (cqlAst.negated && cqlAst.type === 'OR') {

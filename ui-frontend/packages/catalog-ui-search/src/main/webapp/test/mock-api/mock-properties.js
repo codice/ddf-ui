@@ -17,7 +17,7 @@ const api = require('./index')
 const oldInit = properties.init
 
 const mock = () => {
-  properties.init = function() {
+  properties.init = function () {
     const data = api('./internal/config')
     const uiConfig = api('./internal/platform/config/ui')
     // use this function to initialize variables that rely on others

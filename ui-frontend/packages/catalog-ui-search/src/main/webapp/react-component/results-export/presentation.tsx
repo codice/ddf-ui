@@ -21,15 +21,15 @@ const Dropdown = require('../dropdown')
 import GetAppIcon from '@material-ui/icons/GetApp'
 
 const Root = styled.div`
-  padding: ${props => props.theme.largeSpacing};
+  padding: ${(props) => props.theme.largeSpacing};
 
   button {
-    margin-top: ${props => props.theme.minimumSpacing};
+    margin-top: ${(props) => props.theme.minimumSpacing};
     width: 100%;
   }
 
   .export-option {
-    margin-bottom: ${props => props.theme.largeSpacing};
+    margin-bottom: ${(props) => props.theme.largeSpacing};
   }
 `
 
@@ -61,7 +61,7 @@ const ResultsExport = (props: Props) => {
         <p>Export Format:</p>
         <Dropdown label={selectedFormat}>
           <Menu value={selectedFormat} onChange={handleExportOptionChange}>
-            {exportFormats.map(option => (
+            {exportFormats.map((option) => (
               <MenuItem key={option.id} value={option.displayName} />
             ))}
           </Menu>

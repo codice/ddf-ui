@@ -33,10 +33,7 @@ import { LazyQueryResults } from './LazyQueryResult/LazyQueryResults'
 const Query = {}
 
 function getEphemeralSort() {
-  return user
-    .get('user')
-    .get('preferences')
-    .get('resultSort')
+  return user.get('user').get('preferences').get('resultSort')
 }
 
 function mixinEphemeralFilter(originalCQL) {
@@ -82,17 +79,13 @@ function limitToHistoric(cqlFilterTree) {
   }
 }
 
-const handleTieredSearchLocalFinish = function(ids) {
-  const results = this.get('result')
-    .get('results')
-    .toJSON()
+const handleTieredSearchLocalFinish = function (ids) {
+  const results = this.get('result').get('results').toJSON()
 
-  const status = this.get('result')
-    .get('status')
-    .toJSON()
+  const status = this.get('result').get('status').toJSON()
 
-  const resultIds = results.map(result => result.metacard.id)
-  const missingResult = ids.some(id => !resultIds.includes(id))
+  const resultIds = results.map((result) => result.metacard.id)
+  const missingResult = ids.some((id) => !resultIds.includes(id))
   if (!missingResult) {
     return
   }
@@ -219,16 +212,16 @@ Query.Model = Backbone.AssociatedModel.extend({
     if (selectedSources.includes('local')) {
       sourceArray = sourceArray
         .concat(Sources.getHarvested())
-        .filter(src => src !== 'local')
+        .filter((src) => src !== 'local')
     }
     if (selectedSources.includes('remote')) {
       sourceArray = sourceArray
         .concat(
           _.pluck(Sources.toJSON(), 'id').filter(
-            src => !Sources.getHarvested().includes(src)
+            (src) => !Sources.getHarvested().includes(src)
           )
         )
-        .filter(src => src !== 'remote')
+        .filter((src) => src !== 'remote')
     }
     return sourceArray
   },
@@ -236,10 +229,7 @@ Query.Model = Backbone.AssociatedModel.extend({
     const data = this.toJSON()
     data.sources = this.getSelectedSources()
 
-    data.count = user
-      .get('user')
-      .get('preferences')
-      .get('resultCount')
+    data.count = user.get('user').get('preferences').get('resultCount')
 
     data.sorts = getEphemeralSort() || this.get('sorts')
 
@@ -276,7 +266,7 @@ Query.Model = Backbone.AssociatedModel.extend({
   },
   startTieredSearch(ids) {
     this.set('federation', 'local')
-    this.startSearch(undefined, searches => {
+    this.startSearch(undefined, (searches) => {
       $.when(...searches).then(() => {
         const queryResponse = this.get('result')
         if (queryResponse && queryResponse.isUnmerged()) {
@@ -341,8 +331,8 @@ Query.Model = Backbone.AssociatedModel.extend({
 
     const harvestedSources = Sources.getHarvested()
 
-    const isHarvested = id => harvestedSources.includes(id)
-    const isFederated = id => !harvestedSources.includes(id)
+    const isHarvested = (id) => harvestedSources.includes(id)
+    const isFederated = (id) => !harvestedSources.includes(id)
 
     this.currentIndexForSourceGroup = this.nextIndexForSourceGroup
     const localSearchToRun = {
@@ -354,7 +344,7 @@ Query.Model = Backbone.AssociatedModel.extend({
 
     const federatedSearchesToRun = selectedSources
       .filter(isFederated)
-      .map(source => ({
+      .map((source) => ({
         ...data,
         cql: cqlString,
         srcs: [source],
@@ -362,7 +352,7 @@ Query.Model = Backbone.AssociatedModel.extend({
       }))
 
     const searchesToRun = [localSearchToRun, ...federatedSearchesToRun].filter(
-      search => search.srcs.length > 0
+      (search) => search.srcs.length > 0
     )
 
     if (searchesToRun.length === 0) {
@@ -375,7 +365,7 @@ Query.Model = Backbone.AssociatedModel.extend({
       return
     }
 
-    this.currentSearches = searchesToRun.map(search => {
+    this.currentSearches = searchesToRun.map((search) => {
       delete search.sources // This key isn't used on the backend and only serves to confuse those debugging this code.
 
       // `result` is QueryResponse
@@ -402,7 +392,8 @@ Query.Model = Backbone.AssociatedModel.extend({
                 href: providerUrl,
                 target: '_blank',
                 style: {
-                  color: `${props => readableColor(props.theme.negativeColor)}`,
+                  color: `${(props) =>
+                    readableColor(props.theme.negativeColor)}`,
                 },
               },
               `Click Here To Authenticate ${sourceId}`
@@ -424,7 +415,7 @@ Query.Model = Backbone.AssociatedModel.extend({
   },
   currentSearches: [],
   cancelCurrentSearches() {
-    this.currentSearches.forEach(request => {
+    this.currentSearches.forEach((request) => {
       request.abort('Canceled')
     })
     const result = this.get('result')
@@ -441,7 +432,7 @@ Query.Model = Backbone.AssociatedModel.extend({
   },
   setSources(sources) {
     const sourceArr = []
-    sources.each(src => {
+    sources.each((src) => {
       if (src.get('available') === true) {
         sourceArr.push(src.get('id'))
       }
@@ -485,18 +476,18 @@ Query.Model = Backbone.AssociatedModel.extend({
       ? this.get('result').get('lazyResults').status
       : {}
     const harvestedSources = Sources.getHarvested()
-    const isLocal = id => {
+    const isLocal = (id) => {
       return harvestedSources.includes(id)
     }
     const maxIndexSeenLocal =
       Object.values(currentStatus)
-        .filter(status => isLocal(status.id))
+        .filter((status) => isLocal(status.id))
         .reduce((amt, status) => {
           amt = amt + status.count
           return amt
         }, 0) + this.currentIndexForSourceGroup.local
     const maxIndexPossibleLocal = Object.values(currentStatus)
-      .filter(status => isLocal(status.id))
+      .filter((status) => isLocal(status.id))
       .reduce((amt, status) => {
         amt = amt + status.hits
         return amt
@@ -506,8 +497,8 @@ Query.Model = Backbone.AssociatedModel.extend({
     }
 
     return Object.values(currentStatus)
-      .filter(status => !isLocal(status.id))
-      .some(status => {
+      .filter((status) => !isLocal(status.id))
+      .some((status) => {
         const maxIndexPossible = status.hits
         const count = status.count
         const maxIndexSeen = count + this.currentIndexForSourceGroup[status.id]
@@ -521,9 +512,7 @@ Query.Model = Backbone.AssociatedModel.extend({
   resetCurrentIndexForSourceGroup() {
     this.currentIndexForSourceGroup = {}
     if (this.get('result')) {
-      this.get('result')
-        .get('lazyResults')
-        ._resetSources([])
+      this.get('result').get('lazyResults')._resetSources([])
     }
     this.setNextIndexForSourceGroupToNextPage(this.getSelectedSources())
     this.pastIndexesForSourceGroup = []
@@ -555,10 +544,10 @@ Query.Model = Backbone.AssociatedModel.extend({
    */
   _calculateNextIndexForSourceGroupNextPage(sources) {
     const harvestedSources = Sources.getHarvested()
-    const isLocal = id => {
+    const isLocal = (id) => {
       return harvestedSources.includes(id)
     }
-    const federatedSources = sources.filter(id => {
+    const federatedSources = sources.filter((id) => {
       return !isLocal(id)
     })
     const currentStatus = this.get('result')
@@ -568,8 +557,8 @@ Query.Model = Backbone.AssociatedModel.extend({
     const maxLocalStart = Math.max(
       1,
       Object.values(currentStatus)
-        .filter(status => isLocal(status.id))
-        .filter(status => status.hits !== undefined)
+        .filter((status) => isLocal(status.id))
+        .filter((status) => status.hits !== undefined)
         .reduce((blob, status) => {
           return blob + status.hits
         }, 1)

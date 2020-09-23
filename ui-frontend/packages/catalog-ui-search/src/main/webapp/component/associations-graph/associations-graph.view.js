@@ -25,7 +25,7 @@ const Vis = require('vis')
 function determineNodes(view) {
   const currentMetacard = view.options.currentMetacard
   let nodes = view.options.knownMetacards
-    .map(metacard => ({
+    .map((metacard) => ({
       id: metacard.id,
       label: metacard.get('title'),
     }))
@@ -35,15 +35,15 @@ function determineNodes(view) {
           .get('currentQuery')
           .get('result')
           .get('lazyResults').results
-      ).map(function(result) {
+      ).map(function (result) {
         return {
           id: result['metacard.id'],
           label: result.plain.metacard.properties.title,
         }
       })
     )
-  nodes = _.uniq(nodes, false, node => node.id)
-  return nodes.map(node => ({
+  nodes = _.uniq(nodes, false, (node) => node.id)
+  return nodes.map((node) => ({
     id: node.id,
 
     label:
@@ -166,7 +166,7 @@ module.exports = Marionette.LayoutView.extend({
 
     // create an array with edges
     const edges = this.collection
-      .map(association => ({
+      .map((association) => ({
         arrows: {
           to: {
             enabled: true,
@@ -189,10 +189,10 @@ module.exports = Marionette.LayoutView.extend({
           forceDirection: 'vertical',
         },
       }))
-      .filter(edge => edge.to === currentMetacard.get('metacard').id)
+      .filter((edge) => edge.to === currentMetacard.get('metacard').id)
 
-    nodes = nodes.filter(node =>
-      edges.some(edge => edge.from === node.id || edge.to === node.id)
+    nodes = nodes.filter((node) =>
+      edges.some((edge) => edge.from === node.id || edge.to === node.id)
     )
     this.$el.toggleClass('has-no-parent', nodes.length === 0)
     if (nodes.length === 0) {
@@ -231,7 +231,7 @@ module.exports = Marionette.LayoutView.extend({
 
     // create an array with edges
     const edges = this.collection
-      .map(association => ({
+      .map((association) => ({
         arrows: {
           to: {
             enabled: true,
@@ -254,10 +254,10 @@ module.exports = Marionette.LayoutView.extend({
           forceDirection: 'vertical',
         },
       }))
-      .filter(edge => edge.from === currentMetacard.get('metacard').id)
+      .filter((edge) => edge.from === currentMetacard.get('metacard').id)
 
-    nodes = nodes.filter(node =>
-      edges.some(edge => edge.from === node.id || edge.to === node.id)
+    nodes = nodes.filter((node) =>
+      edges.some((edge) => edge.from === node.id || edge.to === node.id)
     )
     this.$el.toggleClass('has-no-child', nodes.length === 0)
     if (nodes.length === 0) {

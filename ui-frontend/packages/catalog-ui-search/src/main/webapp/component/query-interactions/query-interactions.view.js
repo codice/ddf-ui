@@ -30,7 +30,7 @@ import { getExportResults } from '../../react-component/utils/export/export'
 
 const NOT_CLONEABLE_ATTRIBUTES = ['id', 'result', 'hasBeenSaved']
 
-const createDuplicateQuery = attributes => {
+const createDuplicateQuery = (attributes) => {
   let clonedAttributes = JSON.parse(JSON.stringify(attributes))
   return _.omit(clonedAttributes, NOT_CLONEABLE_ATTRIBUTES)
 }

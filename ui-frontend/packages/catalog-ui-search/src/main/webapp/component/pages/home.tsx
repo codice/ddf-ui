@@ -56,7 +56,7 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
         </Grid>
         <Grid item className="mt-3 w-full">
           <Dropdown
-            content={context => {
+            content={(context) => {
               return (
                 <BetterClickAwayListener
                   onClickAway={() => {
@@ -133,7 +133,7 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
       </Grid>
       <Grid item className="ml-auto">
         <Dropdown
-          content={context => {
+          content={(context) => {
             return (
               <BetterClickAwayListener
                 onClickAway={() => {

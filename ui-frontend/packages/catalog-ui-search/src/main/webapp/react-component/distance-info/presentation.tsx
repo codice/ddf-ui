@@ -25,14 +25,14 @@ type Props = {
 
 const Root = styled.div<Props>`
   font-family: 'Inconsolata', 'Lucida Console', monospace;
-  background: ${props => props.theme.backgroundModal};
+  background: ${(props) => props.theme.backgroundModal};
   display: block;
   width: auto;
   height: auto;
-  font-size: ${props => props.theme.mediumFontSize};
+  font-size: ${(props) => props.theme.mediumFontSize};
   position: absolute;
   text-align: left;
-  padding: ${props => props.theme.minimumSpacing};
+  padding: ${(props) => props.theme.minimumSpacing};
   max-width: 50%;
 `
 

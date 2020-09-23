@@ -47,7 +47,7 @@ const UserUnique = styled.div`
 
 const UserButton = styled(Button)`
   height: 100%;
-  padding: 0px ${props => props.theme.mediumSpacing};
+  padding: 0px ${(props) => props.theme.mediumSpacing};
   max-width: 10rem;
   border-left: solid 1px ${transparentize(0.8, '#ffffff')};
 `

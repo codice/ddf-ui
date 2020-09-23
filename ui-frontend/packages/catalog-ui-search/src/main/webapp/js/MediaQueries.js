@@ -30,12 +30,7 @@ const mediumScreenSize = 90 //1440 px
 
 const updateMediaQueries = _.throttle(() => {
   const $html = $('html')
-  const fontSize = parseInt(
-    user
-      .get('user')
-      .get('preferences')
-      .get('fontSize')
-  )
+  const fontSize = parseInt(user.get('user').get('preferences').get('fontSize'))
   const screenSize = window.innerWidth / fontSize
   const mobile = screenSize < mobileScreenSize
   const small = screenSize < smallScreenSize && !mobile
@@ -46,8 +41,5 @@ const updateMediaQueries = _.throttle(() => {
 }, 30)
 
 $(window).resize(updateMediaQueries)
-user
-  .get('user')
-  .get('preferences')
-  .on('change:fontSize', updateMediaQueries)
+user.get('user').get('preferences').on('change:fontSize', updateMediaQueries)
 updateMediaQueries()

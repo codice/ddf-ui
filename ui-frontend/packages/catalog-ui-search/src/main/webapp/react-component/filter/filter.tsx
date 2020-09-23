@@ -34,7 +34,7 @@ const Filter = ({ filter, setFilter }: Props) => {
   const { property } = filter
   const attributeList = getFilteredAttributeList()
   const currentSelectedAttribute = attributeList.find(
-    attrInfo => attrInfo.value === property
+    (attrInfo) => attrInfo.value === property
   )
   return (
     <Grid container direction="column" alignItems="center" className="w-full">
@@ -45,7 +45,7 @@ const Filter = ({ filter, setFilter }: Props) => {
           fullWidth
           size="small"
           options={attributeList}
-          getOptionLabel={option => option.label}
+          getOptionLabel={(option) => option.label}
           getOptionSelected={(option, value) => option.value === value.value}
           // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
           onChange={(e, newValue) => {
@@ -57,7 +57,7 @@ const Filter = ({ filter, setFilter }: Props) => {
           }}
           disableClearable
           value={currentSelectedAttribute}
-          renderInput={params => <TextField {...params} variant="outlined" />}
+          renderInput={(params) => <TextField {...params} variant="outlined" />}
         />
       </Grid>
       <Grid item className="w-full pb-2">

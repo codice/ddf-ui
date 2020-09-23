@@ -25,7 +25,7 @@ const metacardDefinitions = require('../singletons/metacard-definitions.js')
 
 function filterAndSort(attributes) {
   return attributes
-    .filter(property => {
+    .filter((property) => {
       if (metacardDefinitions.metacardTypes[property]) {
         return !metacardDefinitions.metacardTypes[property].hidden
       } else {
@@ -42,12 +42,7 @@ function calculateAvailableAttributesFromSelection(selectionInterface) {
     .reduce((currentAvailable, result) => {
       currentAvailable = _.union(
         currentAvailable,
-        Object.keys(
-          result
-            .get('metacard')
-            .get('properties')
-            .toJSON()
-        )
+        Object.keys(result.get('metacard').get('properties').toJSON())
       )
       return currentAvailable
     }, [])
@@ -110,7 +105,7 @@ module.exports = Marionette.LayoutView.extend({
     this.attributeSelector.show(
       new PropertyView({
         model: new Property({
-          enum: totalAttributes.map(attr => {
+          enum: totalAttributes.map((attr) => {
             return {
               label: metacardDefinitions.getLabel(attr),
               value: attr,

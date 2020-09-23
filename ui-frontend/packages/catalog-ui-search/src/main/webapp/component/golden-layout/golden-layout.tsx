@@ -21,14 +21,11 @@ export const GoldenLayout = ({ selectionInterface }: Props) => {
   )
   const { closed } = useResizableGridContext()
 
-  React.useEffect(
-    () => {
-      setTimeout(() => {
-        if (goldenlayoutInstance.goldenLayout) goldenlayoutInstance.updateSize()
-      }, 100)
-    },
-    [closed]
-  )
+  React.useEffect(() => {
+    setTimeout(() => {
+      if (goldenlayoutInstance.goldenLayout) goldenlayoutInstance.updateSize()
+    }, 100)
+  }, [closed])
 
   React.useEffect(() => {
     setTimeout(() => {

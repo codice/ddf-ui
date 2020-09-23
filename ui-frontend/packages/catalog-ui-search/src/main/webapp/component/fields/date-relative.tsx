@@ -41,7 +41,7 @@ export const DateRelativeField = ({ value, onChange }: Props) => {
       <Grid item className="w-full pb-2">
         <NumberField
           type="float"
-          onChange={val => {
+          onChange={(val) => {
             if (onChange)
               onChange({
                 ...defaultValue,
@@ -61,7 +61,7 @@ export const DateRelativeField = ({ value, onChange }: Props) => {
           fullWidth
           variant="outlined"
           select
-          onChange={e => {
+          onChange={(e) => {
             if (onChange)
               onChange({
                 ...defaultValue,

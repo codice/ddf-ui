@@ -25,18 +25,18 @@ function checkValidation(model) {
   if (model.get('id')) {
     model.set('validating', true)
     //wait for solr
-    setTimeout(function() {
+    setTimeout(function () {
       $.whenAll
         .apply(this, [
           $.get(
             './internal/metacard/' + model.get('id') + '/attribute/validation'
-          ).then(response => {
+          ).then((response) => {
             model.set({
               issues: model.get('issues') || response.length > 0,
             })
           }),
           $.get('./internal/metacard/' + model.get('id') + '/validation').then(
-            response => {
+            (response) => {
               model.set({
                 issues: model.get('issues') || response.length > 0,
               })

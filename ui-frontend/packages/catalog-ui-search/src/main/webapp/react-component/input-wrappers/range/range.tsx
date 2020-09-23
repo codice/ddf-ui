@@ -34,7 +34,7 @@ export default hot(module)((props: Props) => {
       units={units}
       type={Type.range}
       onChange={onChange}
-      {...destructureBaseProps(otherProps) as any}
+      {...(destructureBaseProps(otherProps) as any)}
     />
   )
 })

@@ -46,7 +46,7 @@ const Zone = ({ value, onChange }) => (
     <Label>Zone</Label>
     <Dropdown label={value}>
       <Menu value={value} onChange={onChange}>
-        {range.map(zone => (
+        {range.map((zone) => (
           <MenuItem key={zone} value={zone} />
         ))}
       </Menu>
@@ -67,7 +67,7 @@ const Hemisphere = ({ value, onChange }) => (
 )
 
 const MinimumSpacing = styled.div`
-  height: ${props => props.theme.minimumSpacing};
+  height: ${(props) => props.theme.minimumSpacing};
 `
 
 module.exports = {

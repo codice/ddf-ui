@@ -37,7 +37,7 @@ class LineRenderView extends GeometryRenderView {
     })
   }
 
-  init = options => {
+  init = (options) => {
     const { model, events } = { ...options }
 
     this.updatePrimitive()
@@ -45,7 +45,7 @@ class LineRenderView extends GeometryRenderView {
     this.listenForCameraChange()
   }
 
-  drawGeometry = model => {
+  drawGeometry = (model) => {
     const json = model.toJSON()
     let linePoints = json.line
     const lineWidth =
@@ -61,7 +61,7 @@ class LineRenderView extends GeometryRenderView {
       return
     }
 
-    linePoints.forEach(point => {
+    linePoints.forEach((point) => {
       point[0] = DistanceUtils.coordinateRound(point[0])
       point[1] = DistanceUtils.coordinateRound(point[1])
     })
@@ -104,7 +104,7 @@ class LineController extends GeometryController {
     })
   }
 
-  createRenderView = model => {
+  createRenderView = (model) => {
     return new LineRenderView({ model, map: this.map })
   }
 }

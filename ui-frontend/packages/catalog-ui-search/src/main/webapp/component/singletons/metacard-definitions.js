@@ -24,7 +24,7 @@ function transformEnumResponse(metacardTypes, response) {
     (result, value, key) => {
       switch (metacardTypes[key].type) {
         case 'DATE':
-          result[key] = value.map(subval => {
+          result[key] = value.map((subval) => {
             if (subval) {
               return moment(subval).toISOString()
             }
@@ -89,7 +89,7 @@ function metacardStartingTypesWithTemporal() {
   let metacardStartingTypeWithTemporal = { ...metacardStartingTypes }
 
   if (properties.basicSearchTemporalSelectionDefault) {
-    properties.basicSearchTemporalSelectionDefault.forEach(proposedType => {
+    properties.basicSearchTemporalSelectionDefault.forEach((proposedType) => {
       metacardStartingTypeWithTemporal[proposedType] = {
         id: proposedType,
         type: 'DATE',
@@ -124,13 +124,13 @@ module.exports = new (Backbone.Model.extend({
     )
   },
   getDatatypeEnum() {
-    $.get('./internal/enumerations/attribute/datatype').then(response => {
+    $.get('./internal/enumerations/attribute/datatype').then((response) => {
       _.extend(this.enums, response)
     })
   },
   getEnumForMetacardDefinition(metacardDefinition) {
     $.get('./internal/enumerations/metacardtype/' + metacardDefinition).then(
-      response => {
+      (response) => {
         _.extend(
           this.enums,
           transformEnumResponse(this.metacardTypes, response)
@@ -181,7 +181,7 @@ module.exports = new (Backbone.Model.extend({
   },
   typesFetched: false,
   getMetacardTypes() {
-    $.get('./internal/metacardtype').then(metacardDefinitions => {
+    $.get('./internal/metacardtype').then((metacardDefinitions) => {
       this.addMetacardDefinitions(metacardDefinitions)
       this.typesFetched = true
     })

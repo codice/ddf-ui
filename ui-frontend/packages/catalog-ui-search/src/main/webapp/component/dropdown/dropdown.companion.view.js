@@ -253,16 +253,19 @@ module.exports = Marionette.LayoutView.extend(
       this.options.linkedView.$el.focus()
     },
     listenForReposition() {
-      this.$el.on('repositionDropdown.' + CustomElements.getNamespace(), e => {
-        this.updateWidth()
-        this.updatePosition()
-      })
+      this.$el.on(
+        'repositionDropdown.' + CustomElements.getNamespace(),
+        (e) => {
+          this.updateWidth()
+          this.updatePosition()
+        }
+      )
     },
     stopListeningForReposition() {
       this.$el.off('repositionDropdown.' + CustomElements.getNamespace())
     },
     listenForClose() {
-      this.$el.on('closeDropdown.' + CustomElements.getNamespace(), e => {
+      this.$el.on('closeDropdown.' + CustomElements.getNamespace(), (e) => {
         // stop from closing dropdowns higher in the dom
         e.stopPropagation()
         // close
@@ -274,7 +277,7 @@ module.exports = Marionette.LayoutView.extend(
       this.$el.off('closeDropdown.' + CustomElements.getNamespace())
     },
     listenForOutsideClick() {
-      $('body').on('mousedown.' + this.cid, event => {
+      $('body').on('mousedown.' + this.cid, (event) => {
         if (!DropdownBehaviorUtility.drawing(event)) {
           if (!DropdownBehaviorUtility.withinAnyDropdown(event.target)) {
             this.close()
@@ -296,7 +299,7 @@ module.exports = Marionette.LayoutView.extend(
     listenForResize() {
       $(window).on(
         'resize.' + this.cid,
-        _.throttle(event => {
+        _.throttle((event) => {
           this.updatePosition()
           this.updateWidth()
         }, 16)

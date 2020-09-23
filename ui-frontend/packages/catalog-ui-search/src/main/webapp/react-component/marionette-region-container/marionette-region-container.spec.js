@@ -26,7 +26,7 @@ describe('<MarionetteRegionContainer />', () => {
     expect(wrapper.find('div')).to.have.length(1)
   })
 
-  it('renders a marionette view', done => {
+  it('renders a marionette view', (done) => {
     const div = document.createElement('div')
     document.body.appendChild(div)
     const TestView = Marionette.ItemView.extend({
@@ -41,7 +41,7 @@ describe('<MarionetteRegionContainer />', () => {
     })
   })
 
-  it('handles switching views quickly', done => {
+  it('handles switching views quickly', (done) => {
     const div = document.createElement('div')
     document.body.appendChild(div)
     const TestView = Marionette.ItemView.extend({

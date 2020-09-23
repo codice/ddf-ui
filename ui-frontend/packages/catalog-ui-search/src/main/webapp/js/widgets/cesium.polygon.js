@@ -53,14 +53,14 @@ class PolygonRenderView extends GeometryRenderView {
     })
   }
 
-  init = options => {
+  init = (options) => {
     const { model, events } = { ...options }
     this.listenTo(model, events, this.updatePrimitive)
     this.updatePrimitive()
     this.listenForCameraChange()
   }
 
-  drawGeometry = model => {
+  drawGeometry = (model) => {
     const json = model.toJSON()
     if (!Array.isArray(json.polygon)) {
       this.map.scene.requestRender()
@@ -76,7 +76,7 @@ class PolygonRenderView extends GeometryRenderView {
 
     this.primitive = new Cesium.PolylineCollection()
     this.cameraMagnitude = this.map.camera.getMagnitude()
-    ;(polygons || []).forEach(polygonPoints => {
+    ;(polygons || []).forEach((polygonPoints) => {
       if (!polygonPoints || polygonPoints.length < 3) {
         return
       }
@@ -89,7 +89,7 @@ class PolygonRenderView extends GeometryRenderView {
       if (validateGeo('polygon', JSON.stringify(polygonPoints)).error) {
         return
       }
-      polygonPoints.forEach(point => {
+      polygonPoints.forEach((point) => {
         point[0] = DistanceUtils.coordinateRound(point[0])
         point[1] = DistanceUtils.coordinateRound(point[1])
       })
@@ -101,15 +101,15 @@ class PolygonRenderView extends GeometryRenderView {
         this.model
       )
       const bufferedPolygons = bufferedPolygonPoints.geometry.coordinates.map(
-        set => Turf.polygon([set])
+        (set) => Turf.polygon([set])
       )
       const bufferedPolygon = Turf.union(...bufferedPolygons)
 
       const primitive = this.primitive
-      bufferedPolygon.geometry.coordinates.forEach(set =>
+      bufferedPolygon.geometry.coordinates.forEach((set) =>
         primitive.add(this.constructLinePrimitive(set))
       )
-      drawnPolygonPoints.geometry.coordinates.forEach(set =>
+      drawnPolygonPoints.geometry.coordinates.forEach((set) =>
         primitive.add(this.constructDottedLinePrimitive(set))
       )
     })
@@ -130,7 +130,7 @@ class PolygonController extends GeometryController {
     })
   }
 
-  createRenderView = model => {
+  createRenderView = (model) => {
     return new PolygonRenderView({ model, map: this.map })
   }
 }

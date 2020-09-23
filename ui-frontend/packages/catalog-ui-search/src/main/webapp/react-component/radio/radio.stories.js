@@ -29,7 +29,7 @@ stories.add('basic', () => {
 
   return (
     <Radio value={value} onChange={action('onChange')}>
-      {items.map(value => {
+      {items.map((value) => {
         return <RadioItem value={value} />
       })}
     </Radio>

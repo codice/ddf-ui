@@ -49,7 +49,7 @@ const Controller = CommonLayerController.extend({
     this.map.scene.requestRenderMode = true
     this.layerOrder = []
 
-    this.collection.forEach(function(model) {
+    this.collection.forEach(function (model) {
       if (model.get('show')) {
         this.initLayer(model)
       }
@@ -100,7 +100,7 @@ const Controller = CommonLayerController.extend({
 
     this.layerOrder = addLayer({
       initialized: this.layerOrder,
-      all: this.collection.models.map(model => model.id).reverse(), //this.collection.models sorts layers from top to bottom, while Cesium expects the reverse.
+      all: this.collection.models.map((model) => model.id).reverse(), //this.collection.models sorts layers from top to bottom, while Cesium expects the reverse.
       layer: model.id,
     })
 
@@ -142,7 +142,7 @@ const Controller = CommonLayerController.extend({
   reIndexLayers() {
     const newLayerOrder = shiftLayers({
       prev: this.layerOrder,
-      cur: this.collection.models.map(model => model.id).reverse(),
+      cur: this.collection.models.map((model) => model.id).reverse(),
     })
     const { layer, method, count } = getShift({
       prev: this.layerOrder,
@@ -156,7 +156,7 @@ const Controller = CommonLayerController.extend({
 
     _.times(
       count,
-      function() {
+      function () {
         this.map.imageryLayers[method](this.layerForCid[layer])
       },
       this

@@ -31,11 +31,11 @@ export type LocationType = {
 
 const Root = styled.div`
   font-family: 'Inconsolata', 'Lucida Console', monospace;
-  background: ${props => props.theme.backgroundModal};
+  background: ${(props) => props.theme.backgroundModal};
   display: block;
   width: auto;
   height: auto;
-  font-size: ${props => props.theme.mediumFontSize};
+  font-size: ${(props) => props.theme.mediumFontSize};
   position: absolute;
   text-align: left;
   padding: 4px;
@@ -46,7 +46,7 @@ const Root = styled.div`
   &::before {
     top: 100%;
     content: ' ';
-    border-top: 15px solid ${props => props.theme.backgroundModal};
+    border-top: 15px solid ${(props) => props.theme.backgroundModal};
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     height: 0;
@@ -74,7 +74,7 @@ const Preview = styled.div`
   min-height: 15px;
   max-height: 250px;
   padding: 2px;
-  background-color: ${props => props.theme.backgroundContent};
+  background-color: ${(props) => props.theme.backgroundContent};
   border: 1px solid;
   overflow-y: auto;
   overflow-x: auto;
@@ -104,7 +104,7 @@ const ClusterTitle = styled.li`
   font-family: 'Open Sans', arial, sans-serif;
 
   &:hover {
-    background-color: ${props => props.theme.backgroundSlideout};
+    background-color: ${(props) => props.theme.backgroundSlideout};
   }
 `
 
@@ -190,14 +190,14 @@ const getLocation = (map: any, target: MetacardType[]) => {
 
 const HookPopupPreview = (props: Props) => {
   const { map, selectionInterface } = props
-  const [location, setLocation] = React.useState(undefined as
-    | undefined
-    | LocationType)
+  const [location, setLocation] = React.useState(
+    undefined as undefined | LocationType
+  )
   const dragRef = React.useRef(0)
   const [open, setOpen] = React.useState(false)
-  const [previewText, setPreviewText] = React.useState(undefined as
-    | undefined
-    | string)
+  const [previewText, setPreviewText] = React.useState(
+    undefined as undefined | string
+  )
   const { listenTo } = useBackbone()
 
   const getTarget = () => {
@@ -270,7 +270,7 @@ const HookPopupPreview = (props: Props) => {
 
   return (
     <Root style={{ left: getLeft(location), top: getTop(location) }}>
-      {(function() {
+      {(function () {
         if (selectionInterface.getSelectedResults().length === 1) {
           const metacardJSON = selectionInterface
             .getSelectedResults()

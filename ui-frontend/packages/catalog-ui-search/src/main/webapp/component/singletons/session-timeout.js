@@ -117,8 +117,8 @@ const sessionTimeoutModel = new (Backbone.Model.extend({
     fetch(invalidateUrl + window.location.href, {
       redirect: 'manual',
     })
-      .then(response => response.text())
-      .then(text => {
+      .then((response) => response.text())
+      .then((text) => {
         window.location.replace(text)
       })
   },

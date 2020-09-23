@@ -43,7 +43,7 @@ export const IntegerField = ({ value, onChange }: IntegerFieldProps) => {
       size="small"
       placeholder="Use * for wildcard."
       value={value}
-      onChange={e => {
+      onChange={(e) => {
         onChange(parseInt(e.target.value))
       }}
     />

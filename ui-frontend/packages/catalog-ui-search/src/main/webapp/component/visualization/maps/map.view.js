@@ -67,7 +67,7 @@ function getHomeCoordinates() {
           }
           return coordinates
         }, [])
-        .map(coordinateObj => {
+        .map((coordinateObj) => {
           let lon = parseFloat(coordinateObj.lon)
           let lat = parseFloat(coordinateObj.lat)
           if (isNaN(lon) || isNaN(lat)) {
@@ -80,7 +80,7 @@ function getHomeCoordinates() {
             lat,
           }
         })
-        .filter(coordinateObj => {
+        .filter((coordinateObj) => {
           return coordinateObj !== undefined
         })
     }
@@ -234,13 +234,10 @@ module.exports = Marionette.LayoutView.extend({
   },
   zoomToHome() {
     const home = [
-      user
-        .get('user')
-        .get('preferences')
-        .get('mapHome'),
+      user.get('user').get('preferences').get('mapHome'),
       homeBoundingBox,
       defaultHomeBoundingBox,
-    ].find(element => element !== undefined)
+    ].find((element) => element !== undefined)
 
     this.map.zoomToBoundingBox(home)
   },
@@ -418,7 +415,7 @@ module.exports = Marionette.LayoutView.extend({
   */
   clearRuler() {
     const points = this.mapModel.get('points')
-    points.forEach(point => {
+    points.forEach((point) => {
       this.map.removeRulerPoint(point)
     })
     this.mapModel.clearPoints()
@@ -520,7 +517,7 @@ module.exports = Marionette.LayoutView.extend({
     )
   },
   initializeMap() {
-    this.loadMap().then(Map => {
+    this.loadMap().then((Map) => {
       this.createMap(Map)
       this.hasLoadedMap = true
       this.onMapLoaded(this.map.getMap())
@@ -554,17 +551,14 @@ module.exports = Marionette.LayoutView.extend({
         currentQuery.get('color')
       )
     }
-    const resultFilter = user
-      .get('user')
-      .get('preferences')
-      .get('resultFilter')
+    const resultFilter = user.get('user').get('preferences').get('resultFilter')
     if (resultFilter) {
       this.handleFilter(resultFilter, '#c89600')
     }
   },
   handleFilter(filter, color) {
     if (filter.filters) {
-      filter.filters.forEach(subfilter => {
+      filter.filters.forEach((subfilter) => {
         this.handleFilter(subfilter, color)
       })
     } else {
@@ -600,7 +594,9 @@ module.exports = Marionette.LayoutView.extend({
       lineWidth: filter.distance || 0,
       line: pointText
         .split(',')
-        .map(coordinate => coordinate.split(' ').map(value => Number(value))),
+        .map((coordinate) =>
+          coordinate.split(' ').map((value) => Number(value))
+        ),
       color,
     })
     this.map.showLineShape(locationModel)

@@ -72,11 +72,11 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 function not(a: string[], b: string[]) {
-  return a.filter(value => b.indexOf(value) === -1)
+  return a.filter((value) => b.indexOf(value) === -1)
 }
 
 function intersection(a: string[], b: string[]) {
-  return a.filter(value => b.indexOf(value) !== -1)
+  return a.filter((value) => b.indexOf(value) !== -1)
 }
 
 function union(a: string[], b: string[]) {
@@ -195,7 +195,7 @@ const CustomList = ({
                   }
                 : {},
           }}
-          onChange={e => {
+          onChange={(e) => {
             setFilter(e.target.value)
           }}
         />
@@ -233,7 +233,7 @@ const CustomList = ({
             }}
           >
             <Droppable droppableId="test">
-              {provided => {
+              {(provided) => {
                 return (
                   <div {...provided.droppableProps} ref={provided.innerRef}>
                     {items.map((value: string, index: number) => {
@@ -254,7 +254,7 @@ const CustomList = ({
                           key={value}
                           isDragDisabled={!isDnD}
                         >
-                          {provided => {
+                          {(provided) => {
                             return (
                               // @ts-ignore ts-migrate(2322) FIXME: Type 'DragEvent<HTMLDivElement>' is missing the fo... Remove this comment to see the full error message
                               <div
@@ -403,10 +403,9 @@ const TransferList = ({
 }) => {
   const classes = useStyles()
   const dialogContext = useDialog()
-  const [mode, setMode] = React.useState('loading' as
-    | 'normal'
-    | 'saving'
-    | 'loading')
+  const [mode, setMode] = React.useState(
+    'loading' as 'normal' | 'saving' | 'loading'
+  )
   const [checked, setChecked] = React.useState<string[]>([])
   const [left, setLeft] = React.useState(startingLeft)
   const [right, setRight] = React.useState(startingRight)

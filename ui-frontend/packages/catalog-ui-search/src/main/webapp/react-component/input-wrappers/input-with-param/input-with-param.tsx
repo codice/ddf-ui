@@ -34,7 +34,7 @@ export default hot(module)((props: Props) => {
       param={param}
       type={Type.inputWithParam}
       onChange={onChange}
-      {...destructureBaseProps(otherProps) as any}
+      {...(destructureBaseProps(otherProps) as any)}
     />
   )
 })

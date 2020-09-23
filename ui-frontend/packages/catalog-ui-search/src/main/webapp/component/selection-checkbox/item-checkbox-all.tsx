@@ -67,7 +67,7 @@ export const ItemCheckboxAll = ({ selectionInterface }: any) => {
   return (
     <Root
       className={'checkbox-container'}
-      onClick={e => {
+      onClick={(e) => {
         e.stopPropagation()
         if (isSelected({ selectionInterface })) {
           selectionInterface.clearSelectedResults()

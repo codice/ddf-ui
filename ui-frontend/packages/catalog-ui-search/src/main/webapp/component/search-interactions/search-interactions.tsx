@@ -34,7 +34,7 @@ const SearchInteractions = (props: SearchInteractionProps) => (
     {(props: PresentationProps) => {
       return (
         <Menu onChange={(formId: string) => props.triggerQueryForm(formId)}>
-          {queryForms.map(form => {
+          {queryForms.map((form) => {
             return (
               <SearchFormMenuItem
                 key={form.id}

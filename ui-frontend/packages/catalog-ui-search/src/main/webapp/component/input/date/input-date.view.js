@@ -22,17 +22,13 @@ const user = require('../../singletons/user-instance.js')
 require('eonasdan-bootstrap-datetimepicker')
 
 function getDateFormat() {
-  return user
-    .get('user')
-    .get('preferences')
-    .get('dateTimeFormat')['datetimefmt']
+  return user.get('user').get('preferences').get('dateTimeFormat')[
+    'datetimefmt'
+  ]
 }
 
 function getTimeZone() {
-  return user
-    .get('user')
-    .get('preferences')
-    .get('timeZone')
+  return user.get('user').get('preferences').get('timeZone')
 }
 
 module.exports = InputView.extend({
@@ -134,7 +130,7 @@ module.exports = InputView.extend({
     }
   },
   listenForChange() {
-    this.$el.on('dp.change', e => {
+    this.$el.on('dp.change', (e) => {
       if (e.oldDate === null) {
         return
       }
@@ -154,7 +150,7 @@ module.exports = InputView.extend({
       datetimepicker.viewDate(newValue)
       this.$el.find('input').val(newValue)
     })
-    this.$el.on('dp.change click input change keyup', e => {
+    this.$el.on('dp.change click input change keyup', (e) => {
       this.model.set('value', this.getCurrentValue())
       this.validate()
     })

@@ -115,11 +115,11 @@ module.exports = Marionette.LayoutView.extend({
   resetDefaults() {
     this.focusModel.clear()
     this.stopListeningToModel()
-    this.model.get('mapLayers').forEach(viewLayer => {
+    this.model.get('mapLayers').forEach((viewLayer) => {
       const name = viewLayer.get('name')
       const defaultConfig = _.find(
         properties.imageryProviders,
-        layerObj => name === layerObj.name
+        (layerObj) => name === layerObj.name
       )
       viewLayer.set(defaultConfig)
     })

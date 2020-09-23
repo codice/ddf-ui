@@ -58,32 +58,32 @@ const ItemRoot = styled.div<{
   disabled: boolean
   selected: boolean
 }>`
-position: relative;
-padding: 0px ${({ theme }) => theme.minimumSpacing};
-padding-right: ${({ theme }) => theme.minimumButtonSize};
-box-sizing: border-box;
-height: ${({ theme }) => theme.minimumButtonSize};
-line-height: ${({ theme }) => theme.minimumButtonSize};
-cursor: pointer;
--webkit-touch-callout: none; /* iOS Safari */
--webkit-user-select: none; /* Safari */
--khtml-user-select: none; /* Konqueror HTML */
--moz-user-select: none; /* Firefox */
--ms-user-select: none; /* Internet Explorer/Edge */
-user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
-${({ disabled }) => (disabled ? 'pointer-events : none' : '')}
-${({ theme, active, disabled }) =>
-  active && !disabled
-    ? `box-shadow: inset 0px 0px 0px 1px  ${theme.primaryColor};`
-    : ''}
+  position: relative;
+  padding: 0px ${({ theme }) => theme.minimumSpacing};
+  padding-right: ${({ theme }) => theme.minimumButtonSize};
+  box-sizing: border-box;
+  height: ${({ theme }) => theme.minimumButtonSize};
+  line-height: ${({ theme }) => theme.minimumButtonSize};
+  cursor: pointer;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  ${({ disabled }) => (disabled ? 'pointer-events : none' : '')}
+  ${({ theme, active, disabled }) =>
+    active && !disabled
+      ? `box-shadow: inset 0px 0px 0px 1px  ${theme.primaryColor};`
+      : ''}
 ${({ selected }) => (selected ? 'font-weight: bold;' : '')}
 ${({ selected, disabled }) => (selected && !disabled ? after : '')}
-background: ${props =>
-  props.active && !props.disabled ? background(props) : 'inherit'};
-color: ${props => (props.disabled ? 'lightgrey' : foreground)};
+background: ${(props) =>
+    props.active && !props.disabled ? background(props) : 'inherit'};
+  color: ${(props) => (props.disabled ? 'lightgrey' : foreground)};
 `
 
 const DocumentListener = (props: any) => {

@@ -109,7 +109,7 @@ const TabsView = Marionette.LayoutView.extend({
     menu.off('click').on('click', () => {
       tabList.toggleClass('is-open')
       if (tabList.hasClass('is-open')) {
-        $('body').on(namespacedEvent('click', view), e => {
+        $('body').on(namespacedEvent('click', view), (e) => {
           if (e.target !== menu[0] && menu.find(e.target).length === 0) {
             $('body').off(namespacedEvent('click', view))
             tabList.removeClass('is-open')
@@ -122,7 +122,7 @@ const TabsView = Marionette.LayoutView.extend({
   },
   _widthWhenCollapsed() {
     const widthWhenCollaspsed = []
-    this._widthWhenCollapsed = function() {
+    this._widthWhenCollapsed = function () {
       return widthWhenCollaspsed
     }
     return widthWhenCollaspsed

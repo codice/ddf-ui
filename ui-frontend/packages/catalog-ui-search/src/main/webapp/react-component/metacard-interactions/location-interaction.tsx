@@ -101,10 +101,7 @@ const handleCreateSearch = (props: Props) => {
 
 const getGeoLocations = (model: Model) =>
   model.reduce((locationArray: Array<string>, result: Result) => {
-    const location = result
-      .get('metacard')
-      .get('properties')
-      .get('location')
+    const location = result.get('metacard').get('properties').get('location')
 
     if (location) {
       const geometry = Geometry.parse(location)

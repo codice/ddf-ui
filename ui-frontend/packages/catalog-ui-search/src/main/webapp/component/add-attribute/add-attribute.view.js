@@ -24,24 +24,19 @@ const metacardDefinitions = require('../singletons/metacard-definitions.js')
 function determineMissingAttributes(selectionInterface) {
   const attributes = _.union.apply(
     this,
-    selectionInterface.getSelectedResults().map(result => {
-      return Object.keys(
-        result
-          .get('metacard')
-          .get('properties')
-          .toJSON()
-      )
+    selectionInterface.getSelectedResults().map((result) => {
+      return Object.keys(result.get('metacard').get('properties').toJSON())
     })
   )
   const types = _.union.apply(
     this,
-    selectionInterface.getSelectedResults().map(result => {
+    selectionInterface.getSelectedResults().map((result) => {
       return [result.get('metacardType')]
     })
   )
   const possibleAttributes = _.intersection.apply(
     this,
-    types.map(type => {
+    types.map((type) => {
       return Object.keys(metacardDefinitions.metacardDefinitions[type])
     })
   )
@@ -49,10 +44,10 @@ function determineMissingAttributes(selectionInterface) {
   return metacardDefinitions
     .sortMetacardTypes(
       missingAttributes
-        .map(attribute => metacardDefinitions.metacardTypes[attribute])
-        .filter(definition => !definition.hidden && !definition.readOnly)
+        .map((attribute) => metacardDefinitions.metacardTypes[attribute])
+        .filter((definition) => !definition.hidden && !definition.readOnly)
     )
-    .map(definition => ({
+    .map((definition) => ({
       label: definition.alias || definition.id,
       value: definition.id,
     }))

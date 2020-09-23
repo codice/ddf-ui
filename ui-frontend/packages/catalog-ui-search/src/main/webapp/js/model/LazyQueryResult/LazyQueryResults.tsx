@@ -90,7 +90,7 @@ export class LazyQueryResults {
     const subscribers = this[
       `subscriptionsToMe.${subscribableThing}`
     ] as SubscriptionType
-    Object.values(subscribers).forEach(callback => callback())
+    Object.values(subscribers).forEach((callback) => callback())
   }
   ['_notifySubscribers.status']() {
     this._notifySubscribers('status')
@@ -175,7 +175,7 @@ export class LazyQueryResults {
    */
   selectByIds(targets: string[]) {
     this.deselect()
-    targets.forEach(id => {
+    targets.forEach((id) => {
       if (this.results[id]) {
         this.results[id].setSelected(true)
       }
@@ -193,7 +193,7 @@ export class LazyQueryResults {
     target.setSelected(isSelected)
   }
   deselect() {
-    Object.values(this.selectedResults).forEach(result => {
+    Object.values(this.selectedResults).forEach((result) => {
       result.setSelected(false)
     })
   }
@@ -278,12 +278,12 @@ export class LazyQueryResults {
   init() {
     this.currentAsOf = Date.now()
     if (this['subscriptionsToOthers.result.isSelected'])
-      this['subscriptionsToOthers.result.isSelected'].forEach(unsubscribe => {
+      this['subscriptionsToOthers.result.isSelected'].forEach((unsubscribe) => {
         unsubscribe()
       })
     if (this['subscriptionsToOthers.result.backboneCreated'])
       this['subscriptionsToOthers.result.backboneCreated'].forEach(
-        unsubscribe => {
+        (unsubscribe) => {
           unsubscribe()
         }
       )
@@ -326,22 +326,19 @@ export class LazyQueryResults {
     results = [],
     highlights = [],
   }: { results?: ResultType[]; highlights?: ResponseHighlightType } = {}) {
-    const highlightMap = highlights.reduce(
-      (blob, highlight) => {
-        blob[highlight.id] = highlight.highlights.reduce(
-          (innerblob, subhighlight) => {
-            innerblob[subhighlight.attribute] = highlight.highlights.filter(
-              hl => hl.attribute === subhighlight.attribute
-            )
-            return innerblob
-          },
-          {} as { [key: string]: Array<AttributeHighlight> }
-        )
-        return blob
-      },
-      {} as TransformedHighlightsType
-    )
-    results.forEach(result => {
+    const highlightMap = highlights.reduce((blob, highlight) => {
+      blob[highlight.id] = highlight.highlights.reduce(
+        (innerblob, subhighlight) => {
+          innerblob[subhighlight.attribute] = highlight.highlights.filter(
+            (hl) => hl.attribute === subhighlight.attribute
+          )
+          return innerblob
+        },
+        {} as { [key: string]: Array<AttributeHighlight> }
+      )
+      return blob
+    }, {} as TransformedHighlightsType)
+    results.forEach((result) => {
       const lazyResult = new LazyQueryResult(
         result,
         highlightMap[result.metacard.properties.id]
@@ -416,18 +413,15 @@ export class LazyQueryResults {
     this._resetStatus()
   }
   _resetStatus() {
-    this.status = this.sources.reduce(
-      (blob, source) => {
-        blob[source] = new Status({ id: source })
-        return blob
-      },
-      {} as SearchStatus
-    )
+    this.status = this.sources.reduce((blob, source) => {
+      blob[source] = new Status({ id: source })
+      return blob
+    }, {} as SearchStatus)
     this._updateIsSearching()
     this['_notifySubscribers.status']()
   }
   cancel() {
-    Object.keys(status).forEach(id => {
+    Object.keys(status).forEach((id) => {
       if (this.status[id].hasReturned === false) {
         this.status[id].updateStatus({
           hasReturned: true,
@@ -440,7 +434,7 @@ export class LazyQueryResults {
     this['_notifySubscribers.status']()
   }
   updateStatus(status: SearchStatus) {
-    Object.keys(status).forEach(id => {
+    Object.keys(status).forEach((id) => {
       this.status[id].updateStatus(status[id])
     })
     this._updateIsSearching()
@@ -453,7 +447,7 @@ export class LazyQueryResults {
     sources: string[]
     message: string
   }) {
-    sources.forEach(id => {
+    sources.forEach((id) => {
       if (this.status[id])
         this.status[id].updateStatus({
           message,
@@ -464,7 +458,7 @@ export class LazyQueryResults {
     this['_notifySubscribers.status']()
   }
   _updateIsSearching() {
-    this.isSearching = Object.values(this.status).some(status => {
+    this.isSearching = Object.values(this.status).some((status) => {
       return !status.hasReturned
     })
   }

@@ -20,7 +20,7 @@ import { BaseWorker } from './worker.base'
   }
   global.window.document = {
     // @ts-ignore ts-migrate(7030) FIXME: Not all code paths return a value.
-    getElementsByTagName: function(tagName: any) {
+    getElementsByTagName: function (tagName: any) {
       if (tagName === 'script') {
         return [
           {

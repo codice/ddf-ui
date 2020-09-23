@@ -29,7 +29,7 @@ module.exports = Marionette.LayoutView.extend({
         isValid={this.model.get('isValid')}
         {...this.options}
         editing={this.$el.hasClass('is-editing')}
-        onChange={state => this.onChange(state)}
+        onChange={(state) => this.onChange(state)}
       />
     )
   },
