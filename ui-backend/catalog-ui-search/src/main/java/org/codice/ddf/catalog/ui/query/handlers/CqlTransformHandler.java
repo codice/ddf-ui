@@ -46,7 +46,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPOutputStream;
 import javax.ws.rs.core.HttpHeaders;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -79,7 +78,6 @@ public class CqlTransformHandler implements Route {
   public static final String TRANSFORMER_ID_PROPERTY = "id";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CqlTransformHandler.class);
-  private static final String GZIP = "gzip";
 
   private static final Gson GSON =
       new GsonBuilder()
@@ -311,11 +309,6 @@ public class CqlTransformHandler implements Route {
 
     String fileExt = getFileExtFromMimeType(mimeType);
 
-    if (containsGzip(request)) {
-      LOGGER.trace("Request header accepts gzip");
-      response.header(HttpHeaders.CONTENT_ENCODING, GZIP);
-    }
-
     response.type(mimeType);
     String attachment =
         String.format("attachment;filename=\"export-%s%s\"", Instant.now().toString(), fileExt);
@@ -329,15 +322,6 @@ public class CqlTransformHandler implements Route {
       LOGGER.debug("Null or empty file extension from mime-type {}", mimeType);
     }
     return fileExt;
-  }
-
-  private Boolean containsGzip(Request request) {
-    String acceptEncoding = request.headers(HttpHeaders.ACCEPT_ENCODING);
-    if (acceptEncoding != null) {
-      return acceptEncoding.toLowerCase().contains(GZIP);
-    }
-    LOGGER.debug("Request header Accept-Encoding is null");
-    return false;
   }
 
   private void attachFileToResponse(
@@ -354,13 +338,7 @@ public class CqlTransformHandler implements Route {
 
     try (OutputStream servletOutputStream = response.raw().getOutputStream();
         InputStream resultStream = content.getInputStream()) {
-      if (containsGzip(request)) {
-        try (OutputStream gzipServletOutputStream = new GZIPOutputStream(servletOutputStream)) {
-          IOUtils.copy(resultStream, gzipServletOutputStream);
-        }
-      } else {
-        IOUtils.copy(resultStream, servletOutputStream);
-      }
+      IOUtils.copy(resultStream, servletOutputStream);
     }
 
     response.status(HttpStatus.OK_200);

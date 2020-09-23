@@ -173,7 +173,7 @@
         <dependency>
             <groupId>org.ops4j.pax.web</groupId>
             <artifactId>pax-web-jsp</artifactId>
-            <version>7.2.11</version>
+            <version>${pax.web.jsp.version}</version>
         </dependency>
     </dependencies>
 </project>

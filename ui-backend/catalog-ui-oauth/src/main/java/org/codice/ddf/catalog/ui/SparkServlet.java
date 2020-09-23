@@ -13,8 +13,6 @@
  */
 package org.codice.ddf.catalog.ui;
 
-import static spark.Spark.after;
-
 import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
@@ -38,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.ExceptionMapper;
 import spark.globalstate.ServletFlag;
 import spark.http.matching.MatcherFilter;
 import spark.route.ServletRoutes;
@@ -124,26 +123,11 @@ public class SparkServlet extends HttpServlet {
     filterPath = getConfigPath(filterMappingPattern, config);
     matcherFilter =
         new MatcherFilter(
-            ServletRoutes.get(), StaticFilesConfiguration.servletInstance, false, false);
-
-    after(
-        (request, response) -> {
-          if (response.raw().containsHeader("Content-Encoding")) {
-            return;
-          }
-
-          String acceptEncoding = request.headers("Accept-Encoding");
-
-          boolean shouldGzip =
-              StringUtils.isNotBlank(acceptEncoding)
-                  && acceptEncoding.toLowerCase().contains("gzip");
-
-          if (!shouldGzip) {
-            return;
-          }
-
-          response.header("Content-Encoding", "gzip");
-        });
+            ServletRoutes.get(),
+            StaticFilesConfiguration.servletInstance,
+            ExceptionMapper.getServletInstance(),
+            false,
+            false);
   }
 
   @Override
