@@ -572,7 +572,7 @@ Query.Model = Backbone.AssociatedModel.extend({
         .filter(status => status.hits !== undefined)
         .reduce((blob, status) => {
           return blob + status.hits
-        }, 0)
+        }, 1)
     )
     return Object.values(currentStatus).reduce(
       (blob, status) => {
@@ -580,7 +580,7 @@ Query.Model = Backbone.AssociatedModel.extend({
           blob['local'] = Math.min(maxLocalStart, blob['local'] + status.count)
         } else {
           blob[status.id] = Math.min(
-            status.hits !== undefined ? status.hits : 1,
+            status.hits !== undefined ? status.hits + 1 : 1,
             blob[status.id] + status.count
           )
         }
