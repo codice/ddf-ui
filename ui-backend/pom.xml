@@ -21,5 +21,7 @@
         <module>catalog-ui-oauth</module>
         <module>catalog-ui-splitter</module>
         <module>intrigue-ui-app</module>
+        <module>audit</module>
+        <module>javalin-utils</module>
     </modules>
 </project>

@@ -26,6 +26,24 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Embed-Dependency>
+                            guava,
+                        </Embed-Dependency>
+                        <Import-Package>
+                            !com.fasterxml.jackson.*,
+                            !io.swagger.annotations*,
+                            !org.glassfish.jersey.*,
+                            *
+                        </Import-Package>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <execution>
@@ -126,6 +144,31 @@
             <groupId>org.codice.ddf.search</groupId>
             <artifactId>catalog-ui-splitter</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codice.thirdparty</groupId>
+            <artifactId>javalin</artifactId>
+            <version>${javalin.thirdparty.bundle.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codice.ddf.search</groupId>
+            <artifactId>audit-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codice.ddf.search</groupId>
+            <artifactId>audit-application</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codice.ddf.search</groupId>
+            <artifactId>audit-logging</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>28.1-jre</version>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.web</groupId>
