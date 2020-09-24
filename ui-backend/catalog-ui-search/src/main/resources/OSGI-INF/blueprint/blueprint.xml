@@ -120,7 +120,6 @@ Implementation details
                 persistent-id="org.codice.ddf.catalog.ui.attribute.descriptions"
                 update-strategy="container-managed"/>
 
-        <property name="uiName" value="Intrigue"/>
         <property name="branding" ref="webBranding"/>
         <property name="httpProxy" ref="httpProxyService"/>
         <property name="historianConfiguration" ref="historianConfiguration"/>
