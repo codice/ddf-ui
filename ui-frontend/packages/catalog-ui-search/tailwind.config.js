@@ -1,4 +1,11 @@
 module.exports = {
+  purge: [
+    './src/**/*.tsx',
+    './src/**/*.jsx',
+    './src/**/*.hbs',
+    './src/**/*.js',
+    './src/**/*.ts',
+  ],
   theme: {
     namedGroups: ['1', '2'],
     extend: {
