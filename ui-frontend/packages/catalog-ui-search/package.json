@@ -146,7 +146,7 @@
     "redux": "3.5.2",
     "redux-thunk": "2.1.0",
     "rpc-websockets": "4.0.0",
-    "sanitize-html": "1.15.0",
+    "sanitize-html": "2.0.0",
     "scroll-into-view-if-needed": "^2.2.25",
     "select2": "4.0.3",
     "sortablejs": "1.4.2",
