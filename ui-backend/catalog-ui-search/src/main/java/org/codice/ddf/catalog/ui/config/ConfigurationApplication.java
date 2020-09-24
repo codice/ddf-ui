@@ -205,7 +205,7 @@ public class ConfigurationApplication implements SparkApplication {
 
   private int sourcePollInterval = 60000;
 
-  private String uiName;
+  private String product;
 
   private Integer relevancePrecision = 5;
 
@@ -243,7 +243,7 @@ public class ConfigurationApplication implements SparkApplication {
   private List<String> defaultSources = Collections.emptyList();
   private List<String> defaultTableColumns = Collections.emptyList();
 
-  private String brandingName;
+  private String customBranding;
 
   private String helpUrl;
 
@@ -565,7 +565,7 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("webSocketsEnabled", webSocketsEnabled);
     config.put("iconConfig", iconConfig);
     config.put("mapHome", mapHome);
-    config.put("product", uiName);
+    config.put("product", product);
     config.put("showRelevanceScores", relevanceScoresEnabled);
     config.put("relevancePrecision", relevancePrecision);
     config.put("showLogo", logoEnabled);
@@ -608,7 +608,7 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("bottomLeftLogoSrc", bottomLeftLogoSrc);
     config.put("bottomLeftBackgroundSrc", bottomLeftBackgroundSrc);
     config.put("menuIconSrc", menuIconSrc);
-    config.put("brandingName", brandingName);
+    config.put("customBranding", customBranding);
 
     return config;
   }
@@ -1056,12 +1056,12 @@ public class ConfigurationApplication implements SparkApplication {
     this.queryFeedbackEmailDestination = queryFeedbackEmailDestination;
   }
 
-  public String getUiName() {
-    return uiName;
+  public String getProduct() {
+    return product;
   }
 
-  public void setUiName(String uiName) {
-    this.uiName = uiName;
+  public void setProduct(String product) {
+    this.product = product;
   }
 
   public Boolean getRelevanceScoresEnabled() {
@@ -1381,12 +1381,12 @@ public class ConfigurationApplication implements SparkApplication {
     this.helpUrl = url;
   }
 
-  public String getBrandingName() {
-    return brandingName;
+  public String getCustomBranding() {
+    return customBranding;
   }
 
-  public void setBrandingName(String brandingName) {
-    this.brandingName = brandingName;
+  public void setCustomBranding(String customBranding) {
+    this.customBranding = customBranding;
   }
 
   public String getLandingPageBackgroundSrc() {

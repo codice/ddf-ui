@@ -178,9 +178,9 @@ require('../component/singletons/session-auto-renew.js')
 require('./SessionTimeout.js')
 
 $(window.document).ready(() => {
-  window.document.title = properties.branding + ' ' + properties.product
+  window.document.title = properties.customBranding + ' ' + properties.product
   window.document.querySelector('.welcome-branding').textContent =
-    properties.branding
+    properties.customBranding
   window.document.querySelector('.welcome-branding-name').textContent =
     properties.product
   window.document.querySelector('#loading').classList.add('show-welcome')

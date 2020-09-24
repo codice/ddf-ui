@@ -13,3 +13,4 @@ docs/build
 *.classpath
 *.factorypath
 release.properties
+dist/

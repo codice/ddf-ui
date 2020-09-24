@@ -318,12 +318,6 @@
             type="String"
             required="false"/>
 
-        <AD id="uiName"
-            name="UI Branding Name"
-            description="Specifies a custom UI branding name in the UI."
-            type="String"
-            default="Intrigue"/>
-
         <AD id="attributeEnumMap"
             name="Upload Editor: Attribute Configuration"
             description="List of attributes to show in the upload editor. By default, an attribute may be assigned any text value. Entries of the form 'attribute=value_1,...,value_n' will restrict input to the listed values."
@@ -363,11 +357,17 @@
                 default="https://codice.org/ddf/docs/documentation.html"/>
 
         <AD
-                description="The name to display as the branding."
-                name="Branding name"
-                id="brandingName"
+                description="The name to display as the branding name, by default DDF."
+                name="Branding Name"
+                id="customBranding"
                 type="String"
                 default="DDF"/>
+
+        <AD id="product"
+                name="Product Name"
+                description="Specifies a custom product name for the UI, by default Intrigue"
+                type="String"
+                default="Intrigue"/>
 
         <AD
                 description="The Branding."
