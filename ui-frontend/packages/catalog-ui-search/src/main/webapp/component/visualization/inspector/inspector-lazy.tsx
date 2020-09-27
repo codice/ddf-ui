@@ -57,13 +57,13 @@ const LazyInspector = ({ selectionInterface }: Props) => {
   }, [selectedResults])
 
   return (
-      <MRC
-        key="inspector"
-        view={InspectorView}
-        viewOptions={{
-          selectionInterface,
-        }}
-      />
+    <MRC
+      key="inspector"
+      view={InspectorView}
+      viewOptions={{
+        selectionInterface,
+      }}
+    />
   )
 }
 
