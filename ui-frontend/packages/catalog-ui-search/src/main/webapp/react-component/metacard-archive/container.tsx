@@ -113,9 +113,13 @@ class MetacardArchive extends React.Component<Props, State> {
           .get('metacard')
           .get('properties')
           .get('metacard.deleted.version')
+        const storeId = result
+          .get('metacard')
+          .get('properties')
+          .get('source-id')
 
         return fetch(
-          `./internal/history/revert/${metacardDeletedId}/${metacardDeletedVersion}`
+          `./internal/history/revert/${metacardDeletedId}/${metacardDeletedVersion}/${storeId}`
         )
       })
 
