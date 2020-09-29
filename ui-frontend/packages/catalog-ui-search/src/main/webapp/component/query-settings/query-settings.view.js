@@ -65,7 +65,11 @@ module.exports = plugin(
         Common.safeCallback(this.onBeforeShow)
       )
       this.resultForms = ResultFormCollection.getCollection()
-      this.listenTo(this.resultForms, 'change', this.renderResultForms)
+      this.listenTo(
+        this.resultForms,
+        'change add remove',
+        this.renderResultForms
+      )
       this.listenTo(user.getQuerySettings(), 'change:defaultResultFormId', () =>
         this.renderResultForms()
       )
@@ -98,12 +102,19 @@ module.exports = plugin(
       })
       resultFormsForDropdown = _.uniq(resultFormsForDropdown, 'id')
       let lastIndex = resultFormsForDropdown.length - 1
-      let defaultResultForm = resultFormsForDropdown.find(
-        form => form.id === user.getQuerySettings().get('defaultResultFormId')
-      )
+      let detailLevel = this.model.get('detail-level')
+      if (detailLevel === null) {
+        const defaultResultForm = resultFormsForDropdown.find(
+          form => form.id === user.getQuerySettings().get('defaultResultFormId')
+        )
+        detailLevel = defaultResultForm && defaultResultForm.value
+      }
+      const isValidDetailLevel =
+        resultFormsForDropdown.find(
+          dropdownItem => dropdownItem.value === detailLevel
+        ) !== undefined
       const propertyValue =
-        this.model.get('detail-level') ||
-        (defaultResultForm && defaultResultForm.value) ||
+        (isValidDetailLevel && detailLevel) ||
         (resultFormsForDropdown &&
           resultFormsForDropdown[lastIndex] &&
           resultFormsForDropdown[lastIndex].value)
@@ -251,7 +262,7 @@ module.exports = plugin(
       let federation = this._srcDropdownModel.get('federation')
       const spellcheck = this.model.get('spellcheck')
       const phonetics = this.model.get('phonetics')
-      let sources
+      let sources = this.model.get('sources')
       if (federation === 'selected') {
         sources = this._srcDropdownModel.get('value')
         if (sources === undefined || sources.length === 0) {
