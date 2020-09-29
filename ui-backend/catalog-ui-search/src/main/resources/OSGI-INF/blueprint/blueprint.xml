@@ -267,7 +267,6 @@ Implementation details
         <argument ref="configurationApplication"/>
         <argument ref="noteUtil"/>
         <argument ref="subjectIdentity"/>
-        <argument ref="accessControlSecurityConfiguration"/>
         <argument ref="queryWorkspaceService"/>
         <argument ref="queryMetacardsHandler"/>
         <argument ref="ddfSecurity" />
