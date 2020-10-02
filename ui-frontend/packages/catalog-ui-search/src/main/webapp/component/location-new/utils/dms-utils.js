@@ -100,10 +100,10 @@ function dmsCoordinateToDD(coordinate) {
  *  DMS -> WKT conversion utils
  */
 function dmsPointToWkt(point) {
-  const latitude = parseDmsCoordinate(point.latitude)
-  const longitude = parseDmsCoordinate(point.longitude)
-  const _latitude = dmsCoordinateToDD(latitude)
-  const _longitude = dmsCoordinateToDD(longitude)
+  const latitude = parseDmsCoordinate(point.latitude.coordinate)
+  const longitude = parseDmsCoordinate(point.longitude.coordinate)
+  const _latitude = dmsCoordinateToDD({...latitude, direction: point.latitude.direction})
+  const _longitude = dmsCoordinateToDD({...longitude, direction: point.longitude.direction})
   return new wkx.Point(_longitude, _latitude)
 }
 
@@ -186,8 +186,8 @@ function inValidRange(coordinate, maximum) {
 }
 
 function validateDmsPoint(point) {
-  const latitude = parseDmsCoordinate(point.latitude)
-  const longitude = parseDmsCoordinate(point.longitude)
+  const latitude = parseDmsCoordinate(point.latitude.coordinate)
+  const longitude = parseDmsCoordinate(point.longitude.coordinate)
   if (latitude && longitude) {
     return inValidRange(latitude, 90) && inValidRange(longitude, 180)
   }
@@ -195,10 +195,10 @@ function validateDmsPoint(point) {
 }
 
 function validateDmsBoundingBox(boundingbox) {
-  const north = parseDmsCoordinate(boundingbox.north)
-  const south = parseDmsCoordinate(boundingbox.south)
-  const east = parseDmsCoordinate(boundingbox.east)
-  const west = parseDmsCoordinate(boundingbox.west)
+  const north = parseDmsCoordinate(boundingbox.north.coordinate)
+  const south = parseDmsCoordinate(boundingbox.south.coordinate)
+  const east = parseDmsCoordinate(boundingbox.east.coordinate)
+  const west = parseDmsCoordinate(boundingbox.west.coordinate)
 
   if (!north || !south || !east || !west) {
     return false
@@ -213,10 +213,10 @@ function validateDmsBoundingBox(boundingbox) {
     return false
   }
 
-  const ddNorth = dmsCoordinateToDD(north)
-  const ddSouth = dmsCoordinateToDD(south)
-  const ddEast = dmsCoordinateToDD(east)
-  const ddWest = dmsCoordinateToDD(west)
+  const ddNorth = dmsCoordinateToDD({...north, direction: boundingbox.north.direction})
+  const ddSouth = dmsCoordinateToDD({...south, direction: boundingbox.south.direction})
+  const ddEast = dmsCoordinateToDD({...east, direction: boundingbox.east.direction})
+  const ddWest = dmsCoordinateToDD({...west, direction: boundingbox.west.direction})
   if (ddNorth < ddSouth || ddEast < ddWest) {
     return false
   }
