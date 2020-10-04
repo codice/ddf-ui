@@ -60,7 +60,7 @@ const determinePropertiesToApplyTo = ({
   value: BasicFilterClass
 }): Array<{ label: string; value: string }> => {
   if (value.property) {
-    return value.property.map((property) => {
+    return value.property.map(property => {
       return {
         label: TypedMetacardDefs.getAlias({ attr: property }),
         value: property,
@@ -79,16 +79,19 @@ const determinePropertiesToApplyTo = ({
 }
 
 const QueryTime = ({ value, onChange }: QueryTimeProps) => {
-  React.useEffect(() => {
-    if (value && value.property === undefined) {
-      onChange({
-        ...value,
-        property: determinePropertiesToApplyTo({ value }).map(
-          (val) => val.value
-        ),
-      })
-    }
-  }, [value])
+  React.useEffect(
+    () => {
+      if (value && value.property === undefined) {
+        onChange({
+          ...value,
+          property: determinePropertiesToApplyTo({ value }).map(
+            val => val.value
+          ),
+        })
+      }
+    },
+    [value]
+  )
   if (value && value.property === undefined) {
     return null // the use effect above should fire to take care of setting a default
   }
@@ -101,7 +104,7 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
             <Checkbox
               color="default"
               checked={value ? true : false}
-              onChange={(e) => {
+              onChange={e => {
                 if (e.target.checked) {
                   onChange({
                     ...value,
@@ -122,7 +125,7 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
             size="small"
             select
             value={value.type}
-            onChange={(e) => {
+            onChange={e => {
               onChange({
                 ...value,
                 type: e.target.value,
@@ -150,11 +153,12 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
             </Grid>
             <Grid item className="w-full pl-2">
               <Autocomplete
+                // @ts-ignore Property 'fullWidth' does not exist on type (error is wrong)
                 fullWidth
                 multiple
                 options={getPossibleProperties()}
                 disableCloseOnSelect
-                getOptionLabel={(option) => option.label}
+                getOptionLabel={option => option.label}
                 getOptionSelected={(option, value) =>
                   option.value === value.value
                 }
@@ -162,7 +166,7 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
                   console.log(newValue)
                   onChange({
                     ...value,
-                    property: newValue.map((val) => val.value),
+                    property: newValue.map(val => val.value),
                   })
                 }}
                 size="small"
@@ -177,7 +181,7 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
                   ))
                 }
                 value={determinePropertiesToApplyTo({ value })}
-                renderInput={(params) => (
+                renderInput={params => (
                   <TextField {...params} variant="outlined" />
                 )}
               />
