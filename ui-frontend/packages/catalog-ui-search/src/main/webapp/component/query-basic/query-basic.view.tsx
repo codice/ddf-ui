@@ -81,7 +81,7 @@ const determinePropertiesToApplyTo = ({
 }: {
   value: PropertyValueMapType['anyType']['properties']
 }): Array<{ label: string; value: string }> => {
-  return value.map(property => {
+  return value.map((property) => {
     return {
       label: TypedMetacardDefs.getAlias({ attr: property }),
       value: property,
@@ -281,7 +281,7 @@ const constructFilterFromBasicFilter = ({
   if (basicFilter.anyDate[0] !== undefined) {
     filters.push({
       type: 'OR',
-      filters: basicFilter.anyDate[0].property.map(property => {
+      filters: basicFilter.anyDate[0].property.map((property) => {
         return {
           ...basicFilter.anyDate[0],
           property,
@@ -298,7 +298,7 @@ const constructFilterFromBasicFilter = ({
     filters.push({
       type: 'OR',
       filters: basicFilter.anyType.properties
-        .map(property => {
+        .map((property) => {
           return new FilterClass({
             property: 'datatype',
             value: property,
@@ -306,7 +306,7 @@ const constructFilterFromBasicFilter = ({
           })
         })
         .concat(
-          basicFilter.anyType.properties.map(property => {
+          basicFilter.anyType.properties.map((property) => {
             return new FilterClass({
               property: 'metadata-content-type',
               value: property,
@@ -341,18 +341,15 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
     model.set('cql', cql.write(constructFilterFromBasicFilter({ basicFilter })))
     model.set('filterTree', constructFilterFromBasicFilter({ basicFilter }))
   })
-  React.useEffect(
-    () => {
-      saveCallbackRef.current = () => {
-        model.set(
-          'cql',
-          cql.write(constructFilterFromBasicFilter({ basicFilter }))
-        )
-        model.set('filterTree', constructFilterFromBasicFilter({ basicFilter }))
-      }
-    },
-    [basicFilter, model]
-  )
+  React.useEffect(() => {
+    saveCallbackRef.current = () => {
+      model.set(
+        'cql',
+        cql.write(constructFilterFromBasicFilter({ basicFilter }))
+      )
+      model.set('filterTree', constructFilterFromBasicFilter({ basicFilter }))
+    }
+  }, [basicFilter, model])
   React.useEffect(() => {
     return () => {
       saveCallbackRef.current()
@@ -371,26 +368,23 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
       clearTimeout(timeoutId)
     }
   }, [])
-  React.useEffect(
-    () => {
-      const callback = () => {
-        saveCallbackRef.current()
-      }
-      const callback2 = () => {
-        setBasicFilter(
-          translateFilterToBasicMap(getFilterTree(model)).propertyValueMap
-        )
-      }
-      // for perf, only update when necessary
-      listenTo(model, 'update', callback)
-      listenTo(model, 'change:filterTree', callback2)
-      return () => {
-        stopListening(model, 'update', callback)
-        stopListening(model, 'change:filterTree', callback2)
-      }
-    },
-    [model, basicFilter]
-  )
+  React.useEffect(() => {
+    const callback = () => {
+      saveCallbackRef.current()
+    }
+    const callback2 = () => {
+      setBasicFilter(
+        translateFilterToBasicMap(getFilterTree(model)).propertyValueMap
+      )
+    }
+    // for perf, only update when necessary
+    listenTo(model, 'update', callback)
+    listenTo(model, 'change:filterTree', callback2)
+    return () => {
+      stopListening(model, 'update', callback)
+      stopListening(model, 'change:filterTree', callback2)
+    }
+  }, [model, basicFilter])
   return (
     <>
       <div className="editor-properties px-2 py-3">
@@ -401,13 +395,13 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
             value={basicFilter.anyText ? basicFilter.anyText[0].value : ''}
             placeholder={`Text to search for. Use "*" for wildcard.`}
             id="Text"
-            onChange={e => {
+            onChange={(e) => {
               basicFilter.anyText[0].value = e.target.value
               setBasicFilter({
                 ...basicFilter,
               })
             }}
-            onKeyUp={e => {
+            onKeyUp={(e) => {
               if (e.which === 13) {
                 model.startSearchFromFirstPage()
               }
@@ -444,7 +438,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
         <div className="pt-2">
           <QueryTimeReactView
             value={basicFilter.anyDate[0]}
-            onChange={newValue => {
+            onChange={(newValue) => {
               basicFilter.anyDate[0] = newValue
 
               setBasicFilter({
@@ -460,7 +454,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
               <Checkbox
                 color="default"
                 checked={Boolean(basicFilter.anyGeo[0])}
-                onChange={e => {
+                onChange={(e) => {
                   if (!e.target.checked) {
                     basicFilter.anyGeo.pop()
                     setBasicFilter({
@@ -519,7 +513,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
               <Checkbox
                 color="default"
                 checked={basicFilter.anyType.on}
-                onChange={e => {
+                onChange={(e) => {
                   basicFilter.anyType.on = e.target.checked
                   setBasicFilter({
                     ...basicFilter,
@@ -547,13 +541,13 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
                   multiple
                   options={Object.values(typeAttributes)}
                   disableCloseOnSelect
-                  getOptionLabel={option => option.label}
+                  getOptionLabel={(option) => option.label}
                   getOptionSelected={(option, value) =>
                     option.value === value.value
                   }
                   onChange={(_e, newValue) => {
                     basicFilter.anyType.properties = newValue.map(
-                      val => val.value
+                      (val) => val.value
                     )
                     setBasicFilter({
                       ...basicFilter,
@@ -592,7 +586,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
                   value={determinePropertiesToApplyTo({
                     value: basicFilter.anyType.properties,
                   })}
-                  renderInput={params => (
+                  renderInput={(params) => (
                     <TextField {...params} variant="outlined" />
                   )}
                 />
