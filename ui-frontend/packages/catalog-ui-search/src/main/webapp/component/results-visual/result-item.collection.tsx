@@ -48,7 +48,12 @@ type Props = {
 }
 
 const getShowThumbnails = () => {
-  return user.get('user').get('preferences').get('resultDisplay') === 'Grid'
+  return (
+    user
+      .get('user')
+      .get('preferences')
+      .get('resultDisplay') === 'Grid'
+  )
 }
 
 const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
@@ -101,19 +106,15 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
                 if (showThumbnails) {
                   return (
                     <>
-                      <Box color="text.primary">
-                        <CheckBoxIcon />
-                      </Box>
-                      <Box className="pl-2">Thumbnails</Box>
+                      <CheckBoxIcon className="Mui-text-text-primary" />
+                      <div className="pl-2">Thumbnails</div>
                     </>
                   )
                 }
                 return (
                   <>
-                    <Box color="text.primary">
-                      <CheckBoxOutlineBlankIcon />
-                    </Box>
-                    <Box className="pl-2">Thumbnails</Box>
+                    <CheckBoxOutlineBlankIcon className="Mui-text-text-primary" />
+                    <div className="pl-2">Thumbnails</div>
                   </>
                 )
               })()}
@@ -168,7 +169,7 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
                 <div ref={itemRef} className="relative">
                   {index !== 0 ? (
                     <>
-                      <Box className="h-min w-full" bgcolor={'divider'} />
+                      <div className="h-min w-full Mui-bg-divider" />
                     </>
                   ) : null}
                   <ResultItem
@@ -181,7 +182,7 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
                   />
                   {index === results.length - 1 ? (
                     <>
-                      <Box className="h-min w-full" bgcolor={'divider'} />
+                      <div className="h-min w-full Mui-bg-divider" />
                     </>
                   ) : null}
                 </div>

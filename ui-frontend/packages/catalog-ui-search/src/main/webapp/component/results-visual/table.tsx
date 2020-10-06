@@ -43,8 +43,11 @@ import TableChartIcon from '@material-ui/icons/TableChart'
 import Box from '@material-ui/core/Box'
 ;(() => {
   const oldHandleSave = TableVisibility.prototype.handleSave
-  TableVisibility.prototype.handleSave = function () {
-    user.get('user').get('preferences').set('hasSelectedColumns', true)
+  TableVisibility.prototype.handleSave = function() {
+    user
+      .get('user')
+      .get('preferences')
+      .set('hasSelectedColumns', true)
     oldHandleSave.apply(this, arguments)
   }
   // const oldDestroy = TableVisibility.prototype.destroy
@@ -76,9 +79,12 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
     getVisibleHeaders(filteredAttributes)
   )
 
-  React.useEffect(() => {
-    setFilteredAttributes(getFilteredAttributes(lazyResults))
-  }, [lazyResults.results])
+  React.useEffect(
+    () => {
+      setFilteredAttributes(getFilteredAttributes(lazyResults))
+    },
+    [lazyResults.results]
+  )
 
   React.useEffect(() => {
     listenTo(
@@ -90,9 +96,12 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
     )
   }, [])
 
-  React.useEffect(() => {
-    setVisibleHeaders(getVisibleHeaders(filteredAttributes))
-  }, [filteredAttributes])
+  React.useEffect(
+    () => {
+      setVisibleHeaders(getVisibleHeaders(filteredAttributes))
+    },
+    [filteredAttributes]
+  )
 
   const openExportModal = () => {
     lightboxInstance.model.updateTitle('Export Results')
@@ -183,9 +192,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
               onClick={openRearrangeModel}
               color="primary"
             >
-              <Box color="text.primary">
-                <span className="fa fa-columns pr-2"> </span>
-              </Box>
+              <span className="fa fa-columns pr-2 Mui-text-text-primary" />
               Rearrange Column
             </Button>
           </Grid>
@@ -195,9 +202,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
               onClick={openVisibilityModel}
               color="primary"
             >
-              <Box color="text.primary">
-                <span className="fa fa-eye pr-2"> </span>
-              </Box>
+              <span className="fa fa-eye pr-2 Mui-text-text-primary"> </span>
               Hide / Show Columns
             </Button>
           </Grid>
@@ -211,9 +216,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
               }}
               color="primary"
             >
-              <Box color="text.primary">
-                <ViewColumnIcon className="pr-2" />
-              </Box>
+              <ViewColumnIcon className="pr-2 Mui-text-text-primary" />
               Reset Shown to Defaults
             </Button>
           </Grid>
@@ -223,9 +226,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
               onClick={openExportModal}
               color="primary"
             >
-              <Box color="text.primary">
-                <span className="fa fa-share pr-2"> </span>
-              </Box>
+              <span className="fa fa-share pr-2 Mui-text-text-primary"> </span>
               Export
             </Button>
           </Grid>
@@ -292,7 +293,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
             <Grid item className="w-full h-full overflow-hidden bg-inherit">
               <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
                 outerElementProps={{
-                  onScroll: (e) => {
+                  onScroll: e => {
                     if (headerRef.current) {
                       // @ts-ignore ts-migrate(2339) FIXME: Property 'scrollLeft' does not exist on type 'Even... Remove this comment to see the full error message
                       headerRef.current.scrollLeft = e.target.scrollLeft

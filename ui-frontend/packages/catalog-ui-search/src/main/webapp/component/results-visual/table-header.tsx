@@ -68,7 +68,7 @@ const updateSort = (attribute: string) => {
   const prefResultSort = prefs.get('resultSort') as Sort[]
   const currSort =
     prefResultSort && prefResultSort.length
-      ? prefResultSort.find((sort) => sort.attribute === attribute)
+      ? prefResultSort.find(sort => sort.attribute === attribute)
       : undefined
 
   const sort: Sort[] = [
@@ -88,9 +88,11 @@ const updateSort = (attribute: string) => {
 }
 
 const getSortDirectionClass = (attribute: string) => {
-  const sorts = user.get('user').get('preferences').get('resultSort') as Sort[]
-  const matchedSort =
-    sorts && sorts.find((sort) => sort.attribute === attribute)
+  const sorts = user
+    .get('user')
+    .get('preferences')
+    .get('resultSort') as Sort[]
+  const matchedSort = sorts && sorts.find(sort => sort.attribute === attribute)
   if (matchedSort && matchedSort.direction) {
     if (matchedSort.direction === 'ascending') {
       return 'fa fa-sort-asc'
@@ -120,14 +122,14 @@ export const HeaderCheckbox = ({
     <Button
       data-id="select-all-checkbox"
       color="primary"
-      onClick={(event) => {
+      onClick={event => {
         event.stopPropagation()
         if (selection === 'selected') {
-          Object.values(lazyResults.results).forEach((lazyResult) => {
+          Object.values(lazyResults.results).forEach(lazyResult => {
             lazyResult.setSelected(false)
           })
         } else {
-          Object.values(lazyResults.results).forEach((lazyResult) => {
+          Object.values(lazyResults.results).forEach(lazyResult => {
             lazyResult.setSelected(true)
           })
         }
@@ -139,28 +141,24 @@ export const HeaderCheckbox = ({
           case 'partially':
             return (
               <>
-                <Box color="text.primary">
-                  <IndeterminateCheckBoxIcon />
-                </Box>
-                {showText ? <Box className="pl-2">Select All</Box> : null}
+                <IndeterminateCheckBoxIcon className="Mui-text-text-primary" />
+                {showText ? <div className="pl-2">Select All</div> : null}
               </>
             )
           case 'selected':
             return (
               <>
-                <Box color="text.primary">
-                  <CheckBoxIcon />
-                </Box>
-                {showText ? <Box className="pl-2">Deselect All</Box> : null}
+                <CheckBoxIcon className="Mui-text-text-primary" />
+                {showText ? <div className="pl-2">Deselect All</div> : null}
               </>
             )
           case 'unselected':
             return (
               <>
-                <Box color="text.primary">
+                <div className="Mui-text-text-primary">
                   <CheckBoxOutlineBlankIcon />
-                </Box>
-                {showText ? <Box className="pl-2">Select All</Box> : null}
+                </div>
+                {showText ? <div className="pl-2">Select All</div> : null}
               </>
             )
         }
@@ -206,10 +204,7 @@ export const Header = ({ visibleHeaders, lazyResults }: HeaderProps) => {
                 minWidth: last ? '208px' : '200px', // 8px is the scrollbar width and they only affect the body, so we need to account for it in the last header cell
               }}
             >
-              <Box
-                className="w-min h-full absolute left-0 top-0"
-                bgcolor="divider"
-              />
+              <div className="w-min h-full absolute left-0 top-0 Mui-bg-divider" />
               <Button
                 disabled={!sortable}
                 className="w-full outline-none is-bold h-full"

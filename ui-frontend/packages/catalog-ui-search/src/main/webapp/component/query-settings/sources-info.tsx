@@ -35,10 +35,7 @@ const SourcesInfo = () => {
       >
         <Grid container direction="row" alignItems="center" wrap="nowrap">
           <Grid item>
-            <Box color="text.primary">
-              {' '}
-              <StorageIcon />
-            </Box>
+            <StorageIcon />
           </Grid>
           <Grid item>Sources</Grid>
         </Grid>

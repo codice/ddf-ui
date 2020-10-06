@@ -93,7 +93,7 @@ const matchesRoute = ({
     // @ts-ignore FIXME TS2339: Property 'some' does not exist on type 'string | string[]
     return routeInfo.routeProps.path.some(
       // @ts-ignore FIXME implicit any
-      (possibleRoute) =>
+      possibleRoute =>
         pathname.startsWith(`${possibleRoute}/`) ||
         pathname.endsWith(`${possibleRoute}`)
     )
@@ -198,9 +198,12 @@ const App = ({
    * Keep the current route visible to the user since it's useful info.
    * This also ensures it's visible upon first load of the page.
    */
-  React.useEffect(() => {
-    scrollCurrentRouteIntoView()
-  }, [location])
+  React.useEffect(
+    () => {
+      scrollCurrentRouteIntoView()
+    },
+    [location]
+  )
   React.useEffect(() => {
     listenTo(notifications, 'change add remove reset update', () => {
       setHasUnseenNotifications(notifications.hasUnseen() as boolean)
@@ -210,7 +213,7 @@ const App = ({
     })
   }, [])
   return (
-    <Box bgcolor="background.default" className="h-full w-full overflow-hidden">
+    <div className="h-full w-full overflow-hidden Mui-bg-default">
       {/* Don't move CSSBaseline or GlobalStyles to providers, since we have multiple react roots.   */}
       <CssBaseline />
       <GlobalStyles />
@@ -339,7 +342,7 @@ const App = ({
                     }}
                   >
                     {RouteInformation.filter(
-                      (routeInfo) => routeInfo.showInNav
+                      routeInfo => routeInfo.showInNav
                     ).map((routeInfo: RouteShownInNavType) => {
                       const isSelected = matchesRoute({
                         routeInfo,
@@ -463,10 +466,11 @@ const App = ({
 
                       return (
                         <>
-                          <Box
-                            color={hasUnseenNotifications ? 'warning.main' : ''}
+                          <div
                             className={
-                              hasUnseenNotifications ? 'animate-wiggle' : ''
+                              hasUnseenNotifications
+                                ? 'animate-wiggle Mui-text-warning'
+                                : ''
                             }
                           >
                             <ExpandingButton
@@ -489,7 +493,7 @@ const App = ({
                               expanded={navOpen}
                               focusVisibleClassName="focus-visible"
                             />
-                          </Box>
+                          </div>
                           <Drawer
                             anchor="left"
                             open={open}
@@ -598,7 +602,7 @@ const App = ({
           ) : null}
         </Grid>
       </Grid>
-    </Box>
+    </div>
   )
 }
 

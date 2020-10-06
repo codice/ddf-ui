@@ -92,17 +92,17 @@ const SourceSelector = ({ search }: Props) => {
   // @ts-ignore ts-migrate(6133) FIXME: 'inputRef' is declared but its value is never read... Remove this comment to see the full error message
   const inputRef = React.useRef()
   // @ts-ignore ts-migrate(6133) FIXME: 'federation' is declared but its value is never re... Remove this comment to see the full error message
-  const [federation, setFederation] = React.useState(
-    search.get('federation') as 'enterprise' | 'selected' | 'local'
-  )
+  const [federation, setFederation] = React.useState(search.get(
+    'federation'
+  ) as 'enterprise' | 'selected' | 'local')
   const [availableSources, setAvailableSources] = React.useState(
     sourcesInstance.toJSON()
   )
   const [sources, setSources] = React.useState(getSourcesFromSearch({ search }))
-  const sourceIds = availableSources.map((source) => source.id)
+  const sourceIds = availableSources.map(source => source.id)
   const defaultSources = search.get('sources') as string[]
   const validDefaultSources =
-    defaultSources && defaultSources.filter((src) => sourceIds.includes(src))
+    defaultSources && defaultSources.filter(src => sourceIds.includes(src))
   // @ts-ignore ts-migrate(6133) FIXME: 'hasValidDefaultSources' is declared but its value... Remove this comment to see the full error message
   const hasValidDefaultSources =
     validDefaultSources && validDefaultSources.length
@@ -116,13 +116,16 @@ const SourceSelector = ({ search }: Props) => {
       setAvailableSources(sourcesInstance.toJSON())
     })
   }, [])
-  React.useEffect(() => {
-    search.set('sources', sources)
-  }, [sources])
-  const availableLocalSources = availableSources.filter((availableSource) => {
+  React.useEffect(
+    () => {
+      search.set('sources', sources)
+    },
+    [sources]
+  )
+  const availableLocalSources = availableSources.filter(availableSource => {
     return sourcesInstance.getHarvested().includes(availableSource.id)
   })
-  const availableRemoteSources = availableSources.filter((availableSource) => {
+  const availableRemoteSources = availableSources.filter(availableSource => {
     return !sourcesInstance.getHarvested().includes(availableSource.id)
   })
 
@@ -171,17 +174,17 @@ const SourceSelector = ({ search }: Props) => {
           },
         }}
         value={sources}
-        onChange={(e) => {
+        onChange={e => {
           // first of all I'm sorry, second of all, order matters in these cases.  Should really just make a state machine out of this.
           // https://xstate.js.org/docs/  perhaps?
           let newSources = (e.target.value as unknown) as string[]
           // these first three if only apply if the value didn't previous exist (user is going from not all to 'all', etc.)
           const newLocalSources = newSources
-            .filter((src) => !['all', 'remote', 'local'].includes(src))
-            .filter((src) => isHarvested(src))
+            .filter(src => !['all', 'remote', 'local'].includes(src))
+            .filter(src => isHarvested(src))
           const newRemoteSources = newSources
-            .filter((src) => !['all', 'remote', 'local'].includes(src))
-            .filter((src) => !isHarvested(src))
+            .filter(src => !['all', 'remote', 'local'].includes(src))
+            .filter(src => !isHarvested(src))
 
           if (
             (newSources.includes('all') && !sources.includes('all')) ||
@@ -198,14 +201,14 @@ const SourceSelector = ({ search }: Props) => {
           } else if (sources.includes('all') && newLocalSources.length > 0) {
             setSources(
               _.difference(
-                availableLocalSources.map((src) => src.id).concat(['remote']),
+                availableLocalSources.map(src => src.id).concat(['remote']),
                 newLocalSources
               )
             )
           } else if (sources.includes('all') && newRemoteSources.length > 0) {
             setSources(
               _.difference(
-                availableRemoteSources.map((src) => src.id).concat(['local']),
+                availableRemoteSources.map(src => src.id).concat(['local']),
                 newRemoteSources
               )
             )
@@ -213,8 +216,8 @@ const SourceSelector = ({ search }: Props) => {
             setSources(
               _.difference(
                 sources
-                  .filter((src) => src !== 'local')
-                  .concat(availableLocalSources.map((src) => src.id)),
+                  .filter(src => src !== 'local')
+                  .concat(availableLocalSources.map(src => src.id)),
                 newLocalSources
               )
             )
@@ -225,8 +228,8 @@ const SourceSelector = ({ search }: Props) => {
             setSources(
               _.difference(
                 sources
-                  .filter((src) => src !== 'remote')
-                  .concat(availableRemoteSources.map((src) => src.id)),
+                  .filter(src => src !== 'remote')
+                  .concat(availableRemoteSources.map(src => src.id)),
                 newRemoteSources
               )
             )
@@ -235,7 +238,7 @@ const SourceSelector = ({ search }: Props) => {
             !sources.includes('local')
           ) {
             setSources(
-              newSources.filter((val) => !isHarvested(val) && val !== 'all')
+              newSources.filter(val => !isHarvested(val) && val !== 'all')
             )
           } else if (
             newSources.includes('remote') &&
@@ -243,7 +246,7 @@ const SourceSelector = ({ search }: Props) => {
           ) {
             setSources(
               ['remote'].concat(
-                newSources.filter((val) => isHarvested(val) && val !== 'all')
+                newSources.filter(val => isHarvested(val) && val !== 'all')
               )
             )
           } else if (
@@ -258,34 +261,32 @@ const SourceSelector = ({ search }: Props) => {
           } else if (
             availableLocalSources.length > 0 &&
             _.difference(
-              availableLocalSources.map((src) => src.id),
-              newSources.filter((src) => isHarvested(src))
+              availableLocalSources.map(src => src.id),
+              newSources.filter(src => isHarvested(src))
             ).length === 0
           ) {
             setSources(
-              ['local'].concat(newSources.filter((src) => !isHarvested(src)))
+              ['local'].concat(newSources.filter(src => !isHarvested(src)))
             )
           } else if (
             availableRemoteSources.length > 0 &&
             _.difference(
-              availableRemoteSources.map((src) => src.id),
-              newSources.filter((src) => !isHarvested(src))
+              availableRemoteSources.map(src => src.id),
+              newSources.filter(src => !isHarvested(src))
             ).length === 0
           ) {
             setSources(
-              ['remote'].concat(newSources.filter((src) => isHarvested(src)))
+              ['remote'].concat(newSources.filter(src => isHarvested(src)))
             )
           } else {
             // in these case, we now have to determine if we should remove all, remote, or local based on what is in newSources
             // no matter what all should be removed
-            newSources = newSources.filter((src) => src !== 'all')
-            if (newSources.find((src) => isHarvested(src))) {
-              newSources = newSources.filter((src) => src !== 'local')
+            newSources = newSources.filter(src => src !== 'all')
+            if (newSources.find(src => isHarvested(src))) {
+              newSources = newSources.filter(src => src !== 'local')
             }
-            if (
-              newSources.find((src) => src !== 'remote' && !isHarvested(src))
-            ) {
-              newSources = newSources.filter((src) => src !== 'remote')
+            if (newSources.find(src => src !== 'remote' && !isHarvested(src))) {
+              newSources = newSources.filter(src => src !== 'remote')
             }
             setSources(newSources)
           }
@@ -360,13 +361,15 @@ const SourceSelector = ({ search }: Props) => {
                     </Grid>
                     <Grid container direction="row" alignItems="center">
                       <Grid item>
-                        <Box
-                          color={
-                            source.available ? 'text.primary' : 'warning.main'
+                        <div
+                          className={
+                            source.available
+                              ? 'Mui-text-text-primary'
+                              : 'Mui-text-warning'
                           }
                         >
                           {source.id}
-                        </Box>
+                        </div>
                       </Grid>
                       <Grid item className="pl-2">
                         {source.available ? null : <WarningIcon />}
@@ -429,13 +432,15 @@ const SourceSelector = ({ search }: Props) => {
                     </Grid>
                     <Grid container direction="row" alignItems="center">
                       <Grid item>
-                        <Box
-                          color={
-                            source.available ? 'text.primary' : 'warning.main'
+                        <div
+                          className={
+                            source.available
+                              ? 'Mui-text-text-primary'
+                              : 'Mui-text-warning'
                           }
                         >
                           {source.id}
-                        </Box>
+                        </div>
                       </Grid>
                       <Grid item className="pl-2">
                         {source.available ? null : <WarningIcon />}

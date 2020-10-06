@@ -55,7 +55,7 @@ const CellValue = (props: CellValueProps) => {
                 if (message) {
                   return message
                 } else if (warnings.length > 0) {
-                  return warnings.map((warning) => (
+                  return warnings.map(warning => (
                     <div key={warning}>{warning}</div>
                   ))
                 } else {
@@ -71,12 +71,13 @@ const CellValue = (props: CellValueProps) => {
       {alwaysShowValue || (!message && hasReturned && successful)
         ? value
         : null}
-      {!hasReturned && !alwaysShowValue && (
-        <span
-          className="fa fa-circle-o-notch fa-spin"
-          title="Waiting for source to return"
-        />
-      )}
+      {!hasReturned &&
+        !alwaysShowValue && (
+          <span
+            className="fa fa-circle-o-notch fa-spin"
+            title="Waiting for source to return"
+          />
+        )}
     </React.Fragment>
   )
 }
@@ -139,9 +140,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
             }}
             color="primary"
           >
-            <Box color="primary.text">
-              <FilterListIcon />
-            </Box>
+            <FilterListIcon className="Mui-text-text-primary" />
             Filter
           </Button>
         </Tooltip>
@@ -175,7 +174,7 @@ const QueryStatus = ({
         </HeaderCell>
       </tr>
       <tbody className="is-list">
-        {statusBySource.map((status) => {
+        {statusBySource.map(status => {
           return (
             <QueryStatusRow key={status.id} status={status} query={query} />
           )
@@ -189,15 +188,18 @@ const LastRan = ({ currentAsOf }: { currentAsOf: number }) => {
   const [howLongAgo, setHowLongAgo] = React.useState(
     moment(currentAsOf).fromNow()
   )
-  React.useEffect(() => {
-    setHowLongAgo(moment(currentAsOf).fromNow())
-    const intervalId = setInterval(() => {
+  React.useEffect(
+    () => {
       setHowLongAgo(moment(currentAsOf).fromNow())
-    }, 60000)
-    return () => {
-      clearInterval(intervalId)
-    }
-  }, [currentAsOf])
+      const intervalId = setInterval(() => {
+        setHowLongAgo(moment(currentAsOf).fromNow())
+      }, 60000)
+      return () => {
+        clearInterval(intervalId)
+      }
+    },
+    [currentAsOf]
+  )
   return <div style={{ whiteSpace: 'nowrap' }}>Current as of {howLongAgo}</div>
 }
 
@@ -217,19 +219,19 @@ const QueryFeed = ({ selectionInterface }: Props) => {
     resultCount = 'Has not been run'
   } else {
     const sourcesThatHaveReturned = statusBySource.filter(
-      (status) => status.hasReturned
+      status => status.hasReturned
     )
     resultCount =
       sourcesThatHaveReturned.length > 0
         ? `${statusBySource
-            .filter((status) => status.hasReturned)
-            .filter((status) => status.successful)
+            .filter(status => status.hasReturned)
+            .filter(status => status.successful)
             .reduce((amt, status) => {
               amt = amt + status.hits
               return amt
             }, 0)} hits`
         : 'Searching...'
-    failed = sourcesThatHaveReturned.some((status) => !status.successful)
+    failed = sourcesThatHaveReturned.some(status => !status.successful)
     pending = isSearching
   }
 

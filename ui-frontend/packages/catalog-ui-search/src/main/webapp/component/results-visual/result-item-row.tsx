@@ -19,8 +19,6 @@ import useTheme from '@material-ui/core/styles/useTheme'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { CellComponent } from './table-header'
-// @ts-ignore ts-migrate(6133) FIXME: 'styled' is declared but its value is never read.
-import styled from 'styled-components'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { useSelectionOfLazyResult } from '../../js/model/LazyQueryResult/hooks'
 
@@ -84,40 +82,44 @@ const RowComponent = ({
 }: ResultItemFullProps) => {
   const isSelected = useSelectionOfLazyResult({ lazyResult })
 
-  const visibleProperties: Property[] = React.useMemo(() => {
-    return visibleHeaders.map((property: any) => {
-      let value = lazyResult.plain.metacard.properties[property.id]
-      if (value === undefined) {
-        value = ''
-      }
-      if (value.constructor !== Array) {
-        value = [value]
-      }
-      let className = 'is-text'
-      if (value && metacardDefinitions.metacardTypes[property.id]) {
-        switch (metacardDefinitions.metacardTypes[property.id].type) {
-          case 'DATE':
-            value = value.map((val: any) =>
-              val !== undefined && val !== ''
-                ? user.getUserReadableDateTime(val)
-                : ''
-            )
-            break
-          default:
-            break
+  const visibleProperties: Property[] = React.useMemo(
+    () => {
+      return visibleHeaders.map((property: any) => {
+        let value = lazyResult.plain.metacard.properties[property.id]
+        if (value === undefined) {
+          value = ''
         }
-      }
-      if (property.id === 'thumbnail') {
-        className = 'is-thumbnail'
-      }
-      return {
-        property: property.id,
-        value,
-        class: className,
-        hidden: property.hidden,
-      }
-    })
-  }, [visibleHeaders])
+        if (value.constructor !== Array) {
+          value = [value]
+        }
+        let className = 'is-text'
+        if (value && metacardDefinitions.metacardTypes[property.id]) {
+          switch (metacardDefinitions.metacardTypes[property.id].type) {
+            case 'DATE':
+              value = value.map(
+                (val: any) =>
+                  val !== undefined && val !== ''
+                    ? user.getUserReadableDateTime(val)
+                    : ''
+              )
+              break
+            default:
+              break
+          }
+        }
+        if (property.id === 'thumbnail') {
+          className = 'is-thumbnail'
+        }
+        return {
+          property: property.id,
+          value,
+          class: className,
+          hidden: property.hidden,
+        }
+      })
+    },
+    [visibleHeaders]
+  )
 
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
 
@@ -142,17 +144,15 @@ const RowComponent = ({
           orientation="horizontal"
           className="absolute bottom-0 z-20 w-full h-min"
         />
-        <Box
-          className="absolute left-0 top-0 z-0 w-full h-full"
-          bgcolor="secondary.main"
+        <div
+          className="absolute left-0 top-0 z-0 w-full h-full Mui-bg-secondary"
           style={{
             opacity: isSelected ? 0.05 : 0,
           }}
         />
         <Grid item className="sticky left-0 w-auto z-10 bg-inherit">
-          <Box
-            className="absolute left-0 top-0 -z-1 w-full h-full"
-            bgcolor="secondary.main"
+          <div
+            className="absolute left-0 top-0 -z-1 w-full h-full Mui-bg-secondary"
             style={{
               opacity: isSelected ? 0.05 : 0,
             }}
@@ -160,7 +160,7 @@ const RowComponent = ({
           <CellComponent className="" style={{ width: 'auto', padding: '0px' }}>
             <Button
               data-id="select-checkbox"
-              onClick={(event) => {
+              onClick={event => {
                 event.stopPropagation()
 
                 if (event.shiftKey) {
@@ -177,7 +177,7 @@ const RowComponent = ({
         <Grid item>
           <Button
             data-id="result-item-row-container-button"
-            onMouseDown={(event) => {
+            onMouseDown={event => {
               /**
                * Shift key can cause selections since we set the class to allow text selection,
                * so the only scenario we want to prevent that in is when shift clicking
@@ -186,7 +186,7 @@ const RowComponent = ({
                 clearSelection()
               }
             }}
-            onClick={(event) => {
+            onClick={event => {
               if (hasSelection()) {
                 return
               }
@@ -204,9 +204,8 @@ const RowComponent = ({
             className="relative outline-none rounded-none select-text p-0 text-left break-words"
           >
             <div className="w-full">
-              <Box
-                className="absolute left-0 top-0 -z-1 w-full h-full"
-                bgcolor="secondary.main"
+              <div
+                className="absolute left-0 top-0 -z-1 w-full h-full Mui-bg-secondary"
                 style={{
                   opacity: isSelected ? 0.05 : 0,
                 }}
@@ -219,7 +218,7 @@ const RowComponent = ({
                   width: visibleProperties.length * 200 + 'px',
                 }}
               >
-                {visibleProperties.map((property) => {
+                {visibleProperties.map(property => {
                   const alias = TypedMetacardDefs.getAlias({
                     attr: property.property,
                   })
@@ -234,10 +233,7 @@ const RowComponent = ({
                       data-value={`${property.value}`}
                     >
                       <>
-                        <Box
-                          className="w-min h-full absolute left-0 top-0"
-                          bgcolor="divider"
-                        />
+                        <div className="w-min h-full absolute left-0 top-0 Mui-bg-divider" />
                       </>
                       {property.property === 'thumbnail' && thumbnail ? (
                         <img

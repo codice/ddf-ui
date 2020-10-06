@@ -48,15 +48,19 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
               setLength(lastLength)
             }}
           >
-            <Box color="text.primary">
-              <KeyboardArrowRightIcon color="inherit" />
-              <KeyboardArrowRightIcon color="inherit" className="-ml-5" />
-            </Box>
+            <KeyboardArrowRightIcon
+              color="inherit"
+              className="Mui-text-text-primary"
+            />
+            <KeyboardArrowRightIcon
+              color="inherit"
+              className="-ml-5 Mui-text-text-primary"
+            />
           </Button>
         </Grid>
         <Grid item className="mt-3 w-full">
           <Dropdown
-            content={(context) => {
+            content={context => {
               return (
                 <BetterClickAwayListener
                   onClickAway={() => {
@@ -84,9 +88,7 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
                   size="small"
                   onClick={handleClick}
                 >
-                  <Box color="text.primary">
-                    <MoreVert />
-                  </Box>
+                  <MoreVert className="Mui-text-text-primary" />
                 </Button>
               )
             }}
@@ -125,15 +127,19 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
           }}
         >
           Collapse
-          <Box color="text.primary">
-            <KeyboardArrowLeftIcon color="inherit" />
-            <KeyboardArrowLeftIcon color="inherit" className="-ml-5" />
-          </Box>
+          <KeyboardArrowLeftIcon
+            color="inherit"
+            className="Mui-text-text-primary"
+          />
+          <KeyboardArrowLeftIcon
+            color="inherit"
+            className="-ml-5 Mui-text-text-primary"
+          />
         </Button>
       </Grid>
       <Grid item className="ml-auto">
         <Dropdown
-          content={(context) => {
+          content={context => {
             return (
               <BetterClickAwayListener
                 onClickAway={() => {
@@ -161,9 +167,7 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
                 onClick={handleClick}
               >
                 Options
-                <Box color="text.primary">
-                  <MoreVert color="inherit" />
-                </Box>
+                <MoreVert className="Mui-text-text-primary" />
               </Button>
             )
           }}

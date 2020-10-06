@@ -72,11 +72,13 @@ const SelectedResults = ({ selectionInterface }: any) => {
             size="small"
           >
             {selectedResultsArray.length} selected
-            <Box
-              color={selectedResultsArray.length === 0 ? '' : 'text.primary'}
+            <div
+              className={
+                selectedResultsArray.length === 0 ? '' : 'Mui-text-text-primary'
+              }
             >
               <MoreIcon />
-            </Box>
+            </div>
           </Button>
         )
       }}
@@ -85,11 +87,21 @@ const SelectedResults = ({ selectionInterface }: any) => {
 }
 
 const determineHasResultFilter = () => {
-  return user.get('user').get('preferences').get('resultFilter') !== undefined
+  return (
+    user
+      .get('user')
+      .get('preferences')
+      .get('resultFilter') !== undefined
+  )
 }
 
 const determineHasResultSort = () => {
-  return user.get('user').get('preferences').get('resultSort') !== undefined
+  return (
+    user
+      .get('user')
+      .get('preferences')
+      .get('resultSort') !== undefined
+  )
 }
 
 type Props = {
@@ -184,9 +196,7 @@ const ResultSelector = ({
                       : '0px',
                   }}
                 >
-                  <Box color="text.primary">
-                    <FilterListIcon />
-                  </Box>
+                  <FilterListIcon className="Mui-text-text-primary" />
                   Filter
                 </Button>
               )
@@ -218,9 +228,7 @@ const ResultSelector = ({
                       : '0px',
                   }}
                 >
-                  <Box color="text.primary">
-                    <ArrowDownwardIcon />
-                  </Box>
+                  <ArrowDownwardIcon className="Mui-text-text-primary" />
                   Sort
                 </Button>
               )
@@ -251,10 +259,8 @@ const ResultSelector = ({
                   color="primary"
                   onClick={handleClick}
                 >
-                  <Box color="text.primary">
-                    <ViewCompactIcon />
-                  </Box>
-                  <Box className="pl-1">Layout</Box>
+                  <ViewCompactIcon className="Mui-text-text-primary" />
+                  <div className="pl-1">Layout</div>
                 </Button>
               )
             }}

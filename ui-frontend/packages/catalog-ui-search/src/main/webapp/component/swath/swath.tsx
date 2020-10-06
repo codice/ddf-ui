@@ -1,14 +1,13 @@
 import * as React from 'react'
-import Box, { BoxProps } from '@material-ui/core/Box'
+import { BoxProps } from '@material-ui/core/Box'
 import { hot } from 'react-hot-loader'
-import useTheme from '@material-ui/core/styles/useTheme'
 
 const Swath = (props: BoxProps) => {
-  const theme = useTheme()
+  const { className, ...otherProps } = props
   return (
-    <Box
-      {...props}
-      bgcolor={theme.palette.type === 'dark' ? 'divider' : 'divider'}
+    <div
+      className={`${className ? className : ''} Mui-bg-divider`}
+      {...otherProps}
     />
   )
 }

@@ -28,34 +28,26 @@ import GetAppIcon from '@material-ui/icons/GetApp'
 import Grid from '@material-ui/core/Grid'
 const Common = require('../../js/Common.js')
 import { hot } from 'react-hot-loader'
-// @ts-ignore ts-migrate(6133) FIXME: 'useTheme' is declared but its value is never read... Remove this comment to see the full error message
-import useTheme from '@material-ui/core/styles/useTheme'
 import Paper from '@material-ui/core/Paper'
-// @ts-ignore ts-migrate(6133) FIXME: 'Divider' is declared but its value is never read.
-import Divider from '@material-ui/core/Divider'
-import Box from '@material-ui/core/Box'
 import Tooltip from '@material-ui/core/Tooltip'
 const LIST_DISPLAY_TYPE = 'List'
 const GRID_DISPLAY_TYPE = 'Grid'
 import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
-import styled from 'styled-components'
 import MoreIcon from '@material-ui/icons/MoreVert'
 import WarningIcon from '@material-ui/icons/Warning'
-import { ThemeInterface } from '../../react-component/styles/styled-components/theme'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { useSelectionOfLazyResult } from '../../js/model/LazyQueryResult/hooks'
 import Extensions from '../../extension-points'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import CheckIcon from '@material-ui/icons/Check'
-// @ts-ignore ts-migrate(6133) FIXME: 'DoneOutlineIcon' is declared but its value is nev... Remove this comment to see the full error message
-import DoneOutlineIcon from '@material-ui/icons/DoneOutline'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import { Elevations } from '../theme/theme'
 import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple'
 import { clearSelection, hasSelection } from './result-item-row'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
 import Skeleton from '@material-ui/lab/Skeleton'
+import { Memo } from '../memo/memo'
 
 const getResultDisplayType = () =>
   (user &&
@@ -144,36 +136,6 @@ const showRelevanceScore = ({
   return properties.showRelevanceScores && lazyResult.hasRelevance()
 }
 
-const getPaddingForTheme = ({ theme }: { theme: ThemeInterface }) => {
-  switch (theme.spacingMode) {
-    case 'comfortable':
-      return 'padding: 8px 8px;'
-    case 'cozy':
-      return 'padding: 3px 6px;'
-    case 'compact':
-      return 'padding: 0px;'
-  }
-}
-
-const SmallButton = styled(Button)`
-  && {
-    ${props => getPaddingForTheme({ theme: props.theme })};
-  }
-`
-
-const IconSpan = styled.span`
-  && {
-    font-size: 1.4rem;
-    font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-  }
-  /* stylelint-disable */
-  &::before {
-    font-family: 'FontAwesome';
-    margin-left: 2px;
-    margin-right: 5px;
-  }
-`
-
 const getIconClassName = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   if (lazyResult.isRevision()) {
     return 'fa fa-history'
@@ -231,15 +193,200 @@ const MultiSelectActions = ({
             size="small"
           >
             {selectedResultsArray.length} selected
-            <Box
-              color={selectedResultsArray.length === 0 ? '' : 'text.primary'}
-            >
-              <MoreIcon />
-            </Box>
+            <MoreIcon className="Mui-text-text-primary" />
           </Button>
         )
       }}
     </Dropdown>
+  )
+}
+
+const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
+  const triggerDownload = (e: any) => {
+    e.stopPropagation()
+    window.open(lazyResult.plain.metacard.properties['resource-download-url'])
+  }
+  return (
+    <Grid container direction="row" wrap="nowrap" alignItems="center">
+      <Grid item className="h-full">
+        {lazyResult.hasErrors() ? (
+          <div
+            data-id="validation-errors-icon"
+            className="h-full"
+            title="Has validation errors."
+            data-help="Indicates the given result has a validation error.
+                    See the 'Quality' tab of the result for more details."
+          >
+            <WarningIcon />
+          </div>
+        ) : (
+          ''
+        )}
+      </Grid>
+      <Grid item className="h-full">
+        {!lazyResult.hasErrors() && lazyResult.hasWarnings() ? (
+          <div
+            data-id="validation-warnings-icon"
+            className="h-full"
+            title="Has validation warnings."
+            data-help="Indicates the given result has a validation warning.
+                    See the 'Quality' tab of the result for more details."
+          >
+            <WarningIcon />
+          </div>
+        ) : (
+          ''
+        )}
+      </Grid>
+      <Grid item className="h-full">
+        {lazyResult.plain.metacard.properties['ext.link'] ? (
+          <Button
+            title={lazyResult.plain.metacard.properties['ext.link']}
+            onClick={e => {
+              e.stopPropagation()
+              window.open(lazyResult.plain.metacard.properties['ext.link'])
+            }}
+            style={{ height: '100%' }}
+            size="small"
+          >
+            <LinkIcon />
+          </Button>
+        ) : null}
+      </Grid>
+      <Grid item className="h-full">
+        {lazyResult.isDownloadable() ? (
+          <Button
+            data-id="download-button"
+            onClick={e => {
+              e.stopPropagation()
+              triggerDownload(e)
+            }}
+            style={{ height: '100%' }}
+            size="small"
+          >
+            <GetAppIcon />
+          </Button>
+        ) : null}
+      </Grid>
+      <Extensions.resultItemTitleAddOn lazyResult={lazyResult} />
+      <Grid item className="h-full">
+        <Dropdown
+          popperProps={{
+            disablePortal: true,
+          }}
+          content={({ close }) => {
+            return (
+              <BetterClickAwayListener onClickAway={close}>
+                <Paper>
+                  <LazyMetacardInteractions
+                    lazyResults={[lazyResult]}
+                    onClose={() => {
+                      close()
+                    }}
+                  />
+                </Paper>
+              </BetterClickAwayListener>
+            )
+          }}
+        >
+          {({ handleClick }) => {
+            return (
+              <Button
+                data-id="result-item-more-vert-button"
+                onClick={e => {
+                  e.stopPropagation()
+                  handleClick(e)
+                }}
+                style={{ height: '100%' }}
+                size="small"
+              >
+                <MoreIcon />
+              </Button>
+            )
+          }}
+        </Dropdown>
+      </Grid>
+    </Grid>
+  )
+}
+
+const SelectionBackground = ({
+  lazyResult,
+}: {
+  lazyResult: LazyQueryResult
+}) => {
+  const isSelected = useSelectionOfLazyResult({ lazyResult })
+
+  return (
+    <div
+      className="absolute left-0 top-0 z-0 w-full h-full Mui-bg-secondary"
+      style={{
+        opacity: isSelected ? 0.05 : 0,
+      }}
+    />
+  )
+}
+
+const IconButton = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
+  const isSelected = useSelectionOfLazyResult({ lazyResult })
+
+  return (
+    <Grid item>
+      <Button
+        data-id="select-checkbox"
+        onClick={event => {
+          event.stopPropagation() // this button takes precedence over the enclosing button, and is always additive / subtractive (no deselect of other results)
+          if (event.shiftKey) {
+            lazyResult.shiftSelect()
+          } else {
+            lazyResult.controlSelect()
+          }
+        }}
+        focusVisibleClassName="focus-visible"
+        className="relative p-2 min-w-0 outline-none h-full group-1"
+      >
+        {(() => {
+          if (isSelected) {
+            return (
+              <>
+                <div
+                  className={`absolute w-full h-full left-0 top-0 opacity-0 transform transition duration-200 ease-in-out -translate-x-full`}
+                >
+                  <CheckBoxIcon className="group-1-hover:block group-1-focus-visible:block hidden" />
+                  <CheckIcon className="group-1-hover:hidden group-1-focus-visible:hidden block" />
+                </div>
+                <div
+                  className={`transform transition duration-200 ease-in-out -translate-x-full group-1-focus-visible:translate-x-0 group-1-hover:translate-x-0`}
+                >
+                  <CheckBoxIcon className="group-1-hover:block group-1-focus-visible:block hidden" />
+                  <CheckIcon className="group-1-hover:hidden group-1-focus-visible:hidden block" />
+                </div>
+              </>
+            )
+          } else if (!isSelected) {
+            return (
+              <div className="transform ">
+                <CheckBoxOutlineBlankIcon
+                  className={`group-1-hover:visible group-1-focus-visible:visible invisible`}
+                />
+              </div>
+            )
+          }
+          return null
+        })()}
+        <span
+          className={`${getIconClassName({
+            lazyResult,
+          })} font-awesome-span group-1-focus-visible:invisible group-1-hover:invisible absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
+          data-help={TypedMetacardDefs.getAlias({
+            attr: 'title',
+          })}
+          title={`${TypedMetacardDefs.getAlias({
+            attr: 'title',
+          })}: ${lazyResult.plain.metacard.properties.title}`}
+        />
+      </Button>
+    </Grid>
   )
 }
 
@@ -257,10 +404,6 @@ export const ResultItem = ({
   measure,
   // @ts-ignore ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
   index,
-  // @ts-ignore ts-migrate(6133) FIXME: 'selectionInterface' is declared but its value is ... Remove this comment to see the full error message
-  selectionInterface,
-  // @ts-ignore ts-migrate(6133) FIXME: 'lazyResults' is declared but its value is never r... Remove this comment to see the full error message
-  lazyResults,
 }: ResultItemFullProps) => {
   // console.log(`rendered: ${index}`)
   const rippleRef = React.useRef<{
@@ -268,8 +411,6 @@ export const ResultItem = ({
     stop: (e: any) => void
     start: (e: any) => void
   }>(null)
-  console.log(index)
-  const isSelected = useSelectionOfLazyResult({ lazyResult })
   const [isGallery, setIsGallery] = React.useState(checkResultDisplayType())
   const renderThumbnail =
     isGallery && lazyResult.plain.metacard.properties.thumbnail
@@ -291,139 +432,13 @@ export const ResultItem = ({
         measure()
       }
     },
-    [renderThumbnail, firstRender]
+    [renderThumbnail]
   )
 
   const customDetails = getCustomDetails({ lazyResult })
 
-  const triggerDownload = (e: any) => {
-    e.stopPropagation()
-    window.open(lazyResult.plain.metacard.properties['resource-download-url'])
-  }
-
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const imgsrc = Common.getImageSrc(thumbnail)
-
-  const DynamicActions = () => {
-    return (
-      <Grid container direction="column" alignItems="flex-end">
-        <Grid item>
-          <Grid container alignItems="center">
-            <Grid item className="ml-auto">
-              <Grid container direction="row" wrap="nowrap" alignItems="center">
-                <Grid item style={{ height: '100%' }}>
-                  {lazyResult.hasErrors() ? (
-                    <div
-                      data-id="validation-errors-icon"
-                      className="h-full"
-                      title="Has validation errors."
-                      data-help="Indicates the given result has a validation error.
-                      See the 'Quality' tab of the result for more details."
-                    >
-                      <WarningIcon />
-                    </div>
-                  ) : (
-                    ''
-                  )}
-                </Grid>
-                <Grid item style={{ height: '100%' }}>
-                  {!lazyResult.hasErrors() && lazyResult.hasWarnings() ? (
-                    <div
-                      data-id="validation-warnings-icon"
-                      className="h-full"
-                      title="Has validation warnings."
-                      data-help="Indicates the given result has a validation warning.
-                      See the 'Quality' tab of the result for more details."
-                    >
-                      <WarningIcon />
-                    </div>
-                  ) : (
-                    ''
-                  )}
-                </Grid>
-                <Grid item style={{ height: '100%' }}>
-                  {lazyResult.plain.metacard.properties['ext.link'] ? (
-                    <SmallButton
-                      title={lazyResult.plain.metacard.properties['ext.link']}
-                      onClick={e => {
-                        e.stopPropagation()
-                        window.open(
-                          lazyResult.plain.metacard.properties['ext.link']
-                        )
-                      }}
-                      style={{ height: '100%' }}
-                      size="small"
-                    >
-                      <LinkIcon />
-                    </SmallButton>
-                  ) : null}
-                </Grid>
-                <Grid item style={{ height: '100%' }}>
-                  {lazyResult.isDownloadable() ? (
-                    <SmallButton
-                      data-id="download-button"
-                      onClick={e => {
-                        e.stopPropagation()
-                        triggerDownload(e)
-                      }}
-                      style={{ height: '100%' }}
-                      size="small"
-                    >
-                      <GetAppIcon />
-                    </SmallButton>
-                  ) : null}
-                </Grid>
-                <Extensions.resultItemTitleAddOn lazyResult={lazyResult} />
-                <Grid item style={{ height: '100%' }}>
-                  <Dropdown
-                    popperProps={{
-                      disablePortal: true,
-                    }}
-                    content={({ close }) => {
-                      return (
-                        <BetterClickAwayListener onClickAway={close}>
-                          <Paper>
-                            <LazyMetacardInteractions
-                              lazyResults={[lazyResult]}
-                              onClose={() => {
-                                close()
-                              }}
-                            />
-                          </Paper>
-                        </BetterClickAwayListener>
-                      )
-                    }}
-                  >
-                    {({ handleClick }) => {
-                      return (
-                        <SmallButton
-                          data-id="result-item-more-vert-button"
-                          onClick={e => {
-                            e.stopPropagation()
-                            handleClick(e)
-                          }}
-                          style={{ height: '100%' }}
-                          size="small"
-                        >
-                          <MoreIcon />
-                        </SmallButton>
-                      )
-                    }}
-                  </Dropdown>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
-        {/* <Grid item className="py-2 w-full">
-          <Divider className="w-full h-1" />
-        </Grid>
-        <Grid item className="pt-2">
-          <MultiSelectActions selectionInterface={selectionInterface} />
-        </Grid> */}
-      </Grid>
-    )
-  }
 
   const ResultItemAddOnInstance = Extensions.resultItemRowAddOn({ lazyResult })
   const shouldShowRelevance = showRelevanceScore({ lazyResult })
@@ -495,13 +510,7 @@ export const ResultItem = ({
     >
       <div className="w-full">
         <TouchRipple ref={rippleRef} />
-        <Box
-          className="absolute left-0 top-0 z-0 w-full h-full"
-          bgcolor="secondary.main"
-          style={{
-            opacity: isSelected ? 0.05 : 0,
-          }}
-        />
+        <SelectionBackground lazyResult={lazyResult} />
         <div className="w-full relative z-0">
           <Grid
             className="w-full"
@@ -511,60 +520,7 @@ export const ResultItem = ({
             alignItems="center"
           >
             <Grid item>
-              <Button
-                data-id="select-checkbox"
-                onClick={event => {
-                  event.stopPropagation() // this button takes precedence over the enclosing button, and is always additive / subtractive (no deselect of other results)
-                  if (event.shiftKey) {
-                    lazyResult.shiftSelect()
-                  } else {
-                    lazyResult.controlSelect()
-                  }
-                }}
-                focusVisibleClassName="focus-visible"
-                className="relative p-2 min-w-0 outline-none h-full group-1"
-              >
-                {(() => {
-                  if (isSelected) {
-                    return (
-                      <>
-                        <Box
-                          className={`absolute w-full h-full left-0 top-0 opacity-0 transform transition duration-200 ease-in-out -translate-x-full`}
-                        >
-                          <CheckBoxIcon className="group-1-hover:block group-1-focus-visible:block hidden" />
-                          <CheckIcon className="group-1-hover:hidden group-1-focus-visible:hidden block" />
-                        </Box>
-                        <Box
-                          className={`transform transition duration-200 ease-in-out -translate-x-full group-1-focus-visible:translate-x-0 group-1-hover:translate-x-0`}
-                        >
-                          <CheckBoxIcon className="group-1-hover:block group-1-focus-visible:block hidden" />
-                          <CheckIcon className="group-1-hover:hidden group-1-focus-visible:hidden block" />
-                        </Box>
-                      </>
-                    )
-                  } else if (!isSelected) {
-                    return (
-                      <Box className="transform ">
-                        <CheckBoxOutlineBlankIcon
-                          className={`group-1-hover:visible group-1-focus-visible:visible invisible`}
-                        />
-                      </Box>
-                    )
-                  }
-                  return null
-                })()}
-                <IconSpan
-                  className={`${getIconClassName({
-                    lazyResult,
-                  })} group-1-focus-visible:invisible group-1-hover:invisible absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
-                  data-help={TypedMetacardDefs.getAlias({
-                    attr: 'title',
-                  })}
-                  title={`${TypedMetacardDefs.getAlias({
-                    attr: 'title',
-                  })}: ${lazyResult.plain.metacard.properties.title}`}
-                />
-              </Button>
+              <IconButton lazyResult={lazyResult} />
             </Grid>
             <Grid item>
               <div data-id="result-item-title-label" className="">
@@ -734,7 +690,7 @@ export const ResultItem = ({
             elevation={Elevations.overlays}
             className="p-2"
           >
-            <DynamicActions />
+            <DynamicActions lazyResult={lazyResult} />
           </Paper>
         </div>
       </div>
