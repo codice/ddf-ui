@@ -444,9 +444,8 @@ export const ResultItem = ({
   const shouldShowRelevance = showRelevanceScore({ lazyResult })
   const shouldShowSource = showSource()
   return (
-    <Button
+    <button
       data-id="result-item-container-button"
-      component="div" // we have to use a div since there are buttons inside this (invalid to nest buttons)
       onMouseDown={(event: any) => {
         /**
          * Shift key can cause selections since we set the class to allow text selection,
@@ -502,11 +501,7 @@ export const ResultItem = ({
           rippleRef.current.stop(e)
         }
       }}
-      fullWidth
-      className={`select-text outline-none px-6 text-left break-words group`}
-      disableFocusRipple
-      disableTouchRipple
-      disableRipple
+      className={`select-text outline-none px-6 p-2 text-left break-words group w-full`}
     >
       <div className="w-full">
         <TouchRipple ref={rippleRef} />
@@ -694,7 +689,7 @@ export const ResultItem = ({
           </Paper>
         </div>
       </div>
-    </Button>
+    </button>
   )
 }
 
