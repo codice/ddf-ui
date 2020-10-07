@@ -130,8 +130,6 @@ import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
 import org.codice.ddf.catalog.ui.metacard.workspace.transformer.WorkspaceTransformer;
 import org.codice.ddf.catalog.ui.metacard.workspace.transformer.impl.AssociatedQueryMetacardsHandler;
 import org.codice.ddf.catalog.ui.query.monitor.api.WorkspaceService;
-import org.codice.ddf.catalog.ui.security.Constants;
-import org.codice.ddf.catalog.ui.security.accesscontrol.AccessControlSecurityConfiguration;
 import org.codice.ddf.catalog.ui.subscription.SubscriptionsPersistentStore;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
 import org.codice.ddf.security.Security;
@@ -169,7 +167,7 @@ public class MetacardApplication implements SparkApplication {
   private static final Type ASSOCIATED_EDGE_LIST_TYPE =
       new TypeToken<List<Associated.Edge>>() {}.getType();
 
-  private static int pageSize = 250;
+  private static final int PAGE_SIZE = 250;
 
   private static final Gson GSON =
       new GsonBuilder()
@@ -197,8 +195,6 @@ public class MetacardApplication implements SparkApplication {
 
   private final NoteUtil noteUtil;
 
-  private final AccessControlSecurityConfiguration accessControlSecurityConfiguration;
-
   private final WorkspaceService workspaceService;
 
   private final AssociatedQueryMetacardsHandler queryMetacardsHandler;
@@ -224,7 +220,6 @@ public class MetacardApplication implements SparkApplication {
       ConfigurationApplication configuration,
       NoteUtil noteUtil,
       SubjectIdentity subjectIdentity,
-      AccessControlSecurityConfiguration accessControlSecurityConfiguration,
       WorkspaceService workspaceService,
       AssociatedQueryMetacardsHandler queryMetacardsHandler,
       Security security) {
@@ -242,7 +237,6 @@ public class MetacardApplication implements SparkApplication {
     this.configuration = configuration;
     this.noteUtil = noteUtil;
     this.subjectIdentity = subjectIdentity;
-    this.accessControlSecurityConfiguration = accessControlSecurityConfiguration;
     this.workspaceService = workspaceService;
     this.queryMetacardsHandler = queryMetacardsHandler;
     this.security = security;
@@ -252,14 +246,11 @@ public class MetacardApplication implements SparkApplication {
     return subjectOperations.getEmailAddress(SecurityUtils.getSubject());
   }
 
-  private List<String> getSubjectRoles() {
-    return subjectOperations.getAttribute(SecurityUtils.getSubject(), Constants.ROLES_CLAIM_URI);
-  }
-
   private String getSubjectIdentifier() {
     return subjectIdentity.getUniqueIdentifier(SecurityUtils.getSubject());
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void init() {
     get("/metacardtype", (req, res) -> util.getJson(util.getMetacardTypeMap()));
@@ -307,9 +298,8 @@ public class MetacardApplication implements SparkApplication {
           List<String> ids = GSON.fromJson(util.safeGetBody(req), LIST_STRING);
           List<Metacard> metacards =
               util.getMetacardsWithTagById(ids, "*")
-                  .entrySet()
+                  .values()
                   .stream()
-                  .map(Map.Entry::getValue)
                   .map(Result::getMetacard)
                   .collect(Collectors.toList());
 
@@ -397,37 +387,7 @@ public class MetacardApplication implements SparkApplication {
           String id = req.params(":id");
           String revertId = req.params(":revertid");
           String storeId = req.params(":storeId");
-          Metacard versionMetacard = util.getMetacardById(revertId);
-
-          List<Result> queryResponse = getMetacardHistory(id, storeId);
-          if (queryResponse == null || queryResponse.isEmpty()) {
-            throw new NotFoundException("Could not find metacard with id: " + id);
-          }
-
-          Optional<Metacard> contentVersion =
-              queryResponse
-                  .stream()
-                  .map(Result::getMetacard)
-                  .filter(
-                      mc ->
-                          getVersionedOnDate(mc).isAfter(getVersionedOnDate(versionMetacard))
-                              || getVersionedOnDate(mc).equals(getVersionedOnDate(versionMetacard)))
-                  .filter(mc -> CONTENT_ACTIONS.contains(Action.ofMetacard(mc)))
-                  .filter(mc -> mc.getResourceURI() != null)
-                  .filter(mc -> ContentItem.CONTENT_SCHEME.equals(mc.getResourceURI().getScheme()))
-                  .sorted(
-                      Comparator.comparing(
-                          (Metacard mc) ->
-                              util.parseToDate(
-                                  mc.getAttribute(MetacardVersion.VERSIONED_ON).getValue())))
-                  .findFirst();
-
-          if (!contentVersion.isPresent()) {
-            /* no content versions, just restore metacard */
-            revertMetacard(versionMetacard, id, false);
-          } else {
-            revertContentandMetacard(contentVersion.get(), versionMetacard, id);
-          }
+          Metacard versionMetacard = revert(id, revertId, storeId);
           return util.metacardToJson(MetacardVersionImpl.toMetacard(versionMetacard, types));
         });
 
@@ -518,9 +478,8 @@ public class MetacardApplication implements SparkApplication {
               isEmpty(email) ? Collections.emptySet() : subscriptions.getSubscriptions(email);
 
           return util.getMetacardsByTag(WorkspaceConstants.WORKSPACE_TAG)
-              .entrySet()
+              .values()
               .stream()
-              .map(Map.Entry::getValue)
               .map(Result::getMetacard)
               .map(
                   metacard -> {
@@ -654,22 +613,18 @@ public class MetacardApplication implements SparkApplication {
     get(
         "/enumerations/metacardtype/:type",
         APPLICATION_JSON,
-        (req, res) -> {
-          return util.getJson(enumExtractor.getEnumerations(req.params(":type")));
-        });
+        (req, res) -> util.getJson(enumExtractor.getEnumerations(req.params(":type"))));
 
     get(
         "/enumerations/attribute/:attribute",
         APPLICATION_JSON,
-        (req, res) -> {
-          return util.getJson(enumExtractor.getAttributeEnumerations(req.params(":attribute")));
-        });
+        (req, res) ->
+            util.getJson(enumExtractor.getAttributeEnumerations(req.params(":attribute"))));
 
     get(
         "/localcatalogid",
-        (req, res) -> {
-          return String.format("{\"%s\":\"%s\"}", "local-catalog-id", catalogFramework.getId());
-        });
+        (req, res) ->
+            String.format("{\"%s\":\"%s\"}", "local-catalog-id", catalogFramework.getId()));
 
     post(
         "/transform/csv",
@@ -851,10 +806,7 @@ public class MetacardApplication implements SparkApplication {
           return util.getResponseWrapper(ERROR_RESPONSE_TYPE, "Could not delete note metacard!");
         });
 
-    after(
-        (req, res) -> {
-          res.type(APPLICATION_JSON);
-        });
+    after((req, res) -> res.type(APPLICATION_JSON));
 
     exception(
         IngestException.class,
@@ -889,6 +841,56 @@ public class MetacardApplication implements SparkApplication {
     exception(RuntimeException.class, util::handleRuntimeException);
   }
 
+  private Metacard revert(String id, String revertId, String storeId)
+      throws UnsupportedQueryException, SourceUnavailableException, FederationException,
+          IngestException, ResourceNotFoundException, IOException, ResourceNotSupportedException {
+    try {
+      Metacard versionMetacard = util.getMetacardById(revertId);
+
+      List<Result> queryResponse = getMetacardHistory(id, storeId);
+      if (queryResponse.isEmpty()) {
+        throw new NotFoundException("Could not find metacard with id: " + id);
+      }
+
+      Optional<Metacard> contentVersion =
+          queryResponse
+              .stream()
+              .map(Result::getMetacard)
+              .filter(
+                  mc ->
+                      getVersionedOnDate(mc).isAfter(getVersionedOnDate(versionMetacard))
+                          || getVersionedOnDate(mc).equals(getVersionedOnDate(versionMetacard)))
+              .filter(mc -> CONTENT_ACTIONS.contains(Action.ofMetacard(mc)))
+              .filter(mc -> mc.getResourceURI() != null)
+              .filter(mc -> ContentItem.CONTENT_SCHEME.equals(mc.getResourceURI().getScheme()))
+              .min(
+                  Comparator.comparing(
+                      mc ->
+                          util.parseToDate(
+                              mc.getAttribute(MetacardVersion.VERSIONED_ON).getValue())));
+
+      if (!contentVersion.isPresent()) {
+        /* no content versions, just restore metacard */
+        revertMetacard(versionMetacard, id, false);
+      } else {
+        revertContentandMetacard(contentVersion.get(), versionMetacard, id);
+      }
+
+      securityLogger.audit("Reverted {} to metacard {}", revertId, id);
+
+      return versionMetacard;
+    } catch (UnsupportedQueryException
+        | SourceUnavailableException
+        | FederationException
+        | IngestException
+        | ResourceNotFoundException
+        | IOException
+        | ResourceNotSupportedException e) {
+      securityLogger.audit("Failed to revert {} to metcard {}", revertId, id, e);
+      throw e;
+    }
+  }
+
   private Set<String> getHiddenFields(List<Result> metacards) {
     Set<String> matchedHiddenFields;
     List<Pattern> hiddenFieldPatterns =
@@ -916,8 +918,7 @@ public class MetacardApplication implements SparkApplication {
   }
 
   private void revertMetacard(Metacard versionMetacard, String id, boolean alreadyCreated)
-      throws SourceUnavailableException, IngestException, FederationException,
-          UnsupportedQueryException {
+      throws SourceUnavailableException, IngestException {
     LOGGER.trace("Reverting metacard [{}] to version [{}]", id, versionMetacard.getId());
     Metacard revertMetacard = MetacardVersionImpl.toMetacard(versionMetacard, types);
     Action action =
@@ -940,7 +941,7 @@ public class MetacardApplication implements SparkApplication {
 
   private void revertContentandMetacard(Metacard latestContent, Metacard versionMetacard, String id)
       throws SourceUnavailableException, IngestException, ResourceNotFoundException, IOException,
-          ResourceNotSupportedException, FederationException, UnsupportedQueryException {
+          ResourceNotSupportedException {
     LOGGER.trace(
         "Reverting content and metacard for metacard [{}]. \nLatest content: [{}] \nVersion metacard: [{}]",
         id,
@@ -987,16 +988,15 @@ public class MetacardApplication implements SparkApplication {
     revertMetacard(versionMetacard, id, alreadyCreated);
   }
 
-  private void trySleep(long millis) {
+  private void trySleep() {
     try {
-      Thread.sleep(millis);
+      Thread.sleep(350);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }
   }
 
-  private void tryUpdate(int retries, Callable<Boolean> func)
-      throws IngestException, SourceUnavailableException {
+  private void tryUpdate(int retries, Callable<Boolean> func) throws IngestException {
     if (retries <= 0) {
       throw new IngestException("Could not update metacard!");
     }
@@ -1006,13 +1006,12 @@ public class MetacardApplication implements SparkApplication {
       LOGGER.trace("Successfully updated metacard.");
     } catch (Exception e) {
       LOGGER.trace("Failed to update metacard");
-      trySleep(350);
+      trySleep();
       tryUpdate(retries - 1, func);
     }
   }
 
-  private void attemptDeleteDeletedMetacard(String id)
-      throws UnsupportedQueryException, SourceUnavailableException, FederationException {
+  private void attemptDeleteDeletedMetacard(String id) {
     LOGGER.trace("Attemping to delete metacard [{}]", id);
     Filter tags =
         filterBuilder.attribute(Metacard.TAGS).is().like().text(DeletedMetacard.DELETED_TAG);
@@ -1047,10 +1046,9 @@ public class MetacardApplication implements SparkApplication {
    *
    * @param func What to execute as the System
    * @param <T> Generic return type of func
-   * @return result of the callable func
    */
-  private <T> T executeAsSystem(Callable<T> func) {
-    return security.runAsAdmin(() -> security.getSystemSubject().execute(func));
+  private <T> void executeAsSystem(Callable<T> func) {
+    security.runAsAdmin(() -> security.getSystemSubject().execute(func));
   }
 
   private Instant getVersionedOnDate(Metacard mc) {
@@ -1143,7 +1141,7 @@ public class MetacardApplication implements SparkApplication {
                 new QueryImpl(
                     filter,
                     1,
-                    pageSize,
+                    PAGE_SIZE,
                     SortBy.NATURAL_ORDER,
                     false,
                     TimeUnit.SECONDS.toMillis(10)),
@@ -1187,7 +1185,7 @@ public class MetacardApplication implements SparkApplication {
     }
 
     @Override
-    public InputStream openStream() throws IOException {
+    public InputStream openStream() {
       return supplier.get();
     }
   }

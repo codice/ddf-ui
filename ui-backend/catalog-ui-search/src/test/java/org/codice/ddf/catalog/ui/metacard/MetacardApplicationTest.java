@@ -166,14 +166,13 @@ public class MetacardApplicationTest {
    * Framework's ability to return a good response; we're testing the app's ability to correctly
    * write to the framework, so this return value is meaningless to propagate.
    */
-  private class MetacardApplicationUnderTest extends MetacardApplication {
+  private static class MetacardApplicationUnderTest extends MetacardApplication {
     private MetacardApplicationUnderTest(
         CatalogFramework catalogFramework, EndpointUtil endpointUtil) {
       super(
           catalogFramework,
           null,
           endpointUtil,
-          null,
           null,
           null,
           null,
