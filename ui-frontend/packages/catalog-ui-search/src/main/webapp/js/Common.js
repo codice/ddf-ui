@@ -62,7 +62,7 @@ module.exports = {
     if (window.performance && typeof window.performance.now === 'function') {
       d += performance.now() //use high-precision timer if available
     }
-    const uuid = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const uuid = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, c => {
       const r = (d + Math.random() * 16) % 16 | 0
       d = Math.floor(d / 16)
       return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16)
@@ -88,7 +88,7 @@ module.exports = {
     return cql
   },
   setupPopOver($component) {
-    $component.find('[title]').each(function () {
+    $component.find('[title]').each(function() {
       const $element = $(this)
       $element.popover({
         delay: {
@@ -182,7 +182,8 @@ module.exports = {
     return timeZones
   },
   getMomentDate(date) {
-    return moment(date).fromNow()
+    const user = require('../component/singletons/user-instance')
+    return `${moment(date).fromNow()} : ${user.getUserReadableDateTime(date)}`
   },
   getImageSrc(img) {
     if (
@@ -206,7 +207,7 @@ module.exports = {
       requestId: undefined,
     }
     const timeEnd = Date.now() + time
-    const repaint = function () {
+    const repaint = function() {
       callback()
       if (Date.now() < timeEnd) {
         requestDetails.requestId = window.requestAnimationFrame(() => {
@@ -228,13 +229,15 @@ module.exports = {
     return setTimeout(callback, 0)
   },
   escapeHTML(value) {
-    return $('<div>').text(value).html()
+    return $('<div>')
+      .text(value)
+      .html()
   },
   duplicate(reference) {
     return JSON.parse(JSON.stringify(reference))
   },
   safeCallback(callback) {
-    return function () {
+    return function() {
       if (!this.isDestroyed) {
         callback.apply(this, arguments)
       }
