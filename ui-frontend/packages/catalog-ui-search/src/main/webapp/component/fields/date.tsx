@@ -19,43 +19,50 @@ import { DateInput, IDateInputProps } from '@blueprintjs/datetime'
 import user from '../singletons/user-instance'
 
 export const getTimeZone = () => {
-  return user.get('user').get('preferences').get('timeZone') as string
+  return user
+    .get('user')
+    .get('preferences')
+    .get('timeZone') as string
 }
 
 export const getDateFormat = () => {
-  return user.get('user').get('preferences').get('dateTimeFormat')[
-    'datetimefmt'
-  ] as string
+  return user
+    .get('user')
+    .get('preferences')
+    .get('dateTimeFormat')['datetimefmt'] as string
 }
 
 // @ts-ignore Can't find type declarations, but they exist
 import moment from 'moment-timezone'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
+import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 
 /**
- * No need to convert timezone since we are already doing it in parseDate
+ *
  */
 export const formatDate = (date: Date) => {
-  const momentDate = moment(date)
-  const format = getDateFormat()
-  if (!momentDate.isValid()) {
+  try {
+    let momentShiftedDate = moment.utc(date.toUTCString())
+    const utcOffsetMinutesLocal = new Date().getTimezoneOffset()
+    const utcOffsetMinutesTimezone = moment.tz(getTimeZone()).utcOffset()
+    const totalOffset = utcOffsetMinutesLocal + utcOffsetMinutesTimezone
+    momentShiftedDate.subtract(totalOffset, 'minutes')
+    console.log(`offset: ${totalOffset}`)
+    return user.getUserReadableDateTime(momentShiftedDate.toISOString())
+  } catch (err) {
     return ''
   }
-  return momentDate.format(format)
 }
 
 export const parseDate = (input?: string) => {
   try {
+    console.log(`parseDate: ${input}`)
     const timeZone = getTimeZone()
     const format = getDateFormat()
     if (!input) {
       return null
     }
-    const date = moment.tz(
-      input.substring(0, input.length - 1),
-      format,
-      timeZone
-    )
+    const date = moment.tz(input, timeZone)
     if (date.isValid()) {
       return moment.tz(input, format, timeZone).toDate()
     }
@@ -79,31 +86,85 @@ const validateShape = ({ value, onChange }: DateFieldProps) => {
     onChange(new Date().toISOString())
   }
 }
+window.moment = moment
+window.getTimeZone = getTimeZone
+window.getDateFormat = getDateFormat
 
 export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
+  const { listenTo } = useBackbone()
+  const [forceRender, setForceRender] = React.useState(Math.random())
   React.useEffect(() => {
     validateShape({ onChange, value })
   }, [])
+  let shiftedDate = value
+  React.useEffect(() => {
+    listenTo(
+      user.getPreferences(),
+      'change:dateTimeFormat change:timeZone',
+      () => {
+        setForceRender(Math.random())
+      }
+    )
+  }, [])
+  try {
+    /**
+     * The datepicker from blueprint doesn't handle timezones.  So if we want to make it feel like the user is in their
+     * chosen timezone, we have to shift the date ourselves.  So what we do is
+     */
+    let momentShiftedDate = moment.tz(value, getTimeZone())
+    const utcOffsetMinutesLocal = new Date().getTimezoneOffset()
+    const utcOffsetMinutesTimezone = moment.tz(getTimeZone()).utcOffset()
+    const totalOffset = utcOffsetMinutesLocal + utcOffsetMinutesTimezone
+    console.log(`offset: ${totalOffset}`)
+    shiftedDate = momentShiftedDate
+      .add(totalOffset, 'minutes')
+      .toDate()
+      .toISOString()
+  } catch (err) {}
+
+  console.log(`compare: ${value} : ${shiftedDate}`)
   return (
-    <DateInput
-      className={MuiOutlinedInputBorderClasses}
-      closeOnSelection={false}
-      fill
-      formatDate={formatDate}
-      onChange={(selectedDate, isUserChange) => {
-        if (onChange && selectedDate && isUserChange)
-          onChange(selectedDate.toISOString())
-      }}
-      parseDate={parseDate}
-      placeholder={'M/D/YYYY'}
-      shortcuts
-      timePrecision="minute"
-      {...(value
-        ? {
-            value: new Date(value || ''),
+    <>
+      <DateInput
+        className={MuiOutlinedInputBorderClasses}
+        closeOnSelection={false}
+        fill
+        formatDate={formatDate}
+        onChange={(selectedDate, isUserChange) => {
+          console.log(`onchange: ${isUserChange}`)
+          if (onChange && selectedDate && isUserChange) {
+            const utcOffsetMinutesLocal = new Date().getTimezoneOffset()
+            const utcOffsetMinutesTimezone = moment
+              .tz(getTimeZone())
+              .utcOffset()
+            const totalOffset = utcOffsetMinutesLocal + utcOffsetMinutesTimezone
+            let momentShiftedDate = moment.tz(
+              selectedDate.toISOString(),
+              getTimeZone()
+            )
+            onChange(
+              momentShiftedDate
+                .subtract(totalOffset, 'minutes')
+                .toDate()
+                .toISOString()
+            )
           }
-        : {})}
-      {...BPDateProps}
-    />
+        }}
+        parseDate={parseDate}
+        placeholder={'M/D/YYYY'}
+        shortcuts
+        timePrecision="minute"
+        {...(value
+          ? {
+              value: new Date(shiftedDate || ''),
+            }
+          : {})}
+        {...BPDateProps}
+      />
+      <div>{value}</div>
+      <div>{shiftedDate}</div>
+      <div>{getDateFormat()}</div>
+      <div>{getTimeZone()}</div>
+    </>
   )
 }

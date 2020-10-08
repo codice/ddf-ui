@@ -162,7 +162,7 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
           <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
             controlledMeasuring={true}
             items={results}
-            defaultSize={76}
+            defaultSize={60}
             overscanCount={10}
             Item={({ itemRef, item, measure, index, width }) => {
               return (

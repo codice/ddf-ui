@@ -47,7 +47,6 @@ import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple'
 import { clearSelection, hasSelection } from './result-item-row'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
 import Skeleton from '@material-ui/lab/Skeleton'
-import { Memo } from '../memo/memo'
 
 const getResultDisplayType = () =>
   (user &&
@@ -331,62 +330,60 @@ const IconButton = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   const isSelected = useSelectionOfLazyResult({ lazyResult })
 
   return (
-    <Grid item>
-      <Button
-        data-id="select-checkbox"
-        onClick={event => {
-          event.stopPropagation() // this button takes precedence over the enclosing button, and is always additive / subtractive (no deselect of other results)
-          if (event.shiftKey) {
-            lazyResult.shiftSelect()
-          } else {
-            lazyResult.controlSelect()
-          }
-        }}
-        focusVisibleClassName="focus-visible"
-        className="relative p-2 min-w-0 outline-none h-full group-1"
-      >
-        {(() => {
-          if (isSelected) {
-            return (
-              <>
-                <div
-                  className={`absolute w-full h-full left-0 top-0 opacity-0 transform transition duration-200 ease-in-out -translate-x-full`}
-                >
-                  <CheckBoxIcon className="group-1-hover:block group-1-focus-visible:block hidden" />
-                  <CheckIcon className="group-1-hover:hidden group-1-focus-visible:hidden block" />
-                </div>
-                <div
-                  className={`transform transition duration-200 ease-in-out -translate-x-full group-1-focus-visible:translate-x-0 group-1-hover:translate-x-0`}
-                >
-                  <CheckBoxIcon className="group-1-hover:block group-1-focus-visible:block hidden" />
-                  <CheckIcon className="group-1-hover:hidden group-1-focus-visible:hidden block" />
-                </div>
-              </>
-            )
-          } else if (!isSelected) {
-            return (
-              <div className="transform ">
-                <CheckBoxOutlineBlankIcon
-                  className={`group-1-hover:visible group-1-focus-visible:visible invisible`}
-                />
+    <Button
+      data-id="select-checkbox"
+      onClick={event => {
+        event.stopPropagation() // this button takes precedence over the enclosing button, and is always additive / subtractive (no deselect of other results)
+        if (event.shiftKey) {
+          lazyResult.shiftSelect()
+        } else {
+          lazyResult.controlSelect()
+        }
+      }}
+      focusVisibleClassName="focus-visible"
+      className="relative p-2 min-w-0 outline-none h-full group-1"
+    >
+      {(() => {
+        if (isSelected) {
+          return (
+            <>
+              <div
+                className={`absolute w-full h-full left-0 top-0 opacity-0 transform transition duration-200 ease-in-out -translate-x-full`}
+              >
+                <CheckBoxIcon className="group-1-hover:block group-1-focus-visible:block hidden" />
+                <CheckIcon className="group-1-hover:hidden group-1-focus-visible:hidden block" />
               </div>
-            )
-          }
-          return null
-        })()}
-        <span
-          className={`${getIconClassName({
-            lazyResult,
-          })} font-awesome-span group-1-focus-visible:invisible group-1-hover:invisible absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
-          data-help={TypedMetacardDefs.getAlias({
-            attr: 'title',
-          })}
-          title={`${TypedMetacardDefs.getAlias({
-            attr: 'title',
-          })}: ${lazyResult.plain.metacard.properties.title}`}
-        />
-      </Button>
-    </Grid>
+              <div
+                className={`transform transition duration-200 ease-in-out -translate-x-full group-1-focus-visible:translate-x-0 group-1-hover:translate-x-0`}
+              >
+                <CheckBoxIcon className="group-1-hover:block group-1-focus-visible:block hidden" />
+                <CheckIcon className="group-1-hover:hidden group-1-focus-visible:hidden block" />
+              </div>
+            </>
+          )
+        } else if (!isSelected) {
+          return (
+            <div className="transform ">
+              <CheckBoxOutlineBlankIcon
+                className={`group-1-hover:visible group-1-focus-visible:visible invisible`}
+              />
+            </div>
+          )
+        }
+        return null
+      })()}
+      <span
+        className={`${getIconClassName({
+          lazyResult,
+        })} font-awesome-span group-1-focus-visible:invisible group-1-hover:invisible absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
+        data-help={TypedMetacardDefs.getAlias({
+          attr: 'title',
+        })}
+        title={`${TypedMetacardDefs.getAlias({
+          attr: 'title',
+        })}: ${lazyResult.plain.metacard.properties.title}`}
+      />
+    </Button>
   )
 }
 
@@ -415,6 +412,7 @@ export const ResultItem = ({
   const renderThumbnail =
     isGallery && lazyResult.plain.metacard.properties.thumbnail
   const { listenTo } = useBackbone()
+  const [renderExtras, setRenderExtras] = React.useState(false)
   React.useEffect(() => {
     listenTo(
       user.get('user').get('preferences'),
@@ -491,6 +489,10 @@ export const ResultItem = ({
           console.log(err)
         }
       }}
+      onMouseEnter={() => {
+        // dynamic actions are a significant part of rendering time, so delay until necessary
+        setRenderExtras(true)
+      }}
       onFocus={(e: any) => {
         if (e.target === e.currentTarget && rippleRef.current) {
           rippleRef.current.pulsate()
@@ -507,30 +509,20 @@ export const ResultItem = ({
         <TouchRipple ref={rippleRef} />
         <SelectionBackground lazyResult={lazyResult} />
         <div className="w-full relative z-0">
-          <Grid
-            className="w-full"
-            container
-            direction="row"
-            wrap="nowrap"
-            alignItems="center"
-          >
-            <Grid item>
-              <IconButton lazyResult={lazyResult} />
-            </Grid>
-            <Grid item>
-              <div data-id="result-item-title-label" className="">
-                {lazyResult.highlights['title'] ? (
-                  <span
-                    dangerouslySetInnerHTML={{
-                      __html: lazyResult.highlights['title'][0].highlight,
-                    }}
-                  />
-                ) : (
-                  lazyResult.plain.metacard.properties.title
-                )}
-              </div>
-            </Grid>
-          </Grid>
+          <div className="w-full flex items-center">
+            <IconButton lazyResult={lazyResult} />
+            <div data-id="result-item-title-label" className="">
+              {lazyResult.highlights['title'] ? (
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: lazyResult.highlights['title'][0].highlight,
+                  }}
+                />
+              ) : (
+                lazyResult.plain.metacard.properties.title
+              )}
+            </div>
+          </div>
           <div
             className={`pl-3 ${
               ResultItemAddOnInstance !== null ||
@@ -652,42 +644,46 @@ export const ResultItem = ({
             </div>
           </div>
         </div>
-        {/* trick to keep the dropdown visible over an arc of the cursor, so users have some leeway if going diagonal to the actions dropdowns **/}
-        <div
-          className={`${diagonalHoverClasses} w-full transform translate-y-1`}
-        />
-        <div
-          className={`${diagonalHoverClasses} w-9/12 transform translate-y-2 `}
-        />
-        <div
-          className={`${diagonalHoverClasses} w-6/12 transform translate-y-3`}
-        />
-        <div
-          className={`${diagonalHoverClasses} w-5/12 transform translate-y-4`}
-        />
-        <div
-          className={`${diagonalHoverClasses} w-4/12 transform translate-y-5`}
-        />
-        <div
-          className={`${diagonalHoverClasses} w-3/12 transform translate-y-6`}
-        />
-        <div
-          className={`${diagonalHoverClasses} w-2/12 transform translate-y-8`}
-        />
-
-        <div
-          className={`absolute z-50 right-0 bottom-0 focus-within:opacity-100 group-hover:opacity-100 hover:opacity-100 opacity-0 cursor-auto transform translate-y-3/4 scale-0 group-hover:scale-100 focus-within:scale-100 transition-all`}
-        >
-          <Paper
-            onClick={e => {
-              e.stopPropagation()
-            }}
-            elevation={Elevations.overlays}
-            className="p-2"
-          >
-            <DynamicActions lazyResult={lazyResult} />
-          </Paper>
-        </div>
+        {renderExtras ? (
+          <>
+            {' '}
+            {/* trick to keep the dropdown visible over an arc of the cursor, so users have some leeway if going diagonal to the actions dropdowns **/}
+            <div
+              className={`${diagonalHoverClasses} w-full transform translate-y-1`}
+            />
+            <div
+              className={`${diagonalHoverClasses} w-9/12 transform translate-y-2 `}
+            />
+            <div
+              className={`${diagonalHoverClasses} w-6/12 transform translate-y-3`}
+            />
+            <div
+              className={`${diagonalHoverClasses} w-5/12 transform translate-y-4`}
+            />
+            <div
+              className={`${diagonalHoverClasses} w-4/12 transform translate-y-5`}
+            />
+            <div
+              className={`${diagonalHoverClasses} w-3/12 transform translate-y-6`}
+            />
+            <div
+              className={`${diagonalHoverClasses} w-2/12 transform translate-y-8`}
+            />
+            <div
+              className={`absolute z-50 right-0 bottom-0 focus-within:opacity-100 group-hover:opacity-100 hover:opacity-100 opacity-0 cursor-auto transform translate-y-3/4 scale-0 group-hover:scale-100 focus-within:scale-100 transition-all`}
+            >
+              <Paper
+                onClick={e => {
+                  e.stopPropagation()
+                }}
+                elevation={Elevations.overlays}
+                className="p-2"
+              >
+                <DynamicActions lazyResult={lazyResult} />
+              </Paper>
+            </div>
+          </>
+        ) : null}
       </div>
     </button>
   )
