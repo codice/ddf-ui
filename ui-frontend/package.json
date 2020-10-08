@@ -16,7 +16,7 @@
     "mvn:install-file": "mvn org.apache.maven.plugins:maven-install-plugin:install-file -Dfile=target/packages-packages.zip -DpomFile=pom.xml -Dclassifier=packages -Dpackaging=zip"
   },
   "devDependencies": {
-    "@connexta/ace": "git://github.com/connexta/ace.git#76bada4b2f4d9f8163bc73cf0dd2a5bbea0b3ad0",
+    "@connexta/ace": "git://github.com/connexta/ace.git#149ba3b62076c6bb567ade2478e819587ea3b135",
     "@connexta/eslint-config-connexta": "git://github.com/connexta/eslint-config-connexta.git#105393617ec845b009b682882c95313ba50144b1",
     "@connexta/eslint-plugin-connexta": "git://github.com/connexta/eslint-plugin-connexta.git#9b366b8924c3dbe03aedcfe6d25c8eb3567cc061",
     "bootstrap-sass": "3.4.1",
