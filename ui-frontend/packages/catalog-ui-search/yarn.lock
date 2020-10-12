@@ -3241,12 +3241,12 @@
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
-"@types/moment-timezone@0.5.4":
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/@types/moment-timezone/-/moment-timezone-0.5.4.tgz#b600e033f871f3074c283e2bd26fe4f4ec3949d4"
-  integrity sha512-GXWxTNJaN6A6CSa7+8a0ZGN5yGozW3So7fFHrXE/1c976Nx4hv2470Bx/q6/nmNNOYbcuKT61P0kRNf4cQTirw==
+"@types/moment-timezone@0.5.30":
+  version "0.5.30"
+  resolved "https://registry.yarnpkg.com/@types/moment-timezone/-/moment-timezone-0.5.30.tgz#340ed45fe3e715f4a011f5cfceb7cb52aad46fc7"
+  integrity sha512-aDVfCsjYnAQaV/E9Qc24C5Njx1CoDjXsEgkxtp9NyXDpYu4CCbmclb6QhWloS9UTU/8YROUEEdEkWI0D7DxnKg==
   dependencies:
-    moment ">=2.14.0"
+    moment-timezone "*"
 
 "@types/node@*", "@types/node@>=6":
   version "14.6.0"
@@ -15305,7 +15305,7 @@ mocha@5.2.0:
     mkdirp "0.5.1"
     supports-color "5.4.0"
 
-moment-timezone@0.5.31:
+moment-timezone@*, moment-timezone@0.5.31:
   version "0.5.31"
   resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.31.tgz#9c40d8c5026f0c7ab46eda3d63e49c155148de05"
   integrity sha512-+GgHNg8xRhMXfEbv81iDtrVeTcWt0kWmTEY1XQK14dICTXnWJnT0dxdlPspwqF3keKMVPXwayEsk1DI0AA/jdA==
@@ -15324,7 +15324,7 @@ moment@2.22.0:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.0.tgz#7921ade01017dd45186e7fee5f424f0b8663a730"
   integrity sha512-1muXCh8jb1N/gHRbn9VDUBr0GYb8A/aVcHlII9QSB68a50spqEVLIGN6KVmCOnSvJrUhC0edGgKU5ofnGXdYdg==
 
-"moment@>= 2.6.0", "moment@>= 2.9.0", moment@>=2.14.0, moment@^2.10, moment@^2.15.1, moment@^2.24.0:
+"moment@>= 2.6.0", "moment@>= 2.9.0", moment@^2.10, moment@^2.15.1, moment@^2.24.0:
   version "2.27.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.27.0.tgz#8bff4e3e26a236220dfe3e36de756b6ebaa0105d"
   integrity sha512-al0MUK7cpIcglMv3YF13qSgdAIqxHTO7brRtaz3DlSULbqfazqkc5kEjNrLDOM7fsjshoFIihnU8snrP7zUvhQ==

@@ -31,17 +31,9 @@ export const DateHelpers = {
        */
       parseDate: (input?: string) => {
         try {
-          console.log(`parseDate: ${input}`)
-          const timeZone = DateHelpers.General.getTimeZone()
-          const format = DateHelpers.General.getDateFormat()
-          if (!input) {
-            return null
-          }
-          const date = moment.tz(input, timeZone)
-          if (date.isValid()) {
-            return moment.tz(input, format, timeZone).toDate()
-          }
-          return null
+          return DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
+            input || ''
+          )
         } catch (err) {
           return null
         }
