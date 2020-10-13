@@ -15,15 +15,11 @@ import { useDialog } from '@connexta/atlas/atoms/dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
-import { KeyboardDateTimePicker } from '@connexta/atlas/atoms/pickers'
-import { getDateTimeFormat } from '../../user/utils'
 import useSnack from '../../hooks/useSnack'
 import LinearProgress from '@material-ui/core/LinearProgress'
 const $ = require('jquery')
 const ResultUtils = require('../../../js/ResultUtils.js')
 import PublishIcon from '@material-ui/icons/Publish'
-// @ts-ignore ts-migrate(6133) FIXME: 'AutoSizer' is declared but its value is never rea... Remove this comment to see the full error message
-import AutoSizer from 'react-virtualized-auto-sizer'
 import Paper from '@material-ui/core/Paper'
 import useTheme from '@material-ui/core/styles/useTheme'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
@@ -33,74 +29,11 @@ import TransferList from './transfer-list'
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace'
 import AddIcon from '@material-ui/icons/Add'
 import Box from '@material-ui/core/Box'
-// @ts-ignore ts-migrate(6133) FIXME: 'dark' is declared but its value is never read.
-import { Elevations, dark, light } from '../../theme/theme'
+import { Elevations } from '../../theme/theme'
 import { DarkDivider } from '../../dark-divider/dark-divider'
 import { displayHighlightedAttrInFull } from './highlightUtil'
+import DateTimePicker from '../../fields/date-time-picker'
 import Geometry from '../../../react-component/input-wrappers/geometry'
-//metacardDefinitions.metacardTypes[attribute].type
-//metacardDefinitions.metacardTypes[attribute].multivalued
-//properties.isReadOnly(attribute)
-//properties.attributeAliases[attribute]
-//metacardDefinitions.validation[attribute]
-//metacardDefinitions.enums[attribute]
-//properties.requiredAttributes.includes(property)
-//metacardDefinitions.isHiddenTypeExceptThumbnail(property)
-/**
- *  _setCalculatedType() {
-    let calculatedType
-
-    switch (this.get('type')) {
-      case 'DATE':
-        calculatedType = 'date'
-        break
-      case 'TIME':
-        calculatedType = 'time'
-        break
-      case 'BINARY':
-        calculatedType = 'thumbnail'
-        break
-      case 'LOCATION':
-        calculatedType = 'location'
-        break
-      case 'TEXTAREA':
-        calculatedType = 'textarea'
-        break
-      case 'BOOLEAN':
-        calculatedType = 'boolean'
-        break
-      case 'LONG':
-      case 'DOUBLE':
-      case 'FLOAT':
-      case 'INTEGER':
-      case 'SHORT':
-        calculatedType = 'number'
-        break
-      case 'RANGE':
-        calculatedType = 'range'
-        break
-      case 'GEOMETRY':
-        calculatedType = 'geometry'
-        break
-      case 'AUTOCOMPLETE':
-        calculatedType = 'autocomplete'
-        break
-      case 'COLOR':
-        calculatedType = 'color'
-        break
-      case 'NEAR':
-        calculatedType = 'near'
-        break
-      case 'PASSWORD':
-        calculatedType = 'password'
-        break
-      case 'STRING':
-      case 'XML':
-      default:
-        calculatedType = 'text'
-        break
-    }
- */
 
 function getSummaryShown(): string[] {
   const userchoices = user
@@ -251,21 +184,17 @@ export const Editor = ({
                   switch (attrType) {
                     case 'DATE':
                       return (
-                        <KeyboardDateTimePicker
-                          disabled={mode !== Mode.Normal}
+                        <DateTimePicker
+                          disabled={mode === Mode.Normal}
                           value={val}
-                          onChange={(e: any) => {
-                            values[index] = e.toISOString()
+                          onChange={(value) => {
+                            values[index] = value
                             setValues([...values])
                           }}
-                          DialogProps={{
-                            disablePortal: true,
-                            style: {
-                              minWidth: '500px',
-                            },
+                          style={{
+                            minWidth: '500px',
                           }}
-                          format={getDateTimeFormat()}
-                          fullWidth
+                          label={label}
                         />
                       )
 

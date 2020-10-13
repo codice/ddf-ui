@@ -17,9 +17,7 @@ import { DateRangeInput, IDateRangeInputProps } from '@blueprintjs/datetime'
 import { DateHelpers } from './date-helpers'
 import { ValueTypes } from '../filter-builder/filter.structure'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
-// @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../s... Remove this comment to see the full error message
-import user from '../singletons/user-instance'
-import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import useTimePrefs from './useTimePrefs'
 
 type Props = {
   value: ValueTypes['during']
@@ -48,19 +46,9 @@ export const DateRangeField = ({
   onChange,
   BPDateRangeProps,
 }: Props) => {
-  const { listenTo } = useBackbone()
-  const [, setForceRender] = React.useState(Math.random())
+  useTimePrefs()
   React.useEffect(() => {
     validateShape({ value, onChange, BPDateRangeProps })
-  }, [])
-  React.useEffect(() => {
-    listenTo(
-      user.getPreferences(),
-      'change:dateTimeFormat change:timeZone',
-      () => {
-        setForceRender(Math.random())
-      }
-    )
   }, [])
   return (
     <DateRangeInput
