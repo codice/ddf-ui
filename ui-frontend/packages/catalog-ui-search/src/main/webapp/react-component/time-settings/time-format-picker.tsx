@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import Autocomplete from '@material-ui/lab/Autocomplete'
-import { TextField } from '@material-ui/core'
+import TextField from '@material-ui/core/TextField'
 import { TimeFormat } from './types'
 
 const Common = require('../../js/Common')

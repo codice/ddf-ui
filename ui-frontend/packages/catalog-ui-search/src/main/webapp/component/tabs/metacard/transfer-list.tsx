@@ -7,31 +7,20 @@ import Theme from '@material-ui/core/styles/Theme'
 import createStyles from '@material-ui/core/styles/createStyles'
 import Grid from '@material-ui/core/Grid'
 import List from '@material-ui/core/List'
-// @ts-ignore ts-migrate(6133) FIXME: 'Card' is declared but its value is never read.
-import Card from '@material-ui/core/Card'
-// @ts-ignore ts-migrate(6133) FIXME: 'CardHeader' is declared but its value is never re... Remove this comment to see the full error message
-import CardHeader from '@material-ui/core/CardHeader'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import Checkbox from '@material-ui/core/Checkbox'
 import Button from '@material-ui/core/Button'
-// @ts-ignore ts-migrate(6133) FIXME: 'Divider' is declared but its value is never read.
-import Divider from '@material-ui/core/Divider'
-import {
-  // @ts-ignore ts-migrate(6133) FIXME: 'DialogTitle' is declared but its value is never r... Remove this comment to see the full error message
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  useTheme,
-  // @ts-ignore ts-migrate(6133) FIXME: 'Typography' is declared but its value is never re... Remove this comment to see the full error message
-  Typography,
-  LinearProgress,
-  CircularProgress,
-  Paper,
-  DialogProps,
-} from '@material-ui/core'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogActions from '@material-ui/core/DialogActions'
+import TextField from '@material-ui/core/TextField'
+import useTheme from '@material-ui/core/styles/useTheme'
+import LinearProgress from '@material-ui/core/LinearProgress'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import Paper from '@material-ui/core/Paper'
+import { DialogProps } from '@material-ui/core/Dialog'
+
 import { useDialog } from '@connexta/atlas/atoms/dialog'
 import TypedMetacardDefs from './metacardDefinitions'
 import EditIcon from '@material-ui/icons/Edit'
@@ -72,11 +61,11 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 function not(a: string[], b: string[]) {
-  return a.filter((value) => b.indexOf(value) === -1)
+  return a.filter(value => b.indexOf(value) === -1)
 }
 
 function intersection(a: string[], b: string[]) {
-  return a.filter((value) => b.indexOf(value) !== -1)
+  return a.filter(value => b.indexOf(value) !== -1)
 }
 
 function union(a: string[], b: string[]) {
@@ -195,7 +184,7 @@ const CustomList = ({
                   }
                 : {},
           }}
-          onChange={(e) => {
+          onChange={e => {
             setFilter(e.target.value)
           }}
         />
@@ -233,7 +222,7 @@ const CustomList = ({
             }}
           >
             <Droppable droppableId="test">
-              {(provided) => {
+              {provided => {
                 return (
                   <div {...provided.droppableProps} ref={provided.innerRef}>
                     {items.map((value: string, index: number) => {
@@ -254,7 +243,7 @@ const CustomList = ({
                           key={value}
                           isDragDisabled={!isDnD}
                         >
-                          {(provided) => {
+                          {provided => {
                             return (
                               // @ts-ignore ts-migrate(2322) FIXME: Type 'DragEvent<HTMLDivElement>' is missing the fo... Remove this comment to see the full error message
                               <div
@@ -403,9 +392,10 @@ const TransferList = ({
 }) => {
   const classes = useStyles()
   const dialogContext = useDialog()
-  const [mode, setMode] = React.useState(
-    'loading' as 'normal' | 'saving' | 'loading'
-  )
+  const [mode, setMode] = React.useState('loading' as
+    | 'normal'
+    | 'saving'
+    | 'loading')
   const [checked, setChecked] = React.useState<string[]>([])
   const [left, setLeft] = React.useState(startingLeft)
   const [right, setRight] = React.useState(startingRight)
