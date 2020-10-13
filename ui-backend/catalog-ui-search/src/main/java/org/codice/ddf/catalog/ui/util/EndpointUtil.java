@@ -50,6 +50,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
@@ -178,12 +179,23 @@ public class EndpointUtil implements EndpointUtility {
 
   public Metacard getMetacardById(String id)
       throws UnsupportedQueryException, SourceUnavailableException, FederationException {
+    return getMetacardById(id, null);
+  }
+
+  public Metacard getMetacardById(String id, String storeId)
+      throws UnsupportedQueryException, SourceUnavailableException, FederationException {
+    Collection<String> storeIds;
+    if (storeId == null) {
+      storeIds = null;
+    } else {
+      storeIds = Arrays.asList(storeId);
+    }
     Filter idFilter = filterBuilder.attribute(Core.ID).is().equalTo().text(id);
     Filter tagsFilter = filterBuilder.attribute(Core.METACARD_TAGS).is().like().text("*");
     Filter filter = filterBuilder.allOf(idFilter, tagsFilter);
 
     QueryResponse queryResponse =
-        catalogFramework.query(new QueryRequestImpl(new QueryImpl(filter), false));
+        catalogFramework.query(new QueryRequestImpl(new QueryImpl(filter), storeIds));
 
     if (queryResponse.getResults().isEmpty()) {
       throw new NotFoundException("Could not find metacard for id: " + id);
@@ -509,9 +521,9 @@ public class EndpointUtil implements EndpointUtility {
     return outerMap;
   }
 
-  public String metacardToJson(String id)
+  public String metacardToJson(String id, String storeId)
       throws SourceUnavailableException, UnsupportedQueryException, FederationException {
-    return metacardToJson(getMetacardById(id));
+    return metacardToJson(getMetacardById(id, storeId));
   }
 
   public String metacardToJson(Metacard metacard) {
