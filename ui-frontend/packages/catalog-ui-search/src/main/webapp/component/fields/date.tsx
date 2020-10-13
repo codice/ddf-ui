@@ -17,53 +17,9 @@ import { DateInput, IDateInputProps } from '@blueprintjs/datetime'
 
 // @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../s... Remove this comment to see the full error message
 import user from '../singletons/user-instance'
-
-export const getTimeZone = () => {
-  return user.get('user').get('preferences').get('timeZone') as string
-}
-
-export const getDateFormat = () => {
-  return user.get('user').get('preferences').get('dateTimeFormat')[
-    'datetimefmt'
-  ] as string
-}
-
-// @ts-ignore Can't find type declarations, but they exist
-import moment from 'moment-timezone'
+import { DateHelpers } from './date-helpers'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
-
-/**
- * No need to convert timezone since we are already doing it in parseDate
- */
-export const formatDate = (date: Date) => {
-  const momentDate = moment(date)
-  const format = getDateFormat()
-  if (!momentDate.isValid()) {
-    return ''
-  }
-  return momentDate.format(format)
-}
-
-export const parseDate = (input?: string) => {
-  try {
-    const timeZone = getTimeZone()
-    const format = getDateFormat()
-    if (!input) {
-      return null
-    }
-    const date = moment.tz(
-      input.substring(0, input.length - 1),
-      format,
-      timeZone
-    )
-    if (date.isValid()) {
-      return moment.tz(input, format, timeZone).toDate()
-    }
-    return null
-  } catch (err) {
-    return null
-  }
-}
+import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 
 type DateFieldProps = {
   value: string
@@ -75,35 +31,46 @@ type DateFieldProps = {
 }
 
 const validateShape = ({ value, onChange }: DateFieldProps) => {
-  if (parseDate(value) === null) {
+  if (DateHelpers.Blueprint.commonProps.parseDate(value) === null) {
     onChange(new Date().toISOString())
   }
 }
 
 export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
+  const { listenTo } = useBackbone()
+  const [forceRender, setForceRender] = React.useState(Math.random())
   React.useEffect(() => {
     validateShape({ onChange, value })
   }, [])
+  React.useEffect(() => {
+    listenTo(
+      user.getPreferences(),
+      'change:dateTimeFormat change:timeZone',
+      () => {
+        setForceRender(Math.random())
+      }
+    )
+  }, [])
+
   return (
-    <DateInput
-      className={MuiOutlinedInputBorderClasses}
-      closeOnSelection={false}
-      fill
-      formatDate={formatDate}
-      onChange={(selectedDate, isUserChange) => {
-        if (onChange && selectedDate && isUserChange)
-          onChange(selectedDate.toISOString())
-      }}
-      parseDate={parseDate}
-      placeholder={'M/D/YYYY'}
-      shortcuts
-      timePrecision="minute"
-      {...(value
-        ? {
-            value: new Date(value || ''),
-          }
-        : {})}
-      {...BPDateProps}
-    />
+    <>
+      <DateInput
+        className={MuiOutlinedInputBorderClasses}
+        closeOnSelection={false}
+        fill
+        formatDate={DateHelpers.Blueprint.commonProps.formatDate}
+        onChange={DateHelpers.Blueprint.DateProps.generateOnChange(onChange)}
+        parseDate={DateHelpers.Blueprint.commonProps.parseDate}
+        placeholder={'M/D/YYYY'}
+        shortcuts
+        timePrecision="minute"
+        {...(value
+          ? {
+              value: DateHelpers.Blueprint.DateProps.generateValue(value),
+            }
+          : {})}
+        {...BPDateProps}
+      />
+    </>
   )
 }
