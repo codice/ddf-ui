@@ -47,7 +47,7 @@
   "devDependencies": {
     "@blueprintjs/core": "3.29.0",
     "@blueprintjs/datetime": "3.18.3",
-    "@connexta/ace": "git://github.com/connexta/ace.git#7c2dee5cb3013a4c1b95c9b92acd44e38301b611",
+    "@connexta/ace": "git://github.com/connexta/ace.git#149ba3b62076c6bb567ade2478e819587ea3b135",
     "@connexta/atlas": "0.0.60",
     "@material-ui/core": "4.11.0",
     "@material-ui/icons": "4.9.1",

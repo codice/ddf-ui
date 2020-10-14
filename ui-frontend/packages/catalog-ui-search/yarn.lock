@@ -1499,9 +1499,9 @@
   dependencies:
     commander "^2.15.1"
 
-"@connexta/ace@git://github.com/connexta/ace.git#7c2dee5cb3013a4c1b95c9b92acd44e38301b611":
+"@connexta/ace@git://github.com/connexta/ace.git#149ba3b62076c6bb567ade2478e819587ea3b135":
   version "1.0.0"
-  resolved "git://github.com/connexta/ace.git#7c2dee5cb3013a4c1b95c9b92acd44e38301b611"
+  resolved "git://github.com/connexta/ace.git#149ba3b62076c6bb567ade2478e819587ea3b135"
   dependencies:
     "@babel/core" "^7.0.0"
     "@storybook/addon-actions" "5.2.8"
@@ -1553,7 +1553,7 @@
     mocha-loader "1.1.3"
     ora "3.0.0"
     postcss-loader "3.0.0"
-    prettier "1.14.2"
+    prettier "2.1.2"
     puppeteer "1.5.0"
     raw-loader "0.5.1"
     react-dev-utils "5.0.2"
@@ -17445,10 +17445,10 @@ preserve@^0.2.0:
   resolved "https://registry.yarnpkg.com/preserve/-/preserve-0.2.0.tgz#815ed1f6ebc65926f865b310c0713bcb3315ce4b"
   integrity sha1-gV7R9uvGWSb4ZbMQwHE7yzMVzks=
 
-prettier@1.14.2:
-  version "1.14.2"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.14.2.tgz#0ac1c6e1a90baa22a62925f41963c841983282f9"
-  integrity sha512-McHPg0n1pIke+A/4VcaS2en+pTNjy4xF+Uuq86u/5dyDO59/TtFZtQ708QIRkEZ3qwKz3GVkVa6mpxK/CpB8Rg==
+prettier@2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.1.2.tgz#3050700dae2e4c8b67c4c3f666cdb8af405e1ce5"
+  integrity sha512-16c7K+x4qVlJg9rEbXl7HEGmQyZlG4R9AgP+oHKRMsMsuk8s+ATStlf1NpDqyBI1HpVyfjLOeMhH2LvuNvV5Vg==
 
 prettier@^1.5.3:
   version "1.19.1"
