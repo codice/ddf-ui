@@ -28,6 +28,9 @@ Services (OSGi) that catalog-ui-search PROVIDES to DDF
 
     <!-- Needed by both metacard app and query metacard app for now -->
     <service interface="ddf.catalog.data.MetacardType">
+        <service-properties>
+            <entry key="name" value="metacard.query"/>
+        </service-properties>
         <bean class="org.codice.ddf.catalog.ui.metacard.query.data.metacard.QueryMetacardTypeImpl"/>
     </service>
 
@@ -61,6 +64,9 @@ Services (OSGi) that catalog-ui-search PROVIDES to DDF
     -->
 
     <service interface="ddf.catalog.data.MetacardType">
+        <service-properties>
+            <entry key="name" value="metacard.list"/>
+        </service-properties>
         <bean class="org.codice.ddf.catalog.ui.metacard.workspace.ListMetacardTypeImpl"/>
     </service>
 
