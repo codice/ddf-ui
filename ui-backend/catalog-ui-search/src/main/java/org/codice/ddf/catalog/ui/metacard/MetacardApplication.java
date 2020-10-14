@@ -259,7 +259,7 @@ public class MetacardApplication implements SparkApplication {
         "/metacard/:id",
         (req, res) -> {
           String id = req.params(":id");
-          String storeId = Optional.ofNullable(req.queryParams("storeId")).orElse(null);
+          String storeId = req.queryParams("storeId");
           return util.metacardToJson(id, storeId);
         });
 
