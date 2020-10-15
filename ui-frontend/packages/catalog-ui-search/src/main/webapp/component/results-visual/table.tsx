@@ -41,6 +41,7 @@ import useTheme from '@material-ui/core/styles/useTheme'
 import ViewAgendaIcon from '@material-ui/icons/ViewAgenda'
 import TableChartIcon from '@material-ui/icons/TableChart'
 import Box from '@material-ui/core/Box'
+import { useUpdateEffect } from 'react-use'
 ;(() => {
   const oldHandleSave = TableVisibility.prototype.handleSave
   TableVisibility.prototype.handleSave = function() {
@@ -78,8 +79,9 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
   const [visibleHeaders, setVisibleHeaders] = React.useState(
     getVisibleHeaders(filteredAttributes)
   )
+  const [key, setKey] = React.useState(Math.random().toString())
 
-  React.useEffect(
+  useUpdateEffect(
     () => {
       setFilteredAttributes(getFilteredAttributes(lazyResults))
     },
@@ -96,8 +98,9 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
     )
   }, [])
 
-  React.useEffect(
+  useUpdateEffect(
     () => {
+      setKey(Math.random().toString())
       setVisibleHeaders(getVisibleHeaders(filteredAttributes))
     },
     [filteredAttributes]
@@ -171,7 +174,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
       )
     }, 250)
   }
-
+  console.log('rendered')
   return (
     <Grid
       container
@@ -276,7 +279,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
             direction="column"
             wrap="nowrap"
           >
-            <Grid item className="overflow-hidden bg-inherit">
+            <Grid item className="bg-inherit">
               <div
                 className="w-auto overflow-auto scrollbars-hide bg-inherit"
                 ref={headerRef}
@@ -291,7 +294,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
               <Divider className="w-full h-min" />
             </Grid>
             <Grid item className="w-full h-full overflow-hidden bg-inherit">
-              <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
+              {/* <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
                 outerElementProps={{
                   onScroll: e => {
                     if (headerRef.current) {
@@ -300,7 +303,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                     }
                   },
                 }}
-                key={JSON.stringify(visibleHeaders)}
+                key={key}
                 defaultSize={76}
                 overscanCount={10}
                 controlledMeasuring={true}
@@ -332,7 +335,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                     </div>
                   )
                 }}
-              />
+              /> */}
             </Grid>
           </Grid>
         </Paper>

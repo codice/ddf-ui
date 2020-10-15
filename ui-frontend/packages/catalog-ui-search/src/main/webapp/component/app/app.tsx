@@ -117,6 +117,9 @@ export const useDefaultWelcome = () => {
     const loadingElement = document.querySelector('#loading')
     if (loadingElement) {
       loadingElement.classList.remove('is-open')
+      setTimeout(() => {
+        loadingElement.remove()
+      }, 500)
     }
   }, [])
 }

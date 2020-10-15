@@ -22,7 +22,6 @@ const $ = require('jquery')
 const user = require('../singletons/user-instance.js')
 require('jquery-ui/ui/widgets/resizable')
 import Button, { ButtonProps } from '@material-ui/core/Button'
-import Box from '@material-ui/core/Box'
 import { useSelectionOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
@@ -45,20 +44,16 @@ type Sort = {
 }
 
 export const CellComponent = (props: GridProps) => {
-  const { style, ...otherProps } = props
+  const { style, className, ...otherProps } = props
   return (
-    <Grid
-      item
+    <div
       {...otherProps}
+      className={`inline-block ${className} p-2 overflow-hidden whitespace-normal break-all `}
       style={{
         width: '200px',
         maxHeight: '200px',
-        textOverflow: 'ellipsis',
-        overflow: 'hidden',
-        padding: '10px',
         ...style,
       }}
-      zeroMinWidth
     />
   )
 }
@@ -172,31 +167,30 @@ export const Header = ({ visibleHeaders, lazyResults }: HeaderProps) => {
 
   return (
     <React.Fragment>
-      <Grid
+      <div
         data-id="table-container"
-        container
-        direction="row"
-        wrap="nowrap"
-        className="bg-inherit"
+        className="bg-inherit whitespace-no-wrap flex items-stretch"
         style={{
           width: visibleHeaders.length * 200 + 'px',
         }}
       >
-        <Grid item className="sticky left-0 w-auto z-10 bg-inherit">
+        <div className="inline-block left-0 w-auto z-10 bg-inherit">
           <CellComponent
             className="bg-inherit"
             style={{ width: 'auto', paddingLeft: '0px', paddingRight: '0px' }}
           >
             <HeaderCheckbox lazyResults={lazyResults} />
           </CellComponent>
-        </Grid>
+        </div>
         {visibleHeaders.map((header, index) => {
           const last = visibleHeaders.length - 1 === index
           const { label, id, sortable } = header
           return (
             <CellComponent
               key={id}
-              className={`relative ${sortable ? 'is-sortable' : ''}`}
+              className={`${
+                sortable ? 'is-sortable' : ''
+              } Mui-border-divider border border-t-0 border-r-0 border-b-0`}
               data-propertyid={`${id}`}
               data-propertytext={`${label ? `${label} ${id}` : `${id}`}`}
               style={{
@@ -204,7 +198,6 @@ export const Header = ({ visibleHeaders, lazyResults }: HeaderProps) => {
                 minWidth: last ? '208px' : '200px', // 8px is the scrollbar width and they only affect the body, so we need to account for it in the last header cell
               }}
             >
-              <div className="w-min h-full absolute left-0 top-0 Mui-bg-divider" />
               <Button
                 disabled={!sortable}
                 className="w-full outline-none is-bold h-full"
@@ -227,7 +220,7 @@ export const Header = ({ visibleHeaders, lazyResults }: HeaderProps) => {
             </CellComponent>
           )
         })}
-      </Grid>
+      </div>
     </React.Fragment>
   )
 }

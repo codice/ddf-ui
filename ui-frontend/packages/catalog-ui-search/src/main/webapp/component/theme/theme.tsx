@@ -302,6 +302,19 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .Mui-bg-divider {
         background-color: ${props => props.palette.divider};
       }
+      .Mui-border-divider {
+        border-color: ${props => props.palette.divider};
+      }
+      .children-h-full {
+        > * {
+          height: 100%;
+        }
+      }
+      .children-block {
+        > * {
+          display: block;
+        }
+      }
     `
 
 const lightenUntilContrasting = (color: string, background: string): string => {

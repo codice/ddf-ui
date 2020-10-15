@@ -72,6 +72,21 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
       setShowThumbnails(getShowThumbnails())
     })
   }, [])
+  /**
+   * Note that this scenario only plays out when the component is first created, so if this is open before a search is run it will already be mounted.
+   *
+   * This is solely to keep the illusion of responsiveness when switching from table mode to list mode (or dropping a new result visual in)
+   */
+  const [isMounted, setIsMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    const mountedTimeout = setTimeout(() => {
+      setIsMounted(true)
+    }, 1000)
+    return () => {
+      clearTimeout(mountedTimeout)
+    }
+  }, [])
   return (
     <Grid container className="w-full h-full" direction="column" wrap="nowrap">
       <Grid item className="w-full">
@@ -158,50 +173,54 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
       </Grid>
       <DarkDivider className="w-full h-min my-2" />
       <Grid item className="w-full h-full p-2">
-        <Paper elevation={Elevations.paper} className="w-full h-full ">
-          <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
-            controlledMeasuring={true}
-            items={results}
-            defaultSize={60}
-            overscanCount={10}
-            Item={({ itemRef, item, measure, index, width }) => {
-              return (
-                <div ref={itemRef} className="relative">
-                  {index !== 0 ? (
-                    <>
-                      <div className="h-min w-full Mui-bg-divider" />
-                    </>
-                  ) : null}
-                  <ResultItem
-                    lazyResults={results}
-                    lazyResult={item}
-                    selectionInterface={selectionInterface}
-                    measure={measure}
-                    index={index}
-                    width={width}
-                  />
-                  {index === results.length - 1 ? (
-                    <>
-                      <div className="h-min w-full Mui-bg-divider" />
-                    </>
-                  ) : null}
-                </div>
-              )
-            }}
-            Empty={() => {
-              if (Object.values(status).length === 0) {
-                return <div className="p-2">Search has not yet been run.</div>
-              }
-              if (isSearching) {
-                return <LinearProgress variant="indeterminate" />
-              }
-              return (
-                <div className="result-item-collection-empty p-2">
-                  No Results Found
-                </div>
-              )
-            }}
-          />
+        <Paper elevation={Elevations.paper} className="w-full h-full">
+          {isMounted ? (
+            <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
+              controlledMeasuring={true}
+              items={results}
+              defaultSize={60}
+              overscanCount={10}
+              Item={({ itemRef, item, measure, index, width }) => {
+                return (
+                  <div ref={itemRef} className="relative">
+                    {index !== 0 ? (
+                      <>
+                        <div className="h-min w-full Mui-bg-divider" />
+                      </>
+                    ) : null}
+                    <ResultItem
+                      lazyResults={results}
+                      lazyResult={item}
+                      selectionInterface={selectionInterface}
+                      measure={measure}
+                      index={index}
+                      width={width}
+                    />
+                    {index === results.length - 1 ? (
+                      <>
+                        <div className="h-min w-full Mui-bg-divider" />
+                      </>
+                    ) : null}
+                  </div>
+                )
+              }}
+              Empty={() => {
+                if (Object.values(status).length === 0) {
+                  return <div className="p-2">Search has not yet been run.</div>
+                }
+                if (isSearching) {
+                  return <LinearProgress variant="indeterminate" />
+                }
+                return (
+                  <div className="result-item-collection-empty p-2">
+                    No Results Found
+                  </div>
+                )
+              }}
+            />
+          ) : (
+            <LinearProgress variant="indeterminate" />
+          )}
         </Paper>
       </Grid>
     </Grid>

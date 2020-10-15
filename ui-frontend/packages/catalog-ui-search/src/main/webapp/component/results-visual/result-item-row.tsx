@@ -32,6 +32,7 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox'
 // @ts-ignore ts-migrate(6133) FIXME: 'CheckIcon' is declared but its value is never rea... Remove this comment to see the full error message
 import CheckIcon from '@material-ui/icons/Check'
 import Divider from '@material-ui/core/Divider'
+import { SelectionBackground } from './result-item'
 type Property = {
   class: string
   hidden: boolean
@@ -73,6 +74,30 @@ export function hasSelection(): boolean {
   }
 }
 
+const CheckboxCell = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
+  const isSelected = useSelectionOfLazyResult({ lazyResult })
+
+  return (
+    <CellComponent className="h-full" style={{ width: 'auto', padding: '0px' }}>
+      <Button
+        data-id="select-checkbox"
+        onClick={event => {
+          event.stopPropagation()
+
+          if (event.shiftKey) {
+            lazyResult.shiftSelect()
+          } else {
+            lazyResult.controlSelect()
+          }
+        }}
+        className="h-full children-block children-h-full"
+      >
+        {isSelected ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
+      </Button>
+    </CellComponent>
+  )
+}
+
 const RowComponent = ({
   lazyResult,
   visibleHeaders,
@@ -80,8 +105,7 @@ const RowComponent = ({
   // @ts-ignore ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
   index,
 }: ResultItemFullProps) => {
-  const isSelected = useSelectionOfLazyResult({ lazyResult })
-
+  console.log(index)
   const visibleProperties: Property[] = React.useMemo(
     () => {
       return visibleHeaders.map((property: any) => {
@@ -131,50 +155,18 @@ const RowComponent = ({
   // console.log('row rendered:' + index)
   return (
     <React.Fragment>
-      <Grid
-        container
-        className="bg-inherit relative"
-        direction="row"
-        wrap="nowrap"
+      <div
+        className="bg-inherit flex items-strech flex-no-wrap"
         style={{
           width: visibleProperties.length * 200 + 'px',
         }}
       >
-        <Divider
-          orientation="horizontal"
-          className="absolute bottom-0 z-20 w-full h-min"
-        />
-        <div
-          className="absolute left-0 top-0 z-0 w-full h-full Mui-bg-secondary"
-          style={{
-            opacity: isSelected ? 0.05 : 0,
-          }}
-        />
-        <Grid item className="sticky left-0 w-auto z-10 bg-inherit">
-          <div
-            className="absolute left-0 top-0 -z-1 w-full h-full Mui-bg-secondary"
-            style={{
-              opacity: isSelected ? 0.05 : 0,
-            }}
-          />
-          <CellComponent className="" style={{ width: 'auto', padding: '0px' }}>
-            <Button
-              data-id="select-checkbox"
-              onClick={event => {
-                event.stopPropagation()
-
-                if (event.shiftKey) {
-                  lazyResult.shiftSelect()
-                } else {
-                  lazyResult.controlSelect()
-                }
-              }}
-            >
-              {isSelected ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
-            </Button>
-          </CellComponent>
-        </Grid>
-        <Grid item>
+        <SelectionBackground lazyResult={lazyResult} />
+        <div className="sticky left-0 w-auto z-10 bg-inherit">
+          <SelectionBackground lazyResult={lazyResult} />
+          <CheckboxCell lazyResult={lazyResult} />
+        </div>
+        <div>
           <Button
             data-id="result-item-row-container-button"
             onMouseDown={event => {
@@ -201,18 +193,13 @@ const RowComponent = ({
             disableFocusRipple
             disableRipple
             disableTouchRipple
-            className="relative outline-none rounded-none select-text p-0 text-left break-words"
+            className="outline-none rounded-none select-text p-0 text-left break-words"
           >
             <div className="w-full">
-              <div
-                className="absolute left-0 top-0 -z-1 w-full h-full Mui-bg-secondary"
-                style={{
-                  opacity: isSelected ? 0.05 : 0,
-                }}
-              />
               <Grid
                 container
                 direction="row"
+                className=""
                 wrap="nowrap"
                 style={{
                   width: visibleProperties.length * 200 + 'px',
@@ -229,12 +216,9 @@ const RowComponent = ({
                       data-property={`${property.property}`}
                       className={`${property.class} ${
                         property.hidden ? 'is-hidden-column' : ''
-                      } relative`}
+                      } Mui-border-divider border border-t-0 border-r-0 border-b-0`}
                       data-value={`${property.value}`}
                     >
-                      <>
-                        <div className="w-min h-full absolute left-0 top-0 Mui-bg-divider" />
-                      </>
                       {property.property === 'thumbnail' && thumbnail ? (
                         <img
                           data-id="thumbnail-value"
@@ -289,8 +273,8 @@ const RowComponent = ({
               </Grid>
             </div>
           </Button>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </React.Fragment>
   )
 }

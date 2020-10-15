@@ -147,12 +147,12 @@ const ResultSelector = ({
   return (
     <React.Fragment>
       <Grid container alignItems="center" justify="flex-start" direction="row">
-        <LinearProgress
-          variant="query"
-          className={`${
-            isSearching ? 'opacity-100' : 'opacity-0'
-          } absolute w-full h-1 left-0 bottom-0 transition-opacity`}
-        />
+        {isSearching ? (
+          <LinearProgress
+            variant="query"
+            className="opacity-100 absolute w-full h-1 left-0 bottom-0"
+          />
+        ) : null}
 
         <Grid item>
           <Spellcheck

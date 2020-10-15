@@ -309,7 +309,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   )
 }
 
-const SelectionBackground = ({
+export const SelectionBackground = ({
   lazyResult,
 }: {
   lazyResult: LazyQueryResult
