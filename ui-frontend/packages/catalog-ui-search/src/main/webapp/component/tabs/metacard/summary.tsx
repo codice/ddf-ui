@@ -37,6 +37,7 @@ import Box from '@material-ui/core/Box'
 import { Elevations, dark, light } from '../../theme/theme'
 import { DarkDivider } from '../../dark-divider/dark-divider'
 import { displayHighlightedAttrInFull } from './highlightUtil'
+import Geometry from '../../../react-component/input-wrappers/geometry'
 //metacardDefinitions.metacardTypes[attribute].type
 //metacardDefinitions.metacardTypes[attribute].multivalued
 //properties.isReadOnly(attribute)
@@ -194,6 +195,12 @@ const ThumbnailInput = ({
   )
 }
 
+enum Mode {
+  Normal = 'normal',
+  Saving = 'saving',
+  BadInput = 'bad-input',
+}
+
 export const Editor = ({
   attr,
   lazyResult,
@@ -207,7 +214,7 @@ export const Editor = ({
   onSave?: () => void
   goBack?: () => void
 }) => {
-  const [mode, setMode] = React.useState('normal' as 'normal' | 'saving')
+  const [mode, setMode] = React.useState(Mode.Normal)
   const [values, setValues] = React.useState(
     Array.isArray(lazyResult.plain.metacard.properties[attr])
       ? lazyResult.plain.metacard.properties[attr]
@@ -245,7 +252,7 @@ export const Editor = ({
                     case 'DATE':
                       return (
                         <KeyboardDateTimePicker
-                          disabled={mode === 'saving'}
+                          disabled={mode !== Mode.Normal}
                           value={val}
                           onChange={(e: any) => {
                             values[index] = e.toISOString()
@@ -265,7 +272,7 @@ export const Editor = ({
                     case 'BINARY':
                       return (
                         <ThumbnailInput
-                          disabled={mode === 'saving'}
+                          disabled={mode !== Mode.Normal}
                           value={val}
                           onChange={(update) => {
                             values[index] = update
@@ -276,7 +283,7 @@ export const Editor = ({
                     case 'BOOLEAN':
                       return (
                         <Checkbox
-                          disabled={mode === 'saving'}
+                          disabled={mode !== Mode.Normal}
                           checked={val}
                           onChange={(e) => {
                             values[index] = e.target.checked
@@ -292,7 +299,7 @@ export const Editor = ({
                     case 'SHORT':
                       return (
                         <TextField
-                          disabled={mode === 'saving'}
+                          disabled={mode !== Mode.Normal}
                           value={val}
                           onChange={(e) => {
                             values[index] = e.target.value
@@ -304,28 +311,22 @@ export const Editor = ({
                       )
                     case 'GEOMETRY':
                       return (
-                        <TextField
-                          disabled={mode === 'saving'}
-                          value={val}
-                          onChange={(e) => {
-                            values[index] = e.target.value
+                        <Geometry
+                          label={label}
+                          onChange={(location: any) => {
+                            location === null || location === 'INVALID'
+                              ? setMode(Mode.BadInput)
+                              : setMode(Mode.Normal)
+                            values[index] = location
                             setValues([...values])
                           }}
-                          fullWidth
-                          helperText="WKT Syntax is supported for geometries, here are some examples:
-                          POINT (50 40)
-                          LINESTRING (30 10, 10 30, 40 40)
-                          POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))
-                          MULTIPOINT (10 40, 40 30, 20 20, 30 10)
-                          MULTILINESTRING ((10 10, 20 20, 10 40), (40 40, 30 30, 40 20, 30 10))
-                          MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))
-                          GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6,7 10))"
+                          value={val}
                         />
                       )
                     default:
                       return (
                         <TextField
-                          disabled={mode === 'saving'}
+                          disabled={mode !== Mode.Normal}
                           value={val}
                           onChange={(e: any) => {
                             values[index] = e.target.value
@@ -343,7 +344,7 @@ export const Editor = ({
               {isMultiValued ? (
                 <Grid item md={1}>
                   <Button
-                    disabled={mode === 'saving'}
+                    disabled={mode === Mode.Saving}
                     onClick={() => {
                       values.splice(index, 1)
                       setValues([...values])
@@ -358,7 +359,7 @@ export const Editor = ({
         })}
         {isMultiValued && values.length > 0 && (
           <Button
-            disabled={mode === 'saving'}
+            disabled={mode === Mode.Saving}
             variant="text"
             color="primary"
             onClick={() => {
@@ -381,7 +382,7 @@ export const Editor = ({
       <Divider />
       <DialogActions>
         <Button
-          disabled={mode === 'saving'}
+          disabled={mode === Mode.Saving}
           variant="text"
           onClick={() => {
             onCancel()
@@ -390,11 +391,11 @@ export const Editor = ({
           Cancel
         </Button>
         <Button
-          disabled={mode === 'saving'}
+          disabled={mode !== Mode.Normal}
           variant="contained"
           color="primary"
           onClick={() => {
-            setMode('saving')
+            setMode(Mode.Saving)
             let transformedValues = values
             try {
               transformedValues =
@@ -437,7 +438,7 @@ export const Editor = ({
           Save
         </Button>
       </DialogActions>
-      {mode === 'saving' ? (
+      {mode === Mode.Saving ? (
         <LinearProgress
           style={{
             width: '100%',
