@@ -8,16 +8,12 @@ import moment from 'moment-timezone'
 export const DateHelpers = {
   General: {
     getDateFormat: () => {
-      return user
-        .get('user')
-        .get('preferences')
-        .get('dateTimeFormat')['datetimefmt'] as string
+      return user.get('user').get('preferences').get('dateTimeFormat')[
+        'datetimefmt'
+      ] as string
     },
     getTimeZone: () => {
-      return user
-        .get('user')
-        .get('preferences')
-        .get('timeZone') as string
+      return user.get('user').get('preferences').get('timeZone') as string
     },
   },
   Blueprint: {

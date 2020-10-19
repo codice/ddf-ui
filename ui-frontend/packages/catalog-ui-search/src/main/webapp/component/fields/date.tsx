@@ -38,7 +38,7 @@ const validateShape = ({ value, onChange }: DateFieldProps) => {
 
 export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
   const { listenTo } = useBackbone()
-  const [forceRender, setForceRender] = React.useState(Math.random())
+  const [, setForceRender] = React.useState(Math.random())
   React.useEffect(() => {
     validateShape({ onChange, value })
   }, [])

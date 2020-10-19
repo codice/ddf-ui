@@ -49,7 +49,7 @@ export const DateRangeField = ({
   BPDateRangeProps,
 }: Props) => {
   const { listenTo } = useBackbone()
-  const [forceRender, setForceRender] = React.useState(Math.random())
+  const [, setForceRender] = React.useState(Math.random())
   React.useEffect(() => {
     validateShape({ value, onChange, BPDateRangeProps })
   }, [])
