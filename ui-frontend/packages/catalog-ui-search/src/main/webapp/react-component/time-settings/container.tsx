@@ -32,7 +32,7 @@ const getUserPreferences = (): UserPreferences => {
 }
 
 const savePreferences = (model: {}) => {
-  const nullOrUndefinedValues = !Object.values(model).every(value => !!value)
+  const nullOrUndefinedValues = !Object.values(model).every((value) => !!value)
   if (nullOrUndefinedValues) return
 
   const preferences = getUserPreferences()

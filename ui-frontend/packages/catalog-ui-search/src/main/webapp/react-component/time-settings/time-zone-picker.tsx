@@ -12,7 +12,7 @@ type Props = {
 
 const TimeZoneSelector = (props: Props) => {
   const getDefaultTimeZone = (timeZoneName: string) => {
-    return props.timeZones.find(zone => zone.zoneName === timeZoneName)
+    return props.timeZones.find((zone) => zone.zoneName === timeZoneName)
   }
 
   let [currentTimeZone, setCurrentTimeZone] = React.useState(
@@ -34,11 +34,11 @@ const TimeZoneSelector = (props: Props) => {
           return oldZone.zoneName !== newZone.zoneName
         }}
         options={props.timeZones}
-        getOptionLabel={zone =>
+        getOptionLabel={(zone) =>
           `${zone.zoneName}, ${zone.abbr}, ${zone.offsetAsString}`
         }
         style={{ width: '100%' }}
-        renderInput={params => (
+        renderInput={(params) => (
           <TextField {...params} label="Time Zone" variant="outlined" />
         )}
         value={currentTimeZone}

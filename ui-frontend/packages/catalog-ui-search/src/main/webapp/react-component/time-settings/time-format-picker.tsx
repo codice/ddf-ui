@@ -28,7 +28,7 @@ const timeFormats = [
 
 const TimeFormatSelector = (props: Props) => {
   const getDefaultFormat = (timeFormat: string) => {
-    return timeFormats.find(format => format.value.datetimefmt === timeFormat)
+    return timeFormats.find((format) => format.value.datetimefmt === timeFormat)
   }
 
   let [currentTimeFormat, setCurrentTimeFormat] = React.useState(
@@ -50,9 +50,9 @@ const TimeFormatSelector = (props: Props) => {
           return oldFormat.value.datetimefmt !== newFormat.value.datetimefmt
         }}
         options={timeFormats}
-        getOptionLabel={format => `${format.label}`}
+        getOptionLabel={(format) => `${format.label}`}
         style={{ width: '100%', paddingTop: '2em' }}
-        renderInput={params => (
+        renderInput={(params) => (
           <TextField {...params} label="Time Format" variant="outlined" />
         )}
         value={currentTimeFormat}
