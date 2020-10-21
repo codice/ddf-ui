@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button'
 const user = require('../../singletons/user-instance')
 const properties = require('../../../js/properties.js')
 import TypedMetacardDefs from './metacardDefinitions'
+import Autocomplete from '@material-ui/lab/Autocomplete'
 import Checkbox from '@material-ui/core/Checkbox'
 import Divider from '@material-ui/core/Divider'
 const Common = require('../../../js/Common.js')
@@ -217,12 +218,13 @@ export const Editor = ({
   const [mode, setMode] = React.useState(Mode.Normal)
   const [values, setValues] = React.useState(
     Array.isArray(lazyResult.plain.metacard.properties[attr])
-      ? lazyResult.plain.metacard.properties[attr]
+      ? lazyResult.plain.metacard.properties[attr].slice(0)
       : [lazyResult.plain.metacard.properties[attr]]
   )
   const label = TypedMetacardDefs.getAlias({ attr })
   const isMultiValued = TypedMetacardDefs.isMulti({ attr })
   const attrType = TypedMetacardDefs.getType({ attr })
+  const enumForAttr = TypedMetacardDefs.getEnum({ attr: attr })
   const addSnack = useSnack()
 
   return (
@@ -244,10 +246,30 @@ export const Editor = ({
       <DialogContent style={{ minHeight: '30em', minWidth: '60vh' }}>
         {values.map((val: any, index: number) => {
           return (
-            <Grid container direction="row">
+            <Grid container direction="row" className="my-2">
               {index !== 0 ? <Divider style={{ margin: '5px 0px' }} /> : null}
               <Grid item md={11}>
                 {(() => {
+                  if (enumForAttr) {
+                    return (
+                      <Autocomplete
+                        disabled={mode === 'saving'}
+                        value={val}
+                        onChange={(_e: any, newValue: string) => {
+                          values[index] = newValue
+                          setValues([...values])
+                        }}
+                        // @ts-ignore fullWidth does exist on Autocomplete
+                        fullWidth
+                        disableClearable
+                        size="small"
+                        options={enumForAttr}
+                        renderInput={(params) => (
+                          <TextField {...params} variant="outlined" />
+                        )}
+                      />
+                    )
+                  }
                   switch (attrType) {
                     case 'DATE':
                       return (
@@ -268,7 +290,6 @@ export const Editor = ({
                           fullWidth
                         />
                       )
-
                     case 'BINARY':
                       return (
                         <ThumbnailInput
