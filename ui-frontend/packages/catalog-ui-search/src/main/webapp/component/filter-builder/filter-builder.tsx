@@ -26,80 +26,48 @@ type Props = {
   model: any
 }
 
+const convertToFilterIfNecessary = ({
+  filter,
+}: {
+  filter: any
+}): FilterBuilderClass => {
+  if (isFilterBuilderClass(filter)) {
+    return filter
+  }
+  if (filter.filters === undefined) {
+    return new FilterBuilderClass({
+      type: 'AND',
+      filters: [filter],
+      negated: false,
+    })
+  }
+  return new FilterBuilderClass({
+    ...filter,
+  })
+}
+
 const getBaseFilter = ({ model }: { model: any }): FilterBuilderClass => {
   const filter = model.get('filterTree')
-  if (filter.filters === undefined) {
-    return validateFilter(
-      new FilterBuilderClass({
-        type: 'AND',
-        filters: [filter],
-        negated: false,
-      })
-    )
-  }
-  return validateFilter(
-    new FilterBuilderClass({
-      ...filter,
-    })
-  )
-}
-
-/**
- * Updates filter to accomodate WFS sources which don't handle blanks
- */
-const validateFilter = (filter: FilterBuilderClass) => {
-  if (filter.filters.length === 1) {
-    if (
-      !isFilterBuilderClass(filter.filters[0]) &&
-      filter.filters[0].property === 'anyText' &&
-      filter.filters[0].type === 'ILIKE' &&
-      filter.filters[0].value === ''
-    ) {
-      filter.filters[0].value = '*'
-    }
-  }
-  return filter
-}
-
-const generateSaveCallback = (model: any, filter: FilterBuilderClass) => {
-  return () => {
-    model.set('cql', cql.write(filter))
-    model.set('filterTree', filter)
-  }
+  return convertToFilterIfNecessary({ filter })
 }
 
 export const FilterBuilderRoot = ({ model }: Props) => {
   const [filter, setFilter] = React.useState(getBaseFilter({ model }))
   const { listenTo, stopListening } = useBackbone()
-  const saveCallbackRef = React.useRef(generateSaveCallback(model, filter))
-  React.useEffect(() => {
-    saveCallbackRef.current = generateSaveCallback(model, filter)
-  }, [filter, model])
-  React.useEffect(() => {
-    return () => {
-      saveCallbackRef.current()
-    }
-  }, [])
   React.useEffect(() => {
     const callback = () => {
-      saveCallbackRef.current()
-    }
-    const callback2 = () => {
       setFilter(getBaseFilter({ model }))
     }
-    // for perf, only update when necessary
-    listenTo(model, 'update', callback)
-    listenTo(model, 'change:filterTree', callback2)
+    listenTo(model, 'change:filterTree', callback)
     return () => {
-      stopListening(model, 'update', callback)
-      stopListening(model, 'change:filterTree', callback2)
+      stopListening(model, 'change:filterTree', callback)
     }
-  }, [model, filter])
+  }, [model])
   return (
     <FilterBranch
       filter={filter}
       setFilter={(update) => {
-        setFilter(update)
+        model.set('filterTree', convertToFilterIfNecessary({ filter: update }))
       }}
       root={true}
     />

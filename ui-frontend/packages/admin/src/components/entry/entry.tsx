@@ -17,8 +17,8 @@ const links = [
 entry({
   extension: {
     links,
-    handleModuleRouting: (moduleId) => {
-      const Link = links.find((link) => link.url === moduleId)
+    handleModuleRouting: moduleId => {
+      const Link = links.find(link => link.url === moduleId)
       return Link ? <Link.content /> : undefined
     },
   },

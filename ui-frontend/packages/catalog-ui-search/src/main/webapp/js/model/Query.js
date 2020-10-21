@@ -259,8 +259,16 @@ Query.Model = Backbone.AssociatedModel.extend({
       this.startSearch()
     }
   },
+  /**
+   * We only keep filterTree up to date, then when we interact with the server we write out what it means
+   *
+   * We do this for performance, and because transformation is lossy.
+   */
+  updateCqlBasedOnFilterTree() {
+    this.set('cql', cql.write(this.get('filterTree')))
+  },
   startSearchFromFirstPage(options) {
-    this.trigger('update')
+    this.updateCqlBasedOnFilterTree()
     this.resetCurrentIndexForSourceGroup()
     this.startSearch(options)
   },
