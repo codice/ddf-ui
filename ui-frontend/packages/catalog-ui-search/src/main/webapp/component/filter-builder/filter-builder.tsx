@@ -13,7 +13,6 @@
  *
  **/
 import * as React from 'react'
-const cql = require('../../js/cql.js')
 
 // @ts-ignore ts-migrate(6192) FIXME: All imports in import declaration are unused.
 import { serialize, deserialize } from './filter-serialization'
