@@ -30,7 +30,7 @@ export type ExtensionPointsType = {
     user: any
     editableAttributes: string[]
   }) => boolean | undefined
-  customEditableAttributes: () => string[]
+  customEditableAttributes: () => Promise<any>
   resultItemTitleAddOn: ({
     lazyResult,
   }: {
@@ -55,7 +55,7 @@ const ExtensionPoints: ExtensionPointsType = {
   metacardInteractions,
   customFilterInput: () => undefined,
   customCanWritePermission: () => undefined,
-  customEditableAttributes: () => [],
+  customEditableAttributes: async () => undefined,
   resultItemTitleAddOn: () => null,
   resultItemRowAddOn: () => null,
   layoutDropdown: () => null,
