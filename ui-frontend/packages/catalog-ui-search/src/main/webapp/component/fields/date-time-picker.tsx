@@ -76,7 +76,22 @@ const DateTimePicker = ({
       InputProps={{
         inputComponent: inputComponent,
         endAdornment: (
-          <InputAdornment position="end">
+          <InputAdornment
+            className="cursor-pointer"
+            position="end"
+            onClick={(e) => {
+              try {
+                const blueprintDatepickerComponent = e.currentTarget
+                  .previousElementSibling as Element
+                const blueprintDatepickerInput = blueprintDatepickerComponent.querySelector(
+                  'input'
+                ) as HTMLInputElement
+                blueprintDatepickerInput.focus() // focusing will cause the datepicker to popup
+              } catch (err) {
+                console.warn('Could not find input to focus to')
+              }
+            }}
+          >
             <CalendarIcon
               className={
                 TextFieldProps?.variant === 'outlined' ? 'mr-1' : 'mr-4'
