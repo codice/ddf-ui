@@ -4,6 +4,14 @@ import { IDateRangeInputProps } from '@blueprintjs/datetime'
 // @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../s... Remove this comment to see the full error message
 import user from '../singletons/user-instance'
 import moment from 'moment-timezone'
+import {
+  isDateValid,
+  isDayInRange,
+} from '@blueprintjs/datetime/lib/esm/common/dateUtils'
+import {
+  getDefaultMinDate,
+  getDefaultMaxDate,
+} from '@blueprintjs/datetime/lib/esm/datePickerCore'
 
 export const DateHelpers = {
   General: {
@@ -45,6 +53,16 @@ export const DateHelpers = {
         } catch (err) {
           return ''
         }
+      },
+      isValid: (date: Date, minDate?: Date, maxDate?: Date) => {
+        return (
+          date &&
+          isDateValid(date) &&
+          isDayInRange(date, [
+            minDate || getDefaultMinDate(),
+            maxDate || getDefaultMaxDate(),
+          ])
+        )
       },
     },
     DateProps: {
@@ -91,7 +109,7 @@ export const DateHelpers = {
        *
        * TLDR: Use this on an ISO date going INTO the blueprint datepicker (the value prop).  Use the sibling function TimeshiftedDateToISO to reverse this.
        */
-      ISOToTimeshiftedDate: (value: string) => {
+      ISOToTimeshiftedDate: (value: string): Date => {
         try {
           let momentShiftedDate = moment.utc(new Date(value).toUTCString())
           const utcOffsetMinutesLocal = new Date().getTimezoneOffset()
@@ -100,10 +118,23 @@ export const DateHelpers = {
             .utcOffset()
           const totalOffset = utcOffsetMinutesLocal + utcOffsetMinutesTimezone
           console.log(`offset: ${totalOffset}`)
-          return momentShiftedDate.add(totalOffset, 'minutes').toDate()
+          const momentWithOffset = momentShiftedDate.add(totalOffset, 'minutes')
+
+          if (
+            momentWithOffset.isValid() &&
+            DateHelpers.Blueprint.commonProps.isValid(momentWithOffset.toDate())
+          ) {
+            return momentWithOffset.toDate()
+          } else {
+            return DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
+              new Date().toISOString()
+            )
+          }
         } catch (err) {
           console.error(err)
-          return new Date()
+          return DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
+            new Date().toISOString()
+          )
         }
       },
       /**
@@ -128,6 +159,15 @@ export const DateHelpers = {
           console.error(err)
           return value.toISOString()
         }
+      },
+      /**
+       * The output from the onChange is an ISOString. This converts it to a string in the user's timezone and preferred format.
+       *
+       * TLDR: Use this on the string from the onChange when you want to display it.
+       */
+      ISOtoFormattedString: (value: string) => {
+        const date = DateHelpers.Blueprint.DateProps.generateValue(value)
+        return DateHelpers.Blueprint.commonProps.formatDate(date)
       },
     },
   },

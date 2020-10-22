@@ -19,7 +19,7 @@ import { DateInput, IDateInputProps } from '@blueprintjs/datetime'
 import user from '../singletons/user-instance'
 import { DateHelpers } from './date-helpers'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
-import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import useTimePrefs from './useTimePrefs'
 
 type DateFieldProps = {
   value: string
@@ -27,7 +27,7 @@ type DateFieldProps = {
   /**
    * Override if you absolutely must
    */
-  BPDateProps?: IDateInputProps
+  BPDateProps?: Partial<IDateInputProps>
 }
 
 const validateShape = ({ value, onChange }: DateFieldProps) => {
@@ -37,19 +37,9 @@ const validateShape = ({ value, onChange }: DateFieldProps) => {
 }
 
 export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
-  const { listenTo } = useBackbone()
-  const [, setForceRender] = React.useState(Math.random())
+  useTimePrefs()
   React.useEffect(() => {
     validateShape({ onChange, value })
-  }, [])
-  React.useEffect(() => {
-    listenTo(
-      user.getPreferences(),
-      'change:dateTimeFormat change:timeZone',
-      () => {
-        setForceRender(Math.random())
-      }
-    )
   }, [])
 
   return (
