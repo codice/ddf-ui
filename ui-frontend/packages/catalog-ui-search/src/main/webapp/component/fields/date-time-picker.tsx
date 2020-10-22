@@ -82,9 +82,9 @@ const DateTimePicker = ({
             className="cursor-pointer"
             position="end"
             onClick={() => {
-                if (inputRef.current) {
-                  inputRef.current.focus()
-                }
+              if (inputRef.current) {
+                inputRef.current.focus()
+              }
             }}
           >
             <CalendarIcon
