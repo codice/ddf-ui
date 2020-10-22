@@ -25,7 +25,7 @@ type Props = {
   /**
    * Override if you absolutely must
    */
-  BPDateRangeProps?: IDateRangeInputProps
+  BPDateRangeProps?: Partial<IDateRangeInputProps>
 }
 
 const validateShape = ({ value, onChange }: Props) => {
