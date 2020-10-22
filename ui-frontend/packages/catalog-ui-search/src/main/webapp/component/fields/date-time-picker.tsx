@@ -56,6 +56,9 @@ const DateTimePicker = ({
           BPDateProps={{
             ...BPDateProps,
             className: classes,
+            inputProps: {
+              inputRef: props.inputRef,
+            },
           }}
         />
       )
