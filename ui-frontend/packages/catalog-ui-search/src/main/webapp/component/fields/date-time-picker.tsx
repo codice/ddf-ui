@@ -35,6 +35,7 @@ const DateTimePicker = ({
   TextFieldProps,
   BPDateProps,
 }: DateFieldProps) => {
+  const inputRef = React.useRef<HTMLInputElement>()
   /**
    * We want to avoid causing the TextField below to percieve a change to inputComponent when possible, because that mucks with focus.
    *
@@ -73,10 +74,19 @@ const DateTimePicker = ({
       InputLabelProps={{ shrink: true }}
       value={value}
       onChange={onChange as any}
+      inputRef={inputRef}
       InputProps={{
         inputComponent: inputComponent,
         endAdornment: (
-          <InputAdornment position="end">
+          <InputAdornment
+            className="cursor-pointer"
+            position="end"
+            onClick={() => {
+                if (inputRef.current) {
+                  inputRef.current.focus()
+                }
+            }}
+          >
             <CalendarIcon
               className={
                 TextFieldProps?.variant === 'outlined' ? 'mr-1' : 'mr-4'
