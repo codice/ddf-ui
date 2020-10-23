@@ -19,7 +19,7 @@ import ThemeContainer from '../../react-component/theme'
 import { IntlProvider } from 'react-intl'
 import { Provider as ThemeProvider } from '../../component/theme/theme'
 import { SnackProvider } from '../../component/snack/snack.provider'
-import { DialogProvider } from '@connexta/atlas/atoms/dialog'
+import { DialogProvider } from '../../component/dialog'
 import { HashRouter as Router } from 'react-router-dom'
 
 const properties = require('properties')

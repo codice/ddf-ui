@@ -21,7 +21,7 @@ const user = require('../singletons/user-instance.js')
 const metacardDefinitions = require('../singletons/metacard-definitions.js')
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 
-import { Dropdown } from '@connexta/atlas/atoms/dropdown'
+import { Dropdown } from '../atlas-dropdown'
 import Button from '@material-ui/core/Button'
 import LinkIcon from '@material-ui/icons/Link'
 import GetAppIcon from '@material-ui/icons/GetApp'

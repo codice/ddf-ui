@@ -12,7 +12,7 @@ import Divider from '@material-ui/core/Divider'
 const Common = require('../../../js/Common.js')
 import DeleteIcon from '@material-ui/icons/Delete'
 import TextField from '@material-ui/core/TextField'
-import { useDialog } from '@connexta/atlas/atoms/dialog'
+import { useDialog } from '../../dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
