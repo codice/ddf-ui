@@ -45,13 +45,13 @@ const ImageInput = ({ src = '', updateSrc }: ImageInputType) => {
         <input
           ref={inputRef}
           type="file"
-          onChange={e => {
+          onChange={(e) => {
             const img = e.target
             const reader = new FileReader()
-            reader.onload = function(event) {
+            reader.onload = function (event) {
               const result = event.target ? event.target.result : ''
               updateSrc(result as string)
-              img.onload = function() {}
+              img.onload = function () {}
               img.onerror = () => {}
             }
             reader.onerror = () => {}
@@ -113,13 +113,13 @@ const ImageInput = ({ src = '', updateSrc }: ImageInputType) => {
         <input
           ref={inputRef}
           type="file"
-          onChange={e => {
+          onChange={(e) => {
             const img = e.target
             const reader = new FileReader()
-            reader.onload = function(event) {
+            reader.onload = function (event) {
               const result = event.target ? event.target.result : ''
               updateSrc(result as string)
-              img.onload = function() {}
+              img.onload = function () {}
               img.onerror = () => {}
             }
             reader.onerror = () => {}
@@ -158,7 +158,7 @@ const BrandingContents = () => {
   const { services } = useServicesContext()
 
   const brandingService = services.find(
-    service => service.id === brandingConfigurationId
+    (service) => service.id === brandingConfigurationId
   )
 
   const submit = () => {
@@ -178,7 +178,7 @@ const BrandingContents = () => {
         mbean:
           'org.codice.ddf.ui.admin.api.ConfigurationAdmin:service=ui,version=2.3.0',
       },
-    }).then(response => {
+    }).then((response) => {
       if (!response.success) {
         enqueueSnackbar(`Branding update failed`, {
           variant: 'error',
@@ -199,20 +199,17 @@ const BrandingContents = () => {
     })
   }
 
-  React.useEffect(
-    () => {
-      if (brandingService !== undefined) {
-        const currentProperties = (brandingService.configurations
-          ? brandingService.configurations[0].properties
-          : {}) as BrandingPropertiesType
-        setState({
-          ...currentProperties,
-        })
-        setLoading(false)
-      }
-    },
-    [services]
-  )
+  React.useEffect(() => {
+    if (brandingService !== undefined) {
+      const currentProperties = (brandingService.configurations
+        ? brandingService.configurations[0].properties
+        : {}) as BrandingPropertiesType
+      setState({
+        ...currentProperties,
+      })
+      setLoading(false)
+    }
+  }, [services])
 
   if (services.length === 0 && brandingService === undefined) {
     return <CircularProgress size={250} />
