@@ -229,13 +229,13 @@ export const HomePage = () => {
   const history = useHistory()
   const { listenTo } = useBackbone()
   React.useEffect(() => {
-    listenTo(queryModel, 'update', () => {
+    listenTo(queryModel, 'change', () => {
       // run after the updates
       setTimeout(() => {
         const encodedQueryModel = encodeURIComponent(
           JSON.stringify(queryModel.toJSON())
         )
-        history.push({
+        history.replace({
           pathname: '/home',
           search: `?defaultQuery=${encodedQueryModel}`,
         })

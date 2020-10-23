@@ -70,10 +70,12 @@ export class FilterBuilderClass {
     type = 'AND',
     filters = [new FilterClass()],
     negated = false,
+    id = Math.random().toString(),
   }: {
     type?: FilterBuilderClass['type']
     filters?: FilterBuilderClass['filters']
     negated?: FilterBuilderClass['negated']
+    id?: string
   } = {}) {
     this.type = type
     /**
@@ -91,7 +93,7 @@ export class FilterBuilderClass {
       }
     })
     this.negated = negated
-    this.id = Math.random().toString()
+    this.id = id
   }
 }
 
@@ -168,22 +170,24 @@ export class FilterClass {
     property = 'anyText',
     value = '',
     negated = false,
+    id = Math.random().toString(),
   }: {
     type?: FilterClass['type']
     property?: FilterClass['property']
     value?: FilterClass['value']
     negated?: FilterClass['negated']
+    id?: string
   } = {}) {
     this.type = type
     this.property = property
     this.value = value
     this.negated = negated
-    this.id = Math.random().toString()
+    this.id = id
   }
 }
 
 export const isFilterBuilderClass = (
   filter: FilterBuilderClass | FilterClass
 ): filter is FilterBuilderClass => {
-  return (filter as FilterBuilderClass).filters !== undefined
+  return filter.constructor === FilterBuilderClass
 }
