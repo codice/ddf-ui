@@ -13,9 +13,9 @@
  *
  **/
 
-import wrapNum from '../../../react-component/utils/wrap-num/wrap-num.tsx'
+import wrapNum from '../../../react-component/utils/wrap-num/wrap-num'
 import * as React from 'react'
-import ZoomToHomeButton from '../../../react-component/button/split-button/zoomToHome.tsx'
+import ZoomToHomeButton from '../../../react-component/button/split-button/zoomToHome'
 import Gazetteer from '../../../react-component/location/gazetteer'
 
 const wreqr = require('../../../js/wreqr.js')
