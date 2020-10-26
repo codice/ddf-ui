@@ -16,7 +16,7 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { hot } from 'react-hot-loader'
 
-const Portal = ({children}: {children: React.ReactNode}) => {
+const Portal = ({ children }: { children: React.ReactNode }) => {
   /*
     Why this wrapper?  Well, styled-components doesn't have a good 
     abstraction for making a portal yet, so we keep the portal lightly styled 
