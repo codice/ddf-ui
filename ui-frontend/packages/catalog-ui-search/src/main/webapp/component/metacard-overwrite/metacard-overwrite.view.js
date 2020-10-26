@@ -215,10 +215,45 @@ class MetacardOverwrite extends React.Component {
   }
 
   componentDidMount() {
+    const overrides = {
+      'security.access-administrators':
+        this.model
+          .get('metacard')
+          .get('properties')
+          .get('security.access-administrators') || [],
+      'security.access-groups':
+        this.model
+          .get('metacard')
+          .get('properties')
+          .get('security.access-groups') || [],
+      'security.access-groups-read':
+        this.model
+          .get('metacard')
+          .get('properties')
+          .get('security.access-groups-read') || [],
+      'security.access-individuals':
+        this.model
+          .get('metacard')
+          .get('properties')
+          .get('security.access-individuals') || [],
+      'security.access-individuals-read':
+        this.model
+          .get('metacard')
+          .get('properties')
+          .get('security.access-individuals-read') || [],
+    }
     this.dropzone = new Dropzone(this.dropzoneElement.current, {
+      paramName: 'parse.resource', //required to parse multipart body
       url: './internal/catalog/' + this.model.get('metacard').id,
       maxFilesize: 5000000, //MB
       method: 'put',
+      sending(file, xhr, formData) {
+        Object.keys(overrides).forEach((attribute) => {
+          overrides[attribute].forEach((value) => {
+            formData.append('parse.' + attribute, value)
+          })
+        })
+      },
     })
     this.trackOverwrite()
     this.setupEventListeners()
