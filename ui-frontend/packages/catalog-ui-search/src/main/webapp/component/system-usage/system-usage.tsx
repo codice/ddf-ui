@@ -7,7 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent'
 import Divider from '@material-ui/core/Divider'
 const properties = require('../../js/properties.js')
 const user = require('../singletons/user-instance.js')
-import { useDialog } from '@connexta/atlas/atoms/dialog'
+import { useDialog } from '../dialog'
 
 function hasMessage() {
   return properties.ui.systemUsageTitle

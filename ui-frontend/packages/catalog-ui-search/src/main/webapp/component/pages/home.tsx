@@ -14,17 +14,16 @@ import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 
 import MRC from '../../react-component/marionette-region-container'
 import Button from '@material-ui/core/Button'
-import { Dropdown } from '@connexta/atlas/atoms/dropdown'
 import SearchInteractions from '../search-interactions'
 import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
 import MoreVert from '@material-ui/icons/MoreVert'
 import Box from '@material-ui/core/Box'
 import Divider from '@material-ui/core/Divider'
+import { Dropdown } from '../atlas-dropdown'
 import { Elevations } from '../theme/theme'
 import SearchIcon from '@material-ui/icons/SearchTwoTone'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-// @ts-ignore ts-migrate(6133) FIXME: 'useParams' is declared but its value is never rea... Remove this comment to see the full error message
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
