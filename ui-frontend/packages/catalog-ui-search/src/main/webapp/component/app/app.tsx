@@ -531,6 +531,7 @@ const App = ({
                             iconPosition="start"
                             expandedText={userInstance.getUserName()}
                             unexpandedText={userInstance.getUserName()}
+                            dataId="user-profile"
                             expanded={navOpen}
                             focusVisibleClassName="focus-visible"
                           />

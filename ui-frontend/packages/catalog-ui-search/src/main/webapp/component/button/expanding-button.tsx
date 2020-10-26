@@ -37,12 +37,13 @@ const ExpandingButton = ({
   Icon,
   expandedText,
   unexpandedText,
+  dataId=expandedText,
   ...buttonProps
 }: ExpandingButtonProps) => {
   const { className, ...otherButtonProps } = buttonProps
   return (
     <Button
-      data-id={`sidebar-${expandedText
+      data-id={`sidebar-${dataId
         .toLowerCase()
         .split(' ')
         .join('-')}-button`}
