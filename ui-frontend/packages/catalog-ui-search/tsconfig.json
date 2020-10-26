@@ -10,7 +10,7 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noEmitHelpers": true,
+    "noEmitHelpers": false,
     "importHelpers": true,
     "declaration": true,
     "strictNullChecks": true,
