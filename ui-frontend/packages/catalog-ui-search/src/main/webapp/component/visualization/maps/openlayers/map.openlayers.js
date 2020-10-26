@@ -14,7 +14,7 @@
  **/
 /* global require, window */
 
-import wrapNum from '../../../../react-component/utils/wrap-num/wrap-num.tsx'
+import wrapNum from '../../../../react-component/utils/wrap-num/wrap-num'
 
 const $ = require('jquery')
 const _ = require('underscore')

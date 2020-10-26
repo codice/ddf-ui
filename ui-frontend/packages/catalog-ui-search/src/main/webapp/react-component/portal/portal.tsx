@@ -16,13 +16,7 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { hot } from 'react-hot-loader'
 
-class Portal extends React.Component<{}, {}> {
-  wrapper = document.createElement('react-portal')
-  constructor(props: {}) {
-    super(props)
-    document.body.appendChild(this.wrapper)
-    this.setupWrapper()
-  }
+const Portal = ({children}: {children: React.ReactNode}) => {
   /*
     Why this wrapper?  Well, styled-components doesn't have a good 
     abstraction for making a portal yet, so we keep the portal lightly styled 
@@ -30,22 +24,22 @@ class Portal extends React.Component<{}, {}> {
     to visible.  This allows us to accomplish pretty much exactly what 
     we want.
   */
-  setupWrapper() {
-    this.wrapper.style.position = 'absolute'
-    this.wrapper.style.left = '0px'
-    this.wrapper.style.top = '0px'
-    this.wrapper.style.display = 'block'
-    this.wrapper.style.overflow = 'visible'
-    this.wrapper.style.zIndex = '103' // use creation / append order from here on out
-  }
-  componentWillUnmount() {
-    this.wrapper.remove()
-  }
+  const [wrapper] = React.useState(document.createElement('react-portal'))
 
-  // @ts-ignore
-  render() {
-    return ReactDOM.createPortal(this.props.children, this.wrapper)
-  }
+  React.useEffect(() => {
+    wrapper.style.position = 'absolute'
+    wrapper.style.left = '0px'
+    wrapper.style.top = '0px'
+    wrapper.style.display = 'block'
+    wrapper.style.overflow = 'visible'
+    wrapper.style.zIndex = '103' // use creation / append order from here on out
+    document.body.appendChild(wrapper)
+    return () => {
+      wrapper.remove()
+    }
+  }, [])
+
+  return ReactDOM.createPortal(children, wrapper)
 }
 
 export default hot(module)(Portal)
