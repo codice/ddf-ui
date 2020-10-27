@@ -22,7 +22,7 @@ const validateShape = ({ value, onChange }: Props) => {
 }
 
 const isInvalid = ({ value }: Props) => {
-  return value.last === undefined || value.unit === undefined
+  return value === undefined || value.last === undefined || value.unit === undefined
 }
 
 export const DateRelativeField = ({ value, onChange }: Props) => {
