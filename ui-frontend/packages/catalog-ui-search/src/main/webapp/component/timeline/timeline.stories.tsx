@@ -7,6 +7,7 @@ import Timeline from './index'
 import styled from 'styled-components'
 import { createTestData, formatDate } from './util'
 import { TimelineItem } from './timeline'
+import moment, { Moment } from 'moment-timezone'
 
 const stories = storiesOf('Components|Timeline', module).addParameters({
   info: `The TimelinePicker is a controlled component that can be used to select a time range. The TimelinePicker utilizies d3.js,
@@ -18,18 +19,18 @@ const ShowTimelineButton = styled.button`
   color: white;
 `
 
-const renderDates = (dates: Date[], format: string, timezone: string) => {
+const renderDates = (dates: Moment[], format: string) => {
   if (dates.length == 0) {
     return null
   } else if (dates.length == 1) {
-    return formatDate(dates[0], format, timezone)
+    return formatDate(dates[0], format)
   } else if (dates.length == 2) {
-    return `${formatDate(dates[0], format, timezone)} ---------- ${formatDate(
+    return `${formatDate(dates[0], format)} ---------- ${formatDate(
       dates[1],
-      format,
-      timezone
+      format
     )}`
   }
+  return null
 }
 
 stories.add('Timeline with Data', () => {
@@ -77,8 +78,8 @@ stories.add('Timeline with Data', () => {
 
   return (
     <Timeline
-      min={new Date(minKnob)}
-      max={new Date(maxKnob)}
+      min={moment(new Date(minKnob))}
+      max={moment(new Date(maxKnob))}
       height={300}
       mode={mode}
       format={dateFormatKnob}
@@ -99,7 +100,7 @@ stories.add('Timeline with Data', () => {
         })
         setData(newData)
       }}
-      onDone={(selectionRange: Date[]) => {
+      onDone={(selectionRange) => {
         action('clicked onDone')(selectionRange)
         setMode(undefined)
       }}
@@ -125,7 +126,7 @@ stories.add('Conditional Render', () => {
   )
 
   const [showTimeline, setShowTimeline] = useState(true)
-  const [timePicked, setTimePicked] = useState<Date[]>([])
+  const [timePicked, setTimePicked] = useState<Moment[]>([])
 
   const timezoneKnob = select(
     'Timezone',
@@ -165,11 +166,11 @@ stories.add('Conditional Render', () => {
       </ShowTimelineButton>
       <br />
       <br />
-      {renderDates(timePicked, dateFormatKnob, timezoneKnob)}
+      {renderDates(timePicked, dateFormatKnob)}
       {showTimeline && (
         <Timeline
-          min={new Date(minKnob)}
-          max={new Date(maxKnob)}
+          min={moment(new Date(minKnob))}
+          max={moment(new Date(maxKnob))}
           data={testData}
           height={300}
           mode={mode}
@@ -179,7 +180,7 @@ stories.add('Conditional Render', () => {
           onCopy={(copiedValue: string) =>
             action('clicked onCopy')(copiedValue)
           }
-          onDone={(selectionRange: Date[]) => {
+          onDone={(selectionRange) => {
             setShowTimeline(false)
             action('clicked onDone')(selectionRange)
             setTimePicked(selectionRange)
