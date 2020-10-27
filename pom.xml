@@ -86,7 +86,7 @@
     <owasp-html-sanitizer.version>20191001.1</owasp-html-sanitizer.version>
     <ows-v_1_0_0-schema.version>1.1.0</ows-v_1_0_0-schema.version>
     <pac4j.version>4.0.1</pac4j.version>
-    <pax.web.jsp.version>7.2.18</pax.web.jsp.version>
+    <pax.web.jsp.version>7.3.9</pax.web.jsp.version>
     <quartz.version>2.3.2</quartz.version>
     <spark.version>2.9.2</spark.version>
     <spatial4j.version>0.7</spatial4j.version>
@@ -240,7 +240,7 @@
               </goals>
               <configuration>
                 <rules>
-                  <ArtifactSizeEnforcerRule implementation="org.codice.maven.artifactsize.ArtifactSizeEnforcerRule" />
+                  <ArtifactSizeEnforcerRule implementation="org.codice.maven.artifactsize.ArtifactSizeEnforcerRule"/>
                 </rules>
               </configuration>
             </execution>
