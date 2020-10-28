@@ -50,11 +50,6 @@
             <artifactId>catalog-core-api-impl</artifactId>
             <version>${ddf.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.codice.thirdparty</groupId>
-            <artifactId>javalin</artifactId>
-            <version>${javalin.thirdparty.bundle.version}</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
