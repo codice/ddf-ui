@@ -78,7 +78,7 @@
     <jvnet.jaxb2.version>0.11.0</jvnet.jaxb2.version>
     <jvnet-ogc.version>2.6.1</jvnet-ogc.version>
     <karaf.version>4.2.9</karaf.version>
-    <nimbus.version>8.14.1</nimbus.version>
+    <nimbus.version>8.20.1</nimbus.version>
     <nimbus.oidc.version>8.3</nimbus.oidc.version>
     <org.geotools.version>20.1</org.geotools.version>
     <org.geotools.bundle.version>${org.geotools.version}_2</org.geotools.bundle.version>
@@ -240,7 +240,7 @@
               </goals>
               <configuration>
                 <rules>
-                  <ArtifactSizeEnforcerRule implementation="org.codice.maven.artifactsize.ArtifactSizeEnforcerRule" />
+                  <ArtifactSizeEnforcerRule implementation="org.codice.maven.artifactsize.ArtifactSizeEnforcerRule"/>
                 </rules>
               </configuration>
             </execution>
