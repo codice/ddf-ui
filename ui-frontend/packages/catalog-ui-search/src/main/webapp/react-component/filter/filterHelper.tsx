@@ -35,6 +35,9 @@ export const getFilteredAttributeList = () => {
 }
 
 export const getAttributeType = (attribute: string): string => {
+  if(attribute === undefined) {
+    return ''
+  }
   const type = metacardDefinitions.metacardTypes[attribute].type
   if (type === 'GEOMETRY') return 'LOCATION'
   if (isIntegerType(type)) return 'INTEGER'

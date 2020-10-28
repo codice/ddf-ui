@@ -107,6 +107,9 @@ function isTypeLimiter(filter: any) {
 
 // strip extra quotes
 const stripQuotes = (property: any) => {
+  if(property === undefined){
+    return ''
+  }
   return property.replace(/^"(.+(?="$))"$/, '$1')
 }
 
