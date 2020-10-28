@@ -174,6 +174,7 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
           color="primary"
           size="small"
           onClick={() => {
+            selectionInterface.getCurrentQuery().trigger('update')
             selectionInterface.getCurrentQuery().startSearchFromFirstPage()
           }}
         >
