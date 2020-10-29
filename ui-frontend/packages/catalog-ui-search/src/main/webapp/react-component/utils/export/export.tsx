@@ -30,7 +30,7 @@ export type ResultSet = {
 export type ExportBody = {
   searches: ResultSet[]
   count: number
-  sorts?: Object[]
+  sorts: Object[]
   args?: Object
 }
 
@@ -96,7 +96,7 @@ export const exportResultSet = async (
 ) => {
   return await fetch(`./internal/cql/transform/${transformer}`, {
     method: 'POST',
-    body: JSON.stringify({ ...body, sorts: body.sorts || [] }),
+    body: JSON.stringify(body),
     headers: {
       'Content-Type': 'application/json',
     },

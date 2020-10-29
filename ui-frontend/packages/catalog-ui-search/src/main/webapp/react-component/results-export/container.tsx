@@ -145,6 +145,7 @@ class ResultsExport extends React.Component<Props, State> {
       response = await exportResultSet('zipCompression', {
         searches,
         count,
+        sorts: [],
         args: {
           transformerId: uriEncodedTransformerId,
         },
@@ -153,6 +154,7 @@ class ResultsExport extends React.Component<Props, State> {
       response = await exportResultSet(uriEncodedTransformerId, {
         searches,
         count,
+        sorts: []
       })
     } else {
       const result = this.props.results[0]
