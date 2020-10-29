@@ -154,7 +154,7 @@ class ResultsExport extends React.Component<Props, State> {
       response = await exportResultSet(uriEncodedTransformerId, {
         searches,
         count,
-        sorts: []
+        sorts: [],
       })
     } else {
       const result = this.props.results[0]
