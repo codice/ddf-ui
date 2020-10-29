@@ -10,7 +10,7 @@
     "postbuild": "ace package"
   },
   "dependencies": {
-    "cesium": "1.44",
+    "cesium": "1.74.0",
     "mkdirp": "0.5.1"
   },
   "files": [
