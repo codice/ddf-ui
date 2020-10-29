@@ -84,7 +84,10 @@ export class FilterBuilderClass extends SpreadOperatorProtectedClass {
      * If for some reason filters come in that aren't classed, this will handle it.
      */
     this.filters = filters.map((childFilter) => {
-      if (isFilterBuilderClass(childFilter) || shouldBeFilterBuilderClass(childFilter)) {
+      if (
+        isFilterBuilderClass(childFilter) ||
+        shouldBeFilterBuilderClass(childFilter)
+      ) {
         return new FilterBuilderClass({
           ...childFilter,
         })
@@ -163,10 +166,10 @@ export class FilterClass extends SpreadOperatorProtectedClass {
     | 'DURING'
     | 'BETWEEN'
     | 'FILTER FUNCTION proximity'
-    readonly property: string
-    readonly value: string | boolean | null | ValuesType<ValueTypes>
-    readonly negated: boolean | undefined
-    readonly id: string
+  readonly property: string
+  readonly value: string | boolean | null | ValuesType<ValueTypes>
+  readonly negated: boolean | undefined
+  readonly id: string
   constructor({
     type = 'ILIKE',
     property = 'anyText',
@@ -202,7 +205,11 @@ export const shouldBeFilterBuilderClass = (
  *determine it is actually an instantiation of the filter builder class
  */
 export const isFilterBuilderClass = (
-  filter: FilterBuilderClass | FilterClass| Partial<FilterBuilderClass> | Partial<FilterClass>
+  filter:
+    | FilterBuilderClass
+    | FilterClass
+    | Partial<FilterBuilderClass>
+    | Partial<FilterClass>
 ): filter is FilterBuilderClass => {
   return filter.constructor === FilterBuilderClass
 }

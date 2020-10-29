@@ -30,7 +30,10 @@ require('backbone-associations')
 import React from 'react'
 import { readableColor } from 'polished'
 import { LazyQueryResults } from './LazyQueryResult/LazyQueryResults'
-import {FilterBuilderClass, FilterClass} from '../../component/filter-builder/filter.structure'
+import {
+  FilterBuilderClass,
+  FilterClass,
+} from '../../component/filter-builder/filter.structure'
 const Query = {}
 
 function getEphemeralSort() {
@@ -264,16 +267,21 @@ Query.Model = Backbone.AssociatedModel.extend({
    * We only keep filterTree up to date, then when we interact with the server we write out what it means
    *
    * We do this for performance, and because transformation is lossy.
-   * 
+   *
    * Also notice that we do a slight bit of validation, so anything that has no filters will translate to a star query (everything)
    */
   updateCqlBasedOnFilterTree() {
     const filterTree = this.get('filterTree')
     if (filterTree.filters.length === 0) {
-      this.set('filterTree', new FilterBuilderClass({
-        filters: [new FilterClass({value: '*', property: 'anyText', type: 'ILIKE'})],
-        type: 'AND'
-      }))
+      this.set(
+        'filterTree',
+        new FilterBuilderClass({
+          filters: [
+            new FilterClass({ value: '*', property: 'anyText', type: 'ILIKE' }),
+          ],
+          type: 'AND',
+        })
+      )
       this.updateCqlBasedOnFilterTree()
     } else {
       this.set('cql', cql.write(filterTree))

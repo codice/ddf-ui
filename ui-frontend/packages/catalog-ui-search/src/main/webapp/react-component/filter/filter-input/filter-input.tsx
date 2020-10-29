@@ -50,10 +50,12 @@ const FilterInput = ({ filter, setFilter }: Props) => {
   }
   const { value } = filter
   const onChange = (val: any) => {
-    setFilter(new FilterClass({
-      ...filter,
-      value: val,
-    }))
+    setFilter(
+      new FilterClass({
+        ...filter,
+        value: val,
+      })
+    )
   }
   switch (filter.type) {
     case 'IS NULL':

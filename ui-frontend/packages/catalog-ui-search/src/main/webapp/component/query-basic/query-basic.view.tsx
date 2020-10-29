@@ -29,7 +29,10 @@ const METADATA_CONTENT_TYPE = 'metadata-content-type'
 import TextField from '@material-ui/core/TextField'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
-import { FilterBuilderClass, FilterClass } from '../filter-builder/filter.structure'
+import {
+  FilterBuilderClass,
+  FilterClass,
+} from '../filter-builder/filter.structure'
 import Typography from '@material-ui/core/Typography'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import FilterInput from '../../react-component/filter/filter-input'
@@ -244,9 +247,9 @@ function translateFilterToBasicMap(filter: any) {
   // if datatype exists, this maps to "anyType" (we expand to multiple attributes going out, but can look at just datatype when coming in)
   if (propertyValueMap.datatype) {
     propertyValueMap.anyType.on = true
-    propertyValueMap.anyType.properties = propertyValueMap.datatype.map(
-      (filter: FilterClass) => filter.value
-    ).filter((val:string) => val!== '*') // allows us to depend on directly on filterTree with minimal weirdness, see constructFilterFromBasicFilter method for why this is necessary
+    propertyValueMap.anyType.properties = propertyValueMap.datatype
+      .map((filter: FilterClass) => filter.value)
+      .filter((val: string) => val !== '*') // allows us to depend on directly on filterTree with minimal weirdness, see constructFilterFromBasicFilter method for why this is necessary
   }
   return {
     propertyValueMap,
@@ -279,15 +282,17 @@ const constructFilterFromBasicFilter = ({
   }
 
   if (basicFilter.anyDate[0] !== undefined) {
-    filters.push(new FilterBuilderClass({
-      type: 'OR',
-      filters: basicFilter.anyDate[0].property.map((property) => {
-        return {
-          ...basicFilter.anyDate[0],
-          property,
-        }
-      }),
-    }))
+    filters.push(
+      new FilterBuilderClass({
+        type: 'OR',
+        filters: basicFilter.anyDate[0].property.map((property) => {
+          return {
+            ...basicFilter.anyDate[0],
+            property,
+          }
+        }),
+      })
+    )
   }
 
   if (basicFilter.anyGeo[0] !== undefined) {
@@ -295,34 +300,38 @@ const constructFilterFromBasicFilter = ({
   }
 
   if (basicFilter.anyType.on && basicFilter.anyType.properties.length > 0) {
-    filters.push(new FilterBuilderClass({
-      type: 'OR',
-      filters: basicFilter.anyType.properties
-        .map((property) => {
-          return new FilterClass({
-            property: 'datatype',
-            value: property,
-            type: 'ILIKE',
-          })
-        })
-        .concat(
-          basicFilter.anyType.properties.map((property) => {
+    filters.push(
+      new FilterBuilderClass({
+        type: 'OR',
+        filters: basicFilter.anyType.properties
+          .map((property) => {
             return new FilterClass({
-              property: 'metadata-content-type',
+              property: 'datatype',
               value: property,
               type: 'ILIKE',
             })
           })
-        ),
-    }))
+          .concat(
+            basicFilter.anyType.properties.map((property) => {
+              return new FilterClass({
+                property: 'metadata-content-type',
+                value: property,
+                type: 'ILIKE',
+              })
+            })
+          ),
+      })
+    )
   } else if (basicFilter.anyType.on) {
     // a bit of an unfortunate hack so we can depend directly on filterTree (this will only happen if properties is blank!)
     // see the anyDate part of translateFilterToBasicMap for more details
-    filters.push(new FilterClass({
-      property: 'datatype',
-      value: '*',
-      type: 'ILIKE',
-    }))
+    filters.push(
+      new FilterClass({
+        property: 'datatype',
+        value: '*',
+        type: 'ILIKE',
+      })
+    )
   }
 
   return new FilterBuilderClass({
@@ -378,9 +387,12 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
             onChange={(e) => {
               basicFilter.anyText[0] = new FilterClass({
                 ...basicFilter.anyText[0],
-                value: e.target.value
+                value: e.target.value,
               })
-              model.set('filterTree', constructFilterFromBasicFilter({basicFilter}))
+              model.set(
+                'filterTree',
+                constructFilterFromBasicFilter({ basicFilter })
+              )
             }}
             onKeyUp={(e) => {
               if (e.which === 13) {
@@ -399,7 +411,10 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
             value={basicFilter.anyDate[0]}
             onChange={(newValue) => {
               basicFilter.anyDate[0] = newValue
-              model.set('filterTree', constructFilterFromBasicFilter({basicFilter}))
+              model.set(
+                'filterTree',
+                constructFilterFromBasicFilter({ basicFilter })
+              )
             }}
           />
         </div>
@@ -422,7 +437,10 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
                       })
                     )
                   }
-                  model.set('filterTree', constructFilterFromBasicFilter({basicFilter}))
+                  model.set(
+                    'filterTree',
+                    constructFilterFromBasicFilter({ basicFilter })
+                  )
                 }}
               />
             }
@@ -441,13 +459,18 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
               </Grid>
               <Grid item className="w-full pl-2">
                 <FilterInput
-                  filter={new FilterClass({
-                    ...basicFilter.anyGeo[0],
-                    property: basicFilter.anyGeo[0].property,
-                  })}
+                  filter={
+                    new FilterClass({
+                      ...basicFilter.anyGeo[0],
+                      property: basicFilter.anyGeo[0].property,
+                    })
+                  }
                   setFilter={(val: any) => {
                     basicFilter.anyGeo[0] = val
-                    model.set('filterTree', constructFilterFromBasicFilter({basicFilter}))
+                    model.set(
+                      'filterTree',
+                      constructFilterFromBasicFilter({ basicFilter })
+                    )
                   }}
                 />
               </Grid>
@@ -463,7 +486,10 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
                 checked={basicFilter.anyType.on}
                 onChange={(e) => {
                   basicFilter.anyType.on = e.target.checked
-                  model.set('filterTree', constructFilterFromBasicFilter({basicFilter}))
+                  model.set(
+                    'filterTree',
+                    constructFilterFromBasicFilter({ basicFilter })
+                  )
                 }}
               />
             }
@@ -495,7 +521,10 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
                     basicFilter.anyType.properties = newValue.map(
                       (val) => val.value
                     )
-                    model.set('filterTree', constructFilterFromBasicFilter({basicFilter}))
+                    model.set(
+                      'filterTree',
+                      constructFilterFromBasicFilter({ basicFilter })
+                    )
                   }}
                   size="small"
                   renderOption={({ label, value }) => {

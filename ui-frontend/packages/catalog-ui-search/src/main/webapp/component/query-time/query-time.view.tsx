@@ -54,7 +54,10 @@ const getPossibleProperties = () => {
   ]
 }
 
-const getDefaultPropertiesToApplyTo = ():{label:string, value:string}[] => {
+const getDefaultPropertiesToApplyTo = (): {
+  label: string
+  value: string
+}[] => {
   return (properties.basicSearchTemporalSelectionDefault || []).map(
     (property: string) => {
       return {
@@ -110,7 +113,9 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
                   onChange({
                     ...value,
                     type: 'AFTER',
-                    property: getDefaultPropertiesToApplyTo().map(val => val.value)
+                    property: getDefaultPropertiesToApplyTo().map(
+                      (val) => val.value
+                    ),
                   })
                 } else {
                   onChange(undefined)

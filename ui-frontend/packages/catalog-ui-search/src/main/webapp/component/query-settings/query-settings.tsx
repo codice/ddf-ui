@@ -33,7 +33,6 @@ type Props = {
  * this will not work.
  */
 const QuerySettings = ({ model }: Props) => {
-
   return (
     <Memo dependencies={[model]}>
       <div>

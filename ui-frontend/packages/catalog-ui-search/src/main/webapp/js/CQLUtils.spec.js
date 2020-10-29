@@ -73,7 +73,6 @@ describe('CQL Utils', () => {
     //   })
     //   expect(cql).to.equal('(INTERSECTS("anyGeo", POLYGON((1 2,3 4,5 6,1 2))))')
     // })
-
     // it('transform compound AND filter to CQL', () => {
     //   const cql = CQLUtils.transformFilterToCQL({
     //     type: 'AND',
@@ -94,7 +93,6 @@ describe('CQL Utils', () => {
     //     '((INTERSECTS("anyGeo", LINESTRING((1 2,3 4)))) AND (INTERSECTS("anyGeo", POLYGON((5 6,7 8,9 10,5 6)))))'
     //   )
     // })
-
     // it('transform CQL to filter', () => {
     //   const cql = CQLUtils.transformCQLToFilter(
     //     '(INTERSECTS(anyGeo, POLYGON((1 2,3 4,5 6,1 2))))'
@@ -105,7 +103,6 @@ describe('CQL Utils', () => {
     //     value: { type: 'GEOMETRY', value: 'POLYGON((1 2,3 4,5 6,1 2))' },
     //   })
     // })
-
     // it('transform compound AND CQL to filter', () => {
     //   const cql = CQLUtils.transformCQLToFilter(
     //     '((INTERSECTS(anyGeo, LINESTRING((1 2,3 4)))) AND (INTERSECTS(anyGeo, POLYGON((5 6,7 8,9 10,5 6)))))'

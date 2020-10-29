@@ -50,10 +50,12 @@ const Filter = ({ filter, setFilter }: Props) => {
           // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
           onChange={(e, newValue) => {
             const newProperty = newValue.value as FilterClass['property']
-            setFilter(new FilterClass({
-              ...filter,
-              property: newProperty,
-            }))
+            setFilter(
+              new FilterClass({
+                ...filter,
+                property: newProperty,
+              })
+            )
           }}
           disableClearable
           value={currentSelectedAttribute}
