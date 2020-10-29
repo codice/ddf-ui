@@ -50,6 +50,10 @@ const getBaseFilter = ({ model }: { model: any }): FilterBuilderClass => {
   return convertToFilterIfNecessary({ filter })
 }
 
+/**
+ * We use the filterTree of the model as the single source of truth, so it's always up to date.
+ * As a result, we have to listen to updates to it.  
+ */
 export const FilterBuilderRoot = ({ model }: Props) => {
   const [filter, setFilter] = React.useState(getBaseFilter({ model }))
   const { listenTo, stopListening } = useBackbone()
@@ -66,7 +70,7 @@ export const FilterBuilderRoot = ({ model }: Props) => {
     <FilterBranch
       filter={filter}
       setFilter={(update) => {
-        model.set('filterTree', convertToFilterIfNecessary({ filter: update }))
+        model.set('filterTree', update) // update the filterTree directly so it's always in sync and we're ready to search
       }}
       root={true}
     />

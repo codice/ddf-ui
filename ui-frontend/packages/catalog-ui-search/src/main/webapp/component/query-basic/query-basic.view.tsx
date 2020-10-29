@@ -396,7 +396,10 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
             placeholder={`Text to search for. Use "*" for wildcard.`}
             id="Text"
             onChange={(e) => {
-              basicFilter.anyText[0].value = e.target.value
+              basicFilter.anyText[0] = new FilterClass({
+                ...basicFilter.anyText[0],
+                value: e.target.value
+              })
               setBasicFilter({
                 ...basicFilter,
               })
@@ -490,10 +493,10 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
               </Grid>
               <Grid item className="w-full pl-2">
                 <FilterInput
-                  filter={{
+                  filter={new FilterClass({
                     ...basicFilter.anyGeo[0],
                     property: basicFilter.anyGeo[0].property,
-                  }}
+                  })}
                   setFilter={(val: any) => {
                     basicFilter.anyGeo[0] = val
 

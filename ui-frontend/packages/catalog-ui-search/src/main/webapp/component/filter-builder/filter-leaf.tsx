@@ -32,10 +32,10 @@ const FilterLeaf = ({ filter, setFilter }: Props) => {
           color="primary"
           variant="contained"
           onClick={() => {
-            setFilter({
+            setFilter(new FilterClass({
               ...filter,
               negated: !filter.negated,
-            })
+            }))
           }}
         >
           {({ hover }) => {
@@ -55,10 +55,10 @@ const FilterLeaf = ({ filter, setFilter }: Props) => {
           color="primary"
           variant="contained"
           onClick={() => {
-            setFilter({
+            setFilter(new FilterClass({
               ...filter,
               negated: !filter.negated,
-            })
+            }))
           }}
         >
           + Not Field

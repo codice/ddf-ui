@@ -65,10 +65,10 @@ const ChildFilter = ({
               value={parentFilter.type}
               onChange={(e) => {
                 const newOperator = e.target.value as FilterBuilderClass['type']
-                setFilter({
+                setFilter(new FilterBuilderClass({
                   ...parentFilter,
                   type: newOperator,
-                })
+                }))
               }}
               select
               variant="outlined"
@@ -90,10 +90,10 @@ const ChildFilter = ({
               onClick={() => {
                 const newFilters = parentFilter.filters.slice(0)
                 newFilters.splice(index, 1)
-                setFilter({
+                setFilter(new FilterBuilderClass({
                   ...parentFilter,
                   filters: newFilters,
-                })
+                }))
               }}
             >
               Remove
@@ -107,10 +107,10 @@ const ChildFilter = ({
           setFilter={(newChildFilter) => {
             const newFilters = parentFilter.filters.slice(0)
             newFilters.splice(index, 1, newChildFilter)
-            setFilter({
+            setFilter(new FilterBuilderClass({
               ...parentFilter,
               filters: newFilters,
-            })
+            }))
           }}
         />
       ) : (
@@ -119,10 +119,10 @@ const ChildFilter = ({
           setFilter={(newChildFilter) => {
             const newFilters = parentFilter.filters.slice(0)
             newFilters.splice(index, 1, newChildFilter)
-            setFilter({
+            setFilter(new FilterBuilderClass({
               ...parentFilter,
               filters: newFilters,
-            })
+            }))
           }}
         />
       )}
@@ -151,10 +151,10 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
       ) {
         const newFilters = filter.filters.slice(0)
         newFilters.splice(index, 1)
-        setFilter({
+        setFilter(new FilterBuilderClass({
           ...filter,
           filters: newFilters,
-        })
+        }))
       }
     })
   }, [filter])
@@ -197,10 +197,10 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                     data-id="add-field-button"
                     color="primary"
                     onClick={() => {
-                      setFilter({
+                      setFilter(new FilterBuilderClass({
                         ...filter,
                         filters: filter.filters.concat([new FilterClass()]),
-                      })
+                      }))
                     }}
                   >
                     <Box color="text.primary">
@@ -214,12 +214,12 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                     data-id="add-group-button"
                     color="primary"
                     onClick={() => {
-                      setFilter({
+                      setFilter(new FilterBuilderClass({
                         ...filter,
                         filters: filter.filters.concat([
                           new FilterBuilderClass(),
                         ]),
-                      })
+                      }))
                     }}
                   >
                     <Box color="text.primary">
@@ -236,10 +236,10 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                       onClick={() => {
                         const newFilters = filter.filters.slice(0)
                         newFilters.splice(0, 1)
-                        setFilter({
+                        setFilter(new FilterBuilderClass({
                           ...filter,
                           filters: newFilters,
-                        })
+                        }))
                       }}
                     >
                       Remove
@@ -255,10 +255,10 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                   color="primary"
                   variant="contained"
                   onClick={() => {
-                    setFilter({
+                    setFilter(new FilterBuilderClass({
                       ...filter,
                       negated: !filter.negated,
-                    })
+                    }))
                   }}
                 >
                   {({ hover }) => {
@@ -280,10 +280,10 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                   color="primary"
                   variant="contained"
                   onClick={() => {
-                    setFilter({
+                    setFilter(new FilterBuilderClass({
                       ...filter,
                       negated: !filter.negated,
-                    })
+                    }))
                   }}
                 >
                   + Not Group

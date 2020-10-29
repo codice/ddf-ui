@@ -19,6 +19,7 @@ import { ValuesType } from 'utility-types'
 import { serialize as locationSerialize } from '../location-old/location-serialization'
 // @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
 import CQLUtils from '../../js/CQLUtils'
+import { SpreadOperatorProtectedClass } from '../../typescript/classes'
 
 // @ts-ignore ts-migrate(6133) FIXME: 'comparatorToCQL' is declared but its value is nev... Remove this comment to see the full error message
 const comparatorToCQL = {
@@ -61,11 +62,11 @@ export const serialize = {
   },
 }
 
-export class FilterBuilderClass {
-  type: 'AND' | 'OR' | 'NOT OR' | 'NOT AND'
-  filters: (FilterBuilderClass | FilterClass)[]
-  negated: boolean
-  id: string
+export class FilterBuilderClass extends SpreadOperatorProtectedClass {
+  readonly type: 'AND' | 'OR' | 'NOT OR' | 'NOT AND'
+  readonly filters: (FilterBuilderClass | FilterClass)[]
+  readonly negated: boolean
+  readonly id: string
   constructor({
     type = 'AND',
     filters = [new FilterClass()],
@@ -77,6 +78,7 @@ export class FilterBuilderClass {
     negated?: FilterBuilderClass['negated']
     id?: string
   } = {}) {
+    super()
     this.type = type
     /**
      * If for some reason filters come in that aren't classed, this will handle it.
@@ -141,7 +143,7 @@ export type ValueTypes = {
       }
 }
 
-export class FilterClass {
+export class FilterClass extends SpreadOperatorProtectedClass {
   type:
     | 'BEFORE'
     | 'AFTER'
@@ -161,10 +163,10 @@ export class FilterClass {
     | 'DURING'
     | 'BETWEEN'
     | 'FILTER FUNCTION proximity'
-  property: string
-  value: string | boolean | null | ValuesType<ValueTypes>
-  negated: boolean | undefined
-  id: string
+    readonly property: string
+    readonly value: string | boolean | null | ValuesType<ValueTypes>
+    readonly negated: boolean | undefined
+    readonly id: string
   constructor({
     type = 'ILIKE',
     property = 'anyText',
@@ -178,6 +180,7 @@ export class FilterClass {
     negated?: FilterClass['negated']
     id?: string
   } = {}) {
+    super()
     this.type = type
     this.property = property
     this.value = value
@@ -186,8 +189,11 @@ export class FilterClass {
   }
 }
 
+/**
+ *determine it is actually an instantiation of the filter builder class
+ */
 export const isFilterBuilderClass = (
-  filter: FilterBuilderClass | FilterClass
+  filter: FilterBuilderClass | FilterClass| Partial<FilterBuilderClass> | Partial<FilterClass>
 ): filter is FilterBuilderClass => {
   return filter.constructor === FilterBuilderClass
 }

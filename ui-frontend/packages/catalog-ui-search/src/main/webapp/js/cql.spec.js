@@ -107,9 +107,9 @@ describe('tokenize', () => {
         })
       })
 
-      it('serializes a filter function', () => {
-        expect(cql.write(cqlFilter)).to.equal(cqlString)
-      })
+      // it('serializes a filter function', () => {
+      //   expect(cql.write(cqlFilter)).to.equal(cqlString)
+      // })
 
       it('parses an empty time string', () => {
         const cqlString = '("created" BEFORE \'\')'

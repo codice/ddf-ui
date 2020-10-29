@@ -14,7 +14,7 @@
  **/
 import { expect } from 'chai'
 
-import filterHelper from './filterHelper'
+import { matchesFilter } from './filterHelper'
 
 function testAllSubstrings(
   testFilterString,
@@ -24,9 +24,9 @@ function testAllSubstrings(
 ) {
   for (let i = 0; i < testFilterString.length; i++) {
     const filterValue = testFilterString.substring(0, i)
-    expect(
-      filterHelper.matchesFilter(filterValue, stringToEval, matchcase)
-    ).to.equal(expectation)
+    expect(matchesFilter(filterValue, stringToEval, matchcase)).to.equal(
+      expectation
+    )
   }
 }
 
@@ -36,9 +36,9 @@ function testWholeStrings(
   matchcase,
   expectation
 ) {
-  expect(
-    filterHelper.matchesFilter(testFilterString, stringToEval, matchcase)
-  ).to.equal(expectation)
+  expect(matchesFilter(testFilterString, stringToEval, matchcase)).to.equal(
+    expectation
+  )
 }
 
 describe('filter helper functions', () => {
@@ -49,11 +49,11 @@ describe('filter helper functions', () => {
     const positiveTestStrings = ['text', 'any', 'anytext', 'ANYTEXT', 'aNyTeXt']
     const negativeTestStrings = ['test', 'anyG', 'any text', 'anyText ', 'az']
 
-    positiveTestStrings.forEach((testFilterString) => {
+    positiveTestStrings.forEach(testFilterString => {
       testAllSubstrings(testFilterString, stringToEval, matchcase, true)
     })
 
-    negativeTestStrings.forEach((testFilterString) => {
+    negativeTestStrings.forEach(testFilterString => {
       testWholeStrings(testFilterString, stringToEval, matchcase, false)
     })
   })
@@ -75,10 +75,10 @@ describe('filter helper functions', () => {
     ]
     const negativeTestStrings = ['az', 'thdo', 'ndDash', 'aString-']
 
-    positiveTestStrings.forEach((testFilterString) => {
+    positiveTestStrings.forEach(testFilterString => {
       testAllSubstrings(testFilterString, stringToEval, matchcase, true)
     })
-    negativeTestStrings.forEach((testFilterString) => {
+    negativeTestStrings.forEach(testFilterString => {
       testWholeStrings(testFilterString, stringToEval, matchcase, false)
     })
   })
@@ -90,10 +90,10 @@ describe('filter helper functions', () => {
     const positiveTestStrings = ['ALLCAPSSTRING', 'allcapsstring']
     const negativeTestStrings = ['z', 'CA', 'STR', 'ING']
 
-    positiveTestStrings.forEach((testFilterString) => {
+    positiveTestStrings.forEach(testFilterString => {
       testAllSubstrings(testFilterString, stringToEval, matchcase, true)
     })
-    negativeTestStrings.forEach((testFilterString) => {
+    negativeTestStrings.forEach(testFilterString => {
       testWholeStrings(testFilterString, stringToEval, matchcase, false)
     })
   })
@@ -117,10 +117,10 @@ describe('filter helper functions', () => {
       'acamelcasedstring',
     ]
 
-    positiveTestStrings.forEach((testFilterString) => {
+    positiveTestStrings.forEach(testFilterString => {
       testAllSubstrings(testFilterString, stringToEval, matchcase, true)
     })
-    negativeTestStrings.forEach((testFilterString) => {
+    negativeTestStrings.forEach(testFilterString => {
       testWholeStrings(testFilterString, stringToEval, matchcase, false)
     })
   })
@@ -144,10 +144,10 @@ describe('filter helper functions', () => {
       'rings',
     ]
 
-    positiveTestStrings.forEach((testFilterString) => {
+    positiveTestStrings.forEach(testFilterString => {
       testAllSubstrings(testFilterString, stringToEval, matchcase, true)
     })
-    negativeTestStrings.forEach((testFilterString) => {
+    negativeTestStrings.forEach(testFilterString => {
       testWholeStrings(testFilterString, stringToEval, matchcase, false)
     })
   })
@@ -169,7 +169,7 @@ describe('filter helper functions', () => {
       '{',
       '}',
     ]
-    regexSymbols.forEach((symbol) => {
+    regexSymbols.forEach(symbol => {
       testWholeStrings(symbol, symbol, false, true)
     })
   })
