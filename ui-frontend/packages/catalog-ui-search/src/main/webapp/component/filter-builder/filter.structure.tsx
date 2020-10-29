@@ -84,7 +84,7 @@ export class FilterBuilderClass extends SpreadOperatorProtectedClass {
      * If for some reason filters come in that aren't classed, this will handle it.
      */
     this.filters = filters.map((childFilter) => {
-      if (isFilterBuilderClass(childFilter)) {
+      if (isFilterBuilderClass(childFilter) || shouldBeFilterBuilderClass(childFilter)) {
         return new FilterBuilderClass({
           ...childFilter,
         })
@@ -187,6 +187,15 @@ export class FilterClass extends SpreadOperatorProtectedClass {
     this.negated = negated
     this.id = id
   }
+}
+
+/**
+ * determine it is actually an plain object form of the filter builder class
+ */
+export const shouldBeFilterBuilderClass = (
+  filter: any
+): filter is FilterBuilderClass => {
+  return !isFilterBuilderClass(filter) && filter.filters !== undefined
 }
 
 /**

@@ -27,7 +27,7 @@ import {
   getSortDirectionOptions,
 } from './sort-selection-helpers'
 
-type SortsType = {
+export type SortsType = {
   attribute: string
   direction: string
 }[]

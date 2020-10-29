@@ -54,6 +54,17 @@ const getPossibleProperties = () => {
   ]
 }
 
+const getDefaultPropertiesToApplyTo = ():{label:string, value:string}[] => {
+  return (properties.basicSearchTemporalSelectionDefault || []).map(
+    (property: string) => {
+      return {
+        label: TypedMetacardDefs.getAlias({ attr: property }),
+        value: property,
+      }
+    }
+  )
+}
+
 const determinePropertiesToApplyTo = ({
   value,
 }: {
@@ -67,14 +78,7 @@ const determinePropertiesToApplyTo = ({
       }
     })
   } else {
-    return (properties.basicSearchTemporalSelectionDefault || []).map(
-      (property: string) => {
-        return {
-          label: TypedMetacardDefs.getAlias({ attr: property }),
-          value: property,
-        }
-      }
-    )
+    return getDefaultPropertiesToApplyTo()
   }
 }
 
@@ -106,6 +110,7 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
                   onChange({
                     ...value,
                     type: 'AFTER',
+                    property: getDefaultPropertiesToApplyTo().map(val => val.value)
                   })
                 } else {
                   onChange(undefined)
