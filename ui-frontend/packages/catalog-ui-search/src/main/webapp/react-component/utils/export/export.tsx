@@ -96,7 +96,7 @@ export const exportResultSet = async (
 ) => {
   return await fetch(`./internal/cql/transform/${transformer}`, {
     method: 'POST',
-    body: JSON.stringify(body),
+    body: JSON.stringify({ ...body, sorts: body.sorts || [] }),
     headers: {
       'Content-Type': 'application/json',
     },
