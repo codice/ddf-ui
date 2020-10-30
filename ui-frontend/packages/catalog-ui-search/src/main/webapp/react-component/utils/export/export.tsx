@@ -30,7 +30,7 @@ export type ResultSet = {
 export type ExportBody = {
   searches: ResultSet[]
   count: number
-  sorts?: Object[]
+  sorts: Object[]
   args?: Object
 }
 
