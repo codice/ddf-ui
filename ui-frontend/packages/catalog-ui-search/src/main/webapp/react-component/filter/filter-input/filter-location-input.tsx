@@ -19,6 +19,7 @@ const ShapeUtils = require('../../../js/ShapeUtils.js')
 const wreqr = require('../../../js/wreqr.js')
 import { Drawing } from '../../../component/singletons/drawing'
 import { useBackbone } from '../../../component/selection-checkbox/useBackbone.hook'
+import {hot} from 'react-hot-loader'
 
 function getCurrentValue({locationModel}: any) {
   const modelJSON = locationModel.toJSON()
@@ -54,12 +55,6 @@ function getCurrentValue({locationModel}: any) {
   })
 }
 
-function clearLocation({locationModel, setState}: any) {
-  locationModel.set(new LocationOldModel().toJSON())
-  wreqr.vent.trigger('search:drawend', locationModel)
-  setState(locationModel.toJSON())
-}
-
 function updateMap({locationModel}: any) {
   const mode = locationModel.get('mode')
     if (mode !== undefined && Drawing.isDrawing() !== true) {
@@ -79,9 +74,6 @@ const LocationInput = ({onChange, value}: any) => {
       onChange(getCurrentValue({locationModel}))
     })
     listenTo(locationModel,'change:mapNorth change:mapSouth change:mapEast change:mapWest', locationModel.setLatLon)
-    listenTo(locationModel, 'change:mode', () => {
-      clearLocation({locationModel, setState})
-    })
     return () => {
       locationModel.set(new LocationOldModel().toJSON())
       wreqr.vent.trigger('search:drawend', locationModel)
@@ -105,4 +97,4 @@ const LocationInput = ({onChange, value}: any) => {
   /> )
 }
 
-export default LocationInput
+export default hot(module)(LocationInput)

@@ -51,6 +51,7 @@ module.exports = Marionette.LayoutView.extend(
       return _.extend(this.model.toJSON(), { cid: this.cid })
     },
     initialize() {
+      console.log('where do we use this?')
       this.turnOnLimitedWidth()
       this.listenTo(
         this.model,
