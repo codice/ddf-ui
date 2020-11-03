@@ -46,6 +46,12 @@ export const serialize = {
     if (unit === undefined || !parseFloat(last)) {
       return ''
     }
+    //Weeks is not a valid unit, so convert this to days
+    if(unit === 'w') {
+      let convertedUnit = 'd'
+      let convertedLast = (parseInt(last) * 7).toString()
+      return `RELATIVE(${'P' + convertedLast + convertedUnit.toUpperCase()})`
+    }
     const prefix = unit === 'm' || unit === 'h' ? 'PT' : 'P'
     return `RELATIVE(${prefix + last + unit.toUpperCase()})`
   },
@@ -114,7 +120,9 @@ export type ValueTypes = {
   integer: number
   relative: {
     last: string
-    unit: 'm' | 'h' | 'd' | 'M' | 'y'
+    //NOTE: Weeks is not a valid unit, but we allow it in our system.
+    //This is converted to days to become valid cql
+    unit: 'm' | 'h' | 'd' | 'M' | 'y' | 'w' 
   }
   during: {
     start: string

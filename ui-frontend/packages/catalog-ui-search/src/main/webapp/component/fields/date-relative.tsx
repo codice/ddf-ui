@@ -75,6 +75,7 @@ export const DateRelativeField = ({ value, onChange }: Props) => {
           <MenuItem value="m">Minutes</MenuItem>
           <MenuItem value="h">Hours</MenuItem>
           <MenuItem value="d">Days</MenuItem>
+          <MenuItem value="w">Weeks</MenuItem>
           <MenuItem value="M">Months</MenuItem>
           <MenuItem value="y">Years</MenuItem>
         </TextField>
