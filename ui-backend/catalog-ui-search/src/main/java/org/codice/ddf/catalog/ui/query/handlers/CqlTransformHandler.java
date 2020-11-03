@@ -350,6 +350,9 @@ public class CqlTransformHandler implements Route {
 
   private CollectionResultComparator getResultComparators(List<CqlRequest.Sort> sorts) {
     CollectionResultComparator resultComparator = new CollectionResultComparator();
+    if (sorts == null) {
+      return resultComparator;
+    }
     for (CqlRequest.Sort sort : sorts) {
       Comparator<Result> comparator;
 
