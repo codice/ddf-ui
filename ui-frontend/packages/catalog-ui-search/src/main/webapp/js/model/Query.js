@@ -184,6 +184,9 @@ Query.Model = Backbone.AssociatedModel.extend({
         // this.resetCurrentIndexForSourceGroup()
       }
     )
+    this.listenTo(this, 'change:type', () => {
+      this.set('filterTree', cql.removeInvalidFilters(this.get('filterTree'))) // basically remove invalid filters when going from basic to advanced
+    })
     this.listenTo(
       user.get('user').get('preferences'),
       'change:resultCount',

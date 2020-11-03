@@ -285,12 +285,20 @@ const constructFilterFromBasicFilter = ({
     filters.push(
       new FilterBuilderClass({
         type: 'OR',
-        filters: basicFilter.anyDate[0].property.map((property) => {
-          return {
-            ...basicFilter.anyDate[0],
-            property,
-          }
-        }),
+        filters:
+          basicFilter.anyDate[0].property.length !== 0
+            ? basicFilter.anyDate[0].property.map((property) => {
+                return {
+                  ...basicFilter.anyDate[0],
+                  property,
+                }
+              })
+            : [
+                {
+                  ...basicFilter.anyDate[0],
+                  property: 'anyDate',
+                },
+              ], // we need a default since we rely on the filterTree solely
       })
     )
   }

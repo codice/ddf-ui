@@ -74,12 +74,14 @@ const determinePropertiesToApplyTo = ({
   value: BasicFilterClass
 }): Array<{ label: string; value: string }> => {
   if (value.property) {
-    return value.property.map((property) => {
-      return {
-        label: TypedMetacardDefs.getAlias({ attr: property }),
-        value: property,
-      }
-    })
+    return value.property
+      .filter((prop) => prop !== 'anyDate')
+      .map((property) => {
+        return {
+          label: TypedMetacardDefs.getAlias({ attr: property }),
+          value: property,
+        }
+      })
   } else {
     return getDefaultPropertiesToApplyTo()
   }
