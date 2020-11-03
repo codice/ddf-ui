@@ -20,6 +20,7 @@ import FilterBranch from './filter-branch'
 
 import { FilterBuilderClass, isFilterBuilderClass } from './filter.structure'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import { FilterTextFieldIdentifier } from '../fields/text'
 
 type Props = {
   model: any
@@ -50,6 +51,10 @@ const getBaseFilter = ({ model }: { model: any }): FilterBuilderClass => {
   return convertToFilterIfNecessary({ filter })
 }
 
+/**
+ * We use the filterTree of the model as the single source of truth, so it's always up to date.
+ * As a result, we have to listen to updates to it.
+ */
 export const FilterBuilderRoot = ({ model }: Props) => {
   const [filter, setFilter] = React.useState(getBaseFilter({ model }))
   const { listenTo, stopListening } = useBackbone()
@@ -63,12 +68,23 @@ export const FilterBuilderRoot = ({ model }: Props) => {
     }
   }, [model])
   return (
-    <FilterBranch
-      filter={filter}
-      setFilter={(update) => {
-        model.set('filterTree', convertToFilterIfNecessary({ filter: update }))
+    <div
+      onKeyUp={(e) => {
+        if (e.keyCode === 13) {
+          const targetElement = e.target as HTMLInputElement
+          if (targetElement.classList.contains(FilterTextFieldIdentifier)) {
+            model.startSearchFromFirstPage()
+          }
+        }
       }}
-      root={true}
-    />
+    >
+      <FilterBranch
+        filter={filter}
+        setFilter={(update) => {
+          model.set('filterTree', update) // update the filterTree directly so it's always in sync and we're ready to search
+        }}
+        root={true}
+      />
+    </div>
   )
 }

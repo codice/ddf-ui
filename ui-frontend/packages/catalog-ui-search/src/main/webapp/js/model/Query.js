@@ -30,6 +30,10 @@ require('backbone-associations')
 import React from 'react'
 import { readableColor } from 'polished'
 import { LazyQueryResults } from './LazyQueryResult/LazyQueryResults'
+import {
+  FilterBuilderClass,
+  FilterClass,
+} from '../../component/filter-builder/filter.structure'
 const Query = {}
 
 function getEphemeralSort() {
@@ -180,6 +184,9 @@ Query.Model = Backbone.AssociatedModel.extend({
         // this.resetCurrentIndexForSourceGroup()
       }
     )
+    this.listenTo(this, 'change:type', () => {
+      this.set('filterTree', cql.removeInvalidFilters(this.get('filterTree'))) // basically remove invalid filters when going from basic to advanced
+    })
     this.listenTo(
       user.get('user').get('preferences'),
       'change:resultCount',
@@ -263,9 +270,25 @@ Query.Model = Backbone.AssociatedModel.extend({
    * We only keep filterTree up to date, then when we interact with the server we write out what it means
    *
    * We do this for performance, and because transformation is lossy.
+   *
+   * Also notice that we do a slight bit of validation, so anything that has no filters will translate to a star query (everything)
    */
   updateCqlBasedOnFilterTree() {
-    this.set('cql', cql.write(this.get('filterTree')))
+    const filterTree = this.get('filterTree')
+    if (filterTree.filters.length === 0) {
+      this.set(
+        'filterTree',
+        new FilterBuilderClass({
+          filters: [
+            new FilterClass({ value: '*', property: 'anyText', type: 'ILIKE' }),
+          ],
+          type: 'AND',
+        })
+      )
+      this.updateCqlBasedOnFilterTree()
+    } else {
+      this.set('cql', cql.write(filterTree))
+    }
   },
   startSearchFromFirstPage(options) {
     this.updateCqlBasedOnFilterTree()

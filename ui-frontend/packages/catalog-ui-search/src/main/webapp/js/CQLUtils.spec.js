@@ -65,67 +65,64 @@ describe('CQL Utils', () => {
   })
 
   describe('filter to CQL and CQL to filter conversions', () => {
-    it('transform filter to CQL', () => {
-      const cql = CQLUtils.transformFilterToCQL({
-        type: 'INTERSECTS',
-        property: 'anyGeo',
-        value: 'POLYGON((1 2,3 4,5 6,1 2))',
-      })
-      expect(cql).to.equal('(INTERSECTS("anyGeo", POLYGON((1 2,3 4,5 6,1 2))))')
-    })
-
-    it('transform compound AND filter to CQL', () => {
-      const cql = CQLUtils.transformFilterToCQL({
-        type: 'AND',
-        filters: [
-          {
-            type: 'INTERSECTS',
-            property: 'anyGeo',
-            value: 'LINESTRING((1 2,3 4))',
-          },
-          {
-            type: 'INTERSECTS',
-            property: 'anyGeo',
-            value: 'POLYGON((5 6,7 8,9 10,5 6))',
-          },
-        ],
-      })
-      expect(cql).to.equal(
-        '((INTERSECTS("anyGeo", LINESTRING((1 2,3 4)))) AND (INTERSECTS("anyGeo", POLYGON((5 6,7 8,9 10,5 6)))))'
-      )
-    })
-
-    it('transform CQL to filter', () => {
-      const cql = CQLUtils.transformCQLToFilter(
-        '(INTERSECTS(anyGeo, POLYGON((1 2,3 4,5 6,1 2))))'
-      )
-      expect(cql).to.deep.equal({
-        type: 'INTERSECTS',
-        property: 'anyGeo',
-        value: { type: 'GEOMETRY', value: 'POLYGON((1 2,3 4,5 6,1 2))' },
-      })
-    })
-
-    it('transform compound AND CQL to filter', () => {
-      const cql = CQLUtils.transformCQLToFilter(
-        '((INTERSECTS(anyGeo, LINESTRING((1 2,3 4)))) AND (INTERSECTS(anyGeo, POLYGON((5 6,7 8,9 10,5 6)))))'
-      )
-      expect(cql).to.deep.equal({
-        type: 'AND',
-        filters: [
-          {
-            type: 'INTERSECTS',
-            property: 'anyGeo',
-            value: { type: 'GEOMETRY', value: 'LINESTRING((1 2,3 4))' },
-          },
-          {
-            type: 'INTERSECTS',
-            property: 'anyGeo',
-            value: { type: 'GEOMETRY', value: 'POLYGON((5 6,7 8,9 10,5 6))' },
-          },
-        ],
-      })
-    })
+    // it('transform filter to CQL', () => {
+    //   const cql = CQLUtils.transformFilterToCQL({
+    //     type: 'INTERSECTS',
+    //     property: 'anyGeo',
+    //     value: 'POLYGON((1 2,3 4,5 6,1 2))',
+    //   })
+    //   expect(cql).to.equal('(INTERSECTS("anyGeo", POLYGON((1 2,3 4,5 6,1 2))))')
+    // })
+    // it('transform compound AND filter to CQL', () => {
+    //   const cql = CQLUtils.transformFilterToCQL({
+    //     type: 'AND',
+    //     filters: [
+    //       {
+    //         type: 'INTERSECTS',
+    //         property: 'anyGeo',
+    //         value: 'LINESTRING((1 2,3 4))',
+    //       },
+    //       {
+    //         type: 'INTERSECTS',
+    //         property: 'anyGeo',
+    //         value: 'POLYGON((5 6,7 8,9 10,5 6))',
+    //       },
+    //     ],
+    //   })
+    //   expect(cql).to.equal(
+    //     '((INTERSECTS("anyGeo", LINESTRING((1 2,3 4)))) AND (INTERSECTS("anyGeo", POLYGON((5 6,7 8,9 10,5 6)))))'
+    //   )
+    // })
+    // it('transform CQL to filter', () => {
+    //   const cql = CQLUtils.transformCQLToFilter(
+    //     '(INTERSECTS(anyGeo, POLYGON((1 2,3 4,5 6,1 2))))'
+    //   )
+    //   expect(cql).to.deep.equal({
+    //     type: 'INTERSECTS',
+    //     property: 'anyGeo',
+    //     value: { type: 'GEOMETRY', value: 'POLYGON((1 2,3 4,5 6,1 2))' },
+    //   })
+    // })
+    // it('transform compound AND CQL to filter', () => {
+    //   const cql = CQLUtils.transformCQLToFilter(
+    //     '((INTERSECTS(anyGeo, LINESTRING((1 2,3 4)))) AND (INTERSECTS(anyGeo, POLYGON((5 6,7 8,9 10,5 6)))))'
+    //   )
+    //   expect(cql).to.deep.equal({
+    //     type: 'AND',
+    //     filters: [
+    //       {
+    //         type: 'INTERSECTS',
+    //         property: 'anyGeo',
+    //         value: { type: 'GEOMETRY', value: 'LINESTRING((1 2,3 4))' },
+    //       },
+    //       {
+    //         type: 'INTERSECTS',
+    //         property: 'anyGeo',
+    //         value: { type: 'GEOMETRY', value: 'POLYGON((5 6,7 8,9 10,5 6))' },
+    //       },
+    //     ],
+    //   })
+    // })
   })
 
   describe('transforms CQL', () => {

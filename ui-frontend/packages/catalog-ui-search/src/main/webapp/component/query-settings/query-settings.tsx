@@ -22,14 +22,19 @@ import SourcesInfo from './sources-info'
 import Phonetics from './phonetics'
 import Spellcheck from './spellcheck'
 import { hot } from 'react-hot-loader'
+import { Memo } from '../memo/memo'
 
 type Props = {
   model: Backbone.Model
 }
 
+/**
+ * This is expensive to rerender, so we memo.  However, if the inner components aren't listening to the query,
+ * this will not work.
+ */
 const QuerySettings = ({ model }: Props) => {
   return (
-    <>
+    <Memo dependencies={[model]}>
       <div>
         {properties.isSpellcheckEnabled ? (
           <div className="pb-2">
@@ -52,7 +57,7 @@ const QuerySettings = ({ model }: Props) => {
           <SourcesInfo />
         </div>
       </div>
-    </>
+    </Memo>
   )
 }
 

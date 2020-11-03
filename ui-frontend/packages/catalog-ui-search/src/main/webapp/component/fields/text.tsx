@@ -17,6 +17,16 @@ import * as React from 'react'
 import MuiTextField from '@material-ui/core/TextField'
 import { ValueTypes } from '../filter-builder/filter.structure'
 
+/**
+ * Use this to easily latch onto events for this input in ancestor components (pressing enter to search, etc.)
+ */
+export const FilterTextFieldIdentifier = `filter-text-filter-${Math.random()
+  .toString()
+  .replace('.', '')}`
+const inputProps = {
+  className: FilterTextFieldIdentifier,
+}
+
 type TextFieldProps = {
   value: ValueTypes['text']
   onChange: (val: ValueTypes['text']) => void
@@ -37,14 +47,13 @@ export const TextField = ({ value, onChange }: TextFieldProps) => {
   return (
     <MuiTextField
       fullWidth
-      multiline
-      rowsMax={3}
       variant="outlined"
       placeholder="Use * for wildcard."
       value={value || ''}
       onChange={(e) => {
         onChange(e.target.value)
       }}
+      inputProps={inputProps}
       className="whitespace-normal"
       size="small"
     />

@@ -54,27 +54,36 @@ const getPossibleProperties = () => {
   ]
 }
 
+const getDefaultPropertiesToApplyTo = (): {
+  label: string
+  value: string
+}[] => {
+  return (properties.basicSearchTemporalSelectionDefault || []).map(
+    (property: string) => {
+      return {
+        label: TypedMetacardDefs.getAlias({ attr: property }),
+        value: property,
+      }
+    }
+  )
+}
+
 const determinePropertiesToApplyTo = ({
   value,
 }: {
   value: BasicFilterClass
 }): Array<{ label: string; value: string }> => {
   if (value.property) {
-    return value.property.map((property) => {
-      return {
-        label: TypedMetacardDefs.getAlias({ attr: property }),
-        value: property,
-      }
-    })
-  } else {
-    return (properties.basicSearchTemporalSelectionDefault || []).map(
-      (property: string) => {
+    return value.property
+      .filter((prop) => prop !== 'anyDate')
+      .map((property) => {
         return {
           label: TypedMetacardDefs.getAlias({ attr: property }),
           value: property,
         }
-      }
-    )
+      })
+  } else {
+    return getDefaultPropertiesToApplyTo()
   }
 }
 
@@ -106,6 +115,9 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
                   onChange({
                     ...value,
                     type: 'AFTER',
+                    property: getDefaultPropertiesToApplyTo().map(
+                      (val) => val.value
+                    ),
                   })
                 } else {
                   onChange(undefined)

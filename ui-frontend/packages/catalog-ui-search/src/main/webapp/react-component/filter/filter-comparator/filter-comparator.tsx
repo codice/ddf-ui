@@ -29,10 +29,12 @@ const FilterComparator = ({ filter, setFilter }: Props) => {
     if (
       !comparators.map((comparator) => comparator.value).includes(filter.type)
     ) {
-      setFilter({
-        ...filter,
-        type: comparators[0].value as FilterClass['type'],
-      })
+      setFilter(
+        new FilterClass({
+          ...filter,
+          type: comparators[0].value as FilterClass['type'],
+        })
+      )
     }
   }, [filter])
 
@@ -48,10 +50,12 @@ const FilterComparator = ({ filter, setFilter }: Props) => {
       value={filter.type}
       onChange={(e) => {
         const newType = e.target.value as FilterClass['type']
-        setFilter({
-          ...filter,
-          type: newType,
-        })
+        setFilter(
+          new FilterClass({
+            ...filter,
+            type: newType,
+          })
+        )
       }}
       size="small"
     >

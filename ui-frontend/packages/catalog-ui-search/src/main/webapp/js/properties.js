@@ -163,6 +163,10 @@ const properties = {
     $('html').toggleClass('is-upload-enabled', this.isUploadEnabled())
   },
   isHidden(attribute) {
+    if (attribute === 'anyDate') {
+      // feels like we should consolidate all the attribute logic into the metacard definitions file, but for now don't want to risk circular dependency
+      return true
+    }
     return match(this.hiddenAttributes, attribute)
   },
   isReadOnly(attribute) {

@@ -24,6 +24,7 @@ import { Elevations } from '../theme/theme'
 import SearchIcon from '@material-ui/icons/SearchTwoTone'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { useHistory, useLocation } from 'react-router-dom'
+import _ from 'lodash'
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
@@ -228,18 +229,17 @@ export const HomePage = () => {
   const history = useHistory()
   const { listenTo } = useBackbone()
   React.useEffect(() => {
-    listenTo(queryModel, 'change', () => {
-      // run after the updates
-      setTimeout(() => {
-        const encodedQueryModel = encodeURIComponent(
-          JSON.stringify(queryModel.toJSON())
-        )
-        history.replace({
-          pathname: '/home',
-          search: `?defaultQuery=${encodedQueryModel}`,
-        })
-      }, 0)
-    })
+    // this is fairly expensive, so keep it heavily debounced
+    const debouncedUpdate = _.debounce(() => {
+      const encodedQueryModel = encodeURIComponent(
+        JSON.stringify(queryModel.toJSON())
+      )
+      history.replace({
+        pathname: '/home',
+        search: `?defaultQuery=${encodedQueryModel}`,
+      })
+    }, 2000)
+    listenTo(queryModel, 'change', debouncedUpdate)
   }, [])
   return (
     <div className="w-full h-full">

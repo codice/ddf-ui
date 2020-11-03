@@ -14,7 +14,7 @@
  **/
 import { expect } from 'chai'
 
-import filterHelper from './filterHelper'
+import { matchesFilter } from './filterHelper'
 
 function testAllSubstrings(
   testFilterString,
@@ -24,9 +24,9 @@ function testAllSubstrings(
 ) {
   for (let i = 0; i < testFilterString.length; i++) {
     const filterValue = testFilterString.substring(0, i)
-    expect(
-      filterHelper.matchesFilter(filterValue, stringToEval, matchcase)
-    ).to.equal(expectation)
+    expect(matchesFilter(filterValue, stringToEval, matchcase)).to.equal(
+      expectation
+    )
   }
 }
 
@@ -36,9 +36,9 @@ function testWholeStrings(
   matchcase,
   expectation
 ) {
-  expect(
-    filterHelper.matchesFilter(testFilterString, stringToEval, matchcase)
-  ).to.equal(expectation)
+  expect(matchesFilter(testFilterString, stringToEval, matchcase)).to.equal(
+    expectation
+  )
 }
 
 describe('filter helper functions', () => {
