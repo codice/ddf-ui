@@ -22,6 +22,7 @@ import {
 } from '../filter-builder/filter.structure'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
+import { FilterTextFieldIdentifier } from '../fields/text'
 const user = require('../singletons/user-instance.js')
 
 const getResultFilter = () => {
@@ -68,7 +69,18 @@ const ResultFilter = ({ closeDropdown }: { closeDropdown: () => void }) => {
   const [filter, setFilter] = React.useState(getBaseFilter())
   return (
     <>
-      <div className="min-w-120 max-w-120">
+      <div
+        className="min-w-120 max-w-120"
+        onKeyUp={(e) => {
+          if (e.keyCode === 13) {
+            const targetElement = e.target as HTMLInputElement
+            if (targetElement.classList.contains(FilterTextFieldIdentifier)) {
+              saveFilter({ filter })
+              closeDropdown()
+            }
+          }
+        }}
+      >
         <FilterBranch root={true} filter={filter} setFilter={setFilter} />
       </div>
       <Grid
