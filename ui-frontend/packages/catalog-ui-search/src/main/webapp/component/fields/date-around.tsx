@@ -35,12 +35,16 @@ const defaultValue = {
   date: new Date().toISOString(),
   buffer: {
     amount: '1',
-    unit: 'd'
-  }
+    unit: 'd',
+  },
 } as ValueTypes['around']
 
 const validateShape = ({ value, onChange }: DateAroundProps) => {
-  if (!value.date || !value.buffer || DateHelpers.Blueprint.commonProps.parseDate(value.date) === null) {
+  if (
+    !value.date ||
+    !value.buffer ||
+    DateHelpers.Blueprint.commonProps.parseDate(value.date) === null
+  ) {
     onChange(defaultValue)
   }
 }
@@ -56,95 +60,93 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
     onChange({
       ...defaultValue,
       ...value,
-      date: date
+      date: date,
     })
   }, [date])
 
   return (
-      <Grid
-      container
-      alignItems="stretch"
-      direction="column"
-      wrap="nowrap"
-    >
+    <Grid container alignItems="stretch" direction="column" wrap="nowrap">
       <Grid item className="w-full pb-2">
-      <DateInput
-        className={MuiOutlinedInputBorderClasses}
-        closeOnSelection={false}
-        fill
-        formatDate={DateHelpers.Blueprint.commonProps.formatDate}
-        onChange={DateHelpers.Blueprint.DateProps.generateOnChange(setDate)}
-        parseDate={DateHelpers.Blueprint.commonProps.parseDate}
-        placeholder={'M/D/YYYY'}
-        shortcuts
-        timePrecision="minute"
-        {...(value.date
-          ? {
-              value: DateHelpers.Blueprint.DateProps.generateValue(value.date),
-            }
-          : {})}
-      />
+        <DateInput
+          className={MuiOutlinedInputBorderClasses}
+          closeOnSelection={false}
+          fill
+          formatDate={DateHelpers.Blueprint.commonProps.formatDate}
+          onChange={DateHelpers.Blueprint.DateProps.generateOnChange(setDate)}
+          parseDate={DateHelpers.Blueprint.commonProps.parseDate}
+          placeholder={'M/D/YYYY'}
+          shortcuts
+          timePrecision="minute"
+          {...(value.date
+            ? {
+                value: DateHelpers.Blueprint.DateProps.generateValue(
+                  value.date
+                ),
+              }
+            : {})}
+        />
       </Grid>
       <Grid item className="w-full pb-2">
         with buffer of
       </Grid>
       <Grid container direction="row" className="w-full">
-      <Grid item xs={4} className="pb-2">
-        <NumberField
-          type="float"
-          onChange={(val) => {
-            if (onChange)
-              onChange({
-                ...defaultValue,
-                ...value,
-                buffer: {
-                  ...defaultValue.buffer,
-                  ...value.buffer,
-                  amount: val
+        <Grid item xs={4} className="pb-2">
+          <NumberField
+            type="float"
+            onChange={(val) => {
+              if (onChange)
+                onChange({
+                  ...defaultValue,
+                  ...value,
+                  buffer: {
+                    ...defaultValue.buffer,
+                    ...value.buffer,
+                    amount: val,
+                  },
+                })
+            }}
+            {...(value.buffer
+              ? {
+                  value: value.buffer.amount,
                 }
-              })
-          }}
-          {...(value.buffer
-            ? {
-                value: value.buffer.amount
-              }
-            : {})}
-        />
-      </Grid>
-      <Grid item xs={8} className="pl-2">
-        <TextField
-          fullWidth
-          variant="outlined"
-          select
-          onChange={(e) => {
-            if (onChange)
-              onChange({
-                ...defaultValue,
-                ...value,
-                buffer: {
-                  ...defaultValue.buffer,
-                  ...value.buffer,
-                  unit: e.target.value as ValueTypes['around']['buffer']['unit'],
+              : {})}
+          />
+        </Grid>
+        <Grid item xs={8} className="pl-2">
+          <TextField
+            fullWidth
+            variant="outlined"
+            select
+            onChange={(e) => {
+              if (onChange)
+                onChange({
+                  ...defaultValue,
+                  ...value,
+                  buffer: {
+                    ...defaultValue.buffer,
+                    ...value.buffer,
+                    unit: e.target
+                      .value as ValueTypes['around']['buffer']['unit'],
+                  },
+                })
+            }}
+            size="small"
+            {...(value.buffer
+              ? {
+                  value: value.buffer.unit,
                 }
-              })
-          }}
-          size="small"
-          {
-            ...(value.buffer ? {
-              value: value.buffer.unit
-            } : {value: 'd'})
-          }
-        >
-          <MenuItem value="s">Seconds</MenuItem>
-          <MenuItem value="m">Minutes</MenuItem>
-          <MenuItem value="h">Hours</MenuItem>
-          <MenuItem value="d">Days</MenuItem>
-          <MenuItem value="w">Weeks</MenuItem>
-          <MenuItem value="M">Months</MenuItem>
-          <MenuItem value="y">Years</MenuItem>
-        </TextField>
+              : { value: 'd' })}
+          >
+            <MenuItem value="s">Seconds</MenuItem>
+            <MenuItem value="m">Minutes</MenuItem>
+            <MenuItem value="h">Hours</MenuItem>
+            <MenuItem value="d">Days</MenuItem>
+            <MenuItem value="w">Weeks</MenuItem>
+            <MenuItem value="M">Months</MenuItem>
+            <MenuItem value="y">Years</MenuItem>
+          </TextField>
+        </Grid>
       </Grid>
-    </Grid>
     </Grid>
   )
 }

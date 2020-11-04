@@ -82,7 +82,7 @@ const FilterInput = ({ filter, setFilter }: Props) => {
           onChange={onChange}
         />
       )
-    case 'AROUND': 
+    case 'AROUND':
       return (
         <DateAroundField
           value={value as ValueTypes['around']}

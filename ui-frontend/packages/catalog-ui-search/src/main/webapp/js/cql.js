@@ -576,10 +576,8 @@ function write(filter) {
       return `${wrap(filter.property)} = '${serialize.dateRelative(
         filter.value
       )}'`
-    case 'AROUND': 
-        return `${wrap(filter.property)} ${serialize.dateAround(
-          filter.value
-        )}`
+    case 'AROUND':
+      return `${wrap(filter.property)} ${serialize.dateAround(filter.value)}`
     case 'BEFORE':
     case 'AFTER':
       return (

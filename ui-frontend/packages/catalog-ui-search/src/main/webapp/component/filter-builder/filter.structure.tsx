@@ -48,7 +48,7 @@ export const serialize = {
       return ''
     }
     //Weeks is not a valid unit, so convert this to days
-    if(unit === 'w') {
+    if (unit === 'w') {
       let convertedUnit = 'd'
       let convertedLast = (parseInt(last) * 7).toString()
       return `RELATIVE(${'P' + convertedLast + convertedUnit.toUpperCase()})`
@@ -57,11 +57,15 @@ export const serialize = {
     return `RELATIVE(${prefix + last + unit.toUpperCase()})`
   },
   dateAround: (value: ValueTypes['around']) => {
-    if(value.buffer === undefined || value.date === undefined) {
+    if (value.buffer === undefined || value.date === undefined) {
       return ''
     }
-    let before = moment(value.date).subtract(value.buffer.amount, value.buffer.unit).toISOString()
-    let after = moment(value.date).add(value.buffer.amount, value.buffer.unit).toISOString()
+    let before = moment(value.date)
+      .subtract(value.buffer.amount, value.buffer.unit)
+      .toISOString()
+    let after = moment(value.date)
+      .add(value.buffer.amount, value.buffer.unit)
+      .toISOString()
     return `DURING ${before}/${after}`
   },
   dateBetween: (value: ValueTypes['between']) => {
@@ -131,13 +135,13 @@ export type ValueTypes = {
     last: string
     //NOTE: Weeks is not a valid unit, but we allow it in our system.
     //This is converted to days to become valid cql
-    unit: 'm' | 'h' | 'd' | 'M' | 'y' | 's' | 'w' 
+    unit: 'm' | 'h' | 'd' | 'M' | 'y' | 's' | 'w'
   }
   around: {
     date: string
     buffer: {
       amount: string
-      unit: 'm' | 'h' | 'd' | 'M' | 'y' | 's' | 'w' 
+      unit: 'm' | 'h' | 'd' | 'M' | 'y' | 's' | 'w'
     }
   }
   during: {
