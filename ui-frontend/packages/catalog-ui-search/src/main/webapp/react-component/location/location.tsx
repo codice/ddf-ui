@@ -63,6 +63,29 @@ const inputs = plugin({
       )
     },
   },
+  searcharea: {
+    label: 'Search Area',
+    // @ts-ignore
+    Component: ({setState} : any) => {
+      // so here, we basically stuff whatever we want from search areas into the location model upon selection (using setState, see below where we pass that in)
+      // setState({
+      //   searchAreaId: '102938120398123' // => this roughly will do locationModel.set({ searchAreaId: '102938120398123'})
+      // })
+      // I would suggest, to be how I would expect this to work, to only store the id of the search area, then do some loading in the component
+      // this will mean the search area is always up to date, and minimizes the surface area of what we touch in location-old
+      // you could, if you want, keep the information around and only fetch once each time the component loads (this would allow you to avoid fetching over in filter.structure where we have to turn the search area into cql filters)
+      // if you do that, just make sure that it fetchs the latest at least once
+      // ACTUALLY, I just realized this might make us look bad if a scheduled search is using a search area since it will only have the cql from the most recent use of the ui,
+      // so maybe just load in the search area and assume it will be static.  In that case, you can stuff the remaining search area stuff into location old like so:
+      // setState({
+      //   searchAreaDetails: {
+      //     id: '123123213',
+      //     /// whatever else we want
+      //   }
+      // })
+      return <div>Fancy geometry</div>
+    }
+  }
 }) as {
   [key:string]: {
     label: string
@@ -123,7 +146,7 @@ function updateMap({locationModel}: any) {
 const Component = CustomElements.registerReact('location')
 const LocationInput = ({onChange, value}: any) => {
   const [locationModel] = React.useState(new LocationOldModel(value) as any)
-  const [state, setState] = React.useState(locationModel.toJSON() as any) // appears to be here to force rerender
+  const [state, setState] = React.useState(locationModel.toJSON() as any) 
   const {listenTo} = useBackbone()
   React.useEffect(() => {
     /**
@@ -171,9 +194,9 @@ const LocationInput = ({onChange, value}: any) => {
         />
 
         <div className="form-group clearfix">
-         {/* this part is weird, we splat state as seperate props, that's why we use destructuring */}
+         {/* this part is really weird, we splat state as seperate props, that's why we use destructuring */}
         <ComponentToRender {...state} setState={(args:any) => {
-          locationModel.set(args)
+          locationModel.set(args) // always update the locationModel, that's our "source of truth", above we map this back into state by listening to changes
         }} /> 
           {drawTypes.includes(state.mode) ? (
             <Button className="location-draw is-primary" onMouseDown={() => {

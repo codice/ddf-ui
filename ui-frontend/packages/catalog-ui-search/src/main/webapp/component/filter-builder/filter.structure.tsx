@@ -58,6 +58,25 @@ export const serialize = {
     return (from.toISOString() || '') + '/' + (to.toISOString() || '')
   },
   location: (property: string, value: ValueTypes['location']) => {
+    // here is where we generate the filter (this is called from cql.js)
+    if (value.mode === 'searcharea') {
+      // return the filter tree equivalent of the searcharea, this might require fetching if we only store id!  here is example of what's possible
+      // try this out to see what I mean (but you'll need results that match the filters below)
+      return {
+        type: 'OR',
+        filters: [
+          new FilterClass({
+            type: 'ILIKE',
+            value: 'sleepy',
+            property: 'anyText'
+          }), new FilterClass({
+            type: 'ILIKE',
+            value: 'kitty',
+            property: 'anyText'
+          })
+        ]
+      }
+    }
     return CQLUtils.generateAnyGeoFilter(property, value)
   },
 }
