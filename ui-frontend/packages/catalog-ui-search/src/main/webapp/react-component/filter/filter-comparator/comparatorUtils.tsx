@@ -26,7 +26,7 @@ export const dateComparators = [
   },
   {
     value: 'RELATIVE',
-    label: 'RELATIVE',
+    label: 'WITHIN THE LAST',
   },
   {
     value: 'DURING',
