@@ -52,7 +52,7 @@ export const serialize = {
       let convertedLast = (parseInt(last) * 7).toString()
       return `RELATIVE(${'P' + convertedLast + convertedUnit.toUpperCase()})`
     }
-    const prefix = unit === 'm' || unit === 'h' ? 'PT' : 'P'
+    const prefix = unit === 's' || unit === 'm' || unit === 'h' ? 'PT' : 'P'
     return `RELATIVE(${prefix + last + unit.toUpperCase()})`
   },
   dateBetween: (value: ValueTypes['between']) => {
@@ -122,7 +122,7 @@ export type ValueTypes = {
     last: string
     //NOTE: Weeks is not a valid unit, but we allow it in our system.
     //This is converted to days to become valid cql
-    unit: 'm' | 'h' | 'd' | 'M' | 'y' | 'w' 
+    unit: 'm' | 'h' | 'd' | 'M' | 'y' | 's' | 'w' 
   }
   during: {
     start: string
