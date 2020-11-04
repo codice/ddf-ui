@@ -36,6 +36,10 @@ export const dateComparators = [
     value: 'IS NULL',
     label: 'IS EMPTY',
   },
+  {
+    value: 'AROUND',
+    label: 'AROUND',
+  },
 ] as ComparatorType[]
 // verified
 export const geometryComparators = [

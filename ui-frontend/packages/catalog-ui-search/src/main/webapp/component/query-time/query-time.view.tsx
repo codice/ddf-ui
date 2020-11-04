@@ -198,7 +198,8 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
                     <MenuItem value="AFTER">After</MenuItem>
                     <MenuItem value="BEFORE">Before</MenuItem>
                     <MenuItem value="DURING">Between</MenuItem>
-                    <MenuItem value="RELATIVE">Relative</MenuItem>
+                    <MenuItem value="RELATIVE">Within the last</MenuItem>
+                    <MenuItem value="AROUND">Around</MenuItem>
                   </TextField>
                 </Grid>
                 <Grid item className="w-full pl-2">

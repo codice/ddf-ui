@@ -33,6 +33,7 @@ import { BooleanField } from '../../../component/fields/boolean'
 import MetacardDefinitions from '../../../component/tabs/metacard/metacardDefinitions'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import MuiTextField from '@material-ui/core/TextField'
+import { DateAroundField } from '../../../component/fields/date-around'
 export type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
@@ -78,6 +79,13 @@ const FilterInput = ({ filter, setFilter }: Props) => {
       return (
         <DateRelativeField
           value={value as ValueTypes['relative']}
+          onChange={onChange}
+        />
+      )
+    case 'AROUND': 
+      return (
+        <DateAroundField
+          value={value as ValueTypes['around']}
           onChange={onChange}
         />
       )

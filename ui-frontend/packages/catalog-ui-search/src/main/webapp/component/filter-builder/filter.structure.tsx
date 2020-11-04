@@ -20,6 +20,7 @@ import { serialize as locationSerialize } from '../location-old/location-seriali
 // @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
 import CQLUtils from '../../js/CQLUtils'
 import { SpreadOperatorProtectedClass } from '../../typescript/classes'
+const moment = require('moment')
 
 // @ts-ignore ts-migrate(6133) FIXME: 'comparatorToCQL' is declared but its value is nev... Remove this comment to see the full error message
 const comparatorToCQL = {
@@ -54,6 +55,14 @@ export const serialize = {
     }
     const prefix = unit === 's' || unit === 'm' || unit === 'h' ? 'PT' : 'P'
     return `RELATIVE(${prefix + last + unit.toUpperCase()})`
+  },
+  dateAround: (value: ValueTypes['around']) => {
+    if(value.buffer === undefined || value.date === undefined) {
+      return ''
+    }
+    let before = moment(value.date).subtract(value.buffer.amount, value.buffer.unit).toISOString()
+    let after = moment(value.date).add(value.buffer.amount, value.buffer.unit).toISOString()
+    return `DURING ${before}/${after}`
   },
   dateBetween: (value: ValueTypes['between']) => {
     const from = moment(value.start)
@@ -124,6 +133,13 @@ export type ValueTypes = {
     //This is converted to days to become valid cql
     unit: 'm' | 'h' | 'd' | 'M' | 'y' | 's' | 'w' 
   }
+  around: {
+    date: string
+    buffer: {
+      amount: string
+      unit: 'm' | 'h' | 'd' | 'M' | 'y' | 's' | 'w' 
+    }
+  }
   during: {
     start: string
     end: string
@@ -174,6 +190,7 @@ export class FilterClass extends SpreadOperatorProtectedClass {
     | 'DURING'
     | 'BETWEEN'
     | 'FILTER FUNCTION proximity'
+    | 'AROUND' // This isn't valid cql, but something we support
   readonly property: string
   readonly value: string | boolean | null | ValuesType<ValueTypes>
   readonly negated: boolean | undefined
