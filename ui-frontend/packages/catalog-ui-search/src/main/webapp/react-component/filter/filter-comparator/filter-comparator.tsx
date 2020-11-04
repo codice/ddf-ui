@@ -29,6 +29,8 @@ const FilterComparator = ({ filter, setFilter }: Props) => {
     if (
       !comparators.map((comparator) => comparator.value).includes(filter.type)
     ) {
+      console.log(`update comparator: ${filter.type}`)
+      console.log(`update comparator: ${filter.property}`)
       setFilter(
         new FilterClass({
           ...filter,
@@ -36,9 +38,7 @@ const FilterComparator = ({ filter, setFilter }: Props) => {
         })
       )
     }
-  }, [filter])
-
-  useEffect(() => {}, [filter])
+  }, [filter, setFilter])
 
   const comparators = getComparators(filter.property)
   return (

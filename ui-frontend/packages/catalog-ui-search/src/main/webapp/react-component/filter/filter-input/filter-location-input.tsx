@@ -13,87 +13,15 @@
  *
  **/
 import React from 'react'
-const LocationView = require('../../location/index.js')
-const LocationOldModel = require('../../../component/location-old/location-old')
-const ShapeUtils = require('../../../js/ShapeUtils.js')
-const wreqr = require('../../../js/wreqr.js')
-import { Drawing } from '../../../component/singletons/drawing'
-import { useBackbone } from '../../../component/selection-checkbox/useBackbone.hook'
+import LocationView from '../../location/location'
 import {hot} from 'react-hot-loader'
 
-function getCurrentValue({locationModel}: any) {
-  const modelJSON = locationModel.toJSON()
-  let type
-  if (modelJSON.polygon !== undefined) {
-    type = ShapeUtils.isArray3D(modelJSON.polygon)
-      ? 'MULTIPOLYGON'
-      : 'POLYGON'
-  } else if (
-    modelJSON.lat !== undefined &&
-    modelJSON.lon !== undefined &&
-    modelJSON.radius !== undefined
-  ) {
-    type = 'POINTRADIUS'
-  } else if (
-    modelJSON.line !== undefined &&
-    modelJSON.lineWidth !== undefined
-  ) {
-    type = 'LINE'
-  } else if (
-    modelJSON.north !== undefined &&
-    modelJSON.south !== undefined &&
-    modelJSON.east !== undefined &&
-    modelJSON.west !== undefined
-  ) {
-    type = 'BBOX'
-  }
-
-  return Object.assign(modelJSON, {
-    type,
-    lineWidth: modelJSON.lineWidth,
-    radius: modelJSON.radius,
-  })
-}
-
-function updateMap({locationModel}: any) {
-  const mode = locationModel.get('mode')
-    if (mode !== undefined && Drawing.isDrawing() !== true) {
-      wreqr.vent.trigger('search:' + mode + 'display', locationModel)
-    }
-}
-
+/**
+ * consolidated with location since there is no reason for indirection here, we should delete this 
+ */
 const LocationInput = ({onChange, value}: any) => {
-  const [locationModel] = React.useState(new LocationOldModel(value) as any)
-  const [state, setState] = React.useState(locationModel.toJSON() as any)
-  const {listenTo} = useBackbone()
-  React.useEffect(() => {
-    onChange(getCurrentValue({locationModel}))
-    listenTo(locationModel, 'change', () => {
-      setState(locationModel.toJSON())
-      updateMap({locationModel})
-      onChange(getCurrentValue({locationModel}))
-    })
-    listenTo(locationModel,'change:mapNorth change:mapSouth change:mapEast change:mapWest', locationModel.setLatLon)
-    return () => {
-      locationModel.set(new LocationOldModel().toJSON())
-      wreqr.vent.trigger('search:drawend', locationModel)
-    }
-  }, [])
-
-  const options = {
-    // @ts-ignore ts-migrate(6133) FIXME: 'drawingType' is declared but its value is never r... Remove this comment to see the full error message
-    onDraw: (drawingType: any) => {
-      wreqr.vent.trigger(
-        'search:draw' + locationModel.get('mode'),
-        locationModel
-      )
-    },
-  }
   return (
-    <LocationView
-    state={state}
-    options={options}
-    setState={(args:any) => locationModel.set(args)}
+    <LocationView onChange={onChange} value={value}
   /> )
 }
 

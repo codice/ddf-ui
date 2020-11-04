@@ -1055,5 +1055,5 @@ module.exports = Backbone.AssociatedModel.extend({
       this.get('utmUpsZone'),
       this.get('utmUpsHemisphere')
     )
-  },
+  }
 })

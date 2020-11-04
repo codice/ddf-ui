@@ -24,6 +24,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete'
 import { hot } from 'react-hot-loader'
 import TextField from '@material-ui/core/TextField'
 import { FilterClass } from '../../component/filter-builder/filter.structure'
+import { getComparators } from './filter-comparator/comparatorUtils'
 
 type Props = {
   filter: FilterClass
@@ -36,6 +37,7 @@ const Filter = ({ filter, setFilter }: Props) => {
   const currentSelectedAttribute = attributeList.find(
     (attrInfo) => attrInfo.value === property
   )
+  console.log(`Filter: ${filter.type}`)
   return (
     <Grid container direction="column" alignItems="center" className="w-full">
       <Grid item className="w-full pb-2">
@@ -47,13 +49,21 @@ const Filter = ({ filter, setFilter }: Props) => {
           options={attributeList}
           getOptionLabel={(option) => option.label}
           getOptionSelected={(option, value) => option.value === value.value}
-          // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-          onChange={(e, newValue) => {
+          onChange={(_e, newValue) => {
+            /**
+             * should update both the property and the type, since type is restricted based on property
+             */
             const newProperty = newValue.value as FilterClass['property']
+            const comparators = getComparators(newProperty)
+            const updates = {
+             property: newProperty,
+             type: !comparators.map((comparator) => comparator.value).includes(filter.type) ? comparators[0].value as FilterClass['type'] : filter.type
+            }
+
             setFilter(
               new FilterClass({
                 ...filter,
-                property: newProperty,
+                ...updates,
               })
             )
           }}
