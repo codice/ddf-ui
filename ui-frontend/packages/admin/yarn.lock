@@ -1248,9 +1248,9 @@
   resolved "https://registry.yarnpkg.com/@base2/pretty-print-object/-/pretty-print-object-1.0.0.tgz#860ce718b0b73f4009e153541faff2cb6b85d047"
   integrity sha512-4Th98KlMHr5+JkxfcoDT//6vY8vM+iSPrLNpHhRyLx2CFYi8e2RfqPLdpbnpo0Q5lQC5hNB79yes07zb02fvCw==
 
-"@connexta/ace@git://github.com/connexta/ace.git#149ba3b62076c6bb567ade2478e819587ea3b135":
+"@connexta/ace@git://github.com/connexta/ace.git#fec6481783a05766a28cf31eb5cecca68add39e7":
   version "1.0.0"
-  resolved "git://github.com/connexta/ace.git#149ba3b62076c6bb567ade2478e819587ea3b135"
+  resolved "git://github.com/connexta/ace.git#fec6481783a05766a28cf31eb5cecca68add39e7"
   dependencies:
     "@babel/core" "^7.0.0"
     "@storybook/addon-actions" "5.2.8"
