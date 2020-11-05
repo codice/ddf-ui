@@ -53,6 +53,7 @@ export const DateRangeField = ({
   return (
     <DateRangeInput
       allowSingleDayRange
+      minDate={new Date('Jan 1, 1900')}
       endInputProps={{
         fill: true,
         className: MuiOutlinedInputBorderClasses,
@@ -70,7 +71,10 @@ export const DateRangeField = ({
       timePrecision="minute"
       {...(value
         ? {
-            value: DateHelpers.Blueprint.DateRangeProps.generateValue(value),
+            value: DateHelpers.Blueprint.DateRangeProps.generateValue(
+              value,
+              new Date('Jan 1, 1900')
+            ),
           }
         : {})}
       {...BPDateRangeProps}

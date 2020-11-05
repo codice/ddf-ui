@@ -46,6 +46,7 @@ export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
     <>
       <DateInput
         className={MuiOutlinedInputBorderClasses}
+        minDate={new Date('Jan 1, 1900')}
         closeOnSelection={false}
         fill
         formatDate={DateHelpers.Blueprint.commonProps.formatDate}
@@ -56,7 +57,10 @@ export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
         timePrecision="minute"
         {...(value
           ? {
-              value: DateHelpers.Blueprint.DateProps.generateValue(value),
+              value: DateHelpers.Blueprint.DateProps.generateValue(
+                value,
+                new Date('Jan 1, 1900')
+              ),
             }
           : {})}
         {...BPDateProps}

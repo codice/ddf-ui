@@ -69,6 +69,7 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
       <Grid item className="w-full pb-2">
         <DateInput
           className={MuiOutlinedInputBorderClasses}
+          minDate={new Date('Jan 1, 1900')}
           closeOnSelection={false}
           fill
           formatDate={DateHelpers.Blueprint.commonProps.formatDate}
@@ -80,7 +81,8 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
           {...(value.date
             ? {
                 value: DateHelpers.Blueprint.DateProps.generateValue(
-                  value.date
+                  value.date,
+                  new Date('Jan 1, 1900')
                 ),
               }
             : {})}
