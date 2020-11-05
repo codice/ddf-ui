@@ -132,6 +132,11 @@
                                     <classifier>catalog-ui-search</classifier>
                                 </artifact>
                                 <artifact>
+                                    <file>packages/catalog-ui-search/dist/catalog-ui-search.tgz</file>
+                                    <type>tgz</type>
+                                    <classifier>catalog-ui-search-src</classifier>
+                                </artifact>
+                                <artifact>
                                     <file>packages/cesium-assets/target/cesium-assets.jar</file>
                                     <type>jar</type>
                                     <classifier>cesium-assets</classifier>
