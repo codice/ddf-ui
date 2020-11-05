@@ -48,7 +48,9 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <compiler.fork>false</compiler.fork>
+    <dependency-check-maven.version>6.0.2</dependency-check-maven.version>
     <maven.deploy.plugin.version>2.8.2</maven.deploy.plugin.version>
+    <mariadb.version>2.4.1</mariadb.version>
     <javalin.version>2.5.0</javalin.version>
     <javalin.thirdparty.bundle.version>2.5.0_1</javalin.thirdparty.bundle.version>
     <kotlin-osgi.version>1.2.61</kotlin-osgi.version>
@@ -280,6 +282,50 @@
               </configuration>
             </execution>
           </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.owasp</groupId>
+          <artifactId>dependency-check-maven</artifactId>
+          <version>${dependency-check-maven.version}</version>
+          <dependencies>
+            <dependency>
+              <groupId>ddf.support</groupId>
+              <artifactId>support-owasp</artifactId>
+              <version>${ddf.support.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.mariadb.jdbc</groupId>
+              <artifactId>mariadb-java-client</artifactId>
+              <version>${mariadb.version}</version>
+            </dependency>
+          </dependencies>
+          <configuration>
+            <!-- The following properties enable using a centralized nvd server -->
+            <autoUpdate>${owasp.autoUpdate}</autoUpdate>
+            <databaseDriverName>${owasp.database.driverName}</databaseDriverName>
+            <connectionString>${owasp.database.url}</connectionString>
+            <serverId>${owasp.serverId}</serverId>
+            <!-- End Centralized NVD Server Configuration -->
+            <failOnError>false</failOnError>
+            <skipTestScope>true</skipTestScope>
+            <!--Disable by plugin maintainer recommendation on https://github.com/jeremylong/DependencyCheck/issues/978#issuecomment-349620687-->
+            <centralAnalyzerEnabled>false</centralAnalyzerEnabled>
+            <!--Disable .NET analyzers-->
+            <nuspecAnalyzerEnabled>false</nuspecAnalyzerEnabled>
+            <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+            <!--Analyzes Ruby Gemfile.lock files, not OSGi bundles-->
+            <bundleAuditAnalyzerEnabled>false</bundleAuditAnalyzerEnabled>
+            <!--We don't use CMake, CocoaPods, AutoConf, or Ruby-->
+            <cmakeAnalyzerEnabled>false</cmakeAnalyzerEnabled>
+            <cocoapodsAnalyzerEnabled>false</cocoapodsAnalyzerEnabled>
+            <autoconfAnalyzerEnabled>false</autoconfAnalyzerEnabled>
+            <rubygemsAnalyzerEnabled>false</rubygemsAnalyzerEnabled>
+            <suppressionFiles>
+              <suppressionFile>dependency-check-maven-config.xml</suppressionFile>
+            </suppressionFiles>
+            <!-- This prevents a build failure on jdk tools jar -->
+            <skipSystemScope>true</skipSystemScope>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>

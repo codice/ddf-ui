@@ -43,6 +43,14 @@ jobs: # a collection of steps
 
       - store_test_results:
           path: ~/test-results
+
+      - run:
+          name: Dependency Check
+          command: mvn dependency-check:aggregate
+
+      - store_artifacts:
+          path: target/dependency-check-report.html
+
 #      - store_artifacts: # store the uberjar as an artifact
 #          # Upload test summary for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
 #          path: target/demo-java-spring-0.0.1-SNAPSHOT.jar
