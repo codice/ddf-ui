@@ -17,7 +17,7 @@ import { DateInput } from '@blueprintjs/datetime'
 
 // @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../s... Remove this comment to see the full error message
 import user from '../singletons/user-instance'
-import { DateHelpers } from './date-helpers'
+import { DateHelpers, DefaultMinDate } from './date-helpers'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
 import useTimePrefs from './useTimePrefs'
 import { ValueTypes } from '../filter-builder/filter.structure'
@@ -69,7 +69,7 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
       <Grid item className="w-full pb-2">
         <DateInput
           className={MuiOutlinedInputBorderClasses}
-          minDate={new Date('Jan 1, 1900')}
+          minDate={DefaultMinDate}
           closeOnSelection={false}
           fill
           formatDate={DateHelpers.Blueprint.commonProps.formatDate}
@@ -81,8 +81,7 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
           {...(value.date
             ? {
                 value: DateHelpers.Blueprint.DateProps.generateValue(
-                  value.date,
-                  new Date('Jan 1, 1900')
+                  value.date
                 ),
               }
             : {})}

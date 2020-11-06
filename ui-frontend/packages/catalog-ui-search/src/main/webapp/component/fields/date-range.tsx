@@ -14,7 +14,7 @@
  **/
 import * as React from 'react'
 import { DateRangeInput, IDateRangeInputProps } from '@blueprintjs/datetime'
-import { DateHelpers } from './date-helpers'
+import { DateHelpers, DefaultMinDate } from './date-helpers'
 import { ValueTypes } from '../filter-builder/filter.structure'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
 import useTimePrefs from './useTimePrefs'
@@ -53,7 +53,7 @@ export const DateRangeField = ({
   return (
     <DateRangeInput
       allowSingleDayRange
-      minDate={new Date('Jan 1, 1900')}
+      minDate={DefaultMinDate}
       endInputProps={{
         fill: true,
         className: MuiOutlinedInputBorderClasses,
@@ -71,10 +71,7 @@ export const DateRangeField = ({
       timePrecision="minute"
       {...(value
         ? {
-            value: DateHelpers.Blueprint.DateRangeProps.generateValue(
-              value,
-              new Date('Jan 1, 1900')
-            ),
+            value: DateHelpers.Blueprint.DateRangeProps.generateValue(value),
           }
         : {})}
       {...BPDateRangeProps}

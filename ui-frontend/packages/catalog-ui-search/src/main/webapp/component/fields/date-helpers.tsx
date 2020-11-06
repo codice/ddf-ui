@@ -8,10 +8,11 @@ import {
   isDateValid,
   isDayInRange,
 } from '@blueprintjs/datetime/lib/esm/common/dateUtils'
-import {
-  getDefaultMinDate,
-  getDefaultMaxDate,
-} from '@blueprintjs/datetime/lib/esm/datePickerCore'
+import { getDefaultMaxDate } from '@blueprintjs/datetime/lib/esm/datePickerCore'
+
+export const DefaultMinDate = new Date('Jan 1 1900')
+
+export const DefaultMaxDate = getDefaultMaxDate()
 
 export const DateHelpers = {
   General: {
@@ -59,8 +60,8 @@ export const DateHelpers = {
           date &&
           isDateValid(date) &&
           isDayInRange(date, [
-            minDate || getDefaultMinDate(),
-            maxDate || getDefaultMaxDate(),
+            minDate || DefaultMinDate,
+            maxDate || DefaultMaxDate,
           ])
         )
       },
