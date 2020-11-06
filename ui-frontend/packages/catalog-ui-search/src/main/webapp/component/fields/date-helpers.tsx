@@ -8,10 +8,11 @@ import {
   isDateValid,
   isDayInRange,
 } from '@blueprintjs/datetime/lib/esm/common/dateUtils'
-import {
-  getDefaultMinDate,
-  getDefaultMaxDate,
-} from '@blueprintjs/datetime/lib/esm/datePickerCore'
+import { getDefaultMaxDate } from '@blueprintjs/datetime/lib/esm/datePickerCore'
+
+export const DefaultMinDate = new Date('Jan 1, 1900')
+
+export const DefaultMaxDate = getDefaultMaxDate()
 
 export const DateHelpers = {
   General: {
@@ -54,14 +55,13 @@ export const DateHelpers = {
           return ''
         }
       },
-      isValid: (date: Date, minDate?: Date, maxDate?: Date) => {
+      isValid: (
+        date: Date,
+        minDate: Date = DefaultMinDate,
+        maxDate: Date = DefaultMaxDate
+      ) => {
         return (
-          date &&
-          isDateValid(date) &&
-          isDayInRange(date, [
-            minDate || getDefaultMinDate(),
-            maxDate || getDefaultMaxDate(),
-          ])
+          date && isDateValid(date) && isDayInRange(date, [minDate, maxDate])
         )
       },
     },
@@ -77,8 +77,12 @@ export const DateHelpers = {
           }
         }) as IDateInputProps['onChange']
       },
-      generateValue: (value: string) =>
-        DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(value),
+      generateValue: (value: string, minDate?: Date, maxDate?: Date) =>
+        DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
+          value,
+          minDate,
+          maxDate
+        ),
     },
     DateRangeProps: {
       generateOnChange: (onChange: (value: ValueTypes['during']) => void) => {
@@ -95,10 +99,22 @@ export const DateHelpers = {
           }
         }) as IDateRangeInputProps['onChange']
       },
-      generateValue: (value: ValueTypes['during']) =>
+      generateValue: (
+        value: ValueTypes['during'],
+        minDate?: Date,
+        maxDate?: Date
+      ) =>
         [
-          DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(value.start),
-          DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(value.end),
+          DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
+            value.start,
+            minDate,
+            maxDate
+          ),
+          DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
+            value.end,
+            minDate,
+            maxDate
+          ),
         ] as IDateRangeInputProps['value'],
     },
     converters: {
@@ -109,7 +125,11 @@ export const DateHelpers = {
        *
        * TLDR: Use this on an ISO date going INTO the blueprint datepicker (the value prop).  Use the sibling function TimeshiftedDateToISO to reverse this.
        */
-      ISOToTimeshiftedDate: (value: string): Date => {
+      ISOToTimeshiftedDate: (
+        value: string,
+        minDate?: Date,
+        maxDate?: Date
+      ): Date => {
         try {
           let momentShiftedDate = moment.utc(new Date(value).toUTCString())
           const utcOffsetMinutesLocal = new Date().getTimezoneOffset()
@@ -122,7 +142,11 @@ export const DateHelpers = {
 
           if (
             momentWithOffset.isValid() &&
-            DateHelpers.Blueprint.commonProps.isValid(momentWithOffset.toDate())
+            DateHelpers.Blueprint.commonProps.isValid(
+              momentWithOffset.toDate(),
+              minDate,
+              maxDate
+            )
           ) {
             return momentWithOffset.toDate()
           } else {
