@@ -55,14 +55,13 @@ export const DateHelpers = {
           return ''
         }
       },
-      isValid: (date: Date, minDate?: Date, maxDate?: Date) => {
+      isValid: (
+        date: Date,
+        minDate: Date = DefaultMinDate,
+        maxDate: Date = DefaultMaxDate
+      ) => {
         return (
-          date &&
-          isDateValid(date) &&
-          isDayInRange(date, [
-            minDate || DefaultMinDate,
-            maxDate || DefaultMaxDate,
-          ])
+          date && isDateValid(date) && isDayInRange(date, [minDate, maxDate])
         )
       },
     },
