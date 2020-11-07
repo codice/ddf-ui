@@ -20,6 +20,8 @@ const usngs = require('usng.js')
 const Common = require('../../js/Common.js')
 const dmsUtils = require('../location-new/utils/dms-utils.js')
 const DistanceUtils = require('../../js/DistanceUtils.js')
+const wreqr = require('../../js/wreqr.js')
+
 import { Drawing } from '../singletons/drawing'
 
 const converter = new usngs.Converter()
@@ -32,62 +34,64 @@ const usngPrecision = 6
 const Direction = dmsUtils.Direction
 
 module.exports = Backbone.AssociatedModel.extend({
-  defaults: {
-    drawing: false,
-    north: undefined,
-    east: undefined,
-    south: undefined,
-    west: undefined,
-    dmsNorth: undefined,
-    dmsSouth: undefined,
-    dmsEast: undefined,
-    dmsWest: undefined,
-    dmsNorthDirection: Direction.North,
-    dmsSouthDirection: Direction.North,
-    dmsEastDirection: Direction.East,
-    dmsWestDirection: Direction.East,
-    mapNorth: undefined,
-    mapEast: undefined,
-    mapWest: undefined,
-    mapSouth: undefined,
-    radiusUnits: 'meters',
-    radius: '',
-    locationType: 'dd',
-    prevLocationType: 'dd',
-    lat: undefined,
-    lon: undefined,
-    dmsLat: undefined,
-    dmsLon: undefined,
-    dmsLatDirection: Direction.North,
-    dmsLonDirection: Direction.East,
-    bbox: undefined,
-    usng: undefined,
-    utmUps: undefined,
-    color: undefined,
-    line: undefined,
-    multiline: undefined,
-    lineWidth: '',
-    lineUnits: 'meters',
-    polygon: undefined,
-    polygonBufferWidth: '',
-    polyType: undefined,
-    polygonBufferUnits: 'meters',
-    hasKeyword: false,
-    keywordValue: undefined,
-    utmUpsUpperLeftEasting: undefined,
-    utmUpsUpperLeftNorthing: undefined,
-    utmUpsUpperLeftHemisphere: 'Northern',
-    utmUpsUpperLeftZone: 1,
-    utmUpsLowerRightEasting: undefined,
-    utmUpsLowerRightNorthing: undefined,
-    utmUpsLowerRightHemisphere: 'Northern',
-    utmUpsLowerRightZone: 1,
-    utmUpsEasting: undefined,
-    utmUpsNorthing: undefined,
-    utmUpsZone: 1,
-    utmUpsHemisphere: 'Northern',
-    usngbbUpperLeft: undefined,
-    usngbbLowerRight: undefined,
+  defaults: () => {
+    return {
+      color: '#c89600',
+      drawing: false,
+      north: undefined,
+      east: undefined,
+      south: undefined,
+      west: undefined,
+      dmsNorth: undefined,
+      dmsSouth: undefined,
+      dmsEast: undefined,
+      dmsWest: undefined,
+      dmsNorthDirection: Direction.North,
+      dmsSouthDirection: Direction.North,
+      dmsEastDirection: Direction.East,
+      dmsWestDirection: Direction.East,
+      mapNorth: undefined,
+      mapEast: undefined,
+      mapWest: undefined,
+      mapSouth: undefined,
+      radiusUnits: 'meters',
+      radius: '',
+      locationType: 'dd',
+      prevLocationType: 'dd',
+      lat: undefined,
+      lon: undefined,
+      dmsLat: undefined,
+      dmsLon: undefined,
+      dmsLatDirection: Direction.North,
+      dmsLonDirection: Direction.East,
+      bbox: undefined,
+      usng: undefined,
+      utmUps: undefined,
+      line: undefined,
+      multiline: undefined,
+      lineWidth: '',
+      lineUnits: 'meters',
+      polygon: undefined,
+      polygonBufferWidth: '',
+      polyType: undefined,
+      polygonBufferUnits: 'meters',
+      hasKeyword: false,
+      keywordValue: undefined,
+      utmUpsUpperLeftEasting: undefined,
+      utmUpsUpperLeftNorthing: undefined,
+      utmUpsUpperLeftHemisphere: 'Northern',
+      utmUpsUpperLeftZone: 1,
+      utmUpsLowerRightEasting: undefined,
+      utmUpsLowerRightNorthing: undefined,
+      utmUpsLowerRightHemisphere: 'Northern',
+      utmUpsLowerRightZone: 1,
+      utmUpsEasting: undefined,
+      utmUpsNorthing: undefined,
+      utmUpsZone: 1,
+      utmUpsHemisphere: 'Northern',
+      usngbbUpperLeft: undefined,
+      usngbbLowerRight: undefined,
+    }
   },
   set(key, value, options) {
     if (!_.isObject(key)) {
@@ -157,11 +161,12 @@ module.exports = Backbone.AssociatedModel.extend({
       'change:utmUpsUpperLeftEasting change:utmUpsUpperLeftNorthing change:utmUpsUpperLeftZone change:utmUpsUpperLeftHemisphere change:utmUpsLowerRightEasting change:utmUpsLowerRightNorthing change:utmUpsLowerRightZone change:utmUpsLowerRightHemisphere',
       this.setBboxUtmUps
     )
+    this.listenTo(this, 'change:mode', () => {
+      this.set(this.defaults())
+      wreqr.vent.trigger('search:drawend', this)
+    })
     this.listenTo(this, 'EndExtent', this.drawingOff)
     this.listenTo(this, 'BeginExtent', this.drawingOn)
-    if (this.get('color') === undefined) {
-      this.set('color', '#c89600')
-    }
   },
   drawingOff() {
     if (this.get('locationType') === 'dms') {

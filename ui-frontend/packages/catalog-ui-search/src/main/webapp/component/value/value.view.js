@@ -20,7 +20,6 @@ const InputView = require('../input/input.view')
 const InputThumbnailView = require('../input/thumbnail/input-thumbnail.view.js')
 const InputDateView = require('../input/date/input-date.view.js')
 const InputTimeView = require('../input/time/input-time.view.js')
-const InputLocationView = require('../input/location/input-location.view.js')
 const InputEnumView = require('../input/enum/input-enum.view.js')
 const InputRadioView = require('../input/radio/input-radio.view.js')
 const InputNumberView = require('../input/number/input-number.view.js')
@@ -85,13 +84,6 @@ module.exports = Marionette.LayoutView.extend({
         case 'thumbnail':
           this.input.show(
             new InputThumbnailView({
-              model: this.model,
-            })
-          )
-          break
-        case 'location':
-          this.input.show(
-            new InputLocationView({
               model: this.model,
             })
           )
