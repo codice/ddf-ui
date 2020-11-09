@@ -17,6 +17,7 @@ import wrapNum from '../../../react-component/utils/wrap-num/wrap-num'
 import * as React from 'react'
 import ZoomToHomeButton from '../../../react-component/button/split-button/zoomToHome'
 import Gazetteer from '../../../react-component/location/gazetteer'
+import ExtensionPoints from '../../../extension-points'
 
 const wreqr = require('../../../js/wreqr.js')
 const template = require('./map.hbs')
@@ -562,7 +563,12 @@ module.exports = Marionette.LayoutView.extend({
         this.handleFilter(subfilter, color)
       })
     } else {
-      const value = filter.value
+      const extensionModel = ExtensionPoints.handleFilter(this.map, filter)
+
+      if (extensionModel) {
+        return
+      }
+
       if (filter.type === 'GEOMETRY') {
         const locationModel = new LocationModel(filter.value)
         switch (filter.value.type) {

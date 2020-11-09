@@ -15,11 +15,10 @@
 // @ts-ignore Can't find type declarations, but they exist
 import moment from 'moment-timezone'
 import { ValuesType } from 'utility-types'
-// @ts-ignore ts-migrate(6133) FIXME: 'locationSerialize' is declared but its value is n... Remove this comment to see the full error message
-import { serialize as locationSerialize } from '../location-old/location-serialization'
 // @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
 import CQLUtils from '../../js/CQLUtils'
 import { SpreadOperatorProtectedClass } from '../../typescript/classes'
+import ExtensionPoints from '../../extension-points'
 const moment = require('moment')
 
 // @ts-ignore ts-migrate(6133) FIXME: 'comparatorToCQL' is declared but its value is nev... Remove this comment to see the full error message
@@ -77,6 +76,10 @@ export const serialize = {
     return (from.toISOString() || '') + '/' + (to.toISOString() || '')
   },
   location: (property: string, value: ValueTypes['location']) => {
+    const transformation = ExtensionPoints.serializeLocation(property, value)
+    if (transformation !== null) {
+      return transformation
+    }
     return CQLUtils.generateAnyGeoFilter(property, value)
   },
 }

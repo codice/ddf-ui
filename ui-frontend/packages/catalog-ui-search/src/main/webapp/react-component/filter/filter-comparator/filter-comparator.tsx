@@ -36,9 +36,7 @@ const FilterComparator = ({ filter, setFilter }: Props) => {
         })
       )
     }
-  }, [filter])
-
-  useEffect(() => {}, [filter])
+  }, [filter, setFilter])
 
   const comparators = getComparators(filter.property)
   return (
