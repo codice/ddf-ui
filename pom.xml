@@ -58,7 +58,7 @@
     <errorprone.version>2.2.0</errorprone.version>
 
     <!--Backend properties-->
-    <ddf.version>2.26.0</ddf.version>
+    <ddf.version>2.26.1</ddf.version>
     <ddf.support.version>2.3.16</ddf.support.version>
     <antlr.version>4.3</antlr.version>
     <c3p0.version>0.9.5.4</c3p0.version>
