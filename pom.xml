@@ -300,12 +300,6 @@
             </dependency>
           </dependencies>
           <configuration>
-            <!-- The following properties enable using a centralized nvd server -->
-            <autoUpdate>${owasp.autoUpdate}</autoUpdate>
-            <databaseDriverName>${owasp.database.driverName}</databaseDriverName>
-            <connectionString>${owasp.database.url}</connectionString>
-            <serverId>${owasp.serverId}</serverId>
-            <!-- End Centralized NVD Server Configuration -->
             <failOnError>false</failOnError>
             <skipTestScope>true</skipTestScope>
             <!--Disable by plugin maintainer recommendation on https://github.com/jeremylong/DependencyCheck/issues/978#issuecomment-349620687-->
