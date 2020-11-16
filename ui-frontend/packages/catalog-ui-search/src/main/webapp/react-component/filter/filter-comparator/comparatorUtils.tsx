@@ -26,7 +26,7 @@ export const dateComparators = [
   },
   {
     value: 'RELATIVE',
-    label: 'RELATIVE',
+    label: 'WITHIN THE LAST',
   },
   {
     value: 'DURING',
@@ -35,6 +35,10 @@ export const dateComparators = [
   {
     value: 'IS NULL',
     label: 'IS EMPTY',
+  },
+  {
+    value: 'AROUND',
+    label: 'AROUND',
   },
 ] as ComparatorType[]
 // verified

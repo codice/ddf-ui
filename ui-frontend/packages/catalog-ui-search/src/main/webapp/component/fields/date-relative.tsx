@@ -34,11 +34,8 @@ export const DateRelativeField = ({ value, onChange }: Props) => {
     return null
   }
   return (
-    <Grid container direction="column" className="w-full">
-      <Grid item className="w-full pb-2 pl-2">
-        within the last
-      </Grid>
-      <Grid item className="w-full pb-2">
+    <Grid container direction="row" className="w-full">
+      <Grid item xs={4} className="pb-2">
         <NumberField
           type="float"
           onChange={(val) => {
@@ -56,7 +53,7 @@ export const DateRelativeField = ({ value, onChange }: Props) => {
             : {})}
         />
       </Grid>
-      <Grid item className="w-full">
+      <Grid item xs={8} className="pl-2">
         <TextField
           fullWidth
           variant="outlined"
@@ -72,9 +69,11 @@ export const DateRelativeField = ({ value, onChange }: Props) => {
           size="small"
           value={value.unit}
         >
+          <MenuItem value="s">Seconds</MenuItem>
           <MenuItem value="m">Minutes</MenuItem>
           <MenuItem value="h">Hours</MenuItem>
           <MenuItem value="d">Days</MenuItem>
+          <MenuItem value="w">Weeks</MenuItem>
           <MenuItem value="M">Months</MenuItem>
           <MenuItem value="y">Years</MenuItem>
         </TextField>

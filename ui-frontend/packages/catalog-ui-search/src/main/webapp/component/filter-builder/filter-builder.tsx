@@ -13,7 +13,6 @@
  *
  **/
 import * as React from 'react'
-const cql = require('../../js/cql.js')
 
 // @ts-ignore ts-migrate(6192) FIXME: All imports in import declaration are unused.
 import { serialize, deserialize } from './filter-serialization'
@@ -21,87 +20,71 @@ import FilterBranch from './filter-branch'
 
 import { FilterBuilderClass, isFilterBuilderClass } from './filter.structure'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import { FilterTextFieldIdentifier } from '../fields/text'
 
 type Props = {
   model: any
 }
 
+const convertToFilterIfNecessary = ({
+  filter,
+}: {
+  filter: any
+}): FilterBuilderClass => {
+  if (isFilterBuilderClass(filter)) {
+    return filter
+  }
+  if (filter.filters === undefined) {
+    return new FilterBuilderClass({
+      type: 'AND',
+      filters: [filter],
+      negated: false,
+    })
+  }
+  return new FilterBuilderClass({
+    ...filter,
+  })
+}
+
 const getBaseFilter = ({ model }: { model: any }): FilterBuilderClass => {
   const filter = model.get('filterTree')
-  if (filter.filters === undefined) {
-    return validateFilter(
-      new FilterBuilderClass({
-        type: 'AND',
-        filters: [filter],
-        negated: false,
-      })
-    )
-  }
-  return validateFilter(
-    new FilterBuilderClass({
-      ...filter,
-    })
-  )
+  return convertToFilterIfNecessary({ filter })
 }
 
 /**
- * Updates filter to accomodate WFS sources which don't handle blanks
+ * We use the filterTree of the model as the single source of truth, so it's always up to date.
+ * As a result, we have to listen to updates to it.
  */
-const validateFilter = (filter: FilterBuilderClass) => {
-  if (filter.filters.length === 1) {
-    if (
-      !isFilterBuilderClass(filter.filters[0]) &&
-      filter.filters[0].property === 'anyText' &&
-      filter.filters[0].type === 'ILIKE' &&
-      filter.filters[0].value === ''
-    ) {
-      filter.filters[0].value = '*'
-    }
-  }
-  return filter
-}
-
-const generateSaveCallback = (model: any, filter: FilterBuilderClass) => {
-  return () => {
-    model.set('cql', cql.write(filter))
-    model.set('filterTree', filter)
-  }
-}
-
 export const FilterBuilderRoot = ({ model }: Props) => {
   const [filter, setFilter] = React.useState(getBaseFilter({ model }))
   const { listenTo, stopListening } = useBackbone()
-  const saveCallbackRef = React.useRef(generateSaveCallback(model, filter))
-  React.useEffect(() => {
-    saveCallbackRef.current = generateSaveCallback(model, filter)
-  }, [filter, model])
-  React.useEffect(() => {
-    return () => {
-      saveCallbackRef.current()
-    }
-  }, [])
   React.useEffect(() => {
     const callback = () => {
-      saveCallbackRef.current()
-    }
-    const callback2 = () => {
       setFilter(getBaseFilter({ model }))
     }
-    // for perf, only update when necessary
-    listenTo(model, 'update', callback)
-    listenTo(model, 'change:filterTree', callback2)
+    listenTo(model, 'change:filterTree', callback)
     return () => {
-      stopListening(model, 'update', callback)
-      stopListening(model, 'change:filterTree', callback2)
+      stopListening(model, 'change:filterTree', callback)
     }
-  }, [model, filter])
+  }, [model])
   return (
-    <FilterBranch
-      filter={filter}
-      setFilter={(update) => {
-        setFilter(update)
+    <div
+      onKeyUp={(e) => {
+        if (e.keyCode === 13) {
+          const targetElement = e.target as HTMLInputElement
+          if (targetElement.classList.contains(FilterTextFieldIdentifier)) {
+            model.startSearchFromFirstPage()
+          }
+        }
       }}
-      root={true}
-    />
+    >
+      <FilterBranch
+        filter={filter}
+        setFilter={(update) => {
+          model.set('filterTree', update) // update the filterTree directly so it's always in sync and we're ready to search
+        }}
+        root={true}
+      />
+    </div>
   )
 }

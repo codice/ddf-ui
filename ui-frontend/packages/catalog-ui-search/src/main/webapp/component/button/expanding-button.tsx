@@ -13,6 +13,7 @@ type ExpandingButtonProps =
       expandedText: string
       unexpandedText: string
       component?: undefined
+      dataId?: string
     })
   | (ButtonProps & {
       expanded: boolean
@@ -20,6 +21,7 @@ type ExpandingButtonProps =
       iconPosition?: 'start' | 'end'
       expandedText: string
       unexpandedText: string
+      dataId?: string
       component: typeof Link
     } & Partial<LinkProps>)
   | (ButtonProps & {
@@ -29,6 +31,7 @@ type ExpandingButtonProps =
       expandedText: string
       unexpandedText: string
       component: 'a'
+      dataId?: string
     } & Partial<React.HTMLAttributes<HTMLAnchorElement>>)
 
 const ExpandingButton = ({
@@ -37,15 +40,13 @@ const ExpandingButton = ({
   Icon,
   expandedText,
   unexpandedText,
+  dataId = expandedText,
   ...buttonProps
 }: ExpandingButtonProps) => {
   const { className, ...otherButtonProps } = buttonProps
   return (
     <Button
-      data-id={`sidebar-${expandedText
-        .toLowerCase()
-        .split(' ')
-        .join('-')}-button`}
+      data-id={`sidebar-${dataId.toLowerCase().split(' ').join('-')}-button`}
       fullWidth
       className={`${className} transition-all duration-200 ease-in-out h-16 whitespace-no-wrap max-w-full overflow-hidden relative outline-none ${
         expanded ? '' : 'p-0'

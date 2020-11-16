@@ -17,7 +17,7 @@
     <parent>
         <artifactId>catalog-ui</artifactId>
         <groupId>org.codice.ddf.search</groupId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.1.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.codice.ddf.search</groupId>
@@ -130,6 +130,11 @@
                                     <file>packages/catalog-ui-search/target/catalog-ui-search.jar</file>
                                     <type>jar</type>
                                     <classifier>catalog-ui-search</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>packages/catalog-ui-search/dist/catalog-ui-search.tgz</file>
+                                    <type>tgz</type>
+                                    <classifier>catalog-ui-search-src</classifier>
                                 </artifact>
                                 <artifact>
                                     <file>packages/cesium-assets/target/cesium-assets.jar</file>

@@ -576,6 +576,8 @@ function write(filter) {
       return `${wrap(filter.property)} = '${serialize.dateRelative(
         filter.value
       )}'`
+    case 'AROUND':
+      return `${wrap(filter.property)} ${serialize.dateAround(filter.value)}`
     case 'BEFORE':
     case 'AFTER':
       return (
@@ -690,6 +692,28 @@ function uncollapseNOTs(cqlAst, parentNode) {
   }
 }
 
+/**
+ * For now, all this does is remove anyDate from cql since that's purely for the UI to track the query basic view state correctly.
+ * We might want to reconsider how we do the basic query in order to avoid this necessity (it's really the checkbox).
+ *
+ * This will only ever happen with a specific structure, so we don't need to recurse or anything.
+ */
+function removeInvalidFilters(cqlAst) {
+  if (cqlAst.filters) {
+    for (let i = 0; i < cqlAst.filters.length; i++) {
+      const currentFilter = cqlAst.filters[i]
+      if (
+        currentFilter.filters &&
+        currentFilter.filters[0].property === 'anyDate'
+      ) {
+        cqlAst.filters.splice(i, 1)
+        break
+      }
+    }
+  }
+  return cqlAst
+}
+
 function iterativelySimplify(cqlAst) {
   let prevAst = JSON.parse(JSON.stringify(cqlAst))
   simplifyAst(cqlAst)
@@ -713,6 +737,7 @@ module.exports = {
     try {
       const duplicatedFilter = JSON.parse(JSON.stringify(filter))
       uncollapseNOTs(duplicatedFilter)
+      removeInvalidFilters(duplicatedFilter)
       return write(duplicatedFilter)
     } catch (err) {
       console.log(err)
@@ -722,6 +747,7 @@ module.exports = {
       })
     }
   },
+  removeInvalidFilters,
   simplify(cqlAst) {
     iterativelySimplify(cqlAst)
     collapseNOTs(cqlAst)

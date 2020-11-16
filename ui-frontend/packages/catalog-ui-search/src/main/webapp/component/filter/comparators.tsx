@@ -18,6 +18,7 @@ export const dateComparators = [
   'RELATIVE',
   'BETWEEN',
   'IS EMPTY',
+  'AROUND',
 ]
 export const geometryComparators = ['INTERSECTS', 'IS EMPTY']
 export const stringComparators = [

@@ -21,7 +21,8 @@ import * as ReactDOM from 'react-dom'
 const user = require('../component/singletons/user-instance.js')
 import SourcesInstance from '../component/singletons/sources-instance'
 import MetacardDefinitions from '../component/tabs/metacard/metacardDefinitions'
-function attemptToStart() {
+
+export const attemptToStart = () => {
   if (
     user.fetched &&
     SourcesInstance.fetched &&
@@ -42,5 +43,3 @@ function attemptToStart() {
     }, 250)
   }
 }
-
-attemptToStart()

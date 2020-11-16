@@ -14,17 +14,17 @@ import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 
 import MRC from '../../react-component/marionette-region-container'
 import Button from '@material-ui/core/Button'
-import { Dropdown } from '@connexta/atlas/atoms/dropdown'
 import SearchInteractions from '../search-interactions'
 import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
 import MoreVert from '@material-ui/icons/MoreVert'
 import Box from '@material-ui/core/Box'
 import Divider from '@material-ui/core/Divider'
+import { Dropdown } from '../atlas-dropdown'
 import { Elevations } from '../theme/theme'
 import SearchIcon from '@material-ui/icons/SearchTwoTone'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-// @ts-ignore ts-migrate(6133) FIXME: 'useParams' is declared but its value is never rea... Remove this comment to see the full error message
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
+import _ from 'lodash'
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
@@ -233,18 +233,17 @@ export const HomePage = () => {
   const history = useHistory()
   const { listenTo } = useBackbone()
   React.useEffect(() => {
-    listenTo(queryModel, 'update', () => {
-      // run after the updates
-      setTimeout(() => {
-        const encodedQueryModel = encodeURIComponent(
-          JSON.stringify(queryModel.toJSON())
-        )
-        history.push({
-          pathname: '/home',
-          search: `?defaultQuery=${encodedQueryModel}`,
-        })
-      }, 0)
-    })
+    // this is fairly expensive, so keep it heavily debounced
+    const debouncedUpdate = _.debounce(() => {
+      const encodedQueryModel = encodeURIComponent(
+        JSON.stringify(queryModel.toJSON())
+      )
+      history.replace({
+        pathname: '/home',
+        search: `?defaultQuery=${encodedQueryModel}`,
+      })
+    }, 2000)
+    listenTo(queryModel, 'change', debouncedUpdate)
   }, [])
   return (
     <div className="w-full h-full">

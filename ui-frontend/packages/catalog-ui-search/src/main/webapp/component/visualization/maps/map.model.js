@@ -13,7 +13,7 @@
  *
  **/
 
-import wrapNum from '../../../react-component/utils/wrap-num/wrap-num.tsx'
+import wrapNum from '../../../react-component/utils/wrap-num/wrap-num'
 
 const _ = require('lodash')
 const Backbone = require('backbone')

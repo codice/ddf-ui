@@ -1,4 +1,3 @@
-import Timeline, { TimelineItem } from '@connexta/atlas/atoms/timeline/timeline'
 import WithListenTo, {
   WithBackboneProps,
 } from './../../../react-component/backbone-container'
@@ -8,6 +7,10 @@ import styled from 'styled-components'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import { useLazyResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import { useSelectedResults } from '../../../js/model/LazyQueryResult/hooks'
+import Timeline from '../../timeline'
+import { TimelineItem } from '../../timeline/timeline'
+import moment, { Moment } from 'moment-timezone'
+import useTimePrefs from '../../fields/useTimePrefs'
 
 const metacardDefinitions = require('../../singletons/metacard-definitions.js')
 const properties = require('../../../js/properties.js')
@@ -17,7 +20,7 @@ const announcement = require('../../announcement')
 const user = require('../../singletons/user-instance')
 const _ = require('lodash')
 
-const maxDate = new Date()
+const maxDate = moment().tz(user.getTimeZone())
 
 type Props = {
   selectionInterface: any
@@ -98,13 +101,9 @@ const onCopy = (copiedValue: string) => {
   )
 }
 
-const getDateFormat = () =>
-  user.get('user').get('preferences').get('dateTimeFormat')['datetimefmt']
-
-const getTimeZone = () => user.get('user').get('preferences').get('timeZone')
-
 const TimelineVisualization = (props: Props) => {
   const { selectionInterface } = props
+  useTimePrefs()
 
   const lazyResults = useLazyResultsFromSelectionInterface({
     selectionInterface,
@@ -126,14 +125,6 @@ const TimelineVisualization = (props: Props) => {
 
   const [resized, setResized] = React.useState(false)
 
-  const [dateFormat, setDateFormat] = React.useState(getDateFormat())
-  const [timezone, setTimeZone] = React.useState(getTimeZone())
-
-  const updateSettings = () => {
-    setDateFormat(getDateFormat())
-    setTimeZone(getTimeZone())
-  }
-
   React.useEffect(() => {
     props.listenTo(wreqr.vent, 'resize', () => {
       if (rootRef.current) {
@@ -144,24 +135,6 @@ const TimelineVisualization = (props: Props) => {
 
       setResized(true)
     })
-
-    const preferences = user.get('user').get('preferences')
-
-    props.listenTo(
-      preferences,
-      'change:timeZone change:dateTimeFormat',
-      updateSettings
-    )
-
-    return () => {
-      props.stopListening(wreqr.vent, 'resize')
-
-      props.stopListening(
-        preferences,
-        'change:timeZone change:dateTimeFormat',
-        updateSettings
-      )
-    }
   }, [])
 
   React.useEffect(() => {
@@ -178,9 +151,11 @@ const TimelineVisualization = (props: Props) => {
     const resultData: TimelineItem[] = Object.values(results).map((result) => {
       const metacard = result.plain.metacard.properties
 
-      const resultDateAttributes: { [key: string]: Date } = {}
+      const resultDateAttributes: { [key: string]: Moment } = {}
       possibleDateAttributes.forEach((dateAttribute: string) => {
-        resultDateAttributes[dateAttribute] = new Date(metacard[dateAttribute])
+        resultDateAttributes[dateAttribute] = moment(
+          metacard[dateAttribute]
+        ) as Moment
       })
 
       const id = metacard.id
@@ -223,15 +198,15 @@ const TimelineVisualization = (props: Props) => {
   return (
     <TimelineWrapper data-id="timeline-container" ref={rootRef}>
       <Timeline
-        min={new Date('1975-01-01:00:00.000z')}
-        max={maxDate}
+        min={moment('1975-01-01').tz(user.getTimeZone())}
+        max={moment(maxDate)}
         heightOffset={250}
         onSelect={onSelect}
         data={data}
         dateAttributeAliases={dateAttributeAliases}
         renderTooltip={renderTooltip}
-        format={dateFormat}
-        timezone={timezone}
+        format={user.getDateTimeFormat()}
+        timezone={user.getTimeZone()}
         height={height}
         onCopy={onCopy}
       />

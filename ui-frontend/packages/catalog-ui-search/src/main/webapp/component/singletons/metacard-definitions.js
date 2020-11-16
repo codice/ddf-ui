@@ -60,6 +60,12 @@ const metacardStartingTypes = {
     type: 'LOCATION',
     multivalued: false,
   },
+  anyDate: {
+    id: 'anyDate',
+    type: 'DATE',
+    multivalued: false,
+    hidden: true, // need to investigate if this is common, it looks like we defer to the properties file instead, think we need to overhaul our data structures for this
+  },
   'metacard-type': {
     id: 'metacard-type',
     type: 'STRING',

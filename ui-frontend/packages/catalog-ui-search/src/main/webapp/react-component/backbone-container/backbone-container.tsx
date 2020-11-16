@@ -34,7 +34,7 @@ const withListenTo = <P extends WithBackboneProps>(
     Subtract<P, WithBackboneProps>,
     {}
   > {
-    backbone: Backbone.Model = new Backbone.Model({})
+    backbone: any = new Backbone.Model({})
     componentWillUnmount() {
       this.backbone.stopListening()
       this.backbone.destroy()

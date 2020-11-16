@@ -6,24 +6,21 @@ import Button from '@material-ui/core/Button'
 const user = require('../../singletons/user-instance')
 const properties = require('../../../js/properties.js')
 import TypedMetacardDefs from './metacardDefinitions'
+import Autocomplete from '@material-ui/lab/Autocomplete'
 import Checkbox from '@material-ui/core/Checkbox'
 import Divider from '@material-ui/core/Divider'
 const Common = require('../../../js/Common.js')
 import DeleteIcon from '@material-ui/icons/Delete'
 import TextField from '@material-ui/core/TextField'
-import { useDialog } from '@connexta/atlas/atoms/dialog'
+import { useDialog } from '../../dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
-import { KeyboardDateTimePicker } from '@connexta/atlas/atoms/pickers'
-import { getDateTimeFormat } from '../../user/utils'
 import useSnack from '../../hooks/useSnack'
 import LinearProgress from '@material-ui/core/LinearProgress'
 const $ = require('jquery')
 const ResultUtils = require('../../../js/ResultUtils.js')
 import PublishIcon from '@material-ui/icons/Publish'
-// @ts-ignore ts-migrate(6133) FIXME: 'AutoSizer' is declared but its value is never rea... Remove this comment to see the full error message
-import AutoSizer from 'react-virtualized-auto-sizer'
 import Paper from '@material-ui/core/Paper'
 import useTheme from '@material-ui/core/styles/useTheme'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
@@ -33,73 +30,11 @@ import TransferList from './transfer-list'
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace'
 import AddIcon from '@material-ui/icons/Add'
 import Box from '@material-ui/core/Box'
-// @ts-ignore ts-migrate(6133) FIXME: 'dark' is declared but its value is never read.
-import { Elevations, dark, light } from '../../theme/theme'
+import { Elevations } from '../../theme/theme'
 import { DarkDivider } from '../../dark-divider/dark-divider'
 import { displayHighlightedAttrInFull } from './highlightUtil'
-//metacardDefinitions.metacardTypes[attribute].type
-//metacardDefinitions.metacardTypes[attribute].multivalued
-//properties.isReadOnly(attribute)
-//properties.attributeAliases[attribute]
-//metacardDefinitions.validation[attribute]
-//metacardDefinitions.enums[attribute]
-//properties.requiredAttributes.includes(property)
-//metacardDefinitions.isHiddenTypeExceptThumbnail(property)
-/**
- *  _setCalculatedType() {
-    let calculatedType
-
-    switch (this.get('type')) {
-      case 'DATE':
-        calculatedType = 'date'
-        break
-      case 'TIME':
-        calculatedType = 'time'
-        break
-      case 'BINARY':
-        calculatedType = 'thumbnail'
-        break
-      case 'LOCATION':
-        calculatedType = 'location'
-        break
-      case 'TEXTAREA':
-        calculatedType = 'textarea'
-        break
-      case 'BOOLEAN':
-        calculatedType = 'boolean'
-        break
-      case 'LONG':
-      case 'DOUBLE':
-      case 'FLOAT':
-      case 'INTEGER':
-      case 'SHORT':
-        calculatedType = 'number'
-        break
-      case 'RANGE':
-        calculatedType = 'range'
-        break
-      case 'GEOMETRY':
-        calculatedType = 'geometry'
-        break
-      case 'AUTOCOMPLETE':
-        calculatedType = 'autocomplete'
-        break
-      case 'COLOR':
-        calculatedType = 'color'
-        break
-      case 'NEAR':
-        calculatedType = 'near'
-        break
-      case 'PASSWORD':
-        calculatedType = 'password'
-        break
-      case 'STRING':
-      case 'XML':
-      default:
-        calculatedType = 'text'
-        break
-    }
- */
+import DateTimePicker from '../../fields/date-time-picker'
+import Geometry from '../../../react-component/input-wrappers/geometry'
 
 function getSummaryShown(): string[] {
   const userchoices = user
@@ -143,12 +78,12 @@ const ThumbnailInput = ({
           type="file"
           ref={fileRef}
           style={{ display: 'none' }}
-          onChange={e => {
+          onChange={(e) => {
             if (imgRef.current === null) {
               return
             }
             const reader = new FileReader()
-            reader.onload = function(event) {
+            reader.onload = function (event) {
               try {
                 // @ts-ignore ts-migrate(2531) FIXME: Object is possibly 'null'.
                 onChange(event.target.result)
@@ -194,6 +129,12 @@ const ThumbnailInput = ({
   )
 }
 
+enum Mode {
+  Normal = 'normal',
+  Saving = 'saving',
+  BadInput = 'bad-input',
+}
+
 export const Editor = ({
   attr,
   lazyResult,
@@ -207,15 +148,16 @@ export const Editor = ({
   onSave?: () => void
   goBack?: () => void
 }) => {
-  const [mode, setMode] = React.useState('normal' as 'normal' | 'saving')
+  const [mode, setMode] = React.useState(Mode.Normal)
   const [values, setValues] = React.useState(
     Array.isArray(lazyResult.plain.metacard.properties[attr])
-      ? lazyResult.plain.metacard.properties[attr]
+      ? lazyResult.plain.metacard.properties[attr].slice(0)
       : [lazyResult.plain.metacard.properties[attr]]
   )
   const label = TypedMetacardDefs.getAlias({ attr })
   const isMultiValued = TypedMetacardDefs.isMulti({ attr })
   const attrType = TypedMetacardDefs.getType({ attr })
+  const enumForAttr = TypedMetacardDefs.getEnum({ attr: attr })
   const addSnack = useSnack()
 
   return (
@@ -237,37 +179,55 @@ export const Editor = ({
       <DialogContent style={{ minHeight: '30em', minWidth: '60vh' }}>
         {values.map((val: any, index: number) => {
           return (
-            <Grid container direction="row">
+            <Grid container direction="row" className="my-2">
               {index !== 0 ? <Divider style={{ margin: '5px 0px' }} /> : null}
               <Grid item md={11}>
                 {(() => {
+                  if (enumForAttr) {
+                    return (
+                      <Autocomplete
+                        disabled={mode === 'saving'}
+                        value={val}
+                        onChange={(_e: any, newValue: string) => {
+                          values[index] = newValue
+                          setValues([...values])
+                        }}
+                        // @ts-ignore fullWidth does exist on Autocomplete
+                        fullWidth
+                        disableClearable
+                        size="small"
+                        options={enumForAttr}
+                        renderInput={(params) => (
+                          <TextField {...params} variant="outlined" />
+                        )}
+                      />
+                    )
+                  }
                   switch (attrType) {
                     case 'DATE':
                       return (
-                        <KeyboardDateTimePicker
-                          disabled={mode === 'saving'}
+                        <DateTimePicker
                           value={val}
-                          onChange={(e: any) => {
-                            values[index] = e.toISOString()
+                          onChange={(value) => {
+                            values[index] = value
                             setValues([...values])
                           }}
-                          DialogProps={{
-                            disablePortal: true,
-                            style: {
-                              minWidth: '500px',
-                            },
+                          TextFieldProps={{
+                            disabled: mode !== Mode.Normal,
+                            label: label,
+                            variant: 'outlined',
                           }}
-                          format={getDateTimeFormat()}
-                          fullWidth
+                          BPDateProps={{
+                            disabled: mode !== Mode.Normal,
+                          }}
                         />
                       )
-
                     case 'BINARY':
                       return (
                         <ThumbnailInput
-                          disabled={mode === 'saving'}
+                          disabled={mode !== Mode.Normal}
                           value={val}
-                          onChange={update => {
+                          onChange={(update) => {
                             values[index] = update
                             setValues([...values])
                           }}
@@ -276,9 +236,9 @@ export const Editor = ({
                     case 'BOOLEAN':
                       return (
                         <Checkbox
-                          disabled={mode === 'saving'}
+                          disabled={mode !== Mode.Normal}
                           checked={val}
-                          onChange={e => {
+                          onChange={(e) => {
                             values[index] = e.target.checked
                             setValues([...values])
                           }}
@@ -292,9 +252,9 @@ export const Editor = ({
                     case 'SHORT':
                       return (
                         <TextField
-                          disabled={mode === 'saving'}
+                          disabled={mode !== Mode.Normal}
                           value={val}
-                          onChange={e => {
+                          onChange={(e) => {
                             values[index] = e.target.value
                             setValues([...values])
                           }}
@@ -304,28 +264,22 @@ export const Editor = ({
                       )
                     case 'GEOMETRY':
                       return (
-                        <TextField
-                          disabled={mode === 'saving'}
-                          value={val}
-                          onChange={e => {
-                            values[index] = e.target.value
+                        <Geometry
+                          label={label}
+                          onChange={(location: any) => {
+                            location === null || location === 'INVALID'
+                              ? setMode(Mode.BadInput)
+                              : setMode(Mode.Normal)
+                            values[index] = location
                             setValues([...values])
                           }}
-                          fullWidth
-                          helperText="WKT Syntax is supported for geometries, here are some examples:
-                          POINT (50 40)
-                          LINESTRING (30 10, 10 30, 40 40)
-                          POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))
-                          MULTIPOINT (10 40, 40 30, 20 20, 30 10)
-                          MULTILINESTRING ((10 10, 20 20, 10 40), (40 40, 30 30, 40 20, 30 10))
-                          MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))
-                          GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6,7 10))"
+                          value={val}
                         />
                       )
                     default:
                       return (
                         <TextField
-                          disabled={mode === 'saving'}
+                          disabled={mode !== Mode.Normal}
                           value={val}
                           onChange={(e: any) => {
                             values[index] = e.target.value
@@ -343,7 +297,7 @@ export const Editor = ({
               {isMultiValued ? (
                 <Grid item md={1}>
                   <Button
-                    disabled={mode === 'saving'}
+                    disabled={mode === Mode.Saving}
                     onClick={() => {
                       values.splice(index, 1)
                       setValues([...values])
@@ -356,31 +310,32 @@ export const Editor = ({
             </Grid>
           )
         })}
-        {isMultiValued &&
-          values.length > 0 && (
-            <Button
-              disabled={mode === 'saving'}
-              variant="text"
-              color="primary"
-              onClick={() => {
-                let defaultValue = ''
-                switch (attrType) {
-                  case 'DATE':
-                    defaultValue = new Date().toISOString()
-                    break
-                }
-                setValues([...values, defaultValue])
-              }}
-            >
-              <AddIcon className="Mui-text-text-primary" />
-              Add New Value
-            </Button>
-          )}
+        {isMultiValued && values.length > 0 && (
+          <Button
+            disabled={mode === Mode.Saving}
+            variant="text"
+            color="primary"
+            onClick={() => {
+              let defaultValue = ''
+              switch (attrType) {
+                case 'DATE':
+                  defaultValue = new Date().toISOString()
+                  break
+              }
+              setValues([...values, defaultValue])
+            }}
+          >
+            <Box color="text.primary">
+              <AddIcon />
+            </Box>
+            Add New Value
+          </Button>
+        )}
       </DialogContent>
       <Divider />
       <DialogActions>
         <Button
-          disabled={mode === 'saving'}
+          disabled={mode === Mode.Saving}
           variant="text"
           onClick={() => {
             onCancel()
@@ -389,11 +344,11 @@ export const Editor = ({
           Cancel
         </Button>
         <Button
-          disabled={mode === 'saving'}
+          disabled={mode !== Mode.Normal}
           variant="contained"
           color="primary"
           onClick={() => {
-            setMode('saving')
+            setMode(Mode.Saving)
             let transformedValues = values
             try {
               transformedValues =
@@ -416,9 +371,7 @@ export const Editor = ({
             ]
             setTimeout(() => {
               $.ajax({
-                url: `./internal/metacards?storeId=${
-                  lazyResult.plain.metacard.properties['source-id']
-                }`,
+                url: `./internal/metacards?storeId=${lazyResult.plain.metacard.properties['source-id']}`,
                 type: 'PATCH',
                 data: JSON.stringify(payload),
                 contentType: 'application/json',
@@ -438,7 +391,7 @@ export const Editor = ({
           Save
         </Button>
       </DialogActions>
-      {mode === 'saving' ? (
+      {mode === Mode.Saving ? (
         <LinearProgress
           style={{
             width: '100%',
@@ -477,124 +430,119 @@ const AttributeComponent = ({
   let label = TypedMetacardDefs.getAlias({ attr })
   const isFiltered =
     filter !== '' ? !label.toLowerCase().includes(filter.toLowerCase()) : false
-  const MemoItem = React.useMemo(
-    () => {
-      return (
-        <Grid container direction="row" wrap={'nowrap'}>
-          <Grid
-            item
-            xs={4}
-            style={{
-              wordBreak: 'break-word',
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-              padding: '10px',
-            }}
-            className="relative"
-          >
-            <Typography>{label}</Typography>
-            <Divider
-              orientation="vertical"
-              className="absolute right-0 top-0 w-min h-full"
-            />
-          </Grid>
-          <Grid
-            item
-            md={8}
-            style={{
-              wordBreak: 'break-word',
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-              padding: '10px',
-            }}
-          >
-            <Grid container direction="row">
-              <Grid data-id={`${attr}-value`} item>
-                {value.map((val: any, index: number) => {
-                  return (
-                    <>
-                      {index !== 0 ? (
-                        <Divider style={{ margin: '5px 0px' }} />
-                      ) : null}
-                      <div>
-                        {(() => {
-                          if (attr === 'ext.audio-snippet') {
-                            const mimetype =
-                              lazyResult.plain.metacard.properties[
-                                'ext.audio-snippet-mimetype'
-                              ]
-                            const src = `data:${mimetype};base64,${val}`
+  const MemoItem = React.useMemo(() => {
+    return (
+      <Grid container direction="row" wrap={'nowrap'}>
+        <Grid
+          item
+          xs={4}
+          style={{
+            wordBreak: 'break-word',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            padding: '10px',
+          }}
+          className="relative"
+        >
+          <Typography>{label}</Typography>
+          <Divider
+            orientation="vertical"
+            className="absolute right-0 top-0 w-min h-full"
+          />
+        </Grid>
+        <Grid
+          item
+          md={8}
+          style={{
+            wordBreak: 'break-word',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            padding: '10px',
+          }}
+        >
+          <Grid container direction="row">
+            <Grid data-id={`${attr}-value`} item>
+              {value.map((val: any, index: number) => {
+                return (
+                  <>
+                    {index !== 0 ? (
+                      <Divider style={{ margin: '5px 0px' }} />
+                    ) : null}
+                    <div>
+                      {(() => {
+                        if (attr === 'ext.audio-snippet') {
+                          const mimetype =
+                            lazyResult.plain.metacard.properties[
+                              'ext.audio-snippet-mimetype'
+                            ]
+                          const src = `data:${mimetype};base64,${val}`
 
-                            return <audio controls src={src} />
-                          }
+                          return <audio controls src={src} />
+                        }
 
-                          switch (TypedMetacardDefs.getType({ attr })) {
-                            case 'DATE':
-                              return (
-                                <Typography title={Common.getMomentDate(val)}>
-                                  {user.getUserReadableDateTime(val)}
-                                </Typography>
-                              )
+                        switch (TypedMetacardDefs.getType({ attr })) {
+                          case 'DATE':
+                            return (
+                              <Typography title={Common.getMomentDate(val)}>
+                                {user.getUserReadableDateTime(val)}
+                              </Typography>
+                            )
 
-                            case 'BINARY':
-                              return (
-                                <a
-                                  target="_blank"
-                                  href={TypedMetacardDefs.getImageSrc({ val })}
-                                  style={{ padding: '0px' }}
-                                >
-                                  <img
-                                    src={TypedMetacardDefs.getImageSrc({ val })}
-                                    style={{
-                                      maxWidth: '100%',
-                                      maxHeight: '50vh',
-                                    }}
-                                  />
-                                </a>
-                              )
-                            case 'BOOLEAN':
-                              return (
-                                <Typography>
-                                  {val ? 'true' : 'false'}
-                                </Typography>
-                              )
-                            default:
-                              if (lazyResult.highlights[attr]) {
-                                if (attr === 'title') {
-                                  //Special case, title highlights don't get truncated
-                                  return (
-                                    <Typography>
-                                      <span
-                                        dangerouslySetInnerHTML={{
-                                          __html:
-                                            lazyResult.highlights[attr][0]
-                                              .highlight,
-                                        }}
-                                      />
-                                    </Typography>
-                                  )
-                                }
-                                return displayHighlightedAttrInFull(
-                                  lazyResult.highlights[attr],
-                                  val
+                          case 'BINARY':
+                            return (
+                              <a
+                                target="_blank"
+                                href={TypedMetacardDefs.getImageSrc({ val })}
+                                style={{ padding: '0px' }}
+                              >
+                                <img
+                                  src={TypedMetacardDefs.getImageSrc({ val })}
+                                  style={{
+                                    maxWidth: '100%',
+                                    maxHeight: '50vh',
+                                  }}
+                                />
+                              </a>
+                            )
+                          case 'BOOLEAN':
+                            return (
+                              <Typography>{val ? 'true' : 'false'}</Typography>
+                            )
+                          default:
+                            if (lazyResult.highlights[attr]) {
+                              if (attr === 'title') {
+                                //Special case, title highlights don't get truncated
+                                return (
+                                  <Typography>
+                                    <span
+                                      dangerouslySetInnerHTML={{
+                                        __html:
+                                          lazyResult.highlights[attr][0]
+                                            .highlight,
+                                      }}
+                                    />
+                                  </Typography>
                                 )
-                              } else {
-                                return <Typography>{val}</Typography>
                               }
-                          }
-                        })()}
-                      </div>
-                    </>
-                  )
-                })}
-              </Grid>
+                              return displayHighlightedAttrInFull(
+                                lazyResult.highlights[attr],
+                                val
+                              )
+                            } else {
+                              return <Typography>{val}</Typography>
+                            }
+                        }
+                      })()}
+                    </div>
+                  </>
+                )
+              })}
             </Grid>
           </Grid>
         </Grid>
-      )
-    },
-    [summaryShown, forceRender]
-  )
+      </Grid>
+    )
+  }, [summaryShown, forceRender])
   return (
     <div style={{ display: isFiltered ? 'none' : 'block' }}>{MemoItem}</div>
   )
@@ -613,13 +561,13 @@ const getHiddenAttributes = (
       type: selection.plain.metacardType,
     })
   )
-    .filter(val => {
+    .filter((val) => {
       if (activeAttributes.includes(val.id)) {
         return false
       }
       return true
     })
-    .filter(val => {
+    .filter((val) => {
       return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({
         attr: val.id,
       })
@@ -656,64 +604,52 @@ const Summary = ({ selectionInterface }: Props) => {
       }
     )
   }, [])
-  React.useEffect(
-    () => {
-      if (selection) {
-        if (getHiddenAttributes(selection, summaryShown).length === 0) {
-          setFullyExpanded(true)
-        } else {
-          setFullyExpanded(false)
-        }
+  React.useEffect(() => {
+    if (selection) {
+      if (getHiddenAttributes(selection, summaryShown).length === 0) {
+        setFullyExpanded(true)
+      } else {
+        setFullyExpanded(false)
       }
-    },
-    [summaryShown]
-  )
-  const everythingElse = React.useMemo(
-    () => {
-      return selection && expanded
-        ? Object.keys(selection.plain.metacard.properties)
-            .filter(attr => {
-              return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({ attr })
+    }
+  }, [summaryShown])
+  const everythingElse = React.useMemo(() => {
+    return selection && expanded
+      ? Object.keys(selection.plain.metacard.properties)
+          .filter((attr) => {
+            return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({ attr })
+          })
+          .filter((attr) => {
+            return !summaryShown.includes(attr)
+          })
+      : []
+  }, [expanded, summaryShown])
+  const blankEverythingElse = React.useMemo(() => {
+    return selection
+      ? Object.values(
+          TypedMetacardDefs.getDefinition({
+            type: selection.plain.metacardType,
+          })
+        )
+          .filter((val) => {
+            if (summaryShown.includes(val.id)) {
+              return false
+            }
+            if (everythingElse.includes(val.id)) {
+              return false
+            }
+            return true
+          })
+          .filter((val) => {
+            return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({
+              attr: val.id,
             })
-            .filter(attr => {
-              return !summaryShown.includes(attr)
-            })
-        : []
-    },
-    [expanded, summaryShown]
-  )
-  const blankEverythingElse = React.useMemo(
-    () => {
-      return selection
-        ? Object.values(
-            TypedMetacardDefs.getDefinition({
-              type: selection.plain.metacardType,
-            })
-          )
-            .filter(val => {
-              if (summaryShown.includes(val.id)) {
-                return false
-              }
-              if (everythingElse.includes(val.id)) {
-                return false
-              }
-              return true
-            })
-            .filter(val => {
-              return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({
-                attr: val.id,
-              })
-            })
-        : []
-    },
-    [expanded, summaryShown]
-  )
-  React.useEffect(
-    () => {
-      globalExpanded = expanded
-    },
-    [expanded]
-  )
+          })
+      : []
+  }, [expanded, summaryShown])
+  React.useEffect(() => {
+    globalExpanded = expanded
+  }, [expanded])
   if (!selection) {
     return <div>No result selected</div>
   }
@@ -745,6 +681,7 @@ const Summary = ({ selectionInterface }: Props) => {
                     elevation: Elevations.panels,
                   },
                   open: true,
+                  disableEnforceFocus: true, // otherwise we can't click inside 3rd party libraries using portals (like date picker from blueprint)
                   children: (
                     <div
                       style={{
@@ -757,7 +694,7 @@ const Summary = ({ selectionInterface }: Props) => {
                           selection,
                           summaryShown
                         )
-                          .map(attr => {
+                          .map((attr) => {
                             return attr.id
                           })
                           .sort()}
@@ -803,7 +740,7 @@ const Summary = ({ selectionInterface }: Props) => {
                       }
                     : {},
               }}
-              onChange={e => {
+              onChange={(e) => {
                 persistantFilter = e.target.value
                 setFilter(e.target.value)
               }}
@@ -836,7 +773,7 @@ const Summary = ({ selectionInterface }: Props) => {
 
           {expanded ? (
             <>
-              {everythingElse.map(attr => {
+              {everythingElse.map((attr) => {
                 return (
                   <div key={attr} className="relative">
                     <AttributeComponent
@@ -853,7 +790,7 @@ const Summary = ({ selectionInterface }: Props) => {
                   </div>
                 )
               })}
-              {blankEverythingElse.map(attr => {
+              {blankEverythingElse.map((attr) => {
                 return (
                   <div key={attr.id} className="relative">
                     <AttributeComponent

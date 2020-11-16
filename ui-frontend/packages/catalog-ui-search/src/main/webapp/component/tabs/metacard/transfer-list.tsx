@@ -7,32 +7,20 @@ import Theme from '@material-ui/core/styles/Theme'
 import createStyles from '@material-ui/core/styles/createStyles'
 import Grid from '@material-ui/core/Grid'
 import List from '@material-ui/core/List'
-// @ts-ignore ts-migrate(6133) FIXME: 'Card' is declared but its value is never read.
-import Card from '@material-ui/core/Card'
-// @ts-ignore ts-migrate(6133) FIXME: 'CardHeader' is declared but its value is never re... Remove this comment to see the full error message
-import CardHeader from '@material-ui/core/CardHeader'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import Checkbox from '@material-ui/core/Checkbox'
 import Button from '@material-ui/core/Button'
-// @ts-ignore ts-migrate(6133) FIXME: 'Divider' is declared but its value is never read.
-import Divider from '@material-ui/core/Divider'
-import {
-  // @ts-ignore ts-migrate(6133) FIXME: 'DialogTitle' is declared but its value is never r... Remove this comment to see the full error message
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  useTheme,
-  // @ts-ignore ts-migrate(6133) FIXME: 'Typography' is declared but its value is never re... Remove this comment to see the full error message
-  Typography,
-  LinearProgress,
-  CircularProgress,
-  Paper,
-  DialogProps,
-} from '@material-ui/core'
-import { useDialog } from '@connexta/atlas/atoms/dialog'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogActions from '@material-ui/core/DialogActions'
+import TextField from '@material-ui/core/TextField'
+import useTheme from '@material-ui/core/styles/useTheme'
+import LinearProgress from '@material-ui/core/LinearProgress'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import Paper from '@material-ui/core/Paper'
+import { DialogProps } from '@material-ui/core/Dialog'
+import { useDialog } from '../../dialog'
 import TypedMetacardDefs from './metacardDefinitions'
 import EditIcon from '@material-ui/icons/Edit'
 import { Editor } from './summary'

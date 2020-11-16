@@ -451,6 +451,14 @@ User.Response = Backbone.AssociatedModel.extend({
         this.get('user').get('preferences').get('dateTimeFormat')['datetimefmt']
       )
   },
+  getDateTimeFormat() {
+    return this.get('user').get('preferences').get('dateTimeFormat')[
+      'datetimefmt'
+    ]
+  },
+  getTimeZone() {
+    return this.get('user').get('preferences').get('timeZone')
+  },
   getHoverPreview() {
     return this.get('user').getHoverPreview()
   },

@@ -31,9 +31,14 @@ require('./properties.js').init()
 require('../js/ApplicationSetup')
 import ExtensionPoints, { ExtensionPointsType } from '../extension-points'
 
-const entry = (extensionPoints: Partial<ExtensionPointsType> = {}) => {
+import { attemptToStart } from './ApplicationStart'
+
+const entry = (
+  extensionPoints: Partial<ExtensionPointsType> = {},
+  startFunction: Function = attemptToStart
+) => {
   Object.assign(ExtensionPoints, extensionPoints)
-  require('../js/ApplicationStart')
+  startFunction()
 }
 
 export default entry

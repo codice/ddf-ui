@@ -1,12 +1,9 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import { Dropdown } from '@connexta/atlas/atoms/dropdown'
+import { Dropdown } from '../atlas-dropdown'
 import Paper from '@material-ui/core/Paper'
 import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
 const moment = require('moment')
-// @ts-ignore ts-migrate(6133) FIXME: 'user' is declared but its value is never read.
-const user = require('../singletons/user-instance')
-
 import styled from 'styled-components'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
@@ -16,6 +13,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import { Elevations } from '../theme/theme'
 import FilterListIcon from '@material-ui/icons/FilterList'
 import Box from '@material-ui/core/Box'
+
 type Props = {
   selectionInterface: any
 }

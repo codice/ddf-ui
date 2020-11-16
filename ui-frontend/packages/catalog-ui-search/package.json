@@ -2,7 +2,7 @@
   "name": "catalog-ui-search",
   "author": "Codice",
   "description": "A frontend UI for DDF Catalog",
-  "version": "3.6.5-SNAPSHOT",
+  "version": "5.0.0",
   "license": "LGPL-3.0",
   "scripts": {
     "fmt": "ace format -w",
@@ -16,9 +16,14 @@
     "storybook": "ace storybook",
     "build": "node --max_old_space_size=16384 ./node_modules/@connexta/ace/bin.js bundle",
     "build:transpile": "node --max_old_space_size=16384 ./node_modules/@connexta/ace/bin.js bundle --tsTranspileOnly true",
-    "postbuild": "ace package",
+    "postbuild": "yarn publish:build && npm pack ./dist && move-cli catalog-ui-search-5.0.0.tgz dist/catalog-ui-search.tgz && ace package",
     "m2": "yarn install:m2",
-    "install:m2": "ace clean && ace bundle --tsTranspileOnly true && ace package && ace install"
+    "install:m2": "ace clean && ace bundle --tsTranspileOnly true && ace package && ace install",
+    "publish:cpx-package": "cpx package.json dist && json -I -f dist/package.json -e 'this.private=false'",
+    "publish:cpx-src": "cpx \"src/**/*.!(tsx|ts)\" dist/src",
+    "publish:cpx-current": "cpx \"*\" dist",
+    "publish:build": "rimraf dist && yarn publish:cpx-src && yarn publish:cpx-current && tsc && yarn publish:cpx-package",
+    "publish:npm": "yarn publish:build && npm publish dist -timeout=99999"
   },
   "repository": {
     "type": "git",
@@ -30,7 +35,6 @@
   "peerDependencies": {
     "@blueprintjs/core": ">3.0.0",
     "@blueprintjs/datetime": ">3.0.0",
-    "@connexta/atlas": ">=0.0.60",
     "@material-ui/core": ">=4.8.3",
     "@material-ui/icons": ">=4.4.3",
     "@material-ui/lab": ">=4.0.0-alpha.39",
@@ -47,13 +51,13 @@
   "devDependencies": {
     "@blueprintjs/core": "3.29.0",
     "@blueprintjs/datetime": "3.18.3",
-    "@connexta/ace": "git://github.com/connexta/ace.git#7c2dee5cb3013a4c1b95c9b92acd44e38301b611",
-    "@connexta/atlas": "0.0.60",
+    "@connexta/ace": "git://github.com/connexta/ace.git#fec6481783a05766a28cf31eb5cecca68add39e7",
     "@material-ui/core": "4.11.0",
     "@material-ui/icons": "4.9.1",
     "@material-ui/lab": "4.0.0-alpha.56",
     "@material-ui/pickers": "3.2.10",
     "@types/d3": "5.0.0",
+    "@types/mocha": "8.0.3",
     "@types/moment-timezone": "0.5.30",
     "@types/react": "16.8.23",
     "@types/react-beautiful-dnd": "^11.0.3",
@@ -64,13 +68,16 @@
     "@types/styled-components": "4.0.3",
     "@welldone-software/why-did-you-render": "4.2.2",
     "chai": "4.1.1",
+    "cpx": "1.5.0",
     "enzyme": "3.3.0",
     "enzyme-adapter-react-16": "1.5.0",
     "html-react-parser": "0.10.3",
     "jsdom": "11.12.0",
+    "json": "9.0.6",
     "loader-utils": "1.1.0",
     "moment": "2.22.0",
     "moment-timezone": "0.5.31",
+    "move-cli": "1.2.1",
     "polished": ">=1.9.3",
     "re-resizable": "6.1.0",
     "react": "16.10.2",
@@ -82,6 +89,7 @@
     "ts-migrate": "^0.1.2",
     "ts-migrate-plugins": "^0.1.0",
     "ts-migrate-server": "^0.1.0",
+    "typescript": "4.0.3",
     "utility-types": "3.10.0"
   },
   "dependencies": {
@@ -165,15 +173,13 @@
   },
   "resolutions": {
     "backbone": "1.1.2",
-    "@connexta/atlas/d3": "5.16.0",
     "handlebars": "4.1.2",
     "jquery": "3.4.1",
     "react": "16.10.2",
     "react-dom": "16.10.2",
     "styled-components": "4.3.2",
     "ts-loader": "6.0.4",
-    "typescript": "3.8.3",
-    "tslib": "2.0.1"
+    "typescript": "4.0.3"
   },
   "main": "src/main/webapp/index.tsx",
   "alias": {
@@ -186,5 +192,6 @@
       "target/webapp"
     ]
   },
-  "context-path": "/search/catalog"
+  "context-path": "/search/catalog",
+  "private": true
 }

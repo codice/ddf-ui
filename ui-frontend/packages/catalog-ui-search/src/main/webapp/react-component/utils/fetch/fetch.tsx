@@ -52,6 +52,8 @@ const cacheBust = (urlString: string) => {
   })
 }
 
+export type FetchProps = (url: string, options?: Options) => Promise<Response>
+
 export default function (url: string, { headers, ...opts }: Options = {}) {
   return fetch(cacheBust(url), {
     credentials: 'same-origin',

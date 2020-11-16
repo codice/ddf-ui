@@ -50,14 +50,26 @@ export default hot(module)(({ username, isGuest, email, signOut }: Props) => {
   return (
     <Root>
       <div className="user-info">
-        <div className="info-username is-large-font is-bold">{username}</div>
-        <div className="info-email is-medium-font">{email}</div>
+        <div
+          data-id="profile-username"
+          className="info-username is-large-font is-bold"
+        >
+          {username}
+        </div>
+        <div data-id="profile-email" className="info-email is-medium-font">
+          {email}
+        </div>
       </div>
       <div className="is-divider" />
       {isGuest ? (
         <div />
       ) : (
-        <Button variant="contained" color="secondary" onClick={signOut}>
+        <Button
+          data-id="profile-signout-button"
+          variant="contained"
+          color="secondary"
+          onClick={signOut}
+        >
           Sign Out
         </Button>
       )}

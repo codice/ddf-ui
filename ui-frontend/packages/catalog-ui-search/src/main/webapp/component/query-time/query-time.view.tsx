@@ -54,27 +54,36 @@ const getPossibleProperties = () => {
   ]
 }
 
+const getDefaultPropertiesToApplyTo = (): {
+  label: string
+  value: string
+}[] => {
+  return (properties.basicSearchTemporalSelectionDefault || []).map(
+    (property: string) => {
+      return {
+        label: TypedMetacardDefs.getAlias({ attr: property }),
+        value: property,
+      }
+    }
+  )
+}
+
 const determinePropertiesToApplyTo = ({
   value,
 }: {
   value: BasicFilterClass
 }): Array<{ label: string; value: string }> => {
   if (value.property) {
-    return value.property.map((property) => {
-      return {
-        label: TypedMetacardDefs.getAlias({ attr: property }),
-        value: property,
-      }
-    })
-  } else {
-    return (properties.basicSearchTemporalSelectionDefault || []).map(
-      (property: string) => {
+    return value.property
+      .filter((prop) => prop !== 'anyDate')
+      .map((property) => {
         return {
           label: TypedMetacardDefs.getAlias({ attr: property }),
           value: property,
         }
-      }
-    )
+      })
+  } else {
+    return getDefaultPropertiesToApplyTo()
   }
 }
 
@@ -106,6 +115,9 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
                   onChange({
                     ...value,
                     type: 'AFTER',
+                    property: getDefaultPropertiesToApplyTo().map(
+                      (val) => val.value
+                    ),
                   })
                 } else {
                   onChange(undefined)
@@ -116,39 +128,14 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
           label="Time"
         />
         {value ? (
-          <TextField
-            fullWidth
-            variant="outlined"
-            size="small"
-            select
-            value={value.type}
-            onChange={(e) => {
-              onChange({
-                ...value,
-                type: e.target.value,
-              })
-            }}
-          >
-            <MenuItem value="AFTER">After</MenuItem>
-            <MenuItem value="BEFORE">Before</MenuItem>
-            <MenuItem value="DURING">Between</MenuItem>
-            <MenuItem value="RELATIVE">Relative</MenuItem>
-          </TextField>
-        ) : null}
-      </div>
-      {value ? (
-        <div>
           <Grid
             container
             alignItems="stretch"
-            direction="row"
+            direction="column"
             wrap="nowrap"
             className="pt-2"
           >
-            <Grid item>
-              <Swath className="w-1 h-full" />
-            </Grid>
-            <Grid item className="w-full pl-2">
+            <Grid item className="w-full pb-2">
               <Autocomplete
                 // @ts-ignore Property 'fullWidth' does not exist on type (error is wrong)
                 fullWidth
@@ -183,31 +170,54 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
                 )}
               />
             </Grid>
-          </Grid>
-          <Grid
-            container
-            alignItems="stretch"
-            direction="row"
-            wrap="nowrap"
-            className="pt-2"
-          >
-            <Grid item>
-              <Swath className="w-1 h-full" />
+            <Grid
+              container
+              alignItems="stretch"
+              direction="row"
+              wrap="nowrap"
+              className="pt-2"
+            >
+              <Grid item>
+                <Swath className="w-1 h-full" />
+              </Grid>
+              <Grid container direction="column">
+                <Grid item className="w-full pl-2 pb-2">
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    select
+                    value={value.type}
+                    onChange={(e) => {
+                      onChange({
+                        ...value,
+                        type: e.target.value,
+                      })
+                    }}
+                  >
+                    <MenuItem value="AFTER">After</MenuItem>
+                    <MenuItem value="BEFORE">Before</MenuItem>
+                    <MenuItem value="DURING">Between</MenuItem>
+                    <MenuItem value="RELATIVE">Within the last</MenuItem>
+                    <MenuItem value="AROUND">Around</MenuItem>
+                  </TextField>
+                </Grid>
+                <Grid item className="w-full pl-2">
+                  <FilterInput
+                    filter={{ ...value, property: value.property[0] }}
+                    setFilter={(val: any) => {
+                      onChange({
+                        ...value,
+                        value: val.value,
+                      })
+                    }}
+                  />
+                </Grid>
+              </Grid>
             </Grid>
-            <Grid item className="w-full pl-2">
-              <FilterInput
-                filter={{ ...value, property: value.property[0] }}
-                setFilter={(val: any) => {
-                  onChange({
-                    ...value,
-                    value: val.value,
-                  })
-                }}
-              />
-            </Grid>
           </Grid>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </>
   )
 }

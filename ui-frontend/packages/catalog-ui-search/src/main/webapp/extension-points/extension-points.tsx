@@ -19,6 +19,7 @@ import metacardInteractions from './metacard-interactions'
 import { Props } from '../react-component/filter/filter-input/filter-input'
 import { LazyQueryResult } from '../js/model/LazyQueryResult/LazyQueryResult'
 import { ResultType } from '../js/model/Types'
+import { ValueTypes } from '../component/filter-builder/filter.structure'
 
 export type ExtensionPointsType = {
   providers: SFC<ProviderProps>
@@ -30,7 +31,7 @@ export type ExtensionPointsType = {
     user: any
     editableAttributes: string[]
   }) => boolean | undefined
-  customEditableAttributes: () => string[]
+  customEditableAttributes: () => Promise<any>
   resultItemTitleAddOn: ({
     lazyResult,
   }: {
@@ -48,6 +49,11 @@ export type ExtensionPointsType = {
   }) => JSX.Element | null
   customSourcesPage: (() => JSX.Element | null) | null
   navigationRight: any[]
+  serializeLocation: (
+    property: string,
+    value: ValueTypes['location']
+  ) => null | any
+  handleFilter: (map: any, filter: any) => null | any
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -55,12 +61,14 @@ const ExtensionPoints: ExtensionPointsType = {
   metacardInteractions,
   customFilterInput: () => undefined,
   customCanWritePermission: () => undefined,
-  customEditableAttributes: () => [],
+  customEditableAttributes: async () => undefined,
   resultItemTitleAddOn: () => null,
   resultItemRowAddOn: () => null,
   layoutDropdown: () => null,
   customSourcesPage: null,
   navigationRight: [],
+  serializeLocation: () => null,
+  handleFilter: () => null,
 }
 
 export default ExtensionPoints
