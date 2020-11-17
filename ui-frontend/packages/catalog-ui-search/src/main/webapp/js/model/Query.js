@@ -280,7 +280,7 @@ Query.Model = Backbone.AssociatedModel.extend({
    */
   updateCqlBasedOnFilterTree() {
     const filterTree = this.get('filterTree')
-    if (filterTree.filters.length === 0) {
+    if (!filterTree || filterTree.filters.length === 0) {
       this.set(
         'filterTree',
         new FilterBuilderClass({
