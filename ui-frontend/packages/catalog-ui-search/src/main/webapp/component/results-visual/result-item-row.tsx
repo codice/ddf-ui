@@ -117,7 +117,7 @@ const RowComponent = ({
 
   const imgsrc = Common.getImageSrc(thumbnail)
   React.useEffect(() => {
-    if (!renderThumbnail) measure()
+    if (!renderThumbnail.current) measure()
   }, [])
   // console.log('row rendered:' + index)
   return (
@@ -197,7 +197,7 @@ const RowComponent = ({
                         break
                     }
                   }
-                  if (property.id === 'thumbnail') {
+                  if (property.id === 'thumbnail' && value[0]) {
                     renderThumbnail.current = true
                   }
                   return (
