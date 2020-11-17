@@ -82,7 +82,6 @@ const CustomList = ({
   handleToggleAll,
   mode,
   classes,
-  checkIsReadOnly,
   handleToggle,
   checked,
   dialogContext,
@@ -101,7 +100,6 @@ const CustomList = ({
   handleToggleAll: (props: any) => () => void
   mode: 'loading' | string
   classes: any
-  checkIsReadOnly: (props: any) => boolean
   handleToggle: (props: any) => () => void
   checked: string[]
   dialogContext: {
@@ -118,6 +116,7 @@ const CustomList = ({
   const isIndeterminate = numberChecked !== items.length && numberChecked !== 0
   const isCompletelySelected =
     numberChecked === items.length && items.length !== 0
+  const { isNotWritable } = useCustomReadOnlyCheck()
   return (
     <Paper
       // @ts-ignore ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
@@ -229,7 +228,10 @@ const CustomList = ({
                       const alias = TypedMetacardDefs.getAlias({
                         attr: value,
                       })
-                      const isReadonly = checkIsReadOnly(value)
+                      const isReadonly = isNotWritable({
+                        attribute: value,
+                        lazyResult,
+                      })
                       const isFiltered =
                         filter !== ''
                           ? !alias.toLowerCase().includes(filter.toLowerCase())
@@ -376,6 +378,57 @@ const CustomList = ({
   )
 }
 
+const getCustomEditableAttributes = (async () => {
+  const attrs = await extension.customEditableAttributes()
+  return attrs
+})()
+
+export const useCustomReadOnlyCheck = () => {
+  const [
+    customEditableAttributes,
+    setCustomEditableAttributes,
+  ] = React.useState([] as string[])
+  const [loading, setLoading] = React.useState(true)
+
+  const initializeCustomEditableAttributes = async () => {
+    const attrs = await getCustomEditableAttributes
+    if (attrs !== undefined) {
+      setCustomEditableAttributes(attrs)
+    }
+    setLoading(false)
+  }
+
+  React.useEffect(() => {
+    initializeCustomEditableAttributes()
+  }, [])
+
+  return {
+    loading,
+    isNotWritable: ({
+      attribute,
+      lazyResult,
+    }: {
+      attribute: string
+      lazyResult: LazyQueryResult
+    }) => {
+      const perm = extension.customCanWritePermission({
+        attribute,
+        lazyResult,
+        user,
+        editableAttributes: customEditableAttributes,
+      })
+      if (perm !== undefined) {
+        return !perm
+      }
+      return (
+        (lazyResult.isRemote() &&
+          !(user.canWrite(lazyResult.getBackbone()) as boolean)) ||
+        TypedMetacardDefs.isReadonly({ attr: attribute })
+      )
+    },
+  }
+}
+
 const TransferList = ({
   startingLeft,
   startingRight,
@@ -397,40 +450,12 @@ const TransferList = ({
   const [checked, setChecked] = React.useState<string[]>([])
   const [left, setLeft] = React.useState(startingLeft)
   const [right, setRight] = React.useState(startingRight)
-  const [
-    customEditableAttributes,
-    setCustomEditableAttributes,
-  ] = React.useState([] as string[])
-
+  const { loading } = useCustomReadOnlyCheck()
   React.useEffect(() => {
-    setMode('loading')
-    getCustomAttrs()
-  }, [])
-
-  const getCustomAttrs = async () => {
-    const attrs = await extension.customEditableAttributes()
-    if (attrs !== undefined) {
-      setCustomEditableAttributes(attrs)
+    if (!loading) {
+      setMode('normal')
     }
-    setMode('normal')
-  }
-
-  const checkIsReadOnly = (attribute: string) => {
-    const perm = extension.customCanWritePermission({
-      attribute,
-      lazyResult,
-      user,
-      editableAttributes: customEditableAttributes,
-    })
-    if (perm !== undefined) {
-      return !perm
-    }
-    return (
-      (lazyResult.isRemote() &&
-        !(user.canWrite(lazyResult.getBackbone()) as boolean)) ||
-      TypedMetacardDefs.isReadonly({ attr: attribute })
-    )
-  }
+  }, [loading])
 
   const leftChecked = intersection(checked, left)
   const rightChecked = intersection(checked, right)
@@ -512,7 +537,6 @@ const TransferList = ({
               right={right}
               onSave={onSave}
               updateActive={updateActive}
-              checkIsReadOnly={checkIsReadOnly}
               numberOfChecked={numberOfChecked}
               handleToggle={handleToggle}
               handleToggleAll={handleToggleAll}
@@ -558,7 +582,6 @@ const TransferList = ({
               right={right}
               onSave={onSave}
               updateActive={updateActive}
-              checkIsReadOnly={checkIsReadOnly}
               numberOfChecked={numberOfChecked}
               handleToggle={handleToggle}
               handleToggleAll={handleToggleAll}
