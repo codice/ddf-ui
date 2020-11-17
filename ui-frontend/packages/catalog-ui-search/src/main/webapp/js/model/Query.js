@@ -136,7 +136,12 @@ Query.Model = Backbone.AssociatedModel.extend({
     return _merge(
       {
         cql: "anyText ILIKE ''",
-        filterTree: { property: 'anyText', value: '', type: 'ILIKE' },
+        filterTree: new FilterBuilderClass({
+          filters: [
+            new FilterClass({ value: '*', property: 'anyText', type: 'ILIKE' }),
+          ],
+          type: 'AND',
+        }),
         associatedFormModel: undefined,
         excludeUnnecessaryAttributes: true,
         count: properties.resultCount,
@@ -275,7 +280,7 @@ Query.Model = Backbone.AssociatedModel.extend({
    */
   updateCqlBasedOnFilterTree() {
     const filterTree = this.get('filterTree')
-    if (filterTree.filters.length === 0) {
+    if (!filterTree || filterTree.filters.length === 0) {
       this.set(
         'filterTree',
         new FilterBuilderClass({
