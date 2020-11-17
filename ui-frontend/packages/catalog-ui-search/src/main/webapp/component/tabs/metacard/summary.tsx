@@ -672,7 +672,6 @@ const Summary = ({ selectionInterface }: Props) => {
       : []
   }, [expanded, summaryShown])
 
-
   React.useEffect(() => {
     globalExpanded = expanded
   }, [expanded])

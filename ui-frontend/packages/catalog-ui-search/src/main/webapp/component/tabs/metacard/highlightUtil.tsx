@@ -50,6 +50,5 @@ export const displayHighlightedAttrInFull = (
     />
   )
   textArray.push(afterText)
-  return <Typography>{textArray}
-  <button>8888888888888</button></Typography>
+  return <Typography>{textArray}</Typography>
 }
