@@ -116,7 +116,7 @@ const CustomList = ({
   const isIndeterminate = numberChecked !== items.length && numberChecked !== 0
   const isCompletelySelected =
     numberChecked === items.length && items.length !== 0
-  const { isWritable } = useCustomReadOnlyCheck()
+  const { isNotWritable } = useCustomReadOnlyCheck()
   return (
     <Paper
       // @ts-ignore ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
@@ -228,7 +228,7 @@ const CustomList = ({
                       const alias = TypedMetacardDefs.getAlias({
                         attr: value,
                       })
-                      const isReadonly = isWritable({
+                      const isReadonly = isNotWritable({
                         attribute: value,
                         lazyResult,
                       })
@@ -404,7 +404,7 @@ export const useCustomReadOnlyCheck = () => {
 
   return {
     loading,
-    isWritable: ({
+    isNotWritable: ({
       attribute,
       lazyResult,
     }: {

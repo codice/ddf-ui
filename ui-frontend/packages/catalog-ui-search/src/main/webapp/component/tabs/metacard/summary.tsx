@@ -429,7 +429,7 @@ const AttributeComponent = ({
     value = [value]
   }
   let label = TypedMetacardDefs.getAlias({ attr })
-  const { isWritable } = useCustomReadOnlyCheck()
+  const { isNotWritable } = useCustomReadOnlyCheck()
   const dialogContext = useDialog()
 
   const isFiltered =
@@ -442,7 +442,7 @@ const AttributeComponent = ({
         wrap={'nowrap'}
         className="group relative"
       >
-        {isWritable({ attribute: attr, lazyResult }) ? (
+        {isNotWritable({ attribute: attr, lazyResult }) ? null : (
           <div className="p-1 hidden group-hover:block absolute right-0 top-0">
             <Button
               onClick={() => {
@@ -466,7 +466,7 @@ const AttributeComponent = ({
               <EditIcon></EditIcon>
             </Button>
           </div>
-        ) : null}
+        )}
 
         <Grid
           item
@@ -577,7 +577,7 @@ const AttributeComponent = ({
         </Grid>
       </Grid>
     )
-  }, [summaryShown, forceRender, isWritable])
+  }, [summaryShown, forceRender, isNotWritable])
   return (
     <div style={{ display: isFiltered ? 'none' : 'block' }}>{MemoItem}</div>
   )
