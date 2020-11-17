@@ -44,11 +44,8 @@ import Box from '@material-ui/core/Box'
 import { useUpdateEffect } from 'react-use'
 ;(() => {
   const oldHandleSave = TableVisibility.prototype.handleSave
-  TableVisibility.prototype.handleSave = function() {
-    user
-      .get('user')
-      .get('preferences')
-      .set('hasSelectedColumns', true)
+  TableVisibility.prototype.handleSave = function () {
+    user.get('user').get('preferences').set('hasSelectedColumns', true)
     oldHandleSave.apply(this, arguments)
   }
   // const oldDestroy = TableVisibility.prototype.destroy
@@ -80,13 +77,25 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
     getVisibleHeaders(filteredAttributes)
   )
   const [key, setKey] = React.useState(Math.random().toString())
+  /**
+   * Note that this scenario only plays out when the component is first created, so if this is open before a search is run it will already be mounted.
+   *
+   * This is solely to keep the illusion of responsiveness when switching from table mode to list mode (or dropping a new result visual in)
+   */
+  const [isMounted, setIsMounted] = React.useState(false)
 
-  useUpdateEffect(
-    () => {
-      setFilteredAttributes(getFilteredAttributes(lazyResults))
-    },
-    [lazyResults.results]
-  )
+  React.useEffect(() => {
+    const mountedTimeout = setTimeout(() => {
+      setIsMounted(true)
+    }, 1000)
+    return () => {
+      clearTimeout(mountedTimeout)
+    }
+  }, [])
+
+  useUpdateEffect(() => {
+    setFilteredAttributes(getFilteredAttributes(lazyResults))
+  }, [lazyResults.results])
 
   React.useEffect(() => {
     listenTo(
@@ -98,13 +107,10 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
     )
   }, [])
 
-  useUpdateEffect(
-    () => {
-      setKey(Math.random().toString())
-      setVisibleHeaders(getVisibleHeaders(filteredAttributes))
-    },
-    [filteredAttributes]
-  )
+  useUpdateEffect(() => {
+    setKey(Math.random().toString())
+    setVisibleHeaders(getVisibleHeaders(filteredAttributes))
+  }, [filteredAttributes])
 
   const openExportModal = () => {
     lightboxInstance.model.updateTitle('Export Results')
@@ -273,71 +279,75 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
 
       <Grid item className="overflow-hidden bg-inherit w-full h-full p-2">
         <Paper elevation={Elevations.paper} className="w-full h-full">
-          <Grid
-            container
-            className="w-full h-full bg-inherit"
-            direction="column"
-            wrap="nowrap"
-          >
-            <Grid item className="bg-inherit">
-              <div
-                className="w-auto overflow-auto scrollbars-hide bg-inherit"
-                ref={headerRef}
-              >
-                <Header
-                  visibleHeaders={visibleHeaders}
-                  lazyResults={lazyResults}
-                />
-              </div>
-            </Grid>
-            <Grid item>
-              <Divider className="w-full h-min" />
-            </Grid>
-            <Grid item className="w-full h-full overflow-hidden bg-inherit">
-              {/* <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
-                outerElementProps={{
-                  onScroll: e => {
-                    if (headerRef.current) {
-                      // @ts-ignore ts-migrate(2339) FIXME: Property 'scrollLeft' does not exist on type 'Even... Remove this comment to see the full error message
-                      headerRef.current.scrollLeft = e.target.scrollLeft
-                    }
-                  },
-                }}
-                key={key}
-                defaultSize={76}
-                overscanCount={10}
-                controlledMeasuring={true}
-                items={results}
-                Item={({ itemRef, item, measure, index }) => {
-                  return (
-                    <div ref={itemRef} className="bg-inherit">
-                      <ResultItemRow
-                        lazyResult={item}
-                        visibleHeaders={visibleHeaders}
-                        measure={measure}
-                        index={index}
-                      />
-                    </div>
-                  )
-                }}
-                Empty={() => {
-                  if (Object.values(status).length === 0) {
+          {isMounted ? (
+            <Grid
+              container
+              className="w-full h-full bg-inherit"
+              direction="column"
+              wrap="nowrap"
+            >
+              <Grid item className="bg-inherit">
+                <div
+                  className="w-auto overflow-auto scrollbars-hide bg-inherit"
+                  ref={headerRef}
+                >
+                  <Header
+                    visibleHeaders={visibleHeaders}
+                    lazyResults={lazyResults}
+                  />
+                </div>
+              </Grid>
+              <Grid item>
+                <Divider className="w-full h-min" />
+              </Grid>
+              <Grid item className="w-full h-full overflow-hidden bg-inherit">
+                <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
+                  outerElementProps={{
+                    onScroll: (e) => {
+                      if (headerRef.current) {
+                        // @ts-ignore ts-migrate(2339) FIXME: Property 'scrollLeft' does not exist on type 'Even... Remove this comment to see the full error message
+                        headerRef.current.scrollLeft = e.target.scrollLeft
+                      }
+                    },
+                  }}
+                  key={key}
+                  defaultSize={76}
+                  overscanCount={10}
+                  controlledMeasuring={true}
+                  items={results}
+                  Item={({ itemRef, item, measure, index }) => {
                     return (
-                      <div className="p-2">Search has not yet been run.</div>
+                      <div ref={itemRef} className="bg-inherit">
+                        <ResultItemRow
+                          lazyResult={item}
+                          visibleHeaders={visibleHeaders}
+                          measure={measure}
+                          index={index}
+                        />
+                      </div>
                     )
-                  }
-                  if (isSearching) {
-                    return <LinearProgress variant="indeterminate" />
-                  }
-                  return (
-                    <div className="result-item-collection-empty p-2">
-                      No Results Found
-                    </div>
-                  )
-                }}
-              /> */}
+                  }}
+                  Empty={() => {
+                    if (Object.values(status).length === 0) {
+                      return (
+                        <div className="p-2">Search has not yet been run.</div>
+                      )
+                    }
+                    if (isSearching) {
+                      return <LinearProgress variant="indeterminate" />
+                    }
+                    return (
+                      <div className="result-item-collection-empty p-2">
+                        No Results Found
+                      </div>
+                    )
+                  }}
+                />
+              </Grid>
             </Grid>
-          </Grid>
+          ) : (
+            <LinearProgress variant="indeterminate" />
+          )}
         </Paper>
       </Grid>
     </Grid>

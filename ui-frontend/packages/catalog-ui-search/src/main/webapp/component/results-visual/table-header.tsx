@@ -63,7 +63,7 @@ const updateSort = (attribute: string) => {
   const prefResultSort = prefs.get('resultSort') as Sort[]
   const currSort =
     prefResultSort && prefResultSort.length
-      ? prefResultSort.find(sort => sort.attribute === attribute)
+      ? prefResultSort.find((sort) => sort.attribute === attribute)
       : undefined
 
   const sort: Sort[] = [
@@ -83,11 +83,9 @@ const updateSort = (attribute: string) => {
 }
 
 const getSortDirectionClass = (attribute: string) => {
-  const sorts = user
-    .get('user')
-    .get('preferences')
-    .get('resultSort') as Sort[]
-  const matchedSort = sorts && sorts.find(sort => sort.attribute === attribute)
+  const sorts = user.get('user').get('preferences').get('resultSort') as Sort[]
+  const matchedSort =
+    sorts && sorts.find((sort) => sort.attribute === attribute)
   if (matchedSort && matchedSort.direction) {
     if (matchedSort.direction === 'ascending') {
       return 'fa fa-sort-asc'
@@ -117,14 +115,14 @@ export const HeaderCheckbox = ({
     <Button
       data-id="select-all-checkbox"
       color="primary"
-      onClick={event => {
+      onClick={(event) => {
         event.stopPropagation()
         if (selection === 'selected') {
-          Object.values(lazyResults.results).forEach(lazyResult => {
+          Object.values(lazyResults.results).forEach((lazyResult) => {
             lazyResult.setSelected(false)
           })
         } else {
-          Object.values(lazyResults.results).forEach(lazyResult => {
+          Object.values(lazyResults.results).forEach((lazyResult) => {
             lazyResult.setSelected(true)
           })
         }
@@ -169,12 +167,12 @@ export const Header = ({ visibleHeaders, lazyResults }: HeaderProps) => {
     <React.Fragment>
       <div
         data-id="table-container"
-        className="bg-inherit whitespace-no-wrap flex items-stretch"
+        className="bg-inherit whitespace-no-wrap flex items-strech flex-no-wrap"
         style={{
           width: visibleHeaders.length * 200 + 'px',
         }}
       >
-        <div className="inline-block left-0 w-auto z-10 bg-inherit">
+        <div className="sticky left-0 w-auto z-10 bg-inherit Mui-border-divider border border-t-0 border-l-0 border-b-0">
           <CellComponent
             className="bg-inherit"
             style={{ width: 'auto', paddingLeft: '0px', paddingRight: '0px' }}
@@ -190,7 +188,7 @@ export const Header = ({ visibleHeaders, lazyResults }: HeaderProps) => {
               key={id}
               className={`${
                 sortable ? 'is-sortable' : ''
-              } Mui-border-divider border border-t-0 border-r-0 border-b-0`}
+              } Mui-border-divider border border-t-0 border-l-0 border-b-0`}
               data-propertyid={`${id}`}
               data-propertytext={`${label ? `${label} ${id}` : `${id}`}`}
               style={{

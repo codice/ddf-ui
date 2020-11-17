@@ -42,7 +42,12 @@ type Property = {
 
 type ResultItemBasicProps = {
   lazyResult: LazyQueryResult
-  visibleHeaders: any
+  visibleHeaders: {
+    label?: string
+    id: string
+    hidden: boolean
+    sortable: boolean
+  }[]
 }
 
 type ResultItemFullProps = ResultItemBasicProps & {
@@ -81,7 +86,7 @@ const CheckboxCell = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
     <CellComponent className="h-full" style={{ width: 'auto', padding: '0px' }}>
       <Button
         data-id="select-checkbox"
-        onClick={event => {
+        onClick={(event) => {
           event.stopPropagation()
 
           if (event.shiftKey) {
@@ -106,70 +111,32 @@ const RowComponent = ({
   index,
 }: ResultItemFullProps) => {
   console.log(index)
-  const visibleProperties: Property[] = React.useMemo(
-    () => {
-      return visibleHeaders.map((property: any) => {
-        let value = lazyResult.plain.metacard.properties[property.id]
-        if (value === undefined) {
-          value = ''
-        }
-        if (value.constructor !== Array) {
-          value = [value]
-        }
-        let className = 'is-text'
-        if (value && metacardDefinitions.metacardTypes[property.id]) {
-          switch (metacardDefinitions.metacardTypes[property.id].type) {
-            case 'DATE':
-              value = value.map(
-                (val: any) =>
-                  val !== undefined && val !== ''
-                    ? user.getUserReadableDateTime(val)
-                    : ''
-              )
-              break
-            default:
-              break
-          }
-        }
-        if (property.id === 'thumbnail') {
-          className = 'is-thumbnail'
-        }
-        return {
-          property: property.id,
-          value,
-          class: className,
-          hidden: property.hidden,
-        }
-      })
-    },
-    [visibleHeaders]
-  )
 
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
+  const renderThumbnail = React.useRef(false)
 
   const imgsrc = Common.getImageSrc(thumbnail)
-
   React.useEffect(() => {
-    measure()
-  })
+    if (!renderThumbnail) measure()
+  }, [])
   // console.log('row rendered:' + index)
   return (
     <React.Fragment>
       <div
-        className="bg-inherit flex items-strech flex-no-wrap"
+        className="bg-inherit flex items-strech flex-no-wrap Mui-border-divider border border-t-0 border-r-0 b-l-0"
         style={{
-          width: visibleProperties.length * 200 + 'px',
+          width: visibleHeaders.length * 200 + 'px',
         }}
       >
         <SelectionBackground lazyResult={lazyResult} />
-        <div className="sticky left-0 w-auto z-10 bg-inherit">
+        <div className="sticky left-0 w-auto z-10 bg-inherit Mui-border-divider border border-t-0 border-l-0 border-b-0">
           <SelectionBackground lazyResult={lazyResult} />
           <CheckboxCell lazyResult={lazyResult} />
         </div>
         <div>
           <Button
             data-id="result-item-row-container-button"
-            onMouseDown={event => {
+            onMouseDown={(event) => {
               /**
                * Shift key can cause selections since we set the class to allow text selection,
                * so the only scenario we want to prevent that in is when shift clicking
@@ -178,7 +145,7 @@ const RowComponent = ({
                 clearSelection()
               }
             }}
-            onClick={event => {
+            onClick={(event) => {
               if (hasSelection()) {
                 return
               }
@@ -202,24 +169,47 @@ const RowComponent = ({
                 className=""
                 wrap="nowrap"
                 style={{
-                  width: visibleProperties.length * 200 + 'px',
+                  width: visibleHeaders.length * 200 + 'px',
                 }}
               >
-                {visibleProperties.map(property => {
-                  const alias = TypedMetacardDefs.getAlias({
-                    attr: property.property,
-                  })
-
+                {visibleHeaders.map((property) => {
+                  let value = lazyResult.plain.metacard.properties[
+                    property.id
+                  ] as any
+                  if (value === undefined) {
+                    value = ''
+                  }
+                  if (value.constructor !== Array) {
+                    value = [value]
+                  }
+                  if (value && metacardDefinitions.metacardTypes[property.id]) {
+                    switch (
+                      metacardDefinitions.metacardTypes[property.id].type
+                    ) {
+                      case 'DATE':
+                        value = value.map((val: any) =>
+                          val !== undefined && val !== ''
+                            ? user.getUserReadableDateTime(val)
+                            : ''
+                        )
+                        break
+                      default:
+                        break
+                    }
+                  }
+                  if (property.id === 'thumbnail') {
+                    renderThumbnail.current = true
+                  }
                   return (
                     <CellComponent
-                      key={property.property}
-                      data-property={`${property.property}`}
-                      className={`${property.class} ${
+                      key={property.id}
+                      data-property={`${property.id}`}
+                      className={`${
                         property.hidden ? 'is-hidden-column' : ''
-                      } Mui-border-divider border border-t-0 border-r-0 border-b-0`}
-                      data-value={`${property.value}`}
+                      } Mui-border-divider border border-t-0 border-l-0 border-b-0`}
+                      data-value={`${value}`}
                     >
-                      {property.property === 'thumbnail' && thumbnail ? (
+                      {property.id === 'thumbnail' && thumbnail ? (
                         <img
                           data-id="thumbnail-value"
                           src={imgsrc}
@@ -237,16 +227,12 @@ const RowComponent = ({
                       ) : (
                         <React.Fragment>
                           <div
-                            data-id={`${property.property}-value`}
+                            data-id={`${property.id}-value`}
                             style={{ wordBreak: 'break-word' }}
                           >
-                            {property.value.map((value, index) => {
+                            {value.map((value: any, index: number) => {
                               return (
-                                <span
-                                  key={index}
-                                  data-value={`${value}`}
-                                  title={`${alias}: ${value}`}
-                                >
+                                <span key={index} data-value={`${value}`}>
                                   {value.toString().substring(0, 4) ===
                                   'http' ? (
                                     <a
@@ -255,7 +241,7 @@ const RowComponent = ({
                                       rel="noopener noreferrer"
                                     >
                                       {TypedMetacardDefs.getAlias({
-                                        attr: property.property,
+                                        attr: property.id,
                                       })}
                                     </a>
                                   ) : (
