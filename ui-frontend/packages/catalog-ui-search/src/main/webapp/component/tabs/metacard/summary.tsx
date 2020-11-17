@@ -26,7 +26,7 @@ import useTheme from '@material-ui/core/styles/useTheme'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
-import TransferList, {useCustomReadOnlyCheck} from './transfer-list'
+import TransferList, { useCustomReadOnlyCheck } from './transfer-list'
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace'
 import AddIcon from '@material-ui/icons/Add'
 import EditIcon from '@material-ui/icons/Edit'
@@ -429,34 +429,45 @@ const AttributeComponent = ({
     value = [value]
   }
   let label = TypedMetacardDefs.getAlias({ attr })
-  const {isWritable} = useCustomReadOnlyCheck()
+  const { isWritable } = useCustomReadOnlyCheck()
   const dialogContext = useDialog()
 
   const isFiltered =
     filter !== '' ? !label.toLowerCase().includes(filter.toLowerCase()) : false
   const MemoItem = React.useMemo(() => {
     return (
-      <Grid container direction="row" wrap={'nowrap'} className="group relative">
-        {isWritable({attribute: attr, lazyResult})  ?  <div className="p-1 hidden group-hover:block absolute right-0 top-0">
-         <Button onClick={() => {
-           dialogContext.setProps({
-            open: true,
-            children: (
-              <Editor
-                attr={attr}
-                lazyResult={lazyResult}
-                onCancel={() => {
-                  dialogContext.setProps({open: false, children: null})
-                }}
-                onSave={() => {
-                  dialogContext.setProps({open: false, children: null})
-                }}
-              />
-            ),
-           })
-         }}><EditIcon></EditIcon></Button>
-        </div>: null }
-       
+      <Grid
+        container
+        direction="row"
+        wrap={'nowrap'}
+        className="group relative"
+      >
+        {isWritable({ attribute: attr, lazyResult }) ? (
+          <div className="p-1 hidden group-hover:block absolute right-0 top-0">
+            <Button
+              onClick={() => {
+                dialogContext.setProps({
+                  open: true,
+                  children: (
+                    <Editor
+                      attr={attr}
+                      lazyResult={lazyResult}
+                      onCancel={() => {
+                        dialogContext.setProps({ open: false, children: null })
+                      }}
+                      onSave={() => {
+                        dialogContext.setProps({ open: false, children: null })
+                      }}
+                    />
+                  ),
+                })
+              }}
+            >
+              <EditIcon></EditIcon>
+            </Button>
+          </div>
+        ) : null}
+
         <Grid
           item
           xs={4}

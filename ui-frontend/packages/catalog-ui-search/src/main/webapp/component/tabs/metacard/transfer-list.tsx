@@ -228,7 +228,10 @@ const CustomList = ({
                       const alias = TypedMetacardDefs.getAlias({
                         attr: value,
                       })
-                      const isReadonly = isWritable({attribute: value, lazyResult})
+                      const isReadonly = isWritable({
+                        attribute: value,
+                        lazyResult,
+                      })
                       const isFiltered =
                         filter !== ''
                           ? !alias.toLowerCase().includes(filter.toLowerCase())
@@ -401,7 +404,13 @@ export const useCustomReadOnlyCheck = () => {
 
   return {
     loading,
-    isWritable: ({attribute,lazyResult}: {attribute: string, lazyResult: LazyQueryResult}) => {
+    isWritable: ({
+      attribute,
+      lazyResult,
+    }: {
+      attribute: string
+      lazyResult: LazyQueryResult
+    }) => {
       const perm = extension.customCanWritePermission({
         attribute,
         lazyResult,
@@ -416,7 +425,7 @@ export const useCustomReadOnlyCheck = () => {
           !(user.canWrite(lazyResult.getBackbone()) as boolean)) ||
         TypedMetacardDefs.isReadonly({ attr: attribute })
       )
-    }
+    },
   }
 }
 
