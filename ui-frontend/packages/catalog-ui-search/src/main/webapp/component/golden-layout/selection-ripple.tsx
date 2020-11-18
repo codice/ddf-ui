@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import Box from '@material-ui/core/Box'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
 import useTheme from '@material-ui/core/styles/useTheme'
 

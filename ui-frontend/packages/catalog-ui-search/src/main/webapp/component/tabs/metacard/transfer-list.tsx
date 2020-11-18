@@ -87,13 +87,12 @@ const CustomList = ({
   dialogContext,
   left,
   right,
-  updateActive,
   onSave,
 }: {
   title: React.ReactNode
   items: string[]
   total: number
-  lazyResult: LazyQueryResult
+  lazyResult?: LazyQueryResult
   updateItems: (arg: string[]) => void
   isDnD: boolean // drag and drop allowed?
   numberOfChecked: (props: any) => number
@@ -107,8 +106,7 @@ const CustomList = ({
   }
   left: string[]
   right: string[]
-  updateActive: (arg: any) => void
-  onSave: () => void
+  onSave: (arg: string[]) => void
 }) => {
   const [filter, setFilter] = React.useState('')
   const theme = useTheme()
@@ -228,10 +226,12 @@ const CustomList = ({
                       const alias = TypedMetacardDefs.getAlias({
                         attr: value,
                       })
-                      const isReadonly = isNotWritable({
-                        attribute: value,
-                        lazyResult,
-                      })
+                      const isReadonly = lazyResult
+                        ? isNotWritable({
+                            attribute: value,
+                            lazyResult,
+                          })
+                        : true
                       const isFiltered =
                         filter !== ''
                           ? !alias.toLowerCase().includes(filter.toLowerCase())
@@ -273,7 +273,7 @@ const CustomList = ({
                                     />
                                   </ListItemIcon>
                                   <ListItemText id={labelId} primary={alias} />
-                                  {!isReadonly && (
+                                  {!isReadonly && lazyResult && (
                                     <Button
                                       data-id="edit-button"
                                       style={{
@@ -309,9 +309,6 @@ const CustomList = ({
                                                       <TransferList
                                                         startingLeft={left}
                                                         startingRight={right}
-                                                        updateActive={
-                                                          updateActive
-                                                        }
                                                         lazyResult={lazyResult}
                                                         onSave={onSave}
                                                       />
@@ -325,9 +322,6 @@ const CustomList = ({
                                                       <TransferList
                                                         startingLeft={left}
                                                         startingRight={right}
-                                                        updateActive={
-                                                          updateActive
-                                                        }
                                                         lazyResult={lazyResult}
                                                         onSave={onSave}
                                                       />
@@ -341,9 +335,6 @@ const CustomList = ({
                                                       <TransferList
                                                         startingLeft={left}
                                                         startingRight={right}
-                                                        updateActive={
-                                                          updateActive
-                                                        }
                                                         lazyResult={lazyResult}
                                                         onSave={onSave}
                                                       />
@@ -432,15 +423,13 @@ export const useCustomReadOnlyCheck = () => {
 const TransferList = ({
   startingLeft,
   startingRight,
-  updateActive,
   lazyResult,
   onSave,
 }: {
   startingLeft: string[]
   startingRight: string[]
-  updateActive: (arg: any) => void
-  lazyResult: LazyQueryResult
-  onSave: () => void
+  lazyResult?: LazyQueryResult
+  onSave: (arg: string[]) => void
 }) => {
   const classes = useStyles()
   const dialogContext = useDialog()
@@ -536,7 +525,6 @@ const TransferList = ({
               left={left}
               right={right}
               onSave={onSave}
-              updateActive={updateActive}
               numberOfChecked={numberOfChecked}
               handleToggle={handleToggle}
               handleToggleAll={handleToggleAll}
@@ -581,7 +569,6 @@ const TransferList = ({
               left={left}
               right={right}
               onSave={onSave}
-              updateActive={updateActive}
               numberOfChecked={numberOfChecked}
               handleToggle={handleToggle}
               handleToggleAll={handleToggleAll}
@@ -615,8 +602,7 @@ const TransferList = ({
           disabled={mode === 'saving'}
           onClick={() => {
             setMode('saving')
-            updateActive(left)
-            onSave()
+            onSave(left)
             dialogContext.setProps({
               open: false,
               children: null,

@@ -18,16 +18,9 @@ import { hot } from 'react-hot-loader'
 import { AutoVariableSizeList } from 'react-window-components'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
-import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
-// @ts-ignore ts-migrate(6133) FIXME: 'LazyQueryResults' is declared but its value is ne... Remove this comment to see the full error message
-import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
-// @ts-ignore ts-migrate(6133) FIXME: 'Divider' is declared but its value is never read.
-import Divider from '@material-ui/core/Divider'
-import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper'
-// @ts-ignore ts-migrate(6133) FIXME: 'dark' is declared but its value is never read.
-import { Elevations, dark, light } from '../theme/theme'
+import { Elevations } from '../theme/theme'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { useStatusOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
 import useTheme from '@material-ui/core/styles/useTheme'
@@ -35,25 +28,13 @@ import LinearProgress from '@material-ui/core/LinearProgress'
 import ViewAgendaIcon from '@material-ui/icons/ViewAgenda'
 import TableChartIcon from '@material-ui/icons/TableChart'
 import { HeaderCheckbox } from './table-header'
-import CheckBoxIcon from '@material-ui/icons/CheckBox'
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import { DarkDivider } from '../dark-divider/dark-divider'
-
-const user = require('../singletons/user-instance.js')
+import { ResultsCommonControls } from './table'
 
 type Props = {
   mode: any
   setMode: any
   selectionInterface: any
-}
-
-const getShowThumbnails = () => {
-  return (
-    user
-      .get('user')
-      .get('preferences')
-      .get('resultDisplay') === 'Grid'
-  )
 }
 
 const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
@@ -63,15 +44,7 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
   const results = Object.values(lazyResults.results)
   const theme = useTheme()
   const { isSearching, status } = useStatusOfLazyResults({ lazyResults })
-  const [showThumbnails, setShowThumbnails] = React.useState(
-    getShowThumbnails()
-  )
-  const { listenTo } = useBackbone()
-  React.useEffect(() => {
-    listenTo(user, 'change:user>preferences>resultDisplay', () => {
-      setShowThumbnails(getShowThumbnails())
-    })
-  }, [])
+
   /**
    * Note that this scenario only plays out when the component is first created, so if this is open before a search is run it will already be mounted.
    *
@@ -107,35 +80,8 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
               }}
             />
           </Grid>
-          <Grid item className="pl-8">
-            <Button
-              data-id="show-hide-thumbnails-button"
-              onClick={() => {
-                const prefs = user.get('user').get('preferences')
-                prefs.set('resultDisplay', showThumbnails ? 'List' : 'Grid')
-                prefs.savePreferences()
-              }}
-              color="primary"
-            >
-              {(() => {
-                if (showThumbnails) {
-                  return (
-                    <>
-                      <CheckBoxIcon className="Mui-text-text-primary" />
-                      <div className="pl-2">Thumbnails</div>
-                    </>
-                  )
-                }
-                return (
-                  <>
-                    <CheckBoxOutlineBlankIcon className="Mui-text-text-primary" />
-                    <div className="pl-2">Thumbnails</div>
-                  </>
-                )
-              })()}
-            </Button>
-          </Grid>
-          <Grid item className="ml-auto pr-2">
+          <ResultsCommonControls />
+          <Grid item className="pr-2">
             <Button
               data-id="list-button"
               onClick={() => {

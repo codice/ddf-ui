@@ -30,8 +30,6 @@ const Common = require('../../js/Common.js')
 import { hot } from 'react-hot-loader'
 import Paper from '@material-ui/core/Paper'
 import Tooltip from '@material-ui/core/Tooltip'
-const LIST_DISPLAY_TYPE = 'List'
-const GRID_DISPLAY_TYPE = 'Grid'
 import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
 import MoreIcon from '@material-ui/icons/MoreVert'
 import WarningIcon from '@material-ui/icons/Warning'
@@ -46,65 +44,21 @@ import { Elevations } from '../theme/theme'
 import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple'
 import { clearSelection, hasSelection } from './result-item-row'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
-import Skeleton from '@material-ui/lab/Skeleton'
-
-const getResultDisplayType = () =>
-  (user &&
-    user
-      .get('user')
-      .get('preferences')
-      .get('resultDisplay')) ||
-  LIST_DISPLAY_TYPE
-
-type CustomDetailType = {
-  label: string
-  value: any
-}
-
-const getCustomDetails = ({
-  lazyResult,
-}: {
-  lazyResult: ResultItemBasicProps['lazyResult']
-}): CustomDetailType[] => {
-  const customDetails = [] as CustomDetailType[]
-  if (properties.resultShow) {
-    properties.resultShow.forEach((additionProperty: any) => {
-      if (additionProperty === 'source-id') {
-        return
-      }
-      let value = lazyResult.plain.metacard.properties[additionProperty]
-      if (value && metacardDefinitions.metacardTypes[additionProperty]) {
-        switch (metacardDefinitions.metacardTypes[additionProperty].type) {
-          case 'DATE':
-            if (value.constructor === Array) {
-              value = value.map((val: any) => Common.getMomentDate(val))
-            } else {
-              value = Common.getMomentDate(value)
-            }
-            break
-        }
-        customDetails.push({
-          label: additionProperty,
-          value,
-        })
-      }
-    })
-  }
-  return customDetails
-}
-
-const checkResultDisplayType = () => {
-  switch (getResultDisplayType()) {
-    case LIST_DISPLAY_TYPE:
-      return false
-    case GRID_DISPLAY_TYPE:
-      return true
-  }
-  return true
-}
+import { TypedUserInstance } from '../singletons/TypedUser'
 
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
-  return <div {...props} style={{ marginTop: '10px', opacity: '.7' }} />
+  return (
+    <div
+      {...props}
+      className="overflow-auto"
+      style={{
+        marginTop: '10px',
+        opacity: '.7',
+        maxHeight: '200px',
+        minHeight: '21px', // firefox will show scroll bars all the time unless we do this minHeight :S
+      }}
+    />
+  )
 }
 
 type ResultItemBasicProps = {
@@ -184,7 +138,7 @@ const MultiSelectActions = ({
             }
             color="primary"
             disabled={selectedResultsArray.length === 0}
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation()
               handleClick(e)
             }}
@@ -241,7 +195,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
         {lazyResult.plain.metacard.properties['ext.link'] ? (
           <Button
             title={lazyResult.plain.metacard.properties['ext.link']}
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation()
               window.open(lazyResult.plain.metacard.properties['ext.link'])
             }}
@@ -256,7 +210,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
         {lazyResult.isDownloadable() ? (
           <Button
             data-id="download-button"
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation()
               triggerDownload(e)
             }}
@@ -292,7 +246,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
             return (
               <Button
                 data-id="result-item-more-vert-button"
-                onClick={e => {
+                onClick={(e) => {
                   e.stopPropagation()
                   handleClick(e)
                 }}
@@ -311,8 +265,10 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
 
 export const SelectionBackground = ({
   lazyResult,
+  style,
 }: {
   lazyResult: LazyQueryResult
+  style?: React.CSSProperties
 }) => {
   const isSelected = useSelectionOfLazyResult({ lazyResult })
 
@@ -321,6 +277,7 @@ export const SelectionBackground = ({
       className="absolute left-0 top-0 z-0 w-full h-full Mui-bg-secondary"
       style={{
         opacity: isSelected ? 0.05 : 0,
+        ...style,
       }}
     />
   )
@@ -332,7 +289,7 @@ const IconButton = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   return (
     <Button
       data-id="select-checkbox"
-      onClick={event => {
+      onClick={(event) => {
         event.stopPropagation() // this button takes precedence over the enclosing button, and is always additive / subtractive (no deselect of other results)
         if (event.shiftKey) {
           lazyResult.shiftSelect()
@@ -341,7 +298,7 @@ const IconButton = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
         }
       }}
       focusVisibleClassName="focus-visible"
-      className="relative p-2 min-w-0 outline-none h-full group-1"
+      className="relative p-2 min-w-0 outline-none h-full group-1 flex-shrink-0"
     >
       {(() => {
         if (isSelected) {
@@ -396,6 +353,28 @@ const fakeEvent = {
   type: '',
 } as any
 
+const getDisplayValue = ({
+  detail,
+  lazyResult,
+}: {
+  detail: string
+  lazyResult: LazyQueryResult
+}) => {
+  let value = lazyResult.plain.metacard.properties[detail]
+  if (value && metacardDefinitions.metacardTypes[detail]) {
+    switch (metacardDefinitions.metacardTypes[detail].type) {
+      case 'DATE':
+        if (value.constructor === Array) {
+          value = value.map((val: any) => Common.getMomentDate(val))
+        } else {
+          value = Common.getMomentDate(value)
+        }
+        break
+    }
+  }
+  return value
+}
+
 export const ResultItem = ({
   lazyResult,
   measure,
@@ -408,32 +387,28 @@ export const ResultItem = ({
     stop: (e: any) => void
     start: (e: any) => void
   }>(null)
-  const [isGallery, setIsGallery] = React.useState(checkResultDisplayType())
-  const renderThumbnail =
-    isGallery && lazyResult.plain.metacard.properties.thumbnail
   const { listenTo } = useBackbone()
   const [renderExtras, setRenderExtras] = React.useState(false)
+  const [shownAttributes, setShownAttributes] = React.useState(
+    TypedUserInstance.getResultsAttributesShown()
+  )
+  const renderThumbnail =
+    shownAttributes.includes('thumbnail') &&
+    lazyResult.plain.metacard.properties.thumbnail
+
   React.useEffect(() => {
     listenTo(
       user.get('user').get('preferences'),
-      'change:resultDisplay',
+      'change:results-attributesShown',
       () => {
-        setIsGallery(checkResultDisplayType())
+        setShownAttributes(TypedUserInstance.getResultsAttributesShown())
       }
     )
   }, [])
 
-  React.useEffect(
-    () => {
-      // only measure immediately after render if no thumbnail is loading, otherwise let it do the measure
-      if (!renderThumbnail) {
-        measure()
-      }
-    },
-    [renderThumbnail]
-  )
-
-  const customDetails = getCustomDetails({ lazyResult })
+  React.useEffect(() => {
+    measure()
+  }, [shownAttributes])
 
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const imgsrc = Common.getImageSrc(thumbnail)
@@ -509,34 +484,17 @@ export const ResultItem = ({
         <TouchRipple ref={rippleRef} />
         <SelectionBackground lazyResult={lazyResult} />
         <div className="w-full relative z-0">
-          <div className="w-full flex items-center">
+          <div className="w-full flex items-start">
             <IconButton lazyResult={lazyResult} />
-            <div data-id="result-item-title-label" className="">
-              {lazyResult.highlights['title'] ? (
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: lazyResult.highlights['title'][0].highlight,
-                  }}
-                />
-              ) : (
-                lazyResult.plain.metacard.properties.title
-              )}
-            </div>
-          </div>
-          <div
-            className={`pl-3 ${
-              ResultItemAddOnInstance !== null ||
-              renderThumbnail ||
-              customDetails.length > 0 ||
-              shouldShowRelevance ||
-              shouldShowSource
-                ? 'pb-2'
-                : ''
-            }`}
-          >
-            <div>{ResultItemAddOnInstance}</div>
-            <div>
-              {renderThumbnail ? (
+            <div
+              data-id={`result-item-${shownAttributes[0]}-label`}
+              title={`${TypedMetacardDefs.getAlias({
+                attr: shownAttributes[0],
+              })}`}
+              className="flex-shrink-1 w-full overflow-auto self-center"
+              style={{ maxHeight: '200px', minHeight: '21px' }} // firefox will show scrollbars always without this minHeight :S
+            >
+              {shownAttributes[0] === 'thumbnail' && thumbnail ? (
                 <img
                   data-id="result-item-thumbnail"
                   src={imgsrc}
@@ -548,44 +506,97 @@ export const ResultItem = ({
                     measure()
                   }}
                 />
-              ) : null}
-
-              {customDetails.map(detail => {
-                return (
-                  <PropertyComponent
-                    key={detail.label}
-                    data-help={TypedMetacardDefs.getAlias({
-                      attr: detail.label,
-                    })}
-                    title={`${TypedMetacardDefs.getAlias({
-                      attr: detail.label,
-                    })}: ${detail.value}`}
-                  >
-                    <span>
-                      {/* It's okay to use the first one here since we only ever want to display one, normally you'd want to map over this list */}
-                      {lazyResult.highlights[detail.label] ? (
-                        <span
-                          dangerouslySetInnerHTML={{
-                            __html:
-                              lazyResult.highlights[detail.label][0].highlight,
-                          }}
-                        />
-                      ) : (
-                        detail.value
-                      )}
-                    </span>
-                  </PropertyComponent>
-                )
-              })}
+              ) : lazyResult.highlights[shownAttributes[0]] ? (
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      lazyResult.highlights[shownAttributes[0]][0].highlight,
+                  }}
+                />
+              ) : (
+                getDisplayValue({ detail: shownAttributes[0], lazyResult })
+              )}
+            </div>
+          </div>
+          <div
+            className={`pl-3 ${
+              ResultItemAddOnInstance !== null ||
+              renderThumbnail ||
+              shownAttributes.length > 0 ||
+              shouldShowRelevance ||
+              shouldShowSource
+                ? 'pb-2'
+                : ''
+            }`}
+          >
+            <div>{ResultItemAddOnInstance}</div>
+            <div>
+              {shownAttributes
+                .map((detail) => {
+                  return {
+                    attribute: detail,
+                    value: getDisplayValue({ detail, lazyResult }),
+                  }
+                })
+                .filter((detail, index) => {
+                  // this is special and is handled above (it has the checkbox and icon with it)
+                  if (index === 0 || detail.attribute === 'source-id') {
+                    return false
+                  }
+                  return detail.value
+                })
+                .map((detail) => {
+                  if (detail.attribute === 'thumbnail') {
+                    return (
+                      <img
+                        data-id="result-item-thumbnail"
+                        src={imgsrc}
+                        style={{ marginTop: '10px', maxWidth: '100%' }}
+                        onLoad={() => {
+                          measure()
+                        }}
+                        onError={() => {
+                          measure()
+                        }}
+                      />
+                    )
+                  }
+                  return (
+                    <PropertyComponent
+                      key={detail.attribute}
+                      data-help={TypedMetacardDefs.getAlias({
+                        attr: detail.attribute,
+                      })}
+                      title={`${TypedMetacardDefs.getAlias({
+                        attr: detail.attribute,
+                      })}: ${detail.value}`}
+                    >
+                      <span>
+                        {/* It's okay to use the first one here since we only ever want to display one, normally you'd want to map over this list */}
+                        {lazyResult.highlights[detail.attribute] ? (
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html:
+                                lazyResult.highlights[detail.attribute][0]
+                                  .highlight,
+                            }}
+                          />
+                        ) : (
+                          detail.value
+                        )}
+                      </span>
+                    </PropertyComponent>
+                  )
+                })}
               {Object.keys(lazyResult.highlights)
                 .filter(
-                  attr =>
+                  (attr) =>
                     attr !== 'title' &&
-                    !customDetails.find(
-                      customDetail => customDetail.label === attr
+                    !shownAttributes.find(
+                      (shownAttribute) => shownAttribute === attr
                     )
                 )
-                .map(extraHighlight => {
+                .map((extraHighlight) => {
                   const relevantHighlight =
                     lazyResult.highlights[extraHighlight][0]
                   return (
@@ -673,7 +684,7 @@ export const ResultItem = ({
               className={`absolute z-50 right-0 bottom-0 focus-within:opacity-100 group-hover:opacity-100 hover:opacity-100 opacity-0 cursor-auto transform translate-y-3/4 scale-0 group-hover:scale-100 focus-within:scale-100 transition-all`}
             >
               <Paper
-                onClick={e => {
+                onClick={(e) => {
                   e.stopPropagation()
                 }}
                 elevation={Elevations.overlays}

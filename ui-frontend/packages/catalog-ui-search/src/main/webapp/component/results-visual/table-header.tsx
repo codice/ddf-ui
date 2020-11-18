@@ -12,13 +12,11 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import Grid, { GridProps } from '@material-ui/core/Grid'
+import { GridProps } from '@material-ui/core/Grid'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 const _ = require('underscore')
-// @ts-ignore ts-migrate(6133) FIXME: '$' is declared but its value is never read.
-const $ = require('jquery')
 const user = require('../singletons/user-instance.js')
 require('jquery-ui/ui/widgets/resizable')
 import Button, { ButtonProps } from '@material-ui/core/Button'
@@ -26,6 +24,9 @@ import { useSelectionOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox'
+import { TypedUserInstance } from '../singletons/TypedUser'
+import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import { TypedMetacardDefs } from '../tabs/metacard/metacardDefinitions'
 export type Header = {
   hidden: boolean
   id: string
@@ -34,7 +35,6 @@ export type Header = {
 }
 
 type HeaderProps = {
-  visibleHeaders: Header[]
   lazyResults: LazyQueryResults
 }
 
@@ -48,7 +48,7 @@ export const CellComponent = (props: GridProps) => {
   return (
     <div
       {...otherProps}
-      className={`inline-block ${className} p-2 overflow-hidden whitespace-normal break-all `}
+      className={`inline-block ${className} p-2 overflow-auto whitespace-normal break-all `}
       style={{
         width: '200px',
         maxHeight: '200px',
@@ -160,16 +160,29 @@ export const HeaderCheckbox = ({
   )
 }
 
-export const Header = ({ visibleHeaders, lazyResults }: HeaderProps) => {
+export const Header = ({ lazyResults }: HeaderProps) => {
   const handleSortClick = _.debounce(updateSort, 500, true)
+  const [shownAttributes, setShownAttributes] = React.useState(
+    TypedUserInstance.getResultsAttributesShown()
+  )
+  const { listenTo } = useBackbone()
 
+  React.useEffect(() => {
+    listenTo(
+      user.get('user').get('preferences'),
+      'change:results-attributesShown',
+      () => {
+        setShownAttributes(TypedUserInstance.getResultsAttributesShown())
+      }
+    )
+  }, [])
   return (
     <React.Fragment>
       <div
         data-id="table-container"
         className="bg-inherit whitespace-no-wrap flex items-strech flex-no-wrap"
         style={{
-          width: visibleHeaders.length * 200 + 'px',
+          width: shownAttributes.length * 200 + 'px',
         }}
       >
         <div className="sticky left-0 w-auto z-10 bg-inherit Mui-border-divider border border-t-0 border-l-0 border-b-0">
@@ -180,37 +193,37 @@ export const Header = ({ visibleHeaders, lazyResults }: HeaderProps) => {
             <HeaderCheckbox lazyResults={lazyResults} />
           </CellComponent>
         </div>
-        {visibleHeaders.map((header, index) => {
-          const last = visibleHeaders.length - 1 === index
-          const { label, id, sortable } = header
+        {shownAttributes.map((attr) => {
+          const label = TypedMetacardDefs.getAlias({ attr })
+          const sortable = true
           return (
             <CellComponent
-              key={id}
+              key={attr}
               className={`${
                 sortable ? 'is-sortable' : ''
               } Mui-border-divider border border-t-0 border-l-0 border-b-0`}
-              data-propertyid={`${id}`}
-              data-propertytext={`${label ? `${label} ${id}` : `${id}`}`}
+              data-propertyid={`${attr}`}
+              data-propertytext={`${label ? `${label}` : `${attr}`}`}
               style={{
                 padding: 0,
-                minWidth: last ? '208px' : '200px', // 8px is the scrollbar width and they only affect the body, so we need to account for it in the last header cell
+                minWidth: '200px',
               }}
             >
               <Button
                 disabled={!sortable}
                 className="w-full outline-none is-bold h-full"
-                onClick={() => handleSortClick(id)}
+                onClick={() => handleSortClick(attr)}
                 style={{ width: '100%' }}
               >
                 <div className="w-full text-left">
                   <span
                     className="column-text is-bold"
-                    title={`${label ? `${label} ${id}` : `${id}`}`}
+                    title={`${label ? `${label}` : `${attr}`}`}
                   >
-                    {`${label ? `${label} ${id}` : `${id}`}`}
+                    {`${label ? `${label}` : `${attr}`}`}
                   </span>
                   <span
-                    className={getSortDirectionClass(id)}
+                    className={getSortDirectionClass(attr)}
                     style={{ paddingLeft: '3px' }}
                   />
                 </div>
@@ -218,6 +231,8 @@ export const Header = ({ visibleHeaders, lazyResults }: HeaderProps) => {
             </CellComponent>
           )
         })}
+        <CellComponent style={{ width: '8px' }}></CellComponent>{' '}
+        {/** // 8px is the scrollbar width and they only affect the body, so we need to account for it */}
       </div>
     </React.Fragment>
   )

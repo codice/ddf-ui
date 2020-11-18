@@ -14,7 +14,6 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import TextField from '@material-ui/core/TextField'
 import { useDialog } from '../../dialog'
 import DialogActions from '@material-ui/core/DialogActions'
-import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
 import useSnack from '../../hooks/useSnack'
 import LinearProgress from '@material-ui/core/LinearProgress'
@@ -173,9 +172,9 @@ export const Editor = ({
           Cancel and return to manage
         </Button>
       )}
-      <DialogTitle style={{ textAlign: 'center' }}>
+      <div className="text-2xl text-center px-2 pb-2 pt-4 font-normal truncate">
         Editing {label} of "{lazyResult.plain.metacard.properties.title}"
-      </DialogTitle>
+      </div>
       <Divider />
       <DialogContent style={{ minHeight: '30em', minWidth: '60vh' }}>
         {values.map((val: any, index: number) => {
@@ -734,15 +733,13 @@ const Summary = ({ selectionInterface }: Props) => {
                             return attr.id
                           })
                           .sort()}
-                        updateActive={(active: string[]) => {
+                        lazyResult={selection}
+                        onSave={(active) => {
                           user
                             .get('user')
                             .get('preferences')
                             .set('inspector-summaryShown', active)
                           user.savePreferences()
-                        }}
-                        lazyResult={selection}
-                        onSave={() => {
                           // Force re-render after save to update values on page
                           // This is more reliable than "refreshing" the result which
                           // is frequently not synched up properly

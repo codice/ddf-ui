@@ -19,7 +19,6 @@ import {
   useLazyResultsStatusFromSelectionInterface,
   useLazyResultsSelectedResultsFromSelectionInterface,
 } from '../selection-interface/hooks'
-import Box from '@material-ui/core/Box'
 
 // @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
 import VisualizationSelector from '../../react-component/visualization-selector/visualization-selector'
@@ -87,21 +86,11 @@ const SelectedResults = ({ selectionInterface }: any) => {
 }
 
 const determineHasResultFilter = () => {
-  return (
-    user
-      .get('user')
-      .get('preferences')
-      .get('resultFilter') !== undefined
-  )
+  return user.get('user').get('preferences').get('resultFilter') !== undefined
 }
 
 const determineHasResultSort = () => {
-  return (
-    user
-      .get('user')
-      .get('preferences')
-      .get('resultSort') !== undefined
-  )
+  return user.get('user').get('preferences').get('resultSort') !== undefined
 }
 
 type Props = {
@@ -129,7 +118,6 @@ const ResultSelector = ({
     determineHasResultSort()
   )
   const { listenTo } = useBackbone()
-
   React.useEffect(() => {
     listenTo(user.get('user').get('preferences'), 'change:resultFilter', () => {
       setHasResultFilter(determineHasResultFilter())
@@ -164,6 +152,7 @@ const ResultSelector = ({
         <Grid item className="relative z-10">
           <QueryFeed selectionInterface={selectionInterface} />
         </Grid>
+
         <Grid item className="relative z-0">
           <SelectionRipple selectionInterface={selectionInterface} />
           <SelectedResults selectionInterface={selectionInterface} />

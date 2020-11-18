@@ -26,31 +26,14 @@ const metacardDefinitions = require('../singletons/metacard-definitions.js')
 const user = require('../singletons/user-instance.js')
 const Common = require('../../js/Common.js')
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
-import Box from '@material-ui/core/Box'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
-// @ts-ignore ts-migrate(6133) FIXME: 'CheckIcon' is declared but its value is never rea... Remove this comment to see the full error message
-import CheckIcon from '@material-ui/icons/Check'
-import Divider from '@material-ui/core/Divider'
 import { SelectionBackground } from './result-item'
-type Property = {
-  class: string
-  hidden: boolean
-  property: string
-  value: string[]
-}
+import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import { TypedUserInstance } from '../singletons/TypedUser'
 
-type ResultItemBasicProps = {
+type ResultItemFullProps = {
   lazyResult: LazyQueryResult
-  visibleHeaders: {
-    label?: string
-    id: string
-    hidden: boolean
-    sortable: boolean
-  }[]
-}
-
-type ResultItemFullProps = ResultItemBasicProps & {
   measure: () => void
   index: number
 }
@@ -103,37 +86,46 @@ const CheckboxCell = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   )
 }
 
-const RowComponent = ({
-  lazyResult,
-  visibleHeaders,
-  measure,
-  // @ts-ignore ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
-  index,
-}: ResultItemFullProps) => {
-  console.log(index)
-
+const RowComponent = ({ lazyResult, measure, index }: ResultItemFullProps) => {
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
-  const renderThumbnail = React.useRef(false)
+  const [shownAttributes, setShownAttributes] = React.useState(
+    TypedUserInstance.getResultsAttributesShown()
+  )
+  const { listenTo } = useBackbone()
 
+  React.useEffect(() => {
+    listenTo(
+      user.get('user').get('preferences'),
+      'change:results-attributesShown',
+      () => {
+        setShownAttributes(TypedUserInstance.getResultsAttributesShown())
+      }
+    )
+  }, [])
   const imgsrc = Common.getImageSrc(thumbnail)
   React.useEffect(() => {
-    if (!renderThumbnail.current) measure()
-  }, [])
-  // console.log('row rendered:' + index)
+    measure()
+  }, [shownAttributes])
   return (
     <React.Fragment>
-      <div
-        className="bg-inherit flex items-strech flex-no-wrap Mui-border-divider border border-t-0 border-r-0 b-l-0"
-        style={{
-          width: visibleHeaders.length * 200 + 'px',
-        }}
-      >
-        <SelectionBackground lazyResult={lazyResult} />
-        <div className="sticky left-0 w-auto z-10 bg-inherit Mui-border-divider border border-t-0 border-l-0 border-b-0">
+      <div className="bg-inherit flex items-strech flex-no-wrap">
+        <div
+          className={`sticky left-0 w-auto z-10 bg-inherit Mui-border-divider border border-b-0 border-l-0 ${
+            index === 0 ? 'border-t-0' : ''
+          }`}
+        >
           <SelectionBackground lazyResult={lazyResult} />
           <CheckboxCell lazyResult={lazyResult} />
         </div>
-        <div>
+        <div
+          className={`relative Mui-border-divider border border-b-0 border-r-0 border-l-0 ${
+            index === 0 ? 'border-t-0' : ''
+          }`}
+        >
+          <SelectionBackground
+            lazyResult={lazyResult}
+            style={{ width: shownAttributes.length * 200 + 'px' }}
+          />
           <Button
             data-id="result-item-row-container-button"
             onMouseDown={(event) => {
@@ -160,21 +152,21 @@ const RowComponent = ({
             disableFocusRipple
             disableRipple
             disableTouchRipple
-            className="outline-none rounded-none select-text p-0 text-left break-words"
+            className="outline-none rounded-none select-text p-0 text-left break-words h-full children-h-full"
           >
-            <div className="w-full">
+            <div className="w-full h-full">
               <Grid
                 container
                 direction="row"
-                className=""
+                className="h-full"
                 wrap="nowrap"
                 style={{
-                  width: visibleHeaders.length * 200 + 'px',
+                  width: shownAttributes.length * 200 + 'px',
                 }}
               >
-                {visibleHeaders.map((property) => {
+                {shownAttributes.map((property) => {
                   let value = lazyResult.plain.metacard.properties[
-                    property.id
+                    property
                   ] as any
                   if (value === undefined) {
                     value = ''
@@ -182,10 +174,8 @@ const RowComponent = ({
                   if (value.constructor !== Array) {
                     value = [value]
                   }
-                  if (value && metacardDefinitions.metacardTypes[property.id]) {
-                    switch (
-                      metacardDefinitions.metacardTypes[property.id].type
-                    ) {
+                  if (value && metacardDefinitions.metacardTypes[property]) {
+                    switch (metacardDefinitions.metacardTypes[property].type) {
                       case 'DATE':
                         value = value.map((val: any) =>
                           val !== undefined && val !== ''
@@ -197,19 +187,14 @@ const RowComponent = ({
                         break
                     }
                   }
-                  if (property.id === 'thumbnail' && value[0]) {
-                    renderThumbnail.current = true
-                  }
                   return (
                     <CellComponent
-                      key={property.id}
-                      data-property={`${property.id}`}
-                      className={`${
-                        property.hidden ? 'is-hidden-column' : ''
-                      } Mui-border-divider border border-t-0 border-l-0 border-b-0`}
+                      key={property}
+                      data-property={`${property}`}
+                      className={`Mui-border-divider border border-t-0 border-l-0 border-b-0 h-full`}
                       data-value={`${value}`}
                     >
-                      {property.id === 'thumbnail' && thumbnail ? (
+                      {property === 'thumbnail' && thumbnail ? (
                         <img
                           data-id="thumbnail-value"
                           src={imgsrc}
@@ -227,7 +212,7 @@ const RowComponent = ({
                       ) : (
                         <React.Fragment>
                           <div
-                            data-id={`${property.id}-value`}
+                            data-id={`${property}-value`}
                             style={{ wordBreak: 'break-word' }}
                           >
                             {value.map((value: any, index: number) => {
@@ -241,7 +226,7 @@ const RowComponent = ({
                                       rel="noopener noreferrer"
                                     >
                                       {TypedMetacardDefs.getAlias({
-                                        attr: property.id,
+                                        attr: property,
                                       })}
                                     </a>
                                   ) : (

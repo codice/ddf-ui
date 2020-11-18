@@ -45,7 +45,6 @@ const HelpView = require('../help/help.view.js')
 import { GlobalStyles } from './global-styles'
 import CancelDrawing from './cancel-drawing'
 import { PermissiveComponentType } from '../../typescript'
-import Box from '@material-ui/core/Box'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { Elevations } from '../theme/theme'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
@@ -93,7 +92,7 @@ const matchesRoute = ({
     // @ts-ignore FIXME TS2339: Property 'some' does not exist on type 'string | string[]
     return routeInfo.routeProps.path.some(
       // @ts-ignore FIXME implicit any
-      possibleRoute =>
+      (possibleRoute) =>
         pathname.startsWith(`${possibleRoute}/`) ||
         pathname.endsWith(`${possibleRoute}`)
     )
@@ -201,12 +200,9 @@ const App = ({
    * Keep the current route visible to the user since it's useful info.
    * This also ensures it's visible upon first load of the page.
    */
-  React.useEffect(
-    () => {
-      scrollCurrentRouteIntoView()
-    },
-    [location]
-  )
+  React.useEffect(() => {
+    scrollCurrentRouteIntoView()
+  }, [location])
   React.useEffect(() => {
     listenTo(notifications, 'change add remove reset update', () => {
       setHasUnseenNotifications(notifications.hasUnseen() as boolean)
@@ -345,7 +341,7 @@ const App = ({
                     }}
                   >
                     {RouteInformation.filter(
-                      routeInfo => routeInfo.showInNav
+                      (routeInfo) => routeInfo.showInNav
                     ).map((routeInfo: RouteShownInNavType) => {
                       const isSelected = matchesRoute({
                         routeInfo,

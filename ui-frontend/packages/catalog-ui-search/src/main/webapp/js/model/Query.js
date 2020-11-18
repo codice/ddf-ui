@@ -183,7 +183,7 @@ Query.Model = Backbone.AssociatedModel.extend({
     this.set('id', this.getId())
     this.listenTo(
       this,
-      'change:cql change:sources change:sorts change:spellcheck change:phonetics',
+      'change:cql change:filterTree change:sources change:sorts change:spellcheck change:phonetics',
       () => {
         this.set('isOutdated', true)
         // this.resetCurrentIndexForSourceGroup()

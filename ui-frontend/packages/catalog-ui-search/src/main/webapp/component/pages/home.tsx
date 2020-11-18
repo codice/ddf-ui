@@ -17,7 +17,6 @@ import Button from '@material-ui/core/Button'
 import SearchInteractions from '../search-interactions'
 import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
 import MoreVert from '@material-ui/icons/MoreVert'
-import Box from '@material-ui/core/Box'
 import Divider from '@material-ui/core/Divider'
 import { Dropdown } from '../atlas-dropdown'
 import { Elevations } from '../theme/theme'
@@ -60,7 +59,7 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
         </Grid>
         <Grid item className="mt-3 w-full">
           <Dropdown
-            content={context => {
+            content={(context) => {
               return (
                 <BetterClickAwayListener
                   onClickAway={() => {
@@ -139,7 +138,7 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
       </Grid>
       <Grid item className="ml-auto">
         <Dropdown
-          content={context => {
+          content={(context) => {
             return (
               <BetterClickAwayListener
                 onClickAway={() => {
