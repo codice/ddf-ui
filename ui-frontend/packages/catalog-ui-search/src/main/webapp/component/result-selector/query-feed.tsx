@@ -12,7 +12,6 @@ import { useLazyResultsStatusFromSelectionInterface } from '../selection-interfa
 import Tooltip from '@material-ui/core/Tooltip'
 import { Elevations } from '../theme/theme'
 import FilterListIcon from '@material-ui/icons/FilterList'
-import Box from '@material-ui/core/Box'
 
 type Props = {
   selectionInterface: any
@@ -137,9 +136,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
             }}
             color="primary"
           >
-            <Box color="primary.text">
-              <FilterListIcon />
-            </Box>
+            <FilterListIcon className="Mui-text-text-primary" />
             Filter
           </Button>
         </Tooltip>

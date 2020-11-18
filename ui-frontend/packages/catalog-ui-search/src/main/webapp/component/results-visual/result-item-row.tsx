@@ -19,8 +19,6 @@ import useTheme from '@material-ui/core/styles/useTheme'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { CellComponent } from './table-header'
-// @ts-ignore ts-migrate(6133) FIXME: 'styled' is declared but its value is never read.
-import styled from 'styled-components'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { useSelectionOfLazyResult } from '../../js/model/LazyQueryResult/hooks'
 
@@ -28,25 +26,14 @@ const metacardDefinitions = require('../singletons/metacard-definitions.js')
 const user = require('../singletons/user-instance.js')
 const Common = require('../../js/Common.js')
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
-import Box from '@material-ui/core/Box'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
-// @ts-ignore ts-migrate(6133) FIXME: 'CheckIcon' is declared but its value is never rea... Remove this comment to see the full error message
-import CheckIcon from '@material-ui/icons/Check'
-import Divider from '@material-ui/core/Divider'
-type Property = {
-  class: string
-  hidden: boolean
-  property: string
-  value: string[]
-}
+import { SelectionBackground } from './result-item'
+import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import { TypedUserInstance } from '../singletons/TypedUser'
 
-type ResultItemBasicProps = {
+type ResultItemFullProps = {
   lazyResult: LazyQueryResult
-  visibleHeaders: any
-}
-
-type ResultItemFullProps = ResultItemBasicProps & {
   measure: () => void
   index: number
 }
@@ -75,106 +62,70 @@ export function hasSelection(): boolean {
   }
 }
 
-const RowComponent = ({
-  lazyResult,
-  visibleHeaders,
-  measure,
-  // @ts-ignore ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
-  index,
-}: ResultItemFullProps) => {
+const CheckboxCell = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   const isSelected = useSelectionOfLazyResult({ lazyResult })
 
-  const visibleProperties: Property[] = React.useMemo(() => {
-    return visibleHeaders.map((property: any) => {
-      let value = lazyResult.plain.metacard.properties[property.id]
-      if (value === undefined) {
-        value = ''
-      }
-      if (value.constructor !== Array) {
-        value = [value]
-      }
-      let className = 'is-text'
-      if (value && metacardDefinitions.metacardTypes[property.id]) {
-        switch (metacardDefinitions.metacardTypes[property.id].type) {
-          case 'DATE':
-            value = value.map((val: any) =>
-              val !== undefined && val !== ''
-                ? user.getUserReadableDateTime(val)
-                : ''
-            )
-            break
-          default:
-            break
-        }
-      }
-      if (property.id === 'thumbnail') {
-        className = 'is-thumbnail'
-      }
-      return {
-        property: property.id,
-        value,
-        class: className,
-        hidden: property.hidden,
-      }
-    })
-  }, [visibleHeaders])
+  return (
+    <CellComponent className="h-full" style={{ width: 'auto', padding: '0px' }}>
+      <Button
+        data-id="select-checkbox"
+        onClick={(event) => {
+          event.stopPropagation()
 
+          if (event.shiftKey) {
+            lazyResult.shiftSelect()
+          } else {
+            lazyResult.controlSelect()
+          }
+        }}
+        className="h-full children-block children-h-full"
+      >
+        {isSelected ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
+      </Button>
+    </CellComponent>
+  )
+}
+
+const RowComponent = ({ lazyResult, measure, index }: ResultItemFullProps) => {
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
-
-  const imgsrc = Common.getImageSrc(thumbnail)
+  const [shownAttributes, setShownAttributes] = React.useState(
+    TypedUserInstance.getResultsAttributesShown()
+  )
+  const { listenTo } = useBackbone()
 
   React.useEffect(() => {
+    listenTo(
+      user.get('user').get('preferences'),
+      'change:results-attributesShown',
+      () => {
+        setShownAttributes(TypedUserInstance.getResultsAttributesShown())
+      }
+    )
+  }, [])
+  const imgsrc = Common.getImageSrc(thumbnail)
+  React.useEffect(() => {
     measure()
-  })
-  // console.log('row rendered:' + index)
+  }, [shownAttributes])
   return (
     <React.Fragment>
-      <Grid
-        container
-        className="bg-inherit relative"
-        direction="row"
-        wrap="nowrap"
-        style={{
-          width: visibleProperties.length * 200 + 'px',
-        }}
-      >
-        <Divider
-          orientation="horizontal"
-          className="absolute bottom-0 z-20 w-full h-min"
-        />
-        <Box
-          className="absolute left-0 top-0 z-0 w-full h-full"
-          bgcolor="secondary.main"
-          style={{
-            opacity: isSelected ? 0.05 : 0,
-          }}
-        />
-        <Grid item className="sticky left-0 w-auto z-10 bg-inherit">
-          <Box
-            className="absolute left-0 top-0 -z-1 w-full h-full"
-            bgcolor="secondary.main"
-            style={{
-              opacity: isSelected ? 0.05 : 0,
-            }}
+      <div className="bg-inherit flex items-strech flex-no-wrap">
+        <div
+          className={`sticky left-0 w-auto z-10 bg-inherit Mui-border-divider border border-b-0 border-l-0 ${
+            index === 0 ? 'border-t-0' : ''
+          }`}
+        >
+          <SelectionBackground lazyResult={lazyResult} />
+          <CheckboxCell lazyResult={lazyResult} />
+        </div>
+        <div
+          className={`relative Mui-border-divider border border-b-0 border-r-0 border-l-0 ${
+            index === 0 ? 'border-t-0' : ''
+          }`}
+        >
+          <SelectionBackground
+            lazyResult={lazyResult}
+            style={{ width: shownAttributes.length * 200 + 'px' }}
           />
-          <CellComponent className="" style={{ width: 'auto', padding: '0px' }}>
-            <Button
-              data-id="select-checkbox"
-              onClick={(event) => {
-                event.stopPropagation()
-
-                if (event.shiftKey) {
-                  lazyResult.shiftSelect()
-                } else {
-                  lazyResult.controlSelect()
-                }
-              }}
-            >
-              {isSelected ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
-            </Button>
-          </CellComponent>
-        </Grid>
-        <Grid item>
           <Button
             data-id="result-item-row-container-button"
             onMouseDown={(event) => {
@@ -201,45 +152,49 @@ const RowComponent = ({
             disableFocusRipple
             disableRipple
             disableTouchRipple
-            className="relative outline-none rounded-none select-text p-0 text-left break-words"
+            className="outline-none rounded-none select-text p-0 text-left break-words h-full children-h-full"
           >
-            <div className="w-full">
-              <Box
-                className="absolute left-0 top-0 -z-1 w-full h-full"
-                bgcolor="secondary.main"
-                style={{
-                  opacity: isSelected ? 0.05 : 0,
-                }}
-              />
+            <div className="w-full h-full">
               <Grid
                 container
                 direction="row"
+                className="h-full"
                 wrap="nowrap"
                 style={{
-                  width: visibleProperties.length * 200 + 'px',
+                  width: shownAttributes.length * 200 + 'px',
                 }}
               >
-                {visibleProperties.map((property) => {
-                  const alias = TypedMetacardDefs.getAlias({
-                    attr: property.property,
-                  })
-
+                {shownAttributes.map((property) => {
+                  let value = lazyResult.plain.metacard.properties[
+                    property
+                  ] as any
+                  if (value === undefined) {
+                    value = ''
+                  }
+                  if (value.constructor !== Array) {
+                    value = [value]
+                  }
+                  if (value && metacardDefinitions.metacardTypes[property]) {
+                    switch (metacardDefinitions.metacardTypes[property].type) {
+                      case 'DATE':
+                        value = value.map((val: any) =>
+                          val !== undefined && val !== ''
+                            ? user.getUserReadableDateTime(val)
+                            : ''
+                        )
+                        break
+                      default:
+                        break
+                    }
+                  }
                   return (
                     <CellComponent
-                      key={property.property}
-                      data-property={`${property.property}`}
-                      className={`${property.class} ${
-                        property.hidden ? 'is-hidden-column' : ''
-                      } relative`}
-                      data-value={`${property.value}`}
+                      key={property}
+                      data-property={`${property}`}
+                      className={`Mui-border-divider border border-t-0 border-l-0 border-b-0 h-full`}
+                      data-value={`${value}`}
                     >
-                      <>
-                        <Box
-                          className="w-min h-full absolute left-0 top-0"
-                          bgcolor="divider"
-                        />
-                      </>
-                      {property.property === 'thumbnail' && thumbnail ? (
+                      {property === 'thumbnail' && thumbnail ? (
                         <img
                           data-id="thumbnail-value"
                           src={imgsrc}
@@ -257,16 +212,12 @@ const RowComponent = ({
                       ) : (
                         <React.Fragment>
                           <div
-                            data-id={`${property.property}-value`}
+                            data-id={`${property}-value`}
                             style={{ wordBreak: 'break-word' }}
                           >
-                            {property.value.map((value, index) => {
+                            {value.map((value: any, index: number) => {
                               return (
-                                <span
-                                  key={index}
-                                  data-value={`${value}`}
-                                  title={`${alias}: ${value}`}
-                                >
+                                <span key={index} data-value={`${value}`}>
                                   {value.toString().substring(0, 4) ===
                                   'http' ? (
                                     <a
@@ -275,7 +226,7 @@ const RowComponent = ({
                                       rel="noopener noreferrer"
                                     >
                                       {TypedMetacardDefs.getAlias({
-                                        attr: property.property,
+                                        attr: property,
                                       })}
                                     </a>
                                   ) : (
@@ -293,8 +244,8 @@ const RowComponent = ({
               </Grid>
             </div>
           </Button>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </React.Fragment>
   )
 }

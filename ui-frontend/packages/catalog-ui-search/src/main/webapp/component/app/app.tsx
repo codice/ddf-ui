@@ -45,7 +45,6 @@ const HelpView = require('../help/help.view.js')
 import { GlobalStyles } from './global-styles'
 import CancelDrawing from './cancel-drawing'
 import { PermissiveComponentType } from '../../typescript'
-import Box from '@material-ui/core/Box'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { Elevations } from '../theme/theme'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
@@ -117,6 +116,9 @@ export const useDefaultWelcome = () => {
     const loadingElement = document.querySelector('#loading')
     if (loadingElement) {
       loadingElement.classList.remove('is-open')
+      setTimeout(() => {
+        loadingElement.remove()
+      }, 500)
     }
   }, [])
 }
@@ -210,7 +212,7 @@ const App = ({
     })
   }, [])
   return (
-    <Box bgcolor="background.default" className="h-full w-full overflow-hidden">
+    <div className="h-full w-full overflow-hidden Mui-bg-default">
       {/* Don't move CSSBaseline or GlobalStyles to providers, since we have multiple react roots.   */}
       <CssBaseline />
       <GlobalStyles />
@@ -463,10 +465,11 @@ const App = ({
 
                       return (
                         <>
-                          <Box
-                            color={hasUnseenNotifications ? 'warning.main' : ''}
+                          <div
                             className={
-                              hasUnseenNotifications ? 'animate-wiggle' : ''
+                              hasUnseenNotifications
+                                ? 'animate-wiggle Mui-text-warning'
+                                : ''
                             }
                           >
                             <ExpandingButton
@@ -489,7 +492,7 @@ const App = ({
                               expanded={navOpen}
                               focusVisibleClassName="focus-visible"
                             />
-                          </Box>
+                          </div>
                           <Drawer
                             anchor="left"
                             open={open}
@@ -599,7 +602,7 @@ const App = ({
           ) : null}
         </Grid>
       </Grid>
-    </Box>
+    </div>
   )
 }
 

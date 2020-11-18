@@ -3,6 +3,11 @@ import { hot } from 'react-hot-loader'
 import Button from '@material-ui/core/Button'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { useLazyResultsStatusFromSelectionInterface } from '../selection-interface/hooks'
+import { Elevations } from '../theme/theme'
+import CloseIcon from '@material-ui/icons/Close'
+import TableExport from '../table-export/table-export'
+import { useDialog } from '../dialog'
+import { DarkDivider } from '../dark-divider/dark-divider'
 
 type Props = {
   selectionInterface: any
@@ -17,7 +22,11 @@ const determineIsOutdated = ({ selectionInterface }: Props) => {
 }
 
 const Paging = ({ selectionInterface }: Props) => {
-  useLazyResultsStatusFromSelectionInterface({ selectionInterface })
+  const { isSearching } = useLazyResultsStatusFromSelectionInterface({
+    selectionInterface,
+  })
+  const dialogContext = useDialog()
+
   const [isOutdated, setIsOutdated] = React.useState(
     determineIsOutdated({ selectionInterface })
   )
@@ -35,7 +44,10 @@ const Paging = ({ selectionInterface }: Props) => {
       }
     }
   })
-  if (!selectionInterface.get('currentQuery')) {
+  if (
+    !selectionInterface.get('currentQuery') ||
+    !selectionInterface.get('currentQuery').get('result')
+  ) {
     return null
   }
 
@@ -66,6 +78,58 @@ const Paging = ({ selectionInterface }: Props) => {
         }}
       >
         Next Page
+      </Button>
+      <Button
+        data-id="export-table-button"
+        className={`${isOutdated ? 'invisible' : ''}`}
+        disabled={isSearching}
+        onClick={() => {
+          dialogContext.setProps({
+            PaperProps: {
+              style: {
+                minWidth: 'none',
+              },
+              elevation: Elevations.panels,
+            },
+            open: true,
+            disableEnforceFocus: true, // otherwise we can't click inside 3rd party libraries using portals (like date picker from blueprint)
+            children: (
+              <div
+                className="min-w-screen-1/2"
+                style={{
+                  minHeight: '60vh',
+                }}
+              >
+                <div className="text-2xl text-center px-2 pb-2 pt-4 font-normal relative">
+                  Export
+                  <Button
+                    data-id="close-button"
+                    className="absolute right-0 top-0 mr-1 mt-1"
+                    variant="text"
+                    color="default"
+                    size="small"
+                    onClick={() => {
+                      dialogContext.setProps({
+                        open: false,
+                        children: null,
+                      })
+                    }}
+                  >
+                    <CloseIcon />
+                  </Button>
+                </div>
+                <DarkDivider className="w-full h-min" />
+                <TableExport
+                  selectionInterface={selectionInterface}
+                  filteredAttributes={[]}
+                />
+              </div>
+            ),
+          })
+        }}
+        color="primary"
+      >
+        Export
       </Button>
     </>
   )

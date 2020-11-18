@@ -215,9 +215,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                       )
                     }}
                   >
-                    <Box color="text.primary">
-                      <AddIcon />
-                    </Box>
+                    <AddIcon className="Mui-text-text-primary" />
                     Field
                   </Button>
                 </Grid>
@@ -236,9 +234,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                       )
                     }}
                   >
-                    <Box color="text.primary">
-                      <AddIcon />
-                    </Box>
+                    <AddIcon className="Mui-text-text-primary" />
                     Group
                   </Button>
                 </Grid>

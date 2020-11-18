@@ -18,16 +18,9 @@ import { hot } from 'react-hot-loader'
 import { AutoVariableSizeList } from 'react-window-components'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
-import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
-// @ts-ignore ts-migrate(6133) FIXME: 'LazyQueryResults' is declared but its value is ne... Remove this comment to see the full error message
-import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
-// @ts-ignore ts-migrate(6133) FIXME: 'Divider' is declared but its value is never read.
-import Divider from '@material-ui/core/Divider'
-import Box from '@material-ui/core/Box'
 import Paper from '@material-ui/core/Paper'
-// @ts-ignore ts-migrate(6133) FIXME: 'dark' is declared but its value is never read.
-import { Elevations, dark, light } from '../theme/theme'
+import { Elevations } from '../theme/theme'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { useStatusOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
 import useTheme from '@material-ui/core/styles/useTheme'
@@ -35,20 +28,13 @@ import LinearProgress from '@material-ui/core/LinearProgress'
 import ViewAgendaIcon from '@material-ui/icons/ViewAgenda'
 import TableChartIcon from '@material-ui/icons/TableChart'
 import { HeaderCheckbox } from './table-header'
-import CheckBoxIcon from '@material-ui/icons/CheckBox'
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import { DarkDivider } from '../dark-divider/dark-divider'
-
-const user = require('../singletons/user-instance.js')
+import { ResultsCommonControls } from './table'
 
 type Props = {
   mode: any
   setMode: any
   selectionInterface: any
-}
-
-const getShowThumbnails = () => {
-  return user.get('user').get('preferences').get('resultDisplay') === 'Grid'
 }
 
 const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
@@ -58,14 +44,21 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
   const results = Object.values(lazyResults.results)
   const theme = useTheme()
   const { isSearching, status } = useStatusOfLazyResults({ lazyResults })
-  const [showThumbnails, setShowThumbnails] = React.useState(
-    getShowThumbnails()
-  )
-  const { listenTo } = useBackbone()
+
+  /**
+   * Note that this scenario only plays out when the component is first created, so if this is open before a search is run it will already be mounted.
+   *
+   * This is solely to keep the illusion of responsiveness when switching from table mode to list mode (or dropping a new result visual in)
+   */
+  const [isMounted, setIsMounted] = React.useState(false)
+
   React.useEffect(() => {
-    listenTo(user, 'change:user>preferences>resultDisplay', () => {
-      setShowThumbnails(getShowThumbnails())
-    })
+    const mountedTimeout = setTimeout(() => {
+      setIsMounted(true)
+    }, 1000)
+    return () => {
+      clearTimeout(mountedTimeout)
+    }
   }, [])
   return (
     <Grid container className="w-full h-full" direction="column" wrap="nowrap">
@@ -87,39 +80,8 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
               }}
             />
           </Grid>
-          <Grid item className="pl-8">
-            <Button
-              data-id="show-hide-thumbnails-button"
-              onClick={() => {
-                const prefs = user.get('user').get('preferences')
-                prefs.set('resultDisplay', showThumbnails ? 'List' : 'Grid')
-                prefs.savePreferences()
-              }}
-              color="primary"
-            >
-              {(() => {
-                if (showThumbnails) {
-                  return (
-                    <>
-                      <Box color="text.primary">
-                        <CheckBoxIcon />
-                      </Box>
-                      <Box className="pl-2">Thumbnails</Box>
-                    </>
-                  )
-                }
-                return (
-                  <>
-                    <Box color="text.primary">
-                      <CheckBoxOutlineBlankIcon />
-                    </Box>
-                    <Box className="pl-2">Thumbnails</Box>
-                  </>
-                )
-              })()}
-            </Button>
-          </Grid>
-          <Grid item className="ml-auto pr-2">
+          <ResultsCommonControls />
+          <Grid item className="pr-2">
             <Button
               data-id="list-button"
               onClick={() => {
@@ -157,50 +119,54 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
       </Grid>
       <DarkDivider className="w-full h-min my-2" />
       <Grid item className="w-full h-full p-2">
-        <Paper elevation={Elevations.paper} className="w-full h-full ">
-          <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
-            controlledMeasuring={true}
-            items={results}
-            defaultSize={76}
-            overscanCount={10}
-            Item={({ itemRef, item, measure, index, width }) => {
-              return (
-                <div ref={itemRef} className="relative">
-                  {index !== 0 ? (
-                    <>
-                      <Box className="h-min w-full" bgcolor={'divider'} />
-                    </>
-                  ) : null}
-                  <ResultItem
-                    lazyResults={results}
-                    lazyResult={item}
-                    selectionInterface={selectionInterface}
-                    measure={measure}
-                    index={index}
-                    width={width}
-                  />
-                  {index === results.length - 1 ? (
-                    <>
-                      <Box className="h-min w-full" bgcolor={'divider'} />
-                    </>
-                  ) : null}
-                </div>
-              )
-            }}
-            Empty={() => {
-              if (Object.values(status).length === 0) {
-                return <div className="p-2">Search has not yet been run.</div>
-              }
-              if (isSearching) {
-                return <LinearProgress variant="indeterminate" />
-              }
-              return (
-                <div className="result-item-collection-empty p-2">
-                  No Results Found
-                </div>
-              )
-            }}
-          />
+        <Paper elevation={Elevations.paper} className="w-full h-full">
+          {isMounted ? (
+            <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
+              controlledMeasuring={true}
+              items={results}
+              defaultSize={60}
+              overscanCount={10}
+              Item={({ itemRef, item, measure, index, width }) => {
+                return (
+                  <div ref={itemRef} className="relative">
+                    {index !== 0 ? (
+                      <>
+                        <div className="h-min w-full Mui-bg-divider" />
+                      </>
+                    ) : null}
+                    <ResultItem
+                      lazyResults={results}
+                      lazyResult={item}
+                      selectionInterface={selectionInterface}
+                      measure={measure}
+                      index={index}
+                      width={width}
+                    />
+                    {index === results.length - 1 ? (
+                      <>
+                        <div className="h-min w-full Mui-bg-divider" />
+                      </>
+                    ) : null}
+                  </div>
+                )
+              }}
+              Empty={() => {
+                if (Object.values(status).length === 0) {
+                  return <div className="p-2">Search has not yet been run.</div>
+                }
+                if (isSearching) {
+                  return <LinearProgress variant="indeterminate" />
+                }
+                return (
+                  <div className="result-item-collection-empty p-2">
+                    No Results Found
+                  </div>
+                )
+              }}
+            />
+          ) : (
+            <LinearProgress variant="indeterminate" />
+          )}
         </Paper>
       </Grid>
     </Grid>
