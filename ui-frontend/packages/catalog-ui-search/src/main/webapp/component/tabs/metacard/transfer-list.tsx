@@ -43,22 +43,6 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox'
 const user = require('../../singletons/user-instance')
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      margin: 'auto',
-    },
-    list: {
-      width: 400,
-      height: 500,
-      overflow: 'auto',
-    },
-    button: {
-      margin: theme.spacing(0.5, 0),
-    },
-  })
-)
-
 function not(a: string[], b: string[]) {
   return a.filter((value) => b.indexOf(value) === -1)
 }
@@ -81,10 +65,8 @@ const CustomList = ({
   numberOfChecked,
   handleToggleAll,
   mode,
-  classes,
   handleToggle,
   checked,
-  dialogContext,
   left,
   right,
   onSave,
@@ -98,16 +80,13 @@ const CustomList = ({
   numberOfChecked: (props: any) => number
   handleToggleAll: (props: any) => () => void
   mode: 'loading' | string
-  classes: any
   handleToggle: (props: any) => () => void
   checked: string[]
-  dialogContext: {
-    setProps: React.Dispatch<React.SetStateAction<Partial<DialogProps>>>
-  }
   left: string[]
   right: string[]
   onSave: (arg: string[]) => void
 }) => {
+  const dialogContext = useDialog()
   const [filter, setFilter] = React.useState('')
   const theme = useTheme()
   const numberChecked = numberOfChecked(items)
@@ -189,7 +168,12 @@ const CustomList = ({
       {mode === 'loading' ? (
         <CircularProgress />
       ) : (
-        <List className={classes.list} dense component="div" role="list">
+        <List
+          className="w-96 h-96 overflow-auto"
+          dense
+          component="div"
+          role="list"
+        >
           {isDnD && (
             <div className="italic px-4 text-xs font-normal">
               Click and drag attributes to reorder.
@@ -431,7 +415,6 @@ const TransferList = ({
   lazyResult?: LazyQueryResult
   onSave: (arg: string[]) => void
 }) => {
-  const classes = useStyles()
   const dialogContext = useDialog()
   const [mode, setMode] = React.useState(
     'loading' as 'normal' | 'saving' | 'loading'
@@ -474,12 +457,14 @@ const TransferList = ({
   }
 
   const handleCheckedRight = () => {
+    console.log('handlecheckedright')
     setRight(right.concat(leftChecked))
     setLeft(not(left, leftChecked))
     setChecked(not(checked, leftChecked))
   }
 
   const handleCheckedLeft = () => {
+    console.log('handlecheckedleft')
     setLeft(left.concat(rightChecked))
     setRight(not(right, rightChecked))
     setChecked(not(checked, rightChecked))
@@ -512,7 +497,7 @@ const TransferList = ({
           spacing={2}
           justify="center"
           alignItems="center"
-          className={classes.root}
+          className="m-auto"
         >
           <Grid item>
             <CustomList
@@ -528,9 +513,7 @@ const TransferList = ({
               numberOfChecked={numberOfChecked}
               handleToggle={handleToggle}
               handleToggleAll={handleToggleAll}
-              classes={classes}
               checked={checked}
-              dialogContext={dialogContext}
               mode={mode}
             />
           </Grid>
@@ -539,7 +522,7 @@ const TransferList = ({
               <Button
                 data-id="move-right-button"
                 variant="outlined"
-                className={classes.button}
+                className="m-1"
                 onClick={handleCheckedRight}
                 disabled={leftChecked.length === 0}
                 aria-label="move selected right"
@@ -549,7 +532,7 @@ const TransferList = ({
               <Button
                 data-id="move-left-button"
                 variant="outlined"
-                className={classes.button}
+                className="m-1"
                 onClick={handleCheckedLeft}
                 disabled={rightChecked.length === 0}
                 aria-label="move selected left"
@@ -572,9 +555,7 @@ const TransferList = ({
               numberOfChecked={numberOfChecked}
               handleToggle={handleToggle}
               handleToggleAll={handleToggleAll}
-              classes={classes}
               checked={checked}
-              dialogContext={dialogContext}
               mode={mode}
             />
           </Grid>
