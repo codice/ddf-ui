@@ -229,6 +229,7 @@ const ItemRow = ({
 const CustomListContext = React.createContext({
   items: {} as CheckedType,
   setItems: (() => {}) as SetCheckedType,
+  filteredItemArray: [] as string[],
 })
 
 const filterUpdate = ({
