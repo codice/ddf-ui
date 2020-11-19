@@ -286,7 +286,7 @@ const CustomList = ({
           <CircularProgress />
         ) : (
           <List
-            className="w-common h-common overflow-auto relative"
+            className="w-common h-common overflow-hidden relative"
             dense
             component="div"
             role="list"
@@ -299,78 +299,111 @@ const CustomList = ({
             ) : null}
             {isDnD ? (
               <Memo dependencies={[itemArray]}>
-                <div className="italic px-4 text-xs font-normal">
-                  Click and drag attributes to reorder.
-                </div>
-                <DragDropContext
-                  onDragEnd={(result: DropResult) => {
-                    //Put these NO-OPs up front for performance reasons:
-                    //1. If the item is dropped outside the list, do nothing
-                    //2. If the item is moved into the same place, do nothing
-                    if (!result.destination) {
-                      return
-                    }
-                    if (result.source.index === result.destination.index) {
-                      return
-                    }
+                <div className="flex flex-col flex-no-wrap h-full w-full overflow-hidden">
+                  <div className="italic px-4 text-xs font-normal">
+                    Click and drag attributes to reorder.
+                  </div>
+                  <div className="w-full h-full">
+                    <DragDropContext
+                      onDragEnd={(result: DropResult) => {
+                        //Put these NO-OPs up front for performance reasons:
+                        //1. If the item is dropped outside the list, do nothing
+                        //2. If the item is moved into the same place, do nothing
+                        if (!result.destination) {
+                          return
+                        }
+                        if (result.source.index === result.destination.index) {
+                          return
+                        }
 
-                    if (result.reason === 'DROP' && result.destination) {
-                      const originalIndex = result.source.index
-                      const destIndex = result.destination.index
-                      const clonedList = Object.keys(items)
-                      clonedList.splice(originalIndex, 1)
-                      clonedList.splice(destIndex, 0, result.draggableId)
-                      updateItems(
-                        clonedList.reduce((blob, attr) => {
-                          blob[attr] = items[attr]
-                          return blob
-                        }, {} as CheckedType)
-                      )
-                      setItemArray(clonedList) // in this case, we eagerly set in order to avoid flickering
-                    }
-                  }}
-                >
-                  <Droppable droppableId="test">
-                    {(provided) => {
-                      return (
-                        <div
-                          {...provided.droppableProps}
-                          ref={provided.innerRef}
-                        >
-                          {itemArray.map((value: string, index: number) => {
+                        if (result.reason === 'DROP' && result.destination) {
+                          const originalIndex = result.source.index
+                          const destIndex = result.destination.index
+                          const clonedList = Object.keys(items)
+                          clonedList.splice(originalIndex, 1)
+                          clonedList.splice(destIndex, 0, result.draggableId)
+                          updateItems(
+                            clonedList.reduce((blob, attr) => {
+                              blob[attr] = items[attr]
+                              return blob
+                            }, {} as CheckedType)
+                          )
+                          setItemArray(clonedList) // in this case, we eagerly set in order to avoid flickering
+                        }
+                      }}
+                    >
+                      <div className="children-h-full children-w-full h-full w-full overflow-hidden">
+                        <Droppable
+                          droppableId="test"
+                          mode="virtual"
+                          renderClone={(provided, _snapshot, rubric) => {
                             return (
-                              <Draggable
-                                draggableId={value}
-                                index={index}
-                                key={value}
-                                isDragDisabled={!isDnD}
+                              // @ts-ignore ts-migrate(2322) FIXME: Type 'DragEvent<HTMLDivElement>' is missing the fo... Remove this comment to see the full error message
+                              <div
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                ref={provided.innerRef}
                               >
-                                {(provided) => {
+                                <ItemRow
+                                  value={itemArray[rubric.source.index]}
+                                  startOver={startOver}
+                                  lazyResult={lazyResult}
+                                  filter={filter}
+                                />
+                              </div>
+                            )
+                          }}
+                        >
+                          {(provided) => {
+                            return (
+                              <AutoVariableSizeList<string, HTMLDivElement>
+                                items={itemArray}
+                                defaultSize={45.42}
+                                controlledMeasuring={true}
+                                overscanCount={10}
+                                outerRef={provided.innerRef}
+                                Item={({ itemRef, item, measure, index }) => {
                                   return (
-                                    // @ts-ignore ts-migrate(2322) FIXME: Type 'DragEvent<HTMLDivElement>' is missing the fo... Remove this comment to see the full error message
-                                    <div
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                    >
-                                      <ItemRow
-                                        value={value}
-                                        startOver={startOver}
-                                        lazyResult={lazyResult}
-                                        filter={filter}
-                                      />
+                                    <div ref={itemRef} className="relative">
+                                      <Draggable
+                                        draggableId={item}
+                                        index={index}
+                                        key={item}
+                                        isDragDisabled={!isDnD}
+                                      >
+                                        {(provided) => {
+                                          return (
+                                            // @ts-ignore ts-migrate(2322) FIXME: Type 'DragEvent<HTMLDivElement>' is missing the fo... Remove this comment to see the full error message
+                                            <div
+                                              ref={provided.innerRef}
+                                              {...provided.draggableProps}
+                                              {...provided.dragHandleProps}
+                                            >
+                                              <ItemRow
+                                                value={item}
+                                                startOver={startOver}
+                                                lazyResult={lazyResult}
+                                                // filter={filter}
+                                                measure={measure}
+                                              />
+                                            </div>
+                                          )
+                                        }}
+                                      </Draggable>
                                     </div>
                                   )
                                 }}
-                              </Draggable>
+                                Empty={() => {
+                                  return <div></div>
+                                }}
+                              />
                             )
-                          })}
-                          {provided.placeholder}
-                        </div>
-                      )
-                    }}
-                  </Droppable>
-                </DragDropContext>
+                          }}
+                        </Droppable>
+                      </div>
+                    </DragDropContext>
+                  </div>
+                </div>
               </Memo>
             ) : (
               <>
