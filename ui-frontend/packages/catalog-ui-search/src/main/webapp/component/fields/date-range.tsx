@@ -34,8 +34,10 @@ const validateShape = ({ value, onChange }: Props) => {
     value.start === undefined ||
     value.end === undefined
   ) {
+    const start = new Date()
+    start.setDate(start.getDate() - 1) // start and end can't be equal or the backend will throw a fit
     onChange({
-      start: new Date().toISOString(),
+      start: start.toISOString(),
       end: new Date().toISOString(),
     })
   }
