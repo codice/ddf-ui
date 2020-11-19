@@ -55,44 +55,40 @@ function union(a: string[], b: string[]) {
   return [...a, ...not(b, a)]
 }
 
+const getAmountChecked = (items: CheckedType) => {
+  return Object.values(items).filter((a) => a).length
+}
+
 const CustomList = ({
   title,
   items,
-  total,
   lazyResult,
   updateItems,
   isDnD,
-  numberOfChecked,
   handleToggleAll,
   mode,
   handleToggle,
-  checked,
-  left,
-  right,
-  onSave,
+  startOver,
+  totalPossible,
 }: {
   title: React.ReactNode
-  items: string[]
-  total: number
+  items: CheckedType
   lazyResult?: LazyQueryResult
-  updateItems: (arg: string[]) => void
+  updateItems: SetCheckedType
   isDnD: boolean // drag and drop allowed?
-  numberOfChecked: (props: any) => number
   handleToggleAll: (props: any) => () => void
   mode: 'loading' | string
   handleToggle: (props: any) => () => void
-  checked: string[]
-  left: string[]
-  right: string[]
-  onSave: (arg: string[]) => void
+  startOver: () => void
+  totalPossible: number
 }) => {
   const dialogContext = useDialog()
   const [filter, setFilter] = React.useState('')
   const theme = useTheme()
-  const numberChecked = numberOfChecked(items)
-  const isIndeterminate = numberChecked !== items.length && numberChecked !== 0
-  const isCompletelySelected =
-    numberChecked === items.length && items.length !== 0
+  const numberChecked = getAmountChecked(items)
+  const total = Object.keys(items).length
+  const isIndeterminate = numberChecked !== total && numberChecked !== 0
+  const isCompletelySelected = numberChecked === total && total !== 0
   const { isNotWritable } = useCustomReadOnlyCheck()
   return (
     <Paper
@@ -111,7 +107,7 @@ const CustomList = ({
           <Button
             // @ts-ignore ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
             data-id={`${title.toLowerCase()}-select-all-checkbox`}
-            disabled={items.length === 0}
+            disabled={Object.keys(items).length === 0}
             onClick={handleToggleAll(items)}
             color={
               isIndeterminate || isCompletelySelected ? 'default' : 'default'
@@ -122,14 +118,14 @@ const CustomList = ({
                 return (
                   <>
                     <CheckBoxIcon />
-                    {numberOfChecked(items)}{' '}
+                    {numberChecked}{' '}
                   </>
                 )
               } else if (isIndeterminate) {
                 return (
                   <>
                     <IndeterminateCheckBoxIcon />
-                    {numberOfChecked(items)}{' '}
+                    {numberChecked}{' '}
                   </>
                 )
               } else {
@@ -139,7 +135,7 @@ const CustomList = ({
           </Button>
         </Grid>
         <Grid item className="m-auto ">
-          {title} ({items.length}/{total})
+          {title} ({total}/{totalPossible})
         </Grid>
       </Grid>
       <DarkDivider className="w-full h-min" />
@@ -169,7 +165,7 @@ const CustomList = ({
         <CircularProgress />
       ) : (
         <List
-          className="w-96 h-96 overflow-auto"
+          className="w-common h-common overflow-auto"
           dense
           component="div"
           role="list"
@@ -194,10 +190,15 @@ const CustomList = ({
               if (result.reason === 'DROP' && result.destination) {
                 const originalIndex = result.source.index
                 const destIndex = result.destination.index
-                const clonedList = items.slice()
+                const clonedList = Object.keys(items)
                 clonedList.splice(originalIndex, 1)
                 clonedList.splice(destIndex, 0, result.draggableId)
-                updateItems(clonedList)
+                updateItems(
+                  clonedList.reduce((blob, attr) => {
+                    blob[attr] = items[attr]
+                    return blob
+                  }, {} as CheckedType)
+                )
               }
             }}
           >
@@ -205,7 +206,7 @@ const CustomList = ({
               {(provided) => {
                 return (
                   <div {...provided.droppableProps} ref={provided.innerRef}>
-                    {items.map((value: string, index: number) => {
+                    {Object.keys(items).map((value: string, index: number) => {
                       const labelId = `transfer-list-all-item-${value}-label`
                       const alias = TypedMetacardDefs.getAlias({
                         attr: value,
@@ -247,7 +248,7 @@ const CustomList = ({
                                   <ListItemIcon>
                                     <Checkbox
                                       data-id="select-checkbox"
-                                      checked={checked.indexOf(value) !== -1}
+                                      checked={items[value]}
                                       tabIndex={-1}
                                       disableRipple
                                       inputProps={{
@@ -286,45 +287,9 @@ const CustomList = ({
                                                 /* Re-open this modal again but with the current state
                                               This maintains the state so that if we haven't saved,
                                               we can come back to where we were working */
-                                                goBack={() => {
-                                                  dialogContext.setProps({
-                                                    open: true,
-                                                    children: (
-                                                      <TransferList
-                                                        startingLeft={left}
-                                                        startingRight={right}
-                                                        lazyResult={lazyResult}
-                                                        onSave={onSave}
-                                                      />
-                                                    ),
-                                                  })
-                                                }}
-                                                onCancel={() => {
-                                                  dialogContext.setProps({
-                                                    open: true,
-                                                    children: (
-                                                      <TransferList
-                                                        startingLeft={left}
-                                                        startingRight={right}
-                                                        lazyResult={lazyResult}
-                                                        onSave={onSave}
-                                                      />
-                                                    ),
-                                                  })
-                                                }}
-                                                onSave={() => {
-                                                  dialogContext.setProps({
-                                                    open: true,
-                                                    children: (
-                                                      <TransferList
-                                                        startingLeft={left}
-                                                        startingRight={right}
-                                                        lazyResult={lazyResult}
-                                                        onSave={onSave}
-                                                      />
-                                                    ),
-                                                  })
-                                                }}
+                                                goBack={startOver}
+                                                onCancel={startOver}
+                                                onSave={startOver}
                                               />
                                             </div>
                                           ),
@@ -404,6 +369,17 @@ export const useCustomReadOnlyCheck = () => {
   }
 }
 
+const convertAttrListToMap = (attrs: string[]) => {
+  return attrs.reduce((blob, attr) => {
+    blob[attr] = false
+    return blob
+  }, {} as { [key: string]: boolean })
+}
+type CheckedType = {
+  [key: string]: boolean
+}
+type SetCheckedType = React.Dispatch<React.SetStateAction<CheckedType>>
+
 const TransferList = ({
   startingLeft,
   startingRight,
@@ -419,9 +395,8 @@ const TransferList = ({
   const [mode, setMode] = React.useState(
     'loading' as 'normal' | 'saving' | 'loading'
   )
-  const [checked, setChecked] = React.useState<string[]>([])
-  const [left, setLeft] = React.useState(startingLeft)
-  const [right, setRight] = React.useState(startingRight)
+  const [left, setLeft] = React.useState(convertAttrListToMap(startingLeft))
+  const [right, setRight] = React.useState(convertAttrListToMap(startingRight))
   const { loading } = useCustomReadOnlyCheck()
   React.useEffect(() => {
     if (!loading) {
@@ -429,46 +404,103 @@ const TransferList = ({
     }
   }, [loading])
 
-  const leftChecked = intersection(checked, left)
-  const rightChecked = intersection(checked, right)
-
-  const handleToggle = (value: string) => () => {
-    const currentIndex = checked.indexOf(value)
-    const newChecked = [...checked]
-
-    if (currentIndex === -1) {
-      newChecked.push(value)
-    } else {
-      newChecked.splice(currentIndex, 1)
-    }
-
-    setChecked(newChecked)
-  }
-
-  const numberOfChecked = (items: string[]) =>
-    intersection(checked, items).length
-
-  const handleToggleAll = (items: string[]) => () => {
-    if (numberOfChecked(items) === items.length) {
-      setChecked(not(checked, items))
-    } else {
-      setChecked(union(checked, items))
+  const generateHandleToggle = ({
+    setState,
+    state,
+  }: {
+    setState: SetCheckedType
+    state: CheckedType
+  }) => {
+    return (value: string) => () => {
+      setState({
+        ...state,
+        [value]: !Boolean(state[value]),
+      })
     }
   }
 
-  const handleCheckedRight = () => {
-    console.log('handlecheckedright')
-    setRight(right.concat(leftChecked))
-    setLeft(not(left, leftChecked))
-    setChecked(not(checked, leftChecked))
+  const generateHandleToggleAll = ({
+    setState,
+    state,
+  }: {
+    setState: SetCheckedType
+    state: CheckedType
+  }) => {
+    return () => () => {
+      if (Object.values(state).includes(false)) {
+        setState(
+          Object.keys(state).reduce((blob, attr) => {
+            blob[attr] = true
+            return blob
+          }, {} as CheckedType)
+        )
+      } else {
+        setState(
+          Object.keys(state).reduce((blob, attr) => {
+            blob[attr] = false
+            return blob
+          }, {} as CheckedType)
+        )
+      }
+    }
   }
 
-  const handleCheckedLeft = () => {
-    console.log('handlecheckedleft')
-    setLeft(left.concat(rightChecked))
-    setRight(not(right, rightChecked))
-    setChecked(not(checked, rightChecked))
+  const moveRight = () => {
+    const checkedLeft = Object.entries(left)
+      .filter((a) => a[1])
+      .reduce((blob, a) => {
+        blob[a[0]] = false
+        return blob
+      }, {} as CheckedType)
+    const nonCheckedLeft = Object.entries(left)
+      .filter((a) => !a[1])
+      .reduce((blob, a) => {
+        blob[a[0]] = a[1]
+        return blob
+      }, {} as CheckedType)
+    setRight({
+      ...right,
+      ...checkedLeft,
+    })
+    setLeft(nonCheckedLeft)
   }
+
+  const moveLeft = () => {
+    const checkedRight = Object.entries(right)
+      .filter((a) => a[1])
+      .reduce((blob, a) => {
+        blob[a[0]] = false
+        return blob
+      }, {} as CheckedType)
+    const nonCheckedRight = Object.entries(right)
+      .filter((a) => !a[1])
+      .reduce((blob, a) => {
+        blob[a[0]] = a[1]
+        return blob
+      }, {} as CheckedType)
+    setLeft({
+      ...left,
+      ...checkedRight,
+    })
+    setRight(nonCheckedRight)
+  }
+
+  const hasLeftChecked = Object.entries(left).find((a) => a[1]) !== undefined
+  const hasRightChecked = Object.entries(right).find((a) => a[1]) !== undefined
+  const startOver = () => {
+    dialogContext.setProps({
+      open: true,
+      children: (
+        <TransferList
+          startingLeft={Object.keys(left)}
+          startingRight={Object.keys(right)}
+          lazyResult={lazyResult}
+          onSave={onSave}
+        />
+      ),
+    })
+  }
+  const totalPossible = startingLeft.length + startingRight.length
 
   return (
     <>
@@ -506,14 +538,16 @@ const TransferList = ({
               lazyResult={lazyResult}
               updateItems={setLeft}
               isDnD={true}
-              total={left.length + right.length}
-              left={left}
-              right={right}
-              onSave={onSave}
-              numberOfChecked={numberOfChecked}
-              handleToggle={handleToggle}
-              handleToggleAll={handleToggleAll}
-              checked={checked}
+              startOver={startOver}
+              handleToggle={generateHandleToggle({
+                setState: setLeft,
+                state: left,
+              })}
+              handleToggleAll={generateHandleToggleAll({
+                setState: setLeft,
+                state: left,
+              })}
+              totalPossible={totalPossible}
               mode={mode}
             />
           </Grid>
@@ -523,8 +557,8 @@ const TransferList = ({
                 data-id="move-right-button"
                 variant="outlined"
                 className="m-1"
-                onClick={handleCheckedRight}
-                disabled={leftChecked.length === 0}
+                onClick={moveRight}
+                disabled={!hasLeftChecked}
                 aria-label="move selected right"
               >
                 <RightArrowIcon />
@@ -533,8 +567,8 @@ const TransferList = ({
                 data-id="move-left-button"
                 variant="outlined"
                 className="m-1"
-                onClick={handleCheckedLeft}
-                disabled={rightChecked.length === 0}
+                onClick={moveLeft}
+                disabled={!hasRightChecked}
                 aria-label="move selected left"
               >
                 <LeftArrowIcon />
@@ -548,15 +582,17 @@ const TransferList = ({
               lazyResult={lazyResult}
               updateItems={setRight}
               isDnD={false}
-              total={left.length + right.length}
-              left={left}
-              right={right}
-              onSave={onSave}
-              numberOfChecked={numberOfChecked}
-              handleToggle={handleToggle}
-              handleToggleAll={handleToggleAll}
-              checked={checked}
+              startOver={startOver}
+              handleToggle={generateHandleToggle({
+                setState: setRight,
+                state: right,
+              })}
+              handleToggleAll={generateHandleToggleAll({
+                setState: setRight,
+                state: right,
+              })}
               mode={mode}
+              totalPossible={totalPossible}
             />
           </Grid>
         </Grid>
@@ -583,7 +619,7 @@ const TransferList = ({
           disabled={mode === 'saving'}
           onClick={() => {
             setMode('saving')
-            onSave(left)
+            onSave(Object.keys(left))
             dialogContext.setProps({
               open: false,
               children: null,
