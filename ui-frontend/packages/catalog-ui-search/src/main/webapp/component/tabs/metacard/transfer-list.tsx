@@ -45,6 +45,81 @@ const getAmountChecked = (items: CheckedType) => {
   return Object.values(items).filter((a) => a).length
 }
 
+const handleShiftClick = ({
+  items,
+  filteredItemArray,
+  setItems,
+  item,
+}: {
+  items: CheckedType
+  item: string
+  filteredItemArray: string[]
+  setItems: SetCheckedType
+}) => {
+  const defaultMin = filteredItemArray.length
+  const defaultMax = -1
+  const firstIndex = filteredItemArray.reduce((min, filteredItem, index) => {
+    if (items[filteredItem]) {
+      return Math.min(min, index)
+    }
+    return min
+  }, defaultMin)
+  const lastIndex = filteredItemArray.reduce((max, filteredItem, index) => {
+    if (items[filteredItem]) {
+      return Math.max(max, index)
+    }
+    return max
+  }, defaultMax)
+  const indexClicked = filteredItemArray.indexOf(item)
+  if (firstIndex === defaultMin && lastIndex === defaultMax) {
+    setItems({
+      ...items,
+      [item]: true,
+    })
+  } else if (indexClicked <= firstIndex) {
+    // traverse from target to next until firstIndex
+    const updates = filteredItemArray.slice(indexClicked, firstIndex + 1)
+    setItems({
+      ...items,
+      ...updates.reduce((blob, filteredItem) => {
+        blob[filteredItem] = true
+        return blob
+      }, {} as CheckedType),
+    })
+  } else if (indexClicked >= lastIndex) {
+    // traverse from target to prev until lastIndex
+    const updates = filteredItemArray.slice(lastIndex, indexClicked + 1)
+    setItems({
+      ...items,
+      ...updates.reduce((blob, filteredItem) => {
+        blob[filteredItem] = true
+        return blob
+      }, {} as CheckedType),
+    })
+  } else {
+    // traverse from target to prev until something doesn't change
+    const closestPreviousIndex = filteredItemArray
+      .slice(0, indexClicked - 1)
+      .reduce((max, filteredItem, index) => {
+        if (items[filteredItem]) {
+          return Math.max(max, index)
+        }
+        return max
+      }, defaultMax)
+    const updates = filteredItemArray.slice(
+      closestPreviousIndex,
+      indexClicked + 1
+    )
+    setItems({
+      ...items,
+      ...updates.reduce((blob, filteredItem) => {
+        blob[filteredItem] = true
+        return blob
+      }, {} as CheckedType),
+    })
+  }
+}
+
 const ItemRow = ({
   value,
   lazyResult,
@@ -59,7 +134,9 @@ const ItemRow = ({
   filter?: string
 }) => {
   const dialogContext = useDialog()
-  const { setItems, items } = React.useContext(CustomListContext)
+  const { setItems, items, filteredItemArray } = React.useContext(
+    CustomListContext
+  )
   const { isNotWritable } = useCustomReadOnlyCheck()
 
   React.useEffect(() => {
@@ -83,11 +160,15 @@ const ItemRow = ({
       role="listitem"
       button
       className="p-0"
-      onClick={() => {
-        setItems({
-          ...items,
-          [value]: !items[value],
-        })
+      onClick={(event) => {
+        if (event.shiftKey) {
+          handleShiftClick({ items, item: value, setItems, filteredItemArray })
+        } else {
+          setItems({
+            ...items,
+            [value]: !items[value],
+          })
+        }
       }}
     >
       <ListItemIcon>
@@ -230,7 +311,7 @@ const CustomList = ({
   }, [filteredItemArray])
   // memo this, other wise the creation of the new object each time is seen as a "change"
   const memoProviderValue = React.useMemo(() => {
-    return { items, setItems: updateItems }
+    return { items, setItems: updateItems, filteredItemArray }
   }, [items, updateItems])
   return (
     <CustomListContext.Provider value={memoProviderValue}>
