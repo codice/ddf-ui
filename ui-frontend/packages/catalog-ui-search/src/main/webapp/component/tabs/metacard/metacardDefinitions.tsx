@@ -64,6 +64,7 @@ export const TypedMetacardDefs = {
   getType({ attr }: { attr: string }): Attributetypes {
     return metacardDefinitions.metacardTypes[attr].type
   },
+  // O(1) lookup of attr alias
   getAlias({ attr }: { attr: string }): string {
     return properties.attributeAliases[attr] || attr
   },

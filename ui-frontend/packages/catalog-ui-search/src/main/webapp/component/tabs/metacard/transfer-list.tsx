@@ -1,10 +1,6 @@
 /* https://material-ui.com/components/transfer-list/ */
 import { hot } from 'react-hot-loader'
 import React from 'react'
-import makeStyles from '@material-ui/core/styles/makeStyles'
-// @ts-ignore ts-migrate(2307) FIXME: Cannot find module '@material-ui/core/styles/Theme... Remove this comment to see the full error message
-import Theme from '@material-ui/core/styles/Theme'
-import createStyles from '@material-ui/core/styles/createStyles'
 import Grid from '@material-ui/core/Grid'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
@@ -19,7 +15,6 @@ import useTheme from '@material-ui/core/styles/useTheme'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Paper from '@material-ui/core/Paper'
-import { DialogProps } from '@material-ui/core/Dialog'
 import { useDialog } from '../../dialog'
 import TypedMetacardDefs from './metacardDefinitions'
 import EditIcon from '@material-ui/icons/Edit'
@@ -41,24 +36,148 @@ import CloseIcon from '@material-ui/icons/Close'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox'
+import { AutoVariableSizeList } from 'react-window-components'
+import debounce from 'lodash.debounce'
+import { Memo } from '../../memo/memo'
 const user = require('../../singletons/user-instance')
-
-function not(a: string[], b: string[]) {
-  return a.filter((value) => b.indexOf(value) === -1)
-}
-
-function intersection(a: string[], b: string[]) {
-  return a.filter((value) => b.indexOf(value) !== -1)
-}
-
-function union(a: string[], b: string[]) {
-  return [...a, ...not(b, a)]
-}
 
 const getAmountChecked = (items: CheckedType) => {
   return Object.values(items).filter((a) => a).length
 }
 
+const ItemRow = ({
+  value,
+  lazyResult,
+  startOver,
+  measure,
+  filter,
+}: {
+  value: string
+  lazyResult?: LazyQueryResult
+  startOver: () => void
+  measure?: () => void
+  filter?: string
+}) => {
+  const dialogContext = useDialog()
+  const { setItems, items } = React.useContext(CustomListContext)
+  const { isNotWritable } = useCustomReadOnlyCheck()
+
+  React.useEffect(() => {
+    if (measure) measure()
+  }, [])
+
+  const alias = TypedMetacardDefs.getAlias({ attr: value })
+  const isReadonly = lazyResult
+    ? isNotWritable({
+        attribute: value,
+        lazyResult,
+      })
+    : true
+
+  if (filter && !alias.toLowerCase().includes(filter.toLowerCase())) {
+    return null
+  }
+  return (
+    <ListItem
+      data-id="attribute-container"
+      role="listitem"
+      button
+      className="p-0"
+      onClick={() => {
+        setItems({
+          ...items,
+          [value]: !items[value],
+        })
+      }}
+    >
+      <ListItemIcon>
+        <Checkbox
+          data-id="select-checkbox"
+          checked={items[value]}
+          tabIndex={-1}
+          disableRipple
+          color="default"
+        />
+      </ListItemIcon>
+      <ListItemText primary={alias} />
+      {!isReadonly && lazyResult && (
+        <Button
+          data-id="edit-button"
+          style={{
+            pointerEvents: 'all',
+            height: '100%',
+          }}
+          onClick={() => {
+            dialogContext.setProps({
+              PaperProps: {
+                style: {
+                  minWidth: 'none',
+                },
+              },
+              open: true,
+              children: (
+                <div
+                  style={{
+                    padding: '10px',
+                    minHeight: '30em',
+                    minWidth: '60vh',
+                  }}
+                >
+                  <Editor
+                    attr={value}
+                    lazyResult={lazyResult}
+                    /* Re-open this modal again but with the current state
+              This maintains the state so that if we haven't saved,
+              we can come back to where we were working */
+                    goBack={startOver}
+                    onCancel={startOver}
+                    onSave={startOver}
+                  />
+                </div>
+              ),
+            })
+          }}
+        >
+          <EditIcon />
+        </Button>
+      )}
+    </ListItem>
+  )
+}
+
+const CustomListContext = React.createContext({
+  items: {} as CheckedType,
+  setItems: (() => {}) as SetCheckedType,
+})
+
+const filterUpdate = ({
+  filter,
+  setItemArray,
+  items,
+}: {
+  items: { [key: string]: boolean }
+  filter: string
+  setItemArray: (val: string[]) => void
+}) => {
+  setItemArray(
+    Object.keys(items).filter((attr) => {
+      const alias = TypedMetacardDefs.getAlias({ attr })
+      const isFiltered =
+        filter !== ''
+          ? !alias.toLowerCase().includes(filter.toLowerCase())
+          : false
+      return !isFiltered
+    })
+  )
+}
+
+const generateDebouncedFilterUpdate = () => {
+  return debounce(filterUpdate, 500)
+}
+
+/**
+ * At the moment, we only virtualize the right side since that's likely to be huge whereas the left isn't (it also has DND on left, which makes things diff to virtualize)
+ */
 const CustomList = ({
   title,
   items,
@@ -67,7 +186,6 @@ const CustomList = ({
   isDnD,
   handleToggleAll,
   mode,
-  handleToggle,
   startOver,
   totalPossible,
 }: {
@@ -78,243 +196,211 @@ const CustomList = ({
   isDnD: boolean // drag and drop allowed?
   handleToggleAll: (props: any) => () => void
   mode: 'loading' | string
-  handleToggle: (props: any) => () => void
   startOver: () => void
   totalPossible: number
 }) => {
-  const dialogContext = useDialog()
   const [filter, setFilter] = React.useState('')
-  const theme = useTheme()
+  const [itemArray, setItemArray] = React.useState(Object.keys(items))
+  const [isFiltering, setIsFiltering] = React.useState(false)
+  const debouncedFilterUpdate = React.useRef(generateDebouncedFilterUpdate())
   const numberChecked = getAmountChecked(items)
   const total = Object.keys(items).length
   const isIndeterminate = numberChecked !== total && numberChecked !== 0
   const isCompletelySelected = numberChecked === total && total !== 0
-  const { isNotWritable } = useCustomReadOnlyCheck()
+  React.useEffect(() => {
+    setIsFiltering(true)
+    debouncedFilterUpdate.current({ items, filter, setItemArray })
+  }, [Object.keys(items).toString(), filter])
+  React.useEffect(() => {
+    setIsFiltering(false)
+  }, [itemArray])
+  // memo this, other wise the creation of the new object each time is seen as a "change"
+  const memoProviderValue = React.useMemo(() => {
+    return { items, setItems: updateItems }
+  }, [items, updateItems])
   return (
-    <Paper
-      // @ts-ignore ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
-      data-id={`${title.toLowerCase()}-container`}
-      elevation={Elevations.paper}
-    >
-      <Grid
-        container
-        className="p-2 text-xl font-normal relative"
-        direction="row"
-        wrap="nowrap"
-        alignItems="center"
+    <CustomListContext.Provider value={memoProviderValue}>
+      <Paper
+        // @ts-ignore ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
+        data-id={`${title.toLowerCase()}-container`}
+        elevation={Elevations.paper}
       >
-        <Grid item className="absolute left-0 top-0 ml-2 mt-min">
-          <Button
-            // @ts-ignore ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
-            data-id={`${title.toLowerCase()}-select-all-checkbox`}
-            disabled={Object.keys(items).length === 0}
-            onClick={handleToggleAll(items)}
-            color={
-              isIndeterminate || isCompletelySelected ? 'default' : 'default'
-            }
-          >
-            {(() => {
-              if (isCompletelySelected) {
-                return (
-                  <>
-                    <CheckBoxIcon />
-                    {numberChecked}{' '}
-                  </>
-                )
-              } else if (isIndeterminate) {
-                return (
-                  <>
-                    <IndeterminateCheckBoxIcon />
-                    {numberChecked}{' '}
-                  </>
-                )
-              } else {
-                return <CheckBoxOutlineBlankIcon />
-              }
-            })()}
-          </Button>
-        </Grid>
-        <Grid item className="m-auto ">
-          {title} ({total}/{totalPossible})
-        </Grid>
-      </Grid>
-      <DarkDivider className="w-full h-min" />
-      <div className="p-2">
-        <TextField
-          data-id="filter-input"
-          size="small"
-          variant="outlined"
-          label="Filter by keyword"
-          fullWidth={true}
-          value={filter}
-          inputProps={{
-            style:
-              filter !== ''
-                ? {
-                    borderBottom: `1px solid ${theme.palette.warning.main}`,
-                  }
-                : {},
-          }}
-          onChange={(e) => {
-            setFilter(e.target.value)
-          }}
-        />
-      </div>
-      <DarkDivider className="w-full h-min" />
-      {mode === 'loading' ? (
-        <CircularProgress />
-      ) : (
-        <List
-          className="w-common h-common overflow-auto"
-          dense
-          component="div"
-          role="list"
+        <Grid
+          container
+          className="p-2 text-xl font-normal relative"
+          direction="row"
+          wrap="nowrap"
+          alignItems="center"
         >
-          {isDnD && (
-            <div className="italic px-4 text-xs font-normal">
-              Click and drag attributes to reorder.
-            </div>
-          )}
-          <DragDropContext
-            onDragEnd={(result: DropResult) => {
-              //Put these NO-OPs up front for performance reasons:
-              //1. If the item is dropped outside the list, do nothing
-              //2. If the item is moved into the same place, do nothing
-              if (!result.destination) {
-                return
+          <Grid item className="absolute left-0 top-0 ml-2 mt-min">
+            <Button
+              // @ts-ignore ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
+              data-id={`${title.toLowerCase()}-select-all-checkbox`}
+              disabled={Object.keys(items).length === 0}
+              onClick={handleToggleAll(items)}
+              color={
+                isIndeterminate || isCompletelySelected ? 'default' : 'default'
               }
-              if (result.source.index === result.destination.index) {
-                return
-              }
-
-              if (result.reason === 'DROP' && result.destination) {
-                const originalIndex = result.source.index
-                const destIndex = result.destination.index
-                const clonedList = Object.keys(items)
-                clonedList.splice(originalIndex, 1)
-                clonedList.splice(destIndex, 0, result.draggableId)
-                updateItems(
-                  clonedList.reduce((blob, attr) => {
-                    blob[attr] = items[attr]
-                    return blob
-                  }, {} as CheckedType)
-                )
-              }
+            >
+              {(() => {
+                if (isCompletelySelected) {
+                  return (
+                    <>
+                      <CheckBoxIcon />
+                      {numberChecked}{' '}
+                    </>
+                  )
+                } else if (isIndeterminate) {
+                  return (
+                    <>
+                      <IndeterminateCheckBoxIcon />
+                      {numberChecked}{' '}
+                    </>
+                  )
+                } else {
+                  return <CheckBoxOutlineBlankIcon />
+                }
+              })()}
+            </Button>
+          </Grid>
+          <Grid item className="m-auto ">
+            {title} ({total}/{totalPossible})
+          </Grid>
+        </Grid>
+        <DarkDivider className="w-full h-min" />
+        <div className="p-2">
+          <TextField
+            data-id="filter-input"
+            size="small"
+            variant="outlined"
+            label="Filter by keyword"
+            fullWidth={true}
+            value={filter}
+            onChange={(e) => {
+              setFilter(e.target.value)
             }}
+          />
+        </div>
+        <DarkDivider className="w-full h-min" />
+        {mode === 'loading' ? (
+          <CircularProgress />
+        ) : (
+          <List
+            className="w-common h-common overflow-auto relative"
+            dense
+            component="div"
+            role="list"
           >
-            <Droppable droppableId="test">
-              {(provided) => {
-                return (
-                  <div {...provided.droppableProps} ref={provided.innerRef}>
-                    {Object.keys(items).map((value: string, index: number) => {
-                      const labelId = `transfer-list-all-item-${value}-label`
-                      const alias = TypedMetacardDefs.getAlias({
-                        attr: value,
-                      })
-                      const isReadonly = lazyResult
-                        ? isNotWritable({
-                            attribute: value,
-                            lazyResult,
-                          })
-                        : true
-                      const isFiltered =
-                        filter !== ''
-                          ? !alias.toLowerCase().includes(filter.toLowerCase())
-                          : false
+            {isFiltering ? (
+              <LinearProgress
+                className="w-full h-1 absolute left-0 top-0"
+                variant="indeterminate"
+              />
+            ) : null}
+            {isDnD ? (
+              <Memo dependencies={[itemArray]}>
+                <div className="italic px-4 text-xs font-normal">
+                  Click and drag attributes to reorder.
+                </div>
+                <DragDropContext
+                  onDragEnd={(result: DropResult) => {
+                    //Put these NO-OPs up front for performance reasons:
+                    //1. If the item is dropped outside the list, do nothing
+                    //2. If the item is moved into the same place, do nothing
+                    if (!result.destination) {
+                      return
+                    }
+                    if (result.source.index === result.destination.index) {
+                      return
+                    }
 
-                      return isFiltered ? null : (
-                        <Draggable
-                          draggableId={value}
-                          index={index}
-                          key={value}
-                          isDragDisabled={!isDnD}
-                        >
-                          {(provided) => {
-                            return (
-                              // @ts-ignore ts-migrate(2322) FIXME: Type 'DragEvent<HTMLDivElement>' is missing the fo... Remove this comment to see the full error message
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                              >
-                                <ListItem
-                                  data-id="attribute-container"
-                                  key={value}
-                                  role="listitem"
-                                  button
-                                  className="p-0"
-                                  onClick={handleToggle(value)}
-                                >
-                                  <ListItemIcon>
-                                    <Checkbox
-                                      data-id="select-checkbox"
-                                      checked={items[value]}
-                                      tabIndex={-1}
-                                      disableRipple
-                                      inputProps={{
-                                        'aria-labelledby': labelId,
-                                      }}
-                                      color="default"
-                                    />
-                                  </ListItemIcon>
-                                  <ListItemText id={labelId} primary={alias} />
-                                  {!isReadonly && lazyResult && (
-                                    <Button
-                                      data-id="edit-button"
-                                      style={{
-                                        pointerEvents: 'all',
-                                        height: '100%',
-                                      }}
-                                      onClick={() => {
-                                        dialogContext.setProps({
-                                          PaperProps: {
-                                            style: {
-                                              minWidth: 'none',
-                                            },
-                                          },
-                                          open: true,
-                                          children: (
-                                            <div
-                                              style={{
-                                                padding: '10px',
-                                                minHeight: '30em',
-                                                minWidth: '60vh',
-                                              }}
-                                            >
-                                              <Editor
-                                                attr={value}
-                                                lazyResult={lazyResult}
-                                                /* Re-open this modal again but with the current state
-                                              This maintains the state so that if we haven't saved,
-                                              we can come back to where we were working */
-                                                goBack={startOver}
-                                                onCancel={startOver}
-                                                onSave={startOver}
-                                              />
-                                            </div>
-                                          ),
-                                        })
-                                      }}
-                                    >
-                                      <EditIcon />
-                                    </Button>
-                                  )}
-                                </ListItem>
-                              </div>
-                            )
-                          }}
-                        </Draggable>
+                    if (result.reason === 'DROP' && result.destination) {
+                      const originalIndex = result.source.index
+                      const destIndex = result.destination.index
+                      const clonedList = Object.keys(items)
+                      clonedList.splice(originalIndex, 1)
+                      clonedList.splice(destIndex, 0, result.draggableId)
+                      updateItems(
+                        clonedList.reduce((blob, attr) => {
+                          blob[attr] = items[attr]
+                          return blob
+                        }, {} as CheckedType)
                       )
-                    })}
-                    {provided.placeholder}
-                  </div>
-                )
-              }}
-            </Droppable>
-          </DragDropContext>
-        </List>
-      )}
-    </Paper>
+                      setItemArray(clonedList) // in this case, we eagerly set in order to avoid flickering
+                    }
+                  }}
+                >
+                  <Droppable droppableId="test">
+                    {(provided) => {
+                      return (
+                        <div
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                        >
+                          {itemArray.map((value: string, index: number) => {
+                            return (
+                              <Draggable
+                                draggableId={value}
+                                index={index}
+                                key={value}
+                                isDragDisabled={!isDnD}
+                              >
+                                {(provided) => {
+                                  return (
+                                    // @ts-ignore ts-migrate(2322) FIXME: Type 'DragEvent<HTMLDivElement>' is missing the fo... Remove this comment to see the full error message
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                    >
+                                      <ItemRow
+                                        value={value}
+                                        startOver={startOver}
+                                        lazyResult={lazyResult}
+                                        filter={filter}
+                                      />
+                                    </div>
+                                  )
+                                }}
+                              </Draggable>
+                            )
+                          })}
+                          {provided.placeholder}
+                        </div>
+                      )
+                    }}
+                  </Droppable>
+                </DragDropContext>
+              </Memo>
+            ) : (
+              <>
+                <AutoVariableSizeList<string, HTMLDivElement>
+                  items={itemArray}
+                  defaultSize={45.42}
+                  controlledMeasuring={true}
+                  overscanCount={10}
+                  Item={({ itemRef, item, measure }) => {
+                    return (
+                      <div ref={itemRef} className="relative">
+                        <ItemRow
+                          value={item}
+                          startOver={startOver}
+                          lazyResult={lazyResult}
+                          measure={measure}
+                        />
+                      </div>
+                    )
+                  }}
+                  Empty={() => {
+                    return <div></div>
+                  }}
+                />
+              </>
+            )}
+          </List>
+        )}
+      </Paper>
+    </CustomListContext.Provider>
   )
 }
 
@@ -403,21 +489,6 @@ const TransferList = ({
       setMode('normal')
     }
   }, [loading])
-
-  const generateHandleToggle = ({
-    setState,
-    state,
-  }: {
-    setState: SetCheckedType
-    state: CheckedType
-  }) => {
-    return (value: string) => () => {
-      setState({
-        ...state,
-        [value]: !Boolean(state[value]),
-      })
-    }
-  }
 
   const generateHandleToggleAll = ({
     setState,
@@ -539,10 +610,6 @@ const TransferList = ({
               updateItems={setLeft}
               isDnD={true}
               startOver={startOver}
-              handleToggle={generateHandleToggle({
-                setState: setLeft,
-                state: left,
-              })}
               handleToggleAll={generateHandleToggleAll({
                 setState: setLeft,
                 state: left,
@@ -583,10 +650,6 @@ const TransferList = ({
               updateItems={setRight}
               isDnD={false}
               startOver={startOver}
-              handleToggle={generateHandleToggle({
-                setState: setRight,
-                state: right,
-              })}
               handleToggleAll={generateHandleToggleAll({
                 setState: setRight,
                 state: right,
