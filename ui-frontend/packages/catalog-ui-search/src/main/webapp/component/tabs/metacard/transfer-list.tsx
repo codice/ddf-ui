@@ -199,8 +199,15 @@ const CustomList = ({
   startOver: () => void
   totalPossible: number
 }) => {
+  const itemsRef = React.useRef(items)
+  itemsRef.current = items // don't see a performant way besides this to allow us to avoid rerendering DnD but allow it to update the item orders correctly
   const [filter, setFilter] = React.useState('')
-  const [itemArray, setItemArray] = React.useState(Object.keys(items))
+  const [unfilteredItemArray, setUnfilteredItemArray] = React.useState(
+    Object.keys(items)
+  )
+  const [filteredItemArray, setFilteredItemArray] = React.useState(
+    Object.keys(items)
+  )
   const [isFiltering, setIsFiltering] = React.useState(false)
   const debouncedFilterUpdate = React.useRef(generateDebouncedFilterUpdate())
   const numberChecked = getAmountChecked(items)
@@ -208,12 +215,19 @@ const CustomList = ({
   const isIndeterminate = numberChecked !== total && numberChecked !== 0
   const isCompletelySelected = numberChecked === total && total !== 0
   React.useEffect(() => {
+    setUnfilteredItemArray(Object.keys(items))
+  }, [Object.keys(items).toString()])
+  React.useEffect(() => {
     setIsFiltering(true)
-    debouncedFilterUpdate.current({ items, filter, setItemArray })
+    debouncedFilterUpdate.current({
+      items,
+      filter,
+      setItemArray: setFilteredItemArray,
+    })
   }, [Object.keys(items).toString(), filter])
   React.useEffect(() => {
     setIsFiltering(false)
-  }, [itemArray])
+  }, [filteredItemArray])
   // memo this, other wise the creation of the new object each time is seen as a "change"
   const memoProviderValue = React.useMemo(() => {
     return { items, setItems: updateItems }
@@ -298,7 +312,7 @@ const CustomList = ({
               />
             ) : null}
             {isDnD ? (
-              <Memo dependencies={[itemArray]}>
+              <Memo dependencies={[filteredItemArray]}>
                 <div className="flex flex-col flex-no-wrap h-full w-full overflow-hidden">
                   <div className="italic px-4 text-xs font-normal">
                     Click and drag attributes to reorder.
@@ -315,20 +329,31 @@ const CustomList = ({
                         if (result.source.index === result.destination.index) {
                           return
                         }
-
+                        // complicated by the fact that we filter, so we need to find the original and dest index ourselves :(
                         if (result.reason === 'DROP' && result.destination) {
-                          const originalIndex = result.source.index
-                          const destIndex = result.destination.index
-                          const clonedList = Object.keys(items)
-                          clonedList.splice(originalIndex, 1)
-                          clonedList.splice(destIndex, 0, result.draggableId)
-                          updateItems(
-                            clonedList.reduce((blob, attr) => {
-                              blob[attr] = items[attr]
-                              return blob
-                            }, {} as CheckedType)
+                          const shiftedOriginalIndex = unfilteredItemArray.indexOf(
+                            result.draggableId
                           )
-                          setItemArray(clonedList) // in this case, we eagerly set in order to avoid flickering
+                          const shiftedDestIndex = unfilteredItemArray.indexOf(
+                            filteredItemArray[result.destination.index]
+                          )
+                          const clonedList = unfilteredItemArray.slice(0)
+                          clonedList.splice(shiftedOriginalIndex, 1)
+                          clonedList.splice(
+                            shiftedDestIndex,
+                            0, // insert WITHOUT removing anything
+                            result.draggableId
+                          )
+                          const newList = clonedList.reduce((blob, attr) => {
+                            blob[attr] = itemsRef.current[attr]
+                            return blob
+                          }, {} as CheckedType)
+                          updateItems(newList)
+                          filterUpdate({
+                            filter,
+                            setItemArray: setFilteredItemArray,
+                            items: newList,
+                          }) // in this case, we eagerly set in order to avoid flickering
                         }
                       }}
                     >
@@ -345,7 +370,7 @@ const CustomList = ({
                                 ref={provided.innerRef}
                               >
                                 <ItemRow
-                                  value={itemArray[rubric.source.index]}
+                                  value={filteredItemArray[rubric.source.index]}
                                   startOver={startOver}
                                   lazyResult={lazyResult}
                                   filter={filter}
@@ -357,7 +382,7 @@ const CustomList = ({
                           {(provided) => {
                             return (
                               <AutoVariableSizeList<string, HTMLDivElement>
-                                items={itemArray}
+                                items={filteredItemArray}
                                 defaultSize={45.42}
                                 controlledMeasuring={true}
                                 overscanCount={10}
@@ -408,7 +433,7 @@ const CustomList = ({
             ) : (
               <>
                 <AutoVariableSizeList<string, HTMLDivElement>
-                  items={itemArray}
+                  items={filteredItemArray}
                   defaultSize={45.42}
                   controlledMeasuring={true}
                   overscanCount={10}
