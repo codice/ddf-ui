@@ -155,32 +155,67 @@ const ItemRow = ({
     return null
   }
   return (
-    <ListItem
+    <div
       data-id="attribute-container"
       role="listitem"
-      button
-      className="p-0"
-      onClick={(event) => {
-        if (event.shiftKey) {
-          handleShiftClick({ items, item: value, setItems, filteredItemArray })
-        } else {
-          setItems({
-            ...items,
-            [value]: !items[value],
-          })
-        }
-      }}
+      className="p-0 flex w-full"
     >
-      <ListItemIcon>
-        <Checkbox
-          data-id="select-checkbox"
-          checked={items[value]}
-          tabIndex={-1}
-          disableRipple
-          color="default"
-        />
-      </ListItemIcon>
-      <ListItemText primary={alias} />
+      <Button
+        onClick={(event) => {
+          if (event.shiftKey) {
+            handleShiftClick({
+              items,
+              item: value,
+              setItems,
+              filteredItemArray,
+            })
+          } else if (event.ctrlKey || event.metaKey) {
+            setItems({
+              ...items,
+              [value]: !items[value],
+            })
+          } else {
+            setItems({
+              ...items,
+              [value]: !items[value],
+            })
+          }
+        }}
+        size="medium"
+      >
+        {items[value] ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
+      </Button>
+      <Button
+        fullWidth
+        size="medium"
+        className="children-block text-left"
+        onClick={(event) => {
+          if (event.shiftKey) {
+            handleShiftClick({
+              items,
+              item: value,
+              setItems,
+              filteredItemArray,
+            })
+          } else if (event.ctrlKey || event.metaKey) {
+            setItems({
+              ...items,
+              [value]: !items[value],
+            })
+          } else {
+            // really the only difference from the checkbox click event, where we turn off everything but this one
+            setItems({
+              ...Object.keys(items).reduce((blob, val) => {
+                blob[val] = false
+                return blob
+              }, {} as CheckedType),
+              [value]: !items[value],
+            })
+          }
+        }}
+      >
+        {alias}
+      </Button>
       {!isReadonly && lazyResult && (
         <Button
           data-id="edit-button"
@@ -222,7 +257,7 @@ const ItemRow = ({
           <EditIcon />
         </Button>
       )}
-    </ListItem>
+    </div>
   )
 }
 
@@ -477,6 +512,7 @@ const CustomList = ({
                                         index={index}
                                         key={item}
                                         isDragDisabled={!isDnD}
+                                        disableInteractiveElementBlocking
                                       >
                                         {(provided) => {
                                           return (
