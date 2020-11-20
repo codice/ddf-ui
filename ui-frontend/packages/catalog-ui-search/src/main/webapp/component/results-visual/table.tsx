@@ -228,6 +228,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                           lazyResult={item}
                           measure={measure}
                           index={index}
+                          results={results}
                         />
                       </div>
                     )

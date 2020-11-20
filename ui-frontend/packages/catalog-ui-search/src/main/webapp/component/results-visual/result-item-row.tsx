@@ -36,6 +36,7 @@ type ResultItemFullProps = {
   lazyResult: LazyQueryResult
   measure: () => void
   index: number
+  results: LazyQueryResult[]
 }
 
 export function clearSelection() {
@@ -86,11 +87,17 @@ const CheckboxCell = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   )
 }
 
-const RowComponent = ({ lazyResult, measure, index }: ResultItemFullProps) => {
+const RowComponent = ({
+  lazyResult,
+  measure,
+  index,
+  results,
+}: ResultItemFullProps) => {
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const [shownAttributes, setShownAttributes] = React.useState(
     TypedUserInstance.getResultsAttributesShownTable()
   )
+  const isLast = index === results.length - 1
   const { listenTo } = useBackbone()
 
   React.useEffect(() => {
@@ -110,9 +117,9 @@ const RowComponent = ({ lazyResult, measure, index }: ResultItemFullProps) => {
     <React.Fragment>
       <div className="bg-inherit flex items-strech flex-no-wrap">
         <div
-          className={`sticky left-0 w-auto z-10 bg-inherit Mui-border-divider border border-b-0 border-l-0 ${
-            index === 0 ? 'border-t-0' : ''
-          }`}
+          className={`sticky left-0 w-auto z-10 bg-inherit Mui-border-divider border ${
+            isLast ? '' : 'border-b-0'
+          } border-l-0 ${index === 0 ? 'border-t-0' : ''}`}
         >
           <SelectionBackground lazyResult={lazyResult} />
           <CheckboxCell lazyResult={lazyResult} />
@@ -191,7 +198,9 @@ const RowComponent = ({ lazyResult, measure, index }: ResultItemFullProps) => {
                     <CellComponent
                       key={property}
                       data-property={`${property}`}
-                      className={`Mui-border-divider border border-t-0 border-l-0 border-b-0 h-full`}
+                      className={`Mui-border-divider border border-t-0 border-l-0 ${
+                        isLast ? '' : 'border-b-0'
+                      } h-full`}
                       data-value={`${value}`}
                     >
                       {property === 'thumbnail' && thumbnail ? (
