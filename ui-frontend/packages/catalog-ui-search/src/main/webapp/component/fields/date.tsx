@@ -31,7 +31,8 @@ type DateFieldProps = {
 }
 
 const validateShape = ({ value, onChange }: DateFieldProps) => {
-  if (DateHelpers.Blueprint.commonProps.parseDate(value) === null) {
+  const dateValue = new Date(value)
+  if (dateValue.toString() === 'Invalid Date') {
     onChange(new Date().toISOString())
   }
 }
