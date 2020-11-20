@@ -35,7 +35,10 @@ import MoreIcon from '@material-ui/icons/MoreVert'
 import WarningIcon from '@material-ui/icons/Warning'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
-import { useSelectionOfLazyResult } from '../../js/model/LazyQueryResult/hooks'
+import {
+  useRerenderOnBackboneSync,
+  useSelectionOfLazyResult,
+} from '../../js/model/LazyQueryResult/hooks'
 import Extensions from '../../extension-points'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import CheckIcon from '@material-ui/icons/Check'
@@ -392,6 +395,7 @@ export const ResultItem = ({
   const [shownAttributes, setShownAttributes] = React.useState(
     TypedUserInstance.getResultsAttributesShownList()
   )
+  useRerenderOnBackboneSync({ lazyResult })
   const renderThumbnail =
     shownAttributes.includes('thumbnail') &&
     lazyResult.plain.metacard.properties.thumbnail

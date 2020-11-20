@@ -83,10 +83,15 @@ const transformPlain = ({
   return plain
 }
 
-type SubscribableType = 'backboneCreated' | 'selected' | 'filtered'
+type SubscribableType =
+  | 'backboneCreated'
+  | 'selected'
+  | 'filtered'
+  | 'backboneSync'
 type SubscriptionType = { [key: string]: () => void }
 export class LazyQueryResult {
   ['subscriptionsToMe.backboneCreated']: { [key: string]: () => void };
+  ['subscriptionsToMe.backboneSync']: { [key: string]: () => void };
   ['subscriptionsToMe.selected']: { [key: string]: () => void };
   ['subscriptionsToMe.filtered']: { [key: string]: () => void }
   subscribeTo({
@@ -115,6 +120,9 @@ export class LazyQueryResult {
   ['_notifySubscribers.backboneCreated']() {
     this._notifySubscribers('backboneCreated')
   }
+  ['_notifySubscribers.backboneSync']() {
+    this._notifySubscribers('backboneSync')
+  }
   ['_notifySubscribers.selected']() {
     this._notifySubscribers('selected')
   }
@@ -124,6 +132,10 @@ export class LazyQueryResult {
   _turnOnDebouncing() {
     this['_notifySubscribers.backboneCreated'] = _.debounce(
       this['_notifySubscribers.backboneCreated'],
+      debounceTime
+    )
+    this['_notifySubscribers.backboneSync'] = _.debounce(
+      this['_notifySubscribers.backboneSync'],
       debounceTime
     )
     this['_notifySubscribers.selected'] = _.debounce(
@@ -153,6 +165,7 @@ export class LazyQueryResult {
     this.plain = transformPlain({ plain })
     this.isResourceLocal = false || plain.isResourceLocal
     this['subscriptionsToMe.backboneCreated'] = {}
+    this['subscriptionsToMe.backboneSync'] = {}
     this['subscriptionsToMe.selected'] = {}
     this['subscriptionsToMe.filtered'] = {}
     this['metacard.id'] = plain.metacard.properties.id
@@ -166,6 +179,7 @@ export class LazyQueryResult {
       this.plain = transformPlain({ plain: this.backbone.toJSON() })
       humanizeResourceSize(this.plain)
       cacheBustThumbnail(this.plain)
+      this['_notifySubscribers.backboneSync']()
     }
   }
   isDownloadable(): boolean {

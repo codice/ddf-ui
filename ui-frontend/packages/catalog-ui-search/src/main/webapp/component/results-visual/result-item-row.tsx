@@ -20,7 +20,10 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { CellComponent } from './table-header'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
-import { useSelectionOfLazyResult } from '../../js/model/LazyQueryResult/hooks'
+import {
+  useRerenderOnBackboneSync,
+  useSelectionOfLazyResult,
+} from '../../js/model/LazyQueryResult/hooks'
 
 const metacardDefinitions = require('../singletons/metacard-definitions.js')
 const user = require('../singletons/user-instance.js')
@@ -99,6 +102,7 @@ const RowComponent = ({
   )
   const isLast = index === results.length - 1
   const { listenTo } = useBackbone()
+  useRerenderOnBackboneSync({ lazyResult })
 
   React.useEffect(() => {
     listenTo(
