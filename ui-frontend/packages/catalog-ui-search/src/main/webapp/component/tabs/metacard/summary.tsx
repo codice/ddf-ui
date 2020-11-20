@@ -35,6 +35,7 @@ import { DarkDivider } from '../../dark-divider/dark-divider'
 import { displayHighlightedAttrInFull } from './highlightUtil'
 import DateTimePicker from '../../fields/date-time-picker'
 import Geometry from '../../../react-component/input-wrappers/geometry'
+import { useRerenderOnBackboneSync } from '../../../js/model/LazyQueryResult/hooks'
 
 function getSummaryShown(): string[] {
   const userchoices = user
@@ -625,6 +626,7 @@ const Summary = ({ selectionInterface }: Props) => {
   const selection = Object.values(selectedResults)[0] as
     | LazyQueryResult
     | undefined
+  useRerenderOnBackboneSync({ lazyResult: selection })
 
   const dialogContext = useDialog()
 

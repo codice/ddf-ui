@@ -41,7 +41,17 @@ type Props = {
   setMode: any
 }
 
-export const ResultsCommonControls = () => {
+type ResultsCommonControlsType = {
+  getStartingLeft: () => string[]
+  getStartingRight: () => string[]
+  onSave: (active: string[]) => void
+}
+
+export const ResultsCommonControls = ({
+  getStartingLeft,
+  getStartingRight,
+  onSave,
+}: ResultsCommonControlsType) => {
   const dialogContext = useDialog()
   return (
     <>
@@ -65,14 +75,10 @@ export const ResultsCommonControls = () => {
                   }}
                 >
                   <TransferList
-                    startingLeft={TypedUserInstance.getResultsAttributesShown()}
-                    startingRight={TypedUserInstance.getResultsAttributesPossible()}
+                    startingLeft={getStartingLeft()}
+                    startingRight={getStartingRight()}
                     onSave={(active) => {
-                      user
-                        .get('user')
-                        .get('preferences')
-                        .set('results-attributesShown', active)
-                      user.savePreferences()
+                      onSave(active)
                     }}
                   />
                 </div>
@@ -128,7 +134,21 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
           direction="row"
           alignItems="center"
         >
-          <ResultsCommonControls />
+          <ResultsCommonControls
+            getStartingLeft={() => {
+              return TypedUserInstance.getResultsAttributesShownTable()
+            }}
+            getStartingRight={() => {
+              return TypedUserInstance.getResultsAttributesPossibleTable()
+            }}
+            onSave={(active) => {
+              user
+                .get('user')
+                .get('preferences')
+                .set('results-attributesShownTable', active)
+              user.savePreferences()
+            }}
+          />
           <Grid item className="pr-2">
             <Button
               data-id="list-button"
@@ -208,6 +228,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                           lazyResult={item}
                           measure={measure}
                           index={index}
+                          results={results}
                         />
                       </div>
                     )

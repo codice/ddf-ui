@@ -30,6 +30,8 @@ import TableChartIcon from '@material-ui/icons/TableChart'
 import { HeaderCheckbox } from './table-header'
 import { DarkDivider } from '../dark-divider/dark-divider'
 import { ResultsCommonControls } from './table'
+import { TypedUserInstance } from '../singletons/TypedUser'
+const user = require('../singletons/user-instance.js')
 
 type Props = {
   mode: any
@@ -80,7 +82,21 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
               }}
             />
           </Grid>
-          <ResultsCommonControls />
+          <ResultsCommonControls
+            getStartingLeft={() => {
+              return TypedUserInstance.getResultsAttributesShownList()
+            }}
+            getStartingRight={() => {
+              return TypedUserInstance.getResultsAttributesPossibleList()
+            }}
+            onSave={(active) => {
+              user
+                .get('user')
+                .get('preferences')
+                .set('results-attributesShownList', active)
+              user.savePreferences()
+            }}
+          />
           <Grid item className="pr-2">
             <Button
               data-id="list-button"

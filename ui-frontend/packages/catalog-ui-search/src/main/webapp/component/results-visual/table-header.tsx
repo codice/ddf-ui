@@ -163,16 +163,16 @@ export const HeaderCheckbox = ({
 export const Header = ({ lazyResults }: HeaderProps) => {
   const handleSortClick = _.debounce(updateSort, 500, true)
   const [shownAttributes, setShownAttributes] = React.useState(
-    TypedUserInstance.getResultsAttributesShown()
+    TypedUserInstance.getResultsAttributesShownTable()
   )
   const { listenTo } = useBackbone()
 
   React.useEffect(() => {
     listenTo(
       user.get('user').get('preferences'),
-      'change:results-attributesShown',
+      'change:results-attributesShownTable',
       () => {
-        setShownAttributes(TypedUserInstance.getResultsAttributesShown())
+        setShownAttributes(TypedUserInstance.getResultsAttributesShownTable())
       }
     )
   }, [])

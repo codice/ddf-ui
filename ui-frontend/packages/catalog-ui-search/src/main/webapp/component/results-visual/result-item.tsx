@@ -35,7 +35,10 @@ import MoreIcon from '@material-ui/icons/MoreVert'
 import WarningIcon from '@material-ui/icons/Warning'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
-import { useSelectionOfLazyResult } from '../../js/model/LazyQueryResult/hooks'
+import {
+  useRerenderOnBackboneSync,
+  useSelectionOfLazyResult,
+} from '../../js/model/LazyQueryResult/hooks'
 import Extensions from '../../extension-points'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import CheckIcon from '@material-ui/icons/Check'
@@ -390,18 +393,16 @@ export const ResultItem = ({
   const { listenTo } = useBackbone()
   const [renderExtras, setRenderExtras] = React.useState(false)
   const [shownAttributes, setShownAttributes] = React.useState(
-    TypedUserInstance.getResultsAttributesShown()
+    TypedUserInstance.getResultsAttributesShownList()
   )
-  const renderThumbnail =
-    shownAttributes.includes('thumbnail') &&
-    lazyResult.plain.metacard.properties.thumbnail
+  useRerenderOnBackboneSync({ lazyResult })
 
   React.useEffect(() => {
     listenTo(
       user.get('user').get('preferences'),
-      'change:results-attributesShown',
+      'change:results-attributesShownList',
       () => {
-        setShownAttributes(TypedUserInstance.getResultsAttributesShown())
+        setShownAttributes(TypedUserInstance.getResultsAttributesShownList())
       }
     )
   }, [])
@@ -416,6 +417,24 @@ export const ResultItem = ({
   const ResultItemAddOnInstance = Extensions.resultItemRowAddOn({ lazyResult })
   const shouldShowRelevance = showRelevanceScore({ lazyResult })
   const shouldShowSource = showSource()
+  const extraHighlights = Object.keys(lazyResult.highlights).filter(
+    (attr) => !shownAttributes.find((shownAttribute) => shownAttribute === attr)
+  )
+  const detailsMap = shownAttributes
+    .slice(1) // remove top one since that's special
+    .map((detail) => {
+      return {
+        attribute: detail,
+        value: getDisplayValue({ detail, lazyResult }),
+      }
+    })
+    .filter((detail) => {
+      // this is special and is handled differently, see show source
+      if (detail.attribute === 'source-id') {
+        return false
+      }
+      return detail.value
+    })
   return (
     <button
       data-id="result-item-container-button"
@@ -498,7 +517,7 @@ export const ResultItem = ({
                 <img
                   data-id="result-item-thumbnail"
                   src={imgsrc}
-                  style={{ marginTop: '10px', maxWidth: '100%' }}
+                  style={{ maxWidth: '100%', maxHeight: '200px' }}
                   onLoad={() => {
                     measure()
                   }}
@@ -521,8 +540,8 @@ export const ResultItem = ({
           <div
             className={`pl-3 ${
               ResultItemAddOnInstance !== null ||
-              renderThumbnail ||
-              shownAttributes.length > 0 ||
+              detailsMap.length > 0 ||
+              extraHighlights.length > 0 ||
               shouldShowRelevance ||
               shouldShowSource
                 ? 'pb-2'
@@ -531,91 +550,73 @@ export const ResultItem = ({
           >
             <div>{ResultItemAddOnInstance}</div>
             <div>
-              {shownAttributes
-                .map((detail) => {
-                  return {
-                    attribute: detail,
-                    value: getDisplayValue({ detail, lazyResult }),
-                  }
-                })
-                .filter((detail, index) => {
-                  // this is special and is handled above (it has the checkbox and icon with it)
-                  if (index === 0 || detail.attribute === 'source-id') {
-                    return false
-                  }
-                  return detail.value
-                })
-                .map((detail) => {
-                  if (detail.attribute === 'thumbnail') {
-                    return (
-                      <img
-                        data-id="result-item-thumbnail"
-                        src={imgsrc}
-                        style={{ marginTop: '10px', maxWidth: '100%' }}
-                        onLoad={() => {
-                          measure()
-                        }}
-                        onError={() => {
-                          measure()
-                        }}
-                      />
-                    )
-                  }
+              {detailsMap.map((detail) => {
+                if (detail.attribute === 'thumbnail') {
                   return (
-                    <PropertyComponent
-                      key={detail.attribute}
-                      data-help={TypedMetacardDefs.getAlias({
-                        attr: detail.attribute,
-                      })}
-                      title={`${TypedMetacardDefs.getAlias({
-                        attr: detail.attribute,
-                      })}: ${detail.value}`}
-                    >
-                      <span>
-                        {/* It's okay to use the first one here since we only ever want to display one, normally you'd want to map over this list */}
-                        {lazyResult.highlights[detail.attribute] ? (
-                          <span
-                            dangerouslySetInnerHTML={{
-                              __html:
-                                lazyResult.highlights[detail.attribute][0]
-                                  .highlight,
-                            }}
-                          />
-                        ) : (
-                          detail.value
-                        )}
-                      </span>
-                    </PropertyComponent>
+                    <img
+                      data-id="result-item-thumbnail"
+                      src={imgsrc}
+                      style={{
+                        marginTop: '10px',
+                        maxWidth: '100%',
+                        maxHeight: '200px',
+                      }}
+                      onLoad={() => {
+                        measure()
+                      }}
+                      onError={() => {
+                        measure()
+                      }}
+                    />
                   )
-                })}
-              {Object.keys(lazyResult.highlights)
-                .filter(
-                  (attr) =>
-                    attr !== 'title' &&
-                    !shownAttributes.find(
-                      (shownAttribute) => shownAttribute === attr
-                    )
-                )
-                .map((extraHighlight) => {
-                  const relevantHighlight =
-                    lazyResult.highlights[extraHighlight][0]
-                  return (
-                    <PropertyComponent
-                      key={relevantHighlight.attribute}
-                      data-help={TypedMetacardDefs.getAlias({
-                        attr: relevantHighlight.attribute,
-                      })}
-                    >
-                      <Tooltip title={relevantHighlight.attribute}>
+                }
+                return (
+                  <PropertyComponent
+                    key={detail.attribute}
+                    data-help={TypedMetacardDefs.getAlias({
+                      attr: detail.attribute,
+                    })}
+                    title={`${TypedMetacardDefs.getAlias({
+                      attr: detail.attribute,
+                    })}: ${detail.value}`}
+                  >
+                    <span>
+                      {/* It's okay to use the first one here since we only ever want to display one, normally you'd want to map over this list */}
+                      {lazyResult.highlights[detail.attribute] ? (
                         <span
                           dangerouslySetInnerHTML={{
-                            __html: relevantHighlight.highlight,
+                            __html:
+                              lazyResult.highlights[detail.attribute][0]
+                                .highlight,
                           }}
                         />
-                      </Tooltip>
-                    </PropertyComponent>
-                  )
-                })}
+                      ) : (
+                        detail.value
+                      )}
+                    </span>
+                  </PropertyComponent>
+                )
+              })}
+              {extraHighlights.map((extraHighlight) => {
+                const relevantHighlight =
+                  lazyResult.highlights[extraHighlight][0]
+                return (
+                  <PropertyComponent
+                    key={relevantHighlight.attribute}
+                    data-help={TypedMetacardDefs.getAlias({
+                      attr: relevantHighlight.attribute,
+                    })}
+                  >
+                    <Tooltip title={relevantHighlight.attribute}>
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: relevantHighlight.highlight,
+                        }}
+                      />
+                    </Tooltip>
+                  </PropertyComponent>
+                )
+              })}
               {shouldShowRelevance ? (
                 <PropertyComponent
                   data-help={`Relevance: ${lazyResult.plain.relevance}`}

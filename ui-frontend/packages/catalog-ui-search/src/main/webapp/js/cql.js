@@ -647,10 +647,8 @@ function collapseNOTs(cqlAst, parentNode) {
       collapseNOTs(filter, cqlAst)
     })
     if (cqlAst.type === 'NOT') {
-      cqlAst.type =
-        cqlAst.type +
-        ' ' +
-        (cqlAst.filters[0].filters ? cqlAst.filters[0].type : 'AND')
+      cqlAst.type = cqlAst.filters[0].filters ? cqlAst.filters[0].type : 'AND'
+      cqlAst.negated = true
       cqlAst.filters = cqlAst.filters[0].filters || cqlAst.filters
     }
   }

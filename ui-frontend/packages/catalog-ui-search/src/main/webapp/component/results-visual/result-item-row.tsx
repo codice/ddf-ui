@@ -20,7 +20,10 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { CellComponent } from './table-header'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
-import { useSelectionOfLazyResult } from '../../js/model/LazyQueryResult/hooks'
+import {
+  useRerenderOnBackboneSync,
+  useSelectionOfLazyResult,
+} from '../../js/model/LazyQueryResult/hooks'
 
 const metacardDefinitions = require('../singletons/metacard-definitions.js')
 const user = require('../singletons/user-instance.js')
@@ -36,6 +39,7 @@ type ResultItemFullProps = {
   lazyResult: LazyQueryResult
   measure: () => void
   index: number
+  results: LazyQueryResult[]
 }
 
 export function clearSelection() {
@@ -86,19 +90,26 @@ const CheckboxCell = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   )
 }
 
-const RowComponent = ({ lazyResult, measure, index }: ResultItemFullProps) => {
+const RowComponent = ({
+  lazyResult,
+  measure,
+  index,
+  results,
+}: ResultItemFullProps) => {
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const [shownAttributes, setShownAttributes] = React.useState(
-    TypedUserInstance.getResultsAttributesShown()
+    TypedUserInstance.getResultsAttributesShownTable()
   )
+  const isLast = index === results.length - 1
   const { listenTo } = useBackbone()
+  useRerenderOnBackboneSync({ lazyResult })
 
   React.useEffect(() => {
     listenTo(
       user.get('user').get('preferences'),
-      'change:results-attributesShown',
+      'change:results-attributesShownTable',
       () => {
-        setShownAttributes(TypedUserInstance.getResultsAttributesShown())
+        setShownAttributes(TypedUserInstance.getResultsAttributesShownTable())
       }
     )
   }, [])
@@ -108,11 +119,16 @@ const RowComponent = ({ lazyResult, measure, index }: ResultItemFullProps) => {
   }, [shownAttributes])
   return (
     <React.Fragment>
-      <div className="bg-inherit flex items-strech flex-no-wrap">
+      <div
+        className="bg-inherit flex items-strech flex-no-wrap"
+        style={{
+          width: shownAttributes.length * 200 + 'px',
+        }}
+      >
         <div
-          className={`sticky left-0 w-auto z-10 bg-inherit Mui-border-divider border border-b-0 border-l-0 ${
-            index === 0 ? 'border-t-0' : ''
-          }`}
+          className={`sticky left-0 w-auto z-10 bg-inherit Mui-border-divider border ${
+            isLast ? '' : 'border-b-0'
+          } border-l-0 ${index === 0 ? 'border-t-0' : ''}`}
         >
           <SelectionBackground lazyResult={lazyResult} />
           <CheckboxCell lazyResult={lazyResult} />
@@ -191,7 +207,9 @@ const RowComponent = ({ lazyResult, measure, index }: ResultItemFullProps) => {
                     <CellComponent
                       key={property}
                       data-property={`${property}`}
-                      className={`Mui-border-divider border border-t-0 border-l-0 border-b-0 h-full`}
+                      className={`Mui-border-divider border border-t-0 border-l-0 ${
+                        isLast ? '' : 'border-b-0'
+                      } h-full`}
                       data-value={`${value}`}
                     >
                       {property === 'thumbnail' && thumbnail ? (
