@@ -115,7 +115,12 @@ const RowComponent = ({
   }, [shownAttributes])
   return (
     <React.Fragment>
-      <div className="bg-inherit flex items-strech flex-no-wrap">
+      <div
+        className="bg-inherit flex items-strech flex-no-wrap"
+        style={{
+          width: shownAttributes.length * 200 + 'px',
+        }}
+      >
         <div
           className={`sticky left-0 w-auto z-10 bg-inherit Mui-border-divider border ${
             isLast ? '' : 'border-b-0'
