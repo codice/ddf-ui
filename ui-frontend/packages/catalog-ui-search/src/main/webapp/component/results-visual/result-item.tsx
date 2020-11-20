@@ -556,7 +556,11 @@ export const ResultItem = ({
                     <img
                       data-id="result-item-thumbnail"
                       src={imgsrc}
-                      style={{ marginTop: '10px', maxWidth: '100%' }}
+                      style={{
+                        marginTop: '10px',
+                        maxWidth: '100%',
+                        maxHeight: '200px',
+                      }}
                       onLoad={() => {
                         measure()
                       }}
