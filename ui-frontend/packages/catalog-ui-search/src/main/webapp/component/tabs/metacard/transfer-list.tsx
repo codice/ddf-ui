@@ -500,7 +500,7 @@ const CustomList = ({
                             return (
                               <AutoVariableSizeList<string, HTMLDivElement>
                                 items={filteredItemArray}
-                                defaultSize={45.42}
+                                defaultSize={39.42}
                                 controlledMeasuring={true}
                                 overscanCount={10}
                                 outerRef={provided.innerRef}
@@ -552,7 +552,7 @@ const CustomList = ({
               <>
                 <AutoVariableSizeList<string, HTMLDivElement>
                   items={filteredItemArray}
-                  defaultSize={45.42}
+                  defaultSize={39.42}
                   controlledMeasuring={true}
                   overscanCount={10}
                   Item={({ itemRef, item, measure }) => {
