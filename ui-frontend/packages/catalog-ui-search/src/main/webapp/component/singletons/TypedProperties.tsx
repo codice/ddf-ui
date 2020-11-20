@@ -13,7 +13,10 @@ export const TypedProperties = {
   getSummaryShow: (): string[] => {
     return properties.summaryShow
   },
-  getResultsAttributeShown: (): string[] => {
+  getResultsAttributesShownTable: (): string[] => {
+    return properties.defaultTableColumns
+  },
+  getResultsAttributesShownList: (): string[] => {
     return properties.resultShow
   },
   getReadOnly: (): string[] => {

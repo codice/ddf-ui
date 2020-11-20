@@ -89,16 +89,16 @@ const CheckboxCell = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
 const RowComponent = ({ lazyResult, measure, index }: ResultItemFullProps) => {
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const [shownAttributes, setShownAttributes] = React.useState(
-    TypedUserInstance.getResultsAttributesShown()
+    TypedUserInstance.getResultsAttributesShownTable()
   )
   const { listenTo } = useBackbone()
 
   React.useEffect(() => {
     listenTo(
       user.get('user').get('preferences'),
-      'change:results-attributesShown',
+      'change:results-attributesShownTable',
       () => {
-        setShownAttributes(TypedUserInstance.getResultsAttributesShown())
+        setShownAttributes(TypedUserInstance.getResultsAttributesShownTable())
       }
     )
   }, [])

@@ -390,7 +390,7 @@ export const ResultItem = ({
   const { listenTo } = useBackbone()
   const [renderExtras, setRenderExtras] = React.useState(false)
   const [shownAttributes, setShownAttributes] = React.useState(
-    TypedUserInstance.getResultsAttributesShown()
+    TypedUserInstance.getResultsAttributesShownList()
   )
   const renderThumbnail =
     shownAttributes.includes('thumbnail') &&
@@ -399,9 +399,9 @@ export const ResultItem = ({
   React.useEffect(() => {
     listenTo(
       user.get('user').get('preferences'),
-      'change:results-attributesShown',
+      'change:results-attributesShownList',
       () => {
-        setShownAttributes(TypedUserInstance.getResultsAttributesShown())
+        setShownAttributes(TypedUserInstance.getResultsAttributesShownList())
       }
     )
   }, [])
