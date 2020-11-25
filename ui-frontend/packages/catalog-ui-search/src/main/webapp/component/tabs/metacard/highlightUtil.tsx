@@ -18,13 +18,13 @@ const comparator = (a: AttributeHighlight, b: AttributeHighlight) => {
 export const displayHighlightedAttrInFull = (
   highlights: Array<AttributeHighlight>,
   text: String,
-  index: number,
+  index: number
 ) => {
   //sort these in the order in which they appear
   highlights.sort(comparator)
   // only use the highlights from this value if multivalued
-  const filteredHighlights = highlights.filter(highlight => 
-    parseInt(highlight.valueIndex) === index
+  const filteredHighlights = highlights.filter(
+    (highlight) => parseInt(highlight.valueIndex) === index
   )
   let textArray = []
   let currentIndex = 0

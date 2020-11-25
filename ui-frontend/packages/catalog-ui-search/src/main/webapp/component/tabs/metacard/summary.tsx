@@ -463,7 +463,7 @@ const AttributeComponent = ({
                 })
               }}
             >
-              <EditIcon/>
+              <EditIcon />
             </Button>
           </div>
         )}
