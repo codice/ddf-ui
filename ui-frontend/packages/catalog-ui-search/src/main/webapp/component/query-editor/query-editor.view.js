@@ -143,6 +143,11 @@ module.exports = Marionette.LayoutView.extend({
     this.$el.removeClass('is-editing')
     this.onBeforeShow()
   },
+  setDefaultTitle() {
+    this.queryView
+      ? this.queryView.setDefaultTitle()
+      : this.queryContent.currentView.setDefaultTitle()
+  },
   save() {
     const queryContentView = this.queryView
       ? this.queryView
@@ -154,9 +159,13 @@ module.exports = Marionette.LayoutView.extend({
     }
     queryContentView.save()
     this.queryTitle.currentView.save()
+    if (this.model.get('title') === '') {
+      this.setDefaultTitle()
+    }
     if (store.getCurrentQueries().get(this.model) === undefined) {
       store.getCurrentQueries().add(this.model)
     }
+    this.model.preQueryPlugin(store.getCurrentQueries())
     this.cancel()
     this.$el.trigger('closeDropdown.' + CustomElements.getNamespace())
     this.originalType = this.model.get('type')
@@ -172,6 +181,9 @@ module.exports = Marionette.LayoutView.extend({
     }
     queryContentView.save()
     this.queryTitle.currentView.save()
+    if (this.model.get('title') === '') {
+      this.setDefaultTitle()
+    }
     if (store.getCurrentQueries().get(this.model) === undefined) {
       store.getCurrentQueries().add(this.model)
     }
