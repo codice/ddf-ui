@@ -13,6 +13,7 @@ import SourcesPage from '../../react-component/sources'
 import SourcesPageIcon from '@material-ui/icons/Cloud'
 import AboutPage from '../../react-component/about'
 import AboutPageIcon from '@material-ui/icons/Info'
+import SaveIcon from '@material-ui/icons/Save'
 import SearchIcon from '@material-ui/icons/Search'
 import ImageSearch from '@material-ui/icons/ImageSearch'
 import UserNotifications from '../../react-component/user-notifications/user-notifications'
@@ -24,6 +25,7 @@ import { Redirect } from 'react-router-dom'
 import Grid from '@material-ui/core/Grid'
 import MetacardNavRoute from '../pages/metacard-nav'
 import MetacardRoute from '../pages/metacard'
+import SavedSearches from '../pages/saved-searches'
 
 const RouteInformation = [
   {
@@ -32,7 +34,7 @@ const RouteInformation = [
       exact: true,
       path: '/',
       children: () => {
-        return <Redirect to="/home" />
+        return <Redirect to="/search" />
       },
     },
   },
@@ -91,14 +93,30 @@ const RouteInformation = [
     shortName: 'Search',
     Icon: SearchIcon,
     routeProps: {
-      exact: true,
-      path: ['/home'],
+      exact: false,
+      path: ['/search/:id', '/search'],
       children: () => {
         return <HomePage />
       },
     },
     linkProps: {
-      to: '/home',
+      to: '/search',
+    },
+    showInNav: true,
+  },
+  {
+    name: 'Saved',
+    shortName: 'Saved',
+    Icon: SaveIcon,
+    routeProps: {
+      exact: true,
+      path: ['/saved'],
+      children: () => {
+        return <SavedSearches />
+      },
+    },
+    linkProps: {
+      to: '/saved',
     },
     showInNav: true,
   },

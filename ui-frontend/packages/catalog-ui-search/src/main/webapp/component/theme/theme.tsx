@@ -277,7 +277,19 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
             : 'linear-gradient(-180deg, rgb(153, 153, 153) 0%, rgb(187, 187, 187) 100%)'};
             border-radius: 4px;
       }
+      // Fix Mui styles 
+      .MuiButton-endIcon {
+        margin-left: 0px;
+        margin-right: 0px;
+      }
+      .MuiButton-iconSizeSmall > svg {
+        font-size: 18px;
+        margin-top: 1px;
+      }
       // Mui tailwind style
+      .Mui-icon-size-small {
+        font-size: 18px;
+      }
       .Mui-text-text-primary {
         color: ${(props) => props.palette.text.primary};
       }
@@ -304,6 +316,11 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       }
       .Mui-border-divider {
         border-color: ${(props) => props.palette.divider};
+      }
+      .children-max-h-full {
+        > * {
+          max-height: 100%;
+        }
       }
       .children-h-full {
         > * {

@@ -48,7 +48,9 @@ import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple'
 import { clearSelection, hasSelection } from './result-item-row'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { TypedUserInstance } from '../singletons/TypedUser'
-
+import EditIcon from '@material-ui/icons/Edit'
+import { ResultsViewContext } from './results-visual'
+import { Link } from '../link/link'
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (
     <div
@@ -100,7 +102,7 @@ const getIconClassName = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   } else if (lazyResult.isDeleted()) {
     return 'fa fa-trash'
   }
-  return ''
+  return IconHelper.getClassByMetacardObject(lazyResult.plain)
 }
 
 // @ts-ignore ts-migrate(6133) FIXME: 'MultiSelectActions' is declared but its value is ... Remove this comment to see the full error message
@@ -162,6 +164,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
     e.stopPropagation()
     window.open(lazyResult.plain.metacard.properties['resource-download-url'])
   }
+  const { setEdit } = React.useContext(ResultsViewContext)
   return (
     <Grid container direction="row" wrap="nowrap" alignItems="center">
       <Grid item className="h-full">
@@ -225,6 +228,33 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
         ) : null}
       </Grid>
       <Extensions.resultItemTitleAddOn lazyResult={lazyResult} />
+      <Grid item className="h-full">
+        {lazyResult.isSearch() ? (
+          <Link
+            component={Button}
+            data-id="edit-button"
+            to={`/search/${lazyResult.plain.id}`}
+            style={{ height: '100%' }}
+          >
+            <EditIcon />
+          </Link>
+        ) : null}
+      </Grid>
+      {/** add inline editing later */}
+      {/* <Grid item className="h-full">
+        {lazyResult.isSearch() ? (
+          <Button
+            data-id="edit-button"
+            onClick={(e) => {
+              setEdit(lazyResult)
+            }}
+            style={{ height: '100%' }}
+            size="small"
+          >
+            <EditIcon />
+          </Button>
+        ) : null}
+      </Grid> */}
       <Grid item className="h-full">
         <Dropdown
           popperProps={{

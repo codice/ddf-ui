@@ -78,6 +78,24 @@ const transformPlain = ({
     plain.metacard.properties.thumbnail = thumbnailAction.url
   }
   plain.metacardType = plain.metacard.properties['metacard-type']
+  if (plain.metacardType === 'metacard.query') {
+    // since the plain cql search endpoint doesn't understand more complex properties on metacards, we can handle them like this
+    // plain.metacard.properties.filterTree = plain.metacard.properties.filterTree && typeof plain.metacard.properties.filterTree === 'string' ? JSON.parse(plain.metacard.properties.filterTree)
+    plain.metacard.properties.sorts =
+      plain.metacard.properties.sorts &&
+      typeof plain.metacard.properties.sorts[0] === 'string'
+        ? (plain.metacard.properties.sorts as string[]).map((sort) => {
+            const attribute = sort
+              .split('attribute=')[1]
+              .split(', direction=')[0]
+            const direction = sort.split(', direction=')[1].slice(0, -1)
+            return {
+              attribute,
+              direction,
+            }
+          })
+        : plain.metacard.properties.sorts
+  }
   plain.metacard.id = plain.metacard.properties.id
   plain.id = plain.metacard.properties.id
   return plain
@@ -198,6 +216,9 @@ export class LazyQueryResult {
   }
   matchesCql(cql: string): boolean {
     return matchesCql(this.plain.metacard, cql)
+  }
+  isSearch(): boolean {
+    return this.plain.metacard.properties['metacard-type'] === 'metacard.query'
   }
   isResource(): boolean {
     return (

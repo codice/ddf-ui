@@ -180,7 +180,6 @@ Query.Model = Backbone.AssociatedModel.extend({
   },
   initialize() {
     _.bindAll.apply(_, [this].concat(_.functions(this))) // underscore bindAll does not take array arg
-    this.set('id', this.getId())
     this.listenTo(
       this,
       'change:cql change:filterTree change:sources change:sorts change:spellcheck change:phonetics',
@@ -295,10 +294,10 @@ Query.Model = Backbone.AssociatedModel.extend({
       this.set('cql', cql.write(filterTree))
     }
   },
-  startSearchFromFirstPage(options) {
+  startSearchFromFirstPage(options, done) {
     this.updateCqlBasedOnFilterTree()
     this.resetCurrentIndexForSourceGroup()
-    this.startSearch(options)
+    this.startSearch(options, done)
   },
   startTieredSearch(ids) {
     this.set('federation', 'local')
@@ -477,15 +476,6 @@ Query.Model = Backbone.AssociatedModel.extend({
       this.set('sources', sourceArr.join(','))
     } else {
       this.set('sources', '')
-    }
-  },
-  getId() {
-    if (this.get('id')) {
-      return this.get('id')
-    } else {
-      const id = this._cloneOf || this.id || Common.generateUUID()
-      this.set('id')
-      return id
     }
   },
   setColor(color) {
