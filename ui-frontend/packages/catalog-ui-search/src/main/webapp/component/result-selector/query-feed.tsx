@@ -12,7 +12,7 @@ import { useLazyResultsStatusFromSelectionInterface } from '../selection-interfa
 import Tooltip from '@material-ui/core/Tooltip'
 import { Elevations } from '../theme/theme'
 import FilterListIcon from '@material-ui/icons/FilterList'
-import { fuzzyResultCount } from './fuzzy-results'
+import { fuzzyHits } from './fuzzy-results'
 
 type Props = {
   selectionInterface: any
@@ -103,7 +103,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
       </Cell>
       <Cell data-id="available-label">
         <CellValue
-          value={fuzzyResultCount(status.count)}
+          value={fuzzyHits(status.count)}
           hasReturned={hasReturned}
           successful={successful}
           warnings={warnings}
@@ -112,7 +112,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
       </Cell>
       <Cell data-id="possible-label">
         <CellValue
-          value={fuzzyResultCount(status.hits)}
+          value={fuzzyHits(status.hits)}
           hasReturned={hasReturned}
           successful={successful}
           warnings={warnings}
@@ -218,7 +218,7 @@ const QueryFeed = ({ selectionInterface }: Props) => {
     )
     resultCount =
       sourcesThatHaveReturned.length > 0
-        ? fuzzyResultCount(
+        ? fuzzyHits(
             statusBySource
               .filter((status) => status.hasReturned)
               .filter((status) => status.successful)
