@@ -41,6 +41,7 @@ import Grid from '@material-ui/core/Grid'
 import Chip from '@material-ui/core/Chip'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
+import { TextField as CustomTextField } from '../fields/text'
 
 function isNested(filter: any) {
   let nested = false
@@ -387,31 +388,29 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
       <div className="editor-properties px-2 py-3">
         <div className="">
           <Typography className="pb-2">Keyword</Typography>
-          <TextField
-            fullWidth
+          <CustomTextField
             value={basicFilter.anyText ? basicFilter.anyText[0].value : ''}
-            placeholder={`Text to search for. Use "*" for wildcard.`}
-            id="Text"
-            onChange={(e) => {
+            onChange={(value) => {
               basicFilter.anyText[0] = new FilterClass({
                 ...basicFilter.anyText[0],
-                value: e.target.value,
+                value: value,
               })
               model.set(
                 'filterTree',
                 constructFilterFromBasicFilter({ basicFilter })
               )
             }}
-            onKeyUp={(e) => {
-              if (e.which === 13) {
-                model.startSearchFromFirstPage()
-              }
+            SpellingSuggestionClassName="-mb-4"
+            TextFieldProps={{
+              id: 'Text',
+              inputProps: { ref: inputRef },
+              onKeyUp: (e) => {
+                if (e.which === 13) {
+                  model.startSearchFromFirstPage()
+                }
+              },
+              placeholder: `Text to search for. Use "*" for wildcard.`,
             }}
-            inputProps={{
-              ref: inputRef as any,
-            }}
-            size="small"
-            variant="outlined"
           />
         </div>
         <div className="pt-2">
