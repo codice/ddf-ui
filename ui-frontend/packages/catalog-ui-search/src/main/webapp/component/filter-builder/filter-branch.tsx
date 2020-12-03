@@ -210,7 +210,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                       setFilter(
                         new FilterBuilderClass({
                           ...filter,
-                          filters: filter.filters.concat([new FilterClass()]),
+                          filters: [new FilterClass()].concat(filter.filters),
                         })
                       )
                     }}
@@ -227,9 +227,9 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                       setFilter(
                         new FilterBuilderClass({
                           ...filter,
-                          filters: filter.filters.concat([
-                            new FilterBuilderClass(),
-                          ]),
+                          filters: [new FilterBuilderClass()].concat(
+                            filter.filters
+                          ),
                         })
                       )
                     }}
