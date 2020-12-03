@@ -209,6 +209,12 @@
             type="Boolean"
             default="false"/>
 
+        <AD id="fuzzyResultsEnabled"
+            name="Enable Fuzzy Results"
+            description="Enables result count approximations."
+            type="Boolean"
+            default="true"/>
+
         <AD id="customTextNotationEnabled"
           name="Show Custom Text Notations"
           description="Toggle the display of custom text notations next to metacard map markers."

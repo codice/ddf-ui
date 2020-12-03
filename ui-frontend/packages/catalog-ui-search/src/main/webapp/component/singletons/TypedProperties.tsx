@@ -25,6 +25,9 @@ export const TypedProperties = {
   isPhoneticsEnabled: (): boolean => {
     return properties.isPhoneticsEnabled
   },
+  isFuzzyResultsEnabled: (): boolean => {
+    return properties.isFuzzyResultsEnabled
+  },
   getIconConfig: (): {
     [key: string]: {
       code: string

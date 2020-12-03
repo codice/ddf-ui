@@ -1,4 +1,10 @@
+import { TypedProperties } from '../singletons/TypedProperties'
+
 export const fuzzyResultCount = (resultCount: number) => {
+  if (!TypedProperties.isFuzzyResultsEnabled()) {
+    return resultCount
+  }
+
   if (resultCount < 10) return '< 10'
   else if (resultCount < 100) return '< 100'
   else if (resultCount < 1000) return '< 1000'
