@@ -133,12 +133,13 @@ export type Suggestion = {
   id: string
   name: string
   geo?: any
+  extensionGeo?: GeoFeature
 }
 
 export type GeoFeature = {
   type: string
-  geometry: { type: string; coordinates: any[] }
-  properties: any
+  geometry: { type: string; coordinates: any[][][] }
+  properties?: any
   id: string
 }
 
@@ -236,6 +237,7 @@ const Gazetteer = (props: Props) => {
         throw 'Unexpected OSM type ' + type
     }
   }
+
   const suggester = async (input: string) => {
     const res = await window.fetch(
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
@@ -243,6 +245,7 @@ const Gazetteer = (props: Props) => {
       )}`
     )
     const suggestions = await res.json()
+
     return suggestions.map((place: Place) => {
       return {
         id: getOsmTypeSymbol(place.osm_type) + ':' + place.osm_id,
