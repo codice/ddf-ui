@@ -60,14 +60,14 @@
     <ddf.support.version>2.3.16</ddf.support.version>
     <antlr.version>4.3</antlr.version>
     <c3p0.version>0.9.5.5</c3p0.version>
-    <camel.version>3.4.0</camel.version>
+    <camel.version>3.6.0</camel.version>
     <commons-collections.version>3.2.2</commons-collections.version>
     <commons-lang.version>2.6</commons-lang.version>
     <commons-lang3.version>3.11</commons-lang3.version>
     <commons-math3.version>3.6.1</commons-math3.version>
     <gson.version>2.8.5</gson.version>
     <guava.version>29.0-jre</guava.version>
-    <httpclient.version>4.5.12</httpclient.version>
+    <httpclient.version>4.5.13</httpclient.version>
     <httpcore.version>4.4.13</httpcore.version>
     <jackson.version>2.11.0</jackson.version>
     <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
@@ -245,7 +245,7 @@
               </goals>
               <configuration>
                 <rules>
-                  <ArtifactSizeEnforcerRule implementation="org.codice.maven.artifactsize.ArtifactSizeEnforcerRule" />
+                  <ArtifactSizeEnforcerRule implementation="org.codice.maven.artifactsize.ArtifactSizeEnforcerRule"/>
                 </rules>
               </configuration>
             </execution>
