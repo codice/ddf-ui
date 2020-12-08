@@ -144,6 +144,7 @@ class Keyword extends React.Component {
               polygonBufferUnits={polygonBufferUnits}
               setBufferState={setBufferState}
               polyType={polyType}
+              readOnly={true}
             />
           )}
         {!loading &&
@@ -156,6 +157,7 @@ class Keyword extends React.Component {
               polygonBufferUnits={polygonBufferUnits}
               setBufferState={setBufferState}
               polyType={polyType}
+              readOnly={true}
             />
           )}
       </div>
