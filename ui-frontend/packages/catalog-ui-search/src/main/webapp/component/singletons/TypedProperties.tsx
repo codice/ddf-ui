@@ -47,4 +47,7 @@ export const TypedProperties = {
   getWebSocketsEnabled: (): boolean => {
     return properties.webSocketsEnabled
   },
+  isDevelopment: (): boolean => {
+    return properties.isDevelopment()
+  },
 }

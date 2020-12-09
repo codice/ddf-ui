@@ -41,6 +41,44 @@ const comparatorToCQL = {
   RANGE: 'BETWEEN',
 }
 
+export const deserialize = {
+  /**
+   * example inputs:  // ' are part of input
+   * 'RELATIVE(PT1S)' // last 1 seconds
+   * 'RELATIVE(PT1M)' // last 1 minutes
+   * 'RELATIVE(PT1H)' // last 1 hours
+   * 'RELATIVE(P1D)' // last 1 days
+   * 'RELATIVE(P7D)' // last 1 weeks (notice we get mod of 7 days)
+   * 'RELATIVE(P1M)' // last 1 month
+   * 'RELATIVE(P1Y)' // last 1 year
+   **/
+  dateRelative: (val: string): ValueTypes['relative'] => {
+    let last = ''
+    const guts = val.split('(')[1].split(')')[0].substring(1) // get the thing between the parens, notice we don't care about P either
+    let unit = guts.charAt(guts.length - 1) // notice that we still need to know if it's minutes or months, the unit is the same between them!
+    if (guts.charAt(0) === 'T') {
+      last = guts.substring(1, guts.length - 1)
+      unit = unit.toLowerCase()
+    } else {
+      last = guts.substring(0, guts.length - 1)
+      if (unit !== 'M') {
+        unit = unit.toLowerCase() // only M differs given the conflict between minutes / months
+      }
+      if (unit === 'd') {
+        if (Number(last) % 7 === 0) {
+          // manually convert to weeks since it's not "really" a cql supported unit for relative
+          last = (Number(last) / 7).toString()
+          unit = 'w'
+        }
+      }
+    }
+    return {
+      last,
+      unit,
+    } as ValueTypes['relative']
+  },
+}
+
 export const serialize = {
   dateRelative: ({ last, unit }: ValueTypes['relative']) => {
     if (unit === undefined || !parseFloat(last)) {
@@ -84,9 +122,9 @@ export const serialize = {
   },
 }
 
-export class FilterBuilderClass extends SpreadOperatorProtectedClass {
-  readonly type: 'AND' | 'OR' | 'NOT OR' | 'NOT AND'
-  readonly filters: (FilterBuilderClass | FilterClass)[]
+class BaseFilterBuilderClass extends SpreadOperatorProtectedClass {
+  readonly type: string
+  readonly filters: Array<any>
   readonly negated: boolean
   readonly id: string
   constructor({
@@ -95,9 +133,9 @@ export class FilterBuilderClass extends SpreadOperatorProtectedClass {
     negated = false,
     id = Math.random().toString(),
   }: {
-    type?: FilterBuilderClass['type']
-    filters?: FilterBuilderClass['filters']
-    negated?: FilterBuilderClass['negated']
+    type?: BaseFilterBuilderClass['type']
+    filters?: BaseFilterBuilderClass['filters']
+    negated?: BaseFilterBuilderClass['negated']
     id?: string
   } = {}) {
     super()
@@ -123,6 +161,43 @@ export class FilterBuilderClass extends SpreadOperatorProtectedClass {
     this.id = id
   }
 }
+export class FilterBuilderClass extends BaseFilterBuilderClass {
+  readonly type: 'AND' | 'OR'
+  readonly filters: Array<FilterBuilderClass | FilterClass>
+  constructor({
+    type = 'AND',
+    filters = [new FilterClass()],
+    negated = false,
+    id = Math.random().toString(),
+  }: {
+    type?: FilterBuilderClass['type']
+    filters?: FilterBuilderClass['filters']
+    negated?: FilterBuilderClass['negated']
+    id?: string
+  } = {}) {
+    super({ type, filters, negated, id })
+  }
+}
+
+export class CQLStandardFilterBuilderClass extends BaseFilterBuilderClass {
+  readonly type: 'AND' | 'OR' | 'NOT'
+  readonly filters: Array<
+    FilterClass | CQLStandardFilterBuilderClass | FilterBuilderClass
+  >
+  constructor({
+    type = 'AND',
+    filters = [new FilterClass()],
+    negated = false,
+    id = Math.random().toString(),
+  }: {
+    type?: CQLStandardFilterBuilderClass['type']
+    filters?: CQLStandardFilterBuilderClass['filters']
+    negated?: CQLStandardFilterBuilderClass['negated']
+    id?: string
+  } = {}) {
+    super({ type, filters, negated, id })
+  }
+}
 
 export type ValueTypes = {
   proximity: {
@@ -130,6 +205,7 @@ export type ValueTypes = {
     second: string
     distance: number
   }
+  date: string
   boolean: boolean
   text: string
   float: number
@@ -155,25 +231,30 @@ export type ValueTypes = {
     start: number
     end: number
   }
-  location:
-    | any //POLYGON
+  location: // this is all we technically need to reconstruct (lo fidelity)
+  | {
+        type: 'LINE'
+        mode: 'line'
+        lineWidth?: string
+        line: Array<Array<number>>
+      }
     | {
         type: 'POLYGON'
-        polygonBufferWidth: number
-        polygonBufferUnits: 'meters'
+        polygonBufferWidth?: number | string
+        polygonBufferUnits?: 'meters'
         polygon: Array<Array<number>>
-        locationType: 'dd'
-        polyType: 'polygon'
+        locationType?: 'dd'
+        polyType?: 'polygon'
         mode: 'poly'
       } //POINTRADIUS
     | {
         type: 'POINTRADIUS'
-        radius: number
-        radiusUnits: 'meters'
+        radius: number | string
+        radiusUnits?: 'meters'
         mode: 'circle'
         lat: number
         lon: number
-        locationType: 'dd'
+        locationType?: 'dd'
       }
 }
 
@@ -240,8 +321,10 @@ export const isFilterBuilderClass = (
   filter:
     | FilterBuilderClass
     | FilterClass
+    | CQLStandardFilterBuilderClass
     | Partial<FilterBuilderClass>
     | Partial<FilterClass>
+    | Partial<CQLStandardFilterBuilderClass>
 ): filter is FilterBuilderClass => {
   return filter.constructor === FilterBuilderClass
 }

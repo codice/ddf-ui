@@ -24,6 +24,10 @@ import { Redirect } from 'react-router-dom'
 import Grid from '@material-ui/core/Grid'
 import MetacardNavRoute from '../pages/metacard-nav'
 import MetacardRoute from '../pages/metacard'
+import { TypedProperties } from '../singletons/TypedProperties'
+import DeveloperIcon from '@material-ui/icons/DeveloperMode'
+import { ReconstitutionTestComponent } from '../pages/reconstitution.test'
+console.log(TypedProperties.isDevelopment())
 
 const RouteInformation = [
   {
@@ -166,6 +170,25 @@ const RouteInformation = [
     showInNav: true,
   },
 ] as IndividualRouteType[]
+// add routes not seen in production
+if (TypedProperties.isDevelopment()) {
+  RouteInformation.push({
+    name: 'Devs',
+    shortName: 'Devs',
+    Icon: DeveloperIcon,
+    routeProps: {
+      exact: true,
+      path: ['/developers'],
+      children: () => {
+        return <ReconstitutionTestComponent />
+      },
+    },
+    linkProps: {
+      to: '/developers',
+    },
+    showInNav: true,
+  })
+}
 
 /**
  * Shows how downstream apps utilize the shell this app provides
