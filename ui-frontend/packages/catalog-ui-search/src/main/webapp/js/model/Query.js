@@ -138,7 +138,6 @@ Query.Model = Backbone.AssociatedModel.extend({
       {
         cql: "anyText ILIKE '*'",
         filterTree: new FilterBuilderClass({
-          id: 'default',
           filters: [
             new FilterClass({ value: '*', property: 'anyText', type: 'ILIKE' }),
           ],
@@ -185,11 +184,7 @@ Query.Model = Backbone.AssociatedModel.extend({
     this.set('id', this.getId())
     const filterTree = this.get('filterTree')
     // when we make drastic changes to filter tree it will be necessary to fall back to cql and reconstruct a filter tree that's compatible
-    if (
-      !filterTree ||
-      filterTree.id === undefined ||
-      filterTree.id === 'default'
-    ) {
+    if (!filterTree || filterTree.id === undefined) {
       this.set('filterTree', cql.simplify(cql.read(this.get('cql')))) // reconstruct
       console.log('migrating a filter tree to the latest structure')
       wreqr.vent.trigger('filterTree:migration') // allow downstream projects to handle how they want to inform users of migrations
