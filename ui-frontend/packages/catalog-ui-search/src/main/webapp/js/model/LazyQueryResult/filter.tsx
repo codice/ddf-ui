@@ -19,10 +19,12 @@
  * It's possible it might be useful in the future if we add in faceting and need to start filtering on the frontend in complicated ways again,
  * but I think even in that circumstance we'll end up sending a query to the server rather than doing anything like this on the
  * client.
+ *
+ * WARNING: This likely needs to be updated to work with the new filter tree.  We don't do filtering on the frontend anymore at the moment, as stated above,
+ * so we have not tackled updating it yet.
  */
 
 import { ResultType } from '../Types'
-import { FilterType, TruncatingFilterType } from './types'
 
 const _ = require('underscore')
 const metacardDefinitions = require('../../../component/singletons/metacard-definitions.js')
@@ -33,6 +35,11 @@ const Turf = require('@turf/turf')
 const wkx = require('wkx')
 const moment = require('moment')
 import cql from '../../cql'
+import {
+  FilterBuilderClass,
+  FilterClass,
+  isFilterBuilderClass,
+} from '../../../component/filter-builder/filter.structure'
 
 // strip extra quotes
 const stripQuotes = (value: any) => {
@@ -101,14 +108,6 @@ function matchesLIKE(value: any, filter: any) {
 function matchesEQUALS(value: any, filter: any) {
   const valueToCheckFor = filter.value
   if (value.toString() === valueToCheckFor.toString()) {
-    return true
-  }
-  return false
-}
-
-function matchesNOTEQUALS(value: any, filter: any) {
-  const valueToCheckFor = filter.value
-  if (value.toString() !== valueToCheckFor.toString()) {
     return true
   }
   return false
@@ -310,17 +309,18 @@ function flattenMultivalueProperties(valuesToCheck: any) {
 
 function matchesFilter(
   metacard: ResultType['metacard'],
-  filter: FilterType | TruncatingFilterType
+  filter: FilterBuilderClass | FilterClass
 ): boolean {
-  if (!filter.filters) {
+  if (!isFilterBuilderClass(filter)) {
     let valuesToCheck = []
+    let propertyToCheck = filter.property
     if (
-      metacardDefinitions.metacardTypes[filter.property] &&
-      metacardDefinitions.metacardTypes[filter.property].type === 'GEOMETRY'
+      metacardDefinitions.metacardTypes[propertyToCheck] &&
+      metacardDefinitions.metacardTypes[propertyToCheck].type === 'GEOMETRY'
     ) {
-      filter.property = 'anyGeo'
+      propertyToCheck = 'anyGeo'
     }
-    switch (filter.property) {
+    switch (propertyToCheck) {
       case 'anyText':
         valuesToCheck = Object.keys(metacard.properties)
           .filter(
@@ -346,7 +346,7 @@ function matchesFilter(
         break
       default:
         const valueToCheck =
-          metacard.properties[filter.property.replace(/['"]+/g, '')]
+          metacard.properties[propertyToCheck.replace(/['"]+/g, '')]
         if (valueToCheck !== undefined) {
           valuesToCheck.push(valueToCheck)
         }
@@ -376,11 +376,6 @@ function matchesFilter(
             return true
           }
           break
-        case '!=':
-          if (matchesNOTEQUALS(valuesToCheck[i], filter)) {
-            return true
-          }
-          break
         case '>':
           if (matchesGreaterThan(valuesToCheck[i], filter)) {
             return true
@@ -406,7 +401,7 @@ function matchesFilter(
             return true
           }
           break
-        case 'INTERSECTS':
+        case 'GEOMETRY':
           if (matchesPOLYGON(valuesToCheck[i], filter)) {
             return true
           }
@@ -449,38 +444,40 @@ function matchesFilter(
 
 export function matchesFilters(
   metacard: ResultType['metacard'],
-  resultFilter: FilterType
+  resultFilter: FilterBuilderClass | FilterClass
 ) {
   let i
   switch (resultFilter.type) {
     case 'AND':
+      if (resultFilter.negated) {
+        for (i = 0; i <= resultFilter.filters.length - 1; i++) {
+          if (!matchesFilter(metacard, resultFilter.filters[i])) {
+            return true
+          }
+        }
+        return false
+      }
       for (i = 0; i <= resultFilter.filters.length - 1; i++) {
         if (!matchesFilter(metacard, resultFilter.filters[i])) {
           return false
         }
       }
       return true
-    case 'NOT AND':
-      for (i = 0; i <= resultFilter.filters.length - 1; i++) {
-        if (!matchesFilter(metacard, resultFilter.filters[i])) {
-          return true
-        }
-      }
-      return false
     case 'OR':
+      if (resultFilter.negated) {
+        for (i = 0; i <= resultFilter.filters.length - 1; i++) {
+          if (matchesFilter(metacard, resultFilter.filters[i])) {
+            return false
+          }
+        }
+        return true
+      }
       for (i = 0; i <= resultFilter.filters.length - 1; i++) {
         if (matchesFilter(metacard, resultFilter.filters[i])) {
           return true
         }
       }
       return false
-    case 'NOT OR':
-      for (i = 0; i <= resultFilter.filters.length - 1; i++) {
-        if (matchesFilter(metacard, resultFilter.filters[i])) {
-          return false
-        }
-      }
-      return true
     default:
       return matchesFilter(metacard, resultFilter)
   }

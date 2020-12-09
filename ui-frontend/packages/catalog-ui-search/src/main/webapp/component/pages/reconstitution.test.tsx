@@ -27,7 +27,6 @@ import _ from 'lodash'
 import FilterBranch from '../filter-builder/filter-branch'
 import { FilterBuilderClass } from '../filter-builder/filter.structure'
 import CQL from '../../js/cql'
-window.CQL = CQL
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
 

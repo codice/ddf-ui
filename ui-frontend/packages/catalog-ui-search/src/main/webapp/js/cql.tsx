@@ -16,7 +16,6 @@
  * full list of contributors). Published under the 2-clause BSD license.
  * See license.txt in the OpenLayers distribution or repository for the
  * full text of the license. */
-// jshint ignore: start
 import {
   CQLStandardFilterBuilderClass,
   deserialize,
@@ -28,7 +27,6 @@ import {
   ValueTypes,
 } from '../component/filter-builder/filter.structure'
 const CQLUtils = require('./CQLUtils')
-const moment = require('moment')
 
 const arrayFromLinestringWkt = (wkt: string): Array<[number, number]> => {
   return wkt
@@ -201,19 +199,22 @@ function tryToken(text: string, pattern: PatternReturnType) {
   }
 }
 
-function nextToken(text: string, tokens: Array<PatternNamesType | 'END'>) {
+function nextToken(
+  text: string,
+  tokens: Array<PatternNamesType | 'END'>
+): TokenType {
   let i,
     token,
     len = tokens.length
   for (i = 0; i < len; i++) {
     token = tokens[i]
-    const pat = patterns[token]
+    const pat = patterns[token as keyof typeof patterns]
     const matches = tryToken(text, pat)
     if (matches) {
       const match = matches[0]
       const remainder = text.substr(match.length).replace(/^\s*/, '')
       return {
-        type: token,
+        type: token as TokenType['type'],
         text: match,
         remainder,
       }
@@ -223,7 +224,7 @@ function nextToken(text: string, tokens: Array<PatternNamesType | 'END'>) {
   let msg = 'ERROR: In parsing: [' + text + '], expected one of: '
   for (i = 0; i < len; i++) {
     token = tokens[i]
-    msg += '\n    ' + token + ': ' + patterns[token]
+    msg += '\n    ' + token + ': ' + patterns[token as keyof typeof patterns]
   }
 
   throw new Error(msg)
