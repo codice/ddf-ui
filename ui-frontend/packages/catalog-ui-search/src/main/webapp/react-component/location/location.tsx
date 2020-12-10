@@ -59,6 +59,7 @@ const inputs = plugin({
             setState({ keywordValue: value, ...data })
           }}
           setBufferState={(key: any, value: any) => setState({ [key]: value })}
+          variant="outlined"
         />
       )
     },

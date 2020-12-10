@@ -3,22 +3,23 @@ import _debounce from 'lodash/debounce'
 import { Suggestion } from '../location/gazetteer'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import TextField from '@material-ui/core/TextField'
+import TextField, { TextFieldProps } from '@material-ui/core/TextField'
 
 type Props = {
   suggester: (input: string) => Promise<Suggestion[]>
+  onChange: (suggestion: Suggestion) => Promise<void>
   debounce?: number
   minimumInputLength?: number
   onError?: any
   value: any
   placeholder?: string
-  onChange: (suggestion: Suggestion) => Promise<void>
+  variant?: TextFieldProps['variant']
 }
 
 const GazetteerAutoComplete = ({
+  suggester,
   debounce = 350,
   minimumInputLength = 3,
-  suggester,
   onError,
   value,
   ...props
@@ -101,9 +102,11 @@ const GazetteerAutoComplete = ({
       renderInput={(params) => (
         <TextField
           {...params}
+          variant={props.variant}
+          margin="dense"
           autoFocus
           value={input}
-          placeholder={placeholder}
+          placeholder={props.placeholder || placeholder}
           onChange={(e) => onChange(e.target.value)}
           InputProps={{
             ...params.InputProps,

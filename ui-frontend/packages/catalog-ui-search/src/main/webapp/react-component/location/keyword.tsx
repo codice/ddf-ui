@@ -19,7 +19,7 @@ import GazetteerAutoComplete from '../auto-complete/gazetteer-autocomplete'
 const Announcement = require('../../component/announcement/index.jsx')
 const Polygon = require('./polygon')
 const MultiPolygon = require('./multipoly')
-
+import { TextFieldProps } from '@material-ui/core/TextField'
 import defaultFetch from '../utils/fetch'
 import { Suggestion, GeoFeature } from './gazetteer'
 
@@ -39,6 +39,7 @@ type Props = {
   loadingMessage?: string
   minimumInputLength?: number
   placeholder?: string
+  variant?: TextFieldProps['variant']
 }
 
 const Keyword = (props: Props) => {
@@ -156,11 +157,10 @@ const Keyword = (props: Props) => {
       <GazetteerAutoComplete
         value={value}
         onChange={onChange}
-        minimumInputLength={props.minimumInputLength || 2}
-        placeholder={
-          props.placeholder || 'Pan to a city, country, or coordinate'
-        }
+        minimumInputLength={props.minimumInputLength || 1}
+        placeholder={props.placeholder || 'Enter a location'}
         suggester={suggester}
+        variant={props.variant}
       />
       {loading && (
         <div style={{ marginTop: 10 }}>

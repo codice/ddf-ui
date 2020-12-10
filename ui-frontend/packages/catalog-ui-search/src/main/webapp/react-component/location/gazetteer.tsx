@@ -12,6 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import { TextFieldProps } from '@material-ui/core/TextField'
 import * as React from 'react'
 import defaultFetch from '../utils/fetch'
 import Keyword from './keyword'
@@ -111,6 +112,7 @@ type Props = {
   fetch?: any
   placeholder?: string
   loadingMessage?: string
+  variant?: TextFieldProps['variant']
 }
 
 type Place = {
@@ -311,6 +313,7 @@ const Gazetteer = (props: Props) => {
           geofeature={geofeature}
           placeholder={props.placeholder}
           loadingMessage={props.loadingMessage}
+          variant={props.variant}
         />
       ) : (
         <Keyword
