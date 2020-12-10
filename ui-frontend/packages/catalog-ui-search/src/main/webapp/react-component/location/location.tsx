@@ -52,15 +52,20 @@ const inputs = plugin({
     label: 'Keyword',
     Component: ({ setState, keywordValue, ...props }: any) => {
       return (
-        <Keyword
-          {...props}
-          value={keywordValue}
-          setState={({ value, ...data }: any) => {
-            setState({ keywordValue: value, ...data })
-          }}
-          setBufferState={(key: any, value: any) => setState({ [key]: value })}
-          variant="outlined"
-        />
+        // Offsets className="form-group clearfix" below
+        <div style={{ marginTop: -15 }}>
+          <Keyword
+            {...props}
+            value={keywordValue}
+            setState={({ value, ...data }: any) => {
+              setState({ keywordValue: value, ...data })
+            }}
+            setBufferState={(key: any, value: any) =>
+              setState({ [key]: value })
+            }
+            variant="outlined"
+          />
+        </div>
       )
     },
   },

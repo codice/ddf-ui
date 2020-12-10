@@ -102,7 +102,7 @@ const GazetteerAutoComplete = ({
       renderInput={(params) => (
         <TextField
           {...params}
-          variant={props.variant}
+          variant={props.variant || 'outlined'}
           margin="dense"
           autoFocus
           value={input}

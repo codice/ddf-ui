@@ -322,6 +322,7 @@ const Gazetteer = (props: Props) => {
           geofeature={geofeatureWithLiteralSupport}
           placeholder={props.placeholder}
           loadingMessage={props.loadingMessage}
+          variant={props.variant}
         />
       )}
     </div>
