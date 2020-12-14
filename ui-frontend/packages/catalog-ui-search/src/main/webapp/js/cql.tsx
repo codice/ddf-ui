@@ -199,10 +199,7 @@ function tryToken(text: string, pattern: PatternReturnType) {
   }
 }
 
-function nextToken(
-  text: string,
-  tokens: Array<PatternNamesType | 'END'>
-) {
+function nextToken(text: string, tokens: Array<PatternNamesType | 'END'>) {
   let i,
     token,
     len = tokens.length
