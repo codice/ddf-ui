@@ -23,6 +23,6 @@
     "emitDecoratorMetadata": true,
     "downlevelIteration": true
   },
-  "include": ["**/*.ts", "**/*.tsx", "src/main/webapp/js/cql.tsx"],
+  "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "dist"]
 }
