@@ -19,7 +19,6 @@ import { ValuesType } from 'utility-types'
 import CQLUtils from '../../js/CQLUtils'
 import { SpreadOperatorProtectedClass } from '../../typescript/classes'
 import ExtensionPoints from '../../extension-points'
-const moment = require('moment')
 
 // @ts-ignore ts-migrate(6133) FIXME: 'comparatorToCQL' is declared but its value is nev... Remove this comment to see the full error message
 const comparatorToCQL = {

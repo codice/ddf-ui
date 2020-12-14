@@ -8,10 +8,10 @@
     "fmt": "ace format -w",
     "format": "ace format",
     "prestart": "ace disable-idp",
-    "start": "node --max_old_space_size=8192 ../../node_modules/@connexta/ace/bin.js start",
+    "start": "node --max_old_space_size=8192 ./node_modules/@connexta/ace/bin.js start",
     "start:transpile": "yarn start --tsTranspileOnly true",
     "pretest": "ace bundle --env=test",
-    "test": "ace test",
+    "test": "yarn publish:build && ace test",
     "start:test": "ace start --env=test",
     "storybook": "ace storybook",
     "build": "node --max_old_space_size=16384 ./node_modules/@connexta/ace/bin.js bundle",
@@ -51,11 +51,12 @@
   "devDependencies": {
     "@blueprintjs/core": "3.29.0",
     "@blueprintjs/datetime": "3.18.3",
-    "@connexta/ace": "git://github.com/connexta/ace.git#fec6481783a05766a28cf31eb5cecca68add39e7",
+    "@connexta/ace": "git://github.com/connexta/ace.git#5edbfdc9f2f9a8621684f5e467925a70f2dfeab9",
     "@material-ui/core": "4.11.0",
     "@material-ui/icons": "4.9.1",
     "@material-ui/lab": "4.0.0-alpha.56",
     "@material-ui/pickers": "3.2.10",
+    "@types/chai": "4.2.14",
     "@types/d3": "5.0.0",
     "@types/lodash.debounce": "4.0.6",
     "@types/mocha": "8.0.3",
@@ -87,10 +88,9 @@
     "react-router-dom": "5.2.0",
     "sinon": "5.0.7",
     "styled-components": "4.3.2",
-    "ts-migrate": "^0.1.2",
-    "ts-migrate-plugins": "^0.1.0",
-    "ts-migrate-server": "^0.1.0",
-    "typescript": "4.1.2",
+    "ts-migrate": "^0.1.10",
+    "ts-migrate-plugins": "^0.1.10",
+    "ts-migrate-server": "^0.1.10",
     "utility-types": "3.10.0"
   },
   "dependencies": {
@@ -179,9 +179,7 @@
     "jquery": "3.4.1",
     "react": "16.10.2",
     "react-dom": "16.10.2",
-    "styled-components": "4.3.2",
-    "ts-loader": "8.0.11",
-    "typescript": "4.1.2"
+    "styled-components": "4.3.2"
   },
   "main": "src/main/webapp/index.tsx",
   "alias": {
@@ -192,7 +190,8 @@
     "files": [
       "src/main/resources",
       "target/webapp"
-    ]
+    ],
+    "testPath": "dist/"
   },
   "context-path": "/search/catalog",
   "private": true

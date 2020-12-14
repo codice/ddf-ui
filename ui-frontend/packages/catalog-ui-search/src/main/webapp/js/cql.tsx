@@ -202,19 +202,19 @@ function tryToken(text: string, pattern: PatternReturnType) {
 function nextToken(
   text: string,
   tokens: Array<PatternNamesType | 'END'>
-): TokenType {
+) {
   let i,
     token,
     len = tokens.length
   for (i = 0; i < len; i++) {
     token = tokens[i]
-    const pat = patterns[token as keyof typeof patterns]
+    const pat = patterns[token]
     const matches = tryToken(text, pat)
     if (matches) {
       const match = matches[0]
       const remainder = text.substr(match.length).replace(/^\s*/, '')
       return {
-        type: token as TokenType['type'],
+        type: token,
         text: match,
         remainder,
       }
@@ -224,7 +224,7 @@ function nextToken(
   let msg = 'ERROR: In parsing: [' + text + '], expected one of: '
   for (i = 0; i < len; i++) {
     token = tokens[i]
-    msg += '\n    ' + token + ': ' + patterns[token as keyof typeof patterns]
+    msg += '\n    ' + token + ': ' + patterns[token]
   }
 
   throw new Error(msg)
