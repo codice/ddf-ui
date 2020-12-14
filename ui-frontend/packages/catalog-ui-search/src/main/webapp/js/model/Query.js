@@ -187,7 +187,10 @@ Query.Model = Backbone.AssociatedModel.extend({
     if (!filterTree || filterTree.id === undefined) {
       this.set('filterTree', cql.read(this.get('cql'))) // reconstruct
       console.log('migrating a filter tree to the latest structure')
-      wreqr.vent.trigger('filterTree:migration') // allow downstream projects to handle how they want to inform users of migrations
+      // allow downstream projects to handle how they want to inform users of migrations
+      wreqr.vent.trigger('filterTree:migration', {
+        search: this,
+      })
     } else {
       this.set('filterTree', new FilterBuilderClass(filterTree)) // instantiate the class if everything is a-okay
     }
