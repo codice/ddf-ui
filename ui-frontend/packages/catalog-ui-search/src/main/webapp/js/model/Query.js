@@ -185,7 +185,7 @@ Query.Model = Backbone.AssociatedModel.extend({
     const filterTree = this.get('filterTree')
     // when we make drastic changes to filter tree it will be necessary to fall back to cql and reconstruct a filter tree that's compatible
     if (!filterTree || filterTree.id === undefined) {
-      this.set('filterTree', cql.simplify(cql.read(this.get('cql')))) // reconstruct
+      this.set('filterTree', cql.read(this.get('cql'))) // reconstruct
       console.log('migrating a filter tree to the latest structure')
       wreqr.vent.trigger('filterTree:migration') // allow downstream projects to handle how they want to inform users of migrations
     } else {
