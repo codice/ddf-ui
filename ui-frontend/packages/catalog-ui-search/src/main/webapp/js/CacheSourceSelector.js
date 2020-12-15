@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const cql = require('./cql.js')
+import cql from './cql'
 const CQLUtils = require('./CQLUtils.js')
 function buildCacheSourcesCql(sources) {
   return {

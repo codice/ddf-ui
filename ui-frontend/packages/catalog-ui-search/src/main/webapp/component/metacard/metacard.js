@@ -19,7 +19,7 @@ const Metacard = require('../../js/model/Metacard.js')
 const Query = require('../../js/model/Query.js')
 const QueryResponse = require('../../js/model/QueryResponse.js')
 const QueryResult = require('../../js/model/QueryResult.js')
-const cql = require('../../js/cql.js')
+import cql from '../../js/cql'
 
 module.exports = new (Backbone.AssociatedModel.extend({
   relations: [

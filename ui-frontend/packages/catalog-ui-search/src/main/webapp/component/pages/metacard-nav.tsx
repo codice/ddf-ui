@@ -5,8 +5,6 @@ import { useLazyResultsFromSelectionInterface } from '../selection-interface/hoo
 import { useStatusOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
 import CircularProgress from '@material-ui/core/CircularProgress'
 const Query = require('../../js/model/Query.js')
-// @ts-ignore ts-migrate(6133) FIXME: 'cql' is declared but its value is never read.
-const cql = require('../../js/cql')
 const SelectionInterfaceModel = require('../selection-interface/selection-interface.model.js')
 const Backbone = require('backbone')
 const MetacardTitleView = require('../metacard-title/metacard-title.view.js')

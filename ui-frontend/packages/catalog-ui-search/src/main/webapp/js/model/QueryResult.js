@@ -18,7 +18,7 @@ const $ = require('jquery')
 import Sources from '../../component/singletons/sources-instance'
 const Common = require('../Common.js')
 const filter = require('../filter.js')
-const cql = require('../cql.js')
+import cql from '../cql'
 require('backbone-associations')
 
 const Metacard = require('./Metacard.js')
