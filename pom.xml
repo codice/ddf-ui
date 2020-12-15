@@ -91,6 +91,7 @@
     <spatial4j.version>0.7</spatial4j.version>
     <tika.version>1.24.1</tika.version>
     <usng4j.version>0.4</usng4j.version>
+    <org.slf4j.version>1.7.29</org.slf4j.version>
 
     <!-- Command line argument properties for the maven-surefire-plugin -->
     <codice-test.version>0.3</codice-test.version>

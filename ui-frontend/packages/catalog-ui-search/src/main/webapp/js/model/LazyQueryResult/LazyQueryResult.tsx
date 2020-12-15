@@ -24,7 +24,7 @@ const TurfMeta = require('@turf/meta')
 const wkx = require('wkx')
 const Common = require('../../Common.js')
 import { matchesCql, matchesFilters } from './filter'
-import { FilterType } from './types'
+import { FilterBuilderClass } from '../../../component/filter-builder/filter.structure'
 const debounceTime = 50
 
 function getThumbnailAction(result: ResultType) {
@@ -211,7 +211,7 @@ export class LazyQueryResult {
   hasPreview(): boolean {
     return this.plain.metacard.properties['ext.extracted.text'] !== undefined
   }
-  matchesFilters(filters: FilterType): boolean {
+  matchesFilters(filters: FilterBuilderClass): boolean {
     return matchesFilters(this.plain.metacard, filters)
   }
   matchesCql(cql: string): boolean {

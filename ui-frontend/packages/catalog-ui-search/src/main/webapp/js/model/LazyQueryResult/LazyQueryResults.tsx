@@ -33,6 +33,7 @@ export type AttributeHighlight = {
   attribute: string
   endIndex: string
   startIndex: string
+  valueIndex: string
 }
 
 export type AttributeHighlights = {

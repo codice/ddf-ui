@@ -463,7 +463,7 @@ const AttributeComponent = ({
                 })
               }}
             >
-              <EditIcon></EditIcon>
+              <EditIcon />
             </Button>
           </div>
         )}
@@ -561,7 +561,8 @@ const AttributeComponent = ({
                               }
                               return displayHighlightedAttrInFull(
                                 lazyResult.highlights[attr],
-                                val
+                                val,
+                                index
                               )
                             } else {
                               return <Typography>{val}</Typography>

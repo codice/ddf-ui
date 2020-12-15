@@ -20,7 +20,7 @@ const CQLUtils = require('./CQLUtils.js')
 const Turf = require('@turf/turf')
 const wkx = require('wkx')
 const moment = require('moment')
-const cql = require('./cql.js')
+import cql from './cql'
 
 // strip extra quotes
 const stripQuotes = (value) => {
