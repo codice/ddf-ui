@@ -34,6 +34,7 @@ import MetacardDefinitions from '../../../component/tabs/metacard/metacardDefini
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import MuiTextField from '@material-ui/core/TextField'
 import { DateAroundField } from '../../../component/fields/date-around'
+import { CustomInputOrDefault } from './customInputOrDefault'
 export type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
@@ -137,14 +138,7 @@ const FilterInput = ({ filter, setFilter }: Props) => {
     )
   }
 
-  // call out to extension, if extension handles it, great, if not fallback to this
-  const componentToReturn = extension.customFilterInput({
-    value: textValue,
-    onChange: onChange,
-  })
-  if (componentToReturn) {
-    return componentToReturn as JSX.Element
-  } else return <TextField value={textValue} onChange={onChange} />
+  return <CustomInputOrDefault value={textValue} onChange={onChange} />
 }
 
 export default FilterInput
