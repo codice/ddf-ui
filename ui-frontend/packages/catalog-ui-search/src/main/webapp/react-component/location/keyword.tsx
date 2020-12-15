@@ -14,12 +14,12 @@
  **/
 import * as React from 'react'
 import { useState } from 'react'
+import ExtensionPoints from '../../extension-points'
+import GazetteerAutoComplete from '../auto-complete/gazetteer-autocomplete'
 const Announcement = require('../../component/announcement/index.jsx')
-
-const AutoComplete = require('../auto-complete')
 const Polygon = require('./polygon')
 const MultiPolygon = require('./multipoly')
-
+import { TextFieldProps } from '@material-ui/core/TextField'
 import defaultFetch from '../utils/fetch'
 import { Suggestion, GeoFeature } from './gazetteer'
 
@@ -28,7 +28,7 @@ type Props = {
   fetch?: any
   value?: string
   onError?: (error: any) => void
-  suggester?: (input: string) => Promise<Suggestion>
+  suggester?: (input: string) => Promise<Suggestion[]>
   geofeature?: (suggestion: Suggestion) => Promise<GeoFeature>
   errorMessage?: string
   polygon?: any[]
@@ -39,6 +39,7 @@ type Props = {
   loadingMessage?: string
   minimumInputLength?: number
   placeholder?: string
+  variant?: TextFieldProps['variant']
 }
 
 const Keyword = (props: Props) => {
@@ -55,24 +56,60 @@ const Keyword = (props: Props) => {
     polyType,
   } = props
 
-  const suggester = async (input: string) => {
+  const internalSuggester = async (input: string): Promise<Suggestion[]> => {
     const res = await fetch(`./internal/geofeature/suggestions?q=${input}`)
     const json = await res.json()
     return await json.filter(({ id }: Suggestion) => !id.startsWith('LITERAL'))
   }
 
-  const geofeature = async ({ id }: Suggestion) => {
+  const suggester = async (input: string): Promise<Suggestion[]> => {
+    let suggestions: Suggestion[] = []
+
+    const extensionSuggestions = await ExtensionPoints.suggester(input)
+
+    if (extensionSuggestions) {
+      suggestions = suggestions.concat(extensionSuggestions)
+    }
+
+    if (props.suggester) {
+      const propsSuggestions = await props.suggester(input)
+      suggestions = suggestions.concat(propsSuggestions)
+    } else {
+      const internalSuggestions = await internalSuggester(input)
+      suggestions = suggestions.concat(internalSuggestions)
+    }
+
+    return suggestions
+  }
+
+  const internalGeofeature = async ({
+    id,
+  }: Suggestion): Promise<GeoFeature> => {
     const res = await fetch(`./internal/geofeature?id=${id}`)
     return await res.json()
   }
 
+  const geofeature = async (suggestion: Suggestion): Promise<GeoFeature> => {
+    if (suggestion.extensionGeo) {
+      return suggestion.extensionGeo
+    } else if (props.geofeature) {
+      return await props.geofeature(suggestion)
+    } else {
+      return await internalGeofeature(suggestion)
+    }
+  }
+
   const onChange = async (suggestion: Suggestion) => {
-    const geofeatureFunc =
-      props.geofeature || ((suggestItem) => geofeature(suggestItem))
+    if (!suggestion) {
+      setValue('')
+      return
+    }
+
+    setError('')
     setValue(suggestion.name)
     setLoading(true)
     try {
-      const { type, geometry = {} } = await geofeatureFunc(suggestion)
+      const { type, geometry } = await geofeature(suggestion)
       setLoading(false)
 
       switch (geometry.type) {
@@ -117,14 +154,13 @@ const Keyword = (props: Props) => {
 
   return (
     <div>
-      <AutoComplete
+      <GazetteerAutoComplete
         value={value}
         onChange={onChange}
-        minimumInputLength={props.minimumInputLength || 2}
-        placeholder={
-          props.placeholder || 'Pan to a city, country, or coordinate'
-        }
-        suggester={props.suggester || suggester}
+        minimumInputLength={props.minimumInputLength || 1}
+        placeholder={props.placeholder || 'Enter a location'}
+        suggester={suggester}
+        variant={props.variant}
       />
       {loading && (
         <div style={{ marginTop: 10 }}>

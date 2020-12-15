@@ -255,7 +255,10 @@ module.exports = Marionette.LayoutView.extend({
   addPanZoom() {
     const PanZoomView = Marionette.ItemView.extend({
       template: () => (
-        <Gazetteer setState={({ polygon }) => this.map.doPanZoom(polygon)} />
+        <Gazetteer
+          variant="standard"
+          setState={({ polygon }) => this.map.doPanZoom(polygon)}
+        />
       ),
     })
     this.$el
