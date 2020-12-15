@@ -41,14 +41,6 @@ export type Props = {
 
 const FilterInput = ({ filter, setFilter }: Props) => {
   const type = getAttributeType(filter.property)
-  // call out to extension, if extension handles it, great, if not fallback to this
-  const componentToReturn = extension.customFilterInput({
-    filter,
-    setFilter,
-  })
-  if (componentToReturn) {
-    return componentToReturn as JSX.Element
-  }
   const { value } = filter
   const onChange = (val: any) => {
     setFilter(
@@ -145,7 +137,14 @@ const FilterInput = ({ filter, setFilter }: Props) => {
     )
   }
 
-  return <TextField value={textValue} onChange={onChange} />
+  // call out to extension, if extension handles it, great, if not fallback to this
+  const componentToReturn = extension.customFilterInput({
+    value: textValue,
+    onChange: onChange,
+  })
+  if (componentToReturn) {
+    return componentToReturn as JSX.Element
+  } else return <TextField value={textValue} onChange={onChange} />
 }
 
 export default FilterInput

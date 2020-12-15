@@ -14,6 +14,7 @@
  **/
 import * as React from 'react'
 
+import extension from '../../extension-points'
 import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
 import { ValueTypes } from '../filter-builder/filter.structure'
@@ -21,6 +22,36 @@ import { ValueTypes } from '../filter-builder/filter.structure'
 type NearFieldProps = {
   value: ValueTypes['proximity']
   onChange: (val: ValueTypes['proximity']) => void
+}
+
+const showCustomTextFieldOrDefault = ({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (val: any) => void
+}) => {
+  // call out to extension, if extension handles it, great, if not fallback to this
+  const componentToReturn = extension.customFilterInput({
+    value: value,
+    onChange: onChange,
+  })
+  if (componentToReturn) {
+    return componentToReturn as JSX.Element
+  } else {
+    return (
+      <TextField
+        fullWidth
+        multiline
+        rowsMax={3}
+        variant="outlined"
+        type="text"
+        value={value}
+        onChange={onChange}
+        size="small"
+      />
+    )
+  }
 }
 
 const defaultValue = {
@@ -52,21 +83,15 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
       wrap="nowrap"
     >
       <Grid item className="w-full pb-2">
-        <TextField
-          fullWidth
-          multiline
-          rowsMax={3}
-          variant="outlined"
-          type="text"
-          value={value.second}
-          onChange={(e) => {
+        {showCustomTextFieldOrDefault({
+          value: value.second,
+          onChange: (e: any) => {
             onChange({
               ...value,
               second: e.target.value,
             })
-          }}
-          size="small"
-        />
+          },
+        })}
       </Grid>
       <Grid item className="w-full pb-2 pl-2">
         within
@@ -90,21 +115,15 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
         of
       </Grid>
       <Grid item className="w-full">
-        <TextField
-          fullWidth
-          multiline
-          rowsMax={3}
-          variant="outlined"
-          type="text"
-          value={value.first}
-          onChange={(e) => {
+        {showCustomTextFieldOrDefault({
+          value: value.first,
+          onChange: (e: any) => {
             onChange({
               ...value,
               first: e.target.value,
             })
-          }}
-          size="small"
-        />
+          },
+        })}
       </Grid>
     </Grid>
   )
