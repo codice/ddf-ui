@@ -31,6 +31,7 @@ import { HeaderCheckbox } from './table-header'
 import { DarkDivider } from '../dark-divider/dark-divider'
 import { ResultsCommonControls } from './table'
 import { TypedUserInstance } from '../singletons/TypedUser'
+import { ErrorBoundary } from '../error-boundary/error-boundary'
 const user = require('../singletons/user-instance.js')
 
 type Props = {
@@ -150,14 +151,16 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
                         <div className="h-min w-full Mui-bg-divider" />
                       </>
                     ) : null}
-                    <ResultItem
-                      lazyResults={results}
-                      lazyResult={item}
-                      selectionInterface={selectionInterface}
-                      measure={measure}
-                      index={index}
-                      width={width}
-                    />
+                    <ErrorBoundary>
+                      <ResultItem
+                        lazyResults={results}
+                        lazyResult={item}
+                        selectionInterface={selectionInterface}
+                        measure={measure}
+                        index={index}
+                        width={width}
+                      />
+                    </ErrorBoundary>
                     {index === results.length - 1 ? (
                       <>
                         <div className="h-min w-full Mui-bg-divider" />
