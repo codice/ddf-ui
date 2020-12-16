@@ -21,7 +21,7 @@ import { Dropdown } from '../atlas-dropdown'
 import { Elevations } from '../theme/theme'
 import SearchIcon from '@material-ui/icons/SearchTwoTone'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
 import _ from 'lodash'
 import fetch from '../../react-component/utils/fetch'
 import TextField from '@material-ui/core/TextField'
@@ -37,10 +37,24 @@ import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResult
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import Skeleton from '@material-ui/lab/Skeleton'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import { useRerenderOnBackboneSync } from '../../js/model/LazyQueryResult/hooks'
+import {
+  useRerenderOnBackboneSync,
+  useStatusOfLazyResults,
+} from '../../js/model/LazyQueryResult/hooks'
 import CloudDoneIcon from '@material-ui/icons/CloudDone'
 const Common = require('../../js/Common.js')
 import SaveIcon from '@material-ui/icons/Save'
+import { useMenuState } from '../menu-state/menu-state'
+import MenuItem from '@material-ui/core/MenuItem'
+import Menu from '@material-ui/core/Menu'
+import { TypedUserInstance } from '../singletons/TypedUser'
+import useSnack from '../hooks/useSnack'
+import Popover from '@material-ui/core/Popover'
+import Autocomplete from '@material-ui/lab/Autocomplete'
+import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
+import OverflowTooltip, {
+  OverflowTooltipHTMLElement,
+} from '../overflow-tooltip/overflow-tooltip'
 type SaveFormType = {
   context: DropdownContextType
   selectionInterface: any
@@ -168,6 +182,189 @@ const ButtonWithTwoStates = (props: ButtonWithMultipleStatesType) => {
   )
 }
 
+type SearchType = {}
+
+const useSearchResults = (searchText: string) => {
+  const [state, setState] = React.useState({
+    lazyResults: [],
+    loading: false,
+  } as { lazyResults: LazyQueryResult[]; loading: boolean })
+  const [selectionInterface] = React.useState(
+    new SelectionInterfaceModel({
+      currentQuery: new Query.Model({
+        sorts: [{ attribute: 'metacard.modified', direction: 'descending' }],
+        filterTree: new FilterBuilderClass({
+          type: 'AND',
+          filters: [
+            new FilterClass({
+              property: 'title',
+              value: `*${searchText}*`,
+              type: 'ILIKE',
+            }),
+            new FilterClass({
+              property: 'metacard-tags',
+              value: 'query',
+              type: 'ILIKE',
+            }),
+          ],
+        }),
+      }),
+    })
+  )
+  React.useEffect(() => {
+    selectionInterface.getCurrentQuery().set(
+      'filterTree',
+      new FilterBuilderClass({
+        type: 'AND',
+        filters: [
+          new FilterClass({
+            property: 'title',
+            value: `*${searchText}*`,
+            type: 'ILIKE',
+          }),
+          new FilterClass({
+            property: 'metacard-tags',
+            value: 'query',
+            type: 'ILIKE',
+          }),
+        ],
+      })
+    )
+    selectionInterface.getCurrentQuery().cancelCurrentSearches()
+    if (searchText.length >= 0) {
+      selectionInterface.getCurrentQuery().startSearchFromFirstPage()
+    }
+  }, [searchText])
+  const lazyResults = useLazyResultsFromSelectionInterface({
+    selectionInterface,
+  })
+  const { isSearching } = useStatusOfLazyResults({ lazyResults })
+  React.useEffect(() => {
+    setState({
+      lazyResults: Object.values(lazyResults.results),
+      loading: isSearching,
+    })
+  }, [lazyResults, isSearching])
+  return state
+}
+
+const OpenSearch = ({ onFinish }: { onFinish: () => void }) => {
+  const [value, setValue] = React.useState('')
+  const [open, setOpen] = React.useState(true)
+  const inputRef = React.useRef<HTMLDivElement>(null)
+  const [
+    currentHighlight,
+    setCurrentHighlight,
+  ] = React.useState<OverflowTooltipHTMLElement | null>(null)
+  const [options, setOptions] = React.useState<LazyQueryResult[]>([])
+  const { lazyResults, loading } = useSearchResults(value)
+  const history = useHistory()
+  React.useEffect(() => {
+    setOptions(lazyResults)
+  }, [lazyResults])
+
+  React.useEffect(() => {
+    if (currentHighlight) {
+      currentHighlight.overflowTooltip.setOpen(true)
+    }
+    return () => {
+      if (currentHighlight) currentHighlight.overflowTooltip.setOpen(false)
+    }
+  }, [currentHighlight])
+
+  return (
+    <Autocomplete
+      className="w-64"
+      getOptionSelected={(option, value) => option.plain.id === option.plain.id}
+      getOptionLabel={(option) => option.plain.metacard.properties.title}
+      options={options}
+      innerRef={inputRef}
+      open={open}
+      onOpen={() => {
+        setOpen(true)
+      }}
+      onClose={() => {
+        setOpen(false)
+      }}
+      loading={loading && options.length === 0}
+      autoHighlight
+      onHighlightChange={(e, option) => {
+        if (inputRef.current) {
+          const highlightedElementString = (inputRef.current.querySelector(
+            'input'
+          ) as HTMLInputElement).getAttribute('aria-activedescendant')
+          if (highlightedElementString) {
+            setCurrentHighlight(
+              (document.querySelector(
+                `#${highlightedElementString}`
+              ) as HTMLLIElement).querySelector(
+                'div'
+              ) as OverflowTooltipHTMLElement
+            )
+          } else {
+            setCurrentHighlight(null)
+          }
+        } else {
+          setCurrentHighlight(null)
+        }
+      }}
+      renderOption={(option) => {
+        return (
+          <Link
+            className="w-full p-2 font-normal no-underline hover:font-normal hover:no-underline"
+            to={`/search/${option.plain.id}`}
+          >
+            <OverflowTooltip>
+              {({ refOfThingToMeasure }) => {
+                return (
+                  <div className="truncate w-full" ref={refOfThingToMeasure}>
+                    {option.plain.metacard.properties.title}
+                  </div>
+                )
+              }}
+            </OverflowTooltip>
+          </Link>
+        )
+      }}
+      ListboxProps={{
+        className: 'children-p-0',
+      }}
+      onChange={(_e, value) => {
+        if (value) {
+          history.replace({
+            pathname: `/search/${value.plain.id}`,
+            search: '',
+          })
+          onFinish()
+        }
+      }}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          value={value}
+          onChange={(e) => {
+            setValue(e.target.value)
+          }}
+          label="Open a saved search"
+          variant="outlined"
+          autoFocus
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <React.Fragment>
+                {loading ? (
+                  <CircularProgress color="inherit" size={20} />
+                ) : null}
+                {params.InputProps.endAdornment}
+              </React.Fragment>
+            ),
+          }}
+        />
+      )}
+    />
+  )
+}
+
 const OptionsButton = () => {
   const {
     data,
@@ -176,6 +373,145 @@ const OptionsButton = () => {
     setIsSaving,
     selectionInterface,
   } = React.useContext(SavedSearchModeContext)
+  const menuState = useMenuState()
+  const menuState2 = useMenuState()
+  const addSnack = useSnack()
+  return (
+    <>
+      <Button innerRef={menuState.anchorRef} onClick={menuState.handleClick}>
+        <span className="Mui-text-primary">Options</span> <MoreVert />
+      </Button>
+      <Popover
+        open={menuState2.open}
+        anchorEl={menuState.anchorRef.current}
+        onClose={menuState2.handleClose}
+      >
+        <Paper elevation={Elevations.overlays} className="p-2">
+          <OpenSearch
+            onFinish={() => {
+              menuState2.handleClose()
+            }}
+          />
+        </Paper>
+      </Popover>
+      <Menu
+        anchorEl={menuState.anchorRef.current}
+        open={menuState.open}
+        onClose={menuState.handleClose}
+        keepMounted={true}
+        disableEnforceFocus
+        disableAutoFocus
+      >
+        <MenuItem
+          component={Link}
+          to="/search"
+          onClick={() => {
+            menuState.handleClose()
+            selectionInterface
+              .getCurrentQuery()
+              .set('id', null)
+              .resetToDefaults()
+            addSnack('Starting a new search', {
+              alertProps: { severity: 'info' },
+            })
+          }}
+        >
+          New
+        </MenuItem>
+        <MenuItem>New from existing</MenuItem>
+        <MenuItem
+          innerRef={menuState2.anchorRef}
+          onClick={() => {
+            menuState.handleClose()
+            menuState2.handleClick()
+          }}
+        >
+          Open
+        </MenuItem>
+        <MenuItem disabled={searchPageMode === 'adhoc'}>Make a copy</MenuItem>
+        <DarkDivider className="m-2" />
+        <MenuItem disabled={searchPageMode === 'adhoc'}>Rename</MenuItem>
+        <MenuItem disabled={searchPageMode === 'adhoc'}>Move to trash</MenuItem>
+        <DarkDivider className="m-2" />
+        <MenuItem
+          onClick={() => {
+            selectionInterface.getCurrentQuery().set('type', 'advanced')
+            if (searchPageMode === 'adhoc') {
+              // set this as their preference
+              TypedUserInstance.updateQuerySettings({
+                type: 'advanced',
+              })
+            }
+            menuState.handleClose()
+          }}
+        >
+          Advanced View
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            selectionInterface.getCurrentQuery().set('type', 'basic')
+            if (searchPageMode === 'adhoc') {
+              // set this as their preference
+              TypedUserInstance.updateQuerySettings({
+                type: 'basic',
+              })
+            }
+            menuState.handleClose()
+          }}
+        >
+          Basic View
+        </MenuItem>
+      </Menu>
+    </>
+  )
+  return (
+    <MenuState>
+      {({ handleClick, handleClose, anchorRef, open }) => {
+        return (
+          <>
+            <Button onClick={handleClick}>
+              Options <MoreVert />
+            </Button>
+            <Menu
+              anchorEl={anchorRef.current}
+              open={open}
+              onClose={handleClose}
+              keepMounted={true}
+            >
+              <MenuItem onClick={() => {}}>New</MenuItem>
+              <MenuItem>New from existing</MenuItem>
+              <MenuItem>Open</MenuItem>
+              <MenuItem disabled={searchPageMode === 'adhoc'}>
+                Make a copy
+              </MenuItem>
+              <DarkDivider className="m-2" />
+              <MenuItem disabled={searchPageMode === 'adhoc'}>Rename</MenuItem>
+              <MenuItem disabled={searchPageMode === 'adhoc'}>
+                Move to trash
+              </MenuItem>
+              <DarkDivider className="m-2" />
+              <MenuItem
+                onClick={() => {
+                  selectionInterface.getCurrentQuery().set('type', 'advanced')
+                  handleClose()
+                }}
+              >
+                Advanced View
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  selectionInterface.getCurrentQuery().set('type', 'basic')
+                  handleClose()
+                }}
+              >
+                Basic View
+              </MenuItem>
+            </Menu>
+          </>
+        )
+      }}
+    </MenuState>
+  )
   return (
     <Dropdown
       content={(context) => {
@@ -186,6 +522,7 @@ const OptionsButton = () => {
             }}
           >
             <Paper>
+              3sq
               <SearchInteractions
                 model={selectionInterface.getCurrentQuery()}
                 onClose={() => {
@@ -590,7 +927,7 @@ const LeftTop = () => {
         ) : (
           <></>
         )}
-        <div className={`ml-auto flex-shrink-0 ${closed ? 'hidden' : ''}`}>
+        <div className={`ml-auto flex-shrink-0 ${closed ? '' : ''}`}>
           <OptionsButton />
         </div>
       </div>

@@ -181,6 +181,9 @@ module.exports = {
   getTimeZones() {
     return timeZones
   },
+  getRelativeDate(date) {
+    return `${moment(date).fromNow()}`
+  },
   getMomentDate(date) {
     const user = require('../component/singletons/user-instance')
     return `${moment(date).fromNow()} : ${user.getUserReadableDateTime(date)}`

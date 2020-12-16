@@ -332,6 +332,11 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
           display: block;
         }
       }
+      .children-p-0 {
+        > * {
+          padding: 0px;
+        }
+      }
     `
 
 const lightenUntilContrasting = (color: string, background: string): string => {

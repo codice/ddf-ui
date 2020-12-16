@@ -58,4 +58,28 @@ export const TypedUserInstance = {
     })
     return attributesPossible.map((attr) => attr.id)
   },
+  getQuerySettings: (): QuerySettingsModelType => {
+    return userInstance.getQuerySettings()
+  },
+  updateQuerySettings: (newSettings: Partial<QuerySettingsType>): void => {
+    const currentSettings = TypedUserInstance.getQuerySettings()
+    currentSettings.set(newSettings)
+    userInstance.savePreferences()
+  },
+}
+
+type QuerySettingsType = {
+  type: string
+  sources: string[]
+  federation: 'selected' | 'enterprise'
+  sorts: { attribute: string; direction: 'descending' | 'ascending' }[]
+  template: string
+  spellcheck: boolean
+  phonetics: boolean
+}
+
+type QuerySettingsModelType = {
+  get: (attr: string) => any
+  set: (attr: any, value?: any) => void
+  toJSON: () => QuerySettingsType
 }
