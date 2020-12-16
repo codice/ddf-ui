@@ -837,10 +837,9 @@ export const HomePage = () => {
               {
                 attributes: {
                   'metacard-tags': ['query'],
-                  'metacard-type': 'metacard.query',
                   ...currentQueryJSON,
                 },
-                'metacard-type': 'metacard.query',
+                metacardType: 'metacard.query',
               },
             ],
           },

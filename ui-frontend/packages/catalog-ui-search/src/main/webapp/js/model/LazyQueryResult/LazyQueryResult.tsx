@@ -81,6 +81,7 @@ const transformPlain = ({
   if (plain.metacardType === 'metacard.query') {
     // since the plain cql search endpoint doesn't understand more complex properties on metacards, we can handle them like this
     // plain.metacard.properties.filterTree = plain.metacard.properties.filterTree && typeof plain.metacard.properties.filterTree === 'string' ? JSON.parse(plain.metacard.properties.filterTree)
+    // we could do the same thing we do for filterTree in query to get rid of this, but it requires a lot of tech debt cleanup I think
     try {
       plain.metacard.properties.sorts =
         plain.metacard.properties.sorts &&
