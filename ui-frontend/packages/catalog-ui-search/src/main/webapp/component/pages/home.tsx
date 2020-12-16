@@ -182,13 +182,12 @@ const ButtonWithTwoStates = (props: ButtonWithMultipleStatesType) => {
   )
 }
 
-type SearchType = {}
-
 const useSearchResults = (searchText: string) => {
   const [state, setState] = React.useState({
     lazyResults: [],
-    loading: false,
+    loading: true,
   } as { lazyResults: LazyQueryResult[]; loading: boolean })
+  const [hasSearched, setHasSearched] = React.useState(false)
   const [selectionInterface] = React.useState(
     new SelectionInterfaceModel({
       currentQuery: new Query.Model({
@@ -231,8 +230,19 @@ const useSearchResults = (searchText: string) => {
       })
     )
     selectionInterface.getCurrentQuery().cancelCurrentSearches()
-    if (searchText.length >= 0) {
-      selectionInterface.getCurrentQuery().startSearchFromFirstPage()
+    setState({
+      lazyResults: [],
+      loading: true,
+    })
+    const timeoutId = setTimeout(() => {
+      if (searchText.length >= 0) {
+        selectionInterface.getCurrentQuery().startSearchFromFirstPage()
+        setHasSearched(true)
+      }
+    }, 500)
+
+    return () => {
+      clearTimeout(timeoutId)
     }
   }, [searchText])
   const lazyResults = useLazyResultsFromSelectionInterface({
@@ -242,13 +252,14 @@ const useSearchResults = (searchText: string) => {
   React.useEffect(() => {
     setState({
       lazyResults: Object.values(lazyResults.results),
-      loading: isSearching,
+      loading: hasSearched ? isSearching : true,
     })
   }, [lazyResults, isSearching])
   return state
 }
 
 const OpenSearch = ({ onFinish }: { onFinish: () => void }) => {
+  const [positioningDone, setPositioningDone] = React.useState(false)
   const [value, setValue] = React.useState('')
   const [open, setOpen] = React.useState(true)
   const inputRef = React.useRef<HTMLDivElement>(null)
@@ -258,6 +269,7 @@ const OpenSearch = ({ onFinish }: { onFinish: () => void }) => {
   ] = React.useState<OverflowTooltipHTMLElement | null>(null)
   const [options, setOptions] = React.useState<LazyQueryResult[]>([])
   const { lazyResults, loading } = useSearchResults(value)
+  const addSnack = useSnack()
   const history = useHistory()
   React.useEffect(() => {
     setOptions(lazyResults)
@@ -271,7 +283,14 @@ const OpenSearch = ({ onFinish }: { onFinish: () => void }) => {
       if (currentHighlight) currentHighlight.overflowTooltip.setOpen(false)
     }
   }, [currentHighlight])
-
+  React.useEffect(() => {
+    const timeoutid = setTimeout(() => {
+      setPositioningDone(true)
+    }, 500)
+    return () => {
+      clearTimeout(timeoutid)
+    }
+  }, [])
   return (
     <Autocomplete
       className="w-64"
@@ -279,14 +298,14 @@ const OpenSearch = ({ onFinish }: { onFinish: () => void }) => {
       getOptionLabel={(option) => option.plain.metacard.properties.title}
       options={options}
       innerRef={inputRef}
-      open={open}
+      open={open && positioningDone}
       onOpen={() => {
         setOpen(true)
       }}
       onClose={() => {
         setOpen(false)
       }}
-      loading={loading && options.length === 0}
+      loading={loading}
       autoHighlight
       onHighlightChange={(e, option) => {
         if (inputRef.current) {
@@ -336,6 +355,9 @@ const OpenSearch = ({ onFinish }: { onFinish: () => void }) => {
             search: '',
           })
           onFinish()
+          addSnack(`Search '${value.plain.metacard.properties.title}' opened`, {
+            alertProps: { severity: 'info' },
+          })
         }
       }}
       renderInput={(params) => (
