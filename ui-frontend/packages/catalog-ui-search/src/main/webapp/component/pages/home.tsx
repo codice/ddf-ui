@@ -1111,7 +1111,7 @@ const AutoSave = () => {
   const { listenTo, stopListening } = useBackbone()
   React.useEffect(() => {
     const callback = () => {
-      if (on) {
+      if (on && queryModel.get('id')) {
         setSaveVersion(Math.random())
         setIsSaving(true)
       }
