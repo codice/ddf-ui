@@ -103,7 +103,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
       </Cell>
       <Cell data-id="available-label">
         <CellValue
-          value={fuzzyHits(status.count)}
+          value={`${status.count} hit${status.count === 1 ? '' : 's'}`}
           hasReturned={hasReturned}
           successful={successful}
           warnings={warnings}
