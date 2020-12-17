@@ -21,7 +21,13 @@ import { Dropdown } from '../atlas-dropdown'
 import { Elevations } from '../theme/theme'
 import SearchIcon from '@material-ui/icons/SearchTwoTone'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
+import {
+  Link,
+  LinkProps,
+  useHistory,
+  useLocation,
+  useParams,
+} from 'react-router-dom'
 import _ from 'lodash'
 import fetch from '../../react-component/utils/fetch'
 import TextField from '@material-ui/core/TextField'
@@ -258,7 +264,15 @@ const useSearchResults = (searchText: string) => {
   return state
 }
 
-const OpenSearch = ({ onFinish }: { onFinish: () => void }) => {
+const OpenSearch = ({
+  onFinish,
+  constructLink,
+  label,
+}: {
+  onFinish: (selection: LazyQueryResult) => void
+  constructLink: (result: LazyQueryResult) => LinkProps['to']
+  label: string
+}) => {
   const [positioningDone, setPositioningDone] = React.useState(false)
   const [value, setValue] = React.useState('')
   const [open, setOpen] = React.useState(true)
@@ -331,7 +345,7 @@ const OpenSearch = ({ onFinish }: { onFinish: () => void }) => {
         return (
           <Link
             className="w-full p-2 font-normal no-underline hover:font-normal hover:no-underline"
-            to={`/search/${option.plain.id}`}
+            to={constructLink(option)}
           >
             <OverflowTooltip>
               {({ refOfThingToMeasure }) => {
@@ -350,14 +364,7 @@ const OpenSearch = ({ onFinish }: { onFinish: () => void }) => {
       }}
       onChange={(_e, value) => {
         if (value) {
-          history.replace({
-            pathname: `/search/${value.plain.id}`,
-            search: '',
-          })
-          onFinish()
-          addSnack(`Search '${value.plain.metacard.properties.title}' opened`, {
-            alertProps: { severity: 'info' },
-          })
+          onFinish(value)
         }
       }}
       renderInput={(params) => (
@@ -367,7 +374,7 @@ const OpenSearch = ({ onFinish }: { onFinish: () => void }) => {
           onChange={(e) => {
             setValue(e.target.value)
           }}
-          label="Open a saved search"
+          label={label}
           variant="outlined"
           autoFocus
           InputProps={{
@@ -396,22 +403,81 @@ const OptionsButton = () => {
     selectionInterface,
   } = React.useContext(SavedSearchModeContext)
   const menuState = useMenuState()
-  const menuState2 = useMenuState()
+  const menuStateOpenSearch = useMenuState()
+  const menuStateNewFromExisting = useMenuState()
   const addSnack = useSnack()
+  const history = useHistory()
   return (
     <>
       <Button innerRef={menuState.anchorRef} onClick={menuState.handleClick}>
         <span className="Mui-text-primary">Options</span> <MoreVert />
       </Button>
       <Popover
-        open={menuState2.open}
+        open={menuStateNewFromExisting.open}
         anchorEl={menuState.anchorRef.current}
-        onClose={menuState2.handleClose}
+        onClose={menuStateNewFromExisting.handleClose}
       >
         <Paper elevation={Elevations.overlays} className="p-2">
           <OpenSearch
-            onFinish={() => {
-              menuState2.handleClose()
+            label="Start a new search from an existing saved search"
+            constructLink={(result) => {
+              const copy = JSON.parse(
+                JSON.stringify(result.plain.metacard.properties)
+              )
+              delete copy.id
+              delete copy.title
+              const encodedQueryModel = encodeURIComponent(JSON.stringify(copy))
+              return {
+                pathname: '/search',
+                search: `?defaultQuery=${encodedQueryModel}`,
+              }
+            }}
+            onFinish={(result) => {
+              const copy = JSON.parse(
+                JSON.stringify(result.plain.metacard.properties)
+              )
+              delete copy.id
+              delete copy.title
+              const encodedQueryModel = encodeURIComponent(JSON.stringify(copy))
+              history.replace({
+                pathname: '/search',
+                search: `?defaultQuery=${encodedQueryModel}`,
+              })
+              selectionInterface.getCurrentQuery().set(copy)
+              addSnack(
+                `New search based on '${result.plain.metacard.properties.title}'`,
+                {
+                  alertProps: { severity: 'info' },
+                }
+              )
+              menuStateNewFromExisting.handleClose()
+            }}
+          />
+        </Paper>
+      </Popover>
+      <Popover
+        open={menuStateOpenSearch.open}
+        anchorEl={menuState.anchorRef.current}
+        onClose={menuStateOpenSearch.handleClose}
+      >
+        <Paper elevation={Elevations.overlays} className="p-2">
+          <OpenSearch
+            label="Open a saved search"
+            constructLink={(result) => {
+              return `/search/${result.plain.id}`
+            }}
+            onFinish={(value) => {
+              history.replace({
+                pathname: `/search/${value.plain.id}`,
+                search: '',
+              })
+              addSnack(
+                `Search '${value.plain.metacard.properties.title}' opened`,
+                {
+                  alertProps: { severity: 'info' },
+                }
+              )
+              menuStateOpenSearch.handleClose()
             }}
           />
         </Paper>
@@ -440,12 +506,20 @@ const OptionsButton = () => {
         >
           New
         </MenuItem>
-        <MenuItem>New from existing</MenuItem>
         <MenuItem
-          innerRef={menuState2.anchorRef}
+          innerRef={menuStateNewFromExisting.anchorRef}
           onClick={() => {
             menuState.handleClose()
-            menuState2.handleClick()
+            menuStateNewFromExisting.handleClick()
+          }}
+        >
+          New from existing
+        </MenuItem>
+        <MenuItem
+          innerRef={menuStateOpenSearch.anchorRef}
+          onClick={() => {
+            menuState.handleClose()
+            menuStateOpenSearch.handleClick()
           }}
         >
           Open
@@ -485,92 +559,6 @@ const OptionsButton = () => {
         </MenuItem>
       </Menu>
     </>
-  )
-  return (
-    <MenuState>
-      {({ handleClick, handleClose, anchorRef, open }) => {
-        return (
-          <>
-            <Button onClick={handleClick}>
-              Options <MoreVert />
-            </Button>
-            <Menu
-              anchorEl={anchorRef.current}
-              open={open}
-              onClose={handleClose}
-              keepMounted={true}
-            >
-              <MenuItem onClick={() => {}}>New</MenuItem>
-              <MenuItem>New from existing</MenuItem>
-              <MenuItem>Open</MenuItem>
-              <MenuItem disabled={searchPageMode === 'adhoc'}>
-                Make a copy
-              </MenuItem>
-              <DarkDivider className="m-2" />
-              <MenuItem disabled={searchPageMode === 'adhoc'}>Rename</MenuItem>
-              <MenuItem disabled={searchPageMode === 'adhoc'}>
-                Move to trash
-              </MenuItem>
-              <DarkDivider className="m-2" />
-              <MenuItem
-                onClick={() => {
-                  selectionInterface.getCurrentQuery().set('type', 'advanced')
-                  handleClose()
-                }}
-              >
-                Advanced View
-              </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  selectionInterface.getCurrentQuery().set('type', 'basic')
-                  handleClose()
-                }}
-              >
-                Basic View
-              </MenuItem>
-            </Menu>
-          </>
-        )
-      }}
-    </MenuState>
-  )
-  return (
-    <Dropdown
-      content={(context) => {
-        return (
-          <BetterClickAwayListener
-            onClickAway={() => {
-              context.deepCloseAndRefocus.bind(context)()
-            }}
-          >
-            <Paper>
-              3sq
-              <SearchInteractions
-                model={selectionInterface.getCurrentQuery()}
-                onClose={() => {
-                  context.deepCloseAndRefocus.bind(context)()
-                }}
-              />
-            </Paper>
-          </BetterClickAwayListener>
-        )
-      }}
-    >
-      {({ handleClick }) => {
-        return (
-          <Button
-            disabled={typeof data === 'boolean' && searchPageMode === 'saved'}
-            variant="text"
-            color="primary"
-            endIcon={<MoreVert className="Mui-text-text-primary" />}
-            size="small"
-            onClick={handleClick}
-          >
-            Options
-          </Button>
-        )
-      }}
-    </Dropdown>
   )
 }
 
@@ -1134,6 +1122,22 @@ const SavedSearchModeContext = React.createContext({
   setSaveVersion: (() => {}) as React.Dispatch<number>,
 })
 
+const getDefaultQueryData = (
+  location: Location<History.UnknownFacade>
+): any => {
+  let urlBasedQuery = location.search.split('?defaultQuery=')[1]
+  if (urlBasedQuery) {
+    try {
+      const urlBasedData = JSON.parse(decodeURIComponent(urlBasedQuery))
+      urlBasedData.filterTree = JSON.parse(urlBasedData.filterTree)
+      return urlBasedData
+    } catch (err) {
+      console.log(err)
+      return {}
+    }
+  }
+}
+
 export const HomePage = () => {
   const searchPageMode = useSearchPageMode()
   const data = useSavedSearchPageMode()
@@ -1143,39 +1147,35 @@ export const HomePage = () => {
   console.log(searchPageMode)
   console.log(data)
   const location = useLocation()
-  let urlBasedQuery = location.search.split('?defaultQuery=')[1]
-  if (urlBasedQuery) {
-    try {
-      urlBasedQuery = new Query.Model(
-        JSON.parse(decodeURIComponent(urlBasedQuery))
-      )
-      ;(urlBasedQuery as any).startSearchFromFirstPage()
-    } catch (err) {
-      console.log(err)
-      urlBasedQuery = ''
+
+  React.useEffect(() => {
+    let urlBasedQuery = location.search.split('?defaultQuery=')[1]
+    if (urlBasedQuery) {
+      ;(selectionInterface.getCurrentQuery() as any).startSearchFromFirstPage()
     }
-  }
-  // @ts-ignore ts-migrate(6133) FIXME: 'setQueryModel' is declared but its value is never... Remove this comment to see the full error message
-  const [queryModel, setQueryModel] = React.useState(
-    urlBasedQuery || new Query.Model()
-  )
+  }, [])
   const [selectionInterface] = React.useState(
     new SelectionInterfaceModel({
-      currentQuery: queryModel,
+      currentQuery: new Query.Model(getDefaultQueryData(location)),
     })
   )
-  useKeepSearchInUrl({ queryModel, on: searchPageMode === 'adhoc' })
+  useKeepSearchInUrl({
+    queryModel: selectionInterface.getCurrentQuery(),
+    on: searchPageMode === 'adhoc',
+  })
   React.useEffect(() => {
     if (typeof data !== 'boolean') {
       selectionInterface.getCurrentQuery().set(data.plain.metacard.properties)
     }
   }, [data])
-  React.useEffect(() => {
+  useUpdateEffect(() => {
     if (searchPageMode === 'adhoc') {
       selectionInterface.getCurrentQuery().unset('id')
-      selectionInterface.getCurrentQuery().resetToDefaults()
+      if (location.search === '') {
+        selectionInterface.getCurrentQuery().resetToDefaults()
+      }
     }
-  }, [searchPageMode])
+  }, [searchPageMode, location.search])
   React.useEffect(() => {
     const controller = new AbortController()
     let timeoutid = (undefined as unknown) as NodeJS.Timeout

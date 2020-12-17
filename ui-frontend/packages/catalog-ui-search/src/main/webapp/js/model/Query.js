@@ -187,6 +187,9 @@ Query.Model = Backbone.AssociatedModel.extend({
   initialize() {
     _.bindAll.apply(_, [this].concat(_.functions(this))) // underscore bindAll does not take array arg
     const filterTree = this.get('filterTree')
+    if (filterTree && typeof filterTree === 'string') {
+      this.set('filterTree', JSON.parse(filterTree))
+    }
     // when we make drastic changes to filter tree it will be necessary to fall back to cql and reconstruct a filter tree that's compatible
     if (!filterTree || filterTree.id === undefined) {
       this.set('filterTree', cql.read(this.get('cql'))) // reconstruct
