@@ -15,6 +15,7 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr:'25'))
         disableConcurrentBuilds()
         timestamps()
+        skipDefaultCheckout()
     }
     triggers {
         /*
@@ -37,6 +38,14 @@ pipeline {
                 dockerd {}
                 slackSend color: 'good', message: "STARTED: ${JOB_NAME} ${BUILD_NUMBER} ${BUILD_URL}"
                 postCommentIfPR("Internal build has been started, your results will be available at build completion.", "${GITHUB_USERNAME}", "${GITHUB_REPONAME}", "${GITHUB_TOKEN}")
+            }
+        }
+        // Checkout the repository
+        stage('Checkout repo') {
+            steps {
+                retry(3) {
+                    checkout scm
+                }
             }
         }
         stage('Full Build') {
