@@ -197,7 +197,7 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
   const sorts = getSorts(selectionInterface)
   const args = {
     hiddenFields: hiddenFields.length > 0 ? hiddenFields : [],
-    columnOrder: columnOrder.length > 0 ? columnOrder : {},
+    columnOrder: columnOrder.length > 0 ? columnOrder : [],
     columnAliasMap: properties.attributeAliases,
   }
 
