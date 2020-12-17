@@ -14,7 +14,6 @@
  **/
 import * as React from 'react'
 
-import extension from '../../extension-points'
 import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
 import { ValueTypes } from '../filter-builder/filter.structure'
