@@ -290,6 +290,14 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .Mui-icon-size-small {
         font-size: 18px;
       }
+      [disabled] .Mui-text-text-primary,
+      [disabled] .Mui-text-primary,
+      [disabled] .Mui-text-secondary {
+        color: ${(props) =>
+          props.palette.type === 'dark'
+            ? 'rgba(255, 255, 255, 0.3)'
+            : 'rgba(0, 0, 0, 0.26)'};
+      }
       .Mui-text-text-primary {
         color: ${(props) => props.palette.text.primary};
       }

@@ -58,9 +58,13 @@ import useSnack from '../hooks/useSnack'
 import Popover from '@material-ui/core/Popover'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
+import TrashIcon from '@material-ui/icons/Delete'
+import RestoreFromTrashIcon from '@material-ui/icons/RestoreFromTrash'
 import OverflowTooltip, {
   OverflowTooltipHTMLElement,
 } from '../overflow-tooltip/overflow-tooltip'
+const ResultUtils = require('../../js/ResultUtils.js')
+
 type SaveFormType = {
   selectionInterface: any
   onSave: (title: string) => void
@@ -399,9 +403,13 @@ const OptionsButton = () => {
     data,
     searchPageMode,
     isSaving,
+    isRestoring,
+    isDeleting,
     setIsSaving,
+    setIsDeleting,
     selectionInterface,
   } = React.useContext(SavedSearchModeContext)
+  const { closed } = useResizableGridContext()
   const menuState = useMenuState()
   const menuStateOpenSearch = useMenuState()
   const menuStateNewFromExisting = useMenuState()
@@ -419,8 +427,14 @@ const OptionsButton = () => {
   }, [menuState.open])
   return (
     <>
-      <Button innerRef={menuState.anchorRef} onClick={menuState.handleClick}>
-        <span className="Mui-text-primary">Options</span> <MoreVert />
+      <Button
+        fullWidth
+        innerRef={menuState.anchorRef}
+        onClick={menuState.handleClick}
+        disabled={isRestoring || isDeleting}
+      >
+        {closed ? null : <span className="Mui-text-primary">Options</span>}
+        <MoreVert />
       </Button>
       <Popover
         open={menuStateCopy.open}
@@ -447,6 +461,7 @@ const OptionsButton = () => {
               addSnack(`Making a copy of ${title}`, {
                 alertProps: { severity: 'info' },
               })
+              setIsSaving(true)
             }}
             selectionInterface={selectionInterface}
           />
@@ -578,24 +593,21 @@ const OptionsButton = () => {
             menuState.handleClose()
             menuStateCopy.handleClick()
             return
-            menuState.handleClose()
-            const title = selectionInterface.getCurrentQuery().get('title')
-            selectionInterface
-              .getCurrentQuery()
-              .set('id', null)
-              .set('title', '')
-            addSnack(`Making a copy of ${title}`, {
-              alertProps: { severity: 'info' },
-            })
           }}
         >
           Make a copy
         </MenuItem>
         <DarkDivider className="m-2" />
-        <MenuItem disabled={searchPageMode === 'adhoc'}>Save</MenuItem>
-        <MenuItem disabled={searchPageMode === 'adhoc'}>Save as</MenuItem>
+        {/* <MenuItem disabled={searchPageMode === 'adhoc'}>Save</MenuItem>
+        <MenuItem disabled={searchPageMode === 'adhoc'}>Save as</MenuItem> */}
         <MenuItem disabled={searchPageMode === 'adhoc'}>Rename</MenuItem>
-        <MenuItem disabled={searchPageMode === 'adhoc'} onClick={() => {}}>
+        <MenuItem
+          disabled={searchPageMode === 'adhoc'}
+          onClick={() => {
+            setIsDeleting(true)
+            menuState.handleClose()
+          }}
+        >
           Move to trash
         </MenuItem>
         <DarkDivider className="m-2" />
@@ -638,6 +650,7 @@ const SaveButton = () => {
     data,
     searchPageMode,
     isSaving,
+    isDeleting,
     setIsSaving,
     selectionInterface,
   } = React.useContext(SavedSearchModeContext)
@@ -688,7 +701,7 @@ const SaveButton = () => {
         }
         return (
           <ButtonWithTwoStates
-            disabled={data === true}
+            disabled={data === true || isDeleting}
             variant="outlined"
             color="primary"
             size="small"
@@ -705,14 +718,20 @@ const SaveButton = () => {
                 state: searchPageMode === 'adhoc' ? 'Save' : 'Save as',
                 loading: false,
               },
+              {
+                state: 'Deleting',
+                loading: true,
+              },
             ]}
-            state={
-              isSaving
-                ? 'Saving'
-                : searchPageMode === 'adhoc'
-                ? 'Save'
-                : 'Save as'
-            }
+            state={(() => {
+              if (isDeleting) {
+                return 'Deleting'
+              }
+              if (isSaving) {
+                return 'Saving'
+              }
+              return searchPageMode === 'adhoc' ? 'Save' : 'Save as'
+            })()}
           />
         )
       }}
@@ -722,9 +741,13 @@ const SaveButton = () => {
 
 const LeftBottom = () => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
-  const { data, searchPageMode, selectionInterface } = React.useContext(
-    SavedSearchModeContext
-  )
+  const {
+    data,
+    searchPageMode,
+    selectionInterface,
+    isRestoring,
+    isDeleting,
+  } = React.useContext(SavedSearchModeContext)
 
   if (closed) {
     return (
@@ -751,7 +774,11 @@ const LeftBottom = () => {
           </Button>
 
           <Button
-            disabled={typeof data === 'boolean' && searchPageMode === 'saved'}
+            disabled={
+              (typeof data === 'boolean' && searchPageMode === 'saved') ||
+              isRestoring ||
+              isDeleting
+            }
             className="mt-3"
             fullWidth
             variant="contained"
@@ -796,7 +823,11 @@ const LeftBottom = () => {
       </Grid>
       <Grid item className="ml-auto">
         <Button
-          disabled={typeof data === 'boolean' && searchPageMode === 'saved'}
+          disabled={
+            (typeof data === 'boolean' && searchPageMode === 'saved') ||
+            isRestoring ||
+            isDeleting
+          }
           variant="contained"
           color="primary"
           size="small"
@@ -811,11 +842,138 @@ const LeftBottom = () => {
   )
 }
 
+const RestoreIndicator = () => {
+  const [restoreProgress, setRestoreProgress] = React.useState(0)
+  const { isRestoring, itemToRestore } = React.useContext(
+    SavedSearchModeContext
+  )
+  const { closed } = useResizableGridContext()
+  const [showTempMessage, setShowTempMessage] = React.useState(false)
+  React.useEffect(() => {
+    let timeoutid = (undefined as unknown) as NodeJS.Timeout
+    if (isRestoring) {
+      timeoutid = setTimeout(() => {
+        const nextVal = restoreProgress >= 100 ? 70 : restoreProgress + 3
+        setRestoreProgress(nextVal)
+      }, 1000)
+    }
+    return () => {
+      clearTimeout(timeoutid)
+    }
+  }, [isRestoring, restoreProgress])
+  useUpdateEffect(() => {
+    let timeoutid = (undefined as unknown) as NodeJS.Timeout
+    if (isRestoring === false) {
+      setShowTempMessage(true)
+      timeoutid = setTimeout(() => {
+        setShowTempMessage(false)
+      }, 4000)
+    }
+    return () => {
+      clearTimeout(timeoutid)
+    }
+  }, [isRestoring])
+  if (!isRestoring && !showTempMessage) {
+    return null
+  }
+  return (
+    <>
+      <span
+        className={`flex-shrink-0 flex items-center flex-no-wrap ${
+          closed ? 'mr-min flex-col' : 'mt-min flex-row'
+        }`}
+      >
+        {isRestoring ? (
+          <>
+            <LinearProgress
+              className="text-current text-base w-full absolute bottom-0 left-0 h-1"
+              variant="determinate"
+              value={restoreProgress}
+            />
+            <CircularProgress
+              className="text-current text-base"
+              style={{ width: '1rem', height: '1rem' }}
+            />
+            <span
+              className={`${closed ? 'writing-mode-vertical-lr mt-1' : 'ml-1'}`}
+            >
+              Restoring '{itemToRestore?.plain.metacard.properties.title}'' from
+              trash ...
+            </span>
+          </>
+        ) : (
+          <>
+            <RestoreFromTrashIcon className="text-base" />{' '}
+            <span
+              className={`${closed ? 'writing-mode-vertical-lr mt-1' : 'ml-1'}`}
+            >
+              {showTempMessage ? 'Restored from trash' : ''}
+            </span>
+          </>
+        )}
+      </span>
+    </>
+  )
+}
+
+const DeleteIndicator = () => {
+  const { isDeleting } = React.useContext(SavedSearchModeContext)
+  const { closed } = useResizableGridContext()
+  const [showTempMessage, setShowTempMessage] = React.useState(false)
+  useUpdateEffect(() => {
+    let timeoutid = (undefined as unknown) as NodeJS.Timeout
+    if (isDeleting === false) {
+      setShowTempMessage(true)
+      timeoutid = setTimeout(() => {
+        setShowTempMessage(false)
+      }, 4000)
+    }
+    return () => {
+      clearTimeout(timeoutid)
+    }
+  }, [isDeleting])
+  if (!isDeleting && !showTempMessage) {
+    return null
+  }
+  return (
+    <>
+      <span
+        className={`opacity-75 text-sm flex-shrink-0 flex items-center flex-no-wrap ${
+          closed ? 'mr-min flex-col' : 'mt-min flex-row'
+        }`}
+      >
+        {isDeleting ? (
+          <>
+            <CircularProgress
+              className="text-current text-base"
+              style={{ width: '1rem', height: '1rem' }}
+            />{' '}
+            <span
+              className={`${closed ? 'writing-mode-vertical-lr mt-1' : 'ml-1'}`}
+            >
+              Moving to trash ...
+            </span>
+          </>
+        ) : (
+          <>
+            <TrashIcon className="text-base" />{' '}
+            <span
+              className={`${closed ? 'writing-mode-vertical-lr mt-1' : 'ml-1'}`}
+            >
+              {showTempMessage ? 'Moved to trash' : ''}
+            </span>
+          </>
+        )}
+      </span>
+    </>
+  )
+}
+
 const SaveIndicator = () => {
   const { isSaving } = React.useContext(SavedSearchModeContext)
   const { closed } = useResizableGridContext()
   const [showTempMessage, setShowTempMessage] = React.useState(false)
-  React.useEffect(() => {
+  useUpdateEffect(() => {
     let timeoutid = (undefined as unknown) as NodeJS.Timeout
     if (isSaving === false) {
       setShowTempMessage(true)
@@ -867,6 +1025,7 @@ const LeftTop = () => {
     data,
     searchPageMode,
     isSaving,
+    isRestoring,
     setIsSaving,
     selectionInterface,
   } = React.useContext(SavedSearchModeContext)
@@ -880,13 +1039,18 @@ const LeftTop = () => {
       }`}
     >
       <div
-        className={`h-full w-full p-2 ${
+        className={`h-full w-full relative p-2 ${
           closed
             ? 'flex flex-col flex-no-wrap items-center'
             : 'flex flex-row flex-no-wrap items-center'
         }`}
       >
-        {searchPageMode === 'adhoc' ? (
+        {isRestoring ? (
+          <div>
+            <RestoreIndicator />
+          </div>
+        ) : null}
+        {!isRestoring && searchPageMode === 'adhoc' ? (
           <Dropdown
             content={(context) => {
               return (
@@ -1009,6 +1173,8 @@ const LeftTop = () => {
                         {data.plain.metacard.properties.title}
                       </span>
                       <SaveIndicator />
+                      <DeleteIndicator />
+                      <RestoreIndicator />
                     </div>
                   </Button>
                 )
@@ -1018,7 +1184,11 @@ const LeftTop = () => {
         ) : (
           <></>
         )}
-        <div className={`ml-auto flex-shrink-0 ${closed ? '' : ''}`}>
+        <div
+          className={`ml-auto flex-shrink-0 ${
+            closed ? 'w-full order-first pt-1 h-16' : ''
+          }`}
+        >
           <OptionsButton />
         </div>
       </div>
@@ -1029,10 +1199,18 @@ const LeftTop = () => {
 
 const LeftMiddle = () => {
   const { closed } = useResizableGridContext()
-  const { data, searchPageMode, selectionInterface } = React.useContext(
-    SavedSearchModeContext
-  )
+  const {
+    data,
+    searchPageMode,
+    selectionInterface,
+    isRestoring,
+    isDeleting,
+  } = React.useContext(SavedSearchModeContext)
 
+  if (isRestoring || isDeleting) {
+    // eventually add something?
+    return <div className="overflow-hidden w-full h-full flex-shrink"></div>
+  }
   if (data === false && searchPageMode === 'saved') {
     // eventually add something?
     return <div className="overflow-hidden w-full h-full flex-shrink"></div>
@@ -1180,7 +1358,18 @@ const AutoSave = () => {
   const { listenTo, stopListening } = useBackbone()
   React.useEffect(() => {
     const callback = () => {
-      if (on && queryModel.get('id')) {
+      const changedAttributes = Object.keys(queryModel.changedAttributes())
+      const isFromSwappingToSavedSearch = changedAttributes.includes('id')
+      const isAttributeThatMatters =
+        changedAttributes.includes('filterTree') ||
+        changedAttributes.includes('sorts') ||
+        changedAttributes.includes('sources')
+      if (
+        on &&
+        queryModel.get('id') &&
+        !isFromSwappingToSavedSearch &&
+        isAttributeThatMatters
+      ) {
         setSaveVersion(Math.random())
         setIsSaving(true)
       }
@@ -1199,6 +1388,11 @@ const SavedSearchModeContext = React.createContext({
   searchPageMode: 'adhoc' as SearchPageMode,
   isSaving: false as boolean,
   setIsSaving: (() => {}) as React.Dispatch<boolean>,
+  isDeleting: false as boolean,
+  setIsDeleting: (() => {}) as React.Dispatch<boolean>,
+  isRestoring: false as boolean,
+  setIsRestoring: (() => {}) as React.Dispatch<boolean>,
+  itemToRestore: null as null | LazyQueryResult,
   selectionInterface: {} as any,
   setSaveVersion: (() => {}) as React.Dispatch<number>,
 })
@@ -1222,10 +1416,16 @@ export const HomePage = () => {
   const data = useSavedSearchPageMode()
   const [saveVersion, setSaveVersion] = React.useState(Math.random()) // use this to see if we should abort the current save since we have more current data
   const [isSaving, setIsSaving] = React.useState(false)
+  const [isRestoring, setIsRestoring] = React.useState(false)
+  const [itemToRestore, setItemToRestore] = React.useState(
+    null as null | LazyQueryResult
+  )
+  const [isDeleting, setIsDeleting] = React.useState(false)
   const history = useHistory()
   console.log(searchPageMode)
   console.log(data)
   const location = useLocation()
+  const addSnack = useSnack()
 
   React.useEffect(() => {
     let urlBasedQuery = location.search.split('?defaultQuery=')[1]
@@ -1310,6 +1510,91 @@ export const HomePage = () => {
       controller.abort()
     }
   }, [isSaving, saveVersion])
+  React.useEffect(() => {
+    const controller = new AbortController()
+    let timeoutid = (undefined as unknown) as NodeJS.Timeout
+    if (isDeleting && typeof data !== 'boolean') {
+      timeoutid = setTimeout(() => {
+        const currentQuery = selectionInterface.getCurrentQuery()
+        const currentQueryJSON = currentQuery.toJSON()
+        const payload = {
+          id: '1',
+          jsonrpc: '2.0',
+          method: 'ddf.catalog/delete',
+          params: {
+            ids: [currentQueryJSON.id],
+          },
+        }
+
+        fetch('/direct', {
+          method: 'POST',
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        }).then(() => {
+          setTimeout(() => {
+            setIsDeleting(false)
+
+            history.replace({
+              pathname: `/search`,
+              search: '',
+            })
+
+            addSnack(
+              `The search '${currentQueryJSON.title}' was successfully deleted.`,
+              {
+                undo: () => {
+                  setItemToRestore(data)
+                  setIsRestoring(true)
+                },
+              }
+            )
+          }, 1000)
+        })
+      }, 500)
+    }
+    return () => {
+      clearTimeout(timeoutid)
+      controller.abort()
+    }
+  }, [isDeleting])
+  React.useEffect(() => {
+    const controller = new AbortController()
+    let timeoutid = (undefined as unknown) as NodeJS.Timeout
+    let unsubscibeCallback = () => {}
+    if (isRestoring && itemToRestore) {
+      unsubscibeCallback = itemToRestore.subscribeTo({
+        subscribableThing: 'backboneSync',
+        callback: () => {
+          const deletedId =
+            itemToRestore.plain.metacard.properties['metacard.deleted.id']
+          const deletedVersion =
+            itemToRestore.plain.metacard.properties['metacard.deleted.version']
+          const sourceId = itemToRestore.plain.metacard.properties['source-id']
+          if (!deletedId) {
+            timeoutid = setTimeout(() => {
+              itemToRestore.getBackbone().refreshData()
+            }, 5000)
+          } else {
+            fetch(
+              `./internal/history/revert/${deletedId}/${deletedVersion}/${sourceId}`
+            ).then(() => {
+              history.replace(`/search/${deletedId}`)
+              setIsRestoring(false)
+            })
+            unsubscibeCallback()
+          }
+        },
+      })
+      timeoutid = setTimeout(() => {
+        itemToRestore.getBackbone().refreshData()
+      }, 5000)
+    }
+    return () => {
+      clearTimeout(timeoutid)
+      unsubscibeCallback()
+      controller.abort()
+    }
+  }, [isRestoring])
   return (
     <SavedSearchModeContext.Provider
       value={{
@@ -1319,6 +1604,11 @@ export const HomePage = () => {
         setIsSaving,
         selectionInterface,
         setSaveVersion,
+        isDeleting,
+        setIsDeleting,
+        isRestoring,
+        setIsRestoring,
+        itemToRestore,
       }}
     >
       <AutoSave />
