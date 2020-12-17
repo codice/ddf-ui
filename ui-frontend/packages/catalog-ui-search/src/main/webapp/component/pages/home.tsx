@@ -62,12 +62,12 @@ import OverflowTooltip, {
   OverflowTooltipHTMLElement,
 } from '../overflow-tooltip/overflow-tooltip'
 type SaveFormType = {
-  context: DropdownContextType
   selectionInterface: any
-  onSave: () => void
+  onSave: (title: string) => void
+  onClose: () => void
 }
 
-const SaveForm = ({ context, selectionInterface, onSave }: SaveFormType) => {
+const SaveForm = ({ onClose, selectionInterface, onSave }: SaveFormType) => {
   const currentQuery = selectionInterface.getCurrentQuery()
 
   const [title, setTitle] = React.useState(currentQuery.get('title') || '')
@@ -98,9 +98,9 @@ const SaveForm = ({ context, selectionInterface, onSave }: SaveFormType) => {
             return false
           } else {
             currentQuery.set('title', title)
-            onSave()
+            onSave(title)
             e.preventDefault()
-            context.deepCloseAndRefocus()
+            onClose()
             return false
           }
         }}
@@ -131,7 +131,7 @@ const SaveForm = ({ context, selectionInterface, onSave }: SaveFormType) => {
             variant="text"
             color="primary"
             onClick={() => {
-              context.deepCloseAndRefocus()
+              onClose()
             }}
           >
             Cancel
@@ -405,13 +405,53 @@ const OptionsButton = () => {
   const menuState = useMenuState()
   const menuStateOpenSearch = useMenuState()
   const menuStateNewFromExisting = useMenuState()
+  const menuStateCopy = useMenuState()
   const addSnack = useSnack()
   const history = useHistory()
+  const [encodedQueryModelJSON, setEncodedQueryModelJSON] = React.useState('')
+
+  React.useEffect(() => {
+    setEncodedQueryModelJSON(
+      encodeURIComponent(
+        JSON.stringify(selectionInterface.getCurrentQuery().toJSON())
+      )
+    )
+  }, [menuState.open])
   return (
     <>
       <Button innerRef={menuState.anchorRef} onClick={menuState.handleClick}>
         <span className="Mui-text-primary">Options</span> <MoreVert />
       </Button>
+      <Popover
+        open={menuStateCopy.open}
+        anchorEl={menuState.anchorRef.current}
+        onClose={menuStateCopy.handleClose}
+      >
+        <Paper elevation={Elevations.overlays} className="p-2">
+          <SaveForm
+            onClose={() => {
+              menuStateCopy.handleClose()
+            }}
+            onSave={(title) => {
+              const currentQueryJSON = selectionInterface
+                .getCurrentQuery()
+                .toJSON()
+              currentQueryJSON.title = title
+
+              history.replace(
+                `/search?defaultQuery=${encodeURIComponent(
+                  JSON.stringify(currentQueryJSON)
+                )}`
+              )
+
+              addSnack(`Making a copy of ${title}`, {
+                alertProps: { severity: 'info' },
+              })
+            }}
+            selectionInterface={selectionInterface}
+          />
+        </Paper>
+      </Popover>
       <Popover
         open={menuStateNewFromExisting.open}
         anchorEl={menuState.anchorRef.current}
@@ -443,7 +483,11 @@ const OptionsButton = () => {
                 pathname: '/search',
                 search: `?defaultQuery=${encodedQueryModel}`,
               })
-              selectionInterface.getCurrentQuery().set(copy)
+              selectionInterface.getCurrentQuery().set({
+                ...copy,
+                id: null,
+                title: '',
+              })
               addSnack(
                 `New search based on '${result.plain.metacard.properties.title}'`,
                 {
@@ -524,10 +568,36 @@ const OptionsButton = () => {
         >
           Open
         </MenuItem>
-        <MenuItem disabled={searchPageMode === 'adhoc'}>Make a copy</MenuItem>
+        <MenuItem
+          component={Link}
+          disabled={searchPageMode === 'adhoc'}
+          to={`/search?defaultQuery=${encodedQueryModelJSON}`}
+          onClick={(e: any) => {
+            e.stopPropagation()
+            e.preventDefault()
+            menuState.handleClose()
+            menuStateCopy.handleClick()
+            return
+            menuState.handleClose()
+            const title = selectionInterface.getCurrentQuery().get('title')
+            selectionInterface
+              .getCurrentQuery()
+              .set('id', null)
+              .set('title', '')
+            addSnack(`Making a copy of ${title}`, {
+              alertProps: { severity: 'info' },
+            })
+          }}
+        >
+          Make a copy
+        </MenuItem>
         <DarkDivider className="m-2" />
+        <MenuItem disabled={searchPageMode === 'adhoc'}>Save</MenuItem>
+        <MenuItem disabled={searchPageMode === 'adhoc'}>Save as</MenuItem>
         <MenuItem disabled={searchPageMode === 'adhoc'}>Rename</MenuItem>
-        <MenuItem disabled={searchPageMode === 'adhoc'}>Move to trash</MenuItem>
+        <MenuItem disabled={searchPageMode === 'adhoc'} onClick={() => {}}>
+          Move to trash
+        </MenuItem>
         <DarkDivider className="m-2" />
         <MenuItem
           onClick={() => {
@@ -582,9 +652,12 @@ const SaveButton = () => {
           >
             <Paper elevation={Elevations.overlays}>
               <SaveForm
-                context={context}
+                onClose={() => {
+                  context.deepCloseAndRefocus
+                }}
                 selectionInterface={selectionInterface}
-                onSave={() => {
+                onSave={(title) => {
+                  selectionInterface.getCurrentQuery().set('title', title)
                   setIsSaving(true)
                 }}
               />
@@ -824,9 +897,12 @@ const LeftTop = () => {
                 >
                   <Paper elevation={Elevations.overlays}>
                     <SaveForm
-                      context={context}
+                      onClose={() => {
+                        context.deepCloseAndRefocus
+                      }}
                       selectionInterface={selectionInterface}
-                      onSave={() => {
+                      onSave={(title) => {
+                        selectionInterface.getCurrentQuery().set('title', title)
                         setIsSaving(true)
                       }}
                     />
@@ -892,9 +968,14 @@ const LeftTop = () => {
                   >
                     <Paper elevation={Elevations.overlays}>
                       <SaveForm
-                        context={context}
+                        onClose={() => {
+                          context.deepCloseAndRefocus
+                        }}
                         selectionInterface={selectionInterface}
-                        onSave={() => {
+                        onSave={(title) => {
+                          selectionInterface
+                            .getCurrentQuery()
+                            .set('title', title)
                           setIsSaving(true)
                         }}
                       />
@@ -1122,9 +1203,7 @@ const SavedSearchModeContext = React.createContext({
   setSaveVersion: (() => {}) as React.Dispatch<number>,
 })
 
-const getDefaultQueryData = (
-  location: Location<History.UnknownFacade>
-): any => {
+const getDefaultQueryData = (location: Location): any => {
   let urlBasedQuery = location.search.split('?defaultQuery=')[1]
   if (urlBasedQuery) {
     try {
@@ -1156,7 +1235,9 @@ export const HomePage = () => {
   }, [])
   const [selectionInterface] = React.useState(
     new SelectionInterfaceModel({
-      currentQuery: new Query.Model(getDefaultQueryData(location)),
+      currentQuery: new Query.Model(
+        getDefaultQueryData((location as unknown) as Location)
+      ),
     })
   )
   useKeepSearchInUrl({
