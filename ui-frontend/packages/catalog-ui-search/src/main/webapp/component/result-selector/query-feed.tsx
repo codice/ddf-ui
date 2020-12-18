@@ -12,7 +12,7 @@ import { useLazyResultsStatusFromSelectionInterface } from '../selection-interfa
 import Tooltip from '@material-ui/core/Tooltip'
 import { Elevations } from '../theme/theme'
 import FilterListIcon from '@material-ui/icons/FilterList'
-import Box from '@material-ui/core/Box'
+import { fuzzyHits } from './fuzzy-results'
 
 type Props = {
   selectionInterface: any
@@ -34,6 +34,7 @@ type CellValueProps = {
   warnings: string[]
   alwaysShowValue?: boolean
 }
+
 const CellValue = (props: CellValueProps) => {
   const {
     value,
@@ -102,7 +103,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
       </Cell>
       <Cell data-id="available-label">
         <CellValue
-          value={status.count}
+          value={fuzzyHits(status.count)}
           hasReturned={hasReturned}
           successful={successful}
           warnings={warnings}
@@ -111,7 +112,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
       </Cell>
       <Cell data-id="possible-label">
         <CellValue
-          value={status.hits}
+          value={fuzzyHits(status.hits)}
           hasReturned={hasReturned}
           successful={successful}
           warnings={warnings}
@@ -137,9 +138,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
             }}
             color="primary"
           >
-            <Box color="primary.text">
-              <FilterListIcon />
-            </Box>
+            <FilterListIcon className="Mui-text-text-primary" />
             Filter
           </Button>
         </Tooltip>
@@ -219,13 +218,15 @@ const QueryFeed = ({ selectionInterface }: Props) => {
     )
     resultCount =
       sourcesThatHaveReturned.length > 0
-        ? `${statusBySource
-            .filter((status) => status.hasReturned)
-            .filter((status) => status.successful)
-            .reduce((amt, status) => {
-              amt = amt + status.hits
-              return amt
-            }, 0)} hits`
+        ? fuzzyHits(
+            statusBySource
+              .filter((status) => status.hasReturned)
+              .filter((status) => status.successful)
+              .reduce((amt, status) => {
+                amt = amt + status.hits
+                return amt
+              }, 0)
+          )
         : 'Searching...'
     failed = sourcesThatHaveReturned.some((status) => !status.successful)
     pending = isSearching

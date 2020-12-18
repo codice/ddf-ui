@@ -19,14 +19,52 @@ type Attributetypes =
   | 'STRING'
   | 'BOOLEAN'
   | 'XML'
+// window.metacardDefinitions = metacardDefinitions
 
-const TypedMetacardDefs = {
+export const TypedMetacardDefs = {
+  /**
+   * We exclude thumbnail because although it is a type of attribute (BINARY) we don't usually support viewing in the UI, we handle it
+   */
   isHiddenTypeExceptThumbnail({ attr }: { attr: string }): boolean {
     return metacardDefinitions.isHiddenTypeExceptThumbnail(attr)
+  },
+  isHidden({ attr }: { attr: string }): boolean {
+    return metacardDefinitions.isHiddenType(attr)
+  },
+  getAllKnownAttributes: (): string[] => {
+    return []
+  },
+  // types that aren't real, but facilitate searching.  Filter these out in things like inspector or table since they aren't real attributes.
+  getSearchOnlyAttributes: (): string[] => {
+    return ['anyText', 'anyGeo']
+  },
+  getSortedMetacardTypes: (): {
+    alias?: string
+    hidden: boolean // not sure where this comes from, but it's not really accurate I think, use the isHidden methods instead
+    id: string
+    isInjected: boolean
+    multivalued: boolean
+    readOnly: boolean
+    type:
+      | 'BOOLEAN'
+      | 'DATE'
+      | 'LOCATION'
+      | 'STRING'
+      | 'BINARY'
+      | 'INTEGER'
+      | 'FLOAT'
+      | 'GEOMETRY'
+      | 'LONG'
+      | 'SHORT'
+      | 'XML'
+      | 'DOUBLE'
+  }[] => {
+    return metacardDefinitions.sortedMetacardTypes
   },
   getType({ attr }: { attr: string }): Attributetypes {
     return metacardDefinitions.metacardTypes[attr].type
   },
+  // O(1) lookup of attr alias
   getAlias({ attr }: { attr: string }): string {
     return properties.attributeAliases[attr] || attr
   },

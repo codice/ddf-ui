@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import Box from '@material-ui/core/Box'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
 import useTheme from '@material-ui/core/styles/useTheme'
 
@@ -21,7 +20,7 @@ const SelectionRipple = ({
     setHasSelection(selectedResultsArray.length !== 0)
   })
   return (
-    <Box
+    <div
       className={` w-full h-full absolute z-0 left-0 top-0 transition-transform  transform overflow-visible  ease-in-out ${
         hasSelection ? 'duration-1000' : 'duration-0'
       }`}

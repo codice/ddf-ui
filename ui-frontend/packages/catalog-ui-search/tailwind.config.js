@@ -8,6 +8,14 @@ module.exports = {
   ],
   theme: {
     namedGroups: ['1', '2'],
+    minWidth: {
+      0: '0',
+      '1/4': '25%',
+      '1/2': '50%',
+      '3/4': '75%',
+      full: '100%',
+      'screen-1/2': '50vw',
+    },
     extend: {
       animation: {
         none: 'none',

@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.codice.ddf.search</groupId>
         <artifactId>catalog-ui</artifactId>
-        <version>4.1.1-SNAPSHOT</version>
+        <version>4.1.6-SNAPSHOT</version>
     </parent>
 
     <groupId>org.codice.ddf.search</groupId>
     <artifactId>backend</artifactId>
-    <version>4.1.1-SNAPSHOT</version>
+    <version>4.1.6-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -20,6 +20,7 @@
         <module>catalog-ui-search</module>
         <module>catalog-ui-oauth</module>
         <module>catalog-ui-splitter</module>
+        <module>catalog-plugin-highlight</module>
         <module>intrigue-ui-app</module>
         <module>audit</module>
         <module>javalin-utils</module>

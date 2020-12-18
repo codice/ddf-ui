@@ -12,7 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import Box from '@material-ui/core/Box'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
@@ -132,9 +131,7 @@ const SortSelections = ({ value = [], onChange }: Props) => {
         >
           <Grid container direction="row" alignItems="center" wrap="nowrap">
             <Grid item>
-              <Box color="text.primary">
-                <AddIcon />
-              </Box>
+              <AddIcon className="Mui-text-text-primary" />
             </Grid>
             <Grid item>Sort</Grid>
           </Grid>

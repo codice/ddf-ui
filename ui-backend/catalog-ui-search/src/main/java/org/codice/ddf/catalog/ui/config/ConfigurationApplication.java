@@ -144,6 +144,8 @@ public class ConfigurationApplication implements SparkApplication {
 
   private Boolean phoneticsEnabled = false;
 
+  private Boolean fuzzyResultsEnabled = true;
+
   private BrandingPlugin branding;
 
   private Integer timeout = 300000;
@@ -576,6 +578,7 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("customTextNotationAttribute", customTextNotationAttribute);
     config.put("isSpellcheckEnabled", spellcheckEnabled);
     config.put("isPhoneticsEnabled", phoneticsEnabled);
+    config.put("isFuzzyResultsEnabled", fuzzyResultsEnabled);
     config.put(
         "isVersioningEnabled",
         historianConfiguration != null && historianConfiguration.isHistoryEnabled());
@@ -1192,6 +1195,14 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setPhoneticsEnabled(Boolean phoneticsEnabled) {
     this.phoneticsEnabled = phoneticsEnabled;
+  }
+
+  public Boolean getFuzzyResultsEnabled() {
+    return fuzzyResultsEnabled;
+  }
+
+  public void setFuzzyResultsEnabled(Boolean fuzzyResultsEnabled) {
+    this.fuzzyResultsEnabled = fuzzyResultsEnabled;
   }
 
   public void setHistorianConfiguration(HistorianConfiguration historian) {

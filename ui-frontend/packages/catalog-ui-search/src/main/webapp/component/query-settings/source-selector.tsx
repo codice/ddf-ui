@@ -10,11 +10,8 @@ import Grid from '@material-ui/core/Grid'
 import HomeIcon from '@material-ui/icons/Home'
 import CloudIcon from '@material-ui/icons/Cloud'
 import WarningIcon from '@material-ui/icons/Warning'
-import Box from '@material-ui/core/Box'
 import CheckIcon from '@material-ui/icons/Check'
 import Chip from '@material-ui/core/Chip'
-// @ts-ignore ts-migrate(6133) FIXME: 'Divider' is declared but its value is never read.
-import Divider from '@material-ui/core/Divider'
 import _ from 'lodash'
 type Props = {
   search: any
@@ -360,13 +357,15 @@ const SourceSelector = ({ search }: Props) => {
                     </Grid>
                     <Grid container direction="row" alignItems="center">
                       <Grid item>
-                        <Box
-                          color={
-                            source.available ? 'text.primary' : 'warning.main'
+                        <div
+                          className={
+                            source.available
+                              ? 'Mui-text-text-primary'
+                              : 'Mui-text-warning'
                           }
                         >
                           {source.id}
-                        </Box>
+                        </div>
                       </Grid>
                       <Grid item className="pl-2">
                         {source.available ? null : <WarningIcon />}
@@ -429,13 +428,15 @@ const SourceSelector = ({ search }: Props) => {
                     </Grid>
                     <Grid container direction="row" alignItems="center">
                       <Grid item>
-                        <Box
-                          color={
-                            source.available ? 'text.primary' : 'warning.main'
+                        <div
+                          className={
+                            source.available
+                              ? 'Mui-text-text-primary'
+                              : 'Mui-text-warning'
                           }
                         >
                           {source.id}
-                        </Box>
+                        </div>
                       </Grid>
                       <Grid item className="pl-2">
                         {source.available ? null : <WarningIcon />}

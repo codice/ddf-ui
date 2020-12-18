@@ -14,7 +14,6 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import TextField from '@material-ui/core/TextField'
 import { useDialog } from '../../dialog'
 import DialogActions from '@material-ui/core/DialogActions'
-import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
 import useSnack from '../../hooks/useSnack'
 import LinearProgress from '@material-ui/core/LinearProgress'
@@ -26,15 +25,17 @@ import useTheme from '@material-ui/core/styles/useTheme'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
-import TransferList from './transfer-list'
+import TransferList, { useCustomReadOnlyCheck } from './transfer-list'
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace'
 import AddIcon from '@material-ui/icons/Add'
+import EditIcon from '@material-ui/icons/Edit'
 import Box from '@material-ui/core/Box'
 import { Elevations } from '../../theme/theme'
 import { DarkDivider } from '../../dark-divider/dark-divider'
 import { displayHighlightedAttrInFull } from './highlightUtil'
 import DateTimePicker from '../../fields/date-time-picker'
 import Geometry from '../../../react-component/input-wrappers/geometry'
+import { useRerenderOnBackboneSync } from '../../../js/model/LazyQueryResult/hooks'
 
 function getSummaryShown(): string[] {
   const userchoices = user
@@ -172,9 +173,9 @@ export const Editor = ({
           Cancel and return to manage
         </Button>
       )}
-      <DialogTitle style={{ textAlign: 'center' }}>
+      <div className="text-2xl text-center px-2 pb-2 pt-4 font-normal truncate">
         Editing {label} of "{lazyResult.plain.metacard.properties.title}"
-      </DialogTitle>
+      </div>
       <Divider />
       <DialogContent style={{ minHeight: '30em', minWidth: '60vh' }}>
         {values.map((val: any, index: number) => {
@@ -428,11 +429,45 @@ const AttributeComponent = ({
     value = [value]
   }
   let label = TypedMetacardDefs.getAlias({ attr })
+  const { isNotWritable } = useCustomReadOnlyCheck()
+  const dialogContext = useDialog()
+
   const isFiltered =
     filter !== '' ? !label.toLowerCase().includes(filter.toLowerCase()) : false
   const MemoItem = React.useMemo(() => {
     return (
-      <Grid container direction="row" wrap={'nowrap'}>
+      <Grid
+        container
+        direction="row"
+        wrap={'nowrap'}
+        className="group relative"
+      >
+        {isNotWritable({ attribute: attr, lazyResult }) ? null : (
+          <div className="p-1 hidden group-hover:block absolute right-0 top-0">
+            <Button
+              onClick={() => {
+                dialogContext.setProps({
+                  open: true,
+                  children: (
+                    <Editor
+                      attr={attr}
+                      lazyResult={lazyResult}
+                      onCancel={() => {
+                        dialogContext.setProps({ open: false, children: null })
+                      }}
+                      onSave={() => {
+                        dialogContext.setProps({ open: false, children: null })
+                      }}
+                    />
+                  ),
+                })
+              }}
+            >
+              <EditIcon />
+            </Button>
+          </div>
+        )}
+
         <Grid
           item
           xs={4}
@@ -526,7 +561,8 @@ const AttributeComponent = ({
                               }
                               return displayHighlightedAttrInFull(
                                 lazyResult.highlights[attr],
-                                val
+                                val,
+                                index
                               )
                             } else {
                               return <Typography>{val}</Typography>
@@ -542,7 +578,7 @@ const AttributeComponent = ({
         </Grid>
       </Grid>
     )
-  }, [summaryShown, forceRender])
+  }, [summaryShown, forceRender, isNotWritable])
   return (
     <div style={{ display: isFiltered ? 'none' : 'block' }}>{MemoItem}</div>
   )
@@ -591,6 +627,7 @@ const Summary = ({ selectionInterface }: Props) => {
   const selection = Object.values(selectedResults)[0] as
     | LazyQueryResult
     | undefined
+  useRerenderOnBackboneSync({ lazyResult: selection })
 
   const dialogContext = useDialog()
 
@@ -647,6 +684,7 @@ const Summary = ({ selectionInterface }: Props) => {
           })
       : []
   }, [expanded, summaryShown])
+
   React.useEffect(() => {
     globalExpanded = expanded
   }, [expanded])
@@ -698,15 +736,13 @@ const Summary = ({ selectionInterface }: Props) => {
                             return attr.id
                           })
                           .sort()}
-                        updateActive={(active: string[]) => {
+                        lazyResult={selection}
+                        onSave={(active) => {
                           user
                             .get('user')
                             .get('preferences')
                             .set('inspector-summaryShown', active)
                           user.savePreferences()
-                        }}
-                        lazyResult={selection}
-                        onSave={() => {
                           // Force re-render after save to update values on page
                           // This is more reliable than "refreshing" the result which
                           // is frequently not synched up properly

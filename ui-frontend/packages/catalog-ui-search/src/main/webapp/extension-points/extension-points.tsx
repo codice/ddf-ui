@@ -20,6 +20,7 @@ import { Props } from '../react-component/filter/filter-input/filter-input'
 import { LazyQueryResult } from '../js/model/LazyQueryResult/LazyQueryResult'
 import { ResultType } from '../js/model/Types'
 import { ValueTypes } from '../component/filter-builder/filter.structure'
+import { Suggestion } from '../react-component/location/gazetteer'
 
 export type ExtensionPointsType = {
   providers: SFC<ProviderProps>
@@ -54,6 +55,7 @@ export type ExtensionPointsType = {
     value: ValueTypes['location']
   ) => null | any
   handleFilter: (map: any, filter: any) => null | any
+  suggester: (input: string) => null | Promise<Suggestion[]>
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -69,6 +71,7 @@ const ExtensionPoints: ExtensionPointsType = {
   navigationRight: [],
   serializeLocation: () => null,
   handleFilter: () => null,
+  suggester: () => null,
 }
 
 export default ExtensionPoints
