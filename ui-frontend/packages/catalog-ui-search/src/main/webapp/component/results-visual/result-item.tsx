@@ -49,7 +49,7 @@ import { clearSelection, hasSelection } from './result-item-row'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { TypedUserInstance } from '../singletons/TypedUser'
 import EditIcon from '@material-ui/icons/Edit'
-import { ResultsViewContext } from './results-visual'
+// import { ResultsViewContext } from './results-visual'
 import { Link } from '../link/link'
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (
@@ -164,7 +164,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
     e.stopPropagation()
     window.open(lazyResult.plain.metacard.properties['resource-download-url'])
   }
-  const { setEdit } = React.useContext(ResultsViewContext)
+  // const { setEdit } = React.useContext(ResultsViewContext)
   return (
     <Grid container direction="row" wrap="nowrap" alignItems="center">
       <Grid item className="h-full">

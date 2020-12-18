@@ -10,8 +10,6 @@ import { useLazyResultsFromSelectionInterface } from '../selection-interface/hoo
 // @ts-ignore ts-migrate(6133) FIXME: 'useStatusOfLazyResults' is declared but its value... Remove this comment to see the full error message
 import { useStatusOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
-import { Elevations } from '../theme/theme'
-import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
 import BackgroundInheritingDiv from '../theme/background-inheriting-div'
 type Props = {
@@ -43,7 +41,7 @@ const ResultsView = ({ selectionInterface }: Props) => {
               <div className="w-full h-full p-2">
                 Currently editing: {edit.plain.metacard.properties.title}
                 <Button
-                  onClick={(e) => {
+                  onClick={() => {
                     setEdit(null)
                   }}
                 >

@@ -14,7 +14,6 @@ import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 
 import MRC from '../../react-component/marionette-region-container'
 import Button, { ButtonProps } from '@material-ui/core/Button'
-import SearchInteractions from '../search-interactions'
 import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
 import MoreVert from '@material-ui/icons/MoreVert'
 import { Dropdown } from '../atlas-dropdown'
@@ -32,7 +31,6 @@ import _ from 'lodash'
 import fetch from '../../react-component/utils/fetch'
 import TextField from '@material-ui/core/TextField'
 import { DarkDivider } from '../dark-divider/dark-divider'
-import { DropdownContextType } from '../atlas-dropdown/dropdown.context'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import { useUpdateEffect } from 'react-use'
 import {
@@ -63,7 +61,6 @@ import RestoreFromTrashIcon from '@material-ui/icons/RestoreFromTrash'
 import OverflowTooltip, {
   OverflowTooltipHTMLElement,
 } from '../overflow-tooltip/overflow-tooltip'
-const ResultUtils = require('../../js/ResultUtils.js')
 
 type SaveFormType = {
   selectionInterface: any
@@ -244,7 +241,7 @@ const useSearchResults = (searchText: string) => {
       lazyResults: [],
       loading: true,
     })
-    const timeoutId = setTimeout(() => {
+    const timeoutId = window.setTimeout(() => {
       if (searchText.length >= 0) {
         selectionInterface.getCurrentQuery().startSearchFromFirstPage()
         setHasSearched(true)
@@ -252,7 +249,7 @@ const useSearchResults = (searchText: string) => {
     }, 500)
 
     return () => {
-      clearTimeout(timeoutId)
+      window.clearTimeout(timeoutId)
     }
   }, [searchText])
   const lazyResults = useLazyResultsFromSelectionInterface({
@@ -287,8 +284,6 @@ const OpenSearch = ({
   ] = React.useState<OverflowTooltipHTMLElement | null>(null)
   const [options, setOptions] = React.useState<LazyQueryResult[]>([])
   const { lazyResults, loading } = useSearchResults(value)
-  const addSnack = useSnack()
-  const history = useHistory()
   React.useEffect(() => {
     setOptions(lazyResults)
   }, [lazyResults])
@@ -302,17 +297,17 @@ const OpenSearch = ({
     }
   }, [currentHighlight])
   React.useEffect(() => {
-    const timeoutid = setTimeout(() => {
+    const timeoutid = window.setTimeout(() => {
       setPositioningDone(true)
     }, 500)
     return () => {
-      clearTimeout(timeoutid)
+      window.clearTimeout(timeoutid)
     }
   }, [])
   return (
     <Autocomplete
       className="w-64"
-      getOptionSelected={(option, value) => option.plain.id === option.plain.id}
+      getOptionSelected={(option) => option.plain.id === option.plain.id}
       getOptionLabel={(option) => option.plain.metacard.properties.title}
       options={options}
       innerRef={inputRef}
@@ -325,7 +320,7 @@ const OpenSearch = ({
       }}
       loading={loading}
       autoHighlight
-      onHighlightChange={(e, option) => {
+      onHighlightChange={() => {
         if (inputRef.current) {
           const highlightedElementString = (inputRef.current.querySelector(
             'input'
@@ -400,9 +395,7 @@ const OpenSearch = ({
 
 const OptionsButton = () => {
   const {
-    data,
     searchPageMode,
-    isSaving,
     isRestoring,
     isDeleting,
     setIsSaving,
@@ -850,27 +843,27 @@ const RestoreIndicator = () => {
   const { closed } = useResizableGridContext()
   const [showTempMessage, setShowTempMessage] = React.useState(false)
   React.useEffect(() => {
-    let timeoutid = (undefined as unknown) as NodeJS.Timeout
+    let timeoutid = undefined as number | undefined
     if (isRestoring) {
-      timeoutid = setTimeout(() => {
+      timeoutid = window.setTimeout(() => {
         const nextVal = restoreProgress >= 100 ? 70 : restoreProgress + 3
         setRestoreProgress(nextVal)
       }, 1000)
     }
     return () => {
-      clearTimeout(timeoutid)
+      window.clearTimeout(timeoutid)
     }
   }, [isRestoring, restoreProgress])
   useUpdateEffect(() => {
-    let timeoutid = (undefined as unknown) as NodeJS.Timeout
+    let timeoutid = undefined as number | undefined
     if (isRestoring === false) {
       setShowTempMessage(true)
-      timeoutid = setTimeout(() => {
+      timeoutid = window.setTimeout(() => {
         setShowTempMessage(false)
       }, 4000)
     }
     return () => {
-      clearTimeout(timeoutid)
+      window.clearTimeout(timeoutid)
     }
   }, [isRestoring])
   if (!isRestoring && !showTempMessage) {
@@ -921,15 +914,15 @@ const DeleteIndicator = () => {
   const { closed } = useResizableGridContext()
   const [showTempMessage, setShowTempMessage] = React.useState(false)
   useUpdateEffect(() => {
-    let timeoutid = (undefined as unknown) as NodeJS.Timeout
+    let timeoutid = undefined as number | undefined
     if (isDeleting === false) {
       setShowTempMessage(true)
-      timeoutid = setTimeout(() => {
+      timeoutid = window.setTimeout(() => {
         setShowTempMessage(false)
       }, 4000)
     }
     return () => {
-      clearTimeout(timeoutid)
+      window.clearTimeout(timeoutid)
     }
   }, [isDeleting])
   if (!isDeleting && !showTempMessage) {
@@ -974,15 +967,15 @@ const SaveIndicator = () => {
   const { closed } = useResizableGridContext()
   const [showTempMessage, setShowTempMessage] = React.useState(false)
   useUpdateEffect(() => {
-    let timeoutid = (undefined as unknown) as NodeJS.Timeout
+    let timeoutid = undefined as number | undefined
     if (isSaving === false) {
       setShowTempMessage(true)
-      timeoutid = setTimeout(() => {
+      timeoutid = window.setTimeout(() => {
         setShowTempMessage(false)
       }, 4000)
     }
     return () => {
-      clearTimeout(timeoutid)
+      window.clearTimeout(timeoutid)
     }
   }, [isSaving])
   return (
@@ -1024,7 +1017,6 @@ const LeftTop = () => {
   const {
     data,
     searchPageMode,
-    isSaving,
     isRestoring,
     setIsSaving,
     selectionInterface,
@@ -1345,9 +1337,7 @@ const useSavedSearchPageMode = (): SavedSearchPageMode => {
 
 const AutoSave = () => {
   const {
-    data,
     searchPageMode,
-    isSaving,
     setIsSaving,
     selectionInterface,
     setSaveVersion,
@@ -1459,9 +1449,9 @@ export const HomePage = () => {
   }, [searchPageMode, location.search])
   React.useEffect(() => {
     const controller = new AbortController()
-    let timeoutid = (undefined as unknown) as NodeJS.Timeout
+    let timeoutid = undefined as number | undefined
     if (isSaving) {
-      timeoutid = setTimeout(() => {
+      timeoutid = window.setTimeout(() => {
         const currentQuery = selectionInterface.getCurrentQuery()
         const isNew = currentQuery.id === undefined
         if (isNew) {
@@ -1493,7 +1483,7 @@ export const HomePage = () => {
           if (typeof data !== 'boolean') {
             data.getBackbone().refreshData()
           }
-          setTimeout(() => {
+          window.setTimeout(() => {
             setIsSaving(false)
 
             history.replace({
@@ -1505,16 +1495,16 @@ export const HomePage = () => {
       }, 500)
     }
     return () => {
-      clearTimeout(timeoutid)
+      window.clearTimeout(timeoutid)
       console.log(saveVersion + ': aborting old version')
       controller.abort()
     }
   }, [isSaving, saveVersion])
   React.useEffect(() => {
     const controller = new AbortController()
-    let timeoutid = (undefined as unknown) as NodeJS.Timeout
+    let timeoutid = undefined as number | undefined
     if (isDeleting && typeof data !== 'boolean') {
-      timeoutid = setTimeout(() => {
+      timeoutid = window.setTimeout(() => {
         const currentQuery = selectionInterface.getCurrentQuery()
         const currentQueryJSON = currentQuery.toJSON()
         const payload = {
@@ -1531,7 +1521,7 @@ export const HomePage = () => {
           body: JSON.stringify(payload),
           signal: controller.signal,
         }).then(() => {
-          setTimeout(() => {
+          window.setTimeout(() => {
             setIsDeleting(false)
 
             history.replace({
@@ -1553,13 +1543,13 @@ export const HomePage = () => {
       }, 500)
     }
     return () => {
-      clearTimeout(timeoutid)
+      window.clearTimeout(timeoutid)
       controller.abort()
     }
   }, [isDeleting])
   React.useEffect(() => {
     const controller = new AbortController()
-    let timeoutid = (undefined as unknown) as NodeJS.Timeout
+    let timeoutid = undefined as number | undefined
     let unsubscibeCallback = () => {}
     if (isRestoring && itemToRestore) {
       unsubscibeCallback = itemToRestore.subscribeTo({
@@ -1571,7 +1561,7 @@ export const HomePage = () => {
             itemToRestore.plain.metacard.properties['metacard.deleted.version']
           const sourceId = itemToRestore.plain.metacard.properties['source-id']
           if (!deletedId) {
-            timeoutid = setTimeout(() => {
+            timeoutid = window.setTimeout(() => {
               itemToRestore.getBackbone().refreshData()
             }, 5000)
           } else {
@@ -1585,12 +1575,12 @@ export const HomePage = () => {
           }
         },
       })
-      timeoutid = setTimeout(() => {
+      timeoutid = window.setTimeout(() => {
         itemToRestore.getBackbone().refreshData()
       }, 5000)
     }
     return () => {
-      clearTimeout(timeoutid)
+      window.clearTimeout(timeoutid)
       unsubscibeCallback()
       controller.abort()
     }
