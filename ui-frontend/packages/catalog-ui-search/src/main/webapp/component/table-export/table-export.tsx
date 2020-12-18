@@ -20,14 +20,12 @@ import {
   Transformer,
 } from '../../react-component/utils/export'
 const user = require('../../component/singletons/user-instance.js')
-import Sources from '../../component/singletons/sources-instance'
 import {
   exportResultSet,
   ExportCountInfo,
   DownloadInfo,
 } from '../../react-component/utils/export'
 import saveFile from '../../react-component/utils/save-file'
-const _ = require('underscore')
 const announcement = require('../../component/announcement/index.jsx')
 const properties = require('../../js/properties.js')
 const contentDisposition = require('content-disposition')
@@ -65,8 +63,7 @@ export function getStartIndex(
   //   : 1
 }
 function getSrcs(selectionInterface: any) {
-  const srcs = selectionInterface.getCurrentQuery().get('src')
-  return srcs === undefined ? _.pluck(Sources.toJSON(), 'id') : srcs
+  return selectionInterface.getCurrentQuery().getSelectedSources()
 }
 export function getSrcCount(
   src: any,
