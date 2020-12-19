@@ -7,7 +7,7 @@
 pipeline {
     agent {
         node {
-            label 'linux-large-ddf'
+            label 'linux-small'
             customWorkspace "/jenkins/workspace/${JOB_NAME}/${BUILD_NUMBER}"
         }
     }
@@ -98,15 +98,6 @@ pipeline {
         }
         unstable {
             slackSend color: '#ffb600', message: "UNSTABLE: ${JOB_NAME} ${BUILD_NUMBER}. See the results here: ${BUILD_URL}"
-        }
-        cleanup {
-            catchError(buildResult: null, stageResult: 'FAILURE') {
-                echo '...Cleaning up workspace'
-                cleanWs()
-                wrap([$class: 'MesosSingleUseSlave']) {
-                    sh 'echo "...Shutting down Jenkins slave: `hostname`"'
-                }
-            }
         }
     }
 }

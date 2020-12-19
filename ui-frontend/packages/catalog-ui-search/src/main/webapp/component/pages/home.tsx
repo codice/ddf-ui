@@ -17,7 +17,6 @@ import Button from '@material-ui/core/Button'
 import SearchInteractions from '../search-interactions'
 import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
 import MoreVert from '@material-ui/icons/MoreVert'
-import Box from '@material-ui/core/Box'
 import Divider from '@material-ui/core/Divider'
 import { Dropdown } from '../atlas-dropdown'
 import { Elevations } from '../theme/theme'
@@ -48,10 +47,14 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
               setLength(lastLength)
             }}
           >
-            <Box color="text.primary">
-              <KeyboardArrowRightIcon color="inherit" />
-              <KeyboardArrowRightIcon color="inherit" className="-ml-5" />
-            </Box>
+            <KeyboardArrowRightIcon
+              color="inherit"
+              className="Mui-text-text-primary"
+            />
+            <KeyboardArrowRightIcon
+              color="inherit"
+              className="-ml-5 Mui-text-text-primary"
+            />
           </Button>
         </Grid>
         <Grid item className="mt-3 w-full">
@@ -84,9 +87,7 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
                   size="small"
                   onClick={handleClick}
                 >
-                  <Box color="text.primary">
-                    <MoreVert />
-                  </Box>
+                  <MoreVert className="Mui-text-text-primary" />
                 </Button>
               )
             }}
@@ -125,10 +126,14 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
           }}
         >
           Collapse
-          <Box color="text.primary">
-            <KeyboardArrowLeftIcon color="inherit" />
-            <KeyboardArrowLeftIcon color="inherit" className="-ml-5" />
-          </Box>
+          <KeyboardArrowLeftIcon
+            color="inherit"
+            className="Mui-text-text-primary"
+          />
+          <KeyboardArrowLeftIcon
+            color="inherit"
+            className="-ml-5 Mui-text-text-primary"
+          />
         </Button>
       </Grid>
       <Grid item className="ml-auto">
@@ -161,9 +166,7 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
                 onClick={handleClick}
               >
                 Options
-                <Box color="text.primary">
-                  <MoreVert color="inherit" />
-                </Box>
+                <MoreVert className="Mui-text-text-primary" />
               </Button>
             )
           }}

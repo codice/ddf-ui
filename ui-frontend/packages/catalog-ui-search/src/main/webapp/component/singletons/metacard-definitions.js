@@ -126,7 +126,8 @@ module.exports = new (Backbone.Model.extend({
       this.metacardTypes[id] === undefined ||
       this.metacardTypes[id].type === 'XML' ||
       this.metacardTypes[id].type === 'BINARY' ||
-      this.metacardTypes[id].type === 'OBJECT'
+      this.metacardTypes[id].type === 'OBJECT' ||
+      properties.isHidden(id)
     )
   },
   getDatatypeEnum() {

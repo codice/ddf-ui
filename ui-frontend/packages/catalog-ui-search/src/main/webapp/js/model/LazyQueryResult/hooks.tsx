@@ -198,3 +198,27 @@ export const useStatusOfLazyResults = ({
 
   return status
 }
+
+/**
+ *  Allow a view to rerender when the backbone model resyncs to the plain model
+ */
+export const useRerenderOnBackboneSync = ({
+  lazyResult,
+}: {
+  lazyResult?: LazyQueryResult
+}) => {
+  const [, setRandomNumber] = React.useState(Math.random())
+  React.useEffect(() => {
+    const unsubscribeCall = lazyResult
+      ? lazyResult.subscribeTo({
+          subscribableThing: 'backboneSync',
+          callback: () => {
+            setRandomNumber(Math.random())
+          },
+        })
+      : () => {}
+    return () => {
+      unsubscribeCall()
+    }
+  }, [lazyResult])
+}

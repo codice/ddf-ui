@@ -19,7 +19,6 @@ import {
   useLazyResultsStatusFromSelectionInterface,
   useLazyResultsSelectedResultsFromSelectionInterface,
 } from '../selection-interface/hooks'
-import Box from '@material-ui/core/Box'
 
 // @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
 import VisualizationSelector from '../../react-component/visualization-selector/visualization-selector'
@@ -72,11 +71,13 @@ const SelectedResults = ({ selectionInterface }: any) => {
             size="small"
           >
             {selectedResultsArray.length} selected
-            <Box
-              color={selectedResultsArray.length === 0 ? '' : 'text.primary'}
+            <div
+              className={
+                selectedResultsArray.length === 0 ? '' : 'Mui-text-text-primary'
+              }
             >
               <MoreIcon />
-            </Box>
+            </div>
           </Button>
         )
       }}
@@ -117,7 +118,6 @@ const ResultSelector = ({
     determineHasResultSort()
   )
   const { listenTo } = useBackbone()
-
   React.useEffect(() => {
     listenTo(user.get('user').get('preferences'), 'change:resultFilter', () => {
       setHasResultFilter(determineHasResultFilter())
@@ -135,12 +135,12 @@ const ResultSelector = ({
   return (
     <React.Fragment>
       <Grid container alignItems="center" justify="flex-start" direction="row">
-        <LinearProgress
-          variant="query"
-          className={`${
-            isSearching ? 'opacity-100' : 'opacity-0'
-          } absolute w-full h-1 left-0 bottom-0 transition-opacity`}
-        />
+        {isSearching ? (
+          <LinearProgress
+            variant="query"
+            className="opacity-100 absolute w-full h-1 left-0 bottom-0"
+          />
+        ) : null}
 
         <Grid item>
           <Spellcheck
@@ -152,6 +152,7 @@ const ResultSelector = ({
         <Grid item className="relative z-10">
           <QueryFeed selectionInterface={selectionInterface} />
         </Grid>
+
         <Grid item className="relative z-0">
           <SelectionRipple selectionInterface={selectionInterface} />
           <SelectedResults selectionInterface={selectionInterface} />
@@ -184,9 +185,7 @@ const ResultSelector = ({
                       : '0px',
                   }}
                 >
-                  <Box color="text.primary">
-                    <FilterListIcon />
-                  </Box>
+                  <FilterListIcon className="Mui-text-text-primary" />
                   Filter
                 </Button>
               )
@@ -218,9 +217,7 @@ const ResultSelector = ({
                       : '0px',
                   }}
                 >
-                  <Box color="text.primary">
-                    <ArrowDownwardIcon />
-                  </Box>
+                  <ArrowDownwardIcon className="Mui-text-text-primary" />
                   Sort
                 </Button>
               )
@@ -251,10 +248,8 @@ const ResultSelector = ({
                   color="primary"
                   onClick={handleClick}
                 >
-                  <Box color="text.primary">
-                    <ViewCompactIcon />
-                  </Box>
-                  <Box className="pl-1">Layout</Box>
+                  <ViewCompactIcon className="Mui-text-text-primary" />
+                  <div className="pl-1">Layout</div>
                 </Button>
               )
             }}

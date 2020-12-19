@@ -86,7 +86,7 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
         outline: none !important; 
       }
       span.highlight {
-        font-weight: bolder;
+        background-color: rgba(66, 110, 203, 0.40);
       }
       .MuiToolbar-root a,
       .MuiToolbar-root .MuiBreadcrumbs-separator {
@@ -248,6 +248,18 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
         background-color: ${(props) =>
           props.palette.type === 'dark' ? dark.overlays : light.overlays};
       }
+      .font-awesome-span {
+        && {
+          font-size: 1.4rem;
+          font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+        }
+        /* stylelint-disable */
+        &::before {
+          font-family: 'FontAwesome';
+          margin-left: 2px;
+          margin-right: 5px;
+        }
+      }
       ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
@@ -264,6 +276,44 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
             ? 'linear-gradient(-180deg, rgb(229, 229, 229) 0%, rgb(206, 206, 206) 100%)'
             : 'linear-gradient(-180deg, rgb(153, 153, 153) 0%, rgb(187, 187, 187) 100%)'};
             border-radius: 4px;
+      }
+      // Mui tailwind style
+      .Mui-text-text-primary {
+        color: ${(props) => props.palette.text.primary};
+      }
+      .Mui-text-primary {
+        color: ${(props) => props.palette.primary.main};
+      }
+      .Mui-text-secondary {
+        color: ${(props) => props.palette.secondary.main};
+      }
+      .Mui-text-warning {
+        color: ${(props) => props.palette.warning.main};
+      }
+      .Mui-bg-default {
+        background-color: ${(props) => props.palette.background.default};
+      }
+      .Mui-bg-primary {
+        background-color: ${(props) => props.palette.primary.main};
+      }
+      .Mui-bg-secondary {
+        background-color: ${(props) => props.palette.secondary.main};
+      }
+      .Mui-bg-divider {
+        background-color: ${(props) => props.palette.divider};
+      }
+      .Mui-border-divider {
+        border-color: ${(props) => props.palette.divider};
+      }
+      .children-h-full {
+        > * {
+          height: 100%;
+        }
+      }
+      .children-block {
+        > * {
+          display: block;
+        }
       }
     `
 

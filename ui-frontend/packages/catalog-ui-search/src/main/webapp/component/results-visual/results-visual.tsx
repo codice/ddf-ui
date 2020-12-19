@@ -18,6 +18,7 @@ type ModeType = 'card' | 'table'
 
 const ResultsView = ({ selectionInterface }: Props) => {
   const [mode, setMode] = React.useState('card' as ModeType)
+  console.log(mode)
   return (
     <Grid
       container

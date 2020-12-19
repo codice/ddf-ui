@@ -17,7 +17,7 @@ import { hot } from 'react-hot-loader'
 const _ = require('underscore')
 const IconHelper = require('../../js/IconHelper.js')
 const properties = require('../../js/properties.js')
-const cql = require('../../js/cql.js')
+import cql from '../../js/cql'
 const metacardDefinitions = require('../singletons/metacard-definitions.js')
 const CQLUtils = require('../../js/CQLUtils.js')
 import QuerySettings from '../query-settings/query-settings'

@@ -127,6 +127,8 @@ User.Preferences = Backbone.AssociatedModel.extend({
       'inspector-summaryOrder': [],
       'inspector-detailsOrder': ['title', 'created', 'modified', 'thumbnail'],
       'inspector-detailsHidden': [],
+      'results-attributesShownTable': [],
+      'results-attributesShownList': [],
       homeFilter: 'Owned by anyone',
       homeSort: 'Last modified',
       homeDisplay: 'Grid',

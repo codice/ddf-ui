@@ -1,0 +1,2 @@
+# Set default behaviour, in case users don't have core.autocrlf set. See https://prettier.io/docs/en/options.html end of line suggestions
+* text=auto eol=lf

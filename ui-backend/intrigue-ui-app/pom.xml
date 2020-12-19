@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.codice.ddf.search</groupId>
         <artifactId>backend</artifactId>
-        <version>4.1.1-SNAPSHOT</version>
+        <version>4.1.6-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <name>DDF :: UI :: Search UI :: App</name>
@@ -117,6 +117,11 @@
     <dependencies>
         <dependency>
             <groupId>org.codice.ddf.search</groupId>
+            <artifactId>catalog-plugin-highlight</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codice.ddf.search</groupId>
             <artifactId>catalog-ui-search</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -168,7 +173,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>28.1-jre</version>
+            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.web</groupId>

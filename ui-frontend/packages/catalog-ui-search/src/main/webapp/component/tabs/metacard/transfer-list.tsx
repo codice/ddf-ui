@@ -1,25 +1,15 @@
 /* https://material-ui.com/components/transfer-list/ */
 import { hot } from 'react-hot-loader'
 import React from 'react'
-import makeStyles from '@material-ui/core/styles/makeStyles'
-// @ts-ignore ts-migrate(2307) FIXME: Cannot find module '@material-ui/core/styles/Theme... Remove this comment to see the full error message
-import Theme from '@material-ui/core/styles/Theme'
-import createStyles from '@material-ui/core/styles/createStyles'
 import Grid from '@material-ui/core/Grid'
 import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import Checkbox from '@material-ui/core/Checkbox'
 import Button from '@material-ui/core/Button'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogActions from '@material-ui/core/DialogActions'
 import TextField from '@material-ui/core/TextField'
-import useTheme from '@material-ui/core/styles/useTheme'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import Paper from '@material-ui/core/Paper'
-import { DialogProps } from '@material-ui/core/Dialog'
 import { useDialog } from '../../dialog'
 import TypedMetacardDefs from './metacardDefinitions'
 import EditIcon from '@material-ui/icons/Edit'
@@ -41,435 +31,718 @@ import CloseIcon from '@material-ui/icons/Close'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox'
+import { AutoVariableSizeList } from 'react-window-components'
+import debounce from 'lodash.debounce'
+import { Memo } from '../../memo/memo'
 const user = require('../../singletons/user-instance')
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      margin: 'auto',
-    },
-    list: {
-      width: 400,
-      height: 500,
-      overflow: 'auto',
-    },
-    button: {
-      margin: theme.spacing(0.5, 0),
-    },
-  })
-)
-
-function not(a: string[], b: string[]) {
-  return a.filter((value) => b.indexOf(value) === -1)
+const getAmountChecked = (items: CheckedType) => {
+  return Object.values(items).filter((a) => a).length
 }
 
-function intersection(a: string[], b: string[]) {
-  return a.filter((value) => b.indexOf(value) !== -1)
+const handleShiftClick = ({
+  items,
+  filteredItemArray,
+  setItems,
+  item,
+}: {
+  items: CheckedType
+  item: string
+  filteredItemArray: string[]
+  setItems: SetCheckedType
+}) => {
+  const defaultMin = filteredItemArray.length
+  const defaultMax = -1
+  const firstIndex = filteredItemArray.reduce((min, filteredItem, index) => {
+    if (items[filteredItem]) {
+      return Math.min(min, index)
+    }
+    return min
+  }, defaultMin)
+  const lastIndex = filteredItemArray.reduce((max, filteredItem, index) => {
+    if (items[filteredItem]) {
+      return Math.max(max, index)
+    }
+    return max
+  }, defaultMax)
+  const indexClicked = filteredItemArray.indexOf(item)
+  if (firstIndex === defaultMin && lastIndex === defaultMax) {
+    setItems({
+      ...items,
+      [item]: true,
+    })
+  } else if (indexClicked <= firstIndex) {
+    // traverse from target to next until firstIndex
+    const updates = filteredItemArray.slice(indexClicked, firstIndex + 1)
+    setItems({
+      ...items,
+      ...updates.reduce((blob, filteredItem) => {
+        blob[filteredItem] = true
+        return blob
+      }, {} as CheckedType),
+    })
+  } else if (indexClicked >= lastIndex) {
+    // traverse from target to prev until lastIndex
+    const updates = filteredItemArray.slice(lastIndex, indexClicked + 1)
+    setItems({
+      ...items,
+      ...updates.reduce((blob, filteredItem) => {
+        blob[filteredItem] = true
+        return blob
+      }, {} as CheckedType),
+    })
+  } else {
+    // traverse from target to prev until something doesn't change
+    const closestPreviousIndex = filteredItemArray
+      .slice(0, indexClicked - 1)
+      .reduce((max, filteredItem, index) => {
+        if (items[filteredItem]) {
+          return Math.max(max, index)
+        }
+        return max
+      }, defaultMax)
+    const updates = filteredItemArray.slice(
+      closestPreviousIndex,
+      indexClicked + 1
+    )
+    setItems({
+      ...items,
+      ...updates.reduce((blob, filteredItem) => {
+        blob[filteredItem] = true
+        return blob
+      }, {} as CheckedType),
+    })
+  }
 }
 
-function union(a: string[], b: string[]) {
-  return [...a, ...not(b, a)]
+const ItemRow = ({
+  value,
+  lazyResult,
+  startOver,
+  measure,
+  filter,
+}: {
+  value: string
+  lazyResult?: LazyQueryResult
+  startOver: () => void
+  measure?: () => void
+  filter?: string
+}) => {
+  const dialogContext = useDialog()
+  const { setItems, items, filteredItemArray } = React.useContext(
+    CustomListContext
+  )
+  const { isNotWritable } = useCustomReadOnlyCheck()
+
+  React.useEffect(() => {
+    if (measure) measure()
+  }, [])
+
+  const alias = TypedMetacardDefs.getAlias({ attr: value })
+  const isReadonly = lazyResult
+    ? isNotWritable({
+        attribute: value,
+        lazyResult,
+      })
+    : true
+
+  if (filter && !alias.toLowerCase().includes(filter.toLowerCase())) {
+    return null
+  }
+  return (
+    <div
+      data-id="attribute-container"
+      role="listitem"
+      className="p-0 flex w-full"
+    >
+      <Button
+        onClick={(event) => {
+          if (event.shiftKey) {
+            handleShiftClick({
+              items,
+              item: value,
+              setItems,
+              filteredItemArray,
+            })
+          } else if (event.ctrlKey || event.metaKey) {
+            setItems({
+              ...items,
+              [value]: !items[value],
+            })
+          } else {
+            setItems({
+              ...items,
+              [value]: !items[value],
+            })
+          }
+        }}
+        size="medium"
+      >
+        {items[value] ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
+      </Button>
+      <Button
+        fullWidth
+        size="medium"
+        className="children-block text-left"
+        onClick={(event) => {
+          if (event.shiftKey) {
+            handleShiftClick({
+              items,
+              item: value,
+              setItems,
+              filteredItemArray,
+            })
+          } else if (event.ctrlKey || event.metaKey) {
+            setItems({
+              ...items,
+              [value]: !items[value],
+            })
+          } else {
+            // really the only difference from the checkbox click event, where we turn off everything but this one
+            setItems({
+              ...Object.keys(items).reduce((blob, val) => {
+                blob[val] = false
+                return blob
+              }, {} as CheckedType),
+              [value]: !items[value],
+            })
+          }
+        }}
+      >
+        {alias}
+      </Button>
+      {!isReadonly && lazyResult && (
+        <Button
+          data-id="edit-button"
+          style={{
+            pointerEvents: 'all',
+            height: '100%',
+          }}
+          onClick={() => {
+            dialogContext.setProps({
+              PaperProps: {
+                style: {
+                  minWidth: 'none',
+                },
+              },
+              open: true,
+              children: (
+                <div
+                  style={{
+                    padding: '10px',
+                    minHeight: '30em',
+                    minWidth: '60vh',
+                  }}
+                >
+                  <Editor
+                    attr={value}
+                    lazyResult={lazyResult}
+                    /* Re-open this modal again but with the current state
+              This maintains the state so that if we haven't saved,
+              we can come back to where we were working */
+                    goBack={startOver}
+                    onCancel={startOver}
+                    onSave={startOver}
+                  />
+                </div>
+              ),
+            })
+          }}
+        >
+          <EditIcon />
+        </Button>
+      )}
+    </div>
+  )
 }
 
+const CustomListContext = React.createContext({
+  items: {} as CheckedType,
+  setItems: (() => {}) as SetCheckedType,
+  filteredItemArray: [] as string[],
+})
+
+const filterUpdate = ({
+  filter,
+  setItemArray,
+  items,
+}: {
+  items: { [key: string]: boolean }
+  filter: string
+  setItemArray: (val: string[]) => void
+}) => {
+  setItemArray(
+    Object.keys(items).filter((attr) => {
+      const alias = TypedMetacardDefs.getAlias({ attr })
+      const isFiltered =
+        filter !== ''
+          ? !alias.toLowerCase().includes(filter.toLowerCase())
+          : false
+      return !isFiltered
+    })
+  )
+}
+
+const generateDebouncedFilterUpdate = () => {
+  return debounce(filterUpdate, 500)
+}
+
+/**
+ * At the moment, we only virtualize the right side since that's likely to be huge whereas the left isn't (it also has DND on left, which makes things diff to virtualize)
+ */
 const CustomList = ({
   title,
   items,
-  total,
   lazyResult,
   updateItems,
   isDnD,
-  numberOfChecked,
   handleToggleAll,
   mode,
-  classes,
-  checkIsReadOnly,
-  handleToggle,
-  checked,
-  dialogContext,
-  left,
-  right,
-  updateActive,
-  onSave,
+  startOver,
+  totalPossible,
 }: {
   title: React.ReactNode
-  items: string[]
-  total: number
-  lazyResult: LazyQueryResult
-  updateItems: (arg: string[]) => void
+  items: CheckedType
+  lazyResult?: LazyQueryResult
+  updateItems: SetCheckedType
   isDnD: boolean // drag and drop allowed?
-  numberOfChecked: (props: any) => number
   handleToggleAll: (props: any) => () => void
   mode: 'loading' | string
-  classes: any
-  checkIsReadOnly: (props: any) => boolean
-  handleToggle: (props: any) => () => void
-  checked: string[]
-  dialogContext: {
-    setProps: React.Dispatch<React.SetStateAction<Partial<DialogProps>>>
-  }
-  left: string[]
-  right: string[]
-  updateActive: (arg: any) => void
-  onSave: () => void
+  startOver: () => void
+  totalPossible: number
 }) => {
+  const itemsRef = React.useRef(items)
+  itemsRef.current = items // don't see a performant way besides this to allow us to avoid rerendering DnD but allow it to update the item orders correctly
   const [filter, setFilter] = React.useState('')
-  const theme = useTheme()
-  const numberChecked = numberOfChecked(items)
-  const isIndeterminate = numberChecked !== items.length && numberChecked !== 0
-  const isCompletelySelected =
-    numberChecked === items.length && items.length !== 0
+  const [unfilteredItemArray, setUnfilteredItemArray] = React.useState(
+    Object.keys(items)
+  )
+  const [filteredItemArray, setFilteredItemArray] = React.useState(
+    Object.keys(items)
+  )
+  const [isFiltering, setIsFiltering] = React.useState(false)
+  const debouncedFilterUpdate = React.useRef(generateDebouncedFilterUpdate())
+  const numberChecked = getAmountChecked(items)
+  const total = Object.keys(items).length
+  const isIndeterminate = numberChecked !== total && numberChecked !== 0
+  const isCompletelySelected = numberChecked === total && total !== 0
+  React.useEffect(() => {
+    setUnfilteredItemArray(Object.keys(items))
+  }, [Object.keys(items).toString()])
+  React.useEffect(() => {
+    setIsFiltering(true)
+    debouncedFilterUpdate.current({
+      items,
+      filter,
+      setItemArray: setFilteredItemArray,
+    })
+  }, [Object.keys(items).toString(), filter])
+  React.useEffect(() => {
+    setIsFiltering(false)
+  }, [filteredItemArray])
+  // memo this, other wise the creation of the new object each time is seen as a "change"
+  const memoProviderValue = React.useMemo(() => {
+    return { items, setItems: updateItems, filteredItemArray }
+  }, [items, updateItems])
   return (
-    <Paper
-      // @ts-ignore ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
-      data-id={`${title.toLowerCase()}-container`}
-      elevation={Elevations.paper}
-    >
-      <Grid
-        container
-        className="p-2 text-xl font-normal relative"
-        direction="row"
-        wrap="nowrap"
-        alignItems="center"
+    <CustomListContext.Provider value={memoProviderValue}>
+      <Paper
+        // @ts-ignore ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
+        data-id={`${title.toLowerCase()}-container`}
+        elevation={Elevations.paper}
       >
-        <Grid item className="absolute left-0 top-0 ml-2 mt-min">
-          <Button
-            // @ts-ignore ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
-            data-id={`${title.toLowerCase()}-select-all-checkbox`}
-            disabled={items.length === 0}
-            onClick={handleToggleAll(items)}
-            color={
-              isIndeterminate || isCompletelySelected ? 'default' : 'default'
-            }
-          >
-            {(() => {
-              if (isCompletelySelected) {
-                return (
-                  <>
-                    <CheckBoxIcon />
-                    {numberOfChecked(items)}{' '}
-                  </>
-                )
-              } else if (isIndeterminate) {
-                return (
-                  <>
-                    <IndeterminateCheckBoxIcon />
-                    {numberOfChecked(items)}{' '}
-                  </>
-                )
-              } else {
-                return <CheckBoxOutlineBlankIcon />
+        <Grid
+          container
+          className="p-2 text-xl font-normal relative"
+          direction="row"
+          wrap="nowrap"
+          alignItems="center"
+        >
+          <Grid item className="absolute left-0 top-0 ml-2 mt-min">
+            <Button
+              // @ts-ignore ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
+              data-id={`${title.toLowerCase()}-select-all-checkbox`}
+              disabled={Object.keys(items).length === 0}
+              onClick={handleToggleAll(items)}
+              color={
+                isIndeterminate || isCompletelySelected ? 'default' : 'default'
               }
-            })()}
-          </Button>
+            >
+              {(() => {
+                if (isCompletelySelected) {
+                  return (
+                    <>
+                      <CheckBoxIcon />
+                      {numberChecked}{' '}
+                    </>
+                  )
+                } else if (isIndeterminate) {
+                  return (
+                    <>
+                      <IndeterminateCheckBoxIcon />
+                      {numberChecked}{' '}
+                    </>
+                  )
+                } else {
+                  return <CheckBoxOutlineBlankIcon />
+                }
+              })()}
+            </Button>
+          </Grid>
+          <Grid item className="m-auto ">
+            {title} ({total}/{totalPossible})
+          </Grid>
         </Grid>
-        <Grid item className="m-auto ">
-          {title} ({items.length}/{total})
-        </Grid>
-      </Grid>
-      <DarkDivider className="w-full h-min" />
-      <div className="p-2">
-        <TextField
-          data-id="filter-input"
-          size="small"
-          variant="outlined"
-          label="Filter by keyword"
-          fullWidth={true}
-          value={filter}
-          inputProps={{
-            style:
-              filter !== ''
-                ? {
-                    borderBottom: `1px solid ${theme.palette.warning.main}`,
-                  }
-                : {},
-          }}
-          onChange={(e) => {
-            setFilter(e.target.value)
-          }}
-        />
-      </div>
-      <DarkDivider className="w-full h-min" />
-      {mode === 'loading' ? (
-        <CircularProgress />
-      ) : (
-        <List className={classes.list} dense component="div" role="list">
-          {isDnD && (
-            <div className="italic px-4 text-xs font-normal">
-              Click and drag attributes to reorder.
-            </div>
-          )}
-          <DragDropContext
-            onDragEnd={(result: DropResult) => {
-              //Put these NO-OPs up front for performance reasons:
-              //1. If the item is dropped outside the list, do nothing
-              //2. If the item is moved into the same place, do nothing
-              if (!result.destination) {
-                return
-              }
-              if (result.source.index === result.destination.index) {
-                return
-              }
-
-              if (result.reason === 'DROP' && result.destination) {
-                const originalIndex = result.source.index
-                const destIndex = result.destination.index
-                const clonedList = items.slice()
-                clonedList.splice(originalIndex, 1)
-                clonedList.splice(destIndex, 0, result.draggableId)
-                updateItems(clonedList)
-              }
+        <DarkDivider className="w-full h-min" />
+        <div className="p-2">
+          <TextField
+            data-id="filter-input"
+            size="small"
+            variant="outlined"
+            label="Filter by keyword"
+            fullWidth={true}
+            value={filter}
+            onChange={(e) => {
+              setFilter(e.target.value)
             }}
+          />
+        </div>
+        <DarkDivider className="w-full h-min" />
+        {mode === 'loading' ? (
+          <CircularProgress />
+        ) : (
+          <List
+            className="w-common h-common overflow-hidden relative"
+            dense
+            component="div"
+            role="list"
           >
-            <Droppable droppableId="test">
-              {(provided) => {
-                return (
-                  <div {...provided.droppableProps} ref={provided.innerRef}>
-                    {items.map((value: string, index: number) => {
-                      const labelId = `transfer-list-all-item-${value}-label`
-                      const alias = TypedMetacardDefs.getAlias({
-                        attr: value,
-                      })
-                      const isReadonly = checkIsReadOnly(value)
-                      const isFiltered =
-                        filter !== ''
-                          ? !alias.toLowerCase().includes(filter.toLowerCase())
-                          : false
-
-                      return isFiltered ? null : (
-                        <Draggable
-                          draggableId={value}
-                          index={index}
-                          key={value}
-                          isDragDisabled={!isDnD}
-                        >
-                          {(provided) => {
+            {isFiltering ? (
+              <LinearProgress
+                className="w-full h-1 absolute left-0 top-0"
+                variant="indeterminate"
+              />
+            ) : null}
+            {isDnD ? (
+              <Memo dependencies={[filteredItemArray]}>
+                <div className="flex flex-col flex-no-wrap h-full w-full overflow-hidden">
+                  <div className="italic px-4 text-xs font-normal">
+                    Click and drag attributes to reorder.
+                  </div>
+                  <div className="w-full h-full">
+                    <DragDropContext
+                      onDragEnd={(result: DropResult) => {
+                        //Put these NO-OPs up front for performance reasons:
+                        //1. If the item is dropped outside the list, do nothing
+                        //2. If the item is moved into the same place, do nothing
+                        if (!result.destination) {
+                          return
+                        }
+                        if (result.source.index === result.destination.index) {
+                          return
+                        }
+                        // complicated by the fact that we filter, so we need to find the original and dest index ourselves :(
+                        if (result.reason === 'DROP' && result.destination) {
+                          const shiftedOriginalIndex = unfilteredItemArray.indexOf(
+                            result.draggableId
+                          )
+                          const shiftedDestIndex = unfilteredItemArray.indexOf(
+                            filteredItemArray[result.destination.index]
+                          )
+                          const clonedList = unfilteredItemArray.slice(0)
+                          clonedList.splice(shiftedOriginalIndex, 1)
+                          clonedList.splice(
+                            shiftedDestIndex,
+                            0, // insert WITHOUT removing anything
+                            result.draggableId
+                          )
+                          const newList = clonedList.reduce((blob, attr) => {
+                            blob[attr] = itemsRef.current[attr]
+                            return blob
+                          }, {} as CheckedType)
+                          updateItems(newList)
+                          filterUpdate({
+                            filter,
+                            setItemArray: setFilteredItemArray,
+                            items: newList,
+                          }) // in this case, we eagerly set in order to avoid flickering
+                        }
+                      }}
+                    >
+                      <div className="children-h-full children-w-full h-full w-full overflow-hidden">
+                        <Droppable
+                          droppableId="test"
+                          mode="virtual"
+                          renderClone={(provided, _snapshot, rubric) => {
                             return (
                               // @ts-ignore ts-migrate(2322) FIXME: Type 'DragEvent<HTMLDivElement>' is missing the fo... Remove this comment to see the full error message
                               <div
-                                ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
+                                ref={provided.innerRef}
                               >
-                                <ListItem
-                                  data-id="attribute-container"
-                                  key={value}
-                                  role="listitem"
-                                  button
-                                  className="p-0"
-                                  onClick={handleToggle(value)}
-                                >
-                                  <ListItemIcon>
-                                    <Checkbox
-                                      data-id="select-checkbox"
-                                      checked={checked.indexOf(value) !== -1}
-                                      tabIndex={-1}
-                                      disableRipple
-                                      inputProps={{
-                                        'aria-labelledby': labelId,
-                                      }}
-                                      color="default"
-                                    />
-                                  </ListItemIcon>
-                                  <ListItemText id={labelId} primary={alias} />
-                                  {!isReadonly && (
-                                    <Button
-                                      data-id="edit-button"
-                                      style={{
-                                        pointerEvents: 'all',
-                                        height: '100%',
-                                      }}
-                                      onClick={() => {
-                                        dialogContext.setProps({
-                                          PaperProps: {
-                                            style: {
-                                              minWidth: 'none',
-                                            },
-                                          },
-                                          open: true,
-                                          children: (
-                                            <div
-                                              style={{
-                                                padding: '10px',
-                                                minHeight: '30em',
-                                                minWidth: '60vh',
-                                              }}
-                                            >
-                                              <Editor
-                                                attr={value}
-                                                lazyResult={lazyResult}
-                                                /* Re-open this modal again but with the current state
-                                              This maintains the state so that if we haven't saved,
-                                              we can come back to where we were working */
-                                                goBack={() => {
-                                                  dialogContext.setProps({
-                                                    open: true,
-                                                    children: (
-                                                      <TransferList
-                                                        startingLeft={left}
-                                                        startingRight={right}
-                                                        updateActive={
-                                                          updateActive
-                                                        }
-                                                        lazyResult={lazyResult}
-                                                        onSave={onSave}
-                                                      />
-                                                    ),
-                                                  })
-                                                }}
-                                                onCancel={() => {
-                                                  dialogContext.setProps({
-                                                    open: true,
-                                                    children: (
-                                                      <TransferList
-                                                        startingLeft={left}
-                                                        startingRight={right}
-                                                        updateActive={
-                                                          updateActive
-                                                        }
-                                                        lazyResult={lazyResult}
-                                                        onSave={onSave}
-                                                      />
-                                                    ),
-                                                  })
-                                                }}
-                                                onSave={() => {
-                                                  dialogContext.setProps({
-                                                    open: true,
-                                                    children: (
-                                                      <TransferList
-                                                        startingLeft={left}
-                                                        startingRight={right}
-                                                        updateActive={
-                                                          updateActive
-                                                        }
-                                                        lazyResult={lazyResult}
-                                                        onSave={onSave}
-                                                      />
-                                                    ),
-                                                  })
-                                                }}
-                                              />
-                                            </div>
-                                          ),
-                                        })
-                                      }}
-                                    >
-                                      <EditIcon />
-                                    </Button>
-                                  )}
-                                </ListItem>
+                                <ItemRow
+                                  value={filteredItemArray[rubric.source.index]}
+                                  startOver={startOver}
+                                  lazyResult={lazyResult}
+                                  filter={filter}
+                                />
                               </div>
                             )
                           }}
-                        </Draggable>
-                      )
-                    })}
-                    {provided.placeholder}
+                        >
+                          {(provided) => {
+                            return (
+                              <AutoVariableSizeList<string, HTMLDivElement>
+                                items={filteredItemArray}
+                                defaultSize={39.42}
+                                controlledMeasuring={true}
+                                overscanCount={10}
+                                outerRef={provided.innerRef}
+                                Item={({ itemRef, item, measure, index }) => {
+                                  return (
+                                    <div ref={itemRef} className="relative">
+                                      <Draggable
+                                        draggableId={item}
+                                        index={index}
+                                        key={item}
+                                        isDragDisabled={!isDnD}
+                                        disableInteractiveElementBlocking
+                                      >
+                                        {(provided) => {
+                                          return (
+                                            // @ts-ignore ts-migrate(2322) FIXME: Type 'DragEvent<HTMLDivElement>' is missing the fo... Remove this comment to see the full error message
+                                            <div
+                                              ref={provided.innerRef}
+                                              {...provided.draggableProps}
+                                              {...provided.dragHandleProps}
+                                            >
+                                              <ItemRow
+                                                value={item}
+                                                startOver={startOver}
+                                                lazyResult={lazyResult}
+                                                // filter={filter}
+                                                measure={measure}
+                                              />
+                                            </div>
+                                          )
+                                        }}
+                                      </Draggable>
+                                    </div>
+                                  )
+                                }}
+                                Empty={() => {
+                                  return <div></div>
+                                }}
+                              />
+                            )
+                          }}
+                        </Droppable>
+                      </div>
+                    </DragDropContext>
                   </div>
-                )
-              }}
-            </Droppable>
-          </DragDropContext>
-        </List>
-      )}
-    </Paper>
+                </div>
+              </Memo>
+            ) : (
+              <>
+                <AutoVariableSizeList<string, HTMLDivElement>
+                  items={filteredItemArray}
+                  defaultSize={39.42}
+                  controlledMeasuring={true}
+                  overscanCount={10}
+                  Item={({ itemRef, item, measure }) => {
+                    return (
+                      <div ref={itemRef} className="relative">
+                        <ItemRow
+                          value={item}
+                          startOver={startOver}
+                          lazyResult={lazyResult}
+                          measure={measure}
+                        />
+                      </div>
+                    )
+                  }}
+                  Empty={() => {
+                    return <div></div>
+                  }}
+                />
+              </>
+            )}
+          </List>
+        )}
+      </Paper>
+    </CustomListContext.Provider>
   )
 }
+
+const getCustomEditableAttributes = (async () => {
+  const attrs = await extension.customEditableAttributes()
+  return attrs
+})()
+
+export const useCustomReadOnlyCheck = () => {
+  const [
+    customEditableAttributes,
+    setCustomEditableAttributes,
+  ] = React.useState([] as string[])
+  const [loading, setLoading] = React.useState(true)
+
+  const initializeCustomEditableAttributes = async () => {
+    const attrs = await getCustomEditableAttributes
+    if (attrs !== undefined) {
+      setCustomEditableAttributes(attrs)
+    }
+    setLoading(false)
+  }
+
+  React.useEffect(() => {
+    initializeCustomEditableAttributes()
+  }, [])
+
+  return {
+    loading,
+    isNotWritable: ({
+      attribute,
+      lazyResult,
+    }: {
+      attribute: string
+      lazyResult: LazyQueryResult
+    }) => {
+      const perm = extension.customCanWritePermission({
+        attribute,
+        lazyResult,
+        user,
+        editableAttributes: customEditableAttributes,
+      })
+      if (perm !== undefined) {
+        return !perm
+      }
+      return (
+        (lazyResult.isRemote() &&
+          !(user.canWrite(lazyResult.getBackbone()) as boolean)) ||
+        TypedMetacardDefs.isReadonly({ attr: attribute })
+      )
+    },
+  }
+}
+
+const convertAttrListToMap = (attrs: string[]) => {
+  return attrs.reduce((blob, attr) => {
+    blob[attr] = false
+    return blob
+  }, {} as { [key: string]: boolean })
+}
+type CheckedType = {
+  [key: string]: boolean
+}
+type SetCheckedType = React.Dispatch<React.SetStateAction<CheckedType>>
 
 const TransferList = ({
   startingLeft,
   startingRight,
-  updateActive,
   lazyResult,
   onSave,
 }: {
   startingLeft: string[]
   startingRight: string[]
-  updateActive: (arg: any) => void
-  lazyResult: LazyQueryResult
-  onSave: () => void
+  lazyResult?: LazyQueryResult
+  onSave: (arg: string[]) => void
 }) => {
-  const classes = useStyles()
   const dialogContext = useDialog()
   const [mode, setMode] = React.useState(
     'loading' as 'normal' | 'saving' | 'loading'
   )
-  const [checked, setChecked] = React.useState<string[]>([])
-  const [left, setLeft] = React.useState(startingLeft)
-  const [right, setRight] = React.useState(startingRight)
-  const [
-    customEditableAttributes,
-    setCustomEditableAttributes,
-  ] = React.useState([] as string[])
-
+  const [left, setLeft] = React.useState(convertAttrListToMap(startingLeft))
+  const [right, setRight] = React.useState(convertAttrListToMap(startingRight))
+  const { loading } = useCustomReadOnlyCheck()
   React.useEffect(() => {
-    setMode('loading')
-    getCustomAttrs()
-  }, [])
-
-  const getCustomAttrs = async () => {
-    const attrs = await extension.customEditableAttributes()
-    if (attrs !== undefined) {
-      setCustomEditableAttributes(attrs)
+    if (!loading) {
+      setMode('normal')
     }
-    setMode('normal')
+  }, [loading])
+
+  const generateHandleToggleAll = ({
+    setState,
+    state,
+  }: {
+    setState: SetCheckedType
+    state: CheckedType
+  }) => {
+    return () => () => {
+      if (Object.values(state).includes(false)) {
+        setState(
+          Object.keys(state).reduce((blob, attr) => {
+            blob[attr] = true
+            return blob
+          }, {} as CheckedType)
+        )
+      } else {
+        setState(
+          Object.keys(state).reduce((blob, attr) => {
+            blob[attr] = false
+            return blob
+          }, {} as CheckedType)
+        )
+      }
+    }
   }
 
-  const checkIsReadOnly = (attribute: string) => {
-    const perm = extension.customCanWritePermission({
-      attribute,
-      lazyResult,
-      user,
-      editableAttributes: customEditableAttributes,
+  const moveRight = () => {
+    const checkedLeft = Object.entries(left)
+      .filter((a) => a[1])
+      .reduce((blob, a) => {
+        blob[a[0]] = false
+        return blob
+      }, {} as CheckedType)
+    const nonCheckedLeft = Object.entries(left)
+      .filter((a) => !a[1])
+      .reduce((blob, a) => {
+        blob[a[0]] = a[1]
+        return blob
+      }, {} as CheckedType)
+    setRight({
+      ...right,
+      ...checkedLeft,
     })
-    if (perm !== undefined) {
-      return !perm
-    }
-    return (
-      (lazyResult.isRemote() &&
-        !(user.canWrite(lazyResult.getBackbone()) as boolean)) ||
-      TypedMetacardDefs.isReadonly({ attr: attribute })
-    )
+    setLeft(nonCheckedLeft)
   }
 
-  const leftChecked = intersection(checked, left)
-  const rightChecked = intersection(checked, right)
-
-  const handleToggle = (value: string) => () => {
-    const currentIndex = checked.indexOf(value)
-    const newChecked = [...checked]
-
-    if (currentIndex === -1) {
-      newChecked.push(value)
-    } else {
-      newChecked.splice(currentIndex, 1)
-    }
-
-    setChecked(newChecked)
+  const moveLeft = () => {
+    const checkedRight = Object.entries(right)
+      .filter((a) => a[1])
+      .reduce((blob, a) => {
+        blob[a[0]] = false
+        return blob
+      }, {} as CheckedType)
+    const nonCheckedRight = Object.entries(right)
+      .filter((a) => !a[1])
+      .reduce((blob, a) => {
+        blob[a[0]] = a[1]
+        return blob
+      }, {} as CheckedType)
+    setLeft({
+      ...left,
+      ...checkedRight,
+    })
+    setRight(nonCheckedRight)
   }
 
-  const numberOfChecked = (items: string[]) =>
-    intersection(checked, items).length
-
-  const handleToggleAll = (items: string[]) => () => {
-    if (numberOfChecked(items) === items.length) {
-      setChecked(not(checked, items))
-    } else {
-      setChecked(union(checked, items))
-    }
+  const hasLeftChecked = Object.entries(left).find((a) => a[1]) !== undefined
+  const hasRightChecked = Object.entries(right).find((a) => a[1]) !== undefined
+  const startOver = () => {
+    dialogContext.setProps({
+      open: true,
+      children: (
+        <TransferList
+          startingLeft={Object.keys(left)}
+          startingRight={Object.keys(right)}
+          lazyResult={lazyResult}
+          onSave={onSave}
+        />
+      ),
+    })
   }
-
-  const handleCheckedRight = () => {
-    setRight(right.concat(leftChecked))
-    setLeft(not(left, leftChecked))
-    setChecked(not(checked, leftChecked))
-  }
-
-  const handleCheckedLeft = () => {
-    setLeft(left.concat(rightChecked))
-    setRight(not(right, rightChecked))
-    setChecked(not(checked, rightChecked))
-  }
+  const totalPossible = startingLeft.length + startingRight.length
 
   return (
     <>
@@ -498,7 +771,7 @@ const TransferList = ({
           spacing={2}
           justify="center"
           alignItems="center"
-          className={classes.root}
+          className="m-auto"
         >
           <Grid item>
             <CustomList
@@ -507,18 +780,12 @@ const TransferList = ({
               lazyResult={lazyResult}
               updateItems={setLeft}
               isDnD={true}
-              total={left.length + right.length}
-              left={left}
-              right={right}
-              onSave={onSave}
-              updateActive={updateActive}
-              checkIsReadOnly={checkIsReadOnly}
-              numberOfChecked={numberOfChecked}
-              handleToggle={handleToggle}
-              handleToggleAll={handleToggleAll}
-              classes={classes}
-              checked={checked}
-              dialogContext={dialogContext}
+              startOver={startOver}
+              handleToggleAll={generateHandleToggleAll({
+                setState: setLeft,
+                state: left,
+              })}
+              totalPossible={totalPossible}
               mode={mode}
             />
           </Grid>
@@ -527,9 +794,9 @@ const TransferList = ({
               <Button
                 data-id="move-right-button"
                 variant="outlined"
-                className={classes.button}
-                onClick={handleCheckedRight}
-                disabled={leftChecked.length === 0}
+                className="m-1"
+                onClick={moveRight}
+                disabled={!hasLeftChecked}
                 aria-label="move selected right"
               >
                 <RightArrowIcon />
@@ -537,9 +804,9 @@ const TransferList = ({
               <Button
                 data-id="move-left-button"
                 variant="outlined"
-                className={classes.button}
-                onClick={handleCheckedLeft}
-                disabled={rightChecked.length === 0}
+                className="m-1"
+                onClick={moveLeft}
+                disabled={!hasRightChecked}
                 aria-label="move selected left"
               >
                 <LeftArrowIcon />
@@ -553,19 +820,13 @@ const TransferList = ({
               lazyResult={lazyResult}
               updateItems={setRight}
               isDnD={false}
-              total={left.length + right.length}
-              left={left}
-              right={right}
-              onSave={onSave}
-              updateActive={updateActive}
-              checkIsReadOnly={checkIsReadOnly}
-              numberOfChecked={numberOfChecked}
-              handleToggle={handleToggle}
-              handleToggleAll={handleToggleAll}
-              classes={classes}
-              checked={checked}
-              dialogContext={dialogContext}
+              startOver={startOver}
+              handleToggleAll={generateHandleToggleAll({
+                setState: setRight,
+                state: right,
+              })}
               mode={mode}
+              totalPossible={totalPossible}
             />
           </Grid>
         </Grid>
@@ -592,8 +853,7 @@ const TransferList = ({
           disabled={mode === 'saving'}
           onClick={() => {
             setMode('saving')
-            updateActive(left)
-            onSave()
+            onSave(Object.keys(left))
             dialogContext.setProps({
               open: false,
               children: null,

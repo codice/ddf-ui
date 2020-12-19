@@ -23,7 +23,7 @@ const Common = require('../Common.js')
 const CacheSourceSelector = require('../CacheSourceSelector.js')
 const announcement = require('../../component/announcement/index.jsx')
 const CQLUtils = require('../CQLUtils.js')
-const cql = require('../cql')
+import cql from '../cql'
 const user = require('../../component/singletons/user-instance.js')
 const _merge = require('lodash/merge')
 require('backbone-associations')
@@ -34,6 +34,7 @@ import {
   FilterBuilderClass,
   FilterClass,
 } from '../../component/filter-builder/filter.structure'
+const wreqr = require('../wreqr')
 const Query = {}
 
 function getEphemeralSort() {
@@ -64,6 +65,11 @@ function limitToDeleted(cqlFilterTree) {
         property: '"metacard-tags"',
         type: 'ILIKE',
         value: 'deleted',
+      },
+      {
+        property: '"metacard.deleted.tags"',
+        type: 'ILIKE',
+        value: 'resource',
       },
     ],
   }
@@ -135,8 +141,13 @@ Query.Model = Backbone.AssociatedModel.extend({
   defaults() {
     return _merge(
       {
-        cql: "anyText ILIKE ''",
-        filterTree: { property: 'anyText', value: '', type: 'ILIKE' },
+        cql: "anyText ILIKE '*'",
+        filterTree: new FilterBuilderClass({
+          filters: [
+            new FilterClass({ value: '*', property: 'anyText', type: 'ILIKE' }),
+          ],
+          type: 'AND',
+        }),
         associatedFormModel: undefined,
         excludeUnnecessaryAttributes: true,
         count: properties.resultCount,
@@ -176,9 +187,21 @@ Query.Model = Backbone.AssociatedModel.extend({
   initialize() {
     _.bindAll.apply(_, [this].concat(_.functions(this))) // underscore bindAll does not take array arg
     this.set('id', this.getId())
+    const filterTree = this.get('filterTree')
+    // when we make drastic changes to filter tree it will be necessary to fall back to cql and reconstruct a filter tree that's compatible
+    if (!filterTree || filterTree.id === undefined) {
+      this.set('filterTree', cql.read(this.get('cql'))) // reconstruct
+      console.log('migrating a filter tree to the latest structure')
+      // allow downstream projects to handle how they want to inform users of migrations
+      wreqr.vent.trigger('filterTree:migration', {
+        search: this,
+      })
+    } else {
+      this.set('filterTree', new FilterBuilderClass(filterTree)) // instantiate the class if everything is a-okay
+    }
     this.listenTo(
       this,
-      'change:cql change:sources change:sorts change:spellcheck change:phonetics',
+      'change:cql change:filterTree change:sources change:sorts change:spellcheck change:phonetics',
       () => {
         this.set('isOutdated', true)
         // this.resetCurrentIndexForSourceGroup()
@@ -275,7 +298,11 @@ Query.Model = Backbone.AssociatedModel.extend({
    */
   updateCqlBasedOnFilterTree() {
     const filterTree = this.get('filterTree')
-    if (filterTree.filters.length === 0) {
+    if (
+      !filterTree ||
+      filterTree.filters === undefined ||
+      filterTree.filters.length === 0
+    ) {
       this.set(
         'filterTree',
         new FilterBuilderClass({
@@ -330,18 +357,25 @@ Query.Model = Backbone.AssociatedModel.extend({
     data.batchId = Common.generateUUID()
 
     // Data.sources is set in `buildSearchData` based on which sources you have selected.
-    const sources = data.sources
+    let selectedSources = data.sources
+    const harvestedSources = Sources.getHarvested()
+
+    const isHarvested = (id) => harvestedSources.includes(id)
+    const isFederated = (id) => !harvestedSources.includes(id)
+    if (options.limitToDeleted) {
+      selectedSources = data.sources.filter(isHarvested)
+    }
     let result = this.get('result')
     if (result) {
       result.get('lazyResults').reset({
         sorts: this.get('sorts'),
-        sources,
+        sources: selectedSources,
       })
     } else {
       result = new QueryResponse({
         lazyResults: new LazyQueryResults({
           sorts: this.get('sorts'),
-          sources,
+          sources: selectedSources,
         }),
       })
       this.set({
@@ -357,13 +391,6 @@ Query.Model = Backbone.AssociatedModel.extend({
     }
     cqlFilterTree = mixinEphemeralFilter(cqlFilterTree)
     let cqlString = cql.write(cqlFilterTree)
-
-    const selectedSources = data.sources
-
-    const harvestedSources = Sources.getHarvested()
-
-    const isHarvested = (id) => harvestedSources.includes(id)
-    const isFederated = (id) => !harvestedSources.includes(id)
 
     this.currentIndexForSourceGroup = this.nextIndexForSourceGroup
     const localSearchToRun = {

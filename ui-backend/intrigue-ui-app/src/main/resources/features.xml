@@ -61,6 +61,7 @@
         <bundle>mvn:org.codice.ddf.search/audit-api/${project.version}</bundle>
         <bundle>mvn:org.codice.ddf.search/audit-application/${project.version}</bundle>
         <bundle>mvn:org.codice.ddf.search/audit-logging/${project.version}</bundle>
+        <bundle>mvn:org.codice.ddf.search/catalog-plugin-highlight/${project.version}</bundle>
     </feature>
 
     <feature name="javalin" version="${project.version}" description="Javalin Web Framework">

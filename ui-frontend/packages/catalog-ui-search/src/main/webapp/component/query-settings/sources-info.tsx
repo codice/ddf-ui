@@ -4,7 +4,6 @@ import StorageIcon from '@material-ui/icons/Storage'
 import Grid from '@material-ui/core/Grid'
 import { Link } from '../../component/link/link'
 import Button from '@material-ui/core/Button'
-import Box from '@material-ui/core/Box'
 import Tooltip from '@material-ui/core/Tooltip'
 import SourcesPage from '../../react-component/sources'
 import Paper from '@material-ui/core/Paper'
@@ -35,10 +34,7 @@ const SourcesInfo = () => {
       >
         <Grid container direction="row" alignItems="center" wrap="nowrap">
           <Grid item>
-            <Box color="text.primary">
-              {' '}
-              <StorageIcon />
-            </Box>
+            <StorageIcon />
           </Grid>
           <Grid item>Sources</Grid>
         </Grid>
