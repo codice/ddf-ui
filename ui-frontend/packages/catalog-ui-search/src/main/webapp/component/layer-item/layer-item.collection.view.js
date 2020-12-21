@@ -23,7 +23,7 @@ import LayerItem from '../../react-component/layer-item'
 const LayerItemView = Marionette.ItemView.extend({
   attributes() {
     return {
-      'data-id': 'layer-item-collection-container',
+      'data-id': this.model.id,
     }
   },
   template() {
