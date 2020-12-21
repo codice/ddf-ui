@@ -207,27 +207,30 @@ const QueryFeed = ({ selectionInterface }: Props) => {
     selectionInterface,
   })
   const statusBySource = Object.values(status)
-  let resultCount = '',
+  let resultMessage = '',
     pending = false,
     failed = false
   if (statusBySource.length === 0) {
-    resultCount = 'Has not been run'
+    resultMessage = 'Has not been run'
   } else {
     const sourcesThatHaveReturned = statusBySource.filter(
       (status) => status.hasReturned
     )
-    resultCount =
-      sourcesThatHaveReturned.length > 0
-        ? fuzzyHits(
-            statusBySource
-              .filter((status) => status.hasReturned)
-              .filter((status) => status.successful)
-              .reduce((amt, status) => {
-                amt = amt + status.hits
-                return amt
-              }, 0)
-          )
-        : 'Searching...'
+
+    if (sourcesThatHaveReturned.length > 0) {
+      const results = statusBySource
+        .filter((status) => status.hasReturned)
+        .filter((status) => status.successful)
+        .reduce((amt, status) => {
+          amt = amt + status.count
+          return amt
+        }, 0)
+
+      resultMessage = `${results} hit${results === 1 ? '' : 's'}`
+    } else {
+      resultMessage = 'Searching...'
+    }
+
     failed = sourcesThatHaveReturned.some((status) => !status.successful)
     pending = isSearching
   }
@@ -238,7 +241,7 @@ const QueryFeed = ({ selectionInterface }: Props) => {
         <Grid item>
           <div
             data-id="results-count-label"
-            title={resultCount}
+            title={resultMessage}
             style={{ whiteSpace: 'nowrap' }}
           >
             {pending ? (
@@ -247,7 +250,7 @@ const QueryFeed = ({ selectionInterface }: Props) => {
               ''
             )}
             {failed ? <i className="fa fa-warning" /> : ''}
-            {resultCount}
+            {resultMessage}
           </div>
           <LastRan currentAsOf={currentAsOf} />
         </Grid>
