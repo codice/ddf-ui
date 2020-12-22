@@ -578,11 +578,23 @@ const AttributeComponent = ({
                                     </Typography>
                                   )
                                 }
-                                return displayHighlightedAttrInFull(
-                                  lazyResult.highlights[attr],
-                                  val,
-                                  index
-                                )
+                                {
+                                  return isUrl(val) ? (
+                                    <Typography>
+                                      <span className="highlight">
+                                        <a href={val} target="_blank">
+                                          {val}
+                                        </a>
+                                      </span>
+                                    </Typography>
+                                  ) : (
+                                    displayHighlightedAttrInFull(
+                                      lazyResult.highlights[attr],
+                                      val,
+                                      index
+                                    )
+                                  )
+                                }
                               } else if (isUrl(val)) {
                                 return (
                                   <Typography>
