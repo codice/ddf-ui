@@ -57,10 +57,10 @@ import Popover from '@material-ui/core/Popover'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import TrashIcon from '@material-ui/icons/Delete'
-import RestoreFromTrashIcon from '@material-ui/icons/RestoreFromTrash'
 import OverflowTooltip, {
   OverflowTooltipHTMLElement,
 } from '../overflow-tooltip/overflow-tooltip'
+import { AsyncTasks } from '../../js/model/AsyncTask/async-task'
 
 type SaveFormType = {
   selectionInterface: any
@@ -396,7 +396,6 @@ const OpenSearch = ({
 const OptionsButton = () => {
   const {
     searchPageMode,
-    isRestoring,
     isDeleting,
     setIsSaving,
     setIsDeleting,
@@ -424,7 +423,7 @@ const OptionsButton = () => {
         fullWidth
         innerRef={menuState.anchorRef}
         onClick={menuState.handleClick}
-        disabled={isRestoring || isDeleting}
+        disabled={isDeleting}
       >
         {closed ? null : <span className="Mui-text-primary">Options</span>}
         <MoreVert />
@@ -738,7 +737,6 @@ const LeftBottom = () => {
     data,
     searchPageMode,
     selectionInterface,
-    isRestoring,
     isDeleting,
   } = React.useContext(SavedSearchModeContext)
 
@@ -769,7 +767,6 @@ const LeftBottom = () => {
           <Button
             disabled={
               (typeof data === 'boolean' && searchPageMode === 'saved') ||
-              isRestoring ||
               isDeleting
             }
             className="mt-3"
@@ -818,7 +815,6 @@ const LeftBottom = () => {
         <Button
           disabled={
             (typeof data === 'boolean' && searchPageMode === 'saved') ||
-            isRestoring ||
             isDeleting
           }
           variant="contained"
@@ -832,80 +828,6 @@ const LeftBottom = () => {
         </Button>
       </Grid>
     </Grid>
-  )
-}
-
-const RestoreIndicator = () => {
-  const [restoreProgress, setRestoreProgress] = React.useState(0)
-  const { isRestoring, itemToRestore } = React.useContext(
-    SavedSearchModeContext
-  )
-  const { closed } = useResizableGridContext()
-  const [showTempMessage, setShowTempMessage] = React.useState(false)
-  React.useEffect(() => {
-    let timeoutid = undefined as number | undefined
-    if (isRestoring) {
-      timeoutid = window.setTimeout(() => {
-        const nextVal = restoreProgress >= 100 ? 70 : restoreProgress + 3
-        setRestoreProgress(nextVal)
-      }, 1000)
-    }
-    return () => {
-      window.clearTimeout(timeoutid)
-    }
-  }, [isRestoring, restoreProgress])
-  useUpdateEffect(() => {
-    let timeoutid = undefined as number | undefined
-    if (isRestoring === false) {
-      setShowTempMessage(true)
-      timeoutid = window.setTimeout(() => {
-        setShowTempMessage(false)
-      }, 4000)
-    }
-    return () => {
-      window.clearTimeout(timeoutid)
-    }
-  }, [isRestoring])
-  if (!isRestoring && !showTempMessage) {
-    return null
-  }
-  return (
-    <>
-      <span
-        className={`flex-shrink-0 flex items-center flex-no-wrap ${
-          closed ? 'mr-min flex-col' : 'mt-min flex-row'
-        }`}
-      >
-        {isRestoring ? (
-          <>
-            <LinearProgress
-              className="text-current text-base w-full absolute bottom-0 left-0 h-1"
-              variant="determinate"
-              value={restoreProgress}
-            />
-            <CircularProgress
-              className="text-current text-base"
-              style={{ width: '1rem', height: '1rem' }}
-            />
-            <span
-              className={`${closed ? 'writing-mode-vertical-lr mt-1' : 'ml-1'}`}
-            >
-              Restoring '{itemToRestore?.plain.metacard.properties.title}'' from
-              trash ...
-            </span>
-          </>
-        ) : (
-          <>
-            <RestoreFromTrashIcon className="text-base" />{' '}
-            <span
-              className={`${closed ? 'writing-mode-vertical-lr mt-1' : 'ml-1'}`}
-            >
-              {showTempMessage ? 'Restored from trash' : ''}
-            </span>
-          </>
-        )}
-      </span>
-    </>
   )
 }
 
@@ -1017,7 +939,6 @@ const LeftTop = () => {
   const {
     data,
     searchPageMode,
-    isRestoring,
     setIsSaving,
     selectionInterface,
   } = React.useContext(SavedSearchModeContext)
@@ -1037,12 +958,7 @@ const LeftTop = () => {
             : 'flex flex-row flex-no-wrap items-center'
         }`}
       >
-        {isRestoring ? (
-          <div>
-            <RestoreIndicator />
-          </div>
-        ) : null}
-        {!isRestoring && searchPageMode === 'adhoc' ? (
+        {searchPageMode === 'adhoc' ? (
           <Dropdown
             content={(context) => {
               return (
@@ -1166,7 +1082,6 @@ const LeftTop = () => {
                       </span>
                       <SaveIndicator />
                       <DeleteIndicator />
-                      <RestoreIndicator />
                     </div>
                   </Button>
                 )
@@ -1195,11 +1110,10 @@ const LeftMiddle = () => {
     data,
     searchPageMode,
     selectionInterface,
-    isRestoring,
     isDeleting,
   } = React.useContext(SavedSearchModeContext)
 
-  if (isRestoring || isDeleting) {
+  if (isDeleting) {
     // eventually add something?
     return <div className="overflow-hidden w-full h-full flex-shrink"></div>
   }
@@ -1380,9 +1294,6 @@ const SavedSearchModeContext = React.createContext({
   setIsSaving: (() => {}) as React.Dispatch<boolean>,
   isDeleting: false as boolean,
   setIsDeleting: (() => {}) as React.Dispatch<boolean>,
-  isRestoring: false as boolean,
-  setIsRestoring: (() => {}) as React.Dispatch<boolean>,
-  itemToRestore: null as null | LazyQueryResult,
   selectionInterface: {} as any,
   setSaveVersion: (() => {}) as React.Dispatch<number>,
 })
@@ -1406,17 +1317,12 @@ export const HomePage = () => {
   const data = useSavedSearchPageMode()
   const [saveVersion, setSaveVersion] = React.useState(Math.random()) // use this to see if we should abort the current save since we have more current data
   const [isSaving, setIsSaving] = React.useState(false)
-  const [isRestoring, setIsRestoring] = React.useState(false)
-  const [itemToRestore, setItemToRestore] = React.useState(
-    null as null | LazyQueryResult
-  )
   const [isDeleting, setIsDeleting] = React.useState(false)
   const history = useHistory()
   console.log(searchPageMode)
   console.log(data)
   const location = useLocation()
   const addSnack = useSnack()
-
   React.useEffect(() => {
     let urlBasedQuery = location.search.split('?defaultQuery=')[1]
     if (urlBasedQuery) {
@@ -1533,8 +1439,7 @@ export const HomePage = () => {
               `The search '${currentQueryJSON.title}' was successfully deleted.`,
               {
                 undo: () => {
-                  setItemToRestore(data)
-                  setIsRestoring(true)
+                  AsyncTasks.restore({ lazyResult: data })
                 },
               }
             )
@@ -1547,44 +1452,6 @@ export const HomePage = () => {
       controller.abort()
     }
   }, [isDeleting])
-  React.useEffect(() => {
-    const controller = new AbortController()
-    let timeoutid = undefined as number | undefined
-    let unsubscibeCallback = () => {}
-    if (isRestoring && itemToRestore) {
-      unsubscibeCallback = itemToRestore.subscribeTo({
-        subscribableThing: 'backboneSync',
-        callback: () => {
-          const deletedId =
-            itemToRestore.plain.metacard.properties['metacard.deleted.id']
-          const deletedVersion =
-            itemToRestore.plain.metacard.properties['metacard.deleted.version']
-          const sourceId = itemToRestore.plain.metacard.properties['source-id']
-          if (!deletedId) {
-            timeoutid = window.setTimeout(() => {
-              itemToRestore.getBackbone().refreshData()
-            }, 5000)
-          } else {
-            fetch(
-              `./internal/history/revert/${deletedId}/${deletedVersion}/${sourceId}`
-            ).then(() => {
-              history.replace(`/search/${deletedId}`)
-              setIsRestoring(false)
-            })
-            unsubscibeCallback()
-          }
-        },
-      })
-      timeoutid = window.setTimeout(() => {
-        itemToRestore.getBackbone().refreshData()
-      }, 5000)
-    }
-    return () => {
-      window.clearTimeout(timeoutid)
-      unsubscibeCallback()
-      controller.abort()
-    }
-  }, [isRestoring])
   return (
     <SavedSearchModeContext.Provider
       value={{
@@ -1596,9 +1463,6 @@ export const HomePage = () => {
         setSaveVersion,
         isDeleting,
         setIsDeleting,
-        isRestoring,
-        setIsRestoring,
-        itemToRestore,
       }}
     >
       <AutoSave />

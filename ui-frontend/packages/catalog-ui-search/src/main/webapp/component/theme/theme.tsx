@@ -345,6 +345,9 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
           padding: 0px;
         }
       }
+      .w-hfull {
+        width: 1;
+      }
     `
 
 const lightenUntilContrasting = (color: string, background: string): string => {

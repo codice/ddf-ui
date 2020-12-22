@@ -48,6 +48,13 @@ import { PermissiveComponentType } from '../../typescript'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { Elevations } from '../theme/theme'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import {
+  AsyncTasks,
+  useRenderOnAsyncTasksAddOrRemove,
+} from '../../js/model/AsyncTask/async-task'
+import useSnack from '../hooks/useSnack'
+import LinearProgress from '@material-ui/core/LinearProgress'
+import CircularProgress from '@material-ui/core/CircularProgress'
 export const handleBase64EncodedImages = (url: string) => {
   if (url && url.startsWith('data:')) {
     return url
@@ -156,6 +163,90 @@ const scrollCurrentRouteIntoView = () => {
   }, 0)
 }
 
+const AsyncTasksComponent = () => {
+  const [showBar, setShowBar] = React.useState(false)
+  useRenderOnAsyncTasksAddOrRemove()
+  const addSnack = useSnack()
+  React.useEffect(() => {
+    let timeoutid = undefined as number | undefined
+    if (AsyncTasks.list.length > 0) {
+      setShowBar(true)
+      window.onbeforeunload = () => {
+        return `Are you sure you want to leave? ${AsyncTasks.list.length} tasks are still running.`
+      }
+    }
+    timeoutid = window.setTimeout(() => {
+      setShowBar(false)
+    }, 5000)
+    return () => {
+      clearTimeout(timeoutid)
+      window.onbeforeunload = null
+    }
+  }, [AsyncTasks.list.length])
+  React.useEffect(() => {
+    const unsubs = AsyncTasks.list.map((task) => {
+      return task.subscribeTo({
+        subscribableThing: 'update',
+        callback: () => {
+          if (AsyncTasks.isRestoreTask(task)) {
+            AsyncTasks.remove(task)
+            addSnack(
+              `Restore of ${task.lazyResult.plain.metacard.properties.title} complete.`,
+              {
+                timeout: 5000,
+                closeable: true,
+                alertProps: {
+                  action: (
+                    <Button
+                      component={Link}
+                      to={`/search/${task.lazyResult.plain.metacard.properties['metacard.deleted.id']}`}
+                    >
+                      Go to
+                    </Button>
+                  ),
+                },
+              }
+            )
+          }
+        },
+      })
+    })
+    return () => {
+      unsubs.forEach((unsub) => {
+        unsub()
+      })
+    }
+  })
+  if (AsyncTasks.list.length > 0) {
+    return (
+      <div
+        className={`${
+          showBar ? 'translate-y-0' : 'translate-y-full'
+        } absolute left-0 bottom-0 w-full bg-black bg-opacity-50 h-16 z-50 transition transform ease-in-out duration-500 hover:translate-y-0`}
+      >
+        <LinearProgress
+          className="w-full absolute h-2 absolute left-0 top-0 -mt-2"
+          variant="indeterminate"
+        />
+        <div className="flex flex-col overflow-auto h-full w-full items-center justify-center text-white">
+          {AsyncTasks.list.map((asyncTask) => {
+            if (AsyncTasks.isRestoreTask(asyncTask)) {
+              return (
+                <div>
+                  Restoring '
+                  {asyncTask.lazyResult.plain.metacard.properties.title}'
+                </div>
+              )
+            }
+            return null
+          })}
+        </div>
+      </div>
+    )
+  }
+  return null
+}
+
 const App = ({
   RouteInformation,
   NotificationsComponent,
@@ -239,6 +330,7 @@ const App = ({
           ) : null}
         </Grid>
         <Grid item className="w-full h-full relative overflow-hidden">
+          <AsyncTasksComponent />
           <Grid
             container
             direction="row"
