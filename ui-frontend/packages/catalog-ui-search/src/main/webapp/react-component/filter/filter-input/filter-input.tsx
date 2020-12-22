@@ -136,7 +136,18 @@ const FilterInput = ({ filter, setFilter }: Props) => {
     )
   }
 
-  return <CustomInputOrDefault value={textValue} onChange={onChange} />
+  return (
+    <CustomInputOrDefault
+      value={textValue}
+      onChange={onChange}
+      props={{
+        fullWidth: true,
+        variant: 'outlined',
+        type: 'text',
+        size: 'small',
+      }}
+    />
+  )
 }
 
 export default FilterInput

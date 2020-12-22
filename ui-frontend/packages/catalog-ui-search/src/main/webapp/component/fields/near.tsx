@@ -55,10 +55,10 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
       <Grid item className="w-full pb-2">
         <CustomInputOrDefault
           value={value.second}
-          onChange={(e: any) => {
+          onChange={(val: any) => {
             onChange({
               ...value,
-              second: e.target.value,
+              second: val,
             })
           }}
           props={{
@@ -95,10 +95,10 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
       <Grid item className="w-full">
         <CustomInputOrDefault
           value={value.first}
-          onChange={(e: any) => {
+          onChange={(val: any) => {
             onChange({
               ...value,
-              first: e.target.value,
+              first: val,
             })
           }}
           props={{

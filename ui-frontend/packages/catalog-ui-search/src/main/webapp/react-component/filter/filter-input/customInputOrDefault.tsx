@@ -23,17 +23,30 @@ export const CustomInputOrDefault = ({
   props,
 }: {
   value: string
-  onChange: (e: any) => void
+  onChange: (e: string) => void
   props?: Partial<TextFieldProps>
 }) => {
+  let textValue = value
+  //Clear out value when switching between structured string inputs (e.g. NEAR)
+  if (typeof textValue !== 'string') {
+    textValue = ''
+  }
   // call out to extension, if extension handles it, great, if not fallback to this
   const componentToReturn = extension.customFilterInput({
-    value: value,
+    value: textValue,
     onChange: onChange,
   })
   if (componentToReturn) {
     return componentToReturn as JSX.Element
   } else {
-    return <TextField value={value} onChange={onChange} {...props} />
+    return (
+      <TextField
+        value={textValue}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          onChange(e.target.value)
+        }}
+        {...props}
+      />
+    )
   }
 }
