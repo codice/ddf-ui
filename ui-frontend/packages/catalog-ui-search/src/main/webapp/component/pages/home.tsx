@@ -396,9 +396,8 @@ const OpenSearch = ({
 const OptionsButton = () => {
   const {
     searchPageMode,
-    isDeleting,
     setIsSaving,
-    setIsDeleting,
+    data,
     selectionInterface,
   } = React.useContext(SavedSearchModeContext)
   const { closed } = useResizableGridContext()
@@ -423,7 +422,6 @@ const OptionsButton = () => {
         fullWidth
         innerRef={menuState.anchorRef}
         onClick={menuState.handleClick}
-        disabled={isDeleting}
       >
         {closed ? null : <span className="Mui-text-primary">Options</span>}
         <MoreVert />
@@ -596,7 +594,13 @@ const OptionsButton = () => {
         <MenuItem
           disabled={searchPageMode === 'adhoc'}
           onClick={() => {
-            setIsDeleting(true)
+            if (typeof data !== 'boolean') {
+              AsyncTasks.delete({ lazyResult: data })
+              history.replace({
+                pathname: `/search`,
+                search: '',
+              })
+            }
             menuState.handleClose()
           }}
         >
@@ -642,7 +646,6 @@ const SaveButton = () => {
     data,
     searchPageMode,
     isSaving,
-    isDeleting,
     setIsSaving,
     selectionInterface,
   } = React.useContext(SavedSearchModeContext)
@@ -693,7 +696,7 @@ const SaveButton = () => {
         }
         return (
           <ButtonWithTwoStates
-            disabled={data === true || isDeleting}
+            disabled={data === true}
             variant="outlined"
             color="primary"
             size="small"
@@ -710,15 +713,8 @@ const SaveButton = () => {
                 state: searchPageMode === 'adhoc' ? 'Save' : 'Save as',
                 loading: false,
               },
-              {
-                state: 'Deleting',
-                loading: true,
-              },
             ]}
             state={(() => {
-              if (isDeleting) {
-                return 'Deleting'
-              }
               if (isSaving) {
                 return 'Saving'
               }
@@ -733,12 +729,9 @@ const SaveButton = () => {
 
 const LeftBottom = () => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
-  const {
-    data,
-    searchPageMode,
-    selectionInterface,
-    isDeleting,
-  } = React.useContext(SavedSearchModeContext)
+  const { data, searchPageMode, selectionInterface } = React.useContext(
+    SavedSearchModeContext
+  )
 
   if (closed) {
     return (
@@ -765,10 +758,7 @@ const LeftBottom = () => {
           </Button>
 
           <Button
-            disabled={
-              (typeof data === 'boolean' && searchPageMode === 'saved') ||
-              isDeleting
-            }
+            disabled={typeof data === 'boolean' && searchPageMode === 'saved'}
             className="mt-3"
             fullWidth
             variant="contained"
@@ -813,10 +803,7 @@ const LeftBottom = () => {
       </Grid>
       <Grid item className="ml-auto">
         <Button
-          disabled={
-            (typeof data === 'boolean' && searchPageMode === 'saved') ||
-            isDeleting
-          }
+          disabled={typeof data === 'boolean' && searchPageMode === 'saved'}
           variant="contained"
           color="primary"
           size="small"
@@ -828,59 +815,6 @@ const LeftBottom = () => {
         </Button>
       </Grid>
     </Grid>
-  )
-}
-
-const DeleteIndicator = () => {
-  const { isDeleting } = React.useContext(SavedSearchModeContext)
-  const { closed } = useResizableGridContext()
-  const [showTempMessage, setShowTempMessage] = React.useState(false)
-  useUpdateEffect(() => {
-    let timeoutid = undefined as number | undefined
-    if (isDeleting === false) {
-      setShowTempMessage(true)
-      timeoutid = window.setTimeout(() => {
-        setShowTempMessage(false)
-      }, 4000)
-    }
-    return () => {
-      window.clearTimeout(timeoutid)
-    }
-  }, [isDeleting])
-  if (!isDeleting && !showTempMessage) {
-    return null
-  }
-  return (
-    <>
-      <span
-        className={`opacity-75 text-sm flex-shrink-0 flex items-center flex-no-wrap ${
-          closed ? 'mr-min flex-col' : 'mt-min flex-row'
-        }`}
-      >
-        {isDeleting ? (
-          <>
-            <CircularProgress
-              className="text-current text-base"
-              style={{ width: '1rem', height: '1rem' }}
-            />{' '}
-            <span
-              className={`${closed ? 'writing-mode-vertical-lr mt-1' : 'ml-1'}`}
-            >
-              Moving to trash ...
-            </span>
-          </>
-        ) : (
-          <>
-            <TrashIcon className="text-base" />{' '}
-            <span
-              className={`${closed ? 'writing-mode-vertical-lr mt-1' : 'ml-1'}`}
-            >
-              {showTempMessage ? 'Moved to trash' : ''}
-            </span>
-          </>
-        )}
-      </span>
-    </>
   )
 }
 
@@ -1081,7 +1015,6 @@ const LeftTop = () => {
                         {data.plain.metacard.properties.title}
                       </span>
                       <SaveIndicator />
-                      <DeleteIndicator />
                     </div>
                   </Button>
                 )
@@ -1106,17 +1039,10 @@ const LeftTop = () => {
 
 const LeftMiddle = () => {
   const { closed } = useResizableGridContext()
-  const {
-    data,
-    searchPageMode,
-    selectionInterface,
-    isDeleting,
-  } = React.useContext(SavedSearchModeContext)
+  const { data, searchPageMode, selectionInterface } = React.useContext(
+    SavedSearchModeContext
+  )
 
-  if (isDeleting) {
-    // eventually add something?
-    return <div className="overflow-hidden w-full h-full flex-shrink"></div>
-  }
   if (data === false && searchPageMode === 'saved') {
     // eventually add something?
     return <div className="overflow-hidden w-full h-full flex-shrink"></div>
@@ -1292,8 +1218,6 @@ const SavedSearchModeContext = React.createContext({
   searchPageMode: 'adhoc' as SearchPageMode,
   isSaving: false as boolean,
   setIsSaving: (() => {}) as React.Dispatch<boolean>,
-  isDeleting: false as boolean,
-  setIsDeleting: (() => {}) as React.Dispatch<boolean>,
   selectionInterface: {} as any,
   setSaveVersion: (() => {}) as React.Dispatch<number>,
 })
@@ -1317,7 +1241,6 @@ export const HomePage = () => {
   const data = useSavedSearchPageMode()
   const [saveVersion, setSaveVersion] = React.useState(Math.random()) // use this to see if we should abort the current save since we have more current data
   const [isSaving, setIsSaving] = React.useState(false)
-  const [isDeleting, setIsDeleting] = React.useState(false)
   const history = useHistory()
   console.log(searchPageMode)
   console.log(data)
@@ -1406,52 +1329,6 @@ export const HomePage = () => {
       controller.abort()
     }
   }, [isSaving, saveVersion])
-  React.useEffect(() => {
-    const controller = new AbortController()
-    let timeoutid = undefined as number | undefined
-    if (isDeleting && typeof data !== 'boolean') {
-      timeoutid = window.setTimeout(() => {
-        const currentQuery = selectionInterface.getCurrentQuery()
-        const currentQueryJSON = currentQuery.toJSON()
-        const payload = {
-          id: '1',
-          jsonrpc: '2.0',
-          method: 'ddf.catalog/delete',
-          params: {
-            ids: [currentQueryJSON.id],
-          },
-        }
-
-        fetch('/direct', {
-          method: 'POST',
-          body: JSON.stringify(payload),
-          signal: controller.signal,
-        }).then(() => {
-          window.setTimeout(() => {
-            setIsDeleting(false)
-
-            history.replace({
-              pathname: `/search`,
-              search: '',
-            })
-
-            addSnack(
-              `The search '${currentQueryJSON.title}' was successfully deleted.`,
-              {
-                undo: () => {
-                  AsyncTasks.restore({ lazyResult: data })
-                },
-              }
-            )
-          }, 1000)
-        })
-      }, 500)
-    }
-    return () => {
-      window.clearTimeout(timeoutid)
-      controller.abort()
-    }
-  }, [isDeleting])
   return (
     <SavedSearchModeContext.Provider
       value={{
@@ -1461,8 +1338,6 @@ export const HomePage = () => {
         setIsSaving,
         selectionInterface,
         setSaveVersion,
-        isDeleting,
-        setIsDeleting,
       }}
     >
       <AutoSave />

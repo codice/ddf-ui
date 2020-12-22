@@ -208,6 +208,17 @@ const AsyncTasksComponent = () => {
               }
             )
           }
+          if (AsyncTasks.isDeleteTask(task)) {
+            AsyncTasks.remove(task)
+            addSnack(
+              `Delete of ${task.lazyResult.plain.metacard.properties.title} complete.`,
+              {
+                undo: () => {
+                  AsyncTasks.restore({ lazyResult: task.lazyResult })
+                },
+              }
+            )
+          }
         },
       })
     })
@@ -234,6 +245,14 @@ const AsyncTasksComponent = () => {
               return (
                 <div>
                   Restoring '
+                  {asyncTask.lazyResult.plain.metacard.properties.title}'
+                </div>
+              )
+            }
+            if (AsyncTasks.isDeleteTask(asyncTask)) {
+              return (
+                <div>
+                  Deleting '
                   {asyncTask.lazyResult.plain.metacard.properties.title}'
                 </div>
               )

@@ -12,6 +12,17 @@ class AsyncTasksClass extends Subscribable<'add' | 'remove' | 'update'> {
     super()
     this.list = []
   }
+  delete({ lazyResult }: { lazyResult: LazyQueryResult }) {
+    const existingTask = this.list
+      .filter(RestoreTask.isRestoreTask)
+      .find((task) => task.lazyResult === lazyResult)
+    if (existingTask) {
+      return existingTask
+    }
+    const newTask = new DeleteTask({ lazyResult })
+    this.add(newTask)
+    return newTask
+  }
   restore({ lazyResult }: { lazyResult: LazyQueryResult }) {
     const existingTask = this.list
       .filter(RestoreTask.isRestoreTask)
@@ -25,6 +36,9 @@ class AsyncTasksClass extends Subscribable<'add' | 'remove' | 'update'> {
   }
   isRestoreTask(task: AsyncTask): task is RestoreTask {
     return RestoreTask.isRestoreTask(task)
+  }
+  isDeleteTask(task: AsyncTask): task is DeleteTask {
+    return DeleteTask.isDeleteTask(task)
   }
   private add(asyncTask: AsyncTask) {
     if (this.list.indexOf(asyncTask) === -1) {
@@ -141,9 +155,27 @@ class DeleteTask extends AsyncTask {
   constructor({ lazyResult }: { lazyResult: LazyQueryResult }) {
     super()
     this.lazyResult = lazyResult
-    this.attemptDelete()
+    setTimeout(() => {
+      this.attemptDelete()
+    }, 1000)
   }
   attemptDelete() {
-    this._notifySubscribers('update')
+    const payload = {
+      id: '1',
+      jsonrpc: '2.0',
+      method: 'ddf.catalog/delete',
+      params: {
+        ids: [this.lazyResult.plain.id],
+      },
+    }
+    fetch('/direct', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }).then(() => {
+      this._notifySubscribers('update')
+    })
+  }
+  static isDeleteTask(task: any): task is DeleteTask {
+    return task.constructor === DeleteTask
   }
 }
