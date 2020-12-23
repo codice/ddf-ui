@@ -24,7 +24,7 @@ export const displayHighlightedAttrInFull = (
   highlights.sort(comparator)
   // only use the highlights from this value if multivalued
   const filteredHighlights = highlights.filter(
-    highlight => parseInt(highlight.valueIndex) === index
+    (highlight) => parseInt(highlight.valueIndex) === index
   )
   let textArray = []
   let currentIndex = 0

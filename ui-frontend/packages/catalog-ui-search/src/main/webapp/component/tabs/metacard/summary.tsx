@@ -79,12 +79,12 @@ const ThumbnailInput = ({
           type="file"
           ref={fileRef}
           style={{ display: 'none' }}
-          onChange={e => {
+          onChange={(e) => {
             if (imgRef.current === null) {
               return
             }
             const reader = new FileReader()
-            reader.onload = function(event) {
+            reader.onload = function (event) {
               try {
                 // @ts-ignore ts-migrate(2531) FIXME: Object is possibly 'null'.
                 onChange(event.target.result)
@@ -198,7 +198,7 @@ export const Editor = ({
                         disableClearable
                         size="small"
                         options={enumForAttr}
-                        renderInput={params => (
+                        renderInput={(params) => (
                           <TextField {...params} variant="outlined" />
                         )}
                       />
@@ -209,7 +209,7 @@ export const Editor = ({
                       return (
                         <DateTimePicker
                           value={val}
-                          onChange={value => {
+                          onChange={(value) => {
                             values[index] = value
                             setValues([...values])
                           }}
@@ -228,7 +228,7 @@ export const Editor = ({
                         <ThumbnailInput
                           disabled={mode !== Mode.Normal}
                           value={val}
-                          onChange={update => {
+                          onChange={(update) => {
                             values[index] = update
                             setValues([...values])
                           }}
@@ -239,7 +239,7 @@ export const Editor = ({
                         <Checkbox
                           disabled={mode !== Mode.Normal}
                           checked={val}
-                          onChange={e => {
+                          onChange={(e) => {
                             values[index] = e.target.checked
                             setValues([...values])
                           }}
@@ -255,7 +255,7 @@ export const Editor = ({
                         <TextField
                           disabled={mode !== Mode.Normal}
                           value={val}
-                          onChange={e => {
+                          onChange={(e) => {
                             values[index] = e.target.value
                             setValues([...values])
                           }}
@@ -311,28 +311,27 @@ export const Editor = ({
             </Grid>
           )
         })}
-        {isMultiValued &&
-          values.length > 0 && (
-            <Button
-              disabled={mode === Mode.Saving}
-              variant="text"
-              color="primary"
-              onClick={() => {
-                let defaultValue = ''
-                switch (attrType) {
-                  case 'DATE':
-                    defaultValue = new Date().toISOString()
-                    break
-                }
-                setValues([...values, defaultValue])
-              }}
-            >
-              <Box color="text.primary">
-                <AddIcon />
-              </Box>
-              Add New Value
-            </Button>
-          )}
+        {isMultiValued && values.length > 0 && (
+          <Button
+            disabled={mode === Mode.Saving}
+            variant="text"
+            color="primary"
+            onClick={() => {
+              let defaultValue = ''
+              switch (attrType) {
+                case 'DATE':
+                  defaultValue = new Date().toISOString()
+                  break
+              }
+              setValues([...values, defaultValue])
+            }}
+          >
+            <Box color="text.primary">
+              <AddIcon />
+            </Box>
+            Add New Value
+          </Button>
+        )}
       </DialogContent>
       <Divider />
       <DialogActions>
@@ -373,9 +372,7 @@ export const Editor = ({
             ]
             setTimeout(() => {
               $.ajax({
-                url: `./internal/metacards?storeId=${
-                  lazyResult.plain.metacard.properties['source-id']
-                }`,
+                url: `./internal/metacards?storeId=${lazyResult.plain.metacard.properties['source-id']}`,
                 type: 'PATCH',
                 data: JSON.stringify(payload),
                 contentType: 'application/json',
@@ -440,186 +437,182 @@ const AttributeComponent = ({
       const protocol = value.toLowerCase().split('/')[0]
       return protocol && (protocol === 'http:' || protocol === 'https:')
     }
+    return false
   }
 
   const isFiltered =
     filter !== '' ? !label.toLowerCase().includes(filter.toLowerCase()) : false
-  const MemoItem = React.useMemo(
-    () => {
-      return (
+  const MemoItem = React.useMemo(() => {
+    return (
+      <Grid
+        container
+        direction="row"
+        wrap={'nowrap'}
+        className="group relative"
+      >
+        {isNotWritable({ attribute: attr, lazyResult }) ? null : (
+          <div className="p-1 hidden group-hover:block absolute right-0 top-0">
+            <Button
+              onClick={() => {
+                dialogContext.setProps({
+                  open: true,
+                  children: (
+                    <Editor
+                      attr={attr}
+                      lazyResult={lazyResult}
+                      onCancel={() => {
+                        dialogContext.setProps({
+                          open: false,
+                          children: null,
+                        })
+                      }}
+                      onSave={() => {
+                        dialogContext.setProps({
+                          open: false,
+                          children: null,
+                        })
+                      }}
+                    />
+                  ),
+                })
+              }}
+            >
+              <EditIcon />
+            </Button>
+          </div>
+        )}
+
         <Grid
-          container
-          direction="row"
-          wrap={'nowrap'}
-          className="group relative"
+          item
+          xs={4}
+          style={{
+            wordBreak: 'break-word',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            padding: '10px',
+          }}
+          className="relative"
         >
-          {isNotWritable({ attribute: attr, lazyResult }) ? null : (
-            <div className="p-1 hidden group-hover:block absolute right-0 top-0">
-              <Button
-                onClick={() => {
-                  dialogContext.setProps({
-                    open: true,
-                    children: (
-                      <Editor
-                        attr={attr}
-                        lazyResult={lazyResult}
-                        onCancel={() => {
-                          dialogContext.setProps({
-                            open: false,
-                            children: null,
-                          })
-                        }}
-                        onSave={() => {
-                          dialogContext.setProps({
-                            open: false,
-                            children: null,
-                          })
-                        }}
-                      />
-                    ),
-                  })
-                }}
-              >
-                <EditIcon />
-              </Button>
-            </div>
-          )}
+          <Typography>{label}</Typography>
+          <Divider
+            orientation="vertical"
+            className="absolute right-0 top-0 w-min h-full"
+          />
+        </Grid>
+        <Grid
+          item
+          md={8}
+          style={{
+            wordBreak: 'break-word',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            padding: '10px',
+          }}
+        >
+          <Grid container direction="row">
+            <Grid data-id={`${attr}-value`} item>
+              {value.map((val: any, index: number) => {
+                return (
+                  <>
+                    {index !== 0 ? (
+                      <Divider style={{ margin: '5px 0px' }} />
+                    ) : null}
+                    <div>
+                      {(() => {
+                        if (attr === 'ext.audio-snippet') {
+                          const mimetype =
+                            lazyResult.plain.metacard.properties[
+                              'ext.audio-snippet-mimetype'
+                            ]
+                          const src = `data:${mimetype};base64,${val}`
 
-          <Grid
-            item
-            xs={4}
-            style={{
-              wordBreak: 'break-word',
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-              padding: '10px',
-            }}
-            className="relative"
-          >
-            <Typography>{label}</Typography>
-            <Divider
-              orientation="vertical"
-              className="absolute right-0 top-0 w-min h-full"
-            />
-          </Grid>
-          <Grid
-            item
-            md={8}
-            style={{
-              wordBreak: 'break-word',
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-              padding: '10px',
-            }}
-          >
-            <Grid container direction="row">
-              <Grid data-id={`${attr}-value`} item>
-                {value.map((val: any, index: number) => {
-                  return (
-                    <>
-                      {index !== 0 ? (
-                        <Divider style={{ margin: '5px 0px' }} />
-                      ) : null}
-                      <div>
-                        {(() => {
-                          if (attr === 'ext.audio-snippet') {
-                            const mimetype =
-                              lazyResult.plain.metacard.properties[
-                                'ext.audio-snippet-mimetype'
-                              ]
-                            const src = `data:${mimetype};base64,${val}`
+                          return <audio controls src={src} />
+                        }
 
-                            return <audio controls src={src} />
-                          }
+                        switch (TypedMetacardDefs.getType({ attr })) {
+                          case 'DATE':
+                            return (
+                              <Typography title={Common.getMomentDate(val)}>
+                                {user.getUserReadableDateTime(val)}
+                              </Typography>
+                            )
 
-                          switch (TypedMetacardDefs.getType({ attr })) {
-                            case 'DATE':
-                              return (
-                                <Typography title={Common.getMomentDate(val)}>
-                                  {user.getUserReadableDateTime(val)}
-                                </Typography>
-                              )
-
-                            case 'BINARY':
-                              return (
-                                <a
-                                  target="_blank"
-                                  href={TypedMetacardDefs.getImageSrc({ val })}
-                                  style={{ padding: '0px' }}
-                                >
-                                  <img
-                                    src={TypedMetacardDefs.getImageSrc({ val })}
-                                    style={{
-                                      maxWidth: '100%',
-                                      maxHeight: '50vh',
-                                    }}
-                                  />
-                                </a>
-                              )
-                            case 'BOOLEAN':
-                              return (
-                                <Typography>
-                                  {val ? 'true' : 'false'}
-                                </Typography>
-                              )
-                            default:
-                              if (lazyResult.highlights[attr]) {
-                                if (attr === 'title') {
-                                  //Special case, title highlights don't get truncated
-                                  return (
-                                    <Typography>
-                                      <span
-                                        dangerouslySetInnerHTML={{
-                                          __html:
-                                            lazyResult.highlights[attr][0]
-                                              .highlight,
-                                        }}
-                                      />
-                                    </Typography>
-                                  )
-                                }
-                                {
-                                  return isUrl(val) ? (
-                                    <Typography>
-                                      <span className="highlight">
-                                        <a href={val} target="_blank">
-                                          {val}
-                                        </a>
-                                      </span>
-                                    </Typography>
-                                  ) : (
-                                    displayHighlightedAttrInFull(
-                                      lazyResult.highlights[attr],
-                                      val,
-                                      index
-                                    )
-                                  )
-                                }
-                              } else if (isUrl(val)) {
+                          case 'BINARY':
+                            return (
+                              <a
+                                target="_blank"
+                                href={TypedMetacardDefs.getImageSrc({ val })}
+                                style={{ padding: '0px' }}
+                              >
+                                <img
+                                  src={TypedMetacardDefs.getImageSrc({ val })}
+                                  style={{
+                                    maxWidth: '100%',
+                                    maxHeight: '50vh',
+                                  }}
+                                />
+                              </a>
+                            )
+                          case 'BOOLEAN':
+                            return (
+                              <Typography>{val ? 'true' : 'false'}</Typography>
+                            )
+                          default:
+                            if (lazyResult.highlights[attr]) {
+                              if (attr === 'title') {
+                                //Special case, title highlights don't get truncated
                                 return (
                                   <Typography>
-                                    <a href={val} target="_blank">
-                                      {val}
-                                    </a>
+                                    <span
+                                      dangerouslySetInnerHTML={{
+                                        __html:
+                                          lazyResult.highlights[attr][0]
+                                            .highlight,
+                                      }}
+                                    />
                                   </Typography>
                                 )
-                              } else {
-                                return <Typography>{val}</Typography>
                               }
-                          }
-                        })()}
-                      </div>
-                    </>
-                  )
-                })}
-              </Grid>
+                              {
+                                return isUrl(val) ? (
+                                  <Typography>
+                                    <span className="highlight">
+                                      <a href={val} target="_blank">
+                                        {val}
+                                      </a>
+                                    </span>
+                                  </Typography>
+                                ) : (
+                                  displayHighlightedAttrInFull(
+                                    lazyResult.highlights[attr],
+                                    val,
+                                    index
+                                  )
+                                )
+                              }
+                            } else if (isUrl(val)) {
+                              return (
+                                <Typography>
+                                  <a href={val} target="_blank">
+                                    {val}
+                                  </a>
+                                </Typography>
+                              )
+                            } else {
+                              return <Typography>{val}</Typography>
+                            }
+                        }
+                      })()}
+                    </div>
+                  </>
+                )
+              })}
             </Grid>
           </Grid>
         </Grid>
-      )
-    },
-    [summaryShown, forceRender, isNotWritable]
-  )
+      </Grid>
+    )
+  }, [summaryShown, forceRender, isNotWritable])
   return (
     <div style={{ display: isFiltered ? 'none' : 'block' }}>{MemoItem}</div>
   )
@@ -638,13 +631,13 @@ const getHiddenAttributes = (
       type: selection.plain.metacardType,
     })
   )
-    .filter(val => {
+    .filter((val) => {
       if (activeAttributes.includes(val.id)) {
         return false
       }
       return true
     })
-    .filter(val => {
+    .filter((val) => {
       return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({
         attr: val.id,
       })
@@ -682,65 +675,53 @@ const Summary = ({ selectionInterface }: Props) => {
       }
     )
   }, [])
-  React.useEffect(
-    () => {
-      if (selection) {
-        if (getHiddenAttributes(selection, summaryShown).length === 0) {
-          setFullyExpanded(true)
-        } else {
-          setFullyExpanded(false)
-        }
+  React.useEffect(() => {
+    if (selection) {
+      if (getHiddenAttributes(selection, summaryShown).length === 0) {
+        setFullyExpanded(true)
+      } else {
+        setFullyExpanded(false)
       }
-    },
-    [summaryShown]
-  )
-  const everythingElse = React.useMemo(
-    () => {
-      return selection && expanded
-        ? Object.keys(selection.plain.metacard.properties)
-            .filter(attr => {
-              return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({ attr })
+    }
+  }, [summaryShown])
+  const everythingElse = React.useMemo(() => {
+    return selection && expanded
+      ? Object.keys(selection.plain.metacard.properties)
+          .filter((attr) => {
+            return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({ attr })
+          })
+          .filter((attr) => {
+            return !summaryShown.includes(attr)
+          })
+      : []
+  }, [expanded, summaryShown])
+  const blankEverythingElse = React.useMemo(() => {
+    return selection
+      ? Object.values(
+          TypedMetacardDefs.getDefinition({
+            type: selection.plain.metacardType,
+          })
+        )
+          .filter((val) => {
+            if (summaryShown.includes(val.id)) {
+              return false
+            }
+            if (everythingElse.includes(val.id)) {
+              return false
+            }
+            return true
+          })
+          .filter((val) => {
+            return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({
+              attr: val.id,
             })
-            .filter(attr => {
-              return !summaryShown.includes(attr)
-            })
-        : []
-    },
-    [expanded, summaryShown]
-  )
-  const blankEverythingElse = React.useMemo(
-    () => {
-      return selection
-        ? Object.values(
-            TypedMetacardDefs.getDefinition({
-              type: selection.plain.metacardType,
-            })
-          )
-            .filter(val => {
-              if (summaryShown.includes(val.id)) {
-                return false
-              }
-              if (everythingElse.includes(val.id)) {
-                return false
-              }
-              return true
-            })
-            .filter(val => {
-              return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({
-                attr: val.id,
-              })
-            })
-        : []
-    },
-    [expanded, summaryShown]
-  )
+          })
+      : []
+  }, [expanded, summaryShown])
 
-  React.useEffect(
-    () => {
-      globalExpanded = expanded
-    },
-    [expanded]
-  )
+  React.useEffect(() => {
+    globalExpanded = expanded
+  }, [expanded])
   if (!selection) {
     return <div>No result selected</div>
   }
@@ -785,12 +766,12 @@ const Summary = ({ selectionInterface }: Props) => {
                           selection,
                           summaryShown
                         )
-                          .map(attr => {
+                          .map((attr) => {
                             return attr.id
                           })
                           .sort()}
                         lazyResult={selection}
-                        onSave={active => {
+                        onSave={(active) => {
                           user
                             .get('user')
                             .get('preferences')
@@ -829,7 +810,7 @@ const Summary = ({ selectionInterface }: Props) => {
                       }
                     : {},
               }}
-              onChange={e => {
+              onChange={(e) => {
                 persistantFilter = e.target.value
                 setFilter(e.target.value)
               }}
@@ -862,7 +843,7 @@ const Summary = ({ selectionInterface }: Props) => {
 
           {expanded ? (
             <>
-              {everythingElse.map(attr => {
+              {everythingElse.map((attr) => {
                 return (
                   <div key={attr} className="relative">
                     <AttributeComponent
@@ -879,7 +860,7 @@ const Summary = ({ selectionInterface }: Props) => {
                   </div>
                 )
               })}
-              {blankEverythingElse.map(attr => {
+              {blankEverythingElse.map((attr) => {
                 return (
                   <div key={attr.id} className="relative">
                     <AttributeComponent
