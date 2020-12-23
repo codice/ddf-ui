@@ -133,7 +133,7 @@ module.exports = Marionette.LayoutView.extend({
       (element, index) => {
         this.model
           .get('mapLayers')
-          .get(element.getAttribute('data-id'))
+          .get(element.getAttribute('layer-id'))
           .set('order', index)
       }
     )

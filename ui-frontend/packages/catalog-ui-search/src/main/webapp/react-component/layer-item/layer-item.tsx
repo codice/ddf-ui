@@ -134,7 +134,7 @@ class LayerItem extends React.Component<ContainerProps, State> {
     }
 
     return (
-      <Component data-id={id}>
+      <Component data-id="layer-item-container" layer-id={id}>
         <LayerItemPresentation {...props} />
       </Component>
     )
