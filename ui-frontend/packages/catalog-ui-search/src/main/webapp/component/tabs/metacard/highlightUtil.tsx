@@ -17,7 +17,7 @@ const comparator = (a: AttributeHighlight, b: AttributeHighlight) => {
 
 export const displayHighlightedAttrInFull = (
   highlights: Array<AttributeHighlight>,
-  text: String,
+  text: string,
   index: number
 ) => {
   //sort these in the order in which they appear
