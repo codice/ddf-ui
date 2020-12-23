@@ -60,7 +60,12 @@ import TrashIcon from '@material-ui/icons/Delete'
 import OverflowTooltip, {
   OverflowTooltipHTMLElement,
 } from '../overflow-tooltip/overflow-tooltip'
-import { AsyncTasks } from '../../js/model/AsyncTask/async-task'
+import {
+  AsyncTasks,
+  useCreateSearchTask,
+  useCreateSearchTaskBasedOnParams,
+  useSaveSearchTaskBasedOnParams,
+} from '../../js/model/AsyncTask/async-task'
 
 type SaveFormType = {
   selectionInterface: any
@@ -394,12 +399,9 @@ const OpenSearch = ({
 }
 
 const OptionsButton = () => {
-  const {
-    searchPageMode,
-    setIsSaving,
-    data,
-    selectionInterface,
-  } = React.useContext(SavedSearchModeContext)
+  const { searchPageMode, data, selectionInterface } = React.useContext(
+    SavedSearchModeContext
+  )
   const { closed } = useResizableGridContext()
   const menuState = useMenuState()
   const menuStateOpenSearch = useMenuState()
@@ -441,17 +443,12 @@ const OptionsButton = () => {
                 .getCurrentQuery()
                 .toJSON()
               currentQueryJSON.title = title
-
-              history.replace(
-                `/search?defaultQuery=${encodeURIComponent(
-                  JSON.stringify(currentQueryJSON)
-                )}`
-              )
+              const task = AsyncTasks.createSearch({ data: currentQueryJSON })
+              history.replace(`/search/${task.data.id}`)
 
               addSnack(`Making a copy of ${title}`, {
                 alertProps: { severity: 'info' },
               })
-              setIsSaving(true)
             }}
             selectionInterface={selectionInterface}
           />
@@ -646,9 +643,9 @@ const SaveButton = () => {
     data,
     searchPageMode,
     isSaving,
-    setIsSaving,
     selectionInterface,
   } = React.useContext(SavedSearchModeContext)
+  const history = useHistory()
   return (
     <Dropdown
       content={(context) => {
@@ -661,12 +658,25 @@ const SaveButton = () => {
             <Paper elevation={Elevations.overlays}>
               <SaveForm
                 onClose={() => {
-                  context.deepCloseAndRefocus
+                  context.deepCloseAndRefocus()
                 }}
                 selectionInterface={selectionInterface}
                 onSave={(title) => {
                   selectionInterface.getCurrentQuery().set('title', title)
-                  setIsSaving(true)
+                  const searchData = selectionInterface
+                    .getCurrentQuery()
+                    .toJSON()
+                  if (searchPageMode === 'adhoc') {
+                    const task = AsyncTasks.createSearch({ data: searchData })
+                    history.replace({
+                      pathname: `/search/${task.data.id}`,
+                    })
+                  } else if (typeof data !== 'boolean') {
+                    AsyncTasks.saveSearch({
+                      lazyResult: data,
+                      data: searchData,
+                    })
+                  }
                 }}
               />
             </Paper>
@@ -870,15 +880,14 @@ const SaveIndicator = () => {
 
 const LeftTop = () => {
   const { closed } = useResizableGridContext()
-  const {
-    data,
-    searchPageMode,
-    setIsSaving,
-    selectionInterface,
-  } = React.useContext(SavedSearchModeContext)
+  const { data, searchPageMode, selectionInterface } = React.useContext(
+    SavedSearchModeContext
+  )
   useRerenderOnBackboneSync({
     lazyResult: typeof data !== 'boolean' ? data : undefined,
   })
+  const history = useHistory()
+
   return (
     <div
       className={`min-h-16 ${
@@ -904,12 +913,27 @@ const LeftTop = () => {
                   <Paper elevation={Elevations.overlays}>
                     <SaveForm
                       onClose={() => {
-                        context.deepCloseAndRefocus
+                        context.deepCloseAndRefocus()
                       }}
                       selectionInterface={selectionInterface}
                       onSave={(title) => {
                         selectionInterface.getCurrentQuery().set('title', title)
-                        setIsSaving(true)
+                        const searchData = selectionInterface
+                          .getCurrentQuery()
+                          .toJSON()
+                        if (searchPageMode === 'adhoc') {
+                          const task = AsyncTasks.createSearch({
+                            data: searchData,
+                          })
+                          history.replace({
+                            pathname: `/search/${task.data.id}`,
+                          })
+                        } else if (typeof data !== 'boolean') {
+                          AsyncTasks.saveSearch({
+                            lazyResult: data,
+                            data: searchData,
+                          })
+                        }
                       }}
                     />
                   </Paper>
@@ -975,14 +999,24 @@ const LeftTop = () => {
                     <Paper elevation={Elevations.overlays}>
                       <SaveForm
                         onClose={() => {
-                          context.deepCloseAndRefocus
+                          context.deepCloseAndRefocus()
                         }}
                         selectionInterface={selectionInterface}
                         onSave={(title) => {
                           selectionInterface
                             .getCurrentQuery()
                             .set('title', title)
-                          setIsSaving(true)
+                          const searchData = selectionInterface
+                            .getCurrentQuery()
+                            .toJSON()
+                          if (searchPageMode === 'adhoc') {
+                            AsyncTasks.createSearch({ data: searchData })
+                          } else if (typeof data !== 'boolean') {
+                            AsyncTasks.saveSearch({
+                              lazyResult: data,
+                              data: searchData,
+                            })
+                          }
                         }}
                       />
                     </Paper>
@@ -1104,26 +1138,32 @@ const useKeepSearchInUrl = ({
 
 type SearchPageMode = 'saved' | 'adhoc'
 
-const useSearchPageMode = (): SearchPageMode => {
-  const params = useParams<{ id?: string }>()
-  const [mode, setMode] = React.useState<SearchPageMode>(
-    params.id ? 'saved' : 'adhoc'
-  )
+const useSearchPageMode = ({ id }: { id?: string }): SearchPageMode => {
+  const [mode, setMode] = React.useState<SearchPageMode>(id ? 'saved' : 'adhoc')
   React.useEffect(() => {
-    if (params.id) {
+    if (id) {
       return setMode('saved')
     }
     return setMode('adhoc')
-  }, [params.id])
+  }, [id])
   return mode
 }
 
 type SavedSearchPageMode = boolean | LazyQueryResult
-const useSavedSearchPageMode = (): SavedSearchPageMode => {
+const useSavedSearchPageMode = ({
+  id,
+}: {
+  id?: string
+}): SavedSearchPageMode => {
   // handle all loading / data in here
-  const { id } = useParams<{ id?: string }>()
   const [data, setData] = React.useState<SavedSearchPageMode>(false)
+  const task = useCreateSearchTask({ id })
+  console.log(task)
   React.useEffect(() => {
+    if (task) {
+      setData(true)
+      return
+    }
     const query = new Query.Model({
       sources: ['local'],
     })
@@ -1171,17 +1211,14 @@ const useSavedSearchPageMode = (): SavedSearchPageMode => {
       subscriptionCancel()
       query.cancelCurrentSearches()
     }
-  }, [id])
+  }, [id, task])
   return data
 }
 
 const AutoSave = () => {
-  const {
-    searchPageMode,
-    setIsSaving,
-    selectionInterface,
-    setSaveVersion,
-  } = React.useContext(SavedSearchModeContext)
+  const { searchPageMode, selectionInterface, data } = React.useContext(
+    SavedSearchModeContext
+  )
   const queryModel = selectionInterface.getCurrentQuery()
   const on = searchPageMode === 'saved'
 
@@ -1198,10 +1235,13 @@ const AutoSave = () => {
         on &&
         queryModel.get('id') &&
         !isFromSwappingToSavedSearch &&
-        isAttributeThatMatters
+        isAttributeThatMatters &&
+        typeof data !== 'boolean'
       ) {
-        setSaveVersion(Math.random())
-        setIsSaving(true)
+        AsyncTasks.saveSearch({
+          lazyResult: data,
+          data: queryModel.toJSON(),
+        })
       }
     }
     listenTo(queryModel, 'change', callback)
@@ -1209,7 +1249,7 @@ const AutoSave = () => {
     return () => {
       stopListening(queryModel, 'change', callback)
     }
-  }, [on, queryModel])
+  }, [on, queryModel, data])
   return null
 }
 
@@ -1217,9 +1257,7 @@ const SavedSearchModeContext = React.createContext({
   data: false as SavedSearchPageMode,
   searchPageMode: 'adhoc' as SearchPageMode,
   isSaving: false as boolean,
-  setIsSaving: (() => {}) as React.Dispatch<boolean>,
   selectionInterface: {} as any,
-  setSaveVersion: (() => {}) as React.Dispatch<number>,
 })
 
 const getDefaultQueryData = (location: Location): any => {
@@ -1237,15 +1275,14 @@ const getDefaultQueryData = (location: Location): any => {
 }
 
 export const HomePage = () => {
-  const searchPageMode = useSearchPageMode()
-  const data = useSavedSearchPageMode()
-  const [saveVersion, setSaveVersion] = React.useState(Math.random()) // use this to see if we should abort the current save since we have more current data
-  const [isSaving, setIsSaving] = React.useState(false)
-  const history = useHistory()
+  const { id } = useParams<{ id?: string }>()
+  const searchPageMode = useSearchPageMode({ id })
+  const data = useSavedSearchPageMode({ id })
+  const saveSearchTask = useSaveSearchTaskBasedOnParams()
+  const isSaving = saveSearchTask !== null
   console.log(searchPageMode)
   console.log(data)
   const location = useLocation()
-  const addSnack = useSnack()
   React.useEffect(() => {
     let urlBasedQuery = location.search.split('?defaultQuery=')[1]
     if (urlBasedQuery) {
@@ -1276,68 +1313,13 @@ export const HomePage = () => {
       }
     }
   }, [searchPageMode, location.search])
-  React.useEffect(() => {
-    const controller = new AbortController()
-    let timeoutid = undefined as number | undefined
-    if (isSaving) {
-      timeoutid = window.setTimeout(() => {
-        const currentQuery = selectionInterface.getCurrentQuery()
-        const isNew = currentQuery.id === undefined
-        if (isNew) {
-          currentQuery.set('id', Common.generateUUID())
-        }
-        const currentQueryJSON = currentQuery.toJSON()
-        const payload = {
-          id: '1',
-          jsonrpc: '2.0',
-          method: 'ddf.catalog/create',
-          params: {
-            metacards: [
-              {
-                attributes: {
-                  'metacard-tags': ['query'],
-                  ...currentQueryJSON,
-                },
-                metacardType: 'metacard.query',
-              },
-            ],
-          },
-        }
-
-        fetch('/direct', {
-          method: 'POST',
-          body: JSON.stringify(payload),
-          signal: controller.signal,
-        }).then(() => {
-          if (typeof data !== 'boolean') {
-            data.getBackbone().refreshData()
-          }
-          window.setTimeout(() => {
-            setIsSaving(false)
-
-            history.replace({
-              pathname: `/search/${currentQueryJSON.id}`,
-              search: '',
-            })
-          }, 1000)
-        })
-      }, 500)
-    }
-    return () => {
-      window.clearTimeout(timeoutid)
-      console.log(saveVersion + ': aborting old version')
-      controller.abort()
-    }
-  }, [isSaving, saveVersion])
   return (
     <SavedSearchModeContext.Provider
       value={{
         data,
         searchPageMode,
         isSaving,
-        setIsSaving,
         selectionInterface,
-        setSaveVersion,
       }}
     >
       <AutoSave />

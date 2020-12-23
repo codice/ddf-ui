@@ -2,6 +2,11 @@ import { Subscribable } from '../Base/base-classes'
 import * as React from 'react'
 import { LazyQueryResult } from '../LazyQueryResult/LazyQueryResult'
 import fetch from '../../../react-component/utils/fetch'
+import { useParams } from 'react-router-dom'
+const Common = require('../../Common.js')
+
+type PlainMetacardPropertiesType = LazyQueryResult['plain']['metacard']['properties']
+
 type AsyncSubscriptionsType = 'update'
 /**
  *  Provides a singleton for tracking async tasks in the UI
@@ -14,7 +19,7 @@ class AsyncTasksClass extends Subscribable<'add' | 'remove' | 'update'> {
   }
   delete({ lazyResult }: { lazyResult: LazyQueryResult }) {
     const existingTask = this.list
-      .filter(RestoreTask.isRestoreTask)
+      .filter(DeleteTask.isInstanceOf)
       .find((task) => task.lazyResult === lazyResult)
     if (existingTask) {
       return existingTask
@@ -25,7 +30,7 @@ class AsyncTasksClass extends Subscribable<'add' | 'remove' | 'update'> {
   }
   restore({ lazyResult }: { lazyResult: LazyQueryResult }) {
     const existingTask = this.list
-      .filter(RestoreTask.isRestoreTask)
+      .filter(RestoreTask.isInstanceOf)
       .find((task) => task.lazyResult === lazyResult)
     if (existingTask) {
       return existingTask
@@ -34,11 +39,45 @@ class AsyncTasksClass extends Subscribable<'add' | 'remove' | 'update'> {
     this.add(newTask)
     return newTask
   }
+  createSearch({ data }: { data: PlainMetacardPropertiesType }) {
+    const newTask = new CreateSearchTask({ data })
+    this.add(newTask)
+    return newTask
+  }
+  saveSearch({
+    lazyResult,
+    data,
+  }: {
+    data: PlainMetacardPropertiesType
+    lazyResult: LazyQueryResult
+  }) {
+    const existingTask = this.list
+      .filter(SaveSearchTask.isInstanceOf)
+      .find((task) => task.lazyResult === lazyResult)
+    if (existingTask) {
+      existingTask.update({ data })
+      return existingTask
+    }
+    const newTask = new SaveSearchTask({ lazyResult, data })
+    this.add(newTask)
+    return newTask
+  }
   isRestoreTask(task: AsyncTask): task is RestoreTask {
-    return RestoreTask.isRestoreTask(task)
+    return RestoreTask.isInstanceOf(task)
   }
   isDeleteTask(task: AsyncTask): task is DeleteTask {
-    return DeleteTask.isDeleteTask(task)
+    return DeleteTask.isInstanceOf(task)
+  }
+  isCreateSearchTask(task: AsyncTask): task is CreateSearchTask {
+    return CreateSearchTask.isInstanceOf(task)
+  }
+  isSaveSearchTask(task: AsyncTask): task is SaveSearchTask {
+    return SaveSearchTask.isInstanceOf(task)
+  }
+  hasShowableTasks() {
+    return (
+      this.list.filter((task) => !SaveSearchTask.isInstanceOf(task)).length > 0
+    )
   }
   private add(asyncTask: AsyncTask) {
     if (this.list.indexOf(asyncTask) === -1) {
@@ -63,7 +102,7 @@ export const AsyncTasks = new AsyncTasksClass()
  * Goal is to provide a common abstraction to track long running async tasks in the UI, and free up the user to do whatever they want during them.
  * Through subscriptions, we'll allow views to track progress if necessary. (useTaskProgress hooks?)
  */
-class AsyncTask extends Subscribable<AsyncSubscriptionsType> {
+abstract class AsyncTask extends Subscribable<AsyncSubscriptionsType> {
   constructor() {
     super()
   }
@@ -83,6 +122,76 @@ export const useRenderOnAsyncTasksAddOrRemove = () => {
     }
   }, [])
   return
+}
+
+// allow someone to see if one exists, and sub to updates
+export const useCreateSearchTaskBasedOnParams = () => {
+  const { id } = useParams<{ id?: string }>()
+  const task = useCreateSearchTask({ id })
+  return task
+}
+
+// allow someone to see if one exists, and sub to updates
+export const useCreateSearchTask = ({ id }: { id?: string }) => {
+  const [task, setTask] = React.useState(null as null | CreateSearchTask)
+  useRenderOnAsyncTasksAddOrRemove()
+  React.useEffect(() => {
+    const updateTask = () => {
+      const relevantTask = AsyncTasks.list
+        .filter(CreateSearchTask.isInstanceOf)
+        .find((task) => {
+          return task.data.id === id
+        })
+      setTask(relevantTask || null)
+    }
+    const unsub = AsyncTasks.subscribeTo({
+      subscribableThing: 'update',
+      callback: () => {
+        updateTask()
+      },
+    })
+    updateTask()
+    return () => {
+      unsub()
+    }
+  }, [id])
+
+  return task
+}
+
+// allow someone to see if one exists, and sub to updates
+export const useSaveSearchTaskBasedOnParams = () => {
+  const { id } = useParams<{ id?: string }>()
+  const task = useSaveSearchTask({ id })
+  return task
+}
+
+// allow someone to see if one exists, and sub to updates
+export const useSaveSearchTask = ({ id }: { id?: string }) => {
+  const [task, setTask] = React.useState(null as null | CreateSearchTask)
+  useRenderOnAsyncTasksAddOrRemove()
+  React.useEffect(() => {
+    const updateTask = () => {
+      const relevantTask = AsyncTasks.list
+        .filter(SaveSearchTask.isInstanceOf)
+        .find((task) => {
+          return task.data.id === id
+        })
+      setTask(relevantTask || null)
+    }
+    const unsub = AsyncTasks.subscribeTo({
+      subscribableThing: 'update',
+      callback: () => {
+        updateTask()
+      },
+    })
+    updateTask()
+    return () => {
+      unsub()
+    }
+  }, [id])
+
+  return task
 }
 
 /**
@@ -145,7 +254,7 @@ class RestoreTask extends AsyncTask {
       this.lazyResult.getBackbone().refreshData()
     }, 5000)
   }
-  static isRestoreTask(task: any): task is RestoreTask {
+  static isInstanceOf(task: any): task is RestoreTask {
     return task.constructor === RestoreTask
   }
 }
@@ -175,7 +284,117 @@ class DeleteTask extends AsyncTask {
       this._notifySubscribers('update')
     })
   }
-  static isDeleteTask(task: any): task is DeleteTask {
+  static isInstanceOf(task: any): task is DeleteTask {
     return task.constructor === DeleteTask
+  }
+}
+
+class CreateSearchTask extends AsyncTask {
+  lazyResult?: LazyQueryResult
+  data: LazyQueryResult['plain']['metacard']['properties']
+  constructor({
+    data,
+  }: {
+    data: LazyQueryResult['plain']['metacard']['properties']
+  }) {
+    super()
+    this.data = data
+    this.data.id = Common.generateUUID()
+    setTimeout(() => {
+      this.attemptSave()
+    }, 1000)
+  }
+  attemptSave() {
+    const payload = {
+      id: '1',
+      jsonrpc: '2.0',
+      method: 'ddf.catalog/create',
+      params: {
+        metacards: [
+          {
+            attributes: {
+              'metacard-tags': ['query'],
+              ...this.data,
+            },
+            metacardType: 'metacard.query',
+          },
+        ],
+      },
+    }
+
+    fetch('/direct', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }).then(() => {
+      this._notifySubscribers('update')
+    })
+  }
+  static isInstanceOf(task: any): task is CreateSearchTask {
+    return task.constructor === CreateSearchTask
+  }
+}
+
+class SaveSearchTask extends AsyncTask {
+  lazyResult: LazyQueryResult
+  data: PlainMetacardPropertiesType
+  controller: AbortController
+  timeoutid: number | undefined
+  constructor({
+    lazyResult,
+    data,
+  }: {
+    lazyResult: LazyQueryResult
+    data: PlainMetacardPropertiesType
+  }) {
+    super()
+    this.lazyResult = lazyResult
+    this.data = data
+    this.controller = new AbortController()
+    this.attemptSave()
+  }
+  update({ data }: { data: PlainMetacardPropertiesType }) {
+    clearTimeout(this.timeoutid)
+    this.controller.abort()
+    this.data = data
+    this.attemptSave()
+  }
+  attemptSave() {
+    this.controller = new AbortController()
+    this.timeoutid = window.setTimeout(() => {
+      const payload = {
+        id: '1',
+        jsonrpc: '2.0',
+        method: 'ddf.catalog/create',
+        params: {
+          metacards: [
+            {
+              attributes: {
+                'metacard-tags': ['query'],
+                ...this.data,
+              },
+              metacardType: 'metacard.query',
+            },
+          ],
+        },
+      }
+
+      fetch('/direct', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        signal: this.controller.signal,
+      }).then(() => {
+        this.lazyResult.getBackbone().refreshData()
+        const unsub = this.lazyResult.subscribeTo({
+          subscribableThing: 'backboneSync',
+          callback: () => {
+            this._notifySubscribers('update')
+            unsub()
+          },
+        })
+      })
+    }, 500)
+  }
+  static isInstanceOf(task: any): task is SaveSearchTask {
+    return task.constructor === SaveSearchTask
   }
 }

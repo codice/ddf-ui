@@ -169,15 +169,27 @@ const AsyncTasksComponent = () => {
   const addSnack = useSnack()
   React.useEffect(() => {
     let timeoutid = undefined as number | undefined
-    if (AsyncTasks.list.length > 0) {
+    timeoutid = window.setTimeout(() => {
+      setShowBar(false)
+    }, 1000)
+    return () => {
+      clearTimeout(timeoutid)
+    }
+  }, [showBar])
+  React.useEffect(() => {
+    let timeoutid = undefined as number | undefined
+    if (AsyncTasks.hasShowableTasks()) {
       setShowBar(true)
       window.onbeforeunload = () => {
+        setShowBar(true)
         return `Are you sure you want to leave? ${AsyncTasks.list.length} tasks are still running.`
       }
+    } else {
+      setShowBar(false)
     }
     timeoutid = window.setTimeout(() => {
       setShowBar(false)
-    }, 5000)
+    }, 1000)
     return () => {
       clearTimeout(timeoutid)
       window.onbeforeunload = null
@@ -188,8 +200,8 @@ const AsyncTasksComponent = () => {
       return task.subscribeTo({
         subscribableThing: 'update',
         callback: () => {
+          AsyncTasks.remove(task)
           if (AsyncTasks.isRestoreTask(task)) {
-            AsyncTasks.remove(task)
             addSnack(
               `Restore of ${task.lazyResult.plain.metacard.properties.title} complete.`,
               {
@@ -209,7 +221,6 @@ const AsyncTasksComponent = () => {
             )
           }
           if (AsyncTasks.isDeleteTask(task)) {
-            AsyncTasks.remove(task)
             addSnack(
               `Delete of ${task.lazyResult.plain.metacard.properties.title} complete.`,
               {
@@ -218,6 +229,9 @@ const AsyncTasksComponent = () => {
                 },
               }
             )
+          }
+          if (AsyncTasks.isCreateSearchTask(task)) {
+            addSnack(`Creation of ${task.data.title} complete.`)
           }
         },
       })
@@ -256,6 +270,12 @@ const AsyncTasksComponent = () => {
                   {asyncTask.lazyResult.plain.metacard.properties.title}'
                 </div>
               )
+            }
+            if (AsyncTasks.isCreateSearchTask(asyncTask)) {
+              return <div>Creating '{asyncTask.data.title}'</div>
+            }
+            if (AsyncTasks.isSaveSearchTask(asyncTask)) {
+              return <div>Saving '{asyncTask.data.title}'</div>
             }
             return null
           })}
