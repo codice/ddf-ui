@@ -16,10 +16,8 @@ import React from 'react'
 import { getAttributeType } from '../filterHelper'
 import LocationInput from './filter-location-input'
 
-import extension from '../../../extension-points'
 import { DateField } from '../../../component/fields/date'
 import { NearField } from '../../../component/fields/near'
-import { TextField } from '../../../component/fields/text'
 import { NumberRangeField } from '../../../component/fields/number-range'
 import { DateRangeField } from '../../../component/fields/date-range'
 import { DateRelativeField } from '../../../component/fields/date-relative'
@@ -34,6 +32,7 @@ import MetacardDefinitions from '../../../component/tabs/metacard/metacardDefini
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import MuiTextField from '@material-ui/core/TextField'
 import { DateAroundField } from '../../../component/fields/date-around'
+import { CustomInputOrDefault } from './customInputOrDefault'
 export type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
@@ -41,14 +40,6 @@ export type Props = {
 
 const FilterInput = ({ filter, setFilter }: Props) => {
   const type = getAttributeType(filter.property)
-  // call out to extension, if extension handles it, great, if not fallback to this
-  const componentToReturn = extension.customFilterInput({
-    filter,
-    setFilter,
-  })
-  if (componentToReturn) {
-    return componentToReturn as JSX.Element
-  }
   const { value } = filter
   const onChange = (val: any) => {
     setFilter(
@@ -145,7 +136,18 @@ const FilterInput = ({ filter, setFilter }: Props) => {
     )
   }
 
-  return <TextField value={textValue} onChange={onChange} />
+  return (
+    <CustomInputOrDefault
+      value={textValue}
+      onChange={onChange}
+      props={{
+        fullWidth: true,
+        variant: 'outlined',
+        type: 'text',
+        size: 'small',
+      }}
+    />
+  )
 }
 
 export default FilterInput

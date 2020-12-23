@@ -16,7 +16,6 @@ import * as React from 'react'
 import { SFC } from '../react-component/hoc/utils'
 import { providers, Props as ProviderProps } from './providers'
 import metacardInteractions from './metacard-interactions'
-import { Props } from '../react-component/filter/filter-input/filter-input'
 import { LazyQueryResult } from '../js/model/LazyQueryResult/LazyQueryResult'
 import { ResultType } from '../js/model/Types'
 import { ValueTypes } from '../component/filter-builder/filter.structure'
@@ -25,7 +24,10 @@ import { Suggestion } from '../react-component/location/gazetteer'
 export type ExtensionPointsType = {
   providers: SFC<ProviderProps>
   metacardInteractions: any[]
-  customFilterInput: (props: Props) => React.ReactNode | undefined
+  customFilterInput: (props: {
+    value: string
+    onChange: (val: any) => void
+  }) => React.ReactNode | undefined
   customCanWritePermission: (props: {
     attribute: string
     lazyResult: LazyQueryResult
