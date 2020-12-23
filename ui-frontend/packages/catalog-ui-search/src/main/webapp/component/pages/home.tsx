@@ -364,7 +364,7 @@ const OpenSearch = ({
         )
       }}
       ListboxProps={{
-        className: 'children-p-0',
+        className: 'children-p-0 MuiAutocomplete-listbox', // we have to add the original class (MuiAutocomplete-listbox) back on unfortunately
       }}
       onChange={(_e, value) => {
         if (value) {
