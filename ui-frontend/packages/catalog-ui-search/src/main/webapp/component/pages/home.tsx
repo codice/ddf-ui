@@ -672,8 +672,16 @@ const OptionsButton = () => {
           Open
         </MenuItem>
         <MenuItem
+          onClick={() => {
+            menuStateRestore.handleClick()
+            menuState.handleClose()
+          }}
+        >
+          Restore from trash
+        </MenuItem>
+        <MenuItem
           component={Link}
-          disabled={searchPageMode === 'adhoc'}
+          disabled={searchPageMode === 'adhoc' || typeof data === 'boolean'}
           to={`/search?defaultQuery=${encodedQueryModelJSON}`}
           onClick={(e: any) => {
             e.stopPropagation()
@@ -689,7 +697,7 @@ const OptionsButton = () => {
         {/* <MenuItem disabled={searchPageMode === 'adhoc'}>Save</MenuItem>
         <MenuItem disabled={searchPageMode === 'adhoc'}>Save as</MenuItem> */}
         <MenuItem
-          disabled={searchPageMode === 'adhoc'}
+          disabled={searchPageMode === 'adhoc' || typeof data === 'boolean'}
           onClick={() => {
             menuStateRename.handleClick()
             menuState.handleClose()
@@ -698,7 +706,7 @@ const OptionsButton = () => {
           Rename
         </MenuItem>
         <MenuItem
-          disabled={searchPageMode === 'adhoc'}
+          disabled={searchPageMode === 'adhoc' || typeof data === 'boolean'}
           onClick={() => {
             if (typeof data !== 'boolean') {
               AsyncTasks.delete({ lazyResult: data })
@@ -712,16 +720,9 @@ const OptionsButton = () => {
         >
           Move to trash
         </MenuItem>
-        <MenuItem
-          onClick={() => {
-            menuStateRestore.handleClick()
-            menuState.handleClose()
-          }}
-        >
-          Restore from trash
-        </MenuItem>
         <DarkDivider className="m-2" />
         <MenuItem
+          disabled={typeof data === 'boolean'}
           onClick={() => {
             selectionInterface.getCurrentQuery().set('type', 'advanced')
             if (searchPageMode === 'adhoc') {
@@ -736,6 +737,7 @@ const OptionsButton = () => {
           Advanced View
         </MenuItem>
         <MenuItem
+          disabled={typeof data === 'boolean'}
           onClick={() => {
             selectionInterface.getCurrentQuery().set('type', 'basic')
             if (searchPageMode === 'adhoc') {
