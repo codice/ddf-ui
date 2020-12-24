@@ -104,22 +104,22 @@ const RouteInformation = [
     },
     showInNav: true,
   },
-  {
-    name: 'Saved',
-    shortName: 'Saved',
-    Icon: SaveIcon,
-    routeProps: {
-      exact: true,
-      path: ['/saved'],
-      children: () => {
-        return <SavedSearches />
-      },
-    },
-    linkProps: {
-      to: '/saved',
-    },
-    showInNav: true,
-  },
+  // {
+  //   name: 'Saved',
+  //   shortName: 'Saved',
+  //   Icon: SaveIcon,
+  //   routeProps: {
+  //     exact: true,
+  //     path: ['/saved'],
+  //     children: () => {
+  //       return <SavedSearches />
+  //     },
+  //   },
+  //   linkProps: {
+  //     to: '/saved',
+  //   },
+  //   showInNav: true,
+  // },
   {
     name: 'Upload',
     shortName: 'Upload',

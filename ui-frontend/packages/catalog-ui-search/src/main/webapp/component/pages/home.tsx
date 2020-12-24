@@ -1149,7 +1149,7 @@ const LeftTop = () => {
                 return (
                   <Button
                     fullWidth
-                    className={`children-block children-h-full text-left text-2xl flex-shrink ${
+                    className={`children-block children-h-full text-left text-2xl flex-shrink overflow-hidden ${
                       closed ? 'h-full' : ''
                     }`}
                     onClick={handleClick}
