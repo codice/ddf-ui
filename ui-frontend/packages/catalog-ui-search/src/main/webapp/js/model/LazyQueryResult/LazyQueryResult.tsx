@@ -78,7 +78,11 @@ const transformPlain = ({
     plain.metacard.properties.thumbnail = thumbnailAction.url
   }
   plain.metacardType = plain.metacard.properties['metacard-type']
-  if (plain.metacardType === 'metacard.query') {
+  if (
+    plain.metacardType === 'metacard.query' ||
+    (plain.metacard.properties['metacard.deleted.tags'] &&
+      plain.metacard.properties['metacard.deleted.tags'].includes('query'))
+  ) {
     // since the plain cql search endpoint doesn't understand more complex properties on metacards, we can handle them like this
     // plain.metacard.properties.filterTree =
     //   plain.metacard.properties.filterTree &&

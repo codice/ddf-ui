@@ -22,6 +22,7 @@ export type MetacardPropertiesType = {
   'metacard.deleted.id'?: string
   'metacard.deleted.version'?: string
   'metacard.deleted.date'?: string
+  'metacard.deleted.tags'?: string[]
   'metacard.owner': string
   description: string
   created: string

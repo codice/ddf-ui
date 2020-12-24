@@ -64,6 +64,7 @@ import {
   AsyncTasks,
   useCreateSearchTask,
   useCreateSearchTaskBasedOnParams,
+  useRestoreSearchTask,
   useSaveSearchTaskBasedOnParams,
 } from '../../js/model/AsyncTask/async-task'
 
@@ -194,7 +195,13 @@ const ButtonWithTwoStates = (props: ButtonWithMultipleStatesType) => {
   )
 }
 
-const useSearchResults = (searchText: string) => {
+const useSearchResults = ({
+  searchText,
+  archived = false,
+}: {
+  searchText: string
+  archived?: boolean
+}) => {
   const [state, setState] = React.useState({
     lazyResults: [],
     loading: true,
@@ -213,10 +220,19 @@ const useSearchResults = (searchText: string) => {
               type: 'ILIKE',
             }),
             new FilterClass({
-              property: 'metacard-tags',
+              property: archived ? 'metacard.deleted.tags' : 'metacard-tags',
               value: 'query',
               type: 'ILIKE',
             }),
+            ...(archived
+              ? [
+                  new FilterClass({
+                    property: 'metacard-tags',
+                    value: '*',
+                    type: 'ILIKE',
+                  }),
+                ]
+              : []),
           ],
         }),
       }),
@@ -234,10 +250,19 @@ const useSearchResults = (searchText: string) => {
             type: 'ILIKE',
           }),
           new FilterClass({
-            property: 'metacard-tags',
+            property: archived ? 'metacard.deleted.tags' : 'metacard-tags',
             value: 'query',
             type: 'ILIKE',
           }),
+          ...(archived
+            ? [
+                new FilterClass({
+                  property: 'metacard-tags',
+                  value: '*',
+                  type: 'ILIKE',
+                }),
+              ]
+            : []),
         ],
       })
     )
@@ -274,10 +299,12 @@ const OpenSearch = ({
   onFinish,
   constructLink,
   label,
+  archived = false,
 }: {
   onFinish: (selection: LazyQueryResult) => void
   constructLink: (result: LazyQueryResult) => LinkProps['to']
   label: string
+  archived?: boolean
 }) => {
   const [positioningDone, setPositioningDone] = React.useState(false)
   const [value, setValue] = React.useState('')
@@ -288,7 +315,10 @@ const OpenSearch = ({
     setCurrentHighlight,
   ] = React.useState<OverflowTooltipHTMLElement | null>(null)
   const [options, setOptions] = React.useState<LazyQueryResult[]>([])
-  const { lazyResults, loading } = useSearchResults(value)
+  const { lazyResults, loading } = useSearchResults({
+    searchText: value,
+    archived,
+  })
   React.useEffect(() => {
     setOptions(lazyResults)
   }, [lazyResults])
@@ -407,6 +437,8 @@ const OptionsButton = () => {
   const menuStateOpenSearch = useMenuState()
   const menuStateNewFromExisting = useMenuState()
   const menuStateCopy = useMenuState()
+  const menuStateRename = useMenuState()
+  const menuStateRestore = useMenuState()
   const addSnack = useSnack()
   const history = useHistory()
   const [encodedQueryModelJSON, setEncodedQueryModelJSON] = React.useState('')
@@ -429,6 +461,46 @@ const OptionsButton = () => {
         <MoreVert />
       </Button>
       <Popover
+        open={menuStateRestore.open}
+        anchorEl={menuState.anchorRef.current}
+        onClose={menuStateRestore.handleClose}
+      >
+        <Paper elevation={Elevations.overlays} className="p-2">
+          <OpenSearch
+            label="Restore a search from the trash"
+            archived
+            constructLink={(result) => {
+              const copy = JSON.parse(
+                JSON.stringify(result.plain.metacard.properties)
+              )
+              delete copy.id
+              delete copy.title
+              delete copy['metacard.deleted.date']
+              delete copy['metacard.deleted.id']
+              delete copy['metacard.deleted.tags']
+              delete copy['metacard.deleted.version']
+              delete copy['metacard-tags']
+              delete copy['metacard-type']
+
+              const encodedQueryModel = encodeURIComponent(JSON.stringify(copy))
+              return {
+                pathname: '/search',
+                search: `?defaultQuery=${encodedQueryModel}`,
+              }
+            }}
+            onFinish={(result) => {
+              AsyncTasks.restore({ lazyResult: result })
+
+              history.replace({
+                pathname: `/search/${result.plain.metacard.properties['metacard.deleted.id']}`,
+                search: '',
+              })
+              menuStateRestore.handleClose()
+            }}
+          />
+        </Paper>
+      </Popover>
+      <Popover
         open={menuStateCopy.open}
         anchorEl={menuState.anchorRef.current}
         onClose={menuStateCopy.handleClose}
@@ -444,11 +516,40 @@ const OptionsButton = () => {
                 .toJSON()
               currentQueryJSON.title = title
               const task = AsyncTasks.createSearch({ data: currentQueryJSON })
-              history.replace(`/search/${task.data.id}`)
+              history.replace({
+                pathname: `/search/${task.data.id}`,
+                search: '',
+              })
 
               addSnack(`Making a copy of ${title}`, {
                 alertProps: { severity: 'info' },
               })
+            }}
+            selectionInterface={selectionInterface}
+          />
+        </Paper>
+      </Popover>
+      <Popover
+        open={menuStateRename.open}
+        anchorEl={menuState.anchorRef.current}
+        onClose={menuStateRename.handleClose}
+      >
+        <Paper elevation={Elevations.overlays} className="p-2">
+          <SaveForm
+            onClose={() => {
+              menuStateRename.handleClose()
+            }}
+            onSave={(title) => {
+              if (typeof data !== 'boolean') {
+                const currentQueryJSON = selectionInterface
+                  .getCurrentQuery()
+                  .toJSON()
+                currentQueryJSON.title = title
+                AsyncTasks.saveSearch({
+                  data: currentQueryJSON,
+                  lazyResult: data,
+                })
+              }
             }}
             selectionInterface={selectionInterface}
           />
@@ -587,7 +688,15 @@ const OptionsButton = () => {
         <DarkDivider className="m-2" />
         {/* <MenuItem disabled={searchPageMode === 'adhoc'}>Save</MenuItem>
         <MenuItem disabled={searchPageMode === 'adhoc'}>Save as</MenuItem> */}
-        <MenuItem disabled={searchPageMode === 'adhoc'}>Rename</MenuItem>
+        <MenuItem
+          disabled={searchPageMode === 'adhoc'}
+          onClick={() => {
+            menuStateRename.handleClick()
+            menuState.handleClose()
+          }}
+        >
+          Rename
+        </MenuItem>
         <MenuItem
           disabled={searchPageMode === 'adhoc'}
           onClick={() => {
@@ -602,6 +711,14 @@ const OptionsButton = () => {
           }}
         >
           Move to trash
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            menuStateRestore.handleClick()
+            menuState.handleClose()
+          }}
+        >
+          Restore from trash
         </MenuItem>
         <DarkDivider className="m-2" />
         <MenuItem
@@ -670,6 +787,7 @@ const SaveButton = () => {
                     const task = AsyncTasks.createSearch({ data: searchData })
                     history.replace({
                       pathname: `/search/${task.data.id}`,
+                      search: '',
                     })
                   } else if (typeof data !== 'boolean') {
                     AsyncTasks.saveSearch({
@@ -927,6 +1045,7 @@ const LeftTop = () => {
                           })
                           history.replace({
                             pathname: `/search/${task.data.id}`,
+                            search: '',
                           })
                         } else if (typeof data !== 'boolean') {
                           AsyncTasks.saveSearch({
@@ -1158,9 +1277,10 @@ const useSavedSearchPageMode = ({
   // handle all loading / data in here
   const [data, setData] = React.useState<SavedSearchPageMode>(false)
   const task = useCreateSearchTask({ id })
+  const restoreTask = useRestoreSearchTask({ id })
   console.log(task)
   React.useEffect(() => {
-    if (task) {
+    if (task || restoreTask) {
       setData(true)
       return
     }
@@ -1211,7 +1331,7 @@ const useSavedSearchPageMode = ({
       subscriptionCancel()
       query.cancelCurrentSearches()
     }
-  }, [id, task])
+  }, [id, task, restoreTask])
   return data
 }
 

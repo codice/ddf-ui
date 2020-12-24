@@ -125,6 +125,50 @@ export const useRenderOnAsyncTasksAddOrRemove = () => {
 }
 
 // allow someone to see if one exists, and sub to updates
+export const useRestoreSearchTaskBasedOnParams = () => {
+  const { id } = useParams<{ id?: string }>()
+  const task = useRestoreSearchTask({ id })
+  return task
+}
+
+// allow someone to see if one exists, and sub to updates
+export const useRestoreSearchTask = ({ id }: { id?: string }) => {
+  const [task, setTask] = React.useState(null as null | RestoreTask)
+  useRenderOnAsyncTasksAddOrRemove()
+  React.useEffect(() => {
+    const updateTask = () => {
+      /**
+       *  Watch out for metacard.deleted.id not existing, hence the guard,
+       * and also that either id could match depending on where we are in the restore
+       * process
+       */
+      const relevantTask = id
+        ? AsyncTasks.list.filter(RestoreTask.isInstanceOf).find((task) => {
+            return (
+              task.lazyResult.plain.metacard.properties[
+                'metacard.deleted.id'
+              ] === id || task.lazyResult.plain.metacard.properties['id'] === id
+            )
+          })
+        : null
+      setTask(relevantTask || null)
+    }
+    const unsub = AsyncTasks.subscribeTo({
+      subscribableThing: 'update',
+      callback: () => {
+        updateTask()
+      },
+    })
+    updateTask()
+    return () => {
+      unsub()
+    }
+  }, [id])
+
+  return task
+}
+
+// allow someone to see if one exists, and sub to updates
 export const useCreateSearchTaskBasedOnParams = () => {
   const { id } = useParams<{ id?: string }>()
   const task = useCreateSearchTask({ id })

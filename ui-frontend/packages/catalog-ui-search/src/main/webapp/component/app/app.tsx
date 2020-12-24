@@ -167,6 +167,7 @@ const AsyncTasksComponent = () => {
   const [showBar, setShowBar] = React.useState(false)
   useRenderOnAsyncTasksAddOrRemove()
   const addSnack = useSnack()
+  const history = useHistory()
   React.useEffect(() => {
     let timeoutid = undefined as number | undefined
     timeoutid = window.setTimeout(() => {
@@ -225,6 +226,10 @@ const AsyncTasksComponent = () => {
               `Delete of ${task.lazyResult.plain.metacard.properties.title} complete.`,
               {
                 undo: () => {
+                  history.replace({
+                    pathname: `/search/${task.lazyResult.plain.id}`,
+                    search: '',
+                  })
                   AsyncTasks.restore({ lazyResult: task.lazyResult })
                 },
               }
@@ -247,7 +252,7 @@ const AsyncTasksComponent = () => {
       <div
         className={`${
           showBar ? 'translate-y-0' : 'translate-y-full'
-        } absolute left-0 bottom-0 w-full bg-black bg-opacity-50 h-16 z-50 transition transform ease-in-out duration-500 hover:translate-y-0`}
+        } absolute left-0 bottom-0 w-full bg-black bg-opacity-75 h-16 z-50 transition transform ease-in-out duration-500 hover:translate-y-0`}
       >
         <LinearProgress
           className="w-full absolute h-2 absolute left-0 top-0 -mt-2"
@@ -257,7 +262,7 @@ const AsyncTasksComponent = () => {
           {AsyncTasks.list.map((asyncTask) => {
             if (AsyncTasks.isRestoreTask(asyncTask)) {
               return (
-                <div>
+                <div className="bg-black p-2">
                   Restoring '
                   {asyncTask.lazyResult.plain.metacard.properties.title}'
                 </div>
@@ -265,17 +270,25 @@ const AsyncTasksComponent = () => {
             }
             if (AsyncTasks.isDeleteTask(asyncTask)) {
               return (
-                <div>
+                <div className="bg-black p-2">
                   Deleting '
                   {asyncTask.lazyResult.plain.metacard.properties.title}'
                 </div>
               )
             }
             if (AsyncTasks.isCreateSearchTask(asyncTask)) {
-              return <div>Creating '{asyncTask.data.title}'</div>
+              return (
+                <div className="bg-black p-2">
+                  Creating '{asyncTask.data.title}'
+                </div>
+              )
             }
             if (AsyncTasks.isSaveSearchTask(asyncTask)) {
-              return <div>Saving '{asyncTask.data.title}'</div>
+              return (
+                <div className="bg-black p-2">
+                  Saving '{asyncTask.data.title}'
+                </div>
+              )
             }
             return null
           })}
