@@ -28,6 +28,8 @@ import ResultsVisual from '../results-visual/results-visual'
 import { SplitPane } from '../resizable-grid/resizable-grid'
 import { GoldenLayout } from '../golden-layout/golden-layout'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
+import { Memo } from '../memo/memo'
+import { useUpdateEffect } from 'react-use'
 
 // const Common = require('../../js/Common.js')
 
@@ -157,13 +159,20 @@ const SelectionInfoPane = ({
   return <GoldenLayout selectionInterface={selectionInterface} />
 }
 
+const selectionInterface = new SelectionInterface({
+  currentQuery: new Query.Model(undefined, {
+    ephemeralFilter: false,
+    ephemeralSort: false,
+  }),
+})
+
 const SavedSearches = () => {
   const [filter, setFilter] = React.useState('')
   const [sortAttribute, setSortAttribute] = React.useState(
-    'title' as SortAttributeType
+    'last modified' as SortAttributeType
   )
   const [sortDirection, setSortDirection] = React.useState(
-    'ascending' as SortDirectionType
+    'descending' as SortDirectionType
   )
   const debouncedUpdate = React.useRef(
     _debounce(
@@ -181,11 +190,6 @@ const SavedSearches = () => {
     )
   )
   const [isUpdating, setIsUpdating] = React.useState(false)
-  const [selectionInterface] = React.useState(
-    new SelectionInterface({
-      currentQuery: modifySearch({ filter, sortAttribute, sortDirection }),
-    })
-  )
   React.useEffect(() => {
     setIsUpdating(true)
     debouncedUpdate.current({
@@ -195,6 +199,14 @@ const SavedSearches = () => {
       search: selectionInterface.getCurrentQuery(),
     })
   }, [filter, sortAttribute, sortDirection])
+  useUpdateEffect(() => {
+    /**
+     * This makes sense, because we only have title and last modified.
+     *
+     * The natural inclination is inverted for sort direction for alphabetical vs time.
+     */
+    setSortDirection(sortAttribute === 'title' ? 'ascending' : 'descending')
+  }, [sortAttribute])
   return (
     <div className="w-full h-full flex flex-col flex-no-wrap overflow-hidden ">
       <div className="flex-shrink-0 w-full pt-2 pr-2">
@@ -214,8 +226,8 @@ const SavedSearches = () => {
           />
           {/* <div className="text-lg">Sort by</div> */}
           <Autocomplete
-            className="w-40 ml-2"
-            options={['title', 'modified'] as SortAttributeType[]}
+            className="w-48 ml-2"
+            options={['title', 'last modified'] as SortAttributeType[]}
             renderOption={(option) => {
               return <>{option}</>
             }}
@@ -246,9 +258,9 @@ const SavedSearches = () => {
             }}
           >
             {
-              getSortDirectionOptions(sortAttribute).find(
-                (option) => option.value === sortDirection
-              )?.label
+              getSortDirectionOptions(
+                sortAttribute === 'title' ? 'title' : 'metacard.modified'
+              ).find((option) => option.value === sortDirection)?.label
             }
           </Button>
           <div className="ml-auto">
@@ -267,14 +279,16 @@ const SavedSearches = () => {
             className="absolute left-0 top-0 w-full h-min"
           />
         ) : null}
-        <SplitPane variant="horizontal">
-          <div className="py-2 w-full h-full">
-            <Paper elevation={Elevations.panels} className="w-full h-full">
-              <ResultsVisual selectionInterface={selectionInterface} />
-            </Paper>
-          </div>
-          <SelectionInfoPane searchSelectionInterface={selectionInterface} />
-        </SplitPane>
+        <Memo dependencies={[]}>
+          <SplitPane variant="horizontal">
+            <div className="py-2 w-full h-full">
+              <Paper elevation={Elevations.panels} className="w-full h-full">
+                <ResultsVisual selectionInterface={selectionInterface} />
+              </Paper>
+            </div>
+            <SelectionInfoPane searchSelectionInterface={selectionInterface} />
+          </SplitPane>
+        </Memo>
       </div>
     </div>
   )

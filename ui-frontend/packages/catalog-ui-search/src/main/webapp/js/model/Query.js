@@ -42,16 +42,21 @@ function getEphemeralSort() {
 }
 
 function mixinEphemeralFilter(originalCQL) {
-  const ephermeralFilter = user
+  const ephemeralFilter = user
     .get('user')
     .get('preferences')
     .get('resultFilter')
-  if (ephermeralFilter) {
-    return {
-      filters: [ephermeralFilter, originalCQL],
-      type: 'AND',
+  try {
+    if (ephemeralFilter) {
+      return new FilterBuilderClass({
+        filters: [ephemeralFilter, originalCQL],
+        type: 'AND',
+      })
+    } else {
+      return originalCQL
     }
-  } else {
+  } catch (err) {
+    console.log(err)
     return originalCQL
   }
 }
@@ -184,7 +189,8 @@ Query.Model = Backbone.AssociatedModel.extend({
   isLocal() {
     return this.get('isLocal')
   },
-  initialize() {
+  initialize(_attrs, options) {
+    this.options = { ephemeralFilter: true, ephemeralSort: true, ...options }
     _.bindAll.apply(_, [this].concat(_.functions(this))) // underscore bindAll does not take array arg
     const filterTree = this.get('filterTree')
     if (filterTree && typeof filterTree === 'string') {
@@ -224,14 +230,18 @@ Query.Model = Backbone.AssociatedModel.extend({
       user.get('user').get('preferences'),
       'change:resultFilter',
       () => {
-        this.startSearchFromFirstPage()
+        if (this.options.ephemeralFilter) {
+          this.startSearchFromFirstPage()
+        }
       }
     )
     this.listenTo(
       user.get('user').get('preferences'),
       'change:resultSort',
       () => {
-        this.startSearchFromFirstPage()
+        if (this.options.ephemeralSort) {
+          this.startSearchFromFirstPage()
+        }
       }
     )
   },
@@ -263,7 +273,9 @@ Query.Model = Backbone.AssociatedModel.extend({
 
     data.count = user.get('user').get('preferences').get('resultCount')
 
-    data.sorts = getEphemeralSort() || this.get('sorts')
+    data.sorts = this.options.ephemeralSort
+      ? getEphemeralSort() || this.get('sorts')
+      : this.get('sorts')
 
     return _.pick(
       data,
@@ -374,10 +386,12 @@ Query.Model = Backbone.AssociatedModel.extend({
         sources: selectedSources,
       })
     } else {
+      console.log(this.options)
       result = new QueryResponse({
         lazyResults: new LazyQueryResults({
           sorts: this.get('sorts'),
           sources: selectedSources,
+          ephemeralSort: this.options.ephemeralSort,
         }),
       })
       this.set({
@@ -391,7 +405,9 @@ Query.Model = Backbone.AssociatedModel.extend({
     } else if (options.limitToHistoric) {
       cqlFilterTree = limitToHistoric(cqlFilterTree)
     }
-    cqlFilterTree = mixinEphemeralFilter(cqlFilterTree)
+    if (this.options.ephemeralFilter) {
+      cqlFilterTree = mixinEphemeralFilter(cqlFilterTree)
+    }
     let cqlString = cql.write(cqlFilterTree)
 
     this.currentIndexForSourceGroup = this.nextIndexForSourceGroup

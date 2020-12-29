@@ -14,6 +14,7 @@ import SourcesPageIcon from '@material-ui/icons/Cloud'
 import AboutPage from '../../react-component/about'
 import AboutPageIcon from '@material-ui/icons/Info'
 import SaveIcon from '@material-ui/icons/Save'
+import FolderIcon from '@material-ui/icons/Folder'
 import SearchIcon from '@material-ui/icons/Search'
 import ImageSearch from '@material-ui/icons/ImageSearch'
 import UserNotifications from '../../react-component/user-notifications/user-notifications'
@@ -104,22 +105,22 @@ const RouteInformation = [
     },
     showInNav: true,
   },
-  // {
-  //   name: 'Saved',
-  //   shortName: 'Saved',
-  //   Icon: SaveIcon,
-  //   routeProps: {
-  //     exact: true,
-  //     path: ['/saved'],
-  //     children: () => {
-  //       return <SavedSearches />
-  //     },
-  //   },
-  //   linkProps: {
-  //     to: '/saved',
-  //   },
-  //   showInNav: true,
-  // },
+  {
+    name: 'Saves',
+    shortName: 'Saves',
+    Icon: FolderIcon,
+    routeProps: {
+      exact: true,
+      path: ['/saved'],
+      children: () => {
+        return <SavedSearches />
+      },
+    },
+    linkProps: {
+      to: '/saved',
+    },
+    showInNav: true,
+  },
   {
     name: 'Upload',
     shortName: 'Upload',

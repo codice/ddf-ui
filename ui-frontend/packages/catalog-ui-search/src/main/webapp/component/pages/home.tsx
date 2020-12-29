@@ -209,33 +209,39 @@ const useSearchResults = ({
   const [hasSearched, setHasSearched] = React.useState(false)
   const [selectionInterface] = React.useState(
     new SelectionInterfaceModel({
-      currentQuery: new Query.Model({
-        sorts: [{ attribute: 'metacard.modified', direction: 'descending' }],
-        filterTree: new FilterBuilderClass({
-          type: 'AND',
-          filters: [
-            new FilterClass({
-              property: 'title',
-              value: `*${searchText}*`,
-              type: 'ILIKE',
-            }),
-            new FilterClass({
-              property: archived ? 'metacard.deleted.tags' : 'metacard-tags',
-              value: 'query',
-              type: 'ILIKE',
-            }),
-            ...(archived
-              ? [
-                  new FilterClass({
-                    property: 'metacard-tags',
-                    value: '*',
-                    type: 'ILIKE',
-                  }),
-                ]
-              : []),
-          ],
-        }),
-      }),
+      currentQuery: new Query.Model(
+        {
+          sorts: [{ attribute: 'metacard.modified', direction: 'descending' }],
+          filterTree: new FilterBuilderClass({
+            type: 'AND',
+            filters: [
+              new FilterClass({
+                property: 'title',
+                value: `*${searchText}*`,
+                type: 'ILIKE',
+              }),
+              new FilterClass({
+                property: archived ? 'metacard.deleted.tags' : 'metacard-tags',
+                value: 'query',
+                type: 'ILIKE',
+              }),
+              ...(archived
+                ? [
+                    new FilterClass({
+                      property: 'metacard-tags',
+                      value: '*',
+                      type: 'ILIKE',
+                    }),
+                  ]
+                : []),
+            ],
+          }),
+        },
+        {
+          ephemeralFilter: false,
+          ephemeralSort: false,
+        }
+      ),
     })
   )
   React.useEffect(() => {
@@ -1286,9 +1292,15 @@ const useSavedSearchPageMode = ({
       setData(true)
       return
     }
-    const query = new Query.Model({
-      sources: ['local'],
-    })
+    const query = new Query.Model(
+      {
+        sources: ['local'],
+      },
+      {
+        ephemeralFilter: false,
+        ephemeralSort: false,
+      }
+    )
     let subscriptionCancel = () => {}
 
     if (id) {
