@@ -33,6 +33,15 @@ type ExpandingButtonProps =
       component: 'a'
       dataId?: string
     } & Partial<React.HTMLAttributes<HTMLAnchorElement>>)
+  | (ButtonProps & {
+      expanded: boolean
+      Icon?: React.FC<React.HTMLAttributes<HTMLDivElement>>
+      iconPosition?: 'start' | 'end'
+      expandedText: string
+      unexpandedText: string
+      component: typeof Button
+      dataId?: string
+    } & Partial<ButtonProps>)
 
 const ExpandingButton = ({
   expanded,

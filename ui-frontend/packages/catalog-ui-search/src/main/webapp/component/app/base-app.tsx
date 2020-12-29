@@ -106,18 +106,18 @@ const RouteInformation = [
     showInNav: true,
   },
   {
-    name: 'Saves',
-    shortName: 'Saves',
+    name: 'Open',
+    shortName: 'Open',
     Icon: FolderIcon,
     routeProps: {
       exact: true,
-      path: ['/saved'],
+      path: ['/open'],
       children: () => {
         return <SavedSearches />
       },
     },
     linkProps: {
-      to: '/saved',
+      to: '/open',
     },
     showInNav: true,
   },
