@@ -122,10 +122,6 @@ const LocationInput = ({ onChange, value }: any) => {
   const [state, setState] = React.useState(locationModel.toJSON() as any)
   const { listenTo } = useBackbone()
   React.useEffect(() => {
-    /**
-     * The first on change call is to set the default value for location
-     */
-    onChange(getCurrentValue({ locationModel }))
     listenTo(locationModel, 'change', () => {
       setState(locationModel.toJSON())
       updateMap({ locationModel })
