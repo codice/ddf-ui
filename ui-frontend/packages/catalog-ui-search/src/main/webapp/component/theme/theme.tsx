@@ -325,6 +325,17 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .Mui-border-divider {
         border-color: ${(props) => props.palette.divider};
       }
+      .Mui-bg-button:hover,
+      .Mui-bg-button:focus-within {
+        background: ${(props) =>
+          props.palette.type === 'dark'
+            ? 'rgba(255, 255, 255, 0.08)'
+            : 'rgba(0, 0, 0, 0.04)'};
+      }
+      .theme-bg-overlays {
+        background: ${(props) =>
+          props.palette.type === 'dark' ? dark.overlays : light.overlays};
+      }
       .children-max-h-full {
         > * {
           max-height: 100%;
