@@ -540,7 +540,7 @@ export const ResultItem = ({
         }
       }}
       ref={buttonRef}
-      className={`select-text outline-none px-6 p-2 text-left break-words group w-full Mui-bg-button`}
+      className={`select-text outline-none px-6 pr-12 p-2 text-left break-words group w-full Mui-bg-button`}
     >
       <div className="w-full">
         <TouchRipple ref={rippleRef} />
