@@ -728,7 +728,7 @@ const OptionsButton = () => {
         </MenuItem>
         <DarkDivider className="m-2" />
         <MenuItem
-          disabled={typeof data === 'boolean'}
+          disabled={searchPageMode === 'saved' && typeof data === 'boolean'}
           onClick={() => {
             selectionInterface.getCurrentQuery().set('type', 'advanced')
             if (searchPageMode === 'adhoc') {
@@ -743,7 +743,7 @@ const OptionsButton = () => {
           Advanced View
         </MenuItem>
         <MenuItem
-          disabled={typeof data === 'boolean'}
+          disabled={searchPageMode === 'saved' && typeof data === 'boolean'}
           onClick={() => {
             selectionInterface.getCurrentQuery().set('type', 'basic')
             if (searchPageMode === 'adhoc') {
