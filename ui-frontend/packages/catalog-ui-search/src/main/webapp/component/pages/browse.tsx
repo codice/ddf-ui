@@ -63,7 +63,6 @@ const modifySearch = ({
       direction: sortDirection.toLowerCase(),
     },
   ]
-  console.log(search)
   if (search) {
     search.set('filterTree', filterBuilder)
     search.set('sorts', sorts)
@@ -127,7 +126,29 @@ const SelectionInfoPane = ({
       selectionInterface.getCurrentQuery().cancelCurrentSearches()
     }
   }, [lazyResults])
-  return <GoldenLayout selectionInterface={selectionInterface} />
+  return (
+    <>
+      <div className="block w-full h-full relative">
+        <div
+          className={
+            Object.keys(lazyResults).length > 0
+              ? 'hidden'
+              : 'block py-2 pr-2 w-full h-full left-0 top-0 absolute z-10'
+          }
+        >
+          <div className="p-2 w-full h-full relative">
+            <div className="opacity-75 bg-black absolute left-0 top-0 w-full h-full z-0"></div>
+            <div className="block text-xl text-white z-10 relative">
+              <span className="bg-black p-2">
+                Select a search(s) from the left to preview.
+              </span>
+            </div>
+          </div>
+        </div>
+        <GoldenLayout selectionInterface={selectionInterface} />
+      </div>
+    </>
+  )
 }
 
 const selectionInterface = new SelectionInterface({

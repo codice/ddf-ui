@@ -265,7 +265,6 @@ export class LazyQueryResults {
     ephemeralSort = true,
   }: ConstructorProps = {}) {
     this.ephemeralSort = ephemeralSort === false ? false : true
-    console.log(`${this.ephemeralSort} : ${ephemeralSort}`)
     this._updateEphemeralSorts()
     this.reset({ results, sorts, sources })
 

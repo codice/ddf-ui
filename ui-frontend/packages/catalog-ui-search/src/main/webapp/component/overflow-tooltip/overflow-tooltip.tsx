@@ -28,7 +28,6 @@ const OverflowTip = ({ children, tooltipProps }: OverflowTipType) => {
     if (textElementRef.current) {
       const compare =
         textElementRef.current.scrollWidth > textElementRef.current.clientWidth
-      console.log('compare: ', compare)
       setIsOverflowed(compare)
     } else {
       console.log(
