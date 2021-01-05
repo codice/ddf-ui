@@ -7,10 +7,7 @@ import {
   FilterBuilderClass,
   FilterClass,
 } from '../filter-builder/filter.structure'
-import {
-  // useLazyResultsFromSelectionInterface,
-  useLazyResultsSelectedResultsFromSelectionInterface,
-} from '../selection-interface/hooks'
+import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { Elevations } from '../theme/theme'
 const SelectionInterface = require('../selection-interface/selection-interface.model.js')
 const Query = require('../../js/model/Query.js')
@@ -18,20 +15,15 @@ import _debounce from 'lodash.debounce'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import Button from '@material-ui/core/Button'
-// import SortIcon from '@material-ui/icons/Sort'
 import QueryFeed from '../result-selector/query-feed'
 import Paging from '../result-selector/paging'
 import { getSortDirectionOptions } from '../../react-component/query-sort-selection/sort-selection-helpers'
-// import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
-// import { AutoVariableSizeList } from 'react-window-components'
 import ResultsVisual from '../results-visual/results-visual'
 import { SplitPane } from '../resizable-grid/resizable-grid'
 import { GoldenLayout } from '../golden-layout/golden-layout'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 import { Memo } from '../memo/memo'
 import { useUpdateEffect } from 'react-use'
-
-// const Common = require('../../js/Common.js')
 
 type ModifySearchParams = {
   search?: any
@@ -85,27 +77,6 @@ const modifySearch = ({
 
 type SortAttributeType = 'title' | 'last modified'
 type SortDirectionType = 'ascending' | 'descending'
-
-// const SearchItem = ({
-//   lazyResult,
-//   measure,
-// }: {
-//   lazyResult: LazyQueryResult
-//   measure: () => void
-// }) => {
-//   const when = Common.getMomentDate(
-//     lazyResult.plain.metacard.properties.modified
-//   ).split(' : ')
-//   React.useEffect(() => {
-//     measure()
-//   }, [])
-//   return (
-//     <Paper elevation={Elevations.paper} className="p-2 mb-2">
-//       <div>{lazyResult.plain.metacard.properties.title || 'Untitled'}</div>
-//       <div>{when[0]}</div>
-//     </Paper>
-//   )
-// }
 
 const buildSearchFromSelection = ({
   search,

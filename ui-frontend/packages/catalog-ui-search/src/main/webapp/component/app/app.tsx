@@ -54,7 +54,6 @@ import {
 } from '../../js/model/AsyncTask/async-task'
 import useSnack from '../hooks/useSnack'
 import LinearProgress from '@material-ui/core/LinearProgress'
-import CircularProgress from '@material-ui/core/CircularProgress'
 export const handleBase64EncodedImages = (url: string) => {
   if (url && url.startsWith('data:')) {
     return url

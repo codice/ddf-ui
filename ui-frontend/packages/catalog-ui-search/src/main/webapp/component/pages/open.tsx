@@ -1,10 +1,7 @@
-import Paper from '@material-ui/core/Paper'
-import Popover from '@material-ui/core/Popover'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { useHistory } from 'react-router-dom'
 import useSnack from '../hooks/useSnack'
-import { Elevations } from '../theme/theme'
 import { OpenSearch } from './home'
 
 const Open = () => {

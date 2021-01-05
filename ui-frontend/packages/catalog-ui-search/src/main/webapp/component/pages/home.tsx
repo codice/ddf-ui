@@ -28,8 +28,7 @@ import {
   useParams,
 } from 'react-router-dom'
 import _ from 'lodash'
-import fetch from '../../react-component/utils/fetch'
-import TextField, { TextFieldProps } from '@material-ui/core/TextField'
+import TextField from '@material-ui/core/TextField'
 import { DarkDivider } from '../dark-divider/dark-divider'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import { useUpdateEffect } from 'react-use'
@@ -46,7 +45,6 @@ import {
   useStatusOfLazyResults,
 } from '../../js/model/LazyQueryResult/hooks'
 import CloudDoneIcon from '@material-ui/icons/CloudDone'
-const Common = require('../../js/Common.js')
 import SaveIcon from '@material-ui/icons/Save'
 import { useMenuState } from '../menu-state/menu-state'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -56,14 +54,12 @@ import useSnack from '../hooks/useSnack'
 import Popover from '@material-ui/core/Popover'
 import Autocomplete, { AutocompleteProps } from '@material-ui/lab/Autocomplete'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
-import TrashIcon from '@material-ui/icons/Delete'
 import OverflowTooltip, {
   OverflowTooltipHTMLElement,
 } from '../overflow-tooltip/overflow-tooltip'
 import {
   AsyncTasks,
   useCreateSearchTask,
-  useCreateSearchTaskBasedOnParams,
   useRestoreSearchTask,
   useSaveSearchTaskBasedOnParams,
 } from '../../js/model/AsyncTask/async-task'

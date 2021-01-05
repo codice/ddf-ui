@@ -7,11 +7,9 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { useHistory } from 'react-router-dom'
 import { AsyncTasks } from '../../js/model/AsyncTask/async-task'
-import useSnack from '../hooks/useSnack'
 import { useMenuState } from '../menu-state/menu-state'
 import { Elevations } from '../theme/theme'
 import { OpenSearch, SaveForm } from './home'
-import Popover from '@material-ui/core/Popover'
 
 const Query = require('../../js/model/Query.js')
 const SelectionInterfaceModel = require('../selection-interface/selection-interface.model')
@@ -20,7 +18,6 @@ const selectionInterface = new SelectionInterfaceModel()
 
 const Open = () => {
   const history = useHistory()
-  const addSnack = useSnack()
   const openMenuState = useMenuState()
   const titleMenuState = useMenuState()
   const fromExistingMenuState = useMenuState()
@@ -105,7 +102,7 @@ const Open = () => {
       >
         <MenuItem
           innerRef={titleMenuState.anchorRef}
-          onClick={(e) => {
+          onClick={() => {
             titleMenuState.handleClick()
           }}
         >
@@ -113,7 +110,7 @@ const Open = () => {
         </MenuItem>
         <MenuItem
           innerRef={fromExistingMenuState.anchorRef}
-          onClick={(e) => {
+          onClick={() => {
             fromExistingMenuState.handleClick()
           }}
         >

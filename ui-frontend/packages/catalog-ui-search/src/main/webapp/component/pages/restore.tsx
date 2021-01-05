@@ -1,16 +1,11 @@
-import Paper from '@material-ui/core/Paper'
-import Popover from '@material-ui/core/Popover'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { useHistory } from 'react-router-dom'
 import { AsyncTasks } from '../../js/model/AsyncTask/async-task'
-import useSnack from '../hooks/useSnack'
-import { Elevations } from '../theme/theme'
 import { OpenSearch } from './home'
 
 const Open = () => {
   const history = useHistory()
-  const addSnack = useSnack()
   return (
     <div className="w-full h-full p-2">
       <div className="text-2xl pb-2">Restore a search</div>
