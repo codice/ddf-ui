@@ -33,7 +33,7 @@ const Open = () => {
         }}
         onFinish={(result) => {
           AsyncTasks.restore({ lazyResult: result })
-
+          // replace because technically they get the link in constructLink put into history as well unfortunately, will need to fix this more generally
           history.replace({
             pathname: `/search/${result.plain.metacard.properties['metacard.deleted.id']}`,
             search: '',

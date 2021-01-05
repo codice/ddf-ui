@@ -503,7 +503,7 @@ const OptionsButton = () => {
             }}
             onFinish={(result) => {
               AsyncTasks.restore({ lazyResult: result })
-
+              // replace because technically they get the link in constructLink put into history as well unfortunately, will need to fix this more generally
               history.replace({
                 pathname: `/search/${result.plain.metacard.properties['metacard.deleted.id']}`,
                 search: '',
@@ -533,7 +533,7 @@ const OptionsButton = () => {
                 .toJSON()
               currentQueryJSON.title = title
               const task = AsyncTasks.createSearch({ data: currentQueryJSON })
-              history.replace({
+              history.push({
                 pathname: `/search/${task.data.id}`,
                 search: '',
               })
@@ -601,6 +601,7 @@ const OptionsButton = () => {
               delete copy.id
               delete copy.title
               const encodedQueryModel = encodeURIComponent(JSON.stringify(copy))
+              // replace because technically they get the link in constructLink put into history as well unfortunately, will need to fix this more generally
               history.replace({
                 pathname: '/search',
                 search: `?defaultQuery=${encodedQueryModel}`,
@@ -635,6 +636,7 @@ const OptionsButton = () => {
                 return `/search/${result.plain.id}`
               }}
               onFinish={(value) => {
+                // replace because technically they get the link in constructLink put into history as well unfortunately, will need to fix this more generally
                 history.replace({
                   pathname: `/search/${value.plain.id}`,
                   search: '',
@@ -743,7 +745,7 @@ const OptionsButton = () => {
           onClick={() => {
             if (typeof data !== 'boolean') {
               AsyncTasks.delete({ lazyResult: data })
-              history.replace({
+              history.push({
                 pathname: `/search`,
                 search: '',
               })
@@ -1072,7 +1074,7 @@ const LeftTop = () => {
                       const task = AsyncTasks.createSearch({
                         data: searchData,
                       })
-                      history.replace({
+                      history.push({
                         pathname: `/search/${task.data.id}`,
                         search: '',
                       })

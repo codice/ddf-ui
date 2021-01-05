@@ -225,7 +225,7 @@ const AsyncTasksComponent = () => {
               `Delete of ${task.lazyResult.plain.metacard.properties.title} complete.`,
               {
                 undo: () => {
-                  history.replace({
+                  history.push({
                     pathname: `/search/${task.lazyResult.plain.id}`,
                     search: '',
                   })

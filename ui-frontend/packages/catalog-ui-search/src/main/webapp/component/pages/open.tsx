@@ -16,6 +16,7 @@ const Open = () => {
           return `/search/${result.plain.id}`
         }}
         onFinish={(value) => {
+          // replace because technically they get the link in constructLink put into history as well unfortunately, will need to fix this more generally
           history.replace({
             pathname: `/search/${value.plain.id}`,
             search: '',
