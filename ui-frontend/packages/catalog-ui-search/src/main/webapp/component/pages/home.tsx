@@ -29,7 +29,7 @@ import {
 } from 'react-router-dom'
 import _ from 'lodash'
 import fetch from '../../react-component/utils/fetch'
-import TextField from '@material-ui/core/TextField'
+import TextField, { TextFieldProps } from '@material-ui/core/TextField'
 import { DarkDivider } from '../dark-divider/dark-divider'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import { useUpdateEffect } from 'react-use'
@@ -54,7 +54,7 @@ import Menu from '@material-ui/core/Menu'
 import { TypedUserInstance } from '../singletons/TypedUser'
 import useSnack from '../hooks/useSnack'
 import Popover from '@material-ui/core/Popover'
-import Autocomplete from '@material-ui/lab/Autocomplete'
+import Autocomplete, { AutocompleteProps } from '@material-ui/lab/Autocomplete'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import TrashIcon from '@material-ui/icons/Delete'
 import OverflowTooltip, {
@@ -74,7 +74,11 @@ type SaveFormType = {
   onClose: () => void
 }
 
-const SaveForm = ({ onClose, selectionInterface, onSave }: SaveFormType) => {
+export const SaveForm = ({
+  onClose,
+  selectionInterface,
+  onSave,
+}: SaveFormType) => {
   const currentQuery = selectionInterface.getCurrentQuery()
 
   const [title, setTitle] = React.useState(currentQuery.get('title') || '')
@@ -301,16 +305,20 @@ const useSearchResults = ({
   return state
 }
 
-const OpenSearch = ({
+export const OpenSearch = ({
   onFinish,
   constructLink,
   label,
   archived = false,
+  autocompleteProps,
 }: {
   onFinish: (selection: LazyQueryResult) => void
   constructLink: (result: LazyQueryResult) => LinkProps['to']
   label: string
   archived?: boolean
+  autocompleteProps?: Partial<
+    AutocompleteProps<LazyQueryResult, false, true, false>
+  >
 }) => {
   const [positioningDone, setPositioningDone] = React.useState(false)
   const [value, setValue] = React.useState('')
@@ -407,29 +415,32 @@ const OpenSearch = ({
           onFinish(value)
         }
       }}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          value={value}
-          onChange={(e) => {
-            setValue(e.target.value)
-          }}
-          label={label}
-          variant="outlined"
-          autoFocus
-          InputProps={{
-            ...params.InputProps,
-            endAdornment: (
-              <React.Fragment>
-                {loading ? (
-                  <CircularProgress color="inherit" size={20} />
-                ) : null}
-                {params.InputProps.endAdornment}
-              </React.Fragment>
-            ),
-          }}
-        />
-      )}
+      renderInput={(params) => {
+        return (
+          <TextField
+            {...params}
+            value={value}
+            onChange={(e) => {
+              setValue(e.target.value)
+            }}
+            label={label}
+            variant="outlined"
+            autoFocus
+            InputProps={{
+              ...params.InputProps,
+              endAdornment: (
+                <React.Fragment>
+                  {loading ? (
+                    <CircularProgress color="inherit" size={20} />
+                  ) : null}
+                  {params.InputProps.endAdornment}
+                </React.Fragment>
+              ),
+            }}
+          />
+        )
+      }}
+      {...autocompleteProps}
     />
   )
 }
@@ -614,25 +625,36 @@ const OptionsButton = () => {
         onClose={menuStateOpenSearch.handleClose}
       >
         <Paper elevation={Elevations.overlays} className="p-2">
-          <OpenSearch
-            label="Open a saved search"
-            constructLink={(result) => {
-              return `/search/${result.plain.id}`
-            }}
-            onFinish={(value) => {
-              history.replace({
-                pathname: `/search/${value.plain.id}`,
-                search: '',
-              })
-              addSnack(
-                `Search '${value.plain.metacard.properties.title}' opened`,
-                {
-                  alertProps: { severity: 'info' },
-                }
-              )
-              menuStateOpenSearch.handleClose()
-            }}
-          />
+          <div className="flex flex-row flex-no-wrap">
+            <OpenSearch
+              label="Open a saved search"
+              constructLink={(result) => {
+                return `/search/${result.plain.id}`
+              }}
+              onFinish={(value) => {
+                history.replace({
+                  pathname: `/search/${value.plain.id}`,
+                  search: '',
+                })
+                addSnack(
+                  `Search '${value.plain.metacard.properties.title}' opened`,
+                  {
+                    alertProps: { severity: 'info' },
+                  }
+                )
+                menuStateOpenSearch.handleClose()
+              }}
+            />
+            <Button
+              color="primary"
+              onClick={() => {
+                menuStateOpenSearch.handleClose()
+                menuStateRestore.handleClick()
+              }}
+            >
+              Check Trash?
+            </Button>
+          </div>
         </Paper>
       </Popover>
       <Menu
@@ -677,14 +699,14 @@ const OptionsButton = () => {
         >
           Open
         </MenuItem>
-        <MenuItem
+        {/* <MenuItem
           onClick={() => {
             menuStateRestore.handleClick()
             menuState.handleClose()
           }}
         >
           Restore from trash
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem
           component={Link}
           disabled={searchPageMode === 'adhoc' || typeof data === 'boolean'}

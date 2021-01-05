@@ -15,6 +15,7 @@ import AboutPage from '../../react-component/about'
 import AboutPageIcon from '@material-ui/icons/Info'
 import SaveIcon from '@material-ui/icons/Save'
 import FolderIcon from '@material-ui/icons/Folder'
+import TrashIcon from '@material-ui/icons/Delete'
 import SearchIcon from '@material-ui/icons/Search'
 import ImageSearch from '@material-ui/icons/ImageSearch'
 import UserNotifications from '../../react-component/user-notifications/user-notifications'
@@ -27,6 +28,11 @@ import Grid from '@material-ui/core/Grid'
 import MetacardNavRoute from '../pages/metacard-nav'
 import MetacardRoute from '../pages/metacard'
 import SavedSearches from '../pages/saved-searches'
+import Open from '../pages/open'
+import Restore from '../pages/restore'
+import Create from '../pages/create'
+import CreateIcon from '@material-ui/icons/Create'
+import AddIcon from '@material-ui/icons/Add'
 
 const RouteInformation = [
   {
@@ -90,6 +96,28 @@ const RouteInformation = [
     },
   },
   {
+    name: 'Create',
+    shortName: 'Create',
+    Icon: AddIcon,
+    routeProps: {
+      exact: true,
+      path: ['/create'],
+      children: () => {
+        return (
+          <div className="py-2 pr-2 w-full h-full">
+            <Paper elevation={Elevations.panels} className="w-full h-full">
+              <Create />
+            </Paper>
+          </div>
+        )
+      },
+    },
+    linkProps: {
+      to: '/create',
+    },
+    showInNav: true,
+  },
+  {
     name: 'Search',
     shortName: 'Search',
     Icon: SearchIcon,
@@ -113,7 +141,13 @@ const RouteInformation = [
       exact: true,
       path: ['/open'],
       children: () => {
-        return <SavedSearches />
+        return (
+          <div className="py-2 pr-2 w-full h-full">
+            <Paper elevation={Elevations.panels} className="w-full h-full">
+              <Open />
+            </Paper>
+          </div>
+        )
       },
     },
     linkProps: {
@@ -160,6 +194,28 @@ const RouteInformation = [
     },
     linkProps: {
       to: '/sources',
+    },
+    showInNav: true,
+  },
+  {
+    name: 'Restore',
+    shortName: 'Restore',
+    Icon: TrashIcon,
+    routeProps: {
+      exact: true,
+      path: ['/restore'],
+      children: () => {
+        return (
+          <div className="py-2 pr-2 w-full h-full">
+            <Paper elevation={Elevations.panels} className="w-full h-full">
+              <Restore />
+            </Paper>
+          </div>
+        )
+      },
+    },
+    linkProps: {
+      to: '/restore',
     },
     showInNav: true,
   },
