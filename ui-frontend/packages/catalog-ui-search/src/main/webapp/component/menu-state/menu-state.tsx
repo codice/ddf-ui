@@ -10,7 +10,6 @@ export const useMenuState = () => {
   }
 
   const handleClose = () => {
-    console.log('does this happen')
     setOpen(false)
   }
   return {

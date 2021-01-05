@@ -522,7 +522,7 @@ export const ResultItem = ({
             document.activeElement.blur()
           }
         } catch (err) {
-          console.log(err)
+          console.error(err)
         }
       }}
       onMouseEnter={() => {

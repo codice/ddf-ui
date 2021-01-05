@@ -56,7 +56,7 @@ function mixinEphemeralFilter(originalCQL) {
       return originalCQL
     }
   } catch (err) {
-    console.log(err)
+    console.error(err)
     return originalCQL
   }
 }
@@ -199,7 +199,7 @@ Query.Model = Backbone.AssociatedModel.extend({
     // when we make drastic changes to filter tree it will be necessary to fall back to cql and reconstruct a filter tree that's compatible
     if (!filterTree || filterTree.id === undefined) {
       this.set('filterTree', cql.read(this.get('cql'))) // reconstruct
-      console.log('migrating a filter tree to the latest structure')
+      console.warn('migrating a filter tree to the latest structure')
       // allow downstream projects to handle how they want to inform users of migrations
       wreqr.vent.trigger('filterTree:migration', {
         search: this,
@@ -386,7 +386,6 @@ Query.Model = Backbone.AssociatedModel.extend({
         sources: selectedSources,
       })
     } else {
-      console.log(this.options)
       result = new QueryResponse({
         lazyResults: new LazyQueryResults({
           sorts: this.get('sorts'),
@@ -594,7 +593,7 @@ Query.Model = Backbone.AssociatedModel.extend({
     if (this.pastIndexesForSourceGroup.length > 0) {
       this.nextIndexForSourceGroup = this.pastIndexesForSourceGroup.pop()
     } else {
-      console.log('this should not happen')
+      console.error('this should not happen')
     }
   },
   /**

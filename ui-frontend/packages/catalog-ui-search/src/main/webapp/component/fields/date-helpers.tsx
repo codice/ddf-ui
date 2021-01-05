@@ -137,7 +137,6 @@ export const DateHelpers = {
             .tz(DateHelpers.General.getTimeZone())
             .utcOffset()
           const totalOffset = utcOffsetMinutesLocal + utcOffsetMinutesTimezone
-          console.log(`offset: ${totalOffset}`)
           const momentWithOffset = momentShiftedDate.add(totalOffset, 'minutes')
 
           if (

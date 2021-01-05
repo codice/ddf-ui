@@ -11,7 +11,7 @@ export const getDateTimeFormat = () => {
 
     return dateTimeFormat || DEFAULT_DATE_TIME_FORMAT
   } catch (err) {
-    console.log(
+    console.error(
       "Unable to retrieve user's prefered datetime format. Retrieving default datetime format.",
       err
     )

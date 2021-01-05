@@ -30,7 +30,7 @@ const OverflowTip = ({ children, tooltipProps }: OverflowTipType) => {
         textElementRef.current.scrollWidth > textElementRef.current.clientWidth
       setIsOverflowed(compare)
     } else {
-      console.log(
+      console.warn(
         'WARNING: No element found to compare.  You must take in and set a ref (refOfThingToMeasure) on one of your elements so this knows when to display a tooltip.'
       )
     }

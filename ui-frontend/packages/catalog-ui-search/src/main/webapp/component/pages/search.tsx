@@ -1288,7 +1288,7 @@ const useSavedSearchPageMode = ({
   const [data, setData] = React.useState<SavedSearchPageMode>(false)
   const task = useCreateSearchTask({ id })
   const restoreTask = useRestoreSearchTask({ id })
-  console.log(task)
+  console.info(task)
   React.useEffect(() => {
     if (task || restoreTask) {
       setData(true)
@@ -1404,7 +1404,7 @@ const getDefaultQueryData = (location: Location): any => {
       urlBasedData.filterTree = JSON.parse(urlBasedData.filterTree)
       return urlBasedData
     } catch (err) {
-      console.log(err)
+      console.error(err)
       return {}
     }
   }
@@ -1416,8 +1416,8 @@ export const HomePage = () => {
   const data = useSavedSearchPageMode({ id })
   const saveSearchTask = useSaveSearchTaskBasedOnParams()
   const isSaving = saveSearchTask !== null
-  console.log(searchPageMode)
-  console.log(data)
+  console.info(searchPageMode)
+  console.info(data)
   const location = useLocation()
   React.useEffect(() => {
     let urlBasedQuery = location.search.split('?defaultQuery=')[1]

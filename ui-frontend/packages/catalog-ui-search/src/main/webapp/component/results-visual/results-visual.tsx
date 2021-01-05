@@ -26,7 +26,6 @@ export const ResultsViewContext = React.createContext({
 const ResultsView = ({ selectionInterface }: Props) => {
   const [mode, setMode] = React.useState('card' as ModeType)
   const [edit, setEdit] = React.useState(null as null | LazyQueryResult)
-  console.log(mode)
   return (
     <ResultsViewContext.Provider value={{ edit, setEdit }}>
       <Grid

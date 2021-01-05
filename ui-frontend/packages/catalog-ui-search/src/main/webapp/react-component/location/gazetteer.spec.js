@@ -43,7 +43,6 @@ describe('getLargestBbox', () => {
       JSON.stringify(expectedAnswer),
     () => {
       const result = GetLargestBbox(testData[0].geojson.coordinates, true)
-      console.log(result)
       expect(result).to.deep.equal(expectedAnswer)
     }
   )
