@@ -7,7 +7,7 @@ import App, {
 import { hot } from 'react-hot-loader/root'
 import MRC from '../../react-component/marionette-region-container'
 const IngestView = require('../ingest/ingest.view')
-import { HomePage } from '../pages/home'
+import { HomePage } from '../pages/search'
 
 import SourcesPage from '../../react-component/sources'
 import SourcesPageIcon from '@material-ui/icons/Cloud'
@@ -26,7 +26,7 @@ import { Redirect } from 'react-router-dom'
 import Grid from '@material-ui/core/Grid'
 import MetacardNavRoute from '../pages/metacard-nav'
 import MetacardRoute from '../pages/metacard'
-import SavedSearches from '../pages/saved-searches'
+import SavedSearches from '../pages/browse'
 import Open from '../pages/open'
 import Restore from '../pages/restore'
 import Create from '../pages/create'

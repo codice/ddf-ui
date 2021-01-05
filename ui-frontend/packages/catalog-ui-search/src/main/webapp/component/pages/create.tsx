@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom'
 import { AsyncTasks } from '../../js/model/AsyncTask/async-task'
 import { useMenuState } from '../menu-state/menu-state'
 import { Elevations } from '../theme/theme'
-import { OpenSearch, SaveForm } from './home'
+import { OpenSearch, SaveForm } from './search'
 
 const Query = require('../../js/model/Query.js')
 const SelectionInterfaceModel = require('../selection-interface/selection-interface.model')

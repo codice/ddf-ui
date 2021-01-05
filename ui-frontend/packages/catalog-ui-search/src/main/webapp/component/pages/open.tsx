@@ -2,7 +2,7 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { useHistory } from 'react-router-dom'
 import useSnack from '../hooks/useSnack'
-import { OpenSearch } from './home'
+import { OpenSearch } from './search'
 
 const Open = () => {
   const history = useHistory()
