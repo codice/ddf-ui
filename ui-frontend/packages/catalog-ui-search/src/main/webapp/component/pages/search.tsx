@@ -14,9 +14,7 @@ import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 
 import MRC from '../../react-component/marionette-region-container'
 import Button, { ButtonProps } from '@material-ui/core/Button'
-import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
 import MoreVert from '@material-ui/icons/MoreVert'
-import { Dropdown } from '../atlas-dropdown'
 import { Elevations } from '../theme/theme'
 import SearchIcon from '@material-ui/icons/SearchTwoTone'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
@@ -478,6 +476,7 @@ const OptionsButton = () => {
         open={menuStateRestore.open}
         anchorEl={menuState.anchorRef.current}
         onClose={menuStateRestore.handleClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Paper elevation={Elevations.overlays} className="p-2">
           <OpenSearch
@@ -518,6 +517,10 @@ const OptionsButton = () => {
         open={menuStateCopy.open}
         anchorEl={menuState.anchorRef.current}
         onClose={menuStateCopy.handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
       >
         <Paper elevation={Elevations.overlays} className="p-2">
           <SaveForm
@@ -547,6 +550,7 @@ const OptionsButton = () => {
         open={menuStateRename.open}
         anchorEl={menuState.anchorRef.current}
         onClose={menuStateRename.handleClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Paper elevation={Elevations.overlays} className="p-2">
           <SaveForm
@@ -573,6 +577,7 @@ const OptionsButton = () => {
         open={menuStateNewFromExisting.open}
         anchorEl={menuState.anchorRef.current}
         onClose={menuStateNewFromExisting.handleClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Paper elevation={Elevations.overlays} className="p-2">
           <OpenSearch
@@ -620,6 +625,7 @@ const OptionsButton = () => {
         open={menuStateOpenSearch.open}
         anchorEl={menuState.anchorRef.current}
         onClose={menuStateOpenSearch.handleClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Paper elevation={Elevations.overlays} className="p-2">
           <div className="flex flex-row flex-no-wrap">
@@ -656,11 +662,13 @@ const OptionsButton = () => {
       </Popover>
       <Menu
         anchorEl={menuState.anchorRef.current}
+        getContentAnchorEl={null}
         open={menuState.open}
         onClose={menuState.handleClose}
         keepMounted={true}
         disableEnforceFocus
         disableAutoFocus
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <MenuItem
           component={Link}
@@ -783,102 +791,42 @@ const OptionsButton = () => {
 
 const SaveButton = () => {
   const { closed } = useResizableGridContext()
-  const {
-    data,
-    searchPageMode,
-    isSaving,
-    selectionInterface,
-  } = React.useContext(SavedSearchModeContext)
-  const history = useHistory()
+  const { data, searchPageMode, isSaving } = React.useContext(
+    SavedSearchModeContext
+  )
   return (
-    <Dropdown
-      content={(context) => {
-        return (
-          <BetterClickAwayListener
-            onClickAway={() => {
-              context.deepCloseAndRefocus()
-            }}
-          >
-            <Paper elevation={Elevations.overlays}>
-              <SaveForm
-                onClose={() => {
-                  context.deepCloseAndRefocus()
-                }}
-                selectionInterface={selectionInterface}
-                onSave={(title) => {
-                  selectionInterface.getCurrentQuery().set('title', title)
-                  const searchData = selectionInterface
-                    .getCurrentQuery()
-                    .toJSON()
-                  if (searchPageMode === 'adhoc') {
-                    const task = AsyncTasks.createSearch({ data: searchData })
-                    history.replace({
-                      pathname: `/search/${task.data.id}`,
-                      search: '',
-                    })
-                  } else if (typeof data !== 'boolean') {
-                    AsyncTasks.saveSearch({
-                      lazyResult: data,
-                      data: searchData,
-                    })
-                  }
-                }}
-              />
-            </Paper>
-          </BetterClickAwayListener>
-        )
-      }}
-    >
-      {({ handleClick }) => {
-        if (closed) {
-          return (
-            <Button
-              disabled={data === true}
-              variant="outlined"
-              color="primary"
-              size="small"
-              onClick={(e) => {
-                if (searchPageMode === 'adhoc') {
-                  return // handled by another button
-                }
-                e.stopPropagation()
-                handleClick(e)
-              }}
-            >
-              <SaveIcon />
-            </Button>
-          )
-        }
-        return (
-          <ButtonWithTwoStates
-            disabled={data === true}
-            variant="outlined"
-            color="primary"
-            size="small"
-            onClick={(e) => {
-              if (searchPageMode === 'adhoc') {
-                return // handled by another button
-              }
-              e.stopPropagation()
-              handleClick(e)
-            }}
-            states={[
-              { state: 'Saving', loading: true },
-              {
-                state: searchPageMode === 'adhoc' ? 'Save' : 'Save as',
-                loading: false,
-              },
-            ]}
-            state={(() => {
-              if (isSaving) {
-                return 'Saving'
-              }
-              return searchPageMode === 'adhoc' ? 'Save' : 'Save as'
-            })()}
-          />
-        )
-      }}
-    </Dropdown>
+    <>
+      {closed ? (
+        <Button
+          disabled={data === true}
+          variant="outlined"
+          color="primary"
+          size="small"
+        >
+          <SaveIcon />
+        </Button>
+      ) : (
+        <ButtonWithTwoStates
+          disabled={data === true}
+          variant="outlined"
+          color="primary"
+          size="small"
+          states={[
+            { state: 'Saving', loading: true },
+            {
+              state: searchPageMode === 'adhoc' ? 'Save' : 'Save as',
+              loading: false,
+            },
+          ]}
+          state={(() => {
+            if (isSaving) {
+              return 'Saving'
+            }
+            return searchPageMode === 'adhoc' ? 'Save' : 'Save as'
+          })()}
+        />
+      )}
+    </>
   )
 }
 
@@ -1083,7 +1031,8 @@ const LeftTop = () => {
     lazyResult: typeof data !== 'boolean' ? data : undefined,
   })
   const history = useHistory()
-
+  const adhocMenuState = useMenuState()
+  const savedMenuState = useMenuState()
   return (
     <div
       className={`min-h-16 ${
@@ -1098,73 +1047,66 @@ const LeftTop = () => {
         }`}
       >
         {searchPageMode === 'adhoc' ? (
-          <Dropdown
-            content={(context) => {
-              return (
-                <BetterClickAwayListener
-                  onClickAway={() => {
-                    context.deepCloseAndRefocus()
+          <>
+            <Popover
+              anchorEl={adhocMenuState.anchorRef.current}
+              open={adhocMenuState.open}
+              onClose={adhocMenuState.handleClose}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            >
+              <Paper elevation={Elevations.overlays}>
+                <SaveForm
+                  onClose={() => {
+                    adhocMenuState.handleClose()
                   }}
-                >
-                  <Paper elevation={Elevations.overlays}>
-                    <SaveForm
-                      onClose={() => {
-                        context.deepCloseAndRefocus()
-                      }}
-                      selectionInterface={selectionInterface}
-                      onSave={(title) => {
-                        selectionInterface.getCurrentQuery().set('title', title)
-                        const searchData = selectionInterface
-                          .getCurrentQuery()
-                          .toJSON()
-                        if (searchPageMode === 'adhoc') {
-                          const task = AsyncTasks.createSearch({
-                            data: searchData,
-                          })
-                          history.replace({
-                            pathname: `/search/${task.data.id}`,
-                            search: '',
-                          })
-                        } else if (typeof data !== 'boolean') {
-                          AsyncTasks.saveSearch({
-                            lazyResult: data,
-                            data: searchData,
-                          })
-                        }
-                      }}
-                    />
-                  </Paper>
-                </BetterClickAwayListener>
-              )
-            }}
-          >
-            {({ handleClick }) => {
-              return (
-                <Button
-                  className={`children-block text-left text-2xl flex-shrink ${
-                    closed ? '' : ''
+                  selectionInterface={selectionInterface}
+                  onSave={(title) => {
+                    selectionInterface.getCurrentQuery().set('title', title)
+                    const searchData = selectionInterface
+                      .getCurrentQuery()
+                      .toJSON()
+                    if (searchPageMode === 'adhoc') {
+                      const task = AsyncTasks.createSearch({
+                        data: searchData,
+                      })
+                      history.replace({
+                        pathname: `/search/${task.data.id}`,
+                        search: '',
+                      })
+                    } else if (typeof data !== 'boolean') {
+                      AsyncTasks.saveSearch({
+                        lazyResult: data,
+                        data: searchData,
+                      })
+                    }
+                  }}
+                />
+              </Paper>
+            </Popover>
+            <Button
+              className={`children-block text-left text-2xl flex-shrink ${
+                closed ? '' : ''
+              }`}
+              onClick={adhocMenuState.handleClick}
+              size="small"
+              innerRef={adhocMenuState.anchorRef}
+            >
+              <div
+                className={`flex items-center flex-no-wrap ${
+                  closed ? 'flex-col' : 'flex-row w-full'
+                }`}
+              >
+                <span
+                  className={`opacity-50 ${
+                    closed ? 'writing-mode-vertical-lr mb-2' : 'mr-2'
                   }`}
-                  onClick={handleClick}
-                  size="small"
                 >
-                  <div
-                    className={`flex items-center flex-no-wrap ${
-                      closed ? 'flex-col' : 'flex-row w-full'
-                    }`}
-                  >
-                    <span
-                      className={`opacity-50 ${
-                        closed ? 'writing-mode-vertical-lr mb-2' : 'mr-2'
-                      }`}
-                    >
-                      Unsaved search{' '}
-                    </span>
-                    <SaveButton />
-                  </div>
-                </Button>
-              )
-            }}
-          </Dropdown>
+                  Unsaved search{' '}
+                </span>
+                <SaveButton />
+              </div>
+            </Button>
+          </>
         ) : null}
         {data === false && searchPageMode === 'saved' ? (
           <div
@@ -1182,75 +1124,62 @@ const LeftTop = () => {
         ) : null}
         {typeof data !== 'boolean' ? (
           <>
-            <Dropdown
-              popperProps={{
-                placement: closed ? 'right-start' : 'bottom',
-              }}
-              content={(context) => {
-                return (
-                  <BetterClickAwayListener
-                    onClickAway={() => {
-                      context.deepCloseAndRefocus()
-                    }}
-                  >
-                    <Paper elevation={Elevations.overlays}>
-                      <SaveForm
-                        onClose={() => {
-                          context.deepCloseAndRefocus()
-                        }}
-                        selectionInterface={selectionInterface}
-                        onSave={(title) => {
-                          selectionInterface
-                            .getCurrentQuery()
-                            .set('title', title)
-                          const searchData = selectionInterface
-                            .getCurrentQuery()
-                            .toJSON()
-                          if (searchPageMode === 'adhoc') {
-                            AsyncTasks.createSearch({ data: searchData })
-                          } else if (typeof data !== 'boolean') {
-                            AsyncTasks.saveSearch({
-                              lazyResult: data,
-                              data: searchData,
-                            })
-                          }
-                        }}
-                      />
-                    </Paper>
-                  </BetterClickAwayListener>
-                )
+            <Popover
+              anchorEl={savedMenuState.anchorRef.current}
+              open={savedMenuState.open}
+              onClose={savedMenuState.handleClose}
+              anchorOrigin={{
+                vertical: closed ? 'top' : 'bottom',
+                horizontal: closed ? 'right' : 'left',
               }}
             >
-              {({ handleClick }) => {
-                return (
-                  <Button
-                    fullWidth
-                    className={`children-block children-h-full text-left text-2xl flex-shrink overflow-hidden ${
-                      closed ? 'h-full' : ''
-                    }`}
-                    onClick={handleClick}
-                    size="small"
-                  >
-                    <div
-                      className={`flex items-center flex-no-wrap ${
-                        closed ? 'flex-col h-full' : 'w-full flex-row'
-                      }`}
-                    >
-                      <span
-                        className={`truncate ${
-                          closed
-                            ? 'writing-mode-vertical-lr mb-2 flex-shrink'
-                            : 'mr-2'
-                        }`}
-                      >
-                        {data.plain.metacard.properties.title}
-                      </span>
-                      <SaveIndicator />
-                    </div>
-                  </Button>
-                )
-              }}
-            </Dropdown>
+              <Paper elevation={Elevations.overlays}>
+                <SaveForm
+                  onClose={savedMenuState.handleClose}
+                  selectionInterface={selectionInterface}
+                  onSave={(title) => {
+                    selectionInterface.getCurrentQuery().set('title', title)
+                    const searchData = selectionInterface
+                      .getCurrentQuery()
+                      .toJSON()
+                    if (searchPageMode === 'adhoc') {
+                      AsyncTasks.createSearch({ data: searchData })
+                    } else if (typeof data !== 'boolean') {
+                      AsyncTasks.saveSearch({
+                        lazyResult: data,
+                        data: searchData,
+                      })
+                    }
+                  }}
+                />
+              </Paper>
+            </Popover>
+            <Button
+              fullWidth
+              className={`children-block children-h-full text-left text-2xl flex-shrink overflow-hidden ${
+                closed ? 'h-full' : ''
+              }`}
+              onClick={savedMenuState.handleClick}
+              size="small"
+              innerRef={savedMenuState.anchorRef}
+            >
+              <div
+                className={`flex items-center flex-no-wrap ${
+                  closed ? 'flex-col h-full' : 'w-full flex-row'
+                }`}
+              >
+                <span
+                  className={`truncate ${
+                    closed
+                      ? 'writing-mode-vertical-lr mb-2 flex-shrink'
+                      : 'mr-2'
+                  }`}
+                >
+                  {data.plain.metacard.properties.title}
+                </span>
+                <SaveIndicator />
+              </div>
+            </Button>
           </>
         ) : (
           <></>
