@@ -385,6 +385,7 @@ export const OpenSearch = ({
           setCurrentHighlight(null)
         }
       }}
+      noOptionsText="Nothing found."
       renderOption={(option) => {
         return (
           <Link
@@ -976,6 +977,7 @@ const SaveIndicator = () => {
   const { isSaving } = React.useContext(SavedSearchModeContext)
   const { closed } = useResizableGridContext()
   const [showTempMessage, setShowTempMessage] = React.useState(false)
+  const popupState = useMenuState()
   useUpdateEffect(() => {
     let timeoutid = undefined as number | undefined
     if (isSaving === false) {
@@ -990,34 +992,84 @@ const SaveIndicator = () => {
   }, [isSaving])
   return (
     <>
-      <span
-        className={`opacity-75 text-sm flex-shrink-0 flex items-center flex-no-wrap ${
-          closed ? 'mr-min flex-col' : 'mt-min flex-row'
-        }`}
+      <Popover
+        anchorEl={popupState.anchorRef.current}
+        open={popupState.open}
+        onClose={popupState.handleClose}
+        onMouseDown={(e) => {
+          // otherwise since we're technically in a button this will trigger it
+          e.stopPropagation()
+        }}
+        onClick={(e) => {
+          // otherwise since we're technically in a button this will trigger it
+          e.stopPropagation()
+        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
-        {isSaving ? (
-          <>
-            <CircularProgress
-              className="text-current text-base"
-              style={{ width: '1rem', height: '1rem' }}
-            />{' '}
-            <span
-              className={`${closed ? 'writing-mode-vertical-lr mt-1' : 'ml-1'}`}
-            >
-              Saving ...
-            </span>
-          </>
-        ) : (
-          <>
-            <CloudDoneIcon className="text-base" />{' '}
-            <span
-              className={`${closed ? 'writing-mode-vertical-lr mt-1' : 'ml-1'}`}
-            >
-              {showTempMessage ? 'Saved' : ''}
-            </span>
-          </>
-        )}
-      </span>
+        <Paper elevation={Elevations.overlays}>
+          <div className="flex flex-row flex-no-wrap items-center p-4 text-2xl Mui-text-primary">
+            {isSaving ? (
+              <>
+                <CircularProgress
+                  className="mr-2"
+                  style={{ width: '1rem', height: '1rem' }}
+                />
+                Saving ...
+              </>
+            ) : (
+              <>
+                <CloudDoneIcon className="mr-2" /> All changes saved to the
+                system.
+              </>
+            )}
+          </div>
+          <DarkDivider />
+          <div className="p-4">
+            Every change you make is automatically saved.
+          </div>
+        </Paper>
+      </Popover>
+      <Button
+        className=""
+        onClick={(e) => {
+          e.stopPropagation()
+          popupState.handleClick()
+        }}
+        innerRef={popupState.anchorRef}
+      >
+        <span
+          className={`opacity-75 text-sm flex-shrink-0 flex items-center flex-no-wrap ${
+            closed ? 'mr-min flex-col' : 'mt-min flex-row'
+          }`}
+        >
+          {isSaving ? (
+            <>
+              <CircularProgress
+                className="text-current text-base"
+                style={{ width: '1rem', height: '1rem' }}
+              />{' '}
+              <span
+                className={`${
+                  closed ? 'writing-mode-vertical-lr mt-1' : 'ml-1'
+                }`}
+              >
+                Saving ...
+              </span>
+            </>
+          ) : (
+            <>
+              <CloudDoneIcon className="text-base" />{' '}
+              <span
+                className={`${
+                  closed ? 'writing-mode-vertical-lr mt-1' : 'ml-1'
+                }`}
+              >
+                {showTempMessage ? 'Saved' : ''}
+              </span>
+            </>
+          )}
+        </span>
+      </Button>
     </>
   )
 }

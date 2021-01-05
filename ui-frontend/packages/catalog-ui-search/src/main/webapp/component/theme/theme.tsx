@@ -277,6 +277,10 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
             : 'linear-gradient(-180deg, rgb(153, 153, 153) 0%, rgb(187, 187, 187) 100%)'};
             border-radius: 4px;
       }
+      // fix an issue where focus is applied because of blueprint to popover papers
+      .MuiPaper-root:focus { 
+        outline: none;
+      }
       // Fix Mui styles 
       .MuiButton-endIcon {
         margin-left: 0px;
