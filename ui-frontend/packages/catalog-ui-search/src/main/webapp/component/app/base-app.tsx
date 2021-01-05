@@ -33,7 +33,7 @@ import Restore from '../pages/restore'
 import Create from '../pages/create'
 import CreateIcon from '@material-ui/icons/Create'
 import AddIcon from '@material-ui/icons/Add'
-
+import ViewListIcon from '@material-ui/icons/ViewList'
 const RouteInformation = [
   {
     showInNav: false,
@@ -96,6 +96,22 @@ const RouteInformation = [
     },
   },
   {
+    name: 'Search',
+    shortName: 'Search',
+    Icon: SearchIcon,
+    routeProps: {
+      exact: false,
+      path: ['/search/:id', '/search'],
+      children: () => {
+        return <HomePage />
+      },
+    },
+    linkProps: {
+      to: '/search',
+    },
+    showInNav: true,
+  },
+  {
     name: 'Create',
     shortName: 'Create',
     Icon: AddIcon,
@@ -118,22 +134,6 @@ const RouteInformation = [
     showInNav: true,
   },
   {
-    name: 'Search',
-    shortName: 'Search',
-    Icon: SearchIcon,
-    routeProps: {
-      exact: false,
-      path: ['/search/:id', '/search'],
-      children: () => {
-        return <HomePage />
-      },
-    },
-    linkProps: {
-      to: '/search',
-    },
-    showInNav: true,
-  },
-  {
     name: 'Open',
     shortName: 'Open',
     Icon: FolderIcon,
@@ -152,6 +152,26 @@ const RouteInformation = [
     },
     linkProps: {
       to: '/open',
+    },
+    showInNav: true,
+  },
+  {
+    name: 'Browse',
+    shortName: 'Browse',
+    Icon: ViewListIcon,
+    routeProps: {
+      exact: true,
+      path: ['/browse'],
+      children: () => {
+        return (
+          <div className="w-full h-full">
+            <SavedSearches />
+          </div>
+        )
+      },
+    },
+    linkProps: {
+      to: '/browse',
     },
     showInNav: true,
   },
