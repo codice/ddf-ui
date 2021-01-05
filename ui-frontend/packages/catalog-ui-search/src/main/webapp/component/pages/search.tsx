@@ -1052,7 +1052,10 @@ const LeftTop = () => {
               anchorEl={adhocMenuState.anchorRef.current}
               open={adhocMenuState.open}
               onClose={adhocMenuState.handleClose}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+              anchorOrigin={{
+                vertical: closed ? 'top' : 'bottom',
+                horizontal: closed ? 'right' : 'left',
+              }}
             >
               <Paper elevation={Elevations.overlays}>
                 <SaveForm
@@ -1084,8 +1087,8 @@ const LeftTop = () => {
               </Paper>
             </Popover>
             <Button
-              className={`children-block text-left text-2xl flex-shrink ${
-                closed ? '' : ''
+              className={`children-block children-h-full text-left text-2xl flex-shrink truncate ${
+                closed ? 'h-full' : ''
               }`}
               onClick={adhocMenuState.handleClick}
               size="small"
@@ -1093,11 +1096,11 @@ const LeftTop = () => {
             >
               <div
                 className={`flex items-center flex-no-wrap ${
-                  closed ? 'flex-col' : 'flex-row w-full'
+                  closed ? 'flex-col h-full' : 'flex-row w-full'
                 }`}
               >
                 <span
-                  className={`opacity-50 ${
+                  className={`opacity-50 flex-shrink truncate ${
                     closed ? 'writing-mode-vertical-lr mb-2' : 'mr-2'
                   }`}
                 >
