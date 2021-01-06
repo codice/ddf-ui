@@ -120,22 +120,25 @@ const Component = CustomElements.registerReact('location')
 const LocationInput = ({ onChange, value }: any) => {
   const [locationModel] = React.useState(new LocationOldModel(value) as any)
   const [state, setState] = React.useState(locationModel.toJSON() as any)
-  const { listenTo } = useBackbone()
+  const { listenTo, stopListening } = useBackbone()
   React.useEffect(() => {
-    /**
-     * The first on change call is to set the default value for location
-     */
-    onChange(getCurrentValue({ locationModel }))
-    listenTo(locationModel, 'change', () => {
-      setState(locationModel.toJSON())
-      updateMap({ locationModel })
-      onChange(getCurrentValue({ locationModel }))
-    })
     return () => {
+      // This is to facilitate clearing out the map, it isn't about the value
       locationModel.set(locationModel.defaults())
       wreqr.vent.trigger('search:drawend', locationModel)
     }
   }, [])
+  React.useEffect(() => {
+    const onChangeCallback = () => {
+      setState(locationModel.toJSON())
+      updateMap({ locationModel })
+      onChange(getCurrentValue({ locationModel }))
+    }
+    listenTo(locationModel, 'change', onChangeCallback)
+    return () => {
+      stopListening(locationModel, 'change', onChangeCallback)
+    }
+  }, [onChange])
 
   const ComponentToRender = inputs[state.mode]
     ? inputs[state.mode].Component
