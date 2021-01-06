@@ -11,7 +11,12 @@ type DateFieldProps = {
   onChange: (value: string) => void
   TextFieldProps?: Partial<TextFieldProps>
   /**
-   * Override if you absolutely must
+   * Override if you absolutely must.
+   * Take extra caution when overriding minDate and maxDate.
+   * Overriding minDate and maxDate will work as a visual overlay which can only be used
+   * to restrict which dates a user can input- but can't be used to give the users a lower/higher
+   * min or max. The true min/max is set in dateHelpers. We should probably update this at some
+   * point to be passed down by this component.
    */
   BPDateProps?: Partial<IDateInputProps>
 }
