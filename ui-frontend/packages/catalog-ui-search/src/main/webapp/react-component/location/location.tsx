@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const React = require('react')
+import * as React from 'react'
 import Keyword from './keyword'
 const LocationOldModel = require('../../component/location-old/location-old')
 const CustomElements = require('../../js/CustomElements.js')
@@ -31,6 +31,13 @@ const PointRadius = require('./point-radius')
 const BoundingBox = require('./bounding-box')
 const plugin = require('plugins/location')
 
+type InputType = {
+  label: string
+  Component: any
+}
+type InputsType = {
+  [key: string]: InputType
+}
 const inputs = plugin({
   line: {
     label: 'Line',
@@ -69,12 +76,7 @@ const inputs = plugin({
       )
     },
   },
-}) as {
-  [key: string]: {
-    label: string
-    Component: any
-  }
-}
+}) as InputsType
 
 const drawTypes = ['line', 'poly', 'circle', 'bbox']
 
@@ -116,8 +118,14 @@ function updateMap({ locationModel }: any) {
   }
 }
 
+export const LocationContext = React.createContext({
+  filterInputPredicate: (_name: string): boolean => {
+    return true
+  },
+})
 const Component = CustomElements.registerReact('location')
 const LocationInput = ({ onChange, value }: any) => {
+  const locationContext = React.useContext(LocationContext)
   const [locationModel] = React.useState(new LocationOldModel(value) as any)
   const [state, setState] = React.useState(locationModel.toJSON() as any)
   const { listenTo, stopListening } = useBackbone()
@@ -143,13 +151,17 @@ const LocationInput = ({ onChange, value }: any) => {
   const ComponentToRender = inputs[state.mode]
     ? inputs[state.mode].Component
     : () => null
-  const options = Object.entries(inputs).map((entry) => {
-    const [key, value] = entry
-    return {
-      label: value.label,
-      value: key,
-    }
-  })
+  const options = Object.entries(inputs)
+    .map((entry) => {
+      const [key, value] = entry
+      return {
+        label: value.label,
+        value: key,
+      }
+    })
+    .filter((value) => {
+      return locationContext.filterInputPredicate(value.value)
+    })
   return (
     <div>
       <Component>

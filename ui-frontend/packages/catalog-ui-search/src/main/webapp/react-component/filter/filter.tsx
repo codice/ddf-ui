@@ -31,9 +31,22 @@ type Props = {
   setFilter: (filter: FilterClass) => void
 }
 
+export const FilterContext = React.createContext({
+  limitedAttributeList: undefined as
+    | undefined
+    | {
+        label: string
+        value: string
+        description: string | undefined
+      }[],
+})
 const Filter = ({ filter, setFilter }: Props) => {
+  const { limitedAttributeList } = React.useContext(FilterContext)
   const { property } = filter
-  const attributeList = getFilteredAttributeList()
+  const attributeList =
+    limitedAttributeList !== undefined
+      ? limitedAttributeList
+      : getFilteredAttributeList()
   const currentSelectedAttribute = attributeList.find(
     (attrInfo) => attrInfo.value === property
   )
