@@ -575,11 +575,6 @@ const CustomList = ({
   )
 }
 
-const getCustomEditableAttributes = (async () => {
-  const attrs = await extension.customEditableAttributes()
-  return attrs
-})()
-
 export const useCustomReadOnlyCheck = () => {
   const [
     customEditableAttributes,
@@ -588,7 +583,7 @@ export const useCustomReadOnlyCheck = () => {
   const [loading, setLoading] = React.useState(true)
 
   const initializeCustomEditableAttributes = async () => {
-    const attrs = await getCustomEditableAttributes
+    const attrs = await extension.customEditableAttributes()
     if (attrs !== undefined) {
       setCustomEditableAttributes(attrs)
     }

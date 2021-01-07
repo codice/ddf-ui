@@ -202,6 +202,9 @@ const properties = {
   isPhoneticsEnabled() {
     return this.isPhoneticsEnabled
   },
+  isFuzzyResultsEnabled() {
+    return this.isFuzzyResultsEnabled
+  },
   isMetacardPreviewEnabled() {
     return !this.isMetacardPreviewDisabled
   },

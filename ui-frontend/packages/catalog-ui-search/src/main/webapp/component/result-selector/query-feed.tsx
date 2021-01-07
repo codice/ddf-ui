@@ -12,6 +12,7 @@ import { useLazyResultsStatusFromSelectionInterface } from '../selection-interfa
 import Tooltip from '@material-ui/core/Tooltip'
 import { Elevations } from '../theme/theme'
 import FilterListIcon from '@material-ui/icons/FilterList'
+import { fuzzyHits } from './fuzzy-results'
 
 type Props = {
   selectionInterface: any
@@ -33,6 +34,7 @@ type CellValueProps = {
   warnings: string[]
   alwaysShowValue?: boolean
 }
+
 const CellValue = (props: CellValueProps) => {
   const {
     value,
@@ -101,7 +103,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
       </Cell>
       <Cell data-id="available-label">
         <CellValue
-          value={status.count}
+          value={`${status.count} hit${status.count === 1 ? '' : 's'}`}
           hasReturned={hasReturned}
           successful={successful}
           warnings={warnings}
@@ -110,7 +112,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
       </Cell>
       <Cell data-id="possible-label">
         <CellValue
-          value={status.hits}
+          value={fuzzyHits(status.hits)}
           hasReturned={hasReturned}
           successful={successful}
           warnings={warnings}
@@ -205,25 +207,30 @@ const QueryFeed = ({ selectionInterface }: Props) => {
     selectionInterface,
   })
   const statusBySource = Object.values(status)
-  let resultCount = '',
+  let resultMessage = '',
     pending = false,
     failed = false
   if (statusBySource.length === 0) {
-    resultCount = 'Has not been run'
+    resultMessage = 'Has not been run'
   } else {
     const sourcesThatHaveReturned = statusBySource.filter(
       (status) => status.hasReturned
     )
-    resultCount =
-      sourcesThatHaveReturned.length > 0
-        ? `${statusBySource
-            .filter((status) => status.hasReturned)
-            .filter((status) => status.successful)
-            .reduce((amt, status) => {
-              amt = amt + status.hits
-              return amt
-            }, 0)} hits`
-        : 'Searching...'
+
+    if (sourcesThatHaveReturned.length > 0) {
+      const results = statusBySource
+        .filter((status) => status.hasReturned)
+        .filter((status) => status.successful)
+        .reduce((amt, status) => {
+          amt = amt + status.count
+          return amt
+        }, 0)
+
+      resultMessage = `${results} hit${results === 1 ? '' : 's'}`
+    } else {
+      resultMessage = 'Searching...'
+    }
+
     failed = sourcesThatHaveReturned.some((status) => !status.successful)
     pending = isSearching
   }
@@ -234,7 +241,7 @@ const QueryFeed = ({ selectionInterface }: Props) => {
         <Grid item>
           <div
             data-id="results-count-label"
-            title={resultCount}
+            title={resultMessage}
             style={{ whiteSpace: 'nowrap' }}
           >
             {pending ? (
@@ -243,7 +250,7 @@ const QueryFeed = ({ selectionInterface }: Props) => {
               ''
             )}
             {failed ? <i className="fa fa-warning" /> : ''}
-            {resultCount}
+            {resultMessage}
           </div>
           <LastRan currentAsOf={currentAsOf} />
         </Grid>

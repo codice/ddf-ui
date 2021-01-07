@@ -432,6 +432,14 @@ const AttributeComponent = ({
   const { isNotWritable } = useCustomReadOnlyCheck()
   const dialogContext = useDialog()
 
+  const isUrl = (value: any) => {
+    if (value && typeof value === 'string') {
+      const protocol = value.toLowerCase().split('/')[0]
+      return protocol && (protocol === 'http:' || protocol === 'https:')
+    }
+    return false
+  }
+
   const isFiltered =
     filter !== '' ? !label.toLowerCase().includes(filter.toLowerCase()) : false
   const MemoItem = React.useMemo(() => {
@@ -453,10 +461,16 @@ const AttributeComponent = ({
                       attr={attr}
                       lazyResult={lazyResult}
                       onCancel={() => {
-                        dialogContext.setProps({ open: false, children: null })
+                        dialogContext.setProps({
+                          open: false,
+                          children: null,
+                        })
                       }}
                       onSave={() => {
-                        dialogContext.setProps({ open: false, children: null })
+                        dialogContext.setProps({
+                          open: false,
+                          children: null,
+                        })
                       }}
                     />
                   ),
@@ -559,10 +573,30 @@ const AttributeComponent = ({
                                   </Typography>
                                 )
                               }
-                              return displayHighlightedAttrInFull(
-                                lazyResult.highlights[attr],
-                                val,
-                                index
+                              {
+                                return isUrl(val) ? (
+                                  <Typography>
+                                    <span className="highlight">
+                                      <a href={val} target="_blank">
+                                        {val}
+                                      </a>
+                                    </span>
+                                  </Typography>
+                                ) : (
+                                  displayHighlightedAttrInFull(
+                                    lazyResult.highlights[attr],
+                                    val,
+                                    index
+                                  )
+                                )
+                              }
+                            } else if (isUrl(val)) {
+                              return (
+                                <Typography>
+                                  <a href={val} target="_blank">
+                                    {val}
+                                  </a>
+                                </Typography>
                               )
                             } else {
                               return <Typography>{val}</Typography>
