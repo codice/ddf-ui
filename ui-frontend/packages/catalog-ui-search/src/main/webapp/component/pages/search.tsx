@@ -980,7 +980,7 @@ const SaveIndicator = () => {
         </Paper>
       </Popover>
       <Button
-        className=""
+        className="flex-shrink-0"
         onClick={(e) => {
           e.stopPropagation()
           popupState.handleClick()
