@@ -433,6 +433,9 @@ module.exports = function CesiumMap(
       map.scene.camera.moveEnd.removeEventListener(callback)
     },
     doPanZoom(coords) {
+      if (coords.length === 0) {
+        return
+      }
       const cartArray = coords.map((coord) =>
         Cesium.Cartographic.fromDegrees(
           coord[0],

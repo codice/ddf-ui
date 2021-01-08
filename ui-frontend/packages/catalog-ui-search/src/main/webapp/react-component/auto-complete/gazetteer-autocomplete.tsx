@@ -132,6 +132,7 @@ const GazetteerAutoComplete = ({
       onChange={onValueSelect}
       onBlur={() => setInput('')}
       noOptionsText={getNoOptionsText()}
+      autoHighlight
       renderInput={(params) => (
         <TextField
           {...params}
