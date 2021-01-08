@@ -101,6 +101,7 @@ const Keyword = (props: Props) => {
 
   const onChange = async (suggestion: Suggestion) => {
     if (!suggestion) {
+      props.setState({ hasKeyword: false, value: '', polygon: undefined })
       setValue('')
       return
     }

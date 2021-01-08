@@ -13,7 +13,6 @@
  *
  **/
 import * as React from 'react'
-import Keyword from './keyword'
 const LocationOldModel = require('../../component/location-old/location-old')
 const CustomElements = require('../../js/CustomElements.js')
 const wreqr = require('../../js/wreqr.js')
@@ -29,6 +28,7 @@ const Line = require('./line')
 const Polygon = require('./polygon')
 const PointRadius = require('./point-radius')
 const BoundingBox = require('./bounding-box')
+import Gazetteer from './gazetteer'
 const plugin = require('plugins/location')
 
 type InputType = {
@@ -61,7 +61,7 @@ const inputs = plugin({
       return (
         // Offsets className="form-group clearfix" below
         <div style={{ marginTop: -15 }}>
-          <Keyword
+          <Gazetteer
             {...props}
             value={keywordValue}
             setState={({ value, ...data }: any) => {
