@@ -108,6 +108,7 @@ export const getLargestBbox = (
 }
 
 type Props = {
+  value: string
   setState: any
   fetch?: any
   placeholder?: string
@@ -308,6 +309,7 @@ const Gazetteer = (props: Props) => {
     <div>
       {onlineGazetteer ? (
         <Keyword
+          value={props.value}
           setState={props.setState}
           suggester={suggester}
           geofeature={geofeature}
@@ -317,6 +319,7 @@ const Gazetteer = (props: Props) => {
         />
       ) : (
         <Keyword
+          value={props.value}
           setState={props.setState}
           suggester={suggesterWithLiteralSupport}
           geofeature={geofeatureWithLiteralSupport}
