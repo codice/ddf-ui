@@ -16,53 +16,73 @@ const React = require('react')
 
 import styled from 'styled-components'
 
-const { Menu, MenuItem } = require('../menu')
-const Dropdown = require('../dropdown')
 const Group = require('../group')
-
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
+import Autocomplete from '@material-ui/lab/Autocomplete'
+import TextField from '@material-ui/core/TextField'
 const Label = require('./label')
 
 const Units = ({ value, onChange, children }) => (
   <Group>
     {children}
-    <span className="input-group-btn">
-      <Dropdown label={value}>
-        <Menu value={value} onChange={onChange}>
-          <MenuItem value="meters" />
-          <MenuItem value="kilometers" />
-          <MenuItem value="feet" />
-          <MenuItem value="yards" />
-          <MenuItem value="miles" />
-          <MenuItem value="nautical miles" />
-        </Menu>
-      </Dropdown>
-    </span>
+    <Autocomplete
+      disableClearable
+      options={[
+        'meters',
+        'kilometers',
+        'feet',
+        'yards',
+        'miles',
+        'nautical miles',
+      ]}
+      renderInput={(params) => {
+        return <TextField {...params} label="" variant="outlined" />
+      }}
+      value={value}
+      onChange={(_event, newVal) => {
+        onChange(newVal)
+      }}
+      size="small"
+    ></Autocomplete>
   </Group>
 )
 
-const range = [...Array(61).keys()]
+// create an array of 1-60 for zones
+const range = [...Array(61).keys()].map((val) => val.toString()).slice(1)
 const Zone = ({ value, onChange }) => (
   <Group>
     <Label>Zone</Label>
-    <Dropdown label={value}>
-      <Menu value={value} onChange={onChange}>
-        {range.map((zone) => (
-          <MenuItem key={zone} value={zone} />
-        ))}
-      </Menu>
-    </Dropdown>
+    <Autocomplete
+      disableClearable
+      options={range}
+      renderInput={(params) => {
+        return <TextField {...params} label="" variant="outlined" />
+      }}
+      value={value.toString()}
+      onChange={(_event, newVal) => {
+        onChange(parseInt(newVal))
+      }}
+      size="small"
+    ></Autocomplete>
   </Group>
 )
 
 const Hemisphere = ({ value, onChange }) => (
   <Group>
     <Label>Hemisphere</Label>
-    <Dropdown label={value}>
-      <Menu value={value} onChange={onChange}>
-        <MenuItem value="Northern" />
-        <MenuItem value="Southern" />
-      </Menu>
-    </Dropdown>
+    <Autocomplete
+      disableClearable
+      options={['Northern', 'Southern']}
+      renderInput={(params) => {
+        return <TextField {...params} label="" variant="outlined" />
+      }}
+      value={value}
+      onChange={(_event, newVal) => {
+        onChange(newVal)
+      }}
+      size="small"
+    ></Autocomplete>
   </Group>
 )
 

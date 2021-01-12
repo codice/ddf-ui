@@ -103,6 +103,27 @@ export const TypedMetacardDefs = {
   typesFetched() {
     return metacardDefinitions.typesFetched as boolean
   },
+  addMetacardDefinition(
+    name: string,
+    definition: {
+      [key: string]: {
+        id: string
+        type: Attributetypes
+      }
+    }
+  ): boolean {
+    return metacardDefinitions.addMetacardDefinition(name, definition)
+  },
+  addMetacardDefinitions(definitions: {
+    [key: string]: {
+      [key: string]: {
+        id: string
+        type: Attributetypes
+      }
+    }
+  }) {
+    metacardDefinitions.addMetacardDefinitions(definitions)
+  },
 }
 
 export default hot(module)(TypedMetacardDefs)

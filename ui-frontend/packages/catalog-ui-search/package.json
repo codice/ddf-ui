@@ -23,7 +23,9 @@
     "publish:cpx-src": "cpx \"src/**/*.!(*tsx|*ts)\" dist/src",
     "publish:cpx-current": "cpx \"*\" dist",
     "publish:build": "rimraf dist && yarn publish:cpx-src && yarn publish:cpx-current && tsc && yarn publish:cpx-package",
-    "publish:npm": "yarn publish:build && npm publish dist -timeout=99999"
+    "watch:build": "yarn publish:cpx-src && yarn publish:cpx-current && tsc && yarn publish:cpx-package",
+    "publish:npm": "yarn publish:build && npm publish dist -timeout=99999",
+    "watch": "ts-node -P ./tsconfig.json ./dev/index.tsx"
   },
   "repository": {
     "type": "git",
@@ -51,13 +53,15 @@
   "devDependencies": {
     "@blueprintjs/core": "3.29.0",
     "@blueprintjs/datetime": "3.18.3",
-    "@connexta/ace": "git://github.com/connexta/ace.git#5edbfdc9f2f9a8621684f5e467925a70f2dfeab9",
+    "@connexta/ace": "git://github.com/connexta/ace.git#3a502c4582a71333466341c9acc0c25050af1e21",
     "@material-ui/core": "4.11.0",
     "@material-ui/icons": "4.9.1",
     "@material-ui/lab": "4.0.0-alpha.56",
     "@material-ui/pickers": "3.2.10",
     "@types/chai": "4.2.14",
     "@types/d3": "5.0.0",
+    "@types/enzyme": "3.10.8",
+    "@types/enzyme-adapter-react-16": "1.0.2",
     "@types/lodash.debounce": "4.0.6",
     "@types/mocha": "8.0.3",
     "@types/moment-timezone": "0.5.30",
@@ -70,9 +74,10 @@
     "@types/styled-components": "4.0.3",
     "@welldone-software/why-did-you-render": "4.2.2",
     "chai": "4.1.1",
+    "chokidar": "3.5.0",
     "cpx": "1.5.0",
-    "enzyme": "3.3.0",
-    "enzyme-adapter-react-16": "1.5.0",
+    "enzyme": "3.11.0",
+    "enzyme-adapter-react-16": "1.15.5",
     "html-react-parser": "0.10.3",
     "jsdom": "11.12.0",
     "json": "9.0.6",
@@ -88,6 +93,7 @@
     "react-router-dom": "5.2.0",
     "sinon": "5.0.7",
     "styled-components": "4.3.2",
+    "ts-node": "9.1.1",
     "ts-migrate": "^0.1.10",
     "ts-migrate-plugins": "^0.1.10",
     "ts-migrate-server": "^0.1.10",
@@ -191,7 +197,8 @@
       "src/main/resources",
       "target/webapp"
     ],
-    "testPath": "dist/"
+    "testPath": "dist/",
+    "testSetupPath": "dist/src/main/webapp/test/setup/index.js"
   },
   "context-path": "/search/catalog",
   "private": true

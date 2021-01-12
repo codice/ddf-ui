@@ -14,7 +14,7 @@
  **/
 
 const DEFAULT_AUTO_MERGE_TIME = 1000
-
+import { Environment } from './Environment'
 const $ = require('jquery')
 const _ = require('underscore')
 
@@ -89,7 +89,8 @@ const properties = {
     },
     numberTypes: ['float', 'short', 'long', 'double', 'integer'],
   },
-
+  sourcePollInterval: 60000,
+  enums: {},
   init() {
     // use this function to initialize variables that rely on others
     let props = this
@@ -133,7 +134,6 @@ const properties = {
             ')'
         )
       })
-
     this.handleFeedback()
     this.handleExperimental()
     this.handleUpload()

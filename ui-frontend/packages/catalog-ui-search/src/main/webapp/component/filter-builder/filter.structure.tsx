@@ -231,30 +231,32 @@ export type ValueTypes = {
     end: number
   }
   location: // this is all we technically need to reconstruct (lo fidelity)
-  | {
-        type: 'LINE'
-        mode: 'line'
-        lineWidth?: string
-        line: Array<Array<number>>
-      }
-    | {
-        type: 'POLYGON'
-        polygonBufferWidth?: number | string
-        polygonBufferUnits?: 'meters'
-        polygon: Array<Array<number>>
-        locationType?: 'dd'
-        polyType?: 'polygon'
-        mode: 'poly'
-      } //POINTRADIUS
-    | {
-        type: 'POINTRADIUS'
-        radius: number | string
-        radiusUnits?: 'meters'
-        mode: 'circle'
-        lat: number
-        lon: number
-        locationType?: 'dd'
-      }
+  LineLocation | PolygonLocation | PointRadiusLocation
+}
+
+export type LineLocation = {
+  type: 'LINE'
+  mode: 'line'
+  lineWidth?: string
+  line: Array<Array<number>>
+}
+export type PolygonLocation = {
+  type: 'POLYGON'
+  polygonBufferWidth?: number | string
+  polygonBufferUnits?: 'meters'
+  polygon: Array<Array<number>>
+  locationType?: 'dd'
+  polyType?: 'polygon'
+  mode: 'poly'
+}
+export type PointRadiusLocation = {
+  type: 'POINTRADIUS'
+  radius: number | string
+  radiusUnits?: 'meters'
+  mode: 'circle'
+  lat: number
+  lon: number
+  locationType?: 'dd'
 }
 
 export class FilterClass extends SpreadOperatorProtectedClass {
