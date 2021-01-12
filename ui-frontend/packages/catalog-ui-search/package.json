@@ -20,7 +20,7 @@
     "m2": "yarn install:m2",
     "install:m2": "ace clean && ace bundle --tsTranspileOnly true && ace package && ace install",
     "publish:cpx-package": "cpx package.json dist && json -I -f dist/package.json -e 'this.private=false'",
-    "publish:cpx-src": "cpx \"src/**/*.!(tsx|ts)\" dist/src",
+    "publish:cpx-src": "cpx \"src/**/*.!(*tsx|*ts)\" dist/src",
     "publish:cpx-current": "cpx \"*\" dist",
     "publish:build": "rimraf dist && yarn publish:cpx-src && yarn publish:cpx-current && tsc && yarn publish:cpx-package",
     "publish:npm": "yarn publish:build && npm publish dist -timeout=99999"
