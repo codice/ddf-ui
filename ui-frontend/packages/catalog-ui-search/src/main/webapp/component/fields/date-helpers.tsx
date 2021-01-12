@@ -133,7 +133,10 @@ export const DateHelpers = {
         maxDate?: Date
       ): Date => {
         try {
-          let momentShiftedDate = moment.utc(new Date(value).toUTCString())
+          const originalDate = new Date(value)
+          let momentShiftedDate = moment.utc(originalDate.toUTCString())
+          // we lose milliseconds with utc, so add them back in here
+          momentShiftedDate.add(originalDate.getMilliseconds(), 'milliseconds')
           const utcOffsetMinutesLocal = new Date().getTimezoneOffset()
           const utcOffsetMinutesTimezone = moment
             .tz(DateHelpers.General.getTimeZone())
@@ -172,6 +175,8 @@ export const DateHelpers = {
       TimeshiftedDateToISO: (value: Date) => {
         try {
           let momentShiftedDate = moment.utc(value.toUTCString())
+          // we lose milliseconds with utc, so add them back in here
+          momentShiftedDate.add(value.getMilliseconds(), 'milliseconds')
           const utcOffsetMinutesLocal = new Date().getTimezoneOffset()
           const utcOffsetMinutesTimezone = moment
             .tz(DateHelpers.General.getTimeZone())

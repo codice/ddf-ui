@@ -37,8 +37,6 @@ export const IntegerField = ({ value, onChange }: IntegerFieldProps) => {
   return (
     <TextField
       fullWidth
-      multiline
-      rowsMax={3}
       variant="outlined"
       size="small"
       placeholder="Use * for wildcard."
