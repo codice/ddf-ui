@@ -14,7 +14,7 @@
  **/
 import * as React from 'react'
 import { DateRangeInput, IDateRangeInputProps } from '@blueprintjs/datetime'
-import { DateHelpers, DefaultMinDate } from './date-helpers'
+import { DateHelpers, DefaultMaxDate, DefaultMinDate } from './date-helpers'
 import { ValueTypes } from '../filter-builder/filter.structure'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
 import useTimePrefs from './useTimePrefs'
@@ -56,6 +56,7 @@ export const DateRangeField = ({
     <DateRangeInput
       allowSingleDayRange
       minDate={DefaultMinDate}
+      maxDate={DefaultMaxDate}
       endInputProps={{
         fill: true,
         className: MuiOutlinedInputBorderClasses,

@@ -12,7 +12,9 @@ import { getDefaultMaxDate } from '@blueprintjs/datetime/lib/esm/datePickerCore'
 
 export const DefaultMinDate = new Date('Jan 1, 1900')
 
-export const DefaultMaxDate = getDefaultMaxDate()
+export const DefaultMaxDate = moment(getDefaultMaxDate())
+  .add(10, 'years')
+  .toDate()
 
 export const DateHelpers = {
   General: {
