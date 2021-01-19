@@ -61,6 +61,7 @@ import {
   useRestoreSearchTask,
   useSaveSearchTaskBasedOnParams,
 } from '../../js/model/AsyncTask/async-task'
+import { Memo } from '../memo/memo'
 
 type SaveFormType = {
   selectionInterface: any
@@ -1460,32 +1461,34 @@ export const HomePage = () => {
         selectionInterface,
       }}
     >
-      <AutoSave />
-      <div className="w-full h-full">
-        <SplitPane
-          variant="horizontal"
-          collapsedLength={80}
-          // startingLength={40} // good for rapidly testing collapsed mode in dev server
-        >
-          <div className="h-full w-full py-2">
-            <Paper
-              elevation={Elevations.panels}
-              className="h-full overflow-hidden w-full"
-            >
-              <div className="flex flex-col flex-no-wrap w-full h-full">
-                <LeftTop />
+      <Memo dependencies={[selectionInterface]}>
+        <AutoSave />
+        <div className="w-full h-full">
+          <SplitPane
+            variant="horizontal"
+            collapsedLength={80}
+            // startingLength={40} // good for rapidly testing collapsed mode in dev server
+          >
+            <div className="h-full w-full py-2">
+              <Paper
+                elevation={Elevations.panels}
+                className="h-full overflow-hidden w-full"
+              >
+                <div className="flex flex-col flex-no-wrap w-full h-full">
+                  <LeftTop />
 
-                <LeftMiddle />
-                <DarkDivider className="h-min w-full" />
-                <LeftBottom />
-              </div>
-            </Paper>
-          </div>
-          <div className="w-full h-full">
-            <GoldenLayout selectionInterface={selectionInterface} />
-          </div>
-        </SplitPane>
-      </div>
+                  <LeftMiddle />
+                  <DarkDivider className="h-min w-full" />
+                  <LeftBottom />
+                </div>
+              </Paper>
+            </div>
+            <div className="w-full h-full">
+              <GoldenLayout selectionInterface={selectionInterface} />
+            </div>
+          </SplitPane>
+        </div>
+      </Memo>
     </SavedSearchModeContext.Provider>
   )
 }

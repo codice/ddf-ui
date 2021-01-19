@@ -4,6 +4,7 @@ import { LazyQueryResult } from '../LazyQueryResult/LazyQueryResult'
 import fetch from '../../../react-component/utils/fetch'
 import { useParams } from 'react-router-dom'
 const Common = require('../../Common.js')
+import CQL from '../../cql'
 
 type PlainMetacardPropertiesType = LazyQueryResult['plain']['metacard']['properties']
 
@@ -359,6 +360,7 @@ class CreateSearchTask extends AsyncTask {
             attributes: {
               'metacard-tags': ['query'],
               ...this.data,
+              cql: CQL.write(this.data.filterTree),
             },
             metacardType: 'metacard.query',
           },
@@ -415,6 +417,7 @@ class SaveSearchTask extends AsyncTask {
               attributes: {
                 'metacard-tags': ['query'],
                 ...this.data,
+                cql: CQL.write(this.data.filterTree),
               },
               metacardType: 'metacard.query',
             },
@@ -436,7 +439,7 @@ class SaveSearchTask extends AsyncTask {
           },
         })
       })
-    }, 500)
+    }, 3000)
   }
   static isInstanceOf(task: any): task is SaveSearchTask {
     return task.constructor === SaveSearchTask
