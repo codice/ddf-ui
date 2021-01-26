@@ -37,12 +37,14 @@ const defaultValue = {
     amount: '1',
     unit: 'd',
   },
+  direction: 'both',
 } as ValueTypes['around']
 
 const validateShape = ({ value, onChange }: DateAroundProps) => {
   if (
     !value.date ||
     !value.buffer ||
+    !value.direction ||
     DateHelpers.Blueprint.commonProps.parseDate(value.date) === null
   ) {
     onChange(defaultValue)
@@ -149,6 +151,24 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
           </TextField>
         </Grid>
       </Grid>
+      <TextField
+        variant="outlined"
+        select
+        value={value.direction || 'both'}
+        onChange={(e) => {
+          if (onChange)
+            onChange({
+              ...defaultValue,
+              ...value,
+              direction: e.target.value as ValueTypes['around']['direction'],
+            })
+        }}
+        size="small"
+      >
+        <MenuItem value="both">Before and After</MenuItem>
+        <MenuItem value="before">Before</MenuItem>
+        <MenuItem value="after">After</MenuItem>
+      </TextField>
     </Grid>
   )
 }
