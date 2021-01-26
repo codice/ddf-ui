@@ -89,11 +89,11 @@ const ThumbnailInput = ({
                 // @ts-ignore ts-migrate(2531) FIXME: Object is possibly 'null'.
                 onChange(event.target.result)
               } catch (err) {
-                console.log('something wrong with file type')
+                console.error('something wrong with file type')
               }
             }
             reader.onerror = () => {
-              console.log('error')
+              console.error('error')
             }
 
             // @ts-ignore ts-migrate(2531) FIXME: Object is possibly 'null'.
@@ -357,7 +357,7 @@ export const Editor = ({
                   ? values.map((subval: any) => subval.split(',')[1])
                   : values
             } catch (err) {
-              console.log(err)
+              console.error(err)
             }
             const payload = [
               {

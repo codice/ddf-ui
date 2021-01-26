@@ -114,7 +114,7 @@ const properties = {
           })
           .fail((jqXHR, status, errorThrown) => {
             if (console) {
-              console.log(
+              console.error(
                 'Platform UI Configuration could not be loaded: (status: ' +
                   status +
                   ', message: ' +

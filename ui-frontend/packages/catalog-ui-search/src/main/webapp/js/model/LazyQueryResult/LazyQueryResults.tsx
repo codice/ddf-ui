@@ -54,6 +54,7 @@ type ConstructorProps = {
   results?: ResultType[]
   sorts?: QuerySortType[]
   sources?: string[]
+  ephemeralSort?: boolean
 }
 
 type SubscribableType = 'status' | 'filteredResults' | 'selectedResults'
@@ -209,6 +210,7 @@ export class LazyQueryResults {
    * (this is a user pref aka client side only)
    */
   ephemeralSorts: QuerySortType[]
+  ephemeralSort: boolean // option on construction to turn off
   /**
    *  Should really only be set at constructor time (moment a query is done)
    */
@@ -220,7 +222,11 @@ export class LazyQueryResults {
    *  And respond to updates to those prefs on the fly.
    */
   _updateEphemeralSorts() {
-    this.ephemeralSorts = user.getPreferences().get('resultSort') || []
+    if (this.ephemeralSort) {
+      this.ephemeralSorts = user.getPreferences().get('resultSort') || []
+    } else {
+      this.ephemeralSorts = []
+    }
   }
   _getSortedResults(results: LazyQueryResult[]) {
     return results.sort(
@@ -256,7 +262,9 @@ export class LazyQueryResults {
     results = [],
     sorts = [],
     sources = [],
+    ephemeralSort = true,
   }: ConstructorProps = {}) {
+    this.ephemeralSort = ephemeralSort === false ? false : true
     this._updateEphemeralSorts()
     this.reset({ results, sorts, sources })
 

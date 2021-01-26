@@ -17,7 +17,6 @@
 const _ = require('underscore')
 const Backbone = require('backbone')
 const usngs = require('usng.js')
-const Common = require('../../js/Common.js')
 const dmsUtils = require('../location-new/utils/dms-utils.js')
 const DistanceUtils = require('../../js/DistanceUtils.js')
 const wreqr = require('../../js/wreqr.js')
@@ -101,9 +100,6 @@ module.exports = Backbone.AssociatedModel.extend({
       value = options
     }
     Backbone.AssociatedModel.prototype.set.call(this, key, value, options)
-    Common.queueExecution(() => {
-      this.trigger('change', Object.keys(key))
-    })
   },
 
   initialize() {

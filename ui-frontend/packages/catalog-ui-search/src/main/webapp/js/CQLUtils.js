@@ -356,7 +356,7 @@ function buildIntersectCQL(locationGeometry) {
       locationFilter = buildIntersectOrCQL.call(this, shapes)
       break
     default:
-      console.log('unknown location type')
+      console.error('unknown location type')
       return
   }
 

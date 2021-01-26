@@ -919,7 +919,7 @@ export default {
       removeInvalidFilters(standardCqlAst)
       return write(standardCqlAst)
     } catch (err) {
-      console.log(err)
+      console.error(err)
       return write(
         new FilterBuilderClass({
           type: 'AND',

@@ -27,11 +27,16 @@ const ExpandMetacard = (props: Props) => {
   }
   let id = props.model.first().get('metacard').get('properties').get('id')
 
+  const to =
+    props.model.first().get('metacardType') === 'metacard.query'
+      ? `/search/${id}`
+      : `/metacards/${id}`
+
   return (
     <Button
       fullWidth
       component={Link}
-      to={`/metacards/${id}`}
+      to={to}
       variant="text"
       color="primary"
       target="_blank"

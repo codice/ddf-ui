@@ -42,16 +42,21 @@ function getEphemeralSort() {
 }
 
 function mixinEphemeralFilter(originalCQL) {
-  const ephermeralFilter = user
+  const ephemeralFilter = user
     .get('user')
     .get('preferences')
     .get('resultFilter')
-  if (ephermeralFilter) {
-    return {
-      filters: [ephermeralFilter, originalCQL],
-      type: 'AND',
+  try {
+    if (ephemeralFilter) {
+      return new FilterBuilderClass({
+        filters: [ephemeralFilter, originalCQL],
+        type: 'AND',
+      })
+    } else {
+      return originalCQL
     }
-  } else {
+  } catch (err) {
+    console.error(err)
     return originalCQL
   }
 }
@@ -178,14 +183,17 @@ Query.Model = Backbone.AssociatedModel.extend({
   isLocal() {
     return this.get('isLocal')
   },
-  initialize() {
+  initialize(_attrs, options) {
+    this.options = { ephemeralFilter: true, ephemeralSort: true, ...options }
     _.bindAll.apply(_, [this].concat(_.functions(this))) // underscore bindAll does not take array arg
-    this.set('id', this.getId())
     const filterTree = this.get('filterTree')
+    if (filterTree && typeof filterTree === 'string') {
+      this.set('filterTree', JSON.parse(filterTree))
+    }
     // when we make drastic changes to filter tree it will be necessary to fall back to cql and reconstruct a filter tree that's compatible
     if (!filterTree || filterTree.id === undefined) {
       this.set('filterTree', cql.read(this.get('cql'))) // reconstruct
-      console.log('migrating a filter tree to the latest structure')
+      console.warn('migrating a filter tree to the latest structure')
       // allow downstream projects to handle how they want to inform users of migrations
       wreqr.vent.trigger('filterTree:migration', {
         search: this,
@@ -216,14 +224,18 @@ Query.Model = Backbone.AssociatedModel.extend({
       user.get('user').get('preferences'),
       'change:resultFilter',
       () => {
-        this.startSearchFromFirstPage()
+        if (this.options.ephemeralFilter) {
+          this.startSearchFromFirstPage()
+        }
       }
     )
     this.listenTo(
       user.get('user').get('preferences'),
       'change:resultSort',
       () => {
-        this.startSearchFromFirstPage()
+        if (this.options.ephemeralSort) {
+          this.startSearchFromFirstPage()
+        }
       }
     )
   },
@@ -255,7 +267,9 @@ Query.Model = Backbone.AssociatedModel.extend({
 
     data.count = user.get('user').get('preferences').get('resultCount')
 
-    data.sorts = getEphemeralSort() || this.get('sorts')
+    data.sorts = this.options.ephemeralSort
+      ? getEphemeralSort() || this.get('sorts')
+      : this.get('sorts')
 
     return _.pick(
       data,
@@ -311,10 +325,10 @@ Query.Model = Backbone.AssociatedModel.extend({
       this.set('cql', cql.write(filterTree))
     }
   },
-  startSearchFromFirstPage(options) {
+  startSearchFromFirstPage(options, done) {
     this.updateCqlBasedOnFilterTree()
     this.resetCurrentIndexForSourceGroup()
-    this.startSearch(options)
+    this.startSearch(options, done)
   },
   startTieredSearch(ids) {
     this.set('federation', 'local')
@@ -370,6 +384,7 @@ Query.Model = Backbone.AssociatedModel.extend({
         lazyResults: new LazyQueryResults({
           sorts: this.get('sorts'),
           sources: selectedSources,
+          ephemeralSort: this.options.ephemeralSort,
         }),
       })
       this.set({
@@ -383,7 +398,9 @@ Query.Model = Backbone.AssociatedModel.extend({
     } else if (options.limitToHistoric) {
       cqlFilterTree = limitToHistoric(cqlFilterTree)
     }
-    cqlFilterTree = mixinEphemeralFilter(cqlFilterTree)
+    if (this.options.ephemeralFilter) {
+      cqlFilterTree = mixinEphemeralFilter(cqlFilterTree)
+    }
     let cqlString = cql.write(cqlFilterTree)
 
     this.currentIndexForSourceGroup = this.nextIndexForSourceGroup
@@ -495,15 +512,6 @@ Query.Model = Backbone.AssociatedModel.extend({
       this.set('sources', '')
     }
   },
-  getId() {
-    if (this.get('id')) {
-      return this.get('id')
-    } else {
-      const id = this._cloneOf || this.id || Common.generateUUID()
-      this.set('id')
-      return id
-    }
-  },
   setColor(color) {
     this.set('color', color)
   },
@@ -579,7 +587,7 @@ Query.Model = Backbone.AssociatedModel.extend({
     if (this.pastIndexesForSourceGroup.length > 0) {
       this.nextIndexForSourceGroup = this.pastIndexesForSourceGroup.pop()
     } else {
-      console.log('this should not happen')
+      console.error('this should not happen')
     }
   },
   /**

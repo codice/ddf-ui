@@ -67,28 +67,28 @@ export const getSortDirectionOptions = (attributeVal: string) => {
   } else {
     switch (metacardDefinitions.metacardTypes[attributeVal].type) {
       case 'DATE':
-        ascendingLabel = 'Earliest'
-        descendingLabel = 'Latest'
+        ascendingLabel = 'Oldest to Latest'
+        descendingLabel = 'Latest to Oldest'
         break
       case 'BOOLEAN':
-        ascendingLabel = 'True First' //Truthiest
-        descendingLabel = 'False First' //Falsiest
+        ascendingLabel = 'True to False' //Truthiest
+        descendingLabel = 'False to True' //Falsiest
         break
       case 'LONG':
       case 'DOUBLE':
       case 'FLOAT':
       case 'INTEGER':
       case 'SHORT':
-        ascendingLabel = 'Smallest'
-        descendingLabel = 'Largest'
+        ascendingLabel = 'Smallest to Largest'
+        descendingLabel = 'Largest to Smallest'
         break
       case 'STRING':
         ascendingLabel = 'A to Z'
         descendingLabel = 'Z to A'
         break
       case 'GEOMETRY':
-        ascendingLabel = 'Closest'
-        descendingLabel = 'Furthest'
+        ascendingLabel = 'Closest to Furthest'
+        descendingLabel = 'Furthest to Closest'
         break
       case 'XML':
       case 'BINARY':

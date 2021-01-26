@@ -34,13 +34,13 @@ const ProviderContainer = (props: Props) => {
       <ThemeContainer>
         <IntlProvider locale={navigator.language} messages={properties.i18n}>
           <ThemeProvider>
-            <SnackProvider>
-              <DialogProvider>
-                <Router>
+            <Router>
+              <SnackProvider>
+                <DialogProvider>
                   <>{props.children}</>
-                </Router>
-              </DialogProvider>
-            </SnackProvider>
+                </DialogProvider>
+              </SnackProvider>
+            </Router>
           </ThemeProvider>
         </IntlProvider>
       </ThemeContainer>

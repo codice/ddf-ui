@@ -104,6 +104,26 @@ function _deriveIconByMetacardObject(metacard) {
   } else if (_iconExistsInMap(mimeType, _mimeMap)) {
     icon = _get(_mimeMap, mimeType, _default)
   }
+  if (metacardType === 'metacard.query') {
+    return {
+      class: 'fa fa-search',
+      style: {
+        code: 'f002',
+        font: 'FontAwesome',
+        size: '12px',
+      },
+    }
+  }
+  if (!icon) {
+    return {
+      class: 'fa fa-question',
+      style: {
+        code: 'f128',
+        font: 'FontAwesome',
+        size: '12px',
+      },
+    }
+  }
   return icon
 }
 

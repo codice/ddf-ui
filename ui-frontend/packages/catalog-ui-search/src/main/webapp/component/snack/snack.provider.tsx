@@ -92,6 +92,7 @@ export function SnackProvider({ children }: any) {
         <Portal>
           <SnackBar
             key={message}
+            className="left-0 bottom-0 p-4 max-w-full"
             anchorOrigin={{
               vertical: 'bottom',
               horizontal: 'left',

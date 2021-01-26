@@ -7,12 +7,14 @@ import App, {
 import { hot } from 'react-hot-loader/root'
 import MRC from '../../react-component/marionette-region-container'
 const IngestView = require('../ingest/ingest.view')
-import { HomePage } from '../pages/home'
+import { HomePage } from '../pages/search'
 
 import SourcesPage from '../../react-component/sources'
 import SourcesPageIcon from '@material-ui/icons/Cloud'
 import AboutPage from '../../react-component/about'
 import AboutPageIcon from '@material-ui/icons/Info'
+import FolderIcon from '@material-ui/icons/Folder'
+import TrashIcon from '@material-ui/icons/Delete'
 import SearchIcon from '@material-ui/icons/Search'
 import ImageSearch from '@material-ui/icons/ImageSearch'
 import UserNotifications from '../../react-component/user-notifications/user-notifications'
@@ -24,7 +26,12 @@ import { Redirect } from 'react-router-dom'
 import Grid from '@material-ui/core/Grid'
 import MetacardNavRoute from '../pages/metacard-nav'
 import MetacardRoute from '../pages/metacard'
-
+import SavedSearches from '../pages/browse'
+import Open from '../pages/open'
+import Restore from '../pages/restore'
+import Create from '../pages/create'
+import AddIcon from '@material-ui/icons/Add'
+import ViewListIcon from '@material-ui/icons/ViewList'
 const RouteInformation = [
   {
     showInNav: false,
@@ -32,7 +39,7 @@ const RouteInformation = [
       exact: true,
       path: '/',
       children: () => {
-        return <Redirect to="/home" />
+        return <Redirect to="/search" />
       },
     },
   },
@@ -91,14 +98,78 @@ const RouteInformation = [
     shortName: 'Search',
     Icon: SearchIcon,
     routeProps: {
-      exact: true,
-      path: ['/home'],
+      exact: false,
+      path: ['/search/:id', '/search'],
       children: () => {
         return <HomePage />
       },
     },
     linkProps: {
-      to: '/home',
+      to: '/search',
+    },
+    showInNav: true,
+  },
+  {
+    name: 'Create',
+    shortName: 'Create',
+    Icon: AddIcon,
+    routeProps: {
+      exact: true,
+      path: ['/create'],
+      children: () => {
+        return (
+          <div className="py-2 pr-2 w-full h-full">
+            <Paper elevation={Elevations.panels} className="w-full h-full">
+              <Create />
+            </Paper>
+          </div>
+        )
+      },
+    },
+    linkProps: {
+      to: '/create',
+    },
+    showInNav: true,
+  },
+  {
+    name: 'Open',
+    shortName: 'Open',
+    Icon: FolderIcon,
+    routeProps: {
+      exact: true,
+      path: ['/open'],
+      children: () => {
+        return (
+          <div className="py-2 pr-2 w-full h-full">
+            <Paper elevation={Elevations.panels} className="w-full h-full">
+              <Open />
+            </Paper>
+          </div>
+        )
+      },
+    },
+    linkProps: {
+      to: '/open',
+    },
+    showInNav: true,
+  },
+  {
+    name: 'Browse',
+    shortName: 'Browse',
+    Icon: ViewListIcon,
+    routeProps: {
+      exact: true,
+      path: ['/browse'],
+      children: () => {
+        return (
+          <div className="w-full h-full">
+            <SavedSearches />
+          </div>
+        )
+      },
+    },
+    linkProps: {
+      to: '/browse',
     },
     showInNav: true,
   },
@@ -141,6 +212,28 @@ const RouteInformation = [
     },
     linkProps: {
       to: '/sources',
+    },
+    showInNav: true,
+  },
+  {
+    name: 'Restore',
+    shortName: 'Restore',
+    Icon: TrashIcon,
+    routeProps: {
+      exact: true,
+      path: ['/restore'],
+      children: () => {
+        return (
+          <div className="py-2 pr-2 w-full h-full">
+            <Paper elevation={Elevations.panels} className="w-full h-full">
+              <Restore />
+            </Paper>
+          </div>
+        )
+      },
+    },
+    linkProps: {
+      to: '/restore',
     },
     showInNav: true,
   },
