@@ -89,7 +89,8 @@ const properties = {
     },
     numberTypes: ['float', 'short', 'long', 'double', 'integer'],
   },
-
+  sourcePollInterval: 60000,
+  enums: {},
   init() {
     // use this function to initialize variables that rely on others
     let props = this
