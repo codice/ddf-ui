@@ -13,6 +13,7 @@
  *
  **/
 import * as React from 'react'
+import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import MapSettingsPresentation from './presentation'
 import Dropdown from '../presentation/dropdown'
@@ -22,58 +23,62 @@ import withListenTo, {
 } from '../../react-component/backbone-container'
 const user = require('../../component/singletons/user-instance.js')
 
-const save = (newFormat: string) => {
-  const preferences = user.get('user').get('preferences')
-  preferences.set({
-    coordinateFormat: newFormat,
-  })
-  preferences.savePreferences()
-}
-
 const Span = styled.span`
   padding-right: 5px;
 `
-type State = {
-  selected: string
-}
 
-class MapSettings extends React.Component<WithBackboneProps, State> {
-  constructor(props: WithBackboneProps) {
-    super(props)
-    this.state = {
-      selected: user.get('user').get('preferences').get('coordinateFormat'),
-    }
-  }
+const MapSettings = (props: WithBackboneProps) => {
+  const [coordFormat, setCoordFormat] = useState(
+    user.get('user').get('preferences').get('coordinateFormat')
+  )
+  const [panOnSearch, setPanOnSearch] = useState(
+    user.get('user').get('preferences').get('panOnSearch')
+  )
 
-  componentDidMount = () =>
-    this.props.listenTo(
+  useEffect(() => {
+    props.listenTo(
       user.get('user').get('preferences'),
       'change:coordinateFormat',
-      (_prefs: any, value: string) => this.setState({ selected: value })
+      (_prefs: any, value: string) => setCoordFormat(value)
     )
+    props.listenTo(
+      user.get('user').get('preferences'),
+      'change:panOnSearch',
+      (_prefs: any, value: boolean) => setPanOnSearch(value)
+    )
+  }, [])
 
-  update(newFormat: string) {
-    save(newFormat)
-    this.setState({ selected: newFormat })
+  const updateCoordFormat = (coordinateFormat: string) => {
+    const preferences = user
+      .get('user')
+      .get('preferences')
+      .set({ coordinateFormat })
+    preferences.savePreferences()
   }
 
-  render() {
-    const { selected } = this.state
-
-    const mapSettingsProps = {
-      selected,
-      update: (newFormat: string) => this.update(newFormat),
-    }
-
-    const mapSettings = <MapSettingsPresentation {...mapSettingsProps} />
-
-    return (
-      <Dropdown content={mapSettings}>
-        <Span className="interaction-text">Settings</Span>
-        <Span className="interaction-icon fa fa-cog" />
-      </Dropdown>
-    )
+  const updatePanOnSearch = (
+    _event: React.ChangeEvent<HTMLInputElement>,
+    panOnSearch: boolean
+  ) => {
+    const preferences = user.get('user').get('preferences').set({ panOnSearch })
+    preferences.savePreferences()
   }
+
+  const mapSettings = (
+    <MapSettingsPresentation
+      coordFormat={coordFormat}
+      updateCoordFormat={updateCoordFormat}
+      panOnSearch={panOnSearch}
+      updatePanOnSearch={updatePanOnSearch}
+    />
+  )
+
+  return (
+    <Dropdown content={mapSettings}>
+      <Span className="interaction-text">Settings</Span>
+      <Span className="interaction-icon fa fa-cog" />
+    </Dropdown>
+  )
 }
 
 export default hot(module)(withListenTo(MapSettings))

@@ -341,6 +341,29 @@ export default function (
         })
       }
     },
+    panToShapesExtent() {
+      var extent = Openlayers.extent.createEmpty()
+
+      map.getLayers().forEach((layer) => {
+        if (layer instanceof Openlayers.layer.Group) {
+          layer.getLayers().forEach(function (groupLayer) {
+            //If this is a vector layer, add it to our extent
+            if (layer instanceof Openlayers.layer.Vector)
+              Openlayers.extent.extend(
+                extent,
+                groupLayer.getSource().getExtent()
+              )
+          })
+        } else if (layer instanceof Openlayers.layer.Vector)
+          Openlayers.extent.extend(extent, layer.getSource().getExtent())
+      })
+
+      map.getView().fit(extent, {
+        size: map.getSize(),
+        maxZoom: map.getView().getZoom(),
+        duration: 500,
+      })
+    },
     zoomToExtent(coords, opts = {}) {
       const lineObject = coords.map((coordinate) =>
         convertPointCoordinate(coordinate)
