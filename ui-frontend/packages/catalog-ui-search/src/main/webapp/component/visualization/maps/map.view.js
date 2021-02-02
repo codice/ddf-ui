@@ -33,7 +33,6 @@ const DropdownModel = require('../../dropdown/dropdown.js')
 const MapContextMenuDropdown = require('../../dropdown/map-context-menu/dropdown.map-context-menu.view.js')
 const MapModel = require('./map.model')
 const properties = require('../../../js/properties.js')
-const Common = require('../../../js/Common.js')
 const announcement = require('../../announcement')
 
 import MapSettings from '../../../react-component/map-settings'
@@ -194,11 +193,16 @@ module.exports = Marionette.LayoutView.extend({
       this.map.zoomToExtent.bind(this.map)
     )
     this.listenTo(
+      wreqr.vent,
+      'search:panToShapesExtent',
+      this.panToShapesExtent
+    )
+    this.listenTo(wreqr.vent, 'search:zoomToHome', this.zoomToHome)
+    this.listenTo(
       this.options.selectionInterface,
       'reset:activeSearchResults',
       this.map.removeAllOverlays.bind(this.map)
     )
-
     this.listenTo(
       user.get('user').get('preferences'),
       'change:resultFilter',
@@ -209,6 +213,7 @@ module.exports = Marionette.LayoutView.extend({
       'change:currentQuery',
       this.handleCurrentQuery
     )
+
     setTimeout(() => {
       this.handleCurrentQuery()
     }, 1000)
@@ -232,6 +237,13 @@ module.exports = Marionette.LayoutView.extend({
     this.setupMapInfo()
     this.setupDistanceInfo()
     this.setupPopupPreview()
+  },
+  handleInitialZoom() {
+    if (user.get('user').get('preferences').get('panOnSearch')) {
+      this.map.panToShapesExtent()
+    } else {
+      this.zoomToHome()
+    }
   },
   zoomToHome() {
     const home = [
@@ -307,6 +319,11 @@ module.exports = Marionette.LayoutView.extend({
       )
     this.addRegion('toolbarSettings', '.toolbar-settings')
     this.toolbarSettings.show(new MapSettingsView())
+  },
+  panToShapesExtent() {
+    if (user.get('user').get('preferences').get('panOnSearch')) {
+      this.map.panToShapesExtent()
+    }
   },
   onMapHover(event, mapEvent) {
     const currentQuery = this.options.selectionInterface.get('currentQuery')
@@ -505,7 +522,9 @@ module.exports = Marionette.LayoutView.extend({
     this.addLayers()
     this.addSettings()
     this.endLoading()
-    this.zoomToHome()
+    setTimeout(() => {
+      this.handleInitialZoom()
+    }, 1000)
   },
   addLayers() {
     this.$el

@@ -24,6 +24,7 @@ import SearchIcon from '@material-ui/icons/SearchTwoTone'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { useHistory, useLocation } from 'react-router-dom'
 import _ from 'lodash'
+const wreqr = require('../../js/wreqr.js')
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
@@ -100,6 +101,7 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
             color="primary"
             size="small"
             onClick={() => {
+              wreqr.vent.trigger('search:panToShapesExtent')
               selectionInterface.getCurrentQuery().startSearchFromFirstPage()
             }}
           >
@@ -178,6 +180,7 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
           color="primary"
           size="small"
           onClick={() => {
+            wreqr.vent.trigger('search:panToShapesExtent')
             selectionInterface.getCurrentQuery().startSearchFromFirstPage()
           }}
         >
