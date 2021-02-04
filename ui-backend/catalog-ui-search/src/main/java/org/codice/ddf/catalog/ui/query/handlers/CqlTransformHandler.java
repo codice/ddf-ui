@@ -456,10 +456,10 @@ public class CqlTransformHandler implements Route {
         queryTransform.getColumnAliasMap() != null
             ? queryTransform.getColumnAliasMap()
             : Collections.emptyMap();
-    
+
     Serializable transformerId =
-            arguments.get("transformerId") != null ? arguments.get("transformerId") : "";
-    
+        arguments.get("transformerId") != null ? arguments.get("transformerId") : "";
+
     return ImmutableMap.<String, Serializable>builder()
         .put("hiddenFields", (Serializable) hiddenFieldsSet)
         .put("columnOrder", (Serializable) columnOrderList)
