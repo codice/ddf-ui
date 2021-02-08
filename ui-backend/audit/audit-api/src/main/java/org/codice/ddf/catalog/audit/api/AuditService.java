@@ -13,6 +13,8 @@ package org.codice.ddf.catalog.audit.api;
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
 
+import java.util.List;
+
 /**
  * This interface represents a service that will be used to log an event that occurred from a
  * particular user or a set or users.
@@ -24,6 +26,13 @@ public interface AuditService {
    * @param ids the set of metacard id of the object
    */
   void log(String action, String component, String... ids) throws AuditException;
+
+  /**
+   * @param action past tense verb defining the user interaction such as 'clicked' or 'viewed'
+   * @param component the UI object that caused the event
+   * @param items List of objects to log
+   */
+  void log(String action, String component, List<AuditItemBasic> items) throws AuditException;
 
   /**
    * @param action future tense verb defining the user interaction such as 'will click' or 'will
