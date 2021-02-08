@@ -1248,9 +1248,9 @@
   resolved "https://registry.yarnpkg.com/@base2/pretty-print-object/-/pretty-print-object-1.0.0.tgz#860ce718b0b73f4009e153541faff2cb6b85d047"
   integrity sha512-4Th98KlMHr5+JkxfcoDT//6vY8vM+iSPrLNpHhRyLx2CFYi8e2RfqPLdpbnpo0Q5lQC5hNB79yes07zb02fvCw==
 
-"@connexta/ace@git://github.com/connexta/ace.git#5edbfdc9f2f9a8621684f5e467925a70f2dfeab9":
+"@connexta/ace@git://github.com/connexta/ace.git#729a01ccb2bb0fbfe25251041efed11e5a0226a9":
   version "1.0.0"
-  resolved "git://github.com/connexta/ace.git#5edbfdc9f2f9a8621684f5e467925a70f2dfeab9"
+  resolved "git://github.com/connexta/ace.git#729a01ccb2bb0fbfe25251041efed11e5a0226a9"
   dependencies:
     "@babel/core" "^7.0.0"
     "@storybook/addon-actions" "5.2.8"
@@ -1315,6 +1315,7 @@
     script-loader "0.7.2"
     simple-progress-webpack-plugin "1.1.2"
     source-map-support "^0.5.16"
+    source-map-url "0.4.0"
     style-loader "0.20.3"
     stylelint "9.5.0"
     stylelint-config-recommended "2.1.0"
@@ -13023,7 +13024,7 @@ source-map-support@^0.5.16, source-map-support@~0.5.12:
     buffer-from "^1.0.0"
     source-map "^0.6.0"
 
-source-map-url@^0.4.0:
+source-map-url@0.4.0, source-map-url@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/source-map-url/-/source-map-url-0.4.0.tgz#3e935d7ddd73631b97659956d55128e87b5084a3"
   integrity sha1-PpNdfd1zYxuXZZlW1VEo6HtQhKM=
