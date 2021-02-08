@@ -16,9 +16,11 @@ package org.codice.ddf.catalog.audit.logging;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
+import com.google.common.collect.ImmutableList;
 import ddf.security.audit.SecurityLogger;
 import java.util.Arrays;
 import org.codice.ddf.catalog.audit.api.AuditException;
+import org.codice.ddf.catalog.audit.api.AuditItemBasic;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,6 +38,12 @@ public class AuditLoggerTest {
   private final String ID_2 = "id2";
   private final String EXCEPTION = "exception";
   private final String[] IDS = Arrays.asList(ID_1, ID_2).toArray(new String[0]);
+  private final AuditItemBasic validItem = new AuditItemBasic("id", "sourceId");
+  private final AuditItemBasic emptyIdItem = new AuditItemBasic("", "sourceId");
+  private final AuditItemBasic emptySourceItem = new AuditItemBasic("id", "");
+  private final AuditItemBasic nullIdItem = new AuditItemBasic(null, "sourceId");
+  private final AuditItemBasic nullSourceItem = new AuditItemBasic("id", null);
+
   private Throwable cause;
 
   private AuditLogger auditLogger;
@@ -45,6 +53,53 @@ public class AuditLoggerTest {
   public void setup() {
     auditLogger = new AuditLogger(securityLogger);
     cause = new Throwable();
+  }
+
+  @Test
+  public void testAuditLogWithItem() throws AuditException {
+    auditLogger.log(ACTION, COMPONENT, ImmutableList.of(validItem));
+    verify(securityLogger, Mockito.times(1))
+        .audit(any(String.class), ArgumentMatchers.<String>any());
+  }
+
+  @Test(expected = AuditException.class)
+  public void testAuditLogWithEmptyIdItem() throws AuditException {
+    auditLogger.log(ACTION, COMPONENT, ImmutableList.of(emptyIdItem));
+  }
+
+  @Test(expected = AuditException.class)
+  public void testAuditLogWithEmptySourceItem() throws AuditException {
+    auditLogger.log(ACTION, COMPONENT, ImmutableList.of(emptySourceItem));
+  }
+
+  @Test(expected = AuditException.class)
+  public void testAuditLogWithNullIdItem() throws AuditException {
+    auditLogger.log(ACTION, COMPONENT, ImmutableList.of(nullIdItem));
+  }
+
+  @Test(expected = AuditException.class)
+  public void testAuditLogWithNullSourceItem() throws AuditException {
+    auditLogger.log(ACTION, COMPONENT, ImmutableList.of(nullSourceItem));
+  }
+
+  @Test(expected = AuditException.class)
+  public void testAuditLogItemWithEmptyAction() throws AuditException {
+    auditLogger.log("", COMPONENT, ImmutableList.of(validItem));
+  }
+
+  @Test(expected = AuditException.class)
+  public void testAuditLogItemWithNullAction() throws AuditException {
+    auditLogger.log(null, COMPONENT, ImmutableList.of(validItem));
+  }
+
+  @Test(expected = AuditException.class)
+  public void testAuditLogItemWithEmptyComponent() throws AuditException {
+    auditLogger.log(ACTION, "", ImmutableList.of(validItem));
+  }
+
+  @Test(expected = AuditException.class)
+  public void testAuditLogItemWithNullComponent() throws AuditException {
+    auditLogger.log("", null, ImmutableList.of(validItem));
   }
 
   @Test

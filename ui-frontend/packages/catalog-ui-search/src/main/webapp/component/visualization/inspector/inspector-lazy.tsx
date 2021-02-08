@@ -4,10 +4,11 @@ import { hot } from 'react-hot-loader'
 import { useLazyResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import MRC from '../../../react-component/marionette-region-container'
 import { useSelectedResults } from '../../../js/model/LazyQueryResult/hooks'
-import { postAuditLog } from '../../../react-component/utils/audit/audit-endpoint'
+import {
+  AuditItem,
+  postAuditLog,
+} from '../../../react-component/utils/audit/audit-endpoint'
 const InspectorView = require('./inspector.view')
-
-let selectedIds = new Set<string>()
 
 type Props = {
   selectionInterface: any
@@ -23,38 +24,55 @@ const LazyInspector = ({ selectionInterface }: Props) => {
   const backboneModels = Object.values(selectedResults).map((result) => {
     return result.getBackbone()
   })
+  const [selectedIds, setSelectedIds] = React.useState(new Set<string>())
   React.useEffect(() => {
     selectionInterface.setSelectedResults(backboneModels)
   })
 
   useEffect(() => {
     let newSelectedIds = new Set(Object.keys(selectedResults))
-
     let unselectedIds = new Set<string>()
-    if (selectedIds.size > 0) {
-      selectedIds.forEach((id: string) => {
-        if (!newSelectedIds.has(id)) {
-          unselectedIds.add(id)
-        }
-      })
-      if (unselectedIds.size > 0) {
-        postAuditLog({
-          action: 'unselected',
-          component: 'resource',
-          ids: unselectedIds,
-        })
+
+    selectedIds.forEach((id: string) => {
+      if (!newSelectedIds.has(id)) {
+        unselectedIds.add(id)
       }
+    })
+
+    let newSelectedItems = getAuditItems(newSelectedIds)
+    let unselectedItems = getAuditItems(unselectedIds)
+
+    if (unselectedItems.length > 0) {
+      postAuditLog({
+        action: 'unselected',
+        component: 'resource',
+        items: unselectedItems,
+      })
     }
 
-    if (newSelectedIds.size > 0) {
+    if (newSelectedItems.length > 0) {
       postAuditLog({
         action: 'selected',
         component: 'resource',
-        ids: newSelectedIds,
+        items: newSelectedItems,
       })
-      selectedIds = newSelectedIds
+      setSelectedIds(newSelectedIds)
     }
   }, [selectedResults])
+
+  const getAuditItems = (ids: Set<string>) => {
+    let items: AuditItem[] = []
+
+    ids.forEach((id) => {
+      const properties = lazyResults?.results[id]?.plain?.metacard?.properties
+
+      if (properties) {
+        items.push({ id: properties.id, 'source-id': properties['source-id'] })
+      }
+    })
+
+    return items
+  }
 
   return (
     <MRC

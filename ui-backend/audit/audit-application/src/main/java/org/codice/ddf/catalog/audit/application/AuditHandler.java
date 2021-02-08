@@ -15,9 +15,11 @@ package org.codice.ddf.catalog.audit.application;
 
 import io.javalin.Context;
 import io.javalin.Handler;
-import java.util.Set;
+import java.util.List;
 import org.apache.http.HttpStatus;
 import org.codice.ddf.catalog.audit.api.AuditException;
+import org.codice.ddf.catalog.audit.api.AuditItemBasic;
+import org.codice.ddf.catalog.audit.api.AuditItemRequestBasic;
 import org.codice.ddf.catalog.audit.api.AuditService;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -35,12 +37,11 @@ public class AuditHandler implements Handler {
 
   @Override
   public void handle(@NotNull Context context) throws AuditException {
-    AuditRequestBasic requestBasic = context.bodyAsClass(AuditRequestBasic.class);
+    AuditItemRequestBasic requestBasic = context.bodyAsClass(AuditItemRequestBasic.class);
 
     try {
-      Set<String> ids = requestBasic.getIds();
-      auditService.log(
-          requestBasic.getAction(), requestBasic.getComponent(), ids.toArray(new String[0]));
+      List<AuditItemBasic> items = requestBasic.getItems();
+      auditService.log(requestBasic.getAction(), requestBasic.getComponent(), items);
       context.status(HttpStatus.SC_OK);
     } catch (AuditException e) {
       LOGGER.error("Unable to log the user's action. Error message: {}", e.getLocalizedMessage());
