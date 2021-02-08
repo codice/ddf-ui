@@ -55,7 +55,7 @@ function findExtreme({ objArray, property, comparator }) {
 }
 
 function getHomeCoordinates() {
-  if (properties.mapHome !== '') {
+  if (properties.mapHome !== '' && properties.mapHome !== undefined) {
     const separateCoordinates = properties.mapHome.replace(/\s/g, '').split(',')
     if (separateCoordinates.length % 2 === 0) {
       return separateCoordinates
