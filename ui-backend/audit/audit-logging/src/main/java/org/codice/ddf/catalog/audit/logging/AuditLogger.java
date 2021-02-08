@@ -14,8 +14,11 @@
 package org.codice.ddf.catalog.audit.logging;
 
 import ddf.security.audit.SecurityLogger;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.codice.ddf.catalog.audit.api.AuditException;
+import org.codice.ddf.catalog.audit.api.AuditItemBasic;
 import org.codice.ddf.catalog.audit.api.AuditService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +44,22 @@ public class AuditLogger implements AuditService {
 
     for (String id : ids) {
       securityLogger.audit("{} a {} with id {}", action, component, id);
+    }
+  }
+
+  @Override
+  public void log(String action, String component, List<AuditItemBasic> items)
+      throws AuditException {
+    if (!isValidStrings(action) || !isValidStrings(component) || !isValidItems(items)) {
+      List<String> ids = items.stream().map(AuditItemBasic::getId).collect(Collectors.toList());
+      LOGGER.trace(
+          "Invalid parameters, request: action {}, component {}, ids {}.", action, component, ids);
+      throw new AuditException(INVALID_PARAM_MSG);
+    }
+
+    for (AuditItemBasic item : items) {
+      securityLogger.audit(
+          "{} a {} with id {} and source {}", action, component, item.getId(), item.getSourceId());
     }
   }
 
@@ -80,6 +99,15 @@ public class AuditLogger implements AuditService {
   private boolean isValidStrings(String... params) {
     for (String param : params) {
       if (StringUtils.isBlank(param) || param == null) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private boolean isValidItems(List<AuditItemBasic> items) {
+    for (AuditItemBasic item : items) {
+      if (StringUtils.isBlank(item.getId()) || StringUtils.isBlank(item.getSourceId())) {
         return false;
       }
     }
