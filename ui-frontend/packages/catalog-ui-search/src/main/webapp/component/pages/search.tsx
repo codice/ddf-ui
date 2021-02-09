@@ -62,7 +62,6 @@ import {
   useSaveSearchTaskBasedOnParams,
 } from '../../js/model/AsyncTask/async-task'
 import { Memo } from '../memo/memo'
-const wreqr = require('../../js/wreqr.js')
 
 type SaveFormType = {
   selectionInterface: any
@@ -872,7 +871,6 @@ const LeftBottom = () => {
             color="primary"
             size="small"
             onClick={() => {
-              wreqr.vent.trigger('search:panToShapesExtent')
               selectionInterface.getCurrentQuery().startSearchFromFirstPage()
             }}
           >
@@ -916,7 +914,6 @@ const LeftBottom = () => {
           color="primary"
           size="small"
           onClick={() => {
-            wreqr.vent.trigger('search:panToShapesExtent')
             selectionInterface.getCurrentQuery().startSearchFromFirstPage()
           }}
         >

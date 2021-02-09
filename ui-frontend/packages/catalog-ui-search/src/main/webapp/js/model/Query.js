@@ -348,6 +348,7 @@ Query.Model = Backbone.AssociatedModel.extend({
     })
   },
   startSearch(options, done) {
+    this.trigger('panToShapesExtent')
     this.set('isOutdated', false)
     if (this.get('cql') === '') {
       return

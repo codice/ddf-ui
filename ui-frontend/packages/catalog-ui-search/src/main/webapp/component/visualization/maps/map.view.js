@@ -193,12 +193,6 @@ module.exports = Marionette.LayoutView.extend({
       this.map.zoomToExtent.bind(this.map)
     )
     this.listenTo(
-      wreqr.vent,
-      'search:panToShapesExtent',
-      this.panToShapesExtent
-    )
-    this.listenTo(wreqr.vent, 'search:zoomToHome', this.zoomToHome)
-    this.listenTo(
       this.options.selectionInterface,
       'reset:activeSearchResults',
       this.map.removeAllOverlays.bind(this.map)
@@ -212,6 +206,11 @@ module.exports = Marionette.LayoutView.extend({
       this.options.selectionInterface,
       'change:currentQuery',
       this.handleCurrentQuery
+    )
+    this.listenTo(
+      this.options.selectionInterface,
+      'panToShapesExtent:currentQuery',
+      this.panToShapesExtent
     )
 
     setTimeout(() => {
@@ -322,7 +321,11 @@ module.exports = Marionette.LayoutView.extend({
   },
   panToShapesExtent() {
     if (user.get('user').get('preferences').get('panOnSearch')) {
-      this.map.panToShapesExtent()
+      if (this.map.getShapes().length) {
+        this.map.panToShapesExtent()
+      } else {
+        this.zoomToHome()
+      }
     }
   },
   onMapHover(event, mapEvent) {

@@ -499,11 +499,6 @@ module.exports = function CesiumMap(
     },
     panToExtent(coords) {},
     panToShapesExtent() {
-      if (!shapes.length) {
-        wreqr.vent.trigger('search:zoomToHome')
-        return
-      }
-
       let features = []
 
       shapes.map((shape) => {
@@ -540,6 +535,9 @@ module.exports = function CesiumMap(
           })
         },
       })
+    },
+    getShapes() {
+      return shapes
     },
     zoomToExtent(coords) {},
     zoomToBoundingBox({ north, south, east, west }) {
