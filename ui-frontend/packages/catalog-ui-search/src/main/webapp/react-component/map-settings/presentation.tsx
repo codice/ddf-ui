@@ -15,20 +15,24 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { hot } from 'react-hot-loader'
-import Enum from '../enum'
 import ExampleCoordinates from './example-coordinates'
 import FormGroup from '@material-ui/core/FormGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
 import Typography from '@material-ui/core/Typography'
+import Select from '@material-ui/core/Select'
+import MenuItem from '@material-ui/core/MenuItem'
 
 type Props = {
   coordFormat: string
   updateCoordFormat: (selected: string) => void
-  panOnSearch: boolean
-  updatePanOnSearch:
-    | ((event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void)
-    | undefined
+  autoPan: boolean
+  updateAutoPan: (
+    event:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.KeyboardEvent<HTMLButtonElement>,
+    checked: boolean
+  ) => void
 }
 
 const Root = styled.div`
@@ -37,23 +41,36 @@ const Root = styled.div`
   padding: ${(props) => props.theme.minimumSpacing};
 `
 
-const render = (props: Props) => {
-  const {
-    coordFormat,
-    updateCoordFormat,
-    panOnSearch,
-    updatePanOnSearch,
-  } = props
+const coordinateFormatOptions = [
+  { label: 'Degrees, Minutes, Seconds', value: 'degrees' },
+  { label: 'Decimal', value: 'decimal' },
+  { label: 'MGRS', value: 'mgrs' },
+  { label: 'UTM/UPS', value: 'utm' },
+]
+
+const render = ({
+  coordFormat,
+  updateCoordFormat,
+  autoPan,
+  updateAutoPan,
+}: Props) => {
   return (
     <Root>
       <FormGroup row>
         <FormControlLabel
           control={
             <Checkbox
-              checked={panOnSearch}
-              onChange={updatePanOnSearch}
+              id="auto-pan-checkbox"
+              autoFocus
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  updateAutoPan(e, !autoPan)
+                }
+              }}
+              checked={autoPan}
+              onChange={updateAutoPan}
               color="primary"
-              name="panOnSearch"
+              name="autoPan"
             />
           }
           label={<Typography variant="body2">Auto-Pan</Typography>}
@@ -62,18 +79,37 @@ const render = (props: Props) => {
         />
       </FormGroup>
 
-      <div style={{ marginLeft: '-14px' }}>
-        <Enum
-          options={[
-            { label: 'Degrees, Minutes, Seconds', value: 'degrees' },
-            { label: 'Decimal', value: 'decimal' },
-            { label: 'MGRS', value: 'mgrs' },
-            { label: 'UTM/UPS', value: 'utm' },
-          ]}
+      <div style={{ padding: '0 10px' }}>
+        <Typography variant="body2">Coordinate Format</Typography>
+        <Select
+          id="coordinate-format-select"
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            updateCoordFormat(event.target.value)
+          }}
           value={coordFormat}
-          label="Coordinate Format"
-          onChange={updateCoordFormat}
-        />
+          variant="outlined"
+          margin="dense"
+          fullWidth
+          MenuProps={{
+            anchorOrigin: {
+              vertical: 'bottom',
+              horizontal: 'left',
+            },
+            transformOrigin: {
+              vertical: 'top',
+              horizontal: 'left',
+            },
+            getContentAnchorEl: null,
+          }}
+        >
+          {coordinateFormatOptions.map((option) => {
+            return (
+              <MenuItem key={option.value} value={option.value}>
+                <Typography variant="subtitle2">{option.label}</Typography>
+              </MenuItem>
+            )
+          })}
+        </Select>
       </div>
 
       <ExampleCoordinates selected={coordFormat} />

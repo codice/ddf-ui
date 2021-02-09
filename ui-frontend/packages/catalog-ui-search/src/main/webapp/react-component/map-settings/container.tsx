@@ -16,11 +16,13 @@ import * as React from 'react'
 import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import MapSettingsPresentation from './presentation'
-import Dropdown from '../presentation/dropdown'
+import { Dropdown } from '../../component/atlas-dropdown'
 import { hot } from 'react-hot-loader'
 import withListenTo, {
   WithBackboneProps,
 } from '../../react-component/backbone-container'
+import Paper from '@material-ui/core/Paper'
+import { BetterClickAwayListener } from '../../component/better-click-away-listener/better-click-away-listener'
 const user = require('../../component/singletons/user-instance.js')
 
 const Span = styled.span`
@@ -31,8 +33,8 @@ const MapSettings = (props: WithBackboneProps) => {
   const [coordFormat, setCoordFormat] = useState(
     user.get('user').get('preferences').get('coordinateFormat')
   )
-  const [panOnSearch, setPanOnSearch] = useState(
-    user.get('user').get('preferences').get('panOnSearch')
+  const [autoPan, setAutoPan] = useState(
+    user.get('user').get('preferences').get('autoPan')
   )
 
   useEffect(() => {
@@ -43,8 +45,8 @@ const MapSettings = (props: WithBackboneProps) => {
     )
     props.listenTo(
       user.get('user').get('preferences'),
-      'change:panOnSearch',
-      (_prefs: any, value: boolean) => setPanOnSearch(value)
+      'change:autoPan',
+      (_prefs: any, value: boolean) => setAutoPan(value)
     )
   }, [])
 
@@ -56,27 +58,47 @@ const MapSettings = (props: WithBackboneProps) => {
     preferences.savePreferences()
   }
 
-  const updatePanOnSearch = (
+  const updateAutoPan = (
     _event: React.ChangeEvent<HTMLInputElement>,
-    panOnSearch: boolean
+    autoPan: boolean
   ) => {
-    const preferences = user.get('user').get('preferences').set({ panOnSearch })
+    const preferences = user.get('user').get('preferences').set({ autoPan })
     preferences.savePreferences()
   }
 
-  const mapSettings = (
-    <MapSettingsPresentation
-      coordFormat={coordFormat}
-      updateCoordFormat={updateCoordFormat}
-      panOnSearch={panOnSearch}
-      updatePanOnSearch={updatePanOnSearch}
-    />
-  )
-
   return (
-    <Dropdown content={mapSettings}>
-      <Span className="interaction-text">Settings</Span>
-      <Span className="interaction-icon fa fa-cog" />
+    <Dropdown
+      content={({ close }) => {
+        return (
+          <BetterClickAwayListener onClickAway={close}>
+            <Paper>
+              <MapSettingsPresentation
+                coordFormat={coordFormat}
+                updateCoordFormat={updateCoordFormat}
+                autoPan={autoPan}
+                updateAutoPan={updateAutoPan}
+              />
+            </Paper>
+          </BetterClickAwayListener>
+        )
+      }}
+    >
+      {({ handleClick }) => {
+        return (
+          <div
+            onClick={handleClick}
+            tabIndex={0}
+            onKeyPress={(e: any) => {
+              if (e.key === 'Enter') {
+                handleClick(e)
+              }
+            }}
+          >
+            <Span className="interaction-text">Settings</Span>
+            <Span className="interaction-icon fa fa-cog" />
+          </div>
+        )
+      }}
     </Dropdown>
   )
 }

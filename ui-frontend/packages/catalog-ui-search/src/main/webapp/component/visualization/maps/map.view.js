@@ -238,7 +238,7 @@ module.exports = Marionette.LayoutView.extend({
     this.setupPopupPreview()
   },
   handleInitialZoom() {
-    if (user.get('user').get('preferences').get('panOnSearch')) {
+    if (user.get('user').get('preferences').get('autoPan')) {
       this.map.panToShapesExtent()
     } else {
       this.zoomToHome()
@@ -320,7 +320,7 @@ module.exports = Marionette.LayoutView.extend({
     this.toolbarSettings.show(new MapSettingsView())
   },
   panToShapesExtent() {
-    if (user.get('user').get('preferences').get('panOnSearch')) {
+    if (user.get('user').get('preferences').get('autoPan')) {
       if (this.map.getShapes().length) {
         this.map.panToShapesExtent()
       } else {
