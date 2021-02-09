@@ -23,6 +23,7 @@ const DistanceUtils = require('../../js/DistanceUtils.js')
 const wreqr = require('../../js/wreqr.js')
 
 import { Drawing } from '../singletons/drawing'
+import validateUsngLineOrPoly from '../../react-component/location/validators'
 
 const converter = new usngs.Converter()
 const utmUpsLocationType = 'utmUps'
@@ -91,6 +92,7 @@ module.exports = Backbone.AssociatedModel.extend({
       utmUpsHemisphere: 'Northern',
       usngbbUpperLeft: undefined,
       usngbbLowerRight: undefined,
+      usngPointArray: undefined,
     }
   },
   set(key, value, options) {
@@ -107,6 +109,8 @@ module.exports = Backbone.AssociatedModel.extend({
   },
 
   initialize() {
+    this.listenTo(this, 'change:line', this.setUsngWithLineOrPoly)
+    this.listenTo(this, 'change:polygon', this.setUsngWithLineOrPoly)
     this.listenTo(
       this,
       'change:north change:south change:east change:west',
@@ -267,6 +271,26 @@ module.exports = Backbone.AssociatedModel.extend({
           clear(this)
         }
       }
+    }
+  },
+
+  setUsngWithLineOrPoly(model) {
+    if (this.get('line')) {
+      const usngPoints = this.get('line').map((point) => {
+        // A little bit unintuitive, but lat/lon is swapped here
+        return converter.LLtoUSNG(point[1], point[0], usngPrecision)
+      })
+      model.set({
+        usngPointArray: usngPoints,
+      })
+    } else if (this.get('polygon')) {
+      const usngPoints = this.get('polygon').map((point) => {
+        // A little bit unintuitive, but lat/lon is swapped here
+        return converter.LLtoUSNG(point[1], point[0], usngPrecision)
+      })
+      model.set({
+        usngPointArray: usngPoints,
+      })
     }
   },
 
