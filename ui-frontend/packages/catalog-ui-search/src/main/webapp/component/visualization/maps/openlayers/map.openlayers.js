@@ -364,6 +364,9 @@ export default function (
         duration: 500,
       })
     },
+    getShapes() {
+      return shapes
+    },
     zoomToExtent(coords, opts = {}) {
       const lineObject = coords.map((coordinate) =>
         convertPointCoordinate(coordinate)
