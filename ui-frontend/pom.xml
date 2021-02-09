@@ -17,7 +17,7 @@
     <parent>
         <artifactId>catalog-ui</artifactId>
         <groupId>org.codice.ddf.search</groupId>
-        <version>4.1.12</version>
+        <version>4.1.13-SNAPSHOT</version>
     </parent>
 
     <groupId>org.codice.ddf.search</groupId>
