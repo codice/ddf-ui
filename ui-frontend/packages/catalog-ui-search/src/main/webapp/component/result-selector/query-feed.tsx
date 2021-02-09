@@ -13,6 +13,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import { Elevations } from '../theme/theme'
 import FilterListIcon from '@material-ui/icons/FilterList'
 import { fuzzyHits } from './fuzzy-results'
+import ErrorIcon from '@material-ui/icons/Error'
 
 type Props = {
   selectionInterface: any
@@ -275,15 +276,31 @@ const QueryFeed = ({ selectionInterface }: Props) => {
           >
             {({ handleClick }) => {
               return (
-                <Button
-                  data-id="heartbeat-button"
-                  onClick={handleClick}
-                  className="details-view is-button"
-                  title="Show the full status for the search."
-                  data-help="Show the full status for the search."
-                >
-                  <span className="fa fa-heartbeat" />
-                </Button>
+                <div>
+                  <div style={{ position: 'relative' }}>
+                    <Button
+                      data-id="heartbeat-button"
+                      onClick={handleClick}
+                      className="details-view is-button"
+                      title="Show the full status for the search."
+                      data-help="Show the full status for the search."
+                    >
+                      <span className="fa fa-heartbeat" />
+                    </Button>
+                    {failed && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          bottom: '0',
+                          right: '0',
+                          fontSize: '14px',
+                        }}
+                      >
+                        <ErrorIcon fontSize="inherit" color="error" />
+                      </div>
+                    )}
+                  </div>
+                </div>
               )
             }}
           </Dropdown>
