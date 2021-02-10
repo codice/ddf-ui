@@ -277,7 +277,7 @@ const QueryFeed = ({ selectionInterface }: Props) => {
             {({ handleClick }) => {
               return (
                 <div>
-                  <div style={{ position: 'relative' }}>
+                  <div className="relative">
                     <Button
                       data-id="heartbeat-button"
                       onClick={handleClick}
@@ -287,18 +287,11 @@ const QueryFeed = ({ selectionInterface }: Props) => {
                     >
                       <span className="fa fa-heartbeat" />
                     </Button>
-                    {failed && (
-                      <div
-                        style={{
-                          position: 'absolute',
-                          bottom: '0',
-                          right: '0',
-                          fontSize: '14px',
-                        }}
-                      >
+                    {
+                      <div className="absolute bottom-0 right-0 text-sm">
                         <ErrorIcon fontSize="inherit" color="error" />
                       </div>
-                    )}
+                    }
                   </div>
                 </div>
               )
