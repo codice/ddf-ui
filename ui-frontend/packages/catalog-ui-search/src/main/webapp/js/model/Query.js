@@ -41,16 +41,21 @@ function getEphemeralSort() {
 }
 
 function mixinEphemeralFilter(originalCQL) {
-  const ephermeralFilter = user
+  const ephemeralFilter = user
     .get('user')
     .get('preferences')
     .get('resultFilter')
-  if (ephermeralFilter) {
-    return new FilterBuilderClass({
-      filters: [ephermeralFilter, originalCQL],
-      type: 'AND',
-    })
-  } else {
+  try {
+    if (ephemeralFilter) {
+      return new FilterBuilderClass({
+        filters: [ephemeralFilter, originalCQL],
+        type: 'AND',
+      })
+    } else {
+      return originalCQL
+    }
+  } catch (err) {
+    console.error(err)
     return originalCQL
   }
 }
