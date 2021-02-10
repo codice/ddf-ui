@@ -287,11 +287,11 @@ const QueryFeed = ({ selectionInterface }: Props) => {
                     >
                       <span className="fa fa-heartbeat" />
                     </Button>
-                    {
+                    {failed && (
                       <div className="absolute bottom-0 right-0 text-sm">
                         <ErrorIcon fontSize="inherit" color="error" />
                       </div>
-                    }
+                    )}
                   </div>
                 </div>
               )
