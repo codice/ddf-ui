@@ -51,6 +51,7 @@ module.exports = Backbone.AssociatedModel.extend({
       dmsSouthDirection: Direction.North,
       dmsEastDirection: Direction.East,
       dmsWestDirection: Direction.East,
+      dmsPointArray: undefined,
       mapNorth: undefined,
       mapEast: undefined,
       mapWest: undefined,
@@ -109,8 +110,11 @@ module.exports = Backbone.AssociatedModel.extend({
   },
 
   initialize() {
-    this.listenTo(this, 'change:line', this.setUsngWithLineOrPoly)
-    this.listenTo(this, 'change:polygon', this.setUsngWithLineOrPoly)
+    this.listenTo(
+      this,
+      'change:line change:polygon',
+      this.setUsngAndDmsWithLineOrPoly
+    )
     this.listenTo(
       this,
       'change:north change:south change:east change:west',
@@ -274,22 +278,30 @@ module.exports = Backbone.AssociatedModel.extend({
     }
   },
 
-  setUsngWithLineOrPoly(model) {
-    if (this.get('line')) {
-      const usngPoints = this.get('line').map((point) => {
+  setUsngAndDmsWithLineOrPoly(model) {
+    const key = this.get('line')
+      ? 'line'
+      : this.get('polygon')
+      ? 'polygon'
+      : undefined
+    if (key) {
+      const usngPoints = this.get(key).map((point) => {
         // A little bit unintuitive, but lat/lon is swapped here
         return converter.LLtoUSNG(point[1], point[0], usngPrecision)
       })
+      const dmsPoints = this.get(key).map((point) => {
+        const lat = dmsUtils.ddToDmsCoordinateLat(point[1])
+        const lon = dmsUtils.ddToDmsCoordinateLon(point[0])
+        return {
+          lat: lat.coordinate,
+          lon: lon.coordinate,
+          latDirection: lat.direction,
+          lonDirection: lon.direction,
+        }
+      })
       model.set({
         usngPointArray: usngPoints,
-      })
-    } else if (this.get('polygon')) {
-      const usngPoints = this.get('polygon').map((point) => {
-        // A little bit unintuitive, but lat/lon is swapped here
-        return converter.LLtoUSNG(point[1], point[0], usngPrecision)
-      })
-      model.set({
-        usngPointArray: usngPoints,
+        dmsPointArray: dmsPoints,
       })
     }
   },

@@ -20,7 +20,12 @@ import {
 } from '../utils/validation'
 import Button from '@material-ui/core/Button'
 import CloseIcon from '@material-ui/icons/Close'
-import validateUsngLineOrPoly from './validators'
+import {
+  validateUsngLineOrPoly,
+  validateDmsLineOrPoly,
+  parseDmsCoordinate,
+} from './validators'
+import DmsTextField from './dms-textfield'
 const { Units } = require('./common')
 const TextField = require('../text-field')
 const { Radio, RadioItem } = require('../radio')
@@ -30,6 +35,7 @@ const _ = require('underscore')
 const usngs = require('usng.js')
 const converter = new usngs.Converter()
 const usngPrecision = 6
+const dmsUtils = require('../../component/location-new/utils/dms-utils.js')
 
 const coordinatePairRegex = /-?\d{1,3}(\.\d*)?\s-?\d{1,3}(\.\d*)?/g
 
@@ -195,6 +201,117 @@ const LineLatLon = (props) => {
   )
 }
 
+const LineDms = (props) => {
+  const {
+    geometryKey,
+    dmsPointArray,
+    setState,
+    unitKey,
+    setBufferState,
+    widthKey,
+  } = props
+  const [points, setPoints] = useState(dmsPointArray || [])
+  const [baseLineError, setBaseLineError] = useState(initialErrorState)
+  const [bufferError, setBufferError] = useState(initialErrorState)
+
+  useEffect(() => {
+    if (props.drawing) {
+      setBaseLineError(initialErrorState)
+    }
+    if (dmsPointArray) {
+      setPoints(dmsPointArray)
+    }
+  }, [props.polygon, props.line])
+
+  useEffect(() => {
+    let validation = validateDmsLineOrPoly(points, geometryKey)
+    let llPoints = convertDmsToLLPoints(!validation.error, points)
+    setState({ ['dmsPointArray']: points })
+    //Maybe only set this if it's empty so we don't have to convert twice?
+    setState({ [geometryKey]: llPoints })
+    setBaseLineError(validation)
+  }, [points])
+
+  return (
+    <div>
+      <div className="input-location">
+        {points.map((point, index) => {
+          return (
+            <div>
+              <DmsTextField
+                key={'point-' + index}
+                point={point}
+                setPoint={(point) => {
+                  points.splice(index, 1, point)
+                  setPoints([...points])
+                }}
+                deletePoint={() => {
+                  points.splice(index, 1)
+                  setPoints([...points])
+                }}
+              />
+              <MinimumSpacing />
+            </div>
+          )
+        })}
+      </div>
+      <Button
+        fullWidth
+        variant="contained"
+        className="is-primary" //match styling of other buttons here
+        onClick={() => {
+          points.push({
+            lat: '',
+            lon: '',
+            latDirection: 'N',
+            lonDirection: 'E',
+          })
+          setPoints([...points])
+        }}
+      >
+        +
+      </Button>
+      <ErrorComponent errorState={baseLineError} />
+      <Units
+        value={props[unitKey]}
+        onChange={(value) => {
+          typeof setBufferState === 'function'
+            ? setBufferState(unitKey, value)
+            : setState({ [unitKey]: value })
+          if (widthKey === 'lineWidth' || 'bufferWidth') {
+            setBufferError(
+              validateGeo(widthKey, {
+                value: props[widthKey],
+                units: value,
+              })
+            )
+          }
+        }}
+      >
+        <TextField
+          type="number"
+          label="Buffer width"
+          value={String(props[widthKey])}
+          onChange={(value) => {
+            typeof setBufferState === 'function'
+              ? setBufferState(widthKey, value)
+              : setState({ [widthKey]: value })
+          }}
+          onBlur={(e) => {
+            setBufferError(
+              validateGeo(widthKey, {
+                value: e.target.value,
+                units: props[unitKey],
+              })
+            )
+          }}
+        />
+      </Units>
+      <ErrorComponent errorState={bufferError} />
+    </div>
+  )
+}
+
 const LineMgrs = (props) => {
   const {
     geometryKey,
@@ -319,12 +436,31 @@ const convertToLLPoints = (valid, points) => {
   } else return undefined
 }
 
+const convertDmsToLLPoints = (valid, points) => {
+  if (valid) {
+    const llPoints = points.map((point) => {
+      let latCoordinate = dmsUtils.dmsCoordinateToDD({
+        ...parseDmsCoordinate(point.lat),
+        direction: point.latDirection,
+      })
+      let lonCoordinate = dmsUtils.dmsCoordinateToDD({
+        ...parseDmsCoordinate(point.lon),
+        direction: point.lonDirection,
+      })
+      // A little bit unintuitive, but lat/lon is swapped here
+      return [lonCoordinate, latCoordinate]
+    })
+    return llPoints
+  } else return undefined
+}
+
 const BaseLine = (props) => {
   const { setState, locationType } = props
 
   const inputs = {
     usng: LineMgrs,
     dd: LineLatLon,
+    dms: LineDms,
   }
 
   const Component = inputs[locationType] || null
@@ -336,6 +472,7 @@ const BaseLine = (props) => {
         onChange={(value) => setState({ ['locationType']: value })}
       >
         <RadioItem value="dd">Lat/Lon (DD)</RadioItem>
+        <RadioItem value="dms">Lat/Lon (DMS)</RadioItem>
         <RadioItem value="usng">USNG / MGRS</RadioItem>
       </Radio>
       <MinimumSpacing />
