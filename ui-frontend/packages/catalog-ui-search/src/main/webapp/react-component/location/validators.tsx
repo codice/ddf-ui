@@ -16,6 +16,7 @@ const usng = require('usng.js')
 const converter = new usng.Converter()
 const errorMessages = require('../../component/location-new/utils/errors')
 const dmsUtils = require('../../component/location-new/utils/dms-utils.js')
+import { validateGeo } from '../utils/validation'
 
 const dmsRegex = new RegExp('^([0-9_]*)°([0-9_]*)\'([0-9_]*\\.?[0-9_]*)"$')
 
@@ -35,6 +36,13 @@ type DmsCoordinate = {
   direction: Direction
 }
 
+type UtmUpsPoint = {
+  easting: number
+  northing: number
+  zoneNumber: number
+  hemisphere: 'NORTHERN' | 'SOUTHERN'
+}
+
 function validateUsngGrid(grid: string) {
   return converter.isUSNG(grid) !== 0
 }
@@ -45,6 +53,17 @@ function gridIsBlank(grid: string) {
 
 function dmsPointIsBlank(point: Point) {
   return point.lat === '' || point.lon === ''
+}
+
+function utmUpsIsBlank(point: UtmUpsPoint) {
+  return point.easting || point.hemisphere || point.northing || point.zoneNumber
+    ? false
+    : true
+}
+
+function validateUtmUpsPoint(point: UtmUpsPoint) {
+  const validation = validateGeo('easting', point)
+  return !validation?.error
 }
 
 function inValidRange(coordinate: DmsCoordinate, maximum: number) {
@@ -161,8 +180,43 @@ function validateUsngLineOrPoly(usng: string[], type: 'line' | 'polygon') {
   return { error, message, defaultValue }
 }
 
+function validateUtmUpsLineOrPoly(
+  utmups: UtmUpsPoint[],
+  type: 'line' | 'polygon'
+) {
+  let defaultValue
+  if (utmups.some(utmUpsIsBlank)) {
+    return { error: true, message: errorMessages.invalidList, defaultValue }
+  }
+  let error = false
+  let message = null
+  switch (type) {
+    case 'line':
+      if (!utmups.every(validateUtmUpsPoint)) {
+        error = true
+        message = errorMessages.invalidList
+      } else if (utmups.length < 2) {
+        error = true
+        message = errorMessages.tooFewPointsLine
+      }
+      break
+    case 'polygon':
+      if (!utmups.every(validateUtmUpsPoint)) {
+        error = true
+        message = errorMessages.invalidList
+      } else if (utmups.length < 4) {
+        //curiously our inspector expects 3 as the minimum, but the map expects at least 4
+        error = true
+        message = 'Polygons must contain 4 or more points'
+      }
+      break
+  }
+  return { error, message, defaultValue }
+}
+
 module.exports = {
   validateUsngLineOrPoly,
   validateDmsLineOrPoly,
   parseDmsCoordinate,
+  validateUtmUpsLineOrPoly,
 }

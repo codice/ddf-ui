@@ -23,9 +23,11 @@ import CloseIcon from '@material-ui/icons/Close'
 import {
   validateUsngLineOrPoly,
   validateDmsLineOrPoly,
+  validateUtmUpsLineOrPoly,
   parseDmsCoordinate,
 } from './validators'
 import DmsTextField from './dms-textfield'
+import UtmupsTextField from './utmups-textfield'
 const { Units } = require('./common')
 const TextField = require('../text-field')
 const { Radio, RadioItem } = require('../radio')
@@ -425,6 +427,78 @@ const LineMgrs = (props) => {
   )
 }
 
+const LineUtmUps = (props) => {
+  const {
+    geometryKey,
+    utmUpsPointArray,
+    setState,
+    unitKey,
+    setBufferState,
+    widthKey,
+  } = props
+
+  const [points, setPoints] = useState(utmUpsPointArray || [])
+  const [baseLineError, setBaseLineError] = useState(initialErrorState)
+  const [bufferError, setBufferError] = useState(initialErrorState)
+
+  useEffect(() => {
+    if (props.drawing) {
+      setBaseLineError(initialErrorState)
+    }
+    if (utmUpsPointArray) {
+      setPoints(utmUpsPointArray)
+    }
+  }, [props.polygon, props.line])
+
+  useEffect(() => {
+    let validation = validateUtmUpsLineOrPoly(points, geometryKey)
+    let llPoints = convertUtmUpsToLLPoints(!validation.error, points)
+    setState({ ['utmUpsPointArray']: points })
+    setState({ [geometryKey]: llPoints })
+    setBaseLineError(validation)
+  }, [points])
+
+  return (
+    <div>
+      {points.map((point, index) => {
+        return (
+          <div>
+            <UtmupsTextField
+              point={point}
+              setPoint={(point) => {
+                points.splice(index, 1, point)
+                setPoints([...points])
+              }}
+              deletePoint={() => {
+                points.splice(index, 1)
+                setPoints([...points])
+              }}
+            />
+            <MinimumSpacing />
+          </div>
+        )
+      })}
+      <Button
+        fullWidth
+        variant="contained"
+        className="is-primary" //match styling of other buttons here
+        onClick={() => {
+          points.push({
+            easting: undefined,
+            hemisphere: 'Northern',
+            northing: undefined,
+            zoneNumber: 0,
+          })
+          setPoints([...points])
+        }}
+      >
+        +
+      </Button>
+      <ErrorComponent errorState={baseLineError} />
+    </div>
+  )
+}
+
 const convertToLLPoints = (valid, points) => {
   if (valid) {
     const llPoints = points.map((point) => {
@@ -454,6 +528,26 @@ const convertDmsToLLPoints = (valid, points) => {
   } else return undefined
 }
 
+const convertUtmUpsToLLPoints = (valid, points) => {
+  if (valid) {
+    const llPoints = points.map((point) => {
+      const northPole =
+        (point.hemisphere === 'NORTHERN') | 'Northern' ? true : false
+      const convertedPoint = converter.UTMUPStoLL({
+        northPole,
+        zoneNumber: point.zoneNumber,
+        easting: point.easting,
+        northing: point.northing,
+      })
+      return [
+        parseFloat(convertedPoint.lon.toFixed(6)),
+        parseFloat(convertedPoint.lat.toFixed(6)),
+      ]
+    })
+    return llPoints
+  } else return undefined
+}
+
 const BaseLine = (props) => {
   const { setState, locationType } = props
 
@@ -461,6 +555,7 @@ const BaseLine = (props) => {
     usng: LineMgrs,
     dd: LineLatLon,
     dms: LineDms,
+    utmups: LineUtmUps,
   }
 
   const Component = inputs[locationType] || null
@@ -474,6 +569,7 @@ const BaseLine = (props) => {
         <RadioItem value="dd">Lat/Lon (DD)</RadioItem>
         <RadioItem value="dms">Lat/Lon (DMS)</RadioItem>
         <RadioItem value="usng">USNG / MGRS</RadioItem>
+        <RadioItem value="utmups">UTM / UPS</RadioItem>
       </Radio>
       <MinimumSpacing />
       {Component !== null ? <Component {...props} /> : null}

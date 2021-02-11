@@ -23,7 +23,6 @@ const DistanceUtils = require('../../js/DistanceUtils.js')
 const wreqr = require('../../js/wreqr.js')
 
 import { Drawing } from '../singletons/drawing'
-import validateUsngLineOrPoly from '../../react-component/location/validators'
 
 const converter = new usngs.Converter()
 const utmUpsLocationType = 'utmUps'
@@ -69,6 +68,7 @@ module.exports = Backbone.AssociatedModel.extend({
       bbox: undefined,
       usng: undefined,
       utmUps: undefined,
+      utmUpsPointArray: undefined,
       line: undefined,
       multiline: undefined,
       lineWidth: '',
@@ -299,9 +299,13 @@ module.exports = Backbone.AssociatedModel.extend({
           lonDirection: lon.direction,
         }
       })
+      const utmupsPoints = this.get(key).map((point) => {
+        return this.LLtoUtmUps(point[1], point[0])
+      })
       model.set({
         usngPointArray: usngPoints,
         dmsPointArray: dmsPoints,
+        utmUpsPointArray: utmupsPoints,
       })
     }
   },
