@@ -30,6 +30,7 @@ import ddf.catalog.data.impl.BinaryContentImpl;
 import ddf.catalog.data.types.Core;
 import ddf.catalog.operation.QueryResponse;
 import ddf.catalog.transform.QueryResponseTransformer;
+import ddf.security.audit.SecurityLogger;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,6 +70,7 @@ public class CqlTransformHandlerTest {
   @Mock private QueryResponseTransformer mockQueryResponseTransformer;
   @Mock private ServletOutputStream mockServletOutputStream;
   @Mock private HttpServletResponse mockHttpServletResponse;
+  @Mock private SecurityLogger securityLogger;
 
   private static final Gson GSON =
       new GsonBuilder()
@@ -159,7 +161,11 @@ public class CqlTransformHandlerTest {
 
     cqlTransformHandler =
         new CqlTransformHandler(
-            queryResponseTransformers, mockBundleContext, mockEndpointUtil, mockCqlQueryUtil);
+            queryResponseTransformers,
+            mockBundleContext,
+            mockEndpointUtil,
+            mockCqlQueryUtil,
+            securityLogger);
 
     when(mockEndpointUtil.safeGetBody(mockRequest)).thenReturn(SAFE_BODY);
 
