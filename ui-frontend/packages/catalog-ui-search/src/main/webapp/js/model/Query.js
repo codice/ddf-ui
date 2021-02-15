@@ -20,7 +20,6 @@ const properties = require('../properties.js')
 const QueryResponse = require('./QueryResponse.js')
 import Sources from '../../component/singletons/sources-instance'
 const Common = require('../Common.js')
-const CacheSourceSelector = require('../CacheSourceSelector.js')
 const announcement = require('../../component/announcement/index.jsx')
 const CQLUtils = require('../CQLUtils.js')
 import cql from '../cql'
@@ -42,16 +41,21 @@ function getEphemeralSort() {
 }
 
 function mixinEphemeralFilter(originalCQL) {
-  const ephermeralFilter = user
+  const ephemeralFilter = user
     .get('user')
     .get('preferences')
     .get('resultFilter')
-  if (ephermeralFilter) {
-    return {
-      filters: [ephermeralFilter, originalCQL],
-      type: 'AND',
+  try {
+    if (ephemeralFilter) {
+      return new FilterBuilderClass({
+        filters: [ephemeralFilter, originalCQL],
+        type: 'AND',
+      })
+    } else {
+      return originalCQL
     }
-  } else {
+  } catch (err) {
+    console.error(err)
     return originalCQL
   }
 }
