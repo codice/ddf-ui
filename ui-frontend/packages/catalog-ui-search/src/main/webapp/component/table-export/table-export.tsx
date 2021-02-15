@@ -188,7 +188,9 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
     getExportCount({ exportSize, selectionInterface, customExportCount }),
     properties.exportResultLimit
   )
-  const cql = selectionInterface.getCurrentQuery().get('cql')
+
+  const query = selectionInterface.getCurrentQuery()
+  const cql = query.getEphemeralMixinCql(query.get('filterTree'))
   const srcs = getSrcs(selectionInterface)
   const sorts = getSorts(selectionInterface)
   const args = {

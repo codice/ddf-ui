@@ -261,6 +261,9 @@ Query.Model = Backbone.AssociatedModel.extend({
     }
     return sourceArray
   },
+  getEphemeralMixinCql(cqlFilterTree) {
+    return cql.write(mixinEphemeralFilter(cqlFilterTree))
+  },
   buildSearchData() {
     const data = this.toJSON()
     data.sources = this.getSelectedSources()
@@ -399,10 +402,8 @@ Query.Model = Backbone.AssociatedModel.extend({
     } else if (options.limitToHistoric) {
       cqlFilterTree = limitToHistoric(cqlFilterTree)
     }
-    if (this.options.ephemeralFilter) {
-      cqlFilterTree = mixinEphemeralFilter(cqlFilterTree)
-    }
-    let cqlString = cql.write(cqlFilterTree)
+
+    let cqlString = this.getEphemeralMixinCql(cqlFilterTree)
 
     this.currentIndexForSourceGroup = this.nextIndexForSourceGroup
     const localSearchToRun = {
