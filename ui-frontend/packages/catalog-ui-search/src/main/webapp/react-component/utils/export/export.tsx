@@ -13,6 +13,7 @@
  *
  **/
 import fetch from '../fetch'
+import { postAuditLog } from '../audit/audit-endpoint'
 
 export enum Transformer {
   Metacard = 'metacard',
@@ -85,9 +86,15 @@ export const exportResult = async (
   transformer: string,
   attributes: string
 ) => {
-  return await fetch(
+  const response = await fetch(
     `/services/catalog/sources/${source}/${id}?transform=${transformer}&columnOrder=${attributes}`
   )
+  await postAuditLog({
+    action: 'exported',
+    component: 'metacard',
+    items: [{ id, 'source-id': source }],
+  })
+  return response
 }
 
 export const exportResultSet = async (
