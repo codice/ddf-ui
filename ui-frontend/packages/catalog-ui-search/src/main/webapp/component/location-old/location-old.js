@@ -24,6 +24,13 @@ const wreqr = require('../../js/wreqr.js')
 
 import { Drawing } from '../singletons/drawing'
 
+import {
+  validateUsngLineOrPoly,
+  validateDmsLineOrPoly,
+  validateUtmUpsLineOrPoly,
+  parseDmsCoordinate,
+} from '../../react-component/location/validators'
+
 const converter = new usngs.Converter()
 const utmUpsLocationType = 'utmUps'
 // offset used by utmUps for southern hemisphere
@@ -104,9 +111,9 @@ module.exports = Backbone.AssociatedModel.extend({
       value = options
     }
     Backbone.AssociatedModel.prototype.set.call(this, key, value, options)
-    Common.queueExecution(() => {
-      this.trigger('change', Object.keys(key))
-    })
+    // Common.queueExecution(() => {
+    //   this.trigger('change', Object.keys(key))
+    // })
   },
 
   initialize() {
@@ -114,6 +121,11 @@ module.exports = Backbone.AssociatedModel.extend({
       this,
       'change:line change:polygon',
       this.setUsngAndDmsWithLineOrPoly
+    )
+    this.listenTo(
+      this,
+      'change:dmsPointArray',
+      this.setLatLonLinePolyFromDms
     )
     this.listenTo(
       this,
@@ -306,6 +318,33 @@ module.exports = Backbone.AssociatedModel.extend({
         usngPointArray: usngPoints,
         dmsPointArray: dmsPoints,
         utmUpsPointArray: utmupsPoints,
+      })
+    }
+  },
+
+  setLatLonLinePolyFromDms() {
+    const key = this.get('line')
+    ? 'line'
+    : this.get('polygon')
+    ? 'polygon'
+    : undefined
+    if (key) {
+      const llPoints = this.get('dmsPointArray').map((point) => {
+        let latCoordinate = dmsUtils.dmsCoordinateToDD({
+          ...parseDmsCoordinate(point.lat),
+          direction: point.latDirection,
+        })
+        let lonCoordinate = dmsUtils.dmsCoordinateToDD({
+          ...parseDmsCoordinate(point.lon),
+          direction: point.lonDirection,
+        })
+        // A little bit unintuitive, but lat/lon is swapped here
+        return [lonCoordinate, latCoordinate]
+      })
+      this.set({
+        [key]: llPoints
+      }, {
+        silent: true //don't trigger another onChange for line or poly
       })
     }
   },

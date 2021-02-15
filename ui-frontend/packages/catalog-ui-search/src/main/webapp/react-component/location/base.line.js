@@ -212,44 +212,40 @@ const LineDms = (props) => {
     setBufferState,
     widthKey,
   } = props
-  const [points, setPoints] = useState(dmsPointArray || [])
   const [baseLineError, setBaseLineError] = useState(initialErrorState)
   const [bufferError, setBufferError] = useState(initialErrorState)
 
-  useEffect(() => {
-    if (props.drawing) {
-      setBaseLineError(initialErrorState)
-    }
-    if (dmsPointArray) {
-      setPoints(dmsPointArray)
-    }
-  }, [props.polygon, props.line])
+  // useEffect(() => {
+  //   if (props.drawing) {
+  //     setBaseLineError(initialErrorState)
+  //   }
+  // }, [props.polygon, props.line])
 
-  useEffect(() => {
-    let validation = validateDmsLineOrPoly(points, geometryKey)
-    let llPoints = convertDmsToLLPoints(!validation.error, points)
-    setState({ ['dmsPointArray']: points })
-    //Maybe only set this if it's empty so we don't have to convert twice?
-    setState({ [geometryKey]: llPoints })
-    setBaseLineError(validation)
-  }, [points])
+  // useEffect(() => {
+  //   let validation = validateDmsLineOrPoly(points, geometryKey)
+  //   let llPoints = convertDmsToLLPoints(!validation.error, points)
+  //   // setState({ ['dmsPointArray']: points })
+  //   //Maybe only set this if it's empty so we don't have to convert twice?
+  //   setState({ [geometryKey]: llPoints })
+  //   setBaseLineError(validation)
+  // }, [points])
 
   return (
     <div>
       <div className="input-location">
-        {points.map((point, index) => {
+        {dmsPointArray && dmsPointArray.map((point, index) => {
           return (
             <div>
               <DmsTextField
                 key={'point-' + index}
                 point={point}
                 setPoint={(point) => {
-                  points.splice(index, 1, point)
-                  setPoints([...points])
+                  dmsPointArray.splice(index, 1, point)
+                  setState({ ['dmsPointArray']: [...dmsPointArray] })
                 }}
                 deletePoint={() => {
-                  points.splice(index, 1)
-                  setPoints([...points])
+                  dmsPointArray.splice(index, 1)
+                  setState({ ['dmsPointArray']: [...dmsPointArray] })
                 }}
               />
               <MinimumSpacing />
@@ -262,13 +258,13 @@ const LineDms = (props) => {
         variant="contained"
         className="is-primary" //match styling of other buttons here
         onClick={() => {
-          points.push({
+          dmsPointArray.push({
             lat: '',
             lon: '',
             latDirection: 'N',
             lonDirection: 'E',
           })
-          setPoints([...points])
+          setState({ ['dmsPointArray']: [...dmsPointArray] })
         }}
       >
         +
