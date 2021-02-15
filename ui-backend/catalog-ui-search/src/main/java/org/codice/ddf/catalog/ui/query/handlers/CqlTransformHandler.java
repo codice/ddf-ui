@@ -41,6 +41,8 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -276,19 +278,24 @@ public class CqlTransformHandler implements Route {
                             .contains(result.getMetacard().getId()))
                 .collect(toList());
 
-    List<String> metacardIds =
-        results.stream().map(result -> result.getMetacard().getId()).collect(toList());
-
-    Set<String> sourceIds =
+    Map<String, List<String>> exportsBySource =
         results
             .stream()
-            .map(result -> result.getMetacard().getSourceId())
-            .collect(Collectors.toSet());
+            .collect(
+                Collectors.toMap(
+                    result -> result.getMetacard().getSourceId(),
+                    result -> new ArrayList<>(Arrays.asList(result.getMetacard().getId())),
+                    (existing, replacement) -> {
+                      existing.addAll(replacement);
+                      return existing;
+                    }));
 
-    securityLogger.audit(
-        String.format(
-            "exported metacards: %s from sources: %s to format: %s",
-            metacardIds, sourceIds, transformerId));
+    for (Map.Entry sourceExportMap : exportsBySource.entrySet()) {
+      securityLogger.audit(
+          String.format(
+              "exported metacards: %s from source: %s to format: %s",
+              sourceExportMap.getValue(), sourceExportMap.getKey(), transformerId));
+    }
 
     QueryResponse combinedResponse =
         new QueryResponseImpl(
