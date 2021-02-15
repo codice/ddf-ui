@@ -13,6 +13,8 @@
  */
 package org.codice.ddf.catalog.ui.query.handlers;
 
+import static java.util.stream.Collectors.toList;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -32,12 +34,15 @@ import ddf.catalog.transform.QueryResponseTransformer;
 import ddf.catalog.util.impl.CollectionResultComparator;
 import ddf.catalog.util.impl.DistanceResultComparator;
 import ddf.catalog.util.impl.RelevanceResultComparator;
+import ddf.security.audit.SecurityLogger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -91,16 +96,19 @@ public class CqlTransformHandler implements Route {
   private List<ServiceReference> queryResponseTransformers;
   private BundleContext bundleContext;
   private CqlQueriesImpl cqlQueryUtil;
+  private SecurityLogger securityLogger;
 
   public CqlTransformHandler(
       List<ServiceReference> queryResponseTransformers,
       BundleContext bundleContext,
       EndpointUtil endpointUtil,
-      CqlQueriesImpl cqlQueryUtil) {
+      CqlQueriesImpl cqlQueryUtil,
+      SecurityLogger securityLogger) {
     this.queryResponseTransformers = queryResponseTransformers;
     this.bundleContext = bundleContext;
     this.util = endpointUtil;
     this.cqlQueryUtil = cqlQueryUtil;
+    this.securityLogger = securityLogger;
   }
 
   public class Arguments {
@@ -215,7 +223,7 @@ public class CqlTransformHandler implements Route {
                     cqlRequest.getCql() != null
                         && (cqlRequest.getSrc() != null
                             || CollectionUtils.isNotEmpty(cqlRequest.getSrcs())))
-            .collect(Collectors.toList());
+            .collect(toList());
 
     cqlRequests.forEach(
         cqlRequest -> {
@@ -269,7 +277,7 @@ public class CqlTransformHandler implements Route {
                 })
             .filter(cqlResults -> CollectionUtils.isNotEmpty(cqlResults))
             .flatMap(cqlResults -> cqlResults.stream())
-            .collect(Collectors.toList());
+            .collect(toList());
 
     results.sort(getResultComparators(cqlTransformRequest.getSorts()));
 
@@ -288,7 +296,26 @@ public class CqlTransformHandler implements Route {
                         !cqlTransformRequest
                             .getHiddenResults()
                             .contains(result.getMetacard().getId()))
-                .collect(Collectors.toList());
+                .collect(toList());
+
+    Map<String, List<String>> exportsBySource =
+        results
+            .stream()
+            .collect(
+                Collectors.toMap(
+                    result -> result.getMetacard().getSourceId(),
+                    result -> new ArrayList<>(Arrays.asList(result.getMetacard().getId())),
+                    (existing, replacement) -> {
+                      existing.addAll(replacement);
+                      return existing;
+                    }));
+
+    for (Map.Entry sourceExportMap : exportsBySource.entrySet()) {
+      securityLogger.audit(
+          String.format(
+              "exported metacards: %s from source: %s to format: %s",
+              sourceExportMap.getValue(), sourceExportMap.getKey(), transformerId));
+    }
 
     QueryResponse combinedResponse =
         new QueryResponseImpl(
