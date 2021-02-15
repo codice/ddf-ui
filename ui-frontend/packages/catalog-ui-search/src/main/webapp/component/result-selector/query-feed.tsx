@@ -210,7 +210,8 @@ const QueryFeed = ({ selectionInterface }: Props) => {
   const statusBySource = Object.values(status)
   let resultMessage = '',
     pending = false,
-    failed = false
+    failed = false,
+    warnings = false
   if (statusBySource.length === 0) {
     resultMessage = 'Has not been run'
   } else {
@@ -233,6 +234,9 @@ const QueryFeed = ({ selectionInterface }: Props) => {
     }
 
     failed = sourcesThatHaveReturned.some((status) => !status.successful)
+    warnings = sourcesThatHaveReturned.some(
+      (status) => status.warnings && status.warnings.length > 0
+    )
     pending = isSearching
   }
 
@@ -287,7 +291,7 @@ const QueryFeed = ({ selectionInterface }: Props) => {
                     >
                       <span className="fa fa-heartbeat" />
                     </Button>
-                    {failed && (
+                    {warnings && (
                       <div className="absolute bottom-0 right-0 text-sm">
                         <ErrorIcon fontSize="inherit" color="error" />
                       </div>
