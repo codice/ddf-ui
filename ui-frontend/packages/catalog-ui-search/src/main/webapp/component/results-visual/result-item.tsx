@@ -591,7 +591,7 @@ export const ResultItem = ({
                           }}
                         />
                       ) : (
-                        detail.value
+                        detail.value.join(', ')
                       )}
                     </span>
                   </PropertyComponent>

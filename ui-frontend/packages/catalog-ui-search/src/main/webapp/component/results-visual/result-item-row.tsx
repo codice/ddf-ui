@@ -233,13 +233,13 @@ const RowComponent = ({
                             data-id={`${property}-value`}
                             style={{ wordBreak: 'break-word' }}
                           >
-                            {value.map((value: any, index: number) => {
+                            {value.map((curValue: any, index: number) => {
                               return (
-                                <span key={index} data-value={`${value}`}>
-                                  {value.toString().substring(0, 4) ===
+                                <span key={index} data-value={`${curValue}`}>
+                                  {curValue.toString().substring(0, 4) ===
                                   'http' ? (
                                     <a
-                                      href={`${value}`}
+                                      href={`${curValue}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                     >
@@ -248,7 +248,12 @@ const RowComponent = ({
                                       })}
                                     </a>
                                   ) : (
-                                    `${value}`
+                                    `${
+                                      value.length > 1 &&
+                                      index < value.length - 1
+                                        ? curValue + ', '
+                                        : curValue
+                                    }`
                                   )}
                                 </span>
                               )
