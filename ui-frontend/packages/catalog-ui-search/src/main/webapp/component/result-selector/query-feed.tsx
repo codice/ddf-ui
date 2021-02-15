@@ -13,6 +13,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import { Elevations } from '../theme/theme'
 import FilterListIcon from '@material-ui/icons/FilterList'
 import { fuzzyHits } from './fuzzy-results'
+import ErrorIcon from '@material-ui/icons/Error'
 
 type Props = {
   selectionInterface: any
@@ -209,7 +210,8 @@ const QueryFeed = ({ selectionInterface }: Props) => {
   const statusBySource = Object.values(status)
   let resultMessage = '',
     pending = false,
-    failed = false
+    failed = false,
+    warnings = false
   if (statusBySource.length === 0) {
     resultMessage = 'Has not been run'
   } else {
@@ -232,6 +234,9 @@ const QueryFeed = ({ selectionInterface }: Props) => {
     }
 
     failed = sourcesThatHaveReturned.some((status) => !status.successful)
+    warnings = sourcesThatHaveReturned.some(
+      (status) => status.warnings && status.warnings.length > 0
+    )
     pending = isSearching
   }
 
@@ -275,15 +280,24 @@ const QueryFeed = ({ selectionInterface }: Props) => {
           >
             {({ handleClick }) => {
               return (
-                <Button
-                  data-id="heartbeat-button"
-                  onClick={handleClick}
-                  className="details-view is-button"
-                  title="Show the full status for the search."
-                  data-help="Show the full status for the search."
-                >
-                  <span className="fa fa-heartbeat" />
-                </Button>
+                <div>
+                  <div className="relative">
+                    <Button
+                      data-id="heartbeat-button"
+                      onClick={handleClick}
+                      className="details-view is-button"
+                      title="Show the full status for the search."
+                      data-help="Show the full status for the search."
+                    >
+                      <span className="fa fa-heartbeat" />
+                    </Button>
+                    {warnings && (
+                      <div className="absolute bottom-0 right-0 text-sm">
+                        <ErrorIcon fontSize="inherit" color="error" />
+                      </div>
+                    )}
+                  </div>
+                </div>
               )
             }}
           </Dropdown>
