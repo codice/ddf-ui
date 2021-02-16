@@ -228,8 +228,8 @@ const PointRadiusUsngMgrs = (props) => {
           type="number"
           value={String(radius)}
           onChange={(value) => {
-            setRadiusError(validateGeo('radius', value))
             setState({ ['radius']: value })
+            setRadiusError(validateGeo('radius', { value, units: radiusUnits }))
           }}
         />
       </Units>
