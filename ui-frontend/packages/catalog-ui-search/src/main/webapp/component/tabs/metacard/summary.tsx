@@ -36,7 +36,6 @@ import { displayHighlightedAttrInFull } from './highlightUtil'
 import DateTimePicker from '../../fields/date-time-picker'
 import Geometry from '../../../react-component/input-wrappers/geometry'
 import { useRerenderOnBackboneSync } from '../../../js/model/LazyQueryResult/hooks'
-import { truncate } from 'lodash'
 
 function getSummaryShown(): string[] {
   const userchoices = user
