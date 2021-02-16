@@ -56,7 +56,8 @@ export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
         parseDate={DateHelpers.Blueprint.commonProps.parseDate}
         placeholder={'M/D/YYYY'}
         shortcuts
-        timePrecision="minute"
+        timePrecision="millisecond"
+        outOfRangeMessage="Out of range"
         {...(value
           ? {
               value: DateHelpers.Blueprint.DateProps.generateValue(value),
