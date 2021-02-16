@@ -12,8 +12,7 @@ import { useLazyResultsStatusFromSelectionInterface } from '../selection-interfa
 import Tooltip from '@material-ui/core/Tooltip'
 import { Elevations } from '../theme/theme'
 import FilterListIcon from '@material-ui/icons/FilterList'
-import { fuzzyHits } from './fuzzy-results'
-import ErrorIcon from '@material-ui/icons/Error'
+import { fuzzyHits, fuzzyResultCount } from './fuzzy-results'
 
 type Props = {
   selectionInterface: any
@@ -207,6 +206,7 @@ const QueryFeed = ({ selectionInterface }: Props) => {
   } = useLazyResultsStatusFromSelectionInterface({
     selectionInterface,
   })
+
   const statusBySource = Object.values(status)
   let resultMessage = '',
     pending = false,
@@ -222,12 +222,18 @@ const QueryFeed = ({ selectionInterface }: Props) => {
       const results = statusBySource
         .filter((status) => status.hasReturned)
         .filter((status) => status.successful)
-        .reduce((amt, status) => {
-          amt = amt + status.count
-          return amt
-        }, 0)
 
-      resultMessage = `${results} hit${results === 1 ? '' : 's'}`
+      let available = 0
+      let possible = 0
+
+      results.forEach((result) => {
+        available += result.count
+        possible += result.hits
+      })
+
+      resultMessage = `${available} hit${
+        available === 1 ? '' : 's'
+      } out of ${fuzzyResultCount(possible)} possible`
     } else {
       resultMessage = 'Searching...'
     }
