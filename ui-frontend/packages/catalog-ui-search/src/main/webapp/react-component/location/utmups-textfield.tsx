@@ -19,16 +19,11 @@ import CloseIcon from '@material-ui/icons/Close'
 const TextField = require('../text-field')
 const { Zone, Hemisphere } = require('./common')
 
-const hemisphere = {
-  NORTHERN: 'Northern',
-  SOUTHERN: 'Southern',
-}
-
 type UtmUpsPoint = {
   easting: number
   northing: number
   zoneNumber: number
-  hemisphere: 'NORTHERN' | 'SOUTHERN'
+  hemisphere: 'Northern' | 'Southern'
 }
 
 const UtmupsTextfield = ({
@@ -76,8 +71,13 @@ const UtmupsTextfield = ({
             }}
           />
           <Hemisphere
-            //IMPLEMENT ON CHANGE HERE
-            value={hemisphere[point.hemisphere]}
+            value={point.hemisphere}
+            onChange={(value: 'Northern' | 'Southern') => {
+              setPoint({
+                ...point,
+                hemisphere: value,
+              })
+            }}
           />
         </Grid>
         <Grid item xs={1}>
