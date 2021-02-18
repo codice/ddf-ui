@@ -46,6 +46,7 @@ const coordinateFormatOptions = [
   { label: 'Decimal', value: 'decimal' },
   { label: 'MGRS', value: 'mgrs' },
   { label: 'UTM/UPS', value: 'utm' },
+  { label: 'Well Known Text', value: 'wkt' },
 ]
 
 const render = ({

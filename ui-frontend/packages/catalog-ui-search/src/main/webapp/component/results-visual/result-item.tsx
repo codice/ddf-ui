@@ -48,6 +48,7 @@ import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple'
 import { clearSelection, hasSelection } from './result-item-row'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { TypedUserInstance } from '../singletons/TypedUser'
+import useCoordinateFormat from '../tabs/metacard/useCoordinateFormat'
 
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (
@@ -356,41 +357,14 @@ const fakeEvent = {
   type: '',
 } as any
 
-const getDisplayValue = ({
-  detail,
-  lazyResult,
-}: {
-  detail: string
-  lazyResult: LazyQueryResult
-}) => {
-  let value = lazyResult.plain.metacard.properties[detail]
-  if (value && metacardDefinitions.metacardTypes[detail]) {
-    switch (metacardDefinitions.metacardTypes[detail].type) {
-      case 'DATE':
-        if (value.constructor === Array) {
-          value = value.map((val: any) => Common.getMomentDate(val))
-        } else {
-          value = Common.getMomentDate(value)
-        }
-        break
-    }
-  }
-  return value
-}
-
-export const ResultItem = ({
-  lazyResult,
-  measure,
-  // @ts-ignore ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
-  index,
-}: ResultItemFullProps) => {
-  // console.log(`rendered: ${index}`)
+export const ResultItem = ({ lazyResult, measure }: ResultItemFullProps) => {
   const rippleRef = React.useRef<{
     pulsate: () => void
     stop: (e: any) => void
     start: (e: any) => void
   }>(null)
   const { listenTo } = useBackbone()
+  const convertToFormat = useCoordinateFormat()
   const [renderExtras, setRenderExtras] = React.useState(false)
   const [shownAttributes, setShownAttributes] = React.useState(
     TypedUserInstance.getResultsAttributesShownList()
@@ -409,7 +383,7 @@ export const ResultItem = ({
 
   React.useEffect(() => {
     measure()
-  }, [shownAttributes])
+  }, [shownAttributes, convertToFormat])
 
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const imgsrc = Common.getImageSrc(thumbnail)
@@ -420,6 +394,36 @@ export const ResultItem = ({
   const extraHighlights = Object.keys(lazyResult.highlights).filter(
     (attr) => !shownAttributes.find((shownAttribute) => shownAttribute === attr)
   )
+
+  const getDisplayValue = ({
+    detail,
+    lazyResult,
+  }: {
+    detail: string
+    lazyResult: LazyQueryResult
+  }) => {
+    let value = lazyResult.plain.metacard.properties[detail]
+    if (value && metacardDefinitions.metacardTypes[detail]) {
+      switch (metacardDefinitions.metacardTypes[detail].type) {
+        case 'DATE':
+          if (value.constructor === Array) {
+            value = value.map((val: any) => Common.getMomentDate(val))
+          } else {
+            value = Common.getMomentDate(value)
+          }
+          break
+        case 'GEOMETRY':
+          value = convertToFormat(value)
+      }
+    }
+
+    if (Array.isArray(value)) {
+      value = value.join(', ')
+    }
+
+    return value
+  }
+
   const detailsMap = shownAttributes
     .slice(1) // remove top one since that's special
     .map((detail) => {
@@ -591,7 +595,10 @@ export const ResultItem = ({
                           }}
                         />
                       ) : (
-                        detail.value.join(', ')
+                        getDisplayValue({
+                          detail: detail.attribute,
+                          lazyResult,
+                        })
                       )}
                     </span>
                   </PropertyComponent>
