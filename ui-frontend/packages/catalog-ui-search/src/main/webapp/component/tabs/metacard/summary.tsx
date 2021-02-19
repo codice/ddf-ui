@@ -456,6 +456,7 @@ const AttributeComponent = ({
               onClick={() => {
                 dialogContext.setProps({
                   open: true,
+                  disableEnforceFocus: true,
                   children: (
                     <Editor
                       attr={attr}

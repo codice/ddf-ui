@@ -57,6 +57,12 @@ export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
         placeholder={'M/D/YYYY'}
         shortcuts
         timePrecision="minute"
+        popoverProps={{
+          modifiers: {
+            preventOverflow: { enabled: false },
+            hide: { enabled: false },
+          },
+        }}
         {...(value
           ? {
               value: DateHelpers.Blueprint.DateProps.generateValue(value),
