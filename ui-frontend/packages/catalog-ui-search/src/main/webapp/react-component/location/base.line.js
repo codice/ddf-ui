@@ -254,7 +254,7 @@ const LineDms = (props) => {
         variant="contained"
         className="is-primary" //match styling of other buttons here
         onClick={() => {
-          let array = [...dmsPointArray]
+          let array = dmsPointArray ? [...dmsPointArray] : []
           array.push({
             lat: '',
             lon: '',
@@ -362,7 +362,7 @@ const LineMgrs = (props) => {
           variant="contained"
           className="is-primary" //match styling of other buttons here
           onClick={() => {
-            let points = [...usngPointArray]
+            let points = usngPointArray ? [...usngPointArray] : []
             points.push('')
             setState({ ['usngPointArray']: points })
           }}
@@ -459,11 +459,11 @@ const LineUtmUps = (props) => {
         variant="contained"
         className="is-primary" //match styling of other buttons here
         onClick={() => {
-          let points = [...utmUpsPointArray]
+          let points = utmUpsPointArray ? [...utmUpsPointArray] : []
           points.push({
-            easting: undefined,
+            easting: '',
             hemisphere: 'Northern',
-            northing: undefined,
+            northing: '',
             zoneNumber: 0,
           })
           setState({['utmUpsPointArray']: points })
