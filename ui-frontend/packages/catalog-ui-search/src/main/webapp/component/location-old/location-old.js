@@ -995,7 +995,7 @@ module.exports = Backbone.AssociatedModel.extend({
   //
   utmUpstoLL(utmUpsParts) {
     const { hemisphere, zoneNumber, northing } = utmUpsParts
-    const northernHemisphere = hemisphere === 'NORTHERN'
+    const northernHemisphere = hemisphere.toUpperCase() === 'NORTHERN'
 
     utmUpsParts = {
       ...utmUpsParts,
