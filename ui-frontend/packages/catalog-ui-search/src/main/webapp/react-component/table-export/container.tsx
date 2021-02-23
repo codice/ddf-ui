@@ -45,8 +45,8 @@ export default hot(module)(
       this.state = {
         exportSizes: [
           {
-            label: 'Visible Results',
-            value: 'visible',
+            label: 'Current Page',
+            value: 'currentPage',
           },
           {
             label: 'All Results',

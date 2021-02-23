@@ -15,6 +15,7 @@
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import TableExport from '../../react-component/table-export'
+import Sources from '../../component/singletons/sources-instance'
 import {
   getExportOptions,
   Transformer,
@@ -47,20 +48,18 @@ type Source = {
 
 export function getStartIndex(
   // @ts-ignore ts-migrate(6133) FIXME: 'src' is declared but its value is never read.
-  src: any,
+  src: string,
   // @ts-ignore ts-migrate(6133) FIXME: 'exportSize' is declared but its value is never re... Remove this comment to see the full error message
   exportSize: any,
   selectionInterface: any
 ) {
-  // @ts-ignore ts-migrate(6133) FIXME: 'result' is declared but its value is never read.
-  const result = selectionInterface.getCurrentQuery().get('result')
-  return 1
-  //todo fix this
-  // return exportSize === 'visible'
-  //   ? Object.values(result.get('lazyResults').status as { [key: string]: any })
-  //       .find((status: any) => status.id === src)
-  //       .get('start')
-  //   : 1
+  const srcIndexMap = selectionInterface.getCurrentQuery()
+    .nextIndexForSourceGroup
+
+  if (src === Sources.localCatalog) {
+    return srcIndexMap['local']
+  }
+  return srcIndexMap[src]
 }
 function getSrcs(selectionInterface: any) {
   return selectionInterface.getCurrentQuery().getSelectedSources()
@@ -72,7 +71,7 @@ export function getSrcCount(
   selectionInterface: any
 ) {
   const result = selectionInterface.getCurrentQuery().get('result')
-  return exportSize === 'visible'
+  return exportSize === 'currentPage'
     ? Object.values(
         result.get('lazyResults').status as {
           [key: string]: any
@@ -93,7 +92,7 @@ function getSearches(
   count: any,
   selectionInterface: any
 ): any {
-  if (exportSize !== 'visible') {
+  if (exportSize !== 'currentPage') {
     return srcs.length > 0
       ? [
           {
@@ -189,7 +188,9 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
     getExportCount({ exportSize, selectionInterface, customExportCount }),
     properties.exportResultLimit
   )
-  const cql = selectionInterface.getCurrentQuery().get('cql')
+
+  const query = selectionInterface.getCurrentQuery()
+  const cql = query.getEphemeralMixinCql(query.get('filterTree'))
   const srcs = getSrcs(selectionInterface)
   const sorts = getSorts(selectionInterface)
   const args = {
