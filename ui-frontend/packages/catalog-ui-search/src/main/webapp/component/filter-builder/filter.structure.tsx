@@ -93,15 +93,23 @@ export const serialize = {
     return `RELATIVE(${prefix + last + unit.toUpperCase()})`
   },
   dateAround: (value: ValueTypes['around']) => {
-    if (value.buffer === undefined || value.date === undefined) {
+    if (
+      value.buffer === undefined ||
+      value.date === undefined ||
+      value.direction === undefined
+    ) {
       return ''
     }
-    let before = moment(value.date)
-      .subtract(value.buffer.amount, value.buffer.unit)
-      .toISOString()
-    let after = moment(value.date)
-      .add(value.buffer.amount, value.buffer.unit)
-      .toISOString()
+    let before = ['both', 'before'].includes(value.direction)
+      ? moment(value.date)
+          .subtract(value.buffer.amount, value.buffer.unit)
+          .toISOString()
+      : value.date
+    let after = ['both', 'after'].includes(value.direction)
+      ? moment(value.date)
+          .add(value.buffer.amount, value.buffer.unit)
+          .toISOString()
+      : value.date
     return `DURING ${before}/${after}`
   },
   dateBetween: (value: ValueTypes['between']) => {
@@ -221,6 +229,7 @@ export type ValueTypes = {
       amount: string
       unit: 'm' | 'h' | 'd' | 'M' | 'y' | 's' | 'w'
     }
+    direction: 'both' | 'before' | 'after'
   }
   during: {
     start: string
