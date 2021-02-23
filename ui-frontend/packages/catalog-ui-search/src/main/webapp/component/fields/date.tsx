@@ -58,6 +58,12 @@ export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
         shortcuts
         timePrecision="millisecond"
         outOfRangeMessage="Out of range"
+        popoverProps={{
+          modifiers: {
+            preventOverflow: { enabled: false },
+            hide: { enabled: false },
+          },
+        }}
         {...(value
           ? {
               value: DateHelpers.Blueprint.DateProps.generateValue(value),
