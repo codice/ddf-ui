@@ -48,9 +48,10 @@ import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple'
 import { clearSelection, hasSelection } from './result-item-row'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { TypedUserInstance } from '../singletons/TypedUser'
+import useCoordinateFormat from '../tabs/metacard/useCoordinateFormat'
 import EditIcon from '@material-ui/icons/Edit'
-// import { ResultsViewContext } from './results-visual'
 import { Link } from '../link/link'
+
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (
     <div
@@ -159,14 +160,12 @@ const MultiSelectActions = ({
   )
 }
 
-// const dynamicActionClasses = `h-full hidden opacity-0 transition-all duration-200 ease-in-out scale-0 group-1-hover:opacity-100 group-1-hover:scale-100 group-1-focus-within:opacity-100 group-1-focus-within:scale-100 group-1-hover:block group-1-focus-within:block`
 const dynamicActionClasses = 'h-full'
 const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   const triggerDownload = (e: any) => {
     e.stopPropagation()
     window.open(lazyResult.plain.metacard.properties['resource-download-url'])
   }
-  // const { setEdit } = React.useContext(ResultsViewContext)
   return (
     <Grid container direction="column" wrap="nowrap" alignItems="center">
       <Grid item className="h-full">
@@ -388,41 +387,14 @@ const fakeEvent = {
   type: '',
 } as any
 
-const getDisplayValue = ({
-  detail,
-  lazyResult,
-}: {
-  detail: string
-  lazyResult: LazyQueryResult
-}) => {
-  let value = lazyResult.plain.metacard.properties[detail]
-  if (value && metacardDefinitions.metacardTypes[detail]) {
-    switch (metacardDefinitions.metacardTypes[detail].type) {
-      case 'DATE':
-        if (value.constructor === Array) {
-          value = value.map((val: any) => Common.getMomentDate(val))
-        } else {
-          value = Common.getMomentDate(value)
-        }
-        break
-    }
-  }
-  return value
-}
-
-export const ResultItem = ({
-  lazyResult,
-  measure,
-  // @ts-ignore ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
-  index,
-}: ResultItemFullProps) => {
-  // console.log(`rendered: ${index}`)
+export const ResultItem = ({ lazyResult, measure }: ResultItemFullProps) => {
   const rippleRef = React.useRef<{
     pulsate: () => void
     stop: (e: any) => void
     start: (e: any) => void
   }>(null)
   const { listenTo } = useBackbone()
+  const convertToFormat = useCoordinateFormat()
   const [renderExtras, setRenderExtras] = React.useState(false) // dynamic actions are a significant part of rendering time, so delay until necessary
   const [shownAttributes, setShownAttributes] = React.useState(
     TypedUserInstance.getResultsAttributesShownList()
@@ -441,7 +413,7 @@ export const ResultItem = ({
 
   React.useEffect(() => {
     measure()
-  }, [shownAttributes])
+  }, [shownAttributes, convertToFormat])
 
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const imgsrc = Common.getImageSrc(thumbnail)
@@ -452,6 +424,36 @@ export const ResultItem = ({
   const extraHighlights = Object.keys(lazyResult.highlights).filter(
     (attr) => !shownAttributes.find((shownAttribute) => shownAttribute === attr)
   )
+
+  const getDisplayValue = ({
+    detail,
+    lazyResult,
+  }: {
+    detail: string
+    lazyResult: LazyQueryResult
+  }) => {
+    let value = lazyResult.plain.metacard.properties[detail]
+    if (value && metacardDefinitions.metacardTypes[detail]) {
+      switch (metacardDefinitions.metacardTypes[detail].type) {
+        case 'DATE':
+          if (value.constructor === Array) {
+            value = value.map((val: any) => Common.getMomentDate(val))
+          } else {
+            value = Common.getMomentDate(value)
+          }
+          break
+        case 'GEOMETRY':
+          value = convertToFormat(value)
+      }
+    }
+
+    if (Array.isArray(value)) {
+      value = value.join(', ')
+    }
+
+    return value
+  }
+
   const detailsMap = shownAttributes
     .slice(1) // remove top one since that's special
     .map((detail) => {
@@ -634,7 +636,10 @@ export const ResultItem = ({
                           }}
                         />
                       ) : (
-                        detail.value
+                        getDisplayValue({
+                          detail: detail.attribute,
+                          lazyResult,
+                        })
                       )}
                     </span>
                   </PropertyComponent>
