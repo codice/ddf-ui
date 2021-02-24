@@ -24,7 +24,6 @@ import {
   validateUsngLineOrPoly,
   validateDmsLineOrPoly,
   validateUtmUpsLineOrPoly,
-  parseDmsCoordinate,
 } from './validators'
 import DmsTextField from './dms-textfield'
 import UtmupsTextField from './utmups-textfield'
@@ -33,11 +32,6 @@ const TextField = require('../text-field')
 const { Radio, RadioItem } = require('../radio')
 const { MinimumSpacing } = require('./common')
 const _ = require('underscore')
-
-const usngs = require('usng.js')
-const converter = new usngs.Converter()
-const usngPrecision = 6
-const dmsUtils = require('../../component/location-new/utils/dms-utils.js')
 
 const coordinatePairRegex = /-?\d{1,3}(\.\d*)?\s-?\d{1,3}(\.\d*)?/g
 
@@ -219,7 +213,7 @@ const LineDms = (props) => {
     if (props.drawing) {
       setBaseLineError(initialErrorState)
     }
-    if(dmsPointArray) {
+    if (dmsPointArray) {
       setBaseLineError(validateDmsLineOrPoly(dmsPointArray, geometryKey))
     }
   }, [props.polygon, props.line, dmsPointArray])
@@ -227,27 +221,28 @@ const LineDms = (props) => {
   return (
     <div>
       <div className="input-location">
-        {dmsPointArray && dmsPointArray.map((point, index) => {
-          return (
-            <div>
-              <DmsTextField
-                key={'point-' + index}
-                point={point}
-                setPoint={(point) => {
-                  let array = [...dmsPointArray]
-                  array.splice(index, 1, point)
-                  setState({ ['dmsPointArray']: array })
-                }}
-                deletePoint={() => {
-                  let array = [...dmsPointArray]
-                  array.splice(index, 1)
-                  setState({ ['dmsPointArray']: array })
-                }}
-              />
-              <MinimumSpacing />
-            </div>
-          )
-        })}
+        {dmsPointArray &&
+          dmsPointArray.map((point, index) => {
+            return (
+              <div>
+                <DmsTextField
+                  key={'point-' + index}
+                  point={point}
+                  setPoint={(point) => {
+                    let array = [...dmsPointArray]
+                    array.splice(index, 1, point)
+                    setState({ ['dmsPointArray']: array })
+                  }}
+                  deletePoint={() => {
+                    let array = [...dmsPointArray]
+                    array.splice(index, 1)
+                    setState({ ['dmsPointArray']: array })
+                  }}
+                />
+                <MinimumSpacing />
+              </div>
+            )
+          })}
       </div>
       <Button
         fullWidth
@@ -434,26 +429,27 @@ const LineUtmUps = (props) => {
 
   return (
     <div>
-      {utmUpsPointArray && utmUpsPointArray.map((point, index) => {
-        return (
-          <div>
-            <UtmupsTextField
-              point={point}
-              setPoint={(point) => {
-                let points = [...utmUpsPointArray]
-                points.splice(index, 1, point)
-                setState({['utmUpsPointArray']: points })
-              }}
-              deletePoint={() => {
-                let points = [...utmUpsPointArray]
-                points.splice(index, 1)
-                setState({['utmUpsPointArray']: points })
-              }}
-            />
-            <MinimumSpacing />
-          </div>
-        )
-      })}
+      {utmUpsPointArray &&
+        utmUpsPointArray.map((point, index) => {
+          return (
+            <div>
+              <UtmupsTextField
+                point={point}
+                setPoint={(point) => {
+                  let points = [...utmUpsPointArray]
+                  points.splice(index, 1, point)
+                  setState({ ['utmUpsPointArray']: points })
+                }}
+                deletePoint={() => {
+                  let points = [...utmUpsPointArray]
+                  points.splice(index, 1)
+                  setState({ ['utmUpsPointArray']: points })
+                }}
+              />
+              <MinimumSpacing />
+            </div>
+          )
+        })}
       <Button
         fullWidth
         variant="contained"
@@ -466,99 +462,50 @@ const LineUtmUps = (props) => {
             northing: '',
             zoneNumber: 0,
           })
-          setState({['utmUpsPointArray']: points })
+          setState({ ['utmUpsPointArray']: points })
         }}
       >
         +
       </Button>
       <ErrorComponent errorState={baseLineError} />
       <Units
-          value={props[unitKey]}
+        value={props[unitKey]}
+        onChange={(value) => {
+          typeof setBufferState === 'function'
+            ? setBufferState(unitKey, value)
+            : setState({ [unitKey]: value })
+          if (widthKey === 'lineWidth' || 'bufferWidth') {
+            setBufferError(
+              validateGeo(widthKey, {
+                value: props[widthKey],
+                units: value,
+              })
+            )
+          }
+        }}
+      >
+        <TextField
+          type="number"
+          label="Buffer width"
+          value={String(props[widthKey])}
           onChange={(value) => {
             typeof setBufferState === 'function'
-              ? setBufferState(unitKey, value)
-              : setState({ [unitKey]: value })
-            if (widthKey === 'lineWidth' || 'bufferWidth') {
-              setBufferError(
-                validateGeo(widthKey, {
-                  value: props[widthKey],
-                  units: value,
-                })
-              )
-            }
+              ? setBufferState(widthKey, value)
+              : setState({ [widthKey]: value })
           }}
-        >
-          <TextField
-            type="number"
-            label="Buffer width"
-            value={String(props[widthKey])}
-            onChange={(value) => {
-              typeof setBufferState === 'function'
-                ? setBufferState(widthKey, value)
-                : setState({ [widthKey]: value })
-            }}
-            onBlur={(e) => {
-              setBufferError(
-                validateGeo(widthKey, {
-                  value: e.target.value,
-                  units: props[unitKey],
-                })
-              )
-            }}
-          />
-        </Units>
-        <ErrorComponent errorState={bufferError} />
+          onBlur={(e) => {
+            setBufferError(
+              validateGeo(widthKey, {
+                value: e.target.value,
+                units: props[unitKey],
+              })
+            )
+          }}
+        />
+      </Units>
+      <ErrorComponent errorState={bufferError} />
     </div>
   )
-}
-
-const convertToLLPoints = (valid, points) => {
-  if (valid) {
-    const llPoints = points.map((point) => {
-      // A little bit unintuitive, but lat/lon is swapped here
-      const convertedPoint = converter.USNGtoLL(point, usngPrecision)
-      return [convertedPoint.lon, convertedPoint.lat]
-    })
-    return llPoints
-  } else return undefined
-}
-
-const convertDmsToLLPoints = (valid, points) => {
-  if (valid) {
-    const llPoints = points.map((point) => {
-      let latCoordinate = dmsUtils.dmsCoordinateToDD({
-        ...parseDmsCoordinate(point.lat),
-        direction: point.latDirection,
-      })
-      let lonCoordinate = dmsUtils.dmsCoordinateToDD({
-        ...parseDmsCoordinate(point.lon),
-        direction: point.lonDirection,
-      })
-      // A little bit unintuitive, but lat/lon is swapped here
-      return [lonCoordinate, latCoordinate]
-    })
-    return llPoints
-  } else return undefined
-}
-
-const convertUtmUpsToLLPoints = (valid, points) => {
-  if (valid) {
-    const llPoints = points.map((point) => {
-      const northPole =
-        (point.hemisphere === 'NORTHERN') | 'Northern' ? true : false
-      const convertedPoint = converter.UTMUPStoLL({
-        northPole,
-        zoneNumber: point.zoneNumber,
-        easting: point.easting,
-        northing: point.northing,
-      })
-      return [
-        parseFloat(convertedPoint.lon.toFixed(6)),
-        parseFloat(convertedPoint.lat.toFixed(6)),
-      ]
-    })
-    return llPoints
-  } else return undefined
 }
 
 const BaseLine = (props) => {

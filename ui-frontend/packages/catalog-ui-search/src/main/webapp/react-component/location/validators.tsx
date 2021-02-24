@@ -15,7 +15,6 @@
 const usng = require('usng.js')
 const converter = new usng.Converter()
 const errorMessages = require('../../component/location-new/utils/errors')
-const dmsUtils = require('../../component/location-new/utils/dms-utils.js')
 import { validateGeo } from '../utils/validation'
 
 const dmsRegex = new RegExp('^([0-9_]*)°([0-9_]*)\'([0-9_]*\\.?[0-9_]*)"$')
@@ -44,7 +43,17 @@ type UtmUpsPoint = {
 }
 
 function validateUsngGrid(grid: string) {
-  return converter.isUSNG(grid) !== 0
+  //corner case for ups zone
+  let isUPS = false
+  try {
+    converter.deserializeUPS(grid)
+    isUPS = true
+  } catch (err) {
+    isUPS = false
+  }
+  return (
+    converter.isUSNG(grid) !== 0 || isUPS
+  )
 }
 
 function gridIsBlank(grid: string) {
@@ -120,7 +129,7 @@ function validateDmsPoint(point: Point) {
 
 function validateDmsLineOrPoly(dms: Point[], type: 'line' | 'polygon') {
   let defaultValue
-  if (dms.some(dmsPointIsBlank)) {
+  if (!dms || dms.some(dmsPointIsBlank)) {
     return { error: true, message: errorMessages.invalidList, defaultValue }
   }
   let error = false
@@ -139,10 +148,9 @@ function validateDmsLineOrPoly(dms: Point[], type: 'line' | 'polygon') {
       if (!dms.every(validateDmsPoint)) {
         error = true
         message = errorMessages.invalidList
-      } else if (dms.length < 4) {
-        //curiously our inspector expects 3 as the minimum, but the map expects at least 4
+      } else if (dms.length < 3) {
         error = true
-        message = 'Polygons must contain 4 or more points'
+        message = errorMessages.tooFewPointsPolygon
       }
       break
   }
@@ -151,7 +159,7 @@ function validateDmsLineOrPoly(dms: Point[], type: 'line' | 'polygon') {
 
 function validateUsngLineOrPoly(usng: string[], type: 'line' | 'polygon') {
   let defaultValue
-  if (usng.some(gridIsBlank)) {
+  if (!usng || usng.some(gridIsBlank)) {
     return { error: true, message: errorMessages.invalidList, defaultValue }
   }
   let error = false
@@ -170,10 +178,9 @@ function validateUsngLineOrPoly(usng: string[], type: 'line' | 'polygon') {
       if (!usng.every(validateUsngGrid)) {
         error = true
         message = errorMessages.invalidList
-      } else if (usng.length < 4) {
-        //curiously our inspector expects 3 as the minimum, but the map expects at least 4
+      } else if (usng.length < 3) {
         error = true
-        message = 'Polygons must contain 4 or more points'
+        message = errorMessages.tooFewPointsPolygon
       }
       break
   }
@@ -185,7 +192,7 @@ function validateUtmUpsLineOrPoly(
   type: 'line' | 'polygon'
 ) {
   let defaultValue
-  if (utmups.some(utmUpsIsBlank)) {
+  if (!utmups || utmups.some(utmUpsIsBlank)) {
     return { error: true, message: errorMessages.invalidList, defaultValue }
   }
   let error = false
@@ -204,10 +211,9 @@ function validateUtmUpsLineOrPoly(
       if (!utmups.every(validateUtmUpsPoint)) {
         error = true
         message = errorMessages.invalidList
-      } else if (utmups.length < 4) {
-        //curiously our inspector expects 3 as the minimum, but the map expects at least 4
+      } else if (utmups.length < 3) {
         error = true
-        message = 'Polygons must contain 4 or more points'
+        message = errorMessages.tooFewPointsPolygon
       }
       break
   }
