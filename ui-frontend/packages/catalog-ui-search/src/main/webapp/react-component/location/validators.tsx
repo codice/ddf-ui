@@ -42,18 +42,18 @@ type UtmUpsPoint = {
   hemisphere: 'NORTHERN' | 'SOUTHERN'
 }
 
+function isUPS(input: string) {
+  try {
+    converter.deserializeUPS(input)
+    return true
+  } catch (err) {
+    return false
+  }
+}
+
 function validateUsngGrid(grid: string) {
   //corner case for ups zone
-  let isUPS = false
-  try {
-    converter.deserializeUPS(grid)
-    isUPS = true
-  } catch (err) {
-    isUPS = false
-  }
-  return (
-    converter.isUSNG(grid) !== 0 || isUPS
-  )
+  return converter.isUSNG(grid) !== 0 || isUPS(grid)
 }
 
 function gridIsBlank(grid: string) {
@@ -225,4 +225,5 @@ module.exports = {
   validateDmsLineOrPoly,
   parseDmsCoordinate,
   validateUtmUpsLineOrPoly,
+  isUPS,
 }

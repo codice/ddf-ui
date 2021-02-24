@@ -29,6 +29,7 @@ import {
   validateDmsLineOrPoly,
   validateUtmUpsLineOrPoly,
   parseDmsCoordinate,
+  isUPS,
 } from '../../react-component/location/validators'
 
 const converter = new usngs.Converter()
@@ -290,36 +291,42 @@ module.exports = Backbone.AssociatedModel.extend({
   },
 
   convertLatLonLinePolyToUsng(points) {
-    return points ? points.map((point) => {
-      // A little bit unintuitive, but lat/lon is swapped here
-      return converter.LLtoMGRSUPS(point[1], point[0], usngPrecision)
-    }) : undefined
+    return points
+      ? points.map((point) => {
+          // A little bit unintuitive, but lat/lon is swapped here
+          return converter.LLtoMGRSUPS(point[1], point[0], usngPrecision)
+        })
+      : undefined
   },
 
   convertLatLonLinePolyToDms(points) {
-    return points ? points.map((point) => {
-      const lat = dmsUtils.ddToDmsCoordinateLat(point[1])
-      const lon = dmsUtils.ddToDmsCoordinateLon(point[0])
-      return {
-        lat: lat.coordinate,
-        lon: lon.coordinate,
-        latDirection: lat.direction,
-        lonDirection: lon.direction,
-      }
-    }) : undefined
+    return points
+      ? points.map((point) => {
+          const lat = dmsUtils.ddToDmsCoordinateLat(point[1])
+          const lon = dmsUtils.ddToDmsCoordinateLon(point[0])
+          return {
+            lat: lat.coordinate,
+            lon: lon.coordinate,
+            latDirection: lat.direction,
+            lonDirection: lon.direction,
+          }
+        })
+      : undefined
   },
 
   convertLatLonLinePolyToUtm(points) {
-    return points ? points.map((point) => {
-      let llPoint = this.LLtoUtmUps(point[1], point[0])
-      return {
-        ...llPoint,
-        hemisphere:
-          llPoint.hemisphere.toUpperCase() === 'NORTHERN'
-            ? 'Northern'
-            : 'Southern',
-      }
-    }) : undefined
+    return points
+      ? points.map((point) => {
+          let llPoint = this.LLtoUtmUps(point[1], point[0])
+          return {
+            ...llPoint,
+            hemisphere:
+              llPoint.hemisphere.toUpperCase() === 'NORTHERN'
+                ? 'Northern'
+                : 'Southern',
+          }
+        })
+      : undefined
   },
 
   setUsngDmsUtmWithLineOrPoly(model) {
@@ -385,7 +392,9 @@ module.exports = Backbone.AssociatedModel.extend({
       if (!validation.error) {
         const llPoints = this.get('usngPointArray').map((point) => {
           // A little bit unintuitive, but lat/lon is swapped here
-          const convertedPoint = converter.USNGtoLL(point, usngPrecision)
+          const convertedPoint = isUPS(point)
+            ? converter.UTMUPStoLL(point)
+            : converter.USNGtoLL(point, usngPrecision)
           return [convertedPoint.lon, convertedPoint.lat]
         })
         const dmsPoints = this.convertLatLonLinePolyToDms(llPoints)
