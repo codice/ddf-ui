@@ -50,7 +50,7 @@ const DmsTextfield = ({
             onChange={(value: string) => {
               setPoint({
                 ...point,
-                lat: value, //validate this first
+                lat: value,
               })
             }}
           >
@@ -71,7 +71,7 @@ const DmsTextfield = ({
             onChange={(value: string) => {
               setPoint({
                 ...point,
-                lon: value, //validate this first
+                lon: value,
               })
             }}
           >
