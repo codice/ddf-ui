@@ -198,8 +198,7 @@ Query.Model = Backbone.AssociatedModel.extend({
         search: this,
       })
     } else {
-      const filterTreeBuilder = new FilterBuilderClass(filterTree)
-      this.set('filterTree', filterTreeBuilder) // instantiate the class if everything is a-okay
+      this.set('filterTree', new FilterBuilderClass(filterTree)) // instantiate the class if everything is a-okay
     }
     this.listenTo(
       this,
