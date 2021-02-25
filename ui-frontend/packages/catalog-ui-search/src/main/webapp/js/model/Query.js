@@ -124,7 +124,7 @@ Query.Model = Backbone.AssociatedModel.extend({
     ) {
       // for backwards compatability
       try {
-        data.filterTree = JSON.parse(data.filterTree)
+        data.filterTree = new FilterBuilderClass(JSON.parse(data.filterTree))
       } catch (e) {
         data.filterTree = CQLUtils.transformCQLToFilter(data.cql)
       }
@@ -186,6 +186,9 @@ Query.Model = Backbone.AssociatedModel.extend({
     _.bindAll.apply(_, [this].concat(_.functions(this))) // underscore bindAll does not take array arg
     this.set('id', this.getId())
     const filterTree = this.get('filterTree')
+    if (filterTree && typeof filterTree === 'string') {
+      this.set('filterTree', JSON.parse(filterTree))
+    }
     // when we make drastic changes to filter tree it will be necessary to fall back to cql and reconstruct a filter tree that's compatible
     if (!filterTree || filterTree.id === undefined) {
       this.set('filterTree', cql.read(this.get('cql'))) // reconstruct
@@ -195,7 +198,8 @@ Query.Model = Backbone.AssociatedModel.extend({
         search: this,
       })
     } else {
-      this.set('filterTree', new FilterBuilderClass(filterTree)) // instantiate the class if everything is a-okay
+      const filterTreeBuilder = new FilterBuilderClass(filterTree)
+      this.set('filterTree', filterTreeBuilder) // instantiate the class if everything is a-okay
     }
     this.listenTo(
       this,
