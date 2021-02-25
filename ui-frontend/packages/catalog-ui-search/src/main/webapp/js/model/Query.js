@@ -123,11 +123,7 @@ Query.Model = Backbone.AssociatedModel.extend({
       typeof data.filterTree === 'string'
     ) {
       // for backwards compatability
-      try {
-        data.filterTree = new FilterBuilderClass(JSON.parse(data.filterTree))
-      } catch (e) {
-        data.filterTree = CQLUtils.transformCQLToFilter(data.cql)
-      }
+      data.filterTree = new FilterBuilderClass(JSON.parse(data.filterTree))
     }
     return Backbone.AssociatedModel.prototype.set.apply(this, arguments)
   },
