@@ -66,6 +66,22 @@ export const TypedUserInstance = {
     currentSettings.set(newSettings)
     userInstance.savePreferences()
   },
+  getCoordinateFormat: (): string => {
+    let coordFormat = userInstance
+      .get('user')
+      ?.get('preferences')
+      ?.get('coordinateFormat')
+
+    if (!coordFormat) {
+      const defaultCoordFormat = userInstance
+        .get('user')
+        ?.defaults()
+        ?.preferences?.get('coordinateFormat')
+      coordFormat = defaultCoordFormat ?? 'degrees'
+    }
+
+    return coordFormat
+  },
 }
 
 type QuerySettingsType = {

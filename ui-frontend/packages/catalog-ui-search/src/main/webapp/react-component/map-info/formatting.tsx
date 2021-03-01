@@ -45,6 +45,7 @@ const formatter = {
       ? 'In UPS Space'
       : converter.LLtoUSNG(lat, lon, usngPrecision),
   utm: ({ lat, lon }: Coordinates) => converter.LLtoUTMUPS(lat, lon),
+  wkt: ({ lat, lon }: Coordinates) => `POINT (${lon} ${lat})`,
 }
 
 export const formatCoordinates = ({

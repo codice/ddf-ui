@@ -806,9 +806,6 @@ module.exports = Backbone.AssociatedModel.extend({
     }
 
     let utmUps = converter.LLtoUTMUPSObject(lat, lon)
-    const { zoneNumber, northing } = utmUps
-    const isUps = zoneNumber === 0
-    utmUps.northing = isUps || lat >= 0 ? northing : northing + northingOffset
 
     utmUps.hemisphere = lat >= 0 ? 'NORTHERN' : 'SOUTHERN'
     return utmUps

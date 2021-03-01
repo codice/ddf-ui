@@ -36,6 +36,7 @@ import { displayHighlightedAttrInFull } from './highlightUtil'
 import DateTimePicker from '../../fields/date-time-picker'
 import Geometry from '../../../react-component/input-wrappers/geometry'
 import { useRerenderOnBackboneSync } from '../../../js/model/LazyQueryResult/hooks'
+import useCoordinateFormat from './useCoordinateFormat'
 
 function getSummaryShown(): string[] {
   const userchoices = user
@@ -431,6 +432,7 @@ const AttributeComponent = ({
   let label = TypedMetacardDefs.getAlias({ attr })
   const { isNotWritable } = useCustomReadOnlyCheck()
   const dialogContext = useDialog()
+  const convertToFormat = useCoordinateFormat()
 
   const isUrl = (value: any) => {
     if (value && typeof value === 'string') {
@@ -557,6 +559,10 @@ const AttributeComponent = ({
                           case 'BOOLEAN':
                             return (
                               <Typography>{val ? 'true' : 'false'}</Typography>
+                            )
+                          case 'GEOMETRY':
+                            return (
+                              <Typography>{convertToFormat(val)}</Typography>
                             )
                           default:
                             if (lazyResult.highlights[attr]) {
