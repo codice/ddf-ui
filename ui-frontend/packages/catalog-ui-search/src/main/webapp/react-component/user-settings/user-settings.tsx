@@ -17,20 +17,17 @@ import { createGlobalStyle } from 'styled-components'
 import ThemeSettings from '../theme-settings'
 import AlertSettings from '../alert-settings'
 import SearchSettings from '../search-settings'
-const MapSettings = require('../../component/layers/layers.view.js')
 import TimeSettings from '../time-settings'
-
 import { hot } from 'react-hot-loader'
-import MarionetteRegionContainer from '../marionette-region-container'
 import Button from '@material-ui/core/Button'
 import ChevronRight from '@material-ui/icons/ChevronRight'
-
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider'
 import { useLocation } from 'react-router-dom'
 import queryString from 'query-string'
 import { Link } from '../../component/link/link'
+import { MapUserSettings } from '../map-user-settings/map-user-settings'
 
 const ThemeGlobalStyle = createGlobalStyle`
 .MuiBackdrop-root {
@@ -76,7 +73,7 @@ export const BaseSettings = {
   },
   Map: {
     component: () => {
-      return <MarionetteRegionContainer view={MapSettings} />
+      return <MapUserSettings />
     },
   },
   'Search Options': {

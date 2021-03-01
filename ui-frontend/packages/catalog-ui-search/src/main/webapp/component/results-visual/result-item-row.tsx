@@ -34,6 +34,7 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import { SelectionBackground } from './result-item'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { TypedUserInstance } from '../singletons/TypedUser'
+import useCoordinateFormat from '../tabs/metacard/useCoordinateFormat'
 
 type ResultItemFullProps = {
   lazyResult: LazyQueryResult
@@ -102,6 +103,7 @@ const RowComponent = ({
   )
   const isLast = index === results.length - 1
   const { listenTo } = useBackbone()
+  const convertToFormat = useCoordinateFormat()
   useRerenderOnBackboneSync({ lazyResult })
 
   React.useEffect(() => {
@@ -116,7 +118,18 @@ const RowComponent = ({
   const imgsrc = Common.getImageSrc(thumbnail)
   React.useEffect(() => {
     measure()
-  }, [shownAttributes])
+  }, [shownAttributes, convertToFormat])
+
+  const getDisplayValue = (value: any, property: string) => {
+    if (value && metacardDefinitions.metacardTypes[property]) {
+      switch (metacardDefinitions.metacardTypes[property].type) {
+        case 'GEOMETRY':
+          return convertToFormat(value)
+      }
+    }
+    return value
+  }
+
   return (
     <React.Fragment>
       <div
@@ -236,8 +249,7 @@ const RowComponent = ({
                             {value.map((curValue: any, index: number) => {
                               return (
                                 <span key={index} data-value={`${curValue}`}>
-                                  {curValue.toString().substring(0, 4) ===
-                                  'http' ? (
+                                  {curValue.toString().startsWith('http') ? (
                                     <a
                                       href={`${curValue}`}
                                       target="_blank"
@@ -252,7 +264,7 @@ const RowComponent = ({
                                       value.length > 1 &&
                                       index < value.length - 1
                                         ? curValue + ', '
-                                        : curValue
+                                        : getDisplayValue(curValue, property)
                                     }`
                                   )}
                                 </span>

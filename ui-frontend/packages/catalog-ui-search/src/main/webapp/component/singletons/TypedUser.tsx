@@ -58,4 +58,20 @@ export const TypedUserInstance = {
     })
     return attributesPossible.map((attr) => attr.id)
   },
+  getCoordinateFormat: (): string => {
+    let coordFormat = userInstance
+      .get('user')
+      ?.get('preferences')
+      ?.get('coordinateFormat')
+
+    if (!coordFormat) {
+      const defaultCoordFormat = userInstance
+        .get('user')
+        ?.defaults()
+        ?.preferences?.get('coordinateFormat')
+      coordFormat = defaultCoordFormat ?? 'degrees'
+    }
+
+    return coordFormat
+  },
 }
