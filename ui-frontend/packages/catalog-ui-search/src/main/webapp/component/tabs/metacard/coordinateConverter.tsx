@@ -41,10 +41,7 @@ export const convertCoordsToPreferred = (lat: number, lon: number): string => {
       case 'decimal':
         return `${lat} ${lon}`
       case 'mgrs':
-        // display dms format inUPSSpace
-        return converter.isInUPSSpace(lat)
-          ? `${mtgeo.toLat(lat)} ${mtgeo.toLon(lon)}`
-          : converter.LLtoUSNG(lat, lon, usngPrecision)
+        return converter.LLtoMGRSUPS(lat, lon, usngPrecision)
       case 'utm':
         return converter.LLtoUTMUPS(lat, lon)
       case 'wkt':

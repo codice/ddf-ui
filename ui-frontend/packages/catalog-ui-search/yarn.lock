@@ -19904,9 +19904,10 @@ username@3.0.0:
     execa "^0.7.0"
     mem "^1.1.0"
 
-usng.js@0.4.4:
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/usng.js/-/usng.js-0.4.4.tgz#4bcb8889d36d2720c851f486b9274a7d45c61aa6"
+usng.js@0.4.5:
+  version "0.4.5"
+  resolved "https://registry.yarnpkg.com/usng.js/-/usng.js-0.4.5.tgz#49301e131baa9f7f7ab36c0539472c1aa1ecdae7"
+  integrity sha512-JTJcFFDy/JqA5iiU8DqMOV5gJiL3ZdXH0hCKYaRMDbbredhFna5Ok4C1YDFU07mTGAgm+5FzHaaOzQnO/3BzWQ==
 
 util-deprecate@^1.0.1, util-deprecate@^1.0.2, util-deprecate@~1.0.1:
   version "1.0.2"
