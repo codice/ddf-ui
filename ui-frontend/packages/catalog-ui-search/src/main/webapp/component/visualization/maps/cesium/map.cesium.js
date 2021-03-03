@@ -27,6 +27,7 @@ const DrawLine = require('../../../../js/widgets/cesium.line.js')
 
 const properties = require('../../../../js/properties.js')
 const Cesium = require('cesium')
+const Turf = require('@turf/turf')
 const DrawHelper = require('cesium-drawhelper/DrawHelper')
 import CesiumLayerCollectionController from '../../../../js/controllers/cesium.layerCollection.controller'
 const user = require('../../../singletons/user-instance.js')
@@ -433,6 +434,9 @@ module.exports = function CesiumMap(
       map.scene.camera.moveEnd.removeEventListener(callback)
     },
     doPanZoom(coords) {
+      if (coords.length === 0) {
+        return
+      }
       const cartArray = coords.map((coord) =>
         Cesium.Cartographic.fromDegrees(
           coord[0],
@@ -494,6 +498,26 @@ module.exports = function CesiumMap(
       })
     },
     panToExtent(coords) {},
+    panToShapesExtent() {
+      let features = []
+
+      shapes.map((shape) => {
+        let feature = utility.featureFromShape(shape)
+
+        if (utility.featureIsValid(feature)) {
+          features.push(feature)
+        }
+      })
+
+      if (features.length) {
+        const featureCollection = Turf.featureCollection(features)
+        // Turf returns bbox as [west, south, east, north], which is the order that Cesium.Rectangle expects
+        const bboxExtent = Turf.bbox(featureCollection)
+        const rectangle = new Cesium.Rectangle.fromDegrees(...bboxExtent)
+
+        this.panToRectangle(rectangle)
+      }
+    },
     panToRectangle(
       rectangle,
       opts = {
@@ -511,6 +535,9 @@ module.exports = function CesiumMap(
           })
         },
       })
+    },
+    getShapes() {
+      return shapes
     },
     zoomToExtent(coords) {},
     zoomToBoundingBox({ north, south, east, west }) {

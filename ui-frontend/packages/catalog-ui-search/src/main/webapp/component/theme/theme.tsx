@@ -277,7 +277,31 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
             : 'linear-gradient(-180deg, rgb(153, 153, 153) 0%, rgb(187, 187, 187) 100%)'};
             border-radius: 4px;
       }
+      // fix an issue where focus is applied because of blueprint to popover papers
+      .MuiPaper-root:focus { 
+        outline: none;
+      }
+      // Fix Mui styles 
+      .MuiButton-endIcon {
+        margin-left: 0px;
+        margin-right: 0px;
+      }
+      .MuiButton-iconSizeSmall > svg {
+        font-size: 18px;
+        margin-top: 1px;
+      }
       // Mui tailwind style
+      .Mui-icon-size-small {
+        font-size: 18px;
+      }
+      [disabled] .Mui-text-text-primary,
+      [disabled] .Mui-text-primary,
+      [disabled] .Mui-text-secondary {
+        color: ${(props) =>
+          props.palette.type === 'dark'
+            ? 'rgba(255, 255, 255, 0.3)'
+            : 'rgba(0, 0, 0, 0.26)'};
+      }
       .Mui-text-text-primary {
         color: ${(props) => props.palette.text.primary};
       }
@@ -305,6 +329,22 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .Mui-border-divider {
         border-color: ${(props) => props.palette.divider};
       }
+      .Mui-bg-button:hover,
+      .Mui-bg-button:focus-within {
+        background: ${(props) =>
+          props.palette.type === 'dark'
+            ? 'rgba(255, 255, 255, 0.08)'
+            : 'rgba(0, 0, 0, 0.04)'};
+      }
+      .theme-bg-overlays {
+        background: ${(props) =>
+          props.palette.type === 'dark' ? dark.overlays : light.overlays};
+      }
+      .children-max-h-full {
+        > * {
+          max-height: 100%;
+        }
+      }
       .children-h-full {
         > * {
           height: 100%;
@@ -314,6 +354,14 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
         > * {
           display: block;
         }
+      }
+      .children-p-0 {
+        > * {
+          padding: 0px;
+        }
+      }
+      .w-hfull {
+        width: 1;
       }
     `
 

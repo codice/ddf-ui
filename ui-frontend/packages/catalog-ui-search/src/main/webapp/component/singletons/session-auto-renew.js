@@ -32,7 +32,7 @@ const sessionAutoRenewModel = new (Backbone.Model.extend({
     $.get(sessionExpiryUrl)
       .done(this.handleExpiryTimeResponse.bind(this))
       .fail(() => {
-        console.log('what do we do on failure')
+        console.warn('what do we do on failure')
       })
   },
   handleExpiryTimeResponse(response) {
@@ -60,7 +60,7 @@ const sessionAutoRenewModel = new (Backbone.Model.extend({
     $.get(sessionExpiryUrl)
       .done(this.handleExpiryTimeResponse.bind(this))
       .fail(() => {
-        console.log('what do we do on a failure')
+        console.warn('what do we do on a failure')
       })
   },
 }))()

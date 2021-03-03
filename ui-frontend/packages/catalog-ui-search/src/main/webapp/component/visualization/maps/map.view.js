@@ -33,7 +33,6 @@ const DropdownModel = require('../../dropdown/dropdown.js')
 const MapContextMenuDropdown = require('../../dropdown/map-context-menu/dropdown.map-context-menu.view.js')
 const MapModel = require('./map.model')
 const properties = require('../../../js/properties.js')
-const Common = require('../../../js/Common.js')
 const announcement = require('../../announcement')
 
 import MapSettings from '../../../react-component/map-settings'
@@ -55,7 +54,7 @@ function findExtreme({ objArray, property, comparator }) {
 }
 
 function getHomeCoordinates() {
-  if (properties.mapHome !== '') {
+  if (properties.mapHome !== '' && properties.mapHome !== undefined) {
     const separateCoordinates = properties.mapHome.replace(/\s/g, '').split(',')
     if (separateCoordinates.length % 2 === 0) {
       return separateCoordinates
@@ -198,7 +197,6 @@ module.exports = Marionette.LayoutView.extend({
       'reset:activeSearchResults',
       this.map.removeAllOverlays.bind(this.map)
     )
-
     this.listenTo(
       user.get('user').get('preferences'),
       'change:resultFilter',
@@ -209,6 +207,12 @@ module.exports = Marionette.LayoutView.extend({
       'change:currentQuery',
       this.handleCurrentQuery
     )
+    this.listenTo(
+      this.options.selectionInterface,
+      'panToShapesExtent:currentQuery',
+      this.panToShapesExtent
+    )
+
     setTimeout(() => {
       this.handleCurrentQuery()
     }, 1000)
@@ -232,6 +236,13 @@ module.exports = Marionette.LayoutView.extend({
     this.setupMapInfo()
     this.setupDistanceInfo()
     this.setupPopupPreview()
+  },
+  handleInitialZoom() {
+    if (user.get('user').get('preferences').get('autoPan')) {
+      this.map.panToShapesExtent()
+    } else {
+      this.zoomToHome()
+    }
   },
   zoomToHome() {
     const home = [
@@ -307,6 +318,15 @@ module.exports = Marionette.LayoutView.extend({
       )
     this.addRegion('toolbarSettings', '.toolbar-settings')
     this.toolbarSettings.show(new MapSettingsView())
+  },
+  panToShapesExtent() {
+    if (user.get('user').get('preferences').get('autoPan')) {
+      if (this.map.getShapes().length) {
+        this.map.panToShapesExtent()
+      } else {
+        this.zoomToHome()
+      }
+    }
   },
   onMapHover(event, mapEvent) {
     const currentQuery = this.options.selectionInterface.get('currentQuery')
@@ -505,7 +525,9 @@ module.exports = Marionette.LayoutView.extend({
     this.addLayers()
     this.addSettings()
     this.endLoading()
-    this.zoomToHome()
+    setTimeout(() => {
+      this.handleInitialZoom()
+    }, 1000)
   },
   addLayers() {
     this.$el

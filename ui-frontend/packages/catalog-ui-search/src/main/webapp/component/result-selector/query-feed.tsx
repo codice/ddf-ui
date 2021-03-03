@@ -12,7 +12,7 @@ import { useLazyResultsStatusFromSelectionInterface } from '../selection-interfa
 import Tooltip from '@material-ui/core/Tooltip'
 import { Elevations } from '../theme/theme'
 import FilterListIcon from '@material-ui/icons/FilterList'
-import { fuzzyHits } from './fuzzy-results'
+import { fuzzyHits, fuzzyResultCount } from './fuzzy-results'
 
 type Props = {
   selectionInterface: any
@@ -103,7 +103,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
       </Cell>
       <Cell data-id="available-label">
         <CellValue
-          value={fuzzyHits(status.count)}
+          value={`${status.count} hit${status.count === 1 ? '' : 's'}`}
           hasReturned={hasReturned}
           successful={successful}
           warnings={warnings}
@@ -206,29 +206,43 @@ const QueryFeed = ({ selectionInterface }: Props) => {
   } = useLazyResultsStatusFromSelectionInterface({
     selectionInterface,
   })
+
   const statusBySource = Object.values(status)
-  let resultCount = '',
+  let resultMessage = '',
     pending = false,
-    failed = false
+    failed = false,
+    warnings = false
   if (statusBySource.length === 0) {
-    resultCount = 'Has not been run'
+    resultMessage = 'Has not been run'
   } else {
     const sourcesThatHaveReturned = statusBySource.filter(
       (status) => status.hasReturned
     )
-    resultCount =
-      sourcesThatHaveReturned.length > 0
-        ? fuzzyHits(
-            statusBySource
-              .filter((status) => status.hasReturned)
-              .filter((status) => status.successful)
-              .reduce((amt, status) => {
-                amt = amt + status.hits
-                return amt
-              }, 0)
-          )
-        : 'Searching...'
+
+    if (sourcesThatHaveReturned.length > 0) {
+      const results = statusBySource
+        .filter((status) => status.hasReturned)
+        .filter((status) => status.successful)
+
+      let available = 0
+      let possible = 0
+
+      results.forEach((result) => {
+        available += result.count
+        possible += result.hits
+      })
+
+      resultMessage = `${available} hit${
+        available === 1 ? '' : 's'
+      } out of ${fuzzyResultCount(possible)} possible`
+    } else {
+      resultMessage = 'Searching...'
+    }
+
     failed = sourcesThatHaveReturned.some((status) => !status.successful)
+    warnings = sourcesThatHaveReturned.some(
+      (status) => status.warnings && status.warnings.length > 0
+    )
     pending = isSearching
   }
 
@@ -238,7 +252,7 @@ const QueryFeed = ({ selectionInterface }: Props) => {
         <Grid item>
           <div
             data-id="results-count-label"
-            title={resultCount}
+            title={resultMessage}
             style={{ whiteSpace: 'nowrap' }}
           >
             {pending ? (
@@ -247,7 +261,7 @@ const QueryFeed = ({ selectionInterface }: Props) => {
               ''
             )}
             {failed ? <i className="fa fa-warning" /> : ''}
-            {resultCount}
+            {resultMessage}
           </div>
           <LastRan currentAsOf={currentAsOf} />
         </Grid>
@@ -272,15 +286,24 @@ const QueryFeed = ({ selectionInterface }: Props) => {
           >
             {({ handleClick }) => {
               return (
-                <Button
-                  data-id="heartbeat-button"
-                  onClick={handleClick}
-                  className="details-view is-button"
-                  title="Show the full status for the search."
-                  data-help="Show the full status for the search."
-                >
-                  <span className="fa fa-heartbeat" />
-                </Button>
+                <div>
+                  <div className="relative">
+                    <Button
+                      data-id="heartbeat-button"
+                      onClick={handleClick}
+                      className="details-view is-button"
+                      title="Show the full status for the search."
+                      data-help="Show the full status for the search."
+                    >
+                      <span className="fa fa-heartbeat" />
+                    </Button>
+                    {warnings && (
+                      <div className="absolute bottom-0 right-0 text-sm">
+                        <ErrorIcon fontSize="inherit" color="error" />
+                      </div>
+                    )}
+                  </div>
+                </div>
               )
             }}
           </Dropdown>

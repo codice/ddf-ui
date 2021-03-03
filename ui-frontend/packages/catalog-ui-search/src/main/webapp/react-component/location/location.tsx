@@ -12,8 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const React = require('react')
-import Keyword from './keyword'
+import * as React from 'react'
 const LocationOldModel = require('../../component/location-old/location-old')
 const CustomElements = require('../../js/CustomElements.js')
 const wreqr = require('../../js/wreqr.js')
@@ -29,8 +28,16 @@ const Line = require('./line')
 const Polygon = require('./polygon')
 const PointRadius = require('./point-radius')
 const BoundingBox = require('./bounding-box')
+import Gazetteer from './gazetteer'
 const plugin = require('plugins/location')
 
+type InputType = {
+  label: string
+  Component: any
+}
+type InputsType = {
+  [key: string]: InputType
+}
 const inputs = plugin({
   line: {
     label: 'Line',
@@ -54,7 +61,7 @@ const inputs = plugin({
       return (
         // Offsets className="form-group clearfix" below
         <div style={{ marginTop: -15 }}>
-          <Keyword
+          <Gazetteer
             {...props}
             value={keywordValue}
             setState={({ value, ...data }: any) => {
@@ -69,12 +76,7 @@ const inputs = plugin({
       )
     },
   },
-}) as {
-  [key: string]: {
-    label: string
-    Component: any
-  }
-}
+}) as InputsType
 
 const drawTypes = ['line', 'poly', 'circle', 'bbox']
 
@@ -116,37 +118,50 @@ function updateMap({ locationModel }: any) {
   }
 }
 
+export const LocationContext = React.createContext({
+  filterInputPredicate: (_name: string): boolean => {
+    return true
+  },
+})
 const Component = CustomElements.registerReact('location')
 const LocationInput = ({ onChange, value }: any) => {
+  const locationContext = React.useContext(LocationContext)
   const [locationModel] = React.useState(new LocationOldModel(value) as any)
   const [state, setState] = React.useState(locationModel.toJSON() as any)
-  const { listenTo } = useBackbone()
+  const { listenTo, stopListening } = useBackbone()
   React.useEffect(() => {
-    /**
-     * The first on change call is to set the default value for location
-     */
-    onChange(getCurrentValue({ locationModel }))
-    listenTo(locationModel, 'change', () => {
-      setState(locationModel.toJSON())
-      updateMap({ locationModel })
-      onChange(getCurrentValue({ locationModel }))
-    })
     return () => {
+      // This is to facilitate clearing out the map, it isn't about the value
       locationModel.set(locationModel.defaults())
       wreqr.vent.trigger('search:drawend', locationModel)
     }
   }, [])
+  React.useEffect(() => {
+    const onChangeCallback = () => {
+      setState(locationModel.toJSON())
+      updateMap({ locationModel })
+      onChange(getCurrentValue({ locationModel }))
+    }
+    listenTo(locationModel, 'change', onChangeCallback)
+    return () => {
+      stopListening(locationModel, 'change', onChangeCallback)
+    }
+  }, [onChange])
 
   const ComponentToRender = inputs[state.mode]
     ? inputs[state.mode].Component
     : () => null
-  const options = Object.entries(inputs).map((entry) => {
-    const [key, value] = entry
-    return {
-      label: value.label,
-      value: key,
-    }
-  })
+  const options = Object.entries(inputs)
+    .map((entry) => {
+      const [key, value] = entry
+      return {
+        label: value.label,
+        value: key,
+      }
+    })
+    .filter((value) => {
+      return locationContext.filterInputPredicate(value.value)
+    })
   return (
     <div>
       <Component>

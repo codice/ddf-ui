@@ -34,6 +34,7 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import { SelectionBackground } from './result-item'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { TypedUserInstance } from '../singletons/TypedUser'
+import useCoordinateFormat from '../tabs/metacard/useCoordinateFormat'
 
 type ResultItemFullProps = {
   lazyResult: LazyQueryResult
@@ -102,6 +103,7 @@ const RowComponent = ({
   )
   const isLast = index === results.length - 1
   const { listenTo } = useBackbone()
+  const convertToFormat = useCoordinateFormat()
   useRerenderOnBackboneSync({ lazyResult })
 
   React.useEffect(() => {
@@ -116,7 +118,18 @@ const RowComponent = ({
   const imgsrc = Common.getImageSrc(thumbnail)
   React.useEffect(() => {
     measure()
-  }, [shownAttributes])
+  }, [shownAttributes, convertToFormat])
+
+  const getDisplayValue = (value: any, property: string) => {
+    if (value && metacardDefinitions.metacardTypes[property]) {
+      switch (metacardDefinitions.metacardTypes[property].type) {
+        case 'GEOMETRY':
+          return convertToFormat(value)
+      }
+    }
+    return value
+  }
+
   return (
     <React.Fragment>
       <div
@@ -233,13 +246,12 @@ const RowComponent = ({
                             data-id={`${property}-value`}
                             style={{ wordBreak: 'break-word' }}
                           >
-                            {value.map((value: any, index: number) => {
+                            {value.map((curValue: any, index: number) => {
                               return (
-                                <span key={index} data-value={`${value}`}>
-                                  {value.toString().substring(0, 4) ===
-                                  'http' ? (
+                                <span key={index} data-value={`${curValue}`}>
+                                  {curValue.toString().startsWith('http') ? (
                                     <a
-                                      href={`${value}`}
+                                      href={`${curValue}`}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                     >
@@ -248,7 +260,12 @@ const RowComponent = ({
                                       })}
                                     </a>
                                   ) : (
-                                    `${value}`
+                                    `${
+                                      value.length > 1 &&
+                                      index < value.length - 1
+                                        ? curValue + ', '
+                                        : getDisplayValue(curValue, property)
+                                    }`
                                   )}
                                 </span>
                               )

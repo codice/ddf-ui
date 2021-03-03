@@ -17,7 +17,7 @@
     <parent>
         <artifactId>audit</artifactId>
         <groupId>org.codice.ddf.search</groupId>
-        <version>4.1.6-SNAPSHOT</version>
+        <version>5.0.1-SNAPSHOT</version>
     </parent>
 
     <packaging>bundle</packaging>
@@ -34,6 +34,11 @@
             <groupId>ddf.security.core</groupId>
             <artifactId>security-core-impl</artifactId>
             <version>${ddf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
         </dependency>
     </dependencies>
 

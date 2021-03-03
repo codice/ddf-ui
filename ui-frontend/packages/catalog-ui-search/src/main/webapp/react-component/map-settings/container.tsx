@@ -13,67 +13,94 @@
  *
  **/
 import * as React from 'react'
+import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import MapSettingsPresentation from './presentation'
-import Dropdown from '../presentation/dropdown'
+import { Dropdown } from '../../component/atlas-dropdown'
 import { hot } from 'react-hot-loader'
 import withListenTo, {
   WithBackboneProps,
 } from '../../react-component/backbone-container'
+import Paper from '@material-ui/core/Paper'
+import { BetterClickAwayListener } from '../../component/better-click-away-listener/better-click-away-listener'
 const user = require('../../component/singletons/user-instance.js')
-
-const save = (newFormat: string) => {
-  const preferences = user.get('user').get('preferences')
-  preferences.set({
-    coordinateFormat: newFormat,
-  })
-  preferences.savePreferences()
-}
 
 const Span = styled.span`
   padding-right: 5px;
 `
-type State = {
-  selected: string
-}
 
-class MapSettings extends React.Component<WithBackboneProps, State> {
-  constructor(props: WithBackboneProps) {
-    super(props)
-    this.state = {
-      selected: user.get('user').get('preferences').get('coordinateFormat'),
-    }
-  }
+const MapSettings = (props: WithBackboneProps) => {
+  const [coordFormat, setCoordFormat] = useState(
+    user.get('user').get('preferences').get('coordinateFormat')
+  )
+  const [autoPan, setAutoPan] = useState(
+    user.get('user').get('preferences').get('autoPan')
+  )
 
-  componentDidMount = () =>
-    this.props.listenTo(
+  useEffect(() => {
+    props.listenTo(
       user.get('user').get('preferences'),
       'change:coordinateFormat',
-      (_prefs: any, value: string) => this.setState({ selected: value })
+      (_prefs: any, value: string) => setCoordFormat(value)
     )
+    props.listenTo(
+      user.get('user').get('preferences'),
+      'change:autoPan',
+      (_prefs: any, value: boolean) => setAutoPan(value)
+    )
+  }, [])
 
-  update(newFormat: string) {
-    save(newFormat)
-    this.setState({ selected: newFormat })
+  const updateCoordFormat = (coordinateFormat: string) => {
+    const preferences = user
+      .get('user')
+      .get('preferences')
+      .set({ coordinateFormat })
+    preferences.savePreferences()
   }
 
-  render() {
-    const { selected } = this.state
-
-    const mapSettingsProps = {
-      selected,
-      update: (newFormat: string) => this.update(newFormat),
-    }
-
-    const mapSettings = <MapSettingsPresentation {...mapSettingsProps} />
-
-    return (
-      <Dropdown content={mapSettings}>
-        <Span className="interaction-text">Settings</Span>
-        <Span className="interaction-icon fa fa-cog" />
-      </Dropdown>
-    )
+  const updateAutoPan = (
+    _event: React.ChangeEvent<HTMLInputElement>,
+    autoPan: boolean
+  ) => {
+    const preferences = user.get('user').get('preferences').set({ autoPan })
+    preferences.savePreferences()
   }
+
+  return (
+    <Dropdown
+      content={({ close }) => {
+        return (
+          <BetterClickAwayListener onClickAway={close}>
+            <Paper>
+              <MapSettingsPresentation
+                coordFormat={coordFormat}
+                updateCoordFormat={updateCoordFormat}
+                autoPan={autoPan}
+                updateAutoPan={updateAutoPan}
+              />
+            </Paper>
+          </BetterClickAwayListener>
+        )
+      }}
+    >
+      {({ handleClick }) => {
+        return (
+          <div
+            onClick={handleClick}
+            tabIndex={0}
+            onKeyPress={(e: any) => {
+              if (e.key === 'Enter') {
+                handleClick(e)
+              }
+            }}
+          >
+            <Span className="interaction-text">Settings</Span>
+            <Span className="interaction-icon fa fa-cog" />
+          </div>
+        )
+      }}
+    </Dropdown>
+  )
 }
 
 export default hot(module)(withListenTo(MapSettings))

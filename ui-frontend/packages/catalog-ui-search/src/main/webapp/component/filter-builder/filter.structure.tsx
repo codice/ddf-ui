@@ -93,15 +93,23 @@ export const serialize = {
     return `RELATIVE(${prefix + last + unit.toUpperCase()})`
   },
   dateAround: (value: ValueTypes['around']) => {
-    if (value.buffer === undefined || value.date === undefined) {
+    if (
+      value.buffer === undefined ||
+      value.date === undefined ||
+      value.direction === undefined
+    ) {
       return ''
     }
-    let before = moment(value.date)
-      .subtract(value.buffer.amount, value.buffer.unit)
-      .toISOString()
-    let after = moment(value.date)
-      .add(value.buffer.amount, value.buffer.unit)
-      .toISOString()
+    let before = ['both', 'before'].includes(value.direction)
+      ? moment(value.date)
+          .subtract(value.buffer.amount, value.buffer.unit)
+          .toISOString()
+      : value.date
+    let after = ['both', 'after'].includes(value.direction)
+      ? moment(value.date)
+          .add(value.buffer.amount, value.buffer.unit)
+          .toISOString()
+      : value.date
     return `DURING ${before}/${after}`
   },
   dateBetween: (value: ValueTypes['between']) => {
@@ -221,6 +229,7 @@ export type ValueTypes = {
       amount: string
       unit: 'm' | 'h' | 'd' | 'M' | 'y' | 's' | 'w'
     }
+    direction: 'both' | 'before' | 'after'
   }
   during: {
     start: string
@@ -231,30 +240,32 @@ export type ValueTypes = {
     end: number
   }
   location: // this is all we technically need to reconstruct (lo fidelity)
-  | {
-        type: 'LINE'
-        mode: 'line'
-        lineWidth?: string
-        line: Array<Array<number>>
-      }
-    | {
-        type: 'POLYGON'
-        polygonBufferWidth?: number | string
-        polygonBufferUnits?: 'meters'
-        polygon: Array<Array<number>>
-        locationType?: 'dd'
-        polyType?: 'polygon'
-        mode: 'poly'
-      } //POINTRADIUS
-    | {
-        type: 'POINTRADIUS'
-        radius: number | string
-        radiusUnits?: 'meters'
-        mode: 'circle'
-        lat: number
-        lon: number
-        locationType?: 'dd'
-      }
+  LineLocation | PolygonLocation | PointRadiusLocation
+}
+
+export type LineLocation = {
+  type: 'LINE'
+  mode: 'line'
+  lineWidth?: string
+  line: Array<Array<number>>
+}
+export type PolygonLocation = {
+  type: 'POLYGON'
+  polygonBufferWidth?: number | string
+  polygonBufferUnits?: 'meters'
+  polygon: Array<Array<number>>
+  locationType?: 'dd'
+  polyType?: 'polygon'
+  mode: 'poly'
+}
+export type PointRadiusLocation = {
+  type: 'POINTRADIUS'
+  radius: number | string
+  radiusUnits?: 'meters'
+  mode: 'circle'
+  lat: number
+  lon: number
+  locationType?: 'dd'
 }
 
 export class FilterClass extends SpreadOperatorProtectedClass {

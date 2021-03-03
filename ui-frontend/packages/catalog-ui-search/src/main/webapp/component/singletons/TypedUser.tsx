@@ -58,4 +58,44 @@ export const TypedUserInstance = {
     })
     return attributesPossible.map((attr) => attr.id)
   },
+  getQuerySettings: (): QuerySettingsModelType => {
+    return userInstance.getQuerySettings()
+  },
+  updateQuerySettings: (newSettings: Partial<QuerySettingsType>): void => {
+    const currentSettings = TypedUserInstance.getQuerySettings()
+    currentSettings.set(newSettings)
+    userInstance.savePreferences()
+  },
+  getCoordinateFormat: (): string => {
+    let coordFormat = userInstance
+      .get('user')
+      ?.get('preferences')
+      ?.get('coordinateFormat')
+
+    if (!coordFormat) {
+      const defaultCoordFormat = userInstance
+        .get('user')
+        ?.defaults()
+        ?.preferences?.get('coordinateFormat')
+      coordFormat = defaultCoordFormat ?? 'degrees'
+    }
+
+    return coordFormat
+  },
+}
+
+type QuerySettingsType = {
+  type: string
+  sources: string[]
+  federation: 'selected' | 'enterprise'
+  sorts: { attribute: string; direction: 'descending' | 'ascending' }[]
+  template: string
+  spellcheck: boolean
+  phonetics: boolean
+}
+
+type QuerySettingsModelType = {
+  get: (attr: string) => any
+  set: (attr: any, value?: any) => void
+  toJSON: () => QuerySettingsType
 }

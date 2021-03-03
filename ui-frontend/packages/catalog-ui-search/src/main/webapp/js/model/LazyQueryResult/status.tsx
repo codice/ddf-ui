@@ -34,6 +34,7 @@ export class Status {
   cacheMessages: []
   hasReturned: boolean
   message: string
+  warnings: [string]
   constructor({ id }: { id: string }) {
     this.id = id
     this.count = 0

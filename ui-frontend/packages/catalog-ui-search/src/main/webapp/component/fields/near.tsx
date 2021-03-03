@@ -17,6 +17,7 @@ import * as React from 'react'
 import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
 import { ValueTypes } from '../filter-builder/filter.structure'
+import { CustomInputOrDefault } from '../../react-component/filter/filter-input/customInputOrDefault'
 
 type NearFieldProps = {
   value: ValueTypes['proximity']
@@ -52,20 +53,22 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
       wrap="nowrap"
     >
       <Grid item className="w-full pb-2">
-        <TextField
-          fullWidth
-          multiline
-          rowsMax={3}
-          variant="outlined"
-          type="text"
+        <CustomInputOrDefault
           value={value.second}
-          onChange={(e) => {
+          onChange={(val: any) => {
             onChange({
               ...value,
-              second: e.target.value,
+              second: val,
             })
           }}
-          size="small"
+          props={{
+            fullWidth: true,
+            multiline: true,
+            rowsMax: 3,
+            variant: 'outlined',
+            type: 'text',
+            size: 'small',
+          }}
         />
       </Grid>
       <Grid item className="w-full pb-2 pl-2">
@@ -90,20 +93,22 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
         of
       </Grid>
       <Grid item className="w-full">
-        <TextField
-          fullWidth
-          multiline
-          rowsMax={3}
-          variant="outlined"
-          type="text"
+        <CustomInputOrDefault
           value={value.first}
-          onChange={(e) => {
+          onChange={(val: any) => {
             onChange({
               ...value,
-              first: e.target.value,
+              first: val,
             })
           }}
-          size="small"
+          props={{
+            fullWidth: true,
+            multiline: true,
+            rowsMax: 3,
+            variant: 'outlined',
+            type: 'text',
+            size: 'small',
+          }}
         />
       </Grid>
     </Grid>

@@ -119,7 +119,6 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
     }
   }, [])
 
-  console.log('rendered')
   return (
     <Grid
       container

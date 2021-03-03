@@ -147,7 +147,6 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
                   option.value === value.value
                 }
                 onChange={(_e, newValue) => {
-                  console.log(newValue)
                   onChange({
                     ...value,
                     property: newValue.map((val) => val.value),

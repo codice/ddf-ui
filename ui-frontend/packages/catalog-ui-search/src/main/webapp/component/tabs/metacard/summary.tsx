@@ -36,6 +36,7 @@ import { displayHighlightedAttrInFull } from './highlightUtil'
 import DateTimePicker from '../../fields/date-time-picker'
 import Geometry from '../../../react-component/input-wrappers/geometry'
 import { useRerenderOnBackboneSync } from '../../../js/model/LazyQueryResult/hooks'
+import useCoordinateFormat from './useCoordinateFormat'
 
 function getSummaryShown(): string[] {
   const userchoices = user
@@ -89,11 +90,11 @@ const ThumbnailInput = ({
                 // @ts-ignore ts-migrate(2531) FIXME: Object is possibly 'null'.
                 onChange(event.target.result)
               } catch (err) {
-                console.log('something wrong with file type')
+                console.error('something wrong with file type')
               }
             }
             reader.onerror = () => {
-              console.log('error')
+              console.error('error')
             }
 
             // @ts-ignore ts-migrate(2531) FIXME: Object is possibly 'null'.
@@ -357,7 +358,7 @@ export const Editor = ({
                   ? values.map((subval: any) => subval.split(',')[1])
                   : values
             } catch (err) {
-              console.log(err)
+              console.error(err)
             }
             const payload = [
               {
@@ -431,6 +432,15 @@ const AttributeComponent = ({
   let label = TypedMetacardDefs.getAlias({ attr })
   const { isNotWritable } = useCustomReadOnlyCheck()
   const dialogContext = useDialog()
+  const convertToFormat = useCoordinateFormat()
+
+  const isUrl = (value: any) => {
+    if (value && typeof value === 'string') {
+      const protocol = value.toLowerCase().split('/')[0]
+      return protocol && (protocol === 'http:' || protocol === 'https:')
+    }
+    return false
+  }
 
   const isFiltered =
     filter !== '' ? !label.toLowerCase().includes(filter.toLowerCase()) : false
@@ -448,15 +458,22 @@ const AttributeComponent = ({
               onClick={() => {
                 dialogContext.setProps({
                   open: true,
+                  disableEnforceFocus: true,
                   children: (
                     <Editor
                       attr={attr}
                       lazyResult={lazyResult}
                       onCancel={() => {
-                        dialogContext.setProps({ open: false, children: null })
+                        dialogContext.setProps({
+                          open: false,
+                          children: null,
+                        })
                       }}
                       onSave={() => {
-                        dialogContext.setProps({ open: false, children: null })
+                        dialogContext.setProps({
+                          open: false,
+                          children: null,
+                        })
                       }}
                     />
                   ),
@@ -543,6 +560,10 @@ const AttributeComponent = ({
                             return (
                               <Typography>{val ? 'true' : 'false'}</Typography>
                             )
+                          case 'GEOMETRY':
+                            return (
+                              <Typography>{convertToFormat(val)}</Typography>
+                            )
                           default:
                             if (lazyResult.highlights[attr]) {
                               if (attr === 'title') {
@@ -559,10 +580,30 @@ const AttributeComponent = ({
                                   </Typography>
                                 )
                               }
-                              return displayHighlightedAttrInFull(
-                                lazyResult.highlights[attr],
-                                val,
-                                index
+                              {
+                                return isUrl(val) ? (
+                                  <Typography>
+                                    <span className="highlight">
+                                      <a href={val} target="_blank">
+                                        {val}
+                                      </a>
+                                    </span>
+                                  </Typography>
+                                ) : (
+                                  displayHighlightedAttrInFull(
+                                    lazyResult.highlights[attr],
+                                    val,
+                                    index
+                                  )
+                                )
+                              }
+                            } else if (isUrl(val)) {
+                              return (
+                                <Typography>
+                                  <a href={val} target="_blank">
+                                    {val}
+                                  </a>
+                                </Typography>
                               )
                             } else {
                               return <Typography>{val}</Typography>

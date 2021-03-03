@@ -24,6 +24,7 @@ const LayerItemView = Marionette.ItemView.extend({
   attributes() {
     return {
       'data-id': 'layer-item-collection-container',
+      'layer-id': this.model.id,
     }
   },
   template() {

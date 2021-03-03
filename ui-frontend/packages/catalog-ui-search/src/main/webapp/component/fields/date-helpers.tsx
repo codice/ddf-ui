@@ -12,7 +12,9 @@ import { getDefaultMaxDate } from '@blueprintjs/datetime/lib/esm/datePickerCore'
 
 export const DefaultMinDate = new Date('Jan 1, 1900')
 
-export const DefaultMaxDate = getDefaultMaxDate()
+export const DefaultMaxDate = moment(getDefaultMaxDate())
+  .add(10, 'years')
+  .toDate()
 
 export const DateHelpers = {
   General: {
@@ -131,13 +133,15 @@ export const DateHelpers = {
         maxDate?: Date
       ): Date => {
         try {
-          let momentShiftedDate = moment.utc(new Date(value).toUTCString())
+          const originalDate = new Date(value)
+          let momentShiftedDate = moment.utc(originalDate.toUTCString())
+          // we lose milliseconds with utc, so add them back in here
+          momentShiftedDate.add(originalDate.getMilliseconds(), 'milliseconds')
           const utcOffsetMinutesLocal = new Date().getTimezoneOffset()
           const utcOffsetMinutesTimezone = moment
             .tz(DateHelpers.General.getTimeZone())
             .utcOffset()
           const totalOffset = utcOffsetMinutesLocal + utcOffsetMinutesTimezone
-          console.log(`offset: ${totalOffset}`)
           const momentWithOffset = momentShiftedDate.add(totalOffset, 'minutes')
 
           if (
@@ -170,6 +174,8 @@ export const DateHelpers = {
       TimeshiftedDateToISO: (value: Date) => {
         try {
           let momentShiftedDate = moment.utc(value.toUTCString())
+          // we lose milliseconds with utc, so add them back in here
+          momentShiftedDate.add(value.getMilliseconds(), 'milliseconds')
           const utcOffsetMinutesLocal = new Date().getTimezoneOffset()
           const utcOffsetMinutesTimezone = moment
             .tz(DateHelpers.General.getTimeZone())

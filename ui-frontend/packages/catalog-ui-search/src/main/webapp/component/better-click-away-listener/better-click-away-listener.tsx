@@ -4,11 +4,28 @@ import ClickAwayListener, {
 } from '@material-ui/core/ClickAwayListener'
 import { Drawing } from '../singletons/drawing'
 
+type BetterClickAwayListenerProps = ClickAwayListenerProps & {
+  onClickAway: (event: React.MouseEvent<Document> | KeyboardEvent) => void
+}
+
 /**
- * Same as ClickAwayListener, but doesn't trigger onClickAway if the click was in a menu.
+ * Same as ClickAwayListener, but doesn't trigger onClickAway if the click was in a menu.  Also adds using escape to escape.
  * @param props
  */
-export const BetterClickAwayListener = (props: ClickAwayListenerProps) => {
+export const BetterClickAwayListener = (
+  props: BetterClickAwayListenerProps
+) => {
+  React.useEffect(() => {
+    const callback = (e: KeyboardEvent) => {
+      if (e.keyCode === 27) {
+        props.onClickAway(e)
+      }
+    }
+    document.addEventListener('keyup', callback)
+    return () => {
+      document.removeEventListener('keyup', callback)
+    }
+  }, [])
   return (
     <ClickAwayListener
       {...props}

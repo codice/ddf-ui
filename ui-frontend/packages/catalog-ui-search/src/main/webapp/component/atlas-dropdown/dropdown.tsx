@@ -24,7 +24,7 @@ type DropdownProps = {
 
 export const Dropdown = ({ children, content, popperProps }: DropdownProps) => {
   const dropdownContext = React.useContext(DropdownContext)
-  const [anchorEl, setAnchorEl] = React.useState(null)
+  const [anchorEl, setAnchorEl] = React.useState(null as null | HTMLBaseElement)
 
   function handleClick(event: React.MouseEvent<any, MouseEvent>) {
     // @ts-ignore
@@ -37,7 +37,12 @@ export const Dropdown = ({ children, content, popperProps }: DropdownProps) => {
     <DropdownContext.Provider
       value={{
         close: close,
-        closeAndRefocus: close,
+        closeAndRefocus: () => {
+          close()
+          if (anchorEl) {
+            anchorEl.focus()
+          }
+        },
         parent: () => dropdownContext,
         parentOpen: open,
         deepCloseAndRefocus: dropdownContext.deepCloseAndRefocus,

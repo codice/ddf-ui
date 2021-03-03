@@ -4,10 +4,14 @@ import { Suggestion } from '../location/gazetteer'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import TextField, { TextFieldProps } from '@material-ui/core/TextField'
+import Button from '@material-ui/core/Button'
+import Chip from '@material-ui/core/Chip'
+import RoomIcon from '@material-ui/icons/Room'
+import DeleteIcon from '@material-ui/icons/Clear'
 
 type Props = {
   suggester: (input: string) => Promise<Suggestion[]>
-  onChange: (suggestion: Suggestion) => Promise<void>
+  onChange: (suggestion?: Suggestion) => Promise<void>
   debounce?: number
   minimumInputLength?: number
   onError?: any
@@ -24,7 +28,8 @@ const GazetteerAutoComplete = ({
   value,
   ...props
 }: Props) => {
-  const [input, setInput] = useState('')
+  const [selected, setSelected] = React.useState(value)
+  const [input, setInput] = useState(value)
   const [loading, setLoading] = useState(false)
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -88,6 +93,34 @@ const GazetteerAutoComplete = ({
       return error || 'No results found'
     }
   }
+  React.useEffect(() => {
+    setSelected(Boolean(value))
+  }, [value])
+
+  if (selected) {
+    return (
+      <Chip
+        className="w-full px-2 py-1 mt-2 justify-start rounded"
+        style={{ height: '42px' }}
+        avatar={<RoomIcon />}
+        label={
+          <div className="flex flex-row flex-no-wrap items-center">
+            <div className="flex-shrink w-full truncate">{value}</div>
+            <Button
+              color="primary"
+              className="flex-shrink-0"
+              onClick={() => {
+                props.onChange(undefined)
+              }}
+            >
+              <DeleteIcon />
+            </Button>
+          </div>
+        }
+        variant="outlined"
+      />
+    )
+  }
 
   return (
     <Autocomplete
@@ -99,6 +132,7 @@ const GazetteerAutoComplete = ({
       onChange={onValueSelect}
       onBlur={() => setInput('')}
       noOptionsText={getNoOptionsText()}
+      autoHighlight
       renderInput={(params) => (
         <TextField
           {...params}

@@ -48,6 +48,9 @@ import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple'
 import { clearSelection, hasSelection } from './result-item-row'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { TypedUserInstance } from '../singletons/TypedUser'
+import useCoordinateFormat from '../tabs/metacard/useCoordinateFormat'
+import EditIcon from '@material-ui/icons/Edit'
+import { Link } from '../link/link'
 
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (
@@ -100,7 +103,7 @@ const getIconClassName = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   } else if (lazyResult.isDeleted()) {
     return 'fa fa-trash'
   }
-  return ''
+  return IconHelper.getClassByMetacardObject(lazyResult.plain)
 }
 
 // @ts-ignore ts-migrate(6133) FIXME: 'MultiSelectActions' is declared but its value is ... Remove this comment to see the full error message
@@ -157,74 +160,14 @@ const MultiSelectActions = ({
   )
 }
 
+const dynamicActionClasses = 'h-full'
 const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   const triggerDownload = (e: any) => {
     e.stopPropagation()
     window.open(lazyResult.plain.metacard.properties['resource-download-url'])
   }
   return (
-    <Grid container direction="row" wrap="nowrap" alignItems="center">
-      <Grid item className="h-full">
-        {lazyResult.hasErrors() ? (
-          <div
-            data-id="validation-errors-icon"
-            className="h-full"
-            title="Has validation errors."
-            data-help="Indicates the given result has a validation error.
-                    See the 'Quality' tab of the result for more details."
-          >
-            <WarningIcon />
-          </div>
-        ) : (
-          ''
-        )}
-      </Grid>
-      <Grid item className="h-full">
-        {!lazyResult.hasErrors() && lazyResult.hasWarnings() ? (
-          <div
-            data-id="validation-warnings-icon"
-            className="h-full"
-            title="Has validation warnings."
-            data-help="Indicates the given result has a validation warning.
-                    See the 'Quality' tab of the result for more details."
-          >
-            <WarningIcon />
-          </div>
-        ) : (
-          ''
-        )}
-      </Grid>
-      <Grid item className="h-full">
-        {lazyResult.plain.metacard.properties['ext.link'] ? (
-          <Button
-            title={lazyResult.plain.metacard.properties['ext.link']}
-            onClick={(e) => {
-              e.stopPropagation()
-              window.open(lazyResult.plain.metacard.properties['ext.link'])
-            }}
-            style={{ height: '100%' }}
-            size="small"
-          >
-            <LinkIcon />
-          </Button>
-        ) : null}
-      </Grid>
-      <Grid item className="h-full">
-        {lazyResult.isDownloadable() ? (
-          <Button
-            data-id="download-button"
-            onClick={(e) => {
-              e.stopPropagation()
-              triggerDownload(e)
-            }}
-            style={{ height: '100%' }}
-            size="small"
-          >
-            <GetAppIcon />
-          </Button>
-        ) : null}
-      </Grid>
-      <Extensions.resultItemTitleAddOn lazyResult={lazyResult} />
+    <Grid container direction="column" wrap="nowrap" alignItems="center">
       <Grid item className="h-full">
         <Dropdown
           popperProps={{
@@ -262,6 +205,94 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
           }}
         </Dropdown>
       </Grid>
+      <Grid item className={dynamicActionClasses}>
+        {lazyResult.hasErrors() ? (
+          <div
+            data-id="validation-errors-icon"
+            className="h-full"
+            title="Has validation errors."
+            data-help="Indicates the given result has a validation error.
+                    See the 'Quality' tab of the result for more details."
+          >
+            <WarningIcon />
+          </div>
+        ) : (
+          ''
+        )}
+      </Grid>
+      <Grid item className={dynamicActionClasses}>
+        {!lazyResult.hasErrors() && lazyResult.hasWarnings() ? (
+          <div
+            data-id="validation-warnings-icon"
+            className="h-full"
+            title="Has validation warnings."
+            data-help="Indicates the given result has a validation warning.
+                    See the 'Quality' tab of the result for more details."
+          >
+            <WarningIcon />
+          </div>
+        ) : (
+          ''
+        )}
+      </Grid>
+      <Grid item className={dynamicActionClasses}>
+        {lazyResult.plain.metacard.properties['ext.link'] ? (
+          <Button
+            title={lazyResult.plain.metacard.properties['ext.link']}
+            onClick={(e) => {
+              e.stopPropagation()
+              window.open(lazyResult.plain.metacard.properties['ext.link'])
+            }}
+            style={{ height: '100%' }}
+            size="small"
+          >
+            <LinkIcon />
+          </Button>
+        ) : null}
+      </Grid>
+      <Grid item className={dynamicActionClasses}>
+        {lazyResult.isDownloadable() ? (
+          <Button
+            data-id="download-button"
+            onClick={(e) => {
+              e.stopPropagation()
+              triggerDownload(e)
+            }}
+            style={{ height: '100%' }}
+            size="small"
+          >
+            <GetAppIcon />
+          </Button>
+        ) : null}
+      </Grid>
+      <Extensions.resultItemTitleAddOn lazyResult={lazyResult} />
+      <Grid item className={dynamicActionClasses}>
+        {lazyResult.isSearch() ? (
+          <Link
+            component={Button}
+            data-id="edit-button"
+            to={`/search/${lazyResult.plain.id}`}
+            style={{ height: '100%' }}
+          >
+            <EditIcon />
+          </Link>
+        ) : null}
+      </Grid>
+      {/** add inline editing later */}
+      {/* <Grid item className="h-full">
+        {lazyResult.isSearch() ? (
+          <Button
+            data-id="edit-button"
+            onClick={(e) => {
+              setEdit(lazyResult)
+            }}
+            style={{ height: '100%' }}
+            size="small"
+          >
+            <EditIcon />
+          </Button>
+        ) : null}
+      </Grid> */}
     </Grid>
   )
 }
@@ -356,42 +387,15 @@ const fakeEvent = {
   type: '',
 } as any
 
-const getDisplayValue = ({
-  detail,
-  lazyResult,
-}: {
-  detail: string
-  lazyResult: LazyQueryResult
-}) => {
-  let value = lazyResult.plain.metacard.properties[detail]
-  if (value && metacardDefinitions.metacardTypes[detail]) {
-    switch (metacardDefinitions.metacardTypes[detail].type) {
-      case 'DATE':
-        if (value.constructor === Array) {
-          value = value.map((val: any) => Common.getMomentDate(val))
-        } else {
-          value = Common.getMomentDate(value)
-        }
-        break
-    }
-  }
-  return value
-}
-
-export const ResultItem = ({
-  lazyResult,
-  measure,
-  // @ts-ignore ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
-  index,
-}: ResultItemFullProps) => {
-  // console.log(`rendered: ${index}`)
+export const ResultItem = ({ lazyResult, measure }: ResultItemFullProps) => {
   const rippleRef = React.useRef<{
     pulsate: () => void
     stop: (e: any) => void
     start: (e: any) => void
   }>(null)
   const { listenTo } = useBackbone()
-  const [renderExtras, setRenderExtras] = React.useState(false)
+  const convertToFormat = useCoordinateFormat()
+  const [renderExtras, setRenderExtras] = React.useState(false) // dynamic actions are a significant part of rendering time, so delay until necessary
   const [shownAttributes, setShownAttributes] = React.useState(
     TypedUserInstance.getResultsAttributesShownList()
   )
@@ -409,17 +413,47 @@ export const ResultItem = ({
 
   React.useEffect(() => {
     measure()
-  }, [shownAttributes])
+  }, [shownAttributes, convertToFormat])
 
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const imgsrc = Common.getImageSrc(thumbnail)
-
+  const buttonRef = React.useRef<HTMLButtonElement>(null)
   const ResultItemAddOnInstance = Extensions.resultItemRowAddOn({ lazyResult })
   const shouldShowRelevance = showRelevanceScore({ lazyResult })
   const shouldShowSource = showSource()
   const extraHighlights = Object.keys(lazyResult.highlights).filter(
     (attr) => !shownAttributes.find((shownAttribute) => shownAttribute === attr)
   )
+
+  const getDisplayValue = ({
+    detail,
+    lazyResult,
+  }: {
+    detail: string
+    lazyResult: LazyQueryResult
+  }) => {
+    let value = lazyResult.plain.metacard.properties[detail]
+    if (value && metacardDefinitions.metacardTypes[detail]) {
+      switch (metacardDefinitions.metacardTypes[detail].type) {
+        case 'DATE':
+          if (value.constructor === Array) {
+            value = value.map((val: any) => Common.getMomentDate(val))
+          } else {
+            value = Common.getMomentDate(value)
+          }
+          break
+        case 'GEOMETRY':
+          value = convertToFormat(value)
+      }
+    }
+
+    if (Array.isArray(value)) {
+      value = value.join(', ')
+    }
+
+    return value
+  }
+
   const detailsMap = shownAttributes
     .slice(1) // remove top one since that's special
     .map((detail) => {
@@ -476,18 +510,28 @@ export const ResultItem = ({
         }, 200)
       }}
       onMouseLeave={() => {
+        /**
+         * This is to prevent weirdness with the dynamic actions, where clicking a menu option there adds focus,
+         * thus making the dynamic actions stay visible when the user starts to mouse away.
+         */
         try {
-          // @ts-ignore ts-migrate(2339) FIXME: Property 'blur' does not exist on type 'Element'.
-          if (document.activeElement) document.activeElement.blur()
+          if (
+            document.activeElement &&
+            buttonRef.current &&
+            buttonRef.current.contains(document.activeElement)
+          ) {
+            // @ts-ignore ts-migrate(2339) FIXME: Property 'blur' does not exist on type 'Element'.
+            document.activeElement.blur()
+          }
         } catch (err) {
-          console.log(err)
+          console.error(err)
         }
       }}
       onMouseEnter={() => {
-        // dynamic actions are a significant part of rendering time, so delay until necessary
         setRenderExtras(true)
       }}
       onFocus={(e: any) => {
+        setRenderExtras(true)
         if (e.target === e.currentTarget && rippleRef.current) {
           rippleRef.current.pulsate()
         }
@@ -497,7 +541,8 @@ export const ResultItem = ({
           rippleRef.current.stop(e)
         }
       }}
-      className={`select-text outline-none px-6 p-2 text-left break-words group w-full`}
+      ref={buttonRef}
+      className={`select-text outline-none px-6 pr-12 p-2 text-left break-words group w-full Mui-bg-button`}
     >
       <div className="w-full">
         <TouchRipple ref={rippleRef} />
@@ -591,7 +636,10 @@ export const ResultItem = ({
                           }}
                         />
                       ) : (
-                        detail.value
+                        getDisplayValue({
+                          detail: detail.attribute,
+                          lazyResult,
+                        })
                       )}
                     </span>
                   </PropertyComponent>
@@ -682,14 +730,14 @@ export const ResultItem = ({
               className={`${diagonalHoverClasses} w-2/12 transform translate-y-8`}
             />
             <div
-              className={`absolute z-50 right-0 bottom-0 focus-within:opacity-100 group-hover:opacity-100 hover:opacity-100 opacity-0 cursor-auto transform translate-y-3/4 scale-0 group-hover:scale-100 focus-within:scale-100 transition-all`}
+              className={`absolute z-40 group-hover:z-50 focus-within:z-50 right-0 top-0 focus-within:opacity-100 group-hover:opacity-100 hover:opacity-100 opacity-0 cursor-auto transform focus-within:scale-100 transition-all hover:scale-100 ease-in-out duration-200 hover:translate-x-0 hover:scale-x-100`}
             >
               <Paper
                 onClick={(e) => {
                   e.stopPropagation()
                 }}
                 elevation={Elevations.overlays}
-                className="p-2"
+                className="p-2 group-1"
               >
                 <DynamicActions lazyResult={lazyResult} />
               </Paper>
