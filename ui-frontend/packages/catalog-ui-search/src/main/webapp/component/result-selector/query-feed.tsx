@@ -13,6 +13,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import { Elevations } from '../theme/theme'
 import FilterListIcon from '@material-ui/icons/FilterList'
 import { fuzzyHits, fuzzyResultCount } from './fuzzy-results'
+import ErrorIcon from '@material-ui/icons/Error'
 
 type Props = {
   selectionInterface: any
