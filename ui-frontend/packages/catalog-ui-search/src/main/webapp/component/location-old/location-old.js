@@ -23,6 +23,14 @@ const wreqr = require('../../js/wreqr.js')
 
 import { Drawing } from '../singletons/drawing'
 
+import {
+  validateUsngLineOrPoly,
+  validateDmsLineOrPoly,
+  validateUtmUpsLineOrPoly,
+  parseDmsCoordinate,
+  isUPS,
+} from '../../react-component/location/validators'
+
 const converter = new usngs.Converter()
 const utmUpsLocationType = 'utmUps'
 // offset used by utmUps for southern hemisphere
@@ -49,6 +57,7 @@ module.exports = Backbone.AssociatedModel.extend({
       dmsSouthDirection: Direction.North,
       dmsEastDirection: Direction.East,
       dmsWestDirection: Direction.East,
+      dmsPointArray: undefined,
       mapNorth: undefined,
       mapEast: undefined,
       mapWest: undefined,
@@ -66,6 +75,7 @@ module.exports = Backbone.AssociatedModel.extend({
       bbox: undefined,
       usng: undefined,
       utmUps: undefined,
+      utmUpsPointArray: undefined,
       line: undefined,
       multiline: undefined,
       lineWidth: '',
@@ -90,6 +100,7 @@ module.exports = Backbone.AssociatedModel.extend({
       utmUpsHemisphere: 'Northern',
       usngbbUpperLeft: undefined,
       usngbbLowerRight: undefined,
+      usngPointArray: undefined,
     }
   },
   set(key, value, options) {
@@ -103,6 +114,18 @@ module.exports = Backbone.AssociatedModel.extend({
   },
 
   initialize() {
+    this.listenTo(
+      this,
+      'change:line change:polygon',
+      this.setUsngDmsUtmWithLineOrPoly
+    )
+    this.listenTo(this, 'change:dmsPointArray', this.setLatLonLinePolyFromDms)
+    this.listenTo(this, 'change:usngPointArray', this.setLatLonLinePolyFromUsng)
+    this.listenTo(
+      this,
+      'change:utmUpsPointArray',
+      this.setLatLonLinePolyFromUtmUps
+    )
     this.listenTo(
       this,
       'change:north change:south change:east change:west',
@@ -262,6 +285,158 @@ module.exports = Backbone.AssociatedModel.extend({
         } else {
           clear(this)
         }
+      }
+    }
+  },
+
+  convertLatLonLinePolyToUsng(points) {
+    return points
+      ? points.map((point) => {
+          // A little bit unintuitive, but lat/lon is swapped here
+          return converter.LLtoMGRSUPS(point[1], point[0], usngPrecision)
+        })
+      : undefined
+  },
+
+  convertLatLonLinePolyToDms(points) {
+    return points
+      ? points.map((point) => {
+          const lat = dmsUtils.ddToDmsCoordinateLat(point[1])
+          const lon = dmsUtils.ddToDmsCoordinateLon(point[0])
+          return {
+            lat: lat.coordinate,
+            lon: lon.coordinate,
+            latDirection: lat.direction,
+            lonDirection: lon.direction,
+          }
+        })
+      : undefined
+  },
+
+  convertLatLonLinePolyToUtm(points) {
+    return points
+      ? points.map((point) => {
+          let llPoint = this.LLtoUtmUps(point[1], point[0])
+          return {
+            ...llPoint,
+            hemisphere:
+              llPoint.hemisphere.toUpperCase() === 'NORTHERN'
+                ? 'Northern'
+                : 'Southern',
+          }
+        })
+      : undefined
+  },
+
+  setUsngDmsUtmWithLineOrPoly(model) {
+    let key = this.get('mode')
+    if (key === 'poly') key = 'polygon'
+    if (key && (key === 'line' || key === 'polygon')) {
+      const points = this.get(key)
+      const usngPoints = this.convertLatLonLinePolyToUsng(points)
+      const dmsPoints = this.convertLatLonLinePolyToDms(points)
+      const utmupsPoints = this.convertLatLonLinePolyToUtm(points)
+      model.set(
+        {
+          usngPointArray: usngPoints,
+          dmsPointArray: dmsPoints,
+          utmUpsPointArray: utmupsPoints,
+        },
+        {
+          silent: true, //don't trigger another onChange for line or poly
+        }
+      )
+    }
+  },
+
+  setLatLonLinePolyFromDms() {
+    let key = this.get('mode')
+    if (key === 'poly') key = 'polygon'
+    if (key && (key === 'line' || key === 'polygon')) {
+      let validation = validateDmsLineOrPoly(this.get('dmsPointArray'), key)
+      if (!validation.error) {
+        const llPoints = this.get('dmsPointArray').map((point) => {
+          let latCoordinate = dmsUtils.dmsCoordinateToDD({
+            ...parseDmsCoordinate(point.lat),
+            direction: point.latDirection,
+          })
+          let lonCoordinate = dmsUtils.dmsCoordinateToDD({
+            ...parseDmsCoordinate(point.lon),
+            direction: point.lonDirection,
+          })
+          // A little bit unintuitive, but lat/lon is swapped here
+          return [lonCoordinate, latCoordinate]
+        })
+        const usngPoints = this.convertLatLonLinePolyToUsng(llPoints)
+        const utmupsPoints = this.convertLatLonLinePolyToUtm(llPoints)
+        this.set(
+          {
+            [key]: llPoints,
+            usngPointArray: usngPoints,
+            utmUpsPointArray: utmupsPoints,
+          },
+          {
+            silent: true, //don't trigger another onChange for line or poly
+          }
+        )
+      }
+    }
+  },
+
+  setLatLonLinePolyFromUsng() {
+    let key = this.get('mode')
+    if (key === 'poly') key = 'polygon'
+    if (key && (key === 'line' || key === 'polygon')) {
+      let validation = validateUsngLineOrPoly(this.get('usngPointArray'), key)
+      if (!validation.error) {
+        const llPoints = this.get('usngPointArray').map((point) => {
+          // A little bit unintuitive, but lat/lon is swapped here
+          const convertedPoint = isUPS(point)
+            ? converter.UTMUPStoLL(point)
+            : converter.USNGtoLL(point, usngPrecision)
+          return [convertedPoint.lon, convertedPoint.lat]
+        })
+        const dmsPoints = this.convertLatLonLinePolyToDms(llPoints)
+        const utmupsPoints = this.convertLatLonLinePolyToUtm(llPoints)
+        this.set(
+          {
+            [key]: llPoints,
+            dmsPointArray: dmsPoints,
+            utmUpsPointArray: utmupsPoints,
+          },
+          {
+            silent: true, //don't trigger another onChange for line or poly
+          }
+        )
+      }
+    }
+  },
+
+  setLatLonLinePolyFromUtmUps() {
+    let key = this.get('mode')
+    if (key === 'poly') key = 'polygon'
+    if (key && (key === 'line' || key === 'polygon')) {
+      let validation = validateUtmUpsLineOrPoly(
+        this.get('utmUpsPointArray'),
+        key
+      )
+      if (!validation.error) {
+        const llPoints = this.get('utmUpsPointArray').map((point) => {
+          const convertedPoint = this.utmUpstoLL(point)
+          return [convertedPoint.lon, convertedPoint.lat]
+        })
+        const dmsPoints = this.convertLatLonLinePolyToDms(llPoints)
+        const usngPoints = this.convertLatLonLinePolyToUsng(llPoints)
+        this.set(
+          {
+            [key]: llPoints,
+            dmsPointArray: dmsPoints,
+            usngPointArray: usngPoints,
+          },
+          {
+            silent: true, //don't trigger another onChange for line or poly
+          }
+        )
       }
     }
   },
@@ -827,7 +1002,7 @@ module.exports = Backbone.AssociatedModel.extend({
   //
   utmUpstoLL(utmUpsParts) {
     const { hemisphere, zoneNumber, northing } = utmUpsParts
-    const northernHemisphere = hemisphere === 'NORTHERN'
+    const northernHemisphere = hemisphere.toUpperCase() === 'NORTHERN'
 
     utmUpsParts = {
       ...utmUpsParts,
