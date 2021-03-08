@@ -21,6 +21,8 @@ import { DateHelpers, DefaultMaxDate, DefaultMinDate } from './date-helpers'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
 import useTimePrefs from './useTimePrefs'
 
+const user = require('../singletons/user-instance.js')
+
 type DateFieldProps = {
   value: string
   onChange: (value: string) => void
@@ -58,6 +60,9 @@ export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
         shortcuts
         timePrecision="millisecond"
         outOfRangeMessage="Out of range"
+        timePickerProps={{
+          useAmPm: user.getAmPmDisplay(),
+        }}
         popoverProps={{
           modifiers: {
             preventOverflow: { enabled: false },

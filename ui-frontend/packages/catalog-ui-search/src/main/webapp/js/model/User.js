@@ -454,6 +454,12 @@ User.Response = Backbone.AssociatedModel.extend({
         this.get('user').get('preferences').get('dateTimeFormat')['datetimefmt']
       )
   },
+  getAmPmDisplay() {
+    return (
+      this.get('user').get('preferences').get('dateTimeFormat')['timefmt'] ===
+      Common.getDateTimeFormats()[12].timefmt
+    )
+  },
   getDateTimeFormat() {
     return this.get('user').get('preferences').get('dateTimeFormat')[
       'datetimefmt'
