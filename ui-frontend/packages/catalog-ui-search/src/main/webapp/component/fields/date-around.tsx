@@ -14,9 +14,6 @@
  **/
 import * as React from 'react'
 import { DateInput } from '@blueprintjs/datetime'
-
-// @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../s... Remove this comment to see the full error message
-import user from '../singletons/user-instance'
 import { DateHelpers, DefaultMaxDate, DefaultMinDate } from './date-helpers'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
 import useTimePrefs from './useTimePrefs'
@@ -25,6 +22,8 @@ import Grid from '@material-ui/core/Grid/Grid'
 import { NumberField } from './number'
 import TextField from '@material-ui/core/TextField/TextField'
 import MenuItem from '@material-ui/core/MenuItem/MenuItem'
+
+const user = require('../singletons/user-instance.js')
 
 type DateAroundProps = {
   value: ValueTypes['around']
@@ -70,6 +69,9 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
     <Grid container alignItems="stretch" direction="column" wrap="nowrap">
       <Grid item className="w-full pb-2">
         <DateInput
+          timePickerProps={{
+            useAmPm: user.getAmPmDisplay(),
+          }}
           className={MuiOutlinedInputBorderClasses}
           minDate={DefaultMinDate}
           maxDate={DefaultMaxDate}

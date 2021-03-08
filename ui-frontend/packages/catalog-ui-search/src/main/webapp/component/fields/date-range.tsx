@@ -19,6 +19,8 @@ import { ValueTypes } from '../filter-builder/filter.structure'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
 import useTimePrefs from './useTimePrefs'
 
+const user = require('../singletons/user-instance.js')
+
 type Props = {
   value: ValueTypes['during']
   onChange: (value: ValueTypes['during']) => void
@@ -54,6 +56,9 @@ export const DateRangeField = ({
   }, [])
   return (
     <DateRangeInput
+      timePickerProps={{
+        useAmPm: user.getAmPmDisplay(),
+      }}
       allowSingleDayRange
       minDate={DefaultMinDate}
       maxDate={DefaultMaxDate}
