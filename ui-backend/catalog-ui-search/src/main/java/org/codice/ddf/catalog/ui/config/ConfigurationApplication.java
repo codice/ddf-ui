@@ -971,7 +971,7 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setTypeNameMapping(String[] mappings) {
     if (mappings != null) {
-      typeNameMapping = MapUtils.lazyMap(new TreeMap(), NEW_SET_FACTORY);
+      typeNameMapping = MapUtils.lazyMap(new TreeMap<String, Set<String>>(), NEW_SET_FACTORY);
 
       for (String mappingValue : mappings) {
         // workaround for KARAF-1701
