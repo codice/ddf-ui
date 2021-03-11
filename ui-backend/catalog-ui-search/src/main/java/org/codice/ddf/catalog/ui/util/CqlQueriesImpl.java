@@ -215,7 +215,7 @@ public class CqlQueriesImpl implements CqlQueries {
    * @param request Catalog Query Request
    * @param responses List of responses to append to.
    * @return A ResultIterable of results, additionally adding the query response to a mutatable list
-   *     for additional context as we query.
+   *     for additiol context as we query.
    */
   private List<Result> retrieveResults(
       CqlRequest cqlRequest, QueryRequest request, List<QueryResponse> responses) {
