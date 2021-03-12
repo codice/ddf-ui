@@ -33,6 +33,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HighlightTransformPluginTest {
+
   QueryRequest request;
 
   private QueryResponse input;
@@ -70,8 +71,11 @@ public class HighlightTransformPluginTest {
     QueryResponse response = new QueryResponseImpl(request, Arrays.asList(result), 1);
     ResultAttributeHighlight resultAttributeHighlight =
         new ResultAttributeHighlightImpl("description", Arrays.asList(highlight));
+    ResultAttributeHighlight missingAttributeHighlight =
+        new ResultAttributeHighlightImpl("extra", Arrays.asList(new HighlightImpl(6, 20)));
     ResultHighlight resultHighlight =
-        new ResultHighlightImpl(id, Arrays.asList(resultAttributeHighlight));
+        new ResultHighlightImpl(
+            id, Arrays.asList(resultAttributeHighlight, missingAttributeHighlight));
 
     response
         .getProperties()

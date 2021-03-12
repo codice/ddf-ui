@@ -30,6 +30,7 @@ import java.util.Map;
 
 /** Transforms solr highlights into an easily displayable format on the frontend */
 public class HighlightTransformPlugin implements PostQueryPlugin {
+
   private int bufferSize;
 
   public HighlightTransformPlugin() {
@@ -44,6 +45,7 @@ public class HighlightTransformPlugin implements PostQueryPlugin {
 
   @VisibleForTesting
   protected static class ProcessedHighlight {
+
     private String id;
     private List<Map<String, String>> highlights;
 
@@ -116,9 +118,12 @@ public class HighlightTransformPlugin implements PostQueryPlugin {
       String attributeName,
       Highlight highlight) {
     Attribute attribute = matchingResult.getMetacard().getAttribute(attributeName);
-    String value = (String) attribute.getValues().get(highlight.getValueIndex());
+    String value = null;
+    if (attribute != null && !attribute.getValues().isEmpty()) {
+      value = (String) attribute.getValues().get(highlight.getValueIndex());
+    }
 
-    if (!value.equals("REDACTED")) {
+    if (value != null && !value.equals("REDACTED")) {
       String highlightedString = createHighlightString(highlight, value, attributeName);
       processedHighlight.addHighlight(
           attributeName,
@@ -162,7 +167,9 @@ public class HighlightTransformPlugin implements PostQueryPlugin {
       int startIndex = highlight.getBeginIndex() - bufferSize;
       if (startIndex <= 0) {
         startBuffer = value.substring(0, highlight.getBeginIndex());
-      } else startBuffer = "...".concat(value.substring(startIndex, highlight.getBeginIndex()));
+      } else {
+        startBuffer = "...".concat(value.substring(startIndex, highlight.getBeginIndex()));
+      }
     }
     return startBuffer;
   }
