@@ -12,50 +12,56 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
+import React from 'react'
 const Marionette = require('marionette')
 const _ = require('underscore')
 const $ = require('jquery')
-const template = require('./ingest.hbs')
 const CustomElements = require('../../js/CustomElements.js')
 const IngestDetails = require('../ingest-details/ingest-details.view.js')
-const IngestEditor = require('../ingest-editor/ingest-editor.view.js')
 const IngestEditorOverride = require('../ingest-editor/ingest-editor-override')
 const properties = require('../../js/properties.js')
 const announcement = require('../announcement/index.jsx')
 
 module.exports = Marionette.LayoutView.extend({
-  template,
-  tagName: CustomElements.register('ingest'),
+  template() {
+    const showEditor = properties.editorAttributes.length > 0
+    return (
+      <React.Fragment>
+        <div className="ingest-uploader flex width-full h-full align-top white-space-nowrap">
+          {showEditor && <div className="ingest-editor w-1/4"></div>}
+          <div className="ingest-details flex-grow"></div>
+        </div>
+      </React.Fragment>
+    )
+  },
+  tagName: CustomElements.register('ingest-override'),
   regions: {
     ingestDetails: '.ingest-details',
     ingestEditor: '.ingest-editor',
   },
   onBeforeShow() {
-    const isEditorShown = properties.editorAttributes.length > 0
-    this.$el.toggleClass('editor-hidden', !isEditorShown)
-    if (isEditorShown) {
+    const showEditor = properties.editorAttributes.length > 0
+    if (showEditor) {
       this.ingestEditor.show(new IngestEditorOverride())
-      // this.ingestEditor.show(new IngestEditor())
     }
     this.ingestDetails.show(
       new IngestDetails({
         url: this.options.url || './internal/catalog/',
         extraHeaders: this.options.extraHeaders,
         handleUploadSuccess: this.options.handleUploadSuccess,
-        preIngestValidator: isEditorShown
+        preIngestValidator: showEditor
           ? this.validateAttributes.bind(this)
           : null,
       })
     )
   },
-  filterMessage(message) {
+  filterMessage(message: string) {
     return message
       .split(' ')
       .map((word) => properties.attributeAliases[word] || word)
       .join(' ')
   },
-  validateAttributes(callback) {
+  validateAttributes(callback: () => void) {
     const propertyCollectionView = this.ingestEditor.currentView.getPropertyCollectionView()
     propertyCollectionView.clearValidation()
     return $.ajax({
@@ -65,7 +71,7 @@ module.exports = Marionette.LayoutView.extend({
       contentType: 'application/json; charset=utf-8',
       dataType: 'json',
     }).then(
-      _.bind(function (response) {
+      _.bind(function (response: any[]) {
         response.forEach((attribute) => {
           attribute.errors = attribute.errors.map(this.filterMessage)
           attribute.warnings = attribute.warnings.map(this.filterMessage)

@@ -6,7 +6,8 @@ import App, {
 } from './app'
 import { hot } from 'react-hot-loader/root'
 import MRC from '../../react-component/marionette-region-container'
-const IngestView = require('../ingest/ingest.view')
+const IngestView = require('../ingest/ingest.view-override')
+// const IngestView = require('../ingest/ingest.view')
 import { HomePage } from '../pages/home'
 
 import SourcesPage from '../../react-component/sources'
