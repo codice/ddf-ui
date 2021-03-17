@@ -13,6 +13,7 @@
  *
  **/
 import React from 'react'
+// import { IngestDetailView } from '../ingest-details/ingest-details-react'
 const Marionette = require('marionette')
 const _ = require('underscore')
 const $ = require('jquery')
@@ -29,7 +30,16 @@ module.exports = Marionette.LayoutView.extend({
       <React.Fragment>
         <div className="ingest-uploader flex width-full h-full align-top white-space-nowrap">
           {showEditor && <div className="ingest-editor w-1/4"></div>}
-          <div className="ingest-details flex-grow"></div>
+          <div className="ingest-details flex-grow">
+            {/* <IngestDetailView
+              url={this.options.url || './internal/catalog/'}
+              extraHeaders={this.options.extraHeaders}
+              handleUploadSuccess={this.options.handleUploadSuccess}
+              preIngestValidator={
+                showEditor ? this.validateAttributes.bind(this) : null
+              }
+            /> */}
+          </div>
         </div>
       </React.Fragment>
     )
@@ -63,6 +73,7 @@ module.exports = Marionette.LayoutView.extend({
   },
   validateAttributes(callback: () => void) {
     const propertyCollectionView = this.ingestEditor.currentView.getPropertyCollectionView()
+    const _this = this
     propertyCollectionView.clearValidation()
     return $.ajax({
       url: './internal/prevalidate',
@@ -73,8 +84,8 @@ module.exports = Marionette.LayoutView.extend({
     }).then(
       _.bind(function (response: any[]) {
         response.forEach((attribute) => {
-          attribute.errors = attribute.errors.map(this.filterMessage)
-          attribute.warnings = attribute.warnings.map(this.filterMessage)
+          attribute.errors = attribute.errors.map(_this.filterMessage)
+          attribute.warnings = attribute.warnings.map(_this.filterMessage)
         })
         propertyCollectionView.updateValidation(response)
         if (
@@ -89,8 +100,8 @@ module.exports = Marionette.LayoutView.extend({
           })
           propertyCollectionView.showRequiredWarnings()
         } else {
-          this.ingestDetails.currentView.setOverrides(
-            this.ingestEditor.currentView.getAttributeOverrides()
+          _this.ingestDetails.currentView.setOverrides(
+            _this.ingestEditor.currentView.getAttributeOverrides()
           )
           propertyCollectionView.hideRequiredWarnings()
           callback()

@@ -83,6 +83,7 @@ module.exports = Marionette.LayoutView.extend({
           })
           propertyCollectionView.showRequiredWarnings()
         } else {
+          // Handle
           this.ingestDetails.currentView.setOverrides(
             this.ingestEditor.currentView.getAttributeOverrides()
           )

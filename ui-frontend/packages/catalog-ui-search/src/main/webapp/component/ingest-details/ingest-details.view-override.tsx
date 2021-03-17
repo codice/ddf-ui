@@ -13,7 +13,6 @@
  *
  **/
 import React from 'react'
-const wreqr = require('../../js/wreqr.js')
 const Marionette = require('marionette')
 const _ = require('underscore')
 const $ = require('jquery')
@@ -46,11 +45,37 @@ function updateDropzoneHeight(view) {
 
 module.exports = Marionette.LayoutView.extend({
   template() {
+    const addFiles = () => {}
+
+    const newUpload = () => {
+      this.$el.addClass('starting-new')
+      setTimeout(() => {
+        this.triggerNewUpload()
+      }, 250)
+    }
+
+    const startUpload = () => {
+      if (this.options.preIngestValidator) {
+        this.options.preIngestValidator(
+          _.bind(this.uploadBatchModel.start, this.uploadBatchModel)
+        )
+      } else {
+        this.uploadBatchModel.start()
+      }
+    }
+
+    const cancelUpload = () => this.uploadBatchModel.cancel()
+
     return (
       <React.Fragment>
-        <div className="details-files"></div>
+        <div className="details-files">
+          {/* <MRC
+            view={UploadItemCollectionView}
+            viewOptions={{ collection: this.uploadBatchModel.get('uploads') }}
+          /> */}
+        </div>
         <div className="details-dropzone">
-          <div className="dropzone-text" onClick={() => this.addFiles()}>
+          <div className="dropzone-text" onClick={() => addFiles()}>
             Drop files here or click to upload
           </div>
         </div>
@@ -59,7 +84,7 @@ module.exports = Marionette.LayoutView.extend({
           <button
             data-id="Clearc"
             className="old-button footer-clear is-negative"
-            onClick={() => this.newUpload()}
+            onClick={() => newUpload()}
           >
             <span className="fa fa-times"></span>
             <span>Clear</span>
@@ -67,7 +92,7 @@ module.exports = Marionette.LayoutView.extend({
           <button
             data-id="start"
             className="old-button footer-start is-positive"
-            onClick={() => this.startUpload()}
+            onClick={() => startUpload()}
           >
             <span className="fa fa-upload"></span>
             <span>Starterjelkj</span>
@@ -75,7 +100,7 @@ module.exports = Marionette.LayoutView.extend({
           <button
             data-id="stop"
             className="old-button footer-cancel is-negative"
-            onClick={() => this.cancelUpload()}
+            onClick={() => cancelUpload()}
           >
             <span className="fa fa-stop"></span>
             <span>Stop</span>
@@ -83,7 +108,7 @@ module.exports = Marionette.LayoutView.extend({
           <button
             data-id="new"
             className="old-button footer-new is-positive"
-            onClick={() => this.newUpload()}
+            onClick={() => newUpload()}
           >
             <span className="fa fa-upload"></span>
             <span>New</span>
@@ -180,9 +205,6 @@ module.exports = Marionette.LayoutView.extend({
       this.dropzone.on('success', this.options.handleUploadSuccess)
     }
   },
-  addFiles() {
-    this.$el.find('.details-dropzone').click()
-  },
   showFiles() {
     this.files.show(
       new UploadItemCollectionView({
@@ -196,35 +218,6 @@ module.exports = Marionette.LayoutView.extend({
         model: this.uploadBatchModel,
       })
     )
-  },
-  clearUploads() {
-    this.uploadBatchModel.clear()
-  },
-  startUpload() {
-    if (this.options.preIngestValidator) {
-      this.options.preIngestValidator(
-        _.bind(this.uploadBatchModel.start, this.uploadBatchModel)
-      )
-    } else {
-      this.uploadBatchModel.start()
-    }
-  },
-  cancelUpload() {
-    this.uploadBatchModel.cancel()
-  },
-  newUpload() {
-    this.$el.addClass('starting-new')
-    setTimeout(() => {
-      this.triggerNewUpload()
-    }, 250)
-  },
-  expandUpload() {
-    wreqr.vent.trigger('router:navigate', {
-      fragment: 'uploads/' + this.uploadBatchModel.id,
-      options: {
-        trigger: true,
-      },
-    })
   },
   updateDropzoneHeight() {
     updateDropzoneHeight(this)

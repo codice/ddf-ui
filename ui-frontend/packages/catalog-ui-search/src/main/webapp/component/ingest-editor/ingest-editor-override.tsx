@@ -35,11 +35,11 @@ const IngestEditor = Marionette.LayoutView.extend({
 
         <div className="ingest-editor-footer">
           <button
-            className="old-button ingest-editor-clear is-primary"
+            className="old-button ingest-editor-clear is-primary w-full"
             onClick={handleClear}
           >
-            <span className="fa fa-undo"></span>
-            <span>Reset Attributes</span>
+            <span className="fa fa-undo" />
+            <span> Reset Attributes</span>
           </button>
         </div>
       </React.Fragment>
