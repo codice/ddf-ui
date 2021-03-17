@@ -27,15 +27,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /** Transforms solr highlights into an easily displayable format on the frontend */
 public class HighlightTransformPlugin implements PostQueryPlugin {
 
   private int bufferSize;
 
+  private Pattern redactedPattern;
+
   public HighlightTransformPlugin() {
     // Create a 80 char buffer around the string
     bufferSize = 80;
+
+    redactedPattern = Pattern.compile("REDACTED");
   }
 
   @VisibleForTesting
@@ -119,11 +124,14 @@ public class HighlightTransformPlugin implements PostQueryPlugin {
       Highlight highlight) {
     Attribute attribute = matchingResult.getMetacard().getAttribute(attributeName);
     String value = null;
-    if (attribute != null && !attribute.getValues().isEmpty()) {
-      value = (String) attribute.getValues().get(highlight.getValueIndex());
+    int index = highlight.getValueIndex();
+    if (attribute != null
+        && !attribute.getValues().isEmpty()
+        && index < attribute.getValues().size()) {
+      value = (String) attribute.getValues().get(index);
     }
 
-    if (value != null && !value.equals("REDACTED")) {
+    if (value != null && (redactedPattern == null || !redactedPattern.matcher(value).matches())) {
       String highlightedString = createHighlightString(highlight, value, attributeName);
       processedHighlight.addHighlight(
           attributeName,
@@ -192,5 +200,13 @@ public class HighlightTransformPlugin implements PostQueryPlugin {
       }
     }
     return endBuffer;
+  }
+
+  public void setRedactedPattern(String redactedPattern) {
+    if (redactedPattern == null || redactedPattern.trim().isEmpty()) {
+      this.redactedPattern = null;
+    } else {
+      this.redactedPattern = Pattern.compile(redactedPattern);
+    }
   }
 }
