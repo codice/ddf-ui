@@ -704,6 +704,8 @@ function write(filter: any): any {
         typeof filter.property === 'object'
           ? write(filter.property)
           : wrap(filter.property)
+        
+      
       return filter.value !== null
         ? property + ' ' + filter.type + ' ' + write(filter.value)
         : property + ' ' + filter.type
