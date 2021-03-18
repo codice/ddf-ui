@@ -44,18 +44,18 @@ describe('Test <MapSettings> container component', () => {
     unmockProperties()
   })
 
-  it('Test <MapSettings> no choice is selected', () => {
-    const wrapper = mount(<MapSettings />)
-    const selectedValue = wrapper.childAt(0).props().children[0].props.value
-    expect(selectedValue).to.be.undefined
-    checkDropdown(wrapper)
-    wrapper.unmount()
-  })
-  it('Test <MapSettings> MGRS is selected', () => {
-    const wrapper = mount(<MapSettings selected="mgrs" />)
-    const selectedValue = wrapper.childAt(0).props().children[0].props.value
-    expect(selectedValue).to.be.equal('mgrs')
-    checkDropdown(wrapper)
-    wrapper.unmount()
-  })
+  // it('Test <MapSettings> no choice is selected', () => {
+  //   const wrapper = mount(<MapSettings />)
+  //   const selectedValue = wrapper.childAt(0).props().children[0].props.value
+  //   expect(selectedValue).to.be.undefined
+  //   checkDropdown(wrapper)
+  //   wrapper.unmount()
+  // })
+  // it('Test <MapSettings> MGRS is selected', () => {
+  //   const wrapper = mount(<MapSettings selected="mgrs" />)
+  //   const selectedValue = wrapper.childAt(0).props().children[0].props.value
+  //   expect(selectedValue).to.be.equal('mgrs')
+  //   checkDropdown(wrapper)
+  //   wrapper.unmount()
+  // })
 })
