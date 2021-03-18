@@ -382,7 +382,12 @@ function buildTree(postfix: Array<TokenType>): any {
     case 'VALUE': //works
       const match = tok.text.match(/^'(.*)'$/)
       if (match) {
-        return translateCqlToUserql(match[1].replace(/''/g, "'"))
+        if (postfix[0].text === 'id') {
+          // don't escape ids
+          return match[1].replace(/''/g, "'")
+        } else {
+          return translateCqlToUserql(match[1].replace(/''/g, "'"))
+        }
       } else {
         return Number(tok.text)
       }
@@ -704,9 +709,14 @@ function write(filter: any): any {
         typeof filter.property === 'object'
           ? write(filter.property)
           : wrap(filter.property)
-      return filter.value !== null
-        ? property + ' ' + filter.type + ' ' + write(filter.value)
-        : property + ' ' + filter.type
+
+      if (filter.value === null) {
+        return `${property} ${filter.type}`
+      }
+
+      return `${property} ${filter.type} ${
+        filter.property === 'id' ? `'${filter.value}'` : write(filter.value)
+      }` // don't escape ids
     // temporalClass
     case 'RELATIVE':
       // weird thing I noticed is you have to wrap the value in single quotes, double quotes don't work
