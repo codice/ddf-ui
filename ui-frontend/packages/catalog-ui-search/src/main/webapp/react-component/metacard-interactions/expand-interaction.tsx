@@ -22,7 +22,7 @@ import { Link } from '../../component/link/link'
 const ExpandMetacard = (props: Props) => {
   const isRouted = router && router.toJSON().name === 'openMetacard'
 
-  if (isRouted || props.model.length > 1) {
+  if (isRouted || !props.model || props.model.length !== 1) {
     return null
   }
   let id = props.model.first().get('metacard').get('properties').get('id')
