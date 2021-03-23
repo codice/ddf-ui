@@ -49,41 +49,49 @@ function transformEnumResponse(metacardTypes, response) {
     {}
   )
 }
+
 const metacardStartingTypes = {
   anyText: {
+    alias: properties.attributeAliases['anyText'],
     id: 'anyText',
     type: 'STRING',
     multivalued: false,
   },
   anyGeo: {
+    alias: properties.attributeAliases['anyGeo'],
     id: 'anyGeo',
     type: 'LOCATION',
     multivalued: false,
   },
   anyDate: {
+    alias: properties.attributeAliases['anyDate'],
     id: 'anyDate',
     type: 'DATE',
     multivalued: false,
     hidden: true, // need to investigate if this is common, it looks like we defer to the properties file instead, think we need to overhaul our data structures for this
   },
   'metacard-type': {
+    alias: properties.attributeAliases['metacard-type'],
     id: 'metacard-type',
     type: 'STRING',
     multivalued: false,
     readOnly: true,
   },
   'source-id': {
+    alias: properties.attributeAliases['source-id'],
     id: 'source-id',
     type: 'STRING',
     multivalued: false,
     readOnly: true,
   },
   cached: {
+    alias: properties.attributeAliases['cached'],
     id: 'cached',
     type: 'STRING',
     multivalued: false,
   },
   'metacard-tags': {
+    alias: properties.attributeAliases['metacard-tags'],
     id: 'metacard-tags',
     type: 'STRING',
     multivalued: true,
