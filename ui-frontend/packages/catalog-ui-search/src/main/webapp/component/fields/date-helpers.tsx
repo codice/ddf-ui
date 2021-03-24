@@ -70,7 +70,7 @@ export const DateHelpers = {
     DateProps: {
       generateOnChange: (onChange: (value: string) => void) => {
         return ((selectedDate, isUserChange) => {
-          if (onChange && selectedDate && isUserChange) {
+          if (selectedDate && isUserChange) {
             onChange(
               DateHelpers.Blueprint.converters.TimeshiftedDateToISO(
                 selectedDate
@@ -139,7 +139,7 @@ export const DateHelpers = {
           momentShiftedDate.add(originalDate.getMilliseconds(), 'milliseconds')
           const utcOffsetMinutesLocal = new Date().getTimezoneOffset()
           const utcOffsetMinutesTimezone = moment
-            .tz(DateHelpers.General.getTimeZone())
+            .tz(value, DateHelpers.General.getTimeZone()) // pass in the value, otherwise it won't account for daylight savings time!
             .utcOffset()
           const totalOffset = utcOffsetMinutesLocal + utcOffsetMinutesTimezone
           console.log(`offset: ${totalOffset}`)
@@ -179,7 +179,7 @@ export const DateHelpers = {
           momentShiftedDate.add(value.getMilliseconds(), 'milliseconds')
           const utcOffsetMinutesLocal = new Date().getTimezoneOffset()
           const utcOffsetMinutesTimezone = moment
-            .tz(DateHelpers.General.getTimeZone())
+            .tz(value, DateHelpers.General.getTimeZone()) // pass in the value, otherwise it won't account for daylight savings time!
             .utcOffset()
           const totalOffset = utcOffsetMinutesLocal + utcOffsetMinutesTimezone
           return momentShiftedDate
