@@ -57,6 +57,12 @@ const data = {
     maxFuture: moment().add(10, 'years').toISOString(),
     disallowedFuture: moment().add(11, 'years').toISOString(),
   },
+  // this is useful for testing daylist savings (date 1 is pre, this is post)
+  date4: {
+    timezone: 'America/St_Johns',
+    originalISO: '2021-04-15T05:53:54.316Z',
+    shiftedDate: new Date('2021-04-15T10:23:54.316Z'),
+  },
 }
 describe('verify date field works', () => {
   before(() => {
@@ -130,6 +136,18 @@ describe('verify date field works', () => {
       target: { value: data.date2.userSuppliedInput },
     })
     expect(input.render().val()).to.equal(data.date2.parsedOutput)
+  })
+  it(`should generate appropriately shifted ISO strings on change (DST)`, () => {
+    const wrapper = mount(
+      <DateField
+        value={new Date().toISOString()}
+        onChange={(updatedValue) => {
+          expect(updatedValue).to.equal(data.date4.originalISO)
+        }}
+      />
+    )
+    const dateFieldInstance = wrapper.children().get(0)
+    dateFieldInstance.props.onChange(data.date4.shiftedDate, true)
   })
   it(`should generate appropriately shifted ISO strings on change`, () => {
     const wrapper = mount(

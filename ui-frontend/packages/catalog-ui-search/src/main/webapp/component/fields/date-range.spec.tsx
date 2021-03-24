@@ -60,6 +60,12 @@ const data = {
     userFormat24: '14 Jan 2021 03:23:54.316 -03:30',
     userFormat12: '14 Jan 2021 03:23:54.316 am -03:30',
   },
+  // this is useful for testing daylist savings (date 1 is pre, this is post)
+  date5: {
+    timezone: 'America/St_Johns',
+    originalISO: '2021-04-15T05:53:54.316Z',
+    shiftedDate: new Date('2021-04-15T10:23:54.316Z'),
+  },
 }
 describe('verify date field works', () => {
   before(() => {
@@ -190,6 +196,25 @@ describe('verify date field works', () => {
     })
     expect(input.first().render().val()).to.equal(data.date2.parsedOutput)
     expect(input.last().render().val()).to.equal(data.date2.parsedOutput)
+  })
+  it(`should generate appropriately shifted ISO strings on change (DST)`, () => {
+    const wrapper = mount(
+      <DateRangeField
+        value={{
+          start: new Date().toISOString(),
+          end: new Date().toISOString(),
+        }}
+        onChange={(updatedValue) => {
+          expect(updatedValue.start).to.equal(data.date5.originalISO)
+          expect(updatedValue.end).to.equal(data.date5.originalISO)
+        }}
+      />
+    )
+    const dateFieldInstance = wrapper.children().get(0)
+    dateFieldInstance.props.onChange(
+      [data.date5.shiftedDate, data.date5.shiftedDate],
+      true
+    )
   })
   it(`should generate appropriately shifted ISO strings on change`, () => {
     const wrapper = mount(
