@@ -50,7 +50,9 @@ export type ExtensionPointsType = {
     layoutResult?: ResultType
     editLayoutRef?: any
   }) => JSX.Element | null
-  customSourcesPage: (() => JSX.Element | null) | null
+  customSourcesPage:
+    | ((props: { onChange?: () => void }) => JSX.Element | null)
+    | null
   navigationRight: any[]
   serializeLocation: (
     property: string,
