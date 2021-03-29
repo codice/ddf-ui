@@ -10,7 +10,8 @@ import Grid from '@material-ui/core/Grid'
 import HomeIcon from '@material-ui/icons/Home'
 import CloudIcon from '@material-ui/icons/Cloud'
 import WarningIcon from '@material-ui/icons/Warning'
-import CheckIcon from '@material-ui/icons/Check'
+import CheckBoxIcon from '@material-ui/icons/CheckBox'
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import Chip from '@material-ui/core/Chip'
 import _ from 'lodash'
 type Props = {
@@ -293,13 +294,11 @@ const SourceSelector = ({ search }: Props) => {
           <Grid container alignItems="stretch" direction="row" wrap="nowrap">
             <Grid container direction="row" alignItems="center">
               <Grid item className="pr-2">
-                <CheckIcon
-                  className={
-                    shouldBeSelected({ srcId: 'all', sources })
-                      ? ''
-                      : 'invisible'
-                  }
-                />
+                {shouldBeSelected({ srcId: 'all', sources }) ? (
+                  <CheckBoxIcon />
+                ) : (
+                  <CheckBoxOutlineBlankIcon />
+                )}
               </Grid>
               <Grid item>All</Grid>
             </Grid>
@@ -307,20 +306,24 @@ const SourceSelector = ({ search }: Props) => {
         </MenuItem>
         {availableLocalSources.length > 0 ? (
           <MenuItem data-id="onsite-option" value="local">
-            <Grid container alignItems="stretch" direction="row" wrap="nowrap">
-              <Grid item className="pr-2">
-                <CheckIcon
-                  className={
-                    shouldBeSelected({ srcId: 'local', sources })
-                      ? ''
-                      : 'invisible'
-                  }
-                />
-              </Grid>
+            <Grid
+              container
+              alignItems="stretch"
+              direction="row"
+              wrap="nowrap"
+              className="pl-3"
+            >
               <Grid item className="pr-2">
                 <Swath className="w-1 h-full" />
               </Grid>
               <Grid container direction="row" alignItems="center">
+                <Grid item className="pr-2">
+                  {shouldBeSelected({ srcId: 'local', sources }) ? (
+                    <CheckBoxIcon />
+                  ) : (
+                    <CheckBoxOutlineBlankIcon />
+                  )}
+                </Grid>
                 <Grid item>Fast (onsite)</Grid>
                 <Grid item className="pl-2">
                   <HomeIcon />
@@ -342,20 +345,19 @@ const SourceSelector = ({ search }: Props) => {
                     alignItems="stretch"
                     direction="row"
                     wrap="nowrap"
+                    className="pl-6"
                   >
-                    <Grid item className="pr-2">
-                      <CheckIcon
-                        className={
-                          shouldBeSelected({ srcId: source.id, sources })
-                            ? ''
-                            : 'invisible'
-                        }
-                      />
-                    </Grid>
-                    <Grid item className="pl-2 pr-3">
+                    <Grid item className="pl-3 pr-3">
                       <Swath className="w-1 h-full" />
                     </Grid>
                     <Grid container direction="row" alignItems="center">
+                      <Grid item className="pr-2">
+                        {shouldBeSelected({ srcId: source.id, sources }) ? (
+                          <CheckBoxIcon />
+                        ) : (
+                          <CheckBoxOutlineBlankIcon />
+                        )}
+                      </Grid>
                       <Grid item>
                         <div
                           className={
@@ -378,20 +380,24 @@ const SourceSelector = ({ search }: Props) => {
           : null}
         {availableRemoteSources.length > -1 ? (
           <MenuItem data-id="offsite-option" value="remote">
-            <Grid container alignItems="stretch" direction="row" wrap="nowrap">
-              <Grid item className="pr-2">
-                <CheckIcon
-                  className={
-                    shouldBeSelected({ srcId: 'remote', sources })
-                      ? ''
-                      : 'invisible'
-                  }
-                />
-              </Grid>
+            <Grid
+              container
+              alignItems="stretch"
+              direction="row"
+              wrap="nowrap"
+              className="pl-3"
+            >
               <Grid item className="pr-2">
                 <Swath className="w-1 h-full" />
               </Grid>
               <Grid container direction="row" alignItems="center">
+                <Grid item className="pr-2">
+                  {shouldBeSelected({ srcId: 'remote', sources }) ? (
+                    <CheckBoxIcon />
+                  ) : (
+                    <CheckBoxOutlineBlankIcon />
+                  )}
+                </Grid>
                 <Grid item>Slow (offsite)</Grid>
                 <Grid item className="pl-2">
                   <CloudIcon />
@@ -413,20 +419,19 @@ const SourceSelector = ({ search }: Props) => {
                     alignItems="stretch"
                     direction="row"
                     wrap="nowrap"
+                    className="pl-6"
                   >
-                    <Grid item className="pr-2">
-                      <CheckIcon
-                        className={
-                          shouldBeSelected({ srcId: source.id, sources })
-                            ? ''
-                            : 'invisible'
-                        }
-                      />
-                    </Grid>
-                    <Grid item className="pl-2 pr-2">
+                    <Grid item className="pl-3 pr-3">
                       <Swath className="w-1 h-full" />
                     </Grid>
                     <Grid container direction="row" alignItems="center">
+                      <Grid item className="pr-2">
+                        {shouldBeSelected({ srcId: source.id, sources }) ? (
+                          <CheckBoxIcon />
+                        ) : (
+                          <CheckBoxOutlineBlankIcon />
+                        )}
+                      </Grid>
                       <Grid item>
                         <div
                           className={
