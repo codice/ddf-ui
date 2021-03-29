@@ -143,6 +143,10 @@ Services (OSGi) that catalog-ui-search CONSUMES from DDF
     <reference id="csvQueryResponseTransformer"
                interface="ddf.catalog.transform.QueryResponseTransformer" filter="(id=csv)"/>
 
+    <reference-list id="deprecatableEnumerations"
+                    interface="org.codice.ddf.catalog.ui.enumeration.api.DeprecatableEnumeration"
+                    availability="optional"/>
+
     <!--
     =============================================================
     QUERY APPLICATION

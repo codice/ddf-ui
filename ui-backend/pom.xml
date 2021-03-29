@@ -24,5 +24,6 @@
         <module>intrigue-ui-app</module>
         <module>audit</module>
         <module>javalin-utils</module>
+        <module>deprecatable-enumeration-api</module>
     </modules>
 </project>
