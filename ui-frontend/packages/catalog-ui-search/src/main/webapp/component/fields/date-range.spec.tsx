@@ -11,6 +11,7 @@ const Common = require('../../js/Common')
 //@ts-ignore
 import user from '../singletons/user-instance'
 import { ValueTypes } from '../filter-builder/filter.structure'
+import { DateHelpers } from './date-helpers'
 
 const UncontrolledDateRangeField = ({
   startingValue,
@@ -28,14 +29,12 @@ const UncontrolledDateRangeField = ({
   )
 }
 
-// do not rely on our own transforms for testing, rely on static data!
+// rely on static data when possible, but in these we can use the DateHelpers (a must for shifted date timezone testing)
 const data = {
   date1: {
     timezone: 'America/St_Johns',
     originalISO: '2021-01-15T06:53:54.316Z',
     originalDate: new Date('2021-01-15T06:53:54.316Z'),
-    shiftedISO: '2021-01-15T10:23:54.316Z',
-    shiftedDate: new Date('2021-01-15T10:23:54.316Z'),
     userFormatISO: '2021-01-15T03:23:54.316-03:30',
     userFormat24: '15 Jan 2021 03:23:54.316 -03:30',
     userFormat12: '15 Jan 2021 03:23:54.316 am -03:30',
@@ -54,8 +53,6 @@ const data = {
     timezone: 'America/St_Johns',
     originalISO: '2021-01-14T06:53:54.316Z',
     originalDate: new Date('2021-01-14T06:53:54.316Z'),
-    shiftedISO: '2021-01-14T10:23:54.316Z',
-    shiftedDate: new Date('2021-01-14T10:23:54.316Z'),
     userFormatISO: '2021-01-14T03:23:54.316-03:30',
     userFormat24: '14 Jan 2021 03:23:54.316 -03:30',
     userFormat12: '14 Jan 2021 03:23:54.316 am -03:30',
@@ -63,8 +60,7 @@ const data = {
   // this is useful for testing daylist savings (date 1 is pre, this is post)
   date5: {
     timezone: 'America/St_Johns',
-    originalISO: '2021-04-15T05:53:54.316Z',
-    shiftedDate: new Date('2021-04-15T10:23:54.316Z'),
+    originalISO: '2021-04-15T05:53:54.316Z', // use the converter to find the appropriate shifted date
   },
 }
 describe('verify date field works', () => {
@@ -212,7 +208,14 @@ describe('verify date field works', () => {
     )
     const dateFieldInstance = wrapper.children().get(0)
     dateFieldInstance.props.onChange(
-      [data.date5.shiftedDate, data.date5.shiftedDate],
+      [
+        DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
+          data.date5.originalISO
+        ),
+        DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
+          data.date5.originalISO
+        ),
+      ],
       true
     )
   })
@@ -231,7 +234,14 @@ describe('verify date field works', () => {
     )
     const dateFieldInstance = wrapper.children().get(0)
     dateFieldInstance.props.onChange(
-      [data.date1.shiftedDate, data.date1.shiftedDate],
+      [
+        DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
+          data.date1.originalISO
+        ),
+        DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
+          data.date1.originalISO
+        ),
+      ],
       true
     )
   })

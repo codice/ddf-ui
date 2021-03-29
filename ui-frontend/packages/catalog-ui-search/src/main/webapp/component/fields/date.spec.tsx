@@ -10,6 +10,7 @@ const Common = require('../../js/Common')
 
 //@ts-ignore
 import user from '../singletons/user-instance'
+import { DateHelpers } from './date-helpers'
 
 /**
  * Useful for seeing if updates are called correctly.
@@ -35,14 +36,12 @@ const UncontrolledDateField = ({
   )
 }
 
-// do not rely on our own transforms for testing, rely on static data!
+// rely on static data when possible, but in these we can use the DateHelpers (a must for shifted date timezone testing)
 const data = {
   date1: {
     timezone: 'America/St_Johns',
     originalISO: '2021-01-15T06:53:54.316Z',
     originalDate: new Date('2021-01-15T06:53:54.316Z'),
-    shiftedISO: '2021-01-15T10:23:54.316Z',
-    shiftedDate: new Date('2021-01-15T10:23:54.316Z'),
     userFormatISO: '2021-01-15T03:23:54.316-03:30',
     userFormat24: '15 Jan 2021 03:23:54.316 -03:30',
     userFormat12: '15 Jan 2021 03:23:54.316 am -03:30',
@@ -61,7 +60,6 @@ const data = {
   date4: {
     timezone: 'America/St_Johns',
     originalISO: '2021-04-15T05:53:54.316Z',
-    shiftedDate: new Date('2021-04-15T10:23:54.316Z'),
   },
 }
 describe('verify date field works', () => {
@@ -147,7 +145,12 @@ describe('verify date field works', () => {
       />
     )
     const dateFieldInstance = wrapper.children().get(0)
-    dateFieldInstance.props.onChange(data.date4.shiftedDate, true)
+    dateFieldInstance.props.onChange(
+      DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
+        data.date4.originalISO
+      ),
+      true
+    )
   })
   it(`should generate appropriately shifted ISO strings on change`, () => {
     const wrapper = mount(
@@ -159,7 +162,12 @@ describe('verify date field works', () => {
       />
     )
     const dateFieldInstance = wrapper.children().get(0)
-    dateFieldInstance.props.onChange(data.date1.shiftedDate, true)
+    dateFieldInstance.props.onChange(
+      DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
+        data.date1.originalISO
+      ),
+      true
+    )
   })
   it(`should not allow dates beyond max future`, () => {
     const wrapper = mount(
