@@ -230,6 +230,7 @@ Implementation details
         <argument ref="defaultAttributeValidatorRegistry"/>
         <argument ref="metacardTypes"/>
         <argument ref="attributeInjectors"/>
+        <argument ref="deprecatableEnumerations"/>
     </bean>
 
     <bean id="workspacePersistentStore"
