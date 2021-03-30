@@ -50,6 +50,11 @@
             <artifactId>jsr305</artifactId>
             <version>${jsr305.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.codice.ddf.search</groupId>
+            <artifactId>deprecatable-enumeration-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
