@@ -45,7 +45,7 @@ class AttributeValueNormalizer {
   // Primary purpose is to protect persistence layer from bad symbols leaking into valid prop names
   // https://codice.atlassian.net/wiki/spaces/CODICE/pages/77627393/Taxonomy+Guidelines
   private static final Pattern EXPECTED_ATTRIBUTE_NAME_PATTERN =
-      Pattern.compile("(ext\\.)?(\\p{Alpha}+\\.)?\\p{Alpha}+(-\\p{Alpha}+)*");
+      Pattern.compile("\\p{Alpha}+([-.]\\p{Alpha}+)*");
 
   private static final Pattern EXPECTED_RELATIVE_FUNCTION_PATTERN =
       Pattern.compile("RELATIVE\\(\\p{Alnum}+\\)");
@@ -72,33 +72,28 @@ class AttributeValueNormalizer {
     if (isNotNormalizableDateValue(property, value)) {
       return value;
     }
+    if (value.contains("/")) {
+      return normalizeRangeForJson(property, value);
+    }
+    // Edge case for relative date function
+    if (EXPECTED_RELATIVE_FUNCTION_PATTERN.matcher(value).matches()) {
+      return value;
+    }
     Instant instant = instantFromEpoch(value);
     if (instant != null) {
       return instant.toString();
     }
-
-    String isoDateRange = getIsoDateRangeFromEpoch(value);
-    if (isoDateRange != null) {
-      return isoDateRange;
-    }
-
     return value;
   }
 
-  @Nullable
-  private String getIsoDateRangeFromEpoch(String value) {
-    if (value.indexOf('/') >= 0) {
-      String dates[] = value.split("/", 2);
-      Instant instantFrom = instantFromEpoch(dates[0]);
-      Instant instantTo = instantFromEpoch(dates[1]);
-
-      final String fromDate = (instantFrom != null) ? instantFrom.toString() : "";
-      final String toDate = (instantTo != null) ? instantTo.toString() : "";
-
-      return fromDate + '/' + toDate;
+  private String normalizeRangeForJson(String property, String value) {
+    String[] range = value.split("/");
+    if (range.length != 2) {
+      return value;
     }
-
-    return null;
+    String before = normalizeForJson(property, range[0]);
+    String after = normalizeForJson(property, range[1]);
+    return before + "/" + after;
   }
 
   /**
@@ -122,6 +117,9 @@ class AttributeValueNormalizer {
     if (isNotNormalizableDateValue(property, value)) {
       return value;
     }
+    if (value.contains("/")) {
+      return normalizeRangeForXml(property, value);
+    }
     Instant epoch = instantFromEpoch(value);
     if (epoch != null) {
       return value;
@@ -130,40 +128,22 @@ class AttributeValueNormalizer {
     if (iso != null) {
       return Objects.toString(iso.toEpochMilli());
     }
-
-    if (value.equals("")) {
-      return "";
-    }
-
     // Edge case for relative date function
     if (EXPECTED_RELATIVE_FUNCTION_PATTERN.matcher(value).matches()) {
       return value;
     }
-
-    // Edge case for a during date range (ISO/ISO)
-    String normalDateRange = normalizableDateRangeForXML(value);
-    if (normalDateRange != null) {
-      return normalDateRange;
-    }
-
     throw new FilterProcessingException("Unexpected date format on search form: " + value);
   }
 
-  @Nullable
-  private String normalizableDateRangeForXML(String dateRange) {
-    if (dateRange.indexOf('/') >= 0) {
-      String[] dates = dateRange.split("/", 2);
-      Instant dateFromInstant = instantFromIso(dates[0]);
-      Instant dateToInstant = instantFromIso(dates[1]);
-
-      final String dateFrom =
-          (dateFromInstant != null) ? Objects.toString(dateFromInstant.toEpochMilli()) : "";
-      final String dateTo =
-          (dateToInstant != null) ? Objects.toString(dateToInstant.toEpochMilli()) : "";
-
-      return dateFrom + '/' + dateTo;
+  private String normalizeRangeForXml(String property, String value) {
+    String[] range = value.split("/");
+    if (range.length != 2) {
+      throw new FilterProcessingException(
+          String.format("Filter node range-value '%s' has too many delimiters", value));
     }
-    return null;
+    String before = normalizeForXml(property, range[0]);
+    String after = normalizeForXml(property, range[1]);
+    return before + "/" + after;
   }
 
   private boolean eitherStringIsNull(String property, String value) {

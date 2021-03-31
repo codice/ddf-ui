@@ -56,6 +56,8 @@ import org.slf4j.LoggerFactory;
 public class TemplateTransformer {
   private static final Logger LOGGER = LoggerFactory.getLogger(TemplateTransformer.class);
 
+  private final FilterReader reader;
+
   private final FilterWriter writer;
 
   private final AttributeRegistry registry;
@@ -63,6 +65,12 @@ public class TemplateTransformer {
   public TemplateTransformer(FilterWriter writer, AttributeRegistry registry) {
     this.writer = writer;
     this.registry = registry;
+
+    try {
+      this.reader = new FilterReader();
+    } catch (JAXBException e) {
+      throw new FilterProcessingException("Could not initialize the filter reader", e);
+    }
   }
 
   public boolean invalidFormTemplate(Metacard metacard) {
@@ -133,7 +141,6 @@ public class TemplateTransformer {
     Map<String, List<Serializable>> securityAttributes = retrieveSecurityIfPresent(metacard);
 
     try {
-      FilterReader reader = new FilterReader();
       String formsFilter = wrapped.getFormsFilter();
       if (formsFilter == null) {
         LOGGER.debug(
@@ -152,18 +159,27 @@ public class TemplateTransformer {
           metacardOwner,
           wrapped.getQuerySettings());
     } catch (JAXBException e) {
+      LOGGER.debug("Search form error full stacktrace", e);
       LOGGER.error(
-          "XML parsing failed for query template metacard's filter, with metacard id "
-              + metacard.getId(),
-          e);
+          "XML parsing failed for query template metacard's filter. {} [metacard id = {}]",
+          e.getMessage(),
+          metacard.getId());
     } catch (FilterProcessingException e) {
+      LOGGER.debug("Search form error full stacktrace", e);
       LOGGER.error(
-          "Could not use filter XML for template - {} [metacard id = {}]",
+          "Could not use filter XML for template. {} [metacard id = {}]",
           e.getMessage(),
           metacard.getId());
     } catch (UnsupportedOperationException e) {
+      LOGGER.debug("Search form error full stacktrace", e);
       LOGGER.error(
-          "Could not use filter XML because it contains unsupported operations - {} [metacard id = {}]",
+          "Could not use filter XML because it contains unsupported operations. {} [metacard id = {}]",
+          e.getMessage(),
+          metacard.getId());
+    } catch (RuntimeException e) {
+      LOGGER.debug("Search form error full stacktrace", e);
+      LOGGER.error(
+          "General error occurred while fetching search form. {} [metacard id = {}]",
           e.getMessage(),
           metacard.getId());
     }

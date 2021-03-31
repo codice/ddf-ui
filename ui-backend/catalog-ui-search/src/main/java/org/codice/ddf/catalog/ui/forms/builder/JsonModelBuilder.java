@@ -19,6 +19,7 @@ import ddf.catalog.data.AttributeRegistry;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,6 +66,7 @@ public class JsonModelBuilder implements FlatFilterBuilder<FilterNode> {
       ImmutableMap.<String, String>builder()
           .put("Before", "BEFORE")
           .put("After", "AFTER")
+          // used for 'date BETWEEN' ops by the UI - contains a range delineated by a slash '/'
           .put("During", "DURING")
           .build();
 
@@ -162,20 +164,19 @@ public class JsonModelBuilder implements FlatFilterBuilder<FilterNode> {
   }
 
   @Override
-  public FlatFilterBuilder beginPropertyIsLikeType(String operator, boolean matchCase) {
+  public JsonModelBuilder beginPropertyIsLikeType(String operator, boolean matchCase) {
     verifyResultNotYetRetrieved();
     verifyTerminalNodeNotInProgress();
     if (!PROPERTY_IS_LIKE.equals(operator)) {
       throw new IllegalArgumentException("Cannot find mapping for like operator: " + operator);
     }
-    // For now, will always choose ILIKE
     String jsonOperator = (matchCase) ? LIKE : ILIKE;
     nodeInProgress = new FilterNodeImpl(jsonOperator);
     return this;
   }
 
   @Override
-  public FlatFilterBuilder beginBinaryTemporalType(String operator) {
+  public JsonModelBuilder beginBinaryTemporalType(String operator) {
     verifyResultNotYetRetrieved();
     verifyTerminalNodeNotInProgress();
     String jsonOperator = BINARY_TEMPORAL_MAPPING.get(operator);
@@ -195,6 +196,52 @@ public class JsonModelBuilder implements FlatFilterBuilder<FilterNode> {
       throw new IllegalArgumentException("Invalid operator for binary spatial type: " + operator);
     }
     nodeInProgress = new FilterNodeImpl(operator);
+    return this;
+  }
+
+  @Override
+  public JsonModelBuilder beginNilType() {
+    verifyResultNotYetRetrieved();
+    verifyTerminalNodeNotInProgress();
+    // used for date 'IS EMPTY' ops by the UI
+    nodeInProgress = new FilterNodeImpl("IS NULL");
+    return this;
+  }
+
+  @Override
+  public JsonModelBuilder addFunctionType(String functionName, List<Object> args) {
+    verifyResultNotYetRetrieved();
+    verifyTerminalNodeNotInProgress();
+
+    FilterNode funcNode = new FilterNodeImpl("FILTER_FUNCTION", functionName);
+    args.forEach(funcNode::addArg);
+
+    if (depth.isEmpty()) {
+      rootNode = funcNode;
+    } else {
+      depth.peek().add(funcNode);
+    }
+    return this;
+  }
+
+  @Override
+  public JsonModelBuilder addBetweenType(String property, Number lower, Number upper) {
+    verifyResultNotYetRetrieved();
+    verifyTerminalNodeNotInProgress();
+
+    FilterNode between = new FilterNodeImpl("BETWEEN");
+    between.setProperty(property);
+
+    Map<String, Object> value = new HashMap<>();
+    value.put("lower", lower);
+    value.put("upper", upper);
+    between.setValue(value);
+
+    if (depth.isEmpty()) {
+      rootNode = between;
+    } else {
+      depth.peek().add(between);
+    }
     return this;
   }
 
@@ -220,11 +267,29 @@ public class JsonModelBuilder implements FlatFilterBuilder<FilterNode> {
   }
 
   @Override
+  public JsonModelBuilder setProperty(String functionName, List<Object> args) {
+    verifyResultNotYetRetrieved();
+    verifyTerminalNodeInProgress();
+
+    FilterNode innerNode = new FilterNodeImpl("FILTER_FUNCTION", functionName);
+    args.forEach(innerNode::addArg);
+
+    nodeInProgress.setProperty(innerNode);
+    return this;
+  }
+
+  @Override
   public JsonModelBuilder setValue(String value) {
     verifyResultNotYetRetrieved();
     verifyTerminalNodeInProgress();
-    String normalizedValue = normalizer.normalizeForJson(nodeInProgress.getProperty(), value);
-    nodeInProgress.setValue(normalizedValue);
+
+    if (nodeInProgress.getPropertyFunction() != null) {
+      nodeInProgress.setValue(Boolean.parseBoolean(value));
+    } else {
+      String normalizedValue = normalizer.normalizeForJson(nodeInProgress.getProperty(), value);
+      nodeInProgress.setValue(normalizedValue);
+    }
+
     return this;
   }
 

@@ -59,13 +59,23 @@ public abstract class AbstractFilterVisitor2 implements FilterVisitor2 {
   }
 
   @Override
-  public void visitDistanceType(VisitableElement<Double> visitable) {
+  public void visitDoubleType(VisitableElement<Double> visitable) {
     traceName(visitable);
     traceValue(visitable.getValue());
   }
 
   @Override
-  public void visitFunctionType(VisitableElement<Map<String, Object>> visitable) {
+  public void visitTemplateType(VisitableElement<Map<String, Object>> visitable) {
+    traceName(visitable);
+  }
+
+  @Override
+  public void visitMapType(VisitableElement<Map<String, Object>> visitable) {
+    traceName(visitable);
+  }
+
+  @Override
+  public void visitFunctionType(VisitableElement<List<Serializable>> visitable) {
     traceName(visitable);
   }
 
@@ -118,6 +128,7 @@ public abstract class AbstractFilterVisitor2 implements FilterVisitor2 {
     visitable.getValue().forEach(v -> v.accept(this));
   }
 
+  // Attribute does not exist in our universe of attributes - will remain unsupported
   @Override
   public void visitPropertyIsNullType(VisitableElement<VisitableElement<?>> visitable) {
     traceName(visitable);
@@ -126,12 +137,11 @@ public abstract class AbstractFilterVisitor2 implements FilterVisitor2 {
     // When support is added, verify result of visiting embedded entity (might be null)
   }
 
+  // Attribute exists but the value is empty - will be used for 'IS EMPTY' predicates
   @Override
   public void visitPropertyIsNilType(VisitableElement<VisitableElement<?>> visitable) {
     traceName(visitable);
-    throw new UnsupportedOperationException("PropertyIsNilType currently is not supported");
-    // Ticket for adding support - https://codice.atlassian.net/browse/DDF-3829
-    // When support is added, verify result of visiting embedded entity (might be null)
+    visitable.getValue().accept(this);
   }
 
   @Override

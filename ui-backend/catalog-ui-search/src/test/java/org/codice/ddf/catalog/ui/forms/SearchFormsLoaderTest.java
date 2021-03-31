@@ -50,7 +50,7 @@ public class SearchFormsLoaderTest {
   private @Mock Security security;
 
   private static final URL LOADER_RESOURCES_DIR =
-      SearchFormsLoaderTest.class.getResource("/forms/loader");
+      SearchFormsLoaderTest.class.getResource("/forms/loader-test");
 
   private static final String ROOT;
 

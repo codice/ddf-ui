@@ -168,8 +168,89 @@ public class AttributeValueNormalizerTest {
   }
 
   @Test(expected = FilterProcessingException.class)
-  public void testBadPropertyNameToXml() {
+  public void testBadPropertyNameQuotesToXml() {
     normalizer.normalizeForXml(PROPERTY_NAME_WITH_QUOTES, VALID_ISO_8601_DATE_STRING);
+  }
+
+  @Test(expected = FilterProcessingException.class)
+  public void testBadPropertyNameNumbersToXml() {
+    normalizer.normalizeForXml("anyText2", VALID_ISO_8601_DATE_STRING);
+  }
+
+  @Test
+  public void testBadPropertyNameSymbolsToXml() {
+    assertThrows(
+        FilterProcessingException.class,
+        () -> normalizer.normalizeForXml("anyText!", VALID_ISO_8601_DATE_STRING));
+    assertThrows(
+        FilterProcessingException.class,
+        () -> normalizer.normalizeForXml("anyText@", VALID_ISO_8601_DATE_STRING));
+    assertThrows(
+        FilterProcessingException.class,
+        () -> normalizer.normalizeForXml("anyText#", VALID_ISO_8601_DATE_STRING));
+    assertThrows(
+        FilterProcessingException.class,
+        () -> normalizer.normalizeForXml("anyText$", VALID_ISO_8601_DATE_STRING));
+    assertThrows(
+        FilterProcessingException.class,
+        () -> normalizer.normalizeForXml("anyText%", VALID_ISO_8601_DATE_STRING));
+    assertThrows(
+        FilterProcessingException.class,
+        () -> normalizer.normalizeForXml("anyText^", VALID_ISO_8601_DATE_STRING));
+    assertThrows(
+        FilterProcessingException.class,
+        () -> normalizer.normalizeForXml("anyText&", VALID_ISO_8601_DATE_STRING));
+    assertThrows(
+        FilterProcessingException.class,
+        () -> normalizer.normalizeForXml("anyText*", VALID_ISO_8601_DATE_STRING));
+    assertThrows(
+        FilterProcessingException.class,
+        () -> normalizer.normalizeForXml("anyText>", VALID_ISO_8601_DATE_STRING));
+    assertThrows(
+        FilterProcessingException.class,
+        () -> normalizer.normalizeForXml("anyText<", VALID_ISO_8601_DATE_STRING));
+  }
+
+  @Test
+  public void testGoodPropertyNameBasicToXml() {
+    assertThat(
+        normalizer.normalizeForXml("anyText", VALID_ISO_8601_DATE_STRING),
+        is(equalTo(VALID_ISO_8601_DATE_STRING)));
+  }
+
+  @Test
+  public void testGoodPropertyNameCompoundDotOnceToXml() {
+    assertThat(
+        normalizer.normalizeForXml("metacard.version", VALID_ISO_8601_DATE_STRING),
+        is(equalTo(VALID_ISO_8601_DATE_STRING)));
+  }
+
+  @Test
+  public void testGoodPropertyNameCompoundDotTwiceToXml() {
+    assertThat(
+        normalizer.normalizeForXml("metacard.version.action", VALID_ISO_8601_DATE_STRING),
+        is(equalTo(VALID_ISO_8601_DATE_STRING)));
+  }
+
+  @Test
+  public void testGoodPropertyNameCompoundDashOnceToXml() {
+    assertThat(
+        normalizer.normalizeForXml("versioned-on", VALID_ISO_8601_DATE_STRING),
+        is(equalTo(VALID_ISO_8601_DATE_STRING)));
+  }
+
+  @Test
+  public void testGoodPropertyNameCompoundDashTwiceToXml() {
+    assertThat(
+        normalizer.normalizeForXml("versioned-not-after", VALID_ISO_8601_DATE_STRING),
+        is(equalTo(VALID_ISO_8601_DATE_STRING)));
+  }
+
+  @Test
+  public void testGoodPropertyNameCompoundBothToXml() {
+    assertThat(
+        normalizer.normalizeForXml("metacard.version.versioned-on", VALID_ISO_8601_DATE_STRING),
+        is(equalTo(VALID_ISO_8601_DATE_STRING)));
   }
 
   @Test(expected = FilterProcessingException.class)
@@ -208,61 +289,20 @@ public class AttributeValueNormalizerTest {
     normalizer.normalizeForXml(PROPERTY_NAME, INVALID_RELATIVE_FUNCTION);
   }
 
-  @Test
-  public void testValidDuringRangeToXml() {
-    when(registry.lookup(eq(PROPERTY_NAME))).thenReturn(Optional.of(DATE_DESCRIPTOR));
-    assertThat(
-        normalizer.normalizeForXml(
-            PROPERTY_NAME, VALID_ISO_8601_DATE_STRING + "/" + VALID_ISO_8601_DATE_STRING),
-        is(equalTo(VALID_MS_SINCE_EPOCH_DATE_STRING + "/" + VALID_MS_SINCE_EPOCH_DATE_STRING)));
-  }
-
-  @Test
-  public void testValidOffsetDuringRangeToXml() {
-    when(registry.lookup(eq(PROPERTY_NAME))).thenReturn(Optional.of(DATE_DESCRIPTOR));
-    assertThat(
-        normalizer.normalizeForXml(
-            PROPERTY_NAME,
-            VALID_ISO_8601_DATE_STRING_WITH_OFFSET + "/" + VALID_ISO_8601_DATE_STRING_WITH_OFFSET),
-        is(
-            equalTo(
-                VALID_MS_SINCE_EPOCH_DATE_STRING_WITH_OFFSET
-                    + "/"
-                    + VALID_MS_SINCE_EPOCH_DATE_STRING_WITH_OFFSET)));
-  }
-
-  @Test
-  public void testValidOnlyFromDuringRangeToXml() {
-    when(registry.lookup(eq(PROPERTY_NAME))).thenReturn(Optional.of(DATE_DESCRIPTOR));
-    assertThat(
-        normalizer.normalizeForXml(PROPERTY_NAME, VALID_ISO_8601_DATE_STRING_WITH_OFFSET + "/"),
-        is(equalTo(VALID_MS_SINCE_EPOCH_DATE_STRING_WITH_OFFSET + "/")));
-  }
-
-  @Test
-  public void testValidOnlyToDuringRangeToXml() {
-    when(registry.lookup(eq(PROPERTY_NAME))).thenReturn(Optional.of(DATE_DESCRIPTOR));
-    assertThat(
-        normalizer.normalizeForXml(PROPERTY_NAME, "/" + VALID_ISO_8601_DATE_STRING_WITH_OFFSET),
-        is(equalTo("/" + VALID_MS_SINCE_EPOCH_DATE_STRING_WITH_OFFSET)));
-  }
-
-  @Test
-  public void testValidEmptyDuringRangeToXml() {
-    when(registry.lookup(eq(PROPERTY_NAME))).thenReturn(Optional.of(DATE_DESCRIPTOR));
-    assertThat(normalizer.normalizeForXml(PROPERTY_NAME, "/"), is(equalTo("/")));
-
-    assertThat(normalizer.normalizeForXml(PROPERTY_NAME, ""), is(equalTo("")));
-  }
-
-  @Test(expected = FilterProcessingException.class)
-  public void testInvalidDuringRangeToXml() {
-    when(registry.lookup(eq(PROPERTY_NAME))).thenReturn(Optional.of(DATE_DESCRIPTOR));
-    normalizer.normalizeForXml(
-        PROPERTY_NAME, VALID_ISO_8601_DATE_STRING + VALID_ISO_8601_DATE_STRING);
-  }
-
   private static AttributeDescriptor createDateDescriptor() {
     return new AttributeDescriptorImpl("created", true, true, true, false, BasicTypes.DATE_TYPE);
+  }
+
+  private static <T> void assertThrows(Class<T> clazz, Runnable op) {
+    boolean wasThrown = false;
+    try {
+      op.run();
+    } catch (Exception e) {
+      wasThrown = true;
+      assertThat(
+          "Thrown exception " + e.getClass() + " did not satisfy provided class " + clazz,
+          clazz.isAssignableFrom(e.getClass()));
+    }
+    assertThat("Runnable finished with no exception thrown", wasThrown);
   }
 }
