@@ -626,6 +626,11 @@ public class MetacardApplication implements SparkApplication {
         util::getJson);
 
     get(
+        "/enumerations/deprecated/:type",
+        APPLICATION_JSON,
+        (req, res) -> util.getJson(enumExtractor.getDeprecatedEnumerations(req.params(":type"))));
+
+    get(
         "/enumerations/metacardtype/:type",
         APPLICATION_JSON,
         (req, res) -> util.getJson(enumExtractor.getEnumerations(req.params(":type"))));
