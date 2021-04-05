@@ -117,13 +117,24 @@ const FilterInput = ({ filter, setFilter }: Props) => {
   }
   const textValue = value as string
   const enumForAttr = MetacardDefinitions.getEnum({ attr: filter.property })
-  if (enumForAttr) {
+  const deprecatedEnumForAttr = MetacardDefinitions.getDeprecatedEnum({
+    attr: filter.property,
+  })
+
+  if (enumForAttr || deprecatedEnumForAttr) {
+    let allEnumForAttr = [] as string[]
+    if (enumForAttr) {
+      allEnumForAttr = allEnumForAttr.concat(enumForAttr)
+    }
+    if (deprecatedEnumForAttr) {
+      allEnumForAttr = allEnumForAttr.concat(deprecatedEnumForAttr)
+    }
     return (
       <Autocomplete
         // @ts-ignore fullWidth does exist on Autocomplete
         fullWidth
         size="small"
-        options={enumForAttr}
+        options={allEnumForAttr}
         onChange={(_e: any, newValue: string) => {
           onChange(newValue)
         }}

@@ -153,12 +153,23 @@ module.exports = new (Backbone.Model.extend({
       }
     )
   },
+  getDeprecatedEnumForMetacardDefinition(metacardDefinition) {
+    $.get('./internal/enumerations/deprecated/' + metacardDefinition).then(
+      (response) => {
+        _.extend(
+          this.deprecatedEnums,
+          transformEnumResponse(this.metacardTypes, response)
+        )
+      }
+    )
+  },
   addMetacardDefinition(metacardDefinitionName, metacardDefinition) {
     if (
       Object.keys(this.metacardDefinitions).indexOf(metacardDefinitionName) ===
       -1
     ) {
       this.getEnumForMetacardDefinition(metacardDefinitionName)
+      this.getDeprecatedEnumForMetacardDefinition(metacardDefinitionName)
       this.metacardDefinitions[metacardDefinitionName] = metacardDefinition
       for (const type in metacardDefinition) {
         if (metacardDefinition.hasOwnProperty(type)) {
@@ -246,4 +257,5 @@ module.exports = new (Backbone.Model.extend({
   metacardTypes: _.extendOwn({}, metacardStartingTypesWithTemporal()),
   validation: {},
   enums: properties.enums,
+  deprecatedEnums: {},
 }))()

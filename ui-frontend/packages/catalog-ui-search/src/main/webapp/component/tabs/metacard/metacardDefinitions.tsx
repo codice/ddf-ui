@@ -100,6 +100,9 @@ export const TypedMetacardDefs = {
   getEnum({ attr }: { attr: string }) {
     return metacardDefinitions.enums[attr] as string[] | undefined
   },
+  getDeprecatedEnum({ attr }: { attr: string }) {
+    return metacardDefinitions.deprecatedEnums[attr] as string[] | undefined
+  },
   typesFetched() {
     return metacardDefinitions.typesFetched as boolean
   },
