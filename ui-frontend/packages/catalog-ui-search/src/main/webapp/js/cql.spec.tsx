@@ -208,5 +208,47 @@ describe('read & write parity for capabilities, as well as boolean logic', () =>
       )
       expect(filterToCheck.value).to.equal(value)
     })
+
+    it('it handles escaping _ in properties that are "id" (double wrapped!)', () => {
+      const value = '12123123_123213123'
+      const originalFilter = new FilterBuilderClass({
+        type: 'AND',
+        filters: [
+          new FilterClass({
+            type: '=',
+            property: '"id"',
+            value,
+          }),
+        ],
+      })
+      const cqlText = cql.write(originalFilter)
+      const newFilter = cql.read(cqlText)
+      const filterToCheck = newFilter.filters[0] as FilterClass
+      expect(cql.write(originalFilter), `Doesn't escape properly`).to.equal(
+        '("id" = \'12123123_123213123\')'
+      )
+      expect(filterToCheck.value).to.equal(value)
+    })
+
+    it(`it handles escaping _ in properties that are 'id' (double wrapped!)`, () => {
+      const value = '12123123_123213123'
+      const originalFilter = new FilterBuilderClass({
+        type: 'AND',
+        filters: [
+          new FilterClass({
+            type: '=',
+            property: `'id'`,
+            value,
+          }),
+        ],
+      })
+      const cqlText = cql.write(originalFilter)
+      const newFilter = cql.read(cqlText)
+      const filterToCheck = newFilter.filters[0] as FilterClass
+      expect(cql.write(originalFilter), `Doesn't escape properly`).to.equal(
+        '("id" = \'12123123_123213123\')'
+      )
+      expect(filterToCheck.value).to.equal(value)
+    })
   })
 })
