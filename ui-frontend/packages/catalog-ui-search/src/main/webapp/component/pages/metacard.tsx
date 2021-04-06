@@ -29,7 +29,6 @@ const getFilterTreeForId = ({ id }: { id: string }) => {
 const getQueryForId = ({ id }: { id: string }) => {
   return new Query.Model({
     filterTree: getFilterTreeForId({ id }),
-    federation: 'enterprise',
   })
 }
 

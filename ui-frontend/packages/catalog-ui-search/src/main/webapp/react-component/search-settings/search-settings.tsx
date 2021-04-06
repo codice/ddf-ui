@@ -42,7 +42,9 @@ const getResultCount = () => {
 }
 
 const SearchSettings = () => {
-  const [queryModel] = React.useState(new QueryModel.Model())
+  const [queryModel] = React.useState(
+    new QueryModel.Model({}, { useUserDefaults: true }) // we pass this to query settings
+  ) 
   const [resultCount, setResultCount] = React.useState(getResultCount())
 
   const { listenTo } = useBackbone()

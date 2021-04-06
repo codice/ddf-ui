@@ -32,7 +32,6 @@ const getCqlForId = ({ id }: { id: string }) => {
 const getQueryForId = ({ id }: { id: string }) => {
   return new Query.Model({
     cql: getCqlForId({ id }),
-    federation: 'enterprise',
   })
 }
 

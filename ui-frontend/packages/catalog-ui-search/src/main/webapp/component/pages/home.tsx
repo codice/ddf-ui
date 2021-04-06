@@ -222,7 +222,9 @@ export const HomePage = () => {
   }
   // @ts-ignore ts-migrate(6133) FIXME: 'setQueryModel' is declared but its value is never... Remove this comment to see the full error message
   const [queryModel, setQueryModel] = React.useState(
-    urlBasedQuery || new Query.Model()
+    urlBasedQuery || new Query.Model({}, {
+      useUserDefaults: true
+    })
   )
   const [selectionInterface] = React.useState(
     new SelectionInterfaceModel({

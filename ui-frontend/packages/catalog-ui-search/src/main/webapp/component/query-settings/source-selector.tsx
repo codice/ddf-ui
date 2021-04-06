@@ -87,27 +87,13 @@ const shouldBeSelected = ({
  * If it includes 'remote', that that means everything remote.  All other values are singular selections of a source.
  */
 const SourceSelector = ({ search }: Props) => {
-  // @ts-ignore ts-migrate(6133) FIXME: 'inputRef' is declared but its value is never read... Remove this comment to see the full error message
-  const inputRef = React.useRef()
-  // @ts-ignore ts-migrate(6133) FIXME: 'federation' is declared but its value is never re... Remove this comment to see the full error message
-  const [federation, setFederation] = React.useState(
-    search.get('federation') as 'enterprise' | 'selected' | 'local'
-  )
   const [availableSources, setAvailableSources] = React.useState(
     sourcesInstance.toJSON()
   )
   const [sources, setSources] = React.useState(getSourcesFromSearch({ search }))
-  const sourceIds = availableSources.map((source) => source.id)
-  const defaultSources = search.get('sources') as string[]
-  const validDefaultSources =
-    defaultSources && defaultSources.filter((src) => sourceIds.includes(src))
-  // @ts-ignore ts-migrate(6133) FIXME: 'hasValidDefaultSources' is declared but its value... Remove this comment to see the full error message
-  const hasValidDefaultSources =
-    validDefaultSources && validDefaultSources.length
   const { listenTo } = useBackbone()
   React.useEffect(() => {
-    listenTo(search, 'change:federation change:sources', () => {
-      setFederation(search.get('federation'))
+    listenTo(search, 'change:sources', () => {
       setSources(getSourcesFromSearch({ search }))
     })
     listenTo(sourcesInstance, 'change', () => {

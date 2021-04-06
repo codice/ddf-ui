@@ -87,7 +87,6 @@ module.exports = new (Backbone.AssociatedModel.extend({
             },
           ],
         }),
-        federation: 'enterprise',
       })
       if (this.get('currentQuery')) {
         this.get('currentQuery').cancelCurrentSearches()
