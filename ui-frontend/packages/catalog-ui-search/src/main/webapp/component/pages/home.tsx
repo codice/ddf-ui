@@ -5,7 +5,7 @@ import {
   useResizableGridContext,
 } from '../resizable-grid/resizable-grid'
 const SelectionInterfaceModel = require('../selection-interface/selection-interface.model')
-const Query = require('../../js/model/Query.js')
+const UntypedQuery = require('../../js/model/Query.js')
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import QueryAddView from '../query-add/query-add'
@@ -24,6 +24,7 @@ import SearchIcon from '@material-ui/icons/SearchTwoTone'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { useHistory, useLocation } from 'react-router-dom'
 import _ from 'lodash'
+import { Query } from '../../js/model/Query'
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
@@ -211,9 +212,7 @@ export const HomePage = () => {
   let urlBasedQuery = location.search.split('?defaultQuery=')[1]
   if (urlBasedQuery) {
     try {
-      urlBasedQuery = new Query.Model(
-        JSON.parse(decodeURIComponent(urlBasedQuery))
-      )
+      urlBasedQuery = Query(JSON.parse(decodeURIComponent(urlBasedQuery)))
       ;(urlBasedQuery as any).startSearchFromFirstPage()
     } catch (err) {
       console.log(err)
@@ -222,9 +221,13 @@ export const HomePage = () => {
   }
   // @ts-ignore ts-migrate(6133) FIXME: 'setQueryModel' is declared but its value is never... Remove this comment to see the full error message
   const [queryModel, setQueryModel] = React.useState(
-    urlBasedQuery || new Query.Model({}, {
-      useUserDefaults: true
-    })
+    urlBasedQuery ||
+      Query(
+        {},
+        {
+          useUserDefaults: true,
+        }
+      )
   )
   const [selectionInterface] = React.useState(
     new SelectionInterfaceModel({
