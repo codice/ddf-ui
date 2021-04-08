@@ -1,7 +1,7 @@
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
-import Popover from '@material-ui/core/Popover'
+import Popover, { PopoverActions } from '@material-ui/core/Popover'
 import StorageIcon from '@material-ui/icons/Storage'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
@@ -11,6 +11,7 @@ import { Elevations } from '../theme/theme'
 
 const SourcesInfo = () => {
   const [anchorEl, setAnchorEl] = React.useState(null)
+  const popoverActions = React.useRef<PopoverActions>(null)
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget)
@@ -21,6 +22,12 @@ const SourcesInfo = () => {
   }
 
   const open = Boolean(anchorEl)
+
+  const onChange = () => {
+    if (popoverActions.current) {
+      popoverActions.current.updatePosition()
+    }
+  }
 
   return (
     <React.Fragment>
@@ -39,6 +46,7 @@ const SourcesInfo = () => {
         </Grid>
       </Button>
       <Popover
+        action={popoverActions}
         open={open}
         anchorEl={anchorEl}
         onClose={handleClose}
@@ -53,7 +61,7 @@ const SourcesInfo = () => {
       >
         <Paper elevation={Elevations.overlays} className="min-w-120">
           {ExtensionPoints.customSourcesPage ? (
-            <ExtensionPoints.customSourcesPage />
+            <ExtensionPoints.customSourcesPage onChange={onChange} />
           ) : (
             <SourcesPage />
           )}
