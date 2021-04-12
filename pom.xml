@@ -64,7 +64,7 @@
 
     <!--Backend properties-->
     <ddf.version>2.27.0-SNAPSHOT</ddf.version>
-    <ddf-jsonrpc.version>0.8</ddf-jsonrpc.version>
+    <ddf-jsonrpc.version>0.7</ddf-jsonrpc.version>
     <ddf.support.version>2.3.16</ddf.support.version>
     <antlr.version>4.3</antlr.version>
     <c3p0.version>0.9.5.5</c3p0.version>
