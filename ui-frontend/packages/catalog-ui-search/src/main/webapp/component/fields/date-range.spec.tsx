@@ -11,6 +11,7 @@ const Common = require('../../js/Common')
 //@ts-ignore
 import user from '../singletons/user-instance'
 import { ValueTypes } from '../filter-builder/filter.structure'
+import { DateHelpers } from './date-helpers'
 
 const UncontrolledDateRangeField = ({
   startingValue,
@@ -28,14 +29,12 @@ const UncontrolledDateRangeField = ({
   )
 }
 
-// do not rely on our own transforms for testing, rely on static data!
+// rely on static data when possible, but in these we can use the DateHelpers (a must for shifted date timezone testing)
 const data = {
   date1: {
     timezone: 'America/St_Johns',
     originalISO: '2021-01-15T06:53:54.316Z',
     originalDate: new Date('2021-01-15T06:53:54.316Z'),
-    shiftedISO: '2021-01-15T10:23:54.316Z',
-    shiftedDate: new Date('2021-01-15T10:23:54.316Z'),
     userFormatISO: '2021-01-15T03:23:54.316-03:30',
     userFormat24: '15 Jan 2021 03:23:54.316 -03:30',
     userFormat12: '15 Jan 2021 03:23:54.316 am -03:30',
@@ -54,11 +53,14 @@ const data = {
     timezone: 'America/St_Johns',
     originalISO: '2021-01-14T06:53:54.316Z',
     originalDate: new Date('2021-01-14T06:53:54.316Z'),
-    shiftedISO: '2021-01-14T10:23:54.316Z',
-    shiftedDate: new Date('2021-01-14T10:23:54.316Z'),
     userFormatISO: '2021-01-14T03:23:54.316-03:30',
     userFormat24: '14 Jan 2021 03:23:54.316 -03:30',
     userFormat12: '14 Jan 2021 03:23:54.316 am -03:30',
+  },
+  // this is useful for testing daylist savings (date 1 is pre, this is post)
+  date5: {
+    timezone: 'America/St_Johns',
+    originalISO: '2021-04-15T05:53:54.316Z', // use the converter to find the appropriate shifted date
   },
 }
 describe('verify date field works', () => {
@@ -191,6 +193,32 @@ describe('verify date field works', () => {
     expect(input.first().render().val()).to.equal(data.date2.parsedOutput)
     expect(input.last().render().val()).to.equal(data.date2.parsedOutput)
   })
+  it(`should generate appropriately shifted ISO strings on change (DST)`, () => {
+    const wrapper = mount(
+      <DateRangeField
+        value={{
+          start: new Date().toISOString(),
+          end: new Date().toISOString(),
+        }}
+        onChange={(updatedValue) => {
+          expect(updatedValue.start).to.equal(data.date5.originalISO)
+          expect(updatedValue.end).to.equal(data.date5.originalISO)
+        }}
+      />
+    )
+    const dateFieldInstance = wrapper.children().get(0)
+    dateFieldInstance.props.onChange(
+      [
+        DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
+          data.date5.originalISO
+        ),
+        DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
+          data.date5.originalISO
+        ),
+      ],
+      true
+    )
+  })
   it(`should generate appropriately shifted ISO strings on change`, () => {
     const wrapper = mount(
       <DateRangeField
@@ -206,7 +234,14 @@ describe('verify date field works', () => {
     )
     const dateFieldInstance = wrapper.children().get(0)
     dateFieldInstance.props.onChange(
-      [data.date1.shiftedDate, data.date1.shiftedDate],
+      [
+        DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
+          data.date1.originalISO
+        ),
+        DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
+          data.date1.originalISO
+        ),
+      ],
       true
     )
   })

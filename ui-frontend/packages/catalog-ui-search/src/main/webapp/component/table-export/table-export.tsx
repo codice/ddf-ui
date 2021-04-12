@@ -193,6 +193,8 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
   const cql = query.getEphemeralMixinCql(query.get('filterTree'))
   const srcs = getSrcs(selectionInterface)
   const sorts = getSorts(selectionInterface)
+  const phonetics = query.get('phonetics')
+  const spellcheck = query.get('spellcheck')
   const args = {
     hiddenFields: hiddenFields.length > 0 ? hiddenFields : [],
     columnOrder: columnOrder.length > 0 ? columnOrder : [],
@@ -202,6 +204,8 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
   const searches = getSearches(exportSize, srcs, cql, count, selectionInterface)
 
   return {
+    phonetics,
+    spellcheck,
     searches,
     count,
     sorts,

@@ -6,7 +6,7 @@ class ExampleClass extends Subscribable<'one' | 'two'> {
     setTimeout(() => {
       this._notifySubscribers('one')
       this._notifySubscribers('two')
-    }, 5000)
+    }, 500) // 2000ms is max before jest complains
   }
 }
 

@@ -139,6 +139,8 @@ public class CqlTransformHandler implements Route {
     private List<CqlRequestImpl> searches = Collections.emptyList();
     private int count = 0;
     private List<CqlRequest.Sort> sorts = Collections.emptyList();
+    private boolean phonetics = false;
+    private boolean spellcheck = false;
     private List<String> hiddenResults = Collections.emptyList();
 
     public void setSearches(List<CqlRequestImpl> searches) {
@@ -155,6 +157,22 @@ public class CqlTransformHandler implements Route {
 
     public int getCount() {
       return this.count;
+    }
+
+    public void setPhonetics(boolean phonetics) {
+      this.phonetics = phonetics;
+    }
+
+    public boolean getPhonetics() {
+      return this.phonetics;
+    }
+
+    public void setSpellcheck(boolean spellcheck) {
+      this.spellcheck = spellcheck;
+    }
+
+    public boolean getSpellcheck() {
+      return this.spellcheck;
     }
 
     public void setSorts(List<CqlRequest.Sort> sorts) {
@@ -202,6 +220,8 @@ public class CqlTransformHandler implements Route {
     cqlRequests.forEach(
         cqlRequest -> {
           cqlRequest.setSorts(cqlTransformRequest.getSorts());
+          cqlRequest.setPhonetics((cqlTransformRequest.getPhonetics()));
+          cqlRequest.setSpellcheck((cqlTransformRequest.getSpellcheck()));
         });
 
     if (CollectionUtils.isEmpty(cqlRequests)) {
