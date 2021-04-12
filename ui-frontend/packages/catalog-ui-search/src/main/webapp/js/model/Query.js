@@ -36,61 +36,37 @@ import {
 const wreqr = require('../wreqr')
 const Query = {}
 
-function getEphemeralSort() {
-  return user.get('user').get('preferences').get('resultSort')
-}
-
-function mixinEphemeralFilter(originalCQL) {
-  const ephemeralFilter = user
-    .get('user')
-    .get('preferences')
-    .get('resultFilter')
-  try {
-    if (ephemeralFilter) {
-      return new FilterBuilderClass({
-        filters: [ephemeralFilter, originalCQL],
-        type: 'AND',
-      })
-    } else {
-      return originalCQL
-    }
-  } catch (err) {
-    console.error(err)
-    return originalCQL
-  }
-}
-
 function limitToDeleted(cqlFilterTree) {
-  return {
+  return new FilterBuilderClass({
     type: 'AND',
     filters: [
       cqlFilterTree,
-      {
+      new FilterClass({
         property: '"metacard-tags"',
         type: 'ILIKE',
         value: 'deleted',
-      },
-      {
+      }),
+      new FilterClass({
         property: '"metacard.deleted.tags"',
         type: 'ILIKE',
         value: 'resource',
-      },
+      }),
     ],
-  }
+  })
 }
 
 function limitToHistoric(cqlFilterTree) {
-  return {
+  return new FilterBuilderClass({
     type: 'AND',
     filters: [
       cqlFilterTree,
-      {
+      new FilterClass({
         property: '"metacard-tags"',
         type: 'ILIKE',
         value: 'revision',
-      },
+      }),
     ],
-  }
+  })
 }
 
 Query.Model = Backbone.AssociatedModel.extend({
@@ -102,8 +78,19 @@ Query.Model = Backbone.AssociatedModel.extend({
       isTransient: true,
     },
   ],
+  // override constructor slightly to ensure options are available on the self ref immediately
   constructor(attributes, options) {
-    this.options = { useUserDefaults: false, ...options }
+    if (
+      !options ||
+      !options.transformDefaults ||
+      !options.transformFilterTree ||
+      !options.transformSorts
+    ) {
+      throw new Error(
+        'Options for transformDefaults, transformFilterTree, and transformSorts must be provided'
+      )
+    }
+    this.options = options
     return Backbone.AssociatedModel.apply(this, arguments)
   },
   set(data) {
@@ -124,13 +111,9 @@ Query.Model = Backbone.AssociatedModel.extend({
     }
     return json
   },
-  //in the search we are checking for whether or not the model
-  //only contains 5 items to know if we can search or not
-  //as soon as the model contains more than 5 items, we assume
-  //that we have enough values to search
   defaults() {
-    return _merge(
-      {
+    return this.options.transformDefaults({
+      originalDefaults: {
         cql: "anyText ILIKE '*'",
         associatedFormModel: undefined,
         excludeUnnecessaryAttributes: true,
@@ -151,8 +134,8 @@ Query.Model = Backbone.AssociatedModel.extend({
         spellcheck: false,
         phonetics: false,
       },
-      this.options.useUserDefaults ? user.getQuerySettings().toJSON() : {}
-    )
+      queryRef: this,
+    })
   },
   resetToDefaults(overridenDefaults) {
     const defaults = _.omit(this.defaults(), ['isLocal', 'result'])
@@ -199,34 +182,11 @@ Query.Model = Backbone.AssociatedModel.extend({
       'change:cql change:filterTree change:sources change:sorts change:spellcheck change:phonetics',
       () => {
         this.set('isOutdated', true)
-        // this.resetCurrentIndexForSourceGroup()
       }
     )
     this.listenTo(this, 'change:type', () => {
       this.set('filterTree', cql.removeInvalidFilters(this.get('filterTree'))) // basically remove invalid filters when going from basic to advanced
     })
-    this.listenTo(
-      user.get('user').get('preferences'),
-      'change:resultCount',
-      () => {
-        this.set('isOutdated', true)
-        // this.resetCurrentIndexForSourceGroup()
-      }
-    )
-    this.listenTo(
-      user.get('user').get('preferences'),
-      'change:resultFilter',
-      () => {
-        this.startSearchFromFirstPage()
-      }
-    )
-    this.listenTo(
-      user.get('user').get('preferences'),
-      'change:resultSort',
-      () => {
-        this.startSearchFromFirstPage()
-      }
-    )
   },
   getSelectedSources() {
     const selectedSources = this.get('sources')
@@ -250,16 +210,16 @@ Query.Model = Backbone.AssociatedModel.extend({
     }
     return sourceArray
   },
-  getEphemeralMixinCql(cqlFilterTree) {
-    return cql.write(mixinEphemeralFilter(cqlFilterTree))
-  },
   buildSearchData() {
     const data = this.toJSON()
     data.sources = this.getSelectedSources()
 
     data.count = user.get('user').get('preferences').get('resultCount')
 
-    data.sorts = getEphemeralSort() || this.get('sorts')
+    data.sorts = this.options.transformSorts({
+      originalSorts: this.get('sorts'),
+      queryRef: this,
+    })
 
     return _.pick(
       data,
@@ -347,12 +307,21 @@ Query.Model = Backbone.AssociatedModel.extend({
       result.get('lazyResults').reset({
         sorts: this.get('sorts'),
         sources: selectedSources,
+        transformSorts: ({ originalSorts }) => {
+          return this.options.transformSorts({ originalSorts, queryRef: this })
+        },
       })
     } else {
       result = new QueryResponse({
         lazyResults: new LazyQueryResults({
           sorts: this.get('sorts'),
           sources: selectedSources,
+          transformSorts: ({ originalSorts }) => {
+            return this.options.transformSorts({
+              originalSorts,
+              queryRef: this,
+            })
+          },
         }),
       })
       this.set({
@@ -367,7 +336,10 @@ Query.Model = Backbone.AssociatedModel.extend({
       cqlFilterTree = limitToHistoric(cqlFilterTree)
     }
 
-    let cqlString = this.getEphemeralMixinCql(cqlFilterTree)
+    let cqlString = this.options.transformFilterTree({
+      originalFilterTree: cqlFilterTree,
+      queryRef: this,
+    })
 
     this.currentIndexForSourceGroup = this.nextIndexForSourceGroup
     const localSearchToRun = {

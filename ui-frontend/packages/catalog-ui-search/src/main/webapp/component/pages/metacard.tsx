@@ -3,32 +3,61 @@ import { hot } from 'react-hot-loader'
 import { useParams } from 'react-router-dom'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { GoldenLayout } from '../golden-layout/golden-layout'
-const Query = require('../../js/model/Query.js')
+import {
+  DEFAULT_QUERY_OPTIONS,
+  UserQuery,
+  useUserQuery,
+} from '../../js/model/TypedQuery'
+import {
+  FilterBuilderClass,
+  FilterClass,
+} from '../filter-builder/filter.structure'
+import { getFilterTreeForId } from './metacard-nav'
 const SelectionInterfaceModel = require('../selection-interface/selection-interface.model.js')
 const user = require('../singletons/user-instance.js')
 const _ = require('underscore')
 
-const getFilterTreeForId = ({ id }: { id: string }) => {
-  return {
-    type: 'AND',
-    filters: [
-      {
-        type: '=',
-        value: id,
-        property: '"id"',
-      },
-      {
-        type: 'ILIKE',
-        value: '*',
-        property: '"metacard-tags"',
-      },
-    ],
-  }
-}
+type UploadType = Backbone.Model<{
+  uploads: Backbone.Model<{ id: string; children: string[] }>[]
+}>
 
-const getQueryForId = ({ id }: { id: string }) => {
-  return new Query.Model({
-    filterTree: getFilterTreeForId({ id }),
+export const getFilterTreeForUpload = ({
+  upload,
+}: {
+  upload: UploadType
+}): FilterBuilderClass => {
+  return new FilterBuilderClass({
+    type: 'OR',
+    filters: _.flatten(
+      upload
+        .get('uploads')
+        .filter((file) => file.id || file.get('children') !== undefined)
+        .map((file) => {
+          if (file.get('children') !== undefined) {
+            return file.get('children').map(
+              (child) =>
+                new FilterClass({
+                  type: '=',
+                  value: child,
+                  property: 'id',
+                })
+            )
+          } else {
+            return new FilterClass({
+              type: '=',
+              value: file.id,
+              property: 'id',
+            })
+          }
+        })
+        .concat(
+          new FilterClass({
+            type: '=',
+            value: '-1',
+            property: 'id',
+          })
+        )
+    ),
   })
 }
 
@@ -43,7 +72,12 @@ const MetacardRoute = () => {
   React.useEffect(() => {
     setId(params.metacardId || params.id)
   }, [params.metacardId])
-  const [query] = React.useState(getQueryForId({ id }))
+  const [query] = useUserQuery({
+    attributes: getFilterTreeForId({ id }),
+    options: {
+      transformDefaults: DEFAULT_QUERY_OPTIONS.transformDefaults,
+    },
+  })
   const [selectionInterface] = React.useState(
     new SelectionInterfaceModel({
       currentQuery: query,
@@ -58,36 +92,7 @@ const MetacardRoute = () => {
         .get('uploads')
         .get(params.uploadId)
       if (upload) {
-        query.set('filterTree', {
-          type: 'OR',
-          filters: _.flatten(
-            upload
-              .get('uploads')
-              .filter(
-                (file: any) => file.id || file.get('children') !== undefined
-              )
-              .map((file: any) => {
-                if (file.get('children') !== undefined) {
-                  return file.get('children').map((child: any) => ({
-                    type: '=',
-                    value: child,
-                    property: 'id',
-                  }))
-                } else {
-                  return {
-                    type: '=',
-                    value: file.id,
-                    property: 'id',
-                  }
-                }
-              })
-              .concat({
-                type: '=',
-                value: '-1',
-                property: 'id',
-              })
-          ),
-        })
+        query.set('filterTree', getFilterTreeForUpload({ upload }))
         query.cancelCurrentSearches()
         query.startSearchFromFirstPage()
       }

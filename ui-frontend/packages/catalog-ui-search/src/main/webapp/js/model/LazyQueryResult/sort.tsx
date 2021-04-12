@@ -78,6 +78,9 @@ function checkSortValue(
 }
 
 export const generateCompareFunction = (sorting: QuerySortType[]) => {
+  if (!sorting) {
+    throw new Error(`Sorting can't be undefined!`)
+  }
   return function (a: LazyQueryResult, b: LazyQueryResult) {
     let sortValue = 0
     for (let i = 0; i <= sorting.length - 1; i++) {

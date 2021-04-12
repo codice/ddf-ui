@@ -12,19 +12,17 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import { FilterBuilderClass } from '../../component/filter-builder/filter.structure'
-const UntypedQuery = require('./Query.js')
 
-type QueryAttributes = {
+import { FilterBuilderClass } from '../../component/filter-builder/filter.structure'
+
+export type SortType = {
+  attribute: string
+  direction: 'ascending' | 'descending'
+}
+
+export type QueryAttributesType = {
   filterTree?: FilterBuilderClass
   sources?: string[]
+  sorts?: SortType[]
   [key: string]: any // slowly build out the proper type, then remove this (leave for now so we don't accidentally leave something off)
-}
-
-type QueryOptions = {
-  useUserDefaults?: boolean
-}
-
-export const Query = (attributes?: QueryAttributes, options?: QueryOptions) => {
-  return new UntypedQuery.Model(attributes, options)
 }
