@@ -3,11 +3,7 @@ import { hot } from 'react-hot-loader'
 import { useParams } from 'react-router-dom'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { GoldenLayout } from '../golden-layout/golden-layout'
-import {
-  DEFAULT_QUERY_OPTIONS,
-  UserQuery,
-  useUserQuery,
-} from '../../js/model/TypedQuery'
+import { DEFAULT_QUERY_OPTIONS, useUserQuery } from '../../js/model/TypedQuery'
 import {
   FilterBuilderClass,
   FilterClass,

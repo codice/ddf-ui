@@ -23,7 +23,7 @@ import SearchIcon from '@material-ui/icons/SearchTwoTone'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { useHistory, useLocation } from 'react-router-dom'
 import _ from 'lodash'
-import { UserQuery, useUserQuery } from '../../js/model/TypedQuery'
+import { useUserQuery } from '../../js/model/TypedQuery'
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
