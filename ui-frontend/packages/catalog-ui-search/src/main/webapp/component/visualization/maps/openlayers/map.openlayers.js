@@ -376,6 +376,7 @@ export default function (
 
       map.getView().fit(extent, {
         size: map.getSize(),
+        maxZoom: map.getView().getZoom(),
         duration: 500,
         ...opts,
       })
