@@ -155,7 +155,7 @@ module.exports = Backbone.AssociatedModel.extend({
       (action) => action.id.indexOf('catalog.data.metacard.map.') === 0
     )
   },
-  refreshData() {
+  refreshData(metacardProperties) {
     //let solr flush
     setTimeout(() => {
       const metacard = this.get('metacard')
@@ -198,38 +198,57 @@ module.exports = Backbone.AssociatedModel.extend({
         url: './internal/cql',
         data: JSON.stringify(req),
         contentType: 'application/json',
-      }).then(this.parseRefresh.bind(this), this.handleRefreshError.bind(this))
+      }).then(
+        this.parseRefresh(metacardProperties).bind(this),
+        this.handleRefreshError.bind(this)
+      )
     }, 1000)
   },
   handleRefreshError() {
     //do nothing for now, should we announce this?
   },
-  parseRefresh(response) {
-    const queryId = this.get('metacard').get('queryId')
-    const color = this.get('metacard').get('color')
-    _.forEach(response.results, (result) => {
-      delete result.relevance
-      result.propertyTypes =
-        response.types[result.metacard.properties['metacard-type']]
-      result.metacardType = result.metacard.properties['metacard-type']
-      result.metacard.id = result.metacard.properties.id
-      result.id = result.metacard.id + result.metacard.properties['source-id']
-      result.metacard.queryId = queryId
-      result.metacard.color = color
-      humanizeResourceSize(result)
-      result.actions.forEach((action) => (action.queryId = queryId))
-      const thumbnailAction = _.findWhere(result.actions, {
-        id: 'catalog.data.metacard.thumbnail',
+  parseRefresh(metacardProperties) {
+    return function (response) {
+      const queryId = this.get('metacard').get('queryId')
+      const color = this.get('metacard').get('color')
+      _.forEach(response.results, (result) => {
+        delete result.relevance
+        result.propertyTypes =
+          response.types[result.metacard.properties['metacard-type']]
+        result.metacardType = result.metacard.properties['metacard-type']
+        result.metacard.id = result.metacard.properties.id
+        result.id = result.metacard.id + result.metacard.properties['source-id']
+        result.metacard.queryId = queryId
+        result.metacard.color = color
+        humanizeResourceSize(result)
+        result.actions.forEach((action) => (action.queryId = queryId))
+        const thumbnailAction = _.findWhere(result.actions, {
+          id: 'catalog.data.metacard.thumbnail',
+        })
+        if (result.hasThumbnail && thumbnailAction) {
+          result.metacard.properties.thumbnail = generateThumbnailUrl(
+            thumbnailAction.url
+          )
+        } else {
+          result.metacard.properties.thumbnail = undefined
+        }
       })
-      if (result.hasThumbnail && thumbnailAction) {
-        result.metacard.properties.thumbnail = generateThumbnailUrl(
-          thumbnailAction.url
-        )
-      } else {
-        result.metacard.properties.thumbnail = undefined
+      const updatedResult = response.results[0]
+      let clearedAttributes = []
+      if (metacardProperties !== undefined) {
+        updatedResult.metacard.properties = metacardProperties
+        clearedAttributes = Object.keys(
+          this.get('metacard').get('properties').toJSON()
+        ).reduce((acc, cur) => {
+          return cur in metacardProperties ? acc : [cur, ...acc]
+        }, [])
       }
-    })
-    this.set(response.results[0])
-    this.trigger('refreshdata')
+
+      this.set(updatedResult)
+      clearedAttributes.forEach((attribute) => {
+        this.get('metacard').get('properties').unset(attribute)
+      })
+      this.trigger('refreshdata')
+    }
   },
 })
