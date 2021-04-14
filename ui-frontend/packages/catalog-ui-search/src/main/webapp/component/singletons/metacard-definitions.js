@@ -227,6 +227,10 @@ module.exports = new (Backbone.Model.extend({
     return metacardTypes.sort((a, b) => {
       const attrToCompareA = (a.alias || a.id).toLowerCase()
       const attrToCompareB = (b.alias || b.id).toLowerCase()
+      if (a.id == 'anyText') return -1
+      if (b.id == 'anyText') return 1
+      if (a.id == 'anyGeo') return -1
+      if (b.id == 'anyGeo') return 1
       if (attrToCompareA < attrToCompareB) {
         return -1
       }
