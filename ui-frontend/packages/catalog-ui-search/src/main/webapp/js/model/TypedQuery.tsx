@@ -110,7 +110,7 @@ function mixinEphemeralFilter(originalCQL: QueryModel): QueryModel {
 
 export const DEFAULT_USER_QUERY_OPTIONS: Readonly<Required<QueryOptions>> = {
   transformDefaults: ({ originalDefaults }) => {
-    return { originalDefaults, ...TypedUserInstance.getQuerySettings() }
+    return { ...originalDefaults, ...TypedUserInstance.getQuerySettings() }
   },
   transformFilterTree: ({ originalFilterTree }) => {
     return cql.write(mixinEphemeralFilter(originalFilterTree))
@@ -139,7 +139,7 @@ export const useQuery = ({
 }: {
   attributes?: QueryAttributesType
   options?: QueryOptions
-}) => {
+} = {}) => {
   const [query, setQuery] = React.useState(Query(attributes, options))
   return [query, setQuery]
 }
@@ -150,7 +150,7 @@ export const useUserQuery = ({
 }: {
   attributes?: QueryAttributesType
   options?: QueryOptions
-}) => {
+} = {}) => {
   const [query, setQuery] = React.useState(UserQuery(attributes, options))
   useListenTo(TypedUserInstance.getPreferences(), 'change:resultCount', () => {
     query.set('isOutdated', true)
