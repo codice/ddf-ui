@@ -223,7 +223,6 @@ export const HomePage = () => {
   const location = useLocation()
   let urlBasedQuery = location.search.split('?defaultQuery=')[1]
   const [queryModel] = useUserQuery(decodeUrlIfValid(urlBasedQuery))
-  console.log(queryModel)
   const [selectionInterface] = React.useState(
     new SelectionInterfaceModel({
       currentQuery: queryModel,

@@ -18,7 +18,7 @@ type Props = {
   search: any
 }
 
-type SourcesType = ('remote' | 'local' | 'enterprise' | string)[]
+type SourcesType = ('all' | 'fast' | 'slow' | string)[]
 
 const getHumanReadableSourceName = (sourceId: string) => {
   if (sourceId === 'all') {
