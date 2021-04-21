@@ -38,3 +38,8 @@ type ActionType = {
   title: string
   url: string
 }
+
+export type MetacardAttribute = {
+  attribute: string
+  values: any
+}
