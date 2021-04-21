@@ -5,7 +5,6 @@ import {
   useResizableGridContext,
 } from '../resizable-grid/resizable-grid'
 const SelectionInterfaceModel = require('../selection-interface/selection-interface.model')
-const Query = require('../../js/model/Query.js')
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import QueryAddView from '../query-add/query-add'
@@ -24,6 +23,7 @@ import SearchIcon from '@material-ui/icons/SearchTwoTone'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { useHistory, useLocation } from 'react-router-dom'
 import _ from 'lodash'
+import { useUserQuery } from '../../js/model/TypedQuery'
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
@@ -206,24 +206,23 @@ const LeftBottom = ({ selectionInterface }: { selectionInterface: any }) => {
   )
 }
 
+const decodeUrlIfValid = (urlBasedQuery: string) => {
+  if (urlBasedQuery) {
+    try {
+      return JSON.parse(decodeURIComponent(urlBasedQuery))
+    } catch (err) {
+      console.error(err)
+      return {}
+    }
+  } else {
+    return {}
+  }
+}
+
 export const HomePage = () => {
   const location = useLocation()
   let urlBasedQuery = location.search.split('?defaultQuery=')[1]
-  if (urlBasedQuery) {
-    try {
-      urlBasedQuery = new Query.Model(
-        JSON.parse(decodeURIComponent(urlBasedQuery))
-      )
-      ;(urlBasedQuery as any).startSearchFromFirstPage()
-    } catch (err) {
-      console.log(err)
-      urlBasedQuery = ''
-    }
-  }
-  // @ts-ignore ts-migrate(6133) FIXME: 'setQueryModel' is declared but its value is never... Remove this comment to see the full error message
-  const [queryModel, setQueryModel] = React.useState(
-    urlBasedQuery || new Query.Model()
-  )
+  const [queryModel] = useUserQuery(decodeUrlIfValid(urlBasedQuery))
   const [selectionInterface] = React.useState(
     new SelectionInterfaceModel({
       currentQuery: queryModel,

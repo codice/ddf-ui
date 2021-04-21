@@ -16,7 +16,7 @@
 const _ = require('underscore')
 const Backbone = require('backbone')
 const Metacard = require('../../js/model/Metacard.js')
-const Query = require('../../js/model/Query.js')
+const QueryModel = require('../../js/model/Query.js')
 const QueryResponse = require('../../js/model/QueryResponse.js')
 const QueryResult = require('../../js/model/QueryResult.js')
 
@@ -25,7 +25,7 @@ module.exports = Backbone.AssociatedModel.extend({
     {
       type: Backbone.One,
       key: 'currentQuery',
-      relatedModel: Query.Model,
+      relatedModel: QueryModel.Model,
     },
     {
       type: Backbone.One,
