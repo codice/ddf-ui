@@ -25,3 +25,22 @@ export function useBackbone(): WithBackboneProps {
     listenToOnce: backboneModel.listenToOnce.bind(backboneModel),
   }
 }
+
+/**
+ *  This is the most common use case.  You start listening at the first lifecycle (render), and stop listening at the last lifecycle (destruction).
+ *  If the paremeters ever change, we unlisten to the old case and relisten with the new parameters (object, events, callback).
+ *
+ *  For more complex uses, it's better to use useBackbone which gives you more control.
+ * @param parameters
+ */
+export function useListenTo(
+  ...parameters: Parameters<WithBackboneProps['listenTo']>
+) {
+  const { listenTo, stopListening } = useBackbone()
+  React.useEffect(() => {
+    listenTo.apply(undefined, parameters)
+    return () => {
+      stopListening.apply(undefined, parameters)
+    }
+  }, [parameters])
+}
