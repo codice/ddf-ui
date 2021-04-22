@@ -67,12 +67,9 @@ public class FilterNodeMapImpl implements FilterNode {
 
   @Override
   public List<FilterNode> getChildren() {
-    return Stream.of(json.get(CHILDREN))
-        .map(List.class::cast)
-        .flatMap(List::stream)
-        .map(Map.class::cast)
-        .map(FilterNodeMapImpl::new)
-        .collect(Collectors.toList());
+    List<Object> filters = (List<Object>) json.get(CHILDREN);
+    Stream<Object> streams = Stream.of(filters).flatMap(List::stream);
+    return streams.map(Map.class::cast).map(FilterNodeMapImpl::new).collect(Collectors.toList());
   }
 
   @Override
