@@ -159,9 +159,19 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.codice.thirdparty</groupId>
-            <artifactId>geotools-suite</artifactId>
-            <version>${org.geotools.bundle.version}</version>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-metadata</artifactId>
+            <version>${org.geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-main</artifactId>
+            <version>${org.geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-geojson</artifactId>
+            <version>${org.geotools.version}</version>
         </dependency>
         <dependency>
             <groupId>ddf.catalog.transformer</groupId>
@@ -211,11 +221,6 @@
         <dependency>
             <groupId>ddf.persistence.core</groupId>
             <artifactId>persistence-core-api</artifactId>
-            <version>${ddf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ddf.platform</groupId>
-            <artifactId>preferences-api</artifactId>
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
@@ -348,12 +353,6 @@
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
-            <groupId>ddf.thirdparty</groupId>
-            <artifactId>rest-assured</artifactId>
-            <version>${ddf.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
             <artifactId>owasp-java-html-sanitizer</artifactId>
             <version>${owasp-html-sanitizer.version}</version>
@@ -393,6 +392,11 @@
             <groupId>ddf.platform</groupId>
             <artifactId>preferences-api</artifactId>
             <version>${ddf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>${restassured.version}</version>
         </dependency>
     </dependencies>
 

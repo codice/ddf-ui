@@ -72,18 +72,22 @@
                             <arguments>install --network-concurrency 1 --frozen-lockfile</arguments>
                         </configuration>
                     </execution>
+
                     <execution>
                         <id>yarn test</id>
                         <goals>
                             <goal>yarn</goal>
                         </goals>
                         <configuration>
+                            <!--Do not run this plugin execution if we are skipping tests-->
+                            <skip>${skipTests}</skip>
                             <arguments>run test</arguments>
                             <environmentVariables>
                                 <NODE_ENV>${buildEnv}</NODE_ENV>
                             </environmentVariables>
                         </configuration>
                     </execution>
+
                     <execution>
                         <id>yarn build</id>
                         <goals>
