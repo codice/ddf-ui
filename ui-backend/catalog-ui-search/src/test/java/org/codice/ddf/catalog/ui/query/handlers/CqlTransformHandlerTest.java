@@ -86,7 +86,7 @@ public class CqlTransformHandlerTest {
   private static final String SERVICE_NOT_FOUND = "\"Service not found\"";
   private static final String SERVICE_SUCCESS = GSON.toJson("");
   private static final String ATTACHMENT_REGEX =
-      "^attachment;filename=\"export-\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{3})?Z."
+      "^attachment;filename=\"export-\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.(\\d{3}){1,2})?Z."
           + RETURN_ID
           + "\"$";
 
