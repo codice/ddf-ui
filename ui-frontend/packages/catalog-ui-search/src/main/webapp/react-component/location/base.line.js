@@ -18,10 +18,20 @@ import {
   validateGeo,
   initialErrorState,
 } from '../utils/validation'
+import Button from '@material-ui/core/Button'
+import CloseIcon from '@material-ui/icons/Close'
+import {
+  validateUsngLineOrPoly,
+  validateDmsLineOrPoly,
+  validateUtmUpsLineOrPoly,
+} from './validators'
+import DmsTextField from './dms-textfield'
+import UtmupsTextField from './utmups-textfield'
 const { Units } = require('./common')
 const TextField = require('../text-field')
+const { Radio, RadioItem } = require('../radio')
+const { MinimumSpacing } = require('./common')
 const _ = require('underscore')
-import Conversion from './conversion'
 
 const coordinatePairRegex = /-?\d{1,3}(\.\d*)?\s-?\d{1,3}(\.\d*)?/g
 
@@ -93,7 +103,7 @@ function getPolygonValue(currentValue, value) {
   }
 }
 
-const BaseLine = (props) => {
+const LineLatLon = (props) => {
   const {
     label,
     geometryKey,
@@ -125,7 +135,6 @@ const BaseLine = (props) => {
   return (
     <div>
       <div className="input-location">
-        <Conversion value={currentValue} isValid={baseLineError} />
         <TextField
           label={label}
           value={currentValue}
@@ -184,6 +193,346 @@ const BaseLine = (props) => {
         </Units>
         <ErrorComponent errorState={bufferError} />
       </div>
+    </div>
+  )
+}
+
+const LineDms = (props) => {
+  const {
+    geometryKey,
+    dmsPointArray,
+    setState,
+    unitKey,
+    setBufferState,
+    widthKey,
+  } = props
+  const [baseLineError, setBaseLineError] = useState(initialErrorState)
+  const [bufferError, setBufferError] = useState(initialErrorState)
+
+  useEffect(() => {
+    if (props.drawing) {
+      setBaseLineError(initialErrorState)
+    }
+    if (dmsPointArray) {
+      setBaseLineError(validateDmsLineOrPoly(dmsPointArray, geometryKey))
+    }
+  }, [props.polygon, props.line, dmsPointArray])
+
+  return (
+    <div>
+      <div className="input-location">
+        {dmsPointArray &&
+          dmsPointArray.map((point, index) => {
+            return (
+              <div>
+                <DmsTextField
+                  key={'point-' + index}
+                  point={point}
+                  setPoint={(point) => {
+                    let array = [...dmsPointArray]
+                    array.splice(index, 1, point)
+                    setState({ ['dmsPointArray']: array })
+                  }}
+                  deletePoint={() => {
+                    let array = [...dmsPointArray]
+                    array.splice(index, 1)
+                    setState({ ['dmsPointArray']: array })
+                  }}
+                />
+                <MinimumSpacing />
+              </div>
+            )
+          })}
+      </div>
+      <Button
+        fullWidth
+        variant="contained"
+        className="is-primary" //match styling of other buttons here
+        onClick={() => {
+          let array = dmsPointArray ? [...dmsPointArray] : []
+          array.push({
+            lat: '',
+            lon: '',
+            latDirection: 'N',
+            lonDirection: 'E',
+          })
+          setState({ ['dmsPointArray']: array })
+        }}
+      >
+        +
+      </Button>
+      <ErrorComponent errorState={baseLineError} />
+      <Units
+        value={props[unitKey]}
+        onChange={(value) => {
+          typeof setBufferState === 'function'
+            ? setBufferState(unitKey, value)
+            : setState({ [unitKey]: value })
+          if (widthKey === 'lineWidth' || 'bufferWidth') {
+            setBufferError(
+              validateGeo(widthKey, {
+                value: props[widthKey],
+                units: value,
+              })
+            )
+          }
+        }}
+      >
+        <TextField
+          type="number"
+          label="Buffer width"
+          value={String(props[widthKey])}
+          onChange={(value) => {
+            typeof setBufferState === 'function'
+              ? setBufferState(widthKey, value)
+              : setState({ [widthKey]: value })
+          }}
+          onBlur={(e) => {
+            setBufferError(
+              validateGeo(widthKey, {
+                value: e.target.value,
+                units: props[unitKey],
+              })
+            )
+          }}
+        />
+      </Units>
+      <ErrorComponent errorState={bufferError} />
+    </div>
+  )
+}
+
+const LineMgrs = (props) => {
+  const {
+    geometryKey,
+    usngPointArray,
+    setState,
+    unitKey,
+    setBufferState,
+    widthKey,
+  } = props
+  const [baseLineError, setBaseLineError] = useState(initialErrorState)
+  const [bufferError, setBufferError] = useState(initialErrorState)
+
+  useEffect(() => {
+    if (props.drawing) {
+      setBaseLineError(initialErrorState)
+    }
+    if (usngPointArray) {
+      setBaseLineError(validateUsngLineOrPoly(usngPointArray, geometryKey))
+    }
+  }, [props.polygon, props.line, usngPointArray])
+
+  return (
+    <div>
+      <div className="input-location">
+        {usngPointArray &&
+          usngPointArray.map((coord, index) => {
+            return (
+              <TextField
+                key={'grid-' + index}
+                label="Grid"
+                value={coord}
+                onChange={(value) => {
+                  let points = [...usngPointArray]
+                  points.splice(index, 1, value)
+                  setState({ ['usngPointArray']: points })
+                }}
+                addon={
+                  <Button
+                    onClick={() => {
+                      let points = [...usngPointArray]
+                      points.splice(index, 1)
+                      setState({ ['usngPointArray']: points })
+                    }}
+                  >
+                    <CloseIcon />
+                  </Button>
+                }
+              />
+            )
+          })}
+        <Button
+          fullWidth
+          variant="contained"
+          className="is-primary" //match styling of other buttons here
+          onClick={() => {
+            let points = usngPointArray ? [...usngPointArray] : []
+            points.push('')
+            setState({ ['usngPointArray']: points })
+          }}
+        >
+          +
+        </Button>
+        <ErrorComponent errorState={baseLineError} />
+        <Units
+          value={props[unitKey]}
+          onChange={(value) => {
+            typeof setBufferState === 'function'
+              ? setBufferState(unitKey, value)
+              : setState({ [unitKey]: value })
+            if (widthKey === 'lineWidth' || 'bufferWidth') {
+              setBufferError(
+                validateGeo(widthKey, {
+                  value: props[widthKey],
+                  units: value,
+                })
+              )
+            }
+          }}
+        >
+          <TextField
+            type="number"
+            label="Buffer width"
+            value={String(props[widthKey])}
+            onChange={(value) => {
+              typeof setBufferState === 'function'
+                ? setBufferState(widthKey, value)
+                : setState({ [widthKey]: value })
+            }}
+            onBlur={(e) => {
+              setBufferError(
+                validateGeo(widthKey, {
+                  value: e.target.value,
+                  units: props[unitKey],
+                })
+              )
+            }}
+          />
+        </Units>
+        <ErrorComponent errorState={bufferError} />
+      </div>
+    </div>
+  )
+}
+
+const LineUtmUps = (props) => {
+  const {
+    geometryKey,
+    utmUpsPointArray,
+    setState,
+    unitKey,
+    setBufferState,
+    widthKey,
+  } = props
+  const [baseLineError, setBaseLineError] = useState(initialErrorState)
+  const [bufferError, setBufferError] = useState(initialErrorState)
+
+  useEffect(() => {
+    if (props.drawing) {
+      setBaseLineError(initialErrorState)
+    }
+    if (utmUpsPointArray) {
+      setBaseLineError(validateUtmUpsLineOrPoly(utmUpsPointArray, geometryKey))
+    }
+  }, [props.polygon, props.line, utmUpsPointArray])
+
+  return (
+    <div>
+      {utmUpsPointArray &&
+        utmUpsPointArray.map((point, index) => {
+          return (
+            <div>
+              <UtmupsTextField
+                point={point}
+                setPoint={(point) => {
+                  let points = [...utmUpsPointArray]
+                  points.splice(index, 1, point)
+                  setState({ ['utmUpsPointArray']: points })
+                }}
+                deletePoint={() => {
+                  let points = [...utmUpsPointArray]
+                  points.splice(index, 1)
+                  setState({ ['utmUpsPointArray']: points })
+                }}
+              />
+              <MinimumSpacing />
+            </div>
+          )
+        })}
+      <Button
+        fullWidth
+        variant="contained"
+        className="is-primary" //match styling of other buttons here
+        onClick={() => {
+          let points = utmUpsPointArray ? [...utmUpsPointArray] : []
+          points.push({
+            easting: '',
+            hemisphere: 'Northern',
+            northing: '',
+            zoneNumber: 0,
+          })
+          setState({ ['utmUpsPointArray']: points })
+        }}
+      >
+        +
+      </Button>
+      <ErrorComponent errorState={baseLineError} />
+      <Units
+        value={props[unitKey]}
+        onChange={(value) => {
+          typeof setBufferState === 'function'
+            ? setBufferState(unitKey, value)
+            : setState({ [unitKey]: value })
+          if (widthKey === 'lineWidth' || 'bufferWidth') {
+            setBufferError(
+              validateGeo(widthKey, {
+                value: props[widthKey],
+                units: value,
+              })
+            )
+          }
+        }}
+      >
+        <TextField
+          type="number"
+          label="Buffer width"
+          value={String(props[widthKey])}
+          onChange={(value) => {
+            typeof setBufferState === 'function'
+              ? setBufferState(widthKey, value)
+              : setState({ [widthKey]: value })
+          }}
+          onBlur={(e) => {
+            setBufferError(
+              validateGeo(widthKey, {
+                value: e.target.value,
+                units: props[unitKey],
+              })
+            )
+          }}
+        />
+      </Units>
+      <ErrorComponent errorState={bufferError} />
+    </div>
+  )
+}
+
+const BaseLine = (props) => {
+  const { setState, locationType } = props
+
+  const inputs = {
+    usng: LineMgrs,
+    dd: LineLatLon,
+    dms: LineDms,
+    utmups: LineUtmUps,
+  }
+
+  const Component = inputs[locationType] || null
+
+  return (
+    <div>
+      <Radio
+        value={locationType}
+        onChange={(value) => setState({ ['locationType']: value })}
+      >
+        <RadioItem value="dd">Lat/Lon (DD)</RadioItem>
+        <RadioItem value="dms">Lat/Lon (DMS)</RadioItem>
+        <RadioItem value="usng">USNG / MGRS</RadioItem>
+        <RadioItem value="utmups">UTM / UPS</RadioItem>
+      </Radio>
+      <MinimumSpacing />
+      {Component !== null ? <Component {...props} /> : null}
     </div>
   )
 }

@@ -27,14 +27,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /** Transforms solr highlights into an easily displayable format on the frontend */
 public class HighlightTransformPlugin implements PostQueryPlugin {
+
   private int bufferSize;
+
+  private Pattern redactedPattern;
 
   public HighlightTransformPlugin() {
     // Create a 80 char buffer around the string
     bufferSize = 80;
+
+    redactedPattern = Pattern.compile("REDACTED");
   }
 
   @VisibleForTesting
@@ -44,6 +50,7 @@ public class HighlightTransformPlugin implements PostQueryPlugin {
 
   @VisibleForTesting
   protected static class ProcessedHighlight {
+
     private String id;
     private List<Map<String, String>> highlights;
 
@@ -116,9 +123,15 @@ public class HighlightTransformPlugin implements PostQueryPlugin {
       String attributeName,
       Highlight highlight) {
     Attribute attribute = matchingResult.getMetacard().getAttribute(attributeName);
-    String value = (String) attribute.getValues().get(highlight.getValueIndex());
+    String value = null;
+    int index = highlight.getValueIndex();
+    if (attribute != null
+        && !attribute.getValues().isEmpty()
+        && index < attribute.getValues().size()) {
+      value = (String) attribute.getValues().get(index);
+    }
 
-    if (!value.equals("REDACTED")) {
+    if (value != null && (redactedPattern == null || !redactedPattern.matcher(value).matches())) {
       String highlightedString = createHighlightString(highlight, value, attributeName);
       processedHighlight.addHighlight(
           attributeName,
@@ -162,7 +175,9 @@ public class HighlightTransformPlugin implements PostQueryPlugin {
       int startIndex = highlight.getBeginIndex() - bufferSize;
       if (startIndex <= 0) {
         startBuffer = value.substring(0, highlight.getBeginIndex());
-      } else startBuffer = "...".concat(value.substring(startIndex, highlight.getBeginIndex()));
+      } else {
+        startBuffer = "...".concat(value.substring(startIndex, highlight.getBeginIndex()));
+      }
     }
     return startBuffer;
   }
@@ -185,5 +200,13 @@ public class HighlightTransformPlugin implements PostQueryPlugin {
       }
     }
     return endBuffer;
+  }
+
+  public void setRedactedPattern(String redactedPattern) {
+    if (redactedPattern == null || redactedPattern.trim().isEmpty()) {
+      this.redactedPattern = null;
+    } else {
+      this.redactedPattern = Pattern.compile(redactedPattern);
+    }
   }
 }

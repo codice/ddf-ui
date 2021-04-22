@@ -33,6 +33,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HighlightTransformPluginTest {
+
   QueryRequest request;
 
   private QueryResponse input;
@@ -83,6 +84,53 @@ public class HighlightTransformPluginTest {
     ArrayList<HighlightTransformPlugin.ProcessedHighlight> highlights =
         (ArrayList<HighlightTransformPlugin.ProcessedHighlight>)
             processedResponse.getProperties().get(Constants.QUERY_HIGHLIGHT_KEY);
+    assertThat(highlights.get(0).getId(), is("123456789"));
+    assertThat(highlights.get(0).getHighlights().get(0).get("attribute"), is("description"));
+    assertThat(
+        highlights.get(0).getHighlights().get(0).get("highlight"),
+        is("<span class=\"highlight\">Lorem</span> ipsum dol..."));
+  }
+
+  @Test
+  public void testProcessHighlightsRedacted() {
+    HighlightTransformPlugin highlightPlugin = new HighlightTransformPlugin(10);
+    highlightPlugin.setRedactedPattern("REDACTED.*");
+
+    String id = "123456789";
+    // Highlight the word "Lorem"
+    Highlight highlight = new HighlightImpl(0, 5);
+
+    Metacard metacard = new MetacardImpl();
+    metacard.setAttribute(new AttributeImpl("title", "REDACTED DATA"));
+    metacard.setAttribute(new AttributeImpl("description", value));
+    metacard.setAttribute(new AttributeImpl("id", "123456789"));
+    Result result = new ResultImpl(metacard);
+
+    QueryResponse response = new QueryResponseImpl(request, Arrays.asList(result), 1);
+    ResultAttributeHighlight resultAttributeHighlight =
+        new ResultAttributeHighlightImpl("description", Arrays.asList(highlight));
+    ResultAttributeHighlight missingAttributeHighlight =
+        new ResultAttributeHighlightImpl("extra", Arrays.asList(new HighlightImpl(6, 20)));
+    ResultAttributeHighlight redactedAttributeHighlight =
+        new ResultAttributeHighlightImpl("title", Arrays.asList(new HighlightImpl(10, 20)));
+
+    ResultHighlight resultHighlight =
+        new ResultHighlightImpl(
+            id,
+            Arrays.asList(
+                resultAttributeHighlight, missingAttributeHighlight, redactedAttributeHighlight));
+
+    response
+        .getProperties()
+        .put(Constants.QUERY_HIGHLIGHT_KEY, (Serializable) Arrays.asList(resultHighlight));
+
+    QueryResponse processedResponse = highlightPlugin.process(response);
+    assertThat(
+        processedResponse.getProperties().containsKey(Constants.QUERY_HIGHLIGHT_KEY), is(true));
+    ArrayList<HighlightTransformPlugin.ProcessedHighlight> highlights =
+        (ArrayList<HighlightTransformPlugin.ProcessedHighlight>)
+            processedResponse.getProperties().get(Constants.QUERY_HIGHLIGHT_KEY);
+    assertThat(highlights.size(), is(1));
     assertThat(highlights.get(0).getId(), is("123456789"));
     assertThat(highlights.get(0).getHighlights().get(0).get("attribute"), is("description"));
     assertThat(

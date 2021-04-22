@@ -382,7 +382,12 @@ function buildTree(postfix: Array<TokenType>): any {
     case 'VALUE': //works
       const match = tok.text.match(/^'(.*)'$/)
       if (match) {
-        return translateCqlToUserql(match[1].replace(/''/g, "'"))
+        if (unwrap(postfix[0].text) === 'id') {
+          // don't escape ids
+          return match[1].replace(/''/g, "'")
+        } else {
+          return translateCqlToUserql(match[1].replace(/''/g, "'"))
+        }
       } else {
         return Number(tok.text)
       }
@@ -520,9 +525,7 @@ function buildAst(tokens: TokenType[]) {
     const tok = tokens.shift() as TokenType
     switch (tok.type) {
       case 'PROPERTY':
-        // Remove single and double quotes if they exist in property name
-        tok.text = tok.text.replace(/^'|'$/g, '')
-        tok.text = tok.text.replace(/^"|"$/g, '')
+        tok.text = unwrap(tok.text)
       case 'GEOMETRY':
       case 'VALUE':
       case 'TIME':
@@ -618,6 +621,11 @@ function wrap(property: string): string {
   return wrapped
 }
 
+function unwrap(property: string): string {
+  // Remove single and double quotes if they exist in property name
+  return property.replace(/^'|'$/g, '').replace(/^"|"$/g, '')
+}
+
 // really could use some refactoring to enable better typing, right now it's recursive and calls itself with so many different types / return types
 function write(filter: any): any {
   switch (filter.type) {
@@ -703,10 +711,17 @@ function write(filter: any): any {
       let property =
         typeof filter.property === 'object'
           ? write(filter.property)
-          : wrap(filter.property)
-      return filter.value !== null
-        ? property + ' ' + filter.type + ' ' + write(filter.value)
-        : property + ' ' + filter.type
+          : wrap(unwrap(filter.property)) // unwrap first, because technically only "" is supported (so swap '' for "")
+
+      if (filter.value === null) {
+        return `${property} ${filter.type}`
+      }
+
+      return `${property} ${filter.type} ${
+        unwrap(filter.property) === 'id'
+          ? `'${filter.value}'`
+          : write(filter.value)
+      }` // don't escape ids
     // temporalClass
     case 'RELATIVE':
       // weird thing I noticed is you have to wrap the value in single quotes, double quotes don't work

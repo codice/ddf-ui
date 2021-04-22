@@ -13,6 +13,10 @@
  *
  **/
 import { expect } from 'chai'
+import {
+  FilterBuilderClass,
+  FilterClass,
+} from '../component/filter-builder/filter.structure'
 import cql from './cql'
 
 type CapabilityCategoriesType =
@@ -159,6 +163,92 @@ describe('read & write parity for capabilities, as well as boolean logic', () =>
           )
         })
       })
+    })
+  })
+
+  describe('test corner cases / special', () => {
+    it('it handles escaping _ in properties that are not id', () => {
+      const value = '12123123_123213123'
+      const originalFilter = new FilterBuilderClass({
+        type: 'AND',
+        filters: [
+          new FilterClass({
+            type: '=',
+            property: 'title',
+            value,
+          }),
+        ],
+      })
+      const cqlText = cql.write(originalFilter)
+      const newFilter = cql.read(cqlText)
+      const filterToCheck = newFilter.filters[0] as FilterClass
+      expect(cqlText, `Doesn't escape properly`).to.equal(
+        '("title" = \'12123123\\_123213123\')'
+      )
+      expect(filterToCheck.value).to.equal(value)
+    })
+
+    it('it handles escaping _ in properties that are id', () => {
+      const value = '12123123_123213123'
+      const originalFilter = new FilterBuilderClass({
+        type: 'AND',
+        filters: [
+          new FilterClass({
+            type: '=',
+            property: 'id',
+            value,
+          }),
+        ],
+      })
+      const cqlText = cql.write(originalFilter)
+      const newFilter = cql.read(cqlText)
+      const filterToCheck = newFilter.filters[0] as FilterClass
+      expect(cql.write(originalFilter), `Doesn't escape properly`).to.equal(
+        '("id" = \'12123123_123213123\')'
+      )
+      expect(filterToCheck.value).to.equal(value)
+    })
+
+    it('it handles escaping _ in properties that are "id" (double wrapped!)', () => {
+      const value = '12123123_123213123'
+      const originalFilter = new FilterBuilderClass({
+        type: 'AND',
+        filters: [
+          new FilterClass({
+            type: '=',
+            property: '"id"',
+            value,
+          }),
+        ],
+      })
+      const cqlText = cql.write(originalFilter)
+      const newFilter = cql.read(cqlText)
+      const filterToCheck = newFilter.filters[0] as FilterClass
+      expect(cql.write(originalFilter), `Doesn't escape properly`).to.equal(
+        '("id" = \'12123123_123213123\')'
+      )
+      expect(filterToCheck.value).to.equal(value)
+    })
+
+    it(`it handles escaping _ in properties that are 'id' (double wrapped!)`, () => {
+      const value = '12123123_123213123'
+      const originalFilter = new FilterBuilderClass({
+        type: 'AND',
+        filters: [
+          new FilterClass({
+            type: '=',
+            property: `'id'`,
+            value,
+          }),
+        ],
+      })
+      const cqlText = cql.write(originalFilter)
+      const newFilter = cql.read(cqlText)
+      const filterToCheck = newFilter.filters[0] as FilterClass
+      expect(cql.write(originalFilter), `Doesn't escape properly`).to.equal(
+        '("id" = \'12123123_123213123\')'
+      )
+      expect(filterToCheck.value).to.equal(value)
     })
   })
 })
