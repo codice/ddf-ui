@@ -17,7 +17,7 @@ import { SFC } from '../react-component/hoc/utils'
 import { providers, Props as ProviderProps } from './providers'
 import metacardInteractions from './metacard-interactions'
 import { LazyQueryResult } from '../js/model/LazyQueryResult/LazyQueryResult'
-import { ResultType } from '../js/model/Types'
+import { MetacardAttribute, ResultType } from '../js/model/Types'
 import { ValueTypes } from '../component/filter-builder/filter.structure'
 import { Suggestion } from '../react-component/location/gazetteer'
 
@@ -60,6 +60,15 @@ export type ExtensionPointsType = {
   ) => null | any
   handleFilter: (map: any, filter: any) => null | any
   suggester: (input: string) => null | Promise<Suggestion[]>
+  handleMetacardUpdate:
+    | (({
+        lazyResult,
+        attributesToUpdate,
+      }: {
+        lazyResult: LazyQueryResult
+        attributesToUpdate: MetacardAttribute[]
+      }) => Promise<void>)
+    | null
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -76,6 +85,7 @@ const ExtensionPoints: ExtensionPointsType = {
   serializeLocation: () => null,
   handleFilter: () => null,
   suggester: () => null,
+  handleMetacardUpdate: null,
 }
 
 export default ExtensionPoints
