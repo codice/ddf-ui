@@ -16,9 +16,8 @@ const _ = require('underscore')
 const metacardDefinitions = require('../component/singletons/metacard-definitions.js')
 
 module.exports = {
-  refreshResult(result) {
-    const id = result.get('metacard').id
-    result.refreshData()
+  refreshResult(result, metacardProperties) {
+    result.refreshData(metacardProperties)
   },
   updateResults(results, response) {
     const attributeMap = response.reduce(

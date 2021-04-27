@@ -155,7 +155,25 @@ module.exports = Backbone.AssociatedModel.extend({
       (action) => action.id.indexOf('catalog.data.metacard.map.') === 0
     )
   },
-  refreshData() {
+  refreshData(metacardProperties) {
+    if (metacardProperties !== undefined) {
+      const updatedResult = this.toJSON()
+      updatedResult.metacard.properties = metacardProperties
+      this.set(updatedResult)
+
+      const clearedAttributes = Object.keys(
+        this.get('metacard').get('properties').toJSON()
+      ).reduce((acc, cur) => {
+        return cur in metacardProperties ? acc : [cur, ...acc]
+      }, [])
+      clearedAttributes.forEach((attribute) => {
+        this.get('metacard').get('properties').unset(attribute)
+      })
+
+      this.trigger('refreshdata')
+      return
+    }
+
     //let solr flush
     setTimeout(() => {
       const metacard = this.get('metacard')
