@@ -30,7 +30,7 @@ function convertPointCoordinate(point) {
 }
 
 function unconvertPointCoordinate(point) {
-  const transformation = transform(point, 'EPSG:4326', properties.projection)
+  const transformation = transform(point, properties.projection, 'EPSG:4326')
   return transformation
 }
 
