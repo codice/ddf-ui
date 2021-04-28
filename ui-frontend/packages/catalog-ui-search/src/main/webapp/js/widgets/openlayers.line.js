@@ -14,7 +14,17 @@
  **/
 
 const Marionette = require('marionette')
-const ol = require('openlayers')
+
+import { transform } from 'ol/proj'
+import LineString from 'ol/geom/LineString'
+import Feature from 'ol/Feature'
+import Style from 'ol/style/Style'
+import Stroke from 'ol/style/Stroke'
+import VectorSource from 'ol/source/Vector'
+import VectorLayer from 'ol/layer/Vector'
+import MultiLineString from 'ol/geom/MultiLineString'
+import { Draw as olDraw } from 'ol/interaction'
+
 const _ = require('underscore')
 const properties = require('../properties.js')
 const wreqr = require('../wreqr.js')
@@ -28,7 +38,7 @@ import { validateGeo } from '../../react-component/utils/validation'
 function translateFromOpenlayersCoordinates(coords) {
   const coordinates = []
   _.each(coords, (point) => {
-    point = ol.proj.transform(
+    point = transform(
       [
         DistanceUtils.coordinateRound(point[0]),
         DistanceUtils.coordinateRound(point[1]),
@@ -53,11 +63,7 @@ function translateToOpenlayersCoordinates(coords) {
       coordinates.push(translateToOpenlayersCoordinates(item))
     } else {
       coordinates.push(
-        ol.proj.transform(
-          [item[0], item[1]],
-          'EPSG:4326',
-          properties.projection
-        )
+        transform([item[0], item[1]], 'EPSG:4326', properties.projection)
       )
     }
   })
@@ -105,9 +111,7 @@ Draw.LineView = Marionette.View.extend({
       return
     }
 
-    const rectangle = new ol.geom.LineString(
-      translateToOpenlayersCoordinates(setArr)
-    )
+    const rectangle = new LineString(translateToOpenlayersCoordinates(setArr))
     return rectangle
   },
 
@@ -145,7 +149,7 @@ Draw.LineView = Marionette.View.extend({
       translateFromOpenlayersCoordinates(rectangle.getCoordinates())
     )
     const bufferedLine = Turf.buffer(turfLine, lineWidth, 'meters')
-    const geometryRepresentation = new ol.geom.MultiLineString(
+    const geometryRepresentation = new MultiLineString(
       translateToOpenlayersCoordinates(bufferedLine.geometry.coordinates)
     )
 
@@ -153,7 +157,7 @@ Draw.LineView = Marionette.View.extend({
       this.map.removeLayer(this.vectorLayer)
     }
 
-    this.billboard = new ol.Feature({
+    this.billboard = new Feature({
       geometry: geometryRepresentation,
     })
 
@@ -161,19 +165,19 @@ Draw.LineView = Marionette.View.extend({
 
     const color = this.model.get('color')
 
-    const iconStyle = new ol.style.Style({
-      stroke: new ol.style.Stroke({
+    const iconStyle = new Style({
+      stroke: new Stroke({
         color: color ? color : '#914500',
         width: 3,
       }),
     })
     this.billboard.setStyle(iconStyle)
 
-    const vectorSource = new ol.source.Vector({
+    const vectorSource = new VectorSource({
       features: [this.billboard],
     })
 
-    let vectorLayer = new ol.layer.Vector({
+    let vectorLayer = new VectorLayer({
       source: vectorSource,
     })
 
@@ -196,10 +200,10 @@ Draw.LineView = Marionette.View.extend({
   start() {
     const that = this
 
-    this.primitive = new ol.interaction.Draw({
+    this.primitive = new olDraw({
       type: 'LineString',
-      style: new ol.style.Style({
-        stroke: new ol.style.Stroke({
+      style: new Style({
+        stroke: new Stroke({
           color: [0, 0, 255, 0],
         }),
       }),

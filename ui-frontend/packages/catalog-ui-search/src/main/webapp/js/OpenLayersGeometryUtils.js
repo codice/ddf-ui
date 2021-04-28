@@ -14,9 +14,10 @@
  **/
 
 /*jshint esversion: 6, bitwise: false*/
-const ol = require('openlayers')
 const properties = require('./properties.js')
 const Common = require('./Common')
+
+import { transform } from 'ol/proj'
 
 module.exports = {
   getCoordinatesFromGeometry: (geometry) => {
@@ -49,9 +50,9 @@ module.exports = {
     }
   },
   mapCoordinateToLonLat: (point) =>
-    ol.proj.transform(point, properties.projection, 'EPSG:4326'),
+    transform(point, properties.projection, 'EPSG:4326'),
   lonLatToMapCoordinate: (point) =>
-    ol.proj.transform(point, 'EPSG:4326', properties.projection),
+    transform(point, 'EPSG:4326', properties.projection),
   wrapCoordinatesFromGeometry: (geometry) => {
     let coordinates = module.exports
       .getCoordinatesFromGeometry(geometry)

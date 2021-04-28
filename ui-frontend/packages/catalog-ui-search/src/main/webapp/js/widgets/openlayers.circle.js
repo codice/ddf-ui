@@ -14,7 +14,17 @@
  **/
 
 const Marionette = require('marionette')
-const ol = require('openlayers')
+
+import { transform } from 'ol/proj'
+import Circle from 'ol/geom/Circle'
+import LineString from 'ol/geom/LineString'
+import Feature from 'ol/Feature'
+import Style from 'ol/style/Style'
+import Stroke from 'ol/style/Stroke'
+import VectorSource from 'ol/source/Vector'
+import VectorLayer from 'ol/layer/Vector'
+import { Draw as olDraw } from 'ol/interaction'
+
 const _ = require('underscore')
 const properties = require('../properties.js')
 const wreqr = require('../wreqr.js')
@@ -26,7 +36,7 @@ const olUtils = require('../OpenLayersGeometryUtils')
 const DistanceUtils = require('../DistanceUtils.js')
 
 function translateFromOpenlayersCoordinate(coord) {
-  return ol.proj.transform(
+  return transform(
     [Number(coord[0]), Number(coord[1])],
     properties.projection,
     'EPSG:4326'
@@ -34,7 +44,7 @@ function translateFromOpenlayersCoordinate(coord) {
 }
 
 function translateToOpenlayersCoordinate(coord) {
-  return ol.proj.transform(
+  return transform(
     [Number(coord[0]), Number(coord[1])],
     'EPSG:4326',
     properties.projection
@@ -80,7 +90,7 @@ Draw.CircleView = Marionette.View.extend({
     if (model.get('lon') === undefined || model.get('lat') === undefined) {
       return undefined
     }
-    const rectangle = new ol.geom.Circle(
+    const rectangle = new Circle(
       translateToOpenlayersCoordinate([model.get('lon'), model.get('lat')]),
       DistanceUtils.getDistanceInMeters(
         model.get('radius'),
@@ -131,11 +141,11 @@ Draw.CircleView = Marionette.View.extend({
       64,
       'meters'
     )
-    const geometryRepresentation = new ol.geom.LineString(
+    const geometryRepresentation = new LineString(
       translateToOpenlayersCoordinates(turfCircle.geometry.coordinates[0])
     )
 
-    this.billboard = new ol.Feature({
+    this.billboard = new Feature({
       geometry: geometryRepresentation,
     })
 
@@ -143,19 +153,19 @@ Draw.CircleView = Marionette.View.extend({
 
     const color = this.model.get('color')
 
-    const iconStyle = new ol.style.Style({
-      stroke: new ol.style.Stroke({
+    const iconStyle = new Style({
+      stroke: new Stroke({
         color: color ? color : '#914500',
         width: 3,
       }),
     })
     this.billboard.setStyle(iconStyle)
 
-    const vectorSource = new ol.source.Vector({
+    const vectorSource = new VectorSource({
       features: [this.billboard],
     })
 
-    let vectorLayer = new ol.layer.Vector({
+    let vectorLayer = new VectorLayer({
       source: vectorSource,
     })
 
@@ -181,10 +191,10 @@ Draw.CircleView = Marionette.View.extend({
   start() {
     const that = this
 
-    this.primitive = new ol.interaction.Draw({
+    this.primitive = new olDraw({
       type: 'Circle',
-      style: new ol.style.Style({
-        stroke: new ol.style.Stroke({
+      style: new Style({
+        stroke: new Stroke({
           color: [0, 0, 255, 0],
         }),
       }),

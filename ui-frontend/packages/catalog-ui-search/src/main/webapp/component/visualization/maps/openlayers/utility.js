@@ -14,16 +14,24 @@
  **/
 
 const _ = require('underscore')
-const Openlayers = require('openlayers')
+
+import { transform } from 'ol/proj'
+import { boundingExtent } from 'ol/extent'
+import { getCenter } from 'ol/extent'
+
 const properties = require('../../../../js/properties.js')
 
 function convertPointCoordinate(point) {
   const coords = [point[0], point[1]]
-  return Openlayers.proj.transform(coords, 'EPSG:4326', properties.projection)
+
+  const transformation = transform(coords, 'EPSG:4326', properties.projection)
+
+  return transformation
 }
 
 function unconvertPointCoordinate(point) {
-  return Openlayers.proj.transform(point, properties.projection, 'EPSG:4326')
+  const transformation = transform(point, 'EPSG:4326', properties.projection)
+  return transformation
 }
 
 /*
@@ -37,8 +45,8 @@ module.exports = {
     const lineObject = propertyModel
       .getPoints()
       .map((coordinate) => convertPointCoordinate(coordinate))
-    const extent = Openlayers.extent.boundingExtent(lineObject)
-    return Openlayers.extent.getCenter(extent)
+    const extent = boundingExtent(lineObject)
+    return getCenter(extent)
   },
   /*
       Calculates the center of given a geometry (WKT)
@@ -57,8 +65,8 @@ module.exports = {
       propertyModels.map((propertyModel) => propertyModel.getPoints()),
       true
     ).map((coordinate) => convertPointCoordinate(coordinate))
-    const extent = Openlayers.extent.boundingExtent(allPoints)
-    return Openlayers.extent.getCenter(extent)
+    const extent = boundingExtent(allPoints)
+    return getCenter(extent)
   },
   /*
       Calculates the center of given geometries (WKT)

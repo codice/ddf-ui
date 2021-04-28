@@ -28,7 +28,29 @@ const DrawPolygon = require('../../../../js/widgets/openlayers.polygon.js')
 const DrawLine = require('../../../../js/widgets/openlayers.line.js')
 
 const properties = require('../../../../js/properties.js')
-const Openlayers = require('openlayers')
+
+import { transform } from 'ol/proj'
+import { boundingExtent } from 'ol/extent'
+import { createEmpty } from 'ol/extent'
+import LayerGroup from 'ol/layer/Group'
+import VectorLayer from 'ol/layer/Vector'
+import { extend } from 'ol/extent'
+import Polygon from 'ol/geom/Polygon'
+import { get } from 'ol/proj'
+import ImageLayer from 'ol/layer/Image'
+import Static from 'ol/source/ImageStatic'
+import LineString from 'ol/geom/LineString'
+import { getLength } from 'ol/sphere'
+import Feature from 'ol/Feature'
+import Point from 'ol/geom/Point'
+import Style from 'ol/style/Style'
+import Icon from 'ol/style/Icon'
+import VectorSource from 'ol/source/Vector'
+import Text from 'ol/style/Text'
+import Stroke from 'ol/style/Stroke'
+import Fill from 'ol/style/Fill'
+import MultiLineString from 'ol/geom/MultiLineString'
+
 const LayerCollectionController = require('../../../../js/controllers/ol.layerCollection.controller.js')
 const user = require('../../../singletons/user-instance.js')
 const User = require('../../../../js/model/User.js')
@@ -73,11 +95,11 @@ function determineIdFromPosition(position, map) {
 
 function convertPointCoordinate(point) {
   const coords = [point[0], point[1]]
-  return Openlayers.proj.transform(coords, 'EPSG:4326', properties.projection)
+  return transform(coords, 'EPSG:4326', properties.projection)
 }
 
 function unconvertPointCoordinate(point) {
-  return Openlayers.proj.transform(point, properties.projection, 'EPSG:4326')
+  return transform(point, properties.projection, 'EPSG:4326')
 }
 
 function offMap([longitude, latitude]) {
@@ -332,7 +354,7 @@ export default function (
           convertPointCoordinate(coordinate)
         )
 
-        const extent = Openlayers.extent.boundingExtent(lineObject)
+        const extent = boundingExtent(lineObject)
 
         map.getView().fit(extent, {
           size: map.getSize(),
@@ -342,20 +364,17 @@ export default function (
       }
     },
     panToShapesExtent() {
-      var extent = Openlayers.extent.createEmpty()
+      var extent = createEmpty()
 
       map.getLayers().forEach((layer) => {
-        if (layer instanceof Openlayers.layer.Group) {
+        if (layer instanceof LayerGroup) {
           layer.getLayers().forEach(function (groupLayer) {
             //If this is a vector layer, add it to our extent
-            if (layer instanceof Openlayers.layer.Vector)
-              Openlayers.extent.extend(
-                extent,
-                groupLayer.getSource().getExtent()
-              )
+            if (layer instanceof VectorLayer)
+              extend(extent, groupLayer.getSource().getExtent())
           })
-        } else if (layer instanceof Openlayers.layer.Vector)
-          Openlayers.extent.extend(extent, layer.getSource().getExtent())
+        } else if (layer instanceof VectorLayer)
+          extend(extent, layer.getSource().getExtent())
       })
 
       map.getView().fit(extent, {
@@ -372,7 +391,7 @@ export default function (
         convertPointCoordinate(coordinate)
       )
 
-      const extent = Openlayers.extent.boundingExtent(lineObject)
+      const extent = boundingExtent(lineObject)
 
       map.getView().fit(extent, {
         size: map.getSize(),
@@ -412,12 +431,12 @@ export default function (
       const coords = model.getPoints('location')
       const array = _.map(coords, (coord) => convertPointCoordinate(coord))
 
-      const polygon = new Openlayers.geom.Polygon([array])
+      const polygon = new Polygon([array])
       const extent = polygon.getExtent()
-      const projection = Openlayers.proj.get(properties.projection)
+      const projection = get(properties.projection)
 
-      const overlayLayer = new Openlayers.layer.Image({
-        source: new Openlayers.source.ImageStatic({
+      const overlayLayer = new ImageLayer({
+        source: new Static({
           url: model.get('currentOverlayUrl'),
           projection,
           imageExtent: extent,
@@ -464,8 +483,8 @@ export default function (
      * Coordinates.
      */
     calculateDistanceBetweenPositions(coords) {
-      const line = new Openlayers.geom.LineString(coords)
-      const sphereLength = Openlayers.Sphere.getLength(line)
+      const line = new LineString(coords)
+      const sphereLength = getLength(line)
 
       return sphereLength
     },
@@ -528,13 +547,13 @@ export default function (
     */
     addPointWithText(point, options, useCustomText = false) {
       const pointObject = convertPointCoordinate(point)
-      const feature = new Openlayers.Feature({
-        geometry: new Openlayers.geom.Point(pointObject),
+      const feature = new Feature({
+        geometry: new Point(pointObject),
       })
       feature.setId(options.id)
 
-      feature.unselectedStyle = new Openlayers.style.Style({
-        image: new Openlayers.style.Icon({
+      feature.unselectedStyle = new Style({
+        image: new Icon({
           img: DrawingUtility.getCircleWithText({
             fillColor: options.color,
             text: options.id.length,
@@ -542,8 +561,8 @@ export default function (
           imgSize: [44, 44],
         }),
       })
-      feature.partiallySelectedStyle = new Openlayers.style.Style({
-        image: new Openlayers.style.Icon({
+      feature.partiallySelectedStyle = new Style({
+        image: new Icon({
           img: DrawingUtility.getCircleWithText({
             fillColor: options.color,
             text: options.id.length,
@@ -553,8 +572,8 @@ export default function (
           imgSize: [44, 44],
         }),
       })
-      feature.selectedStyle = new Openlayers.style.Style({
-        image: new Openlayers.style.Icon({
+      feature.selectedStyle = new Style({
+        image: new Icon({
           img: DrawingUtility.getCircleWithText({
             fillColor: options.color,
             text: options.id.length,
@@ -576,11 +595,11 @@ export default function (
           break
       }
 
-      const vectorSource = new Openlayers.source.Vector({
+      const vectorSource = new VectorSource({
         features: [feature],
       })
 
-      const vectorLayer = new Openlayers.layer.Vector({
+      const vectorLayer = new VectorSource({
         source: vectorSource,
         zIndex: 1,
       })
@@ -595,8 +614,8 @@ export default function (
         */
     addPoint(point, options) {
       const pointObject = convertPointCoordinate(point)
-      const feature = new Openlayers.Feature({
-        geometry: new Openlayers.geom.Point(pointObject),
+      const feature = new Feature({
+        geometry: new Point(pointObject),
         name: options.title,
       })
       feature.setId(options.id)
@@ -607,8 +626,8 @@ export default function (
         x = options.size.x
         y = options.size.y
       }
-      feature.unselectedStyle = new Openlayers.style.Style({
-        image: new Openlayers.style.Icon({
+      feature.unselectedStyle = new Style({
+        image: new Icon({
           img: DrawingUtility.getPin({
             fillColor: options.color,
             icon: options.icon,
@@ -620,8 +639,8 @@ export default function (
           anchorYUnits: 'pixels',
         }),
       })
-      feature.selectedStyle = new Openlayers.style.Style({
-        image: new Openlayers.style.Icon({
+      feature.selectedStyle = new Style({
+        image: new Icon({
           img: DrawingUtility.getPin({
             fillColor: options.color,
             strokeColor: 'black',
@@ -638,11 +657,11 @@ export default function (
         options.isSelected ? feature.selectedStyle : feature.unselectedStyle
       )
 
-      const vectorSource = new Openlayers.source.Vector({
+      const vectorSource = new VectorSource({
         features: [feature],
       })
 
-      const vectorLayer = new Openlayers.layer.Vector({
+      const vectorLayer = new VectorLayer({
         source: vectorSource,
         zIndex: 1,
       })
@@ -657,26 +676,26 @@ export default function (
         */
     addLabel(point, options) {
       const pointObject = convertPointCoordinate(point)
-      const feature = new Openlayers.Feature({
-        geometry: new Openlayers.geom.Point(pointObject),
+      const feature = new Feature({
+        geometry: new Point(pointObject),
         name: options.text,
         isLabel: true,
       })
       feature.setId(options.id)
 
       feature.setStyle(
-        new Openlayers.style.Style({
-          text: new Openlayers.style.Text({
+        new Style({
+          text: new Text({
             text: options.text,
             overflow: true,
           }),
         })
       )
-      const vectorSource = new Openlayers.source.Vector({
+      const vectorSource = new VectorSource({
         features: [feature],
       })
 
-      const vectorLayer = new Openlayers.layer.Vector({
+      const vectorLayer = new VectorLayer({
         source: vectorSource,
         zIndex: 1,
         id: options.id,
@@ -697,20 +716,20 @@ export default function (
         convertPointCoordinate(coordinate)
       )
 
-      const feature = new Openlayers.Feature({
-        geometry: new Openlayers.geom.LineString(lineObject),
+      const feature = new Feature({
+        geometry: new LineString(lineObject),
         name: options.title,
       })
       feature.setId(options.id)
-      const commonStyle = new Openlayers.style.Style({
-        stroke: new Openlayers.style.Stroke({
+      const commonStyle = new Style({
+        stroke: new Stroke({
           color: options.color || defaultColor,
           width: 4,
         }),
       })
       feature.unselectedStyle = [
-        new Openlayers.style.Style({
-          stroke: new Openlayers.style.Stroke({
+        new Style({
+          stroke: new Stroke({
             color: 'white',
             width: 8,
           }),
@@ -718,8 +737,8 @@ export default function (
         commonStyle,
       ]
       feature.selectedStyle = [
-        new Openlayers.style.Style({
-          stroke: new Openlayers.style.Stroke({
+        new Style({
+          stroke: new Stroke({
             color: 'black',
             width: 8,
           }),
@@ -731,11 +750,11 @@ export default function (
         options.isSelected ? feature.selectedStyle : feature.unselectedStyle
       )
 
-      const vectorSource = new Openlayers.source.Vector({
+      const vectorSource = new VectorSource({
         features: [feature],
       })
 
-      const vectorLayer = new Openlayers.layer.Vector({
+      const vectorLayer = new VectorLayer({
         source: vectorSource,
       })
 
@@ -760,7 +779,7 @@ export default function (
       } else {
         const feature = geometry.getSource().getFeatures()[0]
         const geometryInstance = feature.getGeometry()
-        if (geometryInstance.constructor === Openlayers.geom.Point) {
+        if (geometryInstance.constructor === Point) {
           geometry.setZIndex(options.isSelected ? 2 : 1)
           switch (options.isSelected) {
             case 'selected':
@@ -773,18 +792,16 @@ export default function (
               feature.setStyle(feature.unselectedStyle)
               break
           }
-        } else if (
-          geometryInstance.constructor === Openlayers.geom.LineString
-        ) {
+        } else if (geometryInstance.constructor === LineString) {
           const styles = [
-            new Openlayers.style.Style({
-              stroke: new Openlayers.style.Stroke({
+            new Style({
+              stroke: new Stroke({
                 color: 'rgba(255,255,255, .1)',
                 width: 8,
               }),
             }),
-            new Openlayers.style.Style({
-              stroke: new Openlayers.style.Stroke({
+            new Style({
+              stroke: new Stroke({
                 color: 'rgba(0,0,0, .1)',
                 width: 4,
               }),
@@ -806,14 +823,12 @@ export default function (
       } else {
         const feature = geometry.getSource().getFeatures()[0]
         const geometryInstance = feature.getGeometry()
-        if (geometryInstance.constructor === Openlayers.geom.Point) {
+        if (geometryInstance.constructor === Point) {
           geometry.setZIndex(options.isSelected ? 2 : 1)
           feature.setStyle(
             options.isSelected ? feature.selectedStyle : feature.unselectedStyle
           )
-        } else if (
-          geometryInstance.constructor === Openlayers.geom.LineString
-        ) {
+        } else if (geometryInstance.constructor === LineString) {
           feature.setStyle(
             options.isSelected ? feature.selectedStyle : feature.unselectedStyle
           )
@@ -832,8 +847,8 @@ export default function (
         geometry.setZIndex(options.isSelected ? 2 : 1)
         if (!feature.getProperties().isLabel) {
           feature.setStyle(
-            new Openlayers.style.Style({
-              image: new Openlayers.style.Icon({
+            new Style({
+              image: new Icon({
                 img: DrawingUtility.getPin({
                   fillColor: options.color,
                   strokeColor: options.isSelected ? 'black' : 'white',
@@ -849,7 +864,7 @@ export default function (
           )
         } else {
           feature.setStyle(
-            new Openlayers.style.Style({
+            new Style({
               text: this.createTextStyle(
                 feature,
                 map.getView().getResolution()
@@ -865,14 +880,14 @@ export default function (
         }
       } else if (geometryInstance.getType() === 'LineString') {
         const styles = [
-          new Openlayers.style.Style({
-            stroke: new Openlayers.style.Stroke({
+          new Style({
+            stroke: new Stroke({
               color: options.isSelected ? 'black' : 'white',
               width: 8,
             }),
           }),
-          new Openlayers.style.Style({
-            stroke: new Openlayers.style.Stroke({
+          new Style({
+            stroke: new Stroke({
               color: options.color || defaultColor,
               width: 4,
             }),
@@ -886,10 +901,10 @@ export default function (
       const outlineColor = '#ffffff'
       const outlineWidth = 3
 
-      return new Openlayers.style.Text({
+      return new Text({
         text: this.getText(feature, resolution),
-        fill: new Openlayers.style.Fill({ color: fillColor }),
-        stroke: new Openlayers.style.Stroke({
+        fill: new Fill({ color: fillColor }),
+        stroke: new Stroke({
           color: outlineColor,
           width: outlineWidth,
         }),
@@ -979,15 +994,15 @@ export default function (
         line.map((coords) => convertPointCoordinate(coords))
       )
 
-      let feature = new Openlayers.Feature({
-        geometry: new Openlayers.geom.MultiLineString(lineObject),
+      let feature = new Feature({
+        geometry: new MultiLineString(lineObject),
       })
 
       feature.setId(locationModel.cid)
 
       const styles = [
-        new Openlayers.style.Style({
-          stroke: new Openlayers.style.Stroke({
+        new Style({
+          stroke: new Stroke({
             color: locationModel.get('color') || defaultColor,
             width: 4,
           }),
@@ -999,11 +1014,11 @@ export default function (
       return this.createVectorLayer(locationModel, feature)
     },
     createVectorLayer(locationModel, feature) {
-      let vectorSource = new Openlayers.source.Vector({
+      let vectorSource = new VectorSource({
         features: [feature],
       })
 
-      let vectorLayer = new Openlayers.layer.Vector({
+      let vectorLayer = new VectorLayer({
         source: vectorSource,
       })
 

@@ -16,16 +16,28 @@
 /*jshint newcap: false, bitwise: false */
 
 const _ = require('underscore')
-const ol = require('openlayers')
+
+import TileLayer from 'ol/layer/Tile'
+import OSM from 'ol/source/OSM'
+import BingMaps from 'ol/source/BingMaps'
+import TileWMS from 'ol/source/TileWMS'
+import WMTSCapabilities from 'ol/format/WMTSCapabilities'
+import { optionsFromCapabilities } from 'ol/source/WMTS'
+import WMTS from 'ol/source/WMTS'
+import XYZ from 'ol/source/XYZ'
+import { get } from 'ol/proj'
+import View from 'ol/View'
+import { transform } from 'ol/proj'
+import { defaults } from 'ol/interaction'
+import Map from 'ol/Map'
+import Static from 'ol/source/ImageStatic'
+import ImageLayer from 'ol/layer/Image'
+
 const properties = require('../properties.js')
 const CommonLayerController = require('./common.layerCollection.controller.js')
 const user = require('../../component/singletons/user-instance.js')
 
-const createTile = (
-  { show, alpha, ...options },
-  Source,
-  Layer = ol.layer.Tile
-) =>
+const createTile = ({ show, alpha, ...options }, Source, Layer = TileLayer) =>
   new Layer({
     visible: show,
     preload: Infinity,
@@ -33,20 +45,20 @@ const createTile = (
     source: new Source(options),
   })
 
-const OSM = (opts) => {
+const OSMCreate = (opts) => {
   const { url } = opts
   return createTile(
     {
       ...opts,
       url: url + (url.indexOf('/{z}/{x}/{y}') === -1 ? '/{z}/{x}/{y}.png' : ''),
     },
-    ol.source.OSM
+    OSM
   )
 }
 
 const BM = (opts) => {
   const imagerySet = opts.imagerySet || opts.url
-  return createTile({ ...opts, imagerySet }, ol.source.BingMaps)
+  return createTile({ ...opts, imagerySet }, BingMaps)
 }
 
 const WMS = (opts) => {
@@ -54,12 +66,12 @@ const WMS = (opts) => {
     LAYERS: opts.layers,
     ...opts.parameters,
   }
-  return createTile({ ...opts, params }, ol.source.TileWMS)
+  return createTile({ ...opts, params }, TileWMS)
 }
 
 const WMT = async (opts) => {
   const { url, withCredentials } = opts
-  const parser = new ol.format.WMTSCapabilities()
+  const parser = new WMTSCapabilities()
 
   const res = await window.fetch(url, {
     credentials: withCredentials ? 'include' : 'same-origin',
@@ -82,7 +94,7 @@ const WMT = async (opts) => {
     layer = result.Contents.Layer[0].Identifier
   }
 
-  const options = ol.source.WMTS.optionsFromCapabilities(result, {
+  const options = optionsFromCapabilities(result, {
     layer,
     matrixSet,
     ...opts,
@@ -92,7 +104,7 @@ const WMT = async (opts) => {
     throw new Error('WMTS map layer source could not be setup.')
   }
 
-  return createTile(opts, () => new ol.source.WMTS(options))
+  return createTile(opts, () => new WMTS(options))
 }
 
 const AGM = (opts) => {
@@ -111,20 +123,19 @@ const AGM = (opts) => {
     return `${url}/tile/${z - 1}/${-y - 1}/${x}`
   }
 
-  return createTile({ ...opts, tileUrlFunction }, ol.source.XYZ)
+  return createTile({ ...opts, tileUrlFunction }, XYZ)
 }
 
 const SI = (opts) => {
-  const imageExtent =
-    opts.imageExtent || ol.proj.get(properties.projection).getExtent()
+  const imageExtent = opts.imageExtent || get(properties.projection).getExtent()
   return createTile(
     { ...opts, imageExtent, ...opts.parameters },
-    ol.source.ImageStatic,
-    ol.layer.Image
+    Static,
+    ImageLayer
   )
 }
 
-const sources = { OSM, BM, WMS, WMT, AGM, SI }
+const sources = { OSMCreate, BM, WMS, WMT, AGM, SI }
 
 const createLayer = (type, opts) => {
   const fn = sources[type]
@@ -146,9 +157,9 @@ const Controller = CommonLayerController.extend({
       this.addLayer(model)
     })
 
-    const view = new ol.View({
-      projection: ol.proj.get(properties.projection),
-      center: ol.proj.transform([0, 0], 'EPSG:4326', properties.projection),
+    const view = new View({
+      projection: get(properties.projection),
+      center: transform([0, 0], 'EPSG:4326', properties.projection),
       zoom: options.zoom,
       minZoom: options.minZoom,
     })
@@ -156,14 +167,14 @@ const Controller = CommonLayerController.extend({
     const config = {
       target: options.element,
       view,
-      interactions: ol.interaction.defaults({ doubleClickZoom: false }),
+      interactions: defaults({ doubleClickZoom: false }),
     }
 
     if (options.controls !== undefined) {
       config.controls = options.controls
     }
 
-    this.map = new ol.Map(config)
+    this.map = new Map(config)
     this.isMapCreated = true
     return this.map
   },
