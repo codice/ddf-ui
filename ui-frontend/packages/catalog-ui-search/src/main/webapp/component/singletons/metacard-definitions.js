@@ -18,6 +18,7 @@ const Backbone = require('backbone')
 const _ = require('underscore')
 const properties = require('../../js/properties.js')
 const moment = require('moment')
+const PRIORITY_ATTRIBUTES = ['anyText', 'anyGeo']
 function transformEnumResponse(metacardTypes, response) {
   return _.reduce(
     response,
@@ -227,6 +228,8 @@ module.exports = new (Backbone.Model.extend({
     return metacardTypes.sort((a, b) => {
       const attrToCompareA = (a.alias || a.id).toLowerCase()
       const attrToCompareB = (b.alias || b.id).toLowerCase()
+      if (PRIORITY_ATTRIBUTES.includes(a.id)) return -1
+      if (PRIORITY_ATTRIBUTES.includes(b.id)) return 1
       if (attrToCompareA < attrToCompareB) {
         return -1
       }
