@@ -14,6 +14,8 @@ import { Elevations } from '../theme/theme'
 import FilterListIcon from '@material-ui/icons/FilterList'
 import { fuzzyHits, fuzzyResultCount } from './fuzzy-results'
 import ErrorIcon from '@material-ui/icons/Error'
+import { useMenuState } from '../menu-state/menu-state'
+import Popover from '@material-ui/core/Popover'
 
 type Props = {
   selectionInterface: any
@@ -200,6 +202,7 @@ const LastRan = ({ currentAsOf }: { currentAsOf: number }) => {
 }
 
 const QueryFeed = ({ selectionInterface }: Props) => {
+  const { anchorRef, handleClick, handleClose, open } = useMenuState()
   const {
     status,
     currentAsOf,
@@ -267,47 +270,50 @@ const QueryFeed = ({ selectionInterface }: Props) => {
           <LastRan currentAsOf={currentAsOf} />
         </Grid>
         <Grid item>
-          <Dropdown
-            content={({ closeAndRefocus }) => {
-              return (
-                <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper
-                    data-id="query-status-container"
-                    style={{ padding: '20px' }}
-                    className="intrigue-table"
-                  >
-                    <QueryStatus
-                      statusBySource={statusBySource}
-                      query={selectionInterface.getCurrentQuery()}
-                    />
-                  </Paper>
-                </BetterClickAwayListener>
-              )
-            }}
-          >
-            {({ handleClick }) => {
-              return (
-                <div>
-                  <div className="relative">
-                    <Button
-                      data-id="heartbeat-button"
-                      onClick={handleClick}
-                      className="details-view is-button"
-                      title="Show the full status for the search."
-                      data-help="Show the full status for the search."
-                    >
-                      <span className="fa fa-heartbeat" />
-                    </Button>
-                    {warnings && (
-                      <div className="absolute bottom-0 right-0 text-sm">
-                        <ErrorIcon fontSize="inherit" color="error" />
-                      </div>
-                    )}
-                  </div>
+          <div>
+            <div className="relative">
+              <Button
+                innerRef={anchorRef}
+                data-id="heartbeat-button"
+                onClick={handleClick}
+                className="details-view is-button"
+                title="Show the full status for the search."
+                data-help="Show the full status for the search."
+              >
+                <span className="fa fa-heartbeat" />
+              </Button>
+              <Popover
+                open={open}
+                anchorEl={anchorRef.current}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'center',
+                }}
+                className="max-h-screen-1/2"
+              >
+                <Paper
+                  data-id="query-status-container"
+                  style={{ padding: '20px' }}
+                  className="intrigue-table"
+                >
+                  <QueryStatus
+                    statusBySource={statusBySource}
+                    query={selectionInterface.getCurrentQuery()}
+                  />
+                </Paper>
+              </Popover>
+              {warnings && (
+                <div className="absolute bottom-0 right-0 text-sm">
+                  <ErrorIcon fontSize="inherit" color="error" />
                 </div>
-              )
-            }}
-          </Dropdown>
+              )}
+            </div>
+          </div>
         </Grid>
       </Grid>
     </>
