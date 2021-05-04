@@ -684,10 +684,7 @@ module.exports = Backbone.AssociatedModel.extend({
       west !== undefined
     ) {
       this.set('bbox', [west, south, east, north].join(','), {
-        silent:
-          (this.get('locationType') === 'usng' ||
-            this.isLocationTypeUtmUps()) &&
-          !this.get('drawing'),
+        silent: this.isLocationTypeUtmUps() && !this.get('drawing'),
       })
     }
     this.set({
