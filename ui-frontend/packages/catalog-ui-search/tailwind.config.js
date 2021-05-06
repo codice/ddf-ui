@@ -16,6 +16,14 @@ module.exports = {
       full: '100%',
       'screen-1/2': '50vw',
     },
+    maxHeight: {
+      0: '0',
+      '1/4': '25%',
+      '1/2': '50%',
+      '3/4': '75%',
+      full: '100%',
+      'screen-1/2': '50vh',
+    },
     extend: {
       animation: {
         none: 'none',

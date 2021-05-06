@@ -28,6 +28,7 @@ const SourcesInfo = () => {
         variant="text"
         color="primary"
         onClick={handleClick}
+        innerRef={anchorRef}
       >
         <Grid container direction="row" alignItems="center" wrap="nowrap">
           <Grid item className="pr-1">
@@ -49,6 +50,7 @@ const SourcesInfo = () => {
           vertical: 'top',
           horizontal: 'center',
         }}
+        className="max-h-screen-1/2"
       >
         <Paper elevation={Elevations.overlays} className="min-w-120">
           {ExtensionPoints.customSourcesPage ? (
