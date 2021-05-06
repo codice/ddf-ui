@@ -37,6 +37,8 @@ import DateTimePicker from '../../fields/date-time-picker'
 import Geometry from '../../../react-component/input-wrappers/geometry'
 import { useRerenderOnBackboneSync } from '../../../js/model/LazyQueryResult/hooks'
 import useCoordinateFormat from './useCoordinateFormat'
+import { MetacardAttribute } from '../../../js/model/Types'
+import ExtensionPoints from '../../../extension-points'
 
 function getSummaryShown(): string[] {
   const userchoices = user
@@ -135,6 +137,39 @@ enum Mode {
   Normal = 'normal',
   Saving = 'saving',
   BadInput = 'bad-input',
+}
+
+const handleMetacardUpdate = ({
+  lazyResult,
+  attributes,
+  onSuccess,
+  onFailure,
+}: {
+  lazyResult: LazyQueryResult
+  attributes: MetacardAttribute[]
+  onSuccess: () => void
+  onFailure: () => void
+}) => {
+  const payload = [
+    {
+      ids: [lazyResult.plain.metacard.properties.id],
+      attributes,
+    },
+  ]
+  setTimeout(() => {
+    $.ajax({
+      url: `./internal/metacards?storeId=${lazyResult.plain.metacard.properties['source-id']}`,
+      type: 'PATCH',
+      data: JSON.stringify(payload),
+      contentType: 'application/json',
+    }).then(
+      (response: any) => {
+        ResultUtils.updateResults(lazyResult.getBackbone(), response)
+        onSuccess()
+      },
+      () => onFailure()
+    )
+  }, 1000)
 }
 
 export const Editor = ({
@@ -360,34 +395,34 @@ export const Editor = ({
             } catch (err) {
               console.error(err)
             }
-            const payload = [
-              {
-                ids: [lazyResult.plain.metacard.properties.id],
-                attributes: [
-                  {
-                    attribute: attr,
-                    values: transformedValues,
-                  },
-                ],
-              },
-            ]
-            setTimeout(() => {
-              $.ajax({
-                url: `./internal/metacards?storeId=${lazyResult.plain.metacard.properties['source-id']}`,
-                type: 'PATCH',
-                data: JSON.stringify(payload),
-                contentType: 'application/json',
+
+            const attributes = [{ attribute: attr, values: transformedValues }]
+
+            const onSuccess = () =>
+              setTimeout(() => {
+                addSnack('Successfully updated.')
+                onSave()
+              }, 1000)
+
+            const onFailure = () =>
+              setTimeout(() => {
+                addSnack('Failed to update.', { status: 'error' })
+                onSave()
+              }, 1000)
+
+            if (ExtensionPoints.handleMetacardUpdate) {
+              ExtensionPoints.handleMetacardUpdate({
+                lazyResult,
+                attributesToUpdate: attributes,
+              }).then(onSuccess, onFailure)
+            } else {
+              handleMetacardUpdate({
+                lazyResult,
+                attributes,
+                onSuccess,
+                onFailure,
               })
-                .then((response: any) => {
-                  ResultUtils.updateResults(lazyResult.getBackbone(), response)
-                })
-                .always(() => {
-                  setTimeout(() => {
-                    addSnack('Successfully updated.')
-                    onSave()
-                  }, 1000)
-                })
-            }, 1000)
+            }
           }}
         >
           Save
