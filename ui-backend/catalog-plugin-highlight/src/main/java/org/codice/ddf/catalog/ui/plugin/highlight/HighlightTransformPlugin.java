@@ -23,6 +23,7 @@ import ddf.catalog.operation.QueryResponse;
 import ddf.catalog.operation.ResultAttributeHighlight;
 import ddf.catalog.operation.ResultHighlight;
 import ddf.catalog.plugin.PostQueryPlugin;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,8 @@ import java.util.regex.Pattern;
 
 /** Transforms solr highlights into an easily displayable format on the frontend */
 public class HighlightTransformPlugin implements PostQueryPlugin {
+
+  public static final String ORIGINAL_SOURCE_PROPERTIES = "originalSourceProperties";
 
   private int bufferSize;
 
@@ -82,10 +85,33 @@ public class HighlightTransformPlugin implements PostQueryPlugin {
   @Override
   public QueryResponse process(QueryResponse input) {
     ArrayList<ProcessedHighlight> processedHighlights = new ArrayList<>();
-    if (input.getProperties().containsKey(Constants.QUERY_HIGHLIGHT_KEY)) {
-      List<Result> results = input.getResults();
-      List<ResultHighlight> resultHighlights =
+    List<ResultHighlight> resultHighlights = new ArrayList<>();
+
+    // Find highlights per source if available to avoid top level highlight property collisions
+    if (input.getProperties().containsKey(ORIGINAL_SOURCE_PROPERTIES)) {
+      Map<String, Map<String, Serializable>> sourceProperties =
+          (Map<String, Map<String, Serializable>>)
+              input.getProperties().get(ORIGINAL_SOURCE_PROPERTIES);
+
+      for (Map<String, Serializable> properties : sourceProperties.values()) {
+        if (properties.containsKey(Constants.QUERY_HIGHLIGHT_KEY)) {
+          List<ResultHighlight> highlights =
+              (List<ResultHighlight>) properties.get(Constants.QUERY_HIGHLIGHT_KEY);
+          resultHighlights.addAll(highlights);
+        }
+      }
+    }
+
+    // Fallback to old top level highlight properties if per source properties unavailable
+    if (resultHighlights.isEmpty()
+        && input.getProperties().containsKey(Constants.QUERY_HIGHLIGHT_KEY)) {
+      List<ResultHighlight> highlights =
           (List<ResultHighlight>) input.getProperties().get(Constants.QUERY_HIGHLIGHT_KEY);
+      resultHighlights.addAll(highlights);
+    }
+
+    if (!resultHighlights.isEmpty()) {
+      List<Result> results = input.getResults();
       for (ResultHighlight resultHighlight : resultHighlights) {
         String id = resultHighlight.getResultId();
         ProcessedHighlight processedHighlight = new ProcessedHighlight(id);
