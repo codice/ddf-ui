@@ -34,6 +34,7 @@ import TableChartIcon from '@material-ui/icons/TableChart'
 import TransferList from '../tabs/metacard/transfer-list'
 import { useDialog } from '../dialog'
 import { TypedUserInstance } from '../singletons/TypedUser'
+import useTimePrefs from '../fields/useTimePrefs'
 
 type Props = {
   selectionInterface: any
@@ -101,6 +102,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
   const results = Object.values(lazyResults.results)
   const theme = useTheme()
   const { isSearching, status } = useStatusOfLazyResults({ lazyResults })
+  useTimePrefs()
 
   const headerRef = React.useRef<HTMLDivElement>(null)
   /**
