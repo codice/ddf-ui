@@ -13,7 +13,7 @@
  *
  **/
 import React from 'react'
-import { FilterBuilderClass as QueryModel } from '../../component/filter-builder/filter.structure'
+import { FilterBuilderClass } from '../../component/filter-builder/filter.structure'
 import { useListenTo } from '../../component/selection-checkbox/useBackbone.hook'
 import { TypedUserInstance } from '../../component/singletons/TypedUser'
 import cql from '../cql'
@@ -55,7 +55,7 @@ export type QueryOptions = {
     originalFilterTree,
     queryRef,
   }: {
-    originalFilterTree: QueryModel
+    originalFilterTree: FilterBuilderClass
     queryRef: Backbone.Model<any>
   }) => string
   /**
@@ -91,11 +91,13 @@ export const Query = (
   return new UntypedQuery.Model(attributes, mergedOptions)
 }
 
-function mixinEphemeralFilter(originalCQL: QueryModel): QueryModel {
+function mixinEphemeralFilter(
+  originalCQL: FilterBuilderClass
+): FilterBuilderClass {
   const ephemeralFilter = TypedUserInstance.getEphemeralFilter()
   try {
     if (ephemeralFilter) {
-      return new QueryModel({
+      return new FilterBuilderClass({
         filters: [ephemeralFilter, originalCQL],
         type: 'AND',
       })
