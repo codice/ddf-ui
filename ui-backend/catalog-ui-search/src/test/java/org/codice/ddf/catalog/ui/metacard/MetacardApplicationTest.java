@@ -40,8 +40,10 @@ import java.util.function.Consumer;
 import javax.ws.rs.NotFoundException;
 import org.codice.ddf.catalog.ui.metacard.edit.AttributeChange;
 import org.codice.ddf.catalog.ui.metacard.edit.MetacardChanges;
+import org.codice.ddf.catalog.ui.metacard.internal.OperationPropertySupplier;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
 import org.codice.ddf.security.Security;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
@@ -61,8 +63,16 @@ public class MetacardApplicationTest {
 
   private final EndpointUtil mockUtil = mock(EndpointUtil.class);
 
+  private final OperationPropertySupplier operationPropertySupplier =
+      mock(OperationPropertySupplier.class);
+
   private final MetacardApplicationUnderTest app =
-      new MetacardApplicationUnderTest(mockFramework, mockUtil);
+      new MetacardApplicationUnderTest(mockFramework, mockUtil, operationPropertySupplier);
+
+  @Before
+  public void setup() {
+    when(operationPropertySupplier.properties(any())).thenReturn(Collections.emptyMap());
+  }
 
   @Test(expected = NotFoundException.class)
   public void testPatchMetacardsWhenIdNotFound() throws Exception {
@@ -168,7 +178,9 @@ public class MetacardApplicationTest {
    */
   private static class MetacardApplicationUnderTest extends MetacardApplication {
     private MetacardApplicationUnderTest(
-        CatalogFramework catalogFramework, EndpointUtil endpointUtil) {
+        CatalogFramework catalogFramework,
+        EndpointUtil endpointUtil,
+        OperationPropertySupplier operationPropertySupplier) {
       super(
           catalogFramework,
           null,
@@ -186,7 +198,8 @@ public class MetacardApplicationTest {
           null,
           null,
           null,
-          mock(Security.class));
+          mock(Security.class),
+          operationPropertySupplier);
     }
 
     private void doPatchMetacards(List<MetacardChanges> metacardChanges) throws Exception {

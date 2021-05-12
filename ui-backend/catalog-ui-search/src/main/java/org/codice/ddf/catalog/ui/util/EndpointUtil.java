@@ -179,10 +179,20 @@ public class EndpointUtil implements EndpointUtility {
 
   public Metacard getMetacardById(String id)
       throws UnsupportedQueryException, SourceUnavailableException, FederationException {
-    return getMetacardById(id, null);
+    return getMetacardById(id, null, null);
+  }
+
+  public Metacard getMetacardById(String id, Map<String, Serializable> properties)
+      throws UnsupportedQueryException, SourceUnavailableException, FederationException {
+    return getMetacardById(id, null, properties);
   }
 
   public Metacard getMetacardById(String id, String storeId)
+      throws UnsupportedQueryException, SourceUnavailableException, FederationException {
+    return getMetacardById(id, storeId, null);
+  }
+
+  public Metacard getMetacardById(String id, String storeId, Map<String, Serializable> properties)
       throws UnsupportedQueryException, SourceUnavailableException, FederationException {
     Collection<String> storeIds;
     if (storeId == null) {
@@ -195,7 +205,8 @@ public class EndpointUtil implements EndpointUtility {
     Filter filter = filterBuilder.allOf(idFilter, tagsFilter);
 
     QueryResponse queryResponse =
-        catalogFramework.query(new QueryRequestImpl(new QueryImpl(filter), storeIds));
+        catalogFramework.query(
+            new QueryRequestImpl(new QueryImpl(filter), false, storeIds, properties));
 
     if (queryResponse.getResults().isEmpty()) {
       throw new NotFoundException("Could not find metacard for id: " + id);
@@ -523,7 +534,7 @@ public class EndpointUtil implements EndpointUtility {
 
   public String metacardToJson(String id, String storeId)
       throws SourceUnavailableException, UnsupportedQueryException, FederationException {
-    return metacardToJson(getMetacardById(id, storeId));
+    return metacardToJson(getMetacardById(id, storeId, null));
   }
 
   public String metacardToJson(Metacard metacard) {
