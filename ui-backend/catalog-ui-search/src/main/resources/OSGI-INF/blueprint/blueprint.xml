@@ -253,6 +253,12 @@ Implementation details
         <argument ref="catalogFramework"/>
     </bean>
 
+    <reference-list id="revertProperties" interface="org.codice.ddf.catalog.ui.metacard.internal.PropertySupplier" filter="(type=revert)"/>
+
+    <bean id="propertyCoordinator" class="org.codice.ddf.catalog.ui.util.PropertyCoordinator">
+        <argument ref="revertProperties"/>
+    </bean>
+
     <bean id="metacardApplication" class="org.codice.ddf.catalog.ui.metacard.MetacardApplication">
         <argument ref="catalogFramework"/>
         <argument ref="filterBuilder"/>
@@ -271,6 +277,7 @@ Implementation details
         <argument ref="queryWorkspaceService"/>
         <argument ref="queryMetacardsHandler"/>
         <argument ref="ddfSecurity" />
+        <argument ref="propertyCoordinator"/>
         <property name="subjectOperations" ref="subjectOperations1" />
         <property name="securityLogger" ref="securityLogger" />
     </bean>
