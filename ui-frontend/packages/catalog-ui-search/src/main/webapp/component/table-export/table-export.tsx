@@ -27,6 +27,7 @@ import {
   DownloadInfo,
 } from '../../react-component/utils/export'
 import saveFile from '../../react-component/utils/save-file'
+import { DEFAULT_USER_QUERY_OPTIONS } from '../../js/model/TypedQuery'
 const announcement = require('../../component/announcement/index.jsx')
 const properties = require('../../js/properties.js')
 const contentDisposition = require('content-disposition')
@@ -190,7 +191,10 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
   )
 
   const query = selectionInterface.getCurrentQuery()
-  const cql = query.getEphemeralMixinCql(query.get('filterTree'))
+  const cql = DEFAULT_USER_QUERY_OPTIONS.transformFilterTree({
+    originalFilterTree: query.get('filterTree'),
+    queryRef: query,
+  })
   const srcs = getSrcs(selectionInterface)
   const sorts = getSorts(selectionInterface)
   const phonetics = query.get('phonetics')
