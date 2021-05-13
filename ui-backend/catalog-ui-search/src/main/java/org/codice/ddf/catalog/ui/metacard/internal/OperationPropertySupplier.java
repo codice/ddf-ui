@@ -17,11 +17,15 @@ import java.io.Serializable;
 import java.util.Map;
 
 /** Supply addititonal properties for catalog operations. This allows properties to be injected. */
-public interface PropertySupplier {
+public interface OperationPropertySupplier {
 
-  /** Return properties to be added to query operations. */
-  Map<String, Serializable> queryProperties();
+  String QUERY_TYPE = "query";
 
-  /** Return properties to be added to create operations. */
-  Map<String, Serializable> createProperties();
+  String CREATE_TYPE = "create";
+
+  /**
+   * Return properties for specific operation type (eg {@link #QUERY_TYPE} or {@link #CREATE_TYPE})
+   * to be added to the catalog operations.
+   */
+  Map<String, Serializable> properties(String type);
 }

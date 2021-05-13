@@ -119,6 +119,7 @@ import org.codice.ddf.catalog.ui.metacard.associations.Associated;
 import org.codice.ddf.catalog.ui.metacard.edit.AttributeChange;
 import org.codice.ddf.catalog.ui.metacard.edit.MetacardChanges;
 import org.codice.ddf.catalog.ui.metacard.history.HistoryResponse;
+import org.codice.ddf.catalog.ui.metacard.internal.OperationPropertySupplier;
 import org.codice.ddf.catalog.ui.metacard.notes.NoteConstants;
 import org.codice.ddf.catalog.ui.metacard.notes.NoteMetacard;
 import org.codice.ddf.catalog.ui.metacard.notes.NoteUtil;
@@ -132,7 +133,6 @@ import org.codice.ddf.catalog.ui.metacard.workspace.transformer.impl.AssociatedQ
 import org.codice.ddf.catalog.ui.query.monitor.api.WorkspaceService;
 import org.codice.ddf.catalog.ui.subscription.SubscriptionsPersistentStore;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
-import org.codice.ddf.catalog.ui.util.PropertyCoordinator;
 import org.codice.ddf.security.Security;
 import org.codice.gsonsupport.GsonTypeAdapters.DateLongFormatTypeAdapter;
 import org.codice.gsonsupport.GsonTypeAdapters.LongDoubleTypeAdapter;
@@ -202,7 +202,7 @@ public class MetacardApplication implements SparkApplication {
 
   private final Security security;
 
-  private final PropertyCoordinator revertPropertyCoordinator;
+  private final OperationPropertySupplier operationPropertySupplier;
 
   private SubjectOperations subjectOperations;
 
@@ -226,7 +226,7 @@ public class MetacardApplication implements SparkApplication {
       WorkspaceService workspaceService,
       AssociatedQueryMetacardsHandler queryMetacardsHandler,
       Security security,
-      PropertyCoordinator revertPropertyCoordinator) {
+      OperationPropertySupplier operationPropertySupplier) {
     this.catalogFramework = catalogFramework;
     this.filterBuilder = filterBuilder;
     this.util = endpointUtil;
@@ -244,7 +244,7 @@ public class MetacardApplication implements SparkApplication {
     this.workspaceService = workspaceService;
     this.queryMetacardsHandler = queryMetacardsHandler;
     this.security = security;
-    this.revertPropertyCoordinator = revertPropertyCoordinator;
+    this.operationPropertySupplier = operationPropertySupplier;
   }
 
   private String getSubjectEmail() {
@@ -870,7 +870,8 @@ public class MetacardApplication implements SparkApplication {
       throws UnsupportedQueryException, SourceUnavailableException, FederationException,
           IngestException, ResourceNotFoundException, IOException, ResourceNotSupportedException {
     try {
-      Map<String, Serializable> properties = revertPropertyCoordinator.gatherQueryProperties();
+      Map<String, Serializable> properties =
+          operationPropertySupplier.properties(OperationPropertySupplier.QUERY_TYPE);
 
       Metacard versionMetacard = util.getMetacardById(revertId, properties);
 
@@ -954,7 +955,8 @@ public class MetacardApplication implements SparkApplication {
     if (DELETE_ACTIONS.contains(action)) {
       attemptDeleteDeletedMetacard(id);
       if (!alreadyCreated) {
-        Map<String, Serializable> properties = revertPropertyCoordinator.gatherCreateProperties();
+        Map<String, Serializable> properties =
+            operationPropertySupplier.properties(OperationPropertySupplier.CREATE_TYPE);
 
         catalogFramework.create(
             new CreateRequestImpl(Collections.singletonList(revertMetacard), properties));
@@ -1048,7 +1050,8 @@ public class MetacardApplication implements SparkApplication {
     Filter deletion = filterBuilder.attribute(DeletedMetacard.DELETION_OF_ID).is().like().text(id);
     Filter filter = filterBuilder.allOf(tags, deletion);
 
-    Map<String, Serializable> properties = revertPropertyCoordinator.gatherQueryProperties();
+    Map<String, Serializable> properties =
+        operationPropertySupplier.properties(OperationPropertySupplier.QUERY_TYPE);
 
     QueryResponse response = null;
     try {
@@ -1161,7 +1164,8 @@ public class MetacardApplication implements SparkApplication {
   }
 
   private List<Result> getMetacardHistory(String id, String sourceId) {
-    Map<String, Serializable> properties = revertPropertyCoordinator.gatherQueryProperties();
+    Map<String, Serializable> properties =
+        operationPropertySupplier.properties(OperationPropertySupplier.QUERY_TYPE);
 
     Filter historyFilter =
         filterBuilder.attribute(Metacard.TAGS).is().equalTo().text(MetacardVersion.VERSION_TAG);
