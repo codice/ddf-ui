@@ -200,7 +200,7 @@ const LastRan = ({ currentAsOf }: { currentAsOf: number }) => {
 }
 
 const QueryFeed = ({ selectionInterface }: Props) => {
-  const { anchorRef, handleClick, handleClose, open } = useMenuState()
+  const { MuiButtonProps, MuiPopoverProps } = useMenuState()
   const {
     status,
     currentAsOf,
@@ -271,29 +271,15 @@ const QueryFeed = ({ selectionInterface }: Props) => {
           <div>
             <div className="relative">
               <Button
-                innerRef={anchorRef}
                 data-id="heartbeat-button"
-                onClick={handleClick}
                 className="details-view is-button"
                 title="Show the full status for the search."
                 data-help="Show the full status for the search."
+                {...MuiButtonProps}
               >
                 <span className="fa fa-heartbeat" />
               </Button>
-              <Popover
-                open={open}
-                anchorEl={anchorRef.current}
-                onClose={handleClose}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'center',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'center',
-                }}
-                className="max-h-screen-1/2"
-              >
+              <Popover {...MuiPopoverProps}>
                 <Paper
                   data-id="query-status-container"
                   style={{ padding: '20px' }}

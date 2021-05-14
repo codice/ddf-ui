@@ -17,66 +17,14 @@
     background: inherit;
   }
 
-  .cesium-viewer-toolbar {
+  .map-toolbar {
+    position: absolute;
+    z-index: 1;
     top: @minimumSpacing;
     right: @minimumSpacing;
     padding: @minimumSpacing;
     max-width: ~'calc(100% - 2*@{minimumSpacing})';
     background: inherit;
-    .is-medium-font;
-    &,
-    button,
-    button span {
-      .is-medium-font;
-    }
-    .cesium-viewer-geocoderContainer,
-    .geocoder-container {
-      margin: 0px;
-      vertical-align: top;
-      height: @minimumButtonSize;
-
-      form {
-        height: 100%;
-      }
-      input {
-        height: 100%;
-        line-height: inherit;
-        vertical-align: top;
-      }
-      span {
-        color: white;
-        text-align: center;
-        top: 0px;
-        right: 0px;
-        height: 100%;
-        line-height: inherit;
-        vertical-align: top;
-      }
-    }
-    .is-split-button button,
-    .is-button {
-      height: @minimumButtonSize;
-      display: inline-block;
-    }
-
-    .is-button {
-      span {
-        line-height: @minimumButtonSize;
-      }
-    }
-
-    .is-button:not(:first-of-type) {
-      margin-left: @largeSpacing;
-    }
-
-    .zoomToHome-container {
-      display: inline-block;
-      margin-left: 0;
-    }
-
-    .toolbar-panzoom.is-button {
-      display: block;
-    }
   }
 
   .cesium-button {
@@ -97,20 +45,5 @@
   .toolbar-panzoom {
     margin-left: 0 !important;
     margin-bottom: @minimumSpacing;
-  }
-
-  .is-clustering {
-    display: none;
-    padding-right: 5px;
-  }
-
-  .is-clustering.fa-toggle-on {
-    color: lighten(@warning-color, 20%);
-  }
-}
-
-@{customElementNamespace}map.is-clustering {
-  .is-clustering {
-    display: inline;
   }
 }

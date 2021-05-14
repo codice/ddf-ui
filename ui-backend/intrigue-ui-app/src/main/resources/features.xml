@@ -26,6 +26,7 @@
     <feature name="catalog-ui" version="${project.version}" description="Catalog UI">
         <feature>spatial-app</feature>
         <feature>offline-gazetteer</feature>
+        <feature>webservice-gazetteer</feature>
         <feature>camel-http</feature>
         <feature>resource-bundle-locator</feature>
         <feature>platform-usng4j</feature>
