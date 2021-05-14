@@ -15,7 +15,17 @@
 
 const Marionette = require('marionette')
 const Backbone = require('backbone')
-const ol = require('openlayers')
+
+import { transform } from 'ol/proj'
+import LineString from 'ol/geom/LineString'
+import Feature from 'ol/Feature'
+import Style from 'ol/style/Style'
+import Stroke from 'ol/style/Stroke'
+import VectorSource from 'ol/source/Vector'
+import VectorLayer from 'ol/layer/Vector'
+import DragBox from 'ol/interaction/DragBox'
+import always from 'ol/events/condition'
+
 const _ = require('underscore')
 const properties = require('../properties.js')
 const wreqr = require('../wreqr.js')
@@ -48,12 +58,12 @@ Draw.BboxView = Marionette.View.extend({
   setModelFromGeometry(geometry) {
     const extent = geometry.getExtent()
 
-    const northWest = ol.proj.transform(
+    const northWest = transform(
       [extent[0], extent[3]],
       properties.projection,
       'EPSG:4326'
     )
-    const southEast = ol.proj.transform(
+    const southEast = transform(
       [extent[2], extent[1]],
       properties.projection,
       'EPSG:4326'
@@ -112,22 +122,22 @@ Draw.BboxView = Marionette.View.extend({
       west += 360
     }
 
-    const northWest = ol.proj.transform(
+    const northWest = transform(
       [west, north],
       'EPSG:4326',
       properties.projection
     )
-    const northEast = ol.proj.transform(
+    const northEast = transform(
       [east, north],
       'EPSG:4326',
       properties.projection
     )
-    const southWest = ol.proj.transform(
+    const southWest = transform(
       [west, south],
       'EPSG:4326',
       properties.projection
     )
-    const southEast = ol.proj.transform(
+    const southEast = transform(
       [east, south],
       'EPSG:4326',
       properties.projection
@@ -140,7 +150,7 @@ Draw.BboxView = Marionette.View.extend({
     coords.push(southWest)
     coords.push(northWest)
 
-    const rectangle = new ol.geom.LineString(coords)
+    const rectangle = new LineString(coords)
     return rectangle
   },
 
@@ -179,7 +189,7 @@ Draw.BboxView = Marionette.View.extend({
       return
     }
 
-    this.billboard = new ol.Feature({
+    this.billboard = new Feature({
       geometry: rectangle,
     })
 
@@ -187,19 +197,19 @@ Draw.BboxView = Marionette.View.extend({
 
     const color = this.model.get('color')
 
-    const iconStyle = new ol.style.Style({
-      stroke: new ol.style.Stroke({
+    const iconStyle = new Style({
+      stroke: new Stroke({
         color: color ? color : '#914500',
         width: 3,
       }),
     })
     this.billboard.setStyle(iconStyle)
 
-    const vectorSource = new ol.source.Vector({
+    const vectorSource = new VectorSource({
       features: [this.billboard],
     })
 
-    let vectorLayer = new ol.layer.Vector({
+    let vectorLayer = new VectorLayer({
       source: vectorSource,
     })
 
@@ -224,10 +234,10 @@ Draw.BboxView = Marionette.View.extend({
   },
   start() {
     const that = this
-    this.primitive = new ol.interaction.DragBox({
-      condition: ol.events.condition.always,
-      style: new ol.style.Style({
-        stroke: new ol.style.Stroke({
+    this.primitive = new DragBox({
+      condition: always,
+      style: new Style({
+        stroke: new Stroke({
           color: [0, 0, 255, 0],
         }),
       }),
@@ -242,7 +252,7 @@ Draw.BboxView = Marionette.View.extend({
       that.startCoordinate = sketchFeature.coordinate
     })
     this.primitive.on('boxdrag', (sketchFeature) => {
-      const geometryRepresentation = new ol.geom.LineString([
+      const geometryRepresentation = new LineString([
         that.startCoordinate,
         [that.startCoordinate[0], sketchFeature.coordinate[1]],
         sketchFeature.coordinate,

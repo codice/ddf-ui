@@ -15,7 +15,16 @@
 
 const Marionette = require('marionette')
 const Backbone = require('backbone')
-const ol = require('openlayers')
+
+import { transform } from 'ol/proj'
+import Feature from 'ol/Feature'
+import Style from 'ol/style/Style'
+import Stroke from 'ol/style/Stroke'
+import VectorSource from 'ol/source/Vector'
+import VectorLayer from 'ol/layer/Vector'
+import MultiPolygon from 'ol/geom/MultiPolygon'
+import { Draw as olDraw } from 'ol/interaction'
+
 const _ = require('underscore')
 const properties = require('../properties.js')
 const wreqr = require('../wreqr.js')
@@ -31,7 +40,7 @@ const translateFromOpenlayersCoordinates = (coords) => {
   return coords
     .map((value) =>
       value.map((point) => {
-        const mappedPoint = ol.proj.transform(
+        const mappedPoint = transform(
           [
             DistanceUtils.coordinateRound(point[0]),
             DistanceUtils.coordinateRound(point[1]),
@@ -86,11 +95,7 @@ Draw.PolygonView = Marionette.View.extend({
     }
     _.each(setArr, (item) => {
       coords.push(
-        ol.proj.transform(
-          [item[0], item[1]],
-          'EPSG:4326',
-          properties.projection
-        )
+        transform([item[0], item[1]], 'EPSG:4326', properties.projection)
       )
     })
 
@@ -205,37 +210,35 @@ Draw.PolygonView = Marionette.View.extend({
     })
 
     const bufferGeometryRepresentation =
-      (bufferPolygonSegments &&
-        new ol.geom.MultiPolygon(bufferPolygonSegments)) ||
+      (bufferPolygonSegments && new MultiPolygon(bufferPolygonSegments)) ||
       coordinates
 
     const drawnGeometryRepresentation =
-      (drawnPolygonSegments &&
-        new ol.geom.MultiPolygon(drawnPolygonSegments)) ||
+      (drawnPolygonSegments && new MultiPolygon(drawnPolygonSegments)) ||
       coordinates
 
-    this.billboard = new ol.Feature({
+    this.billboard = new Feature({
       geometry: bufferGeometryRepresentation,
     })
 
     this.billboard.setId(this.model.cid)
 
-    const drawnPolygonFeature = new ol.Feature({
+    const drawnPolygonFeature = new Feature({
       geometry: drawnGeometryRepresentation,
     })
 
     const color = this.model.get('color')
 
-    const bufferPolygonIconStyle = new ol.style.Style({
-      stroke: new ol.style.Stroke({
+    const bufferPolygonIconStyle = new Style({
+      stroke: new Stroke({
         color: color ? color : '#914500',
         width: 3,
       }),
       zIndex: 1,
     })
 
-    const drawnPolygonIconStyle = new ol.style.Style({
-      stroke: new ol.style.Stroke({
+    const drawnPolygonIconStyle = new Style({
+      stroke: new Stroke({
         color: color ? color : '#914500',
         width: 2,
         lineDash: [10, 5],
@@ -246,11 +249,11 @@ Draw.PolygonView = Marionette.View.extend({
     this.billboard.setStyle(bufferPolygonIconStyle)
     drawnPolygonFeature.setStyle(drawnPolygonIconStyle)
 
-    const vectorSource = new ol.source.Vector({
+    const vectorSource = new VectorSource({
       features: [this.billboard, drawnPolygonFeature],
     })
 
-    const vectorLayer = new ol.layer.Vector({
+    const vectorLayer = new VectorLayer({
       source: vectorSource,
     })
 
@@ -276,10 +279,10 @@ Draw.PolygonView = Marionette.View.extend({
   start() {
     const that = this
 
-    this.primitive = new ol.interaction.Draw({
+    this.primitive = new olDraw({
       type: 'Polygon',
-      style: new ol.style.Style({
-        stroke: new ol.style.Stroke({
+      style: new Style({
+        stroke: new Stroke({
           color: [0, 0, 255, 0],
         }),
       }),
