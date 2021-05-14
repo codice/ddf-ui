@@ -12,15 +12,11 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
 import wrapNum from '../../../react-component/utils/wrap-num/wrap-num'
 import * as React from 'react'
-import ZoomToHomeButton from '../../../react-component/button/split-button/zoomToHome'
-import Gazetteer from '../../../react-component/location/gazetteer'
 import ExtensionPoints from '../../../extension-points'
 
 const wreqr = require('../../../js/wreqr.js')
-const template = require('./map.hbs')
 const Marionette = require('marionette')
 const CustomElements = require('../../../js/CustomElements.js')
 const LoadingCompanionView = require('../../loading-companion/loading-companion.view.js')
@@ -28,19 +24,18 @@ const PopupPreviewView = require('./popup.view.js')
 const CQLUtils = require('../../../js/CQLUtils.js')
 const LocationModel = require('../../location-old/location-old.js')
 const user = require('../../singletons/user-instance.js')
-const LayersDropdown = require('../../dropdown/layers/dropdown.layers.view.js')
-const DropdownModel = require('../../dropdown/dropdown.js')
 const MapContextMenuDropdown = require('../../dropdown/map-context-menu/dropdown.map-context-menu.view.js')
 const MapModel = require('./map.model')
 const properties = require('../../../js/properties.js')
 const announcement = require('../../announcement')
 
-import MapSettings from '../../../react-component/map-settings'
 import MapInfo from '../../../react-component/map-info'
 import DistanceInfo from '../../../react-component/distance-info'
 import getDistance from 'geolib/es/getDistance'
 import { Drawing } from '../../singletons/drawing'
 import { GeometriesView } from './react/geometries.view'
+import MapToolbar from './map-toolbar'
+const DropdownModel = require('../../dropdown/dropdown.js')
 
 function findExtreme({ objArray, property, comparator }) {
   if (objArray.length === 0) {
@@ -136,16 +131,51 @@ const defaultHomeBoundingBox = {
 
 module.exports = Marionette.LayoutView.extend({
   tagName: CustomElements.register('map'),
-  template,
+  template() {
+    return (
+      <React.Fragment>
+        <div id="mapDrawingPopup"></div>
+        <div className="map-context-menu"></div>
+        <div id="mapTools">
+          <MapToolbar mapView={this} />
+        </div>
+        <div
+          data-id="map-container"
+          id="mapContainer"
+          className="height-full px-2"
+        ></div>
+        <div className="mapInfo">
+          <div className="info-feature"></div>
+          <div className="info-coordinates">
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+        <div className="distanceInfo">
+          <div className="info-feature"></div>
+        </div>
+        <div className="popupPreview">
+          <div className="info-feature"></div>
+        </div>
+        <div className="not-supported">
+          <h3 align="center">The 3D Map is not supported by your browser.</h3>
+          <button className="old-button switch-map is-positive">
+            <span className="fa fa-map"></span>
+            <span>2D Map</span>
+          </button>
+          <h3 align="center">
+            2D Map will automatically load after 10 seconds.
+          </h3>
+        </div>
+      </React.Fragment>
+    )
+  },
   regions: {
     mapDrawingPopup: '#mapDrawingPopup',
     mapContextMenu: '.map-context-menu',
     mapInfo: '.mapInfo',
     distanceInfo: '.distanceInfo',
     popupPreview: '.popupPreview',
-  },
-  events: {
-    'click .cluster-button': 'toggleClustering',
   },
   geometriesView: undefined,
   map: undefined,
@@ -262,62 +292,6 @@ module.exports = Marionette.LayoutView.extend({
       message: 'New map home location set.',
       type: 'success',
     })
-  },
-  addPanZoom() {
-    const PanZoomView = Marionette.ItemView.extend({
-      template: () => (
-        <Gazetteer
-          variant="standard"
-          setState={({ polygon }) => this.map.doPanZoom(polygon)}
-        />
-      ),
-    })
-    this.$el
-      .find('.cesium-viewer-toolbar')
-      .append('<div class="toolbar-panzoom is-button"></div>')
-    this.addRegion('toolbarPanZoom', '.toolbar-panzoom')
-    this.toolbarPanZoom.show(new PanZoomView())
-  },
-  addHome() {
-    const containerClass = 'zoomToHome-container'
-    const ZoomToHomeButtonView = Marionette.ItemView.extend({
-      template: () => (
-        <ZoomToHomeButton
-          goHome={() => this.zoomToHome()}
-          saveHome={() => this.saveAsHome()}
-        />
-      ),
-    })
-    this.$el
-      .find('.cesium-viewer-toolbar')
-      .append(`<div class="${containerClass}"></div>`)
-    this.addRegion('zoomToHomeButtonView', `.${containerClass}`)
-    this.zoomToHomeButtonView.show(new ZoomToHomeButtonView())
-  },
-  addClustering() {
-    this.$el
-      .find('.cesium-viewer-toolbar')
-      .append(
-        '<div data-id="cluster-button" class="is-button cluster cluster-button">' +
-          '<span> Cluster </span>' +
-          '<span class="fa fa-toggle-on is-clustering"/>' +
-          '<span class="fa fa-cubes"/>' +
-          '</div>'
-      )
-  },
-  addSettings() {
-    const MapSettingsView = Marionette.ItemView.extend({
-      template() {
-        return <MapSettings />
-      },
-    })
-    this.$el
-      .find('.cesium-viewer-toolbar')
-      .append(
-        '<div data-id="settings-button" class="toolbar-settings is-button"></div>'
-      )
-    this.addRegion('toolbarSettings', '.toolbar-settings')
-    this.toolbarSettings.show(new MapSettingsView())
   },
   panToShapesExtent() {
     if (user.get('user').get('preferences').get('autoPan')) {
@@ -519,28 +493,10 @@ module.exports = Marionette.LayoutView.extend({
     )
     this.setupCollections()
     this.setupListeners()
-    this.addPanZoom()
-    this.addHome()
-    this.addClustering()
-    this.addLayers()
-    this.addSettings()
     this.endLoading()
     setTimeout(() => {
       this.handleInitialZoom()
     }, 1000)
-  },
-  addLayers() {
-    this.$el
-      .find('.cesium-viewer-toolbar')
-      .append(
-        '<div data-id="layers-button" class="toolbar-layers is-button"></div>'
-      )
-    this.addRegion('toolbarLayers', '.toolbar-layers')
-    this.toolbarLayers.show(
-      new LayersDropdown({
-        model: new DropdownModel(),
-      })
-    )
   },
   initializeMap() {
     this.loadMap().then((Map) => {

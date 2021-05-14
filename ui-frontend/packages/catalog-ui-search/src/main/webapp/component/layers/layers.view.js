@@ -21,6 +21,7 @@ const template = require('./layers.hbs')
 const LayerItemCollectionView = require('../layer-item/layer-item.collection.view.js')
 const user = require('../singletons/user-instance.js')
 const CustomElements = require('../../js/CustomElements.js')
+const $ = require('jquery')
 
 // this is to track focus, since on reordering rerenders and loses focus
 const FocusModel = Backbone.Model.extend({

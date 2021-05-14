@@ -108,7 +108,7 @@ export const getLargestBbox = (
 }
 
 type Props = {
-  value: string
+  value?: string
   setState: any
   fetch?: any
   placeholder?: string

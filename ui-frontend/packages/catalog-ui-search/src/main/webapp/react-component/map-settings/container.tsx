@@ -14,20 +14,17 @@
  **/
 import * as React from 'react'
 import { useState, useEffect } from 'react'
-import styled from 'styled-components'
 import MapSettingsPresentation from './presentation'
-import { Dropdown } from '../../component/atlas-dropdown'
 import { hot } from 'react-hot-loader'
 import withListenTo, {
   WithBackboneProps,
 } from '../../react-component/backbone-container'
 import Paper from '@material-ui/core/Paper'
-import { BetterClickAwayListener } from '../../component/better-click-away-listener/better-click-away-listener'
+import { useMenuState } from '../../component/menu-state/menu-state'
+import Button from '@material-ui/core/Button'
+import Popover from '@material-ui/core/Popover'
 const user = require('../../component/singletons/user-instance.js')
-
-const Span = styled.span`
-  padding-right: 5px;
-`
+import SettingsIcon from '@material-ui/icons/Settings'
 
 const MapSettings = (props: WithBackboneProps) => {
   const [coordFormat, setCoordFormat] = useState(
@@ -36,6 +33,7 @@ const MapSettings = (props: WithBackboneProps) => {
   const [autoPan, setAutoPan] = useState(
     user.get('user').get('preferences').get('autoPan')
   )
+  const menuState = useMenuState()
 
   useEffect(() => {
     props.listenTo(
@@ -67,39 +65,26 @@ const MapSettings = (props: WithBackboneProps) => {
   }
 
   return (
-    <Dropdown
-      content={({ close }) => {
-        return (
-          <BetterClickAwayListener onClickAway={close}>
-            <Paper>
-              <MapSettingsPresentation
-                coordFormat={coordFormat}
-                updateCoordFormat={updateCoordFormat}
-                autoPan={autoPan}
-                updateAutoPan={updateAutoPan}
-              />
-            </Paper>
-          </BetterClickAwayListener>
-        )
-      }}
-    >
-      {({ handleClick }) => {
-        return (
-          <div
-            onClick={handleClick}
-            tabIndex={0}
-            onKeyPress={(e: any) => {
-              if (e.key === 'Enter') {
-                handleClick(e)
-              }
-            }}
-          >
-            <Span className="interaction-text">Settings</Span>
-            <Span className="interaction-icon fa fa-cog" />
-          </div>
-        )
-      }}
-    </Dropdown>
+    <>
+      <Button
+        size="small"
+        data-id="settings-button"
+        {...menuState.MuiButtonProps}
+      >
+        <span className="interaction-text">Settings</span>
+        <SettingsIcon />
+      </Button>
+      <Popover {...menuState.MuiPopoverProps}>
+        <Paper>
+          <MapSettingsPresentation
+            coordFormat={coordFormat}
+            updateCoordFormat={updateCoordFormat}
+            autoPan={autoPan}
+            updateAutoPan={updateAutoPan}
+          />
+        </Paper>
+      </Popover>
+    </>
   )
 }
 

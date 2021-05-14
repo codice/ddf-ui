@@ -13,60 +13,59 @@
  *
  **/
 import * as React from 'react'
-import SplitButton from '.'
-import styled from 'styled-components'
+import Button from '@material-ui/core/Button'
 import { hot } from 'react-hot-loader'
-
+import { useMenuState } from '../../../component/menu-state/menu-state'
+import HomeIcon from '@material-ui/icons/Home'
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
+import Popover from '@material-ui/core/Popover'
+import RoomIcon from '@material-ui/icons/Room'
 type voidFunc = () => void
 
 type Props = {
   goHome: voidFunc
   saveHome: voidFunc
 }
-const Button = styled.button`
-  flex: 1;
-  margin-left: ${(props) => props.theme.mediumSpacing};
-  margin-right: ${(props) => props.theme.mediumSpacing};
-`
-const Icon = styled.div`
-  display: inline-block;
-  background-color: inherit;
-  margin-left: ${(props) => props.theme.minimumSpacing};
-  line-height: ${(props) => `${props.theme.minimumLineSize} !important`};
-  text-align: center;
-  font-size: ${(props) => props.theme.mediumFontSize};
-`
-
-const renderMenu = (onSelect: voidFunc) => {
-  return (
-    <Button
-      data-id="set-home-button"
-      className="old-button"
-      onClick={onSelect}
-      title="Save Current View as Home Location"
-    >
-      <span>
-        Set Home
-        <Icon className="cf cf-map-marker" />
-      </span>
-    </Button>
-  )
-}
 
 const ZoomToHome = (props: Props) => {
   const { saveHome, goHome } = props
+  const menuState = useMenuState()
   return (
-    <SplitButton title="Return To Home Location" onSelect={goHome}>
-      {{
-        label: (
+    <>
+      <div className="Mui-border-divider border border-2 flex flex-row items-stretch">
+        <Button
+          size="small"
+          {...menuState.MuiButtonProps}
+          className="border border-r-2 Mui-border-divider"
+          onClick={goHome}
+        >
+          <div className="flex flex-row items-center">
+            <span>Home</span> <HomeIcon />
+          </div>
+        </Button>
+        <div className="Mui-bg-divider w-min"></div>
+        <Button size="small" {...menuState.MuiButtonProps}>
+          <KeyboardArrowDownIcon />
+        </Button>
+      </div>
+      <Popover {...menuState.MuiPopoverProps}>
+        <Button
+          size="small"
+          data-id="set-home-button"
+          className="p-2"
+          onClick={() => {
+            saveHome()
+            menuState.handleClose()
+          }}
+          title="Save Current View as Home Location"
+        >
           <span>
-            Home
-            <Icon className="fa fa-home" />
+            Set Home
+            <RoomIcon />
           </span>
-        ),
-        menu: renderMenu(saveHome),
-      }}
-    </SplitButton>
+        </Button>
+      </Popover>
+    </>
   )
 }
 

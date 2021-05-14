@@ -16,13 +16,11 @@
 //You typically don't want to use this view directly.  Instead, use the combined-map component which will handle falling back to openlayers.
 
 const MapView = require('../map.view')
-const template = require('./cesium.hbs')
 const $ = require('jquery')
 const _ = require('underscore')
 const featureDetection = require('../../../singletons/feature-detection.js')
 
 module.exports = MapView.extend({
-  template,
   className: 'is-cesium',
   events() {
     return _.extend(

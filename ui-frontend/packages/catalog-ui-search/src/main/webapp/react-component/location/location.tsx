@@ -60,7 +60,7 @@ const inputs = plugin({
     Component: ({ setState, keywordValue, ...props }: any) => {
       return (
         // Offsets className="form-group clearfix" below
-        <div style={{ marginTop: -15 }}>
+        <div>
           <Gazetteer
             {...props}
             value={keywordValue}
@@ -166,6 +166,7 @@ const LocationInput = ({ onChange, value }: any) => {
     <div>
       <Component>
         <Autocomplete
+          className="mb-2"
           data-id="filter-type-autocomplete"
           // @ts-ignore fullWidth does exist on Autocomplete
           fullWidth

@@ -14,20 +14,20 @@ import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import MRC from '../../react-component/marionette-region-container'
 import Button from '@material-ui/core/Button'
 import SearchInteractions from '../search-interactions'
-import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
 import MoreVert from '@material-ui/icons/MoreVert'
 import Divider from '@material-ui/core/Divider'
-import { Dropdown } from '../atlas-dropdown'
 import { Elevations } from '../theme/theme'
 import SearchIcon from '@material-ui/icons/SearchTwoTone'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { useHistory, useLocation } from 'react-router-dom'
 import _ from 'lodash'
 import { useUserQuery } from '../../js/model/TypedQuery'
+import { useMenuState } from '../menu-state/menu-state'
+import Popover from '@material-ui/core/Popover'
 
 const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
   const { closed, setClosed, lastLength, setLength } = useResizableGridContext()
-
+  const searchInteractionsMenuState = useMenuState()
   if (closed) {
     return (
       <Grid
@@ -58,40 +58,23 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
           </Button>
         </Grid>
         <Grid item className="mt-3 w-full">
-          <Dropdown
-            content={(context) => {
-              return (
-                <BetterClickAwayListener
-                  onClickAway={() => {
-                    context.deepCloseAndRefocus.bind(context)()
-                  }}
-                >
-                  <Paper>
-                    <SearchInteractions
-                      model={selectionInterface.getCurrentQuery()}
-                      onClose={() => {
-                        context.deepCloseAndRefocus.bind(context)()
-                      }}
-                    />
-                  </Paper>
-                </BetterClickAwayListener>
-              )
-            }}
+          <Button
+            fullWidth
+            variant="text"
+            color="primary"
+            size="small"
+            {...searchInteractionsMenuState.MuiButtonProps}
           >
-            {({ handleClick }) => {
-              return (
-                <Button
-                  fullWidth
-                  variant="text"
-                  color="primary"
-                  size="small"
-                  onClick={handleClick}
-                >
-                  <MoreVert className="Mui-text-text-primary" />
-                </Button>
-              )
-            }}
-          </Dropdown>
+            <MoreVert className="Mui-text-text-primary" />
+          </Button>
+          <Popover {...searchInteractionsMenuState.MuiPopoverProps}>
+            <Paper>
+              <SearchInteractions
+                model={selectionInterface.getCurrentQuery()}
+                onClose={searchInteractionsMenuState.handleClose}
+              />
+            </Paper>
+          </Popover>
         </Grid>
         <Grid item className="mt-3 w-full">
           <Button
@@ -137,40 +120,23 @@ const LeftTop = ({ selectionInterface }: { selectionInterface: any }) => {
         </Button>
       </Grid>
       <Grid item className="ml-auto">
-        <Dropdown
-          content={(context) => {
-            return (
-              <BetterClickAwayListener
-                onClickAway={() => {
-                  context.deepCloseAndRefocus.bind(context)()
-                }}
-              >
-                <Paper>
-                  <SearchInteractions
-                    model={selectionInterface.getCurrentQuery()}
-                    onClose={() => {
-                      context.deepCloseAndRefocus.bind(context)()
-                    }}
-                  />
-                </Paper>
-              </BetterClickAwayListener>
-            )
-          }}
+        <Button
+          variant="text"
+          color="primary"
+          size="small"
+          {...searchInteractionsMenuState.MuiButtonProps}
         >
-          {({ handleClick }) => {
-            return (
-              <Button
-                variant="text"
-                color="primary"
-                size="small"
-                onClick={handleClick}
-              >
-                Options
-                <MoreVert className="Mui-text-text-primary" />
-              </Button>
-            )
-          }}
-        </Dropdown>
+          Options
+          <MoreVert className="Mui-text-text-primary" />
+        </Button>
+        <Popover {...searchInteractionsMenuState.MuiPopoverProps}>
+          <Paper>
+            <SearchInteractions
+              model={selectionInterface.getCurrentQuery()}
+              onClose={searchInteractionsMenuState.handleClose}
+            />
+          </Paper>
+        </Popover>
       </Grid>
       <Grid item className="ml-3">
         <Button

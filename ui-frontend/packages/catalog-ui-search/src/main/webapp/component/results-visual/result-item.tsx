@@ -21,7 +21,6 @@ const user = require('../singletons/user-instance.js')
 const metacardDefinitions = require('../singletons/metacard-definitions.js')
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 
-import { Dropdown } from '../atlas-dropdown'
 import Button from '@material-ui/core/Button'
 import LinkIcon from '@material-ui/icons/Link'
 import GetAppIcon from '@material-ui/icons/GetApp'
@@ -30,7 +29,6 @@ const Common = require('../../js/Common.js')
 import { hot } from 'react-hot-loader'
 import Paper from '@material-ui/core/Paper'
 import Tooltip from '@material-ui/core/Tooltip'
-import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
 import MoreIcon from '@material-ui/icons/MoreVert'
 import WarningIcon from '@material-ui/icons/Warning'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
@@ -49,6 +47,8 @@ import { clearSelection, hasSelection } from './result-item-row'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { TypedUserInstance } from '../singletons/TypedUser'
 import useCoordinateFormat from '../tabs/metacard/useCoordinateFormat'
+import { useMenuState } from '../menu-state/menu-state'
+import Popover from '@material-ui/core/Popover'
 
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (
@@ -114,51 +114,38 @@ const MultiSelectActions = ({
     selectionInterface,
   })
   const selectedResultsArray = Object.values(selectedResults)
+  const metacardInteractionMenuState = useMenuState()
   return (
-    <Dropdown
-      popperProps={{
-        disablePortal: true,
-      }}
-      content={({ close }) => {
-        return (
-          <BetterClickAwayListener onClickAway={close}>
-            <Paper>
-              <LazyMetacardInteractions
-                lazyResults={selectedResultsArray}
-                onClose={() => {
-                  close()
-                }}
-              />
-            </Paper>
-          </BetterClickAwayListener>
-        )
-      }}
-    >
-      {({ handleClick }) => {
-        return (
-          <Button
-            className={
-              selectedResultsArray.length === 0 ? 'relative' : 'relative'
-            }
-            color="primary"
-            disabled={selectedResultsArray.length === 0}
-            onClick={(e) => {
-              e.stopPropagation()
-              handleClick(e)
-            }}
-            style={{ height: '100%' }}
-            size="small"
-          >
-            {selectedResultsArray.length} selected
-            <MoreIcon className="Mui-text-text-primary" />
-          </Button>
-        )
-      }}
-    </Dropdown>
+    <>
+      <Button
+        className={selectedResultsArray.length === 0 ? 'relative' : 'relative'}
+        color="primary"
+        disabled={selectedResultsArray.length === 0}
+        onClick={(e) => {
+          e.stopPropagation()
+          metacardInteractionMenuState.handleClick()
+        }}
+        innerRef={metacardInteractionMenuState.anchorRef}
+        style={{ height: '100%' }}
+        size="small"
+      >
+        {selectedResultsArray.length} selected
+        <MoreIcon className="Mui-text-text-primary" />
+      </Button>
+      <Popover {...metacardInteractionMenuState.MuiPopoverProps}>
+        <Paper>
+          <LazyMetacardInteractions
+            lazyResults={selectedResultsArray}
+            onClose={metacardInteractionMenuState.handleClose}
+          />
+        </Paper>
+      </Popover>
+    </>
   )
 }
 
 const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
+  const metacardInteractionMenuState = useMenuState()
   const triggerDownload = (e: any) => {
     e.stopPropagation()
     window.open(lazyResult.plain.metacard.properties['resource-download-url'])
@@ -227,41 +214,26 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
       </Grid>
       <Extensions.resultItemTitleAddOn lazyResult={lazyResult} />
       <Grid item className="h-full">
-        <Dropdown
-          popperProps={{
-            disablePortal: true,
+        <Button
+          data-id="result-item-more-vert-button"
+          onClick={(e) => {
+            e.stopPropagation()
+            metacardInteractionMenuState.handleClick()
           }}
-          content={({ close }) => {
-            return (
-              <BetterClickAwayListener onClickAway={close}>
-                <Paper>
-                  <LazyMetacardInteractions
-                    lazyResults={[lazyResult]}
-                    onClose={() => {
-                      close()
-                    }}
-                  />
-                </Paper>
-              </BetterClickAwayListener>
-            )
-          }}
+          style={{ height: '100%' }}
+          size="small"
+          innerRef={metacardInteractionMenuState.anchorRef}
         >
-          {({ handleClick }) => {
-            return (
-              <Button
-                data-id="result-item-more-vert-button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleClick(e)
-                }}
-                style={{ height: '100%' }}
-                size="small"
-              >
-                <MoreIcon />
-              </Button>
-            )
-          }}
-        </Dropdown>
+          <MoreIcon />
+        </Button>
+        <Popover {...metacardInteractionMenuState.MuiPopoverProps}>
+          <Paper>
+            <LazyMetacardInteractions
+              lazyResults={[lazyResult]}
+              onClose={metacardInteractionMenuState.handleClose}
+            />
+          </Paper>
+        </Popover>
       </Grid>
     </Grid>
   )
