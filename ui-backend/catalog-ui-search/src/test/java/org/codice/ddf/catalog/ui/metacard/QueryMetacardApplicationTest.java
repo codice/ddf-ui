@@ -22,6 +22,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static spark.Spark.stop;
 
+import com.jayway.restassured.RestAssured;
 import ddf.catalog.CatalogFramework;
 import ddf.catalog.data.Result;
 import ddf.catalog.data.impl.MetacardImpl;
@@ -39,7 +40,6 @@ import ddf.catalog.operation.impl.UpdateImpl;
 import ddf.catalog.operation.impl.UpdateRequestImpl;
 import ddf.catalog.operation.impl.UpdateResponseImpl;
 import ddf.security.SubjectIdentity;
-import io.restassured.RestAssured;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;

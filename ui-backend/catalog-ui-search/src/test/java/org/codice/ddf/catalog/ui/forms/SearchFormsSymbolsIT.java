@@ -24,6 +24,8 @@ import static org.mockito.Mockito.when;
 import static spark.Spark.stop;
 
 import com.google.common.collect.ImmutableMap;
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.response.Header;
 import ddf.catalog.CatalogFramework;
 import ddf.catalog.data.AttributeRegistry;
 import ddf.catalog.data.Metacard;
@@ -43,8 +45,6 @@ import ddf.catalog.source.IngestException;
 import ddf.catalog.source.SourceUnavailableException;
 import ddf.catalog.source.UnsupportedQueryException;
 import ddf.security.Subject;
-import io.restassured.RestAssured;
-import io.restassured.http.Header;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
