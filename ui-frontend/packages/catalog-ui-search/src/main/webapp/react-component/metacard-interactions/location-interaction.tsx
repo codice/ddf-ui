@@ -22,7 +22,6 @@ import { hot } from 'react-hot-loader'
 import { UserQuery } from '../../js/model/TypedQuery'
 
 const CqlUtils = require('../../js/CQLUtils')
-const Query = require('../../js/model/Query')
 
 const addFilter = (filterTree: any, filter: any) => {
   filter.value = filter.value.value

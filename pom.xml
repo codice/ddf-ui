@@ -57,7 +57,7 @@
 
     <!--Backend properties-->
     <ddf.version>2.26.5</ddf.version>
-    <ddf-jsonrpc.version>0.6</ddf-jsonrpc.version>
+    <ddf-jsonrpc.version>2.25</ddf-jsonrpc.version>
     <ddf.support.version>2.3.16</ddf.support.version>
     <antlr.version>4.3</antlr.version>
     <c3p0.version>0.9.5.5</c3p0.version>
@@ -324,9 +324,9 @@
         <artifactId>maven-release-plugin</artifactId>
         <version>${maven.release.plugin.version}</version>
         <configuration>
-            <autoVersionSubmodules>true</autoVersionSubmodules>
-            <preparationGoals>clean install</preparationGoals>
-            <pushChanges>false</pushChanges>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <preparationGoals>clean install</preparationGoals>
+          <pushChanges>false</pushChanges>
         </configuration>
       </plugin>
     </plugins>

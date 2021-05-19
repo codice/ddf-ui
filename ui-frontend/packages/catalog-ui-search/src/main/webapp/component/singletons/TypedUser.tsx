@@ -1,8 +1,5 @@
 import React from 'react'
-import {
-  QueryAttributesType,
-  SortType,
-} from '../../js/model/Query.shared-types'
+import { SortType } from '../../js/model/Query.shared-types'
 import { FilterBuilderClass } from '../filter-builder/filter.structure'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import { TypedMetacardDefs } from '../tabs/metacard/metacardDefinitions'
@@ -98,9 +95,6 @@ export const TypedUserInstance = {
   removeEphemeralFilter() {
     userInstance.get('user').get('preferences').set('resultFilter', undefined)
     TypedUserInstance.savePreferences()
-  },
-  getQuerySettings(): QueryAttributesType {
-    return userInstance.getQuerySettings().toJSON()
   },
   getPreferences(): Backbone.Model<any> {
     return userInstance.get('user').get('preferences')

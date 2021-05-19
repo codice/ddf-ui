@@ -1392,20 +1392,6 @@ const SavedSearchModeContext = React.createContext({
   selectionInterface: {} as any,
 })
 
-const getDefaultQueryData = (location: Location): any => {
-  let urlBasedQuery = location.search.split('?defaultQuery=')[1]
-  if (urlBasedQuery) {
-    try {
-      const urlBasedData = JSON.parse(decodeURIComponent(urlBasedQuery))
-      urlBasedData.filterTree = JSON.parse(urlBasedData.filterTree)
-      return urlBasedData
-    } catch (err) {
-      console.error(err)
-      return {}
-    }
-  }
-}
-
 const decodeUrlIfValid = (urlBasedQuery: string) => {
   if (urlBasedQuery) {
     try {
