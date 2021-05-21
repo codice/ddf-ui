@@ -62,11 +62,14 @@ export const TypedUserInstance = {
     })
     return attributesPossible.map((attr) => attr.id)
   },
-  getQuerySettings: (): QuerySettingsModelType => {
+  getQuerySettingsJSON: (): QuerySettingsType => {
+    return TypedUserInstance.getQuerySettingsModel().toJSON()
+  },
+  getQuerySettingsModel: (): QuerySettingsModelType => {
     return userInstance.getQuerySettings()
   },
   updateQuerySettings: (newSettings: Partial<QuerySettingsType>): void => {
-    const currentSettings = TypedUserInstance.getQuerySettings()
+    const currentSettings = TypedUserInstance.getQuerySettingsModel()
     currentSettings.set(newSettings)
     userInstance.savePreferences()
   },

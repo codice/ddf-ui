@@ -112,7 +112,7 @@ function mixinEphemeralFilter(
 
 export const DEFAULT_USER_QUERY_OPTIONS: Readonly<Required<QueryOptions>> = {
   transformDefaults: ({ originalDefaults }) => {
-    return { ...originalDefaults, ...TypedUserInstance.getQuerySettings() }
+    return { ...originalDefaults, ...TypedUserInstance.getQuerySettingsJSON() }
   },
   transformFilterTree: ({ originalFilterTree }) => {
     return cql.write(mixinEphemeralFilter(originalFilterTree))
