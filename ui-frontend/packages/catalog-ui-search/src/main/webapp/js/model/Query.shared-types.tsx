@@ -13,17 +13,16 @@
  *
  **/
 
-const DropdownView = require('../dropdown.view')
-const template = require('./dropdown.layers.hbs')
-const LayersView = require('../../layers/layers.view.js')
-const user = require('../../singletons/user-instance.js')
+import { FilterBuilderClass } from '../../component/filter-builder/filter.structure'
 
-module.exports = DropdownView.extend({
-  template,
-  className: 'is-layers',
-  componentToShow: LayersView,
-  initializeComponentModel() {
-    //override if you need more functionality
-    this.modelForComponent = user.get('user>preferences')
-  },
-})
+export type SortType = {
+  attribute: string
+  direction: 'ascending' | 'descending'
+}
+
+export type QueryAttributesType = {
+  filterTree?: FilterBuilderClass
+  sources?: string[]
+  sorts?: SortType[]
+  [key: string]: any // slowly build out the proper type, then remove this (leave for now so we don't accidentally leave something off)
+}

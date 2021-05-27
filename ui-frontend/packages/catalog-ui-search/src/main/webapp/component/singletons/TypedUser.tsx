@@ -1,3 +1,7 @@
+import React from 'react'
+import { SortType } from '../../js/model/Query.shared-types'
+import { FilterBuilderClass } from '../filter-builder/filter.structure'
+import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import { TypedMetacardDefs } from '../tabs/metacard/metacardDefinitions'
 import { TypedProperties } from './TypedProperties'
 
@@ -58,11 +62,14 @@ export const TypedUserInstance = {
     })
     return attributesPossible.map((attr) => attr.id)
   },
-  getQuerySettings: (): QuerySettingsModelType => {
+  getQuerySettingsJSON: (): QuerySettingsType => {
+    return TypedUserInstance.getQuerySettingsModel().toJSON()
+  },
+  getQuerySettingsModel: (): QuerySettingsModelType => {
     return userInstance.getQuerySettings()
   },
   updateQuerySettings: (newSettings: Partial<QuerySettingsType>): void => {
-    const currentSettings = TypedUserInstance.getQuerySettings()
+    const currentSettings = TypedUserInstance.getQuerySettingsModel()
     currentSettings.set(newSettings)
     userInstance.savePreferences()
   },
@@ -82,6 +89,32 @@ export const TypedUserInstance = {
 
     return coordFormat
   },
+  getEphemeralSorts(): undefined | SortType[] {
+    return userInstance.get('user').get('preferences').get('resultSort')
+  },
+  getEphemeralFilter(): undefined | FilterBuilderClass {
+    return userInstance.get('user').get('preferences').get('resultFilter')
+  },
+  removeEphemeralFilter() {
+    userInstance.get('user').get('preferences').set('resultFilter', undefined)
+    TypedUserInstance.savePreferences()
+  },
+  getPreferences(): Backbone.Model<any> {
+    return userInstance.get('user').get('preferences')
+  },
+  savePreferences() {
+    userInstance.get('user').get('preferences').savePreferences()
+  },
+}
+
+export const useEphemeralFilter = () => {
+  const [ephemeralFilter, setEphemeralFilter] = React.useState(
+    TypedUserInstance.getEphemeralFilter()
+  )
+  useListenTo(TypedUserInstance.getPreferences(), 'change:resultFilter', () => {
+    setEphemeralFilter(TypedUserInstance.getEphemeralFilter())
+  })
+  return ephemeralFilter
 }
 
 type QuerySettingsType = {

@@ -7,10 +7,10 @@ import {
   FilterBuilderClass,
   FilterClass,
 } from '../filter-builder/filter.structure'
+import { useQuery, useUserQuery } from '../../js/model/TypedQuery'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { Elevations } from '../theme/theme'
 const SelectionInterface = require('../selection-interface/selection-interface.model.js')
-const Query = require('../../js/model/Query.js')
 import _debounce from 'lodash.debounce'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Autocomplete from '@material-ui/lab/Autocomplete'
@@ -26,7 +26,7 @@ import { Memo } from '../memo/memo'
 import { useUpdateEffect } from 'react-use'
 
 type ModifySearchParams = {
-  search?: any
+  search: any
   filter: string
   sortAttribute: SortAttributeType
   sortDirection: SortDirectionType
@@ -63,15 +63,9 @@ const modifySearch = ({
       direction: sortDirection.toLowerCase(),
     },
   ]
-  if (search) {
-    search.set('filterTree', filterBuilder)
-    search.set('sorts', sorts)
-  } else {
-    return new Query.Model({
-      filterTree: filterBuilder,
-      sorts: sorts,
-    })
-  }
+  search.set('filterTree', filterBuilder)
+  search.set('sorts', sorts)
+  return search
 }
 
 type SortAttributeType = 'title' | 'last modified'
@@ -81,7 +75,7 @@ const buildSearchFromSelection = ({
   search,
   lazyResults,
 }: {
-  search?: any
+  search: any
   lazyResults: LazyQueryResults['results']
 }) => {
   const totalFilterTree = Object.values(lazyResults).reduce(
@@ -95,11 +89,8 @@ const buildSearchFromSelection = ({
     },
     new FilterBuilderClass({ type: 'OR', filters: [] })
   )
-  if (search) {
-    search.set('filterTree', totalFilterTree)
-  } else {
-    return new Query.Model({ filterTree: totalFilterTree })
-  }
+  search.set('filterTree', totalFilterTree)
+  return search
 }
 
 const SelectionInfoPane = ({
@@ -107,18 +98,19 @@ const SelectionInfoPane = ({
 }: {
   searchSelectionInterface: any
 }) => {
+  const [search] = useUserQuery()
   const lazyResults = useLazyResultsSelectedResultsFromSelectionInterface({
     selectionInterface: searchSelectionInterface,
   })
   const [selectionInterface] = React.useState(
     new SelectionInterface({
-      currentQuery: buildSearchFromSelection({ lazyResults }),
+      currentQuery: buildSearchFromSelection({ lazyResults, search }),
     })
   )
   React.useEffect(() => {
     if (Object.keys(lazyResults).length > 0) {
       buildSearchFromSelection({
-        search: selectionInterface.getCurrentQuery(),
+        search,
         lazyResults,
       })
       selectionInterface.getCurrentQuery().startSearchFromFirstPage()
@@ -151,13 +143,6 @@ const SelectionInfoPane = ({
   )
 }
 
-const selectionInterface = new SelectionInterface({
-  currentQuery: new Query.Model(undefined, {
-    ephemeralFilter: false,
-    ephemeralSort: false,
-  }),
-})
-
 const SavedSearches = () => {
   const [filter, setFilter] = React.useState('')
   const [sortAttribute, setSortAttribute] = React.useState(
@@ -166,6 +151,12 @@ const SavedSearches = () => {
   const [sortDirection, setSortDirection] = React.useState(
     'descending' as SortDirectionType
   )
+  const [search] = useQuery()
+  const selectionInterface = React.useMemo(() => {
+    return new SelectionInterface({
+      currentQuery: search,
+    })
+  }, [])
   const debouncedUpdate = React.useRef(
     _debounce(
       ({

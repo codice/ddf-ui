@@ -22,6 +22,7 @@ import {
   // @ts-ignore ts-migrate(6133) FIXME: 'rgba' is declared but its value is never read.
   rgba,
 } from 'polished'
+import { useRemoveFocusStyle } from '../app/blueprint.adjust'
 
 type Theme = {
   primary: string
@@ -168,7 +169,7 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .lm_tabdropdown:before {
         color: ${(props) => props.palette.text.primary} !important;
       }
-      .is-drawing [role="tooltip"] {
+      .is-drawing [role="tooltip"], .is-drawing .MuiPopover-root {
         display: none!important;
       }
       [role="tooltip"] {
@@ -513,6 +514,7 @@ export const Provider = ({ children }: { children: any }) => {
       htmlElement.classList.remove('bp3-dark')
     }
   }, [styledTheme.theme])
+  useRemoveFocusStyle()
   return (
     <>
       <StylesProvider injectFirst>

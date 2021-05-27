@@ -15,13 +15,12 @@
 import { ResultType } from '../Types'
 import { generateCompareFunction } from './sort'
 import { LazyQueryResult } from './LazyQueryResult'
-// @ts-ignore ts-migrate(6133) FIXME: 'FilterType' is declared but its value is never re... Remove this comment to see the full error message
-import { QuerySortType, FilterType } from './types'
+import { QuerySortType } from './types'
 import { Status } from './status'
+import { TransformSortsComposedFunctionType } from '../TypedQuery'
 const _ = require('underscore')
 const debounceTime = 50
 
-const user = require('../../../component/singletons/user-instance.js')
 const Backbone = require('backbone')
 
 export type SearchStatus = {
@@ -54,7 +53,7 @@ type ConstructorProps = {
   results?: ResultType[]
   sorts?: QuerySortType[]
   sources?: string[]
-  ephemeralSort?: boolean
+  transformSorts?: TransformSortsComposedFunctionType
 }
 
 type SubscribableType = 'status' | 'filteredResults' | 'selectedResults'
@@ -206,34 +205,24 @@ export class LazyQueryResults {
    */
   persistantSorts: QuerySortType[]
   /**
-   * on the fly sorts (user prefs), so no distance or best text match
-   * (this is a user pref aka client side only)
+   * Pass a function that returns the sorts to use, allowing such things as substituting ephemeral sorts
    */
-  ephemeralSorts: QuerySortType[]
-  ephemeralSort: boolean // option on construction to turn off
+  transformSorts: TransformSortsComposedFunctionType = ({ originalSorts }) => {
+    return originalSorts
+  }
   /**
    *  Should really only be set at constructor time (moment a query is done)
    */
   _updatePersistantSorts(sorts: QuerySortType[]) {
     this.persistantSorts = sorts
   }
-  /**
-   *  Should be updated based on user prefs at the current moment,
-   *  And respond to updates to those prefs on the fly.
-   */
-  _updateEphemeralSorts() {
-    if (this.ephemeralSort) {
-      this.ephemeralSorts = user.getPreferences().get('resultSort') || []
-    } else {
-      this.ephemeralSorts = []
-    }
+  _updateTransformSorts(transformSorts: TransformSortsComposedFunctionType) {
+    this.transformSorts = transformSorts
   }
   _getSortedResults(results: LazyQueryResult[]) {
     return results.sort(
       generateCompareFunction(
-        this.ephemeralSorts.length > 0
-          ? this.ephemeralSorts
-          : this.persistantSorts
+        this.transformSorts({ originalSorts: this.persistantSorts })
       )
     )
   }
@@ -262,27 +251,13 @@ export class LazyQueryResults {
     results = [],
     sorts = [],
     sources = [],
-    ephemeralSort = true,
+    transformSorts,
   }: ConstructorProps = {}) {
-    this.ephemeralSort = ephemeralSort === false ? false : true
-    this._updateEphemeralSorts()
-    this.reset({ results, sorts, sources })
+    this.reset({ results, sorts, sources, transformSorts })
 
     this.backboneModel = new Backbone.Model({
       id: Math.random().toString(),
     })
-    this.backboneModel.listenTo(
-      user,
-      'change:user>preferences>resultSort',
-      () => {
-        this._updateEphemeralSorts()
-        /**
-         * No need to resort because the query will re-execute.  We do need to update things though, so when all sources return we can sort appropriately.
-         */
-        // this._resort()
-        // this['_notifySubscribers.filteredResults']()
-      }
-    )
   }
   init() {
     this.currentAsOf = Date.now()
@@ -317,12 +292,20 @@ export class LazyQueryResults {
     this.selectedResults = {}
     if (shouldNotify) this['_notifySubscribers.selectedResults']()
   }
-  reset({ results = [], sorts = [], sources = [] }: ConstructorProps = {}) {
+  reset({
+    results = [],
+    sorts = [],
+    sources = [],
+    transformSorts = ({ originalSorts }) => {
+      return originalSorts
+    },
+  }: ConstructorProps = {}) {
     this.init()
     this.resetDidYouMeanFields()
     this.resetShowingResultsForFields()
     this._resetSources(sources)
     this._updatePersistantSorts(sorts)
+    this._updateTransformSorts(transformSorts)
     this.add({ results })
   }
   destroy() {

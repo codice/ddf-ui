@@ -19,9 +19,9 @@ import { Geometry } from 'wkx'
 import { MetacardInteraction } from './metacard-interactions'
 import { Props, Model, Result } from '.'
 import { hot } from 'react-hot-loader'
+import { UserQuery } from '../../js/model/TypedQuery'
 
 const CqlUtils = require('../../js/CQLUtils')
-const Query = require('../../js/model/Query')
 
 const addFilter = (filterTree: any, filter: any) => {
   filter.value = filter.value.value
@@ -52,51 +52,19 @@ const createFilterTree = (locations: string[]) => {
   return filterTree
 }
 
+/**
+ * Unused at the moment, as we need to think of the proper user flow
+ */
 const handleCreateSearch = (props: Props) => {
   const locations = getGeoLocations(props.model)
 
   if (locations.length === 0) return
 
-  const locationString = `(${locations.join(` OR `)})`
   const filterTree = createFilterTree(locations)
-  const newQuery = new Query.Model({
+  const newQuery = UserQuery({
     type: filterTree.filters.length > 1 ? 'advanced' : 'basic',
   })
   newQuery.set('filterTree', filterTree)
-  newQuery.set('cql', locationString)
-
-  // const existingQuery = store.getCurrentQueries()
-
-  // if (existingQuery.canAddQuery()) {
-  //   existingQuery.add(newQuery)
-  //   store.setCurrentQuery(newQuery)
-  //   return
-  // }
-
-  // props.listenTo(
-  //   QueryConfirmationView.generateConfirmation({}),
-  //   'change:choice',
-  //   (confirmation: any) => {
-  //     const choice = confirmation.get('choice')
-  //     if (choice === true) {
-  //       const loadingView = new LoadingView()
-  //       store.get('workspaces').once('sync', (workspace: any) => {
-  //         loadingView.remove()
-  //         wreqr.vent.trigger('router:navigate', {
-  //           fragment: `workspaces/${workspace.id}`,
-  //           options: {
-  //             trigger: true,
-  //           },
-  //         })
-  //       })
-  //       store.get('workspaces').createWorkspaceWithQuery(newQuery)
-  //     } else if (choice !== false) {
-  //       store.getCurrentQueries().remove(choice)
-  //       store.getCurrentQueries().add(newQuery)
-  //       store.setCurrentQuery(newQuery)
-  //     }
-  //   }
-  // )
 }
 
 const getGeoLocations = (model: Model) =>

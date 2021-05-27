@@ -293,6 +293,7 @@ Implementation details
         <argument ref="blueprintBundleContext"/>
         <argument ref="endpointUtil"/>
         <argument ref="cqlQueryUtil"/>
+        <argument ref="securityLogger"/>
     </bean>
 
     <bean id="queryValidators" class="org.codice.ddf.catalog.ui.query.validate.QueryValidators"/>

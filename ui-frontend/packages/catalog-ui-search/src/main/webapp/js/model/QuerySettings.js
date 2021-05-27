@@ -25,7 +25,6 @@ module.exports = Backbone.Model.extend({
     return {
       type: 'text',
       sources,
-      federation: sources ? 'selected' : 'enterprise',
       sorts: [
         {
           attribute: 'modified',

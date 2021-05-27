@@ -5,9 +5,7 @@ import { hot } from 'react-hot-loader'
 import QueryFeed from './query-feed'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Paging from './paging'
-import { Dropdown } from '../atlas-dropdown'
 import Paper from '@material-ui/core/Paper'
-import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
 import Button from '@material-ui/core/Button'
 import FilterListIcon from '@material-ui/icons/FilterList'
 // @ts-ignore ts-migrate(6133) FIXME: 'SortIcon' is declared but its value is never read... Remove this comment to see the full error message
@@ -33,55 +31,49 @@ import useTheme from '@material-ui/core/styles/useTheme'
 import SelectionRipple from '../golden-layout/selection-ripple'
 import { ResultType } from '../../js/model/Types'
 import Extensions from '../../extension-points'
+import { useMenuState } from '../menu-state/menu-state'
+import Popover from '@material-ui/core/Popover'
 
 const SelectedResults = ({ selectionInterface }: any) => {
   const selectedResults = useLazyResultsSelectedResultsFromSelectionInterface({
     selectionInterface,
   })
   const selectedResultsArray = Object.values(selectedResults)
+  const { MuiButtonProps, MuiPopoverProps } = useMenuState()
 
   return (
-    <Dropdown
-      content={({ close }) => {
-        return (
-          <BetterClickAwayListener onClickAway={close}>
-            <Paper>
-              <LazyMetacardInteractions
-                lazyResults={selectedResultsArray}
-                onClose={() => {
-                  close()
-                }}
-              />
-            </Paper>
-          </BetterClickAwayListener>
-        )
-      }}
-    >
-      {({ handleClick }) => {
-        return (
-          <Button
-            data-id="result-selector-more-vert-button"
-            className={`relative ${
-              selectedResultsArray.length === 0 ? 'invisible' : ''
-            }`}
-            color="primary"
-            disabled={selectedResultsArray.length === 0}
-            onClick={handleClick}
-            style={{ height: '100%' }}
-            size="small"
-          >
-            {selectedResultsArray.length} selected
-            <div
-              className={
-                selectedResultsArray.length === 0 ? '' : 'Mui-text-text-primary'
-              }
-            >
-              <MoreIcon />
-            </div>
-          </Button>
-        )
-      }}
-    </Dropdown>
+    <>
+      <Button
+        data-id="result-selector-more-vert-button"
+        className={`relative ${
+          selectedResultsArray.length === 0 ? 'invisible' : ''
+        }`}
+        color="primary"
+        disabled={selectedResultsArray.length === 0}
+        style={{ height: '100%' }}
+        size="small"
+        {...MuiButtonProps}
+      >
+        {selectedResultsArray.length} selected
+        <div
+          className={
+            selectedResultsArray.length === 0 ? '' : 'Mui-text-text-primary'
+          }
+        >
+          <MoreIcon />
+        </div>
+      </Button>
+      <Popover {...MuiPopoverProps}>
+        <Paper>
+          <LazyMetacardInteractions
+            lazyResults={selectedResultsArray}
+            onClose={() => {
+              close()
+            }}
+          />
+        </Paper>
+      </Popover>
+    </>
   )
 }
 
@@ -132,6 +124,9 @@ const ResultSelector = ({
     layoutResult,
     editLayoutRef,
   })
+  const resultFilterMenuState = useMenuState()
+  const resultSortMenuState = useMenuState()
+  const layoutMenuState = useMenuState()
   return (
     <React.Fragment>
       <Grid container alignItems="center" justify="flex-start" direction="row">
@@ -161,99 +156,68 @@ const ResultSelector = ({
           <Paging selectionInterface={selectionInterface} />
         </Grid>
         <Grid item className="ml-auto">
-          <Dropdown
-            content={({ closeAndRefocus }) => {
-              return (
-                <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper className="p-3" elevation={Elevations.overlays}>
-                    <ResultFilter closeDropdown={closeAndRefocus} />
-                  </Paper>
-                </BetterClickAwayListener>
-              )
+          <Button
+            data-id="filter-button"
+            variant="text"
+            color="primary"
+            style={{
+              borderBottom: hasResultFilter
+                ? `1px solid ${theme.palette.warning.main}`
+                : '0px',
             }}
+            {...resultFilterMenuState.MuiButtonProps}
           >
-            {({ handleClick }) => {
-              return (
-                <Button
-                  data-id="filter-button"
-                  onClick={handleClick}
-                  variant="text"
-                  color="primary"
-                  style={{
-                    borderBottom: hasResultFilter
-                      ? `1px solid ${theme.palette.warning.main}`
-                      : '0px',
-                  }}
-                >
-                  <FilterListIcon className="Mui-text-text-primary" />
-                  Filter
-                </Button>
-              )
-            }}
-          </Dropdown>
+            <FilterListIcon className="Mui-text-text-primary" />
+            Filter
+          </Button>
+          <Popover {...resultFilterMenuState.MuiPopoverProps}>
+            <Paper className="p-3" elevation={Elevations.overlays}>
+              <ResultFilter closeDropdown={resultFilterMenuState.handleClose} />
+            </Paper>
+          </Popover>
         </Grid>
         <Grid item className="pl-2">
-          <Dropdown
-            content={({ closeAndRefocus }) => {
-              return (
-                <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper className="p-3" elevation={Elevations.overlays}>
-                    <EphemeralSearchSort closeDropdown={closeAndRefocus} />
-                  </Paper>
-                </BetterClickAwayListener>
-              )
+          <Button
+            data-id="sort-button"
+            variant="text"
+            color="primary"
+            style={{
+              borderBottom: hasResultSort
+                ? `1px solid ${theme.palette.warning.main}`
+                : '0px',
             }}
+            {...resultSortMenuState.MuiButtonProps}
           >
-            {({ handleClick }) => {
-              return (
-                <Button
-                  data-id="sort-button"
-                  onClick={handleClick}
-                  variant="text"
-                  color="primary"
-                  style={{
-                    borderBottom: hasResultSort
-                      ? `1px solid ${theme.palette.warning.main}`
-                      : '0px',
-                  }}
-                >
-                  <ArrowDownwardIcon className="Mui-text-text-primary" />
-                  Sort
-                </Button>
-              )
-            }}
-          </Dropdown>
+            <ArrowDownwardIcon className="Mui-text-text-primary" />
+            Sort
+          </Button>
+          <Popover {...resultSortMenuState.MuiPopoverProps}>
+            <Paper className="p-3" elevation={Elevations.overlays}>
+              <EphemeralSearchSort
+                closeDropdown={resultSortMenuState.handleClose}
+              />
+            </Paper>
+          </Popover>
         </Grid>
         <Grid item className="pl-2">
-          <Dropdown
-            content={({ closeAndRefocus }) => {
-              return (
-                <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper className="p-3" elevation={Elevations.overlays}>
-                    {LayoutDropdown || (
-                      <VisualizationSelector
-                        onClose={closeAndRefocus}
-                        goldenLayout={goldenLayoutViewInstance.goldenLayout}
-                      />
-                    )}
-                  </Paper>
-                </BetterClickAwayListener>
-              )
-            }}
+          <Button
+            data-id="layout-button"
+            color="primary"
+            {...layoutMenuState.MuiButtonProps}
           >
-            {({ handleClick }) => {
-              return (
-                <Button
-                  data-id="layout-button"
-                  color="primary"
-                  onClick={handleClick}
-                >
-                  <ViewCompactIcon className="Mui-text-text-primary" />
-                  <div className="pl-1">Layout</div>
-                </Button>
-              )
-            }}
-          </Dropdown>
+            <ViewCompactIcon className="Mui-text-text-primary" />
+            <div className="pl-1">Layout</div>
+          </Button>
+          <Popover {...layoutMenuState.MuiPopoverProps}>
+            <Paper className="p-3" elevation={Elevations.overlays}>
+              {LayoutDropdown || (
+                <VisualizationSelector
+                  onClose={layoutMenuState.handleClose}
+                  goldenLayout={goldenLayoutViewInstance.goldenLayout}
+                />
+              )}
+            </Paper>
+          </Popover>
         </Grid>
       </Grid>
     </React.Fragment>

@@ -16,7 +16,7 @@ import * as React from 'react'
 const user = require('../../component/singletons/user-instance.js')
 const properties = require('../../js/properties.js')
 import QuerySettings from '../../component/query-settings/query-settings'
-const QueryModel = require('../../js/model/Query.js')
+import { UserQuery } from '../../js/model/TypedQuery'
 import styled from 'styled-components'
 import { hot } from 'react-hot-loader'
 import Typography from '@material-ui/core/Typography'
@@ -42,7 +42,9 @@ const getResultCount = () => {
 }
 
 const SearchSettings = () => {
-  const [queryModel] = React.useState(new QueryModel.Model())
+  const [queryModel] = React.useState(
+    UserQuery() // we pass this to query settings
+  )
   const [resultCount, setResultCount] = React.useState(getResultCount())
 
   const { listenTo } = useBackbone()

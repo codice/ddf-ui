@@ -100,7 +100,7 @@ const GazetteerAutoComplete = ({
   if (selected) {
     return (
       <Chip
-        className="w-full px-2 py-1 mt-2 justify-start rounded"
+        className="w-full px-2 justify-start rounded"
         style={{ height: '42px' }}
         avatar={<RoomIcon />}
         label={
@@ -129,6 +129,7 @@ const GazetteerAutoComplete = ({
       options={suggestions}
       loading={loading}
       loadingText="Searching..."
+      size="small"
       onChange={onValueSelect}
       onBlur={() => setInput('')}
       noOptionsText={getNoOptionsText()}
@@ -137,7 +138,8 @@ const GazetteerAutoComplete = ({
         <TextField
           {...params}
           variant={props.variant || 'outlined'}
-          margin="dense"
+          className="my-0"
+          size="small"
           autoFocus
           value={input}
           placeholder={props.placeholder || placeholder}
