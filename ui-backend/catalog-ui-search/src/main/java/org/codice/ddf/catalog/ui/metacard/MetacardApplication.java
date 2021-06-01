@@ -202,7 +202,7 @@ public class MetacardApplication implements SparkApplication {
 
   private final Security security;
 
-  private final OperationPropertySupplier operationPropertySupplier;
+  private OperationPropertySupplier operationPropertySupplier;
 
   private SubjectOperations subjectOperations;
 
@@ -225,8 +225,7 @@ public class MetacardApplication implements SparkApplication {
       SubjectIdentity subjectIdentity,
       WorkspaceService workspaceService,
       AssociatedQueryMetacardsHandler queryMetacardsHandler,
-      Security security,
-      OperationPropertySupplier operationPropertySupplier) {
+      Security security) {
     this.catalogFramework = catalogFramework;
     this.filterBuilder = filterBuilder;
     this.util = endpointUtil;
@@ -244,7 +243,14 @@ public class MetacardApplication implements SparkApplication {
     this.workspaceService = workspaceService;
     this.queryMetacardsHandler = queryMetacardsHandler;
     this.security = security;
+  }
+
+  public void addOperationPropertySupplier(OperationPropertySupplier operationPropertySupplier) {
     this.operationPropertySupplier = operationPropertySupplier;
+  }
+
+  public void removeOperationPropertySupplier(OperationPropertySupplier operationPropertySupplier) {
+    this.operationPropertySupplier = null;
   }
 
   private String getSubjectEmail() {
@@ -871,7 +877,9 @@ public class MetacardApplication implements SparkApplication {
           IngestException, ResourceNotFoundException, IOException, ResourceNotSupportedException {
     try {
       Map<String, Serializable> properties =
-          operationPropertySupplier.properties(OperationPropertySupplier.QUERY_TYPE);
+          operationPropertySupplier == null
+              ? new HashMap<>()
+              : operationPropertySupplier.properties(OperationPropertySupplier.QUERY_TYPE);
 
       Metacard versionMetacard = util.getMetacardById(revertId, properties);
 
@@ -956,7 +964,9 @@ public class MetacardApplication implements SparkApplication {
       attemptDeleteDeletedMetacard(id);
       if (!alreadyCreated) {
         Map<String, Serializable> properties =
-            operationPropertySupplier.properties(OperationPropertySupplier.CREATE_TYPE);
+            operationPropertySupplier == null
+                ? new HashMap<>()
+                : operationPropertySupplier.properties(OperationPropertySupplier.CREATE_TYPE);
 
         catalogFramework.create(
             new CreateRequestImpl(Collections.singletonList(revertMetacard), properties));
@@ -1051,7 +1061,9 @@ public class MetacardApplication implements SparkApplication {
     Filter filter = filterBuilder.allOf(tags, deletion);
 
     Map<String, Serializable> properties =
-        operationPropertySupplier.properties(OperationPropertySupplier.QUERY_TYPE);
+        operationPropertySupplier == null
+            ? new HashMap<>()
+            : operationPropertySupplier.properties(OperationPropertySupplier.QUERY_TYPE);
 
     QueryResponse response = null;
     try {
@@ -1165,7 +1177,9 @@ public class MetacardApplication implements SparkApplication {
 
   private List<Result> getMetacardHistory(String id, String sourceId) {
     Map<String, Serializable> properties =
-        operationPropertySupplier.properties(OperationPropertySupplier.QUERY_TYPE);
+        operationPropertySupplier == null
+            ? new HashMap<>()
+            : operationPropertySupplier.properties(OperationPropertySupplier.QUERY_TYPE);
 
     Filter historyFilter =
         filterBuilder.attribute(Metacard.TAGS).is().equalTo().text(MetacardVersion.VERSION_TAG);
