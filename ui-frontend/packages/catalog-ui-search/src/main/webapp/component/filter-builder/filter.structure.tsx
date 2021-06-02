@@ -239,6 +239,9 @@ export type ValueTypes = {
     start: number
     end: number
   }
+  booleanText: {
+    value: string
+  }
   location: // this is all we technically need to reconstruct (lo fidelity)
   LineLocation | PolygonLocation | PointRadiusLocation
 }

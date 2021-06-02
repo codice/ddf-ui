@@ -41,6 +41,7 @@ import Grid from '@material-ui/core/Grid'
 import Chip from '@material-ui/core/Chip'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
+import BooleanSearchBar from '../boolean-search-bar/boolean-search-bar'
 
 function isNested(filter: any) {
   let nested = false
@@ -432,6 +433,30 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
             }}
             size="small"
             variant="outlined"
+          />
+          <BooleanSearchBar
+            inputPlaceholder={'*'}
+            value={basicFilter.anyText ? basicFilter.anyText[0].value : ''}
+            onChange={(inputValue) => {
+              console.log(inputValue)
+              basicFilter.anyText[0] = new FilterClass({
+                ...basicFilter.anyText[0],
+                value: inputValue,
+              })
+              model.set(
+                'filterTree',
+                constructFilterFromBasicFilter({ basicFilter })
+              )
+            }}
+            error={error}
+            errorMessage={(() => {
+              if (error) {
+                return ERROR_MESSAGES.both
+              }
+              return ERROR_MESSAGES.punctuation
+            })()}
+            options={options}
+            loading={isLoading}
           />
         </div>
         <div className="pt-2">
