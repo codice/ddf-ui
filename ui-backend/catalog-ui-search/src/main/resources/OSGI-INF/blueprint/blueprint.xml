@@ -253,6 +253,19 @@ Implementation details
         <argument ref="catalogFramework"/>
     </bean>
 
+    <!-- Note: if we ever need to supply multiple instances of OperationPropertySupplier, then use the decorator
+     pattern by creating an instance of OperationPropertySupplier that is constructed from a list of suppliers,
+     which merges the results together. -->
+    <reference id="revertProperties"
+               interface="org.codice.ddf.catalog.ui.metacard.internal.OperationPropertySupplier"
+               availability="optional"
+               filter="(type=revert)">
+        <reference-listener
+                ref="metacardApplication"
+                bind-method="addOperationPropertySupplier"
+                unbind-method="removeOperationPropertySupplier"/>
+    </reference>
+
     <bean id="metacardApplication" class="org.codice.ddf.catalog.ui.metacard.MetacardApplication">
         <argument ref="catalogFramework"/>
         <argument ref="filterBuilder"/>

@@ -119,6 +119,7 @@ import org.codice.ddf.catalog.ui.metacard.associations.Associated;
 import org.codice.ddf.catalog.ui.metacard.edit.AttributeChange;
 import org.codice.ddf.catalog.ui.metacard.edit.MetacardChanges;
 import org.codice.ddf.catalog.ui.metacard.history.HistoryResponse;
+import org.codice.ddf.catalog.ui.metacard.internal.OperationPropertySupplier;
 import org.codice.ddf.catalog.ui.metacard.notes.NoteConstants;
 import org.codice.ddf.catalog.ui.metacard.notes.NoteMetacard;
 import org.codice.ddf.catalog.ui.metacard.notes.NoteUtil;
@@ -201,6 +202,8 @@ public class MetacardApplication implements SparkApplication {
 
   private final Security security;
 
+  private OperationPropertySupplier operationPropertySupplier;
+
   private SubjectOperations subjectOperations;
 
   private SecurityLogger securityLogger;
@@ -240,6 +243,14 @@ public class MetacardApplication implements SparkApplication {
     this.workspaceService = workspaceService;
     this.queryMetacardsHandler = queryMetacardsHandler;
     this.security = security;
+  }
+
+  public void addOperationPropertySupplier(OperationPropertySupplier operationPropertySupplier) {
+    this.operationPropertySupplier = operationPropertySupplier;
+  }
+
+  public void removeOperationPropertySupplier(OperationPropertySupplier operationPropertySupplier) {
+    this.operationPropertySupplier = null;
   }
 
   private String getSubjectEmail() {
@@ -403,7 +414,7 @@ public class MetacardApplication implements SparkApplication {
           String revertId = req.params(":revertid");
           String storeId = req.params(":storeId");
           Metacard versionMetacard = revert(id, revertId, storeId);
-          return util.metacardToJson(MetacardVersionImpl.toMetacard(versionMetacard, types));
+          return util.metacardToJson(MetacardVersionImpl.toMetacard(versionMetacard));
         });
 
     get(
@@ -865,7 +876,12 @@ public class MetacardApplication implements SparkApplication {
       throws UnsupportedQueryException, SourceUnavailableException, FederationException,
           IngestException, ResourceNotFoundException, IOException, ResourceNotSupportedException {
     try {
-      Metacard versionMetacard = util.getMetacardById(revertId);
+      Map<String, Serializable> properties =
+          operationPropertySupplier == null
+              ? new HashMap<>()
+              : operationPropertySupplier.properties(OperationPropertySupplier.QUERY_TYPE);
+
+      Metacard versionMetacard = util.getMetacardById(revertId, properties);
 
       List<Result> queryResponse = getMetacardHistory(id, storeId);
       if (queryResponse.isEmpty()) {
@@ -940,14 +956,20 @@ public class MetacardApplication implements SparkApplication {
   private void revertMetacard(Metacard versionMetacard, String id, boolean alreadyCreated)
       throws SourceUnavailableException, IngestException {
     LOGGER.trace("Reverting metacard [{}] to version [{}]", id, versionMetacard.getId());
-    Metacard revertMetacard = MetacardVersionImpl.toMetacard(versionMetacard, types);
+    Metacard revertMetacard = MetacardVersionImpl.toMetacard(versionMetacard);
     Action action =
         Action.fromKey((String) versionMetacard.getAttribute(MetacardVersion.ACTION).getValue());
 
     if (DELETE_ACTIONS.contains(action)) {
       attemptDeleteDeletedMetacard(id);
       if (!alreadyCreated) {
-        catalogFramework.create(new CreateRequestImpl(revertMetacard));
+        Map<String, Serializable> properties =
+            operationPropertySupplier == null
+                ? new HashMap<>()
+                : operationPropertySupplier.properties(OperationPropertySupplier.CREATE_TYPE);
+
+        catalogFramework.create(
+            new CreateRequestImpl(Collections.singletonList(revertMetacard), properties));
       }
     } else {
       tryUpdate(
@@ -980,7 +1002,7 @@ public class MetacardApplication implements SparkApplication {
             latestResource.getResource().getMimeTypeValue(),
             latestResource.getResource().getName(),
             latestResource.getResource().getSize(),
-            MetacardVersionImpl.toMetacard(versionMetacard, types));
+            MetacardVersionImpl.toMetacard(versionMetacard));
 
     // Try to delete the "deleted metacard" marker first.
     boolean alreadyCreated = false;
@@ -1038,9 +1060,16 @@ public class MetacardApplication implements SparkApplication {
     Filter deletion = filterBuilder.attribute(DeletedMetacard.DELETION_OF_ID).is().like().text(id);
     Filter filter = filterBuilder.allOf(tags, deletion);
 
+    Map<String, Serializable> properties =
+        operationPropertySupplier == null
+            ? new HashMap<>()
+            : operationPropertySupplier.properties(OperationPropertySupplier.QUERY_TYPE);
+
     QueryResponse response = null;
     try {
-      response = catalogFramework.query(new QueryRequestImpl(new QueryImpl(filter), false));
+      response =
+          catalogFramework.query(
+              new QueryRequestImpl(new QueryImpl(filter), false, null, properties));
     } catch (UnsupportedQueryException | SourceUnavailableException | FederationException e) {
       LOGGER.debug("Could not find the deleted metacard marker to delete", e);
     }
@@ -1147,6 +1176,11 @@ public class MetacardApplication implements SparkApplication {
   }
 
   private List<Result> getMetacardHistory(String id, String sourceId) {
+    Map<String, Serializable> properties =
+        operationPropertySupplier == null
+            ? new HashMap<>()
+            : operationPropertySupplier.properties(OperationPropertySupplier.QUERY_TYPE);
+
     Filter historyFilter =
         filterBuilder.attribute(Metacard.TAGS).is().equalTo().text(MetacardVersion.VERSION_TAG);
     Filter idFilter =
@@ -1165,7 +1199,9 @@ public class MetacardApplication implements SparkApplication {
                     SortBy.NATURAL_ORDER,
                     false,
                     TimeUnit.SECONDS.toMillis(10)),
-                sources));
+                false,
+                sources,
+                properties));
     return Lists.newArrayList(resultIterable);
   }
 
