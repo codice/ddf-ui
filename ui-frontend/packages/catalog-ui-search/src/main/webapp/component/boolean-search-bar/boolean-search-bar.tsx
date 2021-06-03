@@ -36,7 +36,7 @@ const SearchBarContainer = styled.div`
 type Props = {
   searchButtonText: string
   inputPlaceholder: string
-  onChange: (event: any) => void
+  onChange: (inputValue: any) => void
   error: boolean
   errorMessage: TextFieldProps['helperText']
   options: any

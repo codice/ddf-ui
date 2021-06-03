@@ -425,10 +425,10 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
             key={searchButtonText}
             inputPlaceholder={'*'}
             searchButtonText={searchButtonText}
-            onChange={(e) => {
+            onChange={(inputValue) => {
               basicFilter.anyText[0] = new FilterClass({
                 ...basicFilter.anyText[0],
-                value: e.target.value,
+                value: inputValue,
               })
               model.set(
                 'filterTree',
