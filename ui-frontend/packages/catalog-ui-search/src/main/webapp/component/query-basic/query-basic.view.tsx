@@ -421,11 +421,37 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
       <div className="editor-properties px-2 py-3">
         <div className="">
           <Typography className="pb-2">Keyword</Typography>
+          <TextField
+            fullWidth
+            value={basicFilter.anyText ? basicFilter.anyText[0].value : ''}
+            placeholder={`Text to search for. Use "*" for wildcard.`}
+            id="Text"
+            onChange={(e) => {
+              basicFilter.anyText[0] = new FilterClass({
+                ...basicFilter.anyText[0],
+                value: e.target.value,
+              })
+              model.set(
+                'filterTree',
+                constructFilterFromBasicFilter({ basicFilter })
+              )
+            }}
+            onKeyUp={(e) => {
+              if (e.which === 13) {
+                model.startSearchFromFirstPage()
+              }
+            }}
+            inputProps={{
+              ref: inputRef as any,
+            }}
+            size="small"
+            variant="outlined"
+          />
           <BooleanSearchBar
-            key={searchButtonText}
             inputPlaceholder={'*'}
-            searchButtonText={searchButtonText}
+            value={basicFilter.anyText ? basicFilter.anyText[0].value : ''}
             onChange={(inputValue) => {
+              console.log(inputValue)
               basicFilter.anyText[0] = new FilterClass({
                 ...basicFilter.anyText[0],
                 value: inputValue,

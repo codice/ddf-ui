@@ -34,7 +34,7 @@ const SearchBarContainer = styled.div`
 `
 
 type Props = {
-  searchButtonText: string
+  value: string
   inputPlaceholder: string
   onChange: (inputValue: any) => void
   error: boolean
@@ -47,6 +47,10 @@ const getRandomId = () => {
   return `a${Math.round(Math.random() * 10000000000000).toString()}`
 }
 
+/**
+ * We want to take in a value, and onChange update it.  That would then flow a new value
+ * back down.
+ */
 const BooleanSearchBar = (props: Props) => {
   const [inputValue, setInputValue] = React.useState<string>('')
   const [suggestion, setSuggestion] = React.useState('')
@@ -64,10 +68,17 @@ const BooleanSearchBar = (props: Props) => {
   ) : (
     <Check style={{ color: green[500] }} />
   )
-
+    //test
+  
   React.useEffect(() => {
     props.onChange(inputValue)
-  }, [inputValue, props.onChange])
+  }, [inputValue])
+
+  React.useEffect(() => {
+    if (props.value !== inputValue) {
+      setInputValue(props.value)
+    }
+  }, [props.value])
 
   React.useEffect(() => {
     const rawTokens = inputValue.split(/[ ())]+/)
