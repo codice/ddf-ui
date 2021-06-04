@@ -45,6 +45,8 @@ public class JsonRpc implements WebSocket {
   private static final String METHOD = "method";
   private static final String ID = "id";
 
+  private static final int WS_MAX_TEXT_MSG_SIZE = 1_000_000;
+
   private static final Gson GSON =
       new GsonBuilder()
           .disableHtmlEscaping()
@@ -95,7 +97,7 @@ public class JsonRpc implements WebSocket {
 
   @Override
   public void onOpen(Session session) {
-    // no action required on open
+    session.getPolicy().setMaxTextMessageSize(WS_MAX_TEXT_MSG_SIZE);
   }
 
   @Override
