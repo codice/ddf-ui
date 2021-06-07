@@ -156,6 +156,7 @@ User.Preferences = Backbone.AssociatedModel.extend({
       hoverPreview: true,
       querySettings: new QuerySettings(),
       mapHome: undefined,
+      actingRole: 'user',
     }
   },
   relations: [

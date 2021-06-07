@@ -105,6 +105,25 @@ export const TypedUserInstance = {
   savePreferences() {
     userInstance.get('user').get('preferences').savePreferences()
   },
+  getActingRole: (): string => {
+    return userInstance.get('user').get('preferences').get('actingRole')
+  },
+  setActingRole: (actingRole: string) => {
+    return userInstance
+      .get('user')
+      .get('preferences')
+      .set('actingRole', actingRole)
+  },
+}
+
+export const useActingRole = () => {
+  const [activeRole, setActiveRole] = React.useState(
+    TypedUserInstance.getActingRole()
+  )
+  useListenTo(TypedUserInstance.getPreferences(), 'change:actingRole', () => {
+    setActiveRole(TypedUserInstance.getActingRole())
+  })
+  return activeRole
 }
 
 export const useEphemeralFilter = () => {

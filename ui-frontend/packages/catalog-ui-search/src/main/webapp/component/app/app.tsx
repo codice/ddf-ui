@@ -31,12 +31,15 @@ import { Link } from '../link/link'
 import { Memo } from '../memo/memo'
 import HelpIcon from '@material-ui/icons/Help'
 import NotificationsIcon from '@material-ui/icons/Notifications'
-import PersonIcon from '@material-ui/icons/Person'
 const userInstance = require('../singletons/user-instance.js')
 const notifications = require('../singletons/user-notifications.js')
 import SystemUsageModal from '../system-usage/system-usage'
 
-import UserView from '../../react-component/user'
+import UserView, {
+  RoleDisplay,
+  RoleIcon,
+  SmallRoleDisplay,
+} from '../../react-component/user/user'
 import UserSettings, {
   SettingsComponentType,
 } from '../../react-component/user-settings/user-settings'
@@ -54,6 +57,7 @@ import {
 } from '../../js/model/AsyncTask/async-task'
 import useSnack from '../hooks/useSnack'
 import LinearProgress from '@material-ui/core/LinearProgress'
+import { BaseProps } from '../button/expanding-button'
 export const handleBase64EncodedImages = (url: string) => {
   if (url && url.startsWith('data:')) {
     return url
@@ -61,13 +65,14 @@ export const handleBase64EncodedImages = (url: string) => {
   return `data:image/png;base64,${url}`
 }
 
+type ForNavButtonType = Omit<BaseProps, 'expanded'> &
+  Required<Pick<BaseProps, 'dataId'>>
+
 export type RouteShownInNavType = {
-  name: string
-  shortName: string
-  Icon?: any
   routeProps: RouteProps
   linkProps: LinkProps
   showInNav: true
+  navButtonProps: ForNavButtonType
 }
 
 export type RouteNotShownInNavType = {
@@ -110,6 +115,10 @@ type AppPropsType = {
   RouteInformation: IndividualRouteType[]
   NotificationsComponent: PermissiveComponentType
   SettingsComponents: SettingsComponentType
+}
+
+function sidebarDataIdTag(name: string) {
+  return `sidebar-${name}-button`
 }
 
 /**
@@ -298,37 +307,498 @@ const AsyncTasksComponent = () => {
   return null
 }
 
-const App = ({
-  RouteInformation,
-  NotificationsComponent,
-  SettingsComponents,
-}: AppPropsType) => {
+/** The song and dance around 'a' vs Link has to do with react router not supporting these outside links */
+const HelpButton = () => {
+  const location = useLocation()
+  const queryParams = queryString.parse(location.search)
+  const { navOpen } = useNavContextProvider()
+  return (
+    <ExpandingButton
+      // @ts-ignore ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
+      component={properties.helpUrl ? 'a' : Link}
+      href={properties.helpUrl}
+      to={
+        properties.helpUrl
+          ? properties.helpurl
+          : {
+              pathname: `${location.pathname}`,
+              search: `${queryString.stringify({
+                ...queryParams,
+                'global-help': 'Help',
+              })}`,
+            }
+      }
+      target={properties.helpUrl ? '_blank' : undefined}
+      className={`group-hover:opacity-100 opacity-25  hover:opacity-100 focus-visible:opacity-100 transition-opacity`}
+      Icon={HelpIcon}
+      expandedLabel="Help"
+      dataId={sidebarDataIdTag('help')}
+      expanded={navOpen}
+      focusVisibleClassName="focus-visible"
+    />
+  )
+}
+
+const SettingsButton = () => {
+  const { SettingsComponents } = useTopLevelAppContext()
   const location = useLocation()
   const history = useHistory()
   const queryParams = queryString.parse(location.search)
-  let defaultOpen =
-    localStorage.getItem('shell.drawer') === 'true' ? true : false
-  const [navOpen, setNavOpen] = React.useState(defaultOpen)
+  const open = Boolean(queryParams['global-settings'])
+  const { navOpen } = useNavContextProvider()
+
+  return (
+    <>
+      <ExpandingButton
+        // @ts-ignore ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
+        component={Link}
+        to={{
+          pathname: `${location.pathname}`,
+          search: `${queryString.stringify({
+            ...queryParams,
+            'global-settings': 'Settings',
+          })}`,
+        }}
+        className={`group-hover:opacity-100 opacity-25 relative hover:opacity-100 focus-visible:opacity-100 transition-opacity`}
+        Icon={SettingsIcon}
+        expandedLabel="Settings"
+        dataId={sidebarDataIdTag('settings')}
+        expanded={navOpen}
+        focusVisibleClassName="focus-visible"
+      />
+      <Drawer
+        anchor="left"
+        open={open}
+        onClose={() => {
+          delete queryParams['global-settings']
+          history.push(
+            `${location.pathname}?${queryString.stringify(queryParams)}`
+          )
+        }}
+        PaperProps={{
+          className: 'min-w-120 max-w-4/5 ',
+        }}
+      >
+        <UserSettings SettingsComponents={SettingsComponents} />
+      </Drawer>
+    </>
+  )
+}
+
+const NotificationsButton = () => {
+  const hasUnseenNotifications = useIndicateHasUnseenNotifications()
+  const { NotificationsComponent } = useTopLevelAppContext()
+  const location = useLocation()
+  const history = useHistory()
+  const queryParams = queryString.parse(location.search)
+  const open = Boolean(queryParams['global-notifications'])
+  const { navOpen } = useNavContextProvider()
+
+  return (
+    <>
+      <div
+        className={
+          hasUnseenNotifications ? 'animate-wiggle Mui-text-warning' : ''
+        }
+      >
+        <ExpandingButton
+          // @ts-ignore ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
+          component={Link}
+          to={{
+            pathname: `${location.pathname}`,
+            search: `${queryString.stringify({
+              ...queryParams,
+              'global-notifications': 'Notifications',
+            })}`,
+          }}
+          className={`${
+            !hasUnseenNotifications ? 'opacity-25' : ''
+          } group-hover:opacity-100  relative hover:opacity-100 focus-visible:opacity-100 transition-opacity`}
+          Icon={NotificationsIcon}
+          expandedLabel="Notifications"
+          dataId={sidebarDataIdTag('notifications')}
+          expanded={navOpen}
+          focusVisibleClassName="focus-visible"
+          orientation="vertical"
+        />
+      </div>
+      <Drawer
+        anchor="left"
+        open={open}
+        onClose={() => {
+          delete queryParams['global-notifications']
+          history.push(
+            `${location.pathname}?${queryString.stringify(queryParams)}`
+          )
+          notifications.setSeen()
+          userInstance.savePreferences()
+        }}
+        PaperProps={{
+          className: 'min-w-120 max-w-4/5 ',
+        }}
+      >
+        <NotificationsComponent />
+      </Drawer>
+    </>
+  )
+}
+
+const UserButton = () => {
+  const location = useLocation()
+  const history = useHistory()
+  const queryParams = queryString.parse(location.search)
+  const open = Boolean(queryParams['global-user'])
+  const { navOpen } = useNavContextProvider()
+  return (
+    <>
+      <ExpandingButton
+        // @ts-ignore ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
+        component={Link}
+        to={{
+          pathname: `${location.pathname}`,
+          search: `${queryString.stringify({
+            ...queryParams,
+            'global-user': 'User',
+          })}`,
+        }}
+        className={`group-hover:opacity-100 opacity-25 relative hover:opacity-100 focus-visible:opacity-100 transition-opacity`}
+        Icon={RoleIcon}
+        expandedLabel={
+          <div className="w-full">
+            <div className="truncate w-full">{userInstance.getUserName()}</div>
+            <div className="text-base truncate w-full">
+              <RoleDisplay />
+            </div>
+          </div>
+        }
+        unexpandedLabel={
+          <div className="w-full">
+            <div className="w-full truncate">{userInstance.getUserName()}</div>
+            <div className="text-xs truncate w-full">
+              <SmallRoleDisplay />
+            </div>
+          </div>
+        }
+        dataId={sidebarDataIdTag('user-profile')}
+        expanded={navOpen}
+        focusVisibleClassName="focus-visible"
+      />
+      <Drawer
+        anchor="left"
+        open={open}
+        onClose={() => {
+          delete queryParams['global-user']
+          history.push(
+            `${location.pathname}?${queryString.stringify(queryParams)}`
+          )
+        }}
+        PaperProps={{
+          className: 'min-w-120 max-w-4/5 ',
+        }}
+      >
+        <UserView />
+      </Drawer>
+    </>
+  )
+}
+
+const RouteButton = ({ routeInfo }: { routeInfo: RouteShownInNavType }) => {
+  const location = useLocation()
+  const { navOpen } = useNavContextProvider()
+  const isSelected = matchesRoute({
+    routeInfo,
+    pathname: location.pathname,
+  })
+  return (
+    <ExpandingButton
+      key={routeInfo.linkProps.to.toString()}
+      // @ts-ignore ts-migrate(2322) FIXME: Type 'null' is not assignable to type 'string | nu... Remove this comment to see the full error message
+      component={Link}
+      to={routeInfo.linkProps.to}
+      className={`group-hover:opacity-100 ${
+        !isSelected ? 'opacity-25' : ''
+      } focus-visible:opacity-100 hover:opacity-100 transition-opacity`}
+      expanded={navOpen}
+      {...routeInfo.navButtonProps}
+      focusVisibleClassName="focus-visible"
+      dataId={sidebarDataIdTag(routeInfo.navButtonProps.dataId)}
+      {...(isSelected
+        ? {
+            ['data-currentroute']: true,
+          }
+        : {})}
+    />
+  )
+}
+
+const SideBarRoutes = () => {
+  const { RouteInformation } = useTopLevelAppContext()
+  return (
+    <Grid
+      item
+      className="overflow-auto p-0 flex-shrink-0 scrollbars-min"
+      style={{
+        maxHeight: `calc(100% - ${7 * 4}rem)`, //
+      }}
+    >
+      {RouteInformation.filter((routeInfo) => routeInfo.showInNav).map(
+        (routeInfo: RouteShownInNavType) => {
+          return <RouteButton routeInfo={routeInfo} />
+        }
+      )}
+    </Grid>
+  )
+}
+
+const SideBarToggleButton = () => {
+  const { navOpen, setNavOpen } = useNavContextProvider()
+  return (
+    <>
+      <Grid item className="w-full h-16 flex-shrink-0">
+        {navOpen ? (
+          <>
+            <Grid
+              container
+              wrap="nowrap"
+              alignItems="center"
+              className="w-full h-full overflow-hidden"
+            >
+              <Grid item className="pl-3 py-1 pr-1 w-full relative h-full">
+                {properties.topLeftLogoSrc ? (
+                  <img
+                    className="max-h-full max-w-full absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 top-1/2 p-4"
+                    src={handleBase64EncodedImages(properties.topLeftLogoSrc)}
+                  />
+                ) : (
+                  <Grid
+                    container
+                    direction="column"
+                    className="pl-3"
+                    justify="center"
+                  >
+                    <Grid item>
+                      <Typography>{properties.customBranding}</Typography>
+                    </Grid>
+                    <Grid item>
+                      <Typography>{properties.product}</Typography>
+                    </Grid>
+                  </Grid>
+                )}
+              </Grid>
+              <Grid item className="ml-auto">
+                <IconButton
+                  className="h-auto"
+                  onClick={() => {
+                    setNavOpen(false)
+                  }}
+                >
+                  <ChevronLeftIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
+          </>
+        ) : (
+          <Button
+            color="inherit"
+            aria-label="open drawer"
+            onClick={() => {
+              setNavOpen(true)
+            }}
+            className="w-full h-full p-2"
+          >
+            {properties.menuIconSrc ? (
+              <>
+                <img
+                  src={handleBase64EncodedImages(properties.menuIconSrc)}
+                  className="max-h-16 max-w-full"
+                />
+              </>
+            ) : (
+              <MenuIcon />
+            )}
+          </Button>
+        )}
+      </Grid>
+    </>
+  )
+}
+
+const SideBar = () => {
+  const { navOpen } = useNavContextProvider()
+  return (
+    <Grid
+      item
+      className={`${
+        navOpen ? 'w-64' : 'w-20'
+      } transition-all duration-200 ease-in-out relative z-10 mr-2 flex-shrink-0 pb-2 pt-2 pl-2 group`}
+      onMouseLeave={() => {
+        scrollCurrentRouteIntoView()
+      }}
+    >
+      <Paper elevation={Elevations.navbar} className="h-full">
+        <Grid
+          container
+          direction="column"
+          className="h-full w-full"
+          wrap="nowrap"
+        >
+          <SideBarToggleButton />
+          <Divider />
+          <SideBarRoutes />
+          <Divider />
+          <SideBarBackground />
+          <Divider />
+          <Grid
+            item
+            className="mt-auto overflow-hidden w-full flex-shrink-0 flex-grow-0"
+          >
+            <HelpButton />
+            <SettingsButton />
+
+            <NotificationsButton />
+            <UserButton />
+          </Grid>
+        </Grid>
+      </Paper>
+    </Grid>
+  )
+}
+
+const Header = () => {
+  return (
+    <Grid item className="w-full">
+      {properties.ui.header ? (
+        <Typography
+          align="center"
+          style={{
+            background: properties.ui.background,
+            color: properties.ui.color,
+          }}
+        >
+          {properties.ui.header}
+        </Typography>
+      ) : null}
+    </Grid>
+  )
+}
+
+const Footer = () => {
+  return (
+    <Grid item className="w-full">
+      {properties.ui.footer ? (
+        <Typography
+          align="center"
+          style={{
+            background: properties.ui.background,
+            color: properties.ui.color,
+          }}
+        >
+          {properties.ui.footer}
+        </Typography>
+      ) : null}
+    </Grid>
+  )
+}
+
+const SideBarBackground = () => {
+  return (
+    <Grid
+      item
+      className="relative overflow-hidden flex-shrink-1 h-full min-w-full"
+    >
+      {properties.bottomLeftBackgroundSrc ? (
+        <img
+          className={`group-hover:opacity-100 opacity-50 duration-200 ease-in-out transition-all w-auto h-full absolute max-w-none m-auto min-h-80`}
+          src={handleBase64EncodedImages(properties.bottomLeftBackgroundSrc)}
+        />
+      ) : null}
+    </Grid>
+  )
+}
+
+const RouteContents = () => {
+  const { RouteInformation } = useTopLevelAppContext()
+  /**
+   * So this is slightly annoying, but the grid won't properly resize without overflow hidden set.
+   *
+   * That makes handling padding / margins / spacing more complicated in our app, because with overflow hidden set
+   * dropshadows on elements will get cut off.  So we have to let the contents instead dictate their padding, that way
+   * their dropshadows can be seen.
+   *
+   * Folks will probably struggle a bit with it at first, but the css utilities actually make it pretty easy.
+   * Just add pb-2 for the correct bottom spacing, pt-2 for correct top spacing, etc. etc.
+   */
+  return (
+    <Grid
+      item
+      className="w-full h-full relative z-0 flex-shrink-1 overflow-x-hidden" // do not remove this overflow hidden, see comment above for more
+    >
+      <Memo>
+        <Switch>
+          {RouteInformation.map((routeInfo: RouteNotShownInNavType) => {
+            return (
+              <Route
+                key={
+                  routeInfo.routeProps.path
+                    ? routeInfo.routeProps.path.toString()
+                    : Math.random()
+                }
+                {...routeInfo.routeProps}
+              />
+            )
+          })}
+        </Switch>
+      </Memo>
+    </Grid>
+  )
+}
+
+const NavContextProvider = React.createContext({
+  setNavOpen: (_navOpen: boolean) => {},
+  navOpen: false,
+})
+
+export const useNavContextProvider = () => {
+  const navContext = React.useContext(NavContextProvider)
+  return navContext
+}
+
+/**
+ * Keep the current route visible to the user since it's useful info.
+ * This also ensures it's visible upon first load of the page.
+ */
+const useScrollCurrentRouteIntoViewOnLocationChange = () => {
+  const location = useLocation()
+  React.useEffect(() => {
+    scrollCurrentRouteIntoView()
+  }, [location])
+}
+
+const useIndicateHasUnseenNotifications = () => {
+  const { listenTo } = useBackbone()
   const [hasUnseenNotifications, setHasUnseenNotifications] = React.useState(
     notifications.hasUnseen() as boolean
   )
+  React.useEffect(() => {
+    listenTo(notifications, 'change add remove reset update', () => {
+      setHasUnseenNotifications(notifications.hasUnseen() as boolean)
+    })
+  }, [])
+  return hasUnseenNotifications
+}
+
+const useBackboneRouteReactRouterCompatibility = () => {
   const { listenTo } = useBackbone()
-  function handleDrawerOpen() {
-    localStorage.setItem('shell.drawer', 'true')
-    setNavOpen(true)
-    setTimeout(() => {
-      $(window).resize() // needed for golden layout to resize
-    }, 250)
-  }
+  const history = useHistory()
 
-  function handleDrawerClose() {
-    localStorage.setItem('shell.drawer', 'false')
-    setNavOpen(false)
-    setTimeout(() => {
-      $(window).resize() // needed for golden layout to resize
-    }, 250)
-  }
+  React.useEffect(() => {
+    listenTo(wreqr.vent, 'router:navigate', ({ fragment }: any) => {
+      history.push(`/${fragment}`)
+    })
+  }, [])
+}
 
+const useFaviconBranding = () => {
   // todo favicon branding
   // $(window.document).ready(() => {
   //   window.document.title = properties.branding + ' ' + properties.product
@@ -337,415 +807,82 @@ const App = ({
   //   favicon.remove()
   //   document.head.appendChild(favicon)
   // })
+}
 
-  /**
-   * Keep the current route visible to the user since it's useful info.
-   * This also ensures it's visible upon first load of the page.
-   */
+const useNavOpen = () => {
+  let defaultOpen =
+    localStorage.getItem('shell.drawer') === 'true' ? true : false
+  const [navOpen, setNavOpen] = React.useState(defaultOpen)
   React.useEffect(() => {
-    scrollCurrentRouteIntoView()
-  }, [location])
-  React.useEffect(() => {
-    listenTo(notifications, 'change add remove reset update', () => {
-      setHasUnseenNotifications(notifications.hasUnseen() as boolean)
-    })
-    listenTo(wreqr.vent, 'router:navigate', ({ fragment }: any) => {
-      history.push(`/${fragment}`)
-    })
-  }, [])
+    localStorage.setItem('shell.drawer', navOpen.toString())
+    setTimeout(() => {
+      $(window).resize() // needed for golden layout to resize
+    }, 250)
+  }, [navOpen])
+  return {
+    navOpen,
+    setNavOpen,
+  }
+}
+
+const TopLevelAppContext = React.createContext({
+  RouteInformation: [],
+  NotificationsComponent: () => null,
+  SettingsComponents: {},
+} as AppPropsType)
+
+const useTopLevelAppContext = () => {
+  const topLevelAppContext = React.useContext(TopLevelAppContext)
+  return topLevelAppContext
+}
+
+const App = ({
+  RouteInformation,
+  NotificationsComponent,
+  SettingsComponents,
+}: AppPropsType) => {
+  const { navOpen, setNavOpen } = useNavOpen()
+  useFaviconBranding()
+  useBackboneRouteReactRouterCompatibility()
+  useScrollCurrentRouteIntoViewOnLocationChange()
+
   return (
-    <div className="h-full w-full overflow-hidden Mui-bg-default">
-      {/* Don't move CSSBaseline or GlobalStyles to providers, since we have multiple react roots.   */}
-      <CssBaseline />
-      <GlobalStyles />
-      <CancelDrawing />
-      <SystemUsageModal />
-      <Grid
-        container
-        alignItems="center"
-        className="h-full w-full overflow-hidden"
-        direction="column"
-        wrap="nowrap"
-      >
-        <Grid item className="w-full">
-          {properties.ui.header ? (
-            <Typography
-              align="center"
-              style={{
-                background: properties.ui.background,
-                color: properties.ui.color,
-              }}
-            >
-              {properties.ui.header}
-            </Typography>
-          ) : null}
-        </Grid>
-        <Grid item className="w-full h-full relative overflow-hidden">
-          <AsyncTasksComponent />
+    <TopLevelAppContext.Provider
+      value={{ RouteInformation, NotificationsComponent, SettingsComponents }}
+    >
+      <NavContextProvider.Provider value={{ navOpen, setNavOpen }}>
+        <div className="h-full w-full overflow-hidden Mui-bg-default">
+          {/* Don't move CSSBaseline or GlobalStyles to providers, since we have multiple react roots.   */}
+          <CssBaseline />
+          <GlobalStyles />
+          <CancelDrawing />
+          <SystemUsageModal />
           <Grid
             container
-            direction="row"
+            alignItems="center"
+            className="h-full w-full overflow-hidden"
+            direction="column"
             wrap="nowrap"
-            alignItems="stretch"
-            className="w-full h-full"
           >
-            <Grid
-              item
-              className={`${
-                navOpen ? 'w-64' : 'w-20'
-              } transition-all duration-200 ease-in-out relative z-10 mr-2 flex-shrink-0 pb-2 pt-2 pl-2 group`}
-              onMouseLeave={() => {
-                scrollCurrentRouteIntoView()
-              }}
-            >
-              <Paper elevation={Elevations.navbar} className="h-full">
-                <Grid
-                  container
-                  direction="column"
-                  className="h-full w-full"
-                  wrap="nowrap"
-                >
-                  <Grid item className="w-full h-16 flex-shrink-0">
-                    {navOpen ? (
-                      <>
-                        <Grid
-                          container
-                          wrap="nowrap"
-                          alignItems="center"
-                          className="w-full h-full overflow-hidden"
-                        >
-                          <Grid
-                            item
-                            className="pl-3 py-1 pr-1 w-full relative h-full"
-                          >
-                            {properties.topLeftLogoSrc ? (
-                              <img
-                                className="max-h-full max-w-full absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 top-1/2 p-4"
-                                src={handleBase64EncodedImages(
-                                  properties.topLeftLogoSrc
-                                )}
-                              />
-                            ) : (
-                              <Grid
-                                container
-                                direction="column"
-                                className="pl-3"
-                                justify="center"
-                              >
-                                <Grid item>
-                                  <Typography>
-                                    {properties.customBranding}
-                                  </Typography>
-                                </Grid>
-                                <Grid item>
-                                  <Typography>{properties.product}</Typography>
-                                </Grid>
-                              </Grid>
-                            )}
-                          </Grid>
-                          <Grid item className="ml-auto">
-                            <IconButton
-                              className="h-auto"
-                              onClick={handleDrawerClose}
-                            >
-                              <ChevronLeftIcon />
-                            </IconButton>
-                          </Grid>
-                        </Grid>
-                      </>
-                    ) : (
-                      <Button
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={handleDrawerOpen}
-                        className="w-full h-full p-2"
-                      >
-                        {properties.menuIconSrc ? (
-                          <>
-                            <img
-                              src={handleBase64EncodedImages(
-                                properties.menuIconSrc
-                              )}
-                              className="max-h-16 max-w-full"
-                            />
-                          </>
-                        ) : (
-                          <MenuIcon />
-                        )}
-                      </Button>
-                    )}
-                  </Grid>
-                  <Divider />
-                  <Grid
-                    item
-                    className="overflow-auto p-0 flex-shrink-0 scrollbars-min"
-                    style={{
-                      maxHeight: `calc(100% - ${7 * 4}rem)`, //
-                    }}
-                  >
-                    {RouteInformation.filter(
-                      (routeInfo) => routeInfo.showInNav
-                    ).map((routeInfo: RouteShownInNavType) => {
-                      const isSelected = matchesRoute({
-                        routeInfo,
-                        pathname: location.pathname,
-                      })
-                      return (
-                        <ExpandingButton
-                          key={routeInfo.linkProps.to.toString()}
-                          // @ts-ignore ts-migrate(2322) FIXME: Type 'null' is not assignable to type 'string | nu... Remove this comment to see the full error message
-                          component={Link}
-                          to={routeInfo.linkProps.to}
-                          className={`group-hover:opacity-100 ${
-                            !isSelected ? 'opacity-25' : ''
-                          } focus-visible:opacity-100 hover:opacity-100 transition-opacity`}
-                          Icon={routeInfo.Icon ? routeInfo.Icon : undefined}
-                          expanded={navOpen}
-                          iconPosition="start"
-                          expandedText={routeInfo.name}
-                          unexpandedText={routeInfo.shortName}
-                          focusVisibleClassName="focus-visible"
-                          {...(isSelected
-                            ? {
-                                ['data-currentroute']: true,
-                              }
-                            : {})}
-                        />
-                      )
-                    })}
-                  </Grid>
-                  <Divider />
-                  <Grid
-                    item
-                    className="relative overflow-hidden flex-shrink-1 h-full min-w-full"
-                  >
-                    {properties.bottomLeftBackgroundSrc ? (
-                      <img
-                        className={`group-hover:opacity-100 opacity-50 duration-200 ease-in-out transition-all w-auto h-full absolute max-w-none m-auto min-h-80`}
-                        src={handleBase64EncodedImages(
-                          properties.bottomLeftBackgroundSrc
-                        )}
-                      />
-                    ) : null}
-                  </Grid>
-                  <Divider />
-                  <Grid
-                    item
-                    className="mt-auto overflow-hidden w-full flex-shrink-0 flex-grow-0"
-                  >
-                    {/** The song and dance around 'a' vs Link has to do with react router not supporting these outside links */}
-                    <ExpandingButton
-                      // @ts-ignore ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
-                      component={properties.helpUrl ? 'a' : Link}
-                      href={properties.helpUrl}
-                      to={
-                        properties.helpUrl
-                          ? properties.helpurl
-                          : {
-                              pathname: `${location.pathname}`,
-                              search: `${queryString.stringify({
-                                ...queryParams,
-                                'global-help': 'Help',
-                              })}`,
-                            }
-                      }
-                      target={properties.helpUrl ? '_blank' : undefined}
-                      className={`group-hover:opacity-100 opacity-25  hover:opacity-100 focus-visible:opacity-100 transition-opacity`}
-                      Icon={HelpIcon}
-                      iconPosition="start"
-                      expandedText="Help"
-                      unexpandedText="Help"
-                      expanded={navOpen}
-                      focusVisibleClassName="focus-visible"
-                    />
-                    {(() => {
-                      const open = Boolean(queryParams['global-settings'])
-                      return (
-                        <>
-                          <ExpandingButton
-                            // @ts-ignore ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
-                            component={Link}
-                            to={{
-                              pathname: `${location.pathname}`,
-                              search: `${queryString.stringify({
-                                ...queryParams,
-                                'global-settings': 'Settings',
-                              })}`,
-                            }}
-                            className={`group-hover:opacity-100 opacity-25 relative py-3 hover:opacity-100 focus-visible:opacity-100 transition-opacity`}
-                            Icon={SettingsIcon}
-                            iconPosition="start"
-                            expandedText="Settings"
-                            unexpandedText="Settings"
-                            expanded={navOpen}
-                            focusVisibleClassName="focus-visible"
-                          />
-                          <Drawer
-                            anchor="left"
-                            open={open}
-                            onClose={() => {
-                              delete queryParams['global-settings']
-                              history.push(
-                                `${location.pathname}?${queryString.stringify(
-                                  queryParams
-                                )}`
-                              )
-                            }}
-                            PaperProps={{
-                              className: 'min-w-120 max-w-4/5 ',
-                            }}
-                          >
-                            <UserSettings
-                              SettingsComponents={SettingsComponents}
-                            />
-                          </Drawer>
-                        </>
-                      )
-                    })()}
-
-                    {(() => {
-                      const open = Boolean(queryParams['global-notifications'])
-
-                      return (
-                        <>
-                          <div
-                            className={
-                              hasUnseenNotifications
-                                ? 'animate-wiggle Mui-text-warning'
-                                : ''
-                            }
-                          >
-                            <ExpandingButton
-                              // @ts-ignore ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
-                              component={Link}
-                              to={{
-                                pathname: `${location.pathname}`,
-                                search: `${queryString.stringify({
-                                  ...queryParams,
-                                  'global-notifications': 'Notifications',
-                                })}`,
-                              }}
-                              className={`${
-                                !hasUnseenNotifications ? 'opacity-25' : ''
-                              } group-hover:opacity-100  relative py-3 hover:opacity-100 focus-visible:opacity-100 transition-opacity`}
-                              iconPosition="start"
-                              Icon={NotificationsIcon}
-                              expandedText="Notifications"
-                              unexpandedText="Notices"
-                              expanded={navOpen}
-                              focusVisibleClassName="focus-visible"
-                            />
-                          </div>
-                          <Drawer
-                            anchor="left"
-                            open={open}
-                            onClose={() => {
-                              delete queryParams['global-notifications']
-                              history.push(
-                                `${location.pathname}?${queryString.stringify(
-                                  queryParams
-                                )}`
-                              )
-                              notifications.setSeen()
-                              userInstance.savePreferences()
-                            }}
-                            PaperProps={{
-                              className: 'min-w-120 max-w-4/5 ',
-                            }}
-                          >
-                            <NotificationsComponent />
-                          </Drawer>
-                        </>
-                      )
-                    })()}
-                    {(() => {
-                      const open = Boolean(queryParams['global-user'])
-                      return (
-                        <>
-                          <ExpandingButton
-                            // @ts-ignore ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
-                            component={Link}
-                            to={{
-                              pathname: `${location.pathname}`,
-                              search: `${queryString.stringify({
-                                ...queryParams,
-                                'global-user': 'User',
-                              })}`,
-                            }}
-                            className={`group-hover:opacity-100 opacity-25 relative py-3 hover:opacity-100 focus-visible:opacity-100 transition-opacity`}
-                            Icon={PersonIcon}
-                            iconPosition="start"
-                            expandedText={userInstance.getUserName()}
-                            unexpandedText={userInstance.getUserName()}
-                            dataId="user-profile"
-                            expanded={navOpen}
-                            focusVisibleClassName="focus-visible"
-                          />
-                          <Drawer
-                            anchor="left"
-                            open={open}
-                            onClose={() => {
-                              delete queryParams['global-user']
-                              history.push(
-                                `${location.pathname}?${queryString.stringify(
-                                  queryParams
-                                )}`
-                              )
-                            }}
-                            PaperProps={{
-                              className: 'min-w-120 max-w-4/5 ',
-                            }}
-                          >
-                            <UserView />
-                          </Drawer>
-                        </>
-                      )
-                    })()}
-                  </Grid>
-                </Grid>
-              </Paper>
+            <Header />
+            <Grid item className="w-full h-full relative overflow-hidden">
+              <AsyncTasksComponent />
+              <Grid
+                container
+                direction="row"
+                wrap="nowrap"
+                alignItems="stretch"
+                className="w-full h-full"
+              >
+                <SideBar />
+                <RouteContents />
+              </Grid>
             </Grid>
-            {/**
-             * So this is slightly annoying, but the grid won't properly resize without overflow hidden set.
-             *
-             * That makes handling padding / margins / spacing more complicated in our app, because with overflow hidden set
-             * dropshadows on elements will get cut off.  So we have to let the contents instead dictate their padding, that way
-             * their dropshadows can be seen.
-             *
-             * Folks will probably struggle a bit with it at first, but the css utilities actually make it pretty easy.
-             * Just add pb-2 for the correct bottom spacing, pt-2 for correct top spacing, etc. etc.
-             */}
-            <Grid
-              item
-              className="w-full h-full relative z-0 flex-shrink-1 overflow-x-hidden" // do not remove this overflow hidden, see comment above for more
-            >
-              <Memo>
-                <Switch>
-                  {RouteInformation.map((routeInfo: RouteShownInNavType) => {
-                    return (
-                      <Route key={routeInfo.name} {...routeInfo.routeProps} />
-                    )
-                  })}
-                </Switch>
-              </Memo>
-            </Grid>
+            <Footer />
           </Grid>
-        </Grid>
-        <Grid item className="w-full">
-          {properties.ui.footer ? (
-            <Typography
-              align="center"
-              style={{
-                background: properties.ui.background,
-                color: properties.ui.color,
-              }}
-            >
-              {properties.ui.footer}
-            </Typography>
-          ) : null}
-        </Grid>
-      </Grid>
-    </div>
+        </div>
+      </NavContextProvider.Provider>
+    </TopLevelAppContext.Provider>
   )
 }
 
