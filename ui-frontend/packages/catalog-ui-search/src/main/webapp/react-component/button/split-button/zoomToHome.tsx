@@ -35,6 +35,7 @@ const ZoomToHome = (props: Props) => {
       <div className="Mui-border-divider border border-2 flex flex-row items-stretch">
         <Button
           size="small"
+          data-id="home-button"
           {...menuState.MuiButtonProps}
           className="border border-r-2 Mui-border-divider"
           onClick={goHome}
@@ -44,7 +45,11 @@ const ZoomToHome = (props: Props) => {
           </div>
         </Button>
         <div className="Mui-bg-divider w-min"></div>
-        <Button size="small" {...menuState.MuiButtonProps}>
+        <Button
+          size="small"
+          data-id="home-dropdown"
+          {...menuState.MuiButtonProps}
+        >
           <KeyboardArrowDownIcon />
         </Button>
       </div>
