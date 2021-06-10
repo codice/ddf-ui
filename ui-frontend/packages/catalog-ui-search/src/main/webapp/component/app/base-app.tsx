@@ -32,7 +32,7 @@ import Restore from '../pages/restore'
 import Create from '../pages/create'
 import AddIcon from '@material-ui/icons/Add'
 import ViewListIcon from '@material-ui/icons/ViewList'
-const RouteInformation = [
+const RouteInformation: IndividualRouteType[] = [
   {
     showInNav: false,
     routeProps: {
@@ -94,9 +94,12 @@ const RouteInformation = [
     },
   },
   {
-    name: 'Search',
-    shortName: 'Search',
-    Icon: SearchIcon,
+    navButtonProps: {
+      expandedLabel: 'Search',
+      unexpandedLabel: 'Search',
+      Icon: SearchIcon,
+      dataId: 'search',
+    },
     routeProps: {
       exact: false,
       path: ['/search/:id', '/search'],
@@ -110,9 +113,12 @@ const RouteInformation = [
     showInNav: true,
   },
   {
-    name: 'Create',
-    shortName: 'Create',
-    Icon: AddIcon,
+    navButtonProps: {
+      expandedLabel: 'Create',
+      unexpandedLabel: 'Create',
+      Icon: AddIcon,
+      dataId: 'create',
+    },
     routeProps: {
       exact: true,
       path: ['/create'],
@@ -132,9 +138,12 @@ const RouteInformation = [
     showInNav: true,
   },
   {
-    name: 'Open',
-    shortName: 'Open',
-    Icon: FolderIcon,
+    navButtonProps: {
+      expandedLabel: 'Open',
+      unexpandedLabel: 'Open',
+      Icon: FolderIcon,
+      dataId: 'open',
+    },
     routeProps: {
       exact: true,
       path: ['/open'],
@@ -154,9 +163,12 @@ const RouteInformation = [
     showInNav: true,
   },
   {
-    name: 'Browse',
-    shortName: 'Browse',
-    Icon: ViewListIcon,
+    navButtonProps: {
+      expandedLabel: 'Browse',
+      unexpandedLabel: 'Browse',
+      Icon: ViewListIcon,
+      dataId: 'browse',
+    },
     routeProps: {
       exact: true,
       path: ['/browse'],
@@ -174,9 +186,12 @@ const RouteInformation = [
     showInNav: true,
   },
   {
-    name: 'Upload',
-    shortName: 'Upload',
-    Icon: ImageSearch,
+    navButtonProps: {
+      expandedLabel: 'Upload',
+      unexpandedLabel: 'Upload',
+      Icon: ImageSearch,
+      dataId: 'upload',
+    },
     routeProps: {
       path: '/upload',
       children: () => {
@@ -195,9 +210,12 @@ const RouteInformation = [
     showInNav: true,
   },
   {
-    name: 'Sources',
-    shortName: 'Sources',
-    Icon: SourcesPageIcon,
+    navButtonProps: {
+      expandedLabel: 'Sources',
+      unexpandedLabel: 'Sources',
+      Icon: SourcesPageIcon,
+      dataId: 'sources',
+    },
     routeProps: {
       path: '/sources',
       children: () => {
@@ -216,9 +234,12 @@ const RouteInformation = [
     showInNav: true,
   },
   {
-    name: 'Restore',
-    shortName: 'Restore',
-    Icon: TrashIcon,
+    navButtonProps: {
+      expandedLabel: 'Restore',
+      unexpandedLabel: 'Restore',
+      Icon: TrashIcon,
+      dataId: 'restore',
+    },
     routeProps: {
       exact: true,
       path: ['/restore'],
@@ -238,9 +259,12 @@ const RouteInformation = [
     showInNav: true,
   },
   {
-    name: 'About',
-    shortName: 'About',
-    Icon: AboutPageIcon,
+    navButtonProps: {
+      expandedLabel: 'About',
+      unexpandedLabel: 'About',
+      Icon: AboutPageIcon,
+      dataId: 'about',
+    },
     routeProps: {
       path: '/about',
       children: () => {
@@ -258,7 +282,7 @@ const RouteInformation = [
     },
     showInNav: true,
   },
-] as IndividualRouteType[]
+]
 
 /**
  * Shows how downstream apps utilize the shell this app provides

@@ -15,7 +15,7 @@ type Props = {
  * Normal refs don't cause a rerender, but often times we want that behavior when grabbing dom nodes and otherwise
  * https://reactjs.org/docs/hooks-faq.html#how-can-i-measure-a-dom-node
  */
-function useRerenderingRef<T>() {
+export function useRerenderingRef<T>() {
   const [ref, setRef] = React.useState<T>()
   const rerenderingRef = React.useCallback(setRef, [])
   return {
