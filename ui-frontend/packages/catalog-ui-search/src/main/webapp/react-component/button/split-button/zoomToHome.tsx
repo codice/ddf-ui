@@ -45,7 +45,11 @@ const ZoomToHome = (props: Props) => {
           </div>
         </Button>
         <div className="Mui-bg-divider w-min"></div>
-        <Button size="small" {...menuState.MuiButtonProps}>
+        <Button
+          size="small"
+          data-id="home-dropdown"
+          {...menuState.MuiButtonProps}
+        >
           <KeyboardArrowDownIcon />
         </Button>
       </div>
