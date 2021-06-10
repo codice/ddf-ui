@@ -1,115 +1,124 @@
 import * as React from 'react'
-import Typography from '@material-ui/core/Typography'
-import Grid from '@material-ui/core/Grid'
+import FakeIcon from '@material-ui/icons/AcUnit'
 import Button, { ButtonProps } from '@material-ui/core/Button'
 import { LinkProps, Link } from 'react-router-dom'
 import { hot } from 'react-hot-loader'
+import Tooltip from '@material-ui/core/Tooltip'
+import Paper from '@material-ui/core/Paper'
+import { Elevations } from '../theme/theme'
+import { useIsTruncated } from '../overflow-tooltip/overflow-tooltip'
+
+export type BaseProps = {
+  Icon?: React.FC<any>
+  expandedLabel: React.ReactNode
+  unexpandedLabel: React.ReactNode
+  dataId?: string
+  expanded: boolean
+  orientation?: 'vertical' | 'horizontal'
+}
 
 type ExpandingButtonProps =
   | (ButtonProps & {
-      expanded: boolean
-      Icon?: React.FC<React.HTMLAttributes<HTMLDivElement>>
-      iconPosition?: 'start' | 'end'
-      expandedText: string
-      unexpandedText: string
       component?: undefined
-      dataId?: string
-    })
-  | (ButtonProps & {
-      expanded: boolean
-      Icon?: React.FC<React.HTMLAttributes<HTMLDivElement>>
-      iconPosition?: 'start' | 'end'
-      expandedText: string
-      unexpandedText: string
-      dataId?: string
-      component: typeof Link
-    } & Partial<LinkProps>)
-  | (ButtonProps & {
-      expanded: boolean
-      Icon?: React.FC<React.HTMLAttributes<HTMLDivElement>>
-      iconPosition?: 'start' | 'end'
-      expandedText: string
-      unexpandedText: string
-      component: 'a'
-      dataId?: string
-    } & Partial<React.HTMLAttributes<HTMLAnchorElement>>)
-  | (ButtonProps & {
-      expanded: boolean
-      Icon?: React.FC<React.HTMLAttributes<HTMLDivElement>>
-      iconPosition?: 'start' | 'end'
-      expandedText: string
-      unexpandedText: string
-      component: typeof Button
-      dataId?: string
-    } & Partial<ButtonProps>)
+    } & BaseProps)
+  | (ButtonProps &
+      BaseProps & {
+        component: typeof Link
+      } & Partial<LinkProps>)
+  | (ButtonProps &
+      BaseProps & {
+        component: 'a'
+      } & Partial<React.HTMLAttributes<HTMLAnchorElement>>)
+  | (ButtonProps &
+      BaseProps & {
+        component: typeof Button
+      } & Partial<ButtonProps>)
 
 const ExpandingButton = ({
   expanded,
-  iconPosition,
   Icon,
-  expandedText,
-  unexpandedText,
-  dataId = expandedText,
+  expandedLabel,
+  unexpandedLabel,
+  dataId = expandedLabel?.toString() || 'default',
+  orientation = 'horizontal',
   ...buttonProps
 }: ExpandingButtonProps) => {
   const { className, ...otherButtonProps } = buttonProps
+  const isTruncatedState = useIsTruncated<HTMLDivElement>()
+  const disableTooltip = (() => {
+    if (
+      (orientation === 'vertical' && !expanded) ||
+      (!unexpandedLabel && !expanded)
+    ) {
+      return false
+    } else {
+      return !isTruncatedState.isTruncated
+    }
+  })()
   return (
-    <Button
-      data-id={`sidebar-${dataId.toLowerCase().split(' ').join('-')}-button`}
-      fullWidth
-      className={`${className} transition-all duration-200 ease-in-out h-16 whitespace-no-wrap max-w-full overflow-hidden relative outline-none ${
-        expanded ? '' : 'p-0'
-      }`}
-      {...otherButtonProps}
+    <Tooltip
+      title={
+        disableTooltip ? (
+          ''
+        ) : (
+          <Paper elevation={Elevations.overlays}>
+            <div className="p-2">{expandedLabel}</div>
+          </Paper>
+        )
+      }
+      onOpen={() => {
+        isTruncatedState.compareSize.current()
+      }}
+      placement="right"
     >
-      <Grid
-        alignItems="center"
-        container
-        className="w-full"
-        direction={iconPosition === 'end' && expanded ? 'row-reverse' : 'row'}
-        wrap="nowrap"
+      <Button
+        data-id={dataId}
+        fullWidth
+        className={`${className} children-block children-h-full transition-all duration-200 ease-in-out whitespace-no-wrap max-w-full overflow-hidden relative outline-none ${
+          expanded ? '' : 'p-0'
+        }`}
+        {...otherButtonProps}
       >
-        <Grid item className="pl-5">
-          {Icon ? (
-            <Icon
-              className="transition duration-200 ease-in-out"
-              style={{
-                transform: expanded
-                  ? 'none'
-                  : 'translateX(2px) translateY(-10px)',
-              }}
-            />
-          ) : null}
-          {Icon ? (
-            <Typography
-              variant="body2"
-              className={`${
-                expanded ? 'opacity-0' : 'opacity-100'
-              } transform -translate-x-1/2 -translate-y-1 absolute left-1/2 bottom-0 transition duration-200 ease-in-out`}
-            >
-              {unexpandedText}
-            </Typography>
-          ) : (
-            <Typography
-              variant="body2"
-              className={`${
-                expanded ? 'opacity-0' : 'opacity-100'
-              } transform -translate-x-1/2 -translate-y-1/2 absolute left-1/2 top-1/2 transition duration-200 ease-in-out`}
-            >
-              {unexpandedText}
-            </Typography>
-          )}
-        </Grid>
-        <Grid
-          item
-          className={`${
-            expanded ? 'opacity-100' : 'opacity-0'
-          } pl-4 transition duration-200 ease-in-out`}
+        <div
+          className={`flex flex-row flex-no-wrap items-center w-full h-full`}
+          ref={isTruncatedState.ref}
         >
-          <Typography variant="h6">{expandedText}</Typography>
-        </Grid>
-      </Grid>
-    </Button>
+          <div
+            className={` ${
+              expanded ? 'hidden' : ''
+            } w-full flex flex-col flex-shrink-0 items-center justify-start flex-no-wrap py-2`}
+          >
+            {Icon ? <Icon className={`py-1`} /> : null}
+            <div
+              className={`${
+                orientation === 'horizontal'
+                  ? 'w-full'
+                  : 'writing-mode-vertical-lr'
+              } truncate text-center`}
+            >
+              {unexpandedLabel}
+            </div>
+          </div>
+
+          <div
+            className={`${
+              expanded ? '' : 'hidden'
+            } pl-4 flex-shrink-1 w-full truncate`}
+          >
+            <div className="flex flex-row items-center flex-no-wrap w-full">
+              {Icon ? (
+                <Icon className="transition duration-200 ease-in-out mr-2 flex-shrink-0" />
+              ) : (
+                <FakeIcon className="transition duration-200 ease-in-out mr-2 opacity-0 flex-shrink-0" />
+              )}
+              <div className="flex flex-col items-start flex-no-wrap text-lg w-full flex-shrink-1 truncate">
+                {expandedLabel}
+              </div>
+            </div>
+          </div>
+        </div>
+      </Button>
+    </Tooltip>
   )
 }
 

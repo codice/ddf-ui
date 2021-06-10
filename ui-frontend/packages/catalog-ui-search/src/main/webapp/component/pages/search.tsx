@@ -330,11 +330,12 @@ export const OpenSearch = ({
   }, [lazyResults])
 
   React.useEffect(() => {
-    if (currentHighlight) {
+    if (currentHighlight && currentHighlight.overflowTooltip) {
       currentHighlight.overflowTooltip.setOpen(true)
     }
     return () => {
-      if (currentHighlight) currentHighlight.overflowTooltip.setOpen(false)
+      if (currentHighlight && currentHighlight.overflowTooltip)
+        currentHighlight.overflowTooltip.setOpen(false)
     }
   }, [currentHighlight])
   React.useEffect(() => {
@@ -385,17 +386,21 @@ export const OpenSearch = ({
       renderOption={(option) => {
         return (
           <Link
-            className="w-full p-2 font-normal no-underline hover:font-normal hover:no-underline"
+            className="w-full p-0 font-normal no-underline hover:font-normal hover:no-underline"
             to={constructLink(option)}
           >
-            <OverflowTooltip>
-              {({ refOfThingToMeasure }) => {
-                return (
-                  <div className="truncate w-full" ref={refOfThingToMeasure}>
+            <OverflowTooltip
+              tooltipProps={{
+                title: (
+                  <div className="w-full p-2">
                     {option.plain.metacard.properties.title}
                   </div>
-                )
+                ),
               }}
+            >
+              <div className="truncate w-full p-2">
+                {option.plain.metacard.properties.title}
+              </div>
             </OverflowTooltip>
           </Link>
         )
