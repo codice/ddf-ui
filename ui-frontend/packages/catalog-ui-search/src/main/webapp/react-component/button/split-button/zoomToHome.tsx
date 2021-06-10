@@ -35,6 +35,7 @@ const ZoomToHome = (props: Props) => {
       <div className="Mui-border-divider border border-2 flex flex-row items-stretch">
         <Button
           size="small"
+          data-id="home-button"
           {...menuState.MuiButtonProps}
           className="border border-r-2 Mui-border-divider"
           onClick={goHome}
