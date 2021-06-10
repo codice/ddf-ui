@@ -210,6 +210,7 @@ User.Preferences = Backbone.AssociatedModel.extend({
     this.listenTo(this, 'change:goldenLayoutAlert', this.savePreferences)
     this.listenTo(this, 'change:mapHome', this.savePreferences)
     this.listenTo(this, 'change:theme', this.savePreferences)
+    this.listenTo(this, 'change:actingRole', this.savePreferences)
   },
   handleRemove() {
     this.savePreferences()

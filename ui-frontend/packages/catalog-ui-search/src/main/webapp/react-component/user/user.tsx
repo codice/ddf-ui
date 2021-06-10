@@ -26,7 +26,14 @@ import PersonIcon from '@material-ui/icons/Person'
 import { SvgIconProps } from '@material-ui/core'
 const user = require('../../component/singletons/user-instance.js')
 
-const AvailableRolesContext = React.createContext({
+export type AvailableRoleType = {
+  value: string
+  label: string
+}
+
+export const AvailableRolesContext = React.createContext<{
+  availableRoles: AvailableRoleType[]
+}>({
   availableRoles: [
     {
       value: 'user',
@@ -40,12 +47,14 @@ const useAvailableRoles = () => {
   return availableRoles
 }
 
-const RoleDisplayContext = React.createContext<{
-  [key: string]: {
-    abbreviated: string
-    full: string
-    icon: React.FC<any>
-  }
+export type RoleDisplayType = {
+  abbreviated: string
+  full: string
+  icon: React.FC<any>
+}
+
+export const RoleDisplayContext = React.createContext<{
+  [key: string]: RoleDisplayType
 }>({
   user: {
     abbreviated: 'user',

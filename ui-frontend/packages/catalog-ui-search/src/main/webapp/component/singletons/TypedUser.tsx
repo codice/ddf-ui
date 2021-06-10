@@ -116,12 +116,12 @@ export const TypedUserInstance = {
   },
 }
 
-export const useActingRole = () => {
+export function useActingRole<T extends string>(): T {
   const [activeRole, setActiveRole] = React.useState(
-    TypedUserInstance.getActingRole()
+    TypedUserInstance.getActingRole() as T
   )
   useListenTo(TypedUserInstance.getPreferences(), 'change:actingRole', () => {
-    setActiveRole(TypedUserInstance.getActingRole())
+    setActiveRole(TypedUserInstance.getActingRole() as T)
   })
   return activeRole
 }
