@@ -251,4 +251,279 @@ describe('read & write parity for capabilities, as well as boolean logic', () =>
       expect(filterToCheck.value).to.equal(value)
     })
   })
+
+  describe('invalid filters get removed', () => {
+    it('handles typical anyDate removal', () => {
+      const testFilter = new FilterBuilderClass({
+        filters: [
+          new FilterBuilderClass({
+            type: 'AND',
+            filters: [
+              new FilterClass({
+                property: 'anyDate',
+                value: '',
+                type: 'BEFORE',
+              }),
+            ],
+          }),
+          new FilterClass({
+            property: 'anyText',
+            value: '*',
+            type: 'ILIKE',
+          }),
+        ],
+        type: 'OR',
+      })
+      expect(cql.write(testFilter)).to.equal(`(\"anyText\" ILIKE '%')`)
+    })
+
+    it('handles anyDate removal', () => {
+      const testFilter = new FilterBuilderClass({
+        filters: [
+          new FilterClass({
+            property: 'anyDate',
+            value: '',
+            type: 'BEFORE',
+          }),
+          new FilterClass({
+            property: 'anyText',
+            value: '*',
+            type: 'ILIKE',
+          }),
+        ],
+        type: 'OR',
+      })
+      expect(cql.write(testFilter)).to.equal(`(\"anyText\" ILIKE '%')`)
+    })
+  })
+
+  describe('test boolean search', () => {
+    it('does handles a simple boolean search', () => {
+      const testFilter = new FilterBuilderClass({
+        type: 'AND',
+        filters: [
+          new FilterClass({
+            type: 'BOOLEAN_TEXT_SEARCH',
+            value: {
+              cql: `(anyText ILIKE '*')`,
+              error: false,
+              text: '"*"',
+            },
+          }),
+        ],
+      })
+      expect(cql.write(testFilter)).to.equal(`((anyText ILIKE '*'))`)
+    })
+
+    it('does handles a simple boolean search 2', () => {
+      const testFilter = new FilterBuilderClass({
+        type: 'AND',
+        filters: [
+          new FilterClass({
+            type: 'BOOLEAN_TEXT_SEARCH',
+            value: {
+              cql: `(anyText ILIKE 'dog') or (anyText ILIKE 'cat')`,
+              error: false,
+              text: 'dog or cat',
+            },
+          }),
+        ],
+      })
+      expect(cql.write(testFilter)).to.equal(
+        `((anyText ILIKE 'dog') or (anyText ILIKE 'cat'))`
+      )
+    })
+
+    it('does handles a simple boolean search with not', () => {
+      const testFilter = new FilterBuilderClass({
+        type: 'AND',
+        filters: [
+          new FilterClass({
+            type: 'BOOLEAN_TEXT_SEARCH',
+            value: {
+              cql: `(anyText ILIKE 'dog') or (anyText ILIKE 'cat') and (NOT ((anyText ILIKE 'fish')))`,
+              error: false,
+              text: 'dog or cat and not (fish)',
+            },
+          }),
+        ],
+      })
+      expect(cql.write(testFilter)).to.equal(
+        `((anyText ILIKE 'dog') or (anyText ILIKE 'cat') and (NOT ((anyText ILIKE 'fish'))))`
+      )
+    })
+
+    it('does handles a simple boolean search other terms', () => {
+      const testFilter = new FilterBuilderClass({
+        type: 'AND',
+        filters: [
+          new FilterClass({
+            type: 'BOOLEAN_TEXT_SEARCH',
+            value: {
+              cql: `(anyText ILIKE 'dog') or (anyText ILIKE 'cat') and (NOT ((anyText ILIKE 'fish')))`,
+              error: false,
+              text: 'dog or cat and not (fish)',
+            },
+          }),
+          new FilterBuilderClass({
+            type: 'OR',
+            filters: [
+              new FilterClass({
+                property: 'datatype',
+                type: 'ILIKE',
+                value: 'Moving Image',
+              }),
+              new FilterClass({
+                property: 'metadata-content-type',
+                type: 'ILIKE',
+                value: 'Moving Image',
+              }),
+            ],
+          }),
+        ],
+      })
+      expect(cql.write(testFilter)).to.equal(
+        `((anyText ILIKE 'dog') or (anyText ILIKE 'cat') and (NOT ((anyText ILIKE 'fish')))) AND ((\"datatype\" ILIKE 'Moving Image') OR (\"metadata-content-type\" ILIKE 'Moving Image'))`
+      )
+    })
+
+    it('does handles a simple boolean search other terms and negations', () => {
+      const testFilter = new FilterBuilderClass({
+        type: 'AND',
+        filters: [
+          new FilterClass({
+            type: 'BOOLEAN_TEXT_SEARCH',
+            negated: true,
+            value: {
+              cql: `(anyText ILIKE 'dog') or (anyText ILIKE 'cat') and (NOT ((anyText ILIKE 'fish')))`,
+              error: false,
+              text: 'dog or cat and not (fish)',
+            },
+          }),
+          new FilterBuilderClass({
+            type: 'OR',
+            filters: [
+              new FilterClass({
+                property: 'datatype',
+                type: 'ILIKE',
+                value: 'Moving Image',
+              }),
+              new FilterClass({
+                property: 'metadata-content-type',
+                type: 'ILIKE',
+                value: 'Moving Image',
+              }),
+            ],
+          }),
+        ],
+      })
+      expect(cql.write(testFilter)).to.equal(
+        `(NOT (((anyText ILIKE 'dog') or (anyText ILIKE 'cat') and (NOT ((anyText ILIKE 'fish')))))) AND ((\"datatype\" ILIKE 'Moving Image') OR (\"metadata-content-type\" ILIKE 'Moving Image'))`
+      )
+    })
+
+    it('does handles a simple boolean search other terms with interspersed errors', () => {
+      const testFilter = new FilterBuilderClass({
+        type: 'AND',
+        filters: [
+          new FilterClass({
+            type: 'BOOLEAN_TEXT_SEARCH',
+            value: {
+              cql: `(anyText ILIKE 'dog') or (anyText ILIKE 'cat') and (NOT ((anyText ILIKE 'fish')))`,
+              error: true,
+              text: 'dog or cat and not (fish)',
+            },
+          }),
+          new FilterBuilderClass({
+            type: 'OR',
+            filters: [
+              new FilterClass({
+                property: 'datatype',
+                type: 'ILIKE',
+                value: 'Moving Image',
+              }),
+              new FilterClass({
+                type: 'BOOLEAN_TEXT_SEARCH',
+                value: {
+                  cql: `(anyText ILIKE 'dog') or (anyText ILIKE 'cat') and (NOT ((anyText ILIKE 'fish')))`,
+                  error: true,
+                  text: 'dog or cat and not (fish)',
+                },
+              }),
+              new FilterClass({
+                property: 'metadata-content-type',
+                type: 'ILIKE',
+                value: 'Moving Image',
+              }),
+            ],
+          }),
+          new FilterClass({
+            type: 'BOOLEAN_TEXT_SEARCH',
+            value: {
+              cql: `(anyText ILIKE 'dog') or (anyText ILIKE 'cat') and (NOT ((anyText ILIKE 'fish')))`,
+              error: true,
+              text: 'dog or cat and not (fish)',
+            },
+          }),
+        ],
+      })
+      expect(cql.write(testFilter)).to.equal(
+        `((\"datatype\" ILIKE 'Moving Image') OR (\"metadata-content-type\" ILIKE 'Moving Image'))`
+      )
+    })
+
+    it('does handles a simple boolean search other terms with interspersed errors and negations', () => {
+      const testFilter = new FilterBuilderClass({
+        type: 'AND',
+        negated: true,
+        filters: [
+          new FilterClass({
+            type: 'BOOLEAN_TEXT_SEARCH',
+            negated: true,
+            value: {
+              cql: `(anyText ILIKE 'dog') or (anyText ILIKE 'cat') and (NOT ((anyText ILIKE 'fish')))`,
+              error: true,
+              text: 'dog or cat and not (fish)',
+            },
+          }),
+          new FilterBuilderClass({
+            type: 'OR',
+            filters: [
+              new FilterClass({
+                property: 'datatype',
+                type: 'ILIKE',
+                value: 'Moving Image',
+              }),
+              new FilterClass({
+                type: 'BOOLEAN_TEXT_SEARCH',
+                negated: true,
+                value: {
+                  cql: `(anyText ILIKE 'dog') or (anyText ILIKE 'cat') and (NOT ((anyText ILIKE 'fish')))`,
+                  error: true,
+                  text: 'dog or cat and not (fish)',
+                },
+              }),
+              new FilterClass({
+                property: 'metadata-content-type',
+                type: 'ILIKE',
+                value: 'Moving Image',
+              }),
+            ],
+          }),
+          new FilterClass({
+            negated: true,
+            type: 'BOOLEAN_TEXT_SEARCH',
+            value: {
+              cql: `(anyText ILIKE 'dog') or (anyText ILIKE 'cat') and (NOT ((anyText ILIKE 'fish')))`,
+              error: true,
+              text: 'dog or cat and not (fish)',
+            },
+          }),
+        ],
+      })
+      expect(cql.write(testFilter)).to.equal(
+        `NOT ((("datatype" ILIKE \'Moving Image\') OR ("metadata-content-type" ILIKE \'Moving Image\')))`
+      )
+    })
+  })
 })

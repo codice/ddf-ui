@@ -25,6 +25,10 @@
         <bundle>mvn:org.codice.ddf.search/catalog-ui-search-api/${project.version}</bundle>
     </feature>
 
+    <feature name="boolean-search" version="${project.version}" description="App for boolean search">
+        <bundle>mvn:org.codice.ddf.search/boolean-search-application/${project.version}</bundle>
+    </feature>
+
     <feature name="catalog-ui" version="${project.version}" description="Catalog UI">
         <feature>spatial-app</feature>
         <feature>offline-gazetteer</feature>
@@ -72,6 +76,7 @@
         <bundle>mvn:org.codice.ddf.search/catalog-plugin-highlight/${project.version}</bundle>
         <bundle>mvn:org.codice.ddf.search/deprecatable-enumeration-api/${project.version}</bundle>
 
+        <feature>boolean-search</feature>
     </feature>
 
     <feature name="javalin" version="${project.version}" description="Javalin Web Framework">

@@ -15,6 +15,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>boolean-search</module>
         <module>catalog-ui-search-api</module>
         <module>catalog-ui-enumeration</module>
         <module>catalog-ui-search</module>

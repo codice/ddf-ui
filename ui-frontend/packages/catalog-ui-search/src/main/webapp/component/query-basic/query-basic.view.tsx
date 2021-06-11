@@ -30,6 +30,7 @@ import TextField from '@material-ui/core/TextField'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
 import {
+  BooleanTextType,
   FilterBuilderClass,
   FilterClass,
 } from '../filter-builder/filter.structure'
@@ -247,7 +248,7 @@ function translateFilterToBasicMap(filter: FilterBuilderClass) {
   if (propertyValueMap.anyText.length === 0) {
     propertyValueMap.anyText.push(
       new FilterClass({
-        type: 'ILIKE',
+        type: 'BOOLEAN_TEXT_SEARCH',
         property: 'anyText',
         value: '',
       })
@@ -389,6 +390,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
     getAllValidValuesForMatchTypeAttribute()
   )
 
+  const { listenTo, stopListening } = useBackbone()
   /**
    * Because of how things render, auto focusing to the input is more complicated than I wish.  This ensures it works everytime, whereas autoFocus prop is unreliable
    */
@@ -403,60 +405,49 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
     }
   }, [])
 
+  const anyTextValue: BooleanTextType = (() => {
+    if (basicFilter.anyText) {
+      if (typeof basicFilter.anyText[0].value === 'string') {
+        return {
+          text: basicFilter.anyText[0].value,
+          cql: '',
+          error: false,
+        }
+      } else {
+        return basicFilter.anyText[0].value as BooleanTextType
+      }
+    } else {
+      return {
+        text: '',
+        cql: '',
+        error: false,
+      }
+    }
+  })()
+
   return (
     <>
       <div className="editor-properties px-2 py-3">
         <div className="">
           <Typography className="pb-2">Keyword</Typography>
-          <TextField
-            fullWidth
-            value={basicFilter.anyText ? basicFilter.anyText[0].value : ''}
-            placeholder={`Text to search for. Use "*" for wildcard.`}
-            id="Text"
-            onChange={(e) => {
-              basicFilter.anyText[0] = new FilterClass({
-                ...basicFilter.anyText[0],
-                value: e.target.value,
-              })
-              model.set(
-                'filterTree',
-                constructFilterFromBasicFilter({ basicFilter })
-              )
-            }}
-            onKeyUp={(e) => {
-              if (e.which === 13) {
-                model.startSearchFromFirstPage()
-              }
-            }}
-            inputProps={{
-              ref: inputRef as any,
-            }}
-            size="small"
-            variant="outlined"
-          />
           <BooleanSearchBar
-            inputPlaceholder={'*'}
-            value={basicFilter.anyText ? basicFilter.anyText[0].value : ''}
-            onChange={(inputValue) => {
-              console.log(inputValue)
+            value={anyTextValue}
+            onChange={({ text, cql, error }) => {
+              // we want the string value, the cql value, and if it's correct
               basicFilter.anyText[0] = new FilterClass({
                 ...basicFilter.anyText[0],
-                value: inputValue,
+                type: 'BOOLEAN_TEXT_SEARCH',
+                value: {
+                  text,
+                  cql,
+                  error,
+                },
               })
               model.set(
                 'filterTree',
                 constructFilterFromBasicFilter({ basicFilter })
               )
             }}
-            error={error}
-            errorMessage={(() => {
-              if (error) {
-                return ERROR_MESSAGES.both
-              }
-              return ERROR_MESSAGES.punctuation
-            })()}
-            options={options}
-            loading={isLoading}
           />
         </div>
         <div className="pt-2">

@@ -13,46 +13,193 @@ import Autocomplete, {
 } from '@material-ui/lab/Autocomplete'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import styled from 'styled-components'
-import { Suggestion } from '../types/graphql'
 import Paper from '@material-ui/core/Paper'
 import { Elevations } from '../theme/theme'
-const properties = require('../../js/properties.js')
+import { useState } from 'react'
+import fetch from '../../react-component/utils/fetch'
+import { BooleanTextType } from '../filter-builder/filter.structure'
 
 const defaultFilterOptions = createFilterOptions()
 
-const SearchBarContainer = styled.div`
-  display: flex;
-  align-self: center;
-  justify-self: center;
-  width: 100%;
-
-  *:focus {
-    animation: unset !important;
-    box-shadow: unset;
-  }
-`
-
 type Props = {
-  value: string
-  inputPlaceholder: string
-  onChange: (inputValue: any) => void
-  error: boolean
-  errorMessage: TextFieldProps['helperText']
-  options: any
-  loading: boolean
+  value: BooleanTextType
+  onChange: (value: BooleanTextType) => void
+  TextFieldProps?: Partial<TextFieldProps>
 }
 
 const getRandomId = () => {
   return `a${Math.round(Math.random() * 10000000000000).toString()}`
 }
 
+type Option = {
+  type: string
+  token: string
+}
+
+type Suggestions = {
+  [key: string]: string[]
+}
+
+const suggestionsToOptions = (suggestions: Suggestions): Option[] => {
+  if (suggestions === undefined || Object.keys(suggestions).length === 0) {
+    return []
+  } else {
+    // @ts-ignore
+    return Object.entries(suggestions).flatMap(([category, tokens]) =>
+      tokens.map((token: string) => ({
+        type: category,
+        token,
+      }))
+    )
+  }
+}
+
+type CallbackType = ({
+  options,
+  error,
+}: {
+  options: Option[]
+  error: any
+}) => void
+
+const fetchSuggestions = async ({
+  text,
+  callback,
+  signal,
+}: {
+  text: string
+  callback: CallbackType
+  signal: AbortSignal
+}) => {
+  const res = await fetch(
+    `./internal/boolean-search/suggest?q=${encodeURIComponent(text)}`,
+    {
+      signal,
+    }
+  )
+
+  if (!res.ok) {
+    throw new Error(res.statusText)
+  }
+
+  const json = await res.json()
+  callback({
+    options: suggestionsToOptions(json.suggestions),
+    error: json.error,
+  })
+}
+
+const ERROR_MESSAGES = {
+  punctuation: (
+    <div>
+      Invalid Query:
+      <div>
+        If using characters outside the alphabet (a-z), make sure to quote them
+        like so ("big.doc" or "bill's car").
+      </div>
+    </div>
+  ),
+  syntax: (
+    <div>
+      Invalid Query:
+      <div>Check that syntax of AND / OR / NOT is used correctly.</div>
+    </div>
+  ),
+  both: (
+    <div>
+      Invalid Query:
+      <div>
+        If using characters outside the alphabet (a-z), make sure to quote them
+        like so ("big.doc" or "bill's car").
+      </div>
+      <div>Check that syntax of AND / OR / NOT is used correctly.</div>
+    </div>
+  ),
+}
+
+const defaultValue = {
+  text: '"*"',
+  cql: '',
+  error: false,
+} as BooleanTextType
+
+const validateShape = ({ value, onChange }: Props) => {
+  if (
+    value.text === undefined ||
+    value.cql === undefined ||
+    value.error === undefined ||
+    value.text === '*'
+  ) {
+    onChange(defaultValue)
+  }
+}
+
+const ShapeValidator = ({ value, onChange, TextFieldProps }: Props) => {
+  React.useEffect(() => {
+    validateShape({ value, onChange })
+  })
+
+  if (value.text !== undefined) {
+    return (
+      <BooleanSearchBar
+        value={value}
+        onChange={onChange}
+        TextFieldProps={TextFieldProps}
+      />
+    )
+  }
+  return null
+}
+
+type BooleanEndpointReturnType = {
+  cql?: string
+  message?: string
+}
+
+const fetchCql = async ({
+  searchText,
+  callback,
+  signal,
+}: {
+  callback: (result: BooleanEndpointReturnType) => void
+  searchText: string | null
+  signal?: AbortSignal
+}) => {
+  let trimmedInput = searchText!.trim()
+
+  if (trimmedInput) {
+    const res = await fetch(
+      `./internal/boolean-search/cql?q=${encodeURIComponent(trimmedInput!)}`,
+      {
+        signal,
+      }
+    )
+
+    const json = (await res.json()) as BooleanEndpointReturnType
+    callback(json)
+  } else {
+    callback({ cql: '' })
+  }
+}
+
 /**
  * We want to take in a value, and onChange update it.  That would then flow a new value
  * back down.
  */
-const BooleanSearchBar = (props: Props) => {
-  const [inputValue, setInputValue] = React.useState<string>('')
+const BooleanSearchBar = ({ value, onChange, TextFieldProps }: Props) => {
+  const [errorMessage, setErrorMessage] = React.useState(
+    <>
+      <div>
+        Invalid Query:
+        <div>
+          If using characters outside the alphabet (a-z), make sure to quote
+          them like so ("big.doc" or "bill's car").
+        </div>
+        <div>Check that syntax of AND / OR / NOT is used correctly.</div>
+      </div>
+    </>
+  )
+  const [loading, setLoading] = React.useState(false)
   const [suggestion, setSuggestion] = React.useState('')
   const [id] = React.useState(getRandomId())
   const [cursorLocation, setCursorLocation] = React.useState(0)
@@ -61,34 +208,92 @@ const BooleanSearchBar = (props: Props) => {
 
   const optionToValue = (option: any) => option.token
 
-  let helpText = props.error ? props.errorMessage : 'Valid'
+  const [options, setOptions] = useState<Option[]>([])
 
-  let indicator = props.error ? (
+  const isValidBeginningToken = (query: any) => {
+    const trimmedToken = query.trim().toLowerCase()
+    if (
+      trimmedToken === 'not' ||
+      trimmedToken === 'and' ||
+      trimmedToken === 'or'
+    ) {
+      return false
+    }
+
+    return true
+  }
+
+  React.useEffect(() => {
+    if (value.error) {
+      setErrorMessage(ERROR_MESSAGES.syntax)
+    } else {
+    }
+  }, [value])
+
+  React.useEffect(() => {
+    var controller = new AbortController()
+    setLoading(true)
+    if (value.text && isValidBeginningToken(value.text)) {
+      fetchCql({
+        searchText: value.text,
+        callback: ({ cql = '', message }) => {
+          onChange({
+            ...value,
+            cql,
+            error: Boolean(message),
+          })
+          setLoading(false)
+          console.log(loading + ' should be falso')
+        },
+        signal: controller.signal,
+      })
+    } else {
+      onChange({
+        ...value,
+        cql: '',
+        error: true,
+      })
+    }
+    return () => {
+      controller.abort()
+    }
+  }, [value.text])
+
+  React.useEffect(() => {
+    var controller = new AbortController()
+    if (value.text !== null && isValidBeginningToken(value.text)) {
+      fetchSuggestions({
+        text: value.text,
+        callback: ({ options }) => {
+          setOptions(options)
+        },
+        signal: controller.signal,
+      })
+    } else {
+      setOptions([])
+    }
+    return () => {
+      controller.abort()
+    }
+  }, [value.text])
+
+  let helpText = value.error ? errorMessage : 'Valid'
+
+  let indicator = value.error ? (
     <Close style={{ color: red[500] }} />
   ) : (
     <Check style={{ color: green[500] }} />
   )
-    //test
-  
-  React.useEffect(() => {
-    props.onChange(inputValue)
-  }, [inputValue])
 
   React.useEffect(() => {
-    if (props.value !== inputValue) {
-      setInputValue(props.value)
-    }
-  }, [props.value])
-
-  React.useEffect(() => {
-    const rawTokens = inputValue.split(/[ ())]+/)
+    const rawTokens = value.text.split(/[ ())]+/)
     const joinTokens = []
     for (let i = 0; i < rawTokens.length; i++) {
       joinTokens.push(rawTokens.slice(i, rawTokens.length).join(' ').trim())
     }
     // @ts-ignore ts-migrate(2345) FIXME: Type 'string' is not assignable to type 'never'.
     setTokens(joinTokens)
-  }, [inputValue])
+  }, [value.text])
 
   const getOptionLabel = (option: any) => {
     if (!option || !option.token) return ''
@@ -123,8 +328,8 @@ const BooleanSearchBar = (props: Props) => {
   )
 
   React.useEffect(() => {
-    if (inputValue) {
-      const replaceIndex = inputValue.indexOf('?')
+    if (value.text) {
+      const replaceIndex = value.text.indexOf('?')
       if (replaceIndex > -1) {
         // Make the selection around "?"
         // @ts-ignore ts-migrate(2532) FIXME: Object is possibly 'undefined'.
@@ -137,17 +342,20 @@ const BooleanSearchBar = (props: Props) => {
         setSuggestion('')
       }
     }
-  }, [inputValue])
+  }, [value.text])
 
   const handleTextChange = (e: any) => {
-    setInputValue(e.target.value)
+    onChange({
+      ...value,
+      text: e.target.value,
+    })
   }
 
   const getLogicalOperators = (options: any) => {
     return options.filter((option: any) => option.type === 'logical')
   }
 
-  const getTokenToRemove = (suggestion: Suggestion) => {
+  const getTokenToRemove = (suggestion: Option) => {
     let tokenToRemove = ''
     for (let i = 0; i < tokens.length; i++) {
       const match = suggestion.token
@@ -162,128 +370,130 @@ const BooleanSearchBar = (props: Props) => {
   }
 
   return (
-    <SearchBarContainer>
-      <FormControl fullWidth className="m-2">
-        <Autocomplete
-          filterOptions={(optionsToFilter) =>
-            // eslint-disable-next-line no-unused-vars
-            filterOptions(optionsToFilter).sort(
-              // @ts-ignore ts-migrate(6133) FIXME: 'o2' is declared but its value is never read.
-              (o1: any, o2: any) => (o1.type === 'mandatory' ? -1 : 1)
-            )
-          }
-          options={getLogicalOperators(props.options)}
-          includeInputInList={true}
-          // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-          onChange={(e: any, suggestion: any) => {
-            if (
-              suggestion &&
-              suggestion.token &&
-              suggestion.token !== inputValue
-            ) {
-              let selectedSuggestion = optionToValue(suggestion).toUpperCase()
+    <FormControl fullWidth>
+      <Autocomplete
+        filterOptions={(optionsToFilter) =>
+          // eslint-disable-next-line no-unused-vars
+          filterOptions(optionsToFilter).sort(
+            // @ts-ignore ts-migrate(6133) FIXME: 'o2' is declared but its value is never read.
+            (o1: any, o2: any) => (o1.type === 'mandatory' ? -1 : 1)
+          )
+        }
+        options={getLogicalOperators(options)}
+        includeInputInList={true}
+        // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
+        onChange={(e: any, suggestion: any) => {
+          if (
+            suggestion &&
+            suggestion.token &&
+            suggestion.token !== value.text
+          ) {
+            let selectedSuggestion = optionToValue(suggestion).toUpperCase()
 
-              if (selectedSuggestion === 'NOT') {
-                selectedSuggestion = 'NOT (?)'
-              }
-
-              setSuggestion(selectedSuggestion)
-
-              const cursor = inputRef.current?.selectionStart
-
-              const tokenToRemove = getTokenToRemove(suggestion)
-
-              let newInputValue = inputValue
-              if (
-                tokenToRemove !== '' &&
-                cursor &&
-                cursor < inputValue.length
-              ) {
-                const postText = inputValue.substr(cursor, inputValue.length)
-                const preText = inputValue.slice(
-                  0,
-                  (tokenToRemove.length + postText.length) * -1
-                )
-
-                setInputValue(`${preText}${selectedSuggestion}${postText}`)
-                const str = `${preText}${selectedSuggestion}`
-                setCursorLocation(str.length)
-              } else if (tokenToRemove !== '') {
-                newInputValue = inputValue.slice(0, tokenToRemove.length * -1)
-              } else if (cursor && cursor < inputValue.length) {
-                const preText = inputValue.substr(0, cursor).trim()
-                const postText = inputValue.substr(cursor, inputValue.length)
-                setInputValue(`${preText} ${selectedSuggestion}${postText}`)
-                const str = `${preText} ${selectedSuggestion}`
-                setCursorLocation(str.length)
-              }
-
-              if (cursor && cursor >= inputValue.length) {
-                let newInput = `${newInputValue}${selectedSuggestion} `
-                setInputValue(newInput)
-                setCursorLocation(newInput.length + 1)
-              }
+            if (selectedSuggestion === 'NOT') {
+              selectedSuggestion = 'NOT (?)'
             }
-          }}
-          inputValue={inputValue}
-          getOptionLabel={getOptionLabel}
-          multiple={false}
-          disableCloseOnSelect
-          disableClearable
-          freeSolo
-          id={id}
-          renderOption={(option) => (
-            <Typography noWrap>{optionToValue(option)}</Typography>
-          )}
-          renderInput={(params) => (
-            <TextField
-              data-id="search-input"
-              {...params}
-              className="pl-6"
-              inputRef={inputRef}
-              size={'small'}
-              variant="outlined"
-              defaultValue={'*'}
-              onChange={handleTextChange}
-              value={inputValue}
-              placeholder={`Search ${properties.customBranding} ${properties.product}`}
-              autoFocus
-              helperText={props.error ? <>{props.errorMessage}</> : ''}
-              InputProps={{
-                ...params.InputProps,
-                type: 'search',
-                startAdornment: (
-                  <React.Fragment>
-                    {props.loading ? (
-                      <CircularProgress
-                        size={20}
-                        style={{ marginRight: 13, marginLeft: 2 }}
-                      />
-                    ) : (
-                      <InputAdornment position="start">
-                        <Tooltip
-                          title={
-                            <Paper
-                              elevation={Elevations.overlays}
-                              className="p-2"
-                            >
-                              {helpText}
-                            </Paper>
-                          }
-                        >
-                          {indicator}
-                        </Tooltip>
-                      </InputAdornment>
-                    )}
-                  </React.Fragment>
-                ),
-              }}
-            />
-          )}
-        />
-      </FormControl>
-    </SearchBarContainer>
+
+            setSuggestion(selectedSuggestion)
+
+            const cursor = inputRef.current?.selectionStart
+
+            const tokenToRemove = getTokenToRemove(suggestion)
+
+            let newInputValue = value.text
+            if (tokenToRemove !== '' && cursor && cursor < value.text.length) {
+              const postText = value.text.substr(cursor, value.text.length)
+              const preText = value.text.slice(
+                0,
+                (tokenToRemove.length + postText.length) * -1
+              )
+
+              onChange({
+                ...value,
+                text: `${preText}${selectedSuggestion}${postText}`,
+              })
+              const str = `${preText}${selectedSuggestion}`
+              setCursorLocation(str.length)
+            } else if (tokenToRemove !== '') {
+              newInputValue = value.text.slice(0, tokenToRemove.length * -1)
+            } else if (cursor && cursor < value.text.length) {
+              const preText = value.text.substr(0, cursor).trim()
+              const postText = value.text.substr(cursor, value.text.length)
+              onChange({
+                ...value,
+                text: `${preText} ${selectedSuggestion}${postText}`,
+              })
+              const str = `${preText} ${selectedSuggestion}`
+              setCursorLocation(str.length)
+            }
+
+            if (cursor && cursor >= value.text.length) {
+              let newInput = `${newInputValue}${selectedSuggestion} `
+              onChange({
+                ...value,
+                text: newInput,
+              })
+              setCursorLocation(newInput.length + 1)
+            }
+          }
+        }}
+        inputValue={value.text}
+        getOptionLabel={getOptionLabel}
+        multiple={false}
+        disableCloseOnSelect
+        disableClearable
+        freeSolo
+        id={id}
+        renderOption={(option) => (
+          <Typography noWrap>{optionToValue(option)}</Typography>
+        )}
+        renderInput={(params) => (
+          <TextField
+            data-id="search-input"
+            {...params}
+            inputRef={inputRef}
+            size={'small'}
+            variant="outlined"
+            defaultValue={'*'}
+            onChange={handleTextChange}
+            value={value.text}
+            autoFocus
+            helperText={value.error ? <>{errorMessage}</> : ''}
+            InputProps={{
+              ...params.InputProps,
+              type: 'search',
+              startAdornment: (
+                <React.Fragment>
+                  {loading ? (
+                    <CircularProgress
+                      size={20}
+                      style={{ marginRight: 13, marginLeft: 2 }}
+                    />
+                  ) : (
+                    <InputAdornment position="start">
+                      <Tooltip
+                        title={
+                          <Paper
+                            elevation={Elevations.overlays}
+                            className="p-2"
+                          >
+                            {helpText}
+                          </Paper>
+                        }
+                      >
+                        {indicator}
+                      </Tooltip>
+                    </InputAdornment>
+                  )}
+                </React.Fragment>
+              ),
+            }}
+            {...TextFieldProps}
+          />
+        )}
+      />
+    </FormControl>
   )
 }
 
-export default hot(module)(BooleanSearchBar)
+export default hot(module)(ShapeValidator)
