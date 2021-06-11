@@ -26,7 +26,6 @@ import QueryTimeReactView, {
 } from '../query-time/query-time.view'
 
 const METADATA_CONTENT_TYPE = 'metadata-content-type'
-const searchButtonText = 'Search'
 import TextField from '@material-ui/core/TextField'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
@@ -391,7 +390,8 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
   const { listenTo, stopListening } = useBackbone()
   const [isLoading] = useState(false)
   const [error] = useState(false)
-  const options = useState([])
+  // @ts-ignore ts-migrate(6133)
+  const [options] = useState(['test', 'and'])
   /**
    * Because of how things render, auto focusing to the input is more complicated than I wish.  This ensures it works everytime, whereas autoFocus prop is unreliable
    */
@@ -421,32 +421,6 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
       <div className="editor-properties px-2 py-3">
         <div className="">
           <Typography className="pb-2">Keyword</Typography>
-          <TextField
-            fullWidth
-            value={basicFilter.anyText ? basicFilter.anyText[0].value : ''}
-            placeholder={`Text to search for. Use "*" for wildcard.`}
-            id="Text"
-            onChange={(e) => {
-              basicFilter.anyText[0] = new FilterClass({
-                ...basicFilter.anyText[0],
-                value: e.target.value,
-              })
-              model.set(
-                'filterTree',
-                constructFilterFromBasicFilter({ basicFilter })
-              )
-            }}
-            onKeyUp={(e) => {
-              if (e.which === 13) {
-                model.startSearchFromFirstPage()
-              }
-            }}
-            inputProps={{
-              ref: inputRef as any,
-            }}
-            size="small"
-            variant="outlined"
-          />
           <BooleanSearchBar
             inputPlaceholder={'*'}
             value={basicFilter.anyText ? basicFilter.anyText[0].value : ''}
@@ -468,7 +442,6 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
               }
               return ERROR_MESSAGES.punctuation
             })()}
-            options={options}
             loading={isLoading}
           />
         </div>

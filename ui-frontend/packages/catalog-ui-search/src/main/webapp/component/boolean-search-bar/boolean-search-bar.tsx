@@ -14,9 +14,11 @@ import Autocomplete, {
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import styled from 'styled-components'
-import { Suggestion } from '../types/graphql'
 import Paper from '@material-ui/core/Paper'
 import { Elevations } from '../theme/theme'
+import { useState } from 'react'
+// import { useLazyQuery } from '@apollo/react-hooks'
+// import { GET_SUGGESTIONS } from '../suggestions/suggestions.graphql'
 const properties = require('../../js/properties.js')
 
 const defaultFilterOptions = createFilterOptions()
@@ -24,7 +26,7 @@ const defaultFilterOptions = createFilterOptions()
 const SearchBarContainer = styled.div`
   display: flex;
   align-self: center;
-  justify-self: center;
+  justify-self: start;
   width: 100%;
 
   *:focus {
@@ -34,17 +36,71 @@ const SearchBarContainer = styled.div`
 `
 
 type Props = {
-  value: string
+  value: any
   inputPlaceholder: string
   onChange: (inputValue: any) => void
   error: boolean
   errorMessage: TextFieldProps['helperText']
-  options: any
   loading: boolean
 }
 
 const getRandomId = () => {
   return `a${Math.round(Math.random() * 10000000000000).toString()}`
+}
+
+type Option = {
+  type: string
+  token: string
+}
+
+type Suggestions = {
+  [key: string]: string[]
+}
+
+const suggestionsToOptions = (suggestions: Suggestions): Option[] => {
+  if (suggestions === undefined || Object.keys(suggestions).length === 0) {
+    return []
+  } else {
+    // @ts-ignore
+    return Object.entries(suggestions).flatMap(([category, tokens]) =>
+      tokens.map((token: string) => ({
+        type: category,
+        token,
+      }))
+    )
+  }
+}
+
+type CallbackType = ({
+  options,
+  error,
+}: {
+  options: Option[]
+  error: any
+}) => void
+
+const fetchSuggestions = async ({
+  text,
+  callback,
+  signal,
+}: {
+  text: string
+  callback: CallbackType
+  signal: AbortSignal
+}) => {
+  const res = await fetch(`/internal/boolean-search/suggest?q=${text}`, {
+    signal,
+  })
+
+  if (!res.ok) {
+    throw new Error(res.statusText)
+  }
+
+  const json = await res.json()
+  callback({
+    options: suggestionsToOptions(json.suggestions),
+    error: json.error,
+  })
 }
 
 /**
@@ -61,6 +117,39 @@ const BooleanSearchBar = (props: Props) => {
 
   const optionToValue = (option: any) => option.token
 
+  const [options, setOptions] = useState<Option[]>([])
+
+  const isValidBeginningToken = (query: any) => {
+    const trimmedToken = query.trim().toLowerCase()
+    if (
+      trimmedToken === 'not' ||
+      trimmedToken === 'and' ||
+      trimmedToken === 'or'
+    ) {
+      return false
+    }
+
+    return true
+  }
+
+  React.useEffect(() => {
+    var controller = new AbortController()
+    if (inputValue !== null && isValidBeginningToken(inputValue)) {
+      fetchSuggestions({
+        text: inputValue,
+        callback: ({ options }) => {
+          setOptions(options)
+        },
+        signal: controller.signal,
+      })
+    } else {
+      setOptions([])
+    }
+    return () => {
+      controller.abort()
+    }
+  }, [inputValue])
+
   let helpText = props.error ? props.errorMessage : 'Valid'
 
   let indicator = props.error ? (
@@ -68,8 +157,8 @@ const BooleanSearchBar = (props: Props) => {
   ) : (
     <Check style={{ color: green[500] }} />
   )
-    //test
-  
+  //test
+
   React.useEffect(() => {
     props.onChange(inputValue)
   }, [inputValue])
@@ -147,7 +236,7 @@ const BooleanSearchBar = (props: Props) => {
     return options.filter((option: any) => option.type === 'logical')
   }
 
-  const getTokenToRemove = (suggestion: Suggestion) => {
+  const getTokenToRemove = (suggestion: Option) => {
     let tokenToRemove = ''
     for (let i = 0; i < tokens.length; i++) {
       const match = suggestion.token
@@ -172,7 +261,7 @@ const BooleanSearchBar = (props: Props) => {
               (o1: any, o2: any) => (o1.type === 'mandatory' ? -1 : 1)
             )
           }
-          options={getLogicalOperators(props.options)}
+          options={getLogicalOperators(options)}
           includeInputInList={true}
           // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
           onChange={(e: any, suggestion: any) => {
