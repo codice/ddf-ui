@@ -112,8 +112,7 @@ module.exports = Backbone.AssociatedModel.extend({
     }
     Backbone.AssociatedModel.prototype.set.call(this, key, value, options)
   },
-
-  initialize() {
+  initialize(props) {
     this.listenTo(
       this,
       'change:line change:polygon',
@@ -186,6 +185,15 @@ module.exports = Backbone.AssociatedModel.extend({
     })
     this.listenTo(this, 'EndExtent', this.drawingOff)
     this.listenTo(this, 'BeginExtent', this.drawingOn)
+    this.initializeValues(props)
+  },
+  initializeValues(props) {
+    if (props.type === 'POINTRADIUS' && props.lat && props.lon) {
+      if (!props.usng || !props.utmUpsEasting) {
+        // initializes dms/usng/utmUps using lat/lon
+        this.setRadiusLatLon()
+      }
+    }
   },
   drawingOff() {
     if (this.get('locationType') === 'dms') {
@@ -566,12 +574,7 @@ module.exports = Backbone.AssociatedModel.extend({
     const lat = this.get('lat'),
       lon = this.get('lon')
 
-    if (
-      (!Drawing.isDrawing() && this.get('locationType') !== 'latlon') ||
-      !this.isLatLonValid(lat, lon)
-    ) {
-      return
-    }
+    if (!this.isLatLonValid(lat, lon)) return
 
     this.setRadiusDmsFromMap()
 
