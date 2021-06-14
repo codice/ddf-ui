@@ -71,6 +71,10 @@ export const stringComparators = [
     label: 'NEAR',
   },
   {
+    value: 'BOOLEAN_TEXT_SEARCH',
+    label: 'BOOLEAN',
+  },
+  {
     value: 'IS NULL',
     label: 'IS EMPTY',
   },

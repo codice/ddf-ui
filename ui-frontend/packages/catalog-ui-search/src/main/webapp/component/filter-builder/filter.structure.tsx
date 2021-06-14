@@ -20,26 +20,6 @@ import CQLUtils from '../../js/CQLUtils'
 import { SpreadOperatorProtectedClass } from '../../typescript/classes'
 import ExtensionPoints from '../../extension-points'
 
-// @ts-ignore ts-migrate(6133) FIXME: 'comparatorToCQL' is declared but its value is nev... Remove this comment to see the full error message
-const comparatorToCQL = {
-  BEFORE: 'BEFORE',
-  AFTER: 'AFTER',
-  RELATIVE: '=',
-  BETWEEN: 'DURING',
-  INTERSECTS: 'INTERSECTS',
-  DWITHIN: 'DWITHIN',
-  CONTAINS: 'ILIKE',
-  MATCHCASE: 'LIKE',
-  EQUALS: '=',
-  'IS EMPTY': 'IS NULL',
-  '>': '>',
-  '<': '<',
-  '=': '=',
-  '<=': '<=',
-  '>=': '>=',
-  RANGE: 'BETWEEN',
-}
-
 export const deserialize = {
   /**
    * example inputs:  // ' are part of input
@@ -206,6 +186,12 @@ export class CQLStandardFilterBuilderClass extends BaseFilterBuilderClass {
   }
 }
 
+export type BooleanTextType = {
+  text: string
+  cql: string
+  error: boolean
+}
+
 export type ValueTypes = {
   proximity: {
     first: string
@@ -239,9 +225,7 @@ export type ValueTypes = {
     start: number
     end: number
   }
-  booleanText: {
-    value: string
-  }
+  booleanText: BooleanTextType
   location: // this is all we technically need to reconstruct (lo fidelity)
   LineLocation | PolygonLocation | PointRadiusLocation
 }
@@ -292,6 +276,7 @@ export class FilterClass extends SpreadOperatorProtectedClass {
     | 'BETWEEN'
     | 'FILTER FUNCTION proximity'
     | 'AROUND' // This isn't valid cql, but something we support
+    | 'BOOLEAN_TEXT_SEARCH' // This isn't valid cql, but something we support
   readonly property: string
   readonly value: string | boolean | null | ValuesType<ValueTypes>
   readonly negated: boolean | undefined

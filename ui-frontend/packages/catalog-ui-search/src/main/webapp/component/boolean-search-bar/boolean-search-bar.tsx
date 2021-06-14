@@ -18,31 +18,17 @@ import Paper from '@material-ui/core/Paper'
 import { Elevations } from '../theme/theme'
 import { useState } from 'react'
 import fetch from '../../react-component/utils/fetch'
+import { BooleanTextType } from '../filter-builder/filter.structure'
 // import { useLazyQuery } from '@apollo/react-hooks'
 // import { GET_SUGGESTIONS } from '../suggestions/suggestions.graphql'
 const properties = require('../../js/properties.js')
 
 const defaultFilterOptions = createFilterOptions()
 
-const SearchBarContainer = styled.div`
-  display: flex;
-  align-self: center;
-  justify-self: start;
-  width: 100%;
-
-  *:focus {
-    animation: unset !important;
-    box-shadow: unset;
-  }
-`
-
 type Props = {
-  value: any
-  inputPlaceholder: string
-  onChange: (inputValue: any) => void
-  error: boolean
-  errorMessage: TextFieldProps['helperText']
-  loading: boolean
+  value: BooleanTextType
+  onChange: (value: BooleanTextType) => void
+  TextFieldProps?: Partial<TextFieldProps>
 }
 
 const getRandomId = () => {
@@ -107,11 +93,75 @@ const fetchSuggestions = async ({
   })
 }
 
+const ERROR_MESSAGES = {
+  punctuation: (
+    <div>
+      Invalid Query:
+      <div>
+        If using characters outside the alphabet (a-z), make sure to quote them
+        like so ("big.doc" or "bill's car").
+      </div>
+    </div>
+  ),
+  syntax: (
+    <div>
+      Invalid Query:
+      <div>Check that syntax of AND / OR / NOT is used correctly.</div>
+    </div>
+  ),
+  both: (
+    <div>
+      Invalid Query:
+      <div>
+        If using characters outside the alphabet (a-z), make sure to quote them
+        like so ("big.doc" or "bill's car").
+      </div>
+      <div>Check that syntax of AND / OR / NOT is used correctly.</div>
+    </div>
+  ),
+}
+
+const defaultValue = {
+  text: '',
+  cql: '',
+  error: false,
+} as BooleanTextType
+
+const validateShape = ({ value, onChange }: Props) => {
+  if (
+    value.text === undefined ||
+    value.cql === undefined ||
+    value.error === undefined
+  ) {
+    onChange(defaultValue)
+  }
+}
+
+const ShapeValidator = ({ value, onChange, TextFieldProps }: Props) => {
+  React.useEffect(() => {
+    validateShape({ value, onChange })
+  }, [])
+
+  if (value.text !== undefined) {
+    return (
+      <BooleanSearchBar
+        value={value}
+        onChange={onChange}
+        TextFieldProps={TextFieldProps}
+      />
+    )
+  }
+  return null
+}
+
 /**
  * We want to take in a value, and onChange update it.  That would then flow a new value
  * back down.
  */
-const BooleanSearchBar = (props: Props) => {
+const BooleanSearchBar = ({ value, onChange, TextFieldProps }: Props) => {
+  const [error, setError] = React.useState(false)
+  const [errorMessage, setErrorMessage] = React.useState('')
+  const [loading, setLoading] = React.useState(false)
   const [inputValue, setInputValue] = React.useState<string>('')
   const [suggestion, setSuggestion] = React.useState('')
   const [id] = React.useState(getRandomId())
@@ -154,9 +204,9 @@ const BooleanSearchBar = (props: Props) => {
     }
   }, [inputValue])
 
-  let helpText = props.error ? props.errorMessage : 'Valid'
+  let helpText = error ? errorMessage : 'Valid'
 
-  let indicator = props.error ? (
+  let indicator = error ? (
     <Close style={{ color: red[500] }} />
   ) : (
     <Check style={{ color: green[500] }} />
@@ -164,14 +214,18 @@ const BooleanSearchBar = (props: Props) => {
   //test
 
   React.useEffect(() => {
-    props.onChange(inputValue)
+    onChange({
+      text: inputValue,
+      cql: '',
+      error: false,
+    })
   }, [inputValue])
 
   React.useEffect(() => {
-    if (props.value !== inputValue) {
-      setInputValue(props.value)
+    if (value.text !== inputValue) {
+      setInputValue(value.text)
     }
-  }, [props.value])
+  }, [value.text])
 
   React.useEffect(() => {
     const rawTokens = inputValue.split(/[ ())]+/)
@@ -255,128 +309,121 @@ const BooleanSearchBar = (props: Props) => {
   }
 
   return (
-    <SearchBarContainer>
-      <FormControl fullWidth className="m-2">
-        <Autocomplete
-          filterOptions={(optionsToFilter) =>
-            // eslint-disable-next-line no-unused-vars
-            filterOptions(optionsToFilter).sort(
-              // @ts-ignore ts-migrate(6133) FIXME: 'o2' is declared but its value is never read.
-              (o1: any, o2: any) => (o1.type === 'mandatory' ? -1 : 1)
-            )
-          }
-          options={getLogicalOperators(options)}
-          includeInputInList={true}
-          // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-          onChange={(e: any, suggestion: any) => {
-            if (
-              suggestion &&
-              suggestion.token &&
-              suggestion.token !== inputValue
-            ) {
-              let selectedSuggestion = optionToValue(suggestion).toUpperCase()
+    <FormControl fullWidth>
+      <Autocomplete
+        filterOptions={(optionsToFilter) =>
+          // eslint-disable-next-line no-unused-vars
+          filterOptions(optionsToFilter).sort(
+            // @ts-ignore ts-migrate(6133) FIXME: 'o2' is declared but its value is never read.
+            (o1: any, o2: any) => (o1.type === 'mandatory' ? -1 : 1)
+          )
+        }
+        options={getLogicalOperators(options)}
+        includeInputInList={true}
+        // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
+        onChange={(e: any, suggestion: any) => {
+          if (
+            suggestion &&
+            suggestion.token &&
+            suggestion.token !== inputValue
+          ) {
+            let selectedSuggestion = optionToValue(suggestion).toUpperCase()
 
-              if (selectedSuggestion === 'NOT') {
-                selectedSuggestion = 'NOT (?)'
-              }
-
-              setSuggestion(selectedSuggestion)
-
-              const cursor = inputRef.current?.selectionStart
-
-              const tokenToRemove = getTokenToRemove(suggestion)
-
-              let newInputValue = inputValue
-              if (
-                tokenToRemove !== '' &&
-                cursor &&
-                cursor < inputValue.length
-              ) {
-                const postText = inputValue.substr(cursor, inputValue.length)
-                const preText = inputValue.slice(
-                  0,
-                  (tokenToRemove.length + postText.length) * -1
-                )
-
-                setInputValue(`${preText}${selectedSuggestion}${postText}`)
-                const str = `${preText}${selectedSuggestion}`
-                setCursorLocation(str.length)
-              } else if (tokenToRemove !== '') {
-                newInputValue = inputValue.slice(0, tokenToRemove.length * -1)
-              } else if (cursor && cursor < inputValue.length) {
-                const preText = inputValue.substr(0, cursor).trim()
-                const postText = inputValue.substr(cursor, inputValue.length)
-                setInputValue(`${preText} ${selectedSuggestion}${postText}`)
-                const str = `${preText} ${selectedSuggestion}`
-                setCursorLocation(str.length)
-              }
-
-              if (cursor && cursor >= inputValue.length) {
-                let newInput = `${newInputValue}${selectedSuggestion} `
-                setInputValue(newInput)
-                setCursorLocation(newInput.length + 1)
-              }
+            if (selectedSuggestion === 'NOT') {
+              selectedSuggestion = 'NOT (?)'
             }
-          }}
-          inputValue={inputValue}
-          getOptionLabel={getOptionLabel}
-          multiple={false}
-          disableCloseOnSelect
-          disableClearable
-          freeSolo
-          id={id}
-          renderOption={(option) => (
-            <Typography noWrap>{optionToValue(option)}</Typography>
-          )}
-          renderInput={(params) => (
-            <TextField
-              data-id="search-input"
-              {...params}
-              className="pl-6"
-              inputRef={inputRef}
-              size={'small'}
-              variant="outlined"
-              defaultValue={'*'}
-              onChange={handleTextChange}
-              value={inputValue}
-              placeholder={`Search ${properties.customBranding} ${properties.product}`}
-              autoFocus
-              helperText={props.error ? <>{props.errorMessage}</> : ''}
-              InputProps={{
-                ...params.InputProps,
-                type: 'search',
-                startAdornment: (
-                  <React.Fragment>
-                    {props.loading ? (
-                      <CircularProgress
-                        size={20}
-                        style={{ marginRight: 13, marginLeft: 2 }}
-                      />
-                    ) : (
-                      <InputAdornment position="start">
-                        <Tooltip
-                          title={
-                            <Paper
-                              elevation={Elevations.overlays}
-                              className="p-2"
-                            >
-                              {helpText}
-                            </Paper>
-                          }
-                        >
-                          {indicator}
-                        </Tooltip>
-                      </InputAdornment>
-                    )}
-                  </React.Fragment>
-                ),
-              }}
-            />
-          )}
-        />
-      </FormControl>
-    </SearchBarContainer>
+
+            setSuggestion(selectedSuggestion)
+
+            const cursor = inputRef.current?.selectionStart
+
+            const tokenToRemove = getTokenToRemove(suggestion)
+
+            let newInputValue = inputValue
+            if (tokenToRemove !== '' && cursor && cursor < inputValue.length) {
+              const postText = inputValue.substr(cursor, inputValue.length)
+              const preText = inputValue.slice(
+                0,
+                (tokenToRemove.length + postText.length) * -1
+              )
+
+              setInputValue(`${preText}${selectedSuggestion}${postText}`)
+              const str = `${preText}${selectedSuggestion}`
+              setCursorLocation(str.length)
+            } else if (tokenToRemove !== '') {
+              newInputValue = inputValue.slice(0, tokenToRemove.length * -1)
+            } else if (cursor && cursor < inputValue.length) {
+              const preText = inputValue.substr(0, cursor).trim()
+              const postText = inputValue.substr(cursor, inputValue.length)
+              setInputValue(`${preText} ${selectedSuggestion}${postText}`)
+              const str = `${preText} ${selectedSuggestion}`
+              setCursorLocation(str.length)
+            }
+
+            if (cursor && cursor >= inputValue.length) {
+              let newInput = `${newInputValue}${selectedSuggestion} `
+              setInputValue(newInput)
+              setCursorLocation(newInput.length + 1)
+            }
+          }
+        }}
+        inputValue={inputValue}
+        getOptionLabel={getOptionLabel}
+        multiple={false}
+        disableCloseOnSelect
+        disableClearable
+        freeSolo
+        id={id}
+        renderOption={(option) => (
+          <Typography noWrap>{optionToValue(option)}</Typography>
+        )}
+        renderInput={(params) => (
+          <TextField
+            data-id="search-input"
+            {...params}
+            inputRef={inputRef}
+            size={'small'}
+            variant="outlined"
+            defaultValue={'*'}
+            onChange={handleTextChange}
+            value={inputValue}
+            autoFocus
+            helperText={error ? <>{errorMessage}</> : ''}
+            InputProps={{
+              ...params.InputProps,
+              type: 'search',
+              startAdornment: (
+                <React.Fragment>
+                  {loading ? (
+                    <CircularProgress
+                      size={20}
+                      style={{ marginRight: 13, marginLeft: 2 }}
+                    />
+                  ) : (
+                    <InputAdornment position="start">
+                      <Tooltip
+                        title={
+                          <Paper
+                            elevation={Elevations.overlays}
+                            className="p-2"
+                          >
+                            {helpText}
+                          </Paper>
+                        }
+                      >
+                        {indicator}
+                      </Tooltip>
+                    </InputAdornment>
+                  )}
+                </React.Fragment>
+              ),
+            }}
+            {...TextFieldProps}
+          />
+        )}
+      />
+    </FormControl>
   )
 }
 
-export default hot(module)(BooleanSearchBar)
+export default hot(module)(ShapeValidator)
