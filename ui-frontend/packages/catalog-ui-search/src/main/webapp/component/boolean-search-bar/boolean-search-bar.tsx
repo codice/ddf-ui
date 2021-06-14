@@ -89,9 +89,12 @@ const fetchSuggestions = async ({
   callback: CallbackType
   signal: AbortSignal
 }) => {
-  const res = await fetch(`./internal/boolean-search/suggest?q=${text}`, {
-    signal,
-  })
+  const res = await fetch(
+    `./internal/boolean-search/suggest?q=${encodeURIComponent(text)}`,
+    {
+      signal,
+    }
+  )
 
   if (!res.ok) {
     throw new Error(res.statusText)
