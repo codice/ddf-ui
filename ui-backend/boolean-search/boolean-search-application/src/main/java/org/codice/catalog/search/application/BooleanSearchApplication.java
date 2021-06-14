@@ -18,7 +18,7 @@ import org.codice.ddf.catalog.search.handlers.SuggestionHandler;
 )
 public class BooleanSearchApplication extends HttpServlet {
 
-  static final String BOOLEAN_SEARCH_PATH = "/search/catalog/internal/catalog/boolean-search";
+  static final String BOOLEAN_SEARCH_PATH = "/search/catalog/internal/boolean-search";
 
   private final JavalinServlet javalinServlet = JavalinUtils.createServlet(BOOLEAN_SEARCH_PATH);
 

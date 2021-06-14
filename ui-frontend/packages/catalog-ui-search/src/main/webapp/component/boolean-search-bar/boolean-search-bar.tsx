@@ -17,6 +17,7 @@ import styled from 'styled-components'
 import Paper from '@material-ui/core/Paper'
 import { Elevations } from '../theme/theme'
 import { useState } from 'react'
+import fetch from '../../react-component/utils/fetch'
 // import { useLazyQuery } from '@apollo/react-hooks'
 // import { GET_SUGGESTIONS } from '../suggestions/suggestions.graphql'
 const properties = require('../../js/properties.js')
