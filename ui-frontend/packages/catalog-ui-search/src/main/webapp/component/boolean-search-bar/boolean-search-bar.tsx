@@ -89,7 +89,7 @@ const fetchSuggestions = async ({
   callback: CallbackType
   signal: AbortSignal
 }) => {
-  const res = await fetch(`/internal/boolean-search/suggest?q=${text}`, {
+  const res = await fetch(`./internal/boolean-search/suggest?q=${text}`, {
     signal,
   })
 
