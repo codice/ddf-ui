@@ -122,7 +122,7 @@ const ERROR_MESSAGES = {
 }
 
 const defaultValue = {
-  text: '',
+  text: '"*"',
   cql: '',
   error: false,
 } as BooleanTextType
@@ -131,7 +131,8 @@ const validateShape = ({ value, onChange }: Props) => {
   if (
     value.text === undefined ||
     value.cql === undefined ||
-    value.error === undefined
+    value.error === undefined ||
+    value.text === '*'
   ) {
     onChange(defaultValue)
   }
@@ -140,7 +141,7 @@ const validateShape = ({ value, onChange }: Props) => {
 const ShapeValidator = ({ value, onChange, TextFieldProps }: Props) => {
   React.useEffect(() => {
     validateShape({ value, onChange })
-  }, [])
+  })
 
   if (value.text !== undefined) {
     return (
@@ -154,15 +155,55 @@ const ShapeValidator = ({ value, onChange, TextFieldProps }: Props) => {
   return null
 }
 
+type BooleanEndpointReturnType = {
+  cql?: string
+  message?: string
+}
+
+const fetchCql = async ({
+  searchText,
+  callback,
+  signal,
+}: {
+  callback: (result: BooleanEndpointReturnType) => void
+  searchText: string | null
+  signal?: AbortSignal
+}) => {
+  let trimmedInput = searchText!.trim()
+
+  if (trimmedInput) {
+    const res = await fetch(
+      `./internal/boolean-search/cql?q=${encodeURIComponent(trimmedInput!)}`,
+      {
+        signal,
+      }
+    )
+
+    const json = (await res.json()) as BooleanEndpointReturnType
+    callback(json)
+  } else {
+    callback({ cql: '' })
+  }
+}
+
 /**
  * We want to take in a value, and onChange update it.  That would then flow a new value
  * back down.
  */
 const BooleanSearchBar = ({ value, onChange, TextFieldProps }: Props) => {
-  const [error, setError] = React.useState(false)
-  const [errorMessage, setErrorMessage] = React.useState('')
+  const [errorMessage, setErrorMessage] = React.useState(
+    <>
+      <div>
+        Invalid Query:
+        <div>
+          If using characters outside the alphabet (a-z), make sure to quote
+          them like so ("big.doc" or "bill's car").
+        </div>
+        <div>Check that syntax of AND / OR / NOT is used correctly.</div>
+      </div>
+    </>
+  )
   const [loading, setLoading] = React.useState(false)
-  const [inputValue, setInputValue] = React.useState<string>('')
   const [suggestion, setSuggestion] = React.useState('')
   const [id] = React.useState(getRandomId())
   const [cursorLocation, setCursorLocation] = React.useState(0)
@@ -187,10 +228,43 @@ const BooleanSearchBar = ({ value, onChange, TextFieldProps }: Props) => {
   }
 
   React.useEffect(() => {
+    if (value.error) {
+      setErrorMessage(ERROR_MESSAGES.syntax)
+    } else {
+    }
+  }, [value])
+
+  React.useEffect(() => {
     var controller = new AbortController()
-    if (inputValue !== null && isValidBeginningToken(inputValue)) {
+    if (value.text && isValidBeginningToken(value.text)) {
+      fetchCql({
+        searchText: value.text,
+        callback: ({ cql = '', message }) => {
+          onChange({
+            ...value,
+            cql,
+            error: Boolean(message),
+          })
+        },
+        signal: controller.signal,
+      })
+    } else {
+      onChange({
+        ...value,
+        cql: '',
+        error: true,
+      })
+    }
+    return () => {
+      controller.abort()
+    }
+  }, [value.text])
+
+  React.useEffect(() => {
+    var controller = new AbortController()
+    if (value.text !== null && isValidBeginningToken(value.text)) {
       fetchSuggestions({
-        text: inputValue,
+        text: value.text,
         callback: ({ options }) => {
           setOptions(options)
         },
@@ -202,40 +276,25 @@ const BooleanSearchBar = ({ value, onChange, TextFieldProps }: Props) => {
     return () => {
       controller.abort()
     }
-  }, [inputValue])
+  }, [value.text])
 
-  let helpText = error ? errorMessage : 'Valid'
+  let helpText = value.error ? errorMessage : 'Valid'
 
-  let indicator = error ? (
+  let indicator = value.error ? (
     <Close style={{ color: red[500] }} />
   ) : (
     <Check style={{ color: green[500] }} />
   )
-  //test
 
   React.useEffect(() => {
-    onChange({
-      text: inputValue,
-      cql: '',
-      error: false,
-    })
-  }, [inputValue])
-
-  React.useEffect(() => {
-    if (value.text !== inputValue) {
-      setInputValue(value.text)
-    }
-  }, [value.text])
-
-  React.useEffect(() => {
-    const rawTokens = inputValue.split(/[ ())]+/)
+    const rawTokens = value.text.split(/[ ())]+/)
     const joinTokens = []
     for (let i = 0; i < rawTokens.length; i++) {
       joinTokens.push(rawTokens.slice(i, rawTokens.length).join(' ').trim())
     }
     // @ts-ignore ts-migrate(2345) FIXME: Type 'string' is not assignable to type 'never'.
     setTokens(joinTokens)
-  }, [inputValue])
+  }, [value.text])
 
   const getOptionLabel = (option: any) => {
     if (!option || !option.token) return ''
@@ -270,8 +329,8 @@ const BooleanSearchBar = ({ value, onChange, TextFieldProps }: Props) => {
   )
 
   React.useEffect(() => {
-    if (inputValue) {
-      const replaceIndex = inputValue.indexOf('?')
+    if (value.text) {
+      const replaceIndex = value.text.indexOf('?')
       if (replaceIndex > -1) {
         // Make the selection around "?"
         // @ts-ignore ts-migrate(2532) FIXME: Object is possibly 'undefined'.
@@ -284,10 +343,13 @@ const BooleanSearchBar = ({ value, onChange, TextFieldProps }: Props) => {
         setSuggestion('')
       }
     }
-  }, [inputValue])
+  }, [value.text])
 
   const handleTextChange = (e: any) => {
-    setInputValue(e.target.value)
+    onChange({
+      ...value,
+      text: e.target.value,
+    })
   }
 
   const getLogicalOperators = (options: any) => {
@@ -325,7 +387,7 @@ const BooleanSearchBar = ({ value, onChange, TextFieldProps }: Props) => {
           if (
             suggestion &&
             suggestion.token &&
-            suggestion.token !== inputValue
+            suggestion.token !== value.text
           ) {
             let selectedSuggestion = optionToValue(suggestion).toUpperCase()
 
@@ -339,35 +401,44 @@ const BooleanSearchBar = ({ value, onChange, TextFieldProps }: Props) => {
 
             const tokenToRemove = getTokenToRemove(suggestion)
 
-            let newInputValue = inputValue
-            if (tokenToRemove !== '' && cursor && cursor < inputValue.length) {
-              const postText = inputValue.substr(cursor, inputValue.length)
-              const preText = inputValue.slice(
+            let newInputValue = value.text
+            if (tokenToRemove !== '' && cursor && cursor < value.text.length) {
+              const postText = value.text.substr(cursor, value.text.length)
+              const preText = value.text.slice(
                 0,
                 (tokenToRemove.length + postText.length) * -1
               )
 
-              setInputValue(`${preText}${selectedSuggestion}${postText}`)
+              onChange({
+                ...value,
+                text: `${preText}${selectedSuggestion}${postText}`,
+              })
               const str = `${preText}${selectedSuggestion}`
               setCursorLocation(str.length)
             } else if (tokenToRemove !== '') {
-              newInputValue = inputValue.slice(0, tokenToRemove.length * -1)
-            } else if (cursor && cursor < inputValue.length) {
-              const preText = inputValue.substr(0, cursor).trim()
-              const postText = inputValue.substr(cursor, inputValue.length)
-              setInputValue(`${preText} ${selectedSuggestion}${postText}`)
+              newInputValue = value.text.slice(0, tokenToRemove.length * -1)
+            } else if (cursor && cursor < value.text.length) {
+              const preText = value.text.substr(0, cursor).trim()
+              const postText = value.text.substr(cursor, value.text.length)
+              onChange({
+                ...value,
+                text: `${preText} ${selectedSuggestion}${postText}`,
+              })
               const str = `${preText} ${selectedSuggestion}`
               setCursorLocation(str.length)
             }
 
-            if (cursor && cursor >= inputValue.length) {
+            if (cursor && cursor >= value.text.length) {
               let newInput = `${newInputValue}${selectedSuggestion} `
-              setInputValue(newInput)
+              onChange({
+                ...value,
+                text: newInput,
+              })
               setCursorLocation(newInput.length + 1)
             }
           }
         }}
-        inputValue={inputValue}
+        inputValue={value.text}
         getOptionLabel={getOptionLabel}
         multiple={false}
         disableCloseOnSelect
@@ -386,9 +457,9 @@ const BooleanSearchBar = ({ value, onChange, TextFieldProps }: Props) => {
             variant="outlined"
             defaultValue={'*'}
             onChange={handleTextChange}
-            value={inputValue}
+            value={value.text}
             autoFocus
-            helperText={error ? <>{errorMessage}</> : ''}
+            helperText={value.error ? <>{errorMessage}</> : ''}
             InputProps={{
               ...params.InputProps,
               type: 'search',
