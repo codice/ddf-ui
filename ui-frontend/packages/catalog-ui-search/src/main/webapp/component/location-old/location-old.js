@@ -112,6 +112,7 @@ module.exports = Backbone.AssociatedModel.extend({
     }
     Backbone.AssociatedModel.prototype.set.call(this, key, value, options)
   },
+
   initialize(props) {
     this.listenTo(
       this,
@@ -191,9 +192,30 @@ module.exports = Backbone.AssociatedModel.extend({
     if (props.type === 'POINTRADIUS' && props.lat && props.lon) {
       if (!props.usng || !props.utmUpsEasting) {
         // initializes dms/usng/utmUps using lat/lon
-        this.setRadiusLatLon()
+        this.updateCoordPointRadiusValues(props.lat, props.lon)
       }
     }
+  },
+  updateCoordPointRadiusValues(lat, lon) {
+    if (!this.isLatLonValid(lat, lon)) return
+
+    this.setRadiusDmsFromMap()
+
+    const utmUps = this.LLtoUtmUps(lat, lon)
+    if (utmUps !== undefined) {
+      const utmUpsParts = this.formatUtmUps(utmUps)
+      this.setUtmUpsPointRadius(utmUpsParts, true)
+    } else {
+      this.clearUtmUpsPointRadius(false)
+    }
+
+    if (this.isInUpsSpace(lat, lon)) {
+      this.set('usng', undefined)
+      return
+    }
+
+    const usngsStr = converter.LLtoUSNG(lat, lon, usngPrecision)
+    this.set('usng', usngsStr, { silent: true })
   },
   drawingOff() {
     if (this.get('locationType') === 'dms') {
@@ -569,30 +591,13 @@ module.exports = Backbone.AssociatedModel.extend({
       this.repositionLatLon()
     }
   },
-
   setRadiusLatLon() {
     const lat = this.get('lat'),
       lon = this.get('lon')
 
-    if (!this.isLatLonValid(lat, lon)) return
+    if (!Drawing.isDrawing() && this.get('locationType') !== 'latlon') return
 
-    this.setRadiusDmsFromMap()
-
-    const utmUps = this.LLtoUtmUps(lat, lon)
-    if (utmUps !== undefined) {
-      const utmUpsParts = this.formatUtmUps(utmUps)
-      this.setUtmUpsPointRadius(utmUpsParts, true)
-    } else {
-      this.clearUtmUpsPointRadius(false)
-    }
-
-    if (this.isInUpsSpace(lat, lon)) {
-      this.set('usng', undefined)
-      return
-    }
-
-    const usngsStr = converter.LLtoUSNG(lat, lon, usngPrecision)
-    this.set('usng', usngsStr, { silent: true })
+    this.updateCoordPointRadiusValues(lat, lon)
   },
 
   setRadiusDmsLat() {
