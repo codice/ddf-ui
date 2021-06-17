@@ -131,9 +131,11 @@ const LocationInput = ({ onChange, value }: any) => {
   const { listenTo, stopListening } = useBackbone()
   React.useEffect(() => {
     return () => {
-      // This is to facilitate clearing out the map, it isn't about the value
-      locationModel.set(locationModel.defaults())
-      wreqr.vent.trigger('search:drawend', locationModel)
+      setTimeout(() => {
+        // This is to facilitate clearing out the map, it isn't about the value, but we don't want the changeCallback to fire!
+        locationModel.set(locationModel.defaults())
+        wreqr.vent.trigger('search:drawend', locationModel)
+      }, 0)
     }
   }, [])
   React.useEffect(() => {
