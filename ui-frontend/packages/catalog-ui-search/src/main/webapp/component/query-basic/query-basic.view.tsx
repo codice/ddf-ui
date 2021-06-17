@@ -179,7 +179,15 @@ type PropertyValueMapType = {
   [key: string]: any
 }
 
-function translateFilterToBasicMap(filter: any) {
+export function downgradeFilterTreeToBasic(
+  filter: FilterBuilderClass
+): FilterBuilderClass {
+  return constructFilterFromBasicFilter({
+    basicFilter: translateFilterToBasicMap(filter).propertyValueMap,
+  })
+}
+
+function translateFilterToBasicMap(filter: FilterBuilderClass) {
   const propertyValueMap = {
     anyDate: [],
     anyText: [],
@@ -260,7 +268,7 @@ function translateFilterToBasicMap(filter: any) {
   }
 }
 
-function getFilterTree(model: any) {
+function getFilterTree(model: any): FilterBuilderClass {
   if (typeof model.get('filterTree') === 'object') {
     return model.get('filterTree')
   }
@@ -348,6 +356,11 @@ const constructFilterFromBasicFilter = ({
   })
 }
 
+/**
+ * We want to reset the basic filter whenever the filter tree changes on the model.
+ *
+ * We also want to update the filter tree once whenver the component is first
+ */
 const useBasicFilterFromModel = ({ model }: QueryBasicProps) => {
   const [basicFilter, setBasicFilter] = React.useState(
     translateFilterToBasicMap(getFilterTree(model)).propertyValueMap
@@ -365,12 +378,12 @@ const useBasicFilterFromModel = ({ model }: QueryBasicProps) => {
       stopListening(model, 'change:filterTree', callback)
     }
   }, [model])
-  return [basicFilter, setBasicFilter]
+  return basicFilter
 }
 
 const QueryBasic = ({ model }: QueryBasicProps) => {
   const inputRef = React.useRef<HTMLDivElement>()
-  const [basicFilter] = useBasicFilterFromModel({ model })
+  const basicFilter = useBasicFilterFromModel({ model })
   const [typeAttributes] = React.useState(
     getAllValidValuesForMatchTypeAttribute()
   )
