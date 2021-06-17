@@ -17,6 +17,7 @@
  * See license.txt in the OpenLayers distribution or repository for the
  * full text of the license. */
 import {
+  BooleanTextType,
   CQLStandardFilterBuilderClass,
   deserialize,
   FilterBuilderClass,
@@ -677,12 +678,15 @@ function write(filter: any): any {
       let res = '('
       let first = true
       for (let i = 0; i < filter.filters.length; i++) {
-        if (first) {
-          first = false
-        } else {
-          res += ') ' + filter.type + ' ('
+        const writtenFilter = write(filter.filters[i])
+        if (writtenFilter) {
+          if (first) {
+            first = false
+          } else {
+            res += ') ' + filter.type + ' ('
+          }
+          res += writtenFilter
         }
-        res += write(filter.filters[i])
       }
       return res + ')'
     case 'NOT':
@@ -749,6 +753,14 @@ function write(filter: any): any {
       return `proximity(${write(filter.property)},${write(
         filter.value.distance
       )},${write(`${filter.value.first} ${filter.value.second}`)}) = true`
+      break
+    case 'BOOLEAN_TEXT_SEARCH':
+      const booleanTextSearchFilter = filter.value as BooleanTextType
+      if (booleanTextSearchFilter.error) {
+        return
+      } else {
+        return booleanTextSearchFilter.cql
+      }
       break
     case undefined:
       if (typeof filter === 'string') {
@@ -861,18 +873,30 @@ function uncollapseNOTs({
  *
  * This will only ever happen with a specific structure, so we don't need to recurse or anything.
  */
-function removeInvalidFilters(cqlAst: FilterBuilderClass): FilterBuilderClass {
-  if (cqlAst.filters) {
-    for (let i = 0; i < cqlAst.filters.length; i++) {
+function removeInvalidFilters(
+  cqlAst: FilterBuilderClass | FilterClass
+): FilterBuilderClass | FilterClass | boolean {
+  // loop over filters, splicing out invalid ones, at end of loop if all filters gone, remove self?
+  if (isFilterBuilderClass(cqlAst) || shouldBeFilterBuilderClass(cqlAst)) {
+    let i = cqlAst.filters.length
+    while (i--) {
       const currentFilter = cqlAst.filters[i]
-      if (
-        isFilterBuilderClass(currentFilter) &&
-        currentFilter.filters &&
-        !isFilterBuilderClass(currentFilter.filters[0]) &&
-        currentFilter.filters[0].property === 'anyDate'
-      ) {
+      const validFilter = removeInvalidFilters(currentFilter)
+      if (!validFilter) {
         cqlAst.filters.splice(i, 1)
-        break
+      }
+    }
+    if (cqlAst.filters.length === 0) {
+      return false
+    }
+  } else {
+    if (cqlAst.property === 'anyDate') {
+      return false
+    }
+    if (cqlAst.type === 'BOOLEAN_TEXT_SEARCH') {
+      const booleanTextValue = cqlAst.value as BooleanTextType
+      if (booleanTextValue.error) {
+        return false
       }
     }
   }

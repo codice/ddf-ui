@@ -33,6 +33,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete'
 import MuiTextField from '@material-ui/core/TextField'
 import { DateAroundField } from '../../../component/fields/date-around'
 import { CustomInputOrDefault } from './customInputOrDefault'
+import BooleanSearchBar from '../../../component/boolean-search-bar/boolean-search-bar'
 export type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
@@ -52,6 +53,13 @@ const FilterInput = ({ filter, setFilter }: Props) => {
   switch (filter.type) {
     case 'IS NULL':
       return null
+    case 'BOOLEAN_TEXT_SEARCH':
+      return (
+        <BooleanSearchBar
+          value={value as ValueTypes['booleanText']}
+          onChange={onChange}
+        />
+      )
     case 'FILTER FUNCTION proximity':
       return (
         <NearField
