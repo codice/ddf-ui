@@ -348,16 +348,33 @@ const constructFilterFromBasicFilter = ({
   })
 }
 
-const QueryBasic = ({ model }: QueryBasicProps) => {
-  const inputRef = React.useRef<HTMLDivElement>()
+const useBasicFilterFromModel = ({ model }: QueryBasicProps) => {
   const [basicFilter, setBasicFilter] = React.useState(
     translateFilterToBasicMap(getFilterTree(model)).propertyValueMap
   )
+  const { listenTo, stopListening } = useBackbone()
+
+  React.useEffect(() => {
+    const callback = () => {
+      setBasicFilter(
+        translateFilterToBasicMap(getFilterTree(model)).propertyValueMap
+      )
+    }
+    listenTo(model, 'change:filterTree', callback)
+    return () => {
+      stopListening(model, 'change:filterTree', callback)
+    }
+  }, [model])
+  return [basicFilter, setBasicFilter]
+}
+
+const QueryBasic = ({ model }: QueryBasicProps) => {
+  const inputRef = React.useRef<HTMLDivElement>()
+  const [basicFilter] = useBasicFilterFromModel({ model })
   const [typeAttributes] = React.useState(
     getAllValidValuesForMatchTypeAttribute()
   )
 
-  const { listenTo, stopListening } = useBackbone()
   /**
    * Because of how things render, auto focusing to the input is more complicated than I wish.  This ensures it works everytime, whereas autoFocus prop is unreliable
    */
@@ -371,17 +388,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
       clearTimeout(timeoutId)
     }
   }, [])
-  React.useEffect(() => {
-    const callback = () => {
-      setBasicFilter(
-        translateFilterToBasicMap(getFilterTree(model)).propertyValueMap
-      )
-    }
-    listenTo(model, 'change:filterTree', callback)
-    return () => {
-      stopListening(model, 'change:filterTree', callback)
-    }
-  }, [model])
+
   return (
     <>
       <div className="editor-properties px-2 py-3">
