@@ -34,6 +34,7 @@ import {
   FilterBuilderClass,
   FilterClass,
 } from '../../component/filter-builder/filter.structure'
+import { downgradeFilterTreeToBasic } from '../../component/query-basic/query-basic.view'
 const wreqr = require('../wreqr')
 const Query = {}
 
@@ -209,8 +210,14 @@ Query.Model = Backbone.AssociatedModel.extend({
         this.set('isOutdated', true)
       }
     )
+    // basically remove invalid filters when going from basic to advanced, and make it basic compatible
     this.listenTo(this, 'change:type', () => {
-      this.set('filterTree', cql.removeInvalidFilters(this.get('filterTree'))) // basically remove invalid filters when going from basic to advanced
+      if (this.get('type') === 'basic') {
+        const cleanedUpFilterTree = cql.removeInvalidFilters(
+          this.get('filterTree')
+        )
+        this.set('filterTree', downgradeFilterTreeToBasic(cleanedUpFilterTree))
+      }
     })
   },
   getSelectedSources() {
