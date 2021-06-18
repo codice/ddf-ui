@@ -116,6 +116,13 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>com.connexta.jsonrpc</groupId>
+            <artifactId>jsonrpc-features</artifactId>
+            <version>${ddf-jsonrpc.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
             <groupId>org.codice.ddf.search</groupId>
             <artifactId>catalog-plugin-highlight</artifactId>
             <version>${project.version}</version>
