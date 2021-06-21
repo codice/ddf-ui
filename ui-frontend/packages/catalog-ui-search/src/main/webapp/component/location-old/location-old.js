@@ -194,6 +194,8 @@ module.exports = Backbone.AssociatedModel.extend({
         // initializes dms/usng/utmUps using lat/lon
         this.updateCoordPointRadiusValues(props.lat, props.lon)
       }
+    } else {
+      this.setUsngDmsUtmWithLineOrPoly(this)
     }
   },
   updateCoordPointRadiusValues(lat, lon) {
