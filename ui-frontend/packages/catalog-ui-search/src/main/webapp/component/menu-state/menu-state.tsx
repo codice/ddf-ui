@@ -24,6 +24,14 @@ export function useRerenderingRef<T>() {
   }
 }
 
+/**
+ * Firefox and Chrome differ slightly in implementation.  If only one entry, firefox returns that instead of an array!
+ */
+const getBorderBoxSizeFromEntry = (entry: ResizeObserverEntry) => {
+  const borderBoxSizeArray: ResizeObserverSize[] = []
+  return borderBoxSizeArray.concat(entry.borderBoxSize)
+}
+
 const useListenForChildUpdates = ({
   popoverRef,
   action,
@@ -39,7 +47,7 @@ const useListenForChildUpdates = ({
      */
     const widthCallback = (entries: ResizeObserverEntry[]) => {
       for (let entry of entries) {
-        for (let subentry of entry.borderBoxSize) {
+        for (let subentry of getBorderBoxSizeFromEntry(entry)) {
           if (subentry.inlineSize !== lastWidth) {
             lastWidth = subentry.inlineSize
             action.current?.updatePosition()
@@ -52,7 +60,7 @@ const useListenForChildUpdates = ({
      */
     const heightCallback = debounce((entries: ResizeObserverEntry[]) => {
       for (let entry of entries) {
-        for (let subentry of entry.borderBoxSize) {
+        for (let subentry of getBorderBoxSizeFromEntry(entry)) {
           if (subentry.blockSize !== lastHeight) {
             lastHeight = subentry.blockSize
             action.current?.updatePosition()
