@@ -25,6 +25,7 @@ import Button from '@material-ui/core/Button'
 import Popover from '@material-ui/core/Popover'
 const user = require('../../component/singletons/user-instance.js')
 import SettingsIcon from '@material-ui/icons/Settings'
+import { Elevations } from '../../component/theme/theme'
 
 const MapSettings = (props: WithBackboneProps) => {
   const [coordFormat, setCoordFormat] = useState(
@@ -71,11 +72,10 @@ const MapSettings = (props: WithBackboneProps) => {
         data-id="settings-button"
         {...menuState.MuiButtonProps}
       >
-        <span className="interaction-text">Settings</span>
         <SettingsIcon />
       </Button>
       <Popover {...menuState.MuiPopoverProps}>
-        <Paper>
+        <Paper elevation={Elevations.overlays}>
           <MapSettingsPresentation
             coordFormat={coordFormat}
             updateCoordFormat={updateCoordFormat}
