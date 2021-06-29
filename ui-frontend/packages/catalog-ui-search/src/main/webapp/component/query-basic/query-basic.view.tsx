@@ -29,7 +29,6 @@ const METADATA_CONTENT_TYPE = 'metadata-content-type'
 import TextField from '@material-ui/core/TextField'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
-import { useState } from 'react'
 import {
   BooleanTextType,
   FilterBuilderClass,

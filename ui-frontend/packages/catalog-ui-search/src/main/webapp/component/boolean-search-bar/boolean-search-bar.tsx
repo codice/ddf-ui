@@ -13,15 +13,11 @@ import Autocomplete, {
 } from '@material-ui/lab/Autocomplete'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import styled from 'styled-components'
 import Paper from '@material-ui/core/Paper'
 import { Elevations } from '../theme/theme'
 import { useState } from 'react'
 import fetch from '../../react-component/utils/fetch'
 import { BooleanTextType } from '../filter-builder/filter.structure'
-// import { useLazyQuery } from '@apollo/react-hooks'
-// import { GET_SUGGESTIONS } from '../suggestions/suggestions.graphql'
-const properties = require('../../js/properties.js')
 
 const defaultFilterOptions = createFilterOptions()
 
@@ -236,6 +232,7 @@ const BooleanSearchBar = ({ value, onChange, TextFieldProps }: Props) => {
 
   React.useEffect(() => {
     var controller = new AbortController()
+    setLoading(true)
     if (value.text && isValidBeginningToken(value.text)) {
       fetchCql({
         searchText: value.text,
@@ -245,6 +242,8 @@ const BooleanSearchBar = ({ value, onChange, TextFieldProps }: Props) => {
             cql,
             error: Boolean(message),
           })
+          setLoading(false)
+          console.log(loading + ' should be falso')
         },
         signal: controller.signal,
       })
