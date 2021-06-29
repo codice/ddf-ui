@@ -136,7 +136,7 @@ module.exports = Marionette.LayoutView.extend({
       <React.Fragment>
         <div id="mapDrawingPopup"></div>
         <div className="map-context-menu"></div>
-        <div id="mapTools" className="">
+        <div id="mapTools">
           <MapToolbar mapView={this} />
         </div>
         <div
