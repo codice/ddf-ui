@@ -361,8 +361,24 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
           padding: 0px;
         }
       }
-      .w-hfull {
-        width: 1;
+      // idea is to have this track with subtracting margin / padding
+      .max-w-full-1 {
+        max-width: calc(100% - 2*0.25rem);
+      }
+      .max-w-full-2 {
+        max-width: calc(100% - 2*0.5rem);
+      }
+      .max-w-full-3 {
+        max-width: calc(100% - 2*0.75rem);
+      }
+      .max-w-full-4 {
+        max-width: calc(100% - 2*1rem);
+      }
+      .min-w-32 {
+        min-width: 8rem;
+      }
+      .min-w-16	{
+        min-width: 4rem;
       }
     `
 

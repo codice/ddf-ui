@@ -306,7 +306,7 @@ const Gazetteer = (props: Props) => {
   }
 
   return (
-    <div>
+    <>
       {onlineGazetteer ? (
         <Keyword
           value={props.value}
@@ -328,7 +328,7 @@ const Gazetteer = (props: Props) => {
           variant={props.variant}
         />
       )}
-    </div>
+    </>
   )
 }
 
