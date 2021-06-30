@@ -142,7 +142,7 @@ module.exports = Marionette.LayoutView.extend({
         <div
           data-id="map-container"
           id="mapContainer"
-          className="height-full px-2"
+          className="height-full p-2"
         ></div>
         <div className="mapInfo">
           <div className="info-feature"></div>
