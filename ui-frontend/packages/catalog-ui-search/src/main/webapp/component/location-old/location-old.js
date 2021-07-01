@@ -553,7 +553,7 @@ module.exports = Backbone.AssociatedModel.extend({
     if (!this.isLatLonValid(north, west) || !this.isLatLonValid(south, east)) {
       return
     }
-
+    this.setBboxDmsFromMap()
     let utmUps = this.LLtoUtmUps(north, west)
     if (utmUps !== undefined) {
       var utmUpsParts = this.formatUtmUps(utmUps)

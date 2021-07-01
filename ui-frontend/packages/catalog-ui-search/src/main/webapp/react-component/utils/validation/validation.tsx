@@ -356,7 +356,11 @@ function getUtmUpsCoords(upperLeft: any, lowerRight: any) {
 }
 
 function validateLatitudes(north: any, south: any, isUsngOrUtmUps: boolean) {
-  if (!isNaN(south) && !isNaN(north) && parseFloat(south) >= parseFloat(north)) {
+  if (
+    !isNaN(south) &&
+    !isNaN(north) &&
+    parseFloat(south) >= parseFloat(north)
+  ) {
     return {
       error: true,
       message: isUsngOrUtmUps
