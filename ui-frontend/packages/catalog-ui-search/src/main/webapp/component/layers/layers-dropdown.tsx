@@ -15,12 +15,14 @@
 import * as React from 'react'
 import Button from '@material-ui/core/Button'
 import Popover from '@material-ui/core/Popover'
-import { useMenuState } from '../../menu-state/menu-state'
-import MRC from '../../../react-component/marionette-region-container/marionette-region-container'
-const Marionette = require('marionette')
-const LayersView = require('../../layers/layers.view.js')
-import TuneIcon from '@material-ui/icons/Tune'
-const ReactLayers = () => {
+import { useMenuState } from '../menu-state/menu-state'
+import MRC from '../../react-component/marionette-region-container/marionette-region-container'
+const LayersView = require('./layers.view.js')
+import LayersIcon from '@material-ui/icons/Layers'
+import Paper from '@material-ui/core/Paper'
+import { Elevations } from '../theme/theme'
+
+export const LayersDropdown = () => {
   const menuState = useMenuState()
 
   return (
@@ -31,22 +33,14 @@ const ReactLayers = () => {
         {...menuState.MuiButtonProps}
       >
         <div className="flex flex-row items-center">
-          <span>Layers</span>
-          <TuneIcon />
+          <LayersIcon />
         </div>
       </Button>
       <Popover {...menuState.MuiPopoverProps}>
-        <div className="px-2">
+        <Paper elevation={Elevations.overlays} className="px-2">
           <MRC view={LayersView} />
-        </div>
+        </Paper>
       </Popover>
     </>
   )
 }
-
-export default Marionette.ItemView.extend({
-  template() {
-    return <ReactLayers />
-  },
-  className: 'is-layers',
-})

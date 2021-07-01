@@ -20,6 +20,8 @@ import HomeIcon from '@material-ui/icons/Home'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
 import Popover from '@material-ui/core/Popover'
 import RoomIcon from '@material-ui/icons/Room'
+import Paper from '@material-ui/core/Paper'
+import { Elevations } from '../../../component/theme/theme'
 type voidFunc = () => void
 
 type Props = {
@@ -32,7 +34,7 @@ const ZoomToHome = (props: Props) => {
   const menuState = useMenuState()
   return (
     <>
-      <div className="Mui-border-divider border border-2 flex flex-row items-stretch">
+      <div className="flex flex-row items-stretch">
         <Button
           size="small"
           data-id="home-button"
@@ -41,10 +43,10 @@ const ZoomToHome = (props: Props) => {
           onClick={goHome}
         >
           <div className="flex flex-row items-center">
-            <span>Home</span> <HomeIcon />
+            <HomeIcon />
           </div>
         </Button>
-        <div className="Mui-bg-divider w-min"></div>
+        <div className="Mui-bg-default w-min my-2"></div>
         <Button
           size="small"
           data-id="home-dropdown"
@@ -54,21 +56,23 @@ const ZoomToHome = (props: Props) => {
         </Button>
       </div>
       <Popover {...menuState.MuiPopoverProps}>
-        <Button
-          size="small"
-          data-id="set-home-button"
-          className="p-2"
-          onClick={() => {
-            saveHome()
-            menuState.handleClose()
-          }}
-          title="Save Current View as Home Location"
-        >
-          <span>
-            Set Home
-            <RoomIcon />
-          </span>
-        </Button>
+        <Paper elevation={Elevations.overlays} className="p-2">
+          <Button
+            size="small"
+            data-id="set-home-button"
+            className="p-2"
+            onClick={() => {
+              saveHome()
+              menuState.handleClose()
+            }}
+            title="Save Current View as Home Location"
+          >
+            <span>
+              Set Home
+              <RoomIcon />
+            </span>
+          </Button>
+        </Paper>
       </Popover>
     </>
   )
