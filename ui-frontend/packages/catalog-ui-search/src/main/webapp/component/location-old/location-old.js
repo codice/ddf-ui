@@ -167,7 +167,7 @@ module.exports = Backbone.AssociatedModel.extend({
       this.setBboxUsng
     )
     this.listenTo(this, 'change:locationType', this.handleLocationType)
-    this.listenTo(this, 'change:bbox', _.debounce(this.setBboxLatLon, 150))
+    this.listenTo(this, 'change:bbox', _.debounce(this.setBboxLatLon, 5))
     this.listenTo(this, 'change:lat change:lon', this.setRadiusLatLon)
     this.listenTo(this, 'change:usng', this.setRadiusUsng)
     this.listenTo(
@@ -555,7 +555,7 @@ module.exports = Backbone.AssociatedModel.extend({
     if (!this.isLatLonValid(north, west) || !this.isLatLonValid(south, east)) {
       return
     }
-
+    this.setBboxDmsFromMap()
     let utmUps = this.LLtoUtmUps(north, west)
     if (utmUps !== undefined) {
       var utmUpsParts = this.formatUtmUps(utmUps)

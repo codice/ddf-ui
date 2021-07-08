@@ -318,10 +318,10 @@ function getUsngCoords(upperLeft: any, lowerRight: any) {
   const upperLeftCoord = converter.USNGtoLL(upperLeft, true)
   const lowerRightCoord = converter.USNGtoLL(lowerRight, true)
   return {
-    north: upperLeftCoord.lat.toFixed(5),
-    south: lowerRightCoord.lat.toFixed(5),
-    west: upperLeftCoord.lon.toFixed(5),
-    east: lowerRightCoord.lon.toFixed(5),
+    north: Number(upperLeftCoord.lat.toFixed(5)),
+    south: Number(lowerRightCoord.lat.toFixed(5)),
+    west: Number(upperLeftCoord.lon.toFixed(5)),
+    east: Number(lowerRightCoord.lon.toFixed(5)),
   }
 }
 
@@ -356,7 +356,11 @@ function getUtmUpsCoords(upperLeft: any, lowerRight: any) {
 }
 
 function validateLatitudes(north: any, south: any, isUsngOrUtmUps: boolean) {
-  if (!isNaN(south) && !isNaN(north) && south >= north) {
+  if (
+    !isNaN(south) &&
+    !isNaN(north) &&
+    parseFloat(south) >= parseFloat(north)
+  ) {
     return {
       error: true,
       message: isUsngOrUtmUps
@@ -368,7 +372,7 @@ function validateLatitudes(north: any, south: any, isUsngOrUtmUps: boolean) {
 }
 
 function validateLongitudes(west: any, east: any, isUsngOrUtmUps: boolean) {
-  if (!isNaN(west) && !isNaN(east) && west === east) {
+  if (!isNaN(west) && !isNaN(east) && parseFloat(west) === parseFloat(east)) {
     return {
       error: true,
       message: isUsngOrUtmUps
