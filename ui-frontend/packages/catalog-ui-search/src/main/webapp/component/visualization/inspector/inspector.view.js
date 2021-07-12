@@ -19,8 +19,6 @@ import styled from 'styled-components'
 const Marionette = require('marionette')
 const CustomElements = require('../../../js/CustomElements.js')
 const MetacardView = require('../../tabs/metacard/tabs-metacard.view.js')
-const MetacardsView = require('../../tabs/metacards/tabs-metacards.view.js')
-const MetacardTitleView = require('../../metacard-title/metacard-title.view.js')
 
 const Empty = styled.div`
   text-align: center;
@@ -88,22 +86,8 @@ module.exports = Marionette.LayoutView.extend({
   },
   showContent() {
     const selectedResults = this.options.selectionInterface.getSelectedResults()
-    if (selectedResults.length === 1) {
+    if (selectedResults.length >= 0) {
       this.showMetacard()
-    } else if (selectedResults.length > 1) {
-      this.showMetacards()
-    }
-  },
-  showMetacards() {
-    if (
-      !this.inspector.currentView ||
-      this.inspector.currentView.constructor !== MetacardsView
-    ) {
-      this.inspector.show(
-        new MetacardsView({
-          selectionInterface: this.options.selectionInterface,
-        })
-      )
     }
   },
   showMetacard() {

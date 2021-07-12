@@ -5,9 +5,6 @@ import { useLazyResultsFromSelectionInterface } from '../selection-interface/hoo
 import { useStatusOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
 import CircularProgress from '@material-ui/core/CircularProgress'
 const SelectionInterfaceModel = require('../selection-interface/selection-interface.model.js')
-const Backbone = require('backbone')
-const MetacardTitleView = require('../metacard-title/metacard-title.view.js')
-import MRC from '../../react-component/marionette-region-container'
 import Grid from '@material-ui/core/Grid'
 import { DEFAULT_QUERY_OPTIONS, useUserQuery } from '../../js/model/TypedQuery'
 import {
@@ -16,6 +13,7 @@ import {
 } from '../filter-builder/filter.structure'
 import { TypedUserInstance, useEphemeralFilter } from '../singletons/TypedUser'
 import Button from '@material-ui/core/Button'
+import { TitleView } from '../visualization/inspector/inspector'
 
 export const getFilterTreeForId = ({ id }: { id: string }) => {
   return new FilterBuilderClass({
@@ -101,17 +99,8 @@ const MetacardNavRoute = () => {
   } else {
     return (
       <Grid container alignItems="center" className="w-full h-full">
-        <Grid item className="w-full">
-          <MRC
-            className="w-full h-full"
-            view={
-              new MetacardTitleView({
-                model: new Backbone.Collection(
-                  filteredResults[0].getBackbone()
-                ),
-              })
-            }
-          />
+        <Grid item className="max-w-full">
+          <TitleView lazyResult={filteredResults[0]} />
         </Grid>
       </Grid>
     )

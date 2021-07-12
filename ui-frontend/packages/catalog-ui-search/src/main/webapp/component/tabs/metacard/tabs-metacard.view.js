@@ -15,15 +15,11 @@
 
 const _ = require('underscore')
 const TabsView = require('../tabs.view')
-const MetacardTabsModel = require('./tabs-metacard')
 const properties = require('../../../js/properties.js')
 const user = require('../../singletons/user-instance')
 
 module.exports = TabsView.extend({
   className: 'is-metacard',
-  setDefaultModel() {
-    this.model = new MetacardTabsModel()
-  },
   initialize(options) {
     this.selectionInterface = options.selectionInterface
     if (options.model === undefined) {

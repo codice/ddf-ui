@@ -53,4 +53,7 @@ export const TypedProperties = {
   isDevelopment: (): boolean => {
     return properties.isDevelopment()
   },
+  isMetacardPreviewEnabled: (): boolean => {
+    return properties.isMetacardPreviewEnabled()
+  },
 }
