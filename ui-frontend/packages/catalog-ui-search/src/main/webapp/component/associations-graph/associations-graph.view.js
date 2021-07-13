@@ -18,7 +18,7 @@ const wreqr = require('../../js/wreqr.js')
 const _ = require('underscore')
 const template = require('./associations-graph.hbs')
 const CustomElements = require('../../js/CustomElements.js')
-const AssociationView = require('../association/association.view.js')
+import AssociationView from '../association/association.view.tsx'
 const Association = require('../association/association.js')
 const Vis = require('vis')
 

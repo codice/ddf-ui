@@ -14,65 +14,28 @@
  **/
 
 import * as React from 'react'
-const Backbone = require('backbone')
+import Backbone from 'backbone'
 const Marionette = require('marionette')
 const $ = require('jquery')
 const CustomElements = require('../../js/CustomElements.js')
 const LoadingCompanionView = require('../loading-companion/loading-companion.view.js')
-const AssociationsMenuView = require('../associations-menu/associations-menu.view.js')
+import { StateModel } from '../associations-menu/associations-menu.view'
 const AssociationCollectionView = require('../association/association.collection.view.js')
 const AssociationCollection = require('../association/association.collection.js')
 const AssociationGraphView = require('../associations-graph/associations-graph.view.js')
-const user = require('../singletons/user-instance')
+import MetacardAssociationsViewReact from './metacard-associations.react'
 
-module.exports = Marionette.LayoutView.extend({
+export default Marionette.LayoutView.extend({
   className: 'w-full h-full overflow-auto',
   setDefaultModel() {
     this.model = this.options.result.getBackbone()
   },
   regions: {
-    associationsMenu: '> .content-menu',
     associationsList: '> .editor-content',
     associationsGraph: '> .content-graph',
   },
   template() {
-    return (
-      <React.Fragment>
-        <div className="content-menu" />
-        <div className="content-graph" />
-        <div className="list-header">
-          <div className="header-text header-parent">Parent</div>
-          <div className="header-text header-relationship">Relationship</div>
-          <div className="header-text header-child">Child</div>
-        </div>
-        <div className="editor-content" />
-        {user.canWrite(this.model) ? (
-          <React.Fragment>
-            <div className="list-footer">
-              <div className="footer-text" />
-              <button className="old-button footer-add is-positive">
-                <span className="fa fa-plus" />
-                <span>&nbsp;Add Association</span>
-              </button>
-            </div>
-            <div className="editor-footer">
-              <button className="old-button footer-edit is-primary">
-                <span className="fa fa-pencil" />
-                <span>&nbsp;Edit</span>
-              </button>
-              <button className="old-button footer-cancel is-negative">
-                <span className="fa fa-times" />
-                <span>&nbsp;Cancel</span>
-              </button>
-              <button className="old-button footer-save is-positive">
-                <span className="fa fa-floppy-o" />
-                <span>&nbsp;Save</span>
-              </button>
-            </div>
-          </React.Fragment>
-        ) : null}
-      </React.Fragment>
-    )
+    return <MetacardAssociationsViewReact view={this} />
   },
   tagName: CustomElements.register('metacard-associations'),
   events: {
@@ -83,7 +46,7 @@ module.exports = Marionette.LayoutView.extend({
   },
   _associationCollection: undefined,
   _knownMetacards: undefined,
-  initialize(options) {
+  initialize(options: any) {
     this.selectionInterface =
       options.selectionInterface || this.selectionInterface
     if (!options.model) {
@@ -104,8 +67,8 @@ module.exports = Marionette.LayoutView.extend({
     this.clearAssociations()
     LoadingCompanionView.beginLoading(this)
     $.get('./internal/associations/' + this.model.get('metacard').get('id'))
-      .then((response) => {
-        if (!this.isDestroyed && this.associationsMenu !== undefined) {
+      .then((response: any) => {
+        if (!this.isDestroyed) {
           this._originalAssociations = JSON.parse(JSON.stringify(response))
           this._associations = response
           this.parseAssociations()
@@ -127,7 +90,7 @@ module.exports = Marionette.LayoutView.extend({
   },
   parseAssociations() {
     this.clearAssociations()
-    this._associations.forEach((association) => {
+    this._associations.forEach((association: any) => {
       this._knownMetacards.add([association.parent, association.child])
       this._associationCollection.add({
         parent: association.parent.id,
@@ -140,7 +103,6 @@ module.exports = Marionette.LayoutView.extend({
     })
   },
   onBeforeShow() {
-    this.showAssociationsMenuView()
     this.showAssociationsListView()
     this.showGraphView()
     this.handleFooter()
@@ -158,9 +120,6 @@ module.exports = Marionette.LayoutView.extend({
       })
     )
   },
-  showAssociationsMenuView() {
-    this.associationsMenu.show(new AssociationsMenuView())
-  },
   showAssociationsListView() {
     this.associationsList.show(
       new AssociationCollectionView({
@@ -173,31 +132,19 @@ module.exports = Marionette.LayoutView.extend({
     this.associationsList.currentView.turnOffEditing()
   },
   setupMenuListeners() {
-    this.listenTo(
-      this.associationsMenu.currentView.getFilterMenuModel(),
-      'change:value',
-      this.handleFilter
-    )
-    this.listenTo(
-      this.associationsMenu.currentView.getDisplayMenuModel(),
-      'change:value',
-      this.handleDisplay
-    )
+    this.listenTo(StateModel, 'change:filter', this.handleFilter)
+    this.listenTo(StateModel, 'change:display', this.handleDisplay)
   },
   handleFilter() {
-    const filter = this.associationsMenu.currentView
-      .getFilterMenuModel()
-      .get('value')[0]
+    const filter = StateModel.get('filter')
     this.$el.toggleClass('filter-by-parent', filter === 'parent')
     this.$el.toggleClass('filter-by-child', filter === 'child')
     this.associationsGraph.currentView.handleFilter(filter)
   },
   handleDisplay() {
-    const filter = this.associationsMenu.currentView
-      .getDisplayMenuModel()
-      .get('value')[0]
-    this.$el.toggleClass('show-list', filter === 'list')
-    this.$el.toggleClass('show-graph', filter === 'graph')
+    const display = StateModel.get('display')
+    this.$el.toggleClass('show-list', display === 'list')
+    this.$el.toggleClass('show-graph', display === 'graph')
     this.associationsGraph.currentView.fitGraph()
   },
   handleEdit() {
@@ -222,7 +169,7 @@ module.exports = Marionette.LayoutView.extend({
   handleSave() {
     LoadingCompanionView.beginLoading(this)
     const data = this._associationCollection.toJSON()
-    data.forEach((association) => {
+    data.forEach((association: any) => {
       association.parent = {
         id: association.parent,
       }
@@ -239,7 +186,7 @@ module.exports = Marionette.LayoutView.extend({
       data: JSON.stringify(data),
       method: 'PUT',
       contentType: 'application/json',
-    }).always((response) => {
+    }).always(() => {
       setTimeout(() => {
         if (!this.isDestroyed) {
           this.getAssociations()

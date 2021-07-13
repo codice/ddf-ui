@@ -13,7 +13,7 @@
  *
  **/
 
-const MetacardAssociationsView = require('../../metacard-associations/metacard-associations.view.js')
+import MetacardAssociationsView from '../../metacard-associations/metacard-associations.view'
 const MetacardPreviewView = require('../../metacard-preview/metacard-preview.view.js')
 import React from 'react'
 //@ts-ignore

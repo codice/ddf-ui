@@ -12,8 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
-const childView = require('./association.view')
+import childView from './association.view.tsx'
 const Marionette = require('marionette')
 const CustomElements = require('../../js/CustomElements.js')
 
