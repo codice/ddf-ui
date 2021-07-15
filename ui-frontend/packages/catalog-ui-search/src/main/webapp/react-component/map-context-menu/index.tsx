@@ -18,8 +18,6 @@ import { Menu, MenuItem } from '../menu'
 
 interface Props {
   onChange: (value: string) => void
-  mouseLat?: number
-  mouseLon?: number
   coordinateValues: {
     dms: string
     lat: string
@@ -28,7 +26,6 @@ interface Props {
     utmUps: string
   }
   closeMenu: () => void
-  key: number
 }
 
 export const MapContextMenu = ({
