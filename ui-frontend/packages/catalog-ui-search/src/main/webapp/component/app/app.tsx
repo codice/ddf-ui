@@ -44,7 +44,6 @@ import UserSettings, {
   SettingsComponentType,
 } from '../../react-component/user-settings/user-settings'
 const wreqr = require('../../js/wreqr.js')
-const HelpView = require('../help/help.view.js')
 import { GlobalStyles } from './global-styles'
 import CancelDrawing from './cancel-drawing'
 import { PermissiveComponentType } from '../../typescript'
@@ -136,27 +135,6 @@ export const useDefaultWelcome = () => {
       }, 500)
     }
   }, [])
-}
-
-export const useDefaultHelp = () => {
-  const location = useLocation()
-  const history = useHistory()
-
-  const queryParams = queryString.parse(location.search)
-
-  React.useEffect(() => {
-    const openHelp = Boolean(queryParams['global-help'])
-
-    HelpView.onClose = () => {
-      delete queryParams['global-help']
-      history.push(`${location.pathname}?${queryString.stringify(queryParams)}`)
-    }
-    if (openHelp && !HelpView.hintOn) {
-      HelpView.toggleHints()
-    } else if (!openHelp && HelpView.hintOn) {
-      HelpView.toggleHints()
-    }
-  })
 }
 
 const scrollCurrentRouteIntoView = () => {

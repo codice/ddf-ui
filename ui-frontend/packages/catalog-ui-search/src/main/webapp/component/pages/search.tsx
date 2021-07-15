@@ -11,6 +11,7 @@ import Paper from '@material-ui/core/Paper'
 import QueryAddView from '../query-add/query-add'
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
+import queryString from 'query-string'
 
 import MRC from '../../react-component/marionette-region-container'
 import Button, { ButtonProps } from '@material-ui/core/Button'
@@ -1257,7 +1258,9 @@ const useKeepSearchInUrl = ({
           JSON.stringify(queryModel.toJSON())
         )
         history.replace({
-          search: `?defaultQuery=${encodedQueryModel}`,
+          search: `${queryString.stringify({
+            defaultQuery: encodedQueryModel,
+          })}`,
         })
       }
     }, 2000)
@@ -1397,10 +1400,12 @@ const SavedSearchModeContext = React.createContext({
   selectionInterface: {} as any,
 })
 
-const decodeUrlIfValid = (urlBasedQuery: string) => {
-  if (urlBasedQuery) {
+const decodeUrlIfValid = (search: string) => {
+  if (location) {
     try {
-      return JSON.parse(decodeURIComponent(urlBasedQuery))
+      const queryParams = queryString.parse(search)
+      const defaultQueryString = (queryParams['defaultQuery'] || '').toString()
+      return JSON.parse(decodeURIComponent(defaultQueryString))
     } catch (err) {
       console.error(err)
       return {}
@@ -1412,9 +1417,8 @@ const decodeUrlIfValid = (urlBasedQuery: string) => {
 
 export const HomePage = () => {
   const location = useLocation()
-  let urlBasedQuery = location.search.split('?defaultQuery=')[1]
   const [queryModel] = useUserQuery({
-    attributes: decodeUrlIfValid(urlBasedQuery),
+    attributes: decodeUrlIfValid(location.search),
   })
   const { id } = useParams<{ id?: string }>()
   const searchPageMode = useSearchPageMode({ id })
