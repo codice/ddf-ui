@@ -17,6 +17,11 @@ import java.util.List;
 import java.util.Map;
 
 public class Parser {
+    public String propertyName= "anyText";
+    public Parser(java.io.Reader stream, String propertyName){
+        this.propertyName = propertyName;
+        return new Parser(stream);
+    }
 }
 
 PARSER_END(Parser)

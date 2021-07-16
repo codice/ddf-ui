@@ -25,6 +25,7 @@ type Props = {
   value: BooleanTextType
   onChange: (value: BooleanTextType) => void
   TextFieldProps?: Partial<TextFieldProps>
+  PropertyFieldProps?: string
 }
 
 const getRandomId = () => {
@@ -134,19 +135,13 @@ const validateShape = ({ value, onChange }: Props) => {
   }
 }
 
-const ShapeValidator = ({ value, onChange, TextFieldProps }: Props) => {
+const ShapeValidator = (props: Props) => {
   React.useEffect(() => {
-    validateShape({ value, onChange })
+    validateShape(props)
   })
 
-  if (value.text !== undefined) {
-    return (
-      <BooleanSearchBar
-        value={value}
-        onChange={onChange}
-        TextFieldProps={TextFieldProps}
-      />
-    )
+  if (props.value.text !== undefined) {
+    return <BooleanSearchBar {...props} />
   }
   return null
 }
@@ -158,10 +153,12 @@ type BooleanEndpointReturnType = {
 
 const fetchCql = async ({
   searchText,
+  searchProperty,
   callback,
   signal,
 }: {
   callback: (result: BooleanEndpointReturnType) => void
+  searchProperty?: string
   searchText: string | null
   signal?: AbortSignal
 }) => {
@@ -169,7 +166,9 @@ const fetchCql = async ({
 
   if (trimmedInput) {
     const res = await fetch(
-      `./internal/boolean-search/cql?q=${encodeURIComponent(trimmedInput!)}`,
+      `./internal/boolean-search/cql?q=${encodeURIComponent(
+        trimmedInput!
+      )}&e=${encodeURIComponent(searchProperty!)}`,
       {
         signal,
       }
@@ -186,7 +185,12 @@ const fetchCql = async ({
  * We want to take in a value, and onChange update it.  That would then flow a new value
  * back down.
  */
-const BooleanSearchBar = ({ value, onChange, TextFieldProps }: Props) => {
+const BooleanSearchBar = ({
+  value,
+  onChange,
+  TextFieldProps,
+  PropertyFieldProps,
+}: Props) => {
   const [errorMessage, setErrorMessage] = React.useState(
     <>
       <div>
@@ -229,13 +233,14 @@ const BooleanSearchBar = ({ value, onChange, TextFieldProps }: Props) => {
     } else {
     }
   }, [value])
-
   React.useEffect(() => {
+    
     var controller = new AbortController()
     setLoading(true)
     if (value.text && isValidBeginningToken(value.text)) {
       fetchCql({
         searchText: value.text,
+        searchProperty: PropertyFieldProps,
         callback: ({ cql = '', message }) => {
           onChange({
             ...value,
@@ -243,7 +248,6 @@ const BooleanSearchBar = ({ value, onChange, TextFieldProps }: Props) => {
             error: Boolean(message),
           })
           setLoading(false)
-          console.log(loading + ' should be falso')
         },
         signal: controller.signal,
       })

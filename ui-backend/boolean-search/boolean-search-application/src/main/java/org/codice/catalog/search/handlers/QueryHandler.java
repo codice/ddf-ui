@@ -30,6 +30,7 @@ public class QueryHandler implements Handler {
   @Override
   public void handle(@NotNull final Context ctx) {
     final String searchExpression = ctx.queryParam("q");
+    final String searchProperty = ctx.queryParam("e");
     final Parser parser = new Parser(new StringReader(searchExpression));
     try {
       String query = parser.SearchExpression();

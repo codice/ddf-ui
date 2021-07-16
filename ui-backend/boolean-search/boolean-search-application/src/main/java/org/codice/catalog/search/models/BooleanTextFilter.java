@@ -19,7 +19,7 @@ public class BooleanTextFilter {
   }
 
   public BooleanTextFilter(final String value) {
-    this("ILIKE", "anyText", value);
+    this("ILIKE", "anyText2", value);
   }
 
   public String getProperty() {
