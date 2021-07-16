@@ -17,6 +17,12 @@ import java.util.List;
 import java.util.Map;
 
 public class Parser {
+    public String propertyName= "anyText";
+
+    public Parser(Reader stream, String property) {
+      this(stream);
+      this.propertyName = property;
+    }
 }
 
 PARSER_END(Parser)
@@ -46,6 +52,8 @@ TOKEN :
      < STRING : (["A"-"Z","a"-"z","0"-"9"])+ >
    | < QUOTED_STRING: "\"" (~["\""])+ "\"" >
 }
+
+
 
 String SearchExpression() :
 {
@@ -93,7 +101,7 @@ String TextSearchComponent() :
     (
         quotedSearchPhrase = QuotedSearchPhrase()
         {
-          filters.add(new BooleanTextFilter(quotedSearchPhrase.replace("\"", "").replace("'", "''")));
+          filters.add(new BooleanTextFilter(this.propertyName, quotedSearchPhrase.replace("\"", "").replace("'", "''")));
         }
         |
         searchTextFilters = WordSequence()
@@ -137,7 +145,7 @@ List<BooleanTextFilter> WordSequence():
   (
     word = <STRING>
     {
-      filters.add(new BooleanTextFilter(word.image));
+      filters.add(new BooleanTextFilter(this.propertyName, word.image));
     }
   )+
   {

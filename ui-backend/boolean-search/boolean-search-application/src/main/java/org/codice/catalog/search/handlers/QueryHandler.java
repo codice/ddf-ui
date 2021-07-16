@@ -30,7 +30,15 @@ public class QueryHandler implements Handler {
   @Override
   public void handle(@NotNull final Context ctx) {
     final String searchExpression = ctx.queryParam("q");
-    final Parser parser = new Parser(new StringReader(searchExpression));
+    final String searchProperty = ctx.queryParam("e");
+    final Parser parser;
+
+    if (searchProperty == null) {
+      parser = new Parser(new StringReader(searchExpression));
+    } else {
+      parser = new Parser(new StringReader(searchExpression), searchProperty);
+    }
+
     try {
       String query = parser.SearchExpression();
       final Map<String, Object> response = new HashMap<>();

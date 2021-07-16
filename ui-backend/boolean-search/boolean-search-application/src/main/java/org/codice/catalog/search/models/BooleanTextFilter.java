@@ -22,6 +22,10 @@ public class BooleanTextFilter {
     this("ILIKE", "anyText", value);
   }
 
+  public BooleanTextFilter(String property, String value) {
+    this("ILIKE", property, value);
+  }
+
   public String getProperty() {
     return property;
   }

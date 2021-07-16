@@ -390,7 +390,6 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
     getAllValidValuesForMatchTypeAttribute()
   )
 
-  const { listenTo, stopListening } = useBackbone()
   /**
    * Because of how things render, auto focusing to the input is more complicated than I wish.  This ensures it works everytime, whereas autoFocus prop is unreliable
    */
