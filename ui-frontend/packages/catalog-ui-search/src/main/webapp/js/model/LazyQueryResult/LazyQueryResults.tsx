@@ -56,7 +56,11 @@ type ConstructorProps = {
   transformSorts?: TransformSortsComposedFunctionType
 }
 
-type SubscribableType = 'status' | 'filteredResults' | 'selectedResults'
+type SubscribableType =
+  | 'status'
+  | 'filteredResults'
+  | 'selectedResults'
+  | 'results.backboneSync'
 type SubscriptionType = { [key: string]: () => void }
 /**
  * Constructed with performance in mind, taking advantage of maps whenever possible.
@@ -67,9 +71,11 @@ type SubscriptionType = { [key: string]: () => void }
 export class LazyQueryResults {
   ['subscriptionsToOthers.result.isSelected']: (() => void)[];
   ['subscriptionsToOthers.result.backboneCreated']: (() => void)[];
+  ['subscriptionsToOthers.result.backboneSync']: (() => void)[];
   ['subscriptionsToMe.status']: SubscriptionType;
   ['subscriptionsToMe.filteredResults']: SubscriptionType;
-  ['subscriptionsToMe.selectedResults']: SubscriptionType
+  ['subscriptionsToMe.selectedResults']: SubscriptionType;
+  ['subscriptionsToMe.results.backboneSync']: SubscriptionType
   subscribeTo({
     subscribableThing,
     callback,
@@ -102,6 +108,9 @@ export class LazyQueryResults {
   ['_notifySubscribers.selectedResults']() {
     this._notifySubscribers('selectedResults')
   }
+  ['_notifySubscribers.results.backboneSync']() {
+    this._notifySubscribers('results.backboneSync')
+  }
   _turnOnDebouncing() {
     this['_notifySubscribers.status'] = _.debounce(
       this['_notifySubscribers.status'],
@@ -113,6 +122,10 @@ export class LazyQueryResults {
     )
     this['_notifySubscribers.selectedResults'] = _.debounce(
       this['_notifySubscribers.selectedResults'],
+      debounceTime
+    )
+    this['_notifySubscribers.results.backboneSync'] = _.debounce(
+      this['_notifySubscribers.results.backboneSync'],
       debounceTime
     )
   }
@@ -247,6 +260,23 @@ export class LazyQueryResults {
       {} as { [key: string]: LazyQueryResult }
     )
   }
+  /**
+   * This is purely to force a rerender in scenarios where we update result values and want to update views without resorting
+   * (resorting wouldn't make sense to do client side since there could be more results on the server)
+   * It also would be weird since things in tables or lists might jump around while the user is working with them.
+   */
+  _fakeResort() {
+    this.results = Object.values(this.results).reduce(
+      (blob, result, index, results) => {
+        result.index = index
+        result.prev = results[index - 1]
+        result.next = results[index + 1]
+        blob[result['metacard.id']] = result
+        return blob
+      },
+      {} as { [key: string]: LazyQueryResult }
+    )
+  }
   constructor({
     results = [],
     sorts = [],
@@ -361,10 +391,10 @@ export class LazyQueryResults {
               () => {
                 lazyResult.syncWithBackbone()
                 /**
-                 * Commenting this part out for now, as this is an expensive thing and I'm not 100% users would actually expect a result to resort on the fly after updating it.
+                 *  In this case we don't want to really resort, just force renders on views by telling them things have changed.
                  */
-                // this._resort()
-                // this['_notifySubscribers.filteredResults']()
+                this._fakeResort()
+                this['_notifySubscribers.filteredResults']()
               }
             )
           },

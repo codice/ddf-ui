@@ -12,11 +12,13 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const React = require('react')
+import * as React from 'react'
+import LocationComponent, { LocationInputPropsType } from './location'
+const { ddToWkt, dmsToWkt, usngToWkt } = require('./utils')
 
-const withAdapter = (Component) =>
-  class extends React.Component {
-    constructor(props) {
+const withAdapter = (Component: any) =>
+  class extends React.Component<any, any> {
+    constructor(props: any) {
       super(props)
       this.state = props.model.toJSON()
     }
@@ -34,20 +36,58 @@ const withAdapter = (Component) =>
         <Component
           state={this.state}
           options={this.props.options}
-          setState={(...args) => this.props.model.set(...args)}
+          setState={(...args: any) => this.props.model.set(...args)}
         />
       )
     }
   }
 
-const LocationInput = withAdapter(require('./location'))
+const LocationInput = withAdapter(LocationComponent) as any
 
 const Marionette = require('marionette')
 const _ = require('underscore')
 const CustomElements = require('../../js/CustomElements.js')
 const LocationNewModel = require('./location-new')
 
-module.exports = Marionette.LayoutView.extend({
+type LocationInputReactPropsType = {
+  value: string
+  onChange: (val: string) => void
+}
+
+export const LocationInputReact = ({
+  value,
+  onChange,
+}: LocationInputReactPropsType) => {
+  const [state, setState] = React.useState<LocationInputPropsType>(
+    new LocationNewModel({ wkt: value, mode: 'wkt' }).toJSON()
+  )
+
+  React.useEffect(() => {
+    if (state.valid) {
+      switch (state.mode) {
+        case 'wkt':
+          onChange(state.wkt)
+          break
+        case 'dd':
+          onChange(ddToWkt(state.dd))
+          break
+        case 'dms':
+          onChange(dmsToWkt(state.dms))
+          break
+        case 'usng':
+          onChange(usngToWkt(state.usng))
+          break
+        default:
+      }
+    } else {
+      onChange('INVALID')
+    }
+  }, [state])
+
+  return <LocationComponent state={state} options={{}} setState={setState} />
+}
+
+export default Marionette.LayoutView.extend({
   template() {
     return (
       <div className="location-input">
@@ -56,7 +96,7 @@ module.exports = Marionette.LayoutView.extend({
     )
   },
   tagName: CustomElements.register('location-new'),
-  initialize(options) {
+  initialize() {
     this.propertyModel = this.model
     this.model = new LocationNewModel()
     _.bindAll.apply(_, [this].concat(_.functions(this))) // underscore bindAll does not take array arg

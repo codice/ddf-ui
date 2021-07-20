@@ -38,6 +38,7 @@ import { useRerenderOnBackboneSync } from '../../../js/model/LazyQueryResult/hoo
 import useCoordinateFormat from './useCoordinateFormat'
 import { MetacardAttribute } from '../../../js/model/Types'
 import ExtensionPoints from '../../../extension-points'
+import { LocationInputReact } from '../../location-new/location-new.view'
 
 function getSummaryShown(): string[] {
   const userchoices = user
@@ -300,12 +301,14 @@ export const Editor = ({
                       )
                     case 'GEOMETRY':
                       return (
-                        <Geometry
-                          label={label}
+                        <LocationInputReact
                           onChange={(location: any) => {
-                            location === null || location === 'INVALID'
-                              ? setMode(Mode.BadInput)
-                              : setMode(Mode.Normal)
+                            console.log(location)
+                            if (location === null || location === 'INVALID') {
+                              setMode(Mode.BadInput)
+                            } else {
+                              setMode(Mode.Normal)
+                            }
                             values[index] = location
                             setValues([...values])
                           }}

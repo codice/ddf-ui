@@ -15,7 +15,7 @@
 
 const template = require('./input-geometry.hbs')
 const InputView = require('../input.view')
-const LocationView = require('../../location-new/location-new.view.js')
+import LocationView from '../../location-new/location-new.view'
 
 module.exports = InputView.extend({
   template,

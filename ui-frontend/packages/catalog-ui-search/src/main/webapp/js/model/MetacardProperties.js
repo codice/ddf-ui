@@ -42,13 +42,18 @@ module.exports = Backbone.AssociatedModel.extend({
     return
   },
   getPoints(attribute) {
-    return this.getGeometries(attribute).reduce(
-      (pointArray, wkt) =>
-        pointArray.concat(
-          TurfMeta.coordAll(wkx.Geometry.parse(wkt).toGeoJSON())
-        ),
-      []
-    )
+    try {
+      return this.getGeometries(attribute).reduce(
+        (pointArray, wkt) =>
+          pointArray.concat(
+            TurfMeta.coordAll(wkx.Geometry.parse(wkt).toGeoJSON())
+          ),
+        []
+      )
+    } catch (err) {
+      console.error(err)
+      return []
+    }
   },
   getGeometries(attribute) {
     return _.filter(

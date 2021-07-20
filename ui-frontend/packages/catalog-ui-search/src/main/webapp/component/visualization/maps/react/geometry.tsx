@@ -190,7 +190,11 @@ const Geometry = ({ lazyResult, map, clusters }: Props) => {
       if (lazyResultGeometries.length > 0) {
         geometries.current = []
         _.forEach(lazyResultGeometries, (property: any) => {
-          handleGeometry(wkx.Geometry.parse(property).toGeoJSON())
+          try {
+            handleGeometry(wkx.Geometry.parse(property).toGeoJSON())
+          } catch (err) {
+            console.error(err)
+          }
         })
         checkIfClustered()
       }

@@ -4,7 +4,7 @@ import Help from '../help/help.view'
 
 import { hot } from 'react-hot-loader/root'
 import MRC from '../../react-component/marionette-region-container'
-const IngestView = require('../ingest/ingest.view')
+import IngestView from '../ingest/ingest.view'
 import { HomePage } from '../pages/search'
 
 import SourcesPage from '../../react-component/sources'

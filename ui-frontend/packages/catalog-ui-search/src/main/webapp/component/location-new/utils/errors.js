@@ -14,13 +14,13 @@
  **/
 const errorMessages = {
   malformedWkt: `Malformed WKT. Syntax for supported geometries:
-                   POINT (50 40)
-                   LINESTRING (30 10, 10 30, 40 40)
-                   POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))
-                   MULTIPOINT (10 40, 40 30, 20 20, 30 10)
-                   MULTILINESTRING ((10 10, 20 20, 10 40), (40 40, 30 30, 40 20, 30 10))
-                   MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))
-                   GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6,7 10))
+                  POINT (50 40)
+                  LINESTRING (30 10, 10 30, 40 40)
+                  POLYGON ((30 10, 40 40, 20 40, 10 20, 30 10))
+                  MULTIPOINT (10 40, 40 30, 20 20, 30 10)
+                  MULTILINESTRING ((10 10, 20 20, 10 40), (40 40, 30 30, 40 20, 30 10))
+                  MULTIPOLYGON (((30 20, 45 40, 10 40, 30 20)), ((15 5, 40 10, 10 20, 5 10, 15 5)))
+                  GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6,7 10))
                   `,
   invalidWktCoordinates:
     'Invalid coordinates. Note that WKT coordinates are ordered longitude then latitude.',

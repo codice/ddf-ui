@@ -288,13 +288,18 @@ export class LazyQueryResult {
     )
   }
   getPoints(attribute?: any): any {
-    return this.getGeometries(attribute).reduce(
-      (pointArray: any, wkt: any) =>
-        pointArray.concat(
-          TurfMeta.coordAll(wkx.Geometry.parse(wkt).toGeoJSON())
-        ),
-      []
-    )
+    try {
+      return this.getGeometries(attribute).reduce(
+        (pointArray: any, wkt: any) =>
+          pointArray.concat(
+            TurfMeta.coordAll(wkx.Geometry.parse(wkt).toGeoJSON())
+          ),
+        []
+      )
+    } catch (err) {
+      console.error(err)
+      return []
+    }
   }
   getMapActions() {
     return this.plain.actions.filter(
