@@ -139,6 +139,7 @@ function generateAnyGeoFilter(property, model) {
           sanitizeForCql(JSON.stringify(bboxToCQLPolygon(model))) +
           ')',
       }
+    case 'POINT':
     case 'POINTRADIUS':
       return {
         type: 'DWITHIN',
