@@ -3,11 +3,14 @@ import Tooltip, { TooltipProps } from '@material-ui/core/Tooltip'
 import Paper from '@material-ui/core/Paper'
 import { hot } from 'react-hot-loader'
 import { Elevations } from '../theme/theme'
+import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+const wreqr = require('../../js/wreqr.js')
 
 type OverflowTipType = {
   children: React.ReactNode
   tooltipProps?: Partial<TooltipProps>
   refOfThingToMeasure?: HTMLDivElement | null
+  className?: string
 }
 
 export type OverflowTooltipHTMLElement = HTMLDivElement & {
@@ -43,6 +46,7 @@ export function useIsTruncated<T extends HTMLElement>(
   const [isTruncated, setIsTruncated] = React.useState(false)
   const ref = useRef<T | null>(passedInRef)
   const compareSizeRef = useRef<() => void>(() => {})
+  const { listenTo, stopListening } = useBackbone()
   useEffect(() => {
     const compareSize = () => {
       if (ref.current) {
@@ -52,6 +56,7 @@ export function useIsTruncated<T extends HTMLElement>(
     compareSizeRef.current = compareSize
     if (ref.current) {
       compareSize()
+      listenTo(wreqr.vent, 'resize', compareSize)
       window.addEventListener('resize', compareSize)
       ref.current.addEventListener('mouseenter', compareSize)
     } else {
@@ -60,6 +65,7 @@ export function useIsTruncated<T extends HTMLElement>(
       )
     }
     return () => {
+      stopListening(wreqr.vent, 'resize', compareSize)
       window.removeEventListener('resize', compareSize)
       ref.current?.removeEventListener('mouseenter', compareSize)
     }
@@ -75,6 +81,7 @@ const OverflowTip = ({
   children,
   tooltipProps = {},
   refOfThingToMeasure: refOfThingToMeasurePassedIn,
+  className,
 }: OverflowTipType) => {
   const { title, ...otherTooltipProps } = tooltipProps
   const [open, setOpen] = React.useState(false)
@@ -97,7 +104,7 @@ const OverflowTip = ({
           className="p-1 overflow-auto max-w-screen-sm"
           elevation={Elevations.overlays}
         >
-          {title ? title : { children }}
+          {title ? title : children}
         </Paper>
       }
       open={open}
@@ -114,7 +121,9 @@ const OverflowTip = ({
       }}
       {...otherTooltipProps}
     >
-      <div ref={isTruncatedState.ref}>{children}</div>
+      <div ref={isTruncatedState.ref} className={className}>
+        {children}
+      </div>
     </Tooltip>
   )
 }

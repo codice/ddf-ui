@@ -22,9 +22,10 @@ const moment = require('moment')
 const announcement = require('component/announcement')
 const user = require('../../component/singletons/user-instance.js')
 import MetacardHistoryPresentation from './presentation'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
 type Props = {
-  selectionInterface: any
+  result: LazyQueryResult
 }
 
 type State = {
@@ -37,8 +38,7 @@ class MetacardHistory extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
 
-    const selectionInterface = props.selectionInterface
-    this.model = selectionInterface.getSelectedResults().first()
+    this.model = props.result.getBackbone()
 
     this.state = {
       history: [],

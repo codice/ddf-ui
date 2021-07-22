@@ -18,9 +18,10 @@ import * as React from 'react'
 import fetch from '../utils/fetch'
 const announcement = require('component/announcement')
 import MetacardQualityPresentation from './presentation'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
 type Props = {
-  selectionInterface: any
+  result: LazyQueryResult
 }
 
 type State = {
@@ -33,8 +34,7 @@ class MetacardQuality extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
 
-    const selectionInterface = props.selectionInterface
-    this.model = selectionInterface.getSelectedResults().first()
+    this.model = props.result.getBackbone()
 
     this.state = {
       attributeValidation: [],

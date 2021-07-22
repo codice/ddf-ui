@@ -16,14 +16,16 @@
 import * as React from 'react'
 
 const Marionette = require('marionette')
-import LazyInspector from './inspector-lazy'
+import { AuditComponent } from './inspector.audit'
+import Inspector from './inspector'
 
 const LazyInspectorView = Marionette.LayoutView.extend({
   className: 'customElement',
   template() {
     return (
       <React.Fragment>
-        <LazyInspector selectionInterface={this.options.selectionInterface} />
+        <AuditComponent selectionInterface={this.options.selectionInterface} />
+        <Inspector selectionInterface={this.options.selectionInterface} />
       </React.Fragment>
     )
   },

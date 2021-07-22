@@ -23,7 +23,6 @@ import PublishIcon from '@material-ui/icons/Publish'
 import Paper from '@material-ui/core/Paper'
 import useTheme from '@material-ui/core/styles/useTheme'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
-import { useLazyResultsSelectedResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import TransferList, { useCustomReadOnlyCheck } from './transfer-list'
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace'
@@ -55,7 +54,7 @@ function getSummaryShown(): string[] {
 }
 
 type Props = {
-  selectionInterface: any
+  result: LazyQueryResult
 }
 
 const ThumbnailInput = ({
@@ -688,11 +687,8 @@ const getHiddenAttributes = (
 
 let globalExpanded = false // globally track if users want this since they may be clicking between results
 
-const Summary = ({ selectionInterface }: Props) => {
+const Summary = ({ result: selection }: Props) => {
   const theme = useTheme()
-  const selectedResults = useLazyResultsSelectedResultsFromSelectionInterface({
-    selectionInterface,
-  })
 
   const [forceRender, setForceRender] = React.useState(false)
   const [expanded, setExpanded] = React.useState(globalExpanded)
@@ -700,9 +696,6 @@ const Summary = ({ selectionInterface }: Props) => {
   const [fullyExpanded, setFullyExpanded] = React.useState(false)
   const [filter, setFilter] = React.useState(persistantFilter)
   const [summaryShown, setSummaryShown] = React.useState(getSummaryShown())
-  const selection = Object.values(selectedResults)[0] as
-    | LazyQueryResult
-    | undefined
   useRerenderOnBackboneSync({ lazyResult: selection })
 
   const dialogContext = useDialog()

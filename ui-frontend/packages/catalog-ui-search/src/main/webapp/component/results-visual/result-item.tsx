@@ -95,7 +95,11 @@ const showRelevanceScore = ({
   return properties.showRelevanceScores && lazyResult.hasRelevance()
 }
 
-const getIconClassName = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
+export const getIconClassName = ({
+  lazyResult,
+}: {
+  lazyResult: LazyQueryResult
+}) => {
   if (lazyResult.isRevision()) {
     return 'fa fa-history'
   } else if (lazyResult.isResource()) {

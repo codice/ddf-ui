@@ -39,13 +39,11 @@ function getSrc(previewHtml, textColor) {
 module.exports = Marionette.ItemView.extend({
   className: 'w-full h-full overflow-auto',
   setDefaultModel() {
-    this.model = this.selectionInterface.getSelectedResults().first()
+    this.model = this.options.result.getBackbone()
   },
   template,
   tagName: CustomElements.register('metacard-preview'),
   initialize(options) {
-    this.selectionInterface =
-      options.selectionInterface || this.selectionInterface
     if (!options.model) {
       this.setDefaultModel()
     }

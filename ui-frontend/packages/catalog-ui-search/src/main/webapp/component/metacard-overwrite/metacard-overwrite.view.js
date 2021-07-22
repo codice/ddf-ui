@@ -210,7 +210,7 @@ class MetacardOverwrite extends React.Component {
   constructor(props) {
     super(props)
     this.state = defaultState
-    this.model = props.selectionInterface.getSelectedResults().first()
+    this.model = props.result.getBackbone()
     this.dropzoneElement = React.createRef()
   }
 

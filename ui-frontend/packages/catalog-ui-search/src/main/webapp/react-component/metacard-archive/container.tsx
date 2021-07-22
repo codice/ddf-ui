@@ -14,6 +14,7 @@
  **/
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import fetch from '../utils/fetch'
 const announcement = require('component/announcement')
@@ -22,11 +23,11 @@ const ConfirmationView = require('../../component/confirmation/confirmation.view
 import MetacardArchivePresentation from './presentation'
 
 type Props = {
-  selectionInterface: any
+  results: LazyQueryResult[]
 } & WithBackboneProps
 
 type State = {
-  collection: Backbone.Collection<Backbone.Model>
+  collection: Backbone.Model[]
   isDeleted: boolean
   loading: boolean
 }
@@ -35,8 +36,7 @@ class MetacardArchive extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
 
-    const selectionInterface = props.selectionInterface
-    const collection = selectionInterface.getSelectedResults()
+    const collection = props.results.map((result) => result.getBackbone())
 
     const isDeleted = collection.some((result: any) => {
       return result.isDeleted()
