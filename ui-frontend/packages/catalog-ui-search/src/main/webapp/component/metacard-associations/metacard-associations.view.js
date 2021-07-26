@@ -28,7 +28,7 @@ const user = require('../singletons/user-instance')
 module.exports = Marionette.LayoutView.extend({
   className: 'w-full h-full overflow-auto',
   setDefaultModel() {
-    this.model = this.selectionInterface.getSelectedResults().first()
+    this.model = this.options.result.getBackbone()
   },
   regions: {
     associationsMenu: '> .content-menu',

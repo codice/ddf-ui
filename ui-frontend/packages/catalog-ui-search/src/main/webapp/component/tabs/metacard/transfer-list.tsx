@@ -34,6 +34,7 @@ import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox'
 import { AutoVariableSizeList } from 'react-window-components'
 import debounce from 'lodash.debounce'
 import { Memo } from '../../memo/memo'
+import { TypedUserInstance } from '../../singletons/TypedUser'
 const user = require('../../singletons/user-instance')
 
 const getAmountChecked = (items: CheckedType) => {
@@ -613,8 +614,8 @@ export const useCustomReadOnlyCheck = () => {
         return !perm
       }
       return (
-        (lazyResult.isRemote() &&
-          !(user.canWrite(lazyResult.getBackbone()) as boolean)) ||
+        lazyResult.isRemote() ||
+        !TypedUserInstance.canWrite(lazyResult) ||
         TypedMetacardDefs.isReadonly({ attr: attribute })
       )
     },

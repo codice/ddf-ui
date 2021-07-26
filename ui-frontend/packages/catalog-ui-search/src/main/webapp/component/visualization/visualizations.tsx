@@ -14,7 +14,7 @@
  **/
 import * as React from 'react'
 import HistogramView from './histogram/lazy-histogram.view'
-import LazyInspectorView from './inspector/inspector-lazy.view'
+import Inspector from './inspector/inspector-lazy.view'
 const LowBandwidthMapView = require('./low-bandwidth-map/low-bandwidth-map.view.js')
 import Timeline from './timeline/timeline'
 import ResultsView from '../results-visual'
@@ -86,7 +86,7 @@ export const Visualizations = [
     id: 'inspector',
     title: 'Inspector',
     icon: 'fa fa-info',
-    view: LazyInspectorView,
+    view: Inspector,
     singular: true,
   },
   {

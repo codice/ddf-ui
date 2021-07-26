@@ -1,4 +1,5 @@
 import React from 'react'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { SortType } from '../../js/model/Query.shared-types'
 import { FilterBuilderClass } from '../filter-builder/filter.structure'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
@@ -113,6 +114,9 @@ export const TypedUserInstance = {
       .get('user')
       .get('preferences')
       .set('actingRole', actingRole)
+  },
+  canWrite: (result: LazyQueryResult): boolean => {
+    return userInstance.canWrite(result.getBackbone())
   },
 }
 
