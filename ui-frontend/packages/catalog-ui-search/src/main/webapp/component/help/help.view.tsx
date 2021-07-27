@@ -111,6 +111,7 @@ function findBlockers() {
 }
 
 function isBlocked(element: any, boundingRect: any) {
+  //@ts-ignore
   return _.some(findBlockers(), (blocker: any) => {
     if (
       blocker.element !== element &&
