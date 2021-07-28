@@ -17,12 +17,11 @@ import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import fetch from '../utils/fetch'
 const Common = require('../../js/Common.js')
-const ResultUtils = require('../../js/ResultUtils.js')
 const moment = require('moment')
 const announcement = require('component/announcement')
-const user = require('../../component/singletons/user-instance.js')
 import MetacardHistoryPresentation from './presentation'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import { TypedUserInstance } from '../../component/singletons/TypedUser'
 
 type Props = {
   result: LazyQueryResult
@@ -38,7 +37,7 @@ class MetacardHistory extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
 
-    this.model = props.result.getBackbone()
+    this.model = props.result
 
     this.state = {
       history: [],
@@ -46,26 +45,22 @@ class MetacardHistory extends React.Component<Props, State> {
       loading: true,
     }
   }
-  model: Backbone.Model
+  model: LazyQueryResult
   componentDidMount() {
     this.loadData()
   }
 
   getSourceId() {
-    const metacardSourceId = this.model
-      .get('metacard')
-      .get('properties')
-      .get('source-id')
-    const harvestedSourceId = this.model
-      .get('metacard')
-      .get('properties')
-      .get('ext.harvested-from')
+    const metacardSourceId = this.model.plain.metacard.properties['source-id']
+    const harvestedSourceId = this.model.plain.metacard.properties[
+      'ext.harvested-from'
+    ]
     return harvestedSourceId || metacardSourceId
   }
 
   loadData() {
     setTimeout(async () => {
-      const id = this.model.get('metacard').get('id')
+      const id = this.model.plain.id
       const res = await fetch(`./internal/history/${id}/${this.getSourceId()}`)
 
       if (!res.ok || res.status === 204) {
@@ -99,7 +94,7 @@ class MetacardHistory extends React.Component<Props, State> {
   revertToSelectedVersion = async () => {
     this.setState({ loading: true })
 
-    const id = this.model.get('metacard').get('id')
+    const id = this.model.plain.id
     const revertId = this.state.selectedVersion
 
     const res = await fetch(
@@ -116,21 +111,17 @@ class MetacardHistory extends React.Component<Props, State> {
       return
     }
 
-    this.model
-      .get('metacard')
-      .get('properties')
-      .set('metacard-tags', ['revision'])
-    ResultUtils.refreshResult(this.model)
+    this.model.plain.metacard.properties['metacard-tags'] = ['revision']
+    this.model.syncWithPlain()
+    this.model.refreshDataOverNetwork()
 
     setTimeout(() => {
       //let solr flush
-      this.model.trigger('refreshdata')
+      this.model.syncWithPlain()
       if (
-        this.model
-          .get('metacard')
-          .get('properties')
-          .get('metacard-tags')
-          .indexOf('revision') >= 0
+        this.model.plain.metacard.properties['metacard-tags'].indexOf(
+          'revision'
+        ) >= 0
       ) {
         announcement.announce({
           title: 'Waiting on Reverted Data',
@@ -154,7 +145,7 @@ class MetacardHistory extends React.Component<Props, State> {
         history={history}
         selectedVersion={selectedVersion}
         loading={loading}
-        canEdit={user.canWrite(this.model)}
+        canEdit={TypedUserInstance.canWrite(this.model)}
       />
     )
   }

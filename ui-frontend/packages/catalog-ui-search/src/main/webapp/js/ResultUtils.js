@@ -19,45 +19,4 @@ module.exports = {
   refreshResult(result, metacardProperties) {
     result.refreshData(metacardProperties)
   },
-  updateResults(results, response) {
-    const attributeMap = response.reduce(
-      (attributeMap, changes) =>
-        changes.attributes.reduce((attrMap, chnges) => {
-          attrMap[chnges.attribute] = metacardDefinitions.metacardTypes[
-            chnges.attribute
-          ].multivalued
-            ? chnges.values
-            : chnges.values[0]
-          if (
-            attrMap[chnges.attribute] &&
-            attrMap[chnges.attribute].constructor === Array &&
-            attrMap[chnges.attribute].length === 0
-          ) {
-            attrMap[chnges.attribute] = undefined
-          }
-          return attrMap
-        }, attributeMap),
-      {}
-    )
-    const unsetAttributes = []
-    _.forEach(attributeMap, (value, key) => {
-      if (
-        value === undefined ||
-        (value.constructor === Array && value.length === 0)
-      ) {
-        unsetAttributes.push(key)
-        delete attributeMap[key]
-      }
-    })
-    if (results.length === undefined) {
-      results = [results]
-    }
-    const ids = results.map((result) => result.get('metacard').id)
-    results.forEach((metacard) => {
-      metacard.get('metacard').get('properties').set(attributeMap)
-      unsetAttributes.forEach((attribute) => {
-        metacard.get('metacard').get('properties').unset(attribute)
-      })
-    })
-  },
 }
