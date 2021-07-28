@@ -457,11 +457,6 @@ module.exports = function CesiumMap(
         })
       }
     },
-    zoomToSelected() {
-      if (selectionInterface.getSelectedResults().length === 1) {
-        this.panToResults(selectionInterface.getSelectedResults())
-      }
-    },
     panToResults(results) {
       let rectangle, cartArray, point
 

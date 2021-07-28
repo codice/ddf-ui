@@ -315,11 +315,6 @@ export default function (
     zoomOut(opts, next) {
       next()
     },
-    zoomToSelected() {
-      if (selectionInterface.getSelectedResults().length === 1) {
-        this.panToResults(selectionInterface.getSelectedResults())
-      }
-    },
     panToResults(results) {
       const coordinates = _.flatten(
         results.map((result) => result.getPoints('location')),
