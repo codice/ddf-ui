@@ -22,13 +22,16 @@ const LoadingCompanionView = require('../loading-companion/loading-companion.vie
 import { StateModel } from '../associations-menu/associations-menu.view'
 const AssociationCollectionView = require('../association/association.collection.view.js')
 const AssociationCollection = require('../association/association.collection.js')
-const AssociationGraphView = require('../associations-graph/associations-graph.view.js')
+import AssociationGraphView from '../associations-graph/associations-graph.view'
 import MetacardAssociationsViewReact from './metacard-associations.react'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
 export default Marionette.LayoutView.extend({
   className: 'w-full h-full overflow-auto',
+  lazyResult: undefined,
   setDefaultModel() {
     this.model = this.options.result.getBackbone()
+    this.lazyResult = this.options.result
   },
   regions: {
     associationsList: '> .editor-content',
@@ -64,20 +67,22 @@ export default Marionette.LayoutView.extend({
     )
   },
   getAssociations() {
-    this.clearAssociations()
-    LoadingCompanionView.beginLoading(this)
-    $.get('./internal/associations/' + this.model.get('metacard').get('id'))
-      .then((response: any) => {
-        if (!this.isDestroyed) {
-          this._originalAssociations = JSON.parse(JSON.stringify(response))
-          this._associations = response
-          this.parseAssociations()
-          this.onBeforeShow()
-        }
-      })
-      .always(() => {
-        LoadingCompanionView.endLoading(this)
-      })
+    if (this.lazyResult) {
+      this.clearAssociations()
+      LoadingCompanionView.beginLoading(this)
+      $.get('./internal/associations/' + this.lazyResult.plain.id)
+        .then((response: any) => {
+          if (!this.isDestroyed) {
+            this._originalAssociations = JSON.parse(JSON.stringify(response))
+            this._associations = response
+            this.parseAssociations()
+            this.onBeforeShow()
+          }
+        })
+        .always(() => {
+          LoadingCompanionView.endLoading(this)
+        })
+    }
   },
   clearAssociations() {
     if (!this._knownMetacards) {
@@ -116,7 +121,12 @@ export default Marionette.LayoutView.extend({
         collection: this._associationCollection,
         selectionInterface: this.selectionInterface,
         knownMetacards: this._knownMetacards,
+        lazyResults: this.selectionInterface
+          .get('currentQuery')
+          .get('result')
+          .get('lazyResults'),
         currentMetacard: this.model,
+        currentLazyResult: this.lazyResult,
       })
     )
   },
@@ -124,9 +134,12 @@ export default Marionette.LayoutView.extend({
     this.associationsList.show(
       new AssociationCollectionView({
         collection: this._associationCollection,
-        selectionInterface: this.selectionInterface,
+        lazyResults: this.selectionInterface
+          .get('currentQuery')
+          .get('result')
+          .get('lazyResults'),
         knownMetacards: this._knownMetacards,
-        currentMetacard: this.model,
+        currentLazyResult: this.lazyResult,
       })
     )
     this.associationsList.currentView.turnOffEditing()
@@ -167,33 +180,35 @@ export default Marionette.LayoutView.extend({
     this.associationsGraph.currentView.turnOffEditing()
   },
   handleSave() {
-    LoadingCompanionView.beginLoading(this)
-    const data = this._associationCollection.toJSON()
-    data.forEach((association: any) => {
-      association.parent = {
-        id: association.parent,
-      }
-      association.child = {
-        id: association.child,
-      }
-      association.relation =
-        association.relationship === 'related'
-          ? 'metacard.associations.related'
-          : 'metacard.associations.derived'
-    })
-    $.ajax({
-      url: './internal/associations/' + this.model.get('metacard').get('id'),
-      data: JSON.stringify(data),
-      method: 'PUT',
-      contentType: 'application/json',
-    }).always(() => {
-      setTimeout(() => {
-        if (!this.isDestroyed) {
-          this.getAssociations()
-          this.turnOffEditing()
+    if (this.lazyResult) {
+      LoadingCompanionView.beginLoading(this)
+      const data = this._associationCollection.toJSON()
+      data.forEach((association: any) => {
+        association.parent = {
+          id: association.parent,
         }
-      }, 1000)
-    })
+        association.child = {
+          id: association.child,
+        }
+        association.relation =
+          association.relationship === 'related'
+            ? 'metacard.associations.related'
+            : 'metacard.associations.derived'
+      })
+      $.ajax({
+        url: './internal/associations/' + this.lazyResult.plain.id,
+        data: JSON.stringify(data),
+        method: 'PUT',
+        contentType: 'application/json',
+      }).always(() => {
+        setTimeout(() => {
+          if (!this.isDestroyed) {
+            this.getAssociations()
+            this.turnOffEditing()
+          }
+        }, 1000)
+      })
+    }
   },
   handleFooter() {
     this.$el
@@ -201,15 +216,22 @@ export default Marionette.LayoutView.extend({
       .html(this._associationCollection.length + ' association(s)')
   },
   handleAdd() {
-    this.associationsList.currentView.collection.add({
-      parent: this.model.get('metacard').id,
-      child: this.model.get('metacard').id,
-    })
+    if (this.lazyResult) {
+      this.associationsList.currentView.collection.add({
+        parent: this.lazyResult.plain.id,
+        child: this.lazyResult.plain.id,
+      })
+    }
   },
   handleType() {
-    this.$el.toggleClass('is-resource', this.model.isResource())
-    this.$el.toggleClass('is-revision', this.model.isRevision())
-    this.$el.toggleClass('is-deleted', this.model.isDeleted())
-    this.$el.toggleClass('is-remote', this.model.isRemote())
+    if (this.lazyResult) {
+      this.$el.toggleClass('is-resource', this.lazyResult.isResource())
+      this.$el.toggleClass('is-revision', this.lazyResult.isRevision())
+      this.$el.toggleClass('is-deleted', this.lazyResult.isDeleted())
+      this.$el.toggleClass('is-remote', this.lazyResult.isRemote())
+    }
   },
+} as {
+  lazyResult: LazyQueryResult | undefined
+  [key: string]: any
 })

@@ -18,43 +18,41 @@ const wreqr = require('../../js/wreqr.js')
 const _ = require('underscore')
 const template = require('./associations-graph.hbs')
 const CustomElements = require('../../js/CustomElements.js')
-import AssociationView from '../association/association.view.tsx'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
+import AssociationView from '../association/association.view'
 const Association = require('../association/association.js')
 const Vis = require('vis')
 
-function determineNodes(view) {
-  const currentMetacard = view.options.currentMetacard
+function determineNodes(view: ViewType) {
+  if (!view.options.lazyResults) {
+    return
+  }
+  const currentLazyResult = view.options.currentLazyResult
   let nodes = view.options.knownMetacards
     .map((metacard) => ({
       id: metacard.id,
       label: metacard.get('title'),
     }))
     .concat(
-      Object.values(
-        view.options.selectionInterface
-          .get('currentQuery')
-          .get('result')
-          .get('lazyResults').results
-      ).map(function (result) {
+      Object.values(view.options.lazyResults.results).map(function (result) {
         return {
-          id: result['metacard.id'],
+          id: result.plain.id,
           label: result.plain.metacard.properties.title,
         }
       })
     )
-  nodes = _.uniq(nodes, false, (node) => node.id)
+  nodes = _.uniq(nodes, false, (node: { id: string; label: string }) => node.id)
   return nodes.map((node) => ({
     id: node.id,
 
     label:
-      node.id === currentMetacard.get('metacard').id
-        ? 'Current Metacard'
-        : node.label,
+      node.id === currentLazyResult?.plain.id ? 'Current Metacard' : node.label,
   }))
 }
 
 // Visjs throws an error if the edge can't be find.  We don't care.
-function selectEdges(network, ids) {
+function selectEdges(network: any, ids: any) {
   try {
     network.selectEdges(ids)
   } catch (e) {
@@ -63,7 +61,7 @@ function selectEdges(network, ids) {
 }
 
 // Visjs throws an error sometimes, we don't care
-function fitGraph(network) {
+function fitGraph(network: any) {
   try {
     if (network) {
       network.fit()
@@ -73,7 +71,7 @@ function fitGraph(network) {
   }
 }
 
-function handleSelection(network, ids) {
+function handleSelection(network: any, ids?: any) {
   if (network) {
     network.unselectAll()
     if (ids) {
@@ -88,9 +86,26 @@ const fontStyles = {
   strokeColor: 'white',
 }
 
-module.exports = Marionette.LayoutView.extend({
+type ViewType = {
+  choices: any
+  options: {
+    knownMetacards: any[]
+    currentLazyResult: LazyQueryResult | undefined
+    lazyResults: LazyQueryResults | undefined
+    [key: string]: any
+  }
+  [key: string]: any
+}
+
+export default Marionette.LayoutView.extend({
   regions: {
     graphInspector: '> .graph-inspector > .inspector-association',
+  },
+  choices: [],
+  options: {
+    knownMetacards: [],
+    lazyResults: undefined,
+    currentLazyResult: undefined,
   },
   template,
   tagName: CustomElements.register('associations-graph'),
@@ -100,7 +115,7 @@ module.exports = Marionette.LayoutView.extend({
     'mouseup > .graph-network': 'handleMouseup',
     'keyup > .graph-network': 'handleKeyup',
   },
-  handleKeyup(e) {
+  handleKeyup(e: any) {
     if (
       this.$el.hasClass('is-editing') &&
       this.$el.hasClass('has-association-selected')
@@ -120,7 +135,7 @@ module.exports = Marionette.LayoutView.extend({
   },
   _parentNetwork: undefined,
   _childNetwork: undefined,
-  initialize(options) {
+  initialize() {
     this.setupListeners()
   },
   setupListeners() {
@@ -145,7 +160,7 @@ module.exports = Marionette.LayoutView.extend({
     this.handleSelection()
     this.$el.find('canvas').attr('tab-index', -1)
   },
-  handleFilter(filter) {
+  handleFilter(filter: any) {
     this.$el.toggleClass('filter-by-parent', filter === 'parent')
     this.$el.toggleClass('filter-by-child', filter === 'child')
     this.showGraphInspector()
@@ -161,12 +176,12 @@ module.exports = Marionette.LayoutView.extend({
     }
   },
   showParentGraph() {
-    const currentMetacard = this.options.currentMetacard
-    let nodes = determineNodes(this)
+    const currentLazyResult = this.options.currentLazyResult
+    let nodes = determineNodes(this) || []
 
     // create an array with edges
     const edges = this.collection
-      .map((association) => ({
+      .map((association: any) => ({
         arrows: {
           to: {
             enabled: true,
@@ -189,10 +204,10 @@ module.exports = Marionette.LayoutView.extend({
           forceDirection: 'vertical',
         },
       }))
-      .filter((edge) => edge.to === currentMetacard.get('metacard').id)
+      .filter((edge: any) => edge.to === currentLazyResult?.plain.id)
 
     nodes = nodes.filter((node) =>
-      edges.some((edge) => edge.from === node.id || edge.to === node.id)
+      edges.some((edge: any) => edge.from === node.id || edge.to === node.id)
     )
     this.$el.toggleClass('has-no-parent', nodes.length === 0)
     if (nodes.length === 0) {
@@ -226,12 +241,12 @@ module.exports = Marionette.LayoutView.extend({
     }
   },
   showChildGraph() {
-    const currentMetacard = this.options.currentMetacard
-    let nodes = determineNodes(this)
+    const currentLazyResult = this.options.currentLazyResult
+    let nodes = determineNodes(this) || []
 
     // create an array with edges
     const edges = this.collection
-      .map((association) => ({
+      .map((association: any) => ({
         arrows: {
           to: {
             enabled: true,
@@ -254,10 +269,10 @@ module.exports = Marionette.LayoutView.extend({
           forceDirection: 'vertical',
         },
       }))
-      .filter((edge) => edge.from === currentMetacard.get('metacard').id)
+      .filter((edge: any) => edge.from === currentLazyResult?.plain.id)
 
     nodes = nodes.filter((node) =>
-      edges.some((edge) => edge.from === node.id || edge.to === node.id)
+      edges.some((edge: any) => edge.from === node.id || edge.to === node.id)
     )
     this.$el.toggleClass('has-no-child', nodes.length === 0)
     if (nodes.length === 0) {
@@ -290,7 +305,7 @@ module.exports = Marionette.LayoutView.extend({
       this._childNetwork.setData(data)
     }
   },
-  listenToNetwork(network) {
+  listenToNetwork(network: any) {
     network.on('selectEdge', this.handleEdgeSelection.bind(this))
     network.on('deselectEdge', this.showGraphInspector.bind(this))
     network.on('hoverEdge', this.handleHover.bind(this))
@@ -299,7 +314,7 @@ module.exports = Marionette.LayoutView.extend({
     network.on('blurNode', this.handleUnhover.bind(this))
     network.on('selectNode', this.handleNodeSelection.bind(this))
   },
-  handleNodeSelection(params) {
+  handleNodeSelection(params: any) {
     if (!this.$el.hasClass('is-editing')) {
       wreqr.vent.trigger('router:navigate', {
         fragment: 'metacards/' + params.nodes[0],
@@ -315,7 +330,7 @@ module.exports = Marionette.LayoutView.extend({
   handleUnhover() {
     this.$el.find('> .graph-network').removeClass('is-hovering')
   },
-  handleEdgeSelection(params) {
+  handleEdgeSelection(params: any) {
     if (params.edges[0]) {
       this.$el.toggleClass('has-association-selected', true)
       this.graphInspector.show(
@@ -323,6 +338,8 @@ module.exports = Marionette.LayoutView.extend({
           model: this.collection.get(params.edges[0]),
           selectionInterface: this.options.selectionInterface,
           knownMetacards: this.options.knownMetacards,
+          lazyResults: this.options.lazyResults,
+          currentLazyResult: this.options.currentLazyResult,
           currentMetacard: this.options.currentMetacard,
         })
       )
@@ -340,6 +357,8 @@ module.exports = Marionette.LayoutView.extend({
         model: new Association(),
         selectionInterface: this.options.selectionInterface,
         knownMetacards: this.options.knownMetacards,
+        lazyResults: this.options.lazyResults,
+        currentLazyResult: this.options.currentLazyResult,
         currentMetacard: this.options.currentMetacard,
       })
     )
@@ -351,6 +370,8 @@ module.exports = Marionette.LayoutView.extend({
         model: new Association(),
         selectionInterface: this.options.selectionInterface,
         knownMetacards: this.options.knownMetacards,
+        lazyResults: this.options.lazyResults,
+        currentLazyResult: this.options.currentLazyResult,
         currentMetacard: this.options.currentMetacard,
       })
     )
@@ -375,4 +396,4 @@ module.exports = Marionette.LayoutView.extend({
       this._childNetwork.destroy()
     }
   },
-})
+} as ViewType)

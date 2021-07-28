@@ -20,20 +20,27 @@ import Autocomplete from '@material-ui/lab/Autocomplete'
 import * as React from 'react'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import DeleteIcon from '@material-ui/icons/Delete'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 const Marionette = require('marionette')
 const CustomElements = require('../../js/CustomElements.js')
 const _ = require('underscore')
 
-function determineChoices(view: any) {
-  const currentMetacard = view.options.currentMetacard
-  let choices = Object.values(
-    view.options.selectionInterface
-      .get('currentQuery')
-      .get('result')
-      .get('lazyResults').results
-  )
-    .filter(function (result: any) {
-      return result['metacard.id'] !== currentMetacard.get('metacard').id
+function determineChoices({
+  currentLazyResult,
+  lazyResults,
+  knownMetacards,
+}: {
+  currentLazyResult?: LazyQueryResult
+  lazyResults?: LazyQueryResults
+  knownMetacards: any[]
+}) {
+  if (!lazyResults || !currentLazyResult) {
+    return
+  }
+  let choices = Object.values(lazyResults.results)
+    .filter(function (result) {
+      return result.plain.id !== currentLazyResult.plain.id
     })
     .filter(
       (result: any) =>
@@ -43,21 +50,18 @@ function determineChoices(view: any) {
       (options: any, result: any) => {
         options.push({
           label: result.plain.metacard.properties.title,
-          value: result['metacard.id'],
+          value: result.plain.id,
         })
         return options
       },
       [
         {
           label: 'Current Metacard',
-          value: currentMetacard.get('metacard').id,
+          value: currentLazyResult.plain.id,
         },
       ].concat(
-        view.options.knownMetacards
-          .filter(
-            (metacard: any) =>
-              metacard.id !== currentMetacard.get('metacard').id
-          )
+        knownMetacards
+          .filter((metacard: any) => metacard.id !== currentLazyResult.plain.id)
           .map((metacard: any) => ({
             label: metacard.get('title'),
             value: metacard.id,
@@ -72,29 +76,41 @@ const getChoiceById = ({ id, choices }: { id: string; choices: any[] }) => {
   return choices.filter((choice: any) => choice.value === id)[0]
 }
 
-const ParentLink = ({ view }: { view: any }) => {
+type ViewType = {
+  model: any
+  choices: any
+  options: {
+    knownMetacards: any[] | undefined
+    currentLazyResult: LazyQueryResult | undefined
+    lazyResults: LazyQueryResults | undefined
+    [key: string]: any
+  }
+  [key: string]: any
+}
+
+const ParentLink = ({ view }: { view: ViewType }) => {
   const [, setRender] = React.useState(Math.random())
   useListenTo(view.model, 'change:parent', () => {
     setRender(Math.random)
   })
-  const currentMetacard = view.options.currentMetacard
+  const currentMetacard = view.options.currentLazyResult
   const currentId = view.model.get('parent')
   const label =
-    currentMetacard.get('metacard').id === currentId
+    currentMetacard?.plain.id === currentId
       ? 'Current Metacard'
       : getChoiceById({ id: currentId, choices: view.choices }).label
   return <a href={`#metacards/${currentId}`}>{label}</a>
 }
 
-const ChildLink = ({ view }: { view: any }) => {
+const ChildLink = ({ view }: { view: ViewType }) => {
   const [, setRender] = React.useState(Math.random())
   useListenTo(view.model, 'change:child', () => {
     setRender(Math.random)
   })
-  const currentMetacard = view.options.currentMetacard
+  const currentMetacard = view.options.currentLazyResult
   const currentId = view.model.get('child')
   const label =
-    currentMetacard.get('metacard').id === currentId
+    currentMetacard?.plain.id === currentId
       ? 'Current Metacard'
       : getChoiceById({ id: currentId, choices: view.choices }).label
   return <a href={`#metacards/${currentId}`}>{label}</a>
@@ -187,6 +203,12 @@ const RelationshipType = ({ view }: { view: any }) => {
 }
 
 export default Marionette.LayoutView.extend({
+  model: undefined,
+  options: {
+    knownMetacards: undefined,
+    currentLazyResult: undefined,
+    lazyResults: undefined,
+  },
   tagName: CustomElements.register('association'),
   template() {
     return (
@@ -196,7 +218,7 @@ export default Marionette.LayoutView.extend({
             <AssociationTo view={this} modelValueName="parent" />
           </div>
           <div className="association-parent-link">
-            <ParentLink view={this} />
+            <ParentLink view={this as ViewType} />
           </div>
           <div className="association-relationship">
             <RelationshipType view={this} />
@@ -221,15 +243,18 @@ export default Marionette.LayoutView.extend({
     )
   },
   initialize() {
-    this.model.set('isEditing', false)
-    const currentMetacardId = this.options.currentMetacard.get('metacard').id
+    const currentMetacardId = this.options.currentLazyResult?.plain.id
     if (!this.model.get('parent')) {
       this.model.set('parent', currentMetacardId)
     }
     if (!this.model.get('child')) {
       this.model.set('child', currentMetacardId)
     }
-    this.choices = determineChoices(this)
+    this.choices = determineChoices({
+      currentLazyResult: this.options.currentLazyResult,
+      lazyResults: this.options.lazyResults,
+      knownMetacards: this.options.knownMetacards || [],
+    })
   },
   choices: undefined,
   onBeforeShow() {
@@ -262,27 +287,27 @@ export default Marionette.LayoutView.extend({
     )
   },
   ensureAtLeastOneCurrent(model: any) {
-    const currentMetacard = this.options.currentMetacard
+    const currentMetacard = this.options.currentLazyResult
     const value = model.hasChanged('parent')
       ? model.get('parent')
       : model.get('child')
-    if (value !== currentMetacard.get('metacard').id) {
+    if (value !== currentMetacard?.plain.id) {
       model.set(
         model.hasChanged('parent') ? 'child' : 'parent',
-        currentMetacard.get('metacard').id
+        currentMetacard?.plain.id
       )
     }
     this.checkHeritage()
   },
   checkHeritage() {
-    const currentMetacard = this.options.currentMetacard
+    const currentMetacard = this.options.currentLazyResult
     this.$el.toggleClass(
       'is-parent',
-      this.model.get('parent') === currentMetacard.get('metacard').id
+      this.model.get('parent') === currentMetacard?.plain.id
     )
     this.$el.toggleClass(
       'is-child',
-      this.model.get('child') === currentMetacard.get('metacard').id
+      this.model.get('child') === currentMetacard?.plain.id
     )
   },
-})
+} as ViewType)
