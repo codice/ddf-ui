@@ -101,26 +101,6 @@ const useLastAsDefaultActiveTab = (tabIndex: string) => {
   }, [tabIndex])
 }
 
-const useKeepDeprecatedSelectedResultsInSync = ({
-  selectionInterface,
-  index,
-  selectedResults,
-}: {
-  selectionInterface: any
-  index: number
-  selectedResults: LazyQueryResult[]
-}) => {
-  React.useEffect(() => {
-    const current = selectedResults[index]
-
-    if (current) {
-      selectionInterface.setSelectedResults([current.getBackbone()])
-    } else {
-      selectionInterface.setSelectedResults([])
-    }
-  }, [index, selectedResults])
-}
-
 const useIndexForSelectedResults = (
   selectedResults: LazyQueryResult[]
 ): [number, (index: number) => void] => {
@@ -203,12 +183,6 @@ const Inspector = ({ selectionInterface }: InspectorType) => {
     selectionInterface,
   })
   const [index, setIndex] = useIndexForSelectedResults(selectedResults)
-
-  useKeepDeprecatedSelectedResultsInSync({
-    selectionInterface,
-    index,
-    selectedResults,
-  })
 
   const amountSelected = selectedResults.length
 
