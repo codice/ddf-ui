@@ -14,7 +14,7 @@ import useTimePrefs from '../../fields/useTimePrefs'
 
 const metacardDefinitions = require('../../singletons/metacard-definitions.js')
 const properties = require('../../../js/properties.js')
-const IconHelper = require('../../../js/IconHelper.js')
+import IconHelper from '../../../js/IconHelper'
 const wreqr = require('../../../js/wreqr.js')
 const announcement = require('../../announcement')
 const user = require('../../singletons/user-instance')

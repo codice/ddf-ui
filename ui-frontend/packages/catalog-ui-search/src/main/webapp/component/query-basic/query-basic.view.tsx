@@ -15,7 +15,7 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 const _ = require('underscore')
-const IconHelper = require('../../js/IconHelper.js')
+import IconHelper from '../../js/IconHelper'
 const properties = require('../../js/properties.js')
 import cql from '../../js/cql'
 const metacardDefinitions = require('../singletons/metacard-definitions.js')

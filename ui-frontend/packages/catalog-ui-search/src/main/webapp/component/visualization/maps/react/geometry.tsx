@@ -6,7 +6,7 @@ const _ = require('underscore')
 const _debounce = require('lodash/debounce')
 const wkx = require('wkx')
 const metacardDefinitions = require('../../../singletons/metacard-definitions.js')
-const iconHelper = require('../../../../js/IconHelper.js')
+import iconHelper from '../../../../js/IconHelper'
 import { useUpdateEffect } from 'react-use'
 import { useSelectionOfLazyResult } from '../../../../js/model/LazyQueryResult/hooks'
 type Props = {

@@ -12,12 +12,14 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const _get = require('lodash/get')
-const properties = require('../js/properties')
+import { TypedProperties } from '../component/singletons/TypedProperties'
+import { LazyQueryResult } from './model/LazyQueryResult/LazyQueryResult'
 
-const _map = Object.keys(properties.iconConfig).reduce(
+const _get = require('lodash/get')
+
+const _map = Object.keys(TypedProperties.getIconConfig()).reduce(
   (totalIconMap, iconConfigKey) => {
-    const iconProp = properties.iconConfig[iconConfigKey]
+    const iconProp = TypedProperties.getIconConfig()[iconConfigKey]
     totalIconMap[iconConfigKey] = {
       class: iconProp.className,
       style: {
@@ -28,7 +30,16 @@ const _map = Object.keys(properties.iconConfig).reduce(
     }
     return totalIconMap
   },
-  {}
+  {} as {
+    [key: string]: {
+      class: string
+      style: {
+        code: string
+        font: string
+        size: string
+      }
+    }
+  }
 )
 
 /* Maps top-level mime type category names to the closest icon. */
@@ -50,7 +61,7 @@ const _mimeMap = {
 const _default = _map.default
 
 /* Remove resource keyword from datatype and covert to lowercase. */
-function _formatAttribute(attr) {
+function _formatAttribute(attr: string) {
   if (attr !== undefined) {
     return attr.toLowerCase().replace(' resource', '')
   }
@@ -58,7 +69,7 @@ function _formatAttribute(attr) {
 }
 
 /* Checks if the attribute value exists in the icon map. */
-function _iconExistsInMap(attr, map) {
+function _iconExistsInMap(attr: any, map: any) {
   if (attr instanceof Array) {
     attr = attr[0]
   }
@@ -74,7 +85,7 @@ function _iconExistsInMap(attr, map) {
 }
 
 /* Find the correct icon based on various Metacard attributes. */
-function _deriveIconByMetacardObject(metacard) {
+function _deriveIconByMetacardObject(metacard: LazyQueryResult['plain']) {
   let prop,
     dataTypes,
     metacardType,
@@ -127,72 +138,30 @@ function _deriveIconByMetacardObject(metacard) {
   return icon
 }
 
-/* Find the correct icon based on various Metacard attributes. */
-function _deriveIconByMetacard(metacard) {
-  let prop,
-    dataTypes,
-    metacardType,
-    mimeType,
-    contentType,
-    icon = _default
-
-  prop = metacard.get('metacard').get('properties')
-  dataTypes = prop.get('datatype')
-  metacardType = _formatAttribute(prop.get('metacard-type'))
-  mimeType = _formatAttribute(prop.get('media.type'))
-  contentType = _formatAttribute(prop.get('metadata-content-type'))
-
-  if (mimeType !== undefined) {
-    const mime = mimeType.split('/')
-    if (mime && mime.length === 2) {
-      mimeType = mime[0]
-    }
-  }
-
-  if (_iconExistsInMap(dataTypes, _map)) {
-    icon = _get(_map, _formatAttribute(dataTypes[0]), _default)
-  } else if (_iconExistsInMap(metacardType, _map)) {
-    icon = _get(_map, metacardType, _default)
-  } else if (_iconExistsInMap(contentType, _map)) {
-    icon = _get(_map, contentType, _default)
-  } else if (_iconExistsInMap(mimeType, _mimeMap)) {
-    icon = _get(_mimeMap, mimeType, _default)
-  }
-  return icon
-}
-
 /* Find the correct icon by icon name. */
-function _deriveIconByName(name) {
+function _deriveIconByName(name: string) {
   return _get(_map, _formatAttribute(name), _default)
 }
 
-module.exports = {
-  getClassByMetacardObject(metacard) {
+export default {
+  getClassByMetacardObject(metacard: LazyQueryResult['plain']) {
     const i = _deriveIconByMetacardObject(metacard)
     return _get(i, 'class', _default.class)
   },
-  getClass(metacard) {
-    const i = _deriveIconByMetacard(metacard)
-    return _get(i, 'class', _default.class)
-  },
-  getUnicode(metacard) {
+  getUnicode() {
     return _get(_map, 'style.code', _default.style.code)
   },
-  getFont(metacard) {
+  getFont() {
     return _get(_map, 'style.font', _default.style.font)
   },
-  getSize(metacard) {
+  getSize() {
     return _get(_map, 'style.size', _default.style.size)
   },
-  getFullByMetacardObject(metacard) {
+  getFullByMetacardObject(metacard: LazyQueryResult['plain']) {
     const i = _deriveIconByMetacardObject(metacard)
     return i !== undefined ? i : _default
   },
-  getFull(metacard) {
-    const i = _deriveIconByMetacard(metacard)
-    return i !== undefined ? i : _default
-  },
-  getClassByName(name) {
+  getClassByName(name: string) {
     const i = _deriveIconByName(name)
     return _get(i, 'class', _default.class)
   },
