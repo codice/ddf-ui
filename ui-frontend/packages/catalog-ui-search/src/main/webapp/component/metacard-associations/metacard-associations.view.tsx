@@ -30,7 +30,6 @@ export default Marionette.LayoutView.extend({
   className: 'w-full h-full overflow-auto',
   lazyResult: undefined,
   setDefaultModel() {
-    this.model = this.options.result.getBackbone()
     this.lazyResult = this.options.result
   },
   regions: {

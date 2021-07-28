@@ -116,7 +116,7 @@ export const TypedUserInstance = {
       .set('actingRole', actingRole)
   },
   canWrite: (result: LazyQueryResult): boolean => {
-    return userInstance.canWrite(result.getBackbone())
+    return userInstance.canWrite(result.plain.metacard.properties)
   },
 }
 

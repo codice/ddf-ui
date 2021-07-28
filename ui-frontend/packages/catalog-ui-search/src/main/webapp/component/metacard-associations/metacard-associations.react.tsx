@@ -2,7 +2,7 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import AssociationsMenuView from '../associations-menu/associations-menu.view'
 import Button from '@material-ui/core/Button'
-const user = require('../singletons/user-instance')
+import { TypedUserInstance } from '../singletons/TypedUser'
 
 const MetacardAssociationsView = ({ view }: { view: any }) => {
   return (
@@ -17,7 +17,7 @@ const MetacardAssociationsView = ({ view }: { view: any }) => {
         <div className="header-text header-child">Child</div>
       </div>
       <div className="editor-content" />
-      {user.canWrite(view.model) ? (
+      {TypedUserInstance.canWrite(view.lazyResult) ? (
         <React.Fragment>
           <div className="list-footer">
             <div className="footer-text" />
