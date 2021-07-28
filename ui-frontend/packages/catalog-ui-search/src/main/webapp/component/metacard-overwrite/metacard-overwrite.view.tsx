@@ -22,6 +22,7 @@ import { readableColor } from 'polished'
 import Button from '@material-ui/core/Button'
 
 import withListenTo from '../../react-component/backbone-container'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
 const Root = styled.div`
   overflow: auto;
@@ -58,7 +59,6 @@ const OverwriteStatus = styled.div`
   transition: transform ${(props) => props.theme.coreTransitionTime} linear;
   text-align: center;
   position: relative;
-  white-space: normal;
   padding: 10px;
 `
 
@@ -123,7 +123,7 @@ const OverwriteBack = styled.button`
   text-align: center;
 `
 
-const Confirm = (props) => (
+const Confirm = (props: any) => (
   <OverwriteConfirm
     data-id="overwrite-confirm-button"
     variant="contained"
@@ -138,7 +138,7 @@ const Confirm = (props) => (
   </OverwriteConfirm>
 )
 
-const Sending = (props) => (
+const Sending = (props: any) => (
   <OverwriteProgress>
     <ProgressTextUnder>
       Uploading File
@@ -158,7 +158,7 @@ const Sending = (props) => (
   </OverwriteProgress>
 )
 
-const Success = (props) => (
+const Success = (props: any) => (
   <OverwriteSuccess>
     <OverwriteBack onClick={props.startOver}>
       <span className="fa fa-chevron-left" />
@@ -167,7 +167,7 @@ const Success = (props) => (
   </OverwriteSuccess>
 )
 
-const Error = (props) => (
+const Error = (props: any) => (
   <OverwriteError>
     <OverwriteBack onClick={props.startOver}>
       <span className="fa fa-chevron-left" />
@@ -181,6 +181,8 @@ const Stages = {
   Sending,
   Success,
   Error,
+} as {
+  [key: string]: any
 }
 
 const defaultState = {
@@ -189,8 +191,8 @@ const defaultState = {
   message: '',
 }
 
-const mapOverwriteModelToState = (overwriteModel) => {
-  const currentState = {}
+const mapOverwriteModelToState = (overwriteModel: any) => {
+  const currentState = {} as any
   if (overwriteModel.get('success')) {
     currentState.stage = 'Success'
   } else if (overwriteModel.get('error')) {
@@ -206,50 +208,53 @@ const mapOverwriteModelToState = (overwriteModel) => {
   return currentState
 }
 
-class MetacardOverwrite extends React.Component {
-  constructor(props) {
+class MetacardOverwrite extends React.Component<any, any> {
+  model: undefined
+  lazyResult = undefined as undefined | LazyQueryResult
+  dropzoneElement = undefined as any
+  dropzone = undefined as any
+  constructor(props: any) {
     super(props)
     this.state = defaultState
-    this.model = props.result.getBackbone()
+    this.lazyResult = props.result
     this.dropzoneElement = React.createRef()
   }
 
   componentDidMount() {
+    if (!this.lazyResult) {
+      return
+    }
     const overrides = {
       'security.access-administrators':
-        this.model
-          .get('metacard')
-          .get('properties')
-          .get('security.access-administrators') || [],
+        this.lazyResult.plain.metacard.properties[
+          'security.access-administrators'
+        ] || [],
       'security.access-groups':
-        this.model
-          .get('metacard')
-          .get('properties')
-          .get('security.access-groups') || [],
+        this.lazyResult.plain.metacard.properties['security.access-groups'] ||
+        [],
       'security.access-groups-read':
-        this.model
-          .get('metacard')
-          .get('properties')
-          .get('security.access-groups-read') || [],
+        this.lazyResult.plain.metacard.properties[
+          'security.access-groups-read'
+        ] || [],
       'security.access-individuals':
-        this.model
-          .get('metacard')
-          .get('properties')
-          .get('security.access-individuals') || [],
+        this.lazyResult.plain.metacard.properties[
+          'security.access-individuals'
+        ] || [],
       'security.access-individuals-read':
-        this.model
-          .get('metacard')
-          .get('properties')
-          .get('security.access-individuals-read') || [],
+        this.lazyResult.plain.metacard.properties[
+          'security.access-individuals-read'
+        ] || [],
+    } as {
+      [key: string]: any
     }
     this.dropzone = new Dropzone(this.dropzoneElement.current, {
       paramName: 'parse.resource', //required to parse multipart body
-      url: './internal/catalog/' + this.model.get('metacard').id,
+      url: './internal/catalog/' + this.lazyResult.plain.id,
       maxFilesize: 5000000, //MB
       method: 'put',
-      sending(file, xhr, formData) {
+      sending(_file: any, _xhr: any, formData: any) {
         Object.keys(overrides).forEach((attribute) => {
-          overrides[attribute].forEach((value) => {
+          overrides[attribute].forEach((value: any) => {
             formData.append('parse.' + attribute, value)
           })
         })
@@ -275,15 +280,18 @@ class MetacardOverwrite extends React.Component {
   }
 
   getOverwriteModel() {
-    return OverwritesInstance.get(this.model.get('metacard').id)
+    if (!this.lazyResult) {
+      return
+    }
+    return OverwritesInstance.get(this.lazyResult.plain.id)
   }
 
   trackOverwrite() {
-    if (!this.getOverwriteModel()) {
+    if (!this.getOverwriteModel() || !this.lazyResult) {
       OverwritesInstance.add({
-        id: this.model.get('metacard').id,
+        id: this.lazyResult?.plain.id,
         dropzone: this.dropzone,
-        result: this.model,
+        result: this.lazyResult,
       })
     }
   }
@@ -310,7 +318,7 @@ class MetacardOverwrite extends React.Component {
         yes: 'Overwrite',
       }),
       'change:choice',
-      (confirmation) => {
+      (confirmation: any) => {
         if (confirmation.get('choice')) {
           this.dropzoneElement.current.click()
         }
@@ -319,14 +327,14 @@ class MetacardOverwrite extends React.Component {
   }
 
   startOver() {
-    OverwritesInstance.remove(this.model.get('metacard').id)
+    OverwritesInstance.remove(this.lazyResult?.plain.id)
     this.trackOverwrite()
     this.setupEventListeners()
     this.setState(defaultState)
   }
 
   componentWillUnmount() {
-    OverwritesInstance.removeIfUnused(this.model.get('metacard').id)
+    OverwritesInstance.removeIfUnused(this.lazyResult?.plain.id)
   }
 }
 

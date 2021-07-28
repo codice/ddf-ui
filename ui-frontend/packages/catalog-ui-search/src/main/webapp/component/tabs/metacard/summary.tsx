@@ -18,7 +18,6 @@ import DialogContent from '@material-ui/core/DialogContent'
 import useSnack from '../../hooks/useSnack'
 import LinearProgress from '@material-ui/core/LinearProgress'
 const $ = require('jquery')
-const ResultUtils = require('../../../js/ResultUtils.js')
 import PublishIcon from '@material-ui/icons/Publish'
 import Paper from '@material-ui/core/Paper'
 import useTheme from '@material-ui/core/styles/useTheme'
@@ -163,7 +162,7 @@ const handleMetacardUpdate = ({
       contentType: 'application/json',
     }).then(
       (response: any) => {
-        ResultUtils.updateResults(lazyResult.getBackbone(), response)
+        lazyResult.refreshFromEditResponse(response)
         onSuccess()
       },
       () => onFailure()

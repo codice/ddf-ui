@@ -12,11 +12,10 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import Backbone from 'backbone'
+import { LazyQueryResult } from './LazyQueryResult/LazyQueryResult'
 
-const Backbone = require('backbone')
-const ResultUtils = require('../ResultUtils.js')
-
-module.exports = Backbone.Model.extend({
+export default Backbone.Model.extend({
   defaults() {
     return {
       id: undefined,
@@ -42,18 +41,19 @@ module.exports = Backbone.Model.extend({
     this.get('dropzone').on('error', this.handleError.bind(this))
     this.get('dropzone').on('success', this.handleSuccess.bind(this))
   },
-  handleSending(file) {
+  handleSending(file: any) {
     this.set({
       file,
       sending: true,
     })
   },
-  handleUploadProgress(file, percentage) {
+  handleUploadProgress(_file: any, percentage: any) {
     this.set('percentage', percentage)
   },
-  handleError(file, response) {
+  handleError(file: any, response: any) {
+    const result = this.get('result') as LazyQueryResult
     const message =
-      this.get('result').get('metacard').get('properties').get('title') +
+      result.plain.metacard.properties.title +
       ' could not be overwritten by ' +
       file.name +
       response
@@ -62,16 +62,17 @@ module.exports = Backbone.Model.extend({
       message,
     })
   },
-  handleSuccess(file) {
+  handleSuccess(file: any) {
+    const result = this.get('result') as LazyQueryResult
     const message =
-      this.get('result').get('metacard').get('properties').get('title') +
+      result.plain.metacard.properties.title +
       ' has been overwritten by ' +
       file.name
     this.set({
       success: true,
       message,
     })
-    ResultUtils.refreshResult(this.get('result'))
+    result.refreshDataOverNetwork()
   },
   removeIfUnused() {
     if (!this.get('sending')) {
