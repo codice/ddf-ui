@@ -17,9 +17,10 @@ import { hot } from 'react-hot-loader'
 import * as React from 'react'
 const wreqr = require('../../js/wreqr.js')
 import MapActionsPresentation from './presentation'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
 type Props = {
-  model: Backbone.Model
+  model: LazyQueryResult
 }
 
 type State = {
@@ -35,12 +36,12 @@ class MapActions extends React.Component<Props, State> {
     super(props)
 
     this.state = {
-      currentOverlayUrl: this.props.model.get('currentOverlayUrl'),
+      currentOverlayUrl: this.props.model.currentOverlayUrl || '',
     }
   }
 
   getActions = () => {
-    return this.props.model.get('actions')
+    return this.props.model.plain.actions
   }
 
   getMapActions = () => {
@@ -85,21 +86,13 @@ class MapActions extends React.Component<Props, State> {
     const removeOverlay = clickedOverlayUrl === this.state.currentOverlayUrl
 
     if (removeOverlay) {
-      this.props.model.unset('currentOverlayUrl', { silent: true })
+      this.props.model.currentOverlayUrl = undefined
       this.setState({ currentOverlayUrl: '' })
-      wreqr.vent.trigger(
-        'metacard:overlay:remove',
-        this.props.model.get('metacard').get('id')
-      )
+      wreqr.vent.trigger('metacard:overlay:remove', this.props.model.plain.id)
     } else {
-      this.props.model.set('currentOverlayUrl', clickedOverlayUrl, {
-        silent: true,
-      })
+      this.props.model.currentOverlayUrl = clickedOverlayUrl
       this.setState({ currentOverlayUrl: clickedOverlayUrl })
-      this.props.model
-        .get('metacard')
-        .set('currentOverlayUrl', clickedOverlayUrl)
-      wreqr.vent.trigger('metacard:overlay', this.props.model.get('metacard'))
+      wreqr.vent.trigger('metacard:overlay', this.props.model)
     }
   }
 

@@ -479,4 +479,5 @@ export class LazyQueryResult {
       return false
     }
   }
+  currentOverlayUrl?: string
 }

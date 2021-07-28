@@ -24,7 +24,7 @@ type Props = {
 }
 
 const MetacardActions = (props: Props) => {
-  const model = props.result.getBackbone()
+  const model = props.result
 
   const exportActions = _.sortBy(
     model.getExportActions().map((action: any) => ({

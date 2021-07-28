@@ -35,6 +35,7 @@ const User = require('../../../../js/model/User.js')
 const wreqr = require('../../../../js/wreqr.js')
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { ClusterType } from '../react/geometries'
+import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryResult'
 const defaultColor = '#3c6dd5'
 const rulerColor = '#506f85'
 
@@ -405,8 +406,8 @@ export default function (
         west: longitudeWest,
       }
     },
-    overlayImage(model) {
-      const metacardId = model.get('properties').get('id')
+    overlayImage(model: LazyQueryResult) {
+      const metacardId = model.plain.id
       this.removeOverlay(metacardId)
 
       const coords = model.getPoints('location')
@@ -418,7 +419,7 @@ export default function (
 
       const overlayLayer = new Openlayers.layer.Image({
         source: new Openlayers.source.ImageStatic({
-          url: model.get('currentOverlayUrl'),
+          url: model.currentOverlayUrl,
           projection,
           imageExtent: extent,
         }),
