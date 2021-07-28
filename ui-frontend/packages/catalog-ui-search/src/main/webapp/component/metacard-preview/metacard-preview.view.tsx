@@ -14,7 +14,6 @@
  **/
 
 const Marionette = require('marionette')
-const $ = require('jquery')
 const template = require('./metacard-preview.hbs')
 const CustomElements = require('../../js/CustomElements.js')
 const LoadingCompanionView = require('../loading-companion/loading-companion.view.js')
@@ -23,8 +22,10 @@ const preferences = user.get('user').get('preferences')
 const wreqr = require('../../js/wreqr.js')
 import React from 'react'
 import { renderToString } from 'react-dom/server'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import fetch from '../../react-component/utils/fetch'
 
-function getSrc(previewHtml, textColor) {
+function getSrc(previewHtml: any, textColor: any) {
   const fontSize = preferences.get('fontSize')
 
   return renderToString(
@@ -36,27 +37,22 @@ function getSrc(previewHtml, textColor) {
   )
 }
 
-module.exports = Marionette.ItemView.extend({
+export default Marionette.ItemView.extend({
   className: 'w-full h-full overflow-auto',
-  setDefaultModel() {
-    this.model = this.options.result.getBackbone()
-  },
+
   template,
   tagName: CustomElements.register('metacard-preview'),
-  initialize(options) {
-    if (!options.model) {
-      this.setDefaultModel()
-    }
+  initialize() {
+    const result = this.options.result as LazyQueryResult
     LoadingCompanionView.beginLoading(this)
-    this.previewRequest = $.get({
-      url: this.model.getPreview(),
+    this.previewRequest = fetch(new URL(result.getPreview()).pathname, {
       dataType: 'html',
-      customErrorHandling: true,
     })
-      .then((previewHtml) => {
+      .then((blob) => blob.text())
+      .then((previewHtml: any) => {
         this.previewHtml = previewHtml
       })
-      .always(() => {
+      .finally(() => {
         LoadingCompanionView.endLoading(this)
       })
   },
