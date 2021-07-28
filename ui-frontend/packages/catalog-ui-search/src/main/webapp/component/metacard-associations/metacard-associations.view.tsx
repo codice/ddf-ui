@@ -119,13 +119,11 @@ export default Marionette.LayoutView.extend({
     this.associationsGraph.show(
       new AssociationGraphView({
         collection: this._associationCollection,
-        selectionInterface: this.selectionInterface,
         knownMetacards: this._knownMetacards,
         lazyResults: this.selectionInterface
           .get('currentQuery')
           .get('result')
           .get('lazyResults'),
-        currentMetacard: this.model,
         currentLazyResult: this.lazyResult,
       })
     )

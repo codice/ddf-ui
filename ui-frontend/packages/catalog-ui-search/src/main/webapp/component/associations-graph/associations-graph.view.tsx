@@ -336,11 +336,9 @@ export default Marionette.LayoutView.extend({
       this.graphInspector.show(
         new AssociationView({
           model: this.collection.get(params.edges[0]),
-          selectionInterface: this.options.selectionInterface,
           knownMetacards: this.options.knownMetacards,
           lazyResults: this.options.lazyResults,
           currentLazyResult: this.options.currentLazyResult,
-          currentMetacard: this.options.currentMetacard,
         })
       )
       this.handleSelection()
@@ -355,11 +353,9 @@ export default Marionette.LayoutView.extend({
     this.graphInspector.show(
       new AssociationView({
         model: new Association(),
-        selectionInterface: this.options.selectionInterface,
         knownMetacards: this.options.knownMetacards,
         lazyResults: this.options.lazyResults,
         currentLazyResult: this.options.currentLazyResult,
-        currentMetacard: this.options.currentMetacard,
       })
     )
     this.handleSelection()
@@ -368,11 +364,9 @@ export default Marionette.LayoutView.extend({
     this.graphInspector.show(
       new AssociationView({
         model: new Association(),
-        selectionInterface: this.options.selectionInterface,
         knownMetacards: this.options.knownMetacards,
         lazyResults: this.options.lazyResults,
         currentLazyResult: this.options.currentLazyResult,
-        currentMetacard: this.options.currentMetacard,
       })
     )
     this.collection.add(this.graphInspector.currentView.model)
