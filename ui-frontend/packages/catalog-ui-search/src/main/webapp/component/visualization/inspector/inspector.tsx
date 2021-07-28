@@ -35,6 +35,7 @@ import MaterialTab, {
 import MetacardTabs, { TabNames } from '../../tabs/metacard/tabs-metacard'
 import { TypedProperties } from '../../singletons/TypedProperties'
 import { TypedUserInstance } from '../../singletons/TypedUser'
+import { useRerenderOnBackboneSync } from '../../../js/model/LazyQueryResult/hooks'
 
 type TabType = Omit<MaterialTabProps, 'label'> & {
   children: MaterialTabProps['label']
@@ -70,6 +71,7 @@ type TitleViewType = {
 
 export const TitleView = ({ lazyResult }: TitleViewType) => {
   const menuState = useMenuState()
+  useRerenderOnBackboneSync({ lazyResult })
   return (
     <div className="flex flex-row items-center justify-center flex-no-wrap p-2">
       <span
