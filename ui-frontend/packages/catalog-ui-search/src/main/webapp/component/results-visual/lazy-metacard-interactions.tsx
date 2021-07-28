@@ -17,7 +17,6 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import MetacardInteractions from '../../react-component/metacard-interactions'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
-const Backbone = require('backbone')
 
 type Props = {
   lazyResults: LazyQueryResult[]
@@ -25,11 +24,7 @@ type Props = {
 }
 
 const LazyMetacardInteractions = ({ lazyResults, onClose }: Props) => {
-  const backboneCollection = new Backbone.Collection(
-    lazyResults.map((lazyResult) => lazyResult.getBackbone())
-  )
-
-  return <MetacardInteractions model={backboneCollection} onClose={onClose} />
+  return <MetacardInteractions model={lazyResults} onClose={onClose} />
 }
 
 export default hot(module)(LazyMetacardInteractions)

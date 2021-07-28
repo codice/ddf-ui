@@ -20,10 +20,13 @@ import { LazyQueryResult } from '../js/model/LazyQueryResult/LazyQueryResult'
 import { MetacardAttribute, ResultType } from '../js/model/Types'
 import { ValueTypes } from '../component/filter-builder/filter.structure'
 import { Suggestion } from '../react-component/location/gazetteer'
+import { MetacardInteractionProps } from '../react-component/metacard-interactions'
 
 export type ExtensionPointsType = {
   providers: SFC<ProviderProps>
-  metacardInteractions: any[]
+  metacardInteractions: ((
+    props: MetacardInteractionProps
+  ) => React.ReactNode | any)[]
   customFilterInput: (props: {
     value: string
     onChange: (val: any) => void
