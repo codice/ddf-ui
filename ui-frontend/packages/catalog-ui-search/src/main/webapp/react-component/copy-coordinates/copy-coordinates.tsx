@@ -120,7 +120,7 @@ const render = (props: Props) => {
             )}
           >
             <div>
-              <div className="opacity-75">Well Known div (WKT)</div>
+              <div className="opacity-75">Well Known (WKT)</div>
               POINT ({lon} {lat})
             </div>
           </Button>

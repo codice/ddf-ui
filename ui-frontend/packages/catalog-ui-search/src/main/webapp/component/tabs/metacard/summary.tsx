@@ -301,7 +301,6 @@ export const Editor = ({
                       return (
                         <LocationInputReact
                           onChange={(location: any) => {
-                            console.log(location)
                             if (location === null || location === 'INVALID') {
                               setMode(Mode.BadInput)
                             } else {

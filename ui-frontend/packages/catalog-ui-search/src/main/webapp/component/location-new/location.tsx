@@ -113,7 +113,6 @@ export type LocationInputPropsType = {
 }
 
 const LocationInput = (props: LocationInputPropsType) => {
-  console.log(props)
   const { mode, valid, error, showErrors, setState } = props
   const input = inputs[mode] || {}
   const { Component = null } = input

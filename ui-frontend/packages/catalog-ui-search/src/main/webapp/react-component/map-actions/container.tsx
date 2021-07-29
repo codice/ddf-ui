@@ -27,8 +27,11 @@ type State = {
   currentOverlayUrl: string
 }
 
-const getActionsWithIdPrefix = (actions: any, id: string) => {
-  return actions.filter((action: any) => action.get('id').startsWith(id))
+const getActionsWithIdPrefix = (
+  actions: LazyQueryResult['plain']['actions'],
+  id: string
+) => {
+  return actions.filter((action) => action.id.startsWith(id))
 }
 
 class MapActions extends React.Component<Props, State> {
@@ -57,11 +60,11 @@ class MapActions extends React.Component<Props, State> {
       'catalog.data.metacard.map.overlay.'
     )
 
-    return modelOverlayActions.map((modelOverlayAction: any) => {
+    return modelOverlayActions.map((modelOverlayAction) => {
       return {
-        description: modelOverlayAction.get('description'),
-        url: modelOverlayAction.get('url'),
-        overlayText: this.getOverlayText(modelOverlayAction.get('url')),
+        description: modelOverlayAction.description,
+        url: modelOverlayAction.url,
+        overlayText: this.getOverlayText(modelOverlayAction.url),
       }
     })
   }

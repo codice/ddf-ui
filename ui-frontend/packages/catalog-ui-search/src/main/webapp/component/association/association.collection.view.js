@@ -26,9 +26,6 @@ module.exports = Marionette.CollectionView.extend({
     }
   },
   tagName: CustomElements.register('association-collection'),
-  initialize() {
-    console.log('hello')
-  },
   onAddChild(childView) {
     if (this.$el.hasClass('is-editing')) {
       childView.turnOnEditing()

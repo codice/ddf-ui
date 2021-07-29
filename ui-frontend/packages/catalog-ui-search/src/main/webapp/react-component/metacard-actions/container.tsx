@@ -27,16 +27,16 @@ const MetacardActions = (props: Props) => {
   const model = props.result
 
   const exportActions = _.sortBy(
-    model.getExportActions().map((action: any) => ({
-      url: action.get('url'),
-      title: action.getExportType(),
+    model.getExportActions().map((action) => ({
+      url: action.url,
+      title: action.displayName,
     })),
     (action: any) => action.title.toLowerCase()
   )
   const otherActions = _.sortBy(
-    model.getOtherActions().map((action: any) => ({
-      url: action.get('url'),
-      title: action.get('title'),
+    model.getOtherActions().map((action) => ({
+      url: action.url,
+      title: action.title,
     })),
     (action: any) => action.title.toLowerCase()
   )
