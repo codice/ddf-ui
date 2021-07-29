@@ -14,13 +14,13 @@
  **/
 
 import * as React from 'react'
-import { MapContextMenu } from '../../react-component/map-context-menu'
 import { hot } from 'react-hot-loader'
 import { useMenuState } from '../menu-state/menu-state'
 import Popover from '@material-ui/core/Popover'
 import Paper from '@material-ui/core/Paper'
 import { Elevations } from '../theme/theme'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
+import CopyCoordinates from '../../react-component/copy-coordinates'
 
 const MapContextDropdown = ({ mapModel }: { mapModel: any }) => {
   const [coordinates, setCoordinates] = React.useState(
@@ -59,11 +59,10 @@ const MapContextDropdown = ({ mapModel }: { mapModel: any }) => {
       ></div>
       <Popover {...menuState.MuiPopoverProps}>
         <Paper elevation={Elevations.overlays}>
-          <MapContextMenu
+          <CopyCoordinates
             key={JSON.stringify(coordinates)}
-            onChange={() => {}}
             coordinateValues={coordinates}
-            closeMenu={() => {
+            closeParent={() => {
               menuState.handleClose()
             }}
           />
