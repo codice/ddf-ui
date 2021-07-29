@@ -99,5 +99,15 @@ pipeline {
         unstable {
             slackSend color: '#ffb600', message: "UNSTABLE: ${JOB_NAME} ${BUILD_NUMBER}. See the results here: ${BUILD_URL}"
         }
+        cleanup {
+            catchError(buildResult: null, stageResult: 'FAILURE') {
+                echo '...Cleaning up workspace'
+                cleanWs()
+                sh 'rm -rf ~/.m2/repository'
+                wrap([$class: 'MesosSingleUseSlave']) {
+                    sh 'echo "...Shutting down Jenkins slave: `hostname`"'
+                }
+            }
+        }
     }
 }

@@ -12,8 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
-const childView = require('./association.view')
+import childView from './association.view.tsx'
 const Marionette = require('marionette')
 const CustomElements = require('../../js/CustomElements.js')
 
@@ -21,12 +20,15 @@ module.exports = Marionette.CollectionView.extend({
   childView,
   childViewOptions() {
     return {
-      selectionInterface: this.options.selectionInterface,
+      lazyResults: this.options.lazyResults,
       knownMetacards: this.options.knownMetacards,
-      currentMetacard: this.options.currentMetacard,
+      currentLazyResult: this.options.currentLazyResult,
     }
   },
   tagName: CustomElements.register('association-collection'),
+  initialize() {
+    console.log('hello')
+  },
   onAddChild(childView) {
     if (this.$el.hasClass('is-editing')) {
       childView.turnOnEditing()

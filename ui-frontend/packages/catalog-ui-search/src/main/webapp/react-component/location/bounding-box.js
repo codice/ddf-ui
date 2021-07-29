@@ -38,8 +38,7 @@ const BoundingBoxLatLonDd = (props) => {
   useEffect(() => {
     if (props.drawing) {
       setDdError(initialErrorStateWithDefault)
-    }
-    if (!ddError.error) {
+    } else {
       setDdError(validateGeo('bbox', { north, south, west, east }))
     }
   }, [props.east, props.west, props.south, props.north])
@@ -144,8 +143,7 @@ const BoundingBoxLatLonDms = (props) => {
   useEffect(() => {
     if (props.drawing) {
       setDmsError(initialErrorStateWithDefault)
-    }
-    if (!dmsError.error) {
+    } else {
       setDmsError(
         validateGeo('bbox', {
           isDms: true,
@@ -265,8 +263,7 @@ const BoundingBoxUsngMgrs = (props) => {
   useEffect(() => {
     if (props.drawing) {
       setUsngError(initialErrorState)
-    }
-    if (!usngError.error) {
+    } else {
       setUsngError(
         validateGeo('bbox', {
           isUsng: true,
@@ -343,12 +340,7 @@ const BoundingBoxUtmUps = (props) => {
     if (props.drawing) {
       setUpperLeftError(initialErrorState)
       setLowerRightError(initialErrorState)
-    }
-    if (
-      !lowerRightError.error ||
-      lowerRightError.message.includes('must be located above') ||
-      lowerRightError.message.includes('cannot equal')
-    ) {
+    } else {
       setLowerRightError(
         validateGeo('bbox', { isUtmUps: true, upperLeft, lowerRight })
       )

@@ -17,13 +17,16 @@ import { SFC } from '../react-component/hoc/utils'
 import { providers, Props as ProviderProps } from './providers'
 import metacardInteractions from './metacard-interactions'
 import { LazyQueryResult } from '../js/model/LazyQueryResult/LazyQueryResult'
-import { ResultType } from '../js/model/Types'
+import { MetacardAttribute, ResultType } from '../js/model/Types'
 import { ValueTypes } from '../component/filter-builder/filter.structure'
 import { Suggestion } from '../react-component/location/gazetteer'
+import { MetacardInteractionProps } from '../react-component/metacard-interactions'
 
 export type ExtensionPointsType = {
   providers: SFC<ProviderProps>
-  metacardInteractions: any[]
+  metacardInteractions: ((
+    props: MetacardInteractionProps
+  ) => React.ReactNode | any)[]
   customFilterInput: (props: {
     value: string
     onChange: (val: any) => void
@@ -50,7 +53,9 @@ export type ExtensionPointsType = {
     layoutResult?: ResultType
     editLayoutRef?: any
   }) => JSX.Element | null
-  customSourcesPage: (() => JSX.Element | null) | null
+  customSourcesPage:
+    | ((props: { onChange?: () => void }) => JSX.Element | null)
+    | null
   navigationRight: any[]
   serializeLocation: (
     property: string,
@@ -58,6 +63,15 @@ export type ExtensionPointsType = {
   ) => null | any
   handleFilter: (map: any, filter: any) => null | any
   suggester: (input: string) => null | Promise<Suggestion[]>
+  handleMetacardUpdate:
+    | (({
+        lazyResult,
+        attributesToUpdate,
+      }: {
+        lazyResult: LazyQueryResult
+        attributesToUpdate: MetacardAttribute[]
+      }) => Promise<void>)
+    | null
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -74,6 +88,7 @@ const ExtensionPoints: ExtensionPointsType = {
   serializeLocation: () => null,
   handleFilter: () => null,
   suggester: () => null,
+  handleMetacardUpdate: null,
 }
 
 export default ExtensionPoints

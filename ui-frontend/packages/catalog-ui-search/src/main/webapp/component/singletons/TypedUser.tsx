@@ -1,3 +1,8 @@
+import React from 'react'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import { SortType } from '../../js/model/Query.shared-types'
+import { FilterBuilderClass } from '../filter-builder/filter.structure'
+import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import { TypedMetacardDefs } from '../tabs/metacard/metacardDefinitions'
 import { TypedProperties } from './TypedProperties'
 
@@ -58,11 +63,14 @@ export const TypedUserInstance = {
     })
     return attributesPossible.map((attr) => attr.id)
   },
-  getQuerySettings: (): QuerySettingsModelType => {
+  getQuerySettingsJSON: (): QuerySettingsType => {
+    return TypedUserInstance.getQuerySettingsModel().toJSON()
+  },
+  getQuerySettingsModel: (): QuerySettingsModelType => {
     return userInstance.getQuerySettings()
   },
   updateQuerySettings: (newSettings: Partial<QuerySettingsType>): void => {
-    const currentSettings = TypedUserInstance.getQuerySettings()
+    const currentSettings = TypedUserInstance.getQuerySettingsModel()
     currentSettings.set(newSettings)
     userInstance.savePreferences()
   },
@@ -82,6 +90,54 @@ export const TypedUserInstance = {
 
     return coordFormat
   },
+  getEphemeralSorts(): undefined | SortType[] {
+    return userInstance.get('user').get('preferences').get('resultSort')
+  },
+  getEphemeralFilter(): undefined | FilterBuilderClass {
+    return userInstance.get('user').get('preferences').get('resultFilter')
+  },
+  removeEphemeralFilter() {
+    userInstance.get('user').get('preferences').set('resultFilter', undefined)
+    TypedUserInstance.savePreferences()
+  },
+  getPreferences(): Backbone.Model<any> {
+    return userInstance.get('user').get('preferences')
+  },
+  savePreferences() {
+    userInstance.get('user').get('preferences').savePreferences()
+  },
+  getActingRole: (): string => {
+    return userInstance.get('user').get('preferences').get('actingRole')
+  },
+  setActingRole: (actingRole: string) => {
+    return userInstance
+      .get('user')
+      .get('preferences')
+      .set('actingRole', actingRole)
+  },
+  canWrite: (result: LazyQueryResult): boolean => {
+    return userInstance.canWrite(result.plain.metacard.properties)
+  },
+}
+
+export function useActingRole<T extends string>(): T {
+  const [activeRole, setActiveRole] = React.useState(
+    TypedUserInstance.getActingRole() as T
+  )
+  useListenTo(TypedUserInstance.getPreferences(), 'change:actingRole', () => {
+    setActiveRole(TypedUserInstance.getActingRole() as T)
+  })
+  return activeRole
+}
+
+export const useEphemeralFilter = () => {
+  const [ephemeralFilter, setEphemeralFilter] = React.useState(
+    TypedUserInstance.getEphemeralFilter()
+  )
+  useListenTo(TypedUserInstance.getPreferences(), 'change:resultFilter', () => {
+    setEphemeralFilter(TypedUserInstance.getEphemeralFilter())
+  })
+  return ephemeralFilter
 }
 
 type QuerySettingsType = {

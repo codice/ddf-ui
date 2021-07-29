@@ -15,13 +15,12 @@
 import { ResultType } from '../Types'
 import { generateCompareFunction } from './sort'
 import { LazyQueryResult } from './LazyQueryResult'
-// @ts-ignore ts-migrate(6133) FIXME: 'FilterType' is declared but its value is never re... Remove this comment to see the full error message
-import { QuerySortType, FilterType } from './types'
+import { QuerySortType } from './types'
 import { Status } from './status'
+import { TransformSortsComposedFunctionType } from '../TypedQuery'
 const _ = require('underscore')
 const debounceTime = 50
 
-const user = require('../../../component/singletons/user-instance.js')
 const Backbone = require('backbone')
 
 export type SearchStatus = {
@@ -54,10 +53,14 @@ type ConstructorProps = {
   results?: ResultType[]
   sorts?: QuerySortType[]
   sources?: string[]
-  ephemeralSort?: boolean
+  transformSorts?: TransformSortsComposedFunctionType
 }
 
-type SubscribableType = 'status' | 'filteredResults' | 'selectedResults'
+type SubscribableType =
+  | 'status'
+  | 'filteredResults'
+  | 'selectedResults'
+  | 'results.backboneSync'
 type SubscriptionType = { [key: string]: () => void }
 /**
  * Constructed with performance in mind, taking advantage of maps whenever possible.
@@ -68,9 +71,11 @@ type SubscriptionType = { [key: string]: () => void }
 export class LazyQueryResults {
   ['subscriptionsToOthers.result.isSelected']: (() => void)[];
   ['subscriptionsToOthers.result.backboneCreated']: (() => void)[];
+  ['subscriptionsToOthers.result.backboneSync']: (() => void)[];
   ['subscriptionsToMe.status']: SubscriptionType;
   ['subscriptionsToMe.filteredResults']: SubscriptionType;
-  ['subscriptionsToMe.selectedResults']: SubscriptionType
+  ['subscriptionsToMe.selectedResults']: SubscriptionType;
+  ['subscriptionsToMe.results.backboneSync']: SubscriptionType
   subscribeTo({
     subscribableThing,
     callback,
@@ -103,6 +108,9 @@ export class LazyQueryResults {
   ['_notifySubscribers.selectedResults']() {
     this._notifySubscribers('selectedResults')
   }
+  ['_notifySubscribers.results.backboneSync']() {
+    this._notifySubscribers('results.backboneSync')
+  }
   _turnOnDebouncing() {
     this['_notifySubscribers.status'] = _.debounce(
       this['_notifySubscribers.status'],
@@ -114,6 +122,10 @@ export class LazyQueryResults {
     )
     this['_notifySubscribers.selectedResults'] = _.debounce(
       this['_notifySubscribers.selectedResults'],
+      debounceTime
+    )
+    this['_notifySubscribers.results.backboneSync'] = _.debounce(
+      this['_notifySubscribers.results.backboneSync'],
       debounceTime
     )
   }
@@ -206,34 +218,24 @@ export class LazyQueryResults {
    */
   persistantSorts: QuerySortType[]
   /**
-   * on the fly sorts (user prefs), so no distance or best text match
-   * (this is a user pref aka client side only)
+   * Pass a function that returns the sorts to use, allowing such things as substituting ephemeral sorts
    */
-  ephemeralSorts: QuerySortType[]
-  ephemeralSort: boolean // option on construction to turn off
+  transformSorts: TransformSortsComposedFunctionType = ({ originalSorts }) => {
+    return originalSorts
+  }
   /**
    *  Should really only be set at constructor time (moment a query is done)
    */
   _updatePersistantSorts(sorts: QuerySortType[]) {
     this.persistantSorts = sorts
   }
-  /**
-   *  Should be updated based on user prefs at the current moment,
-   *  And respond to updates to those prefs on the fly.
-   */
-  _updateEphemeralSorts() {
-    if (this.ephemeralSort) {
-      this.ephemeralSorts = user.getPreferences().get('resultSort') || []
-    } else {
-      this.ephemeralSorts = []
-    }
+  _updateTransformSorts(transformSorts: TransformSortsComposedFunctionType) {
+    this.transformSorts = transformSorts
   }
   _getSortedResults(results: LazyQueryResult[]) {
     return results.sort(
       generateCompareFunction(
-        this.ephemeralSorts.length > 0
-          ? this.ephemeralSorts
-          : this.persistantSorts
+        this.transformSorts({ originalSorts: this.persistantSorts })
       )
     )
   }
@@ -258,31 +260,34 @@ export class LazyQueryResults {
       {} as { [key: string]: LazyQueryResult }
     )
   }
+  /**
+   * This is purely to force a rerender in scenarios where we update result values and want to update views without resorting
+   * (resorting wouldn't make sense to do client side since there could be more results on the server)
+   * It also would be weird since things in tables or lists might jump around while the user is working with them.
+   */
+  _fakeResort() {
+    this.results = Object.values(this.results).reduce(
+      (blob, result, index, results) => {
+        result.index = index
+        result.prev = results[index - 1]
+        result.next = results[index + 1]
+        blob[result['metacard.id']] = result
+        return blob
+      },
+      {} as { [key: string]: LazyQueryResult }
+    )
+  }
   constructor({
     results = [],
     sorts = [],
     sources = [],
-    ephemeralSort = true,
+    transformSorts,
   }: ConstructorProps = {}) {
-    this.ephemeralSort = ephemeralSort === false ? false : true
-    this._updateEphemeralSorts()
-    this.reset({ results, sorts, sources })
+    this.reset({ results, sorts, sources, transformSorts })
 
     this.backboneModel = new Backbone.Model({
       id: Math.random().toString(),
     })
-    this.backboneModel.listenTo(
-      user,
-      'change:user>preferences>resultSort',
-      () => {
-        this._updateEphemeralSorts()
-        /**
-         * No need to resort because the query will re-execute.  We do need to update things though, so when all sources return we can sort appropriately.
-         */
-        // this._resort()
-        // this['_notifySubscribers.filteredResults']()
-      }
-    )
   }
   init() {
     this.currentAsOf = Date.now()
@@ -317,12 +322,20 @@ export class LazyQueryResults {
     this.selectedResults = {}
     if (shouldNotify) this['_notifySubscribers.selectedResults']()
   }
-  reset({ results = [], sorts = [], sources = [] }: ConstructorProps = {}) {
+  reset({
+    results = [],
+    sorts = [],
+    sources = [],
+    transformSorts = ({ originalSorts }) => {
+      return originalSorts
+    },
+  }: ConstructorProps = {}) {
     this.init()
     this.resetDidYouMeanFields()
     this.resetShowingResultsForFields()
     this._resetSources(sources)
     this._updatePersistantSorts(sorts)
+    this._updateTransformSorts(transformSorts)
     this.add({ results })
   }
   destroy() {
@@ -378,10 +391,10 @@ export class LazyQueryResults {
               () => {
                 lazyResult.syncWithBackbone()
                 /**
-                 * Commenting this part out for now, as this is an expensive thing and I'm not 100% users would actually expect a result to resort on the fly after updating it.
+                 *  In this case we don't want to really resort, just force renders on views by telling them things have changed.
                  */
-                // this._resort()
-                // this['_notifySubscribers.filteredResults']()
+                this._fakeResort()
+                this['_notifySubscribers.filteredResults']()
               }
             )
           },

@@ -283,7 +283,7 @@ class RestoreTask extends AsyncTask {
         const sourceId = this.lazyResult.plain.metacard.properties['source-id']
         if (!deletedId) {
           window.setTimeout(() => {
-            this.lazyResult.getBackbone().refreshData()
+            this.lazyResult.refreshDataOverNetwork()
           }, 5000)
         } else {
           fetch(
@@ -296,7 +296,7 @@ class RestoreTask extends AsyncTask {
       },
     })
     window.setTimeout(() => {
-      this.lazyResult.getBackbone().refreshData()
+      this.lazyResult.refreshDataOverNetwork()
     }, 5000)
   }
   static isInstanceOf(task: any): task is RestoreTask {
@@ -430,7 +430,7 @@ class SaveSearchTask extends AsyncTask {
         body: JSON.stringify(payload),
         signal: this.controller.signal,
       }).then(() => {
-        this.lazyResult.getBackbone().refreshData()
+        this.lazyResult.refreshDataOverNetwork()
         const unsub = this.lazyResult.subscribeTo({
           subscribableThing: 'backboneSync',
           callback: () => {

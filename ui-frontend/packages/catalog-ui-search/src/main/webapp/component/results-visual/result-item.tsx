@@ -15,13 +15,12 @@
 
 import * as React from 'react'
 import LazyMetacardInteractions from './lazy-metacard-interactions'
-const IconHelper = require('../../js/IconHelper.js')
+import IconHelper from '../../js/IconHelper'
 const properties = require('../../js/properties.js')
 const user = require('../singletons/user-instance.js')
 const metacardDefinitions = require('../singletons/metacard-definitions.js')
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 
-import { Dropdown } from '../atlas-dropdown'
 import Button from '@material-ui/core/Button'
 import LinkIcon from '@material-ui/icons/Link'
 import GetAppIcon from '@material-ui/icons/GetApp'
@@ -30,7 +29,6 @@ const Common = require('../../js/Common.js')
 import { hot } from 'react-hot-loader'
 import Paper from '@material-ui/core/Paper'
 import Tooltip from '@material-ui/core/Tooltip'
-import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
 import MoreIcon from '@material-ui/icons/MoreVert'
 import WarningIcon from '@material-ui/icons/Warning'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
@@ -51,6 +49,8 @@ import { TypedUserInstance } from '../singletons/TypedUser'
 import useCoordinateFormat from '../tabs/metacard/useCoordinateFormat'
 import EditIcon from '@material-ui/icons/Edit'
 import { Link } from '../link/link'
+import { useMenuState } from '../menu-state/menu-state'
+import Popover from '@material-ui/core/Popover'
 
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (
@@ -95,7 +95,11 @@ const showRelevanceScore = ({
   return properties.showRelevanceScores && lazyResult.hasRelevance()
 }
 
-const getIconClassName = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
+export const getIconClassName = ({
+  lazyResult,
+}: {
+  lazyResult: LazyQueryResult
+}) => {
   if (lazyResult.isRevision()) {
     return 'fa fa-history'
   } else if (lazyResult.isResource()) {
@@ -116,47 +120,34 @@ const MultiSelectActions = ({
     selectionInterface,
   })
   const selectedResultsArray = Object.values(selectedResults)
+  const metacardInteractionMenuState = useMenuState()
+
   return (
-    <Dropdown
-      popperProps={{
-        disablePortal: true,
-      }}
-      content={({ close }) => {
-        return (
-          <BetterClickAwayListener onClickAway={close}>
-            <Paper>
-              <LazyMetacardInteractions
-                lazyResults={selectedResultsArray}
-                onClose={() => {
-                  close()
-                }}
-              />
-            </Paper>
-          </BetterClickAwayListener>
-        )
-      }}
-    >
-      {({ handleClick }) => {
-        return (
-          <Button
-            className={
-              selectedResultsArray.length === 0 ? 'relative' : 'relative'
-            }
-            color="primary"
-            disabled={selectedResultsArray.length === 0}
-            onClick={(e) => {
-              e.stopPropagation()
-              handleClick(e)
-            }}
-            style={{ height: '100%' }}
-            size="small"
-          >
-            {selectedResultsArray.length} selected
-            <MoreIcon className="Mui-text-text-primary" />
-          </Button>
-        )
-      }}
-    </Dropdown>
+    <>
+      <Button
+        className={selectedResultsArray.length === 0 ? 'relative' : 'relative'}
+        color="primary"
+        disabled={selectedResultsArray.length === 0}
+        onClick={(e) => {
+          e.stopPropagation()
+          metacardInteractionMenuState.handleClick()
+        }}
+        innerRef={metacardInteractionMenuState.anchorRef}
+        style={{ height: '100%' }}
+        size="small"
+      >
+        {selectedResultsArray.length} selected
+        <MoreIcon className="Mui-text-text-primary" />
+      </Button>
+      <Popover {...metacardInteractionMenuState.MuiPopoverProps}>
+        <Paper>
+          <LazyMetacardInteractions
+            lazyResults={selectedResultsArray}
+            onClose={metacardInteractionMenuState.handleClose}
+          />
+        </Paper>
+      </Popover>
+    </>
   )
 }
 
@@ -166,44 +157,31 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
     e.stopPropagation()
     window.open(lazyResult.plain.metacard.properties['resource-download-url'])
   }
+  const metacardInteractionMenuState = useMenuState()
+
   return (
     <Grid container direction="column" wrap="nowrap" alignItems="center">
       <Grid item className="h-full">
-        <Dropdown
-          popperProps={{
-            disablePortal: true,
+        <Button
+          data-id="result-item-more-vert-button"
+          onClick={(e) => {
+            e.stopPropagation()
+            metacardInteractionMenuState.handleClick()
           }}
-          content={({ close }) => {
-            return (
-              <BetterClickAwayListener onClickAway={close}>
-                <Paper>
-                  <LazyMetacardInteractions
-                    lazyResults={[lazyResult]}
-                    onClose={() => {
-                      close()
-                    }}
-                  />
-                </Paper>
-              </BetterClickAwayListener>
-            )
-          }}
+          style={{ height: '100%' }}
+          size="small"
+          innerRef={metacardInteractionMenuState.anchorRef}
         >
-          {({ handleClick }) => {
-            return (
-              <Button
-                data-id="result-item-more-vert-button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  handleClick(e)
-                }}
-                style={{ height: '100%' }}
-                size="small"
-              >
-                <MoreIcon />
-              </Button>
-            )
-          }}
-        </Dropdown>
+          <MoreIcon />
+        </Button>
+        <Popover {...metacardInteractionMenuState.MuiPopoverProps}>
+          <Paper>
+            <LazyMetacardInteractions
+              lazyResults={[lazyResult]}
+              onClose={metacardInteractionMenuState.handleClose}
+            />
+          </Paper>
+        </Popover>
       </Grid>
       <Grid item className={dynamicActionClasses}>
         {lazyResult.hasErrors() ? (
@@ -212,7 +190,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
             className="h-full"
             title="Has validation errors."
             data-help="Indicates the given result has a validation error.
-                    See the 'Quality' tab of the result for more details."
+                     See the 'Quality' tab of the result for more details."
           >
             <WarningIcon />
           </div>
@@ -227,7 +205,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
             className="h-full"
             title="Has validation warnings."
             data-help="Indicates the given result has a validation warning.
-                    See the 'Quality' tab of the result for more details."
+                     See the 'Quality' tab of the result for more details."
           >
             <WarningIcon />
           </div>
@@ -280,19 +258,19 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
       </Grid>
       {/** add inline editing later */}
       {/* <Grid item className="h-full">
-        {lazyResult.isSearch() ? (
-          <Button
-            data-id="edit-button"
-            onClick={(e) => {
-              setEdit(lazyResult)
-            }}
-            style={{ height: '100%' }}
-            size="small"
-          >
-            <EditIcon />
-          </Button>
-        ) : null}
-      </Grid> */}
+         {lazyResult.isSearch() ? (
+           <Button
+             data-id="edit-button"
+             onClick={(e) => {
+               setEdit(lazyResult)
+             }}
+             style={{ height: '100%' }}
+             size="small"
+           >
+             <EditIcon />
+           </Button>
+         ) : null}
+       </Grid> */}
     </Grid>
   )
 }

@@ -1,18 +1,17 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import MRC from '../../../react-component/marionette-region-container'
 import { useLazyResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import { LazyQueryResults } from '../../../js/model/LazyQueryResult/LazyQueryResults'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import { useSelectedResults } from '../../../js/model/LazyQueryResult/hooks'
+import Autocomplete from '@material-ui/lab/Autocomplete'
+import TextField from '@material-ui/core/TextField'
 
 const wreqr = require('../../../js/wreqr.js')
 const $ = require('jquery')
 const _ = require('underscore')
 const Plotly = require('plotly.js/dist/plotly.js')
-const Property = require('../../property/property.js')
-const PropertyView = require('../../property/property.view.js')
 const metacardDefinitions = require('../../singletons/metacard-definitions.js')
 const Common = require('../../../js/Common.js')
 const properties = require('../../../js/properties.js')
@@ -237,29 +236,21 @@ type Props = {
   selectionInterface: any
 }
 
-const getPropertyView = ({
+const getAutocompleteState = ({
   lazyResults,
   attributeToBin,
 }: {
   lazyResults: LazyQueryResults
   attributeToBin: any
 }) => {
-  const propertyView = new PropertyView({
-    model: new Property({
-      showValidationIssues: false,
-      enumFiltering: true,
-      enum: calculateAvailableAttributes(Object.values(lazyResults.results)),
-      value: [attributeToBin],
-      id: 'Group by',
-    }),
-  })
-  propertyView.turnOnEditing()
-
-  return propertyView
+  return {
+    choices: calculateAvailableAttributes(Object.values(lazyResults.results)),
+    value: attributeToBin,
+  }
 }
 
 export const Histogram = ({ selectionInterface }: Props) => {
-  const { listenTo, stopListening } = useBackbone()
+  const { listenTo } = useBackbone()
   const [noMatchingData, setNoMatchingData] = React.useState(false)
   const plotlyRef = React.useRef<HTMLDivElement>()
   const lazyResults = useLazyResultsFromSelectionInterface({
@@ -267,28 +258,17 @@ export const Histogram = ({ selectionInterface }: Props) => {
   })
   const selectedResults = useSelectedResults({ lazyResults })
   const [attributeToBin, setAttributeToBin] = React.useState('' as string)
-  const [propertyView, setPropertyView] = React.useState(
-    getPropertyView({ lazyResults, attributeToBin })
+  const [autocompleteState, setAutocompleteState] = React.useState(
+    getAutocompleteState({ lazyResults, attributeToBin })
   )
   const results = Object.values(lazyResults.results)
-  React.useEffect(() => {
-    listenTo(propertyView.model, 'change:value', () => {
-      const newValue = propertyView.model.getValue()[0]
-      if (newValue) {
-        setAttributeToBin(newValue)
-      }
-    })
-    return () => {
-      stopListening(propertyView.model)
-    }
-  }, [propertyView])
 
   React.useEffect(() => {
     setNoMatchingData(false)
   }, [lazyResults.results, attributeToBin])
 
   React.useEffect(() => {
-    setPropertyView(getPropertyView({ lazyResults, attributeToBin }))
+    setAutocompleteState(getAutocompleteState({ lazyResults, attributeToBin }))
   }, [lazyResults.results])
 
   React.useEffect(() => {
@@ -438,7 +418,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
 
   const showHistogram = () => {
     if (plotlyRef.current) {
-      if (results.length > 0 && attributeToBin.length > 0) {
+      if (results.length > 0 && attributeToBin) {
         const histogramElement = plotlyRef.current
         const initialData = determineInitialData()
         if (initialData[0].x.length === 0) {
@@ -661,16 +641,30 @@ export const Histogram = ({ selectionInterface }: Props) => {
     pointsSelected.current = []
   }
 
-  React.useEffect(() => {}, [])
-
   if (Object.keys(lazyResults.results).length === 0) {
     return <div style={{ padding: '20px' }}>No results found</div>
   }
   return (
     <>
-      <div>
-        {' '}
-        <MRC view={propertyView} />
+      <div className="p-2">
+        <Autocomplete
+          size="small"
+          options={autocompleteState.choices}
+          onChange={(_e: any, newValue) => {
+            setAttributeToBin(newValue.value)
+          }}
+          getOptionSelected={(option) => option.value === attributeToBin}
+          getOptionLabel={(option) => {
+            return option.label
+          }}
+          disableClearable
+          value={autocompleteState.choices.find(
+            (choice) => choice.value === attributeToBin
+          )}
+          renderInput={(params) => (
+            <TextField {...params} label="Group by" variant="outlined" />
+          )}
+        />
       </div>
       <div
         className="plotly-histogram"

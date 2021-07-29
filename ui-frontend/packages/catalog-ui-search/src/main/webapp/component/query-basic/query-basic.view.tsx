@@ -15,7 +15,7 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 const _ = require('underscore')
-const IconHelper = require('../../js/IconHelper.js')
+import IconHelper from '../../js/IconHelper'
 const properties = require('../../js/properties.js')
 import cql from '../../js/cql'
 const metacardDefinitions = require('../singletons/metacard-definitions.js')
@@ -179,7 +179,15 @@ type PropertyValueMapType = {
   [key: string]: any
 }
 
-function translateFilterToBasicMap(filter: any) {
+export function downgradeFilterTreeToBasic(
+  filter: FilterBuilderClass
+): FilterBuilderClass {
+  return constructFilterFromBasicFilter({
+    basicFilter: translateFilterToBasicMap(filter).propertyValueMap,
+  })
+}
+
+function translateFilterToBasicMap(filter: FilterBuilderClass) {
   const propertyValueMap = {
     anyDate: [],
     anyText: [],
@@ -260,7 +268,7 @@ function translateFilterToBasicMap(filter: any) {
   }
 }
 
-function getFilterTree(model: any) {
+function getFilterTree(model: any): FilterBuilderClass {
   if (typeof model.get('filterTree') === 'object') {
     return model.get('filterTree')
   }
@@ -348,16 +356,38 @@ const constructFilterFromBasicFilter = ({
   })
 }
 
-const QueryBasic = ({ model }: QueryBasicProps) => {
-  const inputRef = React.useRef<HTMLDivElement>()
+/**
+ * We want to reset the basic filter whenever the filter tree changes on the model.
+ *
+ * We also want to update the filter tree once whenver the component is first
+ */
+const useBasicFilterFromModel = ({ model }: QueryBasicProps) => {
   const [basicFilter, setBasicFilter] = React.useState(
     translateFilterToBasicMap(getFilterTree(model)).propertyValueMap
   )
+  const { listenTo, stopListening } = useBackbone()
+
+  React.useEffect(() => {
+    const callback = () => {
+      setBasicFilter(
+        translateFilterToBasicMap(getFilterTree(model)).propertyValueMap
+      )
+    }
+    listenTo(model, 'change:filterTree', callback)
+    return () => {
+      stopListening(model, 'change:filterTree', callback)
+    }
+  }, [model])
+  return basicFilter
+}
+
+const QueryBasic = ({ model }: QueryBasicProps) => {
+  const inputRef = React.useRef<HTMLDivElement>()
+  const basicFilter = useBasicFilterFromModel({ model })
   const [typeAttributes] = React.useState(
     getAllValidValuesForMatchTypeAttribute()
   )
 
-  const { listenTo, stopListening } = useBackbone()
   /**
    * Because of how things render, auto focusing to the input is more complicated than I wish.  This ensures it works everytime, whereas autoFocus prop is unreliable
    */
@@ -371,17 +401,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
       clearTimeout(timeoutId)
     }
   }, [])
-  React.useEffect(() => {
-    const callback = () => {
-      setBasicFilter(
-        translateFilterToBasicMap(getFilterTree(model)).propertyValueMap
-      )
-    }
-    listenTo(model, 'change:filterTree', callback)
-    return () => {
-      stopListening(model, 'change:filterTree', callback)
-    }
-  }, [model])
+
   return (
     <>
       <div className="editor-properties px-2 py-3">

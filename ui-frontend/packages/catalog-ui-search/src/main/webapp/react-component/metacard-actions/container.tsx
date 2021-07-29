@@ -17,14 +17,14 @@ import { hot } from 'react-hot-loader'
 import * as React from 'react'
 const _ = require('underscore')
 import MetacardActionsPresentation from './presentation'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
 type Props = {
-  selectionInterface: any
+  result: LazyQueryResult
 }
 
 const MetacardActions = (props: Props) => {
-  const selectionInterface = props.selectionInterface
-  const model = selectionInterface.getSelectedResults().first()
+  const model = props.result
 
   const exportActions = _.sortBy(
     model.getExportActions().map((action: any) => ({

@@ -34,13 +34,13 @@ const save = (value: Value) => {
   preferences.savePreferences()
 }
 
-const onExpirationChange = (value: Value) => {
+const onExpirationChange = (value: number) => {
   save({
     alertExpiration: value,
   })
 }
 
-const onPersistenceChange = (value: Value) => {
+const onPersistenceChange = (value: boolean) => {
   save({
     alertPersistence: value,
   })

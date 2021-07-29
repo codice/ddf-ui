@@ -17,6 +17,8 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
     <repository>mvn:com.connexta.jsonrpc/jsonrpc-features/${ddf-jsonrpc.version}/xml/features</repository>
+    <repository>mvn:org.codice.ddf.search/ui-frontend/${project.version}/xml/features</repository>
+    <repository>mvn:ddf.features/apps/${ddf.version}/xml/features</repository>
 
     <feature name="catalog-ui-search-api" version="${project.version}"
              description="API for interacting with Catalog UI">
@@ -69,6 +71,7 @@
         <bundle>mvn:org.codice.ddf.search/audit-logging/${project.version}</bundle>
         <bundle>mvn:org.codice.ddf.search/catalog-plugin-highlight/${project.version}</bundle>
         <bundle>mvn:org.codice.ddf.search/deprecatable-enumeration-api/${project.version}</bundle>
+
     </feature>
 
     <feature name="javalin" version="${project.version}" description="Javalin Web Framework">
@@ -85,6 +88,24 @@
         <feature>catalog-versioning-plugin</feature>
         <feature>catalog-core-validator</feature>
         <feature>catalog-ui</feature>
+    </feature>
+
+    <feature name="ddf-ui" version="${project.version}" description="This will install all needed ddf-ui applications." start-level="1">
+
+        <!-- DDF Apps -->
+        <feature>admin-app</feature>
+        <feature>platform-app</feature>
+        <feature>catalog-core-definitionparser</feature>
+        <feature>catalog-app</feature>
+        <feature>spatial-app</feature>
+        <feature>search-ui-app</feature>
+        <feature>catalog-solr-app</feature>
+
+        <!-- DDF-ui apps -->
+        <feature>jsonrpc-2.25</feature>
+        <feature>catalog-ui-app</feature>
+        <feature>ui-frontend</feature>
+
     </feature>
 
 </features>

@@ -13,6 +13,8 @@
  *
  **/
 import fetch from '../fetch'
+import { postAuditLog } from '../audit/audit-endpoint'
+import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 
 export enum Transformer {
   Metacard = 'metacard',
@@ -48,29 +50,27 @@ export type DownloadInfo = {
   filteredAttributes: any[]
 }
 
-export const getExportResults = (results: any[]) => {
+export const getExportResults = (results: LazyQueryResult[]) => {
   return results.map((result) => getExportResult(result))
 }
 
-const getResultId = (result: any) => {
-  const id = result.get('metacard').get('properties').get('id')
+const getResultId = (result: LazyQueryResult) => {
+  const id = result.plain.id
 
   return encodeURIComponent(id)
 }
 
-const getResultSourceId = (result: any) => {
-  const sourceId = result.get('metacard').get('properties').get('source-id')
+const getResultSourceId = (result: LazyQueryResult) => {
+  const sourceId = result.plain.metacard.properties['source-id']
 
   return encodeURIComponent(sourceId)
 }
 
-export const getExportResult = (result: any) => {
+export const getExportResult = (result: LazyQueryResult) => {
   return {
     id: getResultId(result),
     source: getResultSourceId(result),
-    attributes: Object.keys(
-      result.get('metacard').get('properties').attributes
-    ),
+    attributes: Object.keys(result.plain.metacard.properties),
   }
 }
 
@@ -85,9 +85,15 @@ export const exportResult = async (
   transformer: string,
   attributes: string
 ) => {
-  return await fetch(
+  const response = await fetch(
     `/services/catalog/sources/${source}/${id}?transform=${transformer}&columnOrder=${attributes}`
   )
+  await postAuditLog({
+    action: 'exported',
+    component: 'metacard',
+    items: [{ id, 'source-id': source }],
+  })
+  return response
 }
 
 export const exportResultSet = async (

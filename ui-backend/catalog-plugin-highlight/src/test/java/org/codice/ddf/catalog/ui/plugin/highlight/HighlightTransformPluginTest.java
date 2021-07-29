@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
+import com.google.common.collect.ImmutableMap;
 import ddf.catalog.Constants;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.Result;
@@ -89,6 +90,73 @@ public class HighlightTransformPluginTest {
     assertThat(
         highlights.get(0).getHighlights().get(0).get("highlight"),
         is("<span class=\"highlight\">Lorem</span> ipsum dol..."));
+  }
+
+  @Test
+  public void testHighlightSourceCollision() {
+    String id1 = "123456789";
+    String id2 = "987654321";
+    // Highlight the word "Lorem"
+    Highlight highlight1 = new HighlightImpl(0, 5);
+    Highlight highlight2 = new HighlightImpl(7, 12);
+
+    Metacard metacard1 = new MetacardImpl();
+    metacard1.setAttribute(new AttributeImpl("description", value));
+    metacard1.setAttribute(new AttributeImpl("id", id1));
+    Result result1 = new ResultImpl(metacard1);
+
+    Metacard metacard2 = new MetacardImpl();
+    metacard2.setAttribute(new AttributeImpl("description", "Offset " + value));
+    metacard2.setAttribute(new AttributeImpl("id", id2));
+    Result result2 = new ResultImpl(metacard2);
+
+    QueryResponse response = new QueryResponseImpl(request, Arrays.asList(result1, result2), 2);
+    ResultAttributeHighlight resultAttributeHighlight1 =
+        new ResultAttributeHighlightImpl("description", Arrays.asList(highlight1));
+    ResultHighlight resultHighlight1 =
+        new ResultHighlightImpl(id1, Arrays.asList(resultAttributeHighlight1));
+
+    // Simulate a source collision for highlights that only contain one highlight
+    response
+        .getProperties()
+        .put(Constants.QUERY_HIGHLIGHT_KEY, (Serializable) Arrays.asList(resultHighlight1));
+
+    ResultAttributeHighlight resultAttributeHighlight2 =
+        new ResultAttributeHighlightImpl("description", Arrays.asList(highlight2));
+    ResultHighlight resultHighlight2 =
+        new ResultHighlightImpl(id2, Arrays.asList(resultAttributeHighlight2));
+
+    response
+        .getProperties()
+        .put(
+            HighlightTransformPlugin.ORIGINAL_SOURCE_PROPERTIES,
+            ImmutableMap.of(
+                "source1",
+                ImmutableMap.of(
+                    Constants.QUERY_HIGHLIGHT_KEY, (Serializable) Arrays.asList(resultHighlight1)),
+                "source2",
+                ImmutableMap.of(
+                    Constants.QUERY_HIGHLIGHT_KEY,
+                    (Serializable) Arrays.asList(resultHighlight2))));
+
+    QueryResponse processedResponse = plugin.process(response);
+    assertThat(
+        processedResponse.getProperties().containsKey(Constants.QUERY_HIGHLIGHT_KEY), is(true));
+    ArrayList<HighlightTransformPlugin.ProcessedHighlight> highlights =
+        (ArrayList<HighlightTransformPlugin.ProcessedHighlight>)
+            processedResponse.getProperties().get(Constants.QUERY_HIGHLIGHT_KEY);
+    assertThat(highlights.size(), is(2));
+    assertThat(highlights.get(0).getId(), is(id1));
+    assertThat(highlights.get(0).getHighlights().get(0).get("attribute"), is("description"));
+    assertThat(
+        highlights.get(0).getHighlights().get(0).get("highlight"),
+        is("<span class=\"highlight\">Lorem</span> ipsum dol..."));
+
+    assertThat(highlights.get(1).getId(), is(id2));
+    assertThat(highlights.get(1).getHighlights().get(0).get("attribute"), is("description"));
+    assertThat(
+        highlights.get(1).getHighlights().get(0).get("highlight"),
+        is("Offset <span class=\"highlight\">Lorem</span> ipsum dol..."));
   }
 
   @Test

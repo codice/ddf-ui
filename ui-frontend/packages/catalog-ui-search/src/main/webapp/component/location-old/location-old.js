@@ -113,7 +113,7 @@ module.exports = Backbone.AssociatedModel.extend({
     Backbone.AssociatedModel.prototype.set.call(this, key, value, options)
   },
 
-  initialize() {
+  initialize(props) {
     this.listenTo(
       this,
       'change:line change:polygon',
@@ -167,7 +167,7 @@ module.exports = Backbone.AssociatedModel.extend({
       this.setBboxUsng
     )
     this.listenTo(this, 'change:locationType', this.handleLocationType)
-    this.listenTo(this, 'change:bbox', _.debounce(this.setBboxLatLon, 150))
+    this.listenTo(this, 'change:bbox', _.debounce(this.setBboxLatLon, 5))
     this.listenTo(this, 'change:lat change:lon', this.setRadiusLatLon)
     this.listenTo(this, 'change:usng', this.setRadiusUsng)
     this.listenTo(
@@ -186,6 +186,38 @@ module.exports = Backbone.AssociatedModel.extend({
     })
     this.listenTo(this, 'EndExtent', this.drawingOff)
     this.listenTo(this, 'BeginExtent', this.drawingOn)
+    this.initializeValues(props)
+  },
+  initializeValues(props) {
+    if (props.type === 'POINTRADIUS' && props.lat && props.lon) {
+      if (!props.usng || !props.utmUpsEasting) {
+        // initializes dms/usng/utmUps using lat/lon
+        this.updateCoordPointRadiusValues(props.lat, props.lon)
+      }
+    } else {
+      this.setUsngDmsUtmWithLineOrPoly(this)
+    }
+  },
+  updateCoordPointRadiusValues(lat, lon) {
+    if (!this.isLatLonValid(lat, lon)) return
+
+    this.setRadiusDmsFromMap()
+
+    const utmUps = this.LLtoUtmUps(lat, lon)
+    if (utmUps !== undefined) {
+      const utmUpsParts = this.formatUtmUps(utmUps)
+      this.setUtmUpsPointRadius(utmUpsParts, true)
+    } else {
+      this.clearUtmUpsPointRadius(false)
+    }
+
+    if (this.isInUpsSpace(lat, lon)) {
+      this.set('usng', undefined)
+      return
+    }
+
+    const usngsStr = converter.LLtoUSNG(lat, lon, usngPrecision)
+    this.set('usng', usngsStr, { silent: true })
   },
   drawingOff() {
     if (this.get('locationType') === 'dms') {
@@ -523,7 +555,7 @@ module.exports = Backbone.AssociatedModel.extend({
     if (!this.isLatLonValid(north, west) || !this.isLatLonValid(south, east)) {
       return
     }
-
+    this.setBboxDmsFromMap()
     let utmUps = this.LLtoUtmUps(north, west)
     if (utmUps !== undefined) {
       var utmUpsParts = this.formatUtmUps(utmUps)
@@ -561,35 +593,13 @@ module.exports = Backbone.AssociatedModel.extend({
       this.repositionLatLon()
     }
   },
-
   setRadiusLatLon() {
     const lat = this.get('lat'),
       lon = this.get('lon')
 
-    if (
-      (!Drawing.isDrawing() && this.get('locationType') !== 'latlon') ||
-      !this.isLatLonValid(lat, lon)
-    ) {
-      return
-    }
+    if (!Drawing.isDrawing() && this.get('locationType') !== 'latlon') return
 
-    this.setRadiusDmsFromMap()
-
-    const utmUps = this.LLtoUtmUps(lat, lon)
-    if (utmUps !== undefined) {
-      const utmUpsParts = this.formatUtmUps(utmUps)
-      this.setUtmUpsPointRadius(utmUpsParts, true)
-    } else {
-      this.clearUtmUpsPointRadius(false)
-    }
-
-    if (this.isInUpsSpace(lat, lon)) {
-      this.set('usng', undefined)
-      return
-    }
-
-    const usngsStr = converter.LLtoUSNG(lat, lon, usngPrecision)
-    this.set('usng', usngsStr, { silent: true })
+    this.updateCoordPointRadiusValues(lat, lon)
   },
 
   setRadiusDmsLat() {
@@ -683,10 +693,7 @@ module.exports = Backbone.AssociatedModel.extend({
       west !== undefined
     ) {
       this.set('bbox', [west, south, east, north].join(','), {
-        silent:
-          (this.get('locationType') === 'usng' ||
-            this.isLocationTypeUtmUps()) &&
-          !this.get('drawing'),
+        silent: this.isLocationTypeUtmUps() && !this.get('drawing'),
       })
     }
     this.set({

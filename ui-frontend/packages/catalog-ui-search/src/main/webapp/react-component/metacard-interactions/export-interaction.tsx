@@ -14,14 +14,17 @@
  **/
 import * as React from 'react'
 import ResultsExport from '../results-export'
-import { Props } from '.'
+import { MetacardInteractionProps } from '.'
 import { MetacardInteraction } from './metacard-interactions'
 import { hot } from 'react-hot-loader'
 import { getExportResults } from '../utils/export/export'
 
 const lightboxInstance = require('../../component/lightbox/lightbox.view.instance.js')
 
-const onExport = (props: Props) => {
+const onExport = (props: MetacardInteractionProps) => {
+  if (!props.model || props.model.length <= 0) {
+    return
+  }
   props.onClose()
   lightboxInstance.model.updateTitle('Export Results')
   lightboxInstance.model.open()
@@ -30,7 +33,10 @@ const onExport = (props: Props) => {
   )
 }
 
-export const ExportActions = (props: Props) => {
+export const ExportActions = (props: MetacardInteractionProps) => {
+  if (!props.model || props.model.length <= 0) {
+    return null
+  }
   return (
     <MetacardInteraction
       onClick={() => onExport(props)}

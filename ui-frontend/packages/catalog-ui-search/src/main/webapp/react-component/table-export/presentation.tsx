@@ -14,27 +14,11 @@
  **/
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
-import Enum from '../enum'
-import styled from 'styled-components'
-import Number from '../input-wrappers/number'
 import Button from '@material-ui/core/Button'
 const properties = require('../../js/properties.js')
 import GetAppIcon from '@material-ui/icons/GetApp'
-const Root = styled.div`
-  display: block;
-  height: 100%;
-  width: 100%;
-  overflow: auto;
-
-  button {
-    margin-top: ${(props) => props.theme.minimumSpacing};
-    width: 100%;
-  }
-
-  .warning {
-    text-align: center;
-  }
-`
+import Autocomplete from '@material-ui/lab/Autocomplete'
+import TextField from '@material-ui/core/TextField'
 
 type Option = {
   label: string
@@ -68,50 +52,86 @@ export default hot(module)((props: Props) => {
     customExportCount,
   } = props
   return (
-    <Root>
-      <Enum
-        options={exportSizeOptions}
-        value={exportSize}
-        label="Export"
-        onChange={handleExportSizeChange}
-      />
+    <div className="w-full h-full overflow-auto p-2">
+      <div className="pt-2">
+        <Autocomplete
+          size="small"
+          options={exportSizeOptions}
+          onChange={(_e: any, newValue) => {
+            handleExportSizeChange(newValue.value)
+          }}
+          getOptionSelected={(option) => option.value === exportSize}
+          getOptionLabel={(option) => {
+            return option.label
+          }}
+          disableClearable
+          value={exportSizeOptions.find(
+            (choice) => choice.value === exportSize
+          )}
+          renderInput={(params) => (
+            <TextField {...params} label="Export" variant="outlined" />
+          )}
+        />
+      </div>
       {exportSize === 'custom' ? (
-        <div>
-          <Number
+        <div className="pt-2">
+          <TextField
+            fullWidth
+            size="small"
+            type="number"
             label=""
-            showLabel={false}
             placeholder="Enter number of results you would like to export"
             name="customExport"
-            value={customExportCount.toString()}
-            onChange={handleCustomExportCountChange}
+            value={customExportCount}
+            onChange={(e) => {
+              handleCustomExportCountChange(e.target.value)
+            }}
+            variant="outlined"
           />
         </div>
       ) : (
         <div />
       )}
-      <Enum
-        options={exportFormatOptions}
-        value={exportFormat}
-        label="as"
-        onChange={handleExportFormatChange}
-      />
+      <div className="pt-2">
+        <Autocomplete
+          size="small"
+          options={exportFormatOptions}
+          onChange={(_e: any, newValue) => {
+            handleExportFormatChange(newValue.value)
+          }}
+          getOptionSelected={(option) => option.value === exportFormat}
+          getOptionLabel={(option) => {
+            return option.label
+          }}
+          disableClearable
+          value={exportFormatOptions.find(
+            (choice) => choice.value === exportFormat
+          )}
+          renderInput={(params) => (
+            <TextField {...params} label="as" variant="outlined" />
+          )}
+        />
+      </div>
       {warning && (
-        <div className="warning">
+        <div className="warning text-center pt-1">
           <i className="fa fa-warning" />
           <span>{warning}</span>
         </div>
       )}
-      <Button
-        variant="contained"
-        color="primary"
-        disabled={
-          exportSize === 'custom' &&
-          customExportCount > properties.exportResultLimit
-        }
-        onClick={onDownloadClick}
-      >
-        <GetAppIcon /> Download
-      </Button>
-    </Root>
+      <div className="pt-2">
+        <Button
+          fullWidth
+          variant="contained"
+          color="primary"
+          disabled={
+            exportSize === 'custom' &&
+            customExportCount > properties.exportResultLimit
+          }
+          onClick={onDownloadClick}
+        >
+          <GetAppIcon /> Download
+        </Button>
+      </div>
+    </div>
   )
 })

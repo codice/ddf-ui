@@ -27,6 +27,7 @@ import {
   DownloadInfo,
 } from '../../react-component/utils/export'
 import saveFile from '../../react-component/utils/save-file'
+import { DEFAULT_USER_QUERY_OPTIONS } from '../../js/model/TypedQuery'
 const announcement = require('../../component/announcement/index.jsx')
 const properties = require('../../js/properties.js')
 const contentDisposition = require('content-disposition')
@@ -92,6 +93,7 @@ function getSearches(
   count: any,
   selectionInterface: any
 ): any {
+  const cacheId = selectionInterface.getCurrentQuery().get('cacheId')
   if (exportSize !== 'currentPage') {
     return srcs.length > 0
       ? [
@@ -99,6 +101,7 @@ function getSearches(
             srcs,
             cql,
             count,
+            cacheId,
           },
         ]
       : []
@@ -111,6 +114,7 @@ function getSearches(
       cql,
       start,
       count: srcCount,
+      cacheId,
     }
   })
 }
@@ -190,9 +194,14 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
   )
 
   const query = selectionInterface.getCurrentQuery()
-  const cql = query.getEphemeralMixinCql(query.get('filterTree'))
+  const cql = DEFAULT_USER_QUERY_OPTIONS.transformFilterTree({
+    originalFilterTree: query.get('filterTree'),
+    queryRef: query,
+  })
   const srcs = getSrcs(selectionInterface)
   const sorts = getSorts(selectionInterface)
+  const phonetics = query.get('phonetics')
+  const spellcheck = query.get('spellcheck')
   const args = {
     hiddenFields: hiddenFields.length > 0 ? hiddenFields : [],
     columnOrder: columnOrder.length > 0 ? columnOrder : [],
@@ -202,6 +211,8 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
   const searches = getSearches(exportSize, srcs, cql, count, selectionInterface)
 
   return {
+    phonetics,
+    spellcheck,
     searches,
     count,
     sorts,

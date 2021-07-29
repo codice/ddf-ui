@@ -7,11 +7,11 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { useHistory } from 'react-router-dom'
 import { AsyncTasks } from '../../js/model/AsyncTask/async-task'
+import { useQuery, UserQuery } from '../../js/model/TypedQuery'
 import { useMenuState } from '../menu-state/menu-state'
 import { Elevations } from '../theme/theme'
 import { OpenSearch, SaveForm } from './search'
 
-const Query = require('../../js/model/Query.js')
 const SelectionInterfaceModel = require('../selection-interface/selection-interface.model')
 
 const selectionInterface = new SelectionInterfaceModel()
@@ -21,11 +21,12 @@ const Open = () => {
   const openMenuState = useMenuState()
   const titleMenuState = useMenuState()
   const fromExistingMenuState = useMenuState()
+  const [search] = useQuery()
   React.useEffect(() => {
     openMenuState.handleClick()
   }, [])
   React.useEffect(() => {
-    selectionInterface.setCurrentQuery(new Query.Model())
+    selectionInterface.setCurrentQuery(search)
   }, [])
   return (
     <div className="w-full h-full p-2">
@@ -51,7 +52,7 @@ const Open = () => {
               titleMenuState.handleClose()
             }}
             onSave={(title) => {
-              const searchData = new Query.Model().toJSON()
+              const searchData = UserQuery().toJSON()
               searchData.title = title
               const task = AsyncTasks.createSearch({ data: searchData })
               history.push({

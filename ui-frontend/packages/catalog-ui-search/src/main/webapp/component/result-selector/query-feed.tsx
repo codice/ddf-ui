@@ -1,8 +1,6 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import { Dropdown } from '../atlas-dropdown'
 import Paper from '@material-ui/core/Paper'
-import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
 const moment = require('moment')
 import styled from 'styled-components'
 import Grid from '@material-ui/core/Grid'
@@ -14,6 +12,8 @@ import { Elevations } from '../theme/theme'
 import FilterListIcon from '@material-ui/icons/FilterList'
 import { fuzzyHits, fuzzyResultCount } from './fuzzy-results'
 import ErrorIcon from '@material-ui/icons/Error'
+import { useMenuState } from '../menu-state/menu-state'
+import Popover from '@material-ui/core/Popover'
 
 type Props = {
   selectionInterface: any
@@ -200,6 +200,7 @@ const LastRan = ({ currentAsOf }: { currentAsOf: number }) => {
 }
 
 const QueryFeed = ({ selectionInterface }: Props) => {
+  const { MuiButtonProps, MuiPopoverProps } = useMenuState()
   const {
     status,
     currentAsOf,
@@ -267,47 +268,36 @@ const QueryFeed = ({ selectionInterface }: Props) => {
           <LastRan currentAsOf={currentAsOf} />
         </Grid>
         <Grid item>
-          <Dropdown
-            content={({ closeAndRefocus }) => {
-              return (
-                <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper
-                    data-id="query-status-container"
-                    style={{ padding: '20px' }}
-                    className="intrigue-table"
-                  >
-                    <QueryStatus
-                      statusBySource={statusBySource}
-                      query={selectionInterface.getCurrentQuery()}
-                    />
-                  </Paper>
-                </BetterClickAwayListener>
-              )
-            }}
-          >
-            {({ handleClick }) => {
-              return (
-                <div>
-                  <div className="relative">
-                    <Button
-                      data-id="heartbeat-button"
-                      onClick={handleClick}
-                      className="details-view is-button"
-                      title="Show the full status for the search."
-                      data-help="Show the full status for the search."
-                    >
-                      <span className="fa fa-heartbeat" />
-                    </Button>
-                    {warnings && (
-                      <div className="absolute bottom-0 right-0 text-sm">
-                        <ErrorIcon fontSize="inherit" color="error" />
-                      </div>
-                    )}
-                  </div>
+          <div>
+            <div className="relative">
+              <Button
+                data-id="heartbeat-button"
+                className="details-view is-button"
+                title="Show the full status for the search."
+                data-help="Show the full status for the search."
+                {...MuiButtonProps}
+              >
+                <span className="fa fa-heartbeat" />
+              </Button>
+              <Popover {...MuiPopoverProps}>
+                <Paper
+                  data-id="query-status-container"
+                  style={{ padding: '20px' }}
+                  className="intrigue-table"
+                >
+                  <QueryStatus
+                    statusBySource={statusBySource}
+                    query={selectionInterface.getCurrentQuery()}
+                  />
+                </Paper>
+              </Popover>
+              {warnings && (
+                <div className="absolute bottom-0 right-0 text-sm">
+                  <ErrorIcon fontSize="inherit" color="error" />
                 </div>
-              )
-            }}
-          </Dropdown>
+              )}
+            </div>
+          </div>
         </Grid>
       </Grid>
     </>

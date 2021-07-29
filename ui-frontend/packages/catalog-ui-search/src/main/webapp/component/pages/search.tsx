@@ -5,12 +5,13 @@ import {
   useResizableGridContext,
 } from '../resizable-grid/resizable-grid'
 const SelectionInterfaceModel = require('../selection-interface/selection-interface.model')
-const Query = require('../../js/model/Query.js')
+import { useQuery, useUserQuery } from '../../js/model/TypedQuery'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import QueryAddView from '../query-add/query-add'
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
+import queryString from 'query-string'
 
 import MRC from '../../react-component/marionette-region-container'
 import Button, { ButtonProps } from '@material-ui/core/Button'
@@ -206,41 +207,38 @@ const useSearchResults = ({
     loading: true,
   } as { lazyResults: LazyQueryResult[]; loading: boolean })
   const [hasSearched, setHasSearched] = React.useState(false)
+  const [queryModel] = useQuery({
+    attributes: {
+      sorts: [{ attribute: 'metacard.modified', direction: 'descending' }],
+      filterTree: new FilterBuilderClass({
+        type: 'AND',
+        filters: [
+          new FilterClass({
+            property: 'title',
+            value: `*${searchText}*`,
+            type: 'ILIKE',
+          }),
+          new FilterClass({
+            property: archived ? 'metacard.deleted.tags' : 'metacard-tags',
+            value: 'query',
+            type: 'ILIKE',
+          }),
+          ...(archived
+            ? [
+                new FilterClass({
+                  property: 'metacard-tags',
+                  value: '*',
+                  type: 'ILIKE',
+                }),
+              ]
+            : []),
+        ],
+      }),
+    },
+  })
   const [selectionInterface] = React.useState(
     new SelectionInterfaceModel({
-      currentQuery: new Query.Model(
-        {
-          sorts: [{ attribute: 'metacard.modified', direction: 'descending' }],
-          filterTree: new FilterBuilderClass({
-            type: 'AND',
-            filters: [
-              new FilterClass({
-                property: 'title',
-                value: `*${searchText}*`,
-                type: 'ILIKE',
-              }),
-              new FilterClass({
-                property: archived ? 'metacard.deleted.tags' : 'metacard-tags',
-                value: 'query',
-                type: 'ILIKE',
-              }),
-              ...(archived
-                ? [
-                    new FilterClass({
-                      property: 'metacard-tags',
-                      value: '*',
-                      type: 'ILIKE',
-                    }),
-                  ]
-                : []),
-            ],
-          }),
-        },
-        {
-          ephemeralFilter: false,
-          ephemeralSort: false,
-        }
-      ),
+      currentQuery: queryModel,
     })
   )
   React.useEffect(() => {
@@ -333,11 +331,12 @@ export const OpenSearch = ({
   }, [lazyResults])
 
   React.useEffect(() => {
-    if (currentHighlight) {
+    if (currentHighlight && currentHighlight.overflowTooltip) {
       currentHighlight.overflowTooltip.setOpen(true)
     }
     return () => {
-      if (currentHighlight) currentHighlight.overflowTooltip.setOpen(false)
+      if (currentHighlight && currentHighlight.overflowTooltip)
+        currentHighlight.overflowTooltip.setOpen(false)
     }
   }, [currentHighlight])
   React.useEffect(() => {
@@ -388,17 +387,21 @@ export const OpenSearch = ({
       renderOption={(option) => {
         return (
           <Link
-            className="w-full p-2 font-normal no-underline hover:font-normal hover:no-underline"
+            className="w-full p-0 font-normal no-underline hover:font-normal hover:no-underline"
             to={constructLink(option)}
           >
-            <OverflowTooltip>
-              {({ refOfThingToMeasure }) => {
-                return (
-                  <div className="truncate w-full" ref={refOfThingToMeasure}>
+            <OverflowTooltip
+              tooltipProps={{
+                title: (
+                  <div className="w-full p-2">
                     {option.plain.metacard.properties.title}
                   </div>
-                )
+                ),
               }}
+            >
+              <div className="truncate w-full p-2">
+                {option.plain.metacard.properties.title}
+              </div>
             </OverflowTooltip>
           </Link>
         )
@@ -1255,7 +1258,9 @@ const useKeepSearchInUrl = ({
           JSON.stringify(queryModel.toJSON())
         )
         history.replace({
-          search: `?defaultQuery=${encodedQueryModel}`,
+          search: `${queryString.stringify({
+            defaultQuery: encodedQueryModel,
+          })}`,
         })
       }
     }, 2000)
@@ -1291,26 +1296,22 @@ const useSavedSearchPageMode = ({
   const [data, setData] = React.useState<SavedSearchPageMode>(false)
   const task = useCreateSearchTask({ id })
   const restoreTask = useRestoreSearchTask({ id })
+  const [queryModel] = useQuery({
+    attributes: {
+      sources: ['local'],
+    },
+  })
   console.info(task)
   React.useEffect(() => {
     if (task || restoreTask) {
       setData(true)
       return
     }
-    const query = new Query.Model(
-      {
-        sources: ['local'],
-      },
-      {
-        ephemeralFilter: false,
-        ephemeralSort: false,
-      }
-    )
     let subscriptionCancel = () => {}
 
     if (id) {
       setData(true)
-      query.set(
+      queryModel.set(
         'filterTree',
         new FilterBuilderClass({
           filters: [
@@ -1327,8 +1328,8 @@ const useSavedSearchPageMode = ({
           ],
         })
       )
-      query.startSearchFromFirstPage(undefined, () => {
-        const lazyResults = query
+      queryModel.startSearchFromFirstPage(undefined, () => {
+        const lazyResults = queryModel
           .get('result')
           .get('lazyResults') as LazyQueryResults
         subscriptionCancel = lazyResults.subscribeTo({
@@ -1348,7 +1349,7 @@ const useSavedSearchPageMode = ({
     }
     return () => {
       subscriptionCancel()
-      query.cancelCurrentSearches()
+      queryModel.cancelCurrentSearches()
     }
   }, [id, task, restoreTask])
   return data
@@ -1399,21 +1400,26 @@ const SavedSearchModeContext = React.createContext({
   selectionInterface: {} as any,
 })
 
-const getDefaultQueryData = (location: Location): any => {
-  let urlBasedQuery = location.search.split('?defaultQuery=')[1]
-  if (urlBasedQuery) {
+const decodeUrlIfValid = (search: string) => {
+  if (location) {
     try {
-      const urlBasedData = JSON.parse(decodeURIComponent(urlBasedQuery))
-      urlBasedData.filterTree = JSON.parse(urlBasedData.filterTree)
-      return urlBasedData
+      const queryParams = queryString.parse(search)
+      const defaultQueryString = (queryParams['defaultQuery'] || '').toString()
+      return JSON.parse(decodeURIComponent(defaultQueryString))
     } catch (err) {
       console.error(err)
       return {}
     }
+  } else {
+    return {}
   }
 }
 
 export const HomePage = () => {
+  const location = useLocation()
+  const [queryModel] = useUserQuery({
+    attributes: decodeUrlIfValid(location.search),
+  })
   const { id } = useParams<{ id?: string }>()
   const searchPageMode = useSearchPageMode({ id })
   const data = useSavedSearchPageMode({ id })
@@ -1421,7 +1427,6 @@ export const HomePage = () => {
   const isSaving = saveSearchTask !== null
   console.info(searchPageMode)
   console.info(data)
-  const location = useLocation()
   React.useEffect(() => {
     let urlBasedQuery = location.search.split('?defaultQuery=')[1]
     if (urlBasedQuery) {
@@ -1430,9 +1435,7 @@ export const HomePage = () => {
   }, [])
   const [selectionInterface] = React.useState(
     new SelectionInterfaceModel({
-      currentQuery: new Query.Model(
-        getDefaultQueryData((location as unknown) as Location)
-      ),
+      currentQuery: queryModel,
     })
   )
   useKeepSearchInUrl({

@@ -17,7 +17,6 @@ const _ = require('underscore')
 const $ = require('jquery')
 import Sources from '../../component/singletons/sources-instance'
 const Common = require('../Common.js')
-const filter = require('../filter.js')
 import cql from '../cql'
 require('backbone-associations')
 
@@ -86,12 +85,6 @@ module.exports = Backbone.AssociatedModel.extend({
       undefined
     )
   },
-  matchesFilters(filters) {
-    return filter.matchesFilters(this.get('metacard').toJSON(), filters)
-  },
-  matchesCql(cql) {
-    return filter.matchesCql(this.get('metacard').toJSON(), cql)
-  },
   isResource() {
     return (
       this.get('metacard')
@@ -155,7 +148,25 @@ module.exports = Backbone.AssociatedModel.extend({
       (action) => action.id.indexOf('catalog.data.metacard.map.') === 0
     )
   },
-  refreshData() {
+  refreshData(metacardProperties) {
+    if (metacardProperties !== undefined) {
+      const updatedResult = this.toJSON()
+      updatedResult.metacard.properties = metacardProperties
+      this.set(updatedResult)
+
+      const clearedAttributes = Object.keys(
+        this.get('metacard').get('properties').toJSON()
+      ).reduce((acc, cur) => {
+        return cur in metacardProperties ? acc : [cur, ...acc]
+      }, [])
+      clearedAttributes.forEach((attribute) => {
+        this.get('metacard').get('properties').unset(attribute)
+      })
+
+      this.trigger('refreshdata')
+      return
+    }
+
     //let solr flush
     setTimeout(() => {
       const metacard = this.get('metacard')

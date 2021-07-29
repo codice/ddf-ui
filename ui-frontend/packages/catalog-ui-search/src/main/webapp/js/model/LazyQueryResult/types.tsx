@@ -1,7 +1,6 @@
-export type QuerySortType = {
-  attribute: string
-  direction: string
-}
+import { SortType } from '../Query.shared-types'
+
+export type QuerySortType = SortType
 
 export type TruncatingFilterType = {
   type: 'ILIKE' | string

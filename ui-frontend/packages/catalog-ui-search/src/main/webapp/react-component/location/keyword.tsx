@@ -154,7 +154,7 @@ const Keyword = (props: Props) => {
   }
 
   return (
-    <div>
+    <>
       <GazetteerAutoComplete
         value={value}
         onChange={onChange}
@@ -190,7 +190,7 @@ const Keyword = (props: Props) => {
           polyType={polyType}
         />
       )}
-    </div>
+    </>
   )
 }
 

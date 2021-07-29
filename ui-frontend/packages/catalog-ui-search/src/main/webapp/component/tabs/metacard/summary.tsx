@@ -18,12 +18,10 @@ import DialogContent from '@material-ui/core/DialogContent'
 import useSnack from '../../hooks/useSnack'
 import LinearProgress from '@material-ui/core/LinearProgress'
 const $ = require('jquery')
-const ResultUtils = require('../../../js/ResultUtils.js')
 import PublishIcon from '@material-ui/icons/Publish'
 import Paper from '@material-ui/core/Paper'
 import useTheme from '@material-ui/core/styles/useTheme'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
-import { useLazyResultsSelectedResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import TransferList, { useCustomReadOnlyCheck } from './transfer-list'
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace'
@@ -34,9 +32,11 @@ import { Elevations } from '../../theme/theme'
 import { DarkDivider } from '../../dark-divider/dark-divider'
 import { displayHighlightedAttrInFull } from './highlightUtil'
 import DateTimePicker from '../../fields/date-time-picker'
-import Geometry from '../../../react-component/input-wrappers/geometry'
 import { useRerenderOnBackboneSync } from '../../../js/model/LazyQueryResult/hooks'
 import useCoordinateFormat from './useCoordinateFormat'
+import { MetacardAttribute } from '../../../js/model/Types'
+import ExtensionPoints from '../../../extension-points'
+import { LocationInputReact } from '../../location-new/location-new.view'
 
 function getSummaryShown(): string[] {
   const userchoices = user
@@ -53,7 +53,7 @@ function getSummaryShown(): string[] {
 }
 
 type Props = {
-  selectionInterface: any
+  result: LazyQueryResult
 }
 
 const ThumbnailInput = ({
@@ -135,6 +135,39 @@ enum Mode {
   Normal = 'normal',
   Saving = 'saving',
   BadInput = 'bad-input',
+}
+
+const handleMetacardUpdate = ({
+  lazyResult,
+  attributes,
+  onSuccess,
+  onFailure,
+}: {
+  lazyResult: LazyQueryResult
+  attributes: MetacardAttribute[]
+  onSuccess: () => void
+  onFailure: () => void
+}) => {
+  const payload = [
+    {
+      ids: [lazyResult.plain.metacard.properties.id],
+      attributes,
+    },
+  ]
+  setTimeout(() => {
+    $.ajax({
+      url: `./internal/metacards?storeId=${lazyResult.plain.metacard.properties['source-id']}`,
+      type: 'PATCH',
+      data: JSON.stringify(payload),
+      contentType: 'application/json',
+    }).then(
+      (response: any) => {
+        lazyResult.refreshFromEditResponse(response)
+        onSuccess()
+      },
+      () => onFailure()
+    )
+  }, 1000)
 }
 
 export const Editor = ({
@@ -266,12 +299,14 @@ export const Editor = ({
                       )
                     case 'GEOMETRY':
                       return (
-                        <Geometry
-                          label={label}
+                        <LocationInputReact
                           onChange={(location: any) => {
-                            location === null || location === 'INVALID'
-                              ? setMode(Mode.BadInput)
-                              : setMode(Mode.Normal)
+                            console.log(location)
+                            if (location === null || location === 'INVALID') {
+                              setMode(Mode.BadInput)
+                            } else {
+                              setMode(Mode.Normal)
+                            }
                             values[index] = location
                             setValues([...values])
                           }}
@@ -360,34 +395,34 @@ export const Editor = ({
             } catch (err) {
               console.error(err)
             }
-            const payload = [
-              {
-                ids: [lazyResult.plain.metacard.properties.id],
-                attributes: [
-                  {
-                    attribute: attr,
-                    values: transformedValues,
-                  },
-                ],
-              },
-            ]
-            setTimeout(() => {
-              $.ajax({
-                url: `./internal/metacards?storeId=${lazyResult.plain.metacard.properties['source-id']}`,
-                type: 'PATCH',
-                data: JSON.stringify(payload),
-                contentType: 'application/json',
+
+            const attributes = [{ attribute: attr, values: transformedValues }]
+
+            const onSuccess = () =>
+              setTimeout(() => {
+                addSnack('Successfully updated.')
+                onSave()
+              }, 1000)
+
+            const onFailure = () =>
+              setTimeout(() => {
+                addSnack('Failed to update.', { status: 'error' })
+                onSave()
+              }, 1000)
+
+            if (ExtensionPoints.handleMetacardUpdate) {
+              ExtensionPoints.handleMetacardUpdate({
+                lazyResult,
+                attributesToUpdate: attributes,
+              }).then(onSuccess, onFailure)
+            } else {
+              handleMetacardUpdate({
+                lazyResult,
+                attributes,
+                onSuccess,
+                onFailure,
               })
-                .then((response: any) => {
-                  ResultUtils.updateResults(lazyResult.getBackbone(), response)
-                })
-                .always(() => {
-                  setTimeout(() => {
-                    addSnack('Successfully updated.')
-                    onSave()
-                  }, 1000)
-                })
-            }, 1000)
+            }
           }}
         >
           Save
@@ -653,11 +688,8 @@ const getHiddenAttributes = (
 
 let globalExpanded = false // globally track if users want this since they may be clicking between results
 
-const Summary = ({ selectionInterface }: Props) => {
+const Summary = ({ result: selection }: Props) => {
   const theme = useTheme()
-  const selectedResults = useLazyResultsSelectedResultsFromSelectionInterface({
-    selectionInterface,
-  })
 
   const [forceRender, setForceRender] = React.useState(false)
   const [expanded, setExpanded] = React.useState(globalExpanded)
@@ -665,9 +697,6 @@ const Summary = ({ selectionInterface }: Props) => {
   const [fullyExpanded, setFullyExpanded] = React.useState(false)
   const [filter, setFilter] = React.useState(persistantFilter)
   const [summaryShown, setSummaryShown] = React.useState(getSummaryShown())
-  const selection = Object.values(selectedResults)[0] as
-    | LazyQueryResult
-    | undefined
   useRerenderOnBackboneSync({ lazyResult: selection })
 
   const dialogContext = useDialog()

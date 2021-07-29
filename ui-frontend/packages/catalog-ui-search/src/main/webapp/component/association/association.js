@@ -18,6 +18,7 @@ const Backbone = require('backbone')
 module.exports = Backbone.Model.extend({
   defaults() {
     return {
+      isEditing: false,
       parent: undefined,
       relationship: 'related',
       child: undefined,

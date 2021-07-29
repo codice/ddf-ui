@@ -14,19 +14,19 @@
  **/
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import fetch from '../utils/fetch'
 const announcement = require('component/announcement')
-const ResultUtils = require('../../js/ResultUtils.js')
 const ConfirmationView = require('../../component/confirmation/confirmation.view.js')
 import MetacardArchivePresentation from './presentation'
 
 type Props = {
-  selectionInterface: any
+  results: LazyQueryResult[]
 } & WithBackboneProps
 
 type State = {
-  collection: Backbone.Collection<Backbone.Model>
+  collection: LazyQueryResult[]
   isDeleted: boolean
   loading: boolean
 }
@@ -35,10 +35,9 @@ class MetacardArchive extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
 
-    const selectionInterface = props.selectionInterface
-    const collection = selectionInterface.getSelectedResults()
+    const collection = props.results
 
-    const isDeleted = collection.some((result: any) => {
+    const isDeleted = collection.some((result) => {
       return result.isDeleted()
     })
 
@@ -52,8 +51,8 @@ class MetacardArchive extends React.Component<Props, State> {
   onArchiveConfirm = async (confirmation: any) => {
     if (confirmation.get('choice')) {
       const body = JSON.stringify(
-        this.state.collection.map((result: any) => {
-          return result.get('metacard').get('id')
+        this.state.collection.map((result) => {
+          return result.plain.id
         })
       )
       this.setState({ loading: true })
@@ -76,11 +75,8 @@ class MetacardArchive extends React.Component<Props, State> {
       setTimeout(() => {
         this.setState({ isDeleted: true, loading: false })
         this.state.collection.forEach(function (result) {
-          result
-            .get('metacard')
-            .get('properties')
-            .set('metacard-tags', ['deleted'])
-          result.trigger('refreshdata')
+          result.plain.metacard.properties['metacard-tags'] = ['deleted']
+          result.syncWithPlain()
         })
         this.refreshResults()
       }, 2000)
@@ -104,19 +100,12 @@ class MetacardArchive extends React.Component<Props, State> {
     if (confirmation.get('choice')) {
       this.setState({ loading: true })
 
-      const promises = this.state.collection.map((result: any) => {
-        const metacardDeletedId = result
-          .get('metacard')
-          .get('properties')
-          .get('metacard.deleted.id')
-        const metacardDeletedVersion = result
-          .get('metacard')
-          .get('properties')
-          .get('metacard.deleted.version')
-        const storeId = result
-          .get('metacard')
-          .get('properties')
-          .get('source-id')
+      const promises = this.state.collection.map((result) => {
+        const metacardDeletedId =
+          result.plain.metacard.properties['metacard.deleted.id']
+        const metacardDeletedVersion =
+          result.plain.metacard.properties['metacard.deleted.version']
+        const storeId = result.plain.metacard.properties['source-id']
 
         return fetch(
           `./internal/history/revert/${metacardDeletedId}/${metacardDeletedVersion}/${storeId}`
@@ -136,8 +125,8 @@ class MetacardArchive extends React.Component<Props, State> {
           })
         }
 
-        this.state.collection.map((result: any) => {
-          ResultUtils.refreshResult(result)
+        this.state.collection.map((result) => {
+          result.refreshDataOverNetwork()
         })
 
         setTimeout(() => {
@@ -161,8 +150,8 @@ class MetacardArchive extends React.Component<Props, State> {
   }
 
   refreshResults = () => {
-    this.state.collection.forEach((result: any) => {
-      ResultUtils.refreshResult(result)
+    this.state.collection.forEach((result) => {
+      result.refreshDataOverNetwork()
     })
   }
 
