@@ -25,7 +25,7 @@ type Props = {
   value: BooleanTextType
   onChange: (value: BooleanTextType) => void
   TextFieldProps?: Partial<TextFieldProps>
-  PropertyFieldProps?: string
+  property?: string
 }
 
 const getRandomId = () => {
@@ -189,7 +189,7 @@ const BooleanSearchBar = ({
   value,
   onChange,
   TextFieldProps,
-  PropertyFieldProps,
+  property = 'anyText',
 }: Props) => {
   const [errorMessage, setErrorMessage] = React.useState(
     <>
@@ -241,7 +241,7 @@ const BooleanSearchBar = ({
     if (value.text && isValidBeginningToken(value.text)) {
       fetchCql({
         searchText: value.text,
-        searchProperty: PropertyFieldProps,
+        searchProperty: property,
         callback: ({ cql = '', message }) => {
           onChange({
             ...value,
@@ -253,6 +253,7 @@ const BooleanSearchBar = ({
         signal: controller.signal,
       })
     } else {
+      setLoading(false)
       onChange({
         ...value,
         cql: '',
@@ -262,7 +263,7 @@ const BooleanSearchBar = ({
     return () => {
       controller.abort()
     }
-  }, [value.text, PropertyFieldProps])
+  }, [value.text, property])
 
   React.useEffect(() => {
     var controller = new AbortController()

@@ -58,7 +58,7 @@ const FilterInput = ({ filter, setFilter }: Props) => {
         <BooleanSearchBar
           value={value as ValueTypes['booleanText']}
           onChange={onChange}
-          PropertyFieldProps={filter.property}
+          property={filter.property}
         />
       )
     case 'FILTER FUNCTION proximity':
