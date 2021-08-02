@@ -29,6 +29,7 @@ type Props = {
   onChange: (value: BooleanTextType) => void
   property?: string
   disableClearable?: boolean
+  placeholder?: TextFieldProps['placeholder']
   FormControlProps?: FormControlProps
   TextFieldProps?: Partial<TextFieldProps>
   AutocompleteProps?: AutocompleteProps<Option, false, true, true>
@@ -71,6 +72,7 @@ const BooleanSearchBar = ({
   value,
   onChange,
   property = 'anyText',
+  placeholder = `Enter search. Use “*” (with quotes) to query all.`,
   disableClearable,
   ...props
 }: Props) => {
@@ -312,6 +314,7 @@ const BooleanSearchBar = ({
           <TextField
             data-id="search-input"
             {...params}
+            placeholder={placeholder}
             inputRef={inputRef}
             size={'small'}
             variant="outlined"
