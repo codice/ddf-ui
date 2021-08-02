@@ -110,9 +110,8 @@ function isTypeLimiter(filter: any) {
   }
 }
 
-// TODO: when this is undefined, it prevents us from switching between basic and advanced
 // strip extra quotes
-const stripQuotes = (property: any) => {
+const stripQuotes = (property = 'anyText') => {
   return property?.replace(/^"(.+(?="$))"$/, '$1')
 }
 
@@ -464,7 +463,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
         </div>
         <div className="pt-2">
           <FormControlLabel
-            labelPlacement="start"
+            labelPlacement="end"
             control={
               <Checkbox
                 color="default"
@@ -523,7 +522,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
         </div>
         <div className="pt-2">
           <FormControlLabel
-            labelPlacement="start"
+            labelPlacement="end"
             control={
               <Checkbox
                 color="default"
