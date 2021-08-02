@@ -110,6 +110,7 @@ function isTypeLimiter(filter: any) {
   }
 }
 
+// TODO: when this is undefined, it prevents us from switching between basic and advanced
 // strip extra quotes
 const stripQuotes = (property: any) => {
   return property?.replace(/^"(.+(?="$))"$/, '$1')

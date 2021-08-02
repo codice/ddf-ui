@@ -1,88 +1,36 @@
 /* Copyright (c) Connexta, LLC */
 import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import FormControl from '@material-ui/core/FormControl'
+import FormControl, { FormControlProps } from '@material-ui/core/FormControl'
 import TextField, { TextFieldProps } from '@material-ui/core/TextField'
 import Autocomplete, {
+  AutocompleteProps,
   createFilterOptions,
 } from '@material-ui/lab/Autocomplete'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { useState } from 'react'
-import fetch from '../../react-component/utils/fetch'
 import { BooleanTextType } from '../filter-builder/filter.structure'
 import useBooleanSearchError from './useBooleanSearchError'
 import ValidationIndicator from './validation-indicator'
+import {
+  fetchCql,
+  fetchSuggestions,
+  getRandomId,
+  Option,
+} from './boolean-search-utils'
+import { InputProps } from '@material-ui/core'
 
 const defaultFilterOptions = createFilterOptions()
 
 type Props = {
   value: BooleanTextType
   onChange: (value: BooleanTextType) => void
-  TextFieldProps?: Partial<TextFieldProps>
   property?: string
-}
-
-const getRandomId = () => {
-  return `a${Math.round(Math.random() * 10000000000000).toString()}`
-}
-
-type Option = {
-  type: string
-  token: string
-}
-
-type Suggestions = {
-  [key: string]: string[]
-}
-
-const suggestionsToOptions = (suggestions: Suggestions): Option[] => {
-  if (suggestions === undefined || Object.keys(suggestions).length === 0) {
-    return []
-  } else {
-    // @ts-ignore
-    return Object.entries(suggestions).flatMap(([category, tokens]) =>
-      tokens.map((token: string) => ({
-        type: category,
-        token,
-      }))
-    )
-  }
-}
-
-type CallbackType = ({
-  options,
-  error,
-}: {
-  options: Option[]
-  error: any
-}) => void
-
-const fetchSuggestions = async ({
-  text,
-  callback,
-  signal,
-}: {
-  text: string
-  callback: CallbackType
-  signal: AbortSignal
-}) => {
-  const res = await fetch(
-    `./internal/boolean-search/suggest?q=${encodeURIComponent(text)}`,
-    {
-      signal,
-    }
-  )
-
-  if (!res.ok) {
-    throw new Error(res.statusText)
-  }
-
-  const json = await res.json()
-  callback({
-    options: suggestionsToOptions(json.suggestions),
-    error: json.error,
-  })
+  FormControlProps?: FormControlProps
+  TextFieldProps?: Partial<TextFieldProps>
+  AutocompleteProps?: AutocompleteProps<Option, false, true, true>
+  InputProps?: InputProps
 }
 
 const defaultValue: BooleanTextType = {
@@ -113,41 +61,6 @@ const ShapeValidator = (props: Props) => {
   return null
 }
 
-type BooleanEndpointReturnType = {
-  cql?: string
-  message?: string
-}
-
-const fetchCql = async ({
-  searchText,
-  searchProperty,
-  callback,
-  signal,
-}: {
-  callback: (result: BooleanEndpointReturnType) => void
-  searchText: string | null
-  searchProperty?: string
-  signal?: AbortSignal
-}) => {
-  let trimmedInput = searchText!.trim()
-
-  if (trimmedInput) {
-    const res = await fetch(
-      `./internal/boolean-search/cql?q=${encodeURIComponent(
-        trimmedInput!
-      )}&e=${encodeURIComponent(searchProperty!)}`,
-      {
-        signal,
-      }
-    )
-
-    const json = (await res.json()) as BooleanEndpointReturnType
-    callback(json)
-  } else {
-    callback({ cql: '' })
-  }
-}
-
 /**
  * We want to take in a value, and onChange update it.  That would then flow a new value
  * back down.
@@ -155,8 +68,8 @@ const fetchCql = async ({
 const BooleanSearchBar = ({
   value,
   onChange,
-  TextFieldProps,
   property = 'anyText',
+  ...props
 }: Props) => {
   const { errorMessage } = useBooleanSearchError(value)
   const [loading, setLoading] = React.useState(false)
@@ -314,7 +227,7 @@ const BooleanSearchBar = ({
   }
 
   return (
-    <FormControl fullWidth>
+    <FormControl fullWidth {...props.FormControlProps}>
       <Autocomplete
         filterOptions={(optionsToFilter) =>
           filterOptions(optionsToFilter).sort((o1: any) =>
@@ -417,10 +330,12 @@ const BooleanSearchBar = ({
                   )}
                 </>
               ),
+              ...props.InputProps,
             }}
-            {...TextFieldProps}
+            {...props.TextFieldProps}
           />
         )}
+        {...props.AutocompleteProps}
       />
     </FormControl>
   )
