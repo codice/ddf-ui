@@ -25,7 +25,7 @@ import Summary from './summary'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult.js'
 import MRC from '../../../react-component/marionette-region-container'
 
-type TabContentProps = {
+export type TabContentProps = {
   result: LazyQueryResult
   selectionInterface?: any
 }
