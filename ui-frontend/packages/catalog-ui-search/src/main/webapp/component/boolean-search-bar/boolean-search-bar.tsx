@@ -214,7 +214,7 @@ const BooleanSearchBar = ({
   }
 
   const handleTextClear = () => {
-    onChange({ ...defaultValue })
+    onChange({ ...defaultValue, text: '' })
   }
 
   const getLogicalOperators = (options: any) => {
