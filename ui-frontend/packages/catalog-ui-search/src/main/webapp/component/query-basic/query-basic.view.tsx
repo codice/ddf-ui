@@ -112,7 +112,7 @@ function isTypeLimiter(filter: any) {
 
 // strip extra quotes
 const stripQuotes = (property: any) => {
-  return property.replace(/^"(.+(?="$))"$/, '$1')
+  return property?.replace(/^"(.+(?="$))"$/, '$1')
 }
 
 function isAnyDate(filter: any) {

@@ -1,23 +1,18 @@
 /* Copyright (c) Connexta, LLC */
 import Typography from '@material-ui/core/Typography'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import { green, red } from '@material-ui/core/colors'
 import FormControl from '@material-ui/core/FormControl'
-import InputAdornment from '@material-ui/core/InputAdornment'
 import TextField, { TextFieldProps } from '@material-ui/core/TextField'
-import Tooltip from '@material-ui/core/Tooltip'
-import Check from '@material-ui/icons/Check'
-import Close from '@material-ui/icons/Close'
 import Autocomplete, {
   createFilterOptions,
 } from '@material-ui/lab/Autocomplete'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import Paper from '@material-ui/core/Paper'
-import { Elevations } from '../theme/theme'
 import { useState } from 'react'
 import fetch from '../../react-component/utils/fetch'
 import { BooleanTextType } from '../filter-builder/filter.structure'
+import useBooleanSearchError from './useBooleanSearchError'
+import ValidationIndicator from './validation-indicator'
 
 const defaultFilterOptions = createFilterOptions()
 
@@ -90,39 +85,11 @@ const fetchSuggestions = async ({
   })
 }
 
-const ERROR_MESSAGES = {
-  punctuation: (
-    <div>
-      Invalid Query:
-      <div>
-        If using characters outside the alphabet (a-z), make sure to quote them
-        like so ("big.doc" or "bill's car").
-      </div>
-    </div>
-  ),
-  syntax: (
-    <div>
-      Invalid Query:
-      <div>Check that syntax of AND / OR / NOT is used correctly.</div>
-    </div>
-  ),
-  both: (
-    <div>
-      Invalid Query:
-      <div>
-        If using characters outside the alphabet (a-z), make sure to quote them
-        like so ("big.doc" or "bill's car").
-      </div>
-      <div>Check that syntax of AND / OR / NOT is used correctly.</div>
-    </div>
-  ),
-}
-
-const defaultValue = {
+const defaultValue: BooleanTextType = {
   text: '"*"',
   cql: '',
   error: false,
-} as BooleanTextType
+}
 
 const validateShape = ({ value, onChange }: Props) => {
   if (
@@ -158,8 +125,8 @@ const fetchCql = async ({
   signal,
 }: {
   callback: (result: BooleanEndpointReturnType) => void
-  searchProperty?: string
   searchText: string | null
+  searchProperty?: string
   signal?: AbortSignal
 }) => {
   let trimmedInput = searchText!.trim()
@@ -191,30 +158,19 @@ const BooleanSearchBar = ({
   TextFieldProps,
   property = 'anyText',
 }: Props) => {
-  const [errorMessage, setErrorMessage] = React.useState(
-    <>
-      <div>
-        Invalid Query:
-        <div>
-          If using characters outside the alphabet (a-z), make sure to quote
-          them like so ("big.doc" or "bill's car").
-        </div>
-        <div>Check that syntax of AND / OR / NOT is used correctly.</div>
-      </div>
-    </>
-  )
+  const { errorMessage } = useBooleanSearchError(value)
   const [loading, setLoading] = React.useState(false)
   const [suggestion, setSuggestion] = React.useState('')
   const [id] = React.useState(getRandomId())
   const [cursorLocation, setCursorLocation] = React.useState(0)
-  const [tokens, setTokens] = React.useState([] as string[])
+  const [tokens, setTokens] = React.useState<string[]>([])
   const inputRef = React.useRef<HTMLInputElement>()
 
   const optionToValue = (option: any) => option.token
 
   const [options, setOptions] = useState<Option[]>([])
 
-  const isValidBeginningToken = (query: any) => {
+  const isValidBeginningToken = (query: string) => {
     const trimmedToken = query.trim().toLowerCase()
     if (
       trimmedToken === 'not' ||
@@ -226,13 +182,6 @@ const BooleanSearchBar = ({
 
     return true
   }
-
-  React.useEffect(() => {
-    if (value.error) {
-      setErrorMessage(ERROR_MESSAGES.syntax)
-    } else {
-    }
-  }, [value])
 
   React.useEffect(() => {
     var controller = new AbortController()
@@ -283,21 +232,12 @@ const BooleanSearchBar = ({
     }
   }, [value.text])
 
-  let helpText = value.error ? errorMessage : 'Valid'
-
-  let indicator = value.error ? (
-    <Close style={{ color: red[500] }} />
-  ) : (
-    <Check style={{ color: green[500] }} />
-  )
-
   React.useEffect(() => {
     const rawTokens = value.text.split(/[ ())]+/)
-    const joinTokens = []
+    let joinTokens = []
     for (let i = 0; i < rawTokens.length; i++) {
       joinTokens.push(rawTokens.slice(i, rawTokens.length).join(' ').trim())
     }
-    // @ts-ignore ts-migrate(2345) FIXME: Type 'string' is not assignable to type 'never'.
     setTokens(joinTokens)
   }, [value.text])
 
@@ -338,13 +278,11 @@ const BooleanSearchBar = ({
       const replaceIndex = value.text.indexOf('?')
       if (replaceIndex > -1) {
         // Make the selection around "?"
-        // @ts-ignore ts-migrate(2532) FIXME: Object is possibly 'undefined'.
-        inputRef.current.setSelectionRange(replaceIndex, replaceIndex + 1)
+        inputRef?.current?.setSelectionRange(replaceIndex, replaceIndex + 1)
       }
 
       if (suggestion === 'AND' || suggestion === 'OR') {
-        // @ts-ignore ts-migrate(2532) FIXME: Object is possibly 'undefined'.
-        inputRef.current.setSelectionRange(cursorLocation, cursorLocation)
+        inputRef?.current?.setSelectionRange(cursorLocation, cursorLocation)
         setSuggestion('')
       }
     }
@@ -379,16 +317,13 @@ const BooleanSearchBar = ({
     <FormControl fullWidth>
       <Autocomplete
         filterOptions={(optionsToFilter) =>
-          // eslint-disable-next-line no-unused-vars
-          filterOptions(optionsToFilter).sort(
-            // @ts-ignore ts-migrate(6133) FIXME: 'o2' is declared but its value is never read.
-            (o1: any, o2: any) => (o1.type === 'mandatory' ? -1 : 1)
+          filterOptions(optionsToFilter).sort((o1: any) =>
+            o1.type === 'mandatory' ? -1 : 1
           )
         }
         options={getLogicalOperators(options)}
         includeInputInList={true}
-        // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-        onChange={(e: any, suggestion: any) => {
+        onChange={(_e: any, suggestion: any) => {
           if (
             suggestion &&
             suggestion.token &&
@@ -446,8 +381,8 @@ const BooleanSearchBar = ({
         inputValue={value.text}
         getOptionLabel={getOptionLabel}
         multiple={false}
-        disableCloseOnSelect
         disableClearable
+        disableCloseOnSelect
         freeSolo
         id={id}
         renderOption={(option) => (
@@ -467,31 +402,20 @@ const BooleanSearchBar = ({
             helperText={value.error ? <>{errorMessage}</> : ''}
             InputProps={{
               ...params.InputProps,
-              type: 'search',
               startAdornment: (
-                <React.Fragment>
+                <>
                   {loading ? (
                     <CircularProgress
                       size={20}
                       style={{ marginRight: 13, marginLeft: 2 }}
                     />
                   ) : (
-                    <InputAdornment position="start">
-                      <Tooltip
-                        title={
-                          <Paper
-                            elevation={Elevations.overlays}
-                            className="p-2"
-                          >
-                            {helpText}
-                          </Paper>
-                        }
-                      >
-                        {indicator}
-                      </Tooltip>
-                    </InputAdornment>
+                    <ValidationIndicator
+                      helperMessage={value.error ? errorMessage : 'Valid'}
+                      error={value.error}
+                    />
                   )}
-                </React.Fragment>
+                </>
               ),
             }}
             {...TextFieldProps}
