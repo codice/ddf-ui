@@ -19,7 +19,8 @@ import {
   getRandomId,
   Option,
 } from './boolean-search-utils'
-import { InputProps } from '@material-ui/core'
+import { IconButton, InputProps } from '@material-ui/core'
+import ClearIcon from '@material-ui/icons/Clear'
 
 const defaultFilterOptions = createFilterOptions()
 
@@ -27,6 +28,7 @@ type Props = {
   value: BooleanTextType
   onChange: (value: BooleanTextType) => void
   property?: string
+  disableClearable?: boolean
   FormControlProps?: FormControlProps
   TextFieldProps?: Partial<TextFieldProps>
   AutocompleteProps?: AutocompleteProps<Option, false, true, true>
@@ -69,6 +71,7 @@ const BooleanSearchBar = ({
   value,
   onChange,
   property = 'anyText',
+  disableClearable,
   ...props
 }: Props) => {
   const { errorMessage } = useBooleanSearchError(value)
@@ -208,6 +211,10 @@ const BooleanSearchBar = ({
     })
   }
 
+  const handleTextClear = () => {
+    onChange({ ...defaultValue })
+  }
+
   const getLogicalOperators = (options: any) => {
     return options.filter((option: any) => option.type === 'logical')
   }
@@ -329,6 +336,14 @@ const BooleanSearchBar = ({
                     />
                   )}
                 </>
+              ),
+              endAdornment: !disableClearable && (
+                <IconButton
+                  onClick={handleTextClear}
+                  style={{ padding: '2px' }}
+                >
+                  <ClearIcon fontSize="small" />
+                </IconButton>
               ),
               ...props.InputProps,
             }}
