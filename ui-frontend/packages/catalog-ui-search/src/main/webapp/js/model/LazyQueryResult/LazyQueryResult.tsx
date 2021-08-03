@@ -19,6 +19,7 @@ import cql from '../../cql'
 const _ = require('underscore')
 import Sources from '../../../component/singletons/sources-instance'
 const metacardDefinitions = require('../../../component/singletons/metacard-definitions.js')
+import { TypedMetacardDefs } from '../../../component/tabs/metacard/metacardDefinitions'
 const properties = require('../../properties.js')
 const TurfMeta = require('@turf/meta')
 const wkx = require('wkx')
@@ -229,7 +230,7 @@ export class LazyQueryResult {
     }
   }
   syncWithPlain() {
-    this.plain = transformPlain({ plain: this.plain })
+    this.plain = transformPlain({ plain: { ...this.plain } })
     humanizeResourceSize(this.plain)
     cacheBustThumbnail(this.plain)
     this['_notifySubscribers.backboneSync']()
@@ -242,7 +243,11 @@ export class LazyQueryResult {
   ) {
     response.forEach((part) =>
       part.attributes.forEach((attribute) => {
-        this.plain.metacard.properties[attribute.attribute] = attribute.values
+        this.plain.metacard.properties[
+          attribute.attribute
+        ] = TypedMetacardDefs.isMulti({ attr: attribute.attribute })
+          ? attribute.values
+          : attribute.values[0]
       })
     )
     this.syncWithPlain()

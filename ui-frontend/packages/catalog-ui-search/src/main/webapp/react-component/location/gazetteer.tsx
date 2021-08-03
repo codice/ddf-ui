@@ -242,7 +242,7 @@ const Gazetteer = (props: Props) => {
   }
 
   const suggester = async (input: string) => {
-    const res = await window.fetch(
+    const res = await (window as any).__global__fetch(
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
         input
       )}`
@@ -266,7 +266,7 @@ const Gazetteer = (props: Props) => {
 
   const geofeature = async (suggestion: Suggestion) => {
     const [type, id] = suggestion.id.split(':')
-    const res = await window.fetch(
+    const res = await (window as any).__global__fetch(
       `https://nominatim.openstreetmap.org/reverse?format=json&osm_type=${type}&osm_id=${id}&polygon_geojson=1`
     )
     const data = await res.json()

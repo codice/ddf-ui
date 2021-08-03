@@ -295,13 +295,13 @@ export class LazyQueryResults {
       this['subscriptionsToOthers.result.isSelected'].forEach((unsubscribe) => {
         unsubscribe()
       })
-    if (this['subscriptionsToOthers.result.backboneCreated'])
-      this['subscriptionsToOthers.result.backboneCreated'].forEach(
+    if (this['subscriptionsToOthers.result.backboneSync'])
+      this['subscriptionsToOthers.result.backboneSync'].forEach(
         (unsubscribe) => {
           unsubscribe()
         }
       )
-    this['subscriptionsToOthers.result.backboneCreated'] = []
+    this['subscriptionsToOthers.result.backboneSync'] = []
     this['subscriptionsToOthers.result.isSelected'] = []
     this._resetSelectedResults()
     if (this['subscriptionsToMe.filteredResults'] === undefined)
@@ -381,22 +381,15 @@ export class LazyQueryResults {
       /**
        * When a backbone model is created we want to start listening for updates so the plain object has the same information
        */
-      this['subscriptionsToOthers.result.backboneCreated'].push(
+      this['subscriptionsToOthers.result.backboneSync'].push(
         lazyResult.subscribeTo({
-          subscribableThing: 'backboneCreated',
+          subscribableThing: 'backboneSync',
           callback: () => {
-            this.backboneModel.listenTo(
-              lazyResult.getBackbone(),
-              'change:metacard>properties refreshdata',
-              () => {
-                lazyResult.syncWithBackbone()
-                /**
-                 *  In this case we don't want to really resort, just force renders on views by telling them things have changed.
-                 */
-                this._fakeResort()
-                this['_notifySubscribers.filteredResults']()
-              }
-            )
+            /**
+             *  In this case we don't want to really resort, just force renders on views by telling them things have changed.
+             */
+            this._fakeResort()
+            this['_notifySubscribers.filteredResults']()
           },
         })
       )

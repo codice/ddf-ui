@@ -21,6 +21,9 @@ const {
 } = require('./utils')
 const { Radio, RadioItem } = require('../../react-component/radio/index.js')
 const { WKT, LatLongDD, LatLongDMS, USNG } = require('./geo-components')
+import Gazetteer from '../../react-component/location/gazetteer'
+const CQLUtils = require('../../js/CQLUtils.js')
+
 const produce = require('immer').default
 import { hot } from 'react-hot-loader'
 
@@ -40,6 +43,38 @@ const inputs = {
   usng: {
     label: 'USNG/MGRS',
     Component: USNG,
+  },
+  keyword: {
+    label: 'Keyword',
+    Component: (props: LocationInputPropsType) => {
+      const { keyword } = props
+      console.log(props)
+      return (
+        <Gazetteer
+          placeholder={'Enter a location'}
+          value={keyword ? keyword.keywordValue : ''}
+          setState={props.setState(
+            (draft: LocationInputPropsType, value: any) => {
+              value.type =
+                value.polyType.toLowerCase() === 'polygon'
+                  ? 'POLYGON'
+                  : 'MULTIPOLYGON'
+              value.keywordValue = value.value
+              value.mode = 'keyword'
+
+              value.wkt = CQLUtils.generateFilter(
+                undefined,
+                'location',
+                value,
+                undefined
+              ).value
+              draft.keyword = value
+              // onFieldEdit(field.id, location)
+            }
+          )}
+        />
+      )
+    },
   },
 } as {
   [key: string]: {
@@ -102,9 +137,10 @@ export type LocationInputPropsType = {
     polygon: { list: any[] }
     shape: 'point'
   }
+  keyword: any
   dms: any
   error: null | string
-  mode: 'wkt' | 'dd' | 'dms' | 'usng'
+  mode: 'wkt' | 'dd' | 'dms' | 'usng' | 'keyword'
   setState: any
   showErrors: boolean
   usng: any

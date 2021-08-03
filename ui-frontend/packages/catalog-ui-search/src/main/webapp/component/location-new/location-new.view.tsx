@@ -77,6 +77,9 @@ export const LocationInputReact = ({
         case 'usng':
           onChange(usngToWkt(state.usng))
           break
+        case 'keyword':
+          onChange(state.keyword ? state.keyword.wkt : null)
+          break
         default:
       }
     } else {
