@@ -505,8 +505,10 @@ module.exports = Marionette.LayoutView.extend({
       this.initializeMap()
     }, 1000)
   },
+  isClustering: false,
   toggleClustering() {
     this.$el.toggleClass('is-clustering')
+    this.isClustering = !this.isClustering;
     this.geometriesView.toggleClustering()
   },
   handleDrawing() {

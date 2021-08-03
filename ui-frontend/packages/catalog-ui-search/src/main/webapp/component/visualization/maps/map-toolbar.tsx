@@ -15,6 +15,7 @@ import { Elevations } from '../../theme/theme'
 type Props = {
   mapView: {
     toggleClustering: () => void
+    isClustering: boolean
     zoomToHome: () => void
     saveAsHome: () => void
     map: {
@@ -24,7 +25,7 @@ type Props = {
 }
 
 const ClusteringButton = ({ mapView }: Props) => {
-  const [isClustering, setIsClustering] = React.useState(false)
+  const [isClustering, setIsClustering] = React.useState(mapView.isClustering)
   return (
     <Button
       data-id="cluster-button"
