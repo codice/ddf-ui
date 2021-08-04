@@ -172,6 +172,12 @@ const BooleanSearchBar = ({
     return option.token
   }
 
+  const handleSubmit = () => {
+    if (!value.error && props.onSubmit) {
+      props.onSubmit()
+    }
+  }
+
   // Used to determine what we can go for next in context the the previous.
   const filterOptions = React.useCallback(
     (optionsToFilter) => {
@@ -322,8 +328,8 @@ const BooleanSearchBar = ({
             data-id="search-input"
             {...params}
             onKeyDown={(e) => {
-              if (props.onSubmit && e.keyCode === 13) {
-                props.onSubmit()
+              if (e.keyCode === 13) {
+                handleSubmit()
               }
             }}
             placeholder={placeholder}
@@ -364,7 +370,8 @@ const BooleanSearchBar = ({
                   )}
                   {props.onSubmit && (
                     <IconButton
-                      onClick={props.onSubmit}
+                      onClick={handleSubmit}
+                      disabled={value.error}
                       style={{ padding: '2px' }}
                     >
                       <SearchIcon fontSize="small" />
