@@ -30,6 +30,7 @@ import TextField from '@material-ui/core/TextField'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
 import {
+  BooleanTextType,
   FilterBuilderClass,
   FilterClass,
 } from '../filter-builder/filter.structure'
@@ -41,6 +42,7 @@ import Grid from '@material-ui/core/Grid'
 import Chip from '@material-ui/core/Chip'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
+import BooleanSearchBar from '../boolean-search-bar/boolean-search-bar'
 
 function isNested(filter: any) {
   let nested = false
@@ -109,8 +111,8 @@ function isTypeLimiter(filter: any) {
 }
 
 // strip extra quotes
-const stripQuotes = (property: any) => {
-  return property.replace(/^"(.+(?="$))"$/, '$1')
+const stripQuotes = (property = 'anyText') => {
+  return property?.replace(/^"(.+(?="$))"$/, '$1')
 }
 
 function isAnyDate(filter: any) {
@@ -246,7 +248,7 @@ function translateFilterToBasicMap(filter: FilterBuilderClass) {
   if (propertyValueMap.anyText.length === 0) {
     propertyValueMap.anyText.push(
       new FilterClass({
-        type: 'ILIKE',
+        type: 'BOOLEAN_TEXT_SEARCH',
         property: 'anyText',
         value: '',
       })
@@ -402,36 +404,49 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
     }
   }, [])
 
+  const anyTextValue: BooleanTextType = (() => {
+    if (basicFilter.anyText) {
+      if (typeof basicFilter.anyText[0].value === 'string') {
+        return {
+          text: basicFilter.anyText[0].value,
+          cql: '',
+          error: false,
+        }
+      } else {
+        return basicFilter.anyText[0].value as BooleanTextType
+      }
+    } else {
+      return {
+        text: '',
+        cql: '',
+        error: false,
+      }
+    }
+  })()
+
   return (
     <>
       <div className="editor-properties px-2 py-3">
         <div className="">
           <Typography className="pb-2">Keyword</Typography>
-          <TextField
-            fullWidth
-            value={basicFilter.anyText ? basicFilter.anyText[0].value : ''}
-            placeholder={`Text to search for. Use "*" for wildcard.`}
-            id="Text"
-            onChange={(e) => {
+          <BooleanSearchBar
+            value={anyTextValue}
+            onChange={({ text, cql, error }) => {
+              // we want the string value, the cql value, and if it's correct
               basicFilter.anyText[0] = new FilterClass({
                 ...basicFilter.anyText[0],
-                value: e.target.value,
+                type: 'BOOLEAN_TEXT_SEARCH',
+                value: {
+                  text,
+                  cql,
+                  error,
+                },
               })
               model.set(
                 'filterTree',
                 constructFilterFromBasicFilter({ basicFilter })
               )
             }}
-            onKeyUp={(e) => {
-              if (e.which === 13) {
-                model.startSearchFromFirstPage()
-              }
-            }}
-            inputProps={{
-              ref: inputRef as any,
-            }}
-            size="small"
-            variant="outlined"
           />
         </div>
         <div className="pt-2">
@@ -448,7 +463,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
         </div>
         <div className="pt-2">
           <FormControlLabel
-            labelPlacement="start"
+            labelPlacement="end"
             control={
               <Checkbox
                 color="default"
@@ -507,7 +522,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
         </div>
         <div className="pt-2">
           <FormControlLabel
-            labelPlacement="start"
+            labelPlacement="end"
             control={
               <Checkbox
                 color="default"

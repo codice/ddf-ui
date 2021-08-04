@@ -116,11 +116,21 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>com.connexta</groupId>
+            <artifactId>ddf-rpc-api</artifactId>
+            <version>${ddf-jsonrpc.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.connexta.jsonrpc</groupId>
             <artifactId>jsonrpc-features</artifactId>
             <version>${ddf-jsonrpc.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.codice.ddf.search</groupId>
+            <artifactId>boolean-search-application</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codice.ddf.search</groupId>

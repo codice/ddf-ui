@@ -14,15 +14,12 @@
  **/
 
 const Backbone = require('backbone')
-const $ = require('jquery')
 const _ = require('underscore')
 const properties = require('../properties.js')
 const QueryResponse = require('./QueryResponse.js')
 import Sources from '../../component/singletons/sources-instance'
 const Common = require('../Common.js')
-const CacheSourceSelector = require('../CacheSourceSelector.js')
 const announcement = require('../../component/announcement/index.jsx')
-const CQLUtils = require('../CQLUtils.js')
 import cql from '../cql'
 const user = require('../../component/singletons/user-instance.js')
 const _merge = require('lodash/merge')

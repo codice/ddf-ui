@@ -105,7 +105,7 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
     <>
       <div>
         <FormControlLabel
-          labelPlacement="start"
+          labelPlacement="end"
           control={
             <Checkbox
               color="default"
