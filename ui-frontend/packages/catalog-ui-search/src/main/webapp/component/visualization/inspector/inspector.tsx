@@ -35,6 +35,7 @@ import MaterialTab, {
 import MetacardTabs, { TabNames } from '../../tabs/metacard/tabs-metacard'
 import { TypedProperties } from '../../singletons/TypedProperties'
 import { TypedUserInstance } from '../../singletons/TypedUser'
+import { useRerenderOnBackboneSync } from '../../../js/model/LazyQueryResult/hooks'
 
 type TabType = Omit<MaterialTabProps, 'label'> & {
   children: MaterialTabProps['label']
@@ -70,6 +71,7 @@ type TitleViewType = {
 
 export const TitleView = ({ lazyResult }: TitleViewType) => {
   const menuState = useMenuState()
+  useRerenderOnBackboneSync({ lazyResult })
   return (
     <div className="flex flex-row items-center justify-center flex-no-wrap p-2">
       <span
@@ -99,26 +101,6 @@ const useLastAsDefaultActiveTab = (tabIndex: string) => {
   React.useEffect(() => {
     defaultActiveTab = tabIndex
   }, [tabIndex])
-}
-
-const useKeepDeprecatedSelectedResultsInSync = ({
-  selectionInterface,
-  index,
-  selectedResults,
-}: {
-  selectionInterface: any
-  index: number
-  selectedResults: LazyQueryResult[]
-}) => {
-  React.useEffect(() => {
-    const current = selectedResults[index]
-
-    if (current) {
-      selectionInterface.setSelectedResults([current.getBackbone()])
-    } else {
-      selectionInterface.setSelectedResults([])
-    }
-  }, [index, selectedResults])
 }
 
 const useIndexForSelectedResults = (
@@ -203,12 +185,6 @@ const Inspector = ({ selectionInterface }: InspectorType) => {
     selectionInterface,
   })
   const [index, setIndex] = useIndexForSelectedResults(selectedResults)
-
-  useKeepDeprecatedSelectedResultsInSync({
-    selectionInterface,
-    index,
-    selectedResults,
-  })
 
   const amountSelected = selectedResults.length
 

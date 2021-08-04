@@ -147,6 +147,7 @@ const Keyword = (props: Props) => {
         }
       }
     } catch (e) {
+      console.error(e)
       setLoading(false)
       setError(props.errorMessage || 'Geo feature endpoint unavailable')
       props.onError && props.onError(e)

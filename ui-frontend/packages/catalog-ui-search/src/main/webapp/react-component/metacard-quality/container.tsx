@@ -34,7 +34,7 @@ class MetacardQuality extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
 
-    this.model = props.result.getBackbone()
+    this.model = props.result
 
     this.state = {
       attributeValidation: [],
@@ -42,14 +42,11 @@ class MetacardQuality extends React.Component<Props, State> {
       loading: true,
     }
   }
-  model: Backbone.Model
+  model: LazyQueryResult
   componentDidMount() {
     setTimeout(() => {
-      const metacardId = this.model.get('metacard').get('id')
-      const storeId = this.model
-        .get('metacard')
-        .get('properties')
-        .get('source-id')
+      const metacardId = this.model.plain.id
+      const storeId = this.model.plain.metacard.properties['source-id']
 
       const attributeValidationRes = fetch(
         `./internal/metacard/${metacardId}/${storeId}/attribute/validation`

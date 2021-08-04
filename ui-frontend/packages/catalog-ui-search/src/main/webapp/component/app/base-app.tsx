@@ -1,12 +1,10 @@
 import * as React from 'react'
-import App, {
-  IndividualRouteType,
-  useDefaultWelcome,
-  useDefaultHelp,
-} from './app'
+import App, { IndividualRouteType, useDefaultWelcome } from './app'
+import Help from '../help/help.view'
+
 import { hot } from 'react-hot-loader/root'
 import MRC from '../../react-component/marionette-region-container'
-const IngestView = require('../ingest/ingest.view')
+import IngestView from '../ingest/ingest.view'
 import { HomePage } from '../pages/search'
 
 import SourcesPage from '../../react-component/sources'
@@ -289,13 +287,15 @@ const RouteInformation: IndividualRouteType[] = [
  */
 const BaseApp = () => {
   useDefaultWelcome()
-  useDefaultHelp()
   return (
-    <App
-      RouteInformation={RouteInformation}
-      NotificationsComponent={UserNotifications}
-      SettingsComponents={BaseSettings}
-    />
+    <>
+      <Help />
+      <App
+        RouteInformation={RouteInformation}
+        NotificationsComponent={UserNotifications}
+        SettingsComponents={BaseSettings}
+      />
+    </>
   )
 }
 

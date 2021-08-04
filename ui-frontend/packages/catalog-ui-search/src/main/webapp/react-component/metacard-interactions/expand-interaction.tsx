@@ -14,21 +14,21 @@
  **/
 import * as React from 'react'
 const router = require('../../component/router/router')
-import { Props } from '.'
+import { MetacardInteractionProps } from '.'
 import { hot } from 'react-hot-loader'
 import Button from '@material-ui/core/Button'
 import { Link } from '../../component/link/link'
 
-const ExpandMetacard = (props: Props) => {
+const ExpandMetacard = (props: MetacardInteractionProps) => {
   const isRouted = router && router.toJSON().name === 'openMetacard'
 
   if (isRouted || !props.model || props.model.length !== 1) {
     return null
   }
-  let id = props.model.first().get('metacard').get('properties').get('id')
+  let id = props.model[0].plain.id
 
   const to =
-    props.model.first().get('metacardType') === 'metacard.query'
+    props.model[0].plain.metacardType === 'metacard.query'
       ? `/search/${id}`
       : `/metacards/${id}`
 

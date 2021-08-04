@@ -13,13 +13,11 @@
  *
  **/
 import * as React from 'react'
-import styled from 'styled-components'
 import { hot } from 'react-hot-loader'
-import Dropdown from '../presentation/dropdown'
-import MenuAction from '../menu-action'
-import NavigationBehavior from '../navigation-behavior'
-import { ContextType } from '../presentation/dropdown'
-
+import Button from '@material-ui/core/Button'
+import { useMenuState } from '../../component/menu-state/menu-state'
+import Popover from '@material-ui/core/Popover'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 const Clipboard = require('clipboard')
 const announcement = require('component/announcement')
 
@@ -34,34 +32,7 @@ type Props = {
   closeParent: () => void
 }
 
-const Label = styled.div`
-  display: inline-box;
-  margin-left: ${(props) => props.theme.minimumSpacing};
-`
-const Icon = styled.div`
-  margin-left: ${(props) => props.theme.minimumSpacing};
-  display: inline-block;
-  text-align: center;
-  width: ${(props) => props.theme.minimumFontSize};
-`
-
-const CustomDropdown = styled(Dropdown as any)`
-  width: 100%;
-`
-
-const Text = styled.div`
-  line-height: 1.2rem;
-`
-
-const Description = styled.div`
-  opacity: ${(props) => props.theme.minimumOpacity};
-`
-
-const generateClipboardHandler = (
-  text: string,
-  context: ContextType,
-  closeParent: () => void
-) => {
+const generateClipboardHandler = (text: string, closeParent: () => void) => {
   return (e: React.MouseEvent) => {
     const clipboardInstance = new Clipboard(e.target, {
       text: () => {
@@ -84,7 +55,6 @@ const generateClipboardHandler = (
     })
     clipboardInstance.onClick(e)
     clipboardInstance.destroy()
-    context.closeAndRefocus()
     closeParent()
   }
 }
@@ -92,81 +62,71 @@ const generateClipboardHandler = (
 const render = (props: Props) => {
   const { dms, lat, lon, mgrs, utmUps } = props.coordinateValues
   const { closeParent } = props
+  const menuState = useMenuState()
   return (
-    <CustomDropdown
-      content={(context: ContextType) => (
-        <NavigationBehavior>
-          <MenuAction
-            icon="fa fa-clipboard"
+    <>
+      <Button
+        className="metacard-interaction interaction-copy-coordinates"
+        {...menuState.MuiButtonProps}
+      >
+        Copy Coordinates as
+        <ExpandMoreIcon />
+      </Button>
+      <Popover {...menuState.MuiPopoverProps}>
+        <div className="flex flex-col">
+          <Button
             data-help="Copies the coordinates to your clipboard."
-            onClick={generateClipboardHandler(
-              `${lat} ${lon}`,
-              context,
-              closeParent
-            )}
+            onClick={generateClipboardHandler(`${lat} ${lon}`, closeParent)}
           >
-            <Text>
-              <Description>Decimal Degrees (DD)</Description>
+            <div>
+              <div className="opacity-75">Decimal Degrees (DD)</div>
               {lat + ' ' + lon}
-            </Text>
-          </MenuAction>
-          <MenuAction
-            icon="fa fa-clipboard"
+            </div>
+          </Button>
+          <Button
             data-help="Copies the DMS coordinates to your clipboard."
-            onClick={generateClipboardHandler(dms, context, closeParent)}
+            onClick={generateClipboardHandler(dms, closeParent)}
           >
-            <Text>
-              <Description>Degrees Minutes Seconds (DMS)</Description>
+            <div>
+              <div className="opacity-75">Degrees Minutes Seconds (DMS)</div>
               {dms}
-            </Text>
-          </MenuAction>
+            </div>
+          </Button>
           {mgrs ? (
-            <MenuAction
-              icon="fa fa-clipboard"
+            <Button
               data-help="Copies the MGRS coordinates to your clipboard."
-              onClick={generateClipboardHandler(mgrs, context, closeParent)}
+              onClick={generateClipboardHandler(mgrs, closeParent)}
             >
-              <Text>
-                <Description>MGRS</Description>
+              <div>
+                <div className="opacity-75">MGRS</div>
                 {mgrs}
-              </Text>
-            </MenuAction>
+              </div>
+            </Button>
           ) : null}
-          <MenuAction
-            icon="fa fa-clipboard"
+          <Button
             data-help="Copies the UTM/UPS coordinates to your clipboard."
-            onClick={generateClipboardHandler(utmUps, context, closeParent)}
+            onClick={generateClipboardHandler(utmUps, closeParent)}
           >
-            <Text>
-              <Description>UTM/UPS</Description>
+            <div>
+              <div className="opacity-75">UTM/UPS</div>
               {utmUps}
-            </Text>
-          </MenuAction>
-          <MenuAction
-            icon="fa fa-clipboard"
+            </div>
+          </Button>
+          <Button
             data-help="Copies the WKT of the coordinates to your clipboard."
             onClick={generateClipboardHandler(
               `POINT (${lon} ${lat})`,
-              context,
               closeParent
             )}
           >
-            <Text>
-              <Description>Well Known Text (WKT)</Description>
+            <div>
+              <div className="opacity-75">Well Known (WKT)</div>
               POINT ({lon} {lat})
-            </Text>
-          </MenuAction>
-        </NavigationBehavior>
-      )}
-    >
-      <div className="metacard-interaction interaction-copy-coordinates">
-        <div className="interaction-icon fa fa-clipboard" />
-        <Label className="interaction-text">
-          Copy Coordinates as
-          <Icon className="fa fa-chevron-down fa-chevron-withmargin" />
-        </Label>
-      </div>
-    </CustomDropdown>
+            </div>
+          </Button>
+        </div>
+      </Popover>
+    </>
   )
 }
 

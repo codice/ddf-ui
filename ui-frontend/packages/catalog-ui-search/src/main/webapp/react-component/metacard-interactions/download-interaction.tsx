@@ -14,28 +14,29 @@
  **/
 import * as React from 'react'
 const sources = require('../../component/singletons/sources-instance')
-import { Model, Result, Props } from '.'
+import { MetacardInteractionProps } from '.'
 import { MetacardInteraction } from './metacard-interactions'
 import { hot } from 'react-hot-loader'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
-const openValidUrl = (result: Result) => {
-  const downloadUrl = result
-    .get('metacard')
-    .get('properties')
-    .get('resource-download-url')
+const openValidUrl = (result: LazyQueryResult) => {
+  const downloadUrl = result.plain.metacard.properties['resource-download-url']
   downloadUrl && window.open(downloadUrl)
 }
 
-const isDownloadable = (model: Model): boolean =>
-  model.some((result: Result) =>
-    result.get('metacard').get('properties').get('resource-download-url')
+const isDownloadable = (model: LazyQueryResult[]): boolean =>
+  model.some(
+    (result) => result.plain.metacard.properties['resource-download-url']
   )
 
-const handleDownload = (model: Model) => {
+const handleDownload = (model: LazyQueryResult[]) => {
   model.forEach(openValidUrl)
 }
 
-const DownloadProduct = ({ model }: Props) => {
+const DownloadProduct = ({ model }: MetacardInteractionProps) => {
+  if (!model || model.length === 0) {
+    return null
+  }
   if (!isDownloadable(model)) {
     return null
   }
@@ -58,16 +59,12 @@ const DownloadProduct = ({ model }: Props) => {
   )
 }
 
-const isRemoteResourceCached = (model: Model): boolean => {
-  if (!model) return false
-
-  const modelJson = model.toJSON()
-
-  if (!modelJson || modelJson.length <= 0) return false
+const isRemoteResourceCached = (model: LazyQueryResult[]): boolean => {
+  if (!model || model.length <= 0) return false
 
   return (
-    modelJson[0].isResourceLocal &&
-    modelJson[0].metacard.properties['source-id'] !== sources.localCatalog
+    model[0].isResourceLocal &&
+    model[0].plain.metacard.properties['source-id'] !== sources.localCatalog
   )
 }
 

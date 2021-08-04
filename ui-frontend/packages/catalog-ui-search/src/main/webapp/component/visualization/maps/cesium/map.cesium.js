@@ -457,11 +457,6 @@ module.exports = function CesiumMap(
         })
       }
     },
-    zoomToSelected() {
-      if (selectionInterface.getSelectedResults().length === 1) {
-        this.panToResults(selectionInterface.getSelectedResults())
-      }
-    },
     panToResults(results) {
       let rectangle, cartArray, point
 
@@ -552,8 +547,8 @@ module.exports = function CesiumMap(
         Cesium.Math.toDegrees(val)
       )
     },
-    overlayImage(model) {
-      const metacardId = model.get('properties').get('id')
+    overlayImage(model: LazyQueryResult) {
+      const metacardId = model.plain.id
       this.removeOverlay(metacardId)
 
       const coords = model.getPoints('location')
@@ -570,7 +565,7 @@ module.exports = function CesiumMap(
 
       const overlayLayer = map.scene.imageryLayers.addImageryProvider(
         new Cesium.SingleTileImageryProvider({
-          url: model.get('currentOverlayUrl'),
+          url: model.currentOverlayUrl,
           rectangle,
         })
       )

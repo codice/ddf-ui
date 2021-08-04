@@ -12,8 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
-const OverwriteModel = require('../../js/model/Overwrite.js')
+import OverwriteModel from '../../js/model/Overwrite'
 const Backbone = require('backbone')
 
 module.exports = new (Backbone.Collection.extend({

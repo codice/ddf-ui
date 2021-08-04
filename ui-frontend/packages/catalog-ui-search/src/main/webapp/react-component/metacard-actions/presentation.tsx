@@ -18,9 +18,10 @@ import * as React from 'react'
 import styled from 'styled-components'
 import { readableColor } from 'polished'
 import MapActions from '../map-actions'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
 type Props = {
-  model: Backbone.Model
+  model: LazyQueryResult
   exportActions: any
   otherActions: any
 }

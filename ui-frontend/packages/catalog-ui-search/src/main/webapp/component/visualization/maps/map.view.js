@@ -24,7 +24,6 @@ const PopupPreviewView = require('./popup.view.js')
 const CQLUtils = require('../../../js/CQLUtils.js')
 const LocationModel = require('../../location-old/location-old.js')
 const user = require('../../singletons/user-instance.js')
-const MapContextMenuDropdown = require('../../dropdown/map-context-menu/dropdown.map-context-menu.view.js')
 const MapModel = require('./map.model')
 const properties = require('../../../js/properties.js')
 const announcement = require('../../announcement')
@@ -35,7 +34,7 @@ import getDistance from 'geolib/es/getDistance'
 import { Drawing } from '../../singletons/drawing'
 import { GeometriesView } from './react/geometries.view'
 import MapToolbar from './map-toolbar'
-const DropdownModel = require('../../dropdown/dropdown.js')
+import MapContextDropdown from '../../map-context-menu/map-context-menu.view'
 
 function findExtreme({ objArray, property, comparator }) {
   if (objArray.length === 0) {
@@ -157,6 +156,7 @@ module.exports = Marionette.LayoutView.extend({
         <div className="popupPreview">
           <div className="info-feature"></div>
         </div>
+        <MapContextDropdown mapModel={this.mapModel} />
         <div className="not-supported">
           <h3 align="center">The 3D Map is not supported by your browser.</h3>
           <button className="old-button switch-map is-positive">
@@ -262,7 +262,6 @@ module.exports = Marionette.LayoutView.extend({
 
     this.map.onMouseMove(this.onMapHover.bind(this))
     this.map.onRightClick(this.onRightClick.bind(this))
-    this.setupRightClickMenu()
     this.setupMapInfo()
     this.setupDistanceInfo()
     this.setupPopupPreview()
@@ -422,24 +421,13 @@ module.exports = Marionette.LayoutView.extend({
   },
   onRightClick(event, mapEvent) {
     event.preventDefault()
-    this.$el
-      .find('.map-context-menu')
-      .css('left', event.offsetX)
-      .css('top', event.offsetY)
+    this.mapModel.set({
+      mouseX: event.offsetX,
+      mouseY: event.offsetY,
+      open: true,
+    })
     this.mapModel.updateClickCoordinates()
-    if (this.mapModel.get('mouseLat') !== undefined) {
-      this.mapContextMenu.currentView.model.open()
-    }
     this.updateDistance(true)
-  },
-  setupRightClickMenu() {
-    this.mapContextMenu.show(
-      new MapContextMenuDropdown({
-        model: new DropdownModel(),
-        mapModel: this.mapModel,
-        selectionInterface: this.options.selectionInterface,
-      })
-    )
   },
   setupMapInfo() {
     const map = this.mapModel
@@ -517,8 +505,10 @@ module.exports = Marionette.LayoutView.extend({
       this.initializeMap()
     }, 1000)
   },
+  isClustering: false,
   toggleClustering() {
     this.$el.toggleClass('is-clustering')
+    this.isClustering = !this.isClustering
     this.geometriesView.toggleClustering()
   },
   handleDrawing() {

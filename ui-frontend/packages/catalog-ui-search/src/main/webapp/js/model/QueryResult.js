@@ -17,7 +17,6 @@ const _ = require('underscore')
 const $ = require('jquery')
 import Sources from '../../component/singletons/sources-instance'
 const Common = require('../Common.js')
-const filter = require('../filter.js')
 import cql from '../cql'
 require('backbone-associations')
 
@@ -85,12 +84,6 @@ module.exports = Backbone.AssociatedModel.extend({
       this.get('metacard').get('properties').get('ext.extracted.text') !==
       undefined
     )
-  },
-  matchesFilters(filters) {
-    return filter.matchesFilters(this.get('metacard').toJSON(), filters)
-  },
-  matchesCql(cql) {
-    return filter.matchesCql(this.get('metacard').toJSON(), cql)
   },
   isResource() {
     return (

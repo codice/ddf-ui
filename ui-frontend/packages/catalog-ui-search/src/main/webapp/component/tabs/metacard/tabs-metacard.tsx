@@ -13,11 +13,10 @@
  *
  **/
 
-const MetacardAssociationsView = require('../../metacard-associations/metacard-associations.view.js')
-const MetacardPreviewView = require('../../metacard-preview/metacard-preview.view.js')
+import MetacardAssociationsView from '../../metacard-associations/metacard-associations.view'
+import MetacardPreviewView from '../../metacard-preview/metacard-preview.view'
 import React from 'react'
-//@ts-ignore
-import MetacardOverwrite from '../../metacard-overwrite/metacard-overwrite.view.js'
+import MetacardOverwrite from '../../metacard-overwrite/metacard-overwrite.view'
 import MetacardArchive from '../../../react-component/metacard-archive'
 import MetacardActions from '../../../react-component/metacard-actions'
 import MetacardQuality from '../../../react-component/metacard-quality'
@@ -26,7 +25,7 @@ import Summary from './summary'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult.js'
 import MRC from '../../../react-component/marionette-region-container'
 
-type TabContentProps = {
+export type TabContentProps = {
   result: LazyQueryResult
   selectionInterface?: any
 }
@@ -68,7 +67,7 @@ const Tabs = {
   Archive: ({ result }) => {
     return <MetacardArchive results={[result]} />
   },
-  Overwrite: MetacardOverwrite,
+  Overwrite: (MetacardOverwrite as unknown) as TabContentType,
 } as {
   [key: string]: TabContentType
 }

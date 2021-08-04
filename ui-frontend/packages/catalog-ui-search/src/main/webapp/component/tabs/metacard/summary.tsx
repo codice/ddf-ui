@@ -18,7 +18,6 @@ import DialogContent from '@material-ui/core/DialogContent'
 import useSnack from '../../hooks/useSnack'
 import LinearProgress from '@material-ui/core/LinearProgress'
 const $ = require('jquery')
-const ResultUtils = require('../../../js/ResultUtils.js')
 import PublishIcon from '@material-ui/icons/Publish'
 import Paper from '@material-ui/core/Paper'
 import useTheme from '@material-ui/core/styles/useTheme'
@@ -33,11 +32,11 @@ import { Elevations } from '../../theme/theme'
 import { DarkDivider } from '../../dark-divider/dark-divider'
 import { displayHighlightedAttrInFull } from './highlightUtil'
 import DateTimePicker from '../../fields/date-time-picker'
-import Geometry from '../../../react-component/input-wrappers/geometry'
 import { useRerenderOnBackboneSync } from '../../../js/model/LazyQueryResult/hooks'
 import useCoordinateFormat from './useCoordinateFormat'
 import { MetacardAttribute } from '../../../js/model/Types'
 import ExtensionPoints from '../../../extension-points'
+import { LocationInputReact } from '../../location-new/location-new.view'
 
 function getSummaryShown(): string[] {
   const userchoices = user
@@ -163,7 +162,7 @@ const handleMetacardUpdate = ({
       contentType: 'application/json',
     }).then(
       (response: any) => {
-        ResultUtils.updateResults(lazyResult.getBackbone(), response)
+        lazyResult.refreshFromEditResponse(response)
         onSuccess()
       },
       () => onFailure()
@@ -300,12 +299,13 @@ export const Editor = ({
                       )
                     case 'GEOMETRY':
                       return (
-                        <Geometry
-                          label={label}
+                        <LocationInputReact
                           onChange={(location: any) => {
-                            location === null || location === 'INVALID'
-                              ? setMode(Mode.BadInput)
-                              : setMode(Mode.Normal)
+                            if (location === null || location === 'INVALID') {
+                              setMode(Mode.BadInput)
+                            } else {
+                              setMode(Mode.Normal)
+                            }
                             values[index] = location
                             setValues([...values])
                           }}

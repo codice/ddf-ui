@@ -12,19 +12,28 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
-import MetacardInteractions from '../../react-component/metacard-interactions'
-import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+const Marionette = require('marionette')
+const IngestDetails = require('../ingest-details/ingest-details.view.js')
 
-type Props = {
-  lazyResults: LazyQueryResult[]
-  onClose: () => void
-}
-
-const LazyMetacardInteractions = ({ lazyResults, onClose }: Props) => {
-  return <MetacardInteractions model={lazyResults} onClose={onClose} />
-}
-
-export default hot(module)(LazyMetacardInteractions)
+export default Marionette.LayoutView.extend({
+  className: 'w-full h-full',
+  template() {
+    return (
+      <div className="ingest-details w-full h-full whitespace-no-wrap"></div>
+    )
+  },
+  regions: {
+    ingestDetails: '.ingest-details',
+  },
+  onBeforeShow() {
+    this.ingestDetails.show(
+      new IngestDetails({
+        url: this.options.url || './internal/catalog/',
+        extraHeaders: this.options.extraHeaders,
+        handleUploadSuccess: this.options.handleUploadSuccess,
+        preIngestValidator: null,
+      })
+    )
+  },
+})

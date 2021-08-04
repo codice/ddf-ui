@@ -15,17 +15,22 @@
 import { ResultType } from '../Types'
 const QueryResult = require('../QueryResult.js')
 import { LazyQueryResults, AttributeHighlights } from './LazyQueryResults'
-
+import cql from '../../cql'
 const _ = require('underscore')
 import Sources from '../../../component/singletons/sources-instance'
 const metacardDefinitions = require('../../../component/singletons/metacard-definitions.js')
+import { TypedMetacardDefs } from '../../../component/tabs/metacard/metacardDefinitions'
 const properties = require('../../properties.js')
 const TurfMeta = require('@turf/meta')
 const wkx = require('wkx')
 const Common = require('../../Common.js')
 import { matchesCql, matchesFilters } from './filter'
-import { FilterBuilderClass } from '../../../component/filter-builder/filter.structure'
+import {
+  FilterBuilderClass,
+  FilterClass,
+} from '../../../component/filter-builder/filter.structure'
 const debounceTime = 50
+const $ = require('jquery')
 
 function getThumbnailAction(result: ResultType) {
   return result.actions.find(
@@ -224,6 +229,97 @@ export class LazyQueryResult {
       this['_notifySubscribers.backboneSync']()
     }
   }
+  syncWithPlain() {
+    this.plain = transformPlain({ plain: { ...this.plain } })
+    humanizeResourceSize(this.plain)
+    cacheBustThumbnail(this.plain)
+    this['_notifySubscribers.backboneSync']()
+  }
+  // this is a partial update (like title only or something)
+  refreshFromEditResponse(
+    response: [
+      { ids: string[]; attributes: [{ attribute: string; values: string[] }] }
+    ]
+  ) {
+    response.forEach((part) =>
+      part.attributes.forEach((attribute) => {
+        this.plain.metacard.properties[
+          attribute.attribute
+        ] = TypedMetacardDefs.isMulti({ attr: attribute.attribute })
+          ? attribute.values
+          : attribute.values[0]
+      })
+    )
+    this.syncWithPlain()
+  }
+  // we have the entire metacard sent back
+  refreshData(
+    metacardProperties: LazyQueryResult['plain']['metacard']['properties']
+  ) {
+    if (metacardProperties !== undefined) {
+      this.plain.metacard.properties = metacardProperties
+      this.syncWithPlain()
+    } else {
+      this.refreshDataOverNetwork()
+    }
+  }
+  // just ask the source of truth
+  refreshDataOverNetwork() {
+    //let solr flush
+    setTimeout(() => {
+      const req = {
+        count: 1,
+        cql: cql.write(
+          new FilterBuilderClass({
+            type: 'AND',
+            filters: [
+              new FilterBuilderClass({
+                type: 'OR',
+                filters: [
+                  new FilterClass({
+                    type: '=',
+                    property: '"id"',
+                    value:
+                      this.plain.metacard.properties['metacard.deleted.id'] ||
+                      this.plain.id,
+                  }),
+                  new FilterClass({
+                    type: '=',
+                    property: '"metacard.deleted.id"',
+                    value: this.plain.id,
+                  }),
+                ],
+              }),
+              new FilterClass({
+                type: 'ILIKE',
+                property: '"metacard-tags"',
+                value: '*',
+              }),
+            ],
+          })
+        ),
+        id: '0',
+        sort: 'modified:desc',
+        src: this.plain.metacard.properties['source-id'],
+        start: 1,
+      }
+      $.ajax({
+        type: 'POST',
+        url: './internal/cql',
+        data: JSON.stringify(req),
+        contentType: 'application/json',
+      }).then(this.parseRefresh.bind(this), this.handleRefreshError.bind(this))
+    }, 1000)
+  }
+  handleRefreshError() {
+    //do nothing for now, should we announce this?
+  }
+  parseRefresh(response: { results: ResultType[] }) {
+    response.results.forEach((result) => {
+      this.plain = result
+    })
+    this.syncWithPlain()
+  }
   isDownloadable(): boolean {
     return this.plain.metacard.properties['resource-download-url'] !== undefined
   }
@@ -288,13 +384,18 @@ export class LazyQueryResult {
     )
   }
   getPoints(attribute?: any): any {
-    return this.getGeometries(attribute).reduce(
-      (pointArray: any, wkt: any) =>
-        pointArray.concat(
-          TurfMeta.coordAll(wkx.Geometry.parse(wkt).toGeoJSON())
-        ),
-      []
-    )
+    try {
+      return this.getGeometries(attribute).reduce(
+        (pointArray: any, wkt: any) =>
+          pointArray.concat(
+            TurfMeta.coordAll(wkx.Geometry.parse(wkt).toGeoJSON())
+          ),
+        []
+      )
+    } catch (err) {
+      console.error(err)
+      return []
+    }
   }
   getMapActions() {
     return this.plain.actions.filter(
@@ -383,4 +484,5 @@ export class LazyQueryResult {
       return false
     }
   }
+  currentOverlayUrl?: string
 }
