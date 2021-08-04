@@ -21,6 +21,8 @@ import {
 } from './boolean-search-utils'
 import { IconButton, InputProps } from '@material-ui/core'
 import ClearIcon from '@material-ui/icons/Clear'
+import SearchIcon from '@material-ui/icons/Search'
+const properties = require('../../js/properties.js')
 
 const defaultFilterOptions = createFilterOptions()
 
@@ -30,14 +32,17 @@ type Props = {
   property?: string
   disableClearable?: boolean
   placeholder?: TextFieldProps['placeholder']
+  onSubmit?: (event?: any) => void
   FormControlProps?: FormControlProps
   TextFieldProps?: Partial<TextFieldProps>
   AutocompleteProps?: AutocompleteProps<Option, false, true, true>
   InputProps?: InputProps
 }
 
+const WILD_CARD = '"*"'
+
 const defaultValue: BooleanTextType = {
-  text: '"*"',
+  text: '',
   cql: '',
   error: false,
 }
@@ -58,7 +63,7 @@ const ShapeValidator = (props: Props) => {
     validateShape(props)
   })
 
-  if (props.value.text !== undefined) {
+  if (props.value.text !== undefined || props.value.text === '*') {
     return <BooleanSearchBar {...props} />
   }
   return null
@@ -72,7 +77,7 @@ const BooleanSearchBar = ({
   value,
   onChange,
   property = 'anyText',
-  placeholder = `Enter search. Use “*” (with quotes) to query all.`,
+  placeholder = `Search ${properties.customBranding} ${properties.product}`,
   disableClearable,
   ...props
 }: Props) => {
@@ -104,10 +109,12 @@ const BooleanSearchBar = ({
   React.useEffect(() => {
     var controller = new AbortController()
     setLoading(true)
+    // when empty, interpret as wildcard
+    const searchVal = value.text === '' ? WILD_CARD : value.text
 
-    if (value.text && isValidBeginningToken(value.text)) {
+    if (searchVal && isValidBeginningToken(value.text)) {
       fetchCql({
-        searchText: value.text,
+        searchText: searchVal,
         searchProperty: property,
         callback: ({ cql = '', message }) => {
           onChange({
@@ -314,6 +321,11 @@ const BooleanSearchBar = ({
           <TextField
             data-id="search-input"
             {...params}
+            onKeyDown={(e) => {
+              if (props.onSubmit && e.keyCode === 13) {
+                props.onSubmit()
+              }
+            }}
             placeholder={placeholder}
             inputRef={inputRef}
             size={'small'}
@@ -340,13 +352,25 @@ const BooleanSearchBar = ({
                   )}
                 </>
               ),
-              endAdornment: !disableClearable && (
-                <IconButton
-                  onClick={handleTextClear}
-                  style={{ padding: '2px' }}
-                >
-                  <ClearIcon fontSize="small" />
-                </IconButton>
+              endAdornment: (
+                <>
+                  {!disableClearable && !!value.text && (
+                    <IconButton
+                      onClick={handleTextClear}
+                      style={{ padding: '2px' }}
+                    >
+                      <ClearIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                  {props.onSubmit && (
+                    <IconButton
+                      onClick={props.onSubmit}
+                      style={{ padding: '2px' }}
+                    >
+                      <SearchIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                </>
               ),
               ...props.InputProps,
             }}
