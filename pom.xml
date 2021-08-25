@@ -40,6 +40,7 @@
   <modules>
     <module>ui-backend</module>
     <module>ui-frontend</module>
+    <module>docs</module>
   </modules>
 
   <properties>
