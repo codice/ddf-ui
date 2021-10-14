@@ -19,7 +19,8 @@
 |Metacard Type Whitelist
 |whiteListedMetacardTypes
 |String
-|List of metacard types that are whitelisted and not filtered. NOTE: This will directly filter out metacard types rendered from metacard application. An empty list will whitelist everything.
+a|List of metacard types that are whitelisted and not filtered.
+NOTE: This directly filters out metacard types rendered from metacard application. An empty list whitelists everything.
 |
 |false
 

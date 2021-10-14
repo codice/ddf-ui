@@ -19,7 +19,8 @@
 |Hidden Attributes
 |hiddenAttributes
 |String
-|List of attributes to be hidden. NOTE: the provided values will be evaluated as JavaScript regular expressions when matched against metacard attributes.
+a|List of attributes to be hidden.
+NOTE: the provided values are evaluated as JavaScript regular expressions when matched against metacard attributes.
 a|* `^sorts$`
 * `^cql$`
 * `^polling$`

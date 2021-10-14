@@ -23,7 +23,7 @@
 
 .Query Feedback Template Replacements
 
-The following keywords in the templates will be replaced with submission-specific values, or "Unknown" if unknown.
+The following keywords in the templates are replaced with submission-specific values, or "Unknown" if unknown.
 
 [cols="1m,1"]
 |===

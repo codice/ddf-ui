@@ -7,7 +7,7 @@
 
 == {title}
 
-The Search pane has two tabs: *Search* and *Lists*.
+The Search pane has two tabs, *Search* and *Lists*.
 
 .Search Pane Tabs
 image::search-pane-tabs.png[]
