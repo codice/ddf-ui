@@ -53,7 +53,7 @@ The valid types are:
 
 *WMT example*: `{ "parameters": { "transparent": false, "format": "image/jpeg" }, "name": "Example WMT", "tileMatrixLabels": [ "EPSG:4326:0", "EPSG:4326:1", "EPSG:4326:2", "EPSG:4326:3", "EPSG:4326:4", "EPSG:4326:5", "EPSG:4326:6", "EPSG:4326:7", "EPSG:4326:8", "EPSG:4326:9", "EPSG:4326:10", "EPSG:4326:11", "EPSG:4326:12", "EPSG:4326:13", "EPSG:4326:14", "EPSG:4326:15", "EPSG:4326:16", "EPSG:4326:17", "EPSG:4326:18", "EPSG:4326:19", "EPSG:4326:20", "EPSG:4326:21" ], "tileMatrixSetID": "EPSG:4326", "order": 0, "url": "http://suite.opengeo.org/geoserver/gwc/service/wmts", "layer": "opengeo:countries", "style": "", "proxyEnabled": false, "type": "WMT", "show": true, "alpha": 1}`
 
-*TMS example* (3d map support only): `{ "name": "Example TMS", "show": true, "type": "TMS", "order": 0, "url": "https://cesiumjs.org/tilesets/imagery/blackmarble", "proxyEnabled": false, "alpha": 1}`
+*TMS example* (3D map support only): `{ "name": "Example TMS", "show": true, "type": "TMS", "order": 0, "url": "https://cesiumjs.org/tilesets/imagery/blackmarble", "proxyEnabled": false, "alpha": 1}`
 
 *Multiple layer example*: +
 _Topmost Layer_: `{ "name": "Example AGM", "show": true, "type": "AGM", "url": "https://server.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer", "order": 0, "proxyEnabled": false, "alpha": 1}` +
@@ -88,14 +88,14 @@ Example:
 |List Templates
 |listTemplates
 |String
-|Templates for users to quickly create lists that already specify an icon and a filter. Example: {"id":"Pizza Deliveries", "list.icon": "tasks", "list.cql": "(\"anyText\"ILIKE &apos;pizza&apos;)"}
+|Templates for users to quickly create lists that already specify an icon and a filter. Example: `{"id":"Pizza Deliveries", "list.icon": "tasks", "list.cql": "(\"anyText\"ILIKE &apos;pizza&apos;)"}`
 |
 |false
 
 |Map Projection
 |projection
 |String
-|Projection of imagery providers (e.g. `EPSG:3857`, `EPSG:4326`).
+|Projection of imagery providers (for example, `EPSG:3857`, `EPSG:4326`).
 |EPSG:4326
 |false
 
@@ -144,7 +144,7 @@ Example:
 |Use Online Gazetteer
 |onlineGazetteerEnabled
 |Boolean
-|Should the online gazetteer be used? If unchecked a local gazetteer service will be used. This only applies to the search gazetteer in Intrigue.
+|Should the online gazetteer be used? If unchecked, a local gazetteer service is used. This only applies to the search gazetteer in Intrigue.
 |true
 |false
 
@@ -158,7 +158,7 @@ Example:
 |Enable Cache
 |cacheEnabled
 |Boolean
-|Locally cached results will be returned in search results.
+|Locally cached results are returned in search results.
 |true
 |true
 
@@ -221,7 +221,7 @@ Example:
 |Relevance Score Precision
 |relevancePrecision
 |Integer
-|Set the number of digits to display in for each relevance score. The default is 5 (i.e. 12.345).
+|Set the number of digits to display in for each relevance score. The default is 5 (for example, 12.345).
 |5
 |false
 
@@ -288,7 +288,7 @@ a|* `created`
 |Read Only Metacard Attributes
 |readOnly
 |String
-|List of metacard attributes that are read-only. NOTE: the provided values will be evaluated as JavaScript regular expressions when matched against metacard attributes.
+|List of metacard attributes that are read-only. NOTE: the provided values are evaluated as JavaScript regular expressions when matched against metacard attributes.
 a|* `^checksum$`
 * `^checksum-algorithm$`
 * `^id$`
@@ -326,7 +326,7 @@ a|* `created`
 |Query Schedule Frequencies
 |scheduleFrequencyList
 |Long
-|Custom list of schedule frequencies in seconds. This will override the frequency list in the query schedule tab. Leave this empty to use the frequency list on the Catalog UI.
+|Custom list of schedule frequencies in seconds. This overrides the frequency list in the query schedule tab. Leave this empty to use the frequency list on the Catalog UI.
 a|* `1800`
 * `3600`
 * `7200`
@@ -354,7 +354,8 @@ a|* `1800`
 |queryFeedbackEmailBodyTemplate
 |String
 |See <<{managing-prefix}configuring_query_feedback_for_intrigue,Configuring Query Feedback for ${catalog-ui}>> for more details about Query Feedback templates.
-|
+a|
+----
 <h2>Query Feedback</h2> +
 <p><br> +
 	<b>Authenticated User</b>: {{{auth_username}}}<br><br> +
@@ -367,6 +368,7 @@ a|* `1800`
 	<b>Comments</b>: {{{comments}}}<br><br> +
 	<b>Query_results</b>: <pre>{{{query_results}}}</pre> +
 </p>
+----
 |true
 
 |Query Feedback Email Destination
@@ -379,14 +381,16 @@ a|* `1800`
 |Maximum Endpoint Upload Size
 |maximumUploadSize
 |Integer
-|The maximum size (in bytes) to allow per client when receiving a POST/PATCH/PUT. Note: This does not affect resource upload size, just the maximum size allowed for calls from Intrigue.
+a|The maximum size (in bytes) to allow per client when receiving a POST/PATCH/PUT.
+
+NOTE: this does not affect resource upload size, just the maximum size allowed for calls from Intrigue.
 |1048576
 |true
 
 |Map Home
 |mapHome
 |String
-|Specifies the default home view for the map by bounding box. The format is "West, South, East, North", where North, East, South, and West are coordinates in degrees. An example is: `-124, 60, -100, 40`.
+|Specifies the default home view for the map by bounding box. The format is "`West, South, East, North"`, where North, East, South, and West are coordinates in degrees. An example is: `-124, 60, -100, 40`.
 |
 |false
 
@@ -407,9 +411,9 @@ Supported entry syntax: +
 1. `attribute` +
 2. `attribute=value1,value2,...`
 
-Using the first syntax, the editor will attempt to determine the appropriate control to display
+Using the first syntax, the editor attempts to determine the appropriate control to display
 based on the attribute datatype.
-The second syntax will force the editor to use a dropdown selector populated with the provided
+The second syntax forces the editor to use a dropdown selector populated with the provided
 values. This is intended for use with String datatypes, which by default may be assigned any value.
 |
 |false
@@ -418,7 +422,7 @@ values. This is intended for use with String datatypes, which by default may be 
 |requiredAttributes
 |String
 |List of attributes which must be set before an upload is permitted. If an attribute is
-listed as required but not shown in the editor, it will be ignored.
+listed as required but not shown in the editor, it is ignored.
 |
 |false
 

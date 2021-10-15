@@ -11,7 +11,7 @@ It provides metadata search and discovery, resource retrieval, and workspace man
 .Contextual Help Feature
 [NOTE]
 ====
-For more detail on any feature or button within {catalog-ui}, click the `?` icon in the upper right of the screen; then, hover over any item on the screen and a contextual tooltip will be displayed to define its purpose.
+For more detail on any feature or button within {catalog-ui}, click the `?` icon in the upper right of the screen; then, hover over any item on the screen and a contextual tooltip is displayed to define its purpose.
 To exit this mode, click the `?` again or press `escape`.
 ====
 

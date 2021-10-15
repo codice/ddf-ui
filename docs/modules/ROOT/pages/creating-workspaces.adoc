@@ -9,7 +9,7 @@
 
 .Start new workspace
 . From the *Workspaces* view, enter search terms into the *Start new workspace* search field and click the magnifying glass (image:magnifying-glass.png[magnifying glass icon]) icon.
-This will create a new workspace and perform a search based on the entered search terms.
+This creates a new workspace and perform a search based on the entered search terms.
 
 .Start new workspace
 image::start-new-workspace.png[start new workspace icon]
