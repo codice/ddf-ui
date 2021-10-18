@@ -263,6 +263,17 @@ export const useRenderOnAsyncTaskUpdate = ({
   return
 }
 
+const getCqlForFilterTree = (filterTree: any): string => {
+  if (typeof filterTree === 'string') {
+    try {
+      filterTree = JSON.parse(filterTree)
+    } catch (err) {
+      // Continue using string literal if string is not valid JSON.
+    }
+  }
+  return CQL.write(filterTree)
+}
+
 class RestoreTask extends AsyncTask {
   lazyResult: LazyQueryResult
   constructor({ lazyResult }: { lazyResult: LazyQueryResult }) {
@@ -360,7 +371,7 @@ class CreateSearchTask extends AsyncTask {
             attributes: {
               'metacard-tags': ['query'],
               ...this.data,
-              cql: CQL.write(this.data.filterTree),
+              cql: getCqlForFilterTree(this.data.filterTree),
             },
             metacardType: 'metacard.query',
           },
@@ -417,7 +428,7 @@ class SaveSearchTask extends AsyncTask {
               attributes: {
                 'metacard-tags': ['query'],
                 ...this.data,
-                cql: CQL.write(this.data.filterTree),
+                cql: getCqlForFilterTree(this.data.filterTree),
               },
               metacardType: 'metacard.query',
             },
