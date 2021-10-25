@@ -22,6 +22,8 @@ const moment = require('moment')
 const announcement = require('component/announcement')
 const user = require('../../component/singletons/user-instance.js')
 import MetacardHistoryPresentation from './presentation'
+import MetacardDiff from '../metacard-diff'
+const lightboxInstance = require('../../component/lightbox/lightbox.view.instance.js')
 
 type Props = {
   selectionInterface: any
@@ -29,7 +31,7 @@ type Props = {
 
 type State = {
   history: any
-  selectedVersion: any
+  selectedVersions: any
   loading: boolean
 }
 
@@ -42,7 +44,7 @@ class MetacardHistory extends React.Component<Props, State> {
 
     this.state = {
       history: [],
-      selectedVersion: undefined,
+      selectedVersions: [],
       loading: true,
     }
   }
@@ -91,17 +93,86 @@ class MetacardHistory extends React.Component<Props, State> {
     }, 1000)
   }
 
-  onClick = (event: any) => {
-    const selectedVersion = event.currentTarget.getAttribute('data-id')
-    this.setState({ selectedVersion })
+  onCheck = (event: any) => {
+    const itemId = event.currentTarget.getAttribute('data-id')
+    const selected = event.target.checked
+    const items = this.state.selectedVersions
+    if (selected) {
+      items.push(itemId)
+    } else {
+      items.splice(items.indexOf(itemId), 1)
+    }
+    if (items.length > 2) {
+      items.shift()
+    }
+    this.setState({ selectedVersions: items })
   }
 
-  revertToSelectedVersion = async () => {
+  diffVersions = async () => {
+    const id = this.model.get('metacard').get('id')
+
+    const items = this.state.selectedVersions
+    let base = items[0]
+    let change = id
+    if (items.length > 1) {
+      //figure out which one is older
+      if (this.getHistoryIndex(items[0]) > this.getHistoryIndex(items[1])) {
+        change = items[1]
+      } else {
+        base = items[1]
+        change = items[0]
+      }
+    }
+    const baseHistory = this.state.history[this.getHistoryIndex(base)]
+    const changeHistory = this.state.history[this.getHistoryIndex(change)]
+    lightboxInstance.model.updateTitle('Comparing Versions')
+    lightboxInstance.model.open()
+    lightboxInstance.showContent(
+      <MetacardDiff
+        sourceId={this.getSourceId()}
+        baseInfo={{
+          id: base,
+          version:
+            'Version: ' +
+            baseHistory.versionNumber +
+            ' - ' +
+            baseHistory.niceDate,
+        }}
+        changeInfo={{
+          id: change,
+          version:
+            id == change
+              ? 'Version: Current'
+              : 'Version: ' +
+                changeHistory.versionNumber +
+                ' - ' +
+                changeHistory.niceDate,
+        }}
+        canRevert={user.canWrite(this.model) && id == change}
+        revert={() => {
+          this.revertToSelectedVersion(base)
+        }}
+      />
+    )
+  }
+
+  getHistoryIndex = (item: any) => {
+    let index = -1
+    this.state.history.find((curValue: any, curIndex: number) => {
+      if (curValue.id == item) {
+        index = curIndex
+        return true
+      }
+      return false
+    })
+    return index
+  }
+
+  revertToSelectedVersion = async (revertId: any) => {
     this.setState({ loading: true })
 
     const id = this.model.get('metacard').get('id')
-    const revertId = this.state.selectedVersion
-
+    lightboxInstance.model.close()
     const res = await fetch(
       `./internal/history/revert/${id}/${revertId}/${this.getSourceId()}`
     )
@@ -146,13 +217,13 @@ class MetacardHistory extends React.Component<Props, State> {
   }
 
   render() {
-    const { history, selectedVersion, loading } = this.state
+    const { history, selectedVersions, loading } = this.state
     return (
       <MetacardHistoryPresentation
-        onClick={this.onClick}
-        revertToSelectedVersion={this.revertToSelectedVersion}
+        onCheck={this.onCheck}
+        diffVersions={this.diffVersions}
         history={history}
-        selectedVersion={selectedVersion}
+        selectedVersions={selectedVersions}
         loading={loading}
         canEdit={user.canWrite(this.model)}
       />
