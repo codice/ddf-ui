@@ -18,15 +18,16 @@ import * as React from 'react'
 import Button from '@material-ui/core/Button'
 import styled from 'styled-components'
 import LoadingCompanion from '../loading-companion'
-import Checkbox from '@material-ui/core/Checkbox'
 
 type Props = {
-  onCheck: (event: any) => void
-  diffVersions: () => void
-  history: any
-  selectedVersions: any
+  toggleShowAll: () => void
+  revertToSelectedVersion: () => void
+  canRevert: boolean
+  diffData: any
+  baseInfo: any
+  changeInfo: any
   loading: boolean
-  canEdit: boolean
+  showAll: boolean
 }
 
 const Root = styled.div`
@@ -37,6 +38,10 @@ const Root = styled.div`
     float: left;
     padding: 10px;
     text-align: center;
+  }
+
+  .diffHighlight {
+    background-color: rgba(75, 200, 200, 0.3);
   }
 
   ${(props) => {
@@ -87,86 +92,92 @@ const Body = styled.div`
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   }
 `
-const Check = styled.div`
-  width: 5%;
-  float: left;
-`
-const Version = styled.div`
-  width: 15%;
+
+const Attribute = styled.div`
+  width: 20%;
 `
 
-const Date = styled.div`
-  width: 50%;
+const Base = styled.div`
+  width: 40%;
 `
 
-const Modified = styled.div`
-  width: 30%;
+const Change = styled.div`
+  width: 40%;
   overflow: hidden;
   text-overflow: ellipsis;
 `
 
-const MetacardHistory = (props: Props) => {
-  const { onCheck, diffVersions, history, selectedVersions, loading } = props
+const ShowButton = styled.button`
+  color: #69e1e8;
+  background: transparent;
+  width: auto;
+  transition: none;
+  box-shadow: none;
+  padding: 20px 8px;
+`
+
+const MetacardDiff = (props: Props) => {
+  const {
+    toggleShowAll,
+    revertToSelectedVersion,
+    diffData,
+    baseInfo,
+    changeInfo,
+    canRevert,
+    loading,
+    showAll,
+  } = props
   return (
     <LoadingCompanion loading={loading}>
       <Root>
+        <ShowButton className="p-2" color="primary" onClick={toggleShowAll}>
+          {!showAll && 'Show Matching Attributes'}
+          {showAll && 'Hide Matching Attributes'}
+        </ShowButton>
         <Header>
           <Row>
-            <Check />
-            <Version className="metacardHistory-cell">Version</Version>
-            <Date className="metacardHistory-cell">Date</Date>
-            <Modified className="metacardHistory-cell">Modified by</Modified>
+            <Attribute className="metacardHistory-cell">Attribute</Attribute>
+            <Base className="metacardHistory-cell">{baseInfo.version}</Base>
+            <Change className="metacardHistory-cell">
+              {changeInfo.version}
+            </Change>
           </Row>
         </Header>
         <Body
           className="metacardHistory-body"
-          data-help="This is the history of changes to
-this item.  If you have the right permissions, you can click one of the items in the list
-and then click 'Revert to Selected Version' to restore the item to that specific state.  No history
+          data-help="This is the comparison of two version of the item.  If you compare to the current version and have the right permissions, you can click the 'Revert to <version>' to restore the item to that specific state.  No history
 will be lost in the process.  Instead a new version will be created that is equal to the state you
 have chosen."
         >
-          {history.map((historyItem: any) => {
+          {diffData.map((diffItem: any) => {
+            if (!showAll && !diffItem.isDiff) {
+              return
+            }
             return (
               <Row
-                className={`${
-                  selectedVersions.includes(historyItem.id) && 'is-selected'
-                }`}
-                data-id={historyItem.id}
-                key={historyItem.id}
-                // onClick={onClick}
+                key={diffItem.name}
+                className={showAll && diffItem.isDiff ? 'diffHighlight' : ''}
               >
-                <Check>
-                  <Checkbox
-                    onClick={onCheck}
-                    data-id={historyItem.id}
-                    checked={selectedVersions.includes(historyItem.id)}
-                  />
-                </Check>
-                <Version className="metacardHistory-cell">
-                  {historyItem.versionNumber}
-                </Version>
-                <Date className="metacardHistory-cell">
-                  {historyItem.niceDate}
-                </Date>
-                <Modified className="metacardHistory-cell">
-                  {historyItem.editedBy}
-                </Modified>
+                <Attribute className="metacardHistory-cell">
+                  {diffItem.name}
+                </Attribute>
+                <Base className="metacardHistory-cell">{diffItem.base}</Base>
+                <Change className="metacardHistory-cell">
+                  {diffItem.change}
+                </Change>
               </Row>
             )
           })}
         </Body>
-        {selectedVersions.length > 0 && (
+        {canRevert && (
           <Button
             fullWidth
             className="p-2"
             variant="contained"
             color="primary"
-            onClick={diffVersions}
+            onClick={revertToSelectedVersion}
           >
-            {selectedVersions.length == 1 &&
-              'Compare selected version with the latest version'}
-            {selectedVersions.length == 2 && 'Compare selected versions'}
+            Revert to {baseInfo.version}
           </Button>
         )}
       </Root>
@@ -174,4 +185,4 @@ have chosen."
   )
 }
 
-export default hot(module)(MetacardHistory)
+export default hot(module)(MetacardDiff)
