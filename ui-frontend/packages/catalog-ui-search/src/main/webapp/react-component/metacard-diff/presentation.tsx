@@ -16,6 +16,9 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import Button from '@material-ui/core/Button'
+import FormGroup from '@material-ui/core/FormGroup'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Switch from '@material-ui/core/Switch'
 import styled from 'styled-components'
 import LoadingCompanion from '../loading-companion'
 
@@ -31,89 +34,71 @@ type Props = {
 }
 
 const Root = styled.div`
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
   height: 100%;
-
-  .metacardHistory-cell {
-    float: left;
-    padding: 10px;
-    text-align: center;
-  }
 
   .diffHighlight {
     background-color: rgba(75, 200, 200, 0.3);
   }
-
-  ${(props) => {
-    if (props.theme.screenBelow(props.theme.smallScreenSize)) {
-      return `
-        .metacardHistory-body {
-          max-height: none;
-          overflow: auto;
-        }
-  
-        .metacardHistory-cell {
-          display: block;
-          width: 100%;
-        }
-    `
-    }
-    return
-  }};
 `
 
-const Header = styled.div`
-  height: 50px;
+const ShowSwitch = styled(FormGroup)`
+  margin: 16px;
+  font-size: 1.4rem;
+  align-items: flex-end;
+`
+const ShowSwitchLabel = styled.span`
+  font-size: 1rem;
 `
 
-const Row = styled.div`
-  transition: padding ${(props) => props.theme.transitionTime} linear;
-`
-
-// prettier-ignore
-const Body = styled.div`
-  max-height: calc(100% - ${props => props.theme.minimumButtonSize}*2 - 20px - ${props => props.theme.minimumSpacing});
+const TableWrapper = styled.div`
   overflow: auto;
-  overflow-x: hidden;
+  height: 100%;
+  padding-bottom: 16px;
+  position: relative;
+`
+const Table = styled.table`
+  margin: 0 0 24px;
   width: 100%;
-  cursor: pointer;
-  display: table;
-  content: " ";
-  > *,
-  > * > td {
-    display: inline-block;
-    width: 100%;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  > *:hover,
-  > *:hover > td {
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-collapse: separate;
+  border-spacing: 0;
+`
+const Th = styled.th`
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 4px;
+  position: sticky;
+  top: 0;
+  background: #243540;
+  z-index: 1;
+`
+const Td = styled.td`
+  text-align: center;
+  padding: 8px 4px;
+  height: 60px;
+  word-break: break-word;
+`
+/* stylelint-disable selector-type-no-unknown */
+const Tr = styled.tr`
+  &:hover ${Td} {
+    background: rgba(255, 255, 255, 0.05);
   }
 `
-
-const Attribute = styled.div`
+/* stylelint-enable */
+const ThAttribute = styled(Th)`
   width: 20%;
 `
-
-const Base = styled.div`
+const ThBaseVersion = styled(Th)`
   width: 40%;
 `
-
-const Change = styled.div`
+const ThChangeVersion = styled(Th)`
   width: 40%;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `
-
-const ShowButton = styled.button`
-  color: #69e1e8;
-  background: transparent;
-  width: auto;
-  transition: none;
-  box-shadow: none;
-  padding: 20px 8px;
+const RevertBtnWrapper = styled.div`
+  margin: 0 16px 16px;
+  position: sticky;
+  bottom: 0;
 `
 
 const MetacardDiff = (props: Props) => {
@@ -130,56 +115,59 @@ const MetacardDiff = (props: Props) => {
   return (
     <LoadingCompanion loading={loading}>
       <Root>
-        <ShowButton className="p-2" color="primary" onClick={toggleShowAll}>
-          {!showAll && 'Show Matching Attributes'}
-          {showAll && 'Hide Matching Attributes'}
-        </ShowButton>
-        <Header>
-          <Row>
-            <Attribute className="metacardHistory-cell">Attribute</Attribute>
-            <Base className="metacardHistory-cell">{baseInfo.version}</Base>
-            <Change className="metacardHistory-cell">
-              {changeInfo.version}
-            </Change>
-          </Row>
-        </Header>
-        <Body
-          className="metacardHistory-body"
-          data-help="This is the comparison of two version of the item.  If you compare to the current version and have the right permissions, you can click the 'Revert to <version>' to restore the item to that specific state.  No history
-will be lost in the process.  Instead a new version will be created that is equal to the state you
-have chosen."
-        >
-          {diffData.map((diffItem: any) => {
-            if (!showAll && !diffItem.isDiff) {
-              return
+        <ShowSwitch>
+          <FormControlLabel
+            control={
+              <Switch onChange={toggleShowAll} checked={showAll} size="small" />
             }
-            return (
-              <Row
-                key={diffItem.name}
-                className={showAll && diffItem.isDiff ? 'diffHighlight' : ''}
+            label={<ShowSwitchLabel>Show matching attributes</ShowSwitchLabel>}
+          />
+        </ShowSwitch>
+
+        <TableWrapper>
+          <Table>
+            <thead>
+              <tr>
+                <ThAttribute>Attribute</ThAttribute>
+                <ThBaseVersion>{baseInfo.version}</ThBaseVersion>
+                <ThChangeVersion>{changeInfo.version}</ThChangeVersion>
+              </tr>
+            </thead>
+            <tbody>
+              {diffData.map((diffItem: any) => {
+                if (!showAll && !diffItem.isDiff) {
+                  return
+                }
+                return (
+                  <Tr
+                    key={diffItem.name}
+                    className={
+                      showAll && diffItem.isDiff ? 'diffHighlight' : ''
+                    }
+                  >
+                    <Td>{diffItem.name}</Td>
+                    <Td>{diffItem.base}</Td>
+                    <Td>{diffItem.change}</Td>
+                  </Tr>
+                )
+              })}
+            </tbody>
+          </Table>
+
+          {canRevert && (
+            <RevertBtnWrapper>
+              <Button
+                fullWidth
+                className="p-2"
+                variant="contained"
+                color="primary"
+                onClick={revertToSelectedVersion}
               >
-                <Attribute className="metacardHistory-cell">
-                  {diffItem.name}
-                </Attribute>
-                <Base className="metacardHistory-cell">{diffItem.base}</Base>
-                <Change className="metacardHistory-cell">
-                  {diffItem.change}
-                </Change>
-              </Row>
-            )
-          })}
-        </Body>
-        {canRevert && (
-          <Button
-            fullWidth
-            className="p-2"
-            variant="contained"
-            color="primary"
-            onClick={revertToSelectedVersion}
-          >
-            Revert to {baseInfo.version}
-          </Button>
-        )}
+                Revert to {baseInfo.version}
+              </Button>
+            </RevertBtnWrapper>
+          )}
+        </TableWrapper>
       </Root>
     </LoadingCompanion>
   )
