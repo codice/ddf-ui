@@ -32,12 +32,7 @@ type Props = {
 const Root = styled.div`
   overflow: auto;
   height: 100%;
-
-  .metacardHistory-cell {
-    float: left;
-    padding: 10px;
-    text-align: center;
-  }
+  position: relative;
 
   ${(props) => {
     if (props.theme.screenBelow(props.theme.smallScreenSize)) {
@@ -56,53 +51,45 @@ const Root = styled.div`
     return
   }};
 `
-
-const Header = styled.div`
-  height: 50px;
-`
-
-const Row = styled.div`
-  transition: padding ${(props) => props.theme.transitionTime} linear;
-`
-
-// prettier-ignore
-const Body = styled.div`
-  max-height: calc(100% - ${props => props.theme.minimumButtonSize}*2 - 20px - ${props => props.theme.minimumSpacing});
-  overflow: auto;
-  overflow-x: hidden;
+const Table = styled.table`
+  margin: 16px 0 24px;
   width: 100%;
-  cursor: pointer;
-  display: table;
-  content: " ";
-  > *,
-  > * > td {
-    display: inline-block;
-    width: 100%;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-collapse: separate;
+  border-spacing: 0;
+`
+const Th = styled.th`
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 4px;
+  position: sticky;
+  top: 0;
+  background: #243540;
+  z-index: 1;
+`
+const Td = styled.td`
+  text-align: left;
+  padding: 8px 4px;
+  height: 60px;
+`
+/* stylelint-disable selector-type-no-unknown */
+const Tr = styled.tr`
+  &:hover ${Td} {
+    background: rgba(255, 255, 255, 0.05);
   }
-  > *:hover,
-  > *:hover > td {
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  }
 `
-const Check = styled.div`
-  width: 5%;
-  float: left;
+/* stylelint-enable */
+const ThVersion = styled(Th)`
+  text-align: center;
 `
-const Version = styled.div`
-  width: 15%;
+const TdVersion = styled(Td)`
+  text-align: center;
 `
-
-const Date = styled.div`
-  width: 50%;
+const TdCheck = styled(Td)`
+  width: 80px;
+  text-align: center;
 `
-
-const Modified = styled.div`
-  width: 30%;
-  overflow: hidden;
-  text-overflow: ellipsis;
+const CompareButton = styled(Button)`
+  margin: 0 0 24px 16px;
 `
 
 const MetacardHistory = (props: Props) => {
@@ -110,55 +97,47 @@ const MetacardHistory = (props: Props) => {
   return (
     <LoadingCompanion loading={loading}>
       <Root>
-        <Header>
-          <Row>
-            <Check />
-            <Version className="metacardHistory-cell">Version</Version>
-            <Date className="metacardHistory-cell">Date</Date>
-            <Modified className="metacardHistory-cell">Modified by</Modified>
-          </Row>
-        </Header>
-        <Body
-          className="metacardHistory-body"
-          data-help="This is the history of changes to
-this item.  If you have the right permissions, you can click one of the items in the list
-and then click 'Revert to Selected Version' to restore the item to that specific state.  No history
-will be lost in the process.  Instead a new version will be created that is equal to the state you
-have chosen."
-        >
-          {history.map((historyItem: any) => {
-            return (
-              <Row
-                className={`${
-                  selectedVersions.includes(historyItem.id) && 'is-selected'
-                }`}
-                data-id={historyItem.id}
-                key={historyItem.id}
-                // onClick={onClick}
-              >
-                <Check>
-                  <Checkbox
-                    onClick={onCheck}
-                    data-id={historyItem.id}
-                    checked={selectedVersions.includes(historyItem.id)}
-                  />
-                </Check>
-                <Version className="metacardHistory-cell">
-                  {historyItem.versionNumber}
-                </Version>
-                <Date className="metacardHistory-cell">
-                  {historyItem.niceDate}
-                </Date>
-                <Modified className="metacardHistory-cell">
-                  {historyItem.editedBy}
-                </Modified>
-              </Row>
-            )
-          })}
-        </Body>
+        <Table>
+          <thead>
+            <tr>
+              <Th></Th>
+              <ThVersion>Version</ThVersion>
+              <Th>Date</Th>
+              <Th>Modified by</Th>
+            </tr>
+          </thead>
+          <tbody
+            data-help="This is the history of changes to
+            this item.  If you have the right permissions, you can click one of the items in the list
+            and then click 'Revert to Selected Version' to restore the item to that specific state.  No history
+            will be lost in the process.  Instead a new version will be created that is equal to the state you
+            have chosen."
+          >
+            {history.map((historyItem: any) => {
+              return (
+                <Tr
+                  className={`${
+                    selectedVersions.includes(historyItem.id) && 'is-selected'
+                  }`}
+                  key={historyItem.id}
+                >
+                  <TdCheck>
+                    <Checkbox
+                      onClick={onCheck}
+                      data-id={historyItem.id}
+                      checked={selectedVersions.includes(historyItem.id)}
+                    />
+                  </TdCheck>
+                  <TdVersion>{historyItem.versionNumber}</TdVersion>
+                  <Td>{historyItem.niceDate}</Td>
+                  <Td>{historyItem.editedBy}</Td>
+                </Tr>
+              )
+            })}
+          </tbody>
+        </Table>
         {selectedVersions.length > 0 && (
-          <Button
-            fullWidth
+          <CompareButton
             className="p-2"
             variant="contained"
             color="primary"
@@ -167,7 +146,7 @@ have chosen."
             {selectedVersions.length == 1 &&
               'Compare selected version with the latest version'}
             {selectedVersions.length == 2 && 'Compare selected versions'}
-          </Button>
+          </CompareButton>
         )}
       </Root>
     </LoadingCompanion>
