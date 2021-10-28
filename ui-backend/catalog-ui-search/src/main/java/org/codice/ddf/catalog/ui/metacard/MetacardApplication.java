@@ -50,6 +50,7 @@ import ddf.catalog.data.Attribute;
 import ddf.catalog.data.AttributeDescriptor;
 import ddf.catalog.data.AttributeRegistry;
 import ddf.catalog.data.AttributeType;
+import ddf.catalog.data.AttributeType.AttributeFormat;
 import ddf.catalog.data.BinaryContent;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.MetacardType;
@@ -379,6 +380,44 @@ public class MetacardApplication implements SparkApplication {
                               (Date) mc.getAttribute(MetacardVersion.VERSIONED_ON).getValue()))
                   .sorted(Comparator.comparing(HistoryResponse::getVersioned))
                   .collect(Collectors.toList());
+          return util.getJson(response);
+        });
+
+    get(
+        "/history/diff/:baseid/:changeid/:storeId",
+        (req, res) -> {
+          String baseId = req.params(":baseid");
+          String changeId = req.params(":changeid");
+          String storeId = req.params(":storeId");
+          Map<AttributeDescriptor, List<Serializable>> base =
+              getNormalMetacardAttributeMap(baseId, storeId);
+          Map<AttributeDescriptor, List<Serializable>> change =
+              getNormalMetacardAttributeMap(changeId, storeId);
+
+          if (base.isEmpty() || change.isEmpty()) {
+            res.status(404);
+            return "[]";
+          }
+          Set<AttributeDescriptor> descriptors = new HashSet<>();
+          descriptors.addAll(base.keySet());
+          descriptors.addAll(change.keySet());
+          Map<String, Object> response = new HashMap<>();
+          List<AttributeDiff> diffs =
+              descriptors
+                  .stream()
+                  .map(att -> AttributeDiff.createDiff(att, base.get(att), change.get(att)))
+                  .filter(Objects::nonNull)
+                  .collect(Collectors.toList());
+          List<String> diffNames = diffs.stream().map(ad -> ad.name).collect(Collectors.toList());
+
+          Map<String, String> matching = new HashMap<>();
+          descriptors
+              .stream()
+              .filter(ad -> !diffNames.contains(ad.getName()))
+              .forEach(
+                  ad -> matching.put(ad.getName(), AttributeDiff.getStringValue(ad, base.get(ad))));
+          response.put("changes", diffs);
+          response.put("matching", matching);
           return util.getJson(response);
         });
 
@@ -1064,6 +1103,27 @@ public class MetacardApplication implements SparkApplication {
             () -> new RuntimeException("Could not find attribute descriptor for: " + attribute));
   }
 
+  private Map<AttributeDescriptor, List<Serializable>> getNormalMetacardAttributeMap(
+      String id, String storeId)
+      throws SourceUnavailableException, UnsupportedQueryException, FederationException {
+    Map<AttributeDescriptor, List<Serializable>> attributes = new HashMap<>();
+    Metacard mcard = util.getMetacardById(id, storeId);
+    if (mcard == null) {
+      return null;
+    }
+    if (mcard.getMetacardType().getName().equals("metacard.version")) {
+      mcard = MetacardVersionImpl.toMetacard(mcard);
+    }
+    Metacard finalMcard = mcard;
+    mcard
+        .getMetacardType()
+        .getAttributeDescriptors()
+        .stream()
+        .filter(ad -> finalMcard.getAttribute(ad.getName()) != null)
+        .forEach(ad -> attributes.put(ad, finalMcard.getAttribute(ad.getName()).getValues()));
+    return attributes;
+  }
+
   protected UpdateResponse patchMetacards(
       List<MetacardChanges> metacardChanges, String subjectIdentifer, Set<String> storeIds)
       throws SourceUnavailableException, IngestException {
@@ -1188,6 +1248,64 @@ public class MetacardApplication implements SparkApplication {
     @Override
     public InputStream openStream() {
       return supplier.get();
+    }
+  }
+
+  public static class AttributeDiff {
+
+    String name;
+    String base;
+    String change;
+
+    private AttributeDiff(String name, String base, String change) {
+      this.name = name;
+      this.base = base;
+      this.change = change;
+    }
+
+    public static String getStringValue(AttributeDescriptor descriptor, List<Serializable> values) {
+      if (values == null) {
+        return null;
+      }
+      if (descriptor.getType().getAttributeFormat().equals(AttributeFormat.BINARY)
+          || descriptor.getType().getAttributeFormat().equals(AttributeFormat.OBJECT)) {
+        return "BINARY";
+      }
+      return values.stream().map(Objects::toString).collect(Collectors.joining(", "));
+    }
+
+    public static AttributeDiff createDiff(
+        AttributeDescriptor descriptor, List<Serializable> baseVal, List<Serializable> changeVal) {
+
+      if (baseVal != null && changeVal != null && baseVal.equals(changeVal)) {
+        return null;
+      }
+      if (descriptor.getType().getAttributeFormat().equals(AttributeFormat.BINARY)
+          && Arrays.equals((byte[]) baseVal.get(0), (byte[]) changeVal.get(0))) {
+        return null;
+      }
+
+      return new AttributeDiff(
+          descriptor.getName(),
+          getStringValue(descriptor, baseVal),
+          getStringValue(descriptor, changeVal));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (!(o instanceof AttributeDiff)) {
+        return false;
+      }
+      AttributeDiff that = (AttributeDiff) o;
+      return name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(name);
     }
   }
 }
