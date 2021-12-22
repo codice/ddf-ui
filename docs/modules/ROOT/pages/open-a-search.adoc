@@ -1,0 +1,16 @@
+:title: Opening an Existing Search
+:type: subUsing
+:status: published
+:parent: Searching {catalog-ui}
+:summary: Creating Searches
+:order: 01
+
+== {title}
+
+.Creating a ((New Search from Basic View))
+. Select the *Options* menu on the search pane.
+. Select *Open*.
+. Select *Search* to run the search immediately.
+.. Optionally, select *Make a copy* to duplicate the search
+.. Select *Rename* to rename the search.
+.. Select *Move to Trash* to remove the search.

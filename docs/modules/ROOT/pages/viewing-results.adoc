@@ -16,11 +16,29 @@ There is no semantic meaning to the colors assigned.
 .Search Results Options
 image::search-results-options.png[search results options]
 
-. On the *Search* tab, select a search from the drop-down list.
 . Perform any of these actions on the results list of the selected search:
 .. *Filter* the result set locally. This does not re-execute the search.
 .. *Sort* (Customize results sorting). The default sort is by title in ascending order.
-.. Toggle results view between *List* and *Gallery*(displays a thumbnail, if applicable).
+.. Select *Layout* options to add additional views of the results set.
+
+
+=== Results List View
+
+. Select one or more results.
+. Select *Manage Attributes* to select fields to view.
+. Hover over a result to view the *Options* menu.
+.. Select *Open Metacard View* to see the attribute fields on the selected result
+.. Select *Export as* to download the result.
+... Select an *export option* from the list to select a download format.
+
+
+////
+
+
+
+
+
+
 
 === Search Result Options
 
@@ -163,3 +181,4 @@ Replace a resource.
 . Select *Overwrite content*.
 . Select *Overwrite*
 . Navigate to the new content via the navigation window.
+////

@@ -18,12 +18,15 @@ and will not be available for sharing.
 ====
 
 {catalog-ui} defaults to the Search view.
-For other views, select the *Navigation* menu image:navigator-icon.png[navigator icon] in the upper-left corner of {catalog-ui} and select the desired view.
+For other views, select the *Navigation* menu image:navigator-icon.png[navigator icon] and select the desired view.
 
 .Navigation Menu
-. <<{using-prefix}using_workspaces,Workspaces>>
+
+. <<{using-prefix}_searching_{ddf-ui},Search>>
+. <<{using-prefix}using_workspaces,Create>>
+. <<{using-prefix}using_workspaces,Open>>
+. <<{using-prefix}using_workspaces,Browse>>
 . <<{using-prefix}uploading,Upload>>
 . <<{using-prefix}sources_view,Sources>>
-. <<{using-prefix}using_search_forms,Search Forms>>
-. <<{using-prefix}using_result_forms,Result Forms>>
+. <<{using-prefix}using_search_forms,Restore>>
 

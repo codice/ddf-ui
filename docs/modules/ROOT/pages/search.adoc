@@ -7,8 +7,8 @@
 
 == {title}
 
-The Search pane has two tabs: *Search* and *Lists*.
+From the Search pane, create a new search or run or modify an existing search.
 
-.Search Pane Tabs
-image::search-pane-tabs.png[]
+.Search Pane
+image::search-pane.png[]
 
