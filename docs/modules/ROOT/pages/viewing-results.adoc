@@ -97,8 +97,6 @@ To remove a result from the active search results, archive it.
 . Select *Archive item(s)*.
 . Select *Archive*.
 
-See <<{using-prefix}hiding_a_result,Hiding a result>>.
-
 ==== Overwriting a Resource
 
 Replace a resource.

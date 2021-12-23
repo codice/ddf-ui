@@ -37,7 +37,7 @@
 . Select *Search* to execute the search.
 . Optionally, enter a name in the *Name* field to save this search.
 
-.Wildcards[[Wildcards]]
+.Wildcards[[_wildcards]]
 * Search using wildcards, such as `Text = foo*` : Returns items containing words like "food", "fool", etc..
 * Wildcards should only be used for single word searches, not for phrases.
 

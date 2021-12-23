@@ -22,11 +22,9 @@ For other views, select the *Navigation* menu image:navigator-icon.png[navigator
 
 .Navigation Menu
 
-. <<{using-prefix}_searching_{ddf-ui},Search>>
-. <<{using-prefix}using_workspaces,Create>>
-. <<{using-prefix}using_workspaces,Open>>
-. <<{using-prefix}using_workspaces,Browse>>
+. <<{using-prefix}searching_intrigue,Search>>
+. <<{using-prefix}creating_a_new_search,Create>>
+. <<{using-prefix}opening_an_existing_search,Open>>
 . <<{using-prefix}uploading,Upload>>
 . <<{using-prefix}sources_view,Sources>>
-. <<{using-prefix}using_search_forms,Restore>>
 
