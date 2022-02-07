@@ -76,6 +76,158 @@ const cqlCapabilityStrings = {
   ],
 } as Record<CapabilityCategoriesType, Array<string>>
 
+const cqlMultipolygonStrings = {
+  geometries: [
+    {
+      input: `(INTERSECTS("anyGeo", 
+      MULTIPOLYGON(
+        ((-0.580634 10.295094,0.577341 -1.188461,-5.041638 -1.100891,-0.580634 10.295094)), 
+        ((0.580634 10.295094,0.577341 -1.188461,-5.041638 -1.100891,0.580634 10.295094)),
+        ((10 10,-10 -10,-10 10,10 10))
+      )))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'poly',
+              polygon: [
+                [-0.580634, 10.295094],
+                [0.577341, -1.188461],
+                [-5.041638, -1.100891],
+                [-0.580634, 10.295094],
+              ],
+              type: 'POLYGON',
+            },
+          },
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'poly',
+              polygon: [
+                [0.580634, 10.295094],
+                [0.577341, -1.188461],
+                [-5.041638, -1.100891],
+                [0.580634, 10.295094],
+              ],
+              type: 'POLYGON',
+            },
+          },
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'poly',
+              polygon: [
+                [10, 10],
+                [-10, -10],
+                [-10, 10],
+                [10, 10],
+              ],
+              type: 'POLYGON',
+            },
+          },
+        ],
+        negated: false,
+        type: 'OR',
+      },
+    },
+    {
+      input: `(INTERSECTS("anyGeo", MULTIPOLYGON(((-0.580634 10.295094,0.577341 -1.188461,-5.041638 -1.100891,-0.580634 10.295094)))))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'poly',
+              polygon: [
+                [-0.580634, 10.295094],
+                [0.577341, -1.188461],
+                [-5.041638, -1.100891],
+                [-0.580634, 10.295094],
+              ],
+              type: 'POLYGON',
+            },
+          },
+        ],
+        negated: false,
+        type: 'OR',
+      },
+    },
+    {
+      input: `(DWITHIN("anyGeo", MULTIPOLYGON(((-0.580634 10.295094,0.577341 -1.188461,-5.041638 -1.100891,-0.580634 10.295094))), 500, meters))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'poly',
+              polygon: [
+                [-0.580634, 10.295094],
+                [0.577341, -1.188461],
+                [-5.041638, -1.100891],
+                [-0.580634, 10.295094],
+              ],
+              type: 'POLYGON',
+            },
+          },
+        ],
+        negated: false,
+        type: 'OR',
+      },
+    },
+    {
+      input: `(INTERSECTS("anyGeo", MULTIPOLYGON(((17.704563951827325 26.80670872544821,26.69962466928798 14.956073177047667,9.280618200554649 15.313020030915167,17.704563951827325 26.80670872544821))))) OR (INTERSECTS("anyGeo", MULTIPOLYGON(((37.62219839763307 22.095010254397405,48.83032960907214 32.5892477581015,50.68645324918305 21.09555906356843,40.19221574547897 17.31192241257309,37.62219839763307 22.095010254397405)))))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'poly',
+              polygon: [
+                [17.704563951827325, 26.80670872544821],
+                [26.69962466928798, 14.956073177047667],
+                [9.280618200554649, 15.313020030915167],
+                [17.704563951827325, 26.80670872544821],
+              ],
+              type: 'POLYGON',
+            },
+          },
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'poly',
+              polygon: [
+                [37.62219839763307, 22.095010254397405],
+                [48.83032960907214, 32.5892477581015],
+                [50.68645324918305, 21.09555906356843],
+                [40.19221574547897, 17.31192241257309],
+                [37.62219839763307, 22.095010254397405],
+              ],
+              type: 'POLYGON',
+            },
+          },
+        ],
+        negated: false,
+        type: 'OR',
+      },
+    },
+  ],
+}
+
 /**
  * Same as above, but this goes beyond just testing functions, it tests the boolean logic
  *
@@ -524,6 +676,26 @@ describe('read & write parity for capabilities, as well as boolean logic', () =>
       expect(cql.write(testFilter)).to.equal(
         `NOT ((("datatype" ILIKE \'Moving Image\') OR ("metadata-content-type" ILIKE \'Moving Image\')))`
       )
+    })
+  })
+  describe('multipolygon cql string read test', () => {
+    cqlMultipolygonStrings.geometries.forEach((capability) => {
+      it(`${capability}`, () => {
+        const filterBuilderClassOutput = cql.read(capability.input)
+        const filtersArray: any[] = []
+
+        filterBuilderClassOutput.filters.forEach((filter) => {
+          if (filter instanceof FilterClass) {
+            const { id, ...newFilter } = filter
+            filtersArray.push(newFilter)
+          }
+        })
+        const { id, ...expectedOutput } = filterBuilderClassOutput
+        expectedOutput.filters = filtersArray
+        expect(expectedOutput, 'Unexpected filter value.').to.deep.equal(
+          capability.output
+        )
+      })
     })
   })
 })

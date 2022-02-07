@@ -416,6 +416,24 @@ function buildTree(postfix: Array<TokenType>): any {
               } as ValueTypes['location'],
               property: propertyToken.text,
             })
+          } else if (valueToken.text.startsWith('MULTIPOLYGON')) {
+            // assume our multipolygon is just a single polygon
+            return new FilterBuilderClass({
+              type: 'OR',
+              filters: CQLUtils.arrayFromPolygonWkt(valueToken.text).map(
+                (poly: any) => {
+                  return new FilterClass({
+                    type: 'GEOMETRY',
+                    value: {
+                      mode: 'poly',
+                      type: 'POLYGON',
+                      polygon: poly,
+                    } as ValueTypes['location'],
+                    property: propertyToken.text,
+                  })
+                }
+              ),
+            })
           }
           return new FilterClass({
             type: 'GEOMETRY',
@@ -453,6 +471,24 @@ function buildTree(postfix: Array<TokenType>): any {
                 polygon: CQLUtils.arrayFromPolygonWkt(valueToken.text),
               } as ValueTypes['location'],
               property: propertyToken.text,
+            })
+          } else if (valueToken.text.startsWith('MULTIPOLYGON')) {
+            // assume our multipolygon is just a single polygon
+            return new FilterBuilderClass({
+              type: 'OR',
+              filters: CQLUtils.arrayFromPolygonWkt(valueToken.text).map(
+                (poly: any) => {
+                  return new FilterClass({
+                    type: 'GEOMETRY',
+                    value: {
+                      mode: 'poly',
+                      type: 'POLYGON',
+                      polygon: poly,
+                    } as ValueTypes['location'],
+                    property: propertyToken.text,
+                  })
+                }
+              ),
             })
           }
           return new FilterClass({
