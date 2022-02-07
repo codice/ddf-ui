@@ -131,7 +131,7 @@ const cqlMultipolygonStrings = {
               ],
               type: 'POLYGON',
             },
-          }
+          },
         ],
         negated: false,
         type: 'OR',
@@ -155,7 +155,7 @@ const cqlMultipolygonStrings = {
               ],
               type: 'POLYGON',
             },
-          }
+          },
         ],
         negated: false,
         type: 'OR',
@@ -167,35 +167,23 @@ const cqlMultipolygonStrings = {
         filters: [
           {
             negated: false,
-            property: "anyGeo",
-            type: "GEOMETRY",
+            property: 'anyGeo',
+            type: 'GEOMETRY',
             value: {
-              mode: "poly",
+              mode: 'poly',
               polygon: [
-                [
-                  -0.580634,
-                  10.295094
-                ],
-                [
-                  0.577341,
-                  -1.188461
-                ],
-                [
-                  -5.041638,
-                  -1.100891
-                ],
-                [
-                  -0.580634,
-                  10.295094
-                ]
+                [-0.580634, 10.295094],
+                [0.577341, -1.188461],
+                [-5.041638, -1.100891],
+                [-0.580634, 10.295094],
               ],
-              type: "POLYGON"
-            }
-          }
+              type: 'POLYGON',
+            },
+          },
         ],
         negated: false,
-        type: "OR"
-      }
+        type: 'OR',
+      },
     },
     {
       input: `(INTERSECTS("anyGeo", MULTIPOLYGON(((17.704563951827325 26.80670872544821,26.69962466928798 14.956073177047667,9.280618200554649 15.313020030915167,17.704563951827325 26.80670872544821))))) OR (INTERSECTS("anyGeo", MULTIPOLYGON(((37.62219839763307 22.095010254397405,48.83032960907214 32.5892477581015,50.68645324918305 21.09555906356843,40.19221574547897 17.31192241257309,37.62219839763307 22.095010254397405)))))`,
@@ -203,70 +191,42 @@ const cqlMultipolygonStrings = {
         filters: [
           {
             negated: false,
-            property: "anyGeo",
-            type: "GEOMETRY",
+            property: 'anyGeo',
+            type: 'GEOMETRY',
             value: {
-              mode: "poly",
+              mode: 'poly',
               polygon: [
-                [
-                  17.704563951827325,
-                  26.80670872544821
-                ],
-                [
-                  26.69962466928798,
-                  14.956073177047667
-                ],
-                [
-                  9.280618200554649,
-                  15.313020030915167
-                ],
-                [
-                  17.704563951827325,
-                  26.80670872544821
-                ],
+                [17.704563951827325, 26.80670872544821],
+                [26.69962466928798, 14.956073177047667],
+                [9.280618200554649, 15.313020030915167],
+                [17.704563951827325, 26.80670872544821],
               ],
-              type: "POLYGON"
-            }
+              type: 'POLYGON',
+            },
           },
           {
             negated: false,
-            property: "anyGeo",
-            type: "GEOMETRY",
+            property: 'anyGeo',
+            type: 'GEOMETRY',
             value: {
-              mode: "poly",
+              mode: 'poly',
               polygon: [
-                [
-                  37.62219839763307,
-                  22.095010254397405
-                ],
-                [
-                  48.83032960907214,
-                  32.5892477581015
-                ],
-                [
-                  50.68645324918305,
-                  21.09555906356843
-                ],
-                [
-                  40.19221574547897,
-                  17.31192241257309
-                ],
-                [
-                  37.62219839763307,
-                  22.095010254397405
-                ]
+                [37.62219839763307, 22.095010254397405],
+                [48.83032960907214, 32.5892477581015],
+                [50.68645324918305, 21.09555906356843],
+                [40.19221574547897, 17.31192241257309],
+                [37.62219839763307, 22.095010254397405],
               ],
-              type: "POLYGON"
-            }
-          }
+              type: 'POLYGON',
+            },
+          },
         ],
         negated: false,
-        type: "OR"
-      }
-    }
-  ]
+        type: 'OR',
+      },
+    },
+  ],
 }
-
 
 /**
  * Same as above, but this goes beyond just testing functions, it tests the boolean logic
