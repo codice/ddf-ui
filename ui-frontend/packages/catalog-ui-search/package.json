@@ -100,7 +100,7 @@
     "utility-types": "3.10.0"
   },
   "dependencies": {
-    "@connexta/icons": "git://github.com/connexta/icons.git#v0.0.3",
+    "@connexta/icons": "git+https://github.com/connexta/icons.git#v0.0.3",
     "@fortawesome/fontawesome-svg-core": "1.2.19",
     "@fortawesome/free-solid-svg-icons": "5.9.0",
     "@fortawesome/react-fontawesome": "0.1.4",
@@ -149,7 +149,7 @@
     "q": "1.5.0",
     "query-string": "6.13.1",
     "react-ace": "6.1.3",
-    "react-beautiful-dnd": "git://github.com/andrewkfiedler/react-beautiful-dnd#5703284223ee68ae8543c3f27495824389d2c82a",
+    "react-beautiful-dnd": "git+https://github.com/andrewkfiedler/react-beautiful-dnd#5703284223ee68ae8543c3f27495824389d2c82a",
     "react-intl": "2.7.2",
     "react-live": "1.11.0",
     "react-redux": "5.0.7",
@@ -157,7 +157,7 @@
     "react-text-mask": "5.4.1",
     "react-use": "15.1.0",
     "react-virtualized-auto-sizer": "^1.0.2",
-    "react-window": "git://github.com/andrewkfiedler/react-window#8a68a2508c79044be33f6f743261b069d7fd9cc1",
+    "react-window": "git+https://github.com/andrewkfiedler/react-window#8a68a2508c79044be33f6f743261b069d7fd9cc1",
     "react-window-components": "0.0.6",
     "redux": "3.5.2",
     "redux-thunk": "2.1.0",

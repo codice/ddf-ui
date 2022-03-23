@@ -1248,9 +1248,9 @@
   resolved "https://registry.yarnpkg.com/@base2/pretty-print-object/-/pretty-print-object-1.0.0.tgz#860ce718b0b73f4009e153541faff2cb6b85d047"
   integrity sha512-4Th98KlMHr5+JkxfcoDT//6vY8vM+iSPrLNpHhRyLx2CFYi8e2RfqPLdpbnpo0Q5lQC5hNB79yes07zb02fvCw==
 
-"@connexta/ace@git://github.com/connexta/ace.git#5e2a9555f3950cb33a23a7b2c1eef861e3614605":
+"@connexta/ace@git+https://github.com/connexta/ace.git#5e2a9555f3950cb33a23a7b2c1eef861e3614605":
   version "1.0.0"
-  resolved "git://github.com/connexta/ace.git#5e2a9555f3950cb33a23a7b2c1eef861e3614605"
+  resolved "git+https://github.com/connexta/ace.git#5e2a9555f3950cb33a23a7b2c1eef861e3614605"
   dependencies:
     "@babel/core" "^7.0.0"
     "@storybook/addon-actions" "5.2.8"
@@ -1335,13 +1335,13 @@
     whatwg-fetch "2.0.4"
     worker-loader "1.1.1"
 
-"@connexta/eslint-config-connexta@git://github.com/connexta/eslint-config-connexta.git#105393617ec845b009b682882c95313ba50144b1":
+"@connexta/eslint-config-connexta@git+https://github.com/connexta/eslint-config-connexta.git#105393617ec845b009b682882c95313ba50144b1":
   version "1.0.0"
-  resolved "git://github.com/connexta/eslint-config-connexta.git#105393617ec845b009b682882c95313ba50144b1"
+  resolved "git+https://github.com/connexta/eslint-config-connexta.git#105393617ec845b009b682882c95313ba50144b1"
 
-"@connexta/eslint-plugin-connexta@git://github.com/connexta/eslint-plugin-connexta.git#9b366b8924c3dbe03aedcfe6d25c8eb3567cc061":
+"@connexta/eslint-plugin-connexta@git+https://github.com/connexta/eslint-plugin-connexta.git#9b366b8924c3dbe03aedcfe6d25c8eb3567cc061":
   version "0.0.0"
-  resolved "git://github.com/connexta/eslint-plugin-connexta.git#9b366b8924c3dbe03aedcfe6d25c8eb3567cc061"
+  resolved "git+https://github.com/connexta/eslint-plugin-connexta.git#9b366b8924c3dbe03aedcfe6d25c8eb3567cc061"
   dependencies:
     requireindex "1.1.0"
 

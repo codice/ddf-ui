@@ -1752,9 +1752,9 @@
     whatwg-fetch "2.0.4"
     worker-loader "1.1.1"
 
-"@connexta/icons@git://github.com/connexta/icons.git#v0.0.3":
+"@connexta/icons@git+https://github.com/connexta/icons.git#v0.0.3":
   version "1.0.0"
-  resolved "git://github.com/connexta/icons.git#b3399dca9e0eafbe4b15babb5ddbfd15d6004648"
+  resolved "git+https://github.com/connexta/icons.git#b3399dca9e0eafbe4b15babb5ddbfd15d6004648"
   dependencies:
     css-loader "0.28.11"
     style-loader "0.21.0"
@@ -16383,9 +16383,9 @@ react-addons-test-utils@15.4.2:
     fbjs "^0.8.4"
     object-assign "^4.1.0"
 
-"react-beautiful-dnd@git://github.com/andrewkfiedler/react-beautiful-dnd#5703284223ee68ae8543c3f27495824389d2c82a":
+"react-beautiful-dnd@git+https://github.com/andrewkfiedler/react-beautiful-dnd#5703284223ee68ae8543c3f27495824389d2c82a":
   version "13.0.0"
-  resolved "git://github.com/andrewkfiedler/react-beautiful-dnd#5703284223ee68ae8543c3f27495824389d2c82a"
+  resolved "git+https://github.com/andrewkfiedler/react-beautiful-dnd#5703284223ee68ae8543c3f27495824389d2c82a"
   dependencies:
     "@babel/runtime" "^7.8.4"
     css-box-model "^1.2.0"
@@ -16805,9 +16805,9 @@ react-window-components@0.0.6:
   dependencies:
     lodash.debounce "^4.0.8"
 
-"react-window@git://github.com/andrewkfiedler/react-window#8a68a2508c79044be33f6f743261b069d7fd9cc1":
+"react-window@git+https://github.com/andrewkfiedler/react-window#8a68a2508c79044be33f6f743261b069d7fd9cc1":
   version "1.8.5"
-  resolved "git://github.com/andrewkfiedler/react-window#8a68a2508c79044be33f6f743261b069d7fd9cc1"
+  resolved "git+https://github.com/andrewkfiedler/react-window#8a68a2508c79044be33f6f743261b069d7fd9cc1"
   dependencies:
     "@babel/runtime" "^7.0.0"
     memoize-one ">=3.1.1 <6"

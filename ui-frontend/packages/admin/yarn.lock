@@ -1335,12 +1335,11 @@
     whatwg-fetch "2.0.4"
     worker-loader "1.1.1"
 
-"@connexta/kanri@0.0.11":
+"@connexta/kanri@connexta/kanri#3218c8bc07b22d1c583c504acbdbb2fb0b099339":
   version "0.0.11"
-  resolved "https://registry.yarnpkg.com/@connexta/kanri/-/kanri-0.0.11.tgz#d9d1d0687db3e928d1e046fd46ab2e7b3cad39a1"
-  integrity sha512-owurAUe2+HprQoKC67pAnglFwOwozw5GlOkSaPMGU5zP+W1zi7A3rubSUBXJTx46WaItnQCGXxmdMVA1if7/iw==
+  resolved "https://codeload.github.com/connexta/kanri/tar.gz/3218c8bc07b22d1c583c504acbdbb2fb0b099339"
   dependencies:
-    "@connexta/logviewer" "git://github.com/connexta/logviewer.git#81784420e24eb19d7584e5ee9a73789518d3e6aa"
+    "@connexta/logviewer" "git+https://github.com/connexta/logviewer.git#81784420e24eb19d7584e5ee9a73789518d3e6aa"
     dropzone "5.5.1"
     formik "1.5.8"
     fuse.js "3.4.5"
@@ -1350,9 +1349,9 @@
     scroll-into-view-if-needed "2.2.20"
     yup "0.27.0"
 
-"@connexta/logviewer@git://github.com/connexta/logviewer.git#81784420e24eb19d7584e5ee9a73789518d3e6aa":
+"@connexta/logviewer@git+https://github.com/connexta/logviewer.git#81784420e24eb19d7584e5ee9a73789518d3e6aa":
   version "0.1.0"
-  resolved "git://github.com/connexta/logviewer.git#81784420e24eb19d7584e5ee9a73789518d3e6aa"
+  resolved "git+https://github.com/connexta/logviewer.git#81784420e24eb19d7584e5ee9a73789518d3e6aa"
   dependencies:
     es6-promise "3.2.1"
     isomorphic-fetch "2.2.1"
