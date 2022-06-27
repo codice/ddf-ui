@@ -1665,9 +1665,9 @@
   dependencies:
     commander "^2.15.1"
 
-"@connexta/ace@git://github.com/connexta/ace.git#5e2a9555f3950cb33a23a7b2c1eef861e3614605":
+"@connexta/ace@git+https://github.com/connexta/ace.git#5e2a9555f3950cb33a23a7b2c1eef861e3614605":
   version "1.0.0"
-  resolved "git://github.com/connexta/ace.git#5e2a9555f3950cb33a23a7b2c1eef861e3614605"
+  resolved "git+https://github.com/connexta/ace.git#5e2a9555f3950cb33a23a7b2c1eef861e3614605"
   dependencies:
     "@babel/core" "^7.0.0"
     "@storybook/addon-actions" "5.2.8"
@@ -20815,9 +20815,9 @@ webworkify@^1.0.2:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/webworkify/-/webworkify-1.5.0.tgz#734ad87a774de6ebdd546e1d3e027da5b8f4a42c"
 
-"wellknown@https://github.com/connexta/wellknown.git#4d9ae612e7e308509ec76400b258c9db1581ea82":
+"wellknown@git+https://github.com/connexta/wellknown.git#4d9ae612e7e308509ec76400b258c9db1581ea82":
   version "0.4.0"
-  resolved "https://github.com/connexta/wellknown.git#4d9ae612e7e308509ec76400b258c9db1581ea82"
+  resolved "git+https://github.com/connexta/wellknown.git#4d9ae612e7e308509ec76400b258c9db1581ea82"
   dependencies:
     concat-stream "~1.5.0"
     minimist "~1.1.2"
