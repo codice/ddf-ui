@@ -52,7 +52,7 @@
   "devDependencies": {
     "@blueprintjs/core": "3.29.0",
     "@blueprintjs/datetime": "3.18.3",
-    "@connexta/ace": "git://github.com/connexta/ace.git#5e2a9555f3950cb33a23a7b2c1eef861e3614605",
+    "@connexta/ace": "git+https://github.com/connexta/ace.git#5e2a9555f3950cb33a23a7b2c1eef861e3614605",
     "@material-ui/core": "4.11.0",
     "@material-ui/icons": "4.9.1",
     "@material-ui/lab": "4.0.0-alpha.56",
@@ -176,7 +176,7 @@
     "usng.js": "0.4.5",
     "uuid": "2.0.2",
     "vis": "4.15.0",
-    "wellknown": "https://github.com/connexta/wellknown.git#4d9ae612e7e308509ec76400b258c9db1581ea82",
+    "wellknown": "git+https://github.com/connexta/wellknown.git#4d9ae612e7e308509ec76400b258c9db1581ea82",
     "wkx": "0.4.5"
   },
   "resolutions": {
