@@ -41,7 +41,7 @@ export const TabNames = {
   Associations: 'Associations',
   Quality: 'Quality',
   Actions: 'Actions',
-  Archive: 'Archive',
+  Archive: 'Delete',
   Overwrite: 'Overwrite',
 }
 
