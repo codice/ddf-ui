@@ -41,7 +41,7 @@ export const TabNames = {
   Associations: 'Associations',
   Quality: 'Quality',
   Actions: 'Actions',
-  Archive: 'Delete',
+  Delete: 'Delete',
   Overwrite: 'Overwrite',
 }
 
@@ -64,7 +64,7 @@ const Tabs = {
   },
   Quality: MetacardQuality,
   Actions: MetacardActions,
-  Archive: ({ result }) => {
+  Delete: ({ result }) => {
     return <MetacardArchive results={[result]} />
   },
   Overwrite: (MetacardOverwrite as unknown) as TabContentType,
