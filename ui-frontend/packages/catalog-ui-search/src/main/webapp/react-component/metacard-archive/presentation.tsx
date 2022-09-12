@@ -43,10 +43,10 @@ const render = (props: Props) => {
           color="secondary"
           onClick={handleArchive}
           data-help="This will remove the item(s) from standard search results.
-To restore archived items, you can click on 'File' in the toolbar,
-and then click 'Restore Archived Items'."
+To restore deleted items, you can click on 'File' in the toolbar,
+and then click 'Restore Deleted Items'."
         >
-          <div className="w-full">Archive item(s)</div>
+          <div className="w-full">Delete item(s)</div>
           <div>
             WARNING: This will remove the item(s) from standard search results.
           </div>
