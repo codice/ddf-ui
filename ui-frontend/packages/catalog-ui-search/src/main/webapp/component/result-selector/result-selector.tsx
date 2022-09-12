@@ -67,9 +67,7 @@ const SelectedResults = ({ selectionInterface }: any) => {
         <Paper>
           <LazyMetacardInteractions
             lazyResults={selectedResultsArray}
-            onClose={() => {
-              close()
-            }}
+            onClose={() => {}}
           />
         </Paper>
       </Popover>
