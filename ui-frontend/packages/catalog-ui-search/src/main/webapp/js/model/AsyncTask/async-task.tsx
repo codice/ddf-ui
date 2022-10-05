@@ -40,6 +40,37 @@ class AsyncTasksClass extends Subscribable<'add' | 'remove' | 'update'> {
     this.add(newTask)
     return newTask
   }
+  create({
+    data,
+    metacardType,
+  }: {
+    data: PlainMetacardPropertiesType
+    metacardType: string
+  }) {
+    const newTask = new CreateTask({ data, metacardType })
+    this.add(newTask)
+    return newTask
+  }
+  save({
+    lazyResult,
+    data,
+    metacardType,
+  }: {
+    data: PlainMetacardPropertiesType
+    lazyResult: LazyQueryResult
+    metacardType: string
+  }) {
+    const existingTask = this.list
+      .filter(SaveTask.isInstanceOf)
+      .find((task) => task.lazyResult === lazyResult)
+    if (existingTask) {
+      existingTask.update({ data })
+      return existingTask
+    }
+    const newTask = new SaveTask({ lazyResult, data, metacardType })
+    this.add(newTask)
+    return newTask
+  }
   createSearch({ data }: { data: PlainMetacardPropertiesType }) {
     const newTask = new CreateSearchTask({ data })
     this.add(newTask)
@@ -68,6 +99,12 @@ class AsyncTasksClass extends Subscribable<'add' | 'remove' | 'update'> {
   }
   isDeleteTask(task: AsyncTask): task is DeleteTask {
     return DeleteTask.isInstanceOf(task)
+  }
+  isCreateTask(task: AsyncTask): task is CreateTask {
+    return CreateTask.isInstanceOf(task)
+  }
+  isSaveTask(task: AsyncTask): task is SaveTask {
+    return SaveTask.isInstanceOf(task)
   }
   isCreateSearchTask(task: AsyncTask): task is CreateSearchTask {
     return CreateSearchTask.isInstanceOf(task)
@@ -152,6 +189,76 @@ export const useRestoreSearchTask = ({ id }: { id?: string }) => {
             )
           })
         : null
+      setTask(relevantTask || null)
+    }
+    const unsub = AsyncTasks.subscribeTo({
+      subscribableThing: 'update',
+      callback: () => {
+        updateTask()
+      },
+    })
+    updateTask()
+    return () => {
+      unsub()
+    }
+  }, [id])
+
+  return task
+}
+
+// allow someone to see if one exists, and sub to updates
+export const useCreateTaskBasedOnParams = () => {
+  const { id } = useParams<{ id?: string }>()
+  const task = useCreateTask({ id })
+  return task
+}
+
+// allow someone to see if one exists, and sub to updates
+export const useCreateTask = ({ id }: { id?: string }) => {
+  const [task, setTask] = React.useState(null as null | CreateTask)
+  useRenderOnAsyncTasksAddOrRemove()
+  React.useEffect(() => {
+    const updateTask = () => {
+      const relevantTask = AsyncTasks.list
+        .filter(CreateTask.isInstanceOf)
+        .find((task) => {
+          return task.data.id === id
+        })
+      setTask(relevantTask || null)
+    }
+    const unsub = AsyncTasks.subscribeTo({
+      subscribableThing: 'update',
+      callback: () => {
+        updateTask()
+      },
+    })
+    updateTask()
+    return () => {
+      unsub()
+    }
+  }, [id])
+
+  return task
+}
+
+// allow someone to see if one exists, and sub to updates
+export const useSaveTaskBasedOnParams = () => {
+  const { id } = useParams<{ id?: string }>()
+  const task = useSaveTask({ id })
+  return task
+}
+
+// allow someone to see if one exists, and sub to updates
+export const useSaveTask = ({ id }: { id?: string }) => {
+  const [task, setTask] = React.useState(null as null | SaveTask)
+  useRenderOnAsyncTasksAddOrRemove()
+  React.useEffect(() => {
+    const updateTask = () => {
+      const relevantTask = AsyncTasks.list
+        .filter(SaveTask.isInstanceOf)
+        .find((task) => {
+          return task.data.id === id
+        })
       setTask(relevantTask || null)
     }
     const unsub = AsyncTasks.subscribeTo({
@@ -342,6 +449,121 @@ class DeleteTask extends AsyncTask {
   }
   static isInstanceOf(task: any): task is DeleteTask {
     return task.constructor === DeleteTask
+  }
+}
+
+class CreateTask extends AsyncTask {
+  metacardType: string
+  data: LazyQueryResult['plain']['metacard']['properties']
+  constructor({
+    data,
+    metacardType,
+  }: {
+    data: LazyQueryResult['plain']['metacard']['properties']
+    metacardType: string
+  }) {
+    super()
+    this.metacardType = metacardType
+    this.data = data
+    this.data.id = Common.generateUUID()
+    setTimeout(() => {
+      this.attemptSave()
+    }, 1000)
+  }
+  attemptSave() {
+    const payload = {
+      id: '1',
+      jsonrpc: '2.0',
+      method: 'ddf.catalog/create',
+      params: {
+        metacards: [
+          {
+            attributes: {
+              ...this.data,
+            },
+            metacardType: this.metacardType,
+          },
+        ],
+      },
+    }
+
+    fetch('/direct', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }).then(() => {
+      this._notifySubscribers('update')
+    })
+  }
+  static isInstanceOf(task: any): task is CreateTask {
+    return task.constructor === CreateTask
+  }
+}
+
+class SaveTask extends AsyncTask {
+  metacardType: string
+  lazyResult: LazyQueryResult
+  data: PlainMetacardPropertiesType
+  controller: AbortController
+  timeoutid: number | undefined
+  constructor({
+    lazyResult,
+    data,
+    metacardType,
+  }: {
+    lazyResult: LazyQueryResult
+    data: PlainMetacardPropertiesType
+    metacardType: string
+  }) {
+    super()
+    this.metacardType = metacardType
+    this.lazyResult = lazyResult
+    this.data = data
+    this.controller = new AbortController()
+    this.attemptSave()
+  }
+  update({ data }: { data: PlainMetacardPropertiesType }) {
+    clearTimeout(this.timeoutid)
+    this.controller.abort()
+    this.data = data
+    this.attemptSave()
+  }
+  attemptSave() {
+    this.controller = new AbortController()
+    this.timeoutid = window.setTimeout(() => {
+      const payload = {
+        id: '1',
+        jsonrpc: '2.0',
+        method: 'ddf.catalog/create',
+        params: {
+          metacards: [
+            {
+              attributes: {
+                ...this.data,
+              },
+              metacardType: this.metacardType,
+            },
+          ],
+        },
+      }
+
+      fetch('/direct', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        signal: this.controller.signal,
+      }).then(() => {
+        this.lazyResult.refreshDataOverNetwork()
+        const unsub = this.lazyResult.subscribeTo({
+          subscribableThing: 'backboneSync',
+          callback: () => {
+            this._notifySubscribers('update')
+            unsub()
+          },
+        })
+      })
+    }, 3000)
+  }
+  static isInstanceOf(task: any): task is SaveTask {
+    return task.constructor === SaveTask
   }
 }
 

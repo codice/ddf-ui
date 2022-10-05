@@ -276,6 +276,20 @@ const AsyncTasksComponent = () => {
                 </div>
               )
             }
+            if (AsyncTasks.isCreateTask(asyncTask)) {
+              return (
+                <div className="bg-black p-2">
+                  Creating '{asyncTask.data.title}'
+                </div>
+              )
+            }
+            if (AsyncTasks.isSaveTask(asyncTask)) {
+              return (
+                <div className="bg-black p-2">
+                  Saving '{asyncTask.data.title}'
+                </div>
+              )
+            }
             return null
           })}
         </div>

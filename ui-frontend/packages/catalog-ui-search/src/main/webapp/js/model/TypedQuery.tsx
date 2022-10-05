@@ -12,13 +12,13 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react'
+import React, { Dispatch, SetStateAction } from 'react'
 import { FilterBuilderClass } from '../../component/filter-builder/filter.structure'
 import { useListenTo } from '../../component/selection-checkbox/useBackbone.hook'
 import { TypedUserInstance } from '../../component/singletons/TypedUser'
 import cql from '../cql'
 import { QueryAttributesType, SortType } from './Query.shared-types'
-const UntypedQuery = require('./Query.js')
+import { Query as UntypedQuery, QueryType } from './Query'
 
 /**
  * Mainly used by lazy query results, since it gets passed a function that adds in the query ref for it
@@ -62,6 +62,13 @@ export type QueryOptions = {
    * Pass a function that returns the sorts to use, allowing such things as substituting ephemeral sorts
    */
   transformSorts?: TransformSortsFunctionType
+  transformCount?: ({
+    originalCount,
+    queryRef,
+  }: {
+    originalCount: number
+    queryRef: Backbone.Model<any>
+  }) => number
   limitToDeleted?: boolean
   limitToHistoric?: boolean
 }
@@ -72,6 +79,9 @@ export const DEFAULT_QUERY_OPTIONS: Readonly<Required<QueryOptions>> = {
   },
   transformFilterTree: ({ originalFilterTree }) => {
     return cql.write(originalFilterTree)
+  },
+  transformCount: ({ originalCount }) => {
+    return originalCount
   },
   transformSorts: ({ originalSorts }) => {
     return originalSorts
@@ -112,13 +122,20 @@ function mixinEphemeralFilter(
 
 export const DEFAULT_USER_QUERY_OPTIONS: Readonly<Required<QueryOptions>> = {
   transformDefaults: ({ originalDefaults }) => {
-    return { ...originalDefaults, ...TypedUserInstance.getQuerySettingsJSON() }
+    return {
+      ...originalDefaults,
+      ...TypedUserInstance.getQuerySettingsJSON(),
+      count: TypedUserInstance.getResultCount(),
+    }
   },
   transformFilterTree: ({ originalFilterTree }) => {
     return cql.write(mixinEphemeralFilter(originalFilterTree))
   },
   transformSorts: ({ originalSorts }) => {
     return TypedUserInstance.getEphemeralSorts() || originalSorts
+  },
+  transformCount: ({ originalCount }) => {
+    return TypedUserInstance.getResultCount() || originalCount
   },
   limitToDeleted: false,
   limitToHistoric: false,
@@ -144,7 +161,7 @@ export const useQuery = ({
 }: {
   attributes?: QueryAttributesType
   options?: QueryOptions
-} = {}) => {
+} = {}): [QueryType, Dispatch<SetStateAction<QueryType>>] => {
   const [query, setQuery] = React.useState(Query(attributes, options))
   return [query, setQuery]
 }
@@ -155,10 +172,10 @@ export const useUserQuery = ({
 }: {
   attributes?: QueryAttributesType
   options?: QueryOptions
-} = {}) => {
+} = {}): [QueryType, Dispatch<SetStateAction<QueryType>>] => {
   const [query, setQuery] = React.useState(UserQuery(attributes, options))
   useListenTo(TypedUserInstance.getPreferences(), 'change:resultCount', () => {
-    query.set('isOutdated', true)
+    query.set('count', TypedUserInstance.getResultCount())
   })
   useListenTo(TypedUserInstance.getPreferences(), 'change:resultFilter', () => {
     query.startSearchFromFirstPage()

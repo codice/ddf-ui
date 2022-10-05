@@ -13,7 +13,7 @@
     "test": "yarn publish:build && ace bundle --env=test && ace test",
     "start:test": "ace start --env=test",
     "storybook": "ace storybook",
-    "build": "node --max_old_space_size=16384 ./node_modules/@connexta/ace/bin.js bundle",
+    "build": "node --max_old_space_size=16384 ./node_modules/@connexta/ace/bin.js bundle --tsTranspileOnly true",
     "build:transpile": "node --max_old_space_size=16384 ./node_modules/@connexta/ace/bin.js bundle --tsTranspileOnly true",
     "postbuild": "yarn publish:build && npm pack ./dist && move-cli catalog-ui-search-5.0.0.tgz dist/catalog-ui-search.tgz && ace package",
     "m2": "yarn install:m2",
@@ -62,6 +62,7 @@
     "@types/enzyme": "3.10.8",
     "@types/enzyme-adapter-react-16": "1.0.2",
     "@types/lodash.debounce": "4.0.6",
+    "@types/lodash.isequalwith": "4.4.7",
     "@types/mocha": "8.0.3",
     "@types/moment-timezone": "0.5.30",
     "@types/react": "16.8.23",
@@ -96,7 +97,7 @@
     "ts-migrate": "^0.1.19",
     "ts-migrate-plugins": "^0.1.19",
     "ts-migrate-server": "^0.1.18",
-    "tslib": "2.2.0",
+    "tslib": "2.4.0",
     "utility-types": "3.10.0"
   },
   "dependencies": {
@@ -141,6 +142,7 @@
     "lodash": "4.17.15",
     "lodash.get": "4.4.2",
     "lodash.debounce": "4.0.8",
+    "lodash.isequalwith": "4.4.0",
     "mt-geo": "1.0.1",
     "openlayers": "4.6.5",
     "plotly.js": "1.16.0",
