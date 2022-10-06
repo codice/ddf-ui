@@ -465,7 +465,7 @@ class CreateTask extends AsyncTask {
     super()
     this.metacardType = metacardType
     this.data = data
-    this.data.id = Common.generateUUID()
+    this.data.id = this.data.id || Common.generateUUID()
     setTimeout(() => {
       this.attemptSave()
     }, 1000)
