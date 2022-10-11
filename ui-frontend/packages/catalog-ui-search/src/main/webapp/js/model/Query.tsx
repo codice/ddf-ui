@@ -32,10 +32,8 @@ import {
 } from '../../component/filter-builder/filter.structure'
 import { downgradeFilterTreeToBasic } from '../../component/query-basic/query-basic.view'
 import {
-  calculateNextIndexForSourceGroupNextPage,
   getConstrainedFinalPageForSourceGroup,
   getCurrentStartAndEndForSourceGroup,
-  getFinalPageForSourceGroup,
   getNextPageForSourceGroup,
   getPreviousPageForSourceGroup,
   hasNextPageForSourceGroup,
@@ -482,10 +480,10 @@ Query.Model = Backbone.AssociatedModel.extend({
         method: 'POST',
         processData: false,
         timeout: properties.timeout,
-        success(model: any, response: any, options: any) {
+        success(_model: any, response: any, options: any) {
           response.options = options
         },
-        error(model: any, response: any, options: any) {
+        error(_model: any, response: any, options: any) {
           if (response.status === 401) {
             const providerUrl = response.responseJSON.url
             const sourceId = response.responseJSON.id
@@ -581,38 +579,6 @@ Query.Model = Backbone.AssociatedModel.extend({
       currentIndexForSourceGroup: this.currentIndexForSourceGroup,
       count: this.get('count'),
     })
-    // const currentStatus = this.get('result')
-    //   ? this.get('result').get('lazyResults').status
-    //   : {}
-    // const harvestedSources = Sources.getHarvested()
-    // const isLocal = (id: any) => {
-    //   return harvestedSources.includes(id)
-    // }
-    // const maxIndexSeenLocal =
-    //   (Object.values(currentStatus)
-    //     .filter((status: any) => isLocal(status.id))
-    //     .reduce((amt: any, status: any) => {
-    //       amt = amt + status.count
-    //       return amt
-    //     }, 0) as number) + this.currentIndexForSourceGroup.local
-    // const maxIndexPossibleLocal = Object.values(currentStatus)
-    //   .filter((status: any) => isLocal(status.id))
-    //   .reduce((amt: number, status: any) => {
-    //     amt = amt + status.hits
-    //     return amt
-    //   }, 0) as number
-    // if (maxIndexSeenLocal <= maxIndexPossibleLocal) {
-    //   return true
-    // }
-
-    // return Object.values(currentStatus)
-    //   .filter((status: any) => !isLocal(status.id))
-    //   .some((status: any) => {
-    //     const maxIndexPossible = status.hits
-    //     const count = status.count
-    //     const maxIndexSeen = count + this.currentIndexForSourceGroup[status.id]
-    //     return maxIndexSeen <= maxIndexPossible
-    //   })
   },
   getNextServerPage() {
     this.setNextIndexForSourceGroupToNextPage(this.getSelectedSources())

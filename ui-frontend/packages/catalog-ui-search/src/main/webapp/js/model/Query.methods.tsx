@@ -13,13 +13,6 @@
  *
  **/
 
-import { isEqualWith } from 'lodash'
-import {
-  FilterBuilderClass,
-  FilterClass,
-  isFilterBuilderClass,
-} from '../../component/filter-builder/filter.structure'
-
 // slowly seperate out methods from Query model (which has a lot of dependencies) to here, where we can import them in a spec and test them
 
 export type IndexForSourceGroupType = {
@@ -350,7 +343,6 @@ export const getConstrainedFinalPageForSourceGroup = ({
   const maxFinalPageIndexForSourceGroup = Math.max(
     ...Object.values(finalPageForSourceGroup)
   )
-  console.log(maxFinalPageIndexForSourceGroup)
   return Object.keys(finalPageForSourceGroup).reduce(
     (blob, sourceName) => {
       if (blob[sourceName] < maxFinalPageIndexForSourceGroup) {
