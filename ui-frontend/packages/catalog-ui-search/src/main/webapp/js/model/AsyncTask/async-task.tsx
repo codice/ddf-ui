@@ -8,6 +8,28 @@ import CQL from '../../cql'
 
 type PlainMetacardPropertiesType = LazyQueryResult['plain']['metacard']['properties']
 
+export const convertToBackendCompatibleForm = ({
+  properties,
+}: {
+  properties: PlainMetacardPropertiesType
+}) => {
+  const duplicatedProperties = JSON.parse(JSON.stringify(properties))
+  Object.keys(duplicatedProperties).forEach((key) => {
+    if (typeof duplicatedProperties[key] !== 'string') {
+      if (duplicatedProperties[key].constructor === Array) {
+        duplicatedProperties[key] = (duplicatedProperties[key] as any[]).map(
+          (value) => {
+            return value.toString()
+          }
+        )
+      } else {
+        duplicatedProperties[key] = duplicatedProperties[key].toString()
+      }
+    }
+  })
+  return duplicatedProperties
+}
+
 type AsyncSubscriptionsType = 'update'
 /**
  *  Provides a singleton for tracking async tasks in the UI
@@ -479,7 +501,7 @@ class CreateTask extends AsyncTask {
         metacards: [
           {
             attributes: {
-              ...this.data,
+              ...convertToBackendCompatibleForm({ properties: this.data }),
             },
             metacardType: this.metacardType,
           },
@@ -538,7 +560,7 @@ class SaveTask extends AsyncTask {
           metacards: [
             {
               attributes: {
-                ...this.data,
+                ...convertToBackendCompatibleForm({ properties: this.data }),
               },
               metacardType: this.metacardType,
             },
