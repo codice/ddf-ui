@@ -591,8 +591,8 @@ class CreateSearchTask extends AsyncTask {
         metacards: [
           {
             attributes: {
-              'metacard-tags': ['query'],
               ...this.data,
+              'metacard-tags': ['query'],
               cql: getCqlForFilterTree(this.data.filterTree),
             },
             metacardType: 'metacard.query',
@@ -648,8 +648,8 @@ class SaveSearchTask extends AsyncTask {
           metacards: [
             {
               attributes: {
-                'metacard-tags': ['query'],
                 ...this.data,
+                'metacard-tags': ['query'],
                 cql: getCqlForFilterTree(this.data.filterTree),
               },
               metacardType: 'metacard.query',
