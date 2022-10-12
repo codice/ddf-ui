@@ -118,6 +118,9 @@ export const TypedUserInstance = {
   canWrite: (result: LazyQueryResult): boolean => {
     return userInstance.canWrite(result.plain.metacard.properties)
   },
+  getResultCount: (): number => {
+    return userInstance.get('user').get('preferences').get('resultCount')
+  },
 }
 
 export function useActingRole<T extends string>(): T {

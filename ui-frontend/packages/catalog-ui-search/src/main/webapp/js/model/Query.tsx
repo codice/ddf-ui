@@ -21,7 +21,6 @@ import Sources from '../../component/singletons/sources-instance'
 const Common = require('../Common.js')
 const announcement = require('../../component/announcement/index.jsx')
 import cql from '../cql'
-const user = require('../../component/singletons/user-instance.js')
 const _merge = require('lodash/merge')
 require('backbone-associations')
 import React from 'react'
@@ -32,10 +31,69 @@ import {
   FilterClass,
 } from '../../component/filter-builder/filter.structure'
 import { downgradeFilterTreeToBasic } from '../../component/query-basic/query-basic.view'
+import {
+  getConstrainedFinalPageForSourceGroup,
+  getCurrentStartAndEndForSourceGroup,
+  getNextPageForSourceGroup,
+  getPreviousPageForSourceGroup,
+  hasNextPageForSourceGroup,
+  hasPreviousPageForSourceGroup,
+  IndexForSourceGroupType,
+  QueryStartAndEndType,
+} from './Query.methods'
 const wreqr = require('../wreqr')
-const Query = {}
 
-function limitToDeleted(cqlFilterTree) {
+export type QueryType = {
+  constructor: (_attributes: any, options: any) => void
+  set: (p1: any, p2?: any) => void
+  toJSON: () => any
+  defaults: () => any
+  resetToDefaults: (overridenDefaults: any) => void
+  applyDefaults: () => void
+  revert: () => void
+  isLocal: () => boolean
+  _handleDeprecatedFederation: (attributes: any) => void
+  initialize: (attributes: any) => void
+  getSelectedSources: () => Array<any>
+  buildSearchData: () => any
+  isOutdated: () => boolean
+  startSearchIfOutdated: () => void
+  updateCqlBasedOnFilterTree: () => void
+  startSearchFromFirstPage: (options?: any, done?: any) => void
+  startSearch: (options?: any, done?: any) => void
+  currentSearches: Array<any>
+  cancelCurrentSearches: () => void
+  clearResults: () => void
+  setSources: (sources: any) => void
+  setColor: (color: any) => void
+  getColor: () => any
+  color: () => any
+  currentIndexForSourceGroup: IndexForSourceGroupType
+  nextIndexForSourceGroup: IndexForSourceGroupType
+  pastIndexesForSourceGroup: Array<IndexForSourceGroupType>
+  getPreviousServerPage: () => void
+  hasPreviousServerPage: () => boolean
+  hasNextServerPage: () => boolean
+  getNextServerPage: () => void
+  getHasFirstServerPage: () => boolean
+  getFirstServerPage: () => void
+  getHasLastServerPage: () => boolean
+  getLastServerPage: () => void
+  resetCurrentIndexForSourceGroup: () => void
+  setNextIndexForSourceGroupToPrevPage: () => void
+  setNextIndexForSourceGroupToNextPage: (sources: string[]) => void
+  getCurrentStartAndEndForSourceGroup: () => QueryStartAndEndType
+  [key: string]: any
+}
+
+export const Query = {} as {
+  Model: {
+    new (..._args: any): QueryType
+  }
+}
+export default Query
+
+function limitToDeleted(cqlFilterTree: any) {
   return new FilterBuilderClass({
     type: 'AND',
     filters: [
@@ -54,7 +112,7 @@ function limitToDeleted(cqlFilterTree) {
   })
 }
 
-function limitToHistoric(cqlFilterTree) {
+function limitToHistoric(cqlFilterTree: any) {
   return new FilterBuilderClass({
     type: 'AND',
     filters: [
@@ -78,21 +136,22 @@ Query.Model = Backbone.AssociatedModel.extend({
     },
   ],
   // override constructor slightly to ensure options are available on the self ref immediately
-  constructor(attributes, options) {
+  constructor(_attributes: any, options: any) {
     if (
       !options ||
       !options.transformDefaults ||
       !options.transformFilterTree ||
-      !options.transformSorts
+      !options.transformSorts ||
+      !options.transformCount
     ) {
       throw new Error(
-        'Options for transformDefaults, transformFilterTree, and transformSorts must be provided'
+        'Options for transformDefaults, transformFilterTree, transformSorts, and transformCount must be provided'
       )
     }
     this.options = options
     return Backbone.AssociatedModel.apply(this, arguments)
   },
-  set(data) {
+  set(data: any) {
     if (
       typeof data === 'object' &&
       data.filterTree !== undefined &&
@@ -107,7 +166,7 @@ Query.Model = Backbone.AssociatedModel.extend({
     }
     return Backbone.AssociatedModel.prototype.set.apply(this, arguments)
   },
-  toJSON(...args) {
+  toJSON(...args: any) {
     const json = Backbone.AssociatedModel.prototype.toJSON.call(this, ...args)
     if (typeof json.filterTree === 'object') {
       json.filterTree = JSON.stringify(json.filterTree)
@@ -146,7 +205,7 @@ Query.Model = Backbone.AssociatedModel.extend({
   /**
    *  Add filterTree in here, since initialize is only run once (and defaults can't have filterTree)
    */
-  resetToDefaults(overridenDefaults) {
+  resetToDefaults(overridenDefaults: any) {
     const defaults = _.omit(
       {
         ...this.defaults(),
@@ -175,14 +234,14 @@ Query.Model = Backbone.AssociatedModel.extend({
   isLocal() {
     return this.get('isLocal')
   },
-  _handleDeprecatedFederation(attributes) {
+  _handleDeprecatedFederation(attributes: any) {
     if (attributes && attributes.federation) {
       console.error(
         'Attempt to set federation on a search.  This attribute is deprecated.  Did you mean to set sources?'
       )
     }
   },
-  initialize(attributes) {
+  initialize(attributes: any) {
     _.bindAll.apply(_, [this].concat(_.functions(this))) // underscore bindAll does not take array arg
     const filterTree = this.get('filterTree')
     if (filterTree && typeof filterTree === 'string') {
@@ -202,7 +261,7 @@ Query.Model = Backbone.AssociatedModel.extend({
     this._handleDeprecatedFederation(attributes)
     this.listenTo(
       this,
-      'change:cql change:filterTree change:sources change:sorts change:spellcheck change:phonetics',
+      'change:cql change:filterTree change:sources change:sorts change:spellcheck change:phonetics change:count',
       () => {
         this.set('isOutdated', true)
       }
@@ -213,7 +272,10 @@ Query.Model = Backbone.AssociatedModel.extend({
         const cleanedUpFilterTree = cql.removeInvalidFilters(
           this.get('filterTree')
         )
-        this.set('filterTree', downgradeFilterTreeToBasic(cleanedUpFilterTree))
+        this.set(
+          'filterTree',
+          downgradeFilterTreeToBasic(cleanedUpFilterTree as any)
+        )
       }
     })
   },
@@ -226,16 +288,16 @@ Query.Model = Backbone.AssociatedModel.extend({
     if (selectedSources.includes('local')) {
       sourceArray = sourceArray
         .concat(Sources.getHarvested())
-        .filter((src) => src !== 'local')
+        .filter((src: any) => src !== 'local')
     }
     if (selectedSources.includes('remote')) {
       sourceArray = sourceArray
         .concat(
           _.pluck(Sources.toJSON(), 'id').filter(
-            (src) => !Sources.getHarvested().includes(src)
+            (src: any) => !Sources.getHarvested().includes(src)
           )
         )
-        .filter((src) => src !== 'remote')
+        .filter((src: any) => src !== 'remote')
     }
     return sourceArray
   },
@@ -243,7 +305,10 @@ Query.Model = Backbone.AssociatedModel.extend({
     const data = this.toJSON()
     data.sources = this.getSelectedSources()
 
-    data.count = user.get('user').get('preferences').get('resultCount')
+    data.count = this.options.transformCount({
+      originalCount: this.get('count'),
+      queryRef: this,
+    })
 
     data.sorts = this.options.transformSorts({
       originalSorts: this.get('sorts'),
@@ -299,12 +364,13 @@ Query.Model = Backbone.AssociatedModel.extend({
       this.set('cql', cql.write(filterTree))
     }
   },
-  startSearchFromFirstPage(options, done) {
+  startSearchFromFirstPage(options: any, done: any) {
     this.updateCqlBasedOnFilterTree()
     this.resetCurrentIndexForSourceGroup()
     this.startSearch(options, done)
   },
-  startSearch(options, done) {
+  startSearch(options: any, done: any) {
+    console.log(this)
     this.trigger('panToShapesExtent')
     this.set('isOutdated', false)
     if (this.get('cql') === '') {
@@ -326,8 +392,8 @@ Query.Model = Backbone.AssociatedModel.extend({
     let selectedSources = data.sources
     const harvestedSources = Sources.getHarvested()
 
-    const isHarvested = (id) => harvestedSources.includes(id)
-    const isFederated = (id) => !harvestedSources.includes(id)
+    const isHarvested = (id: any) => harvestedSources.includes(id)
+    const isFederated = (id: any) => !harvestedSources.includes(id)
     if (options.limitToDeleted) {
       selectedSources = data.sources.filter(isHarvested)
     }
@@ -336,7 +402,7 @@ Query.Model = Backbone.AssociatedModel.extend({
       result.get('lazyResults').reset({
         sorts: this.get('sorts'),
         sources: selectedSources,
-        transformSorts: ({ originalSorts }) => {
+        transformSorts: ({ originalSorts }: any) => {
           return this.options.transformSorts({ originalSorts, queryRef: this })
         },
       })
@@ -380,7 +446,7 @@ Query.Model = Backbone.AssociatedModel.extend({
 
     const federatedSearchesToRun = selectedSources
       .filter(isFederated)
-      .map((source) => ({
+      .map((source: any) => ({
         ...data,
         cql: cqlString,
         srcs: [source],
@@ -414,10 +480,10 @@ Query.Model = Backbone.AssociatedModel.extend({
         method: 'POST',
         processData: false,
         timeout: properties.timeout,
-        success(model, response, options) {
+        success(_model: any, response: any, options: any) {
           response.options = options
         },
-        error(model, response, options) {
+        error(_model: any, response: any, options: any) {
           if (response.status === 401) {
             const providerUrl = response.responseJSON.url
             const sourceId = response.responseJSON.id
@@ -428,7 +494,7 @@ Query.Model = Backbone.AssociatedModel.extend({
                 href: providerUrl,
                 target: '_blank',
                 style: {
-                  color: `${(props) =>
+                  color: `${(props: any) =>
                     readableColor(props.theme.negativeColor)}`,
                 },
               },
@@ -451,7 +517,7 @@ Query.Model = Backbone.AssociatedModel.extend({
   },
   currentSearches: [],
   cancelCurrentSearches() {
-    this.currentSearches.forEach((request) => {
+    this.currentSearches.forEach((request: any) => {
       request.abort('Canceled')
     })
     const result = this.get('result')
@@ -466,9 +532,9 @@ Query.Model = Backbone.AssociatedModel.extend({
       result: undefined,
     })
   },
-  setSources(sources) {
-    const sourceArr = []
-    sources.each((src) => {
+  setSources(sources: any) {
+    const sourceArr = [] as any
+    sources.each((src: any) => {
       if (src.get('available') === true) {
         sourceArr.push(src.get('id'))
       }
@@ -479,7 +545,7 @@ Query.Model = Backbone.AssociatedModel.extend({
       this.set('sources', '')
     }
   },
-  setColor(color) {
+  setColor(color: any) {
     this.set('color', color)
   },
   getColor() {
@@ -489,51 +555,55 @@ Query.Model = Backbone.AssociatedModel.extend({
     return this.get('color')
   },
   getPreviousServerPage() {
-    this.setNextIndexForSourceGroupToPrevPage()
+    this.nextIndexForSourceGroup = getPreviousPageForSourceGroup({
+      currentIndexForSourceGroup: this.currentIndexForSourceGroup,
+      count: this.get('count'),
+    })
+    // this.setNextIndexForSourceGroupToPrevPage()
     this.startSearch()
   },
   /**
    * Much simpler than seeing if a next page exists
    */
   hasPreviousServerPage() {
-    return this.pastIndexesForSourceGroup.length > 0
+    return hasPreviousPageForSourceGroup({
+      currentIndexForSourceGroup: this.currentIndexForSourceGroup,
+    })
   },
   hasNextServerPage() {
-    const currentStatus = this.get('result')
-      ? this.get('result').get('lazyResults').status
-      : {}
-    const harvestedSources = Sources.getHarvested()
-    const isLocal = (id) => {
-      return harvestedSources.includes(id)
-    }
-    const maxIndexSeenLocal =
-      Object.values(currentStatus)
-        .filter((status) => isLocal(status.id))
-        .reduce((amt, status) => {
-          amt = amt + status.count
-          return amt
-        }, 0) + this.currentIndexForSourceGroup.local
-    const maxIndexPossibleLocal = Object.values(currentStatus)
-      .filter((status) => isLocal(status.id))
-      .reduce((amt, status) => {
-        amt = amt + status.hits
-        return amt
-      }, 0)
-    if (maxIndexSeenLocal <= maxIndexPossibleLocal) {
-      return true
-    }
-
-    return Object.values(currentStatus)
-      .filter((status) => !isLocal(status.id))
-      .some((status) => {
-        const maxIndexPossible = status.hits
-        const count = status.count
-        const maxIndexSeen = count + this.currentIndexForSourceGroup[status.id]
-        return maxIndexSeen <= maxIndexPossible
-      })
+    return hasNextPageForSourceGroup({
+      queryStatus: this.get('result')?.get('lazyResults')?.status,
+      isLocal: (id) => {
+        return Sources.getHarvested().includes(id)
+      },
+      currentIndexForSourceGroup: this.currentIndexForSourceGroup,
+      count: this.get('count'),
+    })
   },
   getNextServerPage() {
     this.setNextIndexForSourceGroupToNextPage(this.getSelectedSources())
+    this.startSearch()
+  },
+  getHasFirstServerPage() {
+    // so technically always "true" but what we really mean is, are we not on page 1 already
+    return this.hasPreviousServerPage()
+  },
+  getFirstServerPage() {
+    this.startSearchFromFirstPage()
+  },
+  getHasLastServerPage() {
+    // so technically always "true" but what we really mean is, are we not on last page already
+    return this.hasNextServerPage()
+  },
+  getLastServerPage() {
+    this.nextIndexForSourceGroup = getConstrainedFinalPageForSourceGroup({
+      queryStatus: this.get('result')?.get('lazyResults')?.status,
+      isLocal: (id) => {
+        return Sources.getHarvested().includes(id)
+      },
+      count: this.get('count'),
+    })
+    console.log(this.nextIndexForSourceGroup)
     this.startSearch()
   },
   resetCurrentIndexForSourceGroup() {
@@ -552,7 +622,7 @@ Query.Model = Backbone.AssociatedModel.extend({
    */
   setNextIndexForSourceGroupToPrevPage() {
     if (this.pastIndexesForSourceGroup.length > 0) {
-      this.nextIndexForSourceGroup = this.pastIndexesForSourceGroup.pop()
+      this.nextIndexForSourceGroup = this.pastIndexesForSourceGroup.pop() || {}
     } else {
       console.error('this should not happen')
     }
@@ -560,57 +630,21 @@ Query.Model = Backbone.AssociatedModel.extend({
   /**
    * Update the next index to be the next page
    */
-  setNextIndexForSourceGroupToNextPage(sources) {
+  setNextIndexForSourceGroupToNextPage(sources: string[]) {
     this.pastIndexesForSourceGroup.push(this.nextIndexForSourceGroup)
-    this.nextIndexForSourceGroup = this._calculateNextIndexForSourceGroupNextPage(
-      sources
-    )
-  },
-  /**
-   * Get what the next index should be for going forward
-   */
-  _calculateNextIndexForSourceGroupNextPage(sources) {
-    const harvestedSources = Sources.getHarvested()
-    const isLocal = (id) => {
-      return harvestedSources.includes(id)
-    }
-    const federatedSources = sources.filter((id) => {
-      return !isLocal(id)
-    })
-    const currentStatus = this.get('result')
-      ? this.get('result').get('lazyResults').status
-      : {}
-
-    const maxLocalStart = Math.max(
-      1,
-      Object.values(currentStatus)
-        .filter((status) => isLocal(status.id))
-        .filter((status) => status.hits !== undefined)
-        .reduce((blob, status) => {
-          return blob + status.hits
-        }, 1)
-    )
-    return Object.values(currentStatus).reduce(
-      (blob, status) => {
-        if (isLocal(status.id)) {
-          blob['local'] = Math.min(maxLocalStart, blob['local'] + status.count)
-        } else {
-          blob[status.id] = Math.min(
-            status.hits !== undefined ? status.hits + 1 : 1,
-            blob[status.id] + status.count
-          )
-        }
-        return blob
+    this.nextIndexForSourceGroup = getNextPageForSourceGroup({
+      sources,
+      currentIndexForSourceGroup: this.currentIndexForSourceGroup,
+      count: this.get('count'),
+      isLocal: (id) => {
+        return Sources.getHarvested().includes(id)
       },
-      {
-        local: 1,
-        ...federatedSources.reduce((blob, id) => {
-          blob[id] = 1
-          return blob
-        }, {}),
-        ...this.currentIndexForSourceGroup,
-      }
-    )
+    })
   },
-})
-module.exports = Query
+  getCurrentStartAndEndForSourceGroup() {
+    return getCurrentStartAndEndForSourceGroup({
+      currentIndexForSourceGroup: this.currentIndexForSourceGroup,
+      queryStatus: this.get('result')?.get('lazyResults')?.status,
+    })
+  },
+} as QueryType)

@@ -23,9 +23,10 @@ import Phonetics from './phonetics'
 import Spellcheck from './spellcheck'
 import { hot } from 'react-hot-loader'
 import { Memo } from '../memo/memo'
+import { QueryType } from '../../js/model/Query'
 
 type Props = {
-  model: Backbone.Model
+  model: QueryType
 }
 
 /**

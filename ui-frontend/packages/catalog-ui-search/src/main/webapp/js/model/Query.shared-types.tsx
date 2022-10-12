@@ -24,5 +24,6 @@ export type QueryAttributesType = {
   filterTree?: FilterBuilderClass
   sources?: string[]
   sorts?: SortType[]
+  count?: number
   [key: string]: any // slowly build out the proper type, then remove this (leave for now so we don't accidentally leave something off)
 }

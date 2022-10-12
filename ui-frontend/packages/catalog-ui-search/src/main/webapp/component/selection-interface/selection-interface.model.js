@@ -16,7 +16,7 @@
 const _ = require('underscore')
 const Backbone = require('backbone')
 const Metacard = require('../../js/model/Metacard.js')
-const QueryModel = require('../../js/model/Query.js')
+import { Query as QueryModel } from '../../js/model/Query'
 const QueryResponse = require('../../js/model/QueryResponse.js')
 const QueryResult = require('../../js/model/QueryResult.js')
 

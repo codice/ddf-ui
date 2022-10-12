@@ -19,7 +19,8 @@ import {
   getRandomId,
   Option,
 } from './boolean-search-utils'
-import { IconButton, InputProps } from '@material-ui/core'
+import IconButton from '@material-ui/core/IconButton'
+import { InputProps } from '@material-ui/core/Input'
 import ClearIcon from '@material-ui/icons/Clear'
 import SearchIcon from '@material-ui/icons/Search'
 const properties = require('../../js/properties.js')

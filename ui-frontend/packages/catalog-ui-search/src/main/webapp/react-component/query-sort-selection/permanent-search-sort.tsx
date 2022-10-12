@@ -2,9 +2,10 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import SortSelections from './sort-selections'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
+import { QueryType } from '../../js/model/Query'
 
 type Props = {
-  model: Backbone.Model
+  model: QueryType
 }
 
 /**
