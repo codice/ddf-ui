@@ -21,8 +21,8 @@ import styled from 'styled-components'
 import { readableColor } from 'polished'
 import Button from '@material-ui/core/Button'
 
-import withListenTo from '../../react-component/backbone-container'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 
 const Root = styled.div`
   overflow: auto;
@@ -208,134 +208,134 @@ const mapOverwriteModelToState = (overwriteModel: any) => {
   return currentState
 }
 
-class MetacardOverwrite extends React.Component<any, any> {
-  model: undefined
-  lazyResult = undefined as undefined | LazyQueryResult
-  dropzoneElement = undefined as any
-  dropzone = undefined as any
-  constructor(props: any) {
-    super(props)
-    this.state = defaultState
-    this.lazyResult = props.result
-    this.dropzoneElement = React.createRef()
+const getOverwriteModel = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
+  if (!lazyResult) {
+    return
   }
-
-  componentDidMount() {
-    if (!this.lazyResult) {
-      return
-    }
-    const overrides = {
-      'security.access-administrators':
-        this.lazyResult.plain.metacard.properties[
-          'security.access-administrators'
-        ] || [],
-      'security.access-groups':
-        this.lazyResult.plain.metacard.properties['security.access-groups'] ||
-        [],
-      'security.access-groups-read':
-        this.lazyResult.plain.metacard.properties[
-          'security.access-groups-read'
-        ] || [],
-      'security.access-individuals':
-        this.lazyResult.plain.metacard.properties[
-          'security.access-individuals'
-        ] || [],
-      'security.access-individuals-read':
-        this.lazyResult.plain.metacard.properties[
-          'security.access-individuals-read'
-        ] || [],
-    } as {
-      [key: string]: any
-    }
-    this.dropzone = new Dropzone(this.dropzoneElement.current, {
-      paramName: 'parse.resource', //required to parse multipart body
-      url: './internal/catalog/' + this.lazyResult.plain.id,
-      maxFilesize: 5000000, //MB
-      method: 'put',
-      sending(_file: any, _xhr: any, formData: any) {
-        Object.keys(overrides).forEach((attribute) => {
-          overrides[attribute].forEach((value: any) => {
-            formData.append('parse.' + attribute, value)
-          })
-        })
-      },
-    })
-    this.trackOverwrite()
-    this.setupEventListeners()
-    this.setState(mapOverwriteModelToState(this.getOverwriteModel()))
-  }
-
-  render() {
-    const Component = Stages[this.state.stage]
-    return (
-      <Root>
-        <div style={{ display: 'none' }} ref={this.dropzoneElement} />
-        <Component
-          {...this.state}
-          archive={() => this.archive()}
-          startOver={() => this.startOver()}
-        />
-      </Root>
-    )
-  }
-
-  getOverwriteModel() {
-    if (!this.lazyResult) {
-      return
-    }
-    return OverwritesInstance.get(this.lazyResult.plain.id)
-  }
-
-  trackOverwrite() {
-    if (!this.getOverwriteModel() || !this.lazyResult) {
-      OverwritesInstance.add({
-        id: this.lazyResult?.plain.id,
-        dropzone: this.dropzone,
-        result: this.lazyResult,
-      })
-    }
-  }
-
-  setupEventListeners() {
-    const overwriteModel = this.getOverwriteModel()
-    this.props.listenTo(
-      overwriteModel,
-      'change:percentage change:sending change:error change:success',
-      () => this.handleChange()
-    )
-  }
-
-  handleChange() {
-    const overwriteModel = this.getOverwriteModel()
-    this.setState(mapOverwriteModelToState(overwriteModel))
-  }
-
-  archive() {
-    this.props.listenTo(
-      ConfirmationView.generateConfirmation({
-        prompt: 'Are you sure you want to overwrite the content?',
-        no: 'Cancel',
-        yes: 'Overwrite',
-      }),
-      'change:choice',
-      (confirmation: any) => {
-        if (confirmation.get('choice')) {
-          this.dropzoneElement.current.click()
-        }
-      }
-    )
-  }
-
-  startOver() {
-    OverwritesInstance.remove(this.lazyResult?.plain.id)
-    this.trackOverwrite()
-    this.setupEventListeners()
-    this.setState(defaultState)
-  }
-
-  componentWillUnmount() {
-    OverwritesInstance.removeIfUnused(this.lazyResult?.plain.id)
-  }
+  return OverwritesInstance.get(lazyResult.plain.id)
 }
 
-export default withListenTo(MetacardOverwrite)
+export const MetacardOverwrite = ({
+  lazyResult,
+}: {
+  lazyResult: LazyQueryResult
+}) => {
+  const [overwriteModel, setOverwriteModel] = React.useState<any>(null)
+  const [dropzone, setDropzone] = React.useState<any>(null)
+  const [
+    dropzoneElement,
+    setDropdownElement,
+  ] = React.useState<HTMLDivElement | null>(null)
+  const { listenTo, stopListening } = useBackbone()
+  const [state, setState] = React.useState(defaultState)
+
+  React.useEffect(() => {
+    return () => {
+      OverwritesInstance.removeIfUnused(lazyResult?.plain.id)
+    }
+  }, [])
+
+  React.useEffect(() => {
+    if (lazyResult && dropzoneElement) {
+      const overrides = {
+        'security.access-administrators':
+          lazyResult.plain.metacard.properties[
+            'security.access-administrators'
+          ] || [],
+        'security.access-groups':
+          lazyResult.plain.metacard.properties['security.access-groups'] || [],
+        'security.access-groups-read':
+          lazyResult.plain.metacard.properties['security.access-groups-read'] ||
+          [],
+        'security.access-individuals':
+          lazyResult.plain.metacard.properties['security.access-individuals'] ||
+          [],
+        'security.access-individuals-read':
+          lazyResult.plain.metacard.properties[
+            'security.access-individuals-read'
+          ] || [],
+      } as {
+        [key: string]: any
+      }
+      setDropzone(
+        new Dropzone(dropzoneElement, {
+          paramName: 'parse.resource', //required to parse multipart body
+          url: './internal/catalog/' + lazyResult.plain.id,
+          maxFilesize: 5000000, //MB
+          method: 'put',
+          sending(_file: any, _xhr: any, formData: any) {
+            Object.keys(overrides).forEach((attribute) => {
+              overrides[attribute].forEach((value: any) => {
+                formData.append('parse.' + attribute, value)
+              })
+            })
+          },
+        })
+      )
+    }
+  }, [dropzoneElement, lazyResult])
+
+  React.useEffect(() => {
+    if (dropzone && lazyResult && !getOverwriteModel({ lazyResult })) {
+      OverwritesInstance.add({
+        id: lazyResult?.plain.id,
+        dropzone: dropzone,
+        result: lazyResult,
+      })
+      setOverwriteModel(getOverwriteModel({ lazyResult }))
+    }
+  }, [dropzone, lazyResult])
+
+  React.useEffect(() => {
+    if (overwriteModel) {
+      setState(mapOverwriteModelToState(overwriteModel))
+      listenTo(
+        overwriteModel,
+        'change:percentage change:sending change:error change:success',
+        () => {
+          setState(mapOverwriteModelToState(overwriteModel))
+        }
+      )
+    }
+    return () => {
+      if (overwriteModel) {
+        stopListening(overwriteModel)
+      }
+    }
+  }, [overwriteModel])
+
+  const Component = Stages[state.stage]
+  return (
+    <Root>
+      <div style={{ display: 'none' }} ref={setDropdownElement} />
+      <Component
+        {...state}
+        archive={() => {
+          listenTo(
+            ConfirmationView.generateConfirmation({
+              prompt: 'Are you sure you want to overwrite the content?',
+              no: 'Cancel',
+              yes: 'Overwrite',
+            }),
+            'change:choice',
+            (confirmation: any) => {
+              if (confirmation.get('choice')) {
+                dropzoneElement?.click()
+              }
+            }
+          )
+        }}
+        startOver={() => {
+          OverwritesInstance.remove(lazyResult?.plain.id)
+          OverwritesInstance.add({
+            id: lazyResult?.plain.id,
+            dropzone: dropzone,
+            result: lazyResult,
+          })
+          setOverwriteModel(getOverwriteModel({ lazyResult }))
+          setState(defaultState)
+        }}
+      />
+    </Root>
+  )
+}

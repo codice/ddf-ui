@@ -16,7 +16,7 @@
 import MetacardAssociationsView from '../../metacard-associations/metacard-associations.view'
 import MetacardPreviewView from '../../metacard-preview/metacard-preview.view'
 import React from 'react'
-import MetacardOverwrite from '../../metacard-overwrite/metacard-overwrite.view'
+import { MetacardOverwrite } from '../../metacard-overwrite/metacard-overwrite.view'
 import MetacardArchive from '../../../react-component/metacard-archive'
 import MetacardActions from '../../../react-component/metacard-actions'
 import MetacardQuality from '../../../react-component/metacard-quality'
@@ -67,7 +67,9 @@ const Tabs = {
   Delete: ({ result }) => {
     return <MetacardArchive results={[result]} />
   },
-  Overwrite: (MetacardOverwrite as unknown) as TabContentType,
+  Overwrite: ({ result }) => {
+    return <MetacardOverwrite lazyResult={result} />
+  },
 } as {
   [key: string]: TabContentType
 }
