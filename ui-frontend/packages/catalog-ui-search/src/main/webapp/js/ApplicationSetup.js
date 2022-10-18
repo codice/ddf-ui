@@ -166,7 +166,6 @@ require('@connexta/icons/icons/codice.font')
 require('./MediaQueries.js')
 require('./Theming.js')
 require('../component/singletons/session-auto-renew.js')
-require('./SessionTimeout.js')
 
 $(window.document).ready(() => {
   window.document.title = properties.customBranding + ' ' + properties.product

@@ -49,7 +49,10 @@ import CancelDrawing from './cancel-drawing'
 import { PermissiveComponentType } from '../../typescript'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { Elevations } from '../theme/theme'
-import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import {
+  useBackbone,
+  useListenTo,
+} from '../selection-checkbox/useBackbone.hook'
 import {
   AsyncTasks,
   useRenderOnAsyncTasksAddOrRemove,
@@ -57,6 +60,10 @@ import {
 import useSnack from '../hooks/useSnack'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import { BaseProps } from '../button/expanding-button'
+import { useDialogState } from '../hooks/useDialogState'
+import SessionTimeout from '../../react-component/session-timeout'
+const sessionTimeoutModel = require('../singletons/session-timeout.js')
+
 export const handleBase64EncodedImages = (url: string) => {
   if (url && url.startsWith('data:')) {
     return url
@@ -828,6 +835,28 @@ const useTopLevelAppContext = () => {
   return topLevelAppContext
 }
 
+const SessionTimeoutComponent = () => {
+  const sessionTimeoutDialogState = useDialogState()
+
+  useListenTo(sessionTimeoutModel, 'change:showPrompt', () => {
+    if (sessionTimeoutModel.get('showPrompt')) {
+      sessionTimeoutDialogState.handleClick()
+    } else {
+      sessionTimeoutDialogState.handleClose()
+    }
+  })
+
+  return (
+    <sessionTimeoutDialogState.MuiDialogComponents.Dialog
+      {...sessionTimeoutDialogState.MuiDialogProps}
+      disableEscapeKeyDown
+      disableBackdropClick
+    >
+      <SessionTimeout />
+    </sessionTimeoutDialogState.MuiDialogComponents.Dialog>
+  )
+}
+
 const App = ({
   RouteInformation,
   NotificationsComponent,
@@ -849,6 +878,7 @@ const App = ({
           <GlobalStyles />
           <CancelDrawing />
           <SystemUsageModal />
+          <SessionTimeoutComponent />
           <Grid
             container
             alignItems="center"
