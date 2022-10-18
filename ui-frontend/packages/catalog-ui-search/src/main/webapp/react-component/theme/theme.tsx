@@ -63,7 +63,6 @@ const screenSizes = {
 
 const zIndexes = {
   zIndexMenubar: 101,
-  zIndexLightbox: 101,
   zIndexLoadingCompanion: 101,
   zIndexSlideout: 103,
   zIndexContent: 101,
