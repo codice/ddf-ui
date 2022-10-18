@@ -276,12 +276,14 @@ export const MetacardOverwrite = ({
   }, [dropzoneElement, lazyResult])
 
   React.useEffect(() => {
-    if (dropzone && lazyResult && !getOverwriteModel({ lazyResult })) {
-      OverwritesInstance.add({
-        id: lazyResult?.plain.id,
-        dropzone: dropzone,
-        result: lazyResult,
-      })
+    if (dropzone && lazyResult) {
+      if (!getOverwriteModel({ lazyResult })) {
+        OverwritesInstance.add({
+          id: lazyResult?.plain.id,
+          dropzone: dropzone,
+          result: lazyResult,
+        })
+      }
       setOverwriteModel(getOverwriteModel({ lazyResult }))
     }
   }, [dropzone, lazyResult])
@@ -289,19 +291,19 @@ export const MetacardOverwrite = ({
   React.useEffect(() => {
     if (overwriteModel) {
       setState(mapOverwriteModelToState(overwriteModel))
-      listenTo(
-        overwriteModel,
-        'change:percentage change:sending change:error change:success',
-        () => {
-          setState(mapOverwriteModelToState(overwriteModel))
+      const callback = () => {
+        setState(mapOverwriteModelToState(overwriteModel))
+      }
+      const eventString =
+        'change:percentage change:sending change:error change:success'
+      listenTo(overwriteModel, eventString, callback)
+      return () => {
+        if (overwriteModel) {
+          stopListening(overwriteModel, eventString, callback)
         }
-      )
-    }
-    return () => {
-      if (overwriteModel) {
-        stopListening(overwriteModel)
       }
     }
+    return () => {}
   }, [overwriteModel])
 
   const Component = Stages[state.stage]
