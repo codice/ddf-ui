@@ -174,7 +174,10 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
         >
           <MoreIcon />
         </Button>
-        <Popover {...metacardInteractionMenuState.MuiPopoverProps}>
+        <Popover
+          {...metacardInteractionMenuState.MuiPopoverProps}
+          keepMounted={true}
+        >
           <Paper>
             <LazyMetacardInteractions
               lazyResults={[lazyResult]}

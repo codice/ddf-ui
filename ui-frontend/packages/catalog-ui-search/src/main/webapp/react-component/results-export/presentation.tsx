@@ -56,7 +56,7 @@ const ResultsExport = (props: Props) => {
   } = props
 
   return (
-    <Root>
+    <Root style={{ minWidth: '400px' }}>
       <div data-id="export-format-select" className="export-option">
         <p>Export Format:</p>
         <Dropdown label={selectedFormat}>

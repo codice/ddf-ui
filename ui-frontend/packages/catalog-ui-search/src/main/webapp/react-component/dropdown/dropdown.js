@@ -90,7 +90,7 @@ const Area = styled.div`
   box-shadow: 0px 0px 2px 1px rgba(255, 255, 255, 0.4),
     2px 2px 10px 2px rgba(0, 0, 0, 0.4);
   max-width: calc(100vw - 40px);
-  max-height: 50vh;
+  max-height: 40vh;
 `
 
 const stopPropagation = (e) => e.stopPropagation()
