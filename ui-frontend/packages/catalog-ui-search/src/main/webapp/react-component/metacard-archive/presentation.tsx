@@ -18,9 +18,10 @@ import * as React from 'react'
 import styled from 'styled-components'
 import LoadingCompanion from '../loading-companion'
 import Button from '@material-ui/core/Button'
+import { useDialogState } from '../../component/hooks/useDialogState'
 type Props = {
-  handleArchive: () => void
-  handleRestore: () => void
+  onArchiveConfirm: () => Promise<void>
+  onRestoreConfirm: () => Promise<void>
   isDeleted: boolean
   loading: boolean
 }
@@ -32,16 +33,70 @@ const SubText = styled.span`
 `
 
 const render = (props: Props) => {
-  const { handleArchive, handleRestore, isDeleted, loading } = props
+  const { onArchiveConfirm, onRestoreConfirm, isDeleted, loading } = props
+  const archiveDialogState = useDialogState()
+  const restoreDialogState = useDialogState()
   return (
     <LoadingCompanion loading={loading}>
+      <archiveDialogState.MuiDialogComponents.Dialog
+        {...archiveDialogState.MuiDialogProps}
+      >
+        <archiveDialogState.MuiDialogComponents.DialogTitle>
+          Are you sure you want to delete?
+          <div>
+            Doing so will remove the item(s) from future search results.
+          </div>
+        </archiveDialogState.MuiDialogComponents.DialogTitle>
+        <archiveDialogState.MuiDialogComponents.DialogActions>
+          <Button
+            onClick={() => {
+              archiveDialogState.handleClose()
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              archiveDialogState.handleClose()
+              onArchiveConfirm()
+            }}
+          >
+            Delete
+          </Button>
+        </archiveDialogState.MuiDialogComponents.DialogActions>
+      </archiveDialogState.MuiDialogComponents.Dialog>
+      <archiveDialogState.MuiDialogComponents.Dialog
+        {...restoreDialogState.MuiDialogProps}
+      >
+        <archiveDialogState.MuiDialogComponents.DialogTitle>
+          Are you sure you want to restore? Doing so will include the item(s) in
+          future search results.
+        </archiveDialogState.MuiDialogComponents.DialogTitle>
+        <archiveDialogState.MuiDialogComponents.DialogActions>
+          <Button
+            onClick={() => {
+              restoreDialogState.handleClose()
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              restoreDialogState.handleClose()
+              onRestoreConfirm()
+            }}
+          >
+            Restore
+          </Button>
+        </archiveDialogState.MuiDialogComponents.DialogActions>
+      </archiveDialogState.MuiDialogComponents.Dialog>
       {!isDeleted ? (
         <Button
+          {...archiveDialogState.MuiButtonProps}
           data-id="archive-items-button"
           fullWidth
           variant="contained"
           color="secondary"
-          onClick={handleArchive}
           data-help="This will remove the item(s) from standard search results.
 To restore deleted items, you can click on 'File' in the toolbar,
 and then click 'Restore Deleted Items'."
@@ -53,10 +108,10 @@ and then click 'Restore Deleted Items'."
         </Button>
       ) : (
         <Button
+          {...restoreDialogState.MuiButtonProps}
           fullWidth
           variant="contained"
           color="primary"
-          onClick={handleRestore}
           data-help="This will restore the item(s) to standard search results."
         >
           <div>Restore item(s)</div>
