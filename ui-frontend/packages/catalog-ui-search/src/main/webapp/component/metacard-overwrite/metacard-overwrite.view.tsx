@@ -13,16 +13,19 @@
  *
  **/
 
-const ConfirmationView = require('../confirmation/confirmation.view.js')
 const Dropzone = require('dropzone')
 const OverwritesInstance = require('../singletons/overwrites-instance.js')
 import React from 'react'
 import styled from 'styled-components'
 import { readableColor } from 'polished'
 import Button from '@material-ui/core/Button'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogTitle from '@material-ui/core/DialogTitle'
 
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import { useDialogState } from '../hooks/useDialogState'
 
 const Root = styled.div`
   overflow: auto;
@@ -220,6 +223,7 @@ export const MetacardOverwrite = ({
 }: {
   lazyResult: LazyQueryResult
 }) => {
+  const dialogState = useDialogState()
   const [overwriteModel, setOverwriteModel] = React.useState<any>(null)
   const [dropzone, setDropzone] = React.useState<any>(null)
   const [
@@ -310,22 +314,32 @@ export const MetacardOverwrite = ({
   return (
     <Root>
       <div style={{ display: 'none' }} ref={setDropdownElement} />
+      <Dialog {...dialogState.MuiDialogProps}>
+        <DialogTitle>
+          Are you sure you want to overwrite the content?
+        </DialogTitle>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              dialogState.handleClose()
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              dialogState.handleClose()
+              dropzoneElement?.click()
+            }}
+          >
+            Overwrite
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Component
         {...state}
         archive={() => {
-          listenTo(
-            ConfirmationView.generateConfirmation({
-              prompt: 'Are you sure you want to overwrite the content?',
-              no: 'Cancel',
-              yes: 'Overwrite',
-            }),
-            'change:choice',
-            (confirmation: any) => {
-              if (confirmation.get('choice')) {
-                dropzoneElement?.click()
-              }
-            }
-          )
+          dialogState.handleClick()
         }}
         startOver={() => {
           OverwritesInstance.remove(lazyResult?.plain.id)
