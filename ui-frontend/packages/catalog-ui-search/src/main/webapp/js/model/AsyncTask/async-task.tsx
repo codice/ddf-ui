@@ -8,10 +8,14 @@ import CQL from '../../cql'
 
 type PlainMetacardPropertiesType = LazyQueryResult['plain']['metacard']['properties']
 
+type MinimalPropertySet = Partial<PlainMetacardPropertiesType> & {
+  title: PlainMetacardPropertiesType['title']
+}
+
 export const convertToBackendCompatibleForm = ({
   properties,
 }: {
-  properties: PlainMetacardPropertiesType
+  properties: MinimalPropertySet
 }) => {
   const duplicatedProperties = JSON.parse(JSON.stringify(properties))
   Object.keys(duplicatedProperties).forEach((key) => {
@@ -66,7 +70,7 @@ class AsyncTasksClass extends Subscribable<'add' | 'remove' | 'update'> {
     data,
     metacardType,
   }: {
-    data: PlainMetacardPropertiesType
+    data: MinimalPropertySet
     metacardType: string
   }) {
     const newTask = new CreateTask({ data, metacardType })
@@ -476,12 +480,12 @@ class DeleteTask extends AsyncTask {
 
 class CreateTask extends AsyncTask {
   metacardType: string
-  data: LazyQueryResult['plain']['metacard']['properties']
+  data: MinimalPropertySet
   constructor({
     data,
     metacardType,
   }: {
-    data: LazyQueryResult['plain']['metacard']['properties']
+    data: MinimalPropertySet
     metacardType: string
   }) {
     super()
