@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.codice.ddf.search</groupId>
         <artifactId>catalog-ui</artifactId>
-        <version>5.0.13</version>
+        <version>5.0.14-SNAPSHOT</version>
     </parent>
 
     <groupId>org.codice.ddf.search</groupId>
     <artifactId>backend</artifactId>
-    <version>5.0.13</version>
+    <version>5.0.14-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
