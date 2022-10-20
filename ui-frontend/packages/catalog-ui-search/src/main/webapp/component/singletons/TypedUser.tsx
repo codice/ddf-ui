@@ -121,6 +121,9 @@ export const TypedUserInstance = {
   getResultCount: (): number => {
     return userInstance.get('user').get('preferences').get('resultCount')
   },
+  getUserReadableDateTime: (val: any): string => {
+    return userInstance.getUserReadableDateTime(val)
+  },
 }
 
 export function useActingRole<T extends string>(): T {
