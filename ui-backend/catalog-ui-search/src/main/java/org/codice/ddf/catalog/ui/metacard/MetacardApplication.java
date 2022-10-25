@@ -1057,7 +1057,8 @@ public class MetacardApplication implements SparkApplication {
     LOGGER.trace("Attemping to delete metacard [{}]", id);
     Filter tags =
         filterBuilder.attribute(Metacard.TAGS).is().like().text(DeletedMetacard.DELETED_TAG);
-    Filter deletion = filterBuilder.attribute(DeletedMetacard.DELETION_OF_ID).is().like().text(id);
+    Filter deletion =
+        filterBuilder.attribute(DeletedMetacard.DELETION_OF_ID).is().equalTo().text(id);
     Filter filter = filterBuilder.allOf(tags, deletion);
 
     Map<String, Serializable> properties =
