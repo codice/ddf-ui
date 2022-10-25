@@ -12,8 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
-import MetacardAssociationsView from '../../metacard-associations/metacard-associations.view'
 import MetacardPreviewView from '../../metacard-preview/metacard-preview.view'
 import React from 'react'
 import { MetacardOverwrite } from '../../metacard-overwrite/metacard-overwrite.view'
@@ -38,7 +36,6 @@ export const TabNames = {
   Details: 'Details',
   Preview: 'Preview',
   History: 'History',
-  Associations: 'Associations',
   Quality: 'Quality',
   Actions: 'Actions',
   Delete: 'Delete',
@@ -51,17 +48,6 @@ const Tabs = {
     return <MRC view={MetacardPreviewView} viewOptions={{ result }} />
   },
   History: MetacardHistory,
-  Associations: ({ result, selectionInterface }) => {
-    return (
-      <MRC
-        view={MetacardAssociationsView}
-        viewOptions={{
-          result,
-          selectionInterface,
-        }}
-      />
-    )
-  },
   Quality: MetacardQuality,
   Actions: MetacardActions,
   Delete: ({ result }) => {

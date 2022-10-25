@@ -137,7 +137,6 @@ const usePossibleMetacardTabs = ({ result }: { result: LazyQueryResult }) => {
         delete copyOfMetacardTabs[TabNames.History]
         delete copyOfMetacardTabs[TabNames.Overwrite]
         delete copyOfMetacardTabs[TabNames.Delete]
-        delete copyOfMetacardTabs[TabNames.Associations]
         delete copyOfMetacardTabs[TabNames.Quality]
       }
       if (!result.hasPreview()) {
