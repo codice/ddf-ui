@@ -86,7 +86,7 @@ const determineHasResultSort = () => {
 type Props = {
   selectionInterface: any
   model: any
-  goldenLayoutViewInstance: any
+  goldenLayout: any
   layoutResult?: ResultType
   editLayoutRef?: any
 }
@@ -94,7 +94,7 @@ type Props = {
 const ResultSelector = ({
   selectionInterface,
   model,
-  goldenLayoutViewInstance,
+  goldenLayout,
   layoutResult,
   editLayoutRef,
 }: Props) => {
@@ -118,7 +118,7 @@ const ResultSelector = ({
   }, [])
   const theme = useTheme()
   const LayoutDropdown = Extensions.layoutDropdown({
-    goldenLayout: goldenLayoutViewInstance,
+    goldenLayout,
     layoutResult,
     editLayoutRef,
   })
@@ -211,7 +211,7 @@ const ResultSelector = ({
               {LayoutDropdown || (
                 <VisualizationSelector
                   onClose={layoutMenuState.handleClose}
-                  goldenLayout={goldenLayoutViewInstance.goldenLayout}
+                  goldenLayout={goldenLayout}
                 />
               )}
             </Paper>

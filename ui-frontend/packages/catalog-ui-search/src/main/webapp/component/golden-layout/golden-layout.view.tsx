@@ -19,13 +19,8 @@ const _merge = require('lodash/merge')
 const _debounce = require('lodash/debounce')
 const $ = require('jquery')
 const wreqr = require('../../js/wreqr.js')
-// @ts-ignore ts-migrate(6133) FIXME: 'template' is declared but its value is never read... Remove this comment to see the full error message
-const template = require('./golden-layout.hbs')
-const Marionette = require('marionette')
-const CustomElements = require('../../js/CustomElements.js')
 const GoldenLayout = require('golden-layout')
 const properties = require('../../js/properties.js')
-const Common = require('../../js/Common.js')
 const user = require('../singletons/user-instance.js')
 const sanitize = require('sanitize-html')
 import Button from '@material-ui/core/Button'
@@ -35,6 +30,8 @@ import MinimizeIcon from '@material-ui/icons/Minimize'
 import CloseIcon from '@material-ui/icons/Close'
 import { providers as Providers } from '../../extension-points/providers'
 import { Visualizations } from '../visualization/visualizations'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 
 // @ts-ignore ts-migrate(7024) FIXME: Function implicitly has return type 'any' because ... Remove this comment to see the full error message
 const treeMap = (obj: any, fn: any, path = []) => {
@@ -72,7 +69,7 @@ const sanitizeTree = (tree: any) =>
   })
 
 function getGoldenLayoutSettings() {
-  const fontSize = parseInt(user.get('user').get('preferences').get('fontSize'))
+  const fontSize = 16
   const theme = user.get('user').get('preferences').get('theme').getTheme()
   return {
     settings: {
@@ -264,261 +261,248 @@ export const getStringifiedDefaultLayout = () => {
   }
 }
 
-export default Marionette.LayoutView.extend({
-  tagName: CustomElements.register('golden-layout'),
-  template() {
-    return <div className="golden-layout-container w-full h-full" />
-  },
-  className: 'is-minimised h-full w-full',
-  lastConfig: undefined,
-  reconfigureLayout(layout: any) {
-    this.goldenLayout.root.contentItems.forEach((item: any) => {
-      item.remove()
-    })
-    layout.content.forEach((item: any) => {
-      this.goldenLayout.root.addChild(item)
-    })
-  },
-  updateFontSize() {
-    const goldenLayoutSettings = getGoldenLayoutSettings()
-    this.goldenLayout.config.dimensions.borderWidth =
-      goldenLayoutSettings.dimensions.borderWidth
-    this.goldenLayout.config.dimensions.minItemHeight =
-      goldenLayoutSettings.dimensions.minItemHeight
-    this.goldenLayout.config.dimensions.minItemWidth =
-      goldenLayoutSettings.dimensions.minItemWidth
-    this.goldenLayout.config.dimensions.headerHeight =
-      goldenLayoutSettings.dimensions.headerHeight
-    Common.repaintForTimeframe(2000, () => {
-      this.goldenLayout.updateSize()
-    })
-  },
-  updateSize() {
-    if (this.isDestroyed) {
-      return
-    }
-    this.goldenLayout.updateSize()
-  },
-  listenToGoldenLayoutStateChange() {
-    this.goldenLayout.on(
-      'stateChanged',
-      _.debounce(this.handleGoldenLayoutStateChange.bind(this), 200)
-    )
-  },
-  showGoldenLayout() {
-    this.goldenLayout = new GoldenLayout(
-      this.getGoldenLayoutConfig(),
-      this.el.querySelector('.golden-layout-container')
-    )
-    this.registerGoldenLayoutComponents()
-    this.listenToGoldenLayoutStateChange()
-    this.goldenLayout.on('stackCreated', this.handleGoldenLayoutStackCreated)
-    this.goldenLayout.on(
-      'initialised',
-      this.handleGoldenLayoutInitialised.bind(this)
-    )
+type GoldenLayoutViewProps = {
+  layoutResult?: LazyQueryResult['plain']
+  editLayoutRef?: React.MutableRefObject<any>
+  configName?: string
+  selectionInterface: any
+  setGoldenLayout: (instance: any) => void
+}
 
-    this.goldenLayout.init()
-  },
-  getGoldenLayoutConfig() {
-    let currentConfig = undefined
-    if (this.options.layoutResult) {
-      try {
-        currentConfig = JSON.parse(
-          this.options.layoutResult.metacard.properties.layout
-        )
-      } catch (err) {
-        console.warn('issue parsing a saved layout, falling back to default')
-      }
-    } else if (this.options.editLayoutRef) {
-      currentConfig = this.options.editLayoutRef.current
-    } else {
-      currentConfig = user
-        .get('user')
-        .get('preferences')
-        .get(this.options.configName)
+// function reconfigureLayout({
+//   goldenLayoutInstance,
+//   layout,
+// }: {
+//   goldenLayoutInstance: any
+//   layout: any
+// }) {
+//   goldenLayoutInstance.root.contentItems.forEach((item: any) => {
+//     item.remove()
+//   })
+//   layout.content.forEach((item: any) => {
+//     goldenLayoutInstance.root.addChild(item)
+//   })
+// }
+
+function getGoldenLayoutConfig({
+  layoutResult,
+  editLayoutRef,
+  configName,
+}: GoldenLayoutViewProps) {
+  let currentConfig = undefined
+  if (layoutResult) {
+    try {
+      currentConfig = JSON.parse(layoutResult.metacard.properties.layout)
+    } catch (err) {
+      console.warn('issue parsing a saved layout, falling back to default')
     }
-    if (currentConfig === undefined) {
-      currentConfig = DEFAULT_GOLDEN_LAYOUT_CONTENT
+  } else if (editLayoutRef) {
+    currentConfig = editLayoutRef.current
+  } else {
+    currentConfig = user.get('user').get('preferences').get(configName)
+  }
+  if (currentConfig === undefined) {
+    currentConfig = DEFAULT_GOLDEN_LAYOUT_CONTENT
+  }
+  _merge(currentConfig, getGoldenLayoutSettings())
+  return currentConfig
+}
+
+function registerGoldenLayoutComponents({
+  goldenLayout,
+  options,
+}: {
+  goldenLayout: any
+  options: GoldenLayoutViewProps
+}) {
+  Visualizations.forEach((viz) => {
+    try {
+      registerComponent(
+        { goldenLayout, options },
+        viz.id,
+        viz.view,
+        viz.options,
+        viz
+      )
+    } catch (err) {
+      // likely already registered, in dev
+      console.log(err)
     }
-    _merge(currentConfig, getGoldenLayoutSettings())
-    return currentConfig
-  },
-  registerGoldenLayoutComponents() {
-    Visualizations.forEach((viz) => {
-      registerComponent(this, viz.id, viz.view, viz.options, viz)
-    })
-  },
-  detectIfGoldenLayoutMaximised() {
-    this.$el.toggleClass('is-maximised', isMaximised(this.goldenLayout.root))
-  },
-  detectIfGoldenLayoutEmpty() {
-    this.$el.toggleClass(
-      'is-empty',
-      this.goldenLayout.root.contentItems.length === 0
+  })
+}
+
+export function getInstanceConfig({ goldenLayout }: { goldenLayout: any }) {
+  const currentConfig = goldenLayout.toConfig()
+  return removeEphemeralState(currentConfig)
+}
+
+function handleGoldenLayoutStateChange({
+  options,
+  goldenLayout,
+  lastConfig,
+}: {
+  goldenLayout: any
+  options: GoldenLayoutViewProps
+  lastConfig: React.MutableRefObject<any>
+}) {
+  // not sure we can do this if block with react, check if we need still
+  // if (this.isDestroyed) {
+  //   return
+  // }
+  if (lastConfig.current === null) {
+    // this triggers on init of golden layout
+    lastConfig.current = getInstanceConfig({ goldenLayout })
+    return
+  }
+  wreqr.vent.trigger('resize') // do we need this?
+  if (
+    _.isEqual(
+      removeEphemeralState(lastConfig.current),
+      removeEphemeralState(getInstanceConfig({ goldenLayout }))
     )
-  },
-  handleGoldenLayoutInitialised() {
-    this.detectIfGoldenLayoutMaximised()
-    this.detectIfGoldenLayoutEmpty()
-  },
-  handleGoldenLayoutStackCreated(stack: any) {
-    stack.header.controlsContainer
-      .find('.lm_close')
-      .off('click')
-      // @ts-ignore ts-migrate(6133) FIXME: 'event' is declared but its value is never read.
-      .on('click', (event: any) => {
-        if (stack.isMaximised) {
-          stack.toggleMaximise()
-        }
-        stack.remove()
-      })
-    // const root = document.createElement('div')
-    // tab.element.append(root)
-    let intervalId = setInterval(() => {
-      try {
-        ReactDOM.render(
-          <Providers>
-            <Grid container direction="row" wrap="nowrap">
-              <Grid item>
-                <Button
-                  data-id="maximise-tab-button"
-                  // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-                  onClick={(e) => {
-                    const prevWidth = stack.config.prevWidth || 500
-                    const prevHeight = stack.config.prevHeight || 500
-                    stack.contentItems[0].container.setSize(
-                      prevWidth,
-                      prevHeight
-                    )
-                  }}
-                >
-                  +
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button
-                  data-id="minimise-layout-button"
-                  // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-                  onClick={(e) => {
-                    stack.config.prevWidth = stack.getActiveContentItem().container.width
-                    stack.config.prevHeight = stack.getActiveContentItem().container.height
-                    stack.contentItems[0].container.setSize(10, 45)
-                  }}
-                >
-                  <MinimizeIcon />
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button
-                  data-id="maximise-layout-button"
-                  // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-                  onClick={(e) => {
-                    stack.toggleMaximise()
-                  }}
-                >
-                  <AllOutIcon />
-                </Button>
-              </Grid>
-              <Grid item>
-                {stack.header._isClosable() ? (
-                  <Button
-                    data-id="close-layout-button"
-                    // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-                    onClick={(e) => {
-                      if (stack.isMaximised) {
-                        stack.toggleMaximise()
-                      }
-                      stack.remove()
-                    }}
-                  >
-                    <CloseIcon />
-                  </Button>
-                ) : null}
-              </Grid>
+  ) {
+    return
+  }
+  lastConfig.current = getInstanceConfig({ goldenLayout })
+
+  /**
+   * If we have this option, then we're editing a layout in the layout editor.
+   * Otherwise, we're using a layout (or possibly custom) and need to take a change as indication of moving to custom.
+   */
+  if (options.editLayoutRef) {
+    options.editLayoutRef.current = getInstanceConfig({ goldenLayout })
+  } else {
+    // can technically do detections of max or empty here
+
+    //https://github.com/deepstreamIO/golden-layout/issues/253
+    if (goldenLayout.isInitialised) {
+      const currentConfig = goldenLayout.toConfig()
+      removeEphemeralState(currentConfig)
+      user.get('user').get('preferences').set(options.configName, currentConfig)
+      wreqr.vent.trigger('resize')
+      //do not add a window resize event, that will cause an endless loop.  If you need something like that, listen to the wreqr resize event.
+    }
+    user.get('user').get('preferences').set(
+      {
+        layoutId: 'custom',
+      },
+      {
+        internal: true,
+      }
+    )
+  }
+}
+
+function handleGoldenLayoutStackCreated(stack: any) {
+  stack.header.controlsContainer
+    .find('.lm_close')
+    .off('click')
+    // @ts-ignore ts-migrate(6133) FIXME: 'event' is declared but its value is never read.
+    .on('click', (event: any) => {
+      if (stack.isMaximised) {
+        stack.toggleMaximise()
+      }
+      stack.remove()
+    })
+  // const root = document.createElement('div')
+  // tab.element.append(root)
+  let intervalId = setInterval(() => {
+    try {
+      ReactDOM.render(
+        <Providers>
+          <Grid container direction="row" wrap="nowrap">
+            <Grid item>
+              <Button
+                data-id="maximise-tab-button"
+                // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
+                onClick={(e) => {
+                  const prevWidth = stack.config.prevWidth || 500
+                  const prevHeight = stack.config.prevHeight || 500
+                  stack.contentItems[0].container.setSize(prevWidth, prevHeight)
+                }}
+              >
+                +
+              </Button>
             </Grid>
-          </Providers>,
-          stack.header.controlsContainer[0]
-        )
-        clearInterval(intervalId)
-      } catch (err) {}
-    }, 100)
-  },
-  // @ts-ignore ts-migrate(6133) FIXME: 'event' is declared but its value is never read.
-  handleGoldenLayoutStateChange(event: any) {
-    if (this.isDestroyed) {
-      return
-    }
-    if (this.lastConfig === undefined) {
-      // this triggers on init of golden layout
-      this.lastConfig = this.getInstanceConfig()
-      return
-    }
-    wreqr.vent.trigger('resize') // do we need this?
-    if (
-      _.isEqual(
-        removeEphemeralState(this.lastConfig),
-        removeEphemeralState(this.getInstanceConfig())
+            <Grid item>
+              <Button
+                data-id="minimise-layout-button"
+                // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
+                onClick={(e) => {
+                  stack.config.prevWidth = stack.getActiveContentItem().container.width
+                  stack.config.prevHeight = stack.getActiveContentItem().container.height
+                  stack.contentItems[0].container.setSize(10, 45)
+                }}
+              >
+                <MinimizeIcon />
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                data-id="maximise-layout-button"
+                // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
+                onClick={(e) => {
+                  stack.toggleMaximise()
+                }}
+              >
+                <AllOutIcon />
+              </Button>
+            </Grid>
+            <Grid item>
+              {stack.header._isClosable() ? (
+                <Button
+                  data-id="close-layout-button"
+                  // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
+                  onClick={(e) => {
+                    if (stack.isMaximised) {
+                      stack.toggleMaximise()
+                    }
+                    stack.remove()
+                  }}
+                >
+                  <CloseIcon />
+                </Button>
+              ) : null}
+            </Grid>
+          </Grid>
+        </Providers>,
+        stack.header.controlsContainer[0]
       )
-    ) {
-      return
-    }
-    this.lastConfig = this.getInstanceConfig()
+      clearInterval(intervalId)
+    } catch (err) {}
+  }, 100)
+}
 
-    /**
-     * If we have this option, then we're editing a layout in the layout editor.
-     * Otherwise, we're using a layout (or possibly custom) and need to take a change as indication of moving to custom.
-     */
-    if (this.options.editLayoutRef) {
-      this.options.editLayoutRef.current = this.getInstanceConfig()
-    } else {
-      this.detectIfGoldenLayoutMaximised()
-      this.detectIfGoldenLayoutEmpty()
-      //https://github.com/deepstreamIO/golden-layout/issues/253
-      if (this.goldenLayout.isInitialised) {
-        const currentConfig = this.goldenLayout.toConfig()
-        removeEphemeralState(currentConfig)
-        user
-          .get('user')
-          .get('preferences')
-          .set(this.options.configName, currentConfig)
-        wreqr.vent.trigger('resize')
-        //do not add a window resize event, that will cause an endless loop.  If you need something like that, listen to the wreqr resize event.
-      }
-      user.get('user').get('preferences').set(
-        {
-          layoutId: 'custom',
-        },
-        {
-          internal: true,
-        }
-      )
+export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
+  const [
+    goldenLayoutAttachElement,
+    setGoldenLayoutAttachElement,
+  ] = React.useState<HTMLDivElement | null>(null)
+  const [goldenLayout, setGoldenLayout] = React.useState<any>(null)
+  const lastConfig = React.useRef<any>(null)
+  useListenTo(wreqr.vent, 'gl-updateSize', () => {
+    goldenLayout.updateSize()
+  })
+
+  React.useEffect(() => {
+    if (goldenLayout) {
+      options.setGoldenLayout(goldenLayout)
     }
-  },
-  setupListeners() {
-    this.listenTo(
-      user.get('user').get('preferences'),
-      'change:theme',
-      this.updateFontSize
-    )
-    this.listenTo(
-      user.get('user').get('preferences'),
-      'change:fontSize',
-      this.updateFontSize
-    )
-    this.listenForResize()
-  },
-  onFirstRender() {
-    this.showGoldenLayout()
-    this.setupListeners()
-  },
-  listenForResize() {
+    return () => {
+      if (goldenLayout) {
+        goldenLayout.destroy()
+      }
+    }
+  }, [goldenLayout])
+
+  React.useEffect(() => {
+    const randomString = Math.random().toString()
     $(window).on(
-      'resize.' + this.cid,
+      'resize.' + randomString,
       _debounce(
         // @ts-ignore ts-migrate(6133) FIXME: 'event' is declared but its value is never read.
         (event: any) => {
-          this.updateSize()
+          goldenLayout.updateSize()
         },
         100,
         {
@@ -527,22 +511,58 @@ export default Marionette.LayoutView.extend({
         }
       )
     )
-    this.listenTo(wreqr.vent, 'gl-updateSize', () => {
-      this.updateSize()
-    })
-  },
-  stopListeningForResize() {
-    $(window).off('resize.' + this.cid)
-    this.stopListening(wreqr.vent)
-  },
-  getInstanceConfig() {
-    const currentConfig = this.goldenLayout.toConfig()
-    return removeEphemeralState(currentConfig)
-  },
-  onDestroy() {
-    this.stopListeningForResize()
-    if (this.goldenLayout) {
-      this.goldenLayout.destroy()
+    return () => {
+      $(window).off('resize.' + randomString)
     }
-  },
-})
+  }, [goldenLayout])
+
+  React.useEffect(() => {
+    if (goldenLayoutAttachElement) {
+      setGoldenLayout(
+        new GoldenLayout(
+          getGoldenLayoutConfig(options),
+          goldenLayoutAttachElement
+        )
+      )
+    }
+  }, [goldenLayoutAttachElement])
+
+  React.useEffect(() => {
+    if (goldenLayout) {
+      registerGoldenLayoutComponents({
+        goldenLayout,
+        options,
+      })
+      goldenLayout.on(
+        'stateChanged',
+        _.debounce(() => {
+          handleGoldenLayoutStateChange({
+            options,
+            goldenLayout,
+            lastConfig,
+          })
+        }, 200)
+      )
+      goldenLayout.on('stackCreated', handleGoldenLayoutStackCreated)
+      goldenLayout.on('initialised', () => {
+        // can do empty and max detections here
+      })
+
+      goldenLayout.init()
+      return () => {
+        goldenLayout.off('stateChanged')
+        goldenLayout.off('stackCreated')
+      }
+    }
+    return () => {}
+  }, [goldenLayout])
+
+  return (
+    <div data-element="golden-layout" className="is-minimised h-full w-full">
+      <div
+        ref={setGoldenLayoutAttachElement}
+        className="golden-layout-container w-full h-full"
+      />
+    </div>
+  )
+}

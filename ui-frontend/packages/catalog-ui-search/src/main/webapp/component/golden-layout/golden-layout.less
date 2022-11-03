@@ -1,5 +1,5 @@
 //golden layout theming only, other styles should go below in their own nest
-@{customElementNamespace}golden-layout {
+@{customElementNamespace}golden-layout, [data-element="golden-layout"] {
   .lm_maximised ~ .lm_item {
     display: none;
   }
@@ -221,7 +221,7 @@
   cursor: -webkit-grabbing !important;
 }
 
-@{customElementNamespace}golden-layout {
+@{customElementNamespace}golden-layout, [data-element="golden-layout"] {
   .customElement;
   background: inherit !important;
   position: relative;
@@ -276,7 +276,7 @@
   }
 }
 
-@{customElementNamespace}golden-layout.is-minimised {
+@{customElementNamespace}golden-layout.is-minimised, [data-element="golden-layout"].is-minimized {
   > .golden-layout-toolbar {
     z-index: @zIndexContent;
     background: inherit;
@@ -337,7 +337,7 @@
 }
 
 //interim styles (delete me later, after we add layout switching etc.)
-@{customElementNamespace}golden-layout.is-minimised {
+@{customElementNamespace}golden-layout.is-minimised, [data-element="golden-layout"].is-minimized {
   > .golden-layout-toolbar {
     .to-add .dropdown-label {
       display: inline !important;
@@ -345,7 +345,7 @@
   }
 }
 
-@{customElementNamespace}golden-layout {
+@{customElementNamespace}golden-layout, [data-element="golden-layout"] {
   .to-toggle-size {
     display: none !important;
   }
