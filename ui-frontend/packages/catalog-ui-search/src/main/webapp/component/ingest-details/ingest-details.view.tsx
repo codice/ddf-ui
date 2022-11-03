@@ -22,7 +22,7 @@ const Dropzone = require('dropzone')
 import { UploadItemCollection } from '../upload-item/upload-item.collection.view'
 const UploadBatchModel = require('../../js/model/UploadBatch.js')
 const Common = require('../../js/Common.js')
-const UploadSummary = require('../upload-summary/upload-summary.view.js')
+import { UploadSummaryViewReact } from '../upload-summary/upload-summary.view'
 
 function namespacedEvent(event: any, view: any) {
   return event + '.' + view.cid
@@ -65,7 +65,11 @@ export default Marionette.LayoutView.extend({
             Drop files here or click to upload
           </div>
         </div>
-        <div className="details-summary"></div>
+        <div className="details-summary">
+          {this.uploadBatchModel ? (
+            <UploadSummaryViewReact model={this.uploadBatchModel} />
+          ) : null}
+        </div>
         <div className="details-footer">
           <button
             data-id="Clearc"
@@ -136,7 +140,6 @@ export default Marionette.LayoutView.extend({
   },
   onBeforeShow() {
     this.setupBatchModel()
-    this.showSummary()
     this.$el.removeClass()
     this.handleUploadUpdate()
   },
@@ -214,13 +217,6 @@ export default Marionette.LayoutView.extend({
   },
   addFiles() {
     this.$el.find('.details-dropzone').click()
-  },
-  showSummary() {
-    this.summary.show(
-      new UploadSummary({
-        model: this.uploadBatchModel,
-      })
-    )
   },
   clearUploads() {
     this.uploadBatchModel.clear()

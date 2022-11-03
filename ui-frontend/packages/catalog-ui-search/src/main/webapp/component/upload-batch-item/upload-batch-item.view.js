@@ -13,13 +13,11 @@
  *
  **/
 
-const wreqr = require('../../js/wreqr.js')
 const Marionette = require('marionette')
-const template = require('./upload-batch-item.hbs')
 const CustomElements = require('../../js/CustomElements.js')
 const Common = require('../../js/Common.js')
 const user = require('../singletons/user-instance.js')
-const UploadSummaryView = require('../upload-summary/upload-summary.view.js')
+import { UploadSummaryViewReact } from '../upload-summary/upload-summary.view'
 import { Link } from 'react-router-dom'
 import * as React from 'react'
 
@@ -36,7 +34,9 @@ module.exports = Marionette.LayoutView.extend({
               <span className="fa fa-upload" />
               <span>{data.when}</span>
             </div>
-            <div className="details-summary" />
+            <div className="details-summary">
+              <UploadSummaryViewReact model={this.model} />
+            </div>
           </div>
         </Link>
         <div className="upload-actions">
@@ -59,15 +59,7 @@ module.exports = Marionette.LayoutView.extend({
     'click > .upload-actions .actions-remove': 'removeModel',
     'click > .upload-details': 'expandUpload',
   },
-  regions: {
-    uploadDetails: ' .upload-details .details-summary',
-  },
   onBeforeShow() {
-    this.uploadDetails.show(
-      new UploadSummaryView({
-        model: this.model,
-      })
-    )
     this.handleFinished()
   },
   handleFinished() {

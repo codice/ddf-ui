@@ -1,4 +1,4 @@
-@{customElementNamespace}upload-summary {
+@{customElementNamespace}upload-summary, [data-element="upload-summary"] {
   display: block;
   height: 2 * @minimumButtonSize;
   position: relative;
@@ -54,7 +54,7 @@
   }
 }
 
-@{customElementNamespace}upload-summary.has-issues {
+@{customElementNamespace}upload-summary.has-issues, [data-element="upload-summary"].has-issues {
   .files-issues {
     opacity: @minimumOpacity;
     transform: scale(1);
@@ -63,7 +63,7 @@
   }
 }
 
-@{customElementNamespace}upload-summary.was-interrupted {
+@{customElementNamespace}upload-summary.was-interrupted, [data-element="upload-summary"].was-interrupted {
   .info-percentage {
     color: @warning-color;
   }
