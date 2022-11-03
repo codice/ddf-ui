@@ -12,24 +12,23 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
+import React from 'react'
 const wreqr = require('../../js/wreqr.js')
 const Marionette = require('marionette')
 const _ = require('underscore')
 const $ = require('jquery')
-const template = require('./ingest-details.hbs')
 const CustomElements = require('../../js/CustomElements.js')
 const Dropzone = require('dropzone')
-const UploadItemCollectionView = require('../upload-item/upload-item.collection.view.js')
+import { UploadItemCollection } from '../upload-item/upload-item.collection.view'
 const UploadBatchModel = require('../../js/model/UploadBatch.js')
 const Common = require('../../js/Common.js')
 const UploadSummary = require('../upload-summary/upload-summary.view.js')
 
-function namespacedEvent(event, view) {
+function namespacedEvent(event: any, view: any) {
   return event + '.' + view.cid
 }
 
-function updateDropzoneHeight(view) {
+function updateDropzoneHeight(view: any) {
   const filesHeight = view.$el.find('.details-files').height()
   const elementHeight = view.$el.height()
   view.$el
@@ -45,18 +44,75 @@ function updateDropzoneHeight(view) {
     )
 }
 
-module.exports = Marionette.LayoutView.extend({
-  template,
-  tagName: CustomElements.register('ingest-details'),
-  events: {
-    'click > .details-footer .footer-clear': 'newUpload',
-    'click > .details-footer .footer-cancel': 'cancelUpload',
-    'click > .details-footer .footer-new': 'newUpload',
-    'click > .details-dropzone .dropzone-text': 'addFiles',
-    'click > .details-footer .footer-start': 'startUpload',
+export default Marionette.LayoutView.extend({
+  template: function () {
+    return (
+      <>
+        <div className="details-files">
+          {this.uploadBatchModel ? (
+            <UploadItemCollection
+              collection={this.uploadBatchModel.get('uploads')}
+            />
+          ) : null}
+        </div>
+        <div className="details-dropzone">
+          <div
+            className="dropzone-text"
+            onClick={() => {
+              this.addFiles()
+            }}
+          >
+            Drop files here or click to upload
+          </div>
+        </div>
+        <div className="details-summary"></div>
+        <div className="details-footer">
+          <button
+            data-id="Clearc"
+            className="old-button footer-clear is-negative"
+            onClick={() => {
+              this.newUpload()
+            }}
+          >
+            <span className="fa fa-times"></span>
+            <span>Clear</span>
+          </button>
+          <button
+            data-id="start"
+            className="old-button footer-start is-positive"
+            onClick={() => {
+              this.startUpload()
+            }}
+          >
+            <span className="fa fa-upload"></span>
+            <span>Start</span>
+          </button>
+          <button
+            data-id="stop"
+            className="old-button footer-cancel is-negative"
+            onClick={() => {
+              this.cancelUpload()
+            }}
+          >
+            <span className="fa fa-stop"></span>
+            <span>Stop</span>
+          </button>
+          <button
+            data-id="new"
+            className="old-button footer-new is-positive"
+            onClick={() => {
+              this.newUpload()
+            }}
+          >
+            <span className="fa fa-upload"></span>
+            <span>New</span>
+          </button>
+        </div>
+      </>
+    )
   },
+  tagName: CustomElements.register('ingest-details'),
   regions: {
-    files: '> .details-files',
     summary: '> .details-summary',
   },
   overrides: {},
@@ -68,29 +124,43 @@ module.exports = Marionette.LayoutView.extend({
     this.dropzone.removeAllFiles(true)
   },
   triggerNewUpload() {
-    this.onBeforeDestroy()
+    this.resetDropzone()
     this.render()
     this.onBeforeShow()
-    this.resetDropzone()
   },
   onFirstRender() {
     this.setupDropzone()
+    setTimeout(() => {
+      this.triggerNewUpload()
+    }, 100)
   },
   onBeforeShow() {
     this.setupBatchModel()
-    this.showFiles()
     this.showSummary()
     this.$el.removeClass()
     this.handleUploadUpdate()
   },
   setupBatchModel() {
-    this.uploadBatchModel = new UploadBatchModel(
-      {},
-      {
+    if (!this.uploadBatchModel) {
+      this.uploadBatchModel = new UploadBatchModel(
+        {},
+        {
+          dropzone: this.dropzone,
+        }
+      )
+      this.setupBatchModelListeners()
+    } else {
+      this.uploadBatchModel.clear()
+      const defaults = this.uploadBatchModel.defaults()
+      delete defaults.uploads
+      this.uploadBatchModel.set(defaults)
+      this.uploadBatchModel.unset('id')
+      this.uploadBatchModel.get('uploads').reset()
+      this.uploadBatchModel.unlistenToDropzone()
+      this.uploadBatchModel.initialize(undefined, {
         dropzone: this.dropzone,
-      }
-    )
-    this.setupBatchModelListeners()
+      })
+    }
   },
   setupBatchModelListeners() {
     this.listenTo(
@@ -125,14 +195,14 @@ module.exports = Marionette.LayoutView.extend({
     const _this = this
     this.dropzone = new Dropzone(this.el.querySelector('.details-dropzone'), {
       paramName: 'parse.resource',
-      url: this.options.url,
+      url: './internal/catalog/',
       maxFilesize: 5000000, //MB
       method: 'post',
       autoProcessQueue: false,
       headers: this.options.extraHeaders,
-      sending(file, xhr, formData) {
-        _.each(_this.overrides, (values, attribute) => {
-          _.each(values, (value) => {
+      sending(file: any, xhr: any, formData: any) {
+        _.each(_this.overrides, (values: any, attribute: any) => {
+          _.each(values, (value: any) => {
             formData.append('parse.' + attribute, value)
           })
         })
@@ -144,13 +214,6 @@ module.exports = Marionette.LayoutView.extend({
   },
   addFiles() {
     this.$el.find('.details-dropzone').click()
-  },
-  showFiles() {
-    this.files.show(
-      new UploadItemCollectionView({
-        collection: this.uploadBatchModel.get('uploads'),
-      })
-    )
   },
   showSummary() {
     this.summary.show(
@@ -209,7 +272,7 @@ module.exports = Marionette.LayoutView.extend({
     this.stopListening(this.uploadBatchModel)
     this.unlistenToResize()
   },
-  setOverrides(json) {
+  setOverrides(json: any) {
     this.overrides = json
   },
 })
