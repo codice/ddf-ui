@@ -12,21 +12,43 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
+import React from 'react'
 const Marionette = require('marionette')
 const CustomElements = require('../../js/CustomElements.js')
-const template = require('./notification-group.hbs')
-const NotificationListView = require('../notification-list/notification-list.view.js')
+import { UploadBatchItemViewReact } from '../upload-batch-item/upload-batch-item.view'
 const userNotifications = require('../singletons/user-notifications.js')
+const user = require('../singletons/user-instance.js')
+
 const $ = require('jquery')
 const Common = require('../../js/Common.js')
 
-function isEmpty(filter) {
+function isEmpty(filter: any) {
   return userNotifications.filter(filter).length === 0
 }
 
-module.exports = Marionette.LayoutView.extend({
-  template,
+export default Marionette.LayoutView.extend({
+  template: function () {
+    return (
+      <React.Fragment>
+        <div className="group-header">
+          <span className="header-when">{this.options.date}</span>
+          <button className="old-button is-neutral header-clear">
+            <span className="fa fa-times"></span>
+          </button>
+          <button className="old-button is-negative header-confirm">
+            <span>Clear {this.options.date}</span>
+          </button>
+        </div>
+        <div className="group-items">
+          {userNotifications
+            .filter(this.options.filter)
+            .map((notification: any) => {
+              return <UploadBatchItemViewReact model={notification} />
+            })}
+        </div>
+      </React.Fragment>
+    )
+  },
   tagName: CustomElements.register('notification-group'),
   regions: {
     groupItems: '> .group-items',
@@ -39,13 +61,6 @@ module.exports = Marionette.LayoutView.extend({
     this.handleEmpty()
     this.listenTo(userNotifications, 'add remove update', this.handleEmpty)
   },
-  onBeforeShow() {
-    this.groupItems.show(
-      new NotificationListView({
-        filter: this.options.filter,
-      })
-    )
-  },
   handleEmpty() {
     const empty = isEmpty(this.options.filter)
     if (empty) {
@@ -57,14 +72,14 @@ module.exports = Marionette.LayoutView.extend({
       this.$el.toggleClass('is-empty', empty)
     })
   },
-  handleClear(e) {
+  handleClear(e: any) {
     this.$el.toggleClass('wait-for-confirmation', true)
     setTimeout(() => {
       this.listenForClick()
     }, 0)
   },
   listenForClick() {
-    $(window).on('click.notification-group', (e) => {
+    $(window).on('click.notification-group', (e: any) => {
       this.$el.toggleClass('wait-for-confirmation', false)
       this.unlistenForClick()
     })
@@ -73,9 +88,10 @@ module.exports = Marionette.LayoutView.extend({
     $(window).off('click.notification-group')
   },
   handleConfirm() {
-    this.groupItems.currentView.children.forEach((childView) => {
-      childView.removeModel()
+    userNotifications.filter(this.options.filter).forEach((model: any) => {
+      model.collection.remove(model)
     })
+    user.get('user').get('preferences').savePreferences()
   },
   serializeData() {
     return {

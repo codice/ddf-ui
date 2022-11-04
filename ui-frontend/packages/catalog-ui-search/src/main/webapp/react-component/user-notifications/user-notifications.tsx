@@ -16,7 +16,7 @@ import * as React from 'react'
 import styled from 'styled-components'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import MarionetteRegionContainer from '../marionette-region-container'
-const NotificationGroupView = require('../../component/notification-group/notification-group.view.js')
+import NotificationGroupView from '../../component/notification-group/notification-group.view'
 const user = require('../../component/singletons/user-instance.js')
 const moment = require('moment')
 const userNotifications = require('../../component/singletons/user-notifications.js')
@@ -44,6 +44,9 @@ const Notifications = styled.div`
 
 const informalName = (daysAgo: any) => {
   switch (daysAgo) {
+    case -1:
+      return 'Future'
+      break
     case 0:
       return 'Today'
       break
@@ -57,7 +60,14 @@ const informalName = (daysAgo: any) => {
 }
 
 const listPreviousDays = (numDays: any) => {
-  if (numDays < 7) {
+  if (numDays < 0) {
+    return new NotificationGroupView({
+      filter: (model: any) => {
+        return moment().diff(model.get('sentAt'), 'days') < 0
+      },
+      date: informalName(numDays),
+    })
+  } else if (numDays < 7) {
     return new NotificationGroupView({
       filter: (model: any) => {
         return moment().diff(model.get('sentAt'), 'days') === numDays
@@ -74,7 +84,7 @@ const listPreviousDays = (numDays: any) => {
   }
 }
 
-const dayRange = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+const dayRange = [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 class UserNotifications extends React.Component<Props, {}> {
   notificationGroups: any

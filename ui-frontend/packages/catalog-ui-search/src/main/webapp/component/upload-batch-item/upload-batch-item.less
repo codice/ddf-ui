@@ -1,4 +1,4 @@
-@{customElementNamespace}upload-batch-item {
+@{customElementNamespace}upload-batch-item, [data-element="upload-batch-item"] {
   display: block;
   white-space: nowrap;
   position: relative;
@@ -53,14 +53,14 @@
   }
 }
 
-@{customElementNamespace}upload-batch-item.is-finished {
+@{customElementNamespace}upload-batch-item.is-finished, [data-element="upload-batch-item"].is-finished {
   cursor: pointer;
   .upload-actions button {
     transform: translateX(-100%);
   }
 }
 
-@{customElementNamespace}upload-batch-item.is-destroyed {
+@{customElementNamespace}upload-batch-item.is-destroyed, [data-element="upload-batch-item"].is-destroyed {
   height: 0px !important;
   margin: 0px !important;
   transition: height @coreTransitionTime linear,
@@ -68,8 +68,8 @@
 }
 
 @{customElementNamespace}upload-batch-item-collection {
-  @{customElementNamespace}upload-batch-item
-    + @{customElementNamespace}upload-batch-item {
+  @{customElementNamespace}upload-batch-item, [data-element="upload-batch-item"]
+    + @{customElementNamespace}upload-batch-item, [data-element="upload-batch-item"] {
     margin-top: 10px;
   }
 
