@@ -203,7 +203,7 @@ export default Marionette.LayoutView.extend({
       method: 'post',
       autoProcessQueue: false,
       headers: this.options.extraHeaders,
-      sending(file: any, xhr: any, formData: any) {
+      sending(_file: any, _xhr: any, formData: any) {
         _.each(_this.overrides, (values: any, attribute: any) => {
           _.each(values, (value: any) => {
             formData.append('parse.' + attribute, value)

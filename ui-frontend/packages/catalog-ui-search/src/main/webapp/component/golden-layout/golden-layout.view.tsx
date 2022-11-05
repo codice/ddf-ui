@@ -199,15 +199,15 @@ function registerComponent(
   )
 }
 
-function isMaximised(contentItem: any) {
-  if (contentItem.isMaximised) {
-    return true
-  } else if (contentItem.contentItems.length === 0) {
-    return false
-  } else {
-    return _.some(contentItem.contentItems, isMaximised)
-  }
-}
+// function isMaximised(contentItem: any) {
+//   if (contentItem.isMaximised) {
+//     return true
+//   } else if (contentItem.contentItems.length === 0) {
+//     return false
+//   } else {
+//     return _.some(contentItem.contentItems, isMaximised)
+//   }
+// }
 
 function removeActiveTabInformation(config: any) {
   if (config.activeItemIndex !== undefined) {
