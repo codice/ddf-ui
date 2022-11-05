@@ -3,8 +3,7 @@ import App, { IndividualRouteType, useDefaultWelcome } from './app'
 import Help from '../help/help.view'
 
 import { hot } from 'react-hot-loader/root'
-import MRC from '../../react-component/marionette-region-container'
-import IngestView from '../ingest-details/ingest-details.view'
+import { IngestDetailsViewReact } from '../ingest-details/ingest-details.view'
 import { HomePage } from '../pages/search'
 
 import SourcesPage from '../../react-component/sources'
@@ -196,7 +195,7 @@ const RouteInformation: IndividualRouteType[] = [
         return (
           <div className="w-full h-full pb-2 pt-2 pr-2">
             <Paper elevation={Elevations.panels} className="w-full h-full">
-              <MRC view={IngestView} />
+              <IngestDetailsViewReact />
             </Paper>
           </div>
         )

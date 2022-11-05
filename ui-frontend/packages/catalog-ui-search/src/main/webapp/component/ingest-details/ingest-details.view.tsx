@@ -13,6 +13,7 @@
  *
  **/
 import React from 'react'
+import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 const wreqr = require('../../js/wreqr.js')
 const Marionette = require('marionette')
 const _ = require('underscore')
@@ -44,231 +45,235 @@ function updateDropzoneHeight(view: any) {
     )
 }
 
-export default Marionette.LayoutView.extend({
-  template: function () {
-    return (
-      <>
-        <div className="details-files">
-          {this.uploadBatchModel ? (
-            <UploadItemCollection
-              collection={this.uploadBatchModel.get('uploads')}
-            />
-          ) : null}
-        </div>
-        <div className="details-dropzone">
-          <div
-            className="dropzone-text"
-            onClick={() => {
-              this.addFiles()
-            }}
-          >
-            Drop files here or click to upload
-          </div>
-        </div>
-        <div className="details-summary">
-          {this.uploadBatchModel ? (
-            <UploadSummaryViewReact model={this.uploadBatchModel} />
-          ) : null}
-        </div>
-        <div className="details-footer">
-          <button
-            data-id="Clearc"
-            className="old-button footer-clear is-negative"
-            onClick={() => {
-              this.newUpload()
-            }}
-          >
-            <span className="fa fa-times"></span>
-            <span>Clear</span>
-          </button>
-          <button
-            data-id="start"
-            className="old-button footer-start is-positive"
-            onClick={() => {
-              this.startUpload()
-            }}
-          >
-            <span className="fa fa-upload"></span>
-            <span>Start</span>
-          </button>
-          <button
-            data-id="stop"
-            className="old-button footer-cancel is-negative"
-            onClick={() => {
-              this.cancelUpload()
-            }}
-          >
-            <span className="fa fa-stop"></span>
-            <span>Stop</span>
-          </button>
-          <button
-            data-id="new"
-            className="old-button footer-new is-positive"
-            onClick={() => {
-              this.newUpload()
-            }}
-          >
-            <span className="fa fa-upload"></span>
-            <span>New</span>
-          </button>
-        </div>
-      </>
-    )
-  },
-  tagName: CustomElements.register('ingest-details'),
-  regions: {
-    summary: '> .details-summary',
-  },
-  overrides: {},
-  dropzone: undefined,
-  uploadBatchModel: undefined,
-  dropzoneAnimationRequestDetails: undefined,
-  resetDropzone() {
-    this.dropzone.options.autoProcessQueue = false
-    this.dropzone.removeAllFiles(true)
-  },
-  triggerNewUpload() {
-    this.resetDropzone()
-    this.render()
-    this.onBeforeShow()
-  },
-  onFirstRender() {
-    this.setupDropzone()
-    setTimeout(() => {
-      this.triggerNewUpload()
-    }, 100)
-  },
-  onBeforeShow() {
-    this.setupBatchModel()
-    this.$el.removeClass()
-    this.handleUploadUpdate()
-  },
-  setupBatchModel() {
-    if (!this.uploadBatchModel) {
-      this.uploadBatchModel = new UploadBatchModel(
-        {},
-        {
-          dropzone: this.dropzone,
-        }
+type IngestModeType = 'empty' | 'has-files' | 'is-uploading' | 'is-finished'
+
+type IngestDetailsViewReactType = {
+  extraHeaders?: any
+  overrides?: any
+  handleUploadSuccess?: any
+  preIngestValidator?: any
+}
+
+const useDropzone = ({
+  dropzoneElement,
+  extraHeaders,
+  overrides,
+  handleUploadSuccess,
+}: { dropzoneElement: HTMLElement | null } & IngestDetailsViewReactType) => {
+  const [dropzone, setDropzone] = React.useState<any>(null)
+  React.useEffect(() => {
+    if (dropzone && handleUploadSuccess) {
+      dropzone.on('success', handleUploadSuccess)
+    }
+  }, [dropzone])
+  React.useEffect(() => {
+    if (dropzoneElement) {
+      setDropzone(
+        new Dropzone(dropzoneElement, {
+          paramName: 'parse.resource',
+          url: './internal/catalog/',
+          maxFilesize: 5000000, //MB
+          method: 'post',
+          autoProcessQueue: false,
+          headers: extraHeaders,
+          sending(_file: any, _xhr: any, formData: any) {
+            _.each(overrides, (values: any, attribute: any) => {
+              _.each(values, (value: any) => {
+                formData.append('parse.' + attribute, value)
+              })
+            })
+          },
+        })
       )
-      this.setupBatchModelListeners()
+    }
+  }, [dropzoneElement])
+  return dropzone
+}
+
+const useUploadBatchModel = ({
+  dropzone,
+}: {
+  dropzone: any
+}): { model: any; json: any } => {
+  const [uploadBatchModel, setUploadBatchModel] = React.useState<any>(dropzone)
+  const [uploadBatchModelJSON, setUploadBatchModelJSON] = React.useState<any>(
+    null
+  )
+  const callback = React.useMemo(() => {
+    return () => {
+      setUploadBatchModelJSON(uploadBatchModel.toJSON())
+    }
+  }, [uploadBatchModel])
+
+  useListenTo(
+    uploadBatchModel,
+    'add:uploads remove:uploads reset:uploads change:sending change:finished',
+    callback
+  )
+
+  React.useEffect(() => {
+    if (uploadBatchModel) {
+      setUploadBatchModelJSON(uploadBatchModel.toJSON())
+    }
+  }, [uploadBatchModel])
+
+  React.useEffect(() => {
+    if (dropzone) {
+      setUploadBatchModel(
+        new UploadBatchModel(
+          {},
+          {
+            dropzone,
+          }
+        )
+      )
+    }
+  }, [dropzone])
+
+  return {
+    model: uploadBatchModel,
+    json: uploadBatchModelJSON,
+  }
+}
+
+function useIngestMode({
+  uploadBatchModel,
+  dropzone,
+}: {
+  uploadBatchModel: {
+    model: any
+    json: any
+  }
+  dropzone: any
+}): [IngestModeType, React.Dispatch<React.SetStateAction<IngestModeType>>] {
+  const [mode, setMode] = React.useState<IngestModeType>('empty')
+
+  React.useEffect(() => {
+    if (!uploadBatchModel.json) {
+      setMode('empty')
+      return
+    }
+    if (uploadBatchModel.json.sending) {
+      setMode('is-uploading')
+      return
+    }
+    if (uploadBatchModel.json.finished) {
+      setMode('is-finished')
+      return
+    }
+    if (uploadBatchModel.json.uploads.length > 0) {
+      setMode('has-files')
     } else {
-      this.uploadBatchModel.clear()
-      const defaults = this.uploadBatchModel.defaults()
+      setMode('empty')
+    }
+  }, [uploadBatchModel])
+
+  React.useEffect(() => {
+    if (mode === 'empty' && dropzone && uploadBatchModel.model) {
+      // reset dropzone
+      dropzone.options.autoProcessQueue = false
+      dropzone.removeAllFiles(true)
+      uploadBatchModel.model.clear()
+      const defaults = uploadBatchModel.model.defaults()
       delete defaults.uploads
-      this.uploadBatchModel.set(defaults)
-      this.uploadBatchModel.unset('id')
-      this.uploadBatchModel.get('uploads').reset()
-      this.uploadBatchModel.unlistenToDropzone()
-      this.uploadBatchModel.initialize(undefined, {
-        dropzone: this.dropzone,
+      uploadBatchModel.model.set(defaults)
+      uploadBatchModel.model.unset('id')
+      uploadBatchModel.model.get('uploads').reset()
+      uploadBatchModel.model.unlistenToDropzone()
+      uploadBatchModel.model.initialize(undefined, {
+        dropzone,
       })
     }
-  },
-  setupBatchModelListeners() {
-    this.listenTo(
-      this.uploadBatchModel,
-      'add:uploads remove:uploads reset:uploads',
-      this.handleUploadUpdate
-    )
-    this.listenTo(this.uploadBatchModel, 'change:sending', this.handleSending)
-    this.listenTo(this.uploadBatchModel, 'change:finished', this.handleFinished)
-  },
-  handleFinished() {
-    this.$el.toggleClass('is-finished', this.uploadBatchModel.get('finished'))
-  },
-  handleSending() {
-    this.$el.toggleClass('is-sending', this.uploadBatchModel.get('sending'))
-  },
-  handleUploadUpdate() {
-    if (
-      this.uploadBatchModel.get('uploads').length === 0 &&
-      !this.uploadBatchModel.get('sending')
-    ) {
-      Common.cancelRepaintForTimeframe(this.dropzoneAnimationRequestDetails)
-      this.$el.toggleClass('has-files', false)
-      this.unlistenToResize()
-      this.$el.find('.details-dropzone').css('height', '')
-    } else {
-      this.$el.toggleClass('has-files', true)
-      this.updateDropzoneHeight()
-    }
-  },
-  setupDropzone() {
-    const _this = this
-    this.dropzone = new Dropzone(this.el.querySelector('.details-dropzone'), {
-      paramName: 'parse.resource',
-      url: './internal/catalog/',
-      maxFilesize: 5000000, //MB
-      method: 'post',
-      autoProcessQueue: false,
-      headers: this.options.extraHeaders,
-      sending(_file: any, _xhr: any, formData: any) {
-        _.each(_this.overrides, (values: any, attribute: any) => {
-          _.each(values, (value: any) => {
-            formData.append('parse.' + attribute, value)
-          })
-        })
-      },
-    })
-    if (this.options.handleUploadSuccess) {
-      this.dropzone.on('success', this.options.handleUploadSuccess)
-    }
-  },
-  addFiles() {
-    this.$el.find('.details-dropzone').click()
-  },
-  clearUploads() {
-    this.uploadBatchModel.clear()
-  },
-  startUpload() {
-    if (this.options.preIngestValidator) {
-      this.options.preIngestValidator(
-        _.bind(this.uploadBatchModel.start, this.uploadBatchModel)
-      )
-    } else {
-      this.uploadBatchModel.start()
-    }
-  },
-  cancelUpload() {
-    this.uploadBatchModel.cancel()
-  },
-  newUpload() {
-    this.$el.addClass('starting-new')
-    setTimeout(() => {
-      this.triggerNewUpload()
-    }, 250)
-  },
-  expandUpload() {
-    wreqr.vent.trigger('router:navigate', {
-      fragment: 'uploads/' + this.uploadBatchModel.id,
-      options: {
-        trigger: true,
-      },
-    })
-  },
-  updateDropzoneHeight() {
-    updateDropzoneHeight(this)
-    this.listenToResize()
-    Common.cancelRepaintForTimeframe(this.dropzoneAnimationRequestDetails)
-    this.dropzoneAnimationRequestDetails = Common.repaintForTimeframe(
-      2000,
-      updateDropzoneHeight.bind(this, this)
-    )
-  },
-  listenToResize() {
-    $(window)
-      .off(namespacedEvent('resize', this))
-      .on(namespacedEvent('resize', this), this.updateDropzoneHeight.bind(this))
-  },
-  unlistenToResize() {
-    $(window).off(namespacedEvent('resize', this))
-  },
-  onBeforeDestroy() {
-    this.stopListening(this.uploadBatchModel)
-    this.unlistenToResize()
-  },
-  setOverrides(json: any) {
-    this.overrides = json
-  },
-})
+  }, [mode, dropzone, uploadBatchModel.model])
+  return [mode, setMode]
+}
+
+export const IngestDetailsViewReact = (props: IngestDetailsViewReactType) => {
+  const [
+    dropzoneElement,
+    setDropzoneElement,
+  ] = React.useState<HTMLDivElement | null>(null)
+  const dropzone = useDropzone({
+    dropzoneElement,
+    ...props,
+  })
+  const uploadBatchModel = useUploadBatchModel({ dropzone })
+  const [mode, setMode] = useIngestMode({ uploadBatchModel, dropzone })
+
+  return (
+    <div data-element="ingest-details">
+      <div className="details-files">
+        {uploadBatchModel.model ? (
+          <UploadItemCollection
+            collection={uploadBatchModel.model.get('uploads')}
+          />
+        ) : null}
+      </div>
+      <div className="details-dropzone" ref={setDropzoneElement}>
+        <div
+          className="dropzone-text"
+          onClick={() => {
+            if (dropzoneElement) {
+              dropzoneElement.click()
+            }
+          }}
+        >
+          Drop files here or click to upload
+        </div>
+      </div>
+      <div className="details-summary">
+        {uploadBatchModel.model ? (
+          <UploadSummaryViewReact model={uploadBatchModel.model} />
+        ) : null}
+      </div>
+      <div className="details-footer">
+        <button
+          data-id="Clearc"
+          className="old-button footer-clear is-negative"
+          onClick={() => {
+            setMode('empty')
+          }}
+        >
+          <span className="fa fa-times"></span>
+          <span>Clear</span>
+        </button>
+        <button
+          data-id="start"
+          className="old-button footer-start is-positive"
+          onClick={() => {
+            if (props.preIngestValidator) {
+              props.preIngestValidator(
+                _.bind(uploadBatchModel.model.start, uploadBatchModel.model)
+              )
+            } else {
+              uploadBatchModel.model.start()
+            }
+          }}
+        >
+          <span className="fa fa-upload"></span>
+          <span>Start</span>
+        </button>
+        <button
+          data-id="stop"
+          className="old-button footer-cancel is-negative"
+          onClick={() => {
+            uploadBatchModel.model.cancel()
+          }}
+        >
+          <span className="fa fa-stop"></span>
+          <span>Stop</span>
+        </button>
+        <button
+          data-id="new"
+          className="old-button footer-new is-positive"
+          onClick={() => {
+            setMode('empty')
+          }}
+        >
+          <span className="fa fa-upload"></span>
+          <span>New</span>
+        </button>
+      </div>
+    </div>
+  )
+}
