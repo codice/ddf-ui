@@ -29,9 +29,9 @@ export const UploadItemCollection = ({
   })
   console.log(collection.models)
   return (
-    <div className="is-list has-list-highlighting overflow-hidden">
+    <div className="is-list has-list-highlighting overflow-hidden flex flex-col space-y-2">
       {collection.models.map((model: any) => {
-        return <UploadItemViewReact key={model.cid} model={model} />
+        return <UploadItemViewReact key={model.id} model={model} />
       })}
     </div>
   )

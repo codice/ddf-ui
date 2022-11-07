@@ -19,60 +19,67 @@ import { UploadSummaryViewReact } from '../upload-summary/upload-summary.view'
 import { Link } from 'react-router-dom'
 import * as React from 'react'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
+import Button from '@material-ui/core/Button'
+import Paper from '@material-ui/core/Paper'
+import CloseIcon from '@material-ui/icons/Close'
 
 export const UploadBatchItemViewReact = ({ model }: { model: any }) => {
   const [modelJson, setModelJson] = React.useState(model.toJSON())
-  const [remove, setRemove] = React.useState(false)
   useListenTo(model, 'change:finished', () => {
     setModelJson(model.toJSON())
   })
-  React.useEffect(() => {
-    if (remove && model) {
-      setTimeout(() => {
-        model.collection.remove(model)
-        user.get('user').get('preferences').savePreferences()
-      }, 250)
-    }
-  }, [remove, model])
-  const { id, finished, sentAt } = modelJson
-  const when = Common.getMomentDate(sentAt)
+  const { id, finished, sentAt, interrupted } = modelJson
+  const when = Common.getRelativeDate(sentAt)
+  const specificWhen = Common.getMomentDate(sentAt)
 
   return (
-    <div
-      data-element="upload-batch-item"
-      className={`${finished ? 'is-finished' : ''} ${
-        remove ? 'is-destroyed' : ''
-      }`}
+    <Paper
+      className={`${
+        finished ? 'is-finished' : ''
+      }  flex flex-row items-stretch flex-no-wrap w-full justify-between p-2`}
     >
-      <Link to={`/uploads/${id}`} style={{ display: 'block', padding: '0px' }}>
+      <Link
+        to={`/uploads/${id}`}
+        style={{ display: 'block', padding: '0px' }}
+        className="w-full flex-shrink no-underline"
+        title={specificWhen}
+      >
         <div className="upload-details">
           <div className="details-date is-medium-font">
-            <span className="fa fa-upload" />
+            <span className="fa fa-upload p-2" />
             <span>{when}</span>
           </div>
-          <div className="details-summary">
+          <div className="details-summary mt-2">
             <UploadSummaryViewReact model={model} />
           </div>
         </div>
       </Link>
-      <div className="upload-actions">
-        <button
-          className="old-button actions-stop is-negative"
-          onClick={() => {
-            model.cancel()
-          }}
-        >
-          <span className="fa fa-stop" />
-        </button>
-        <button
-          className="old-button actions-remove is-negative"
-          onClick={() => {
-            setRemove(true)
-          }}
-        >
-          <span className="fa fa-minus" />
-        </button>
+      <div className="upload-actions flex-shrink-0 ">
+        {finished || interrupted ? (
+          <>
+            <Button
+              className=" h-full w-12"
+              onClick={() => {
+                model.collection.remove(model)
+                user.get('user').get('preferences').savePreferences()
+              }}
+            >
+              <CloseIcon />
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              className=" h-full w-12"
+              onClick={() => {
+                model.cancel()
+              }}
+            >
+              <span className="fa fa-stop" />
+            </Button>
+          </>
+        )}
       </div>
-    </div>
+    </Paper>
   )
 }

@@ -69,9 +69,14 @@ export const NotificationGroupViewReact = ({
           <CloseIcon></CloseIcon>
         </Button>
       </div>
-      <div>
+      <div className="w-full flex flex-col space-y-4">
         {userNotifications.filter(filter).map((notification: any) => {
-          return <UploadBatchItemViewReact model={notification} />
+          return (
+            <UploadBatchItemViewReact
+              key={notification.id}
+              model={notification}
+            />
+          )
         })}
       </div>
     </React.Fragment>

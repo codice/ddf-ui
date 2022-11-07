@@ -173,6 +173,7 @@ module.exports = Backbone.AssociatedModel.extend({
     if (this.options.dropzone) {
       this.options.dropzone.removeAllFiles(true)
     }
+    this.set('finished', true)
   },
   start() {
     if (this.options.dropzone) {

@@ -42,6 +42,7 @@ export const UploadSummaryViewReact = ({
     error,
     issues,
     interrupted,
+    finished,
   } = modelJson
 
   const isSending = sending
@@ -51,7 +52,6 @@ export const UploadSummaryViewReact = ({
   const wasInterrupted = interrupted
   return (
     <div
-      data-element="upload-summary"
       className={`${isSending ? 'show-progress' : ''} ${
         hasError ? 'has-error' : ''
       } ${hasSuccess ? 'has-success' : ''} ${hasIssues ? 'has-issues' : ''} ${
@@ -67,19 +67,27 @@ export const UploadSummaryViewReact = ({
       }}
     >
       <div className="upload-summary is-medium-font">
-        <div className="summary-info">
+        <div className="summary-info flex flex-col justify-start items-center">
           <div className="info-files">
-            <span className="files-issues fa fa-exclamation-triangle"></span>
+            <span className="files-issues fa fa-exclamation-triangle mr-2"></span>
             <span className="files-text">{`${
               complete + ' / ' + amount + ' Completed'
             }`}</span>
           </div>
-          <div className="info-percentage">{Math.floor(percentage) + '%'}</div>
-          <LinearProgress
-            className="w-full h-2"
-            variant="determinate"
-            value={percentage}
-          />
+          {!finished && !wasInterrupted ? (
+            <>
+              <div className="info-percentage">
+                {Math.floor(percentage) + '%'}
+              </div>
+              <LinearProgress
+                className="w-full h-2"
+                variant="determinate"
+                value={percentage}
+              />
+            </>
+          ) : (
+            <></>
+          )}
         </div>
       </div>
     </div>

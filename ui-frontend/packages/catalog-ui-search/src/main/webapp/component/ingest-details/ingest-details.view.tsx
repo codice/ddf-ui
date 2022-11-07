@@ -14,36 +14,12 @@
  **/
 import React from 'react'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
-const wreqr = require('../../js/wreqr.js')
-const Marionette = require('marionette')
 const _ = require('underscore')
-const $ = require('jquery')
-const CustomElements = require('../../js/CustomElements.js')
 const Dropzone = require('dropzone')
 import { UploadItemCollection } from '../upload-item/upload-item.collection.view'
 const UploadBatchModel = require('../../js/model/UploadBatch.js')
-const Common = require('../../js/Common.js')
 import { UploadSummaryViewReact } from '../upload-summary/upload-summary.view'
-
-function namespacedEvent(event: any, view: any) {
-  return event + '.' + view.cid
-}
-
-function updateDropzoneHeight(view: any) {
-  const filesHeight = view.$el.find('.details-files').height()
-  const elementHeight = view.$el.height()
-  view.$el
-    .find('.details-dropzone')
-    .css(
-      'height',
-      'calc(' +
-        elementHeight +
-        'px - ' +
-        filesHeight +
-        'px - 20px - 2.75rem' +
-        ')'
-    )
-}
+import Button from '@material-ui/core/Button'
 
 type IngestModeType = 'empty' | 'has-files' | 'is-uploading' | 'is-finished'
 
@@ -68,23 +44,28 @@ const useDropzone = ({
   }, [dropzone])
   React.useEffect(() => {
     if (dropzoneElement) {
-      setDropzone(
-        new Dropzone(dropzoneElement, {
-          paramName: 'parse.resource',
-          url: './internal/catalog/',
-          maxFilesize: 5000000, //MB
-          method: 'post',
-          autoProcessQueue: false,
-          headers: extraHeaders,
-          sending(_file: any, _xhr: any, formData: any) {
-            _.each(overrides, (values: any, attribute: any) => {
-              _.each(values, (value: any) => {
-                formData.append('parse.' + attribute, value)
+      if (((dropzoneElement as unknown) as any).dropzone) {
+        setDropzone(((dropzoneElement as unknown) as any).dropzone)
+      } else {
+        setDropzone(
+          new Dropzone(dropzoneElement, {
+            previewsContainer: false,
+            paramName: 'parse.resource',
+            url: './internal/catalog/',
+            maxFilesize: 5000000, //MB
+            method: 'post',
+            autoProcessQueue: false,
+            headers: extraHeaders,
+            sending(_file: any, _xhr: any, formData: any) {
+              _.each(overrides, (values: any, attribute: any) => {
+                _.each(values, (value: any) => {
+                  formData.append('parse.' + attribute, value)
+                })
               })
-            })
-          },
-        })
-      )
+            },
+          })
+        )
+      }
     }
   }, [dropzoneElement])
   return dropzone
@@ -92,8 +73,12 @@ const useDropzone = ({
 
 const useUploadBatchModel = ({
   dropzone,
+  getNewUploadBatchModel,
+  setGetNewUploadBatchModel,
 }: {
   dropzone: any
+  getNewUploadBatchModel: boolean
+  setGetNewUploadBatchModel: (val: boolean) => void
 }): { model: any; json: any } => {
   const [uploadBatchModel, setUploadBatchModel] = React.useState<any>(dropzone)
   const [uploadBatchModelJSON, setUploadBatchModelJSON] = React.useState<any>(
@@ -104,7 +89,7 @@ const useUploadBatchModel = ({
       setUploadBatchModelJSON(uploadBatchModel.toJSON())
     }
   }, [uploadBatchModel])
-
+  console.log(uploadBatchModelJSON)
   useListenTo(
     uploadBatchModel,
     'add:uploads remove:uploads reset:uploads change:sending change:finished',
@@ -118,7 +103,7 @@ const useUploadBatchModel = ({
   }, [uploadBatchModel])
 
   React.useEffect(() => {
-    if (dropzone) {
+    if (dropzone && getNewUploadBatchModel) {
       setUploadBatchModel(
         new UploadBatchModel(
           {},
@@ -127,8 +112,9 @@ const useUploadBatchModel = ({
           }
         )
       )
+      setGetNewUploadBatchModel(false)
     }
-  }, [dropzone])
+  }, [dropzone, getNewUploadBatchModel])
 
   return {
     model: uploadBatchModel,
@@ -153,14 +139,15 @@ function useIngestMode({
       setMode('empty')
       return
     }
-    if (uploadBatchModel.json.sending) {
-      setMode('is-uploading')
-      return
-    }
     if (uploadBatchModel.json.finished) {
       setMode('is-finished')
       return
     }
+    if (uploadBatchModel.json.sending) {
+      setMode('is-uploading')
+      return
+    }
+
     if (uploadBatchModel.json.uploads.length > 0) {
       setMode('has-files')
     } else {
@@ -171,13 +158,13 @@ function useIngestMode({
   React.useEffect(() => {
     if (mode === 'empty' && dropzone && uploadBatchModel.model) {
       // reset dropzone
+      uploadBatchModel.model.unset('id')
       dropzone.options.autoProcessQueue = false
       dropzone.removeAllFiles(true)
       uploadBatchModel.model.clear()
       const defaults = uploadBatchModel.model.defaults()
       delete defaults.uploads
       uploadBatchModel.model.set(defaults)
-      uploadBatchModel.model.unset('id')
       uploadBatchModel.model.get('uploads').reset()
       uploadBatchModel.model.unlistenToDropzone()
       uploadBatchModel.model.initialize(undefined, {
@@ -197,82 +184,103 @@ export const IngestDetailsViewReact = (props: IngestDetailsViewReactType) => {
     dropzoneElement,
     ...props,
   })
-  const uploadBatchModel = useUploadBatchModel({ dropzone })
+  const [getNewUploadBatchModel, setGetNewUploadBatchModel] = React.useState(
+    true
+  )
+  const uploadBatchModel = useUploadBatchModel({
+    dropzone,
+    getNewUploadBatchModel,
+    setGetNewUploadBatchModel,
+  })
   const [mode, setMode] = useIngestMode({ uploadBatchModel, dropzone })
 
   return (
-    <div data-element="ingest-details">
-      <div className="details-files">
+    <div className="ingest-details p-2 w-full h-full flex flex-col items-center flex-no-wrap overflow-hidden space-y-2">
+      <div className="details-files w-full overflow-auto">
         {uploadBatchModel.model ? (
           <UploadItemCollection
             collection={uploadBatchModel.model.get('uploads')}
           />
         ) : null}
       </div>
-      <div className="details-dropzone" ref={setDropzoneElement}>
+      {mode === 'empty' || mode === 'has-files' ? (
         <div
-          className="dropzone-text"
-          onClick={() => {
-            if (dropzoneElement) {
-              dropzoneElement.click()
-            }
-          }}
+          className="details-dropzone border border-dashed w-full h-full flex flex-col justify-center items-center cursor-pointer"
+          ref={setDropzoneElement}
         >
-          Drop files here or click to upload
+          <div
+            className="text-4xl cursor-pointer"
+            onClick={() => {
+              if (dropzoneElement) {
+                dropzoneElement.click()
+              }
+            }}
+          >
+            Drop files here or click to upload
+          </div>
         </div>
-      </div>
-      <div className="details-summary">
-        {uploadBatchModel.model ? (
-          <UploadSummaryViewReact model={uploadBatchModel.model} />
+      ) : null}
+      {mode === 'is-finished' || mode === 'is-uploading' ? (
+        <div className="details-summary w-full mt-2">
+          {uploadBatchModel.model ? (
+            <UploadSummaryViewReact model={uploadBatchModel.model} />
+          ) : null}
+        </div>
+      ) : null}
+      <div className="details-footer w-full flex flex-row items-center flex-no-wrap overflow-hidden flex-shrink-0 mt-2">
+        {mode === 'has-files' ? (
+          <>
+            <Button
+              onClick={() => {
+                setGetNewUploadBatchModel(true)
+              }}
+              className="w-full"
+            >
+              Clear
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                if (props.preIngestValidator) {
+                  props.preIngestValidator(
+                    _.bind(uploadBatchModel.model.start, uploadBatchModel.model)
+                  )
+                } else {
+                  uploadBatchModel.model.start()
+                }
+              }}
+              className="w-full"
+            >
+              Start
+            </Button>
+          </>
         ) : null}
-      </div>
-      <div className="details-footer">
-        <button
-          data-id="Clearc"
-          className="old-button footer-clear is-negative"
-          onClick={() => {
-            setMode('empty')
-          }}
-        >
-          <span className="fa fa-times"></span>
-          <span>Clear</span>
-        </button>
-        <button
-          data-id="start"
-          className="old-button footer-start is-positive"
-          onClick={() => {
-            if (props.preIngestValidator) {
-              props.preIngestValidator(
-                _.bind(uploadBatchModel.model.start, uploadBatchModel.model)
-              )
-            } else {
-              uploadBatchModel.model.start()
-            }
-          }}
-        >
-          <span className="fa fa-upload"></span>
-          <span>Start</span>
-        </button>
-        <button
-          data-id="stop"
-          className="old-button footer-cancel is-negative"
-          onClick={() => {
-            uploadBatchModel.model.cancel()
-          }}
-        >
-          <span className="fa fa-stop"></span>
-          <span>Stop</span>
-        </button>
-        <button
-          data-id="new"
-          className="old-button footer-new is-positive"
-          onClick={() => {
-            setMode('empty')
-          }}
-        >
-          <span className="fa fa-upload"></span>
-          <span>New</span>
-        </button>
+        {mode === 'is-uploading' ? (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              uploadBatchModel.model.cancel()
+            }}
+            className="w-full"
+          >
+            Stop
+          </Button>
+        ) : null}
+        {mode === 'is-finished' ? (
+          <Button
+            variant="contained"
+            color="primary"
+            data-id="new"
+            onClick={() => {
+              setGetNewUploadBatchModel(true)
+            }}
+            className="w-full"
+          >
+            New
+          </Button>
+        ) : null}
       </div>
     </div>
   )
