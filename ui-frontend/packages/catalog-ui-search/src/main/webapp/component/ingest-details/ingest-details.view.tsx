@@ -192,7 +192,7 @@ export const IngestDetailsViewReact = (props: IngestDetailsViewReactType) => {
     getNewUploadBatchModel,
     setGetNewUploadBatchModel,
   })
-  const [mode, setMode] = useIngestMode({ uploadBatchModel, dropzone })
+  const [mode] = useIngestMode({ uploadBatchModel, dropzone })
 
   return (
     <div className="ingest-details p-2 w-full h-full flex flex-col items-center flex-no-wrap overflow-hidden space-y-2">

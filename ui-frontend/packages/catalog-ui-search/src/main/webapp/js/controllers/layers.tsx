@@ -13,23 +13,34 @@
  *
  **/
 
-/*jshint newcap: false, bitwise: false */
+import { Subscribable } from '../model/Base/base-classes'
 
-const Marionette = require('marionette')
+type LayerType = {
+  alpha: string
+  id: string
+  label: string
+  name: string
+  order: number
+  parameters: any
+  proxyEnabled: boolean
+  show: boolean
+  type: string
+  url: string
+  withCredentials: boolean
+}
 
-const Controller = Marionette.Object.extend({
-  initialize(options) {
-    this.collection = options.collection
-    this.layerForCid = {}
+export class Layer extends Subscribable<'change'> {
+  layer: LayerType
+  constructor(layer: LayerType) {
+    super()
+    this.layer = layer
+  }
+}
 
-    this.listenTo(this.collection, 'change:alpha', this.setAlpha)
-    this.listenTo(this.collection, 'change:show change:alpha', this.setShow)
-
-    // subclasses must implement reIndexLayers()
-    this.listenTo(this.collection, 'sort', this.reIndexLayers)
-    this.listenTo(this.collection, 'add', this.addLayer)
-    this.listenTo(this.collection, 'remove', this.removeLayer)
-  },
-})
-
-module.exports = Controller
+export class Layers extends Subscribable<'sort' | 'add' | 'remove'> {
+  layers: Array<any>
+  constructor(layers: Array<any>) {
+    super()
+    this.layers = layers
+  }
+}

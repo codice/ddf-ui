@@ -1,29 +1,16 @@
-/**
- * Copyright (c) Codice Foundation
- *
- * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
- * General Public License as published by the Free Software Foundation, either version 3 of the
- * License, or any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
- * is distributed along with this program and can be found at
- * <http://www.gnu.org/licenses/lgpl.html>.
- *
- **/
-
-/*jshint newcap: false, bitwise: false */
+import { Subscribable } from '../model/Base/base-classes'
+import { Layers } from './layers'
 
 const _ = require('underscore')
 const ol = require('openlayers')
 const properties = require('../properties.js')
-const CommonLayerController = require('./common.layerCollection.controller.js')
 const user = require('../../component/singletons/user-instance.js')
+const User = require('../../js/model/User.js')
+const Backbone = require('backbone')
 
 const createTile = (
-  { show, alpha, ...options },
-  Source,
+  { show, alpha, ...options }: any,
+  Source: any,
   Layer = ol.layer.Tile
 ) =>
   new Layer({
@@ -33,7 +20,7 @@ const createTile = (
     source: new Source(options),
   })
 
-const OSM = (opts) => {
+const OSM = (opts: any) => {
   const { url } = opts
   return createTile(
     {
@@ -44,12 +31,12 @@ const OSM = (opts) => {
   )
 }
 
-const BM = (opts) => {
+const BM = (opts: any) => {
   const imagerySet = opts.imagerySet || opts.url
   return createTile({ ...opts, imagerySet }, ol.source.BingMaps)
 }
 
-const WMS = (opts) => {
+const WMS = (opts: any) => {
   const params = opts.params || {
     LAYERS: opts.layers,
     ...opts.parameters,
@@ -57,7 +44,7 @@ const WMS = (opts) => {
   return createTile({ ...opts, params }, ol.source.TileWMS)
 }
 
-const WMT = async (opts) => {
+const WMT = async (opts: any) => {
   const { url, withCredentials } = opts
   const parser = new ol.format.WMTSCapabilities()
 
@@ -95,7 +82,7 @@ const WMT = async (opts) => {
   return createTile(opts, () => new ol.source.WMTS(options))
 }
 
-const AGM = (opts) => {
+const AGM = (opts: any) => {
   // We strip the template part of the url because we will manually format
   // it in the `tileUrlFunction` function.
   const url = opts.url.replace('tile/{z}/{y}/{x}', '')
@@ -106,7 +93,7 @@ const AGM = (opts) => {
   // reference links:
   //  - https://openlayers.org/en/latest/examples/xyz-esri-4326-512.html
   //  - https://developers.arcgis.com/rest/services-reference/map-tile.htm
-  const tileUrlFunction = (tileCoord) => {
+  const tileUrlFunction = (tileCoord: any) => {
     const [z, x, y] = tileCoord
     return `${url}/tile/${z - 1}/${-y - 1}/${x}`
   }
@@ -114,7 +101,7 @@ const AGM = (opts) => {
   return createTile({ ...opts, tileUrlFunction }, ol.source.XYZ)
 }
 
-const SI = (opts) => {
+const SI = (opts: any) => {
   const imageExtent =
     opts.imageExtent || ol.proj.get(properties.projection).getExtent()
   return createTile(
@@ -124,9 +111,9 @@ const SI = (opts) => {
   )
 }
 
-const sources = { OSM, BM, WMS, WMT, AGM, SI }
+const sources = { OSM, BM, WMS, WMT, AGM, SI } as { [key: string]: any }
 
-const createLayer = (type, opts) => {
+const createLayer = (type: any, opts: any) => {
   const fn = sources[type]
 
   if (fn === undefined) {
@@ -136,44 +123,72 @@ const createLayer = (type, opts) => {
   return fn(opts)
 }
 
-const Controller = CommonLayerController.extend({
-  initialize() {
-    // there is no automatic chaining of initialize.
-    CommonLayerController.prototype.initialize.apply(this, arguments)
-  },
-  makeMap(options) {
-    this.collection.forEach((model) => {
-      this.addLayer(model)
+type MakeMapType = {
+  zoom: number
+  minZoom: number
+  center: [number, number]
+  element: HTMLElement
+}
+
+export class OpenlayersLayers extends Subscribable<''> {
+  layers: Layers
+  map: any
+  isMapCreated: boolean
+  layerForCid: any
+  backboneModel: any
+  constructor() {
+    super()
+    this.backboneModel = new Backbone.Model({})
+    this.isMapCreated = false
+    this.layerForCid = {}
+    const layerPrefs = user.get('user>preferences>mapLayers')
+    User.updateMapLayers(layerPrefs)
+    this.layers = new Layers(layerPrefs)
+    this.backboneModel.listenTo(
+      layerPrefs,
+      'change:alpha',
+      this.setAlpha.bind(this)
+    )
+    this.backboneModel.listenTo(
+      layerPrefs,
+      'change:show change:alpha',
+      this.setShow.bind(this)
+    )
+    this.backboneModel.listenTo(layerPrefs, 'add', this.addLayer.bind(this))
+    this.backboneModel.listenTo(
+      layerPrefs,
+      'remove',
+      this.removeLayer.bind(this)
+    )
+    this.backboneModel.listenTo(
+      layerPrefs,
+      'sort',
+      this.reIndexLayers.bind(this)
+    )
+  }
+  makeMap(mapOptions: MakeMapType) {
+    this.layers.layers.forEach((layer) => {
+      this.addLayer(layer)
     })
 
     const view = new ol.View({
       projection: ol.proj.get(properties.projection),
       center: ol.proj.transform([0, 0], 'EPSG:4326', properties.projection),
-      zoom: options.zoom,
-      minZoom: options.minZoom,
+      zoom: mapOptions.zoom,
+      minZoom: mapOptions.minZoom,
     })
 
     const config = {
-      target: options.element,
+      target: mapOptions.element,
       view,
       interactions: ol.interaction.defaults({ doubleClickZoom: false }),
-    }
-
-    if (options.controls !== undefined) {
-      config.controls = options.controls
     }
 
     this.map = new ol.Map(config)
     this.isMapCreated = true
     return this.map
-  },
-  onDestroy() {
-    if (this.isMapCreated) {
-      this.map.setTarget(null)
-      this.map = null
-    }
-  },
-  async addLayer(model) {
+  }
+  async addLayer(model: any) {
     const { id, type } = model.toJSON()
     const opts = _.omit(model.attributes, 'type', 'label', 'index', 'modelCid')
     opts.show = model.shouldShowLayer()
@@ -186,8 +201,8 @@ const Controller = CommonLayerController.extend({
     } catch (e) {
       model.set('warning', e.message)
     }
-  },
-  removeLayer(model) {
+  }
+  removeLayer(model: any) {
     const id = model.get('id')
     const layer = this.layerForCid[id]
     if (layer !== undefined) {
@@ -195,28 +210,26 @@ const Controller = CommonLayerController.extend({
     }
     delete this.layerForCid[id]
     this.reIndexLayers()
-  },
-  setAlpha(model) {
-    const layer = this.layerForCid[model.id]
-    if (layer !== undefined) {
-      layer.setOpacity(model.get('alpha'))
-    }
-  },
-  setShow(model) {
-    const layer = this.layerForCid[model.id]
-    if (layer !== undefined) {
-      layer.setVisible(model.shouldShowLayer())
-    }
-  },
+  }
   reIndexLayers() {
-    this.collection.forEach(function (model, index) {
+    this.layers.layers.forEach((model, index) => {
       const layer = this.layerForCid[model.id]
       if (layer !== undefined) {
         layer.setZIndex(-(index + 1))
       }
     }, this)
     user.savePreferences()
-  },
-})
-
-module.exports = Controller
+  }
+  setAlpha(model: any) {
+    const layer = this.layerForCid[model.id]
+    if (layer !== undefined) {
+      layer.setOpacity(model.get('alpha'))
+    }
+  }
+  setShow(model: any) {
+    const layer = this.layerForCid[model.id]
+    if (layer !== undefined) {
+      layer.setVisible(model.shouldShowLayer())
+    }
+  }
+}

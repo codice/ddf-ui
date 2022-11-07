@@ -16,7 +16,6 @@
 /*jshint newcap: false, bitwise: false */
 
 const Cesium = require('cesium')
-const CommonLayerController = require('./common.layerCollection.controller.js')
 const properties = require('../properties.js')
 import { addLayer, shiftLayers, getShift } from './cesium.layer-ordering'
 import _ from 'underscore'
@@ -24,7 +23,7 @@ import _ from 'underscore'
 const DEFAULT_HTTPS_PORT = 443
 const DEFAULT_HTTP_PORT = 80
 
-const imageryProviderTypes = {
+export const CesiumImageryProviderTypes = {
   OSM: Cesium.createOpenStreetMapImageryProvider,
   AGM: Cesium.ArcGisMapServerImageryProvider,
   BM: Cesium.BingMapsImageryProvider,
@@ -36,20 +35,66 @@ const imageryProviderTypes = {
   AGS: Cesium.ArcGisImageServerTerrainProvider,
   VRW: Cesium.VRTheWorldTerrainProvider,
   SI: Cesium.SingleTileImageryProvider,
+} as {
+  [key: string]: any
 }
 
-const Controller = CommonLayerController.extend({
-  initialize() {
-    // there is no automatic chaining of initialize.
-    CommonLayerController.prototype.initialize.apply(this, arguments)
-  },
-  makeMap(options) {
+import { Subscribable } from '../model/Base/base-classes'
+import { Layers } from './layers'
+
+const user = require('../../component/singletons/user-instance.js')
+const User = require('../../js/model/User.js')
+const Backbone = require('backbone')
+
+type MakeMapType = {
+  cesiumOptions: any
+  element: HTMLElement
+}
+
+export class CesiumLayers extends Subscribable<''> {
+  layers: Layers
+  map: any
+  isMapCreated: boolean
+  layerForCid: any
+  backboneModel: any
+  layerOrder: Array<any>
+  constructor() {
+    super()
+    this.backboneModel = new Backbone.Model({})
+    this.isMapCreated = false
+    this.layerOrder = []
+    this.layerForCid = {}
+    const layerPrefs = user.get('user>preferences>mapLayers')
+    User.updateMapLayers(layerPrefs)
+    this.layers = new Layers(layerPrefs)
+    this.backboneModel.listenTo(
+      layerPrefs,
+      'change:alpha',
+      this.setAlpha.bind(this)
+    )
+    this.backboneModel.listenTo(
+      layerPrefs,
+      'change:show change:alpha',
+      this.setShow.bind(this)
+    )
+    this.backboneModel.listenTo(layerPrefs, 'add', this.addLayer.bind(this))
+    this.backboneModel.listenTo(
+      layerPrefs,
+      'remove',
+      this.removeLayer.bind(this)
+    )
+    this.backboneModel.listenTo(
+      layerPrefs,
+      'sort',
+      this.reIndexLayers.bind(this)
+    )
+  }
+  makeMap(options: MakeMapType) {
     // must create cesium map after containing DOM is attached.
     this.map = new Cesium.Viewer(options.element, options.cesiumOptions)
     this.map.scene.requestRenderMode = true
-    this.layerOrder = []
 
-    this.collection.forEach(function (model) {
+    this.layers.layers.forEach((model) => {
       if (model.get('show')) {
         this.initLayer(model)
       }
@@ -57,9 +102,9 @@ const Controller = CommonLayerController.extend({
 
     this.isMapCreated = true
     return this.map
-  },
-  initLayer(model) {
-    const type = imageryProviderTypes[model.get('type')]
+  }
+  initLayer(model: any) {
+    const type = CesiumImageryProviderTypes[model.get('type')]
     const initObj = _.omit(
       model.attributes,
       'type',
@@ -100,7 +145,7 @@ const Controller = CommonLayerController.extend({
 
     this.layerOrder = addLayer({
       initialized: this.layerOrder,
-      all: this.collection.models.map((model) => model.id).reverse(), //this.collection.models sorts layers from top to bottom, while Cesium expects the reverse.
+      all: this.layers.layers.map((model) => model.id).reverse(), //this.collection.models sorts layers from top to bottom, while Cesium expects the reverse.
       layer: model.id,
     })
 
@@ -113,25 +158,25 @@ const Controller = CommonLayerController.extend({
     this.layerForCid[model.id] = layer
     layer.alpha = model.get('alpha')
     layer.show = model.shouldShowLayer()
-  },
-  onDestroy() {
-    if (this.isMapCreated) {
-      this.map.destroy()
-      this.map = null
-    }
-  },
-  setAlpha(model) {
+  }
+  addLayer() {
+    // never done
+  }
+  removeLayer() {
+    // never done
+  }
+  setAlpha(model: any) {
     const layer = this.layerForCid[model.id]
     layer.alpha = model.get('alpha')
-  },
-  setShow(model) {
+  }
+  setShow(model: any) {
     if (!this.layerForCid[model.id]) {
       this.initLayer(model)
     }
     const layer = this.layerForCid[model.id]
     layer.show = model.shouldShowLayer()
     this.map.scene.requestRender()
-  },
+  }
   /*
     removing/re-adding the layers causes visible "re-render" of entire map;
     raising/lowering is smoother.
@@ -142,7 +187,7 @@ const Controller = CommonLayerController.extend({
   reIndexLayers() {
     const newLayerOrder = shiftLayers({
       prev: this.layerOrder,
-      cur: this.collection.models.map((model) => model.id).reverse(),
+      cur: this.layers.layers.map((model) => model.id).reverse(),
     })
     const { layer, method, count } = getShift({
       prev: this.layerOrder,
@@ -156,15 +201,11 @@ const Controller = CommonLayerController.extend({
 
     _.times(
       count,
-      function () {
+      () => {
         this.map.imageryLayers[method](this.layerForCid[layer])
       },
       this
     )
     this.layerOrder = newLayerOrder
-  },
-})
-
-Controller.imageryProviderTypes = imageryProviderTypes
-
-export default Controller
+  }
+}

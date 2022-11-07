@@ -18,9 +18,9 @@ export function addLayer({
   initialized: initializedLayerOrder,
   all: allLayerOrder,
   layer: layerId,
-}) {
+}: any) {
   const initializedLayers = new Set(initializedLayerOrder)
-  const filtered = allLayerOrder.filter((id) => initializedLayers.has(id))
+  const filtered = allLayerOrder.filter((id: any) => initializedLayers.has(id))
 
   if (filtered.length < initializedLayerOrder.length) {
     throw new Error(
@@ -33,19 +33,22 @@ export function addLayer({
     )
   }
   return allLayerOrder.filter(
-    (id) => id === layerId || initializedLayers.has(id)
+    (id: any) => id === layerId || initializedLayers.has(id)
   )
 }
 
 export function shiftLayers({
   prev: previousLayerOrder,
   cur: currentLayerOrder,
-}) {
+}: any) {
   const previousLayers = new Set(previousLayerOrder)
-  return currentLayerOrder.filter((id) => previousLayers.has(id))
+  return currentLayerOrder.filter((id: any) => previousLayers.has(id))
 }
 
-export function getShift({ prev: previousLayerOrder, cur: currentLayerOrder }) {
+export function getShift({
+  prev: previousLayerOrder,
+  cur: currentLayerOrder,
+}: any) {
   if (
     intersection(previousLayerOrder, currentLayerOrder).length !==
       previousLayerOrder.length ||
@@ -58,8 +61,8 @@ export function getShift({ prev: previousLayerOrder, cur: currentLayerOrder }) {
     return { layer: previousLayerOrder[0], method: 'lower', count: 0 }
   }
 
-  const shiftLayerToIndex = ({ layerOrder, layer: layerId, index }) => {
-    const layerIdRemoved = layerOrder.filter((id) => id !== layerId)
+  const shiftLayerToIndex = ({ layerOrder, layer: layerId, index }: any) => {
+    const layerIdRemoved = layerOrder.filter((id: any) => id !== layerId)
     return [
       ...layerIdRemoved.slice(0, index),
       layerId,
@@ -68,7 +71,7 @@ export function getShift({ prev: previousLayerOrder, cur: currentLayerOrder }) {
   }
 
   const changedLayers = previousLayerOrder.filter(
-    (id, index) => currentLayerOrder[index] !== id
+    (id: any, index: any) => currentLayerOrder[index] !== id
   )
 
   for (let i = 0; i < changedLayers.length; i++) {

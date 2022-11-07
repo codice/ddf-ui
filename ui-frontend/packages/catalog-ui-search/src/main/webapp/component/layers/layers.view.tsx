@@ -15,12 +15,14 @@
 /* global require*/
 import React from 'react'
 const _ = require('underscore')
-const Marionette = require('marionette')
 const Backbone = require('backbone')
 const properties = require('../../js/properties.js')
 import { LayerItemCollectionViewReact } from '../layer-item/layer-item.collection.view'
 const user = require('../singletons/user-instance.js')
 const CustomElements = require('../../js/CustomElements.js')
+import { hot } from 'react-hot-loader'
+import { useListenTo } from '../selection-checkbox/useBackbone.hook'
+import debounce from 'lodash.debounce'
 
 // this is to track focus, since on reordering rerenders and loses focus
 const FocusModel = Backbone.Model.extend({
@@ -60,98 +62,72 @@ const FocusModel = Backbone.Model.extend({
     return this.getDirection() === this.directions.down
   },
 })
-export default Marionette.LayoutView.extend({
-  attributes() {
-    return {
-      'data-id': 'layers-container',
-    }
-  },
-  tagName: CustomElements.register('layers'),
-  setDefaultModel() {
-    this.model = user.get('user>preferences')
-  },
-  events: {
-    'click > .footer button': 'resetDefaults',
-  },
-  template() {
-    return (
-      <React.Fragment>
-        <div className="is-header">Layers</div>
-        <div className="layers">
-          <LayerItemCollectionViewReact
-            collection={this.model.get('mapLayers')}
-            updateOrdering={this.updateOrdering.bind(this)}
-            focusModel={this.focusModel}
-          />
-        </div>
-        <div className="footer">
-          <button
-            data-id="reset-to-defaults-button"
-            className="old-button is-button"
-          >
-            <span>Reset to Defaults</span>
-          </button>
-        </div>
-      </React.Fragment>
-    )
-  },
-  regions: {
-    layers: '> .layers',
-  },
-  initialize(options: any) {
-    if (options.model === undefined) {
-      this.setDefaultModel()
-    }
-    this.listenToModel()
-    this.setupFocusModel()
-  },
-  setupFocusModel() {
-    this.focusModel = new FocusModel()
-  },
-  listenToModel() {
-    this.stopListeningToModel()
-    this.listenTo(
-      this.model.get('mapLayers'),
-      'change:alpha change:show',
-      this.save
-    )
-  },
-  stopListeningToModel() {
-    this.stopListening(
-      this.model.get('mapLayers'),
-      'change:alpha change:show',
-      this.save
-    )
-  },
-  resetDefaults() {
-    this.focusModel.clear()
-    this.stopListeningToModel()
-    this.model.get('mapLayers').forEach((viewLayer: any) => {
-      const name = viewLayer.get('name')
-      const defaultConfig = _.find(
-        properties.imageryProviders,
-        (layerObj: any) => name === layerObj.name
-      )
-      viewLayer.set(defaultConfig)
-    })
-    this.model.get('mapLayers').sort()
-    this.save()
-    this.listenToModel()
-  },
-  updateOrdering() {
-    _.forEach(
-      this.$el.find(`${CustomElements.getNamespace()}layer-item`),
-      (element: any, index: any) => {
-        this.model
-          .get('mapLayers')
-          .get(element.getAttribute('layer-id'))
-          .set('order', index)
-      }
-    )
-    this.model.get('mapLayers').sort()
-    this.save()
-  },
-  save() {
-    this.model.savePreferences()
-  },
-})
+
+const LayersViewReact = () => {
+  const [focusModel] = React.useState(new FocusModel())
+  const containerElementRef = React.useRef<HTMLDivElement>(null)
+  const saveCallback = React.useMemo(() => {
+    return debounce(() => {
+      user.get('user>preferences').save()
+    }, 100)
+  }, [])
+  useListenTo(
+    user.get('user>preferences').get('mapLayers'),
+    'change:alpha change:show',
+    saveCallback
+  )
+
+  return (
+    <div data-id="layers-container" ref={containerElementRef}>
+      <div className="is-header">Layers</div>
+      <div className="layers">
+        <LayerItemCollectionViewReact
+          collection={user.get('user>preferences').get('mapLayers')}
+          updateOrdering={() => {
+            _.forEach(
+              containerElementRef.current?.querySelectorAll(
+                `${CustomElements.getNamespace()}layer-item`
+              ),
+              (element: any, index: any) => {
+                user
+                  .get('user>preferences')
+                  .get('mapLayers')
+                  .get(element.getAttribute('layer-id'))
+                  .set('order', index)
+              }
+            )
+            user.get('user>preferences').get('mapLayers').sort()
+            // user.get('user>preferences').save()
+          }}
+          focusModel={focusModel}
+        />
+      </div>
+      <div className="footer">
+        <button
+          data-id="reset-to-defaults-button"
+          className="old-button is-button"
+          onClick={() => {
+            focusModel.clear()
+            user
+              .get('user>preferences')
+              .get('mapLayers')
+              .forEach((viewLayer: any) => {
+                const name = viewLayer.get('name')
+                const defaultConfig = _.find(
+                  properties.imageryProviders,
+                  (layerObj: any) => name === layerObj.name
+                )
+                viewLayer.set(defaultConfig)
+              })
+            user.get('user>preferences').get('mapLayers').sort()
+            user.get('user>preferences').save()
+          }}
+        >
+          <span>Reset to Defaults</span>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+export default hot(module)(LayersViewReact)

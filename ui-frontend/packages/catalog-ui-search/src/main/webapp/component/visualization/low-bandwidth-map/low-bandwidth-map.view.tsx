@@ -20,7 +20,7 @@ const CustomElements = require('../../../js/CustomElements.js')
 const CombinedMapView = require('../combined-map/combined-map.view.js')
 const OpenlayersView = require('../maps/openlayers/openlayers.view.js')
 
-module.exports = Marionette.LayoutView.extend({
+export default Marionette.LayoutView.extend({
   tagName: CustomElements.register('low-bandwidth-map'),
   template,
   regions: {
@@ -32,7 +32,7 @@ module.exports = Marionette.LayoutView.extend({
     'click .low-bandwidth-button-close': 'closeMap',
   },
 
-  initialize(options) {
+  initialize(options: any) {
     this.options = _.extend({}, options, {
       lowBandwidth: false,
     })

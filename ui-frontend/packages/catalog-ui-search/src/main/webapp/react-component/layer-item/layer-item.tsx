@@ -15,8 +15,8 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { Order, Visibility } from '.'
-import withListenTo, { WithBackboneProps } from '../backbone-container'
 import LayerItemPresentation from './presentation/layer-item'
+import { useListenTo } from '../../component/selection-checkbox/useBackbone.hook'
 
 const CustomElements = require('../../js/CustomElements')
 const Component = CustomElements.register('layer-item')
@@ -31,7 +31,7 @@ type ContainerProps = {
   sortable: any
   updateOrdering: any
   focusModel: any
-} & WithBackboneProps
+}
 
 const mapPropsToState = (props: ContainerProps) => {
   const { layer } = props
@@ -47,100 +47,70 @@ const mapPropsToState = (props: ContainerProps) => {
   }
 }
 
-class LayerItem extends React.Component<ContainerProps, State> {
-  _isMounted = false
-  constructor(props: ContainerProps) {
-    super(props)
-    this.state = mapPropsToState(props)
-    this.listenToLayer()
+const LayerItem = (props: ContainerProps) => {
+  const [state, setState] = React.useState<State>(mapPropsToState(props))
+  useListenTo(props.layer, 'change:show change:alpha change:order', () => {
+    setState(mapPropsToState(props))
+  })
+  useListenTo(props.layer.collection, 'sort remove add', () => {
+    setState(mapPropsToState(props))
+  })
+
+  const { layer } = props
+  const id = layer.get('id')
+  const layerInfo = {
+    name: layer.get('name'),
+    warning: layer.get('warning'),
+    isRemovable: layer.has('userRemovable'),
+    id,
   }
 
-  componentDidMount() {
-    this._isMounted = true
+  const actions = {
+    updateLayerShow: () => {
+      const show = state.visibility.show
+      props.layer.set('show', !show)
+    },
+    updateLayerAlpha: (e: any) => {
+      props.layer.set('alpha', e.target.value)
+    },
+    moveDown: () => {
+      const { focusModel, layer, sortable, updateOrdering } = props
+      const ordering = sortable.toArray()
+      const currentIndex = ordering.indexOf(layer.id)
+      ordering.splice(currentIndex, 1)
+      ordering.splice(currentIndex + 1, 0, layer.id)
+      sortable.sort(ordering)
+      focusModel.setDown(layer.id)
+      updateOrdering()
+    },
+    moveUp: () => {
+      const { layer, sortable, focusModel, updateOrdering } = props
+      const ordering = sortable.toArray()
+      const currentIndex = ordering.indexOf(layer.id)
+      ordering.splice(currentIndex - 1, 0, layer.id)
+      ordering.splice(currentIndex + 1, 1)
+      sortable.sort(ordering)
+      focusModel.setUp(layer.id)
+      updateOrdering()
+    },
+    onRemove: () => {
+      const { layer } = props
+      layer.collection.remove(layer)
+    },
   }
 
-  componentWillUnmount() {
-    this._isMounted = false
+  const presProps = {
+    ...state,
+    layerInfo,
+    actions: actions,
+    options: { focusModel: props.focusModel },
   }
 
-  listenToLayer = () => {
-    const { listenTo, layer } = this.props
-    listenTo(layer, 'change:show change:alpha change:order', this.handleChange)
-    listenTo(layer.collection, 'sort remove add', this.handleChange)
-  }
-
-  handleChange = () => {
-    if (this._isMounted) {
-      this.setState(mapPropsToState(this.props))
-    }
-  }
-
-  updateLayerShow = () => {
-    const show = this.state.visibility.show
-    this.props.layer.set('show', !show)
-  }
-
-  updateLayerAlpha = (e: any) => {
-    this.props.layer.set('alpha', e.target.value)
-  }
-
-  moveDown = () => {
-    const { focusModel, layer, sortable, updateOrdering } = this.props
-    const ordering = sortable.toArray()
-    const currentIndex = ordering.indexOf(layer.id)
-    ordering.splice(currentIndex, 1)
-    ordering.splice(currentIndex + 1, 0, layer.id)
-    sortable.sort(ordering)
-    focusModel.setDown(layer.id)
-    updateOrdering()
-  }
-
-  moveUp = () => {
-    const { layer, sortable, focusModel, updateOrdering } = this.props
-    const ordering = sortable.toArray()
-    const currentIndex = ordering.indexOf(layer.id)
-    ordering.splice(currentIndex - 1, 0, layer.id)
-    ordering.splice(currentIndex + 1, 1)
-    sortable.sort(ordering)
-    focusModel.setUp(layer.id)
-    updateOrdering()
-  }
-
-  onRemove = () => {
-    const { layer } = this.props
-    layer.collection.remove(layer)
-  }
-
-  _actions = {
-    updateLayerShow: this.updateLayerShow,
-    updateLayerAlpha: this.updateLayerAlpha,
-    moveDown: this.moveDown,
-    moveUp: this.moveUp,
-    onRemove: this.onRemove,
-  }
-
-  render() {
-    const { layer } = this.props
-    const id = layer.get('id')
-    const layerInfo = {
-      name: layer.get('name'),
-      warning: layer.get('warning'),
-      isRemovable: layer.has('userRemovable'),
-      id,
-    }
-    const props = {
-      ...this.state,
-      layerInfo,
-      actions: this._actions,
-      options: { focusModel: this.props.focusModel },
-    }
-
-    return (
-      <Component data-id="layer-item-container" layer-id={id}>
-        <LayerItemPresentation {...props} />
-      </Component>
-    )
-  }
+  return (
+    <Component data-id={id} layer-id={id}>
+      <LayerItemPresentation {...presProps} />
+    </Component>
+  )
 }
 
-export default hot(module)(withListenTo(LayerItem))
+export default hot(module)(LayerItem)

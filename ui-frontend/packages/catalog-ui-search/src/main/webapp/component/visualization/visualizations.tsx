@@ -15,7 +15,7 @@
 import * as React from 'react'
 import HistogramView from './histogram/lazy-histogram.view'
 import Inspector from './inspector/inspector-lazy.view'
-const LowBandwidthMapView = require('./low-bandwidth-map/low-bandwidth-map.view.js')
+import LowBandwidthMapView from './low-bandwidth-map/low-bandwidth-map.view'
 import Timeline from './timeline/timeline'
 import ResultsView from '../results-visual'
 const Marionette = require('marionette')

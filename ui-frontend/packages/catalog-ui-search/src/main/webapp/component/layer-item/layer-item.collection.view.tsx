@@ -16,6 +16,7 @@
 const Sortable = require('sortablejs')
 import * as React from 'react'
 import LayerItem from '../../react-component/layer-item'
+import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 
 function useSortable({
   sortableElement,
@@ -56,11 +57,15 @@ export const LayerItemCollectionViewReact = ({
   updateOrdering: any
   focusModel: any
 }) => {
+  const [, setForceRender] = React.useState(Math.random())
   const [
     sortableElement,
     setSortableElement,
   ] = React.useState<HTMLDivElement | null>(null)
   const sortable = useSortable({ sortableElement, updateOrdering, focusModel })
+  useListenTo(collection, 'sort', () => {
+    setForceRender(Math.random())
+  })
 
   return (
     <div ref={setSortableElement}>

@@ -29,7 +29,10 @@ const properties = require('../../../../js/properties.js')
 const Cesium = require('cesium')
 const Turf = require('@turf/turf')
 const DrawHelper = require('cesium-drawhelper/DrawHelper')
-import CesiumLayerCollectionController from '../../../../js/controllers/cesium.layerCollection.controller'
+import {
+  CesiumImageryProviderTypes,
+  CesiumLayers,
+} from '../../../../js/controllers/cesium.layers'
 const user = require('../../../singletons/user-instance.js')
 const User = require('../../../../js/model/User.js')
 import { Drawing } from '../../../singletons/drawing'
@@ -45,8 +48,7 @@ const rulerPointColor = '#506f85'
 const rulerLineHeight = 0
 
 Cesium.BingMapsApi.defaultKey = properties.bingKey || 0
-const imageryProviderTypes =
-  CesiumLayerCollectionController.imageryProviderTypes
+const imageryProviderTypes = CesiumImageryProviderTypes
 
 function setupTerrainProvider(viewer, terrainProvider) {
   if (terrainProvider == null || terrainProvider === undefined) {
@@ -81,7 +83,7 @@ function setupTerrainProvider(viewer, terrainProvider) {
 function createMap(insertionElement) {
   const layerPrefs = user.get('user>preferences>mapLayers')
   User.updateMapLayers(layerPrefs)
-  const layerCollectionController = new CesiumLayerCollectionController({
+  const layerCollectionController = new CesiumLayers({
     collection: layerPrefs,
   })
 

@@ -29,7 +29,7 @@ const DrawLine = require('../../../../js/widgets/openlayers.line.js')
 
 const properties = require('../../../../js/properties.js')
 const Openlayers = require('openlayers')
-const LayerCollectionController = require('../../../../js/controllers/ol.layerCollection.controller.js')
+import { OpenlayersLayers } from '../../../../js/controllers/openlayers.layers'
 const user = require('../../../singletons/user-instance.js')
 const User = require('../../../../js/model/User.js')
 const wreqr = require('../../../../js/wreqr.js')
@@ -39,17 +39,10 @@ import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryR
 const defaultColor = '#3c6dd5'
 const rulerColor = '#506f85'
 
-const OpenLayerCollectionController = LayerCollectionController.extend({
-  initialize() {
-    // there is no automatic chaining of initialize.
-    LayerCollectionController.prototype.initialize.apply(this, arguments)
-  },
-})
-
 function createMap(insertionElement) {
   const layerPrefs = user.get('user>preferences>mapLayers')
   User.updateMapLayers(layerPrefs)
-  const layerCollectionController = new OpenLayerCollectionController({
+  const layerCollectionController = new OpenlayersLayers({
     collection: layerPrefs,
   })
   const map = layerCollectionController.makeMap({
