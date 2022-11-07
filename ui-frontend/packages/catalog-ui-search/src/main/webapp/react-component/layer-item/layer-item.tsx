@@ -28,7 +28,9 @@ type State = {
 
 type ContainerProps = {
   layer: Backbone.Model
-  options: any
+  sortable: any
+  updateOrdering: any
+  focusModel: any
 } & WithBackboneProps
 
 const mapPropsToState = (props: ContainerProps) => {
@@ -83,25 +85,25 @@ class LayerItem extends React.Component<ContainerProps, State> {
   }
 
   moveDown = () => {
-    const { options, layer } = this.props
-    const ordering = options.sortable.toArray()
+    const { focusModel, layer, sortable, updateOrdering } = this.props
+    const ordering = sortable.toArray()
     const currentIndex = ordering.indexOf(layer.id)
     ordering.splice(currentIndex, 1)
     ordering.splice(currentIndex + 1, 0, layer.id)
-    options.sortable.sort(ordering)
-    options.focusModel.setDown(layer.id)
-    options.updateOrdering()
+    sortable.sort(ordering)
+    focusModel.setDown(layer.id)
+    updateOrdering()
   }
 
   moveUp = () => {
-    const { options, layer } = this.props
-    const ordering = options.sortable.toArray()
+    const { layer, sortable, focusModel, updateOrdering } = this.props
+    const ordering = sortable.toArray()
     const currentIndex = ordering.indexOf(layer.id)
     ordering.splice(currentIndex - 1, 0, layer.id)
     ordering.splice(currentIndex + 1, 1)
-    options.sortable.sort(ordering)
-    options.focusModel.setUp(layer.id)
-    options.updateOrdering()
+    sortable.sort(ordering)
+    focusModel.setUp(layer.id)
+    updateOrdering()
   }
 
   onRemove = () => {
@@ -130,7 +132,7 @@ class LayerItem extends React.Component<ContainerProps, State> {
       ...this.state,
       layerInfo,
       actions: this._actions,
-      options: { focusModel: this.props.options.focusModel },
+      options: { focusModel: this.props.focusModel },
     }
 
     return (

@@ -17,7 +17,7 @@ import Button from '@material-ui/core/Button'
 import Popover from '@material-ui/core/Popover'
 import { useMenuState } from '../menu-state/menu-state'
 import MRC from '../../react-component/marionette-region-container/marionette-region-container'
-const LayersView = require('./layers.view.js')
+import LayersView from './layers.view'
 import LayersIcon from '@material-ui/icons/Layers'
 import Paper from '@material-ui/core/Paper'
 import { Elevations } from '../theme/theme'

@@ -13,15 +13,14 @@
  *
  **/
 /* global require*/
+import React from 'react'
 const _ = require('underscore')
 const Marionette = require('marionette')
 const Backbone = require('backbone')
 const properties = require('../../js/properties.js')
-const template = require('./layers.hbs')
-const LayerItemCollectionView = require('../layer-item/layer-item.collection.view.js')
+import { LayerItemCollectionViewReact } from '../layer-item/layer-item.collection.view'
 const user = require('../singletons/user-instance.js')
 const CustomElements = require('../../js/CustomElements.js')
-const $ = require('jquery')
 
 // this is to track focus, since on reordering rerenders and loses focus
 const FocusModel = Backbone.Model.extend({
@@ -39,13 +38,13 @@ const FocusModel = Backbone.Model.extend({
       direction: undefined,
     })
   },
-  setUp(id) {
+  setUp(id: any) {
     this.set({
       id,
       direction: this.directions.up,
     })
   },
-  setDown(id) {
+  setDown(id: any) {
     this.set({
       id,
       direction: this.directions.down,
@@ -61,8 +60,7 @@ const FocusModel = Backbone.Model.extend({
     return this.getDirection() === this.directions.down
   },
 })
-
-module.exports = Marionette.LayoutView.extend({
+export default Marionette.LayoutView.extend({
   attributes() {
     return {
       'data-id': 'layers-container',
@@ -75,11 +73,32 @@ module.exports = Marionette.LayoutView.extend({
   events: {
     'click > .footer button': 'resetDefaults',
   },
-  template,
+  template() {
+    return (
+      <React.Fragment>
+        <div className="is-header">Layers</div>
+        <div className="layers">
+          <LayerItemCollectionViewReact
+            collection={this.model.get('mapLayers')}
+            updateOrdering={this.updateOrdering.bind(this)}
+            focusModel={this.focusModel}
+          />
+        </div>
+        <div className="footer">
+          <button
+            data-id="reset-to-defaults-button"
+            className="old-button is-button"
+          >
+            <span>Reset to Defaults</span>
+          </button>
+        </div>
+      </React.Fragment>
+    )
+  },
   regions: {
     layers: '> .layers',
   },
-  initialize(options) {
+  initialize(options: any) {
     if (options.model === undefined) {
       this.setDefaultModel()
     }
@@ -88,15 +107,6 @@ module.exports = Marionette.LayoutView.extend({
   },
   setupFocusModel() {
     this.focusModel = new FocusModel()
-  },
-  onRender() {
-    this.layers.show(
-      new LayerItemCollectionView({
-        collection: this.model.get('mapLayers'),
-        updateOrdering: this.updateOrdering.bind(this),
-        focusModel: this.focusModel,
-      })
-    )
   },
   listenToModel() {
     this.stopListeningToModel()
@@ -116,11 +126,11 @@ module.exports = Marionette.LayoutView.extend({
   resetDefaults() {
     this.focusModel.clear()
     this.stopListeningToModel()
-    this.model.get('mapLayers').forEach((viewLayer) => {
+    this.model.get('mapLayers').forEach((viewLayer: any) => {
       const name = viewLayer.get('name')
       const defaultConfig = _.find(
         properties.imageryProviders,
-        (layerObj) => name === layerObj.name
+        (layerObj: any) => name === layerObj.name
       )
       viewLayer.set(defaultConfig)
     })
@@ -131,7 +141,7 @@ module.exports = Marionette.LayoutView.extend({
   updateOrdering() {
     _.forEach(
       this.$el.find(`${CustomElements.getNamespace()}layer-item`),
-      (element, index) => {
+      (element: any, index: any) => {
         this.model
           .get('mapLayers')
           .get(element.getAttribute('layer-id'))
