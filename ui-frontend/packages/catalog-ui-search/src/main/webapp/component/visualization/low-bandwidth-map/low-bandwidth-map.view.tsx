@@ -12,48 +12,45 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import React from 'react'
+import { CesiumMapViewReact } from '../maps/cesium/cesium.view'
+import { OpenlayersMapViewReact } from '../maps/openlayers/openlayers.view'
 
-const _ = require('underscore')
-const template = require('./low-bandwidth-map.hbs')
-const Marionette = require('marionette')
-const CustomElements = require('../../../js/CustomElements.js')
-const CombinedMapView = require('../combined-map/combined-map.view.js')
-const OpenlayersView = require('../maps/openlayers/openlayers.view.js')
+export const LowBandwidthMapViewReact = ({
+  selectionInterface,
+  desiredContainer,
+}: {
+  selectionInterface: any
+  desiredContainer: 'cesium' | string
+}) => {
+  const [continueLoading, setContinueLoading] = React.useState(false)
 
-export default Marionette.LayoutView.extend({
-  tagName: CustomElements.register('low-bandwidth-map'),
-  template,
-  regions: {
-    mapContainer: ' .map-container',
-  },
-
-  events: {
-    'click .low-bandwidth-button': 'continueLoading',
-    'click .low-bandwidth-button-close': 'closeMap',
-  },
-
-  initialize(options: any) {
-    this.options = _.extend({}, options, {
-      lowBandwidth: false,
-    })
-  },
-
-  onRender() {
-    if (!this.options.lowBandwidth) {
-      this.continueLoading()
-    }
-  },
-
-  continueLoading() {
-    this.$el.find('.low-bandwidth-confirmation').addClass('is-hidden')
-    if (this.options.desiredContainer === 'cesium') {
-      this.mapContainer.show(new CombinedMapView(this.options))
-    } else {
-      this.mapContainer.show(new OpenlayersView(this.options))
-    }
-  },
-
-  closeMap() {
-    this.options.container.close()
-  },
-})
+  if (!continueLoading) {
+    return (
+      <>
+        <div className="low-bandwidth-confirmation">
+          <h3 className="text-center">
+            Low-bandwidth mode is enabled. Please confirm that you want this
+            component to load despite potential bandwidth implications. Choosing
+            to continue may cause available connection resources to be
+            exhausted, and you or other users on your network may experience
+            slowdowns or extended periods of waiting while necessary resources
+            are fetched.
+          </h3>
+          <button
+            className="old-button low-bandwidth-button is-positive"
+            onClick={() => {
+              setContinueLoading(true)
+            }}
+          >
+            <span>Continue to Map</span>
+          </button>
+        </div>
+      </>
+    )
+  }
+  if (desiredContainer === 'cesium') {
+    return <CesiumMapViewReact selectionInterface={selectionInterface} />
+  }
+  return <OpenlayersMapViewReact selectionInterface={selectionInterface} />
+}

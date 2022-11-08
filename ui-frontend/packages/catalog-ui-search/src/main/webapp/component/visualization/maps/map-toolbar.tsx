@@ -13,25 +13,21 @@ import Paper from '@material-ui/core/Paper'
 import { Elevations } from '../../theme/theme'
 
 type Props = {
-  mapView: {
-    toggleClustering: () => void
-    isClustering: boolean
-    zoomToHome: () => void
-    saveAsHome: () => void
-    map: {
-      doPanZoom: (polygon: any) => void
-    }
+  toggleClustering: () => void
+  isClustering: boolean
+  zoomToHome: () => void
+  saveAsHome: () => void
+  map: {
+    doPanZoom: (polygon: any) => void
   }
 }
 
-const ClusteringButton = ({ mapView }: Props) => {
-  const [isClustering, setIsClustering] = React.useState(mapView.isClustering)
+const ClusteringButton = ({ toggleClustering, isClustering }: Props) => {
   return (
     <Button
       data-id="cluster-button"
       onClick={() => {
-        mapView.toggleClustering()
-        setIsClustering(!isClustering)
+        toggleClustering()
       }}
       size="small"
       color="primary"
@@ -48,7 +44,7 @@ const ClusteringButton = ({ mapView }: Props) => {
   )
 }
 
-export const MapToolbar = ({ mapView }: Props) => {
+export const MapToolbar = (props: Props) => {
   const [expanded, setExpanded] = React.useState(false)
 
   return (
@@ -103,11 +99,11 @@ export const MapToolbar = ({ mapView }: Props) => {
               <Gazetteer
                 variant="outlined"
                 placeholder="Go to a location"
-                setState={({ polygon }: any) => mapView.map.doPanZoom(polygon)}
+                setState={({ polygon }: any) => props.map.doPanZoom(polygon)}
               />
             </div>
             <div className="py-2 pr-2 flex-shrink-0">
-              <ClusteringButton mapView={mapView} />
+              <ClusteringButton {...props} />
             </div>
             <div className="Mui-bg-default w-min self-stretch flex-shrink-0"></div>
             <div className="py-2 px-2 flex-shrink-0">
@@ -116,8 +112,8 @@ export const MapToolbar = ({ mapView }: Props) => {
             <div className="Mui-bg-default w-min self-stretch flex-shrink-0"></div>
             <div className="py-2 px-2 flex-shrink-0">
               <ZoomToHomeButton
-                goHome={() => mapView.zoomToHome()}
-                saveHome={() => mapView.saveAsHome()}
+                goHome={() => props.zoomToHome()}
+                saveHome={() => props.saveAsHome()}
               />
             </div>
             <div className="Mui-bg-default w-min self-stretch flex-shrink-0"></div>

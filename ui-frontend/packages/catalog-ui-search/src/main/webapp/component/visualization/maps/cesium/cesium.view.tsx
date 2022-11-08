@@ -12,46 +12,44 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import React from 'react'
+import { MapViewReact } from '../map.view'
 
 //You typically don't want to use this view directly.  Instead, use the combined-map component which will handle falling back to openlayers.
 
-const MapView = require('../map.view')
 const $ = require('jquery')
 const _ = require('underscore')
 const featureDetection = require('../../../singletons/feature-detection.js')
 
-module.exports = MapView.extend({
-  className: 'is-cesium',
-  events() {
-    return _.extend(
-      {
-        'click > .not-supported button': 'switchTo2DMap',
-      },
-      MapView.prototype.events
-    )
-  },
-  loadMap() {
-    const deferred = new $.Deferred()
-    require(['./map.cesium'], (CesiumMap) => {
-      deferred.resolve(CesiumMap)
-    })
-    return deferred
-  },
-  createMap() {
-    try {
-      MapView.prototype.createMap.apply(this, arguments)
-    } catch (err) {
-      console.error(err)
-      this.$el.addClass('not-supported')
-      setTimeout(() => {
-        this.switchTo2DMap()
-      }, 10000)
-      this.endLoading()
-    }
-  },
-  switchTo2DMap() {
-    if (!this.isDestroyed) {
-      featureDetection.addFailure('cesium')
-    }
-  },
-})
+export const CesiumMapViewReact = ({
+  selectionInterface,
+}: {
+  selectionInterface: any
+}) => {
+  return (
+    <MapViewReact
+      loadMap={() => {
+        const deferred = new $.Deferred()
+        require(['./map.cesium'], (CesiumMap) => {
+          deferred.resolve(CesiumMap)
+        })
+        return deferred
+      }}
+      createMap={() => {}}
+      selectionInterface={selectionInterface}
+    />
+  )
+}
+
+// try {
+//   MapView.prototype.createMap.apply(this, arguments)
+// } catch (err) {
+//   console.error(err)
+//   this.$el.addClass('not-supported')
+//   setTimeout(() => {
+//     this.switchTo2DMap()
+//   }, 10000)
+//   this.endLoading()
+// }
+
+// featureDetection.addFailure('cesium')

@@ -12,26 +12,25 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
-const template = require('./combined-map.hbs')
-const Marionette = require('marionette')
-const CustomElements = require('../../../js/CustomElements.js')
-const CesiumView = require('../maps/cesium/cesium.view.js')
-const OpenlayersView = require('../maps/openlayers/openlayers.view.js')
+import React from 'react'
+import { useListenTo } from '../../selection-checkbox/useBackbone.hook'
+import { CesiumMapViewReact } from '../maps/cesium/cesium.view'
+import { OpenlayersMapViewReact } from '../maps/openlayers/openlayers.view'
 const featureDetection = require('../../singletons/feature-detection.js')
 
-module.exports = Marionette.LayoutView.extend({
-  tagName: CustomElements.register('combined-map'),
-  template,
-  regions: {
-    mapContainer: '> .map-container',
-  },
-  onRender() {
-    this.listenToOnce(featureDetection, 'change:cesium', this.render)
-    if (featureDetection.supportsFeature('cesium')) {
-      this.mapContainer.show(new CesiumView(this.options))
-    } else {
-      this.mapContainer.show(new OpenlayersView(this.options))
-    }
-  },
-})
+export const CombinedMapViewReact = ({
+  selectionInterface,
+}: {
+  selectionInterface: any
+}) => {
+  const [, setForceRender] = React.useState(Math.random())
+  useListenTo(featureDetection, 'change:cesium', () => {
+    setForceRender(Math.random())
+  })
+
+  if (featureDetection.supportsFeature('cesium')) {
+    return <CesiumMapViewReact selectionInterface={selectionInterface} />
+  }
+
+  return <OpenlayersMapViewReact selectionInterface={selectionInterface} />
+}

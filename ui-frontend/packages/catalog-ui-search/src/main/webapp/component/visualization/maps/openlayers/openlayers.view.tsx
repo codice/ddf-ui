@@ -12,17 +12,26 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
-const MapView = require('../map.view')
+import React from 'react'
+import { MapViewReact } from '../map.view'
 const $ = require('jquery')
 
-module.exports = MapView.extend({
-  className: 'is-openlayers',
-  loadMap() {
-    const deferred = new $.Deferred()
-    require(['./map.openlayers'], (OpenlayersMap) => {
-      deferred.resolve(OpenlayersMap.default)
-    })
-    return deferred
-  },
-})
+export const OpenlayersMapViewReact = ({
+  selectionInterface,
+}: {
+  selectionInterface: any
+}) => {
+  return (
+    <MapViewReact
+      selectionInterface={selectionInterface}
+      createMap={() => {}}
+      loadMap={() => {
+        const deferred = new $.Deferred()
+        require(['./map.openlayers'], (OpenlayersMap) => {
+          deferred.resolve(OpenlayersMap.default)
+        })
+        return deferred
+      }}
+    />
+  )
+}

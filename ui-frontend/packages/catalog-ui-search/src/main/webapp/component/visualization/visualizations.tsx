@@ -15,10 +15,37 @@
 import * as React from 'react'
 import HistogramView from './histogram/lazy-histogram.view'
 import Inspector from './inspector/inspector-lazy.view'
-import LowBandwidthMapView from './low-bandwidth-map/low-bandwidth-map.view'
 import Timeline from './timeline/timeline'
 import ResultsView from '../results-visual'
+import { OpenlayersMapViewReact } from './maps/openlayers/openlayers.view'
+import { CombinedMapViewReact } from './combined-map/combined-map.view'
 const Marionette = require('marionette')
+
+const CesiumWrapper = Marionette.LayoutView.extend({
+  className: 'customElement bg-inherit',
+  template() {
+    return (
+      <>
+        <CombinedMapViewReact
+          selectionInterface={this.options.selectionInterface}
+        />
+      </>
+    )
+  },
+})
+
+const OpenlayersWrapper = Marionette.LayoutView.extend({
+  className: 'customElement bg-inherit',
+  template() {
+    return (
+      <>
+        <OpenlayersMapViewReact
+          selectionInterface={this.options.selectionInterface}
+        />
+      </>
+    )
+  },
+})
 
 const ResultsViewWrapper = Marionette.LayoutView.extend({
   className: 'customElement bg-inherit',
@@ -51,7 +78,7 @@ export const Visualizations = [
   {
     id: 'openlayers',
     title: '2D Map',
-    view: LowBandwidthMapView,
+    view: OpenlayersWrapper,
     icon: 'fa fa-map',
     options: {
       desiredContainer: 'openlayers',
@@ -61,7 +88,7 @@ export const Visualizations = [
   {
     id: 'cesium',
     title: '3D Map',
-    view: LowBandwidthMapView,
+    view: CesiumWrapper,
     icon: 'fa fa-globe',
     options: {
       desiredContainer: 'cesium',
