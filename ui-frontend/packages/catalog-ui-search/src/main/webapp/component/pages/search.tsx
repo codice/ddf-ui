@@ -8,12 +8,11 @@ const SelectionInterfaceModel = require('../selection-interface/selection-interf
 import { useQuery, useUserQuery } from '../../js/model/TypedQuery'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
-import QueryAddView from '../query-add/query-add'
+import { QueryAddReact } from '../query-add/query-add'
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import queryString from 'query-string'
 
-import MRC from '../../react-component/marionette-region-container'
 import Button, { ButtonProps } from '@material-ui/core/Button'
 import MoreVert from '@material-ui/icons/MoreVert'
 import { Elevations } from '../theme/theme'
@@ -1225,17 +1224,13 @@ const LeftMiddle = () => {
       {data === true ? (
         <Skeleton variant="rect" className="w-full h-full p-10"></Skeleton>
       ) : (
-        <MRC
+        <div
           className={`w-full h-full overflow-auto pb-64 ${
             closed ? 'hidden' : ''
           }`}
-          defaultStyling={false}
-          view={QueryAddView}
-          viewOptions={{
-            selectionInterface,
-            model: selectionInterface.getCurrentQuery(),
-          }}
-        />
+        >
+          <QueryAddReact model={selectionInterface.getCurrentQuery()} />
+        </div>
       )}
     </div>
   )
