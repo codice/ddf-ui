@@ -28,7 +28,6 @@ import MapInfo from '../../../react-component/map-info'
 import DistanceInfo from '../../../react-component/distance-info'
 import getDistance from 'geolib/es/getDistance'
 import { Drawing } from '../../singletons/drawing'
-import { GeometriesView } from './react/geometries.view'
 import MapToolbar from './map-toolbar'
 import MapContextDropdown from '../../map-context-menu/map-context-menu.view'
 import { useListenTo } from '../../selection-checkbox/useBackbone.hook'
@@ -582,7 +581,7 @@ const useOnMouseLeave = ({
 }) => {
   React.useEffect(() => {
     if (mapElement && mapModel) {
-      mapElement.addEventListener('onmouseleave', () => {
+      mapElement.addEventListener('mouseleave', () => {
         mapModel.clearMouseCoordinates()
       })
     }
