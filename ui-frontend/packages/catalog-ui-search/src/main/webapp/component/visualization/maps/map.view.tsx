@@ -17,7 +17,6 @@ import * as React from 'react'
 import ExtensionPoints from '../../../extension-points'
 
 const wreqr = require('../../../js/wreqr.js')
-const PopupPreviewView = require('./popup.view.js')
 const LocationModel = require('../../location-old/location-old.js')
 const user = require('../../singletons/user-instance.js')
 const MapModel = require('./map.model')
@@ -32,9 +31,9 @@ import MapToolbar from './map-toolbar'
 import MapContextDropdown from '../../map-context-menu/map-context-menu.view'
 import { useListenTo } from '../../selection-checkbox/useBackbone.hook'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
-import MRC from '../../../react-component/marionette-region-container'
 import Geometries from './react/geometries'
 import LinearProgress from '@material-ui/core/LinearProgress'
+import PopupPreview from '../../../react-component/popup-preview'
 const featureDetection = require('../../singletons/feature-detection.js')
 
 function findExtreme({ objArray, property, comparator }: any) {
@@ -763,13 +762,10 @@ export const MapViewReact = (props: MapViewReactType) => {
       <div className="popupPreview">
         {map && mapModel && props.selectionInterface ? (
           <>
-            <MRC
-              view={PopupPreviewView}
-              viewOptions={{
-                map: map,
-                mapModel: mapModel,
-                selectionInterface: props.selectionInterface,
-              }}
+            <PopupPreview
+              map={map}
+              mapModel={mapModel}
+              selectionInterface={props.selectionInterface}
             />
           </>
         ) : null}
