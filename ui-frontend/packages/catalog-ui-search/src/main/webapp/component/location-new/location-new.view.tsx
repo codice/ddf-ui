@@ -16,37 +16,6 @@ import * as React from 'react'
 import LocationComponent, { LocationInputPropsType } from './location'
 const { ddToWkt, dmsToWkt, usngToWkt } = require('./utils')
 
-const withAdapter = (Component: any) =>
-  class extends React.Component<any, any> {
-    constructor(props: any) {
-      super(props)
-      this.state = props.model.toJSON()
-    }
-    setModelState() {
-      this.setState(this.props.model.toJSON())
-    }
-    componentWillMount() {
-      this.props.model.on('change', this.setModelState, this)
-    }
-    componentWillUnmount() {
-      this.props.model.off('change', this.setModelState)
-    }
-    render() {
-      return (
-        <Component
-          state={this.state}
-          options={this.props.options}
-          setState={(...args: any) => this.props.model.set(...args)}
-        />
-      )
-    }
-  }
-
-const LocationInput = withAdapter(LocationComponent) as any
-
-const Marionette = require('marionette')
-const _ = require('underscore')
-const CustomElements = require('../../js/CustomElements.js')
 const LocationNewModel = require('./location-new')
 
 type LocationInputReactPropsType = {
@@ -89,25 +58,3 @@ export const LocationInputReact = ({
 
   return <LocationComponent state={state} options={{}} setState={setState} />
 }
-
-export default Marionette.LayoutView.extend({
-  template() {
-    return (
-      <div className="location-input">
-        <LocationInput model={this.model} />
-      </div>
-    )
-  },
-  tagName: CustomElements.register('location-new'),
-  initialize() {
-    this.propertyModel = this.model
-    this.model = new LocationNewModel()
-    _.bindAll.apply(_, [this].concat(_.functions(this))) // underscore bindAll does not take array arg
-  },
-  getCurrentValue() {
-    return this.model.getValue()
-  },
-  isValid() {
-    return this.model.isValid()
-  },
-})
