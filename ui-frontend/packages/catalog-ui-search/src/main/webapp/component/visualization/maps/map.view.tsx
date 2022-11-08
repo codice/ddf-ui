@@ -507,7 +507,6 @@ const updateTarget = ({
 }
 
 const handleMapHover = ({
-  map,
   mapModel,
   selectionInterface,
   mapEvent,

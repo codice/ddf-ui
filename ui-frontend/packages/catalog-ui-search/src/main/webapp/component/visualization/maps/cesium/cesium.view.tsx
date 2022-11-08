@@ -21,7 +21,6 @@ import { OpenlayersMapViewReact } from '../openlayers/openlayers.view'
 //You typically don't want to use this view directly.  Instead, use the combined-map component which will handle falling back to openlayers.
 
 const $ = require('jquery')
-const _ = require('underscore')
 const featureDetection = require('../../../singletons/feature-detection.js')
 
 const useSupportsCesium = () => {
