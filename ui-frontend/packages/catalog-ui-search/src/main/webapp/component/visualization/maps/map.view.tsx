@@ -609,6 +609,27 @@ type MapViewReactType = {
   selectionInterface: any
 }
 
+const useChangeCursorOnHover = ({
+  mapElement,
+  isHovering,
+}: {
+  mapElement: HTMLDivElement | null
+  isHovering: boolean
+}) => {
+  React.useEffect(() => {
+    if (mapElement) {
+      const canvas = mapElement.querySelector('canvas')
+      if (canvas) {
+        if (isHovering) {
+          canvas.classList.add('cursor-pointer')
+        } else {
+          canvas.classList.remove('cursor-pointer')
+        }
+      }
+    }
+  }, [mapElement, isHovering])
+}
+
 export const MapViewReact = (props: MapViewReactType) => {
   const [isClustering, setIsClustering] = React.useState(false)
   const mapModel = useMapModel()
@@ -647,9 +668,13 @@ export const MapViewReact = (props: MapViewReactType) => {
     selectionInterface: props.selectionInterface,
   })
   useOnMouseLeave({ mapElement, mapModel })
-  const isDrawing = useListenToDrawing()
+  useChangeCursorOnHover({ isHovering, mapElement })
+  // const isDrawing = useListenToDrawing()
   return (
-    <div ref={setContainerElement} className="w-full h-full bg-inherit">
+    <div
+      ref={setContainerElement}
+      className={`w-full h-full bg-inherit relative p-2`}
+    >
       <div id="mapDrawingPopup" ref={setMapDrawingPopupElement}></div>
       <div className="map-context-menu"></div>
       <div id="mapTools">
@@ -687,7 +712,7 @@ export const MapViewReact = (props: MapViewReactType) => {
       <div
         data-id="map-container"
         id="mapContainer"
-        className="height-full p-2"
+        className="height-full"
         ref={setMapElement}
       ></div>
       <div className="mapInfo">
