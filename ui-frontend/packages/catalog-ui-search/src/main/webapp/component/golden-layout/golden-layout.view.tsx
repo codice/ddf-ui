@@ -110,15 +110,22 @@ function registerComponent(
     (container: any, componentState: any) => {
       container.on('open', () => {
         setTimeout(() => {
-          const componentView = new ComponentView(
-            _.extend({}, options, componentState, {
-              container,
-            })
+          // const componentView = new ComponentView(
+          //   _.extend({}, options, componentState, {
+          //     container,
+          //   })
+          // )
+          console.log(options)
+          console.log(componentState)
+          console.log(container)
+          ReactDOM.render(
+            <Providers>
+              <ComponentView selectionInterface={options.selectionInterface} />
+            </Providers>,
+            container.getElement()[0]
           )
-          container.getElement().append(componentView.el)
-          componentView.render()
           container.on('destroy', () => {
-            componentView.destroy()
+            ReactDOM.unmountComponentAtNode(container.getElement()[0])
           })
         }, 0)
       })

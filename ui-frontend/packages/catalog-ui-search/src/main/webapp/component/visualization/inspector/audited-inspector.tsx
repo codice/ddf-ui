@@ -15,20 +15,18 @@
 
 import * as React from 'react'
 
-const Marionette = require('marionette')
 import { AuditComponent } from './inspector.audit'
 import Inspector from './inspector'
 
-const LazyInspectorView = Marionette.LayoutView.extend({
-  className: 'customElement',
-  template() {
-    return (
-      <React.Fragment>
-        <AuditComponent selectionInterface={this.options.selectionInterface} />
-        <Inspector selectionInterface={this.options.selectionInterface} />
-      </React.Fragment>
-    )
-  },
-})
-
-export default LazyInspectorView
+export const AuditedInspector = ({
+  selectionInterface,
+}: {
+  selectionInterface: any
+}) => {
+  return (
+    <React.Fragment>
+      <AuditComponent selectionInterface={selectionInterface} />
+      <Inspector selectionInterface={selectionInterface} />
+    </React.Fragment>
+  )
+}

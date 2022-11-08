@@ -12,58 +12,12 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
-import HistogramView from './histogram/lazy-histogram.view'
-import Inspector from './inspector/inspector-lazy.view'
 import Timeline from './timeline/timeline'
 import ResultsView from '../results-visual'
 import { OpenlayersMapViewReact } from './maps/openlayers/openlayers.view'
 import { CesiumMapViewReact } from './maps/cesium/cesium.view'
-const Marionette = require('marionette')
-
-const CesiumWrapper = Marionette.LayoutView.extend({
-  className: 'customElement bg-inherit',
-  template() {
-    return (
-      <>
-        <CesiumMapViewReact
-          selectionInterface={this.options.selectionInterface}
-        />
-      </>
-    )
-  },
-})
-
-const OpenlayersWrapper = Marionette.LayoutView.extend({
-  className: 'customElement bg-inherit',
-  template() {
-    return (
-      <>
-        <OpenlayersMapViewReact
-          selectionInterface={this.options.selectionInterface}
-        />
-      </>
-    )
-  },
-})
-
-const ResultsViewWrapper = Marionette.LayoutView.extend({
-  className: 'customElement bg-inherit',
-  template() {
-    return (
-      <>
-        <ResultsView selectionInterface={this.options.selectionInterface} />
-      </>
-    )
-  },
-})
-
-const TimelineViewWrapper = Marionette.LayoutView.extend({
-  className: 'customElement',
-  template() {
-    return <Timeline selectionInterface={this.options.selectionInterface} />
-  },
-})
+import { Histogram } from './histogram/histogram'
+import { AuditedInspector } from './inspector/audited-inspector'
 
 type VisualizationType = {
   id: string
@@ -78,7 +32,7 @@ export const Visualizations = [
   {
     id: 'openlayers',
     title: '2D Map',
-    view: OpenlayersWrapper,
+    view: OpenlayersMapViewReact,
     icon: 'fa fa-map',
     options: {
       desiredContainer: 'openlayers',
@@ -88,7 +42,7 @@ export const Visualizations = [
   {
     id: 'cesium',
     title: '3D Map',
-    view: CesiumWrapper,
+    view: CesiumMapViewReact,
     icon: 'fa fa-globe',
     options: {
       desiredContainer: 'cesium',
@@ -99,13 +53,13 @@ export const Visualizations = [
     id: 'histogram',
     title: 'Histogram',
     icon: 'fa fa-bar-chart',
-    view: HistogramView,
+    view: Histogram,
     singular: true,
   },
   {
     id: 'results',
     title: 'Results',
-    view: ResultsViewWrapper,
+    view: ResultsView,
     icon: 'fa fa-table',
     singular: true,
   },
@@ -113,14 +67,14 @@ export const Visualizations = [
     id: 'inspector',
     title: 'Inspector',
     icon: 'fa fa-info',
-    view: Inspector,
+    view: AuditedInspector,
     singular: true,
   },
   {
     id: 'timeline',
     title: 'Timeline',
     icon: 'fa fa-hourglass-half',
-    view: TimelineViewWrapper,
+    view: Timeline,
     singular: true,
   },
 ] as VisualizationType[]
