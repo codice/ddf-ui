@@ -34,6 +34,8 @@ import { useListenTo } from '../../selection-checkbox/useBackbone.hook'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import MRC from '../../../react-component/marionette-region-container'
 import Geometries from './react/geometries'
+import LinearProgress from '@material-ui/core/LinearProgress'
+const featureDetection = require('../../singletons/feature-detection.js')
 
 function findExtreme({ objArray, property, comparator }: any) {
   if (objArray.length === 0) {
@@ -152,15 +154,19 @@ const useMap = (
 
   React.useEffect(() => {
     if (props.mapElement && mapCode) {
-      setMap(
-        mapCode.createMap(
-          props.mapElement,
-          props.selectionInterface,
-          props.mapDrawingPopupElement,
-          props.containerElement,
-          props.mapModel
+      try {
+        setMap(
+          mapCode.createMap(
+            props.mapElement,
+            props.selectionInterface,
+            props.mapDrawingPopupElement,
+            props.containerElement,
+            props.mapModel
+          )
         )
-      )
+      } catch (err) {
+        featureDetection.addFailure('cesium')
+      }
     }
     return () => {
       if (props.mapElement && mapCode && map) {
@@ -630,6 +636,27 @@ const useChangeCursorOnHover = ({
   }, [mapElement, isHovering])
 }
 
+const useChangeCursorOnDrawing = ({
+  mapElement,
+  isDrawing,
+}: {
+  mapElement: HTMLDivElement | null
+  isDrawing: boolean
+}) => {
+  React.useEffect(() => {
+    if (mapElement) {
+      const canvas = mapElement.querySelector('canvas')
+      if (canvas) {
+        if (isDrawing) {
+          canvas.style.cursor = 'crosshair'
+        } else {
+          canvas.style.cursor = ''
+        }
+      }
+    }
+  }, [mapElement, isDrawing])
+}
+
 export const MapViewReact = (props: MapViewReactType) => {
   const [isClustering, setIsClustering] = React.useState(false)
   const mapModel = useMapModel()
@@ -669,12 +696,25 @@ export const MapViewReact = (props: MapViewReactType) => {
   })
   useOnMouseLeave({ mapElement, mapModel })
   useChangeCursorOnHover({ isHovering, mapElement })
-  // const isDrawing = useListenToDrawing()
+  const isDrawing = useListenToDrawing()
+  useChangeCursorOnDrawing({ mapElement, isDrawing })
   return (
     <div
       ref={setContainerElement}
       className={`w-full h-full bg-inherit relative p-2`}
     >
+      {!map ? (
+        <>
+          <LinearProgress
+            className="absolute left-0 w-full h-2 transform -translate-y-1/2"
+            style={{
+              top: '50%',
+            }}
+          />
+        </>
+      ) : (
+        <></>
+      )}
       <div id="mapDrawingPopup" ref={setMapDrawingPopupElement}></div>
       <div className="map-context-menu"></div>
       <div id="mapTools">
@@ -736,18 +776,6 @@ export const MapViewReact = (props: MapViewReactType) => {
         ) : null}
       </div>
       {mapModel ? <MapContextDropdown mapModel={mapModel} /> : null}
-      <div className="not-supported">
-        <h3 className=" text-center">
-          The 3D Map is not supported by your browser.
-        </h3>
-        <button className="old-button switch-map is-positive">
-          <span className="fa fa-map"></span>
-          <span>2D Map</span>
-        </button>
-        <h3 className=" text-center">
-          2D Map will automatically load after 10 seconds.
-        </h3>
-      </div>
     </div>
   )
 }

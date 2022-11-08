@@ -18,7 +18,7 @@ import Inspector from './inspector/inspector-lazy.view'
 import Timeline from './timeline/timeline'
 import ResultsView from '../results-visual'
 import { OpenlayersMapViewReact } from './maps/openlayers/openlayers.view'
-import { CombinedMapViewReact } from './combined-map/combined-map.view'
+import { CesiumMapViewReact } from './maps/cesium/cesium.view'
 const Marionette = require('marionette')
 
 const CesiumWrapper = Marionette.LayoutView.extend({
@@ -26,7 +26,7 @@ const CesiumWrapper = Marionette.LayoutView.extend({
   template() {
     return (
       <>
-        <CombinedMapViewReact
+        <CesiumMapViewReact
           selectionInterface={this.options.selectionInterface}
         />
       </>
