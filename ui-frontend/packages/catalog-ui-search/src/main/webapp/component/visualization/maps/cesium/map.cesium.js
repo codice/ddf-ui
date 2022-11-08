@@ -91,6 +91,7 @@ function createMap(insertionElement) {
     element: insertionElement,
     cesiumOptions: {
       sceneMode: Cesium.SceneMode.SCENE3D,
+      creditContainer: document.createElement('div'),
       animation: false,
       fullscreenButton: false,
       timeline: false,
