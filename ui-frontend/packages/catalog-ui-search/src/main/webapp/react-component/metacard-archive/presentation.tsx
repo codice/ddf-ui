@@ -16,7 +16,7 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import styled from 'styled-components'
-import LoadingCompanion from '../loading-companion'
+import LinearProgress from '@material-ui/core/LinearProgress'
 import Button from '@material-ui/core/Button'
 import { useDialogState } from '../../component/hooks/useDialogState'
 type Props = {
@@ -36,8 +36,8 @@ const render = (props: Props) => {
   const { onArchiveConfirm, onRestoreConfirm, isDeleted, loading } = props
   const archiveDialogState = useDialogState()
   const restoreDialogState = useDialogState()
-  return (
-    <LoadingCompanion loading={loading}>
+  return !loading ? (
+    <>
       <archiveDialogState.MuiDialogComponents.Dialog
         {...archiveDialogState.MuiDialogProps}
       >
@@ -117,7 +117,9 @@ and then click 'Restore Deleted Items'."
           <div>Restore item(s)</div>
         </Button>
       )}
-    </LoadingCompanion>
+    </>
+  ) : (
+    <LinearProgress className="w-full h-2" />
   )
 }
 
