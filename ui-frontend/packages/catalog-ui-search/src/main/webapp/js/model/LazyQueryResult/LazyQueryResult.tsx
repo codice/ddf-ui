@@ -324,9 +324,7 @@ export class LazyQueryResult {
     return this.plain.metacard.properties['resource-download-url'] !== undefined
   }
   getPreview(): string {
-    return this.plain.actions.filter(
-      (action) => action.id === 'catalog.data.metacard.html.preview'
-    )[0].url
+    return this.plain.metacard.properties['ext.extracted.text']
   }
   hasPreview(): boolean {
     return this.plain.metacard.properties['ext.extracted.text'] !== undefined

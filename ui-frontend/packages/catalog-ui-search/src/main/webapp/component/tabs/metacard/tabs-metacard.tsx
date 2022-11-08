@@ -12,7 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import MetacardPreviewView from '../../metacard-preview/metacard-preview.view'
 import React from 'react'
 import { MetacardOverwrite } from '../../metacard-overwrite/metacard-overwrite.view'
 import MetacardArchive from '../../../react-component/metacard-archive'
@@ -21,7 +20,7 @@ import MetacardQuality from '../../../react-component/metacard-quality'
 import MetacardHistory from '../../../react-component/metacard-history'
 import Summary from './summary'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult.js'
-import MRC from '../../../react-component/marionette-region-container'
+import { MetacardPreviewReact } from '../../metacard-preview/metacard-preview.view'
 
 export type TabContentProps = {
   result: LazyQueryResult
@@ -45,7 +44,7 @@ export const TabNames = {
 const Tabs = {
   Details: Summary,
   Preview: ({ result }) => {
-    return <MRC view={MetacardPreviewView} viewOptions={{ result }} />
+    return <MetacardPreviewReact result={result} />
   },
   History: MetacardHistory,
   Quality: MetacardQuality,
