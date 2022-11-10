@@ -6,11 +6,11 @@ Enzyme.configure({ adapter: new Adapter() })
 import { DateField } from './date'
 import moment from 'moment'
 import { expect } from 'chai'
-const Common = require('../../js/Common')
 
 //@ts-ignore
 import user from '../singletons/user-instance'
 import { DateHelpers } from './date-helpers'
+import Common from '../../js/Common'
 
 /**
  * Useful for seeing if updates are called correctly.

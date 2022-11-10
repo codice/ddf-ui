@@ -23,8 +23,8 @@ const NotificationView = require('./notification.view')
 const ShapeUtils = require('../ShapeUtils.js')
 const Turf = require('@turf/turf')
 const DrawingController = require('./drawing.controller')
-const olUtils = require('../OpenLayersGeometryUtils')
-const DistanceUtils = require('../DistanceUtils.js')
+import olUtils from '../OpenLayersGeometryUtils'
+import DistanceUtils from '../DistanceUtils'
 import { validateGeo } from '../../react-component/utils/validation'
 
 const translateFromOpenlayersCoordinates = (coords) => {

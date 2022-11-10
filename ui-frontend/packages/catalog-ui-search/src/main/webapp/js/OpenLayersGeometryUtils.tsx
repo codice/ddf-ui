@@ -13,13 +13,26 @@
  *
  **/
 
+import Common from './Common'
+
 /*jshint esversion: 6, bitwise: false*/
 const ol = require('openlayers')
 const properties = require('./properties.js')
-const Common = require('./Common')
 
-module.exports = {
-  getCoordinatesFromGeometry: (geometry) => {
+type CoordinateType = Array<any>
+
+type PointType = Array<any>
+
+type GeometryType = {
+  getType: () => 'LineString' | 'Polygon' | 'Circle'
+  getCoordinates: () => CoordinateType
+  getCenter: () => any
+  setCoordinates: (coords: CoordinateType) => void
+  setCenter: (cords: CoordinateType) => void
+}
+
+export const OpenLayersGeometryUtils = {
+  getCoordinatesFromGeometry: (geometry: GeometryType) => {
     const type = geometry.getType()
     switch (type) {
       case 'LineString':
@@ -32,7 +45,10 @@ module.exports = {
         return []
     }
   },
-  setCoordinatesForGeometry: (geometry, coordinates) => {
+  setCoordinatesForGeometry: (
+    geometry: GeometryType,
+    coordinates: CoordinateType
+  ) => {
     const type = geometry.getType()
     switch (type) {
       case 'LineString':
@@ -48,18 +64,20 @@ module.exports = {
         break
     }
   },
-  mapCoordinateToLonLat: (point) =>
+  mapCoordinateToLonLat: (point: PointType) =>
     ol.proj.transform(point, properties.projection, 'EPSG:4326'),
-  lonLatToMapCoordinate: (point) =>
+  lonLatToMapCoordinate: (point: PointType) =>
     ol.proj.transform(point, 'EPSG:4326', properties.projection),
-  wrapCoordinatesFromGeometry: (geometry) => {
-    let coordinates = module.exports
-      .getCoordinatesFromGeometry(geometry)
-      .map(module.exports.mapCoordinateToLonLat)
+  wrapCoordinatesFromGeometry: (geometry: GeometryType) => {
+    let coordinates = OpenLayersGeometryUtils.getCoordinatesFromGeometry(
+      geometry
+    ).map(OpenLayersGeometryUtils.mapCoordinateToLonLat)
     coordinates = Common.wrapMapCoordinatesArray(coordinates).map(
-      module.exports.lonLatToMapCoordinate
+      OpenLayersGeometryUtils.lonLatToMapCoordinate
     )
-    module.exports.setCoordinatesForGeometry(geometry, coordinates)
+    OpenLayersGeometryUtils.setCoordinatesForGeometry(geometry, coordinates)
     return geometry
   },
 }
+
+export default OpenLayersGeometryUtils

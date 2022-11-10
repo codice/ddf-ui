@@ -15,7 +15,7 @@
 
 const UploadModel = require('./Upload')
 const Backbone = require('backbone')
-const Common = require('../Common.js')
+import Common from '../Common'
 const wreqr = require('../wreqr.js')
 const _ = require('underscore')
 

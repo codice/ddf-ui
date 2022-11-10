@@ -1,3 +1,6 @@
+import { useRender } from '../hooks/useRender'
+import { useListenTo } from '../selection-checkbox/useBackbone.hook'
+
 const Backbone = require('backbone')
 const wreqr = require('../../js/wreqr.js')
 const $ = require('jquery')
@@ -23,7 +26,6 @@ export const Drawing = new (Backbone.Model.extend({
     this.listenTo(wreqr.vent, 'search:drawcircle', this.turnOnDrawing)
     this.listenTo(wreqr.vent, 'search:drawpoly', this.turnOnDrawing)
     this.listenTo(wreqr.vent, 'search:drawbbox', this.turnOnDrawing)
-    this.listenTo(wreqr.vent, 'search:drawstop', this.turnOffDrawing)
     this.listenTo(wreqr.vent, 'search:drawend', this.turnOffDrawing)
   },
   turnOnDrawing(model: Backbone.Model) {
@@ -49,3 +51,9 @@ export const Drawing = new (Backbone.Model.extend({
     return this.get('drawing')
   },
 }))() as DrawingType
+
+export const useIsDrawing = () => {
+  const render = useRender()
+  useListenTo(Drawing, 'change:drawing', render)
+  return Drawing.isDrawing()
+}

@@ -13,25 +13,35 @@
  *
  **/
 import React from 'react'
+import { Memo } from '../../../memo/memo'
 import { MapViewReact } from '../map.view'
+import { OpenlayersDrawings } from './drawing-and-display'
 const $ = require('jquery')
+
+const loadOpenLayersCode = () => {
+  const deferred = new $.Deferred()
+  require(['./map.openlayers'], (OpenlayersMap) => {
+    deferred.resolve(OpenlayersMap.default)
+  })
+  return deferred
+}
 
 export const OpenlayersMapViewReact = ({
   selectionInterface,
 }: {
   selectionInterface: any
 }) => {
+  const [map, setMap] = React.useState<any>(null)
   return (
-    <MapViewReact
-      selectionInterface={selectionInterface}
-      createMap={() => {}}
-      loadMap={() => {
-        const deferred = new $.Deferred()
-        require(['./map.openlayers'], (OpenlayersMap) => {
-          deferred.resolve(OpenlayersMap.default)
-        })
-        return deferred
-      }}
-    />
+    <>
+      <Memo>
+        <MapViewReact
+          selectionInterface={selectionInterface}
+          loadMap={loadOpenLayersCode}
+          setMap={setMap}
+        />
+      </Memo>
+      <OpenlayersDrawings map={map} />
+    </>
   )
 }

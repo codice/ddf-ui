@@ -15,8 +15,8 @@
 
 import Paper from '@material-ui/core/Paper'
 import React from 'react'
+import Common from '../../js/Common'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
-const Common = require('../../js/Common')
 
 export const MetacardPreviewReact = ({
   result,

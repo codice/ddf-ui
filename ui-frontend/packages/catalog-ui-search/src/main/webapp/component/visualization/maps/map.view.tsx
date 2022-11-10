@@ -234,19 +234,19 @@ const handleFilter = ({
       const locationModel = new LocationModel(filter.value)
       switch (filter.value.type) {
         case 'LINE':
-          map.showLineShape(locationModel)
+          // map.showLineShape(locationModel)
           break
         case 'POLYGON':
-          map.showPolygonShape(locationModel)
+          // map.showPolygonShape(locationModel)
           break
         case 'MULTIPOLYGON':
           map.showPolygonShape(locationModel)
           break
         case 'BBOX':
-          map.showBboxShape(locationModel)
+          // map.showBboxShape(locationModel)
           break
         case 'POINTRADIUS':
-          map.showCircleShape(locationModel)
+          // map.showCircleShape(locationModel)
           break
       }
     }
@@ -601,7 +601,7 @@ const useListenToDrawing = () => {
 }
 
 type MapViewReactType = {
-  createMap: () => any
+  setMap: (map: any) => void
   /*
     Map creation is deferred to this method, so that all resources pertaining to the map can be loaded lazily and
     not be included in the initial page payload.
@@ -676,6 +676,9 @@ export const MapViewReact = (props: MapViewReactType) => {
     containerElement,
     mapDrawingPopupElement,
   })
+  React.useEffect(() => {
+    props.setMap(map) // allow outside access to map
+  }, [map])
   useWreqrMapListeners({ map })
   useSelectionInterfaceMapListeners({
     map,

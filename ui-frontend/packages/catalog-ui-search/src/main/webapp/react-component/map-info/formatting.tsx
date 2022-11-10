@@ -15,12 +15,12 @@
 const metacardDefinitions = require('../../component/singletons/metacard-definitions')
 const mtgeo = require('mt-geo')
 const usngs = require('usng.js')
-const Common = require('js/Common')
 
 const converter = new usngs.Converter()
 const usngPrecision = 6
 
 import { Attribute, Coordinates, Format, validCoordinates } from '.'
+import Common from '../../js/Common'
 
 export const formatAttribute = ({ name, value }: Attribute): string | null => {
   const definition = metacardDefinitions.metacardTypes[name]

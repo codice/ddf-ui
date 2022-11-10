@@ -27,7 +27,6 @@ import {
 
 const metacardDefinitions = require('../singletons/metacard-definitions.js')
 const user = require('../singletons/user-instance.js')
-const Common = require('../../js/Common.js')
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
@@ -35,6 +34,7 @@ import { SelectionBackground } from './result-item'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { TypedUserInstance } from '../singletons/TypedUser'
 import useCoordinateFormat from '../tabs/metacard/useCoordinateFormat'
+import Common from '../../js/Common'
 
 type ResultItemFullProps = {
   lazyResult: LazyQueryResult

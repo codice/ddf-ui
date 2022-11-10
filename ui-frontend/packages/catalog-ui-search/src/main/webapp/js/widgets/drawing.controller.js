@@ -33,9 +33,6 @@ module.exports = Marionette.Controller.extend({
     ) {
       this.draw(model)
     })
-    this.listenTo(wreqr.vent, 'search:drawstop', function (model) {
-      this.stop(model)
-    })
     this.listenTo(wreqr.vent, 'search:drawend', function (model) {
       this.destroyByModel(model)
     })

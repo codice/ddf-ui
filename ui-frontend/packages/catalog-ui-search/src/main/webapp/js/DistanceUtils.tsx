@@ -31,17 +31,25 @@ const METERS_NAUTICAL_MILES = 1852
 of application */
 const DECIMAL_PRECISION = 6
 
-module.exports = {
-  distToDegrees(distanceInMeters) {
+type UnitsType =
+  | 'kilometers'
+  | 'feet'
+  | 'yards'
+  | 'miles'
+  | 'nautical miles'
+  | 'meters'
+
+export const DistanceUtils = {
+  distToDegrees(distanceInMeters: number) {
     return this.toDegrees(this.distToRadians(distanceInMeters))
   },
-  distToRadians(distanceInMeters) {
+  distToRadians(distanceInMeters: number) {
     return distanceInMeters / EARTH_MEAN_RADIUS_METERS
   },
-  toDegrees(distanceInRadians) {
+  toDegrees(distanceInRadians: number) {
     return distanceInRadians * RADIANS_TO_DEGREES
   },
-  getDistanceInMeters(distance, units) {
+  getDistanceInMeters(distance: number, units: UnitsType) {
     distance = distance || 0
     switch (units) {
       case 'kilometers':
@@ -59,7 +67,7 @@ module.exports = {
         return Number(distance)
     }
   },
-  getDistanceFromMeters(distance, units) {
+  getDistanceFromMeters(distance: number, units: UnitsType) {
     distance = distance || 0
     switch (units) {
       case 'kilometers':
@@ -77,11 +85,13 @@ module.exports = {
         return distance
     }
   },
-  altitudeRound(value) {
+  altitudeRound(value: number) {
     // round the value, don't need picometer precision.
     return Math.round(value)
   },
-  coordinateRound(value) {
-    return parseFloat(parseFloat(value).toFixed(DECIMAL_PRECISION))
+  coordinateRound(value: string | number) {
+    return parseFloat(parseFloat(value.toString()).toFixed(DECIMAL_PRECISION))
   },
 }
+
+export default DistanceUtils

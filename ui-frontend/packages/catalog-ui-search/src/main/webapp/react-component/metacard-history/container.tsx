@@ -16,12 +16,12 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import fetch from '../utils/fetch'
-const Common = require('../../js/Common.js')
 const moment = require('moment')
 const announcement = require('component/announcement')
 import MetacardHistoryPresentation from './presentation'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { TypedUserInstance } from '../../component/singletons/TypedUser'
+import Common from '../../js/Common'
 
 type Props = {
   result: LazyQueryResult

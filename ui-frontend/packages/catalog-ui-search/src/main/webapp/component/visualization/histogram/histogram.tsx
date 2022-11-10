@@ -7,13 +7,13 @@ import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import { useSelectedResults } from '../../../js/model/LazyQueryResult/hooks'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
+import Common from '../../../js/Common'
 
 const wreqr = require('../../../js/wreqr.js')
 const $ = require('jquery')
 const _ = require('underscore')
 const Plotly = require('plotly.js/dist/plotly.js')
 const metacardDefinitions = require('../../singletons/metacard-definitions.js')
-const Common = require('../../../js/Common.js')
 const properties = require('../../../js/properties.js')
 const moment = require('moment')
 const user = require('../../singletons/user-instance.js')

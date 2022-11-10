@@ -19,7 +19,7 @@ const wreqr = require('./wreqr.js')
 const user = require('../component/singletons/user-instance.js')
 const preferences = user.get('user').get('preferences')
 let lessStyles = require('./uncompiled-less.unless')
-const Common = require('./Common.js')
+import Common from './Common'
 
 const backboneModel = new Backbone.Model()
 import { lessWorkerModel } from './../component/singletons/less.worker-instance'

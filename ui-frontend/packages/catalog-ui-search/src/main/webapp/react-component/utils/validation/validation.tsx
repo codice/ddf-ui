@@ -22,7 +22,7 @@ const converter = new usngs.Converter()
 const NORTHING_OFFSET = 10000000
 const LATITUDE = 'latitude'
 const LONGITUDE = 'longitude'
-const DistanceUtils = require('../../../js/DistanceUtils')
+import DistanceUtils from '../../../js/DistanceUtils'
 const {
   parseDmsCoordinate,
   dmsCoordinateToDD,

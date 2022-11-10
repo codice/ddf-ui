@@ -9,7 +9,6 @@ import TypedMetacardDefs from './metacardDefinitions'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import Checkbox from '@material-ui/core/Checkbox'
 import Divider from '@material-ui/core/Divider'
-const Common = require('../../../js/Common.js')
 import DeleteIcon from '@material-ui/icons/Delete'
 import TextField from '@material-ui/core/TextField'
 import { useDialog } from '../../dialog'
@@ -37,6 +36,7 @@ import useCoordinateFormat from './useCoordinateFormat'
 import { MetacardAttribute } from '../../../js/model/Types'
 import ExtensionPoints from '../../../extension-points'
 import { LocationInputReact } from '../../location-new/location-new.view'
+import Common from '../../../js/Common'
 
 function getSummaryShown(): string[] {
   const userchoices = user

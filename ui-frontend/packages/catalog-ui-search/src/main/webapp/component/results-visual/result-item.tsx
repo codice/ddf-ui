@@ -25,7 +25,6 @@ import Button from '@material-ui/core/Button'
 import LinkIcon from '@material-ui/icons/Link'
 import GetAppIcon from '@material-ui/icons/GetApp'
 import Grid from '@material-ui/core/Grid'
-const Common = require('../../js/Common.js')
 import { hot } from 'react-hot-loader'
 import Paper from '@material-ui/core/Paper'
 import Tooltip from '@material-ui/core/Tooltip'
@@ -51,6 +50,7 @@ import EditIcon from '@material-ui/icons/Edit'
 import { Link } from '../link/link'
 import { useMenuState } from '../menu-state/menu-state'
 import Popover from '@material-ui/core/Popover'
+import Common from '../../js/Common'
 
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (

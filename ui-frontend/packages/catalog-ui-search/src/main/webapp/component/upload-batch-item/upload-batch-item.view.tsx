@@ -13,7 +13,6 @@
  *
  **/
 
-const Common = require('../../js/Common.js')
 const user = require('../singletons/user-instance.js')
 import { UploadSummaryViewReact } from '../upload-summary/upload-summary.view'
 import { Link } from 'react-router-dom'
@@ -22,6 +21,7 @@ import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import Button from '@material-ui/core/Button'
 import Paper from '@material-ui/core/Paper'
 import CloseIcon from '@material-ui/icons/Close'
+import Common from '../../js/Common'
 
 export const UploadBatchItemViewReact = ({ model }: { model: any }) => {
   const [modelJson, setModelJson] = React.useState(model.toJSON())

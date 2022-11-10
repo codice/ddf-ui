@@ -18,7 +18,7 @@ const _ = require('underscore')
 const Backbone = require('backbone')
 const usngs = require('usng.js')
 const dmsUtils = require('../location-new/utils/dms-utils.js')
-const DistanceUtils = require('../../js/DistanceUtils.js')
+import DistanceUtils from '../../js/DistanceUtils'
 const wreqr = require('../../js/wreqr.js')
 
 import { Drawing } from '../singletons/drawing'

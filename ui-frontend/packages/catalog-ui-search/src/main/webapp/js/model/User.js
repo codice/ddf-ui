@@ -25,7 +25,7 @@ const wreqr = require('../wreqr.js')
 const Backbone = require('backbone')
 const properties = require('../properties.js')
 const Alert = require('./Alert')
-const Common = require('../Common.js')
+import Common from '../Common'
 const UploadBatch = require('./UploadBatch.js')
 const announcement = require('../../component/announcement/index.jsx')
 const moment = require('moment-timezone')

@@ -21,8 +21,8 @@ const properties = require('../properties.js')
 const wreqr = require('../wreqr.js')
 const NotificationView = require('./notification.view')
 const DrawingController = require('./drawing.controller')
-const olUtils = require('../OpenLayersGeometryUtils')
-const DistanceUtils = require('../DistanceUtils.js')
+import olUtils from '../OpenLayersGeometryUtils'
+import DistanceUtils from '../DistanceUtils'
 import { validateGeo } from '../../react-component/utils/validation'
 
 const Draw = {}

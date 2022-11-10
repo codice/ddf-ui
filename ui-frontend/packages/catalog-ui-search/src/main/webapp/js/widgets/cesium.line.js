@@ -16,7 +16,7 @@
 const Cesium = require('cesium')
 const _ = require('underscore')
 const Turf = require('@turf/turf')
-const DistanceUtils = require('../DistanceUtils.js')
+import DistanceUtils from '../DistanceUtils'
 import { validateGeo } from '../../react-component/utils/validation'
 const {
   GeometryRenderView,

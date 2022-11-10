@@ -22,7 +22,7 @@ const NotificationView = require('./notification.view')
 const Turf = require('@turf/turf')
 const TurfCircle = require('@turf/circle')
 const DrawingController = require('./drawing.controller')
-const DistanceUtils = require('../DistanceUtils.js')
+import DistanceUtils from '../DistanceUtils'
 
 const DrawCircle = {}
 

@@ -3,8 +3,8 @@ import * as React from 'react'
 import { LazyQueryResult } from '../LazyQueryResult/LazyQueryResult'
 import fetch from '../../../react-component/utils/fetch'
 import { useParams } from 'react-router-dom'
-const Common = require('../../Common.js')
 import CQL from '../../cql'
+import Common from '../../Common'
 
 type PlainMetacardPropertiesType = LazyQueryResult['plain']['metacard']['properties']
 

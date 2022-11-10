@@ -19,7 +19,7 @@ const Cesium = require('cesium')
 const _ = require('underscore')
 const wreqr = require('../wreqr.js')
 const NotificationView = require('./notification.view')
-const DistanceUtils = require('../DistanceUtils.js')
+import DistanceUtils from '../DistanceUtils'
 const DrawingController = require('./drawing.controller')
 
 const Draw = {}

@@ -15,8 +15,7 @@
 
 /*jshint bitwise: false*/
 const $ = require('jquery')
-const moment = require('moment')
-const _ = require('underscore')
+import moment from 'moment'
 require('./requestAnimationFramePolyfill')
 
 const timeZones = {
@@ -53,7 +52,7 @@ const dateTimeFormats = {
   12: { datetimefmt: 'DD MMM YYYY hh:mm:ss.SSS a Z', timefmt: 'hh:mm:ss a Z' },
 }
 
-module.exports = {
+export const Common = {
   //randomly generated guid guaranteed to be unique ;)
   undefined: '2686dcb5-7578-4957-974d-aaa9289cd2f0',
   coreTransitionTime: 250,
@@ -71,13 +70,13 @@ module.exports = {
 
     const chunks = uuid.match(/.{1,4}/g)
 
-    const prefix = chunks.slice(0, 2).join('')
-    const middle = chunks.slice(2, 5).join('-')
-    const suffix = chunks.slice(5, chunks.length).join('')
+    const prefix = chunks?.slice(0, 2).join('')
+    const middle = chunks?.slice(2, 5).join('-')
+    const suffix = chunks?.slice(5, chunks.length).join('')
 
     return `${prefix}-${middle}-${suffix}`
   },
-  cqlToHumanReadable(cql) {
+  cqlToHumanReadable(cql?: string) {
     if (cql === undefined) {
       return cql
     }
@@ -87,23 +86,11 @@ module.exports = {
     cql = cql.replace(new RegExp('DURING', 'g'), 'BETWEEN')
     return cql
   },
-  setupPopOver($component) {
-    $component.find('[title]').each(function () {
-      const $element = $(this)
-      $element.popover({
-        delay: {
-          show: 1000,
-          hide: 0,
-        },
-        trigger: 'hover',
-      })
-    })
-  },
-  getFileSize(item) {
-    if (_.isUndefined(item)) {
+  getFileSize(item?: string) {
+    if (item === undefined || item === null) {
       return 'Unknown Size'
     }
-    const givenProductSize = item.replace(/[,]+/g, '').trim()
+    const givenProductSize = item?.replace(/[,]+/g, '').trim() || ''
     //remove any commas and trailing whitespace
     const bytes = parseInt(givenProductSize, 10)
     const noUnitsGiven = /[0-9]$/
@@ -172,7 +159,7 @@ module.exports = {
     }
   },
   //can be deleted once histogram changes are merged
-  getHumanReadableDateTime(date) {
+  getHumanReadableDateTime(date: string) {
     return moment(date).format(dateTimeFormats['24']['datetimefmt'])
   },
   getDateTimeFormats() {
@@ -181,14 +168,14 @@ module.exports = {
   getTimeZones() {
     return timeZones
   },
-  getRelativeDate(date) {
+  getRelativeDate(date: string) {
     return `${moment(date).fromNow()}`
   },
-  getMomentDate(date) {
+  getMomentDate(date: string) {
     const user = require('../component/singletons/user-instance')
     return `${moment(date).fromNow()} : ${user.getUserReadableDateTime(date)}`
   },
-  getImageSrc(img) {
+  getImageSrc(img: string) {
     if (
       typeof img === 'string' &&
       (img === '' || img.substring(0, 4) === 'http')
@@ -197,18 +184,18 @@ module.exports = {
 
     return 'data:image/png;base64,' + img
   },
-  getResourceUrlFromThumbUrl(url) {
+  getResourceUrlFromThumbUrl(url: string) {
     return url.replace(/=thumbnail[_=&\d\w\s;]+/, '=resource')
   },
-  cancelRepaintForTimeframe(requestDetails) {
+  cancelRepaintForTimeframe(requestDetails: any) {
     if (requestDetails) {
       window.cancelAnimationFrame(requestDetails.requestId)
     }
   },
-  repaintForTimeframe(time, callback) {
+  repaintForTimeframe(time: any, callback: any) {
     const requestDetails = {
       requestId: undefined,
-    }
+    } as any
     const timeEnd = Date.now() + time
     const repaint = function () {
       callback()
@@ -223,35 +210,22 @@ module.exports = {
     })
     return requestDetails
   },
-  executeAfterRepaint(callback) {
-    return window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(callback)
-    })
-  },
-  queueExecution(callback) {
-    return setTimeout(callback, 0)
-  },
-  escapeHTML(value) {
+  escapeHTML(value: string) {
     return $('<div>').text(value).html()
   },
-  duplicate(reference) {
+  duplicate(reference: any) {
     return JSON.parse(JSON.stringify(reference))
   },
-  safeCallback(callback) {
-    return function () {
-      if (!this.isDestroyed) {
-        callback.apply(this, arguments)
-      }
-    }
-  },
-  wrapMapCoordinates(x, [min, max]) {
+  wrapMapCoordinates(x: number, [min, max]: [number, number]) {
     const d = max - min
     return ((((x - min) % d) + d) % d) + min
   },
-  wrapMapCoordinatesArray(coordinates) {
+  wrapMapCoordinatesArray(coordinates: Array<[number, number]>) {
     return coordinates.map(([lon, lat]) => [
       this.wrapMapCoordinates(lon, [-180, 180]),
       this.wrapMapCoordinates(lat, [-90, 90]),
     ])
   },
 }
+
+export default Common

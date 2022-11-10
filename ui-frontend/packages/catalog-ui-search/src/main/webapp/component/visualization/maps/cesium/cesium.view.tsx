@@ -14,6 +14,7 @@
  **/
 import Button from '@material-ui/core/Button'
 import React from 'react'
+import { Memo } from '../../../memo/memo'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { MapViewReact } from '../map.view'
 import { OpenlayersMapViewReact } from '../openlayers/openlayers.view'
@@ -67,19 +68,22 @@ export const CesiumMapViewReact = ({
     length: 10000,
   })
   const [swap, setSwap] = React.useState(false)
+  const [map, setMap] = React.useState<any>(null)
   if (supportsCesium) {
     return (
-      <MapViewReact
-        loadMap={() => {
-          const deferred = new $.Deferred()
-          require(['./map.cesium'], (CesiumMap) => {
-            deferred.resolve(CesiumMap)
-          })
-          return deferred
-        }}
-        createMap={() => {}}
-        selectionInterface={selectionInterface}
-      />
+      <Memo>
+        <MapViewReact
+          loadMap={() => {
+            const deferred = new $.Deferred()
+            require(['./map.cesium'], (CesiumMap) => {
+              deferred.resolve(CesiumMap)
+            })
+            return deferred
+          }}
+          setMap={setMap}
+          selectionInterface={selectionInterface}
+        />
+      </Memo>
     )
   }
 

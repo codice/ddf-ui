@@ -3,9 +3,9 @@
  */
 
 import { hot } from 'react-hot-loader'
+import Common from '../../../js/Common'
 const metacardDefinitions = require('../../singletons/metacard-definitions')
 const properties = require('../../../js/properties.js')
-const Common = require('../../../js/Common.js')
 type Attributetypes =
   | 'BINARY'
   | 'DATE'

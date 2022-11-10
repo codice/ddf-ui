@@ -92,7 +92,7 @@ export default function (
   const map = createMap(insertionElement)
   listenToResize()
   setupTooltip(map)
-  const drawingTools = setupDrawingTools(map)
+  // const drawingTools = setupDrawingTools(map)
 
   function setupTooltip(map) {
     map.on('pointermove', (e) => {

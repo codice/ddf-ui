@@ -18,7 +18,6 @@ const _ = require('underscore')
 const properties = require('../properties.js')
 const QueryResponse = require('./QueryResponse.js')
 import Sources from '../../component/singletons/sources-instance'
-const Common = require('../Common.js')
 const announcement = require('../../component/announcement/index.jsx')
 import cql from '../cql'
 const _merge = require('lodash/merge')
@@ -41,6 +40,7 @@ import {
   IndexForSourceGroupType,
   QueryStartAndEndType,
 } from './Query.methods'
+import { Common } from '../Common'
 const wreqr = require('../wreqr')
 
 export type QueryType = {

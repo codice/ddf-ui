@@ -23,12 +23,12 @@ import { TypedMetacardDefs } from '../../../component/tabs/metacard/metacardDefi
 const properties = require('../../properties.js')
 const TurfMeta = require('@turf/meta')
 const wkx = require('wkx')
-const Common = require('../../Common.js')
 import { matchesCql, matchesFilters } from './filter'
 import {
   FilterBuilderClass,
   FilterClass,
 } from '../../../component/filter-builder/filter.structure'
+import Common from '../../Common'
 const debounceTime = 50
 const $ = require('jquery')
 

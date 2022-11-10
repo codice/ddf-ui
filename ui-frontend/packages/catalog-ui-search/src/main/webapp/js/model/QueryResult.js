@@ -16,7 +16,7 @@ const Backbone = require('backbone')
 const _ = require('underscore')
 const $ = require('jquery')
 import Sources from '../../component/singletons/sources-instance'
-const Common = require('../Common.js')
+import Common from '../Common'
 import cql from '../cql'
 require('backbone-associations')
 

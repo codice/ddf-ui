@@ -17,8 +17,7 @@ import styled from 'styled-components'
 import { hot } from 'react-hot-loader'
 import { Attribute, Coordinates, Format, validCoordinates } from '.'
 import { formatAttribute, formatCoordinates } from './formatting'
-
-const DistanceUtils = require('../../../webapp/js/DistanceUtils.js')
+import DistanceUtils from '../../js/DistanceUtils'
 
 type Props = {
   format: Format
