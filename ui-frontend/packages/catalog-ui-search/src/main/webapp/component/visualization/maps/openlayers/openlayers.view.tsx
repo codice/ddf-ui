@@ -41,7 +41,7 @@ export const OpenlayersMapViewReact = ({
           setMap={setMap}
         />
       </Memo>
-      <OpenlayersDrawings map={map} />
+      <OpenlayersDrawings selectionInterface={selectionInterface} map={map} />
     </>
   )
 }

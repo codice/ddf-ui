@@ -145,6 +145,7 @@ const useListenToBboxModel = ({ model, map }: { model: any; map: any }) => {
     }
   }, [model, map])
   useListenTo(model, 'change:lat change:lon change:radius', callback)
+  callback()
 }
 
 export const OpenlayersCircleDisplay = ({

@@ -242,6 +242,7 @@ const useListenToPolygonModel = ({ model, map }: { model: any; map: any }) => {
     'change:polygon change:polygonBufferWidth change:polygonBufferUnits',
     callback
   )
+  callback()
 }
 
 export const OpenlayersPolygonDisplay = ({

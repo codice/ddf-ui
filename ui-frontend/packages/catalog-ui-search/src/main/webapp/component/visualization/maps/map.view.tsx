@@ -240,7 +240,7 @@ const handleFilter = ({
           // map.showPolygonShape(locationModel)
           break
         case 'MULTIPOLYGON':
-          map.showPolygonShape(locationModel)
+          // map.showPolygonShape(locationModel)
           break
         case 'BBOX':
           // map.showBboxShape(locationModel)

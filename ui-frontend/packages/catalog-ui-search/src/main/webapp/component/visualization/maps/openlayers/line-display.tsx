@@ -187,6 +187,7 @@ const useListenToLineModel = ({ model, map }: { model: any; map: any }) => {
     }
   }, [model, map])
   useListenTo(model, 'change:line change:lineWidth change:lineUnits', callback)
+  callback()
 }
 
 export const OpenlayersLineDisplay = ({

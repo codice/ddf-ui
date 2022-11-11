@@ -183,6 +183,7 @@ const useListenToBboxModel = ({ model, map }: { model: any; map: any }) => {
     'change:mapNorth change:mapSouth change:mapEast change:mapWest',
     callback
   )
+  callback()
 }
 
 export const OpenlayersBboxDisplay = ({

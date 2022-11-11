@@ -17,6 +17,7 @@ import { useRender } from '../../../hooks/useRender'
 const wreqr = require('../../../../js/wreqr.js')
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useIsDrawing } from '../../../singletons/drawing'
+import { TypedUserInstance } from '../../../singletons/TypedUser'
 import { OpenlayersBboxDisplay } from './bbox-display'
 import { OpenlayersBboxDrawing } from './bbox-drawing'
 import { OpenlayersCircleDisplay } from './circle-display'
@@ -25,6 +26,7 @@ import { OpenlayersLineDisplay } from './line-display'
 import { OpenlayersLineDrawing } from './line-drawing'
 import { OpenlayersPolygonDisplay } from './polygon-display'
 import { OpenlayersPolygonDrawing } from './polygon-drawing'
+const LocationModel = require('../../../location-old/location-old.js')
 
 export const removeOldDrawing = ({ map, id }: { map: ol.Map; id: string }) => {
   const oldLayers = map
@@ -44,12 +46,37 @@ const getDrawModeFromModel = ({ model }: { model: any }): DrawModeType => {
   return model.get('mode')
 }
 
-export const OpenlayersDrawings = ({ map }: { map: any }) => {
+const extractModelsFromFilter = ({
+  filter,
+  extractedModels,
+}: {
+  filter: any
+  extractedModels: any[]
+}) => {
+  if (filter.filters) {
+    filter.filters.forEach((subfilter: any) => {
+      extractModelsFromFilter({ filter: subfilter, extractedModels })
+    })
+  } else {
+    if (filter.type === 'GEOMETRY') {
+      extractedModels.push(new LocationModel(filter.value))
+    }
+  }
+}
+
+export const OpenlayersDrawings = ({
+  map,
+  selectionInterface,
+}: {
+  map: any
+  selectionInterface: any
+}) => {
   const render = useRender()
   const [models, setModels] = React.useState<Array<any>>([])
+  const [filterModels, setFilterModels] = React.useState<Array<any>>([])
   const [drawingModels, setDrawingModels] = React.useState<Array<any>>([])
   const isDrawing = useIsDrawing()
-  console.log(models)
+  console.log(filterModels)
   useListenTo(
     wreqr.vent,
     'search:linedisplay search:polydisplay search:bboxdisplay search:circledisplay',
@@ -60,6 +87,28 @@ export const OpenlayersDrawings = ({ map }: { map: any }) => {
       render()
     }
   )
+  const updateFilterModels = React.useMemo(() => {
+    return () => {
+      const currentQuery = selectionInterface.get('currentQuery')
+      const resultFilter = TypedUserInstance.getEphemeralFilter()
+      const extractedModels = [] as any[]
+      if (currentQuery) {
+        extractModelsFromFilter({
+          filter: currentQuery.get('filterTree'),
+          extractedModels,
+        })
+      }
+
+      if (resultFilter) {
+        extractModelsFromFilter({
+          filter: resultFilter,
+          extractedModels,
+        })
+      }
+      setFilterModels(extractedModels)
+    }
+  }, [selectionInterface])
+  useListenTo(selectionInterface, 'change:currentQuery', updateFilterModels)
   useListenTo(
     wreqr.vent,
     'search:drawline search:drawpoly search:drawbbox search:drawcircle',
@@ -92,9 +141,44 @@ export const OpenlayersDrawings = ({ map }: { map: any }) => {
       setDrawingModels([])
     }
   }, [isDrawing])
+  React.useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      updateFilterModels()
+    }, 1000)
+    return () => {
+      window.clearTimeout(timeoutId)
+    }
+  }, [])
 
   return (
     <>
+      {filterModels.map((model) => {
+        const drawMode = getDrawModeFromModel({ model })
+        switch (drawMode) {
+          case 'bbox':
+            return (
+              <OpenlayersBboxDisplay key={model.id} model={model} map={map} />
+            )
+          case 'circle':
+            return (
+              <OpenlayersCircleDisplay key={model.id} model={model} map={map} />
+            )
+          case 'line':
+            return (
+              <OpenlayersLineDisplay key={model.id} model={model} map={map} />
+            )
+          case 'poly':
+            return (
+              <OpenlayersPolygonDisplay
+                key={model.id}
+                model={model}
+                map={map}
+              />
+            )
+          default:
+            return <></>
+        }
+      })}
       {models.map((model) => {
         const drawMode = getDrawModeFromModel({ model })
         switch (drawMode) {
