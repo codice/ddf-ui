@@ -13,15 +13,11 @@
  *
  **/
 import React from 'react'
-import DistanceUtils from '../../../../js/DistanceUtils'
 const Cesium = require('cesium')
 const _ = require('underscore')
-const Turf = require('@turf/turf')
-import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
 import { removeOldDrawing } from './drawing-and-display'
-const TurfCircle = require('@turf/circle')
 
 const CAMERA_MAGNITUDE_THRESHOLD = 8000000
 
@@ -85,7 +81,6 @@ const drawGeometry = ({
   model,
   map,
   id,
-  setDrawnMagnitude,
 }: {
   model: any
   map: any

@@ -134,7 +134,7 @@ const LocationInput = ({ onChange, value }: any) => {
       setTimeout(() => {
         // This is to facilitate clearing out the map, it isn't about the value, but we don't want the changeCallback to fire!
         locationModel.set(locationModel.defaults())
-        wreqr.vent.trigger('search:drawend', locationModel)
+        wreqr.vent.trigger('search:drawend', [locationModel])
       }, 0)
     }
   }, [])

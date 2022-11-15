@@ -20,6 +20,13 @@ import { TypedUserInstance } from '../../singletons/TypedUser'
 const LocationModel = require('../../location-old/location-old.js')
 
 type DrawModeType = 'line' | 'poly' | 'circle' | 'bbox' | 'keyword'
+// from these all other drawings are constructed
+const BasicDrawModeTypes: Array<DrawModeType> = [
+  'bbox',
+  'circle',
+  'line',
+  'poly',
+]
 
 type LocationTypeType =
   | 'LINE'
@@ -27,6 +34,7 @@ type LocationTypeType =
   | 'MULTIPOLYGON'
   | 'BBOX'
   | 'POINTRADIUS'
+  | 'POINT'
 
 export const getLocationTypeFromModel = ({ model }: { model: any }) => {
   const type = model.get('type') as LocationTypeType
@@ -38,7 +46,27 @@ export const getDrawModeFromModel = ({
 }: {
   model: any
 }): DrawModeType => {
-  return model.get('mode')
+  const mode = model.get('mode')
+  if (BasicDrawModeTypes.includes(mode)) {
+    return mode
+  }
+  const fallbackType = getLocationTypeFromModel({ model })
+  switch (fallbackType) {
+    case 'BBOX':
+      return 'bbox'
+    case 'LINE':
+      return 'line'
+    case 'MULTIPOLYGON':
+      return 'poly'
+    case 'POINTRADIUS':
+      return 'circle'
+    case 'POINT':
+      return 'circle'
+    case 'POLYGON':
+      return 'poly'
+    default:
+      return 'poly'
+  }
 }
 
 const extractModelsFromFilter = ({
@@ -54,7 +82,15 @@ const extractModelsFromFilter = ({
     })
   } else {
     if (filter.type === 'GEOMETRY') {
-      extractedModels.push(new LocationModel(filter.value))
+      if (filter.value?.areaDetails?.locations) {
+        filter.value.areaDetails.locations.map((location: any) => {
+          const newLocationModel = new LocationModel(location)
+          extractedModels.push(newLocationModel)
+        })
+      } else {
+        const newLocationModel = new LocationModel(filter.value)
+        extractedModels.push(newLocationModel)
+      }
     }
   }
 }
@@ -80,7 +116,13 @@ export const useDrawingAndDisplayModels = ({
     wreqr.vent,
     'search:linedisplay search:polydisplay search:bboxdisplay search:circledisplay search:keyworddisplay',
     (model: any) => {
-      if (!models.includes(model)) {
+      if (Array.isArray(model)) {
+        setModels(
+          [...models].concat(
+            model.filter((newModel) => !models.includes(newModel))
+          )
+        )
+      } else if (!models.includes(model)) {
         setModels([...models, model])
       }
     }
@@ -132,23 +174,17 @@ export const useDrawingAndDisplayModels = ({
       }
     }
   )
-  useListenTo(wreqr.vent, 'search:drawend', (model: any) => {
-    if (drawingModels.includes(model)) {
-      setDrawingModels(
-        drawingModels.filter((drawingModel) => drawingModel !== model)
-      )
-    }
-    if (models.includes(model)) {
-      setModels(models.filter((drawingModel) => drawingModel !== model))
-    }
-  })
-  useListenTo(wreqr.vent, 'search:destroyAllDraw', (model: any) => {
-    console.log('destroyAllDraw')
-    if (drawingModels.includes(model)) {
-      setDrawingModels(
-        drawingModels.filter((drawingModel) => drawingModel !== model)
-      )
-    }
+  useListenTo(wreqr.vent, 'search:drawend', (drawendModels: any[]) => {
+    setDrawingModels(
+      drawingModels.filter((drawingModel) => {
+        return !drawendModels.includes(drawingModel)
+      })
+    )
+    setModels(
+      models.filter((drawingModel) => {
+        return !drawendModels.includes(drawingModel)
+      })
+    )
   })
   React.useEffect(() => {
     if (!isDrawing) {

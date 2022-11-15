@@ -22,11 +22,6 @@ const Map = require('../map')
 const utility = require('./utility')
 const DrawingUtility = require('../DrawingUtility')
 
-const DrawBBox = require('../../../../js/widgets/openlayers.bbox.js')
-const DrawCircle = require('../../../../js/widgets/openlayers.circle.js')
-const DrawPolygon = require('../../../../js/widgets/openlayers.polygon.js')
-const DrawLine = require('../../../../js/widgets/openlayers.line.js')
-
 const properties = require('../../../../js/properties.js')
 const Openlayers = require('openlayers')
 import { OpenlayersLayers } from '../../../../js/controllers/openlayers.layers'

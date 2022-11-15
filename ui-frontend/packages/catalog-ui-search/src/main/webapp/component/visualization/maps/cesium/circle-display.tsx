@@ -17,7 +17,6 @@ import DistanceUtils from '../../../../js/DistanceUtils'
 const Cesium = require('cesium')
 const _ = require('underscore')
 const Turf = require('@turf/turf')
-import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
 import { removeOldDrawing } from './drawing-and-display'
@@ -70,7 +69,6 @@ const drawGeometry = ({
   model,
   map,
   id,
-  setDrawnMagnitude,
 }: {
   model: any
   map: any

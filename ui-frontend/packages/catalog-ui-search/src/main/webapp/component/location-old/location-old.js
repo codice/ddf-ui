@@ -182,7 +182,7 @@ module.exports = Backbone.AssociatedModel.extend({
     )
     this.listenTo(this, 'change:mode', () => {
       this.set(this.defaults())
-      wreqr.vent.trigger('search:drawend', this)
+      wreqr.vent.trigger('search:drawend', [this])
     })
     this.listenTo(this, 'EndExtent', this.drawingOff)
     this.listenTo(this, 'BeginExtent', this.drawingOn)

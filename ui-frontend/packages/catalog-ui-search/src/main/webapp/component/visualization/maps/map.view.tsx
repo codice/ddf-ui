@@ -14,10 +14,8 @@
  **/
 import wrapNum from '../../../react-component/utils/wrap-num/wrap-num'
 import * as React from 'react'
-import ExtensionPoints from '../../../extension-points'
 
 const wreqr = require('../../../js/wreqr.js')
-const LocationModel = require('../../location-old/location-old.js')
 const user = require('../../singletons/user-instance.js')
 const MapModel = require('./map.model')
 const properties = require('../../../js/properties.js')
@@ -182,77 +180,6 @@ const useMapModel = () => {
   return mapModel
 }
 
-const removePreviousLocationsFromMap = ({ map }: { map: any }) => {
-  if (map) map.destroyShapes()
-}
-
-const handleCurrentQuery = ({
-  map,
-  selectionInterface,
-}: {
-  map: any
-  selectionInterface: any
-}) => {
-  removePreviousLocationsFromMap({ map })
-  const currentQuery = selectionInterface.get('currentQuery')
-  const resultFilter = user.get('user').get('preferences').get('resultFilter')
-
-  if (currentQuery) {
-    handleFilter({
-      map,
-      filter: currentQuery.get('filterTree'),
-      color: currentQuery.get('color'),
-    })
-  }
-
-  if (resultFilter) {
-    handleFilter({ map, filter: resultFilter, color: '#c89600' })
-  }
-}
-
-const handleFilter = ({
-  map,
-  filter,
-  color,
-}: {
-  map: any
-  filter: any
-  color: any
-}) => {
-  if (filter.filters) {
-    filter.filters.forEach((subfilter: any) => {
-      handleFilter({ map, filter: subfilter, color })
-    })
-  } else {
-    const extensionModel = ExtensionPoints.handleFilter(map, filter)
-
-    if (extensionModel) {
-      return
-    }
-
-    if (filter.type === 'GEOMETRY') {
-      const locationModel = new LocationModel(filter.value)
-      switch (filter.value.type) {
-        case 'LINE':
-          // map.showLineShape(locationModel)
-          break
-        case 'POLYGON':
-          // map.showPolygonShape(locationModel)
-          break
-        case 'MULTIPOLYGON':
-          // map.showPolygonShape(locationModel)
-          break
-        case 'BBOX':
-          // map.showBboxShape(locationModel)
-          break
-        case 'POINTRADIUS':
-          // map.showCircleShape(locationModel)
-          break
-      }
-    }
-  }
-}
-
 const zoomToHome = ({ map }: { map: any }) => {
   const home = [
     user.get('user').get('preferences').get('mapHome'),
@@ -391,22 +318,6 @@ const useWreqrMapListeners = ({ map }: { map: any }) => {
   }, [map])
 }
 
-const usePreferencesMapListeners = ({
-  map,
-  selectionInterface,
-}: {
-  map: any
-  selectionInterface: any
-}) => {
-  useListenTo(
-    map ? user.get('user').get('preferences') : undefined,
-    'change:resultFilter',
-    () => {
-      handleCurrentQuery({ map, selectionInterface })
-    }
-  )
-}
-
 const useSelectionInterfaceMapListeners = ({
   map,
   selectionInterface,
@@ -423,30 +334,11 @@ const useSelectionInterfaceMapListeners = ({
   )
   useListenTo(
     map ? selectionInterface : undefined,
-    'change:currentQuery',
-    () => {
-      handleCurrentQuery({ map, selectionInterface })
-    }
-  )
-  useListenTo(
-    map ? selectionInterface : undefined,
     'panToShapesExtent:currentQuery',
     () => {
       panToShapesExtent({ map })
     }
   )
-
-  React.useEffect(() => {
-    if (map && selectionInterface) {
-      const timeoutId = window.setTimeout(() => {
-        handleCurrentQuery({ selectionInterface, map })
-      }, 1000)
-      return () => {
-        window.clearTimeout(timeoutId)
-      }
-    }
-    return () => {}
-  }, [map, selectionInterface])
 }
 
 const useListenToMapModel = ({
@@ -681,10 +573,6 @@ export const MapViewReact = (props: MapViewReactType) => {
   }, [map])
   useWreqrMapListeners({ map })
   useSelectionInterfaceMapListeners({
-    map,
-    selectionInterface: props.selectionInterface,
-  })
-  usePreferencesMapListeners({
     map,
     selectionInterface: props.selectionInterface,
   })

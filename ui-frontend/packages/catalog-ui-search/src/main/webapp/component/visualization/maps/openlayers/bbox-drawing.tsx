@@ -16,7 +16,6 @@ import React from 'react'
 import ol from 'openlayers'
 const wreqr = require('../../../../js/wreqr.js')
 import { useRender } from '../../../hooks/useRender'
-import OpenLayersGeometryUtils from '../../../../js/OpenLayersGeometryUtils'
 import { removeOldDrawing } from './drawing-and-display'
 import DistanceUtils from '../../../../js/DistanceUtils'
 import { drawBbox } from './bbox-display'
@@ -103,7 +102,7 @@ const useStartMapDrawing = ({ map, model }: { map: any; model: any }) => {
         })
         setFeature(feature)
       })
-      primitive.on('boxend', (sketchFeature: any) => {
+      primitive.on('boxend', (_sketchFeature: any) => {
         const geometryRepresentation = new ol.geom.LineString([
           startCoordinate,
           [startCoordinate[0], endCoordinate[1]],

@@ -20,11 +20,6 @@ const utility = require('./utility')
 const DrawingUtility = require('../DrawingUtility')
 const wreqr = require('../../../../js/wreqr.js')
 
-const DrawBBox = require('../../../../js/widgets/cesium.bbox.js')
-const DrawCircle = require('../../../../js/widgets/cesium.circle.js')
-const DrawPolygon = require('../../../../js/widgets/cesium.polygon.js')
-const DrawLine = require('../../../../js/widgets/cesium.line.js')
-
 const properties = require('../../../../js/properties.js')
 const Cesium = require('cesium')
 const Turf = require('@turf/turf')

@@ -88,8 +88,8 @@ const useStartMapDrawing = ({ map, model }: { map: any; model: any }) => {
         )
         setModelFromGeometry({ model, geometry, map })
         model.trigger('EndExtent', model)
-        wreqr.vent.trigger('search:bboxdisplay', model)
-        wreqr.vent.trigger('search:drawbbox-end', model)
+        wreqr.vent.trigger('search:circledisplay', model)
+        wreqr.vent.trigger('search:drawcircle-end', model)
         mapRef.removeInteraction(primitive)
       })
       return () => {

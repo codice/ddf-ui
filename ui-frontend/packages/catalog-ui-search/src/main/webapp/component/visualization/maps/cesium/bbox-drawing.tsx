@@ -38,7 +38,6 @@ const disableInput = ({ map }: { map: any }) => {
 
 const setModelFromClicks = ({
   model,
-  map,
   mn,
   mx,
   crossDateLine,

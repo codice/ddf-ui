@@ -28,10 +28,17 @@ const loadOpenLayersCode = () => {
 
 export const OpenlayersMapViewReact = ({
   selectionInterface,
+  setMap: outerSetMap,
 }: {
   selectionInterface: any
+  setMap?: (map: any) => void
 }) => {
   const [map, setMap] = React.useState<any>(null)
+  React.useEffect(() => {
+    if (outerSetMap) {
+      outerSetMap(map)
+    }
+  }, [map])
   return (
     <>
       <Memo>
