@@ -19,7 +19,19 @@ import { useIsDrawing } from '../../singletons/drawing'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 const LocationModel = require('../../location-old/location-old.js')
 
-type DrawModeType = 'line' | 'poly' | 'circle' | 'bbox'
+type DrawModeType = 'line' | 'poly' | 'circle' | 'bbox' | 'keyword'
+
+type LocationTypeType =
+  | 'LINE'
+  | 'POLYGON'
+  | 'MULTIPOLYGON'
+  | 'BBOX'
+  | 'POINTRADIUS'
+
+export const getLocationTypeFromModel = ({ model }: { model: any }) => {
+  const type = model.get('type') as LocationTypeType
+  return type
+}
 
 export const getDrawModeFromModel = ({
   model,
@@ -66,7 +78,7 @@ export const useDrawingAndDisplayModels = ({
   console.log(drawingModels)
   useListenTo(
     wreqr.vent,
-    'search:linedisplay search:polydisplay search:bboxdisplay search:circledisplay',
+    'search:linedisplay search:polydisplay search:bboxdisplay search:circledisplay search:keyworddisplay',
     (model: any) => {
       if (!models.includes(model)) {
         setModels([...models, model])

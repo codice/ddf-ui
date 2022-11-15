@@ -79,7 +79,13 @@ export const OpenlayersDrawings = ({
               />
             )
           default:
-            return <></>
+            return (
+              <OpenlayersPolygonDisplay
+                key={model.cid}
+                model={model}
+                map={map}
+              />
+            )
         }
       })}
       {models.map((model) => {
@@ -110,7 +116,13 @@ export const OpenlayersDrawings = ({
               />
             )
           default:
-            return <></>
+            return (
+              <OpenlayersPolygonDisplay
+                key={model.cid}
+                model={model}
+                map={map}
+              />
+            )
         }
       })}
       {drawingModels.map((model) => {
@@ -141,7 +153,13 @@ export const OpenlayersDrawings = ({
               />
             )
           default:
-            return <></>
+            return (
+              <OpenlayersPolygonDrawing
+                key={model.cid}
+                model={model}
+                map={map}
+              />
+            )
         }
       })}
     </>
