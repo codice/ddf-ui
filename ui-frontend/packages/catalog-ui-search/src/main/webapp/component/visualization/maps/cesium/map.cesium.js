@@ -214,9 +214,10 @@ module.exports = function CesiumMap(
   let shapes = []
   const { map, requestRenderHandler } = createMap(insertionElement)
   const drawHelper = new DrawHelper(map)
+  map.drawHelper = drawHelper
   const billboardCollection = setupBillboardCollection()
   const labelCollection = setupLabelCollection()
-  const drawingTools = setupDrawingTools(map)
+  // const drawingTools = setupDrawingTools(map)
   setupTooltip(map, selectionInterface)
 
   function updateCoordinatesTooltip(position) {
@@ -349,7 +350,7 @@ module.exports = function CesiumMap(
 
   const exposedMethods = _.extend({}, Map, {
     drawLine(model) {
-      drawingTools.line.draw(model)
+      // drawingTools.line.draw(model)
     },
     drawBbox(model) {
       drawingTools.bbox.draw(model)

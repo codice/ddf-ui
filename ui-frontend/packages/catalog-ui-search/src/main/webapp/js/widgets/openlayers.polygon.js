@@ -20,7 +20,7 @@ const _ = require('underscore')
 const properties = require('../properties.js')
 const wreqr = require('../wreqr.js')
 const NotificationView = require('./notification.view')
-const ShapeUtils = require('../ShapeUtils.js')
+const ShapeUtils = require('../ShapeUtils.tsx')
 const Turf = require('@turf/turf')
 const DrawingController = require('./drawing.controller')
 import olUtils from '../OpenLayersGeometryUtils'

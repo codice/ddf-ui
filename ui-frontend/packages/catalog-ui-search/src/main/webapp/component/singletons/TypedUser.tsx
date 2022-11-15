@@ -9,6 +9,9 @@ import { TypedProperties } from './TypedProperties'
 const userInstance = require('./user-instance')
 
 export const TypedUserInstance = {
+  getUserInstance: () => {
+    return userInstance
+  },
   getResultsAttributesShownList: (): string[] => {
     const userchoices = userInstance
       .get('user')

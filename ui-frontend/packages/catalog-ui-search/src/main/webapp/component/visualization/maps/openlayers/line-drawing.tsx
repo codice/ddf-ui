@@ -97,5 +97,12 @@ export const OpenlayersLineDrawing = ({
   model: any
 }) => {
   useStartMapDrawing({ map, model })
+  React.useEffect(() => {
+    return () => {
+      if (map && model) {
+        removeOldDrawing({ map: map.getMap(), id: model.cid + 'dynamic' })
+      }
+    }
+  }, [map, model])
   return <></>
 }

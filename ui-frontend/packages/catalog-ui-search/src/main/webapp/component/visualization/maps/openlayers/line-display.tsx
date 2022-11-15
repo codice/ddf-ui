@@ -183,7 +183,9 @@ const updatePrimitive = ({
 const useListenToLineModel = ({ model, map }: { model: any; map: any }) => {
   const callback = React.useMemo(() => {
     return () => {
-      updatePrimitive({ map, model, id: model.cid + 'display' })
+      if (model && map) {
+        updatePrimitive({ map, model, id: model.cid + 'display' })
+      }
     }
   }, [model, map])
   useListenTo(model, 'change:line change:lineWidth change:lineUnits', callback)

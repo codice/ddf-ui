@@ -14,7 +14,7 @@
  **/
 
 const Cesium = require('cesium')
-const ShapeUtils = require('../ShapeUtils.js')
+const ShapeUtils = require('../ShapeUtils.tsx')
 const Turf = require('@turf/turf')
 import DistanceUtils from '../DistanceUtils'
 import { validateGeo } from '../../react-component/utils/validation'

@@ -13,8 +13,8 @@
  *
  **/
 
-module.exports = {
-  isArray3D(values) {
+export default {
+  isArray3D(values: any) {
     return values && values[0] && values[0][0] instanceof Array
   },
 }

@@ -141,7 +141,9 @@ const updatePrimitive = ({
 const useListenToBboxModel = ({ model, map }: { model: any; map: any }) => {
   const callback = React.useMemo(() => {
     return () => {
-      updatePrimitive({ map, model, id: model.cid + 'display' })
+      if (model && map) {
+        updatePrimitive({ map, model, id: model.cid + 'display' })
+      }
     }
   }, [model, map])
   useListenTo(model, 'change:lat change:lon change:radius', callback)

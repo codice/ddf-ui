@@ -17,7 +17,6 @@ const LocationOldModel = require('../../component/location-old/location-old')
 const CustomElements = require('../../js/CustomElements.js')
 const wreqr = require('../../js/wreqr.js')
 import { Drawing } from '../../component/singletons/drawing'
-const ShapeUtils = require('../../js/ShapeUtils.js')
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 import { hot } from 'react-hot-loader'
 import Autocomplete from '@material-ui/lab/Autocomplete'
@@ -29,6 +28,7 @@ const Polygon = require('./polygon')
 const PointRadius = require('./point-radius')
 const BoundingBox = require('./bounding-box')
 import Gazetteer from './gazetteer'
+import ShapeUtils from '../../js/ShapeUtils'
 const plugin = require('plugins/location')
 
 type InputType = {

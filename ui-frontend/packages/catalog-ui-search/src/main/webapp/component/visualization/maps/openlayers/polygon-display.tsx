@@ -18,10 +18,10 @@ import ol from 'openlayers'
 const _ = require('underscore')
 const properties = require('../../../../js/properties.js')
 const Turf = require('@turf/turf')
-const ShapeUtils = require('../../../../js/ShapeUtils.js')
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { removeOldDrawing } from './drawing-and-display'
+import ShapeUtils from '../../../../js/ShapeUtils'
 
 export const translateFromOpenlayersCoordinates = (coords: any) => {
   return coords
@@ -234,7 +234,9 @@ const updatePrimitive = ({
 const useListenToPolygonModel = ({ model, map }: { model: any; map: any }) => {
   const callback = React.useMemo(() => {
     return () => {
-      updatePrimitive({ map, model, id: model.cid + 'display' })
+      if (model && map) {
+        updatePrimitive({ map, model, id: model.cid + 'display' })
+      }
     }
   }, [model, map])
   useListenTo(

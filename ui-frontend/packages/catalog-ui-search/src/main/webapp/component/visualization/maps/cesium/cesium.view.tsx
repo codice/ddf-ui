@@ -18,6 +18,7 @@ import { Memo } from '../../../memo/memo'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { MapViewReact } from '../map.view'
 import { OpenlayersMapViewReact } from '../openlayers/openlayers.view'
+import { CesiumDrawings } from './drawing-and-display'
 
 //You typically don't want to use this view directly.  Instead, use the combined-map component which will handle falling back to openlayers.
 
@@ -71,19 +72,22 @@ export const CesiumMapViewReact = ({
   const [map, setMap] = React.useState<any>(null)
   if (supportsCesium) {
     return (
-      <Memo>
-        <MapViewReact
-          loadMap={() => {
-            const deferred = new $.Deferred()
-            require(['./map.cesium'], (CesiumMap) => {
-              deferred.resolve(CesiumMap)
-            })
-            return deferred
-          }}
-          setMap={setMap}
-          selectionInterface={selectionInterface}
-        />
-      </Memo>
+      <>
+        <Memo>
+          <MapViewReact
+            loadMap={() => {
+              const deferred = new $.Deferred()
+              require(['./map.cesium'], (CesiumMap) => {
+                deferred.resolve(CesiumMap)
+              })
+              return deferred
+            }}
+            setMap={setMap}
+            selectionInterface={selectionInterface}
+          />
+        </Memo>
+        <CesiumDrawings map={map} selectionInterface={selectionInterface} />
+      </>
     )
   }
 
