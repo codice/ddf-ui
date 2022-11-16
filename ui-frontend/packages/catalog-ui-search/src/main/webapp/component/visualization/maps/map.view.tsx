@@ -32,6 +32,7 @@ import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResu
 import Geometries from './react/geometries'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import PopupPreview from '../../../react-component/popup-preview'
+import { SHAPE_ID_PREFIX } from './drawing-and-display'
 const featureDetection = require('../../singletons/feature-detection.js')
 
 function findExtreme({ objArray, property, comparator }: any) {
@@ -424,7 +425,8 @@ const handleMapHover = ({
       mapEvent.mapTarget &&
         mapEvent.mapTarget !== 'userDrawing' &&
         (mapEvent.mapTarget.constructor === Array ||
-          mapEvent.mapTarget.length > 10) // why ten?  Well, for some reason we don't put 'userDrawing' as the id on openlayers targets, instead we put a random cid from marionette / backbone. Not sure why to be honest.  We have to check if it's an array though, because clusters come back as arrays
+          (mapEvent.mapTarget.constructor === String &&
+            !(mapEvent.mapTarget as string).startsWith(SHAPE_ID_PREFIX)))
     )
   )
 }

@@ -19,6 +19,7 @@ import { useRender } from '../../../hooks/useRender'
 import OpenLayersGeometryUtils from '../../../../js/OpenLayersGeometryUtils'
 import { drawLine, translateFromOpenlayersCoordinates } from './line-display'
 import { removeOldDrawing } from './drawing-and-display'
+import { getIdFromModelForDrawing } from '../drawing-and-display'
 
 const setModelFromGeometry = ({
   model,
@@ -43,7 +44,7 @@ const useStartMapDrawing = ({ map, model }: { map: any; model: any }) => {
           map,
           model,
           rectangle: feature.feature.getGeometry(),
-          id: model.cid + 'dynamic',
+          id: getIdFromModelForDrawing({ model }),
         })
         render()
       })
@@ -82,7 +83,10 @@ const useStartMapDrawing = ({ map, model }: { map: any; model: any }) => {
       return () => {
         setFeature(null)
         mapRef.removeInteraction(primitive)
-        removeOldDrawing({ map: mapRef, id: model.cid + 'dynamic' })
+        removeOldDrawing({
+          map: mapRef,
+          id: getIdFromModelForDrawing({ model }),
+        })
       }
     }
     return () => {}
@@ -100,7 +104,10 @@ export const OpenlayersLineDrawing = ({
   React.useEffect(() => {
     return () => {
       if (map && model) {
-        removeOldDrawing({ map: map.getMap(), id: model.cid + 'dynamic' })
+        removeOldDrawing({
+          map: map.getMap(),
+          id: getIdFromModelForDrawing({ model }),
+        })
       }
     }
   }, [map, model])

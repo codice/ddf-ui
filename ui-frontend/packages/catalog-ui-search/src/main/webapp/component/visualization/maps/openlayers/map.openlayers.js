@@ -87,7 +87,6 @@ export default function (
   const map = createMap(insertionElement)
   listenToResize()
   setupTooltip(map)
-  // const drawingTools = setupDrawingTools(map)
 
   function setupTooltip(map) {
     map.on('pointermove', (e) => {
@@ -101,27 +100,6 @@ export default function (
         mapModel.clearMouseCoordinates()
       }
     })
-  }
-
-  function setupDrawingTools(map) {
-    return {
-      bbox: new DrawBBox.Controller({
-        map,
-        notificationEl,
-      }),
-      circle: new DrawCircle.Controller({
-        map,
-        notificationEl,
-      }),
-      polygon: new DrawPolygon.Controller({
-        map,
-        notificationEl,
-      }),
-      line: new DrawLine.Controller({
-        map,
-        notificationEl,
-      }),
-    }
   }
 
   function resizeMap() {
@@ -213,24 +191,6 @@ export default function (
   }
 
   const exposedMethods = _.extend({}, Map, {
-    drawLine(model) {
-      drawingTools.line.draw(model)
-    },
-    drawBbox(model) {
-      drawingTools.bbox.draw(model)
-    },
-    drawCircle(model) {
-      drawingTools.circle.draw(model)
-    },
-    drawPolygon(model) {
-      drawingTools.polygon.draw(model)
-    },
-    destroyDrawingTools() {
-      drawingTools.line.destroy()
-      drawingTools.polygon.destroy()
-      drawingTools.circle.destroy()
-      drawingTools.bbox.destroy()
-    },
     onLeftClick(callback) {
       $(map.getTargetElement()).on('click', (e) => {
         const boundingRect = map.getTargetElement().getBoundingClientRect()
@@ -926,34 +886,6 @@ export default function (
       }
       map.removeLayer(geometry)
     },
-    showPolygonShape(locationModel) {
-      const polygon = new DrawPolygon.PolygonView({
-        model: locationModel,
-        map,
-      })
-      shapes.push(polygon)
-    },
-    showBboxShape(locationModel) {
-      const polygon = new DrawBBox.BboxView({
-        model: locationModel,
-        map,
-      })
-      shapes.push(polygon)
-    },
-    showCircleShape(locationModel) {
-      const circle = new DrawCircle.CircleView({
-        model: locationModel,
-        map,
-      })
-      shapes.push(circle)
-    },
-    showLineShape(locationModel) {
-      const line = new DrawLine.LineView({
-        model: locationModel,
-        map,
-      })
-      shapes.push(line)
-    },
     showMultiLineShape(locationModel) {
       let lineObject = locationModel.get('multiline')
       if (validateGeo('multiline', JSON.stringify(lineObject)).error) {
@@ -1013,7 +945,6 @@ export default function (
       return map
     },
     destroy() {
-      this.destroyDrawingTools()
       unlistenToResize()
     },
   })

@@ -20,6 +20,7 @@ import OpenLayersGeometryUtils from '../../../../js/OpenLayersGeometryUtils'
 import { removeOldDrawing } from './drawing-and-display'
 import DistanceUtils from '../../../../js/DistanceUtils'
 import { drawCircle, translateFromOpenlayersCoordinate } from './circle-display'
+import { getIdFromModelForDrawing } from '../drawing-and-display'
 
 const setModelFromGeometry = ({
   model,
@@ -55,7 +56,7 @@ const useStartMapDrawing = ({ map, model }: { map: any; model: any }) => {
           map,
           model,
           rectangle: feature.feature.getGeometry(),
-          id: model.cid + 'dynamic',
+          id: getIdFromModelForDrawing({ model }),
         })
         render()
       })
@@ -95,7 +96,10 @@ const useStartMapDrawing = ({ map, model }: { map: any; model: any }) => {
       return () => {
         setFeature(null)
         mapRef.removeInteraction(primitive)
-        removeOldDrawing({ map: mapRef, id: model.cid + 'dynamic' })
+        removeOldDrawing({
+          map: mapRef,
+          id: getIdFromModelForDrawing({ model }),
+        })
       }
     }
     return () => {}

@@ -25,6 +25,7 @@ import {
   constructDottedLinePrimitive,
   constructLinePrimitive,
 } from './line-display'
+import { getIdFromModelForDisplay } from '../drawing-and-display'
 
 const createBufferedPolygonPointsFromModel = ({
   polygonPoints,
@@ -197,7 +198,7 @@ const useListenToLineModel = ({ model, map }: { model: any; map: any }) => {
         drawGeometry({
           map,
           model,
-          id: model.cid + 'display',
+          id: getIdFromModelForDisplay({ model }),
           setDrawnMagnitude,
         })
       }
@@ -229,7 +230,7 @@ export const CesiumPolygonDisplay = ({
   React.useEffect(() => {
     return () => {
       if (model && map) {
-        removeOldDrawing({ map, id: model.cid + 'display' })
+        removeOldDrawing({ map, id: getIdFromModelForDisplay({ model }) })
       }
     }
   }, [map, model])

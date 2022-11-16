@@ -212,7 +212,6 @@ module.exports = function CesiumMap(
   map.drawHelper = drawHelper
   const billboardCollection = setupBillboardCollection()
   const labelCollection = setupLabelCollection()
-  // const drawingTools = setupDrawingTools(map)
   setupTooltip(map, selectionInterface)
 
   function updateCoordinatesTooltip(position) {
@@ -240,29 +239,6 @@ module.exports = function CesiumMap(
       }
       updateCoordinatesTooltip(movement.endPosition)
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
-  }
-
-  function setupDrawingTools(map) {
-    return {
-      bbox: new DrawBBox.Controller({
-        map,
-        notificationEl,
-      }),
-      circle: new DrawCircle.Controller({
-        map,
-        notificationEl,
-      }),
-      polygon: new DrawPolygon.Controller({
-        map,
-        notificationEl,
-        drawHelper,
-      }),
-      line: new DrawLine.Controller({
-        map,
-        notificationEl,
-        drawHelper,
-      }),
-    }
   }
 
   function setupBillboardCollection() {
@@ -344,24 +320,6 @@ module.exports = function CesiumMap(
   }
 
   const exposedMethods = _.extend({}, Map, {
-    drawLine(model) {
-      // drawingTools.line.draw(model)
-    },
-    drawBbox(model) {
-      drawingTools.bbox.draw(model)
-    },
-    drawCircle(model) {
-      drawingTools.circle.draw(model)
-    },
-    drawPolygon(model) {
-      drawingTools.polygon.draw(model)
-    },
-    destroyDrawingTools() {
-      drawingTools.line.destroy()
-      drawingTools.polygon.destroy()
-      drawingTools.circle.destroy()
-      drawingTools.bbox.destroy()
-    },
     onLeftClick(callback) {
       $(map.scene.canvas).on('click', (e) => {
         const boundingRect = map.scene.canvas.getBoundingClientRect()
@@ -1115,34 +1073,6 @@ module.exports = function CesiumMap(
       }
       map.scene.requestRender()
     },
-    showPolygonShape(locationModel) {
-      const polygon = new DrawPolygon.PolygonRenderView({
-        model: locationModel,
-        map,
-      })
-      shapes.push(polygon)
-    },
-    showBboxShape(locationModel) {
-      const polygon = new DrawBBox.BboxView({
-        model: locationModel,
-        map,
-      })
-      shapes.push(polygon)
-    },
-    showCircleShape(locationModel) {
-      const circle = new DrawCircle.CircleView({
-        model: locationModel,
-        map,
-      })
-      shapes.push(circle)
-    },
-    showLineShape(locationModel) {
-      const line = new DrawLine.LineRenderView({
-        model: locationModel,
-        map,
-      })
-      shapes.push(line)
-    },
     destroyShapes() {
       shapes.forEach((shape) => {
         shape.destroy()
@@ -1157,7 +1087,6 @@ module.exports = function CesiumMap(
     },
     destroy() {
       wreqr.vent.off('map:requestRender', requestRenderHandler)
-      this.destroyDrawingTools()
       map.destroy()
     },
   })

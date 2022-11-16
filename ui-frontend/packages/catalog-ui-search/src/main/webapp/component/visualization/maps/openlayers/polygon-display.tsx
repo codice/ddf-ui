@@ -22,6 +22,7 @@ import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { removeOldDrawing } from './drawing-and-display'
 import ShapeUtils from '../../../../js/ShapeUtils'
+import { getIdFromModelForDisplay } from '../drawing-and-display'
 
 export const translateFromOpenlayersCoordinates = (coords: any) => {
   return coords
@@ -235,7 +236,7 @@ const useListenToPolygonModel = ({ model, map }: { model: any; map: any }) => {
   const callback = React.useMemo(() => {
     return () => {
       if (model && map) {
-        updatePrimitive({ map, model, id: model.cid + 'display' })
+        updatePrimitive({ map, model, id: getIdFromModelForDisplay({ model }) })
       }
     }
   }, [model, map])
@@ -258,7 +259,10 @@ export const OpenlayersPolygonDisplay = ({
   React.useEffect(() => {
     return () => {
       if (map && model) {
-        removeOldDrawing({ map: map.getMap(), id: model.cid + 'display' })
+        removeOldDrawing({
+          map: map.getMap(),
+          id: getIdFromModelForDisplay({ model }),
+        })
       }
     }
   }, [map, model])

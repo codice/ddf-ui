@@ -21,6 +21,7 @@ import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
 import { removeOldDrawing } from './drawing-and-display'
+import { getIdFromModelForDisplay } from '../drawing-and-display'
 
 const CAMERA_MAGNITUDE_THRESHOLD = 8000000
 
@@ -196,7 +197,7 @@ const useListenToLineModel = ({ model, map }: { model: any; map: any }) => {
         drawGeometry({
           map,
           model,
-          id: model.cid + 'display',
+          id: getIdFromModelForDisplay({ model }),
           setDrawnMagnitude,
         })
       }
@@ -218,7 +219,7 @@ export const CesiumLineDisplay = ({ map, model }: { map: any; model: any }) => {
   React.useEffect(() => {
     return () => {
       if (model && map) {
-        removeOldDrawing({ map, id: model.cid + 'display' })
+        removeOldDrawing({ map, id: getIdFromModelForDisplay({ model }) })
       }
     }
   }, [map, model])

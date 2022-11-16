@@ -7,6 +7,7 @@ import CalculateClusters from './calculate-clusters'
 import Cluster from './cluster'
 import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryResult'
 import ZoomToSelection from './zoom-to-selection'
+import { SHAPE_ID_PREFIX } from '../drawing-and-display'
 type Props = {
   selectionInterface: any
   map: any
@@ -68,7 +69,7 @@ const Geometries = (props: Props) => {
         // we get click events on normal drawn features from the location drawing
         if (
           mapEvent.mapTarget.constructor === String &&
-          mapEvent.mapTarget.length < 8
+          (mapEvent.mapTarget as string).startsWith(SHAPE_ID_PREFIX)
         ) {
           return
         }

@@ -19,6 +19,16 @@ import { useIsDrawing } from '../../singletons/drawing'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 const LocationModel = require('../../location-old/location-old.js')
 
+export const SHAPE_ID_PREFIX = 'shape'
+
+export const getIdFromModelForDisplay = ({ model }: { model: any }) => {
+  return `${SHAPE_ID_PREFIX}-${model.cid}-display`
+}
+
+export const getIdFromModelForDrawing = ({ model }: { model: any }) => {
+  return `${SHAPE_ID_PREFIX}-${model.cid}-drawing`
+}
+
 type DrawModeType = 'line' | 'poly' | 'circle' | 'bbox' | 'keyword'
 // from these all other drawings are constructed
 const BasicDrawModeTypes: Array<DrawModeType> = [

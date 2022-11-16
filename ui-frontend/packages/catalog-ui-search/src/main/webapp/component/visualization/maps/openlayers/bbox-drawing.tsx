@@ -19,6 +19,7 @@ import { useRender } from '../../../hooks/useRender'
 import { removeOldDrawing } from './drawing-and-display'
 import DistanceUtils from '../../../../js/DistanceUtils'
 import { drawBbox } from './bbox-display'
+import { getIdFromModelForDrawing } from '../drawing-and-display'
 const properties = require('../../../../js/properties.js')
 
 const setModelFromGeometry = ({
@@ -59,7 +60,7 @@ const useStartMapDrawing = ({ map, model }: { map: any; model: any }) => {
           map,
           model,
           rectangle: feature.getGeometry(),
-          id: model.cid + 'dynamic',
+          id: getIdFromModelForDrawing({ model }),
         })
         render()
       })
@@ -119,7 +120,10 @@ const useStartMapDrawing = ({ map, model }: { map: any; model: any }) => {
       return () => {
         setFeature(null)
         mapRef.removeInteraction(primitive)
-        removeOldDrawing({ map: mapRef, id: model.cid + 'dynamic' })
+        removeOldDrawing({
+          map: mapRef,
+          id: getIdFromModelForDrawing({ model }),
+        })
       }
     }
     return () => {}
