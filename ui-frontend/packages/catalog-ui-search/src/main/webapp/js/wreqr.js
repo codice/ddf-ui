@@ -14,8 +14,7 @@
  **/
 
 const Backbone = require('backbone')
-require('marionette')
-
+require('backbone.wreqr')
 const wreqr = {}
 
 wreqr.vent = new Backbone.Wreqr.EventAggregator()

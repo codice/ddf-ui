@@ -16,8 +16,6 @@
 import * as React from 'react'
 // @ts-ignore ts-migrate(6133) FIXME: 'styled' is declared but its value is never read.
 import styled from 'styled-components'
-// @ts-ignore ts-migrate(6133) FIXME: 'MarionetteRegionContainer' is declared but its va... Remove this comment to see the full error message
-import MarionetteRegionContainer from '../marionette-region-container'
 // @ts-ignore ts-migrate(6133) FIXME: 'TextField' is declared but its value is never rea... Remove this comment to see the full error message
 import TextField from '@material-ui/core/TextField'
 // @ts-ignore ts-migrate(6133) FIXME: 'MenuItem' is declared but its value is never read... Remove this comment to see the full error message

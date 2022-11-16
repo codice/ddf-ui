@@ -37,7 +37,6 @@ if (process.env.NODE_ENV !== 'production') {
 window.CESIUM_BASE_URL = './cesium/assets'
 
 const Backbone = require('backbone')
-const Marionette = require('marionette')
 const properties = require('./properties.js')
 const announcement = require('../component/announcement/index.jsx')
 require('./extensions/application.patches')
@@ -149,17 +148,6 @@ Backbone.AssociatedModel.prototype.set = function (key, value, options) {
     return this
   }
   return associationsSet.apply(this, arguments)
-}
-
-// https://github.com/marionettejs/backbone.marionette/issues/3077
-// monkey-patch Marionette for compatibility with jquery 3+.
-// jquery removed the .selector method, which was used by the original
-// implementation here.
-Marionette.Region.prototype.reset = function () {
-  this.empty()
-  this.el = this.options.el
-  delete this.$el
-  return this
 }
 
 require('@connexta/icons/icons/codice.font')
