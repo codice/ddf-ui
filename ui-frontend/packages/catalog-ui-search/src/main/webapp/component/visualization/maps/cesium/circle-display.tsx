@@ -79,13 +79,13 @@ const drawGeometry = ({
   // if model has been reset
 
   const modelProp = model.toJSON()
-  if (
-    isModelReset({ modelProp }) ||
-    typeof modelProp.lat !== 'number' ||
-    Number.isNaN(modelProp.lat) ||
-    typeof modelProp.lon !== 'number' ||
-    Number.isNaN(modelProp.lon)
-  ) {
+  if (isModelReset({ modelProp })) {
+    map.getMap().scene.requestRender()
+    return
+  }
+  modelProp.lat = parseFloat(modelProp.lat)
+  modelProp.lon = parseFloat(modelProp.lon)
+  if (Number.isNaN(modelProp.lat) || Number.isNaN(modelProp.lon)) {
     map.getMap().scene.requestRender()
     return
   }
