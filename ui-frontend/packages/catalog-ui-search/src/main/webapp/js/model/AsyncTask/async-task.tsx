@@ -559,7 +559,7 @@ class SaveTask extends AsyncTask {
       const payload = {
         id: '1',
         jsonrpc: '2.0',
-        method: 'ddf.catalog/create',
+        method: 'ddf.catalog/update',
         params: {
           metacards: [
             {
