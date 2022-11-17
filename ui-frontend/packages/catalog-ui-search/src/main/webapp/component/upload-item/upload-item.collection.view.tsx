@@ -27,7 +27,6 @@ export const UploadItemCollection = ({
   useListenTo(collection, 'add remove reset', () => {
     setForceRender(Math.random())
   })
-  console.log(collection.models)
   return (
     <div className="is-list has-list-highlighting overflow-hidden flex flex-col space-y-2">
       {collection.models.map((model: any) => {

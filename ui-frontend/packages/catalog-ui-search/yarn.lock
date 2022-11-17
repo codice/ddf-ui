@@ -5687,10 +5687,6 @@ bootstrap@3.4.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-3.4.0.tgz#f8d77540dd3062283d2ae7687e21c1e691961640"
 
-bootstrap@^3.3:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-3.4.1.tgz#c3a347d419e289ad11f4033e3c4132b87c081d72"
-
 bops@0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/bops/-/bops-0.0.6.tgz#082d1d55fa01e60dbdc2ebc2dba37f659554cf3a"
@@ -8542,15 +8538,6 @@ enzyme@3.11.0:
     raf "^3.4.1"
     rst-selector-parser "^2.2.3"
     string.prototype.trim "^1.2.1"
-
-eonasdan-bootstrap-datetimepicker@Eonasdan/bootstrap-datetimepicker#4.17.47:
-  version "4.17.47"
-  resolved "https://codeload.github.com/Eonasdan/bootstrap-datetimepicker/tar.gz/25c11d79e614bc6463a87c3dd9cbf8280422e006"
-  dependencies:
-    bootstrap "^3.3"
-    jquery "^1.8.3 || ^2.0 || ^3.0"
-    moment "^2.10"
-    moment-timezone "^0.4.0"
 
 errlop@^2.0.0:
   version "2.2.0"
@@ -12256,15 +12243,7 @@ jquery-mousewheel@~3.1.13:
   version "3.1.13"
   resolved "https://registry.yarnpkg.com/jquery-mousewheel/-/jquery-mousewheel-3.1.13.tgz#06f0335f16e353a695e7206bf50503cb523a6ee5"
 
-jquery-ui-multiselect-widget@1.17.0:
-  version "1.17.0"
-  resolved "https://registry.yarnpkg.com/jquery-ui-multiselect-widget/-/jquery-ui-multiselect-widget-1.17.0.tgz#5a9c52e7e638df50dced0e0f76cef15a100b25e2"
-
-jquery-ui@1.12.1:
-  version "1.12.1"
-  resolved "https://registry.yarnpkg.com/jquery-ui/-/jquery-ui-1.12.1.tgz#bcb4045c8dd0539c134bc1488cdd3e768a7a9e51"
-
-jquery@*, jquery@3.4.1, jquery@>=1.7.1, "jquery@^1.8.3 || ^2.0 || ^3.0":
+jquery@*, jquery@3.4.1, jquery@>=1.7.1:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.4.1.tgz#714f1f8d9dde4bdfa55764ba37ef214630d80ef2"
 
@@ -13985,17 +13964,11 @@ moment-timezone@*, moment-timezone@0.5.31:
   dependencies:
     moment ">= 2.9.0"
 
-moment-timezone@^0.4.0:
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.4.1.tgz#81f598c3ad5e22cdad796b67ecd8d88d0f5baa06"
-  dependencies:
-    moment ">= 2.6.0"
-
 moment@2.22.0:
   version "2.22.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.0.tgz#7921ade01017dd45186e7fee5f424f0b8663a730"
 
-"moment@>= 2.6.0", "moment@>= 2.9.0", moment@^2.10, moment@^2.15.1, moment@^2.24.0:
+"moment@>= 2.9.0", moment@^2.15.1, moment@^2.24.0:
   version "2.27.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.27.0.tgz#8bff4e3e26a236220dfe3e36de756b6ebaa0105d"
 

@@ -110,14 +110,6 @@ function registerComponent(
     (container: any, componentState: any) => {
       container.on('open', () => {
         setTimeout(() => {
-          // const componentView = new ComponentView(
-          //   _.extend({}, options, componentState, {
-          //     container,
-          //   })
-          // )
-          console.log(options)
-          console.log(componentState)
-          console.log(container)
           ReactDOM.render(
             <Providers>
               <ComponentView selectionInterface={options.selectionInterface} />

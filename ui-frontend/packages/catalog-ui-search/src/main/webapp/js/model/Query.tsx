@@ -370,7 +370,6 @@ Query.Model = Backbone.AssociatedModel.extend({
     this.startSearch(options, done)
   },
   startSearch(options: any, done: any) {
-    console.log(this)
     this.trigger('panToShapesExtent')
     this.set('isOutdated', false)
     if (this.get('cql') === '') {
@@ -603,7 +602,6 @@ Query.Model = Backbone.AssociatedModel.extend({
       },
       count: this.get('count'),
     })
-    console.log(this.nextIndexForSourceGroup)
     this.startSearch()
   },
   resetCurrentIndexForSourceGroup() {

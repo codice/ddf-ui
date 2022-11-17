@@ -89,7 +89,6 @@ const useUploadBatchModel = ({
       setUploadBatchModelJSON(uploadBatchModel.toJSON())
     }
   }, [uploadBatchModel])
-  console.log(uploadBatchModelJSON)
   useListenTo(
     uploadBatchModel,
     'add:uploads remove:uploads reset:uploads change:sending change:finished',

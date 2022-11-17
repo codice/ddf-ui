@@ -114,14 +114,6 @@ export const useDrawingAndDisplayModels = ({
   const [filterModels, setFilterModels] = React.useState<Array<any>>([])
   const [drawingModels, setDrawingModels] = React.useState<Array<any>>([])
   const isDrawing = useIsDrawing()
-  console.log('models:')
-  console.log(models)
-  console.log('filterModels:')
-
-  console.log(filterModels)
-  console.log('drawing Models:')
-
-  console.log(drawingModels)
   useListenTo(
     wreqr.vent,
     'search:linedisplay search:polydisplay search:bboxdisplay search:circledisplay search:keyworddisplay',

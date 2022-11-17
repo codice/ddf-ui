@@ -212,7 +212,6 @@ export const drawPolygon = ({
 
   removeOldDrawing({ map: mapRef, id })
   vectorLayer.set('id', id)
-  console.log(id)
   mapRef.addLayer(vectorLayer)
 }
 

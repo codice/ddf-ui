@@ -18,7 +18,6 @@ import { hot } from 'react-hot-loader'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 const _ = require('underscore')
 const user = require('../singletons/user-instance.js')
-require('jquery-ui/ui/widgets/resizable')
 import Button, { ButtonProps } from '@material-ui/core/Button'
 import { useSelectionOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'

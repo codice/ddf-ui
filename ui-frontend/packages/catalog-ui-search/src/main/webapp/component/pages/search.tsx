@@ -1420,8 +1420,6 @@ export const HomePage = () => {
   const data = useSavedSearchPageMode({ id })
   const saveSearchTask = useSaveSearchTaskBasedOnParams()
   const isSaving = saveSearchTask !== null
-  console.info(searchPageMode)
-  console.info(data)
   React.useEffect(() => {
     let urlBasedQuery = location.search.split('?defaultQuery=')[1]
     if (urlBasedQuery) {

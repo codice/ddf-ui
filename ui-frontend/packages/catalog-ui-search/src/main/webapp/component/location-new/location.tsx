@@ -48,7 +48,6 @@ const inputs = {
     label: 'Keyword',
     Component: (props: LocationInputPropsType) => {
       const { keyword } = props
-      console.log(props)
       return (
         <Gazetteer
           placeholder={'Enter a location'}
