@@ -23,6 +23,10 @@ export const convertToBackendCompatibleForm = ({
       if (duplicatedProperties[key].constructor === Array) {
         duplicatedProperties[key] = (duplicatedProperties[key] as any[]).map(
           (value) => {
+            if (typeof value === 'object') {
+              // sorts on queries!
+              return value
+            }
             return value.toString()
           }
         )
@@ -617,7 +621,7 @@ class CreateSearchTask extends AsyncTask {
         metacards: [
           {
             attributes: {
-              ...this.data,
+              ...convertToBackendCompatibleForm({ properties: this.data }),
               'metacard-tags': ['query'],
               cql: getCqlForFilterTree(this.data.filterTree),
             },
@@ -674,7 +678,7 @@ class SaveSearchTask extends AsyncTask {
           metacards: [
             {
               attributes: {
-                ...this.data,
+                ...convertToBackendCompatibleForm({ properties: this.data }),
                 'metacard-tags': ['query'],
                 cql: getCqlForFilterTree(this.data.filterTree),
               },

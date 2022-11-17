@@ -23,6 +23,7 @@ import IconButton from '@material-ui/core/IconButton'
 import { InputProps } from '@material-ui/core/Input'
 import ClearIcon from '@material-ui/icons/Clear'
 import SearchIcon from '@material-ui/icons/Search'
+import { useUpdateEffect } from 'react-use'
 const properties = require('../../js/properties.js')
 
 const defaultFilterOptions = createFilterOptions()
@@ -107,7 +108,7 @@ const BooleanSearchBar = ({
     return true
   }
 
-  React.useEffect(() => {
+  useUpdateEffect(() => {
     var controller = new AbortController()
     setLoading(true)
     // when empty, interpret as wildcard

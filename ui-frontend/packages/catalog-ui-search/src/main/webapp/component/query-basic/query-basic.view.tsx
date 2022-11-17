@@ -431,6 +431,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
           <Typography className="pb-2">Keyword</Typography>
           <BooleanSearchBar
             value={anyTextValue}
+            key={model.id}
             onChange={({ text, cql, error }) => {
               // we want the string value, the cql value, and if it's correct
               basicFilter.anyText[0] = new FilterClass({
