@@ -52,9 +52,9 @@ export const QueryAddReact = ({ model }: QueryAddReactType) => {
       >
         {(() => {
           if (form.id === 'basic') {
-            return <QueryBasic model={model} />
+            return <QueryBasic model={model} key={model.id} />
           } else {
-            return <QueryAdvanced model={model} />
+            return <QueryAdvanced model={model} key={model.id} />
           }
         })()}
       </form>
