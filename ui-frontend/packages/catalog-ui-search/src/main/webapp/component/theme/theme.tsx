@@ -117,6 +117,9 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
             ? dark.background
             : light.background} !important;
       }
+      .lm_splitter:hover  {
+        background: ${(props) => props.palette.primary.main} !important;
+      }
       .lm_stack{
         box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
         background: ${(props) =>
@@ -160,6 +163,9 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
         border: 1px solid fade(@contrastColor, 10%);
         margin-right: 8px !important;
         box-shadow: none !important;
+        padding: 0px !important;
+        height: 44px !important;
+        minWidth: 44px !important;
       }
       .lm_tabs .lm_tab:hover {
         color: ${(props) => props.palette.text.primary} !important;

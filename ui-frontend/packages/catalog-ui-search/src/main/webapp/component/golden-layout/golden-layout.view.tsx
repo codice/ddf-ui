@@ -27,11 +27,14 @@ import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import AllOutIcon from '@material-ui/icons/AllOut'
 import MinimizeIcon from '@material-ui/icons/Minimize'
+import MaximizeIcon from '@material-ui/icons/Add'
 import CloseIcon from '@material-ui/icons/Close'
 import { providers as Providers } from '../../extension-points/providers'
 import { Visualizations } from '../visualization/visualizations'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
+import Paper from '@material-ui/core/Paper'
+import { Elevations } from '../theme/theme'
 
 // @ts-ignore ts-migrate(7024) FIXME: Function implicitly has return type 'any' because ... Remove this comment to see the full error message
 const treeMap = (obj: any, fn: any, path = []) => {
@@ -95,6 +98,98 @@ function getGoldenLayoutSettings() {
   }
 }
 
+const GoldenLayoutComponentHeader = ({
+  viz,
+  tab,
+  options,
+  componentState,
+  container,
+  name,
+}: {
+  viz: any
+  tab: any
+  options: any
+  componentState: any
+  container: any
+  name: any
+}) => {
+  const [width, setWidth] = React.useState(tab.header.element.width())
+  React.useEffect(() => {
+    if (tab) {
+      tab.header.parent.on('resize', () => {
+        setWidth(tab.header.element.width())
+      })
+    }
+  }, [tab])
+  const isMinimized = width <= 100
+  return (
+    <Providers>
+      <div
+        data-id={`${name}-tab`}
+        className={`flex flex-row items-center flex-nowrap ${
+          isMinimized ? 'hidden' : ''
+        }`}
+      >
+        <Grid item className="px-2 text-lg">
+          <div>{tab.titleElement.text()}</div>
+        </Grid>
+        <Grid item>
+          {viz.header ? (
+            <viz.header
+              {..._.extend({}, options, componentState, {
+                container,
+              })}
+            />
+          ) : null}
+        </Grid>
+        <Grid item>
+          {tab.closeElement[0].style.display !== 'none' ? (
+            <Button
+              data-id="close-tab-button"
+              onClick={(e) => {
+                tab._onCloseClickFn(e)
+              }}
+            >
+              <CloseIcon />
+            </Button>
+          ) : null}
+        </Grid>
+      </div>
+    </Providers>
+  )
+}
+
+const GoldenLayoutComponent = ({
+  ComponentView,
+  options,
+  container,
+}: {
+  options: any
+  ComponentView: any
+  container: any
+}) => {
+  const [width, setWidth] = React.useState<number>(container.width)
+  React.useEffect(() => {
+    if (container) {
+      container.on('resize', () => {
+        setWidth(container.width)
+      })
+    }
+  }, [container])
+  const isMinimized = width <= 100
+
+  return (
+    <Providers>
+      <Paper
+        elevation={Elevations.panels}
+        className={`w-full h-full ${isMinimized ? 'hidden' : ''}`}
+      >
+        <ComponentView selectionInterface={options.selectionInterface} />
+      </Paper>
+    </Providers>
+  )
+}
+
 // see https://github.com/deepstreamIO/golden-layout/issues/239 for details on why the setTimeout is necessary
 // The short answer is it mostly has to do with making sure these ComponentViews are able to function normally (set up events, etc.)
 function registerComponent(
@@ -111,22 +206,17 @@ function registerComponent(
       container.on('open', () => {
         setTimeout(() => {
           ReactDOM.render(
-            <Providers>
-              <ComponentView selectionInterface={options.selectionInterface} />
-            </Providers>,
+            <GoldenLayoutComponent
+              options={options}
+              ComponentView={ComponentView}
+              container={container}
+            />,
             container.getElement()[0]
           )
           container.on('destroy', () => {
             ReactDOM.unmountComponentAtNode(container.getElement()[0])
           })
         }, 0)
-      })
-      container.on('resize', () => {
-        if (container.width < 100) {
-          container.parent.parent.element.addClass('is-minimized')
-        } else {
-          container.parent.parent.element.removeClass('is-minimized')
-        }
       })
       container.on('tab', (tab: any) => {
         tab.closeElement.off('click').on('click', (event: any) => {
@@ -143,51 +233,14 @@ function registerComponent(
         let intervalId = setInterval(() => {
           try {
             ReactDOM.render(
-              <Providers>
-                <Grid
-                  data-id={`${name}-tab`}
-                  container
-                  direction="row"
-                  wrap="nowrap"
-                >
-                  <Grid item className="px-2">
-                    <div>{tab.titleElement.text()}</div>
-                  </Grid>
-                  <Grid item>
-                    {viz.header ? (
-                      <viz.header
-                        {..._.extend({}, options, componentState, {
-                          container,
-                        })}
-                      />
-                    ) : null}
-                  </Grid>
-                  {/* <Grid item>
-                    <Button
-                      onClick={e => {
-                        tab.contentItem.container.setSize(
-                          10,
-                          tab.contentItem.container.height
-                        )
-                      }}
-                    >
-                      -
-                    </Button>
-                  </Grid> */}
-                  <Grid item>
-                    {tab.closeElement[0].style.display !== 'none' ? (
-                      <Button
-                        data-id="close-tab-button"
-                        onClick={(e) => {
-                          tab._onCloseClickFn(e)
-                        }}
-                      >
-                        <CloseIcon />
-                      </Button>
-                    ) : null}
-                  </Grid>
-                </Grid>
-              </Providers>,
+              <GoldenLayoutComponentHeader
+                viz={viz}
+                tab={tab}
+                options={options}
+                componentState={componentState}
+                container={container}
+                name={name}
+              />,
               tab.element[0]
             )
             clearInterval(intervalId)
@@ -392,24 +445,38 @@ function handleGoldenLayoutStateChange({
   }
 }
 
+/**
+ *  Replace the toolbar with our own
+ */
 function handleGoldenLayoutStackCreated(stack: any) {
-  stack.header.controlsContainer
-    .find('.lm_close')
-    .off('click')
-    // @ts-ignore ts-migrate(6133) FIXME: 'event' is declared but its value is never read.
-    .on('click', (event: any) => {
-      if (stack.isMaximised) {
-        stack.toggleMaximise()
-      }
-      stack.remove()
-    })
-  // const root = document.createElement('div')
-  // tab.element.append(root)
   let intervalId = setInterval(() => {
     try {
       ReactDOM.render(
-        <Providers>
-          <Grid container direction="row" wrap="nowrap">
+        <GoldenLayoutToolbar stack={stack} />,
+        stack.header.controlsContainer[0]
+      )
+      clearInterval(intervalId)
+    } catch (err) {}
+  }, 100)
+}
+
+const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
+  const [width, setWidth] = React.useState<number>(stack.header.element.width())
+  React.useEffect(() => {
+    if (stack) {
+      stack.on('resize', () => {
+        setWidth(stack.header.element.width())
+      })
+    }
+  }, [stack])
+
+  const isMinimized = width <= 100
+  return (
+    <Providers>
+      <Grid container direction="row" wrap="nowrap">
+        {isMinimized ? (
+          <>
+            {' '}
             <Grid item>
               <Button
                 data-id="maximise-tab-button"
@@ -420,9 +487,12 @@ function handleGoldenLayoutStackCreated(stack: any) {
                   stack.contentItems[0].container.setSize(prevWidth, prevHeight)
                 }}
               >
-                +
+                <MaximizeIcon />
               </Button>
             </Grid>
+          </>
+        ) : (
+          <>
             <Grid item>
               <Button
                 data-id="minimise-layout-button"
@@ -463,13 +533,11 @@ function handleGoldenLayoutStackCreated(stack: any) {
                 </Button>
               ) : null}
             </Grid>
-          </Grid>
-        </Providers>,
-        stack.header.controlsContainer[0]
-      )
-      clearInterval(intervalId)
-    } catch (err) {}
-  }, 100)
+          </>
+        )}
+      </Grid>
+    </Providers>
+  )
 }
 
 export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
