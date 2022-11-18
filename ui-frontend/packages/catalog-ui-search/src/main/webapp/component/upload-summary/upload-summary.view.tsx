@@ -15,6 +15,7 @@
 import React from 'react'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import LinearProgress from '@material-ui/core/LinearProgress'
+import Button from '@material-ui/core/Button'
 const wreqr = require('../../js/wreqr.js')
 
 type UploadSummaryViewReactType = {
@@ -51,12 +52,13 @@ export const UploadSummaryViewReact = ({
   const hasIssues = issues > 0
   const wasInterrupted = interrupted
   return (
-    <div
+    <Button
       className={`${isSending ? 'show-progress' : ''} ${
         hasError ? 'has-error' : ''
       } ${hasSuccess ? 'has-success' : ''} ${hasIssues ? 'has-issues' : ''} ${
         wasInterrupted ? 'was-interrupted' : ''
       }`}
+      fullWidth
       onClick={() => {
         wreqr.vent.trigger('router:navigate', {
           fragment: 'uploads/' + model.id,
@@ -90,6 +92,6 @@ export const UploadSummaryViewReact = ({
           )}
         </div>
       </div>
-    </div>
+    </Button>
   )
 }
