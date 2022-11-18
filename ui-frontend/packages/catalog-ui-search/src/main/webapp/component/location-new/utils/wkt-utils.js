@@ -15,7 +15,7 @@
 
 const wkx = require('wkx')
 const errorMessages = require('./errors')
-const DistanceUtils = require('../../../js/DistanceUtils')
+import DistanceUtils from '../../../js/DistanceUtils'
 
 function convertUserValueToWKT(val) {
   val = val.split(' (').join('(').split(', ').join(',')

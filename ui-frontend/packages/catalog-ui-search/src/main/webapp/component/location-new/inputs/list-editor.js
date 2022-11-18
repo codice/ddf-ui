@@ -15,9 +15,7 @@
 const React = require('react')
 
 const Group = require('../../../react-component/group/index.js')
-const CustomElements = require('../../../js/CustomElements.js')
-const Component = CustomElements.registerReact('list-editor')
-
+import Button from '@material-ui/core/Button'
 class ListEditor extends React.Component {
   handleAdd() {
     const { list, defaultItem, onChange } = this.props
@@ -40,26 +38,22 @@ class ListEditor extends React.Component {
         <li className="item">
           <Group>
             {child}
-            <button
-              className="old-button button-remove is-negative"
-              onClick={this.handleRemove.bind(this, index)}
-            >
-              <span className="fa fa-minus" />
-            </button>
+            <Button onClick={this.handleRemove.bind(this, index)}>
+              Remove
+            </Button>
           </Group>
         </li>
       )
     )
     return (
-      <Component>
-        <ul className="list">{listItems}</ul>
-        <button
-          className="old-button button-add is-positive"
-          onClick={this.handleAdd.bind(this)}
-        >
-          <span className="fa fa-plus" />
-        </button>
-      </Component>
+      <div>
+        <ul className="list flex flex-col flex-no-wrap space-y-2">
+          {listItems}
+        </ul>
+        <Button onClick={this.handleAdd.bind(this)} className="mt-2" fullWidth>
+          Add
+        </Button>
+      </div>
     )
   }
 }

@@ -14,9 +14,6 @@
  **/
 const React = require('react')
 
-const CustomElements = require('../../../js/CustomElements.js')
-const Component = CustomElements.registerReact('direction')
-
 class Direction extends React.Component {
   getToggledOption() {
     return this.props.value === this.props.options[0]
@@ -41,15 +38,15 @@ class Direction extends React.Component {
   render() {
     const { value } = this.props
     return (
-      <Component>
+      <div className="flex-shrink-0 flex-grow-0">
         <input
           value={value}
-          className="toggle-input"
+          className="flex-1 w-12 cursor-pointer"
           onMouseDown={this.handleMouseDown.bind(this)}
           onKeyPress={this.handleKeyPress.bind(this)}
           onChange={(e) => e.stopPropagation()}
         />
-      </Component>
+      </div>
     )
   }
 }

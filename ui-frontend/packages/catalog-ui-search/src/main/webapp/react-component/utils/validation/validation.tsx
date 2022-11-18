@@ -113,7 +113,7 @@ export function validateGeo(key: string, value: any) {
 export const ErrorComponent = (props: any) => {
   const { errorState } = props
   return errorState.error ? (
-    <Invalid>
+    <Invalid className="my-2">
       <WarningIcon className="fa fa-warning" />
       <span>{errorState.message}</span>
     </Invalid>
@@ -694,7 +694,7 @@ function getEmptyErrorMessage(label: string) {
 }
 
 const Invalid = styled.div`
-  background-color: ${(props) => props.theme.negativeColor};
+  border: 1px solid ${(props) => props.theme.negativeColor};
   height: 100%;
   display: block;
   overflow: hidden;

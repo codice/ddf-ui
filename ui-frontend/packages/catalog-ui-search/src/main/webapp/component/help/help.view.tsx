@@ -23,7 +23,6 @@ import Paper from '@material-ui/core/Paper'
 import { Elevations } from '../theme/theme'
 const _ = require('underscore')
 const $ = require('jquery')
-const CustomElements = require('../../js/CustomElements.js')
 
 const zeroScale = 'matrix(0, 0, 0, 0, 0, 0)'
 const zeroOpacity = '0'
@@ -99,11 +98,7 @@ function findLowestAncestorRight(element: any) {
 }
 
 function findBlockers() {
-  const blockingElements = $(
-    CustomElements.getNamespace() + 'dropdown-companion.is-open'
-  )
-    .add(CustomElements.getNamespace() + 'menu-vertical.is-open')
-    .add('.is-blocker')
+  const blockingElements = $('.is-blocker')
   return _.map(blockingElements, (blockingElement: any) => ({
     boundingRect: blockingElement.getBoundingClientRect(),
     element: blockingElement,

@@ -15,7 +15,12 @@
 const React = require('react')
 
 const Label = ({ children }) => (
-  <span className="input-group-addon">
+  <span
+    className="p-2 flex-shrink-0 flex-grow-0"
+    style={{
+      minWidth: '120px',
+    }}
+  >
     {children}
     &nbsp;
   </span>

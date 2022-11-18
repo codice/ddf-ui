@@ -74,7 +74,7 @@ const BoundingBoxLatLonDd = (props) => {
   }
 
   return (
-    <div className="input-location">
+    <div className="input-location flex flex-col flex-nowrap space-y-2">
       <TextField
         label="West"
         value={west !== undefined ? String(west) : west}
@@ -206,7 +206,7 @@ const BoundingBoxLatLonDms = (props) => {
   }
 
   return (
-    <div className="input-location">
+    <div className="input-location flex flex-col flex-nowrap space-y-2">
       <DmsLongitude
         label="West"
         value={dmsWest}
@@ -289,7 +289,7 @@ const BoundingBoxUsngMgrs = (props) => {
   }
 
   return (
-    <div className="input-location">
+    <div className="input-location flex flex-col flex-nowrap space-y-2">
       <TextField
         label="Upper Left"
         style={{ minWidth: 200 }}
@@ -381,10 +381,10 @@ const BoundingBoxUtmUps = (props) => {
 
   return (
     <div>
-      <div className="input-location">
+      <div className="input-location mb-2">
         <Group>
           <Label>Upper Left</Label>
-          <div>
+          <div className="flex flex-col space-y-2">
             <TextField
               label="Easting"
               value={
@@ -436,7 +436,7 @@ const BoundingBoxUtmUps = (props) => {
       <div className="input-location">
         <Group>
           <Label>Lower Right</Label>
-          <div>
+          <div className="flex flex-col space-y-2">
             <TextField
               label="Easting"
               value={

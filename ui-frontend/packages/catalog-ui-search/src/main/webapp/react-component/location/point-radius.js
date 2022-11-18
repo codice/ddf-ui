@@ -52,7 +52,7 @@ const PointRadiusLatLonDd = (props) => {
   }
 
   return (
-    <div>
+    <div className="flex flex-col flex-nowrap space-y-2">
       <TextField
         type="number"
         label="Latitude"
@@ -142,7 +142,7 @@ const PointRadiusLatLonDms = (props) => {
   }
 
   return (
-    <div>
+    <div className="flex flex-col flex-nowrap space-y-2">
       <DmsLatitude
         label="Latitude"
         value={dmsLat}
@@ -208,7 +208,7 @@ const PointRadiusUsngMgrs = (props) => {
   }, [props.usng, props.radius])
 
   return (
-    <div>
+    <div className="flex flex-col flex-nowrap space-y-2">
       <TextField
         label="USNG / MGRS"
         value={usng}
@@ -265,7 +265,7 @@ const PointRadiusUtmUps = (props) => {
   ])
 
   return (
-    <div>
+    <div className="flex flex-col flex-nowrap space-y-2">
       <TextField
         label="Easting"
         value={

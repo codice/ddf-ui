@@ -14,7 +14,6 @@
  **/
 import React from 'react'
 import CloseIcon from '@material-ui/icons/Close'
-import Grid from '@material-ui/core/Grid/Grid'
 import IconButton from '@material-ui/core/IconButton'
 const {
   DmsLatitude,
@@ -42,8 +41,8 @@ const DmsTextfield = ({
 }) => {
   return (
     <div>
-      <Grid container alignItems="center">
-        <Grid item xs={11}>
+      <div className="flex flex-row items-center flex-no-wrap">
+        <div className="flex flex-col space-y-2 flex-no-wrap flex-shrink w-full">
           <DmsLatitude
             label="Latitude"
             value={point.lat}
@@ -86,13 +85,13 @@ const DmsTextfield = ({
               }}
             />
           </DmsLongitude>
-        </Grid>
-        <Grid item xs={1}>
+        </div>
+        <div className="flex-shrink-0 flex-grow-0">
           <IconButton onClick={deletePoint}>
             <CloseIcon />
           </IconButton>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </div>
   )
 }

@@ -66,7 +66,7 @@ const Point = (props) => {
 const Circle = (props) => {
   const { dms, setState } = props
   return (
-    <div>
+    <div className="flex flex-col flex-no-wrap space-y-2">
       <Group>
         <DmsLatitude
           value={dms.circle.point.latitude.coordinate}
@@ -221,7 +221,7 @@ const Polygon = (props) => {
 const BoundingBox = (props) => {
   const { dms, setState } = props
   return (
-    <div>
+    <div className="flex flex-col flex-no-wrap space-y-2">
       <DmsLatitude
         label="South"
         value={dms.boundingbox.south.coordinate}
@@ -311,7 +311,7 @@ const LatLongDMS = (props) => {
         <RadioItem value="polygon">Polygon</RadioItem>
         <RadioItem value="boundingbox">Bounding Box</RadioItem>
       </Radio>
-      <div className="input-location">
+      <div className="input-location mt-2">
         {Component !== null ? <Component {...props} /> : null}
       </div>
     </div>

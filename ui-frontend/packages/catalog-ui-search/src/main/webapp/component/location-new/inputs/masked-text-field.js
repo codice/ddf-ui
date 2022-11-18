@@ -15,9 +15,6 @@
 const React = require('react')
 const Group = require('../../../react-component/group/index.js')
 const MaskedInput = require('react-text-mask').default
-const CustomElements = require('../../../js/CustomElements.js')
-const Component = CustomElements.registerReact('text-field')
-
 class MaskedTextField extends React.Component {
   prevEvent = undefined
 
@@ -67,15 +64,21 @@ class MaskedTextField extends React.Component {
     // eslint-disable-next-line no-unused-vars
     const { label, addon, onChange, value, ...args } = this.props
     return (
-      <Component>
+      <div className="flex-1">
         <Group>
           {label != null ? (
-            <span className="input-group-addon">
+            <div
+              className="p-2 flex-shrink-0 flex-grow-0"
+              style={{
+                minWidth: '120px',
+              }}
+            >
               {label}
               &nbsp;
-            </span>
+            </div>
           ) : null}
           <MaskedInput
+            className="inline-block w-full whitespace-no-wrap flex-shrink overflow-hidden"
             value={value}
             keepCharPositions
             onChange={(e) => {
@@ -98,10 +101,10 @@ class MaskedTextField extends React.Component {
             {...args}
           />
           {addon != null ? (
-            <label className="input-group-addon">{addon}</label>
+            <label className="p-2 flex-shrink-0 flex-grow-0">{addon}</label>
           ) : null}
         </Group>
-      </Component>
+      </div>
     )
   }
 }

@@ -14,9 +14,9 @@
  **/
 
 import _ from 'underscore'
+import DistanceUtils from '../../../../js/DistanceUtils'
 import ShapeUtils from '../../../../js/ShapeUtils'
 const Cesium = require('cesium')
-const DistanceUtils = require('../../../../js/DistanceUtils')
 const Turf = require('@turf/turf')
 
 const METERS = 'meters'

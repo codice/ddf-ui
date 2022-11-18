@@ -21,7 +21,7 @@ const { Units } = require('../../../react-component/location/common.js')
 const ListEditor = require('../inputs/list-editor')
 const { DdLatitude, DdLongitude } = require('./coordinates')
 const { ddPoint } = require('../models')
-const DistanceUtils = require('../../../js/DistanceUtils')
+import DistanceUtils from '../../../js/DistanceUtils'
 
 const Point = (props) => {
   const { dd, setState } = props
@@ -48,7 +48,7 @@ const Point = (props) => {
 const Circle = (props) => {
   const { dd, setState } = props
   return (
-    <div>
+    <div className="flex flex-col flex-no-wrap space-y-2">
       <Group>
         <DdLatitude
           value={DistanceUtils.coordinateRound(dd.circle.point.latitude)}
@@ -162,7 +162,7 @@ const Polygon = (props) => {
 const BoundingBox = (props) => {
   const { dd, setState } = props
   return (
-    <div>
+    <div className="flex flex-col space-y-2">
       <DdLatitude
         label="South"
         value={DistanceUtils.coordinateRound(dd.boundingbox.south)}
@@ -224,7 +224,7 @@ const LatLongDD = (props) => {
         <RadioItem value="polygon">Polygon</RadioItem>
         <RadioItem value="boundingbox">Bounding Box</RadioItem>
       </Radio>
-      <div className="input-location">
+      <div className="input-location mt-2">
         {Component !== null ? <Component {...props} /> : null}
       </div>
     </div>

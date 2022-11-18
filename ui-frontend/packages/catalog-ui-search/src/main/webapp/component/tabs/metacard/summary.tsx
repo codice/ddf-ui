@@ -35,7 +35,7 @@ import { useRerenderOnBackboneSync } from '../../../js/model/LazyQueryResult/hoo
 import useCoordinateFormat from './useCoordinateFormat'
 import { MetacardAttribute } from '../../../js/model/Types'
 import ExtensionPoints from '../../../extension-points'
-import { LocationInputReact } from '../../location-new/location-new.view'
+import LocationInputReact from '../../location-new/location-new.view'
 import Common from '../../../js/Common'
 
 function getSummaryShown(): string[] {

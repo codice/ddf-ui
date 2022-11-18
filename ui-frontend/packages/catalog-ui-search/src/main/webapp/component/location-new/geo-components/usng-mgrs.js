@@ -33,7 +33,7 @@ const Point = (props) => {
 const Circle = (props) => {
   const { usng, setState } = props
   return (
-    <div>
+    <div className="flex flex-col flex-no-wrap space-y-2">
       <UsngCoordinate
         value={usng.circle.point}
         onChange={setState((draft, value) => (draft.usng.circle.point = value))}
@@ -136,7 +136,7 @@ const USNG = (props) => {
         <RadioItem value="polygon">Polygon</RadioItem>
         <RadioItem value="boundingbox">Bounding Box</RadioItem>
       </Radio>
-      <div className="input-location">
+      <div className="input-location mt-2">
         {Component !== null ? <Component {...props} /> : null}
       </div>
     </div>

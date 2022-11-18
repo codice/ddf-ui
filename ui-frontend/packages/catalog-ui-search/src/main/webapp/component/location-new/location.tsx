@@ -82,10 +82,6 @@ const inputs = {
   }
 }
 
-const Form = ({ children }: any) => (
-  <div className="form-group clearfix">{children}</div>
-)
-
 const validate = ({
   state,
   setState,
@@ -164,7 +160,7 @@ const LocationInput = (props: LocationInputPropsType) => {
   }, [props])
 
   return (
-    <div>
+    <div className="">
       <Radio
         value={mode}
         onChange={setState((draft: any, value: any) => (draft.mode = value))}
@@ -175,7 +171,7 @@ const LocationInput = (props: LocationInputPropsType) => {
           </RadioItem>
         ))}
       </Radio>
-      <Form>
+      <div className="form-group clearfix mt-2">
         {Component !== null ? <Component {...props} /> : null}
         <div
           className={`for-error whitespace-pre-line ${
@@ -188,7 +184,7 @@ const LocationInput = (props: LocationInputPropsType) => {
         >
           <span className="fa fa-exclamation-triangle" /> {error}
         </div>
-      </Form>
+      </div>
     </div>
   )
 }

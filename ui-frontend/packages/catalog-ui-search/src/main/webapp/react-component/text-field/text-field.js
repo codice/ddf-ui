@@ -52,12 +52,18 @@ const TextField = (props) => {
   return (
     <Group>
       {label !== undefined ? (
-        <span className="input-group-addon">
+        <span
+          className="p-2 flex-shrink-0 flex-grow-0"
+          style={{
+            minWidth: '120px',
+          }}
+        >
           {label}
           &nbsp;
         </span>
       ) : null}
       <Input
+        className="flex-shrink overflow-hidden"
         value={value !== undefined ? value : ''}
         type={type}
         onChange={(e) => {
@@ -66,7 +72,7 @@ const TextField = (props) => {
         {...rest}
       />
       {addon !== undefined ? (
-        <label className="input-group-addon">{addon}</label>
+        <label className="p-2 flex-shrink-0 flex-grow-0">{addon}</label>
       ) : null}
     </Group>
   )

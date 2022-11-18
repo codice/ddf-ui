@@ -14,7 +14,6 @@
  **/
 import * as React from 'react'
 const LocationOldModel = require('../../component/location-old/location-old')
-const CustomElements = require('../../js/CustomElements.js')
 const wreqr = require('../../js/wreqr.js')
 import { Drawing } from '../../component/singletons/drawing'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
@@ -123,7 +122,6 @@ export const LocationContext = React.createContext({
     return true
   },
 })
-const Component = CustomElements.registerReact('location')
 const LocationInput = ({ onChange, value }: any) => {
   const locationContext = React.useContext(LocationContext)
   const [locationModel] = React.useState(new LocationOldModel(value) as any)
@@ -166,7 +164,7 @@ const LocationInput = ({ onChange, value }: any) => {
     })
   return (
     <div>
-      <Component>
+      <div>
         <Autocomplete
           className="mb-2"
           data-id="filter-type-autocomplete"
@@ -202,17 +200,18 @@ const LocationInput = ({ onChange, value }: any) => {
           />
           {drawTypes.includes(state.mode) ? (
             <Button
-              className="location-draw is-primary"
+              className="location-draw  mt-2"
               onMouseDown={() => {
                 wreqr.vent.trigger('search:draw' + state.mode, locationModel)
               }}
+              fullWidth
             >
               <span className="fa fa-globe" />
-              <span>Draw</span>
+              <span className="ml-2">Draw</span>
             </Button>
           ) : null}
         </div>
-      </Component>
+      </div>
     </div>
   )
 }

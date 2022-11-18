@@ -18,9 +18,6 @@ import { Order, Visibility } from '.'
 import LayerItemPresentation from './presentation/layer-item'
 import { useListenTo } from '../../component/selection-checkbox/useBackbone.hook'
 
-const CustomElements = require('../../js/CustomElements')
-const Component = CustomElements.register('layer-item')
-
 type State = {
   order: Order
   visibility: Visibility
@@ -107,9 +104,9 @@ const LayerItem = (props: ContainerProps) => {
   }
 
   return (
-    <Component data-id={id} layer-id={id}>
+    <div className="layer-item" data-id={id} layer-id={id}>
       <LayerItemPresentation {...presProps} />
-    </Component>
+    </div>
   )
 }
 

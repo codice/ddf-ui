@@ -15,7 +15,7 @@
 const React = require('react')
 
 const Group = (props) => (
-  <div className="input-group" {...props}>
+  <div className="flex flex-row items-center flex-no-wrap w-full" {...props}>
     {props.children}
   </div>
 )

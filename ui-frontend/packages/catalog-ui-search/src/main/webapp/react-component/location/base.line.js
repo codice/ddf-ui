@@ -134,7 +134,7 @@ const LineLatLon = (props) => {
 
   return (
     <div>
-      <div className="input-location">
+      <div className="input-location flex flex-col flex-nowrap space-y-2">
         <TextField
           label={label}
           value={currentValue}
@@ -220,7 +220,7 @@ const LineDms = (props) => {
 
   return (
     <div>
-      <div className="input-location">
+      <div className="input-location flex flex-col flex-nowrap space-y-2">
         {dmsPointArray &&
           dmsPointArray.map((point, index) => {
             return (
@@ -246,8 +246,6 @@ const LineDms = (props) => {
       </div>
       <Button
         fullWidth
-        variant="contained"
-        className="is-primary" //match styling of other buttons here
         onClick={() => {
           let array = dmsPointArray ? [...dmsPointArray] : []
           array.push({
@@ -259,7 +257,7 @@ const LineDms = (props) => {
           setState({ ['dmsPointArray']: array })
         }}
       >
-        +
+        Add Point
       </Button>
       <ErrorComponent errorState={baseLineError} />
       <Units
@@ -325,7 +323,7 @@ const LineMgrs = (props) => {
 
   return (
     <div>
-      <div className="input-location">
+      <div className="input-location flex flex-col flex-nowrap space-y-2">
         {usngPointArray &&
           usngPointArray.map((coord, index) => {
             return (
@@ -354,15 +352,13 @@ const LineMgrs = (props) => {
           })}
         <Button
           fullWidth
-          variant="contained"
-          className="is-primary" //match styling of other buttons here
           onClick={() => {
             let points = usngPointArray ? [...usngPointArray] : []
             points.push('')
             setState({ ['usngPointArray']: points })
           }}
         >
-          +
+          Add Point
         </Button>
         <ErrorComponent errorState={baseLineError} />
         <Units
@@ -428,7 +424,7 @@ const LineUtmUps = (props) => {
   }, [props.polygon, props.line, utmUpsPointArray])
 
   return (
-    <div>
+    <div className="flex flex-col flex-nowrap space-y-2">
       {utmUpsPointArray &&
         utmUpsPointArray.map((point, index) => {
           return (
@@ -452,8 +448,7 @@ const LineUtmUps = (props) => {
         })}
       <Button
         fullWidth
-        variant="contained"
-        className="is-primary" //match styling of other buttons here
+        className=""
         onClick={() => {
           let points = utmUpsPointArray ? [...utmUpsPointArray] : []
           points.push({
@@ -465,7 +460,7 @@ const LineUtmUps = (props) => {
           setState({ ['utmUpsPointArray']: points })
         }}
       >
-        +
+        Add Point
       </Button>
       <ErrorComponent errorState={baseLineError} />
       <Units

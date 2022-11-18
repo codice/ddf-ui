@@ -19,7 +19,6 @@ const Backbone = require('backbone')
 const properties = require('../../js/properties.js')
 import { LayerItemCollectionViewReact } from '../layer-item/layer-item.collection.view'
 const user = require('../singletons/user-instance.js')
-const CustomElements = require('../../js/CustomElements.js')
 import { hot } from 'react-hot-loader'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import debounce from 'lodash.debounce'
@@ -85,9 +84,7 @@ const LayersViewReact = () => {
           collection={user.get('user>preferences').get('mapLayers')}
           updateOrdering={() => {
             _.forEach(
-              containerElementRef.current?.querySelectorAll(
-                `${CustomElements.getNamespace()}layer-item`
-              ),
+              containerElementRef.current?.querySelectorAll(`.layer-item`),
               (element: any, index: any) => {
                 user
                   .get('user>preferences')

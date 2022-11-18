@@ -543,22 +543,6 @@ table.metacard-table {
   background: none;
 }
 
-.input-group {
-  width: 100%;
-  margin-bottom: 10px;
-}
-
-.input-group .input-group-addon,
-.ui-widget {
-  color: white;
-  background: none #555;
-  border-color: #666;
-  text-shadow: none;
-}
-
-.input-group-addon:first-child {
-  width: 65px;
-}
 
 select.add-on {
   -webkit-appearance: none;
