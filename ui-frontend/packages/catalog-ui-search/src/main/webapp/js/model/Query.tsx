@@ -18,12 +18,9 @@ const _ = require('underscore')
 const properties = require('../properties.js')
 const QueryResponse = require('./QueryResponse.js')
 import Sources from '../../component/singletons/sources-instance'
-const announcement = require('../../component/announcement/index.jsx')
 import cql from '../cql'
 const _merge = require('lodash/merge')
 require('backbone-associations')
-import React from 'react'
-import { readableColor } from 'polished'
 import { LazyQueryResults } from './LazyQueryResult/LazyQueryResults'
 import {
   FilterBuilderClass,
@@ -457,12 +454,9 @@ Query.Model = Backbone.AssociatedModel.extend({
     )
 
     if (searchesToRun.length === 0) {
-      announcement.announce({
-        title: 'Search "' + this.get('title') + '" cannot be run.',
-        message: properties.i18n['search.sources.selected.none.message'],
-        type: 'warn',
-      })
-      this.currentSearches = []
+      // reset to all and run
+      this.set('sources', ['all'])
+      this.startSearchFromFirstPage()
       return
     }
 
@@ -483,29 +477,6 @@ Query.Model = Backbone.AssociatedModel.extend({
           response.options = options
         },
         error(_model: any, response: any, options: any) {
-          if (response.status === 401) {
-            const providerUrl = response.responseJSON.url
-            const sourceId = response.responseJSON.id
-
-            const link = React.createElement(
-              'a',
-              {
-                href: providerUrl,
-                target: '_blank',
-                style: {
-                  color: `${(props: any) =>
-                    readableColor(props.theme.negativeColor)}`,
-                },
-              },
-              `Click Here To Authenticate ${sourceId}`
-            )
-            announcement.announce({
-              title: `Source ${sourceId} is Not Authenticated`,
-              message: link,
-              type: 'error',
-            })
-          }
-
           response.options = options
         },
       })

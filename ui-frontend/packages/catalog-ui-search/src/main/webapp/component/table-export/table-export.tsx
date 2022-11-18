@@ -28,7 +28,8 @@ import {
 } from '../../react-component/utils/export'
 import saveFile from '../../react-component/utils/save-file'
 import { DEFAULT_USER_QUERY_OPTIONS } from '../../js/model/TypedQuery'
-const announcement = require('../../component/announcement/index.jsx')
+import useSnack from '../hooks/useSnack'
+import { AddSnack } from '../snack/snack.provider'
 const properties = require('../../js/properties.js')
 const contentDisposition = require('content-disposition')
 
@@ -220,36 +221,34 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
   }
 }
 
-export const onDownloadClick = async (downloadInfo: DownloadInfo) => {
-  const exportFormat = encodeURIComponent(downloadInfo.exportFormat)
-  try {
-    const body = getDownloadBody(downloadInfo)
-    const response = await exportResultSet(exportFormat, body)
-    onDownloadSuccess(response)
-  } catch (error) {
-    console.error(error)
-  }
-}
-export const onDownloadSuccess = async (response: Response) => {
-  if (response.status === 200) {
-    const data = await response.blob()
-    const contentType = response.headers.get('content-type')
-    const filename = contentDisposition.parse(
-      response.headers.get('content-disposition')
-    ).parameters.filename
-    saveFile(filename, 'data:' + contentType, data)
-  } else {
-    announcement.announce({
-      title: 'Error',
-      message: 'Could not export results.',
-      type: 'error',
-    })
+const generateOnDownloadClick = ({ addSnack }: { addSnack: AddSnack }) => {
+  return async (downloadInfo: DownloadInfo) => {
+    const exportFormat = encodeURIComponent(downloadInfo.exportFormat)
+    try {
+      const body = getDownloadBody(downloadInfo)
+      const response = await exportResultSet(exportFormat, body)
+      if (response.status === 200) {
+        const data = await response.blob()
+        const contentType = response.headers.get('content-type')
+        const filename = contentDisposition.parse(
+          response.headers.get('content-disposition')
+        ).parameters.filename
+        saveFile(filename, 'data:' + contentType, data)
+      } else {
+        addSnack('Error: Could not export results.', {
+          alertProps: { severity: 'error' },
+        })
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
 }
 
 const TableExports = (props: Props) => {
   const [formats, setFormats] = useState([])
 
+  const addSnack = useSnack()
   useEffect(() => {
     const fetchFormats = async () => {
       const exportFormats = await getExportOptions(Transformer.Query)
@@ -273,7 +272,7 @@ const TableExports = (props: Props) => {
       exportFormats={formats}
       selectionInterface={props.selectionInterface}
       getWarning={getWarning}
-      onDownloadClick={onDownloadClick}
+      onDownloadClick={generateOnDownloadClick({ addSnack })}
       filteredAttributes={props.filteredAttributes}
     />
   )

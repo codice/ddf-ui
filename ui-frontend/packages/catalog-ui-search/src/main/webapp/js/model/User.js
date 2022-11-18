@@ -27,7 +27,6 @@ const properties = require('../properties.js')
 const Alert = require('./Alert')
 import Common from '../Common'
 const UploadBatch = require('./UploadBatch.js')
-const announcement = require('../../component/announcement/index.jsx')
 const moment = require('moment-timezone')
 const Theme = require('./Theme.js')
 const ThemeUtils = require('../ThemeUtils.js')
@@ -242,11 +241,14 @@ User.Preferences = Backbone.AssociatedModel.extend({
           this.lastSaved = Common.duplicate(currentPrefs)
         },
         error: () => {
-          announcement.announce({
-            title: 'Issue Authorizing Request',
+          wreqr.vent.trigger('snack', {
             message:
-              'You appear to have been logged out.  Please sign in again.',
-            type: 'error',
+              'Issue Authorizing Request: You appear to have been logged out.  Please sign in again.',
+            snackProps: {
+              alertProps: {
+                severity: 'error',
+              },
+            },
           })
         },
       })

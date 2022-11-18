@@ -62,6 +62,8 @@ import LinearProgress from '@material-ui/core/LinearProgress'
 import { BaseProps } from '../button/expanding-button'
 import { useDialogState } from '../hooks/useDialogState'
 import SessionTimeout from '../../react-component/session-timeout'
+import { AjaxErrorHandling } from './ajax-error-handling'
+import { WreqrSnacks } from './wreqr-snacks'
 const sessionTimeoutModel = require('../singletons/session-timeout.js')
 
 export const handleBase64EncodedImages = (url: string) => {
@@ -879,6 +881,8 @@ const App = ({
           <CancelDrawing />
           <SystemUsageModal />
           <SessionTimeoutComponent />
+          <AjaxErrorHandling />
+          <WreqrSnacks />
           <Grid
             container
             alignItems="center"

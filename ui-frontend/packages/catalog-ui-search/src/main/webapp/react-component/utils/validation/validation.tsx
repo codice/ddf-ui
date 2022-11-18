@@ -14,9 +14,7 @@
  **/
 
 const React = require('react')
-import { InvalidSearchFormMessage } from '../../../component/announcement/CommonMessages'
 import styled from 'styled-components'
-const announcement = require('../../../component/announcement/index.jsx')
 const usngs = require('usng.js')
 const converter = new usngs.Converter()
 const NORTHING_OFFSET = 10000000
@@ -27,12 +25,16 @@ const {
   parseDmsCoordinate,
   dmsCoordinateToDD,
 } = require('../../../component/location-new/utils/dms-utils.js')
+const wreqr = require('../../../js/wreqr.js')
 
 export function showErrorMessages(errors: any) {
   if (errors.length === 0) {
     return
   }
-  let searchErrorMessage = JSON.parse(JSON.stringify(InvalidSearchFormMessage))
+  let searchErrorMessage = {
+    title: '',
+    message: '',
+  }
   if (errors.length > 1) {
     let msg = searchErrorMessage.message
     searchErrorMessage.title =
@@ -46,7 +48,14 @@ export function showErrorMessages(errors: any) {
     searchErrorMessage.title = error.title
     searchErrorMessage.message = error.body
   }
-  announcement.announce(searchErrorMessage)
+  wreqr.vent.trigger('snack', {
+    message: `${searchErrorMessage.title} : ${searchErrorMessage.message}`,
+    snackProps: {
+      alertProps: {
+        severity: 'error',
+      },
+    },
+  })
 }
 
 export function getFilterErrors(filters: any) {

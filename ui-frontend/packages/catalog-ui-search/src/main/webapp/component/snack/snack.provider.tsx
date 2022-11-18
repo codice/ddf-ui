@@ -6,7 +6,7 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import Portal from '@material-ui/core/Portal'
 
-type AddSnack = (message: string, props?: SnackProps) => void
+export type AddSnack = (message: string, props?: SnackProps) => void
 
 type Snack = {
   message?: string

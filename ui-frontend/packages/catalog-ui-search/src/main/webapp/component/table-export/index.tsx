@@ -16,8 +16,6 @@ export {
   default as tableExport,
   Props,
   getWarning,
-  onDownloadClick,
-  onDownloadSuccess,
   getDownloadBody,
   getStartIndex,
   getSrcCount,

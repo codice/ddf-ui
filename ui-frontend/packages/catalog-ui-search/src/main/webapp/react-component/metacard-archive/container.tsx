@@ -17,8 +17,8 @@ import { hot } from 'react-hot-loader'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import fetch from '../utils/fetch'
-const announcement = require('component/announcement')
 import MetacardArchivePresentation from './presentation'
+const wreqr = require('../../js/wreqr.js')
 
 type Props = {
   results: LazyQueryResult[]
@@ -62,10 +62,13 @@ class MetacardArchive extends React.Component<Props, State> {
     })
     if (!res.ok) {
       this.setState({ loading: false })
-      announcement.announce({
-        title: 'Unable to archive the selected item(s).',
-        message: 'Something went wrong.',
-        type: 'error',
+      wreqr.vent.trigger('snack', {
+        message: 'Unable to archive the selected item(s).',
+        snackProps: {
+          alertProps: {
+            severity: 'error',
+          },
+        },
       })
       return
     }
@@ -101,10 +104,13 @@ class MetacardArchive extends React.Component<Props, State> {
       })
       if (!isResponseOk) {
         this.setState({ loading: false })
-        announcement.announce({
-          title: 'Unable to restore the selected item(s).',
-          message: 'Something went wrong.',
-          type: 'error',
+        wreqr.vent.trigger('snack', {
+          message: 'Unable to restore the selected item(s).',
+          snackProps: {
+            alertProps: {
+              severity: 'error',
+            },
+          },
         })
       }
 

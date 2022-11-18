@@ -16,12 +16,12 @@ import * as React from 'react'
 import { useState } from 'react'
 import ExtensionPoints from '../../extension-points'
 import GazetteerAutoComplete from '../auto-complete/gazetteer-autocomplete'
-const Announcement = require('../../component/announcement/index.jsx')
 const Polygon = require('./polygon')
 const MultiPolygon = require('./multipoly')
 import { TextFieldProps } from '@material-ui/core/TextField'
 import defaultFetch from '../utils/fetch'
 import { Suggestion, GeoFeature } from './gazetteer'
+import useSnack from '../../component/hooks/useSnack'
 
 type Props = {
   setState: any
@@ -47,7 +47,7 @@ const Keyword = (props: Props) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const fetch = props.fetch || defaultFetch
-
+  const addSnack = useSnack()
   const {
     polygon,
     setBufferState,
@@ -139,11 +139,15 @@ const Keyword = (props: Props) => {
           break
         }
         default: {
-          Announcement.announce({
-            title: 'Invalid feature',
-            message: 'Unrecognized feature type: ' + JSON.stringify(type),
-            type: 'error',
-          })
+          addSnack(
+            'Invalid feature - Unrecognized feature type: ' +
+              JSON.stringify(type),
+            {
+              alertProps: {
+                severity: 'error',
+              },
+            }
+          )
         }
       }
     } catch (e) {

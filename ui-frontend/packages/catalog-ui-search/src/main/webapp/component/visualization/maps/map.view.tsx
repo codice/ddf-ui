@@ -19,7 +19,6 @@ const wreqr = require('../../../js/wreqr.js')
 const user = require('../../singletons/user-instance.js')
 const MapModel = require('./map.model')
 const properties = require('../../../js/properties.js')
-const announcement = require('../../announcement')
 
 import MapInfo from '../../../react-component/map-info'
 import DistanceInfo from '../../../react-component/distance-info'
@@ -33,6 +32,7 @@ import Geometries from './react/geometries'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import PopupPreview from '../../../react-component/popup-preview'
 import { SHAPE_ID_PREFIX } from './drawing-and-display'
+import useSnack from '../../hooks/useSnack'
 const featureDetection = require('../../singletons/feature-detection.js')
 
 function findExtreme({ objArray, property, comparator }: any) {
@@ -589,6 +589,7 @@ export const MapViewReact = (props: MapViewReactType) => {
   useChangeCursorOnHover({ isHovering, mapElement })
   const isDrawing = useListenToDrawing()
   useChangeCursorOnDrawing({ mapElement, isDrawing })
+  const addSnack = useSnack()
   return (
     <div
       ref={setContainerElement}
@@ -627,10 +628,10 @@ export const MapViewReact = (props: MapViewReactType) => {
               const boundingBox = map.getBoundingBox()
               const userPreferences = user.get('user').get('preferences')
               userPreferences.set('mapHome', boundingBox)
-              announcement.announce({
-                title: 'Success!',
-                message: 'New map home location set.',
-                type: 'success',
+              addSnack('Success! New map home location set.', {
+                alertProps: {
+                  severity: 'success',
+                },
               })
             }}
             isClustering={isClustering}

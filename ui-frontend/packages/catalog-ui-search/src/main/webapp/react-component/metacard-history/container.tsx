@@ -17,11 +17,11 @@ import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import fetch from '../utils/fetch'
 const moment = require('moment')
-const announcement = require('component/announcement')
 import MetacardHistoryPresentation from './presentation'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { TypedUserInstance } from '../../component/singletons/TypedUser'
 import Common from '../../js/Common'
+const wreqr = require('../../js/wreqr.js')
 
 type Props = {
   result: LazyQueryResult
@@ -103,10 +103,13 @@ class MetacardHistory extends React.Component<Props, State> {
 
     if (!res.ok) {
       this.setState({ loading: false })
-      announcement.announce({
-        title: 'Unable to revert to the selected version',
-        message: 'Something went wrong.',
-        type: 'error',
+      wreqr.vent.trigger('snack', {
+        message: 'Unable to revert to the selected version',
+        snackProps: {
+          alertProps: {
+            severity: 'error',
+          },
+        },
       })
       return
     }
@@ -123,13 +126,13 @@ class MetacardHistory extends React.Component<Props, State> {
           'revision'
         ) >= 0
       ) {
-        announcement.announce({
-          title: 'Waiting on Reverted Data',
-          message: [
-            "It's taking an unusually long time for the reverted data to come back.",
-            'The item will be put in a revision-like state (read-only) until data returns.',
-          ],
-          type: 'warn',
+        wreqr.vent.trigger('snack', {
+          message: `Waiting on Reverted Data: It's taking an unusually long time for the reverted data to come back.  The item will be put in a revision-like state (read-only) until data returns.`,
+          snackProps: {
+            alertProps: {
+              severity: 'warn',
+            },
+          },
         })
       }
       this.loadData()

@@ -16,9 +16,9 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import fetch from '../utils/fetch'
-const announcement = require('component/announcement')
 import MetacardQualityPresentation from './presentation'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+const wreqr = require('../../js/wreqr.js')
 
 type Props = {
   result: LazyQueryResult
@@ -76,10 +76,13 @@ class MetacardQuality extends React.Component<Props, State> {
 
   getData = (res: any, type: string) => {
     if (!res.ok) {
-      announcement.announce({
-        title: `Unable to retrieve ${type} Validation Issues`,
-        message: 'Something went wrong.',
-        type: 'warn',
+      wreqr.vent.trigger('snack', {
+        message: `Unable to retrieve ${type} Validation Issues`,
+        snackProps: {
+          alertProps: {
+            severity: 'warn',
+          },
+        },
       })
       return []
     } else {

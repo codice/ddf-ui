@@ -15,8 +15,8 @@ import useTimePrefs from '../../fields/useTimePrefs'
 const metacardDefinitions = require('../../singletons/metacard-definitions.js')
 const properties = require('../../../js/properties.js')
 import IconHelper from '../../../js/IconHelper'
+import useSnack from '../../hooks/useSnack'
 const wreqr = require('../../../js/wreqr.js')
-const announcement = require('../../announcement')
 const user = require('../../singletons/user-instance')
 const _ = require('lodash')
 
@@ -90,17 +90,6 @@ const renderTooltip = (timelineItems: TimelineItem[]) => {
   )
 }
 
-const onCopy = (copiedValue: string) => {
-  announcement.announce(
-    {
-      title: 'Copied to clipboard',
-      message: copiedValue,
-      type: 'success',
-    },
-    2500
-  )
-}
-
 const TimelineVisualization = (props: Props) => {
   const { selectionInterface } = props
   useTimePrefs()
@@ -124,6 +113,7 @@ const TimelineVisualization = (props: Props) => {
   const rootRef = React.useRef(null)
 
   const [resized, setResized] = React.useState(false)
+  const addSnack = useSnack()
 
   React.useEffect(() => {
     props.listenTo(wreqr.vent, 'resize', () => {
@@ -208,7 +198,13 @@ const TimelineVisualization = (props: Props) => {
         format={user.getDateTimeFormat()}
         timezone={user.getTimeZone()}
         height={height}
-        onCopy={onCopy}
+        onCopy={(copiedValue) => {
+          addSnack('Copied to clipboard: ' + copiedValue, {
+            alertProps: {
+              severity: 'success',
+            },
+          })
+        }}
       />
     </TimelineWrapper>
   )
