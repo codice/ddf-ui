@@ -14,6 +14,10 @@
  **/
 import React from 'react'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
+import { hot } from 'react-hot-loader'
+import Button from '@material-ui/core/Button'
+import LinearProgress from '@material-ui/core/LinearProgress'
+
 const wreqr = require('../../js/wreqr.js')
 
 type UploadItemViewReactType = {
@@ -55,14 +59,7 @@ export const UploadItemViewReact = ({ model }: UploadItemViewReactType) => {
 
   return (
     <div
-      data-element="upload-item"
-      className={`${isSending ? 'show-progress' : ''} ${
-        hasError ? 'has-error' : ''
-      } ${hasSuccess ? 'has-success' : ''} ${
-        hasIssues ? 'has-validation-issues' : ''
-      } ${isValidating ? 'checking-validation' : ''} ${
-        cancel ? 'is-removed' : ''
-      }`}
+      className={`flex flex-row items-center flex-no-wrap w-full p-4`}
       onClick={() => {
         if (model.get('success') && !model.hasChildren()) {
           wreqr.vent.trigger('router:navigate', {
@@ -74,67 +71,91 @@ export const UploadItemViewReact = ({ model }: UploadItemViewReactType) => {
         }
       }}
     >
-      <div className="upload-info">
-        <div className="info-details">
-          <div className="details-top">
+      <div className="w-full flex-shrink">
+        <div className="text-center">
+          <div className="">
             <span className="top-filename">{modelJson.file.name}</span>
           </div>
-          <div className="details-bottom">
-            <div className="bottom-info">
+          <div className="">
+            <div className="">
               <span className="bottom-filesize">{modelJson.file.size}</span>
               <span className="bottom-filetype">{modelJson.file.type}</span>
             </div>
-            <div className="bottom-percentage">
-              {Math.floor(modelJson.percentage) + '%'}
+            <div className="">{Math.floor(modelJson.percentage) + '%'}</div>
+          </div>
+        </div>
+        {!hasSuccess && !hasError && isSending ? (
+          <LinearProgress
+            className="h-2 w-full"
+            value={modelJson.percentage}
+            variant="determinate"
+          />
+        ) : null}
+
+        {hasSuccess ? (
+          <div className="info-success text-center">
+            <div className="success-message">
+              {hasIssues ? (
+                <span>Uploaded, but quality issues were found </span>
+              ) : (
+                <></>
+              )}
+              {isValidating ? (
+                <span className="success-validate fa fa-refresh fa-spin is-critical-animation"></span>
+              ) : (
+                <></>
+              )}
+              {hasIssues ? <span className="message-text"></span> : <></>}
             </div>
           </div>
-        </div>
-        <div
-          className="info-progress"
-          style={{
-            width: `${modelJson.percentage}%`,
-          }}
-        ></div>
-        <div className="info-success">
-          <div className="success-message">
-            <span className="success-issues fa fa-exclamation-triangle"></span>
-            <span className="success-validate fa fa-refresh fa-spin is-critical-animation"></span>
-            <span className="message-text">{modelJson.message}</span>
+        ) : null}
+        {hasError ? (
+          <div className="info-error text-center">
+            <div className="error-message">{modelJson.message}</div>
           </div>
-        </div>
-        <div className="info-error">
-          <div className="error-message">{modelJson.message}</div>
-        </div>
+        ) : null}
       </div>
 
-      <div className="upload-actions">
-        <button
-          className="old-button upload-cancel is-negative"
-          onClick={() => {
-            setCancel(true)
-          }}
-        >
-          <span className="fa fa-minus"></span>
-        </button>
+      <div className="upload-actions flex-shrink-0">
+        {!isSending ? (
+          <Button
+            className=""
+            onClick={() => {
+              setCancel(true)
+            }}
+          >
+            Remove
+          </Button>
+        ) : null}
 
-        <div
-          className="upload-expand is-positive"
-          onClick={() => {
-            wreqr.vent.trigger('router:navigate', {
-              fragment: 'metacards/' + model.get('id'),
-              options: {
-                trigger: true,
-              },
-            })
-          }}
-        >
-          <span className="fa fa-check"></span>
-        </div>
+        {hasSuccess ? (
+          <Button
+            className=""
+            onClick={() => {
+              wreqr.vent.trigger('router:navigate', {
+                fragment: 'metacards/' + model.get('id'),
+                options: {
+                  trigger: true,
+                },
+              })
+            }}
+          >
+            Success
+          </Button>
+        ) : (
+          <></>
+        )}
 
-        <div className="upload-fail is-negative">
-          <span className="fa fa-exclamation-triangle"></span>
-        </div>
+        {hasError ? (
+          <>
+            <div>Failures</div>
+          </>
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   )
 }
+
+export default hot(module)(UploadItemViewReact)

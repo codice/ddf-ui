@@ -195,7 +195,11 @@ export const IngestDetailsViewReact = (props: IngestDetailsViewReactType) => {
 
   return (
     <div className="ingest-details p-2 w-full h-full flex flex-col items-center flex-no-wrap overflow-hidden space-y-2">
-      <div className="details-files w-full overflow-auto">
+      <div
+        className={`details-files w-full overflow-auto ${
+          mode === 'empty' ? '' : 'h-full'
+        }`}
+      >
         {uploadBatchModel.model ? (
           <UploadItemCollection
             collection={uploadBatchModel.model.get('uploads')}
@@ -204,7 +208,7 @@ export const IngestDetailsViewReact = (props: IngestDetailsViewReactType) => {
       </div>
       {mode === 'empty' || mode === 'has-files' ? (
         <div
-          className="details-dropzone border border-dashed w-full h-full flex flex-col justify-center items-center cursor-pointer"
+          className="details-dropzone border border-dashed w-full h-full flex flex-col justify-center items-center cursor-pointer overflow-hidden"
           ref={setDropzoneElement}
         >
           <div

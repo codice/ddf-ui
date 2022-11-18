@@ -14,7 +14,7 @@
  **/
 import React from 'react'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
-import { UploadItemViewReact } from './upload-item.view'
+import UploadItemViewReact from './upload-item.view'
 
 type UploadItemCollectionType = {
   collection: any
@@ -30,7 +30,7 @@ export const UploadItemCollection = ({
   return (
     <div className="is-list has-list-highlighting overflow-hidden flex flex-col space-y-2">
       {collection.models.map((model: any) => {
-        return <UploadItemViewReact key={model.id} model={model} />
+        return <UploadItemViewReact key={model.cid} model={model} />
       })}
     </div>
   )
