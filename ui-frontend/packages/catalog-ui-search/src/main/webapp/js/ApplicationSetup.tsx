@@ -14,8 +14,19 @@
  **/
 require('focus-visible')
 require('../styles/tailwind.css')
-require('../styles/libraries.less')
-require('../styles/styles.less')
+
+import 'cesium/Build/Cesium/Widgets/widgets.css'
+import 'font-awesome/css/font-awesome.css'
+import '../lib/cesium-drawhelper/DrawHelper.css'
+import 'golden-layout/src/css/goldenlayout-base.css'
+import 'golden-layout/src/css/goldenlayout-dark-theme.css'
+import 'spectrum-colorpicker/spectrum.css'
+import '../styles/fonts.css'
+import '../styles/loading.css'
+import '../styles/input-range.css'
+import '../styles/additional-styles.css'
+import '../styles/plotly.css'
+
 import $ from 'jquery'
 $.ajaxSetup({
   cache: false,
