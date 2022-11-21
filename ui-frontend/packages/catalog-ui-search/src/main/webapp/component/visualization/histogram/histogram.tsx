@@ -182,7 +182,8 @@ function getLayout(plot?: any) {
     font: {
       family: '"Open Sans Light","Helvetica Neue",Helvetica,Arial,sans-serif',
       size: 16,
-      color: 'white',
+      color: 'inherit',
+      fill: 'inherit',
     },
     margin: {
       t: 10,
@@ -268,9 +269,9 @@ export const Histogram = ({ selectionInterface }: Props) => {
         type: 'histogram',
         name: 'Hits        ',
         marker: {
-          color: 'rgba(255, 255, 255, .05)',
+          color: 'rgba(120, 120, 120, .05)',
           line: {
-            color: 'rgba(255,255,255,.2)',
+            color: 'rgba(120,120,120,.2)',
             width: '2',
           },
         },
@@ -299,9 +300,9 @@ export const Histogram = ({ selectionInterface }: Props) => {
         hoverinfo: 'y+x+name',
         name: 'Hits        ',
         marker: {
-          color: 'rgba(255, 255, 255, .05)',
+          color: 'rgba(120, 120, 120, .05)',
           line: {
-            color: 'rgba(255,255,255,.2)',
+            color: 'rgba(120,120,120,.2)',
             width: '2',
           },
         },
@@ -318,7 +319,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
         hoverinfo: 'y+x+name',
         name: 'Selected',
         marker: {
-          color: 'rgba(255, 255, 255, .2)',
+          color: 'rgba(120, 120, 120, .2)',
         },
         autobinx: false,
         xbins,

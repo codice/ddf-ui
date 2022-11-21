@@ -19,6 +19,16 @@ body {
   overflow: hidden;
 }
 
+html.theme-dark {
+  color: white;
+  fill: white;
+}
+
+html {
+  color: black;
+  fill: black;
+}
+
 body {
   position: relative;
 }

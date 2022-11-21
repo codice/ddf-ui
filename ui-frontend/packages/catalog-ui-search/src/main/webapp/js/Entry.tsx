@@ -28,7 +28,7 @@ require('./properties.js').init()
     throw Error(firstImportErrorMessage)
   }
 })()
-require('../js/ApplicationSetup')
+import '../js/ApplicationSetup'
 import ExtensionPoints, { ExtensionPointsType } from '../extension-points'
 
 import { attemptToStart } from './ApplicationStart'

@@ -12,13 +12,11 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react'
 require('focus-visible')
 require('../styles/tailwind.css')
 require('../styles/libraries.less')
 require('../styles/styles.less')
-
-const $ = require('jquery')
+import $ from 'jquery'
 $.ajaxSetup({
   cache: false,
   headers: {
@@ -34,6 +32,7 @@ if (process.env.NODE_ENV !== 'production') {
   }
 }
 
+//@ts-ignore
 window.CESIUM_BASE_URL = './cesium/assets'
 
 const Backbone = require('backbone')
@@ -42,11 +41,11 @@ require('./extensions/application.patches')
 
 //in here we drop in any top level patches, etc.
 const toJSON = Backbone.Model.prototype.toJSON
-Backbone.Model.prototype.toJSON = function (options) {
+Backbone.Model.prototype.toJSON = function (options: any) {
   const originalJSON = toJSON.call(this, options)
   if (options && options.additionalProperties !== undefined) {
     const backboneModel = this
-    options.additionalProperties.forEach((property) => {
+    options.additionalProperties.forEach((property: any) => {
       originalJSON[property] = backboneModel[property]
     })
   }
@@ -65,7 +64,11 @@ Backbone.AssociatedModel.prototype.clone = function () {
   return cloneRef
 }
 const associationsSet = Backbone.AssociatedModel.prototype.set
-Backbone.AssociatedModel.prototype.set = function (key, value, options) {
+Backbone.AssociatedModel.prototype.set = function (
+  key: any,
+  value: any,
+  options: any
+) {
   if (typeof key === 'object') {
     options = value
   }
@@ -81,9 +84,12 @@ require('../component/singletons/session-auto-renew.js')
 
 $(window.document).ready(() => {
   window.document.title = properties.customBranding + ' ' + properties.product
+  //@ts-ignore
   window.document.querySelector('.welcome-branding').textContent =
     properties.customBranding
+  //@ts-ignore
   window.document.querySelector('.welcome-branding-name').textContent =
     properties.product
+  //@ts-ignore
   window.document.querySelector('#loading').classList.add('show-welcome')
 })
