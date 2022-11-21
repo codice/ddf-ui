@@ -45,6 +45,7 @@ const Units = ({ value, onChange, children }) => (
         onChange(newVal)
       }}
       size="small"
+      style={{ minWidth: '200px' }}
     ></Autocomplete>
   </Group>
 )
