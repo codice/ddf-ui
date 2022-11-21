@@ -16,7 +16,6 @@ const Plotly = require('plotly.js/dist/plotly.js')
 const metacardDefinitions = require('../../singletons/metacard-definitions.js')
 const properties = require('../../../js/properties.js')
 const moment = require('moment')
-const user = require('../../singletons/user-instance.js')
 
 const zeroWidthSpace = '\u200B'
 const plotlyDateFormat = 'YYYY-MM-DD HH:mm:ss.SS'
@@ -345,51 +344,6 @@ export const Histogram = ({ selectionInterface }: Props) => {
         })
     }
   }
-
-  const updateTheme = (e: any) => {
-    if (plotlyRef.current) {
-      const histogramElement = plotlyRef.current
-      if (
-        histogramElement.children.length !== 0 &&
-        attributeToBin &&
-        results.length !== 0
-      ) {
-        // @ts-ignore ts-migrate(2339) FIXME: Property 'layout' does not exist on type 'HTMLDivE... Remove this comment to see the full error message
-        histogramElement.layout.margin = {
-          t: 10,
-          l: 50,
-          r: 115,
-          b: 140,
-          pad: 0,
-          autoexpand: true,
-        }
-      }
-    }
-  }
-
-  const updateFontSize = (e: any) => {
-    if (plotlyRef.current) {
-      const histogramElement = plotlyRef.current
-
-      if (
-        histogramElement.children.length !== 0 &&
-        attributeToBin &&
-        results.length !== 0
-      ) {
-        // @ts-ignore ts-migrate(2339) FIXME: Property 'layout' does not exist on type 'HTMLDivE... Remove this comment to see the full error message
-        histogramElement.layout.font.size = e.get('fontSize')
-      }
-    }
-  }
-
-  React.useEffect(() => {
-    listenTo(
-      user.get('user').get('preferences'),
-      'change:fontSize',
-      updateFontSize
-    )
-    listenTo(user.get('user').get('preferences'), 'change:theme', updateTheme)
-  }, [])
 
   React.useEffect(() => {
     const id = (Math.random() * 100).toFixed(0).toString()
