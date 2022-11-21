@@ -190,9 +190,9 @@ function updateTheme(userTheme: UserTheme) {
       {}
     ) as ThemeColorInterface
   }
-  let sizingTheme = sizing[userTheme.spacingMode]
+  let sizingTheme = sizing['comfortable']
   return {
-    spacingMode: userTheme.spacingMode as 'comfortable' | 'cozy' | 'compact',
+    spacingMode: 'comfortable',
     ...relevantColorTheme,
     ...userTheme,
     ...sizingTheme,
@@ -227,7 +227,7 @@ const sharedState: ThemeInterface = {
     return sharedState.screenSize < parseFloat(specifiedSize)
   },
   background: 'black',
-  ...updateTheme(user.get('user').get('preferences').get('theme').getTheme()),
+  ...updateTheme(user.get('user').get('preferences').get('theme').toJSON()),
 }
 
 function updateMediaQueries() {
@@ -237,7 +237,7 @@ function updateMediaQueries() {
 function updateSharedTheme() {
   _.extend(
     sharedState,
-    updateTheme(user.get('user').get('preferences').get('theme').getTheme())
+    updateTheme(user.get('user').get('preferences').get('theme').toJSON())
   )
 }
 

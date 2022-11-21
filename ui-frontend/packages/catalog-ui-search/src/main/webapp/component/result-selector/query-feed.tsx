@@ -21,6 +21,7 @@ type Props = {
 
 const Cell = styled.td`
   padding: 20px;
+  border: solid 1px rgba(120, 120, 120, 0.2);
 `
 
 const HeaderCell = styled.th`
@@ -172,7 +173,7 @@ const QueryStatus = ({
           Filter
         </HeaderCell>
       </tr>
-      <tbody className="is-list">
+      <tbody className="">
         {statusBySource.map((status) => {
           return (
             <QueryStatusRow key={status.id} status={status} query={query} />
@@ -272,7 +273,7 @@ const QueryFeed = ({ selectionInterface }: Props) => {
             <div className="relative">
               <Button
                 data-id="heartbeat-button"
-                className="details-view is-button"
+                className=""
                 title="Show the full status for the search."
                 data-help="Show the full status for the search."
                 {...MuiButtonProps}

@@ -77,7 +77,6 @@ Backbone.AssociatedModel.prototype.set = function (key, value, options) {
 
 require('@connexta/icons/icons/codice.font')
 require('./MediaQueries.js')
-require('./Theming.js')
 require('../component/singletons/session-auto-renew.js')
 
 $(window.document).ready(() => {

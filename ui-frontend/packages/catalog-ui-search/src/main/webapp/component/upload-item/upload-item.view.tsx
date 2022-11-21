@@ -59,7 +59,7 @@ export const UploadItemViewReact = ({ model }: UploadItemViewReactType) => {
 
   return (
     <div
-      className={`flex flex-row items-center flex-no-wrap w-full p-4`}
+      className={`flex flex-row items-center flex-no-wrap w-full p-4 border-gray-600 border border-opacity-25`}
       onClick={() => {
         if (model.get('success') && !model.hasChildren()) {
           wreqr.vent.trigger('router:navigate', {

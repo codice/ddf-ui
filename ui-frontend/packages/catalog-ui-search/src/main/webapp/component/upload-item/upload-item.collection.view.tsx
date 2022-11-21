@@ -28,7 +28,7 @@ export const UploadItemCollection = ({
     setForceRender(Math.random())
   })
   return (
-    <div className="is-list has-list-highlighting overflow-hidden flex flex-col space-y-2">
+    <div className=" overflow-hidden flex flex-col space-y-2">
       {collection.models.map((model: any) => {
         return <UploadItemViewReact key={model.cid} model={model} />
       })}

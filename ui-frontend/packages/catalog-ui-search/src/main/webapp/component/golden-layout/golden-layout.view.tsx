@@ -72,8 +72,6 @@ const sanitizeTree = (tree: any) =>
   })
 
 function getGoldenLayoutSettings() {
-  const fontSize = 16
-  const theme = user.get('user').get('preferences').get('theme').getTheme()
   return {
     settings: {
       showPopoutIcon: false,
@@ -83,7 +81,7 @@ function getGoldenLayoutSettings() {
       borderWidth: 8,
       minItemHeight: 50,
       minItemWidth: 50,
-      headerHeight: parseFloat(theme.minimumButtonSize) * fontSize,
+      headerHeight: 44,
       dragProxyWidth: 300,
       dragProxyHeight: 200,
     },
@@ -183,6 +181,7 @@ const GoldenLayoutComponent = ({
       <Paper
         elevation={Elevations.panels}
         className={`w-full h-full ${isMinimized ? 'hidden' : ''}`}
+        square
       >
         <ComponentView selectionInterface={options.selectionInterface} />
       </Paper>

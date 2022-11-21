@@ -28,12 +28,19 @@ const Alert = require('./Alert')
 import Common from '../Common'
 const UploadBatch = require('./UploadBatch.js')
 const moment = require('moment-timezone')
-const Theme = require('./Theme.js')
-const ThemeUtils = require('../ThemeUtils.js')
 const QuerySettings = require('./QuerySettings.js')
 require('backbone-associations')
 
 const User = {}
+
+const Theme = Backbone.Model.extend({
+  defaults() {
+    return {
+      palette: 'default',
+      theme: 'dark',
+    }
+  },
+})
 
 User.updateMapLayers = function (layers) {
   const providers = properties.imageryProviders
@@ -139,7 +146,7 @@ User.Preferences = Backbone.AssociatedModel.extend({
       hasSelectedColumns: false,
       uploads: [],
       oauth: [],
-      fontSize: ThemeUtils.getFontSize(_get(properties, 'zoomPercentage', 100)),
+      fontSize: 16,
       resultCount: properties.resultCount,
       dateTimeFormat: Common.getDateTimeFormats()['ISO'],
       timeZone: Common.getTimeZones()['UTC'],
@@ -149,7 +156,10 @@ User.Preferences = Backbone.AssociatedModel.extend({
       goldenLayoutUpload: undefined,
       goldenLayoutMetacard: undefined,
       goldenLayoutAlert: undefined,
-      theme: new Theme(),
+      theme: {
+        palette: 'custom',
+        theme: 'dark',
+      },
       animation: true,
       hoverPreview: true,
       querySettings: new QuerySettings(),

@@ -134,7 +134,8 @@ have chosen."
             return (
               <Row
                 className={`${
-                  selectedVersion === historyItem.id && 'is-selected'
+                  selectedVersion === historyItem.id &&
+                  ' bg-gray-600 bg-opacity-25'
                 }`}
                 data-id={historyItem.id}
                 key={historyItem.id}

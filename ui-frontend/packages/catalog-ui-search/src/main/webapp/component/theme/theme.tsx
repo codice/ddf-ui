@@ -111,11 +111,12 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
           margin-left: 8px;
         }
       }
+      .lm_goldenlayout, .lm_content {
+        background: inherit;
+      }
       .lm_splitter  {
-        background: ${(props) =>
-          props.palette.type === 'dark'
-            ? dark.background
-            : light.background} !important;
+        background: ${(props) => props.palette.background.default};
+        opacity: 1;
       }
       .lm_splitter:hover  {
         background: ${(props) => props.palette.primary.main} !important;

@@ -22,6 +22,7 @@ const user = require('../singletons/user-instance.js')
 import { hot } from 'react-hot-loader'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import debounce from 'lodash.debounce'
+import Button from '@material-ui/core/Button'
 
 // this is to track focus, since on reordering rerenders and loses focus
 const FocusModel = Backbone.Model.extend({
@@ -78,7 +79,7 @@ const LayersViewReact = () => {
 
   return (
     <div data-id="layers-container" ref={containerElementRef}>
-      <div className="is-header">Layers</div>
+      <div className="text-xl text-center">Layers</div>
       <div className="layers">
         <LayerItemCollectionViewReact
           collection={user.get('user>preferences').get('mapLayers')}
@@ -100,9 +101,8 @@ const LayersViewReact = () => {
         />
       </div>
       <div className="footer">
-        <button
+        <Button
           data-id="reset-to-defaults-button"
-          className="old-button is-button"
           onClick={() => {
             focusModel.clear()
             user
@@ -121,7 +121,7 @@ const LayersViewReact = () => {
           }}
         >
           <span>Reset to Defaults</span>
-        </button>
+        </Button>
       </div>
     </div>
   )

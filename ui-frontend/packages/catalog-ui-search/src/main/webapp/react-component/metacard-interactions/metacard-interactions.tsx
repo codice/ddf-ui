@@ -14,8 +14,13 @@
  **/
 import * as React from 'react'
 import styled from 'styled-components'
+import MuiDivider from '@material-ui/core/Divider'
 
-export const Divider = () => <div className="is-divider composed-menu" />
+export const Divider = () => {
+  return (
+    <MuiDivider variant="fullWidth" orientation="horizontal" className="my-3" />
+  )
+}
 
 const InteractionIcon = styled.div`
   text-align: center;

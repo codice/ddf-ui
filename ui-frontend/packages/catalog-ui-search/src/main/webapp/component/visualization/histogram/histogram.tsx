@@ -174,46 +174,24 @@ function getValueFromClick(data: any, categories: any) {
   }
 }
 
-function getTheme(theme: any) {
-  const config = {
-    margin: {
-      t: 10,
-      l: 50,
-      r: 115,
-      b: 90,
-      pad: 0,
-      autoexpand: true,
-    },
-  }
-  switch (theme) {
-    case 'comfortable':
-      config.margin.b = 140
-      return config
-    case 'cozy':
-      config.margin.b = 115
-      return config
-    case 'compact':
-      config.margin.b = 90
-      return config
-    default:
-      return config
-  }
-}
-
 function getLayout(plot?: any) {
-  const prefs = user.get('user').get('preferences')
-  const theme = getTheme(prefs.get('theme').get('spacingMode'))
-
   const baseLayout = {
     autosize: true,
     paper_bgcolor: 'rgba(0,0,0,0)',
     plot_bgcolor: 'rgba(0,0,0,0)',
     font: {
       family: '"Open Sans Light","Helvetica Neue",Helvetica,Arial,sans-serif',
-      size: prefs.get('fontSize'),
+      size: 16,
       color: 'white',
     },
-    margin: theme.margin,
+    margin: {
+      t: 10,
+      l: 50,
+      r: 115,
+      b: 140,
+      pad: 0,
+      autoexpand: true,
+    },
     barmode: 'overlay',
     xaxis: {
       fixedrange: true,
@@ -375,10 +353,15 @@ export const Histogram = ({ selectionInterface }: Props) => {
         attributeToBin &&
         results.length !== 0
       ) {
-        const theme = getTheme(e.get('spacingMode'))
-
         // @ts-ignore ts-migrate(2339) FIXME: Property 'layout' does not exist on type 'HTMLDivE... Remove this comment to see the full error message
-        histogramElement.layout.margin = theme.margin
+        histogramElement.layout.margin = {
+          t: 10,
+          l: 50,
+          r: 115,
+          b: 140,
+          pad: 0,
+          autoexpand: true,
+        }
       }
     }
   }

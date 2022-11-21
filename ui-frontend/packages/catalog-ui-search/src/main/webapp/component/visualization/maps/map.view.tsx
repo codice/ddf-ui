@@ -644,7 +644,7 @@ export const MapViewReact = (props: MapViewReactType) => {
       <div
         data-id="map-container"
         id="mapContainer"
-        className="height-full"
+        className="h-full"
         ref={setMapElement}
       ></div>
       <div className="mapInfo">
