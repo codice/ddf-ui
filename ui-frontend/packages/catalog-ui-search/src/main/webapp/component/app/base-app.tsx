@@ -16,7 +16,7 @@ import SearchIcon from '@material-ui/icons/Search'
 import ImageSearch from '@material-ui/icons/ImageSearch'
 import UserNotifications from '../../react-component/user-notifications/user-notifications'
 import { BaseSettings } from '../../react-component/user-settings/user-settings'
-import { providers as Providers } from '../../extension-points/providers'
+import ExtensionPoints from '../../extension-points/extension-points'
 import Paper from '@material-ui/core/Paper'
 import { Elevations } from '../theme/theme'
 import { Redirect } from 'react-router-dom'
@@ -300,9 +300,9 @@ const BaseApp = () => {
 
 const WrappedWithProviders = () => {
   return (
-    <Providers>
+    <ExtensionPoints.providers>
       <BaseApp />
-    </Providers>
+    </ExtensionPoints.providers>
   )
 }
 

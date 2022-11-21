@@ -12782,10 +12782,6 @@ less-loader@4.1.0:
     loader-utils "^1.1.0"
     pify "^3.0.0"
 
-less-vars-to-js@1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/less-vars-to-js/-/less-vars-to-js-1.1.2.tgz#eef3e48e0ab8d0fb9a8b515753a2d7b502a9ab0c"
-
 less@3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/less/-/less-3.0.1.tgz#ba2fea24a5632ccb8c84230d6043c0bf91855e37"

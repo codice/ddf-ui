@@ -29,7 +29,7 @@ import AllOutIcon from '@material-ui/icons/AllOut'
 import MinimizeIcon from '@material-ui/icons/Minimize'
 import MaximizeIcon from '@material-ui/icons/Add'
 import CloseIcon from '@material-ui/icons/Close'
-import { providers as Providers } from '../../extension-points/providers'
+import ExtensionPoints from '../../extension-points/extension-points'
 import { Visualizations } from '../visualization/visualizations'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
@@ -121,7 +121,7 @@ const GoldenLayoutComponentHeader = ({
   }, [tab])
   const isMinimized = width <= 100
   return (
-    <Providers>
+    <ExtensionPoints.providers>
       <div
         data-id={`${name}-tab`}
         className={`flex flex-row items-center flex-nowrap ${
@@ -153,7 +153,7 @@ const GoldenLayoutComponentHeader = ({
           ) : null}
         </Grid>
       </div>
-    </Providers>
+    </ExtensionPoints.providers>
   )
 }
 
@@ -177,7 +177,7 @@ const GoldenLayoutComponent = ({
   const isMinimized = width <= 100
 
   return (
-    <Providers>
+    <ExtensionPoints.providers>
       <Paper
         elevation={Elevations.panels}
         className={`w-full h-full ${isMinimized ? 'hidden' : ''}`}
@@ -185,7 +185,7 @@ const GoldenLayoutComponent = ({
       >
         <ComponentView selectionInterface={options.selectionInterface} />
       </Paper>
-    </Providers>
+    </ExtensionPoints.providers>
   )
 }
 
@@ -471,7 +471,7 @@ const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
 
   const isMinimized = width <= 100
   return (
-    <Providers>
+    <ExtensionPoints.providers>
       <Grid container direction="row" wrap="nowrap">
         {isMinimized ? (
           <>
@@ -535,7 +535,7 @@ const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
           </>
         )}
       </Grid>
-    </Providers>
+    </ExtensionPoints.providers>
   )
 }
 
