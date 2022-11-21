@@ -533,8 +533,10 @@ export const Provider = ({ children }: { children: any }) => {
     const htmlElement = document.querySelector('html') as HTMLElement
     if (styledTheme.theme === 'dark') {
       htmlElement.classList.add('bp3-dark')
+      htmlElement.classList.add('theme-dark')
     } else {
       htmlElement.classList.remove('bp3-dark')
+      htmlElement.classList.remove('theme-dark')
     }
   }, [styledTheme.theme])
   useRemoveFocusStyle()

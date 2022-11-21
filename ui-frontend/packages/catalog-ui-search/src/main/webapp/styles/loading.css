@@ -35,12 +35,17 @@
   line-height: 100vh;
   font-size: 1.25rem;
   text-align: center;
-  background: rgba(120, 120, 120, 1);
+  background: rgb(252, 252, 252);
   color: inherit;
   position: fixed;
   transform: translateX(-100%);
   transition: transform 0.75s ease-in-out;
   z-index: 1000;
+}
+
+.theme-dark #loading {
+  background: rgb(43, 64, 76);
+  color: white;
 }
 
 .loader {

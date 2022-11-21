@@ -192,7 +192,7 @@ function updateTheme(userTheme: UserTheme) {
   }
   let sizingTheme = sizing['comfortable']
   return {
-    spacingMode: 'comfortable',
+    spacingMode: 'comfortable' as 'comfortable',
     ...relevantColorTheme,
     ...userTheme,
     ...sizingTheme,
