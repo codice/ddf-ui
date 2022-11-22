@@ -14,24 +14,10 @@
  **/
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import styled from 'styled-components'
 import Button from '@material-ui/core/Button'
-const { Menu, MenuItem } = require('../menu')
-const Dropdown = require('../dropdown')
 import GetAppIcon from '@material-ui/icons/GetApp'
-
-const Root = styled.div`
-  padding: ${(props) => props.theme.largeSpacing};
-
-  button {
-    margin-top: ${(props) => props.theme.minimumSpacing};
-    width: 100%;
-  }
-
-  .export-option {
-    margin-bottom: ${(props) => props.theme.largeSpacing};
-  }
-`
+import Autocomplete from '@material-ui/lab/Autocomplete'
+import TextField from '@material-ui/core/TextField'
 
 type ExportFormat = {
   id: string
@@ -43,7 +29,7 @@ type Props = {
   exportFormats: ExportFormat[]
   downloadDisabled: boolean
   onDownloadClick: () => void
-  handleExportOptionChange: () => void
+  handleExportOptionChange: (val: string) => void
 }
 
 const ResultsExport = (props: Props) => {
@@ -55,17 +41,35 @@ const ResultsExport = (props: Props) => {
     handleExportOptionChange,
   } = props
 
+  React.useEffect(() => {
+    handleExportOptionChange(exportFormats[0]?.displayName)
+  }, [exportFormats])
+
   return (
-    <Root style={{ minWidth: '400px' }}>
+    <div className="p-4" style={{ minWidth: '400px' }}>
       <div data-id="export-format-select" className="export-option">
-        <p>Export Format:</p>
-        <Dropdown label={selectedFormat}>
-          <Menu value={selectedFormat} onChange={handleExportOptionChange}>
-            {exportFormats.map((option) => (
-              <MenuItem key={option.id} value={option.displayName} />
-            ))}
-          </Menu>
-        </Dropdown>
+        <Autocomplete
+          key={JSON.stringify(exportFormats)}
+          data-id="filter-type-autocomplete"
+          // @ts-ignore fullWidth does exist on Autocomplete
+          fullWidth
+          size="small"
+          options={exportFormats}
+          getOptionLabel={(option) => option.displayName}
+          getOptionSelected={(option, value) =>
+            option.displayName === value.displayName
+          }
+          onChange={(_e, newValue) => {
+            handleExportOptionChange(newValue.displayName)
+          }}
+          disableClearable
+          value={
+            exportFormats.find(
+              (format) => format.displayName === selectedFormat
+            ) || exportFormats[0]
+          }
+          renderInput={(params) => <TextField {...params} variant="outlined" />}
+        />
       </div>
       <Button
         variant="contained"
@@ -73,10 +77,12 @@ const ResultsExport = (props: Props) => {
         data-id="download-export-button"
         disabled={downloadDisabled}
         onClick={onDownloadClick}
+        className="mt-3"
+        fullWidth
       >
         <GetAppIcon /> Download
       </Button>
-    </Root>
+    </div>
   )
 }
 

@@ -49,7 +49,7 @@ class ResultsExport extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = {
-      selectedFormat: 'Select an export option',
+      selectedFormat: 'Binary Resource',
       exportFormats: [],
       downloadDisabled: true,
     }
@@ -62,7 +62,7 @@ class ResultsExport extends React.Component<Props, State> {
     ) {
       this.fetchExportOptions()
       this.setState({
-        selectedFormat: 'Select an export option',
+        selectedFormat: 'Binary Resource',
         downloadDisabled: true,
       })
     }
