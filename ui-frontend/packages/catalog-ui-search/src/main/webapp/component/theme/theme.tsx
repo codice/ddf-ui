@@ -13,15 +13,7 @@ import {
 } from '@material-ui/core/styles'
 import { ThemeContext } from 'styled-components'
 import { createGlobalStyle } from 'styled-components'
-import {
-  // @ts-ignore ts-migrate(6133) FIXME: 'polishedLighten' is declared but its value is nev... Remove this comment to see the full error message
-  lighten as polishedLighten,
-  meetsContrastGuidelines,
-  // @ts-ignore ts-migrate(6133) FIXME: 'mix' is declared but its value is never read.
-  mix,
-  // @ts-ignore ts-migrate(6133) FIXME: 'rgba' is declared but its value is never read.
-  rgba,
-} from 'polished'
+import { meetsContrastGuidelines } from 'polished'
 import { useRemoveFocusStyle } from '../app/blueprint.adjust'
 
 type Theme = {
