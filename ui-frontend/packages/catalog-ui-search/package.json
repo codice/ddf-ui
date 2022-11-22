@@ -98,9 +98,6 @@
   },
   "dependencies": {
     "@connexta/icons": "git+https://github.com/connexta/icons.git#v0.0.3",
-    "@fortawesome/fontawesome-svg-core": "1.2.19",
-    "@fortawesome/free-solid-svg-icons": "5.9.0",
-    "@fortawesome/react-fontawesome": "0.1.4",
     "@turf/circle": "3.3.3",
     "@turf/meta": "3.13.0",
     "@turf/turf": "3.4.1",
