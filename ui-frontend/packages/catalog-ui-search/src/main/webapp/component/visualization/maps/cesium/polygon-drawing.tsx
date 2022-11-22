@@ -67,6 +67,7 @@ export const CesiumPolygonDrawing = ({
   React.useEffect(() => {
     return () => {
       if (map && model) {
+        map.getMap().drawHelper.stopDrawing()
       }
     }
   }, [map, model])

@@ -210,7 +210,10 @@ const useStartMapDrawing = ({ map, model }: { map: any; model: any }) => {
           }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
         }
       }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
-      return () => {}
+      return () => {
+        mouseHandler.destroy()
+        enableInput({ map })
+      }
     }
     return () => {}
   }, [map, model])
@@ -221,6 +224,7 @@ export const CesiumBboxDrawing = ({ map, model }: { map: any; model: any }) => {
   React.useEffect(() => {
     return () => {
       if (map && model) {
+        map.getMap().drawHelper.stopDrawing()
       }
     }
   }, [map, model])

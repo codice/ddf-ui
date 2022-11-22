@@ -61,6 +61,7 @@ export const CesiumLineDrawing = ({ map, model }: { map: any; model: any }) => {
   React.useEffect(() => {
     return () => {
       if (map && model) {
+        map.getMap().drawHelper.stopDrawing()
       }
     }
   }, [map, model])
