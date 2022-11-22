@@ -127,6 +127,9 @@ export const TypedUserInstance = {
   getUserReadableDateTime: (val: any): string => {
     return userInstance.getUserReadableDateTime(val)
   },
+  getMapHome: () => {
+    return TypedUserInstance.getPreferences().get('mapHome')
+  },
 }
 
 export function useActingRole<T extends string>(): T {

@@ -298,8 +298,12 @@ export default function (
                 groupLayer.getSource().getExtent()
               )
           })
-        } else if (layer instanceof Openlayers.layer.Vector)
+        } else if (
+          layer instanceof Openlayers.layer.Vector &&
+          layer.get('id')
+        ) {
           Openlayers.extent.extend(extent, layer.getSource().getExtent())
+        }
       })
 
       map.getView().fit(extent, {

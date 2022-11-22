@@ -12,13 +12,11 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import wrapNum from '../../../react-component/utils/wrap-num/wrap-num'
 import * as React from 'react'
 
 const wreqr = require('../../../js/wreqr.js')
 const user = require('../../singletons/user-instance.js')
 const MapModel = require('./map.model')
-const properties = require('../../../js/properties.js')
 
 import MapInfo from '../../../react-component/map-info'
 import DistanceInfo from '../../../react-component/distance-info'
@@ -33,99 +31,8 @@ import LinearProgress from '@material-ui/core/LinearProgress'
 import PopupPreview from '../../../react-component/popup-preview'
 import { SHAPE_ID_PREFIX } from './drawing-and-display'
 import useSnack from '../../hooks/useSnack'
+import { zoomToHome } from './home'
 const featureDetection = require('../../singletons/feature-detection.js')
-
-function findExtreme({ objArray, property, comparator }: any) {
-  if (objArray.length === 0) {
-    return undefined
-  }
-  return objArray.reduce(
-    (extreme: any, coordinateObj: any) =>
-      (extreme = comparator(extreme, coordinateObj[property])),
-    objArray[0][property]
-  )
-}
-
-function getHomeCoordinates() {
-  if (properties.mapHome !== '' && properties.mapHome !== undefined) {
-    const separateCoordinates = properties.mapHome.replace(/\s/g, '').split(',')
-    if (separateCoordinates.length % 2 === 0) {
-      return separateCoordinates
-        .reduce((coordinates: any, coordinate: any, index: any) => {
-          if (index % 2 === 0) {
-            coordinates.push({
-              lon: coordinate,
-              lat: separateCoordinates[index + 1],
-            })
-          }
-          return coordinates
-        }, [])
-        .map((coordinateObj: any) => {
-          let lon = parseFloat(coordinateObj.lon)
-          let lat = parseFloat(coordinateObj.lat)
-          if (isNaN(lon) || isNaN(lat)) {
-            return undefined
-          }
-          lon = wrapNum(lon, -180, 180)
-          lat = wrapNum(lat, -90, 90)
-          return {
-            lon,
-            lat,
-          }
-        })
-        .filter((coordinateObj: any) => {
-          return coordinateObj !== undefined
-        })
-    }
-  } else {
-    return []
-  }
-}
-
-function getBoundingBox(coordinates: any) {
-  const north = findExtreme({
-    objArray: coordinates,
-    property: 'lat',
-    comparator: Math.max,
-  })
-  const south = findExtreme({
-    objArray: coordinates,
-    property: 'lat',
-    comparator: Math.min,
-  })
-  const east = findExtreme({
-    objArray: coordinates,
-    property: 'lon',
-    comparator: Math.max,
-  })
-  const west = findExtreme({
-    objArray: coordinates,
-    property: 'lon',
-    comparator: Math.min,
-  })
-  if (
-    north === undefined ||
-    south === undefined ||
-    east === undefined ||
-    west === undefined
-  ) {
-    return undefined
-  }
-  return {
-    north,
-    east,
-    south,
-    west,
-  }
-}
-
-const homeBoundingBox = getBoundingBox(getHomeCoordinates())
-const defaultHomeBoundingBox = {
-  west: -128,
-  south: 24,
-  east: -63,
-  north: 52,
-}
 
 const useMapCode = (props: MapViewReactType) => {
   const [mapCode, setMapCode] = React.useState<any>(null)
@@ -179,26 +86,6 @@ const useMapModel = () => {
   const [mapModel] = React.useState<any>(new MapModel())
 
   return mapModel
-}
-
-const zoomToHome = ({ map }: { map: any }) => {
-  const home = [
-    user.get('user').get('preferences').get('mapHome'),
-    homeBoundingBox,
-    defaultHomeBoundingBox,
-  ].find((element) => element !== undefined)
-
-  map.zoomToBoundingBox(home)
-}
-
-const panToShapesExtent = ({ map }: { map: any }) => {
-  if (user.get('user').get('preferences').get('autoPan')) {
-    if (map.getShapes().length) {
-      map.panToShapesExtent()
-    } else {
-      zoomToHome({ map })
-    }
-  }
 }
 
 /*
@@ -333,13 +220,6 @@ const useSelectionInterfaceMapListeners = ({
       map.removeAllOverlays.bind(map)()
     }
   )
-  useListenTo(
-    map ? selectionInterface : undefined,
-    'panToShapesExtent:currentQuery',
-    () => {
-      panToShapesExtent({ map })
-    }
-  )
 }
 
 const useListenToMapModel = ({
@@ -363,20 +243,6 @@ const useListenToMapModel = ({
       updateDistance({ map, mapModel })
     }
   )
-}
-
-const useInitialZoom = ({ map }: { map: any }) => {
-  React.useEffect(() => {
-    if (map) {
-      const timeoutId = window.setTimeout(() => {
-        panToShapesExtent({ map })
-      }, 1000)
-      return () => {
-        window.clearTimeout(timeoutId)
-      }
-    }
-    return () => {}
-  }, [map])
 }
 
 const updateTarget = ({
@@ -579,7 +445,6 @@ export const MapViewReact = (props: MapViewReactType) => {
     selectionInterface: props.selectionInterface,
   })
   useListenToMapModel({ map, mapModel })
-  useInitialZoom({ map })
   const { isHovering } = useMapListeners({
     map,
     mapModel,

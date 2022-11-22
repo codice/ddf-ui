@@ -451,24 +451,29 @@ module.exports = function CesiumMap(
     },
     panToExtent(coords) {},
     panToShapesExtent() {
-      let features = []
-
-      shapes.map((shape) => {
-        let feature = utility.featureFromShape(shape)
-
-        if (utility.featureIsValid(feature)) {
-          features.push(feature)
-        }
-      })
-
-      if (features.length) {
-        const featureCollection = Turf.featureCollection(features)
-        // Turf returns bbox as [west, south, east, north], which is the order that Cesium.Rectangle expects
-        const bboxExtent = Turf.bbox(featureCollection)
-        const rectangle = new Cesium.Rectangle.fromDegrees(...bboxExtent)
-
-        this.panToRectangle(rectangle)
+      const currentPrimitives = map.scene.primitives._primitives.filter(
+        (prim) => prim.id
+      )
+      const actualPositions = currentPrimitives.reduce((blob, prim) => {
+        return blob.concat(
+          prim._polylines.reduce((subblob, polyline) => {
+            return subblob.concat(polyline._actualPositions)
+          }, [])
+        )
+      }, [])
+      if (actualPositions.length > 0) {
+        map.scene.camera.flyTo({
+          duration: 0.5,
+          destination: Cesium.Rectangle.fromCartesianArray(actualPositions),
+          orientation: {
+            heading: map.scene.camera.heading,
+            pitch: map.scene.camera.pitch,
+            roll: map.scene.camera.roll,
+          },
+        })
+        return true
       }
+      return false
     },
     panToRectangle(
       rectangle,

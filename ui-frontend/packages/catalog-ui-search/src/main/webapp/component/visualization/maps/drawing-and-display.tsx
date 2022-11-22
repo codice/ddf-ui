@@ -17,6 +17,7 @@ const wreqr = require('../../../js/wreqr.js')
 import { useListenTo } from '../../selection-checkbox/useBackbone.hook'
 import { useIsDrawing } from '../../singletons/drawing'
 import { TypedUserInstance } from '../../singletons/TypedUser'
+import { zoomToHome } from './home'
 const LocationModel = require('../../location-old/location-old.js')
 
 export const SHAPE_ID_PREFIX = 'shape'
@@ -105,10 +106,38 @@ const extractModelsFromFilter = ({
   }
 }
 
+function useOnceIsNearFirstRender({
+  howNear = 1000,
+  callback,
+}: {
+  howNear?: number
+  callback: () => void
+}) {
+  const [firstRender, setFirstRender] = React.useState(true)
+  const [hasFired, setHasFired] = React.useState(false)
+  React.useEffect(() => {
+    setFirstRender(false)
+  }, [])
+  React.useEffect(() => {
+    if (!firstRender && !hasFired) {
+      const timeoutId = window.setTimeout(() => {
+        callback()
+        setHasFired(true)
+      }, howNear)
+      return () => {
+        window.clearTimeout(timeoutId)
+      }
+    }
+    return () => {}
+  }, [firstRender, howNear, hasFired, callback])
+}
+
 export const useDrawingAndDisplayModels = ({
   selectionInterface,
+  map,
 }: {
   selectionInterface: any
+  map: any
 }) => {
   const [models, setModels] = React.useState<Array<any>>([])
   const [filterModels, setFilterModels] = React.useState<Array<any>>([])
@@ -201,6 +230,15 @@ export const useDrawingAndDisplayModels = ({
       window.clearTimeout(timeoutId)
     }
   }, [])
+  const callback = React.useMemo(() => {
+    return () => {
+      const shapesExist = map.panToShapesExtent()
+      if (!shapesExist) {
+        zoomToHome({ map })
+      }
+    }
+  }, [filterModels, models, map])
+  useOnceIsNearFirstRender({ callback })
 
   return {
     models,

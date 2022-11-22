@@ -48,6 +48,7 @@ export const CesiumDrawings = ({
 }) => {
   const { models, filterModels, drawingModels } = useDrawingAndDisplayModels({
     selectionInterface,
+    map,
   })
 
   return (

@@ -47,6 +47,7 @@ export const OpenlayersDrawings = ({
 }) => {
   const { models, filterModels, drawingModels } = useDrawingAndDisplayModels({
     selectionInterface,
+    map,
   })
 
   return (
