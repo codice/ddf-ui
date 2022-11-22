@@ -23,7 +23,6 @@ import { TypedMetacardDefs } from '../../../component/tabs/metacard/metacardDefi
 const properties = require('../../properties.js')
 const TurfMeta = require('@turf/meta')
 const wkx = require('wkx')
-import { matchesCql, matchesFilters } from './filter'
 import {
   FilterBuilderClass,
   FilterClass,
@@ -328,12 +327,6 @@ export class LazyQueryResult {
   }
   hasPreview(): boolean {
     return this.plain.metacard.properties['ext.extracted.text'] !== undefined
-  }
-  matchesFilters(filters: FilterBuilderClass): boolean {
-    return matchesFilters(this.plain.metacard, filters)
-  }
-  matchesCql(cql: string): boolean {
-    return matchesCql(this.plain.metacard, cql)
   }
   isSearch(): boolean {
     return this.plain.metacard.properties['metacard-type'] === 'metacard.query'
