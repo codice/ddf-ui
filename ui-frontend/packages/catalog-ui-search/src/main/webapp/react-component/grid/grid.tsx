@@ -25,7 +25,7 @@ export const WrappedCardGridItem = ({
   gridItemProps,
 }: CardGridProps) => {
   return (
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2322) FIXME: Type '{ children: ReactNode; item: true; xs: 12; s... Remove this comment to see the full error message
     <GridItem {...gridItemProps} item xs={12} sm={6} md={4} lg={3} xl={2}>
       {children}
     </GridItem>
@@ -35,7 +35,6 @@ export const WrappedCardGridItem = ({
 export const WrappedCardGrid = styled(
   ({ gridProps, children }: CardGridProps) => {
     return (
-      // @ts-ignore
       <WrappedGrid
         container
         spacing={3}

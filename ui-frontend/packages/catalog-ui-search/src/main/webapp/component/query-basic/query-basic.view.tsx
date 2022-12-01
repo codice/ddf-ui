@@ -112,7 +112,7 @@ function isTypeLimiter(filter: any) {
 
 // strip extra quotes
 const stripQuotes = (property = 'anyText') => {
-  return property?.replace(/^"(.+(?="$))"$/, '$1')
+  return property?.replace(/^"(.+(?="$))"$/, '$1');
 }
 
 function isAnyDate(filter: any) {
@@ -552,7 +552,6 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
               </Grid>
               <Grid item className="w-full pl-2">
                 <Autocomplete
-                  // @ts-ignore Property 'fullWidth' does not exist on type (error is wrong)
                   fullWidth
                   multiple
                   options={Object.values(typeAttributes)}

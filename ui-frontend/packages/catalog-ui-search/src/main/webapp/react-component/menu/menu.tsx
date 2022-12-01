@@ -39,14 +39,14 @@ const after = `
   }
 `
 
-// @ts-ignore ts-migrate(7030) FIXME: Not all code paths return a value.
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
 const background = (props: any) => {
   if (props.theme.backgroundDropdown !== undefined) {
     return rgba(readableColor(props.theme.backgroundDropdown), 0.1)
   }
 }
 
-// @ts-ignore ts-migrate(7030) FIXME: Not all code paths return a value.
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
 const foreground = (props: any) => {
   if (props.theme.backgroundDropdown !== undefined) {
     return readableColor(props.theme.backgroundDropdown)

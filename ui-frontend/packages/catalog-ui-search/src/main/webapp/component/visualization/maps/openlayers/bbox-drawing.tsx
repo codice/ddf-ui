@@ -75,7 +75,7 @@ const useStartMapDrawing = ({ map, model }: { map: any; model: any }) => {
       const mapRef = map.getMap() as ol.Map
       const primitive = new ol.interaction.DragBox({
         condition: ol.events.condition.always,
-        // @ts-ignore
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ condition: (mapBrowserEvent: o... Remove this comment to see the full error message
         style: new ol.style.Style({
           stroke: new ol.style.Stroke({
             color: [0, 0, 255, 0],

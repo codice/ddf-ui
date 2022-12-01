@@ -106,7 +106,7 @@ function findBlockers() {
 }
 
 function isBlocked(element: any, boundingRect: any) {
-  //@ts-ignore
+  // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
   return _.some(findBlockers(), (blocker: any) => {
     if (
       blocker.element !== element &&

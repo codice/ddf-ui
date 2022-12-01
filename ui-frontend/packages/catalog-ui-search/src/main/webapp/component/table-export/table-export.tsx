@@ -49,9 +49,8 @@ type Source = {
 }
 
 export function getStartIndex(
-  // @ts-ignore ts-migrate(6133) FIXME: 'src' is declared but its value is never read.
   src: string,
-  // @ts-ignore ts-migrate(6133) FIXME: 'exportSize' is declared but its value is never re... Remove this comment to see the full error message
+  // @ts-expect-error ts-migrate(6133) FIXME: 'exportSize' is declared but its value is never re... Remove this comment to see the full error message
   exportSize: any,
   selectionInterface: any
 ) {

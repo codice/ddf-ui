@@ -137,7 +137,6 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
           >
             <Grid item className="w-full pb-2">
               <Autocomplete
-                // @ts-ignore Property 'fullWidth' does not exist on type (error is wrong)
                 fullWidth
                 multiple
                 options={getPossibleProperties()}

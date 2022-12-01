@@ -21,7 +21,7 @@ import ExpandingButton from '../button/expanding-button'
 import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-// @ts-ignore ts-migrate(6133) FIXME: 'ListItem' is declared but its value is never read... Remove this comment to see the full error message
+// @ts-expect-error ts-migrate(6133) FIXME: 'ListItem' is declared but its value is never read... Remove this comment to see the full error message
 import ListItem from '@material-ui/core/ListItem'
 import MenuIcon from '@material-ui/icons/Menu'
 import SettingsIcon from '@material-ui/icons/Settings'
@@ -108,9 +108,7 @@ const matchesRoute = ({
     routeInfo.routeProps.path &&
     routeInfo.routeProps.path.constructor === Array
   ) {
-    // @ts-ignore FIXME TS2339: Property 'some' does not exist on type 'string | string[]
     return routeInfo.routeProps.path.some(
-      // @ts-ignore FIXME implicit any
       (possibleRoute) =>
         pathname.startsWith(`${possibleRoute}/`) ||
         pathname.endsWith(`${possibleRoute}`)
@@ -315,7 +313,7 @@ const HelpButton = () => {
   const { navOpen } = useNavContextProvider()
   return (
     <ExpandingButton
-      // @ts-ignore ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
+      // @ts-expect-error ts-migrate(2322) FIXME: Type '"a" | ForwardRefExoticComponent<LinkProps<Un... Remove this comment to see the full error message
       component={properties.helpUrl ? 'a' : Link}
       href={properties.helpUrl}
       to={
@@ -351,7 +349,7 @@ const SettingsButton = () => {
   return (
     <>
       <ExpandingButton
-        // @ts-ignore ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
+        // @ts-expect-error ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
         component={Link}
         to={{
           pathname: `${location.pathname}`,
@@ -403,7 +401,7 @@ const NotificationsButton = () => {
         }
       >
         <ExpandingButton
-          // @ts-ignore ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
+          // @ts-expect-error ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
           component={Link}
           to={{
             pathname: `${location.pathname}`,
@@ -453,7 +451,7 @@ const UserButton = () => {
   return (
     <>
       <ExpandingButton
-        // @ts-ignore ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
+        // @ts-expect-error ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
         component={Link}
         to={{
           pathname: `${location.pathname}`,
@@ -513,7 +511,7 @@ const RouteButton = ({ routeInfo }: { routeInfo: RouteShownInNavType }) => {
   return (
     <ExpandingButton
       key={routeInfo.linkProps.to.toString()}
-      // @ts-ignore ts-migrate(2322) FIXME: Type 'null' is not assignable to type 'string | nu... Remove this comment to see the full error message
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
       component={Link}
       to={routeInfo.linkProps.to}
       className={`group-hover:opacity-100 ${

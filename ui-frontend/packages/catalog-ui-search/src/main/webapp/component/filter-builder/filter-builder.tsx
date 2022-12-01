@@ -14,7 +14,7 @@
  **/
 import * as React from 'react'
 
-// @ts-ignore ts-migrate(6192) FIXME: All imports in import declaration are unused.
+// @ts-expect-error ts-migrate(6192) FIXME: All imports in import declaration are unused.
 import { serialize, deserialize } from './filter-serialization'
 import FilterBranch from './filter-branch'
 

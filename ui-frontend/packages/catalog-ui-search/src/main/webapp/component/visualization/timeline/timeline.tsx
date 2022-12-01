@@ -118,7 +118,7 @@ const TimelineVisualization = (props: Props) => {
   React.useEffect(() => {
     props.listenTo(wreqr.vent, 'resize', () => {
       if (rootRef.current) {
-        // @ts-ignore ts-migrate(2531) FIXME: Object is possibly 'null'.
+        // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
         const rect = rootRef.current.getBoundingClientRect()
         setHeight(rect.height)
       }

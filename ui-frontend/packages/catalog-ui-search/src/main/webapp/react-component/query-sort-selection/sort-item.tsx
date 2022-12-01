@@ -49,7 +49,6 @@ const SortItem = ({
             <Autocomplete
               data-id="sort-type-autocomplete"
               size="small"
-              // @ts-ignore fullWidth does exist on Autocomplete
               fullWidth
               options={attributeOptions}
               getOptionLabel={(option) => option.label}
@@ -95,7 +94,6 @@ const SortItem = ({
               <Autocomplete
                 data-id="sort-order-autocomplete"
                 size="small"
-                // @ts-ignore fullWidth does exist on Autocomplete
                 fullWidth
                 options={directionOptions}
                 getOptionLabel={(option) => option.label}

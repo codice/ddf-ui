@@ -36,20 +36,20 @@ import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import Paper from '@material-ui/core/Paper'
 import { Elevations } from '../theme/theme'
 
-// @ts-ignore ts-migrate(7024) FIXME: Function implicitly has return type 'any' because ... Remove this comment to see the full error message
+// @ts-expect-error ts-migrate(7024) FIXME: Function implicitly has return type 'any' because ... Remove this comment to see the full error message
 const treeMap = (obj: any, fn: any, path = []) => {
   if (Array.isArray(obj)) {
-    // @ts-ignore ts-migrate(2769) FIXME: Argument of type 'number' is not assignable to par... Remove this comment to see the full error message
+    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     return obj.map((v, i) => treeMap(v, fn, path.concat(i)))
   }
 
   if (obj !== null && typeof obj === 'object') {
     return (
       Object.keys(obj)
-        // @ts-ignore ts-migrate(2769) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
         .map((k) => [k, treeMap(obj[k], fn, path.concat(k))])
         .reduce((o, [k, v]) => {
-          // @ts-ignore ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           o[k] = v
           return o
         }, {})
@@ -59,7 +59,7 @@ const treeMap = (obj: any, fn: any, path = []) => {
   return fn(obj, path)
 }
 
-// @ts-ignore ts-migrate(6133) FIXME: 'sanitizeTree' is declared but its value is never ... Remove this comment to see the full error message
+// @ts-expect-error ts-migrate(6133) FIXME: 'sanitizeTree' is declared but its value is never ... Remove this comment to see the full error message
 const sanitizeTree = (tree: any) =>
   treeMap(tree, (obj: any) => {
     if (typeof obj === 'string') {
@@ -479,7 +479,7 @@ const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
             <Grid item>
               <Button
                 data-id="maximise-tab-button"
-                // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
+                // @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
                 onClick={(e) => {
                   const prevWidth = stack.config.prevWidth || 500
                   const prevHeight = stack.config.prevHeight || 500
@@ -495,7 +495,7 @@ const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
             <Grid item>
               <Button
                 data-id="minimise-layout-button"
-                // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
+                // @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
                 onClick={(e) => {
                   stack.config.prevWidth = stack.getActiveContentItem().container.width
                   stack.config.prevHeight = stack.getActiveContentItem().container.height
@@ -508,7 +508,7 @@ const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
             <Grid item>
               <Button
                 data-id="maximise-layout-button"
-                // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
+                // @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
                 onClick={(e) => {
                   stack.toggleMaximise()
                 }}
@@ -520,7 +520,7 @@ const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
               {stack.header._isClosable() ? (
                 <Button
                   data-id="close-layout-button"
-                  // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
+                  // @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
                   onClick={(e) => {
                     if (stack.isMaximised) {
                       stack.toggleMaximise()
@@ -566,7 +566,7 @@ export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
     $(window).on(
       'resize.' + randomString,
       _debounce(
-        // @ts-ignore ts-migrate(6133) FIXME: 'event' is declared but its value is never read.
+        // @ts-expect-error ts-migrate(6133) FIXME: 'event' is declared but its value is never read.
         (event: any) => {
           goldenLayout.updateSize()
         },

@@ -13,10 +13,10 @@
  *
  **/
 
-// @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
 import metacardDefinitions from '../../component/singletons/metacard-definitions.js'
 
-// @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
 import properties from '../../js/properties.js'
 
 export const getFilteredAttributeList = () => {

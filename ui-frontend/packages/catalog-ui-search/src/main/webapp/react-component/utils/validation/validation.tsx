@@ -76,7 +76,7 @@ export function getFilterErrors(filters: any) {
   return Array.from(errors)
 }
 
-// @ts-ignore ts-migrate(7030) FIXME: Not all code paths return a value.
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
 export function validateGeo(key: string, value: any) {
   switch (key) {
     case 'lat':
@@ -686,11 +686,11 @@ function getDefaultingErrorMessage(
   return `${value.replace(
     /_/g,
     '0'
-  )} is not an acceptable ${label} value. Defaulting to ${defaultValue}`
+  )} is not an acceptable ${label} value. Defaulting to ${defaultValue}`;
 }
 
 function getEmptyErrorMessage(label: string) {
-  return `${label.replace(/^\w/, (c) => c.toUpperCase())} cannot be empty`
+  return `${label.replace(/^\w/, (c) => c.toUpperCase())} cannot be empty`;
 }
 
 const Invalid = styled.div`

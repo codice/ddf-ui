@@ -168,7 +168,6 @@ const LocationInput = ({ onChange, value }: any) => {
         <Autocomplete
           className="mb-2"
           data-id="filter-type-autocomplete"
-          // @ts-ignore fullWidth does exist on Autocomplete
           fullWidth
           size="small"
           options={options}

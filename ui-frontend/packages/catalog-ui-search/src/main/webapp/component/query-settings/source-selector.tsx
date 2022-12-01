@@ -127,14 +127,14 @@ const SourceSelector = ({ search }: Props) => {
                   .sort((a, b) => {
                     return a.toLowerCase().localeCompare(b.toLowerCase()) // case insensitive sort
                   })
-                  // @ts-ignore ts-migrate(6133) FIXME: 'b' is declared but its value is never read.
+                  // @ts-expect-error ts-migrate(6133) FIXME: 'b' is declared but its value is never read.
                   .sort((a, b) => {
                     if (a === 'local' || a === 'remote') {
                       return -1 // move these subcategories upwards to front
                     }
                     return 0
                   })
-                  // @ts-ignore ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
+                  // @ts-expect-error ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
                   .map((src, index) => {
                     return (
                       <Grid item key={src} className="mr-2">

@@ -8,7 +8,7 @@ import Paging from './paging'
 import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
 import FilterListIcon from '@material-ui/icons/FilterList'
-// @ts-ignore ts-migrate(6133) FIXME: 'SortIcon' is declared but its value is never read... Remove this comment to see the full error message
+// @ts-expect-error ts-migrate(6133) FIXME: 'SortIcon' is declared but its value is never read... Remove this comment to see the full error message
 import SortIcon from '@material-ui/icons/Sort'
 import ResultFilter from '../result-filter/result-filter'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
@@ -18,7 +18,7 @@ import {
   useLazyResultsSelectedResultsFromSelectionInterface,
 } from '../selection-interface/hooks'
 
-// @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
 import VisualizationSelector from '../../react-component/visualization-selector/visualization-selector'
 import ViewCompactIcon from '@material-ui/icons/ViewCompact'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'

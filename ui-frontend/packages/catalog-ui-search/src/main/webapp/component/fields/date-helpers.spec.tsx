@@ -14,7 +14,7 @@
  **/
 import { expect } from 'chai'
 import { DateHelpers } from './date-helpers'
-//@ts-ignore
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '../s... Remove this comment to see the full error message
 import user from '../singletons/user-instance'
 user.get('user').get('preferences').set('timeZone', 'America/St_Johns')
 const date = new Date()

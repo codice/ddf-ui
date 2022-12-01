@@ -12,10 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-// @ts-ignore Can't find type declarations, but they exist
 import moment from 'moment-timezone'
 import { ValuesType } from 'utility-types'
-// @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
 import CQLUtils from '../../js/CQLUtils'
 import { SpreadOperatorProtectedClass } from '../../typescript/classes'
 import ExtensionPoints from '../../extension-points'

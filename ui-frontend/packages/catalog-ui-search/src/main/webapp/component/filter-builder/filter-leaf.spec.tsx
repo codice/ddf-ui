@@ -11,7 +11,7 @@ import {
   PolygonLocation,
 } from './filter.structure'
 import moment from 'moment'
-//@ts-ignore
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '../s... Remove this comment to see the full error message
 import user from '../singletons/user-instance'
 import TypedMetacardDefinitions from '../tabs/metacard/metacardDefinitions'
 TypedMetacardDefinitions.addMetacardDefinitions({

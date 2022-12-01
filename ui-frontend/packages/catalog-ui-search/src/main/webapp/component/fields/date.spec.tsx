@@ -7,7 +7,7 @@ import { DateField } from './date'
 import moment from 'moment'
 import { expect } from 'chai'
 
-//@ts-ignore
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '../s... Remove this comment to see the full error message
 import user from '../singletons/user-instance'
 import { DateHelpers } from './date-helpers'
 import Common from '../../js/Common'

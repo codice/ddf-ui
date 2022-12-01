@@ -87,7 +87,7 @@ const ThumbnailInput = ({
             const reader = new FileReader()
             reader.onload = function (event) {
               try {
-                // @ts-ignore ts-migrate(2531) FIXME: Object is possibly 'null'.
+                // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
                 onChange(event.target.result)
               } catch (err) {
                 console.error('something wrong with file type')
@@ -97,7 +97,7 @@ const ThumbnailInput = ({
               console.error('error')
             }
 
-            // @ts-ignore ts-migrate(2531) FIXME: Object is possibly 'null'.
+            // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
             reader.readAsDataURL(e.target.files[0])
           }}
         />
@@ -227,7 +227,6 @@ export const Editor = ({
                           values[index] = newValue
                           setValues([...values])
                         }}
-                        // @ts-ignore fullWidth does exist on Autocomplete
                         fullWidth
                         disableClearable
                         size="small"

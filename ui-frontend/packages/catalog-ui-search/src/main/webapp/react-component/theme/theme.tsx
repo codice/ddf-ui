@@ -114,7 +114,7 @@ type ThemesInterface = {
 }
 
 const themes: ThemesInterface = {
-  // @ts-ignore Missing properties
+  // @ts-expect-error ts-migrate(2739) FIXME: Type '{ primaryColor: string; positiveColor: strin... Remove this comment to see the full error message
   dark: {
     primaryColor: '#32a6ad',
     positiveColor: '#5b963e',
@@ -128,7 +128,7 @@ const themes: ThemesInterface = {
     backgroundModal: '#253540',
     backgroundSlideout: '#435059',
   },
-  // @ts-ignore Missing properties
+  // @ts-expect-error ts-migrate(2739) FIXME: Type '{ primaryColor: string; positiveColor: strin... Remove this comment to see the full error message
   sea: {
     primaryColor: '#32a6ad',
     positiveColor: '#154e7d',
@@ -142,7 +142,7 @@ const themes: ThemesInterface = {
     backgroundModal: '#e5e6e6',
     backgroundSlideout: '#e5e6e6',
   },
-  // @ts-ignore Missing properties
+  // @ts-expect-error ts-migrate(2739) FIXME: Type '{ primaryColor: string; positiveColor: strin... Remove this comment to see the full error message
   light: {
     primaryColor: '#3c6dd5',
     positiveColor: '#428442',
@@ -156,7 +156,7 @@ const themes: ThemesInterface = {
     backgroundModal: '#edf9fc',
     backgroundSlideout: '#edf9fc',
   },
-  // @ts-ignore Missing properties
+  // @ts-expect-error ts-migrate(2739) FIXME: Type '{ primaryColor: string; positiveColor: strin... Remove this comment to see the full error message
   custom: {
     primaryColor: '#3c6dd5',
     positiveColor: '#428442',
@@ -180,7 +180,7 @@ type UserTheme = {
 function updateTheme(userTheme: UserTheme) {
   let relevantColorTheme = themes[userTheme.theme]
   if (userTheme.theme === 'custom') {
-    // @ts-ignore ts-migrate(2769) FIXME: Property 'theme' is missing in type '{}' but requi... Remove this comment to see the full error message
+    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     relevantColorTheme = Object.keys(relevantColorTheme).reduce(
       (newMap: UserTheme, key) => {
         newMap[key] =

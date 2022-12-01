@@ -87,7 +87,6 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
   let successful = status.successful
   let message = status.message
 
-  // @ts-ignore ts-migrate(2339) FIXME: Property 'warnings' does not exist on type 'Status... Remove this comment to see the full error message
   let warnings = status.warnings
   let id = status.id
 
