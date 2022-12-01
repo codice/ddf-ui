@@ -15,6 +15,7 @@
 const React = require('react')
 const Group = require('../../../react-component/group/index.js')
 const MaskedInput = require('react-text-mask').default
+import TextField from '@material-ui/core/TextField'
 class MaskedTextField extends React.Component {
   prevEvent = undefined
 
@@ -87,9 +88,12 @@ class MaskedTextField extends React.Component {
             pipe={(value) => this.padEndWithZeros(value)}
             render={(setRef, { defaultValue, ...props }) => {
               return (
-                <input
+                <TextField
+                  size="small"
+                  fullWidth
+                  variant="outlined"
                   id={label}
-                  ref={(ref) => {
+                  inputRef={(ref) => {
                     setRef(ref)
                     this.ref = ref
                   }}

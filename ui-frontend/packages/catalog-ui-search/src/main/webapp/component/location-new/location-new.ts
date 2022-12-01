@@ -25,7 +25,7 @@ const {
 } = require('./utils')
 const { ddModel, dmsModel, usngModel } = require('./models')
 
-module.exports = Backbone.AssociatedModel.extend({
+export default Backbone.AssociatedModel.extend({
   defaults: {
     showErrors: true,
     valid: true,

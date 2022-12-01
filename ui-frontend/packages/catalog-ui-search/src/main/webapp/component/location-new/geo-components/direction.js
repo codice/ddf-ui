@@ -13,6 +13,7 @@
  *
  **/
 const React = require('react')
+import TextField from '@material-ui/core/TextField'
 
 class Direction extends React.Component {
   getToggledOption() {
@@ -39,7 +40,9 @@ class Direction extends React.Component {
     const { value } = this.props
     return (
       <div className="flex-shrink-0 flex-grow-0">
-        <input
+        <TextField
+          size="small"
+          variant="outlined"
           value={value}
           className="flex-1 w-12 cursor-pointer"
           onMouseDown={this.handleMouseDown.bind(this)}
