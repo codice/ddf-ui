@@ -402,7 +402,10 @@ export const Provider = ({ children }: { children: any }) => {
   const darkMode = styledTheme.theme === 'dark'
   const paperColor = darkMode ? dark.paper : light.paper
   const backgroundColor = darkMode ? dark.background : light.background
-  const customPalette = styledTheme.palette === 'custom'
+  const customPalette =
+    styledTheme.palette === 'custom' &&
+    styledTheme.primary &&
+    styledTheme.secondary
   const primaryMain = customPalette
     ? styledTheme.primary
     : darkMode

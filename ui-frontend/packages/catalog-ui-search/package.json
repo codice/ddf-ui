@@ -50,7 +50,7 @@
   "devDependencies": {
     "@blueprintjs/core": "3.29.0",
     "@blueprintjs/datetime": "3.18.3",
-    "@connexta/ace": "git+https://github.com/connexta/ace.git#5e2a9555f3950cb33a23a7b2c1eef861e3614605",
+    "@connexta/ace": "git+https://github.com/connexta/ace.git#046e6943601237b9e2d9896b73757172cbbb02df",
     "@material-ui/core": "4.12.4",
     "@material-ui/icons": "4.11.3",
     "@material-ui/lab": "4.0.0-alpha.61",
@@ -172,6 +172,14 @@
     "files": [
       "src/main/resources",
       "target/webapp"
+    ],
+    "cacheGroups": [
+      "plotly",
+      "tailwind",
+      "openlayers",
+      "cesium",
+      "react",
+      "backbone"
     ],
     "testPath": "dist/",
     "testSetupPath": "dist/src/main/webapp/test/setup/index.js"
