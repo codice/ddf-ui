@@ -14,10 +14,8 @@
  **/
 import React from 'react';
 
-const Group = (props) => (
-  <div className="flex flex-row items-center flex-no-wrap w-full" {...props}>
-    {props.children}
-  </div>
-)
+const Group = (props: any) => <div className="flex flex-row items-center flex-no-wrap w-full" {...props}>
+  {props.children}
+</div>
 
 export default Group;

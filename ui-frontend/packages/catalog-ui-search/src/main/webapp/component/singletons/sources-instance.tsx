@@ -13,7 +13,7 @@
  *
  **/
 
-import Sources from '../../js/model/Sources.js'
+import Sources from '../../js/model/Sources'
 const SourcesInstance = new Sources() as {
   getHarvested: () => string[]
   localCatalog: string

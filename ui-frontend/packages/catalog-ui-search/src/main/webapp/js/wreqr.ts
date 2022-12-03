@@ -12,14 +12,10 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
 import Backbone from 'backbone';
-
 import 'backbone.wreqr';
-const wreqr = {}
-
-wreqr.vent = new Backbone.Wreqr.EventAggregator()
-wreqr.commands = new Backbone.Wreqr.Commands()
-wreqr.reqres = new Backbone.Wreqr.RequestResponse()
-
+const wreqr = {};
+(wreqr as any).vent = new (Backbone as any).Wreqr.EventAggregator();
+(wreqr as any).commands = new (Backbone as any).Wreqr.Commands();
+(wreqr as any).reqres = new (Backbone as any).Wreqr.RequestResponse();
 export default wreqr;

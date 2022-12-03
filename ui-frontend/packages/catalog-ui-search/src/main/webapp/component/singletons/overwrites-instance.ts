@@ -17,7 +17,7 @@ import Backbone from 'backbone';
 
 export default new (Backbone.Collection.extend({
   model: OverwriteModel,
-  removeIfUnused(id) {
+  removeIfUnused(id: any) {
     if (!this.get(id).get('sending')) {
       this.remove(id)
     }

@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { useStatusOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import SelectionInterfaceModel from '../selection-interface/selection-interface.model.js'
+import SelectionInterfaceModel from '../selection-interface/selection-interface.model'
 import Grid from '@material-ui/core/Grid'
 import { DEFAULT_QUERY_OPTIONS, useUserQuery } from '../../js/model/TypedQuery'
 import {

@@ -44,7 +44,7 @@ const ChildFilter = ({
   setFilter,
   index,
   isFirst,
-  // @ts-ignore ts-migrate(6133) FIXME: 'isLast' is declared but its value is never read.
+  // @ts-expect-error ts-migrate(6133) FIXME: 'isLast' is declared but its value is never read.
   isLast,
 }: ChildFilterProps) => {
   return (

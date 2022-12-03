@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-import user from '../../component/singletons/user-instance.js'
+import user from '../../component/singletons/user-instance'
 import AlertSettingsComponent from './presentation'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import { hot } from 'react-hot-loader'

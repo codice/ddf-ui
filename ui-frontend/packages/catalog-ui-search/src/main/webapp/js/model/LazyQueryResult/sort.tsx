@@ -16,7 +16,7 @@
 import { LazyQueryResult } from './LazyQueryResult'
 import { QuerySortType } from './types'
 
-import metacardDefinitions from '../../../component/singletons/metacard-definitions.js'
+import metacardDefinitions from '../../../component/singletons/metacard-definitions'
 
 function parseMultiValue(value: any) {
   if (value && value.constructor === Array) {
@@ -93,7 +93,7 @@ export const generateCompareFunction = (sorting: QuerySortType[]) => {
         case 'DISTANCE':
           // this says distance could be null, could be a bug we need to address
 
-          // @ts-ignore ts-migrate(2531) FIXME: Object is possibly 'null'.
+          // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
           sortValue = sortOrder * (a.plain.distance - b.plain.distance)
           break
         default:

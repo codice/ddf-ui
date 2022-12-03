@@ -24,14 +24,18 @@
   let lastTime = 0
   const vendors = ['ms', 'moz', 'webkit', 'o']
   for (let x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+    // @ts-expect-error ts-migrate(7015) FIXME: Element implicitly has an 'any' type because index... Remove this comment to see the full error message
     window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame']
     window.cancelAnimationFrame =
+      // @ts-expect-error ts-migrate(7015) FIXME: Element implicitly has an 'any' type because index... Remove this comment to see the full error message
       window[vendors[x] + 'CancelAnimationFrame'] ||
+      // @ts-expect-error ts-migrate(7015) FIXME: Element implicitly has an 'any' type because index... Remove this comment to see the full error message
       window[vendors[x] + 'CancelRequestAnimationFrame']
   }
 
   if (!window.requestAnimationFrame)
-    window.requestAnimationFrame = function (callback, element) {
+    // @ts-expect-error ts-migrate(2322) FIXME: Type '(callback: any, element: any) => number' is ... Remove this comment to see the full error message
+    window.requestAnimationFrame = function (callback: any, element: any) {
       const currTime = new Date().getTime()
       const timeToCall = Math.max(0, 16 - (currTime - lastTime))
       const id = window.setTimeout(() => {

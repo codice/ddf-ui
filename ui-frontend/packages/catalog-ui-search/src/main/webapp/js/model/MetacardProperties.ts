@@ -15,10 +15,10 @@
 import Backbone from 'backbone';
 
 import _ from 'underscore';
-import metacardDefinitions from '../../component/singletons/metacard-definitions.js';
+import metacardDefinitions from '../../component/singletons/metacard-definitions';
 import TurfMeta from '@turf/meta';
 import wkx from 'wkx';
-import properties from '../properties.js';
+import properties from '../properties';
 import 'backbone-associations';
 
 export default Backbone.AssociatedModel.extend({
@@ -28,10 +28,11 @@ export default Backbone.AssociatedModel.extend({
       'metacard-tags': ['resource'],
     }
   },
-  hasGeometry(attribute) {
+  hasGeometry(attribute: any) {
     return (
       _.filter(
         this.toJSON(),
+        // @ts-expect-error ts-migrate(6133) FIXME: 'value' is declared but its value is never read.
         (value, key) =>
           (attribute === undefined || attribute === key) &&
           metacardDefinitions.metacardTypes[key] &&
@@ -42,23 +43,25 @@ export default Backbone.AssociatedModel.extend({
   getCombinedGeoJSON() {
     return
   },
-  getPoints(attribute) {
+  getPoints(attribute: any) {
     try {
       return this.getGeometries(attribute).reduce(
-        (pointArray, wkt) =>
+        (pointArray: any, wkt: any) =>
           pointArray.concat(
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{}' is not assignable to paramet... Remove this comment to see the full error message
             TurfMeta.coordAll(wkx.Geometry.parse(wkt).toGeoJSON())
           ),
         []
-      )
+      );
     } catch (err) {
       console.error(err)
       return []
     }
   },
-  getGeometries(attribute) {
+  getGeometries(attribute: any) {
     return _.filter(
       this.toJSON(),
+      // @ts-expect-error ts-migrate(6133) FIXME: 'value' is declared but its value is never read.
       (value, key) =>
         !properties.isHidden(key) &&
         (attribute === undefined || attribute === key) &&

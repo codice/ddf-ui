@@ -24,8 +24,8 @@ import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 import Chip from '@material-ui/core/Chip'
 import Grid from '@material-ui/core/Grid'
 import Swath from '../swath/swath'
-import properties from '../../js/properties.js'
-import metacardDefinitions from '../singletons/metacard-definitions.js'
+import properties from '../../js/properties'
+import metacardDefinitions from '../singletons/metacard-definitions'
 import FilterInput from '../../react-component/filter/filter-input'
 import Checkbox from '@material-ui/core/Checkbox'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
@@ -137,7 +137,6 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
           >
             <Grid item className="w-full pb-2">
               <Autocomplete
-                // @ts-ignore Property 'fullWidth' does not exist on type (error is wrong)
                 fullWidth
                 multiple
                 options={getPossibleProperties()}

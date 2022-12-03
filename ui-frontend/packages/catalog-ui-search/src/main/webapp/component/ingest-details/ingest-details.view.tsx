@@ -15,9 +15,10 @@
 import React from 'react'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import _ from 'underscore'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'drop... Remove this comment to see the full error message
 import Dropzone from 'dropzone'
 import { UploadItemCollection } from '../upload-item/upload-item.collection.view'
-import UploadBatchModel from '../../js/model/UploadBatch.js'
+import UploadBatchModel from '../../js/model/UploadBatch'
 import { UploadSummaryViewReact } from '../upload-summary/upload-summary.view'
 import Button from '@material-ui/core/Button'
 

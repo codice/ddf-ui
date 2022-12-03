@@ -12,7 +12,5 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
-import User from '../../js/model/User.js';
-
-export default new User.Response();
+import User from '../../js/model/User';
+export default new (User as any).Response();

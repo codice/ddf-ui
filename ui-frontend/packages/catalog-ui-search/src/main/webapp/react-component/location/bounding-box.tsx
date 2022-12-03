@@ -22,13 +22,16 @@ import {
 import Group from '../group';
 import Label from './label';
 import TextField from '../text-field';
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"../radio"' has no exported member 'Radio'... Remove this comment to see the full error message
 import { Radio, RadioItem } from '../radio';
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"./common"' has no exported member 'Zone'.... Remove this comment to see the full error message
 import { Zone, Hemisphere, MinimumSpacing } from './common';
-import { DmsLatitude, DmsLongitude } from '../../component/location-new/geo-components/coordinates.js';
-import DirectionInput from '../../component/location-new/geo-components/direction.js';
-import { Direction } from '../../component/location-new/utils/dms-utils.js';
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"../../component/location-new/geo-componen... Remove this comment to see the full error message
+import { DmsLatitude, DmsLongitude } from '../../component/location-new/geo-components/coordinates';
+import DirectionInput from '../../component/location-new/geo-components/direction';
+import { Direction } from '../../component/location-new/utils/dms-utils';
 
-const BoundingBoxLatLonDd = (props) => {
+const BoundingBoxLatLonDd = (props: any) => {
   const { north, east, south, west, setState } = props
   const [ddError, setDdError] = useState(initialErrorStateWithDefault)
 
@@ -36,12 +39,14 @@ const BoundingBoxLatLonDd = (props) => {
     if (props.drawing) {
       setDdError(initialErrorStateWithDefault)
     } else {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
       setDdError(validateGeo('bbox', { north, south, west, east }))
     }
   }, [props.east, props.west, props.south, props.north])
 
-  function validateDd(key, value, type) {
+  function validateDd(key: any, value: any, type: any) {
     const label = key.includes('east') || key.includes('west') ? 'lon' : 'lat'
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'error' does not exist on type '{ error: ... Remove this comment to see the full error message
     const { error, message, defaultValue } = validateGeo(label, value)
     if (type === 'blur' || defaultValue) {
       setDdError({ error, message, defaultValue })
@@ -49,6 +54,7 @@ const BoundingBoxLatLonDd = (props) => {
     if (!error && label === 'lat') {
       const opposite = key.includes('north') ? south : north
       setDdError(
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
         validateGeo('bbox', {
           north: key.includes('north') ? value : opposite,
           south: key.includes('south') ? value : opposite,
@@ -59,6 +65,7 @@ const BoundingBoxLatLonDd = (props) => {
     } else if (!error && label === 'lon') {
       const opposite = key.includes('west') ? east : west
       setDdError(
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
         validateGeo('bbox', {
           north,
           south,
@@ -73,10 +80,12 @@ const BoundingBoxLatLonDd = (props) => {
   return (
     <div className="input-location flex flex-col flex-nowrap space-y-2">
       <TextField
+        // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; value: any; onChange: (valu... Remove this comment to see the full error message
         label="West"
         value={west !== undefined ? String(west) : west}
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
         onChange={(value) => validateDd('west', value)}
-        onBlur={(event) => validateDd('west', west, event.type)}
+        onBlur={(event: any) => validateDd('west', west, event.type)}
         type="number"
         step="any"
         min={-180}
@@ -84,10 +93,12 @@ const BoundingBoxLatLonDd = (props) => {
         addon="°"
       />
       <TextField
+        // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; value: any; onChange: (valu... Remove this comment to see the full error message
         label="South"
         value={south !== undefined ? String(south) : south}
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
         onChange={(value) => validateDd('south', value)}
-        onBlur={(event) => validateDd('south', south, event.type)}
+        onBlur={(event: any) => validateDd('south', south, event.type)}
         type="number"
         step="any"
         min={-90}
@@ -95,10 +106,12 @@ const BoundingBoxLatLonDd = (props) => {
         addon="°"
       />
       <TextField
+        // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; value: any; onChange: (valu... Remove this comment to see the full error message
         label="East"
         value={east !== undefined ? String(east) : east}
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
         onChange={(value) => validateDd('east', value)}
-        onBlur={(event) => validateDd('east', east, event.type)}
+        onBlur={(event: any) => validateDd('east', east, event.type)}
         type="number"
         step="any"
         min={-180}
@@ -106,10 +119,12 @@ const BoundingBoxLatLonDd = (props) => {
         addon="°"
       />
       <TextField
+        // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; value: any; onChange: (valu... Remove this comment to see the full error message
         label="North"
         value={north !== undefined ? String(north) : north}
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 3 arguments, but got 2.
         onChange={(value) => validateDd('north', value)}
-        onBlur={(event) => validateDd('north', north, event.type)}
+        onBlur={(event: any) => validateDd('north', north, event.type)}
         type="number"
         step="any"
         min={-90}
@@ -118,10 +133,10 @@ const BoundingBoxLatLonDd = (props) => {
       />
       <ErrorComponent errorState={ddError} />
     </div>
-  )
+  );
 }
 
-const BoundingBoxLatLonDms = (props) => {
+const BoundingBoxLatLonDms = (props: any) => {
   const {
     dmsSouth,
     dmsNorth,
@@ -142,6 +157,7 @@ const BoundingBoxLatLonDms = (props) => {
       setDmsError(initialErrorStateWithDefault)
     } else {
       setDmsError(
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
         validateGeo('bbox', {
           isDms: true,
           dmsNorthDirection,
@@ -157,9 +173,10 @@ const BoundingBoxLatLonDms = (props) => {
     }
   }, [props.dmsWest, props.dmsSouth, props.dmsEast, props.dmsNorth])
 
-  function validateDms(key, value, type) {
+  function validateDms(key: any, value: any, type: any) {
     const label =
       key.includes('East') || key.includes('West') ? 'dmsLon' : 'dmsLat'
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'error' does not exist on type '{ error: ... Remove this comment to see the full error message
     const { error, message, defaultValue } = validateGeo(label, value)
     if (type === 'blur' || defaultValue) {
       setDmsError({
@@ -171,6 +188,7 @@ const BoundingBoxLatLonDms = (props) => {
     if (!error && label === 'dmsLat') {
       const opposite = key.includes('North') ? dmsSouth : dmsNorth
       setDmsError(
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
         validateGeo('bbox', {
           isDms: true,
           dmsNorthDirection,
@@ -186,6 +204,7 @@ const BoundingBoxLatLonDms = (props) => {
     } else if (!error && label === 'dmsLon') {
       const opposite = key.includes('West') ? dmsEast : dmsWest
       setDmsError(
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
         validateGeo('bbox', {
           isDms: true,
           dmsNorthDirection,
@@ -207,53 +226,57 @@ const BoundingBoxLatLonDms = (props) => {
       <DmsLongitude
         label="West"
         value={dmsWest}
-        onChange={(value, type) => validateDms('dmsWest', value, type)}
+        onChange={(value: any, type: any) => validateDms('dmsWest', value, type)}
       >
         <DirectionInput
+          // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
           options={longitudeDirections}
           value={dmsWestDirection}
-          onChange={(value) => setState({ ['dmsWestDirection']: value })}
+          onChange={(value: any) => setState({ ['dmsWestDirection']: value })}
         />
       </DmsLongitude>
       <DmsLatitude
         label="South"
         value={dmsSouth}
-        onChange={(value, type) => validateDms('dmsSouth', value, type)}
+        onChange={(value: any, type: any) => validateDms('dmsSouth', value, type)}
       >
         <DirectionInput
+          // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
           options={latitudeDirections}
           value={dmsSouthDirection}
-          onChange={(value) => setState({ ['dmsSouthDirection']: value })}
+          onChange={(value: any) => setState({ ['dmsSouthDirection']: value })}
         />
       </DmsLatitude>
       <DmsLongitude
         label="East"
         value={dmsEast}
-        onChange={(value, type) => validateDms('dmsEast', value, type)}
+        onChange={(value: any, type: any) => validateDms('dmsEast', value, type)}
       >
         <DirectionInput
+          // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
           options={longitudeDirections}
           value={dmsEastDirection}
-          onChange={(value) => setState({ ['dmsEastDirection']: value })}
+          onChange={(value: any) => setState({ ['dmsEastDirection']: value })}
         />
       </DmsLongitude>
       <DmsLatitude
         label="North"
         value={dmsNorth}
-        onChange={(value, type) => validateDms('dmsNorth', value, type)}
+        onChange={(value: any, type: any) => validateDms('dmsNorth', value, type)}
       >
         <DirectionInput
+          // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
           options={latitudeDirections}
           value={dmsNorthDirection}
-          onChange={(value) => setState({ ['dmsNorthDirection']: value })}
+          onChange={(value: any) => setState({ ['dmsNorthDirection']: value })}
         />
       </DmsLatitude>
       <ErrorComponent errorState={dmsError} />
     </div>
-  )
+  );
 }
 
-const BoundingBoxUsngMgrs = (props) => {
+const BoundingBoxUsngMgrs = (props: any) => {
   const { usngbbUpperLeft, usngbbLowerRight, setState } = props
   const [usngError, setUsngError] = useState(initialErrorState)
 
@@ -262,6 +285,7 @@ const BoundingBoxUsngMgrs = (props) => {
       setUsngError(initialErrorState)
     } else {
       setUsngError(
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
         validateGeo('bbox', {
           isUsng: true,
           upperLeft: usngbbUpperLeft,
@@ -271,11 +295,13 @@ const BoundingBoxUsngMgrs = (props) => {
     }
   }, [props.usngbbUpperLeft, props.usngbbLowerRight])
 
-  function validateUsng(value) {
+  function validateUsng(value: any) {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'error' does not exist on type '{ error: ... Remove this comment to see the full error message
     const { error, message } = validateGeo('usng', value)
     setUsngError({ error, message })
     if (!error) {
       setUsngError(
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
         validateGeo('bbox', {
           isUsng: true,
           upperLeft: usngbbUpperLeft,
@@ -288,6 +314,7 @@ const BoundingBoxUsngMgrs = (props) => {
   return (
     <div className="input-location flex flex-col flex-nowrap space-y-2">
       <TextField
+        // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; style: { minWidth: number; ... Remove this comment to see the full error message
         label="Upper Left"
         style={{ minWidth: 200 }}
         value={usngbbUpperLeft}
@@ -295,6 +322,7 @@ const BoundingBoxUsngMgrs = (props) => {
         onBlur={() => validateUsng(usngbbUpperLeft)}
       />
       <TextField
+        // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; style: { minWidth: number; ... Remove this comment to see the full error message
         label="Lower Right"
         style={{ minWidth: 200 }}
         value={usngbbLowerRight}
@@ -306,7 +334,7 @@ const BoundingBoxUsngMgrs = (props) => {
   )
 }
 
-const BoundingBoxUtmUps = (props) => {
+const BoundingBoxUtmUps = (props: any) => {
   const {
     utmUpsUpperLeftEasting,
     utmUpsUpperLeftNorthing,
@@ -339,6 +367,7 @@ const BoundingBoxUtmUps = (props) => {
       setLowerRightError(initialErrorState)
     } else {
       setLowerRightError(
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
         validateGeo('bbox', { isUtmUps: true, upperLeft, lowerRight })
       )
     }
@@ -353,23 +382,29 @@ const BoundingBoxUtmUps = (props) => {
     props.utmUpsLowerRightHemisphere,
   ])
 
-  function validateUtmUps(field, key, value) {
+  function validateUtmUps(field: any, key: any, value: any) {
     if (field === 'upperLeft') {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       upperLeft[key] = value
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
       setUpperLeftError(validateGeo(key, upperLeft))
       // If lower right was previously located above upper left,
       // perform an update to the error message in case that has changed
       if (lowerRightError.message.includes('must be located above')) {
         setLowerRightError(
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
           validateGeo('bbox', { isUtmUps: true, upperLeft, lowerRight })
         )
       }
     } else {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       lowerRight[key] = value
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'error' does not exist on type '{ error: ... Remove this comment to see the full error message
       const { error, message } = validateGeo(key, lowerRight)
       setLowerRightError({ error, message })
       if (!error) {
         setLowerRightError(
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
           validateGeo('bbox', { isUtmUps: true, upperLeft, lowerRight })
         )
       }
@@ -383,6 +418,7 @@ const BoundingBoxUtmUps = (props) => {
           <Label>Upper Left</Label>
           <div className="flex flex-col space-y-2">
             <TextField
+              // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; value: any; onChange: (valu... Remove this comment to see the full error message
               label="Easting"
               value={
                 utmUpsUpperLeftEasting !== undefined
@@ -398,6 +434,7 @@ const BoundingBoxUtmUps = (props) => {
               addon="m"
             />
             <TextField
+              // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; value: any; onChange: (valu... Remove this comment to see the full error message
               label="Northing"
               value={
                 utmUpsUpperLeftNorthing !== undefined
@@ -414,14 +451,14 @@ const BoundingBoxUtmUps = (props) => {
             />
             <Zone
               value={utmUpsUpperLeftZone}
-              onChange={(value) => {
+              onChange={(value: any) => {
                 setState({ ['utmUpsUpperLeftZone']: value })
                 validateUtmUps('upperLeft', 'zoneNumber', value)
               }}
             />
             <Hemisphere
               value={utmUpsUpperLeftHemisphere}
-              onChange={(value) => {
+              onChange={(value: any) => {
                 setState({ ['utmUpsUpperLeftHemisphere']: value })
                 validateUtmUps('upperLeft', 'hemisphere', value)
               }}
@@ -435,6 +472,7 @@ const BoundingBoxUtmUps = (props) => {
           <Label>Lower Right</Label>
           <div className="flex flex-col space-y-2">
             <TextField
+              // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; value: any; onChange: (valu... Remove this comment to see the full error message
               label="Easting"
               value={
                 utmUpsLowerRightEasting !== undefined
@@ -450,6 +488,7 @@ const BoundingBoxUtmUps = (props) => {
               addon="m"
             />
             <TextField
+              // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; value: any; onChange: (valu... Remove this comment to see the full error message
               label="Northing"
               value={
                 utmUpsLowerRightNorthing !== undefined
@@ -470,14 +509,14 @@ const BoundingBoxUtmUps = (props) => {
             />
             <Zone
               value={utmUpsLowerRightZone}
-              onChange={(value) => {
+              onChange={(value: any) => {
                 setState({ ['utmUpsLowerRightZone']: value })
                 validateUtmUps('lowerRight', 'zoneNumber', value)
               }}
             />
             <Hemisphere
               value={utmUpsLowerRightHemisphere}
-              onChange={(value) => {
+              onChange={(value: any) => {
                 setState({ ['utmUpsLowerRightHemisphere']: value })
                 validateUtmUps('lowerRight', 'hemisphere', value)
               }}
@@ -487,10 +526,10 @@ const BoundingBoxUtmUps = (props) => {
         <ErrorComponent errorState={lowerRightError} />
       </div>
     </div>
-  )
+  );
 }
 
-const BoundingBox = (props) => {
+const BoundingBox = (props: any) => {
   const { setState, locationType } = props
 
   const inputs = {
@@ -500,13 +539,14 @@ const BoundingBox = (props) => {
     utmUps: BoundingBoxUtmUps,
   }
 
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const Component = inputs[locationType] || null
 
   return (
     <div>
       <Radio
         value={locationType}
-        onChange={(value) => setState({ ['locationType']: value })}
+        onChange={(value: any) => setState({ ['locationType']: value })}
       >
         <RadioItem value="dd">Lat/Lon (DD)</RadioItem>
         <RadioItem value="dms">Lat/Lon (DMS)</RadioItem>
@@ -516,7 +556,7 @@ const BoundingBox = (props) => {
       <MinimumSpacing />
       {Component !== null ? <Component {...props} /> : null}
     </div>
-  )
+  );
 }
 
 export default BoundingBox;

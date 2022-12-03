@@ -12,59 +12,45 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
-import withListenTo, { WithBackboneProps } from '../backbone-container'
-import Sources from './presentation'
-import sources from '../../component/singletons/sources-instance'
-
-type Props = {} & WithBackboneProps
-
+import * as React from 'react';
+import withListenTo, { WithBackboneProps } from '../backbone-container';
+import Sources from './presentation';
+import sources from '../../component/singletons/sources-instance';
+type Props = {} & WithBackboneProps;
 type Source = {
-  id: string
-  sourceActions: any[]
-  available: boolean
-}
-
+    id: string;
+    sourceActions: any[];
+    available: boolean;
+};
 interface State {
-  amountDown: number
-  sources: Source[]
+    amountDown: number;
+    sources: Source[];
 }
-
 class SourcesSummaryContainer extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props)
-    this.state = {
-      // @ts-ignore ts-migrate(2339) FIXME: Property 'filter' does not exist on type '{ getHar... Remove this comment to see the full error message
-      amountDown: sources.filter(function (source: Backbone.Model) {
-        return !source.get('available')
-      }).length,
-      // @ts-ignore ts-migrate(2322) FIXME: Property 'sourceActions' is missing in type '{ ava... Remove this comment to see the full error message
-      sources: sources.toJSON(),
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            amountDown: (sources as any).filter(function (source: Backbone.Model) {
+                return !source.get('available');
+            }).length,
+            // @ts-expect-error ts-migrate(2322) FIXME: Type '{ available: boolean; contentTypes: { name: ... Remove this comment to see the full error message
+            sources: sources.toJSON(),
+        };
     }
-  }
-  componentDidMount() {
-    this.props.listenTo(sources, 'all', this.handleChange.bind(this))
-  }
-  handleChange() {
-    this.setState({
-      // @ts-ignore ts-migrate(2339) FIXME: Property 'filter' does not exist on type '{ getHar... Remove this comment to see the full error message
-      amountDown: sources.filter(function (source: Backbone.Model) {
-        return !source.get('available')
-      }).length,
-      // @ts-ignore ts-migrate(2322) FIXME: Type '{ available: boolean; contentTypes: { name: ... Remove this comment to see the full error message
-      sources: sources.toJSON(),
-    })
-  }
-  render() {
-    return (
-      <Sources
-        sources={this.state.sources}
-        // @ts-ignore ts-migrate(2339) FIXME: Property 'fetch' does not exist on type '{ getHarv... Remove this comment to see the full error message
-        refreshSources={() => sources.fetch()}
-        amountDown={this.state.amountDown}
-      />
-    )
-  }
+    componentDidMount() {
+        this.props.listenTo(sources, 'all', this.handleChange.bind(this));
+    }
+    handleChange() {
+        this.setState({
+            amountDown: (sources as any).filter(function (source: Backbone.Model) {
+                return !source.get('available');
+            }).length,
+            // @ts-expect-error ts-migrate(2322) FIXME: Type '{ available: boolean; contentTypes: { name: ... Remove this comment to see the full error message
+            sources: sources.toJSON(),
+        });
+    }
+    render() {
+        return (<Sources sources={this.state.sources} refreshSources={() => (sources as any).fetch()} amountDown={this.state.amountDown}/>);
+    }
 }
-
-export default withListenTo(SourcesSummaryContainer)
+export default withListenTo(SourcesSummaryContainer);

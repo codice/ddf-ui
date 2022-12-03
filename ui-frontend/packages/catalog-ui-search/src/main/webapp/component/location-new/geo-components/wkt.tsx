@@ -14,22 +14,23 @@
  **/
 import React from 'react';
 
-import TextField from '../../../react-component/text-field/index.js';
+import TextField from '../../../react-component/text-field/index';
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"../utils"' has no exported member 'roundW... Remove this comment to see the full error message
 import { roundWktCoords } from '../utils';
 
-const WKT = (props) => {
+const WKT = (props: any) => {
   const { wkt, setState } = props
 
   return (
     <div className="input-location">
       <TextField
         value={roundWktCoords(wkt)}
-        onChange={setState((draft, value) =>
+        onChange={setState((draft: any, value: any) =>
           roundWktCoords((draft.wkt = value))
         )}
       />
     </div>
-  )
+  );
 }
 
 export default WKT;

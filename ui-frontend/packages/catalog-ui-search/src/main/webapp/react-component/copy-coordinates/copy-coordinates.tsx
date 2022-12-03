@@ -20,6 +20,7 @@ import Popover from '@material-ui/core/Popover'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import useSnack from '../../component/hooks/useSnack'
 import { AddSnack } from '../../component/snack/snack.provider'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'clip... Remove this comment to see the full error message
 import Clipboard from 'clipboard'
 
 type Props = {

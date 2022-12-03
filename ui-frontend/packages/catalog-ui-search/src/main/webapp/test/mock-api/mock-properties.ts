@@ -18,11 +18,13 @@ import api from './index';
 const oldInit = properties.init
 
 const mock = () => {
+  // @ts-expect-error ts-migrate(2322) FIXME: Type '() => void' is not assignable to type '() =>... Remove this comment to see the full error message
   properties.init = function () {
     const data = api('./internal/config')
     const uiConfig = api('./internal/platform/config/ui')
     // use this function to initialize variables that rely on others
     let props = this
+    // @ts-expect-error ts-migrate(2686) FIXME: '_' refers to a UMD global, but the current file i... Remove this comment to see the full error message
     // eslint-disable-next-line no-undef
     props = _.extend(props, data)
     props.ui = uiConfig

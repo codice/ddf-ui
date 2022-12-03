@@ -18,7 +18,7 @@ export const suggestionsToOptions = (suggestions: Suggestions): Option[] => {
   if (suggestions === undefined || Object.keys(suggestions).length === 0) {
     return []
   } else {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2550) FIXME: Property 'flatMap' does not exist on type '[string... Remove this comment to see the full error message
     return Object.entries(suggestions).flatMap(([category, tokens]) =>
       tokens.map((token: string) => ({
         type: category,

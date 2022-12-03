@@ -13,8 +13,9 @@
  *
  **/
 
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'drop... Remove this comment to see the full error message
 import Dropzone from 'dropzone'
-import OverwritesInstance from '../singletons/overwrites-instance.js'
+import OverwritesInstance from '../singletons/overwrites-instance'
 import React from 'react'
 import styled from 'styled-components'
 import { readableColor } from 'polished'

@@ -14,11 +14,11 @@
  **/
 import wkx from 'wkx';
 
-function degreesToRadians(degrees) {
+function degreesToRadians(degrees: any) {
   return (degrees * Math.PI) / 180
 }
 
-function radiansToDegrees(radians) {
+function radiansToDegrees(radians: any) {
   return (radians * 180) / Math.PI
 }
 
@@ -36,7 +36,7 @@ const R = 6371.01
  * @param bearing: degrees from north
  * @param distance: kilometers
  */
-function computeDestination(point, bearing, distance) {
+function computeDestination(point: any, bearing: any, distance: any) {
   if (distance < 0) {
     return null
   }
@@ -76,7 +76,7 @@ function computeDestination(point, bearing, distance) {
  * @param distance: kilometers
  * @param n: number of points used to approximate the circle
  */
-function computeCircle(point, distance, n) {
+function computeCircle(point: any, distance: any, n: any) {
   if (distance < 0 || n < 0) {
     return null
   }
@@ -86,6 +86,7 @@ function computeCircle(point, distance, n) {
     points.push(computeDestination(point, (360 * i) / n, distance))
   }
   points.push(points[0])
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(Point | null)[]' is not assigna... Remove this comment to see the full error message
   return new wkx.Polygon(points)
 }
 
@@ -94,7 +95,7 @@ function computeCircle(point, distance, n) {
  * international definition for nautical mile is used (1 nautical mile = 1852 meters).
  * Reference: https://www.sfei.org/it/gis/map-interpretation/conversion-constants
  */
-function toKilometers(distance, units) {
+function toKilometers(distance: any, units: any) {
   switch (units) {
     case 'meters':
       return distance / 1000

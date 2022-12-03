@@ -8,7 +8,7 @@ import Paging from './paging'
 import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
 import FilterListIcon from '@material-ui/icons/FilterList'
-// @ts-ignore ts-migrate(6133) FIXME: 'SortIcon' is declared but its value is never read... Remove this comment to see the full error message
+// @ts-expect-error ts-migrate(6133) FIXME: 'SortIcon' is declared but its value is never read... Remove this comment to see the full error message
 import SortIcon from '@material-ui/icons/Sort'
 import ResultFilter from '../result-filter/result-filter'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
@@ -18,11 +18,10 @@ import {
   useLazyResultsSelectedResultsFromSelectionInterface,
 } from '../selection-interface/hooks'
 
-// @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
 import VisualizationSelector from '../../react-component/visualization-selector/visualization-selector'
 import ViewCompactIcon from '@material-ui/icons/ViewCompact'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
-import user from '../singletons/user-instance.js'
+import user from '../singletons/user-instance'
 import MoreIcon from '@material-ui/icons/MoreVert'
 
 import LazyMetacardInteractions from '../results-visual/lazy-metacard-interactions'
@@ -210,6 +209,7 @@ const ResultSelector = ({
             <Paper className="p-3" elevation={Elevations.overlays}>
               {LayoutDropdown || (
                 <VisualizationSelector
+                  // @ts-expect-error ts-migrate(2322) FIXME: Type '{ onClose: () => void; goldenLayout: any; }'... Remove this comment to see the full error message
                   onClose={layoutMenuState.handleClose}
                   goldenLayout={goldenLayout}
                 />

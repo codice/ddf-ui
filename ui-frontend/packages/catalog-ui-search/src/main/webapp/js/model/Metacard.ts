@@ -15,16 +15,16 @@
 import Backbone from 'backbone';
 
 import 'backbone-associations';
-import MetacardPropertiesModel from './MetacardProperties.js';
+import MetacardPropertiesModel from './MetacardProperties';
 
 export default Backbone.AssociatedModel.extend({
-  hasGeometry(attribute) {
+  hasGeometry(attribute: any) {
     return this.get('properties').hasGeometry(attribute)
   },
-  getPoints(attribute) {
+  getPoints(attribute: any) {
     return this.get('properties').getPoints(attribute)
   },
-  getGeometries(attribute) {
+  getGeometries(attribute: any) {
     return this.get('properties').getGeometries(attribute)
   },
   relations: [

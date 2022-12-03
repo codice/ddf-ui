@@ -14,6 +14,7 @@
  **/
 import * as React from 'react'
 import LocationComponent, { LocationInputPropsType } from './location'
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"./utils"' has no exported member 'ddToWkt... Remove this comment to see the full error message
 import { ddToWkt, dmsToWkt, usngToWkt } from './utils'
 import { hot } from 'react-hot-loader'
 

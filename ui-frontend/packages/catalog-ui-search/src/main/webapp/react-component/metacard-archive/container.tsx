@@ -12,135 +12,104 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
-import { hot } from 'react-hot-loader'
-import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
-import withListenTo, { WithBackboneProps } from '../backbone-container'
-import fetch from '../utils/fetch'
-import MetacardArchivePresentation from './presentation'
-import wreqr from '../../js/wreqr.js'
-
+import * as React from 'react';
+import { hot } from 'react-hot-loader';
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult';
+import withListenTo, { WithBackboneProps } from '../backbone-container';
+import fetch from '../utils/fetch';
+import MetacardArchivePresentation from './presentation';
+import wreqr from '../../js/wreqr';
 type Props = {
-  results: LazyQueryResult[]
-} & WithBackboneProps
-
+    results: LazyQueryResult[];
+} & WithBackboneProps;
 type State = {
-  collection: LazyQueryResult[]
-  isDeleted: boolean
-  loading: boolean
-}
-
+    collection: LazyQueryResult[];
+    isDeleted: boolean;
+    loading: boolean;
+};
 class MetacardArchive extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props)
-
-    const collection = props.results
-
-    const isDeleted = collection.some((result) => {
-      return result.isDeleted()
-    })
-
-    this.state = {
-      collection,
-      isDeleted,
-      loading: false,
+    constructor(props: Props) {
+        super(props);
+        const collection = props.results;
+        const isDeleted = collection.some((result) => {
+            return result.isDeleted();
+        });
+        this.state = {
+            collection,
+            isDeleted,
+            loading: false,
+        };
     }
-  }
-
-  onArchiveConfirm = async () => {
-    const body = JSON.stringify(
-      this.state.collection.map((result) => {
-        return result.plain.id
-      })
-    )
-    this.setState({ loading: true })
-
-    const res = await fetch('./internal/metacards', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body,
-    })
-    if (!res.ok) {
-      this.setState({ loading: false })
-      wreqr.vent.trigger('snack', {
-        message: 'Unable to archive the selected item(s).',
-        snackProps: {
-          alertProps: {
-            severity: 'error',
-          },
-        },
-      })
-      return
+    onArchiveConfirm = async () => {
+        const body = JSON.stringify(this.state.collection.map((result) => {
+            return result.plain.id;
+        }));
+        this.setState({ loading: true });
+        const res = await fetch('./internal/metacards', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body,
+        });
+        if (!res.ok) {
+            this.setState({ loading: false });
+            (wreqr as any).vent.trigger('snack', {
+                message: 'Unable to archive the selected item(s).',
+                snackProps: {
+                    alertProps: {
+                        severity: 'error',
+                    },
+                },
+            });
+            return;
+        }
+        setTimeout(() => {
+            this.setState({ isDeleted: true, loading: false });
+            this.state.collection.forEach(function (result) {
+                result.plain.metacard.properties['metacard-tags'] = ['deleted'];
+                result.syncWithPlain();
+            });
+            this.refreshResults();
+        }, 2000);
+    };
+    onRestoreConfirm = async () => {
+        this.setState({ loading: true });
+        const promises = this.state.collection.map((result) => {
+            const metacardDeletedId = result.plain.metacard.properties['metacard.deleted.id'];
+            const metacardDeletedVersion = result.plain.metacard.properties['metacard.deleted.version'];
+            const storeId = result.plain.metacard.properties['source-id'];
+            return fetch(`./internal/history/revert/${metacardDeletedId}/${metacardDeletedVersion}/${storeId}`);
+        });
+        Promise.all(promises).then((responses: any) => {
+            const isResponseOk = responses.every((resp: any) => {
+                return resp.ok;
+            });
+            if (!isResponseOk) {
+                this.setState({ loading: false });
+                (wreqr as any).vent.trigger('snack', {
+                    message: 'Unable to restore the selected item(s).',
+                    snackProps: {
+                        alertProps: {
+                            severity: 'error',
+                        },
+                    },
+                });
+            }
+            this.state.collection.map((result) => {
+                result.refreshDataOverNetwork();
+            });
+            setTimeout(() => {
+                this.setState({ isDeleted: false, loading: false });
+            }, 2000);
+        });
+    };
+    refreshResults = () => {
+        this.state.collection.forEach((result) => {
+            result.refreshDataOverNetwork();
+        });
+    };
+    render() {
+        const { isDeleted, loading } = this.state;
+        return (<MetacardArchivePresentation onArchiveConfirm={this.onArchiveConfirm} onRestoreConfirm={this.onRestoreConfirm} isDeleted={isDeleted} loading={loading}/>);
     }
-
-    setTimeout(() => {
-      this.setState({ isDeleted: true, loading: false })
-      this.state.collection.forEach(function (result) {
-        result.plain.metacard.properties['metacard-tags'] = ['deleted']
-        result.syncWithPlain()
-      })
-      this.refreshResults()
-    }, 2000)
-  }
-
-  onRestoreConfirm = async () => {
-    this.setState({ loading: true })
-
-    const promises = this.state.collection.map((result) => {
-      const metacardDeletedId =
-        result.plain.metacard.properties['metacard.deleted.id']
-      const metacardDeletedVersion =
-        result.plain.metacard.properties['metacard.deleted.version']
-      const storeId = result.plain.metacard.properties['source-id']
-
-      return fetch(
-        `./internal/history/revert/${metacardDeletedId}/${metacardDeletedVersion}/${storeId}`
-      )
-    })
-
-    Promise.all(promises).then((responses: any) => {
-      const isResponseOk = responses.every((resp: any) => {
-        return resp.ok
-      })
-      if (!isResponseOk) {
-        this.setState({ loading: false })
-        wreqr.vent.trigger('snack', {
-          message: 'Unable to restore the selected item(s).',
-          snackProps: {
-            alertProps: {
-              severity: 'error',
-            },
-          },
-        })
-      }
-
-      this.state.collection.map((result) => {
-        result.refreshDataOverNetwork()
-      })
-
-      setTimeout(() => {
-        this.setState({ isDeleted: false, loading: false })
-      }, 2000)
-    })
-  }
-
-  refreshResults = () => {
-    this.state.collection.forEach((result) => {
-      result.refreshDataOverNetwork()
-    })
-  }
-
-  render() {
-    const { isDeleted, loading } = this.state
-    return (
-      <MetacardArchivePresentation
-        onArchiveConfirm={this.onArchiveConfirm}
-        onRestoreConfirm={this.onRestoreConfirm}
-        isDeleted={isDeleted}
-        loading={loading}
-      />
-    )
-  }
 }
-
-export default hot(module)(withListenTo(MetacardArchive))
+export default hot(module)(withListenTo(MetacardArchive));

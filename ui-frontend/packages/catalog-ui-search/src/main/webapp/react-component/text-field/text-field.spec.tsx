@@ -31,11 +31,12 @@ describe('<TextField />', () => {
   })
 
   it('should update input on change', (done) => {
-    const onChange = (value) => {
+    const onChange = (value: any) => {
       expect(value).to.equal('test')
       done()
     }
     const wrapper = mount(<TextField onChange={onChange} />)
+    // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
     wrapper.find('input').prop('onChange')({ target: { value: 'test' } })
   })
 })

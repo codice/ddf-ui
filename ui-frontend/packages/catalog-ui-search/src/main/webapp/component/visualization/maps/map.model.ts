@@ -17,9 +17,12 @@ import wrapNum from '../../../react-component/utils/wrap-num/wrap-num'
 
 import _ from 'lodash';
 import Backbone from 'backbone';
-import MetacardModel from '../../../js/model/Metacard.js';
+// @ts-expect-error ts-migrate(6133) FIXME: 'MetacardModel' is declared but its value is never... Remove this comment to see the full error message
+import MetacardModel from '../../../js/model/Metacard';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'mt-g... Remove this comment to see the full error message
 import mtgeo from 'mt-geo';
 import * as usngs  from 'usng.js';
+// @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
 const converter = new usngs.Converter()
 const usngPrecision = 6
 
@@ -54,7 +57,7 @@ export default Backbone.AssociatedModel.extend({
    *   - START
    *   - END
    */
-  changeMeasurementState(state) {
+  changeMeasurementState(state: any) {
     // the current distance should be 0 when in the NONE or START state
     if (state === 'NONE' || state === 'START') {
       this.set({
@@ -68,24 +71,24 @@ export default Backbone.AssociatedModel.extend({
   /*
    * Appends the given point to the array of points being tracked.
    */
-  addPoint(point) {
+  addPoint(point: any) {
     this.set({
       points: [...this.get('points'), point],
     })
   },
-  addLabel(label) {
+  addLabel(label: any) {
     this.set({
       labels: [...this.get('labels'), label],
     })
   },
-  removeLabel(label) {
+  removeLabel(label: any) {
     _.remove(this.get('labels'), (e) => e === label)
   },
   /*
    * Sets the line to the given new line. This represents the line on the map
    * being used for the ruler measurement.
    */
-  setLine(line) {
+  setLine(line: any) {
     this.set({ line })
   },
   /*
@@ -106,22 +109,22 @@ export default Backbone.AssociatedModel.extend({
   /*
    * Set coordinates of the ruler measurements starting point
    */
-  setStartingCoordinates(coordinates) {
+  setStartingCoordinates(coordinates: any) {
     this.set({ startingCoordinates: coordinates })
   },
   /*
    * Sets the current distance to the new given distance (in meters).
    */
-  setCurrentDistance(distance) {
+  setCurrentDistance(distance: any) {
     this.set({ currentDistance: distance })
   },
-  addDistanceInfo(distanceInfo) {
+  addDistanceInfo(distanceInfo: any) {
     this.set({ distanceInfo })
   },
   /*
    * set the position of DistanceInfo in px relative to the top left of the Cesium component
    */
-  setDistanceInfoPosition(left, top) {
+  setDistanceInfoPosition(left: any, top: any) {
     this.set({ distanceInfo: { left, top } })
   },
   isOffMap() {
@@ -133,7 +136,7 @@ export default Backbone.AssociatedModel.extend({
       mouseLon: undefined,
     })
   },
-  updateMouseCoordinates(coordinates) {
+  updateMouseCoordinates(coordinates: any) {
     this.set({
       mouseLat: Number(coordinates.lat.toFixed(6)), // wrap in Number to chop off trailing zero
       mouseLon: Number(wrapNum(coordinates.lon, -180, 180).toFixed(6)),

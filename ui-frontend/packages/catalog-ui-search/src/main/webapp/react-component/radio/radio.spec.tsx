@@ -43,7 +43,7 @@ describe('<Radio />', () => {
   })
 
   it('should select child three', (done) => {
-    const onChange = (value) => {
+    const onChange = (value: any) => {
       expect(value).to.equal('three')
       done()
     }
@@ -56,6 +56,7 @@ describe('<Radio />', () => {
       </Radio>
     )
 
+    // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
     wrapper.find({ value: 'three' }).find('RadioItem').prop('onClick')()
   })
 })

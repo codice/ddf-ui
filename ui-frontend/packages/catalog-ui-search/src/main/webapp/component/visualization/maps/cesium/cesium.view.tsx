@@ -23,7 +23,7 @@ import { CesiumDrawings } from './drawing-and-display'
 //You typically don't want to use this view directly.  Instead, use the combined-map component which will handle falling back to openlayers.
 
 import $ from 'jquery'
-import featureDetection from '../../../singletons/feature-detection.js'
+import featureDetection from '../../../singletons/feature-detection'
 
 const useSupportsCesium = () => {
   const [, setForceRender] = React.useState(Math.random())
@@ -76,6 +76,7 @@ export const CesiumMapViewReact = ({
         <Memo>
           <MapViewReact
             loadMap={() => {
+              // @ts-expect-error ts-migrate(7009) FIXME: 'new' expression, whose target lacks a construct s... Remove this comment to see the full error message
               const deferred = new $.Deferred()
               import('./map.cesium').then(CesiumMap => {
                 deferred.resolve(CesiumMap.default)

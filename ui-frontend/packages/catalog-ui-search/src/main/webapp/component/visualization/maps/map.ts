@@ -52,6 +52,7 @@ const exposedMethods = [
 
 const interfaceImplementation = exposedMethods.reduce(
   (implementations, methodName) => {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     implementations[methodName] = throwUnimplementedException
     return implementations
   },
@@ -60,4 +61,4 @@ const interfaceImplementation = exposedMethods.reduce(
 
 export default function MapCommunication() {
   return _.extend({}, interfaceImplementation)
-};
+}

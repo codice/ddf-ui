@@ -14,7 +14,6 @@
  **/
 /* global define */
 import Backbone from 'backbone';
-
 import Q from 'q';
 import _ from 'underscore';
 import 'backbone-associations';
@@ -29,8 +28,7 @@ import 'backbone-associations';
 //
 // This sub object selecting can be see at
 // http://dhruvaray.github.io/backbone-associations/specify-associations.html#sa-getsetop
-Backbone.Associations.setSeparator('>')
-
+Backbone.Associations.setSeparator('>');
 /**
  * A very simple promise wrapper of fetch that just resolves or rejects.  Warning! If
  * you define a success or error handler in options, this will overwrite them for now.
@@ -38,24 +36,21 @@ Backbone.Associations.setSeparator('>')
  * @param options
  * @returns {Q Promise}
  */
-const fetchPromise = function (options) {
-  const deferred = Q.defer(),
-    modelOrCollection = this
-  options = options ? _.clone(options) : {}
-
-  options.success = function () {
-    deferred.resolve.apply(deferred, arguments)
-  }
-  options.error = function () {
-    deferred.reject.apply(deferred, arguments)
-  }
-  modelOrCollection.fetch(options)
-  return deferred.promise
+const fetchPromise = function (this: any, options: any) {
+    const deferred = Q.defer(), modelOrCollection = this;
+    options = options ? _.clone(options) : {};
+    options.success = function () {
+        deferred.resolve.apply(deferred, arguments);
+    };
+    options.error = function () {
+        deferred.reject.apply(deferred, arguments);
+    };
+    modelOrCollection.fetch(options);
+    return deferred.promise;
+};
+if (typeof (Backbone.Collection.prototype as any).fetchPromise !== 'function') {
+    (Backbone.Collection.prototype as any).fetchPromise = fetchPromise;
 }
-
-if (typeof Backbone.Collection.prototype.fetchPromise !== 'function') {
-  Backbone.Collection.prototype.fetchPromise = fetchPromise
-}
-if (typeof Backbone.Model.prototype.fetchPromise !== 'function') {
-  Backbone.Model.prototype.fetchPromise = fetchPromise
+if (typeof (Backbone.Model.prototype as any).fetchPromise !== 'function') {
+    (Backbone.Model.prototype as any).fetchPromise = fetchPromise;
 }

@@ -18,7 +18,8 @@ const zeroOpacity = '0'
 const notDisplayed = 'none'
 
 export default {
-  isEffectivelyHidden(element) {
+  // @ts-expect-error ts-migrate(7023) FIXME: 'isEffectivelyHidden' implicitly has return type '... Remove this comment to see the full error message
+  isEffectivelyHidden(element: any) {
     if (element === document) {
       return false
     } else if (element === null) {

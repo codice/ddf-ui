@@ -13,11 +13,14 @@
  *
  **/
 import React from 'react'
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"./utils"' has no exported member 'validat... Remove this comment to see the full error message
 import { validateWkt, validateDd, validateDms, validateUsng } from './utils'
-import { Radio, RadioItem } from '../../react-component/radio/index.js'
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"../../react-component/radio/index.js"' ha... Remove this comment to see the full error message
+import { Radio, RadioItem } from '../../react-component/radio/index'
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"./geo-components"' has no exported member... Remove this comment to see the full error message
 import { WKT, LatLongDD, LatLongDMS, USNG } from './geo-components'
 import Gazetteer from '../../react-component/location/gazetteer'
-import CQLUtils from '../../js/CQLUtils.js'
+import CQLUtils from '../../js/CQLUtils'
 import immer from 'immer'
 const produce = immer
 import { hot } from 'react-hot-loader'

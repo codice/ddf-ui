@@ -23,6 +23,6 @@ const options = {
   widthKey: 'polygonBufferWidth',
 }
 
-const Polygon = (props) => <BaseLine {...props} {...options} />
+const Polygon = (props: any) => <BaseLine {...props} {...options} />
 
 export default Polygon;

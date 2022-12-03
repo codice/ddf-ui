@@ -14,7 +14,9 @@
  **/
 import React from 'react';
 
-const Label = ({ children }) => (
+const Label = ({
+  children
+}: any) => (
   <span
     className="p-2 flex-shrink-0 flex-grow-0"
     style={{

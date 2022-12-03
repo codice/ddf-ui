@@ -12,8 +12,10 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"./wkt-utils"' has no exported member 'val... Remove this comment to see the full error message
 import { validateWkt, roundWktCoords } from './wkt-utils';
 
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"./dd-utils"' has no exported member 'ddTo... Remove this comment to see the full error message
 import { ddToWkt, validateDd, validateDdPoint } from './dd-utils';
 
 import {
@@ -28,6 +30,7 @@ import {
   Direction,
 } from './dms-utils';
 
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"./usng-utils"' has no exported member 'us... Remove this comment to see the full error message
 import { usngToWkt, validateUsng, validateUsngGrid } from './usng-utils';
 import errorMessages from './errors';
 

@@ -9,8 +9,8 @@ import {
   FilterClass,
 } from '../filter-builder/filter.structure'
 import { getFilterTreeForId } from './metacard-nav'
-import SelectionInterfaceModel from '../selection-interface/selection-interface.model.js'
-import user from '../singletons/user-instance.js'
+import SelectionInterfaceModel from '../selection-interface/selection-interface.model'
+import user from '../singletons/user-instance'
 import _ from 'underscore'
 
 type UploadType = Backbone.Model<{
@@ -96,7 +96,7 @@ const MetacardRoute = () => {
   }, [id, params.uploadId])
 
   React.useEffect(
-    // @ts-ignore ts-migrate(7030) FIXME: Not all code paths return a value.
+    // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
     () => {
       if (id) {
         query.set('filterTree', getFilterTreeForId({ id }))

@@ -20,10 +20,10 @@ import Sources from '../../component/singletons/sources-instance'
 import Common from '../Common'
 import cql from '../cql'
 import 'backbone-associations';
-import Metacard from './Metacard.js';
-import MetacardActionModel from './MetacardAction.js';
+import Metacard from './Metacard';
+import MetacardActionModel from './MetacardAction';
 
-function generateThumbnailUrl(url) {
+function generateThumbnailUrl(url: any) {
   let newUrl = url
   if (url.indexOf('?') >= 0) {
     newUrl += '&'
@@ -34,7 +34,7 @@ function generateThumbnailUrl(url) {
   return newUrl
 }
 
-function humanizeResourceSize(result) {
+function humanizeResourceSize(result: any) {
   if (result.metacard.properties['resource-size']) {
     result.metacard.properties['resource-size'] = Common.getFileSize(
       result.metacard.properties['resource-size']
@@ -60,7 +60,7 @@ export default Backbone.AssociatedModel.extend({
       key: 'actions',
       collectionType: Backbone.Collection.extend({
         model: MetacardActionModel,
-        comparator(c) {
+        comparator(c: any) {
           return c.get('title').toLowerCase()
         },
       }),
@@ -112,13 +112,13 @@ export default Backbone.AssociatedModel.extend({
       ) === false
     )
   },
-  hasGeometry(attribute) {
+  hasGeometry(attribute: any) {
     return this.get('metacard').hasGeometry(attribute)
   },
-  getPoints(attribute) {
+  getPoints(attribute: any) {
     return this.get('metacard').getPoints(attribute)
   },
-  getGeometries(attribute) {
+  getGeometries(attribute: any) {
     return this.get('metacard').getGeometries(attribute)
   },
   hasExportActions() {
@@ -127,24 +127,24 @@ export default Backbone.AssociatedModel.extend({
   getOtherActions() {
     const otherActions = this.getExportActions().concat(this.getMapActions())
     return this.get('actions').filter(
-      (action) => otherActions.indexOf(action) === -1
-    )
+      (action: any) => otherActions.indexOf(action) === -1
+    );
   },
   getExportActions() {
     const otherActions = this.getMapActions()
     return this.get('actions')
-      .filter((action) => action.get('title').indexOf('Export') === 0)
-      .filter((action) => otherActions.indexOf(action) === -1)
+      .filter((action: any) => action.get('title').indexOf('Export') === 0)
+      .filter((action: any) => otherActions.indexOf(action) === -1);
   },
   hasMapActions() {
     return this.getMapActions().length > 0
   },
   getMapActions() {
     return this.get('actions').filter(
-      (action) => action.id.indexOf('catalog.data.metacard.map.') === 0
-    )
+      (action: any) => action.id.indexOf('catalog.data.metacard.map.') === 0
+    );
   },
-  refreshData(metacardProperties) {
+  refreshData(metacardProperties: any) {
     if (metacardProperties !== undefined) {
       const updatedResult = this.toJSON()
       updatedResult.metacard.properties = metacardProperties
@@ -174,6 +174,7 @@ export default Backbone.AssociatedModel.extend({
             {
               type: 'OR',
               filters: [
+                // @ts-expect-error ts-migrate(2322) FIXME: Type '{ type: "="; property: string; value: any; }... Remove this comment to see the full error message
                 {
                   type: '=',
                   property: '"id"',
@@ -181,6 +182,7 @@ export default Backbone.AssociatedModel.extend({
                     metacard.get('properties').get('metacard.deleted.id') ||
                     metacard.id,
                 },
+                // @ts-expect-error ts-migrate(2322) FIXME: Type '{ type: "="; property: string; value: any; }... Remove this comment to see the full error message
                 {
                   type: '=',
                   property: '"metacard.deleted.id"',
@@ -188,6 +190,7 @@ export default Backbone.AssociatedModel.extend({
                 },
               ],
             },
+            // @ts-expect-error ts-migrate(2322) FIXME: Type '{ type: "ILIKE"; property: string; value: st... Remove this comment to see the full error message
             {
               type: 'ILIKE',
               property: '"metacard-tags"',
@@ -211,7 +214,7 @@ export default Backbone.AssociatedModel.extend({
   handleRefreshError() {
     //do nothing for now, should we announce this?
   },
-  parseRefresh(response) {
+  parseRefresh(response: any) {
     const queryId = this.get('metacard').get('queryId')
     const color = this.get('metacard').get('color')
     _.forEach(response.results, (result) => {
@@ -224,7 +227,7 @@ export default Backbone.AssociatedModel.extend({
       result.metacard.queryId = queryId
       result.metacard.color = color
       humanizeResourceSize(result)
-      result.actions.forEach((action) => (action.queryId = queryId))
+      result.actions.forEach((action: any) => action.queryId = queryId)
       const thumbnailAction = _.findWhere(result.actions, {
         id: 'catalog.data.metacard.thumbnail',
       })

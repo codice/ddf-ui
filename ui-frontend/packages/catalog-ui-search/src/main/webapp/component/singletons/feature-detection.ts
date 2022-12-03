@@ -22,10 +22,10 @@ export default new (Backbone.Model.extend({
     cesium: true,
     localStorage: true,
   },
-  supportsFeature(feature) {
+  supportsFeature(feature: any) {
     return this.get(feature)
   },
-  addFailure(feature) {
+  addFailure(feature: any) {
     this.set(feature, false)
   },
 }))();

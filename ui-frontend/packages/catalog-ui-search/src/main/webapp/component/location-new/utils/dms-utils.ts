@@ -14,6 +14,7 @@
  **/
 import wkx from 'wkx';
 
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"./geo-helper"' has no exported member 'co... Remove this comment to see the full error message
 import { computeCircle, toKilometers } from './geo-helper';
 import errorMessages from './errors';
 
@@ -31,18 +32,19 @@ const Direction = Object.freeze({
   West: 'W',
 })
 
-function dmsCoordinateIsBlank(coordinate) {
+function dmsCoordinateIsBlank(coordinate: any) {
   return coordinate.coordinate.length === 0
 }
 
-function dmsPointIsBlank(point) {
+function dmsPointIsBlank(point: any) {
   return (
     dmsCoordinateIsBlank(point.latitude) &&
     dmsCoordinateIsBlank(point.longitude)
   )
 }
 
-function inputIsBlank(dms) {
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
+function inputIsBlank(dms: any) {
   switch (dms.shape) {
     case 'point':
       return dmsPointIsBlank(dms.point)
@@ -62,7 +64,7 @@ function inputIsBlank(dms) {
   }
 }
 
-function parseDmsCoordinate(coordinate) {
+function parseDmsCoordinate(coordinate: any) {
   if (coordinate === undefined) {
     return coordinate
   }
@@ -77,7 +79,7 @@ function parseDmsCoordinate(coordinate) {
   return { degrees, minutes, seconds }
 }
 
-function dmsCoordinateToDD(coordinate) {
+function dmsCoordinateToDD(coordinate: any) {
   const seconds = parseFloat(coordinate.seconds)
   if (isNaN(seconds)) {
     return null
@@ -100,7 +102,7 @@ function dmsCoordinateToDD(coordinate) {
 /*
  *  DMS -> WKT conversion utils
  */
-function dmsPointToWkt(point) {
+function dmsPointToWkt(point: any) {
   const latitude = parseDmsCoordinate(point.latitude.coordinate)
   const longitude = parseDmsCoordinate(point.longitude.coordinate)
   const _latitude = dmsCoordinateToDD({
@@ -111,16 +113,17 @@ function dmsPointToWkt(point) {
     ...longitude,
     direction: point.longitude.direction,
   })
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number | null' is not assignable... Remove this comment to see the full error message
   return new wkx.Point(_longitude, _latitude)
 }
 
-function dmsToWkt(dms) {
+function dmsToWkt(dms: any) {
   if (inputIsBlank(dms)) {
     return null
   }
 
   let wkt = null
-  const points = []
+  const points: any = []
   switch (dms.shape) {
     case 'point':
       wkt = dmsPointToWkt(dms.point).toWkt()
@@ -131,13 +134,13 @@ function dmsToWkt(dms) {
       break
     case 'line':
       if (dms.line.list.length > 0) {
-        dms.line.list.map((point) => points.push(dmsPointToWkt(point)))
+        dms.line.list.map((point: any) => points.push(dmsPointToWkt(point)))
         wkt = new wkx.LineString(points).toWkt()
       }
       break
     case 'polygon':
       if (dms.polygon.list.length > 0) {
-        dms.polygon.list.map((point) => points.push(dmsPointToWkt(point)))
+        dms.polygon.list.map((point: any) => points.push(dmsPointToWkt(point)))
         const p1 = points[0]
         const p2 = points[points.length - 1]
         if (p1.x !== p2.x || p1.y !== p2.y) {
@@ -176,7 +179,7 @@ function dmsToWkt(dms) {
 /*
  *  DMS validation utils
  */
-function inValidRange(coordinate, maximum) {
+function inValidRange(coordinate: any, maximum: any) {
   const degrees = parseInt(coordinate.degrees)
   const minutes = parseInt(coordinate.minutes)
   const seconds = parseFloat(coordinate.seconds)
@@ -192,7 +195,7 @@ function inValidRange(coordinate, maximum) {
   return true
 }
 
-function validateDmsPoint(point) {
+function validateDmsPoint(point: any) {
   const latitude = parseDmsCoordinate(point.latitude.coordinate)
   const longitude = parseDmsCoordinate(point.longitude.coordinate)
   if (latitude && longitude) {
@@ -201,7 +204,7 @@ function validateDmsPoint(point) {
   return false
 }
 
-function validateDmsBoundingBox(boundingbox) {
+function validateDmsBoundingBox(boundingbox: any) {
   const north = parseDmsCoordinate(boundingbox.north.coordinate)
   const south = parseDmsCoordinate(boundingbox.south.coordinate)
   const east = parseDmsCoordinate(boundingbox.east.coordinate)
@@ -236,12 +239,15 @@ function validateDmsBoundingBox(boundingbox) {
     ...west,
     direction: boundingbox.west.direction,
   })
+  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   if (ddNorth < ddSouth || ddEast < ddWest) {
     return false
   }
 
   if (
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     ddNorth - ddSouth < minimumDifference ||
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     ddEast - ddWest < minimumDifference
   ) {
     return false
@@ -250,7 +256,7 @@ function validateDmsBoundingBox(boundingbox) {
   return true
 }
 
-function validateDms(dms) {
+function validateDms(dms: any) {
   if (inputIsBlank(dms)) {
     return { valid: true, error: null }
   }
@@ -321,16 +327,16 @@ function validateDms(dms) {
 /*
  *  Decimal degrees -> DMS conversion utils
  */
-function roundTo(num, sigDigits) {
+function roundTo(num: any, sigDigits: any) {
   const scaler = 10 ** sigDigits
   return Math.round(num * scaler) / scaler
 }
 
-function padWithZeros(num, width) {
+function padWithZeros(num: any, width: any) {
   return num.toString().padStart(width, '0')
 }
 
-function padDecimalWithZeros(num, width) {
+function padDecimalWithZeros(num: any, width: any) {
   const decimalParts = num.toString().split('.')
   if (decimalParts.length > 1) {
     return decimalParts[0].padStart(width, '0') + '.' + decimalParts[1]
@@ -339,7 +345,7 @@ function padDecimalWithZeros(num, width) {
   }
 }
 
-function buildDmsString(components) {
+function buildDmsString(components: any) {
   if (!components) {
     return components
   }
@@ -359,9 +365,9 @@ function replacePlaceholderWithZeros(numString = '') {
 }
 
 function ddToDmsCoordinate(
-  dd,
-  direction,
-  degreesPad,
+  dd: any,
+  direction: any,
+  degreesPad: any,
   secondsPrecision = DEFAULT_SECONDS_PRECISION
 ) {
   const ddAbsoluteValue = Math.abs(dd)
@@ -380,8 +386,9 @@ function ddToDmsCoordinate(
   }
 }
 
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
 function ddToDmsCoordinateLat(
-  dd,
+  dd: any,
   secondsPrecision = DEFAULT_SECONDS_PRECISION
 ) {
   if (!isNaN(dd)) {
@@ -395,8 +402,9 @@ function ddToDmsCoordinateLat(
   }
 }
 
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
 function ddToDmsCoordinateLon(
-  dd,
+  dd: any,
   secondsPrecision = DEFAULT_SECONDS_PRECISION
 ) {
   if (!isNaN(dd)) {
@@ -410,7 +418,8 @@ function ddToDmsCoordinateLon(
   }
 }
 
-function getSecondsPrecision(dmsCoordinate) {
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
+function getSecondsPrecision(dmsCoordinate: any) {
   if (dmsCoordinate === undefined) {
     return
   }

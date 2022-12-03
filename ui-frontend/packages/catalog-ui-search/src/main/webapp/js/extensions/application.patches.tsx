@@ -1,8 +1,8 @@
 /**
  * Collection of patches we apply to various libraries or setup functions
  */
-import '../requestAnimationFramePolyfill.js';
+import '../requestAnimationFramePolyfill';
 
-import '../ApplicationHelpers.js';
-import '../Autocomplete.js';
+import '../ApplicationHelpers';
+import '../Autocomplete';
 import './network.proxy';

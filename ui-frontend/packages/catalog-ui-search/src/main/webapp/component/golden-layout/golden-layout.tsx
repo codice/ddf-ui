@@ -11,7 +11,6 @@ type Props = {
 }
 
 export const GoldenLayout = ({ selectionInterface }: Props) => {
-  // @ts-ignore ts-migrate(6133) FIXME: 'setGoldenlayoutInstance' is declared but its valu... Remove this comment to see the full error message
   const [goldenLayout, setGoldenLayout] = React.useState<any>(null)
   const { closed } = useResizableGridContext()
 

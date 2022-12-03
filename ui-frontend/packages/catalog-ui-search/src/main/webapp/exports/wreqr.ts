@@ -12,5 +12,5 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import wreqr from '../js/wreqr.js'
+import wreqr from '../js/wreqr'
 export default wreqr

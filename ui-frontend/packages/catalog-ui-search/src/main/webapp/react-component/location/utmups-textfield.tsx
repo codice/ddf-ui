@@ -16,6 +16,7 @@ import React from 'react'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import TextField from '../text-field'
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"./common"' has no exported member 'Zone'.... Remove this comment to see the full error message
 import { Zone, Hemisphere } from './common'
 
 type UtmUpsPoint = {
@@ -40,6 +41,7 @@ const UtmupsTextfield = ({
         <div className="flex flex-col space-y-2 flex-no-wrap flex-shrink w-full">
           <TextField
             label="Easting"
+            // @ts-expect-error ts-migrate(2322) FIXME: Type 'number' is not assignable to type 'string | ... Remove this comment to see the full error message
             value={point.easting}
             onChange={(value: number) => {
               setPoint({
@@ -51,6 +53,7 @@ const UtmupsTextfield = ({
           />
           <TextField
             label="Northing"
+            // @ts-expect-error ts-migrate(2322) FIXME: Type 'number' is not assignable to type 'string | ... Remove this comment to see the full error message
             value={point.northing}
             onChange={(value: number) => {
               setPoint({

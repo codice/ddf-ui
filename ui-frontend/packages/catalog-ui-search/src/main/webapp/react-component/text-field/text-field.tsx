@@ -13,12 +13,17 @@
  *
  **/
 import React from 'react'
-import PropTypes from 'prop-types'
 
 import Group from '../group'
 import TextFieldMui from '@material-ui/core/TextField'
 
-const TextField = (props) => {
+type Props = {
+    value?: string;
+    onChange?: (...args: any[]) => any;
+};
+
+const TextField = (props: Props) => {
+  // @ts-expect-error ts-migrate(2339) FIXME: Property 'label' does not exist on type 'Props'.
   const { label, addon, value, type = 'text', onChange, ...rest } = props
   return (
     <Group>
@@ -41,6 +46,7 @@ const TextField = (props) => {
         value={value !== undefined ? value : ''}
         type={type}
         onChange={(e) => {
+          // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
           onChange(e.target.value)
         }}
         {...rest}
@@ -50,13 +56,6 @@ const TextField = (props) => {
       ) : null}
     </Group>
   )
-}
-
-TextField.propTypes = {
-  /** The current input value. */
-  value: PropTypes.string,
-  /** Value change handler. */
-  onChange: PropTypes.func,
 }
 
 export default TextField;

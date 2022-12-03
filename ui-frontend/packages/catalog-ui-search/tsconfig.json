@@ -23,6 +23,6 @@
     "emitDecoratorMetadata": true,
     "downlevelIteration": true
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
+  "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "dist", "dev", "target"]
 }

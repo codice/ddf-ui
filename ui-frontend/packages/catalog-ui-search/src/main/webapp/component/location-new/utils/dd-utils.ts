@@ -14,23 +14,25 @@
  **/
 import wkx from 'wkx';
 
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"./geo-helper"' has no exported member 'co... Remove this comment to see the full error message
 import { computeCircle, toKilometers } from './geo-helper';
 import errorMessages from './errors';
 
 const ddRegex = new RegExp('^-?[0-9]*.?[0-9]*$')
 const minimumDifference = 0.0001
 
-function ddCoordinateIsBlank(coordinate) {
+function ddCoordinateIsBlank(coordinate: any) {
   return coordinate.length === 0
 }
 
-function ddPointIsBlank(point) {
+function ddPointIsBlank(point: any) {
   return (
     ddCoordinateIsBlank(point.latitude) && ddCoordinateIsBlank(point.longitude)
   )
 }
 
-function inputIsBlank(dd) {
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
+function inputIsBlank(dd: any) {
   switch (dd.shape) {
     case 'point':
       return ddPointIsBlank(dd.point)
@@ -53,17 +55,17 @@ function inputIsBlank(dd) {
 /*
  *  Decimal degrees -> WKT conversion utils
  */
-function ddPointToWkt(point) {
+function ddPointToWkt(point: any) {
   return new wkx.Point(point.longitude, point.latitude)
 }
 
-function ddToWkt(dd) {
+function ddToWkt(dd: any) {
   if (inputIsBlank(dd)) {
     return null
   }
 
   let wkt = null
-  const points = []
+  const points: any = []
   switch (dd.shape) {
     case 'point':
       wkt = ddPointToWkt(dd.point).toWkt()
@@ -74,13 +76,13 @@ function ddToWkt(dd) {
       break
     case 'line':
       if (dd.line.list.length > 0) {
-        dd.line.list.map((point) => points.push(ddPointToWkt(point)))
+        dd.line.list.map((point: any) => points.push(ddPointToWkt(point)))
         wkt = new wkx.LineString(points).toWkt()
       }
       break
     case 'polygon':
       if (dd.polygon.list.length > 0) {
-        dd.polygon.list.map((point) => points.push(ddPointToWkt(point)))
+        dd.polygon.list.map((point: any) => points.push(ddPointToWkt(point)))
         const p1 = points[0]
         const p2 = points[points.length - 1]
         if (p1.x !== p2.x || p1.y !== p2.y) {
@@ -103,7 +105,7 @@ function ddToWkt(dd) {
 /*
  *  Decimal degrees validation utils
  */
-function parseDdCoordinate(coordinate) {
+function parseDdCoordinate(coordinate: any) {
   if (ddRegex.exec(coordinate) == null) {
     return null
   }
@@ -114,11 +116,11 @@ function parseDdCoordinate(coordinate) {
   return _coordinate
 }
 
-function inValidRange(coordinate, maximum) {
+function inValidRange(coordinate: any, maximum: any) {
   return coordinate >= -1 * maximum && coordinate <= maximum
 }
 
-function validateDdPoint(point) {
+function validateDdPoint(point: any) {
   const latitude = parseDdCoordinate(point.latitude)
   const longitude = parseDdCoordinate(point.longitude)
   if (latitude && longitude) {
@@ -127,7 +129,7 @@ function validateDdPoint(point) {
   return false
 }
 
-function validateDdBoundingBox(boundingbox) {
+function validateDdBoundingBox(boundingbox: any) {
   const north = parseDdCoordinate(boundingbox.north)
   const south = parseDdCoordinate(boundingbox.south)
   const east = parseDdCoordinate(boundingbox.east)
@@ -157,7 +159,7 @@ function validateDdBoundingBox(boundingbox) {
   return true
 }
 
-function validateDd(dd) {
+function validateDd(dd: any) {
   if (inputIsBlank(dd)) {
     return { valid: true, error: null }
   }

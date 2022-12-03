@@ -21,6 +21,7 @@ import { getResultSetCql } from '../utils/cql'
 import saveFile from '../utils/save-file'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
 import contentDisposition from 'content-disposition'
 
 type ExportFormat = {

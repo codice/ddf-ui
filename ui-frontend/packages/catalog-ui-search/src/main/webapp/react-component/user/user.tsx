@@ -24,7 +24,7 @@ import {
 } from '../../component/singletons/TypedUser'
 import PersonIcon from '@material-ui/icons/Person'
 import { SvgIconProps } from '@material-ui/core/SvgIcon'
-import user from '../../component/singletons/user-instance.js'
+import user from '../../component/singletons/user-instance'
 
 export type AvailableRoleType = {
   value: string

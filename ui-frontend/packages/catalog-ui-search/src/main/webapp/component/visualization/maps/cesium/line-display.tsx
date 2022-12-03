@@ -14,8 +14,10 @@
  **/
 import React from 'react'
 import DistanceUtils from '../../../../js/DistanceUtils'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
 import Cesium from 'cesium'
 import _ from 'underscore'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@tur... Remove this comment to see the full error message
 import Turf from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'

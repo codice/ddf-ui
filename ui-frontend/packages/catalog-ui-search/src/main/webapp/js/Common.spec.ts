@@ -50,6 +50,7 @@ describe('Common', () => {
         [181, 91],
         [0, 0],
       ]
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number[][]' is not assignable to... Remove this comment to see the full error message
       const results = Common.wrapMapCoordinatesArray(coordinates)
       expect(results[0][0]).to.equal(179)
       expect(results[0][1]).to.equal(89)
@@ -62,20 +63,24 @@ describe('Common', () => {
   })
   describe('generateUUID', () => {
     it('has dashes', () => {
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
       const uuid = Common.generateUUID({ useHyphensInUuid: true })
-      expect(uuid).to.satisfy((value) => value.indexOf('-') >= 0)
+      expect(uuid).to.satisfy((value: any) => value.indexOf('-') >= 0)
     })
     it('does not have dashes', () => {
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
       const uuid = Common.generateUUID({})
-      expect(uuid).to.satisfy((value) => value.indexOf('-') === -1)
+      expect(uuid).to.satisfy((value: any) => value.indexOf('-') === -1)
     })
   })
   describe('getImageSrc', () => {
     it('prepends data:image to null', () => {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'null' is not assignable to param... Remove this comment to see the full error message
       const image = Common.getImageSrc(null)
       expect(image).to.equal('data:image/png;base64,null')
     })
     it('prepends data:image to undefined', () => {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'undefined' is not assignable to ... Remove this comment to see the full error message
       const image = Common.getImageSrc(undefined)
       expect(image).to.equal('data:image/png;base64,undefined')
     })
@@ -86,6 +91,7 @@ describe('Common', () => {
       )
     })
     it('prepends data:image to non-string value', () => {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number' is not assignable to par... Remove this comment to see the full error message
       const image = Common.getImageSrc(123456789)
       expect(image).to.equal('data:image/png;base64,123456789')
     })

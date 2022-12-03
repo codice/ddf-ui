@@ -57,7 +57,7 @@ export function SnackProvider({ children }: any) {
     return
   }, [currentSnack])
 
-  // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
+  // @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
   const handleClose = (e: any, reason: string) => {
     if (reason === 'clickaway' && currentSnack.clickawayCloseable) {
       removeCurrentSnack()
@@ -119,7 +119,7 @@ export function SnackProvider({ children }: any) {
                     </Button>
                   )}
                   {closeable && (
-                    // @ts-ignore ts-migrate(2769) FIXME: Type '(e: any, reason: string) => void' is not ass... Remove this comment to see the full error message
+                    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
                     <IconButton
                       style={{ padding: '3px' }}
                       color="inherit"

@@ -14,38 +14,42 @@
  **/
 import React from 'react';
 
-import Group from '../../../react-component/group/index.js';
-import { Radio, RadioItem } from '../../../react-component/radio/index.js';
-import TextField from '../../../react-component/text-field/index.js';
-import { Units } from '../../../react-component/location/common.js';
+import Group from '../../../react-component/group/index';
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"../../../react-component/radio/index.js"'... Remove this comment to see the full error message
+import { Radio, RadioItem } from '../../../react-component/radio/index';
+import TextField from '../../../react-component/text-field/index';
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"../../../react-component/location/common.... Remove this comment to see the full error message
+import { Units } from '../../../react-component/location/common';
 import ListEditor from '../inputs/list-editor';
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"./coordinates"' has no exported member 'D... Remove this comment to see the full error message
 import { DdLatitude, DdLongitude } from './coordinates';
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"../models"' has no exported member 'ddPoi... Remove this comment to see the full error message
 import { ddPoint } from '../models';
 import DistanceUtils from '../../../js/DistanceUtils'
 
-const Point = (props) => {
+const Point = (props: any) => {
   const { dd, setState } = props
   return (
     <Group>
       <DdLatitude
         value={DistanceUtils.coordinateRound(dd.point.latitude)}
         onChange={setState(
-          (draft, value) =>
+          (draft: any, value: any) =>
             (draft.dd.point.latitude = DistanceUtils.coordinateRound(value))
         )}
       />
       <DdLongitude
         value={DistanceUtils.coordinateRound(dd.point.longitude)}
         onChange={setState(
-          (draft, value) =>
+          (draft: any, value: any) =>
             (draft.dd.point.longitude = DistanceUtils.coordinateRound(value))
         )}
       />
     </Group>
-  )
+  );
 }
 
-const Circle = (props) => {
+const Circle = (props: any) => {
   const { dd, setState } = props
   return (
     <div className="flex flex-col flex-no-wrap space-y-2">
@@ -53,7 +57,7 @@ const Circle = (props) => {
         <DdLatitude
           value={DistanceUtils.coordinateRound(dd.circle.point.latitude)}
           onChange={setState(
-            (draft, value) =>
+            (draft: any, value: any) =>
               (draft.dd.circle.point.latitude = DistanceUtils.coordinateRound(
                 value
               ))
@@ -62,7 +66,7 @@ const Circle = (props) => {
         <DdLongitude
           value={DistanceUtils.coordinateRound(dd.circle.point.longitude)}
           onChange={setState(
-            (draft, value) =>
+            (draft: any, value: any) =>
               (draft.dd.circle.point.longitude = DistanceUtils.coordinateRound(
                 value
               ))
@@ -71,30 +75,32 @@ const Circle = (props) => {
       </Group>
       <Units
         value={dd.circle.units}
-        onChange={setState((draft, value) => (draft.dd.circle.units = value))}
+        onChange={setState((draft: any, value: any) => (draft.dd.circle.units = value))}
       >
         <TextField
           label="Radius"
           type="number"
+          // @ts-expect-error ts-migrate(2322) FIXME: Type 'number' is not assignable to type 'string | ... Remove this comment to see the full error message
           value={DistanceUtils.coordinateRound(dd.circle.radius)}
           onChange={setState(
-            (draft, value) =>
+            (draft: any, value: any) =>
               (draft.dd.circle.radius = DistanceUtils.coordinateRound(value))
           )}
         />
       </Units>
     </div>
-  )
+  );
 }
 
-const Line = (props) => {
+const Line = (props: any) => {
   const { dd, setState } = props
-  const points = dd.line.list.map((entry, index) => (
+  // @ts-expect-error ts-migrate(6133) FIXME: 'entry' is declared but its value is never read.
+  const points = dd.line.list.map((entry: any, index: any) => (
     <Group key={index}>
       <DdLatitude
         value={DistanceUtils.coordinateRound(dd.line.list[index].latitude)}
         onChange={setState(
-          (draft, value) =>
+          (draft: any, value: any) =>
             (draft.dd.line.list[index].latitude = DistanceUtils.coordinateRound(
               value
             ))
@@ -103,7 +109,7 @@ const Line = (props) => {
       <DdLongitude
         value={DistanceUtils.coordinateRound(dd.line.list[index].longitude)}
         onChange={setState(
-          (draft, value) =>
+          (draft: any, value: any) =>
             (draft.dd.line.list[
               index
             ].longitude = DistanceUtils.coordinateRound(value))
@@ -114,23 +120,25 @@ const Line = (props) => {
 
   return (
     <ListEditor
+      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       list={dd.line.list}
       defaultItem={ddPoint}
-      onChange={setState((draft, value) => (draft.dd.line.list = value))}
+      onChange={setState((draft: any, value: any) => (draft.dd.line.list = value))}
     >
       {points}
     </ListEditor>
-  )
+  );
 }
 
-const Polygon = (props) => {
+const Polygon = (props: any) => {
   const { dd, setState } = props
-  const points = dd.polygon.list.map((entry, index) => (
+  // @ts-expect-error ts-migrate(6133) FIXME: 'entry' is declared but its value is never read.
+  const points = dd.polygon.list.map((entry: any, index: any) => (
     <Group key={index}>
       <DdLatitude
         value={DistanceUtils.coordinateRound(dd.polygon.list[index].latitude)}
         onChange={setState(
-          (draft, value) =>
+          (draft: any, value: any) =>
             (draft.dd.polygon.list[
               index
             ].latitude = DistanceUtils.coordinateRound(value))
@@ -139,7 +147,7 @@ const Polygon = (props) => {
       <DdLongitude
         value={DistanceUtils.coordinateRound(dd.polygon.list[index].longitude)}
         onChange={setState(
-          (draft, value) =>
+          (draft: any, value: any) =>
             (draft.dd.polygon.list[
               index
             ].longitude = DistanceUtils.coordinateRound(value))
@@ -150,16 +158,17 @@ const Polygon = (props) => {
 
   return (
     <ListEditor
+      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       list={dd.polygon.list}
       defaultItem={ddPoint}
-      onChange={setState((draft, value) => (draft.dd.polygon.list = value))}
+      onChange={setState((draft: any, value: any) => (draft.dd.polygon.list = value))}
     >
       {points}
     </ListEditor>
-  )
+  );
 }
 
-const BoundingBox = (props) => {
+const BoundingBox = (props: any) => {
   const { dd, setState } = props
   return (
     <div className="flex flex-col space-y-2">
@@ -167,7 +176,7 @@ const BoundingBox = (props) => {
         label="South"
         value={DistanceUtils.coordinateRound(dd.boundingbox.south)}
         onChange={setState(
-          (draft, value) =>
+          (draft: any, value: any) =>
             (draft.dd.boundingbox.south = DistanceUtils.coordinateRound(value))
         )}
       />
@@ -175,7 +184,7 @@ const BoundingBox = (props) => {
         label="North"
         value={DistanceUtils.coordinateRound(dd.boundingbox.north)}
         onChange={setState(
-          (draft, value) =>
+          (draft: any, value: any) =>
             (draft.dd.boundingbox.north = DistanceUtils.coordinateRound(value))
         )}
       />
@@ -183,7 +192,7 @@ const BoundingBox = (props) => {
         label="West"
         value={DistanceUtils.coordinateRound(dd.boundingbox.west)}
         onChange={setState(
-          (draft, value) =>
+          (draft: any, value: any) =>
             (draft.dd.boundingbox.west = DistanceUtils.coordinateRound(value))
         )}
       />
@@ -191,15 +200,15 @@ const BoundingBox = (props) => {
         label="East"
         value={DistanceUtils.coordinateRound(dd.boundingbox.east)}
         onChange={setState(
-          (draft, value) =>
+          (draft: any, value: any) =>
             (draft.dd.boundingbox.east = DistanceUtils.coordinateRound(value))
         )}
       />
     </div>
-  )
+  );
 }
 
-const LatLongDD = (props) => {
+const LatLongDD = (props: any) => {
   const { dd, setState } = props
 
   const inputs = {
@@ -210,13 +219,14 @@ const LatLongDD = (props) => {
     boundingbox: BoundingBox,
   }
 
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const Component = inputs[dd.shape] || null
 
   return (
     <div>
       <Radio
         value={dd.shape}
-        onChange={setState((draft, value) => (draft.dd.shape = value))}
+        onChange={setState((draft: any, value: any) => (draft.dd.shape = value))}
       >
         <RadioItem value="point">Point</RadioItem>
         <RadioItem value="circle">Circle</RadioItem>
@@ -228,7 +238,7 @@ const LatLongDD = (props) => {
         {Component !== null ? <Component {...props} /> : null}
       </div>
     </div>
-  )
+  );
 }
 
 export default LatLongDD;

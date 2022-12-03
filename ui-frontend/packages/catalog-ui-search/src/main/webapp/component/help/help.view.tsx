@@ -106,7 +106,7 @@ function findBlockers() {
 }
 
 function isBlocked(element: any, boundingRect: any) {
-  //@ts-ignore
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(blocker: any) => true | undefin... Remove this comment to see the full error message
   return _.some(findBlockers(), (blocker: any) => {
     if (
       blocker.element !== element &&
@@ -259,6 +259,7 @@ const usePaintHints = ({
   React.useEffect(() => {
     if (showHints && attachElement) {
       let $elementsWithHints = $('[data-help]').not('.is-hidden [data-help]')
+      // @ts-expect-error ts-migrate(2740) FIXME: Type 'HTMLElement[]' is missing the following prop... Remove this comment to see the full error message
       $elementsWithHints = _.shuffle($elementsWithHints)
       startPaintingHints($elementsWithHints, attachElement, setPaintedHints)
     }

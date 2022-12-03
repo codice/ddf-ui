@@ -15,8 +15,9 @@
 import React from 'react'
 import CloseIcon from '@material-ui/icons/Close'
 import IconButton from '@material-ui/core/IconButton'
-import { DmsLatitude, DmsLongitude } from '../../component/location-new/geo-components/coordinates.js'
-import DirectionInput from '../../component/location-new/geo-components/direction.js'
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"../../component/location-new/geo-componen... Remove this comment to see the full error message
+import { DmsLatitude, DmsLongitude } from '../../component/location-new/geo-components/coordinates'
+import DirectionInput from '../../component/location-new/geo-components/direction'
 
 type Direction = 'N' | 'S' | 'E' | 'W'
 
@@ -51,6 +52,7 @@ const DmsTextfield = ({
             }}
           >
             <DirectionInput
+              // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
               options={['N', 'S']}
               value={point.latDirection}
               onChange={(value: any) => {
@@ -72,6 +74,7 @@ const DmsTextfield = ({
             }}
           >
             <DirectionInput
+              // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
               options={['E', 'W']}
               value={point.lonDirection}
               onChange={(value: any) => {

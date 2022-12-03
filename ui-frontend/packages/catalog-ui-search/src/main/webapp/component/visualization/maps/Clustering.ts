@@ -13,11 +13,12 @@
  *
  **/
 
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'dens... Remove this comment to see the full error message
 import clustering from 'density-clustering';
 
 const dbscan = new clustering.DBSCAN()
 
-function removeInvalidCenters(results, centers) {
+function removeInvalidCenters(results: any, centers: any) {
   for (let i = centers.length - 1; i >= 0; i--) {
     if (!centers[i]) {
       results.splice(i, 1)
@@ -26,19 +27,19 @@ function removeInvalidCenters(results, centers) {
   }
 }
 
-function convertIndicesToResults(results, cluster) {
-  return cluster.map((index) => results[index])
+function convertIndicesToResults(results: any, cluster: any) {
+  return cluster.map((index: any) => results[index]);
 }
 
 export default {
   /*
       Takes in a list of geometries and a view height and returns a list of clusters
     */
-  calculateClusters(results, map) {
+  calculateClusters(results: any, map: any) {
     const centers = map.getWindowLocationsOfResults(results)
     removeInvalidCenters(results, centers)
     return dbscan
       .run(centers, 44, 2)
-      .map((cluster) => convertIndicesToResults(results, cluster))
+      .map((cluster: any) => convertIndicesToResults(results, cluster));
   },
 };

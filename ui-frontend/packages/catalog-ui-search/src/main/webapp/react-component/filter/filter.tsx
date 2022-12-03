@@ -55,7 +55,6 @@ const Filter = ({ filter, setFilter }: Props) => {
       <Grid item className="w-full pb-2">
         <Autocomplete
           data-id="filter-type-autocomplete"
-          // @ts-ignore fullWidth does exist on Autocomplete
           fullWidth
           size="small"
           options={attributeList}

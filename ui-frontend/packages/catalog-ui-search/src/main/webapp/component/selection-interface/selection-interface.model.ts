@@ -16,10 +16,10 @@
 import _ from 'underscore';
 
 import Backbone from 'backbone';
-import Metacard from '../../js/model/Metacard.js';
+import Metacard from '../../js/model/Metacard';
 import { Query as QueryModel } from '../../js/model/Query'
-import QueryResponse from '../../js/model/QueryResponse.js';
-import QueryResult from '../../js/model/QueryResult.js';
+import QueryResponse from '../../js/model/QueryResponse';
+import QueryResult from '../../js/model/QueryResult';
 
 export default Backbone.AssociatedModel.extend({
   relations: [
@@ -82,7 +82,7 @@ export default Backbone.AssociatedModel.extend({
   },
   updateActiveSearchResultsAttributes() {
     const availableAttributes = this.get('activeSearchResults')
-      .reduce((currentAvailable, result) => {
+      .reduce((currentAvailable: any, result: any) => {
         currentAvailable = _.union(
           currentAvailable,
           Object.keys(result.get('metacard').get('properties').toJSON())
@@ -108,13 +108,13 @@ export default Backbone.AssociatedModel.extend({
   getActiveSearchResults() {
     return this.get('activeSearchResults')
   },
-  setActiveSearchResults(results) {
+  setActiveSearchResults(results: any) {
     this.get('activeSearchResults').reset(results.models || results)
   },
-  addToActiveSearchResults(results) {
+  addToActiveSearchResults(results: any) {
     this.get('activeSearchResults').add(results.models || results)
   },
-  setSelectedResults(results) {
+  setSelectedResults(results: any) {
     this.get('selectedResults').reset(results.models || results)
   },
   getSelectedResults() {
@@ -123,13 +123,13 @@ export default Backbone.AssociatedModel.extend({
   clearSelectedResults() {
     this.getSelectedResults().reset()
   },
-  addSelectedResult(metacard) {
+  addSelectedResult(metacard: any) {
     this.getSelectedResults().add(metacard)
   },
-  removeSelectedResult(metacard) {
+  removeSelectedResult(metacard: any) {
     this.getSelectedResults().remove(metacard)
   },
-  setCurrentQuery(query) {
+  setCurrentQuery(query: any) {
     this.set('currentQuery', query)
   },
   getCurrentQuery() {

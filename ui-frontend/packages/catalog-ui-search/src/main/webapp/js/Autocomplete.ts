@@ -21,14 +21,14 @@
 
 import $ from 'jquery';
 
-function waitForInitialAttachLoad($iframe) {
+function waitForInitialAttachLoad($iframe: any) {
   $iframe.on('load', () => {
     $iframe.off('load')
     attachSubmitListener($iframe)
   })
 }
 
-function attachSubmitListener($iframe) {
+function attachSubmitListener($iframe: any) {
   $iframe.on('load', () => {
     $iframe.off('load')
     $iframe.detach()

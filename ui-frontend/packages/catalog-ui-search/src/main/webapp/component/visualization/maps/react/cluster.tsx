@@ -3,6 +3,7 @@ import { hot } from 'react-hot-loader'
 import { ClusterType } from './geometries'
 import { useSelectionOfLazyResults } from '../../../../js/model/LazyQueryResult/hooks'
 import _ from 'underscore'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'geo-... Remove this comment to see the full error message
 import calculateConvexHull from 'geo-convex-hull'
 
 type Props = {

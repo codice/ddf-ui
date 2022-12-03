@@ -13,6 +13,7 @@
  *
  **/
 /* global require*/
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'sort... Remove this comment to see the full error message
 import Sortable from 'sortablejs'
 import * as React from 'react'
 import LayerItem from '../../react-component/layer-item'

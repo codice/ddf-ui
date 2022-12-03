@@ -12,32 +12,30 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
-import $ from 'jquery'
-
+import * as React from 'react';
+import $ from 'jquery';
 interface Props {
-  turnOffDrawing: Function
+    turnOffDrawing: Function;
 }
-
 class CancelDrawingContainer extends React.Component<Props, {}> {
-  constructor(props: Props) {
-    super(props)
-  }
-  ref = React.createRef()
-  componentDidMount() {
-    $(this.ref.current).on('mousedown', (e: Event) => {
-      e.stopPropagation()
-      this.props.turnOffDrawing()
-    })
-  }
-  render() {
-    const children = React.Children.map(this.props.children, (child) => {
-      return React.cloneElement(child as React.ReactElement<any>, {
-        ref: this.ref,
-      })
-    })
-    return children
-  }
+    constructor(props: Props) {
+        super(props);
+    }
+    ref = React.createRef();
+    componentDidMount() {
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
+        ($(this.ref.current) as any).on('mousedown', (e: Event) => {
+            e.stopPropagation();
+            this.props.turnOffDrawing();
+        });
+    }
+    render() {
+        const children = React.Children.map(this.props.children, (child) => {
+            return React.cloneElement(child as React.ReactElement<any>, {
+                ref: this.ref,
+            });
+        });
+        return children;
+    }
 }
-
-export default CancelDrawingContainer
+export default CancelDrawingContainer;

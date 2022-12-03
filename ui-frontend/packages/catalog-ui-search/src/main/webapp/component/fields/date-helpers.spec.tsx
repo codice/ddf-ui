@@ -14,7 +14,6 @@
  **/
 import { expect } from 'chai'
 import { DateHelpers } from './date-helpers'
-//@ts-ignore
 import user from '../singletons/user-instance'
 user.get('user').get('preferences').set('timeZone', 'America/St_Johns')
 const date = new Date()

@@ -19,6 +19,7 @@ import { OpenlayersDrawings } from './drawing-and-display'
 import $ from 'jquery'
 
 const loadOpenLayersCode = () => {
+  // @ts-expect-error ts-migrate(7009) FIXME: 'new' expression, whose target lacks a construct s... Remove this comment to see the full error message
   const deferred = new $.Deferred()
   import('./map.openlayers').then(OpenlayersMap => {
     deferred.resolve(OpenlayersMap.default)

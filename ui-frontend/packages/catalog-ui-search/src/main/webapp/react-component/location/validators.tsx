@@ -13,6 +13,7 @@
  *
  **/
 import * as usng from 'usng.js'
+// @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
 const converter = new usng.Converter()
 import errorMessages from '../../component/location-new/utils/errors'
 import { validateGeo } from '../utils/validation'

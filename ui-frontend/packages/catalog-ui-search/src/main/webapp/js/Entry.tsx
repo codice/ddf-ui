@@ -18,7 +18,7 @@
  * because some of our styles have the same specificity as vendor
  * styles.
  */
-import properties from './properties.js'
+import properties from './properties'
 properties.init()
 ;(function verifyFirstImport() {
   if (document.querySelector('[data-styled-components]')) {

@@ -2,10 +2,8 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import moment from 'moment'
-//@ts-ignore
 import withListenTo, {
   WithBackboneProps,
-  //@ts-ignore
 } from '../backbone-container'
 
 import TimeSettingsPresentation from './presentation'
@@ -59,7 +57,7 @@ const generateZoneObjects = (): TimeZone[] => {
     const zone = momentTimezone.tz.zone(zoneName)
     const zonedDate = momentTimezone.tz(timestamp, zoneName)
     const offsetAsString = zonedDate.format('Z')
-    //@ts-ignore
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     const abbr = zone.abbr(timestamp)
 
     return {

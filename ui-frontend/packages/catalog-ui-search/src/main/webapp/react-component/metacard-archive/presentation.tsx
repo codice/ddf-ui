@@ -26,7 +26,7 @@ type Props = {
   loading: boolean
 }
 
-// @ts-ignore ts-migrate(6133) FIXME: 'SubText' is declared but its value is never read.
+// @ts-expect-error ts-migrate(6133) FIXME: 'SubText' is declared but its value is never read.
 const SubText = styled.span`
   display: block;
   font-size: ${(props) => props.theme.mediumFontSize};

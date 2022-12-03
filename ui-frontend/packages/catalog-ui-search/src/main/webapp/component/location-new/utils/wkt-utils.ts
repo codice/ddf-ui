@@ -18,11 +18,12 @@ import wkx from 'wkx';
 import errorMessages from './errors';
 import DistanceUtils from '../../../js/DistanceUtils'
 
-function convertUserValueToWKT(val) {
+function convertUserValueToWKT(val: any) {
   val = val.split(' (').join('(').split(', ').join(',')
   val = val
     .split('MULTIPOINT')
-    .map((value, index) => {
+    // @ts-expect-error ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
+    .map((value: any, index: any) => {
       if (value.indexOf('((') === 0) {
         const endOfMultiPoint = value.indexOf('))') + 2
         let multipointStr = value.substring(0, endOfMultiPoint)
@@ -42,11 +43,11 @@ function convertUserValueToWKT(val) {
   return val
 }
 
-function removeTrailingZeros(wkt) {
-  return wkt.replace(/[-+]?[0-9]*\.?[0-9]+/g, (number) => Number(number))
+function removeTrailingZeros(wkt: any) {
+  return wkt.replace(/[-+]?[0-9]*\.?[0-9]+/g, (number: any) => Number(number));
 }
 
-function checkCoordinateOrder(coordinate) {
+function checkCoordinateOrder(coordinate: any) {
   return (
     coordinate[0] >= -180 &&
     coordinate[0] <= 180 &&
@@ -55,34 +56,29 @@ function checkCoordinateOrder(coordinate) {
   )
 }
 
-function checkGeometryCoordinateOrdering(geometry) {
+function checkGeometryCoordinateOrdering(geometry: any) {
   switch (geometry.type) {
     case 'Point':
       return checkCoordinateOrder(geometry.coordinates)
     case 'LineString':
     case 'MultiPoint':
-      return geometry.coordinates.every((coordinate) =>
-        checkCoordinateOrder(coordinate)
-      )
+      return geometry.coordinates.every((coordinate: any) => checkCoordinateOrder(coordinate)
+      );
     case 'Polygon':
     case 'MultiLineString':
-      return geometry.coordinates.every((line) =>
-        line.every((coordinate) => checkCoordinateOrder(coordinate))
-      )
+      return geometry.coordinates.every((line: any) => line.every((coordinate: any) => checkCoordinateOrder(coordinate))
+      );
     case 'MultiPolygon':
-      return geometry.coordinates.every((multipolygon) =>
-        multipolygon.every((polygon) =>
-          polygon.every((coordinate) => checkCoordinateOrder(coordinate))
-        )
+      return geometry.coordinates.every((multipolygon: any) => multipolygon.every((polygon: any) => polygon.every((coordinate: any) => checkCoordinateOrder(coordinate))
       )
+      );
     case 'GeometryCollection':
-      return geometry.geometries.every((subgeometry) =>
-        checkGeometryCoordinateOrdering(subgeometry)
-      )
+      return geometry.geometries.every((subgeometry: any) => checkGeometryCoordinateOrdering(subgeometry)
+      );
   }
 }
 
-function checkForm(wkt) {
+function checkForm(wkt: any) {
   try {
     const test = wkx.Geometry.parse(wkt)
     return test.toWkt() === removeTrailingZeros(convertUserValueToWKT(wkt))
@@ -91,7 +87,7 @@ function checkForm(wkt) {
   }
 }
 
-function checkLonLatOrdering(wkt) {
+function checkLonLatOrdering(wkt: any) {
   try {
     const test = wkx.Geometry.parse(wkt)
     return checkGeometryCoordinateOrdering(test.toGeoJSON())
@@ -100,11 +96,11 @@ function checkLonLatOrdering(wkt) {
   }
 }
 
-function inputIsBlank(wkt) {
+function inputIsBlank(wkt: any) {
   return !wkt || wkt.length === 0
 }
 
-function validateWkt(wkt) {
+function validateWkt(wkt: any) {
   if (inputIsBlank(wkt)) {
     return { valid: true, error: null }
   }
@@ -121,47 +117,42 @@ function validateWkt(wkt) {
   return { valid, error }
 }
 
-function createCoordPair(coordinate) {
-  return coordinate.map((val) => DistanceUtils.coordinateRound(val)).join(' ')
+function createCoordPair(coordinate: any) {
+  return coordinate.map((val: any) => DistanceUtils.coordinateRound(val)).join(' ');
 }
 
-function createLineString(coordinates) {
-  return (
-    '(' +
-    coordinates
-      .map((coord) => {
-        return createCoordPair(coord)
-      })
-      .join(', ') +
-    ')'
-  )
+function createLineString(coordinates: any) {
+  return '(' +
+  coordinates
+    .map((coord: any) => {
+      return createCoordPair(coord)
+    })
+    .join(', ') +
+  ')';
 }
 
-function createMultiLineString(coordinates) {
-  return (
-    '(' +
-    coordinates
-      .map((line) => {
-        return createLineString(line)
-      })
-      .join(', ') +
-    ')'
-  )
+function createMultiLineString(coordinates: any) {
+  return '(' +
+  coordinates
+    .map((line: any) => {
+      return createLineString(line)
+    })
+    .join(', ') +
+  ')';
 }
 
-function createMultiPolygon(coordinates) {
-  return (
-    '(' +
-    coordinates
-      .map((line) => {
-        return createMultiLineString(line)
-      })
-      .join(', ') +
-    ')'
-  )
+function createMultiPolygon(coordinates: any) {
+  return '(' +
+  coordinates
+    .map((line: any) => {
+      return createMultiLineString(line)
+    })
+    .join(', ') +
+  ')';
 }
 
-function createRoundedWktGeo(geoJson) {
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
+function createRoundedWktGeo(geoJson: any) {
   switch (geoJson.type) {
     case 'Point':
       return (
@@ -183,16 +174,14 @@ function createRoundedWktGeo(geoJson) {
         geoJson.type.toUpperCase() + createMultiPolygon(geoJson.coordinates)
       )
     case 'GeometryCollection':
-      return (
-        geoJson.type.toUpperCase() +
-        '(' +
-        geoJson.geometries.map((geo) => createRoundedWktGeo(geo)).join(', ') +
-        ')'
-      )
+      return geoJson.type.toUpperCase() +
+      '(' +
+      geoJson.geometries.map((geo: any) => createRoundedWktGeo(geo)).join(', ') +
+      ')';
   }
 }
 
-function roundWktCoords(wkt) {
+function roundWktCoords(wkt: any) {
   if (!inputIsBlank(wkt) && checkForm(wkt) && checkLonLatOrdering(wkt)) {
     let parsed = wkx.Geometry.parse(wkt)
     let geoJson = parsed.toGeoJSON()

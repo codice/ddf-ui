@@ -20,11 +20,16 @@ const oldPost = $.post
 const oldAjax = $.ajax
 
 const mock = () => {
-  const httpRequest = ({ url }) => {
+  const httpRequest = ({
+    url
+  }: any) => {
     return Promise.resolve(api(url))
   }
-  $.get = (url) => httpRequest({ url })
+  // @ts-expect-error ts-migrate(2322) FIXME: Type '(url: any) => Promise<any>' is not assignabl... Remove this comment to see the full error message
+  $.get = (url: any) => httpRequest({ url })
+  // @ts-expect-error ts-migrate(2322) FIXME: Type '({ url }: any) => Promise<any>' is not assig... Remove this comment to see the full error message
   $.post = httpRequest
+  // @ts-expect-error ts-migrate(2322) FIXME: Type '({ url }: any) => Promise<any>' is not assig... Remove this comment to see the full error message
   $.ajax = httpRequest
 }
 

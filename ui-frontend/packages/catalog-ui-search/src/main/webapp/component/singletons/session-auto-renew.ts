@@ -36,7 +36,7 @@ const sessionAutoRenewModel = new (Backbone.Model.extend({
         console.warn('what do we do on failure')
       })
   },
-  handleExpiryTimeResponse(response) {
+  handleExpiryTimeResponse(response: any) {
     const msUntilTimeout = parseInt(response)
     const msUntilAutoRenew = Math.max(
       msUntilTimeout * 0.7,

@@ -14,7 +14,7 @@
  **/
 import fetch from '../../react-component/utils/fetch'
 
-import user from './user-instance.js';
+import user from './user-instance';
 import Backbone from 'backbone';
 
 export default new (Backbone.Collection.extend({
@@ -28,15 +28,15 @@ export default new (Backbone.Collection.extend({
     this.listenTo(alerts, 'add', this.add)
     this.listenTo(alerts, 'remove', this.remove)
   },
-  comparator(model) {
+  comparator(model: any) {
     return -model.getTimeComparator()
   },
   hasUnseen() {
-    return this.some((notification) => notification.get('unseen'))
+    return this.some((notification: any) => notification.get('unseen'));
   },
   setSeen() {
-    const setSeen = []
-    this.forEach((notification) => {
+    const setSeen: any = []
+    this.forEach((notification: any) => {
       notification.set('unseen', false)
       if (notification.get('queryId')) {
         setSeen.push(notification)

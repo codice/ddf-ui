@@ -17,16 +17,17 @@ import $ from 'jquery';
 
 import Backbone from 'backbone';
 import _ from 'underscore';
-import properties from '../../js/properties.js';
+import properties from '../../js/properties';
 import moment from 'moment';
 const PRIORITY_ATTRIBUTES = ['anyText', 'anyGeo']
-function transformEnumResponse(metacardTypes, response) {
+function transformEnumResponse(metacardTypes: any, response: any) {
   return _.reduce(
     response,
     (result, value, key) => {
       switch (metacardTypes[key].type) {
         case 'DATE':
-          result[key] = value.map((subval) => {
+          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+          result[key] = value.map((subval: any) => {
             if (subval) {
               return moment(subval).toISOString()
             }
@@ -38,34 +39,40 @@ function transformEnumResponse(metacardTypes, response) {
         case 'FLOAT':
         case 'INTEGER':
         case 'SHORT': //needed until enum response correctly returns numbers as numbers
+          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           result[key] = value.map((
-            subval //handle cases of unnecessary number padding -> 22.0000
+            //handle cases of unnecessary number padding -> 22.0000
+            subval: any
           ) => Number(subval))
           break
         default:
+          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           result[key] = value
           break
       }
       return result
     },
     {}
-  )
+  );
 }
 
 const metacardStartingTypes = {
   anyText: {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     alias: properties.attributeAliases['anyText'],
     id: 'anyText',
     type: 'STRING',
     multivalued: false,
   },
   anyGeo: {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     alias: properties.attributeAliases['anyGeo'],
     id: 'anyGeo',
     type: 'LOCATION',
     multivalued: false,
   },
   anyDate: {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     alias: properties.attributeAliases['anyDate'],
     id: 'anyDate',
     type: 'DATE',
@@ -73,6 +80,7 @@ const metacardStartingTypes = {
     hidden: true, // need to investigate if this is common, it looks like we defer to the properties file instead, think we need to overhaul our data structures for this
   },
   'metacard-type': {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     alias: properties.attributeAliases['metacard-type'],
     id: 'metacard-type',
     type: 'STRING',
@@ -80,6 +88,7 @@ const metacardStartingTypes = {
     readOnly: true,
   },
   'source-id': {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     alias: properties.attributeAliases['source-id'],
     id: 'source-id',
     type: 'STRING',
@@ -87,12 +96,14 @@ const metacardStartingTypes = {
     readOnly: true,
   },
   cached: {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     alias: properties.attributeAliases['cached'],
     id: 'cached',
     type: 'STRING',
     multivalued: false,
   },
   'metacard-tags': {
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     alias: properties.attributeAliases['metacard-tags'],
     id: 'metacard-tags',
     type: 'STRING',
@@ -106,9 +117,11 @@ function metacardStartingTypesWithTemporal() {
 
   if (properties.basicSearchTemporalSelectionDefault) {
     properties.basicSearchTemporalSelectionDefault.forEach((proposedType) => {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       metacardStartingTypeWithTemporal[proposedType] = {
         id: proposedType,
         type: 'DATE',
+        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         alias: properties.attributeAliases[proposedType],
         hidden: properties.isHidden(proposedType),
       }
@@ -124,14 +137,14 @@ export default new (Backbone.Model.extend({
     this.getMetacardTypes()
     this.getDatatypeEnum()
   },
-  isHiddenTypeExceptThumbnail(id) {
+  isHiddenTypeExceptThumbnail(id: any) {
     if (id === 'thumbnail') {
       return false
     } else {
       return this.isHiddenType(id)
     }
   },
-  isHiddenType(id) {
+  isHiddenType(id: any) {
     return (
       this.metacardTypes[id] === undefined ||
       this.metacardTypes[id].type === 'XML' ||
@@ -145,7 +158,7 @@ export default new (Backbone.Model.extend({
       _.extend(this.enums, response)
     })
   },
-  getEnumForMetacardDefinition(metacardDefinition) {
+  getEnumForMetacardDefinition(metacardDefinition: any) {
     $.get('./internal/enumerations/metacardtype/' + metacardDefinition).then(
       (response) => {
         _.extend(
@@ -155,7 +168,7 @@ export default new (Backbone.Model.extend({
       }
     )
   },
-  getDeprecatedEnumForMetacardDefinition(metacardDefinition) {
+  getDeprecatedEnumForMetacardDefinition(metacardDefinition: any) {
     $.get('./internal/enumerations/deprecated/' + metacardDefinition).then(
       (response) => {
         _.extend(
@@ -165,7 +178,7 @@ export default new (Backbone.Model.extend({
       }
     )
   },
-  addMetacardDefinition(metacardDefinitionName, metacardDefinition) {
+  addMetacardDefinition(metacardDefinitionName: any, metacardDefinition: any) {
     if (
       Object.keys(this.metacardDefinitions).indexOf(metacardDefinitionName) ===
       -1
@@ -179,6 +192,7 @@ export default new (Backbone.Model.extend({
           this.metacardTypes[type].id = this.metacardTypes[type].id || type
           this.metacardTypes[type].type =
             this.metacardTypes[type].type || this.metacardTypes[type].format
+          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           this.metacardTypes[type].alias = properties.attributeAliases[type]
           this.metacardTypes[type].hidden =
             properties.isHidden(this.metacardTypes[type].id) ||
@@ -192,7 +206,7 @@ export default new (Backbone.Model.extend({
     }
     return false
   },
-  addMetacardDefinitions(metacardDefinitions) {
+  addMetacardDefinitions(metacardDefinitions: any) {
     let updated = false
     for (const metacardDefinition in metacardDefinitions) {
       if (metacardDefinitions.hasOwnProperty(metacardDefinition)) {
@@ -214,7 +228,7 @@ export default new (Backbone.Model.extend({
       this.typesFetched = true
     })
   },
-  attributeComparator(a, b) {
+  attributeComparator(a: any, b: any) {
     const attrToCompareA = this.getLabel(a).toLowerCase()
     const attrToCompareB = this.getLabel(b).toLowerCase()
     if (attrToCompareA < attrToCompareB) {
@@ -225,8 +239,8 @@ export default new (Backbone.Model.extend({
     }
     return 0
   },
-  sortMetacardTypes(metacardTypes) {
-    return metacardTypes.sort((a, b) => {
+  sortMetacardTypes(metacardTypes: any) {
+    return metacardTypes.sort((a: any, b: any) => {
       const attrToCompareA = (a.alias || a.id).toLowerCase()
       const attrToCompareB = (b.alias || b.id).toLowerCase()
       if (PRIORITY_ATTRIBUTES.includes(a.id)) return -1
@@ -238,7 +252,7 @@ export default new (Backbone.Model.extend({
         return 1
       }
       return 0
-    })
+    });
   },
   updateSortedMetacardTypes() {
     this.sortedMetacardTypes = []
@@ -249,7 +263,7 @@ export default new (Backbone.Model.extend({
     }
     this.sortMetacardTypes(this.sortedMetacardTypes)
   },
-  getLabel(id) {
+  getLabel(id: any) {
     const definition = this.metacardTypes[id]
     return definition ? definition.alias || id : id
   },

@@ -13,7 +13,7 @@
  *
  **/
 import { SortItemType } from './sort-selections'
-import metacardDefinitions from '../../component/singletons/metacard-definitions.js'
+import metacardDefinitions from '../../component/singletons/metacard-definitions'
 import properties from '../../js/properties'
 import { Option } from './sort-selections'
 

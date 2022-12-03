@@ -17,13 +17,19 @@ import React from 'react';
 import styled from 'styled-components'
 
 import Group from '../group';
+// @ts-expect-error ts-migrate(6133) FIXME: 'Menu' is declared but its value is never read.
 import Menu from '@material-ui/core/Menu'
+// @ts-expect-error ts-migrate(6133) FIXME: 'MenuItem' is declared but its value is never read... Remove this comment to see the full error message
 import MenuItem from '@material-ui/core/MenuItem'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
 import Label from './label';
 
-const Units = ({ value, onChange, children }) => (
+const Units = ({
+  value,
+  onChange,
+  children
+}: any) => (
   <Group>
     {children}
     <Autocomplete
@@ -52,7 +58,10 @@ const Units = ({ value, onChange, children }) => (
 
 // create an array of 1-60 for zones
 const range = [...Array(61).keys()].map((val) => val.toString()).slice(1)
-const Zone = ({ value, onChange }) => (
+const Zone = ({
+  value,
+  onChange
+}: any) => (
   <Group>
     <Label>Zone</Label>
     <Autocomplete
@@ -71,7 +80,10 @@ const Zone = ({ value, onChange }) => (
   </Group>
 )
 
-const Hemisphere = ({ value, onChange }) => (
+const Hemisphere = ({
+  value,
+  onChange
+}: any) => (
   <Group>
     <Label>Hemisphere</Label>
     <Autocomplete

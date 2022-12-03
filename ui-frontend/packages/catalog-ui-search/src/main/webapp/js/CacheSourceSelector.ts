@@ -13,21 +13,21 @@
  *
  **/
 import cql from './cql'
-import CQLUtils from './CQLUtils.js';
-function buildCacheSourcesCql(sources) {
+import CQLUtils from './CQLUtils';
+function buildCacheSourcesCql(sources: any) {
   return {
     type: 'OR',
     filters: sources
-      .filter((source) => source !== 'cache')
-      .map((source) => ({
-        property: '"metacard_source"',
-        type: '=',
-        value: source,
-      })),
-  }
+      .filter((source: any) => source !== 'cache')
+      .map((source: any) => ({
+      property: '"metacard_source"',
+      type: '=',
+      value: source
+    })),
+  };
 }
 
-function limitCacheSources(cql, sources) {
+function limitCacheSources(cql: any, sources: any) {
   return {
     type: 'AND',
     filters: [cql, buildCacheSourcesCql(sources)],
@@ -35,10 +35,11 @@ function limitCacheSources(cql, sources) {
 }
 
 export default {
-  trimCacheSources(cqlString, sources) {
+  trimCacheSources(cqlString: any, sources: any) {
     return CQLUtils.sanitizeGeometryCql(
       '(' +
         cql.write(
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ type: string; filters: any[]; ... Remove this comment to see the full error message
           limitCacheSources(cql.simplify(cql.read(cqlString)), sources)
         ) +
         ')'

@@ -14,18 +14,16 @@
  **/
 import $ from 'jquery'
 
-// @ts-ignore ts-migrate(7030) FIXME: Not all code paths return a value.
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
 export default function saveFile(name: string, type: string, data: any) {
   if (data != null && navigator.msSaveBlob)
     return navigator.msSaveBlob(new Blob([data], { type: type }), name)
   let a = $("<a style='display: none;'/>")
-  // @ts-ignore TS2339: Property 'URL' does not exist on type 'Window & typeof globalThis'
   let url = window.URL.createObjectURL(new Blob([data], { type: type }))
   a.attr('href', url)
   a.attr('download', name)
   $('body').append(a)
   a[0].click()
-  // @ts-ignore TS2339: Property 'URL' does not exist on type 'Window & typeof globalThis'
   window.URL.revokeObjectURL(url)
   a.remove()
 }

@@ -13,6 +13,7 @@
  *
  **/
 import { expect } from 'chai'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'sino... Remove this comment to see the full error message
 import sinon from 'sinon'
 import {
   mock as mockJquery,
@@ -35,7 +36,8 @@ describe('Common', () => {
   })
   describe('wrapCoordinatesFromGeometry', () => {
     class MockGeometry {
-      constructor(props) {
+      props: any;
+      constructor(props: any) {
         this.props = props
       }
       getType() {

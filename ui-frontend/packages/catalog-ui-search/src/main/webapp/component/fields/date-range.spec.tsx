@@ -7,7 +7,6 @@ import { expect } from 'chai'
 import { DateRangeField } from './date-range'
 import moment from 'moment'
 
-//@ts-ignore
 import user from '../singletons/user-instance'
 import { ValueTypes } from '../filter-builder/filter.structure'
 import { DateHelpers } from './date-helpers'

@@ -7,7 +7,6 @@ import { DateField } from './date'
 import moment from 'moment'
 import { expect } from 'chai'
 
-//@ts-ignore
 import user from '../singletons/user-instance'
 import { DateHelpers } from './date-helpers'
 import Common from '../../js/Common'

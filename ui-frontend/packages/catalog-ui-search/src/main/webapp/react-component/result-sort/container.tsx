@@ -19,7 +19,7 @@ import ResultSortPresentation from './presentation'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 
 import Backbone from 'backbone'
-import user from '../../component/singletons/user-instance.js'
+import user from '../../component/singletons/user-instance'
 
 type Props = {
   closeDropdown: any

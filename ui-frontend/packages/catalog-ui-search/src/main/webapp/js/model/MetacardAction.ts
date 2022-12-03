@@ -15,6 +15,7 @@
 import Backbone from 'backbone';
 
 import 'backbone-associations';
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'urij... Remove this comment to see the full error message
 import URITemplate from 'urijs/src/URITemplate';
 const DECODED_QUERY_ID_TEMPLATE = '{&queryId}'
 const ENCODED_QUERY_ID_TEMPLATE = encodeURIComponent(DECODED_QUERY_ID_TEMPLATE)

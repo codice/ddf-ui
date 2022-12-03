@@ -19,7 +19,7 @@ import MetacardActions from '../../../react-component/metacard-actions'
 import MetacardQuality from '../../../react-component/metacard-quality'
 import MetacardHistory from '../../../react-component/metacard-history'
 import Summary from './summary'
-import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult.js'
+import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import { MetacardPreviewReact } from '../../metacard-preview/metacard-preview.view'
 
 export type TabContentProps = {

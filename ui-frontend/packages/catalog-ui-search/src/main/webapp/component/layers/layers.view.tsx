@@ -16,9 +16,9 @@
 import React from 'react'
 import _ from 'underscore'
 import Backbone from 'backbone'
-import properties from '../../js/properties.js'
+import properties from '../../js/properties'
 import { LayerItemCollectionViewReact } from '../layer-item/layer-item.collection.view'
-import user from '../singletons/user-instance.js'
+import user from '../singletons/user-instance'
 import { hot } from 'react-hot-loader'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import debounce from 'lodash.debounce'
@@ -85,6 +85,7 @@ const LayersViewReact = () => {
           collection={user.get('user>preferences').get('mapLayers')}
           updateOrdering={() => {
             _.forEach(
+              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'NodeListOf<Element> | undefined'... Remove this comment to see the full error message
               containerElementRef.current?.querySelectorAll(`.layer-item`),
               (element: any, index: any) => {
                 user

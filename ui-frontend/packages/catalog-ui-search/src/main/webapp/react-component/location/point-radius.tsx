@@ -13,6 +13,7 @@
  *
  **/
 import React, { useState, useEffect } from 'react'
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"../radio"' has no exported member 'Radio'... Remove this comment to see the full error message
 import { Radio, RadioItem } from '../radio';
 import TextField from '../text-field';
 import {
@@ -21,12 +22,14 @@ import {
   initialErrorStateWithDefault,
   ErrorComponent,
 } from '../utils/validation'
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"./common"' has no exported member 'Units'... Remove this comment to see the full error message
 import { Units, Zone, Hemisphere, MinimumSpacing } from './common';
-import { DmsLatitude, DmsLongitude } from '../../component/location-new/geo-components/coordinates.js';
-import DirectionInput from '../../component/location-new/geo-components/direction.js';
-import { Direction } from '../../component/location-new/utils/dms-utils.js';
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"../../component/location-new/geo-componen... Remove this comment to see the full error message
+import { DmsLatitude, DmsLongitude } from '../../component/location-new/geo-components/coordinates';
+import DirectionInput from '../../component/location-new/geo-components/direction';
+import { Direction } from '../../component/location-new/utils/dms-utils';
 
-const PointRadiusLatLonDd = (props) => {
+const PointRadiusLatLonDd = (props: any) => {
   const { lat, lon, radius, radiusUnits, setState } = props
   const [ddError, setDdError] = useState(initialErrorStateWithDefault)
   const [radiusError, setRadiusError] = useState(initialErrorState)
@@ -38,7 +41,8 @@ const PointRadiusLatLonDd = (props) => {
     }
   }, [props.lat, props.lon, props.radius])
 
-  function validateDd(key, value) {
+  function validateDd(key: any, value: any) {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'error' does not exist on type '{ error: ... Remove this comment to see the full error message
     const { error, message, defaultValue } = validateGeo(key, value)
     if (defaultValue) {
       setDdError({ error, message, defaultValue })
@@ -51,52 +55,58 @@ const PointRadiusLatLonDd = (props) => {
   return (
     <div className="flex flex-col flex-nowrap space-y-2">
       <TextField
+        // @ts-expect-error ts-migrate(2322) FIXME: Type '{ type: string; label: string; value: any; o... Remove this comment to see the full error message
         type="number"
         label="Latitude"
         value={lat !== undefined ? String(lat) : lat}
         onChange={(value) => validateDd('lat', value)}
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
         onBlur={() => setDdError(validateGeo('lat', lat))}
         addon="°"
       />
       <TextField
+        // @ts-expect-error ts-migrate(2322) FIXME: Type '{ type: string; label: string; value: any; o... Remove this comment to see the full error message
         type="number"
         label="Longitude"
         value={lon !== undefined ? String(lon) : lon}
         onChange={(value) => validateDd('lon', value)}
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
         onBlur={() => setDdError(validateGeo('lon', lon))}
         addon="°"
       />
       <ErrorComponent errorState={ddError} />
       <Units
         value={radiusUnits}
-        onChange={(value) => {
+        onChange={(value: any) => {
           setState({ ['radiusUnits']: value })
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
           setRadiusError(validateGeo('radius', { value: radius, units: value }))
         }}
       >
         <TextField
+          // @ts-expect-error ts-migrate(2322) FIXME: Type '{ type: string; label: string; value: string... Remove this comment to see the full error message
           type="number"
           label="Radius"
           value={String(radius)}
           onChange={(value) => {
             setState({ ['radius']: value })
           }}
-          onBlur={(e) =>
-            setRadiusError(
-              validateGeo('radius', {
-                value: e.target.value,
-                units: radiusUnits,
-              })
-            )
+          onBlur={(e: any) => setRadiusError(
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+            validateGeo('radius', {
+              value: e.target.value,
+              units: radiusUnits,
+            })
+          )
           }
         />
       </Units>
       <ErrorComponent errorState={radiusError} />
     </div>
-  )
+  );
 }
 
-const PointRadiusLatLonDms = (props) => {
+const PointRadiusLatLonDms = (props: any) => {
   const {
     dmsLat,
     dmsLon,
@@ -118,7 +128,8 @@ const PointRadiusLatLonDms = (props) => {
     }
   }, [props.dmsLat, props.dmsLon, props.radius])
 
-  function validateDms(key, type, value) {
+  function validateDms(key: any, type: any, value: any) {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'error' does not exist on type '{ error: ... Remove this comment to see the full error message
     const { error, message, defaultValue } = validateGeo(key, value)
     if (type === 'blur') {
       setDmsError({
@@ -143,56 +154,60 @@ const PointRadiusLatLonDms = (props) => {
       <DmsLatitude
         label="Latitude"
         value={dmsLat}
-        onChange={(value, type) => validateDms('dmsLat', type, value)}
+        onChange={(value: any, type: any) => validateDms('dmsLat', type, value)}
       >
         <DirectionInput
+          // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
           options={latitudeDirections}
           value={dmsLatDirection}
-          onChange={(value) => setState({ ['dmsLatDirection']: value })}
+          onChange={(value: any) => setState({ ['dmsLatDirection']: value })}
         />
       </DmsLatitude>
       <DmsLongitude
         label="Longitude"
         value={dmsLon}
-        onChange={(value, type) => validateDms('dmsLon', type, value)}
+        onChange={(value: any, type: any) => validateDms('dmsLon', type, value)}
       >
         <DirectionInput
+          // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
           options={longitudeDirections}
           value={dmsLonDirection}
-          onChange={(value) => setState({ ['dmsLonDirection']: value })}
+          onChange={(value: any) => setState({ ['dmsLonDirection']: value })}
         />
       </DmsLongitude>
       <ErrorComponent errorState={dmsError} />
       <Units
         value={radiusUnits}
-        onChange={(value) => {
+        onChange={(value: any) => {
           setState({ ['radiusUnits']: value })
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
           setRadiusError(validateGeo('radius', { value: radius, units: value }))
         }}
       >
         <TextField
+          // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; type: string; value: string... Remove this comment to see the full error message
           label="Radius"
           type="number"
           value={String(radius)}
           onChange={(value) => {
             setState({ ['radius']: value })
           }}
-          onBlur={(e) =>
-            setRadiusError(
-              validateGeo('radius', {
-                value: e.target.value,
-                units: radiusUnits,
-              })
-            )
+          onBlur={(e: any) => setRadiusError(
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+            validateGeo('radius', {
+              value: e.target.value,
+              units: radiusUnits,
+            })
+          )
           }
         />
       </Units>
       <ErrorComponent errorState={radiusError} />
     </div>
-  )
+  );
 }
 
-const PointRadiusUsngMgrs = (props) => {
+const PointRadiusUsngMgrs = (props: any) => {
   const { usng, radius, radiusUnits, setState } = props
   const [usngError, setUsngError] = useState(initialErrorState)
   const [radiusError, setRadiusError] = useState(initialErrorState)
@@ -207,35 +222,40 @@ const PointRadiusUsngMgrs = (props) => {
   return (
     <div className="flex flex-col flex-nowrap space-y-2">
       <TextField
+        // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; value: any; onChange: (valu... Remove this comment to see the full error message
         label="USNG / MGRS"
         value={usng}
         onChange={(value) => setState({ ['usng']: value })}
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
         onBlur={() => setUsngError(validateGeo('usng', usng))}
       />
       <ErrorComponent errorState={usngError} />
       <Units
         value={radiusUnits}
-        onChange={(value) => {
+        onChange={(value: any) => {
           setState({ ['radiusUnits']: value })
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
           setRadiusError(validateGeo('radius', { value: radius, units: value }))
         }}
       >
         <TextField
+          // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; type: string; value: string... Remove this comment to see the full error message
           label="Radius"
           type="number"
           value={String(radius)}
           onChange={(value) => {
             setState({ ['radius']: value })
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
             setRadiusError(validateGeo('radius', { value, units: radiusUnits }))
           }}
         />
       </Units>
       <ErrorComponent errorState={radiusError} />
     </div>
-  )
+  );
 }
 
-const PointRadiusUtmUps = (props) => {
+const PointRadiusUtmUps = (props: any) => {
   const {
     utmUpsEasting,
     utmUpsNorthing,
@@ -264,6 +284,7 @@ const PointRadiusUtmUps = (props) => {
   return (
     <div className="flex flex-col flex-nowrap space-y-2">
       <TextField
+        // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; value: any; onChange: (valu... Remove this comment to see the full error message
         label="Easting"
         value={
           utmUpsEasting !== undefined ? String(utmUpsEasting) : utmUpsEasting
@@ -271,6 +292,7 @@ const PointRadiusUtmUps = (props) => {
         onChange={(value) => setState({ ['utmUpsEasting']: value })}
         onBlur={() =>
           setUtmError(
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
             validateGeo('easting', {
               easting: utmUpsEasting,
               northing: utmUpsNorthing,
@@ -282,6 +304,7 @@ const PointRadiusUtmUps = (props) => {
         addon="m"
       />
       <TextField
+        // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; value: any; onChange: (valu... Remove this comment to see the full error message
         label="Northing"
         value={
           utmUpsNorthing !== undefined ? String(utmUpsNorthing) : utmUpsNorthing
@@ -289,6 +312,7 @@ const PointRadiusUtmUps = (props) => {
         onChange={(value) => setState({ ['utmUpsNorthing']: value })}
         onBlur={() =>
           setUtmError(
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
             validateGeo('northing', {
               easting: utmUpsEasting,
               northing: utmUpsNorthing,
@@ -301,9 +325,10 @@ const PointRadiusUtmUps = (props) => {
       />
       <Zone
         value={utmUpsZone}
-        onChange={(value) => setState({ ['utmUpsZone']: value })}
+        onChange={(value: any) => setState({ ['utmUpsZone']: value })}
         onBlur={() =>
           setUtmError(
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
             validateGeo('zoneNumber', {
               easting: utmUpsEasting,
               northing: utmUpsNorthing,
@@ -315,9 +340,10 @@ const PointRadiusUtmUps = (props) => {
       />
       <Hemisphere
         value={utmUpsHemisphere}
-        onChange={(value) => setState({ ['utmUpsHemisphere']: value })}
+        onChange={(value: any) => setState({ ['utmUpsHemisphere']: value })}
         onBlur={() =>
           setUtmError(
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
             validateGeo('hemisphere', {
               easting: utmUpsEasting,
               northing: utmUpsNorthing,
@@ -330,34 +356,36 @@ const PointRadiusUtmUps = (props) => {
       <ErrorComponent errorState={utmError} />
       <Units
         value={radiusUnits}
-        onChange={(value) => {
+        onChange={(value: any) => {
           setState({ ['radiusUnits']: value })
+          // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
           setRadiusError(validateGeo('radius', { value: radius, units: value }))
         }}
       >
         <TextField
+          // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; type: string; value: string... Remove this comment to see the full error message
           label="Radius"
           type="number"
           value={String(radius)}
           onChange={(value) => {
             setState({ ['radius']: value })
           }}
-          onBlur={(e) =>
-            setRadiusError(
-              validateGeo('radius', {
-                value: e.target.value,
-                units: radiusUnits,
-              })
-            )
+          onBlur={(e: any) => setRadiusError(
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+            validateGeo('radius', {
+              value: e.target.value,
+              units: radiusUnits,
+            })
+          )
           }
         />
       </Units>
       <ErrorComponent errorState={radiusError} />
     </div>
-  )
+  );
 }
 
-const PointRadius = (props) => {
+const PointRadius = (props: any) => {
   const { setState, locationType } = props
 
   const inputs = {
@@ -367,13 +395,14 @@ const PointRadius = (props) => {
     utmUps: PointRadiusUtmUps,
   }
 
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const Component = inputs[locationType] || null
 
   return (
     <div>
       <Radio
         value={locationType}
-        onChange={(value) => setState({ ['locationType']: value })}
+        onChange={(value: any) => setState({ ['locationType']: value })}
       >
         <RadioItem value="dd">Lat / Lon (DD)</RadioItem>
         <RadioItem value="dms">Lat / Lon (DMS)</RadioItem>
@@ -385,7 +414,7 @@ const PointRadius = (props) => {
         {Component !== null ? <Component {...props} /> : null}
       </div>
     </div>
-  )
+  );
 }
 
 export default PointRadius;

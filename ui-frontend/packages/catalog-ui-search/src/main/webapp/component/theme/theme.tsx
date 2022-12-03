@@ -3,7 +3,7 @@ import {
   createMuiTheme,
   MuiThemeProvider as ThemeProvider,
   darken,
-  // @ts-ignore ts-migrate(6133) FIXME: 'getContrastRatio' is declared but its value is ne... Remove this comment to see the full error message
+  // @ts-expect-error ts-migrate(6133) FIXME: 'getContrastRatio' is declared but its value is ne... Remove this comment to see the full error message
   getContrastRatio,
   Theme as ThemeInterface,
   createStyles,

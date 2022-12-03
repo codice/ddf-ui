@@ -78,6 +78,7 @@ class DistanceInfo extends React.Component<Props, State> {
 
   render() {
     return this.state.showDistance ? (
+      // @ts-expect-error ts-migrate(2322) FIXME: Type '{ showDistance: Boolean; currentDistance: Nu... Remove this comment to see the full error message
       <DistanceInfoPresentation {...this.state} />
     ) : null
   }

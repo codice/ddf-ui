@@ -12,122 +12,85 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
-import TableExportComponent from './presentation'
-import LinearProgress from '@material-ui/core/LinearProgress'
-import { hot } from 'react-hot-loader'
-import properties from '../../js/properties.js'
-import {
-  ExportCountInfo,
-  DownloadInfo,
-} from '../../react-component/utils/export'
+import * as React from 'react';
+import TableExportComponent from './presentation';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import { hot } from 'react-hot-loader';
+import properties from '../../js/properties';
+import { ExportCountInfo, DownloadInfo, } from '../../react-component/utils/export';
 type Props = {
-  selectionInterface: () => void
-  exportFormats: Option[]
-  getWarning: (exportCountInfo: ExportCountInfo) => string
-  onDownloadClick: (downloadInfo: DownloadInfo) => void
-  filteredAttributes: string[]
-}
+    selectionInterface: () => void;
+    exportFormats: Option[];
+    getWarning: (exportCountInfo: ExportCountInfo) => string;
+    onDownloadClick: (downloadInfo: DownloadInfo) => void;
+    filteredAttributes: string[];
+};
 type Option = {
-  label: string
-  value: string
-}
+    label: string;
+    value: string;
+};
 type State = {
-  exportSizes: Option[]
-  exportFormat: string
-  exportSize: string
-  customExportCount: number
-}
-export default hot(module)(
-  class TableExport extends React.Component<Props, State> {
+    exportSizes: Option[];
+    exportFormat: string;
+    exportSize: string;
+    customExportCount: number;
+};
+export default hot(module)(class TableExport extends React.Component<Props, State> {
     constructor(props: Props) {
-      super(props)
-      this.state = {
-        exportSizes: [
-          {
-            label: 'Current Page',
-            value: 'currentPage',
-          },
-          {
-            label: 'All Results',
-            value: 'all',
-          },
-          {
-            label: 'Specific Number of Results',
-            value: 'custom',
-          },
-        ],
-        exportSize: 'all',
-        exportFormat: 'csv',
-        customExportCount: properties.exportResultLimit,
-      }
+        super(props);
+        this.state = {
+            exportSizes: [
+                {
+                    label: 'Current Page',
+                    value: 'currentPage',
+                },
+                {
+                    label: 'All Results',
+                    value: 'all',
+                },
+                {
+                    label: 'Specific Number of Results',
+                    value: 'custom',
+                },
+            ],
+            exportSize: 'all',
+            exportFormat: 'csv',
+            customExportCount: (properties as any).exportResultLimit,
+        };
     }
-    transformUrl = './internal/cql/transform/'
+    transformUrl = './internal/cql/transform/';
     handleExportFormatChange = (value: string) => {
-      this.setState({
-        exportFormat: value,
-      })
-    }
+        this.setState({
+            exportFormat: value,
+        });
+    };
     handleExportSizeChange = (value: string) => {
-      this.setState({
-        exportSize: value,
-      })
-    }
+        this.setState({
+            exportSize: value,
+        });
+    };
     handleCustomExportCountChange = (value: number) => {
-      this.setState({ customExportCount: value })
-    }
+        this.setState({ customExportCount: value });
+    };
     render() {
-      const {
-        exportFormat,
-        exportSizes,
-        exportSize,
-        customExportCount,
-      } = this.state
-      const {
-        exportFormats,
-        selectionInterface,
-        onDownloadClick,
-        getWarning,
-        filteredAttributes,
-      } = this.props
-      return exportFormats.length === 0 ? (
-        <>
+        const { exportFormat, exportSizes, exportSize, customExportCount, } = this.state;
+        const { exportFormats, selectionInterface, onDownloadClick, getWarning, filteredAttributes, } = this.props;
+        return exportFormats.length === 0 ? (<>
           <LinearProgress className="w-full h-2"></LinearProgress>
-        </>
-      ) : (
-        <>
+        </>) : (<>
           <>
-            {exportFormats.length > 0 ? (
-              <TableExportComponent
-                exportFormatOptions={exportFormats}
-                exportFormat={exportFormat}
-                exportSizeOptions={exportSizes}
-                exportSize={exportSize}
-                handleExportFormatChange={this.handleExportFormatChange}
-                handleExportSizeChange={this.handleExportSizeChange}
-                handleCustomExportCountChange={
-                  this.handleCustomExportCountChange
-                }
-                onDownloadClick={() =>
-                  onDownloadClick({
+            {exportFormats.length > 0 ? (<TableExportComponent exportFormatOptions={exportFormats} exportFormat={exportFormat} exportSizeOptions={exportSizes} exportSize={exportSize} handleExportFormatChange={this.handleExportFormatChange} handleExportSizeChange={this.handleExportSizeChange} handleCustomExportCountChange={this.handleCustomExportCountChange} onDownloadClick={() => onDownloadClick({
                     exportFormat,
                     exportSize,
                     selectionInterface,
                     customExportCount,
                     filteredAttributes,
-                  })
-                }
-                warning={getWarning({
-                  exportSize,
-                  selectionInterface,
-                  customExportCount,
-                })}
-                customExportCount={customExportCount}
-              />
-            ) : null}
+                })} warning={getWarning({
+                    exportSize,
+                    selectionInterface,
+                    customExportCount,
+                })} customExportCount={customExportCount}/>) : null}
           </>
-        </>
-      )
+        </>);
     }
-  }
-)
+});

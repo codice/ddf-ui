@@ -14,17 +14,19 @@
  **/
 import React from 'react';
 
-import Group from '../../../react-component/group/index.js';
+import Group from '../../../react-component/group/index';
 import Button from '@material-ui/core/Button'
 class ListEditor extends React.Component {
   handleAdd() {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'list' does not exist on type 'Readonly<{... Remove this comment to see the full error message
     const { list, defaultItem, onChange } = this.props
     const newList = list.slice()
     newList.push(defaultItem)
     onChange(newList)
   }
 
-  handleRemove(index) {
+  handleRemove(index: any) {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'list' does not exist on type 'Readonly<{... Remove this comment to see the full error message
     const { list, onChange } = this.props
     const newList = list.slice()
     newList.splice(index, 1)

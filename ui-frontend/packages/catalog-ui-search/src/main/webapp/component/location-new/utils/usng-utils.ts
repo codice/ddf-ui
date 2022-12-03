@@ -15,20 +15,23 @@
 import wkx from 'wkx';
 
 import * as usng from 'usng.js';
+// @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
 const converter = new usng.Converter()
 
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"./geo-helper"' has no exported member 'co... Remove this comment to see the full error message
 import { computeCircle, toKilometers } from './geo-helper';
 import errorMessages from './errors';
 
-function validateUsngGrid(grid) {
+function validateUsngGrid(grid: any) {
   return converter.isUSNG(grid) !== 0
 }
 
-function gridIsBlank(grid) {
+function gridIsBlank(grid: any) {
   return grid.length === 0
 }
 
-function inputIsBlank(usng) {
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
+function inputIsBlank(usng: any) {
   switch (usng.shape) {
     case 'point':
       return gridIsBlank(usng.point)
@@ -46,18 +49,18 @@ function inputIsBlank(usng) {
 /*
  *  USNG/MGRS -> WKT conversion utils
  */
-function usngGridToWktPoint(grid) {
+function usngGridToWktPoint(grid: any) {
   const LL = converter.USNGtoLL(grid, true)
   return new wkx.Point(LL.lon, LL.lat)
 }
 
-function usngToWkt(usng) {
+function usngToWkt(usng: any) {
   if (inputIsBlank(usng)) {
     return null
   }
 
   let wkt = null
-  const points = []
+  const points: any = []
   switch (usng.shape) {
     case 'point':
       wkt = usngGridToWktPoint(usng.point).toWkt()
@@ -72,13 +75,13 @@ function usngToWkt(usng) {
       break
     case 'line':
       if (usng.line.list.length > 0) {
-        usng.line.list.map((grid) => points.push(usngGridToWktPoint(grid)))
+        usng.line.list.map((grid: any) => points.push(usngGridToWktPoint(grid)))
         wkt = new wkx.LineString(points).toWkt()
       }
       break
     case 'polygon':
       if (usng.polygon.list.length > 0) {
-        usng.polygon.list.map((grid) => points.push(usngGridToWktPoint(grid)))
+        usng.polygon.list.map((grid: any) => points.push(usngGridToWktPoint(grid)))
         const p1 = points[0]
         const p2 = points[points.length - 1]
         if (p1.x !== p2.x || p1.y !== p2.y) {
@@ -107,7 +110,7 @@ function usngToWkt(usng) {
 /*
  *  USNG/MGRS validation utils
  */
-function validateUsng(usng) {
+function validateUsng(usng: any) {
   if (inputIsBlank(usng)) {
     return { valid: true, error: null }
   }

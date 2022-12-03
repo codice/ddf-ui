@@ -27,19 +27,22 @@ import {
 } from './validators'
 import DmsTextField from './dms-textfield'
 import UtmupsTextField from './utmups-textfield'
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"./common"' has no exported member 'Units'... Remove this comment to see the full error message
 import { Units } from './common';
 import TextField from '../text-field';
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"../radio"' has no exported member 'Radio'... Remove this comment to see the full error message
 import { Radio, RadioItem } from '../radio';
+// @ts-expect-error ts-migrate(2614) FIXME: Module '"./common"' has no exported member 'Minimu... Remove this comment to see the full error message
 import { MinimumSpacing } from './common';
 import _ from 'underscore';
 
 const coordinatePairRegex = /-?\d{1,3}(\.\d*)?\s-?\d{1,3}(\.\d*)?/g
 
-function buildWktString(coordinates) {
+function buildWktString(coordinates: any) {
   return '[[' + coordinates.join('],[') + ']]'
 }
 
-function convertWktString(value) {
+function convertWktString(value: any) {
   if (value.includes('MULTI')) {
     return convertMultiWkt(value.includes('POLYGON'), value)
   } else if (value.includes('POLYGON') && value.endsWith('))')) {
@@ -50,16 +53,16 @@ function convertWktString(value) {
   return value
 }
 
-function convertWkt(value, numCoords) {
+function convertWkt(value: any, numCoords: any) {
   const coordinatePairs = value.match(coordinatePairRegex)
   if (!coordinatePairs || coordinatePairs.length < numCoords) {
     return value
   }
-  const coordinates = coordinatePairs.map((coord) => coord.replace(' ', ','))
+  const coordinates = coordinatePairs.map((coord: any) => coord.replace(' ', ','))
   return buildWktString(coordinates)
 }
 
-function convertMultiWkt(isPolygon, value) {
+function convertMultiWkt(isPolygon: any, value: any) {
   if (isPolygon && !value.endsWith(')))')) {
     return value
   } else if (!value.endsWith('))')) {
@@ -69,20 +72,19 @@ function convertMultiWkt(isPolygon, value) {
   const numPoints = isPolygon ? 4 : 2
   let shapes = value
     .split(splitter)
-    .map((shape) => shape.match(coordinatePairRegex))
+    .map((shape: any) => shape.match(coordinatePairRegex))
   shapes = shapes
-    .filter((shape) => shape !== null && shape.length >= numPoints)
-    .map((shape) =>
-      shape.map((coordinatePair) => coordinatePair.replace(' ', ','))
+    .filter((shape: any) => shape !== null && shape.length >= numPoints)
+    .map((shape: any) => shape.map((coordinatePair: any) => coordinatePair.replace(' ', ','))
     )
   return shapes.length === 0
     ? value
     : shapes.length === 1
     ? buildWktString(shapes[0])
-    : '[' + shapes.map((shapeCoords) => buildWktString(shapeCoords)) + ']'
+    : '[' + shapes.map((shapeCoords: any) => buildWktString(shapeCoords)) + ']';
 }
 
-function getPolygonValue(currentValue, value) {
+function getPolygonValue(currentValue: any, value: any) {
   // if current value's 1st coord is different
   // from value's first coord, then delete value's last coord
   try {
@@ -103,7 +105,7 @@ function getPolygonValue(currentValue, value) {
   }
 }
 
-const LineLatLon = (props) => {
+const LineLatLon = (props: any) => {
   const {
     label,
     geometryKey,
@@ -136,6 +138,7 @@ const LineLatLon = (props) => {
     <div>
       <div className="input-location flex flex-col flex-nowrap space-y-2">
         <TextField
+          // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: any; value: string; onChange: (valu... Remove this comment to see the full error message
           label={label}
           value={currentValue}
           onChange={(value) => {
@@ -152,18 +155,20 @@ const LineLatLon = (props) => {
             }
           }}
           onBlur={() =>
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
             setBaseLineError(validateGeo(mode || polyType, currentValue))
           }
         />
         <ErrorComponent errorState={baseLineError} />
         <Units
           value={props[unitKey]}
-          onChange={(value) => {
+          onChange={(value: any) => {
             typeof setBufferState === 'function'
               ? setBufferState(unitKey, value)
               : setState({ [unitKey]: value })
             if (widthKey === 'lineWidth' || 'bufferWidth') {
               setBufferError(
+                // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
                 validateGeo(widthKey, {
                   value: props[widthKey],
                   units: value,
@@ -173,6 +178,7 @@ const LineLatLon = (props) => {
           }}
         >
           <TextField
+            // @ts-expect-error ts-migrate(2322) FIXME: Type '{ type: string; label: string; value: string... Remove this comment to see the full error message
             type="number"
             label="Buffer width"
             value={String(props[widthKey])}
@@ -181,8 +187,9 @@ const LineLatLon = (props) => {
                 ? setBufferState(widthKey, value)
                 : setState({ [widthKey]: value })
             }}
-            onBlur={(e) => {
+            onBlur={(e: any) => {
               setBufferError(
+                // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
                 validateGeo(widthKey, {
                   value: e.target.value,
                   units: props[unitKey],
@@ -194,10 +201,10 @@ const LineLatLon = (props) => {
         <ErrorComponent errorState={bufferError} />
       </div>
     </div>
-  )
+  );
 }
 
-const LineDms = (props) => {
+const LineDms = (props: any) => {
   const {
     geometryKey,
     dmsPointArray,
@@ -214,6 +221,7 @@ const LineDms = (props) => {
       setBaseLineError(initialErrorState)
     }
     if (dmsPointArray) {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
       setBaseLineError(validateDmsLineOrPoly(dmsPointArray, geometryKey))
     }
   }, [props.polygon, props.line, dmsPointArray])
@@ -222,7 +230,7 @@ const LineDms = (props) => {
     <div>
       <div className="input-location flex flex-col flex-nowrap space-y-2">
         {dmsPointArray &&
-          dmsPointArray.map((point, index) => {
+          dmsPointArray.map((point: any, index: any) => {
             return (
               <div>
                 <DmsTextField
@@ -262,12 +270,13 @@ const LineDms = (props) => {
       <ErrorComponent errorState={baseLineError} />
       <Units
         value={props[unitKey]}
-        onChange={(value) => {
+        onChange={(value: any) => {
           typeof setBufferState === 'function'
             ? setBufferState(unitKey, value)
             : setState({ [unitKey]: value })
           if (widthKey === 'lineWidth' || 'bufferWidth') {
             setBufferError(
+              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
               validateGeo(widthKey, {
                 value: props[widthKey],
                 units: value,
@@ -277,6 +286,7 @@ const LineDms = (props) => {
         }}
       >
         <TextField
+          // @ts-expect-error ts-migrate(2322) FIXME: Type '{ type: string; label: string; value: string... Remove this comment to see the full error message
           type="number"
           label="Buffer width"
           value={String(props[widthKey])}
@@ -285,8 +295,9 @@ const LineDms = (props) => {
               ? setBufferState(widthKey, value)
               : setState({ [widthKey]: value })
           }}
-          onBlur={(e) => {
+          onBlur={(e: any) => {
             setBufferError(
+              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
               validateGeo(widthKey, {
                 value: e.target.value,
                 units: props[unitKey],
@@ -297,10 +308,10 @@ const LineDms = (props) => {
       </Units>
       <ErrorComponent errorState={bufferError} />
     </div>
-  )
+  );
 }
 
-const LineMgrs = (props) => {
+const LineMgrs = (props: any) => {
   const {
     geometryKey,
     usngPointArray,
@@ -317,6 +328,7 @@ const LineMgrs = (props) => {
       setBaseLineError(initialErrorState)
     }
     if (usngPointArray) {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
       setBaseLineError(validateUsngLineOrPoly(usngPointArray, geometryKey))
     }
   }, [props.polygon, props.line, usngPointArray])
@@ -325,10 +337,11 @@ const LineMgrs = (props) => {
     <div>
       <div className="input-location flex flex-col flex-nowrap space-y-2">
         {usngPointArray &&
-          usngPointArray.map((coord, index) => {
+          usngPointArray.map((coord: any, index: any) => {
             return (
               <TextField
                 key={'grid-' + index}
+                // @ts-expect-error ts-migrate(2322) FIXME: Type '{ key: string; label: string; value: any; on... Remove this comment to see the full error message
                 label="Grid"
                 value={coord}
                 onChange={(value) => {
@@ -363,12 +376,13 @@ const LineMgrs = (props) => {
         <ErrorComponent errorState={baseLineError} />
         <Units
           value={props[unitKey]}
-          onChange={(value) => {
+          onChange={(value: any) => {
             typeof setBufferState === 'function'
               ? setBufferState(unitKey, value)
               : setState({ [unitKey]: value })
             if (widthKey === 'lineWidth' || 'bufferWidth') {
               setBufferError(
+                // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
                 validateGeo(widthKey, {
                   value: props[widthKey],
                   units: value,
@@ -378,6 +392,7 @@ const LineMgrs = (props) => {
           }}
         >
           <TextField
+            // @ts-expect-error ts-migrate(2322) FIXME: Type '{ type: string; label: string; value: string... Remove this comment to see the full error message
             type="number"
             label="Buffer width"
             value={String(props[widthKey])}
@@ -386,8 +401,9 @@ const LineMgrs = (props) => {
                 ? setBufferState(widthKey, value)
                 : setState({ [widthKey]: value })
             }}
-            onBlur={(e) => {
+            onBlur={(e: any) => {
               setBufferError(
+                // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
                 validateGeo(widthKey, {
                   value: e.target.value,
                   units: props[unitKey],
@@ -399,10 +415,10 @@ const LineMgrs = (props) => {
         <ErrorComponent errorState={bufferError} />
       </div>
     </div>
-  )
+  );
 }
 
-const LineUtmUps = (props) => {
+const LineUtmUps = (props: any) => {
   const {
     geometryKey,
     utmUpsPointArray,
@@ -419,6 +435,7 @@ const LineUtmUps = (props) => {
       setBaseLineError(initialErrorState)
     }
     if (utmUpsPointArray) {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
       setBaseLineError(validateUtmUpsLineOrPoly(utmUpsPointArray, geometryKey))
     }
   }, [props.polygon, props.line, utmUpsPointArray])
@@ -426,7 +443,7 @@ const LineUtmUps = (props) => {
   return (
     <div className="flex flex-col flex-nowrap space-y-2">
       {utmUpsPointArray &&
-        utmUpsPointArray.map((point, index) => {
+        utmUpsPointArray.map((point: any, index: any) => {
           return (
             <div>
               <UtmupsTextField
@@ -465,12 +482,13 @@ const LineUtmUps = (props) => {
       <ErrorComponent errorState={baseLineError} />
       <Units
         value={props[unitKey]}
-        onChange={(value) => {
+        onChange={(value: any) => {
           typeof setBufferState === 'function'
             ? setBufferState(unitKey, value)
             : setState({ [unitKey]: value })
           if (widthKey === 'lineWidth' || 'bufferWidth') {
             setBufferError(
+              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
               validateGeo(widthKey, {
                 value: props[widthKey],
                 units: value,
@@ -480,6 +498,7 @@ const LineUtmUps = (props) => {
         }}
       >
         <TextField
+          // @ts-expect-error ts-migrate(2322) FIXME: Type '{ type: string; label: string; value: string... Remove this comment to see the full error message
           type="number"
           label="Buffer width"
           value={String(props[widthKey])}
@@ -488,8 +507,9 @@ const LineUtmUps = (props) => {
               ? setBufferState(widthKey, value)
               : setState({ [widthKey]: value })
           }}
-          onBlur={(e) => {
+          onBlur={(e: any) => {
             setBufferError(
+              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
               validateGeo(widthKey, {
                 value: e.target.value,
                 units: props[unitKey],
@@ -500,10 +520,10 @@ const LineUtmUps = (props) => {
       </Units>
       <ErrorComponent errorState={bufferError} />
     </div>
-  )
+  );
 }
 
-const BaseLine = (props) => {
+const BaseLine = (props: any) => {
   const { setState, locationType } = props
 
   const inputs = {
@@ -513,13 +533,14 @@ const BaseLine = (props) => {
     utmups: LineUtmUps,
   }
 
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const Component = inputs[locationType] || null
 
   return (
     <div>
       <Radio
         value={locationType}
-        onChange={(value) => setState({ ['locationType']: value })}
+        onChange={(value: any) => setState({ ['locationType']: value })}
       >
         <RadioItem value="dd">Lat/Lon (DD)</RadioItem>
         <RadioItem value="dms">Lat/Lon (DMS)</RadioItem>
@@ -529,7 +550,7 @@ const BaseLine = (props) => {
       <MinimumSpacing />
       {Component !== null ? <Component {...props} /> : null}
     </div>
-  )
+  );
 }
 
 export default BaseLine;

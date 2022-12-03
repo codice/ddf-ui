@@ -18,7 +18,8 @@ import MapInfoPresentation from './presentation'
 import { hot } from 'react-hot-loader'
 import { Coordinates, Format, Attribute } from '.'
 
-import user from '../../component/singletons/user-instance.js'
+import user from '../../component/singletons/user-instance'
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'properties' or its correspondi... Remove this comment to see the full error message
 import properties from 'properties'
 
 type State = {
