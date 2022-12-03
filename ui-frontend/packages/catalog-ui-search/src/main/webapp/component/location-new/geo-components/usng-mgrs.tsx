@@ -14,13 +14,10 @@
  **/
 import React from 'react';
 
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"../../../react-component/radio/index.js"'... Remove this comment to see the full error message
-import { Radio, RadioItem } from '../../../react-component/radio/index';
+import { Radio, RadioItem } from '../../../react-component/radio/radio';
 import TextField from '../../../react-component/text-field/index';
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"../../../react-component/location/common.... Remove this comment to see the full error message
 import { Units } from '../../../react-component/location/common';
 import ListEditor from '../inputs/list-editor';
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"./coordinates"' has no exported member 'U... Remove this comment to see the full error message
 import { UsngCoordinate } from './coordinates';
 
 const Point = (props: any) => {

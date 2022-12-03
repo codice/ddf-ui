@@ -22,11 +22,8 @@ import {
 import Group from '../group';
 import Label from './label';
 import TextField from '../text-field';
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"../radio"' has no exported member 'Radio'... Remove this comment to see the full error message
-import { Radio, RadioItem } from '../radio';
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"./common"' has no exported member 'Zone'.... Remove this comment to see the full error message
+import { Radio, RadioItem } from '../radio/radio';
 import { Zone, Hemisphere, MinimumSpacing } from './common';
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"../../component/location-new/geo-componen... Remove this comment to see the full error message
 import { DmsLatitude, DmsLongitude } from '../../component/location-new/geo-components/coordinates';
 import DirectionInput from '../../component/location-new/geo-components/direction';
 import { Direction } from '../../component/location-new/utils/dms-utils';

@@ -13,11 +13,8 @@
  *
  **/
 import React from 'react'
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"./utils"' has no exported member 'validat... Remove this comment to see the full error message
 import { validateWkt, validateDd, validateDms, validateUsng } from './utils'
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"../../react-component/radio/index.js"' ha... Remove this comment to see the full error message
-import { Radio, RadioItem } from '../../react-component/radio/index'
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"./geo-components"' has no exported member... Remove this comment to see the full error message
+import { Radio, RadioItem } from '../../react-component/radio/radio'
 import { WKT, LatLongDD, LatLongDMS, USNG } from './geo-components'
 import Gazetteer from '../../react-component/location/gazetteer'
 import CQLUtils from '../../js/CQLUtils'

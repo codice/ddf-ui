@@ -191,7 +191,7 @@ function roundWktCoords(wkt: any) {
   }
 }
 
-export default {
+export {
   validateWkt,
   roundWktCoords,
 };

@@ -74,6 +74,7 @@ const Radio = (props: RadioProps) => {
 };
 type RadioItemProps = {
     value?: string;
+    children?: any;
 };
 const RadioItem = (props: RadioItemProps) => {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'first' does not exist on type 'RadioItem... Remove this comment to see the full error message

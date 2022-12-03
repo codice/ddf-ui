@@ -121,7 +121,7 @@ const UsngCoordinate = (props: any) => {
   )
 }
 
-export default {
+export {
   DmsLatitude,
   DmsLongitude,
   DdLatitude,

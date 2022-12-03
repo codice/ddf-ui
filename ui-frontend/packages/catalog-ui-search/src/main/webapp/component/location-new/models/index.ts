@@ -19,7 +19,7 @@ import { ddPoint, ddModel } from './dd-model';
 import { dmsPoint, dmsModel } from './dms-model';
 import usngModel from './usng-model';
 
-export default {
+export {
   ddPoint,
   dmsPoint,
   ddModel,

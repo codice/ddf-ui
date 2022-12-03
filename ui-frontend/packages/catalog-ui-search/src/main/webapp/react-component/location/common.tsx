@@ -106,7 +106,7 @@ const MinimumSpacing = styled.div`
   height: ${(props) => props.theme.minimumSpacing};
 `
 
-export default {
+export {
   Units,
   Zone,
   Hemisphere,

@@ -27,12 +27,9 @@ import {
 } from './validators'
 import DmsTextField from './dms-textfield'
 import UtmupsTextField from './utmups-textfield'
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"./common"' has no exported member 'Units'... Remove this comment to see the full error message
 import { Units } from './common';
 import TextField from '../text-field';
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"../radio"' has no exported member 'Radio'... Remove this comment to see the full error message
-import { Radio, RadioItem } from '../radio';
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"./common"' has no exported member 'Minimu... Remove this comment to see the full error message
+import { Radio, RadioItem } from '../radio/radio';
 import { MinimumSpacing } from './common';
 import _ from 'underscore';
 

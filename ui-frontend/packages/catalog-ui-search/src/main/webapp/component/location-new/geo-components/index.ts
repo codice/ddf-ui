@@ -18,7 +18,7 @@ import LatLongDD from './lat-long-dd';
 import LatLongDMS from './lat-long-dms';
 import USNG from './usng-mgrs';
 
-export default {
+export {
   WKT,
   LatLongDD,
   LatLongDMS,

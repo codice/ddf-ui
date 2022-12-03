@@ -227,7 +227,7 @@ function validateDd(dd: any) {
   return { valid, error }
 }
 
-export default {
+export {
   ddToWkt,
   validateDd,
   validateDdPoint,

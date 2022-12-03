@@ -15,15 +15,11 @@
 import React from 'react';
 
 import Group from '../../../react-component/group/index';
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"../../../react-component/radio/index.js"'... Remove this comment to see the full error message
-import { Radio, RadioItem } from '../../../react-component/radio/index';
+import { Radio, RadioItem } from '../../../react-component/radio/radio';
 import TextField from '../../../react-component/text-field/index';
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"../../../react-component/location/common.... Remove this comment to see the full error message
 import { Units } from '../../../react-component/location/common';
 import ListEditor from '../inputs/list-editor';
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"./coordinates"' has no exported member 'D... Remove this comment to see the full error message
 import { DdLatitude, DdLongitude } from './coordinates';
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"../models"' has no exported member 'ddPoi... Remove this comment to see the full error message
 import { ddPoint } from '../models';
 import DistanceUtils from '../../../js/DistanceUtils'
 
