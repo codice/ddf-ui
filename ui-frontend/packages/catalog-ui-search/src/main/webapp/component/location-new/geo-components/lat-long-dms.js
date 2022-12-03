@@ -12,17 +12,17 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const React = require('react')
+import React from 'react';
 
-const Group = require('../../../react-component/group/index.js')
-const { Radio, RadioItem } = require('../../../react-component/radio/index.js')
-const TextField = require('../../../react-component/text-field/index.js')
-const { Units } = require('../../../react-component/location/common.js')
-const ListEditor = require('../inputs/list-editor')
-const { DmsLatitude, DmsLongitude } = require('./coordinates')
-const { dmsPoint } = require('../models')
-const DirectionInput = require('./direction')
-const { Direction } = require('../utils/dms-utils')
+import Group from '../../../react-component/group/index.js';
+import { Radio, RadioItem } from '../../../react-component/radio/index.js';
+import TextField from '../../../react-component/text-field/index.js';
+import { Units } from '../../../react-component/location/common.js';
+import ListEditor from '../inputs/list-editor';
+import { DmsLatitude, DmsLongitude } from './coordinates';
+import { dmsPoint } from '../models';
+import DirectionInput from './direction';
+import { Direction } from '../utils/dms-utils';
 
 const latitudeDirections = [Direction.North, Direction.South]
 const longitudeDirections = [Direction.East, Direction.West]
@@ -318,4 +318,4 @@ const LatLongDMS = (props) => {
   )
 }
 
-module.exports = LatLongDMS
+export default LatLongDMS;

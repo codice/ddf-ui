@@ -1,4 +1,4 @@
-const Backbone = require('backbone')
+import Backbone from 'backbone'
 import * as React from 'react'
 
 export type WithBackboneProps = {

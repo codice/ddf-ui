@@ -23,7 +23,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
-const user = require('../../component/singletons/user-instance.js')
+import user from '../../component/singletons/user-instance.js'
 import { hot } from 'react-hot-loader'
 import Grid from '@material-ui/core/Grid'
 import ColorTool from './color-tool'

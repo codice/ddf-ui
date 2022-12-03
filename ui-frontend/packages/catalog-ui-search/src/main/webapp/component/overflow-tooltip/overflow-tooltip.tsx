@@ -4,7 +4,7 @@ import Paper from '@material-ui/core/Paper'
 import { hot } from 'react-hot-loader'
 import { Elevations } from '../theme/theme'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-const wreqr = require('../../js/wreqr.js')
+import wreqr from '../../js/wreqr.js'
 
 type OverflowTipType = {
   children: React.ReactNode

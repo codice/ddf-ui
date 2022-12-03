@@ -12,8 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const React = require('react')
-const BaseLine = require('./base.line')
+import React from 'react';
+
+import BaseLine from './base.line';
 
 const options = {
   label: 'Polygon',
@@ -24,4 +25,4 @@ const options = {
 
 const Polygon = (props) => <BaseLine {...props} {...options} />
 
-module.exports = Polygon
+export default Polygon;

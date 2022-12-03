@@ -12,13 +12,14 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const Backbone = require('backbone')
-require('backbone-associations')
-const URITemplate = require('urijs/src/URITemplate')
+import Backbone from 'backbone';
+
+import 'backbone-associations';
+import URITemplate from 'urijs/src/URITemplate';
 const DECODED_QUERY_ID_TEMPLATE = '{&queryId}'
 const ENCODED_QUERY_ID_TEMPLATE = encodeURIComponent(DECODED_QUERY_ID_TEMPLATE)
 
-module.exports = Backbone.AssociatedModel.extend({
+export default Backbone.AssociatedModel.extend({
   defaults() {
     return {
       url: undefined,
@@ -59,4 +60,4 @@ module.exports = Backbone.AssociatedModel.extend({
       this.set('url', expandedUrl)
     }
   },
-})
+});

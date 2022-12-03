@@ -15,7 +15,7 @@
 
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
-const wreqr = require('../../js/wreqr.js')
+import wreqr from '../../js/wreqr.js'
 import MapActionsPresentation from './presentation'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 

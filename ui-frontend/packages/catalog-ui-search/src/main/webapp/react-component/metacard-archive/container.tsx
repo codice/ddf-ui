@@ -18,7 +18,7 @@ import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import fetch from '../utils/fetch'
 import MetacardArchivePresentation from './presentation'
-const wreqr = require('../../js/wreqr.js')
+import wreqr from '../../js/wreqr.js'
 
 type Props = {
   results: LazyQueryResult[]

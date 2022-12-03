@@ -1,4 +1,4 @@
-const properties = require('../../js/properties')
+import properties from '../../js/properties'
 
 export const TypedProperties = {
   isHidden: (attribute: string): boolean => {

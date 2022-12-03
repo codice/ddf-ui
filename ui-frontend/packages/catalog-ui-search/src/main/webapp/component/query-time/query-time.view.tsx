@@ -24,8 +24,8 @@ import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 import Chip from '@material-ui/core/Chip'
 import Grid from '@material-ui/core/Grid'
 import Swath from '../swath/swath'
-const properties = require('../../js/properties.js')
-const metacardDefinitions = require('../singletons/metacard-definitions.js')
+import properties from '../../js/properties.js'
+import metacardDefinitions from '../singletons/metacard-definitions.js'
 import FilterInput from '../../react-component/filter/filter-input'
 import Checkbox from '@material-ui/core/Checkbox'
 import FormControlLabel from '@material-ui/core/FormControlLabel'

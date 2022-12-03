@@ -27,11 +27,11 @@ import {
 } from './validators'
 import DmsTextField from './dms-textfield'
 import UtmupsTextField from './utmups-textfield'
-const { Units } = require('./common')
-const TextField = require('../text-field')
-const { Radio, RadioItem } = require('../radio')
-const { MinimumSpacing } = require('./common')
-const _ = require('underscore')
+import { Units } from './common';
+import TextField from '../text-field';
+import { Radio, RadioItem } from '../radio';
+import { MinimumSpacing } from './common';
+import _ from 'underscore';
 
 const coordinatePairRegex = /-?\d{1,3}(\.\d*)?\s-?\d{1,3}(\.\d*)?/g
 
@@ -532,4 +532,4 @@ const BaseLine = (props) => {
   )
 }
 
-module.exports = BaseLine
+export default BaseLine;

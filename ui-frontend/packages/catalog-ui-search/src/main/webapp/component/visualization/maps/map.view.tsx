@@ -14,9 +14,9 @@
  **/
 import * as React from 'react'
 
-const wreqr = require('../../../js/wreqr.js')
-const user = require('../../singletons/user-instance.js')
-const MapModel = require('./map.model')
+import wreqr from '../../../js/wreqr.js'
+import user from '../../singletons/user-instance.js'
+import MapModel from './map.model'
 
 import MapInfo from '../../../react-component/map-info'
 import DistanceInfo from '../../../react-component/distance-info'
@@ -32,7 +32,7 @@ import PopupPreview from '../../../react-component/popup-preview'
 import { SHAPE_ID_PREFIX } from './drawing-and-display'
 import useSnack from '../../hooks/useSnack'
 import { zoomToHome } from './home'
-const featureDetection = require('../../singletons/feature-detection.js')
+import featureDetection from '../../singletons/feature-detection.js'
 
 const useMapCode = (props: MapViewReactType) => {
   const [mapCode, setMapCode] = React.useState<any>(null)

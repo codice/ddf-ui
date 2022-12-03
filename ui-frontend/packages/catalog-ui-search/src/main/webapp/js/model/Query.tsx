@@ -13,14 +13,14 @@
  *
  **/
 
-const Backbone = require('backbone')
-const _ = require('underscore')
-const properties = require('../properties.js')
-const QueryResponse = require('./QueryResponse.js')
+import Backbone from 'backbone'
+import _ from 'underscore'
+import properties from '../properties.js'
+import QueryResponse from './QueryResponse.js'
 import Sources from '../../component/singletons/sources-instance'
 import cql from '../cql'
-const _merge = require('lodash/merge')
-require('backbone-associations')
+import _merge from 'lodash/merge'
+import 'backbone-associations'
 import { LazyQueryResults } from './LazyQueryResult/LazyQueryResults'
 import {
   FilterBuilderClass,
@@ -38,7 +38,7 @@ import {
   QueryStartAndEndType,
 } from './Query.methods'
 import { Common } from '../Common'
-const wreqr = require('../wreqr')
+import wreqr from '../wreqr'
 
 export type QueryType = {
   constructor: (_attributes: any, options: any) => void

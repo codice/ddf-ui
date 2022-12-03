@@ -15,8 +15,8 @@
 import React from 'react'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
-const TextField = require('../text-field')
-const { Zone, Hemisphere } = require('./common')
+import TextField from '../text-field'
+import { Zone, Hemisphere } from './common'
 
 type UtmUpsPoint = {
   easting: number
@@ -89,4 +89,4 @@ const UtmupsTextfield = ({
   )
 }
 
-module.exports = UtmupsTextfield
+export default UtmupsTextfield

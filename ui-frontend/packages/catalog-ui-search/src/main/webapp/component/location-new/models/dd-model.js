@@ -39,7 +39,7 @@ const ddModel = {
   },
 }
 
-module.exports = {
+export default {
   ddPoint,
   ddModel,
-}
+};

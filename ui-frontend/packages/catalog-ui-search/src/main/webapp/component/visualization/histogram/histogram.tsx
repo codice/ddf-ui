@@ -9,13 +9,13 @@ import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
 import Common from '../../../js/Common'
 
-const wreqr = require('../../../js/wreqr.js')
-const $ = require('jquery')
-const _ = require('underscore')
-const Plotly = require('plotly.js/dist/plotly.js')
-const metacardDefinitions = require('../../singletons/metacard-definitions.js')
-const properties = require('../../../js/properties.js')
-const moment = require('moment')
+import wreqr from '../../../js/wreqr.js'
+import $ from 'jquery'
+import _ from 'underscore'
+import Plotly from 'plotly.js/dist/plotly.js'
+import metacardDefinitions from '../../singletons/metacard-definitions.js'
+import properties from '../../../js/properties.js'
+import moment from 'moment'
 
 const zeroWidthSpace = '\u200B'
 const plotlyDateFormat = 'YYYY-MM-DD HH:mm:ss.SS'

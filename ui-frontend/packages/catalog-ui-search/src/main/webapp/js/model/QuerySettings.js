@@ -13,10 +13,11 @@
  *
  **/
 
-const Backbone = require('backbone')
-const properties = require('../properties.js')
+import Backbone from 'backbone';
 
-module.exports = Backbone.Model.extend({
+import properties from '../properties.js';
+
+export default Backbone.Model.extend({
   defaults() {
     const hasDefaultSources =
       properties.defaultSources && properties.defaultSources.length > 0
@@ -49,4 +50,4 @@ module.exports = Backbone.Model.extend({
   isDefaultTemplate(template) {
     return this.isTemplate(template) && this.get('template').default
   },
-})
+});

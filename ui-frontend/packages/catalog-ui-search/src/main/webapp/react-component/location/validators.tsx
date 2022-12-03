@@ -12,9 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const usng = require('usng.js')
+import * as usng from 'usng.js'
 const converter = new usng.Converter()
-const errorMessages = require('../../component/location-new/utils/errors')
+import errorMessages from '../../component/location-new/utils/errors'
 import { validateGeo } from '../utils/validation'
 
 const dmsRegex = new RegExp('^([0-9_]*)°([0-9_]*)\'([0-9_]*\\.?[0-9_]*)"$')
@@ -220,7 +220,7 @@ function validateUtmUpsLineOrPoly(
   return { error, message, defaultValue }
 }
 
-module.exports = {
+export {
   validateUsngLineOrPoly,
   validateDmsLineOrPoly,
   parseDmsCoordinate,

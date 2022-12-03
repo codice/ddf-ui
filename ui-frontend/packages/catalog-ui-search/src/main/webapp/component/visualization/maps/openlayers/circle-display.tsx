@@ -14,14 +14,14 @@
  **/
 import React from 'react'
 import ol from 'openlayers'
-const _ = require('underscore')
-const properties = require('../../../../js/properties.js')
+import _ from 'underscore'
+import properties from '../../../../js/properties.js'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { removeOldDrawing } from './drawing-and-display'
 import DistanceUtils from '../../../../js/DistanceUtils'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
-const Turf = require('@turf/turf')
-const TurfCircle = require('@turf/circle')
+import Turf from '@turf/turf'
+import TurfCircle from '@turf/circle'
 
 export function translateFromOpenlayersCoordinate(coord: any) {
   return ol.proj.transform(

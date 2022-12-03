@@ -14,13 +14,13 @@
  **/
 import React from 'react'
 import ol from 'openlayers'
-const wreqr = require('../../../../js/wreqr.js')
+import wreqr from '../../../../js/wreqr.js'
 import { useRender } from '../../../hooks/useRender'
 import { removeOldDrawing } from './drawing-and-display'
 import DistanceUtils from '../../../../js/DistanceUtils'
 import { drawBbox } from './bbox-display'
 import { getIdFromModelForDrawing } from '../drawing-and-display'
-const properties = require('../../../../js/properties.js')
+import properties from '../../../../js/properties.js'
 
 const setModelFromGeometry = ({
   model,

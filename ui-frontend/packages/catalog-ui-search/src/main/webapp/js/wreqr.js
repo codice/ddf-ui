@@ -13,12 +13,13 @@
  *
  **/
 
-const Backbone = require('backbone')
-require('backbone.wreqr')
+import Backbone from 'backbone';
+
+import 'backbone.wreqr';
 const wreqr = {}
 
 wreqr.vent = new Backbone.Wreqr.EventAggregator()
 wreqr.commands = new Backbone.Wreqr.Commands()
 wreqr.reqres = new Backbone.Wreqr.RequestResponse()
 
-module.exports = wreqr
+export default wreqr;

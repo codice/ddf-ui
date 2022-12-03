@@ -12,9 +12,10 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const wkx = require('wkx')
-const { computeCircle, toKilometers } = require('./geo-helper')
-const errorMessages = require('./errors')
+import wkx from 'wkx';
+
+import { computeCircle, toKilometers } from './geo-helper';
+import errorMessages from './errors';
 
 const dmsRegex = new RegExp('^([0-9_]*)°([0-9_]*)\'([0-9_]*\\.?[0-9_]*)"$')
 const minimumDifference = 0.0001
@@ -421,7 +422,7 @@ function getSecondsPrecision(dmsCoordinate) {
   }
 }
 
-module.exports = {
+export {
   dmsToWkt,
   validateDms,
   validateDmsPoint,
@@ -432,4 +433,4 @@ module.exports = {
   getSecondsPrecision,
   buildDmsString,
   Direction,
-}
+};

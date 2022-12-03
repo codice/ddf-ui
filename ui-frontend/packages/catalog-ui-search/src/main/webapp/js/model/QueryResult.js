@@ -12,16 +12,16 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const Backbone = require('backbone')
-const _ = require('underscore')
-const $ = require('jquery')
+import Backbone from 'backbone';
+
+import _ from 'underscore';
+import $ from 'jquery';
 import Sources from '../../component/singletons/sources-instance'
 import Common from '../Common'
 import cql from '../cql'
-require('backbone-associations')
-
-const Metacard = require('./Metacard.js')
-const MetacardActionModel = require('./MetacardAction.js')
+import 'backbone-associations';
+import Metacard from './Metacard.js';
+import MetacardActionModel from './MetacardAction.js';
 
 function generateThumbnailUrl(url) {
   let newUrl = url
@@ -42,7 +42,7 @@ function humanizeResourceSize(result) {
   }
 }
 
-module.exports = Backbone.AssociatedModel.extend({
+export default Backbone.AssociatedModel.extend({
   type: 'query-result',
   defaults() {
     return {
@@ -239,4 +239,4 @@ module.exports = Backbone.AssociatedModel.extend({
     this.set(response.results[0])
     this.trigger('refreshdata')
   },
-})
+});

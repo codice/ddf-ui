@@ -12,7 +12,7 @@ import TimeSettingsPresentation from './presentation'
 import { TimeZone, TimeFormat } from './types'
 
 import momentTimezone from 'moment-timezone'
-const user = require('../../component/singletons/user-instance')
+import user from '../../component/singletons/user-instance'
 
 type UserPreferences = {
   get: (key: string) => any

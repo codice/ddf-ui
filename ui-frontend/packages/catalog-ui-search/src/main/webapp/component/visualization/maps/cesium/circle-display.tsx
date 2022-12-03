@@ -14,14 +14,14 @@
  **/
 import React from 'react'
 import DistanceUtils from '../../../../js/DistanceUtils'
-const Cesium = require('cesium')
-const _ = require('underscore')
-const Turf = require('@turf/turf')
+import Cesium from 'cesium'
+import _ from 'underscore'
+import Turf from '@turf/turf'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
 import { removeOldDrawing } from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
-const TurfCircle = require('@turf/circle')
+import TurfCircle from '@turf/circle'
 
 const CAMERA_MAGNITUDE_THRESHOLD = 8000000
 

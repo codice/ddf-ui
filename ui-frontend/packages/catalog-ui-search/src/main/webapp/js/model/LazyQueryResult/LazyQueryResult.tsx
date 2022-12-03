@@ -13,23 +13,23 @@
  *
  **/
 import { ResultType } from '../Types'
-const QueryResult = require('../QueryResult.js')
+import QueryResult from '../QueryResult.js'
 import { LazyQueryResults, AttributeHighlights } from './LazyQueryResults'
 import cql from '../../cql'
-const _ = require('underscore')
+import _ from 'underscore'
 import Sources from '../../../component/singletons/sources-instance'
-const metacardDefinitions = require('../../../component/singletons/metacard-definitions.js')
+import metacardDefinitions from '../../../component/singletons/metacard-definitions.js'
 import { TypedMetacardDefs } from '../../../component/tabs/metacard/metacardDefinitions'
-const properties = require('../../properties.js')
-const TurfMeta = require('@turf/meta')
-const wkx = require('wkx')
+import properties from '../../properties.js'
+import TurfMeta from '@turf/meta'
+import wkx from 'wkx'
 import {
   FilterBuilderClass,
   FilterClass,
 } from '../../../component/filter-builder/filter.structure'
 import Common from '../../Common'
 const debounceTime = 50
-const $ = require('jquery')
+import $ from 'jquery'
 
 function getThumbnailAction(result: ResultType) {
   return result.actions.find(

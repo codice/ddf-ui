@@ -9,9 +9,9 @@ import {
   FilterClass,
 } from '../filter-builder/filter.structure'
 import { getFilterTreeForId } from './metacard-nav'
-const SelectionInterfaceModel = require('../selection-interface/selection-interface.model.js')
-const user = require('../singletons/user-instance.js')
-const _ = require('underscore')
+import SelectionInterfaceModel from '../selection-interface/selection-interface.model.js'
+import user from '../singletons/user-instance.js'
+import _ from 'underscore'
 
 type UploadType = Backbone.Model<{
   uploads: Backbone.Model<{ id: string; children: string[] }>[]

@@ -17,7 +17,7 @@ const zeroScale = 'matrix(0, 0, 0, 0, 0, 0)'
 const zeroOpacity = '0'
 const notDisplayed = 'none'
 
-module.exports = {
+export default {
   isEffectivelyHidden(element) {
     if (element === document) {
       return false
@@ -36,4 +36,4 @@ module.exports = {
       }
     }
   },
-}
+};

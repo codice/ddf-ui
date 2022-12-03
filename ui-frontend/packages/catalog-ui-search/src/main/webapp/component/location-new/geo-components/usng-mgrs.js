@@ -12,13 +12,13 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const React = require('react')
+import React from 'react';
 
-const { Radio, RadioItem } = require('../../../react-component/radio/index.js')
-const TextField = require('../../../react-component/text-field/index.js')
-const { Units } = require('../../../react-component/location/common.js')
-const ListEditor = require('../inputs/list-editor')
-const { UsngCoordinate } = require('./coordinates')
+import { Radio, RadioItem } from '../../../react-component/radio/index.js';
+import TextField from '../../../react-component/text-field/index.js';
+import { Units } from '../../../react-component/location/common.js';
+import ListEditor from '../inputs/list-editor';
+import { UsngCoordinate } from './coordinates';
 
 const Point = (props) => {
   const { usng, setState } = props
@@ -143,4 +143,4 @@ const USNG = (props) => {
   )
 }
 
-module.exports = USNG
+export default USNG;

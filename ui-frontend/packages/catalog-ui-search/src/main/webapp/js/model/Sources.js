@@ -13,11 +13,12 @@
  *
  **/
 
-const _ = require('underscore')
-const Backbone = require('backbone')
-const poller = require('backbone-poller')
-const properties = require('../properties.js')
-const $ = require('jquery')
+import _ from 'underscore';
+
+import Backbone from 'backbone';
+import poller from 'backbone-poller';
+import properties from '../properties.js';
+import $ from 'jquery';
 
 function removeLocalCatalogIfNeeded(response, localCatalog) {
   if (properties.isDisableLocalCatalog()) {
@@ -59,7 +60,7 @@ const computeTypes = function (sources) {
   }
 }
 
-module.exports = Backbone.Collection.extend({
+export default Backbone.Collection.extend({
   url: './internal/catalog/sources',
   useAjaxSync: true,
   comparator(a, b) {
@@ -125,4 +126,4 @@ module.exports = Backbone.Collection.extend({
     }
   },
   localCatalog: 'local',
-})
+});

@@ -18,7 +18,8 @@
  * because some of our styles have the same specificity as vendor
  * styles.
  */
-require('./properties.js').init()
+import properties from './properties.js'
+properties.init()
 ;(function verifyFirstImport() {
   if (document.querySelector('[data-styled-components]')) {
     const firstImportErrorMessage = `The entry import has to be the first (top) import for your application, otherwise styles won't be applied properly.

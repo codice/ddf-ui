@@ -12,12 +12,12 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const Backbone = require('backbone')
-require('backbone-associations')
+import Backbone from 'backbone';
 
-const MetacardPropertiesModel = require('./MetacardProperties.js')
+import 'backbone-associations';
+import MetacardPropertiesModel from './MetacardProperties.js';
 
-module.exports = Backbone.AssociatedModel.extend({
+export default Backbone.AssociatedModel.extend({
   hasGeometry(attribute) {
     return this.get('properties').hasGeometry(attribute)
   },
@@ -37,4 +37,4 @@ module.exports = Backbone.AssociatedModel.extend({
   defaults: {
     queryId: undefined,
   },
-})
+});

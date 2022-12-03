@@ -15,7 +15,7 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { hot } from 'react-hot-loader'
-const mtgeo = require('mt-geo')
+import mtgeo from 'mt-geo'
 
 type Props = {
   selected: string

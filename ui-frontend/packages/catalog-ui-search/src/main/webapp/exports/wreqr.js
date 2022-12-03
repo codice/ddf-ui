@@ -12,4 +12,5 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-module.exports = require('../js/wreqr.js')
+import wreqr from '../js/wreqr.js'
+export default wreqr

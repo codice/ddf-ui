@@ -13,8 +13,9 @@
  *
  **/
 
-const Backbone = require('backbone')
-const {
+import Backbone from 'backbone';
+
+import {
   validateWkt,
   validateDd,
   validateDms,
@@ -22,8 +23,9 @@ const {
   ddToWkt,
   dmsToWkt,
   usngToWkt,
-} = require('./utils')
-const { ddModel, dmsModel, usngModel } = require('./models')
+} from './utils';
+
+import { ddModel, dmsModel, usngModel } from './models';
 
 export default Backbone.AssociatedModel.extend({
   defaults: {

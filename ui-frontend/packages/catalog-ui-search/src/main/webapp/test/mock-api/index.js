@@ -12,24 +12,32 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const User = require('../../js/model/User')
+import User from '../../js/model/User';
+
+import './metacardtype.json';
+import './config.json';
+import './metacardtype.json';
+import './datatype.json';
+import './sources.json';
 
 const mockDataMap = {
-  './internal/metacardtype': require('./metacardtype.json'),
-  './internal/config': require('./config.json'),
-  './internal/platform/config/ui': require('./metacardtype.json'),
-  './internal/enumerations/attribute/datatype': require('./datatype.json'),
+  './internal/metacardtype',
+  './internal/config',
+  './internal/platform/config/ui',
+  './internal/enumerations/attribute/datatype',
   './internal/user': User.Model.prototype.defaults(),
   './internal/localcatalogid': 'ddf.distribution',
   './internal/forms/result': [],
-  './internal/catalog/sources': require('./sources.json'),
+  './internal/catalog/sources',
 }
+
+import './enumerations.json';
 
 const mockDataGlobs = {
-  './internal/enumerations': require('./enumerations.json'),
+  './internal/enumerations',
 }
 
-module.exports = (url) => {
+export default (url) => {
   let data = mockDataMap[url]
   if (data === undefined) {
     Object.keys(mockDataGlobs).forEach((glob) => {

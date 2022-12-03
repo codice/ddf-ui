@@ -29,4 +29,4 @@ const usngModel = {
   boundingbox: '',
 }
 
-module.exports = usngModel
+export default usngModel;

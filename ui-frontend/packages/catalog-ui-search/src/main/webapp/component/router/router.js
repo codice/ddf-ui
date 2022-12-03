@@ -13,10 +13,11 @@
  *
  **/
 
-const $ = require('jquery')
-const Backbone = require('backbone')
+import $ from 'jquery';
 
-module.exports = new (Backbone.Model.extend({
+import Backbone from 'backbone';
+
+export default new (Backbone.Model.extend({
   defaults: {
     name: undefined,
     path: undefined,
@@ -32,4 +33,4 @@ module.exports = new (Backbone.Model.extend({
   handleChangeName() {
     $('html').attr('data-route', this.get('name'))
   },
-}))()
+}))();

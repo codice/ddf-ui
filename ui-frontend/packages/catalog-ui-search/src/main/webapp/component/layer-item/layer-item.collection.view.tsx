@@ -13,7 +13,7 @@
  *
  **/
 /* global require*/
-const Sortable = require('sortablejs')
+import Sortable from 'sortablejs'
 import * as React from 'react'
 import LayerItem from '../../react-component/layer-item'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'

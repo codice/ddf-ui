@@ -16,8 +16,8 @@ import * as React from 'react'
 import { useState } from 'react'
 import ExtensionPoints from '../../extension-points'
 import GazetteerAutoComplete from '../auto-complete/gazetteer-autocomplete'
-const Polygon = require('./polygon')
-const MultiPolygon = require('./multipoly')
+import Polygon from './polygon'
+import MultiPolygon from './multipoly'
 import { TextFieldProps } from '@material-ui/core/TextField'
 import defaultFetch from '../utils/fetch'
 import { Suggestion, GeoFeature } from './gazetteer'

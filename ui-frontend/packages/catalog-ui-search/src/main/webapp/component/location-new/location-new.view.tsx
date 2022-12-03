@@ -14,7 +14,7 @@
  **/
 import * as React from 'react'
 import LocationComponent, { LocationInputPropsType } from './location'
-const { ddToWkt, dmsToWkt, usngToWkt } = require('./utils')
+import { ddToWkt, dmsToWkt, usngToWkt } from './utils'
 import { hot } from 'react-hot-loader'
 
 import LocationNewModel from './location-new'

@@ -14,9 +14,8 @@
  **/
 
 const DEFAULT_AUTO_MERGE_TIME = 1000
-import { Environment } from './Environment'
-const $ = require('jquery')
-const _ = require('underscore')
+import $ from 'jquery';
+import _ from 'underscore';
 
 function match(regexList, attribute) {
   return (
@@ -210,4 +209,4 @@ const properties = {
   },
 }
 
-module.exports = properties
+export default properties;

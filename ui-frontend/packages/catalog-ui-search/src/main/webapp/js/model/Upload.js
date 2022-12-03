@@ -13,9 +13,10 @@
  *
  **/
 
-const Backbone = require('backbone')
-const $ = require('jquery')
-require('../jquery.whenAll.js')
+import Backbone from 'backbone';
+
+import $ from 'jquery';
+import '../jquery.whenAll.js';
 
 function fileMatches(file, model) {
   return file === model.get('file')
@@ -52,7 +53,7 @@ function checkValidation(model) {
   }
 }
 
-module.exports = Backbone.Model.extend({
+export default Backbone.Model.extend({
   options: undefined,
   defaults() {
     return {
@@ -165,4 +166,4 @@ module.exports = Backbone.Model.extend({
       }
     }
   },
-})
+});

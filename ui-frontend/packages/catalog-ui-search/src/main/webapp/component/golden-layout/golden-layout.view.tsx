@@ -14,15 +14,15 @@
  **/
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-const _ = require('underscore')
-const _merge = require('lodash/merge')
-const _debounce = require('lodash/debounce')
-const $ = require('jquery')
-const wreqr = require('../../js/wreqr.js')
-const GoldenLayout = require('golden-layout')
-const properties = require('../../js/properties.js')
-const user = require('../singletons/user-instance.js')
-const sanitize = require('sanitize-html')
+import _ from 'underscore'
+import _merge from 'lodash/merge'
+import _debounce from 'lodash/debounce'
+import $ from 'jquery'
+import wreqr from '../../js/wreqr.js'
+import GoldenLayout from 'golden-layout'
+import properties from '../../js/properties.js'
+import user from '../singletons/user-instance.js'
+import sanitize from 'sanitize-html'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import AllOutIcon from '@material-ui/icons/AllOut'

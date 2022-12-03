@@ -22,7 +22,7 @@ import {
 import VisualizationSelector from '../../react-component/visualization-selector/visualization-selector'
 import ViewCompactIcon from '@material-ui/icons/ViewCompact'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
-const user = require('../singletons/user-instance.js')
+import user from '../singletons/user-instance.js'
 import MoreIcon from '@material-ui/icons/MoreVert'
 
 import LazyMetacardInteractions from '../results-visual/lazy-metacard-interactions'

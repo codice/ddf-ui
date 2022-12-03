@@ -27,7 +27,7 @@ import {
   shouldBeFilterBuilderClass,
   ValueTypes,
 } from '../component/filter-builder/filter.structure'
-const CQLUtils = require('./CQLUtils')
+import CQLUtils from './CQLUtils'
 
 const arrayFromLinestringWkt = (wkt: string): Array<[number, number]> => {
   return wkt

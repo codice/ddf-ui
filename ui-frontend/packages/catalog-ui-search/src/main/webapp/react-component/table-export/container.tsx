@@ -16,7 +16,7 @@ import * as React from 'react'
 import TableExportComponent from './presentation'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import { hot } from 'react-hot-loader'
-const properties = require('../../js/properties.js')
+import properties from '../../js/properties.js'
 import {
   ExportCountInfo,
   DownloadInfo,

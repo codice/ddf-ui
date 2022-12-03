@@ -13,8 +13,8 @@
  *
  **/
 import React from 'react'
-const Cesium = require('cesium')
-const _ = require('underscore')
+import Cesium from 'cesium'
+import _ from 'underscore'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
 import { removeOldDrawing } from './drawing-and-display'

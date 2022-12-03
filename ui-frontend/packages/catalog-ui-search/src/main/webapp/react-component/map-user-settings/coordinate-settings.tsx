@@ -6,7 +6,7 @@ import RadioGroup from '@material-ui/core/RadioGroup'
 import Radio from '@material-ui/core/Radio'
 import Typography from '@material-ui/core/Typography'
 import { TypedUserInstance } from '../../component/singletons/TypedUser'
-const user = require('../../component/singletons/user-instance.js')
+import user from '../../component/singletons/user-instance.js'
 
 const coordinateFormatOptions = [
   { label: 'Degrees, Minutes, Seconds (DMS) (Lat/Lon)', value: 'degrees' },

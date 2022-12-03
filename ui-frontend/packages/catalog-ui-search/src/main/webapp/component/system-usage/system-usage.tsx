@@ -5,8 +5,8 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
 import Divider from '@material-ui/core/Divider'
-const properties = require('../../js/properties.js')
-const user = require('../singletons/user-instance.js')
+import properties from '../../js/properties.js';
+import user from '../singletons/user-instance.js';
 import { useDialog } from '../dialog'
 
 function hasMessage() {

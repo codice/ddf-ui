@@ -12,8 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const $ = require('jquery')
-const api = require('./index')
+import $ from 'jquery';
+
+import api from './index';
 const oldGet = $.get
 const oldPost = $.post
 const oldAjax = $.ajax

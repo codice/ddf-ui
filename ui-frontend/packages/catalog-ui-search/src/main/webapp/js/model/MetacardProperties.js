@@ -12,15 +12,16 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const Backbone = require('backbone')
-const _ = require('underscore')
-const metacardDefinitions = require('../../component/singletons/metacard-definitions.js')
-const TurfMeta = require('@turf/meta')
-const wkx = require('wkx')
-const properties = require('../properties.js')
-require('backbone-associations')
+import Backbone from 'backbone';
 
-module.exports = Backbone.AssociatedModel.extend({
+import _ from 'underscore';
+import metacardDefinitions from '../../component/singletons/metacard-definitions.js';
+import TurfMeta from '@turf/meta';
+import wkx from 'wkx';
+import properties from '../properties.js';
+import 'backbone-associations';
+
+export default Backbone.AssociatedModel.extend({
   type: 'metacard-properties',
   defaults() {
     return {
@@ -65,4 +66,4 @@ module.exports = Backbone.AssociatedModel.extend({
         metacardDefinitions.metacardTypes[key].type === 'GEOMETRY'
     )
   },
-})
+});

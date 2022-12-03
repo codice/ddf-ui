@@ -13,19 +13,16 @@
  *
  **/
 
-const React = require('react')
+import React from 'react'
 import styled from 'styled-components'
-const usngs = require('usng.js')
+import * as usngs  from 'usng.js'
 const converter = new usngs.Converter()
 const NORTHING_OFFSET = 10000000
 const LATITUDE = 'latitude'
 const LONGITUDE = 'longitude'
 import DistanceUtils from '../../../js/DistanceUtils'
-const {
-  parseDmsCoordinate,
-  dmsCoordinateToDD,
-} = require('../../../component/location-new/utils/dms-utils.js')
-const wreqr = require('../../../js/wreqr.js')
+import { parseDmsCoordinate, dmsCoordinateToDD } from '../../../component/location-new/utils/dms-utils.js'
+import wreqr from '../../../js/wreqr.js'
 
 export function showErrorMessages(errors: any) {
   if (errors.length === 0) {

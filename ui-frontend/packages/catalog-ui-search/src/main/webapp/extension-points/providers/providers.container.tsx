@@ -22,7 +22,7 @@ import { SnackProvider } from '../../component/snack/snack.provider'
 import { DialogProvider } from '../../component/dialog'
 import { HashRouter as Router } from 'react-router-dom'
 
-const properties = require('properties')
+import properties from 'properties'
 
 export type Props = {
   children: React.ReactNode

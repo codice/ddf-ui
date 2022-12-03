@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const wkx = require('wkx')
+import wkx from 'wkx';
 
 function degreesToRadians(degrees) {
   return (degrees * Math.PI) / 180
@@ -111,7 +111,7 @@ function toKilometers(distance, units) {
   }
 }
 
-module.exports = {
+export default {
   computeCircle,
   toKilometers,
-}
+};

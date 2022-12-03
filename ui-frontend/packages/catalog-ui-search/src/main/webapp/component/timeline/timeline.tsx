@@ -10,7 +10,7 @@ import {
   multiFormat,
 } from './util'
 import { useSelectionRange } from './hooks'
-import _ = require('lodash')
+import _ from 'lodash'
 import { Timescale } from './types'
 import styled from 'styled-components'
 import Select from '@material-ui/core/Select'

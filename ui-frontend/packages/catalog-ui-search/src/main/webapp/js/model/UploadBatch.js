@@ -13,17 +13,18 @@
  *
  **/
 
-const UploadModel = require('./Upload')
-const Backbone = require('backbone')
+import UploadModel from './Upload';
+
+import Backbone from 'backbone';
 import Common from '../Common'
-const wreqr = require('../wreqr.js')
-const _ = require('underscore')
+import wreqr from '../wreqr.js';
+import _ from 'underscore';
 
 const updatePreferences = _.throttle(() => {
   wreqr.vent.trigger('preferences:save')
 }, 1000)
 
-module.exports = Backbone.AssociatedModel.extend({
+export default Backbone.AssociatedModel.extend({
   options: undefined,
   defaults() {
     return {
@@ -209,4 +210,4 @@ module.exports = Backbone.AssociatedModel.extend({
     }
     return progress
   },
-})
+});

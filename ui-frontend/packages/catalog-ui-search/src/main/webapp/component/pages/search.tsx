@@ -4,7 +4,7 @@ import {
   SplitPane,
   useResizableGridContext,
 } from '../resizable-grid/resizable-grid'
-const SelectionInterfaceModel = require('../selection-interface/selection-interface.model')
+import SelectionInterfaceModel from '../selection-interface/selection-interface.model'
 import { useQuery, useUserQuery } from '../../js/model/TypedQuery'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'

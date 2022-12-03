@@ -21,8 +21,8 @@ import Popover from '@material-ui/core/Popover'
 import Button from '@material-ui/core/Button'
 import Paper from '@material-ui/core/Paper'
 import { Elevations } from '../theme/theme'
-const _ = require('underscore')
-const $ = require('jquery')
+import _ from 'underscore'
+import $ from 'jquery'
 
 const zeroScale = 'matrix(0, 0, 0, 0, 0, 0)'
 const zeroOpacity = '0'

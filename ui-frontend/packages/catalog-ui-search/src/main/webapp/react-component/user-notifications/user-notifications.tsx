@@ -16,9 +16,9 @@ import * as React from 'react'
 import styled from 'styled-components'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import { NotificationGroupViewReact } from '../../component/notification-group/notification-group.view'
-const user = require('../../component/singletons/user-instance.js')
-const moment = require('moment')
-const userNotifications = require('../../component/singletons/user-notifications.js')
+import user from '../../component/singletons/user-instance.js'
+import moment from 'moment'
+import userNotifications from '../../component/singletons/user-notifications.js'
 
 type Props = WithBackboneProps
 

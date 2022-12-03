@@ -12,7 +12,8 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const React = require('react')
+import React from 'react';
+
 import TextField from '@material-ui/core/TextField'
 
 class Direction extends React.Component {
@@ -54,4 +55,4 @@ class Direction extends React.Component {
   }
 }
 
-module.exports = Direction
+export default Direction;

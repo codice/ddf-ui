@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const { Direction } = require('../utils/dms-utils')
+import { Direction } from '../utils/dms-utils';
 
 const dmsLatitude = {
   coordinate: '',
@@ -51,7 +51,7 @@ const dmsModel = {
   },
 }
 
-module.exports = {
+export default {
   dmsPoint,
   dmsModel,
-}
+};

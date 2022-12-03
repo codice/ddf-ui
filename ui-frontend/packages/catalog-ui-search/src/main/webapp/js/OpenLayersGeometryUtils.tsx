@@ -16,8 +16,8 @@
 import Common from './Common'
 
 /*jshint esversion: 6, bitwise: false*/
-const ol = require('openlayers')
-const properties = require('./properties.js')
+import ol from 'openlayers'
+import properties from './properties.js'
 
 type CoordinateType = Array<any>
 

@@ -14,7 +14,7 @@
  **/
 import wrapNum from '../../../react-component/utils/wrap-num/wrap-num'
 import { TypedUserInstance } from '../../singletons/TypedUser'
-const properties = require('../../../js/properties.js')
+import properties from '../../../js/properties.js'
 
 const homeBoundingBox = getBoundingBox(getHomeCoordinates())
 const defaultHomeBoundingBox = {

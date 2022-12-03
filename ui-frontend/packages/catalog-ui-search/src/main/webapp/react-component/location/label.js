@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const React = require('react')
+import React from 'react';
 
 const Label = ({ children }) => (
   <span
@@ -26,4 +26,4 @@ const Label = ({ children }) => (
   </span>
 )
 
-module.exports = Label
+export default Label;

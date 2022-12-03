@@ -19,7 +19,7 @@
     Luckily, we can put it on the load event, and keep the logic centralized here.
 */
 
-const $ = require('jquery')
+import $ from 'jquery';
 
 function waitForInitialAttachLoad($iframe) {
   $iframe.on('load', () => {

@@ -13,8 +13,8 @@
  *
  **/
 import * as React from 'react'
-const LocationOldModel = require('../../component/location-old/location-old')
-const wreqr = require('../../js/wreqr.js')
+import LocationOldModel from '../../component/location-old/location-old'
+import wreqr from '../../js/wreqr.js'
 import { Drawing } from '../../component/singletons/drawing'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 import { hot } from 'react-hot-loader'
@@ -22,13 +22,13 @@ import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 
-const Line = require('./line')
-const Polygon = require('./polygon')
-const PointRadius = require('./point-radius')
-const BoundingBox = require('./bounding-box')
+import Line from './line'
+import Polygon from './polygon'
+import PointRadius from './point-radius'
+import BoundingBox from './bounding-box'
 import Gazetteer from './gazetteer'
 import ShapeUtils from '../../js/ShapeUtils'
-const plugin = require('plugins/location')
+import plugin from 'plugins/location'
 
 type InputType = {
   label: string

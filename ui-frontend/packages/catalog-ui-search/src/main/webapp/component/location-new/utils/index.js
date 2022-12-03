@@ -12,9 +12,11 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const { validateWkt, roundWktCoords } = require('./wkt-utils')
-const { ddToWkt, validateDd, validateDdPoint } = require('./dd-utils')
-const {
+import { validateWkt, roundWktCoords } from './wkt-utils';
+
+import { ddToWkt, validateDd, validateDdPoint } from './dd-utils';
+
+import {
   dmsToWkt,
   validateDms,
   validateDmsPoint,
@@ -24,11 +26,12 @@ const {
   ddToDmsCoordinateLon,
   getSecondsPrecision,
   Direction,
-} = require('./dms-utils')
-const { usngToWkt, validateUsng, validateUsngGrid } = require('./usng-utils')
-const errorMessages = require('./errors')
+} from './dms-utils';
 
-module.exports = {
+import { usngToWkt, validateUsng, validateUsngGrid } from './usng-utils';
+import errorMessages from './errors';
+
+export default {
   validateWkt,
   roundWktCoords,
   validateDd,
@@ -47,4 +50,4 @@ module.exports = {
   errorMessages,
   getSecondsPrecision,
   Direction,
-}
+};

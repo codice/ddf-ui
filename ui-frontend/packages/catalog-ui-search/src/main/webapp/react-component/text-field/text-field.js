@@ -59,4 +59,4 @@ TextField.propTypes = {
   onChange: PropTypes.func,
 }
 
-module.exports = TextField
+export default TextField;

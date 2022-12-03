@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-const router = require('../../component/router/router')
+import router from '../../component/router/router'
 import { MetacardInteractionProps } from '.'
 import { hot } from 'react-hot-loader'
 import Button from '@material-ui/core/Button'

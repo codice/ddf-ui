@@ -16,7 +16,7 @@
 import { LazyQueryResult } from './LazyQueryResult'
 import { QuerySortType } from './types'
 
-const metacardDefinitions = require('../../../component/singletons/metacard-definitions.js')
+import metacardDefinitions from '../../../component/singletons/metacard-definitions.js'
 
 function parseMultiValue(value: any) {
   if (value && value.constructor === Array) {

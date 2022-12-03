@@ -13,12 +13,12 @@
  *
  **/
 import React from 'react'
-const wreqr = require('../../../js/wreqr.js')
+import wreqr from '../../../js/wreqr.js'
 import { useListenTo } from '../../selection-checkbox/useBackbone.hook'
 import { useIsDrawing } from '../../singletons/drawing'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import { zoomToHome } from './home'
-const LocationModel = require('../../location-old/location-old.js')
+import LocationModel from '../../location-old/location-old.js'
 
 export const SHAPE_ID_PREFIX = 'shape'
 

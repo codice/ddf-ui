@@ -21,7 +21,7 @@ import { getResultSetCql } from '../utils/cql'
 import saveFile from '../utils/save-file'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 
-const contentDisposition = require('content-disposition')
+import contentDisposition from 'content-disposition'
 
 type ExportFormat = {
   id: string

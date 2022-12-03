@@ -20,7 +20,7 @@ import {
   getExportOptions,
   Transformer,
 } from '../../react-component/utils/export'
-const user = require('../../component/singletons/user-instance.js')
+import user from '../../component/singletons/user-instance.js'
 import {
   exportResultSet,
   ExportCountInfo,
@@ -30,8 +30,8 @@ import saveFile from '../../react-component/utils/save-file'
 import { DEFAULT_USER_QUERY_OPTIONS } from '../../js/model/TypedQuery'
 import useSnack from '../hooks/useSnack'
 import { AddSnack } from '../snack/snack.provider'
-const properties = require('../../js/properties.js')
-const contentDisposition = require('content-disposition')
+import properties from '../../js/properties.js'
+import contentDisposition from 'content-disposition'
 
 type ExportResponse = {
   displayName: string

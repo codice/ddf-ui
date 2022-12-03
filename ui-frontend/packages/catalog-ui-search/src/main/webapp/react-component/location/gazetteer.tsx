@@ -16,7 +16,8 @@ import { TextFieldProps } from '@material-ui/core/TextField'
 import * as React from 'react'
 import defaultFetch from '../utils/fetch'
 import Keyword from './keyword'
-const onlineGazetteer = require('../../js/properties.js').onlineGazetteer
+import properties from '../../js/properties.js'
+const onlineGazetteer = properties.onlineGazetteer
 
 export const getLargestBbox = (
   polygonCoordinates: any[],

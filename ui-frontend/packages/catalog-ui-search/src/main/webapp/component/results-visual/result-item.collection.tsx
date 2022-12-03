@@ -31,7 +31,7 @@ import { HeaderCheckbox } from './table-header'
 import { DarkDivider } from '../dark-divider/dark-divider'
 import { ResultsCommonControls } from './table'
 import { TypedUserInstance } from '../singletons/TypedUser'
-const user = require('../singletons/user-instance.js')
+import user from '../singletons/user-instance.js'
 
 type Props = {
   mode: any

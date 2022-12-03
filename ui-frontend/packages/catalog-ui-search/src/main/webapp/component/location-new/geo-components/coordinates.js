@@ -12,11 +12,12 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const React = require('react')
-const TextField = require('../../../react-component/text-field/index.js')
-const MaskedTextField = require('../inputs/masked-text-field')
-const { latitudeDMSMask, longitudeDMSMask } = require('./masks')
-const { buildDmsString, parseDmsCoordinate } = require('../utils/dms-utils')
+import React from 'react';
+
+import TextField from '../../../react-component/text-field/index.js';
+import MaskedTextField from '../inputs/masked-text-field';
+import { latitudeDMSMask, longitudeDMSMask } from './masks';
+import { buildDmsString, parseDmsCoordinate } from '../utils/dms-utils';
 
 const Coordinate = (props) => {
   const { placeholder, value, onChange, children, ...otherProps } = props
@@ -119,10 +120,10 @@ const UsngCoordinate = (props) => {
   )
 }
 
-module.exports = {
+export default {
   DmsLatitude,
   DmsLongitude,
   DdLatitude,
   DdLongitude,
   UsngCoordinate,
-}
+};

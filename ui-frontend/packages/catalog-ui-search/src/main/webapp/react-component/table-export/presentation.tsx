@@ -15,7 +15,7 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import Button from '@material-ui/core/Button'
-const properties = require('../../js/properties.js')
+import properties from '../../js/properties.js'
 import GetAppIcon from '@material-ui/icons/GetApp'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'

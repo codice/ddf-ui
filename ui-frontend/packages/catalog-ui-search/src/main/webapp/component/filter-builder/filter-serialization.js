@@ -12,10 +12,11 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const Backbone = require('backbone')
-const CQLUtils = require('../../js/CQLUtils.js')
-const metacardDefinitions = require('../singletons/metacard-definitions.js')
-const _ = require('underscore')
+import Backbone from 'backbone';
+
+import CQLUtils from '../../js/CQLUtils.js';
+import metacardDefinitions from '../singletons/metacard-definitions.js';
+import _ from 'underscore';
 
 const FilterBuilderModel = Backbone.Model.extend({
   defaults() {

@@ -15,15 +15,15 @@
 
 import wrapNum from '../../../react-component/utils/wrap-num/wrap-num'
 
-const _ = require('lodash')
-const Backbone = require('backbone')
-const MetacardModel = require('../../../js/model/Metacard.js')
-const mtgeo = require('mt-geo')
-const usngs = require('usng.js')
+import _ from 'lodash';
+import Backbone from 'backbone';
+import MetacardModel from '../../../js/model/Metacard.js';
+import mtgeo from 'mt-geo';
+import * as usngs  from 'usng.js';
 const converter = new usngs.Converter()
 const usngPrecision = 6
 
-module.exports = Backbone.AssociatedModel.extend({
+export default Backbone.AssociatedModel.extend({
   defaults: {
     mouseLat: undefined,
     mouseLon: undefined,
@@ -157,4 +157,4 @@ module.exports = Backbone.AssociatedModel.extend({
       },
     })
   },
-})
+});

@@ -15,7 +15,7 @@
 import { TypedProperties } from '../component/singletons/TypedProperties'
 import { LazyQueryResult } from './model/LazyQueryResult/LazyQueryResult'
 
-const _get = require('lodash/get')
+import _get from 'lodash/get'
 
 const _map = Object.keys(TypedProperties.getIconConfig()).reduce(
   (totalIconMap, iconConfigKey) => {

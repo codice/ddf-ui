@@ -12,9 +12,10 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const React = require('react')
-const Group = require('../../../react-component/group/index.js')
-const MaskedInput = require('react-text-mask').default
+import React from 'react';
+
+import Group from '../../../react-component/group/index.js';
+import MaskedInput from 'react-text-mask';
 import TextField from '@material-ui/core/TextField'
 class MaskedTextField extends React.Component {
   prevEvent = undefined
@@ -113,4 +114,4 @@ class MaskedTextField extends React.Component {
   }
 }
 
-module.exports = MaskedTextField
+export default MaskedTextField;

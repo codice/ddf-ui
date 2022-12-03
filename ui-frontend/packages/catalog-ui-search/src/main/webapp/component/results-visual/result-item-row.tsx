@@ -25,8 +25,8 @@ import {
   useSelectionOfLazyResult,
 } from '../../js/model/LazyQueryResult/hooks'
 
-const metacardDefinitions = require('../singletons/metacard-definitions.js')
-const user = require('../singletons/user-instance.js')
+import metacardDefinitions from '../singletons/metacard-definitions.js'
+import user from '../singletons/user-instance.js'
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'

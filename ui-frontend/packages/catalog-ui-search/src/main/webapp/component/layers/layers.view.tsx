@@ -14,11 +14,11 @@
  **/
 /* global require*/
 import React from 'react'
-const _ = require('underscore')
-const Backbone = require('backbone')
-const properties = require('../../js/properties.js')
+import _ from 'underscore'
+import Backbone from 'backbone'
+import properties from '../../js/properties.js'
 import { LayerItemCollectionViewReact } from '../layer-item/layer-item.collection.view'
-const user = require('../singletons/user-instance.js')
+import user from '../singletons/user-instance.js'
 import { hot } from 'react-hot-loader'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import debounce from 'lodash.debounce'

@@ -13,9 +13,10 @@
  *
  **/
 
-const _ = require('underscore')
-const Openlayers = require('openlayers')
-const properties = require('../../../../js/properties.js')
+import _ from 'underscore';
+
+import Openlayers from 'openlayers';
+import properties from '../../../../js/properties.js';
 
 function convertPointCoordinate(point) {
   const coords = [point[0], point[1]]
@@ -29,7 +30,7 @@ function unconvertPointCoordinate(point) {
 /*
   A variety of helpful functions for dealing with Openlayers
 */
-module.exports = {
+export default {
   /*
       Calculates the center of given a geometry (WKT)
     */
@@ -69,4 +70,4 @@ module.exports = {
     )
     return unconvertPointCoordinate(openlayersCenter)
   },
-}
+};

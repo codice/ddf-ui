@@ -13,9 +13,10 @@
  *
  **/
 /*jshint bitwise: false*/
-const $ = require('jquery')
-import DistanceUtils from './DistanceUtils'
+import $ from 'jquery';
 
+import DistanceUtils from './DistanceUtils'
+import defaultMetacardDefinitions from '../component/singletons/metacard-definitions.js'
 function sanitizeForCql(text) {
   return text
     .split('[')
@@ -239,7 +240,7 @@ function generateIsEmptyFilter(property) {
 
 function generateFilter(type, property, value, metacardDefinitions) {
   if (!metacardDefinitions) {
-    metacardDefinitions = require('../component/singletons/metacard-definitions.js')
+    metacardDefinitions = defaultMetacardDefinitions
   }
   if (metacardDefinitions.metacardTypes[property] === undefined) {
     return null
@@ -379,7 +380,7 @@ function arrayFromPolygonWkt(wkt) {
   return []
 }
 
-module.exports = {
+export default {
   sanitizeGeometryCql,
   getProperty,
   generateIsEmptyFilter,
@@ -392,4 +393,4 @@ module.exports = {
   isPointRadiusFilter,
   buildIntersectCQL,
   arrayFromPolygonWkt,
-}
+};

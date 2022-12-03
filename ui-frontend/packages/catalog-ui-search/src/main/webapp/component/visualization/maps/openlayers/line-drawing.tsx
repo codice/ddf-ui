@@ -14,7 +14,7 @@
  **/
 import React from 'react'
 import ol from 'openlayers'
-const wreqr = require('../../../../js/wreqr.js')
+import wreqr from '../../../../js/wreqr.js'
 import { useRender } from '../../../hooks/useRender'
 import OpenLayersGeometryUtils from '../../../../js/OpenLayersGeometryUtils'
 import { drawLine, translateFromOpenlayersCoordinates } from './line-display'

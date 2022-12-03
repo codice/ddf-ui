@@ -13,8 +13,8 @@
  *
  **/
 import React from 'react'
-const Cesium = require('cesium')
-const wreqr = require('../../../../js/wreqr.js')
+import Cesium from 'cesium'
+import wreqr from '../../../../js/wreqr.js'
 
 const toDeg = Cesium.Math.toDegrees
 

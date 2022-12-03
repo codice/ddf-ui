@@ -16,7 +16,7 @@
 import Button from '@material-ui/core/Button'
 import * as React from 'react'
 import styled from 'styled-components'
-const sessionTimeoutModel = require('../../component/singletons/session-timeout')
+import sessionTimeoutModel from '../../component/singletons/session-timeout'
 
 const SessionTimeoutRoot = styled.div`
   height: 100%;

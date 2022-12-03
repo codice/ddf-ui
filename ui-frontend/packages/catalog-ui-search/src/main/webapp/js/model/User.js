@@ -19,17 +19,17 @@ import {
 } from '../../react-component/utils/security/security'
 import fetch from '../../react-component/utils/fetch'
 
-const _ = require('underscore')
-const _get = require('lodash.get')
-const wreqr = require('../wreqr.js')
-const Backbone = require('backbone')
-const properties = require('../properties.js')
-const Alert = require('./Alert')
+import _ from 'underscore';
+import _get from 'lodash.get';
+import wreqr from '../wreqr.js';
+import Backbone from 'backbone';
+import properties from '../properties.js';
+import Alert from './Alert';
 import Common from '../Common'
-const UploadBatch = require('./UploadBatch.js')
-const moment = require('moment-timezone')
-const QuerySettings = require('./QuerySettings.js')
-require('backbone-associations')
+import UploadBatch from './UploadBatch.js';
+import moment from 'moment-timezone';
+import QuerySettings from './QuerySettings.js';
+import 'backbone-associations';
 
 const User = {}
 
@@ -494,4 +494,4 @@ User.Response = Backbone.AssociatedModel.extend({
   },
 })
 
-module.exports = User
+export default User;

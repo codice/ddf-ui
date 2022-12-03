@@ -13,14 +13,15 @@
  *
  **/
 
-const _ = require('underscore')
-const Backbone = require('backbone')
-const Metacard = require('../../js/model/Metacard.js')
-import { Query as QueryModel } from '../../js/model/Query'
-const QueryResponse = require('../../js/model/QueryResponse.js')
-const QueryResult = require('../../js/model/QueryResult.js')
+import _ from 'underscore';
 
-module.exports = Backbone.AssociatedModel.extend({
+import Backbone from 'backbone';
+import Metacard from '../../js/model/Metacard.js';
+import { Query as QueryModel } from '../../js/model/Query'
+import QueryResponse from '../../js/model/QueryResponse.js';
+import QueryResult from '../../js/model/QueryResult.js';
+
+export default Backbone.AssociatedModel.extend({
   relations: [
     {
       type: Backbone.One,
@@ -134,4 +135,4 @@ module.exports = Backbone.AssociatedModel.extend({
   getCurrentQuery() {
     return this.get('currentQuery')
   },
-})
+});

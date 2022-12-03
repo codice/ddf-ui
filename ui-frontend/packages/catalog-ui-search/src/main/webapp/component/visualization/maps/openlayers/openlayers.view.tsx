@@ -16,11 +16,11 @@ import React from 'react'
 import { Memo } from '../../../memo/memo'
 import { MapViewReact } from '../map.view'
 import { OpenlayersDrawings } from './drawing-and-display'
-const $ = require('jquery')
+import $ from 'jquery'
 
 const loadOpenLayersCode = () => {
   const deferred = new $.Deferred()
-  require(['./map.openlayers'], (OpenlayersMap) => {
+  import('./map.openlayers').then(OpenlayersMap => {
     deferred.resolve(OpenlayersMap.default)
   })
   return deferred

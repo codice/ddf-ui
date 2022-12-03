@@ -1,9 +1,9 @@
 import { useRender } from '../hooks/useRender'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 
-const Backbone = require('backbone')
-const wreqr = require('../../js/wreqr.js')
-const $ = require('jquery')
+import Backbone from 'backbone'
+import wreqr from '../../js/wreqr.js'
+import $ from 'jquery'
 
 type DrawingType = Backbone.Model & {
   turnOnDrawing: (model: Backbone.Model) => void

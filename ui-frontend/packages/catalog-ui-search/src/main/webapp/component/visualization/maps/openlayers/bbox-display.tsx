@@ -14,8 +14,8 @@
  **/
 import React from 'react'
 import ol from 'openlayers'
-const _ = require('underscore')
-const properties = require('../../../../js/properties.js')
+import _ from 'underscore'
+import properties from '../../../../js/properties.js'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { removeOldDrawing } from './drawing-and-display'

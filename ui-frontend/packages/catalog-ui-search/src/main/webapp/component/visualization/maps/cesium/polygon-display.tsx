@@ -14,8 +14,8 @@
  **/
 import React from 'react'
 import DistanceUtils from '../../../../js/DistanceUtils'
-const Cesium = require('cesium')
-const Turf = require('@turf/turf')
+import Cesium from 'cesium'
+import Turf from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'

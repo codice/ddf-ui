@@ -1,6 +1,6 @@
 import { TypedUserInstance } from '../../singletons/TypedUser'
-const mtgeo = require('mt-geo')
-const usngs = require('usng.js')
+import mtgeo from 'mt-geo'
+import * as usngs  from 'usng.js'
 const converter = new usngs.Converter()
 
 const usngPrecision = 6

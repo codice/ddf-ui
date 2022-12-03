@@ -19,17 +19,14 @@ import {
   initialErrorState,
   initialErrorStateWithDefault,
 } from '../utils/validation'
-const Group = require('../group')
-const Label = require('./label')
-const TextField = require('../text-field')
-const { Radio, RadioItem } = require('../radio')
-const { Zone, Hemisphere, MinimumSpacing } = require('./common')
-const {
-  DmsLatitude,
-  DmsLongitude,
-} = require('../../component/location-new/geo-components/coordinates.js')
-const DirectionInput = require('../../component/location-new/geo-components/direction.js')
-const { Direction } = require('../../component/location-new/utils/dms-utils.js')
+import Group from '../group';
+import Label from './label';
+import TextField from '../text-field';
+import { Radio, RadioItem } from '../radio';
+import { Zone, Hemisphere, MinimumSpacing } from './common';
+import { DmsLatitude, DmsLongitude } from '../../component/location-new/geo-components/coordinates.js';
+import DirectionInput from '../../component/location-new/geo-components/direction.js';
+import { Direction } from '../../component/location-new/utils/dms-utils.js';
 
 const BoundingBoxLatLonDd = (props) => {
   const { north, east, south, west, setState } = props
@@ -522,4 +519,4 @@ const BoundingBox = (props) => {
   )
 }
 
-module.exports = BoundingBox
+export default BoundingBox;

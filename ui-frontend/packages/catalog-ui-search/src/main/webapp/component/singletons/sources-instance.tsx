@@ -13,7 +13,7 @@
  *
  **/
 
-const Sources = require('../../js/model/Sources.js')
+import Sources from '../../js/model/Sources.js'
 const SourcesInstance = new Sources() as {
   getHarvested: () => string[]
   localCatalog: string

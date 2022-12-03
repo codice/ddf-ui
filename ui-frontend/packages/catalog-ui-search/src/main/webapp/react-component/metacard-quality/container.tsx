@@ -18,7 +18,7 @@ import * as React from 'react'
 import fetch from '../utils/fetch'
 import MetacardQualityPresentation from './presentation'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
-const wreqr = require('../../js/wreqr.js')
+import wreqr from '../../js/wreqr.js'
 
 type Props = {
   result: LazyQueryResult

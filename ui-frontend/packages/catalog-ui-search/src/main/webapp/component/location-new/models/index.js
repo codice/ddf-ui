@@ -12,14 +12,15 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const { ddPoint, ddModel } = require('./dd-model')
-const { dmsPoint, dmsModel } = require('./dms-model')
-const usngModel = require('./usng-model')
+import { ddPoint, ddModel } from './dd-model';
 
-module.exports = {
+import { dmsPoint, dmsModel } from './dms-model';
+import usngModel from './usng-model';
+
+export default {
   ddPoint,
   dmsPoint,
   ddModel,
   dmsModel,
   usngModel,
-}
+};

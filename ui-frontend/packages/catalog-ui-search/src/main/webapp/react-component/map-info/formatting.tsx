@@ -12,9 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const metacardDefinitions = require('../../component/singletons/metacard-definitions')
-const mtgeo = require('mt-geo')
-const usngs = require('usng.js')
+import metacardDefinitions from '../../component/singletons/metacard-definitions'
+import mtgeo from 'mt-geo'
+import * as usngs  from 'usng.js'
 
 const converter = new usngs.Converter()
 const usngPrecision = 6

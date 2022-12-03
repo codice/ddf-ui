@@ -1,12 +1,12 @@
 import { Subscribable } from '../model/Base/base-classes'
 import { Layers } from './layers'
 
-const _ = require('underscore')
-const ol = require('openlayers')
-const properties = require('../properties.js')
-const user = require('../../component/singletons/user-instance.js')
-const User = require('../../js/model/User.js')
-const Backbone = require('backbone')
+import _ from 'underscore'
+import ol from 'openlayers'
+import properties from '../properties.js'
+import user from '../../component/singletons/user-instance.js'
+import User from '../../js/model/User.js'
+import Backbone from 'backbone'
 
 const createTile = (
   { show, alpha, ...options }: any,

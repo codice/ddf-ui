@@ -18,8 +18,8 @@ import MapInfoPresentation from './presentation'
 import { hot } from 'react-hot-loader'
 import { Coordinates, Format, Attribute } from '.'
 
-const user = require('../../component/singletons/user-instance.js')
-const properties = require('properties')
+import user from '../../component/singletons/user-instance.js'
+import properties from 'properties'
 
 type State = {
   coordinates: Coordinates

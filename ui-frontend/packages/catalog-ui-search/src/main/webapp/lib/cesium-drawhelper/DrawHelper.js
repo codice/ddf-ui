@@ -23,9 +23,9 @@
  */
 /* eslint-disable */
 
-const Cesium = require('cesium')
+import Cesium from 'cesium';
 
-const DrawHelper = (module.exports = (function () {
+const DrawHelper = (function () {
   // static variables
   const ellipsoid = Cesium.Ellipsoid.WGS84
 
@@ -2101,4 +2101,5 @@ const DrawHelper = (module.exports = (function () {
   }
 
   return _
-})())
+})()
+export default DrawHelper;

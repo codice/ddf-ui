@@ -14,10 +14,10 @@
  **/
 import React from 'react'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
-const _ = require('underscore')
-const Dropzone = require('dropzone')
+import _ from 'underscore'
+import Dropzone from 'dropzone'
 import { UploadItemCollection } from '../upload-item/upload-item.collection.view'
-const UploadBatchModel = require('../../js/model/UploadBatch.js')
+import UploadBatchModel from '../../js/model/UploadBatch.js'
 import { UploadSummaryViewReact } from '../upload-summary/upload-summary.view'
 import Button from '@material-ui/core/Button'
 

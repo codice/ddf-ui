@@ -13,8 +13,8 @@
  *
  **/
 import * as React from 'react'
-const user = require('../../component/singletons/user-instance.js')
-const properties = require('../../js/properties.js')
+import user from '../../component/singletons/user-instance.js'
+import properties from '../../js/properties.js'
 import QuerySettings from '../../component/query-settings/query-settings'
 import { UserQuery } from '../../js/model/TypedQuery'
 import styled from 'styled-components'

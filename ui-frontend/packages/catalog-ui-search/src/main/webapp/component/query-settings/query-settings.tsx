@@ -15,7 +15,7 @@
 
 import PermanentSearchSort from '../../react-component/query-sort-selection/permanent-search-sort'
 
-const properties = require('../../js/properties.js')
+import properties from '../../js/properties.js'
 import * as React from 'react'
 import SourceSelector from './source-selector'
 import SourcesInfo from './sources-info'

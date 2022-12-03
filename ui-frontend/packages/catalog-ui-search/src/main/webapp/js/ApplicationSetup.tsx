@@ -12,8 +12,8 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-require('focus-visible')
-require('../styles/tailwind.css')
+import 'focus-visible'
+import '../styles/tailwind.css'
 
 import 'cesium/Build/Cesium/Widgets/widgets.css'
 import 'font-awesome/css/font-awesome.css'
@@ -25,6 +25,12 @@ import '../styles/loading.css'
 import '../styles/input-range.css'
 import '../styles/additional-styles.css'
 import '../styles/plotly.css'
+import Backbone from 'backbone'
+import properties from './properties.js'
+import './extensions/application.patches'
+import '@connexta/icons/icons/codice.font'
+import './MediaQueries.js'
+import '../component/singletons/session-auto-renew.js'
 
 import $ from 'jquery'
 $.ajaxSetup({
@@ -37,7 +43,7 @@ $.ajaxSetup({
 if (process.env.NODE_ENV !== 'production') {
   $('html').addClass('is-development')
   if (module.hot) {
-    require('react-hot-loader')
+    import('react-hot-loader')
     $('html').addClass('is-hot-reloading')
   }
 }
@@ -45,9 +51,7 @@ if (process.env.NODE_ENV !== 'production') {
 //@ts-ignore
 window.CESIUM_BASE_URL = './cesium/assets'
 
-const Backbone = require('backbone')
-const properties = require('./properties.js')
-require('./extensions/application.patches')
+
 
 //in here we drop in any top level patches, etc.
 const toJSON = Backbone.Model.prototype.toJSON
@@ -87,10 +91,6 @@ Backbone.AssociatedModel.prototype.set = function (
   }
   return associationsSet.apply(this, arguments)
 }
-
-require('@connexta/icons/icons/codice.font')
-require('./MediaQueries.js')
-require('../component/singletons/session-auto-renew.js')
 
 $(window.document).ready(() => {
   window.document.title = properties.customBranding + ' ' + properties.product

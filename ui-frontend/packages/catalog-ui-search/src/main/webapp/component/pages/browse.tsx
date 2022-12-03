@@ -10,7 +10,7 @@ import {
 import { useQuery, useUserQuery } from '../../js/model/TypedQuery'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { Elevations } from '../theme/theme'
-const SelectionInterface = require('../selection-interface/selection-interface.model.js')
+import SelectionInterface from '../selection-interface/selection-interface.model.js'
 import _debounce from 'lodash.debounce'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Autocomplete from '@material-ui/lab/Autocomplete'

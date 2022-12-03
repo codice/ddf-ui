@@ -26,7 +26,7 @@ import { Item } from '../../sharing'
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const _ = require('underscore')
+import _ from 'underscore'
 
 export type Entry = {
   value: string

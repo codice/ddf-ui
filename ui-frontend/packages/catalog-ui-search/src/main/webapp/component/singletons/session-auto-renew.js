@@ -15,8 +15,9 @@
 
 //meant to be used for just in time feature detection
 
-const Backbone = require('backbone')
-const $ = require('jquery')
+import Backbone from 'backbone';
+
+import $ from 'jquery';
 
 const sessionExpiryUrl = './internal/session/expiry'
 
@@ -65,4 +66,4 @@ const sessionAutoRenewModel = new (Backbone.Model.extend({
   },
 }))()
 
-module.exports = sessionAutoRenewModel
+export default sessionAutoRenewModel;

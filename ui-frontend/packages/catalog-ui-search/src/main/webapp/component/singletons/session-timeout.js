@@ -15,12 +15,13 @@
 
 //meant to be used for just in time feature detection
 
-const Backbone = require('backbone')
-const $ = require('jquery')
-const _ = require('underscore')
-const properties = require('../../js/properties.js')
+import Backbone from 'backbone';
+
+import $ from 'jquery';
+import _ from 'underscore';
+import properties from '../../js/properties.js';
 import fetch from '../../react-component/utils/fetch'
-const featureDetection = require('./feature-detection')
+import featureDetection from './feature-detection';
 
 const invalidateUrl = './internal/session/invalidate?service='
 
@@ -131,4 +132,4 @@ const sessionTimeoutModel = new (Backbone.Model.extend({
   },
 }))()
 
-module.exports = sessionTimeoutModel
+export default sessionTimeoutModel;

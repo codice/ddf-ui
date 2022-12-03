@@ -14,12 +14,13 @@
  **/
 /* eslint-disable no-var */
 
-const _ = require('underscore')
-const Backbone = require('backbone')
-const usngs = require('usng.js')
-const dmsUtils = require('../location-new/utils/dms-utils.js')
+import _ from 'underscore';
+
+import Backbone from 'backbone';
+import * as usngs  from 'usng.js';
+import * as dmsUtils from '../location-new/utils/dms-utils.js';
 import DistanceUtils from '../../js/DistanceUtils'
-const wreqr = require('../../js/wreqr.js')
+import wreqr from '../../js/wreqr.js';
 
 import { Drawing } from '../singletons/drawing'
 
@@ -40,7 +41,7 @@ const northingOffset = 10000000
 const usngPrecision = 6
 const Direction = dmsUtils.Direction
 
-module.exports = Backbone.AssociatedModel.extend({
+export default Backbone.AssociatedModel.extend({
   defaults: () => {
     return {
       color: '#c89600',
@@ -1231,4 +1232,4 @@ module.exports = Backbone.AssociatedModel.extend({
       this.get('utmUpsHemisphere')
     )
   },
-})
+});

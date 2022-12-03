@@ -14,9 +14,9 @@
  **/
 import React from 'react'
 import DistanceUtils from '../../../../js/DistanceUtils'
-const Cesium = require('cesium')
-const wreqr = require('../../../../js/wreqr.js')
-const _ = require('underscore')
+import Cesium from 'cesium'
+import wreqr from '../../../../js/wreqr.js'
+import _ from 'underscore'
 
 const enableInput = ({ map }: { map: any }) => {
   const controller = map.getMap().scene.screenSpaceCameraController

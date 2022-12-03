@@ -15,8 +15,10 @@
 
 /*jshint newcap: false, bitwise: false */
 
-const Cesium = require('cesium')
-const properties = require('../properties.js')
+import Cesium from 'cesium'
+import properties from '../properties.js'
+import url from 'url'
+
 import { addLayer, shiftLayers, getShift } from './cesium.layer-ordering'
 import _ from 'underscore'
 
@@ -42,9 +44,9 @@ export const CesiumImageryProviderTypes = {
 import { Subscribable } from '../model/Base/base-classes'
 import { Layers } from './layers'
 
-const user = require('../../component/singletons/user-instance.js')
-const User = require('../../js/model/User.js')
-const Backbone = require('backbone')
+import user from '../../component/singletons/user-instance.js'
+import User from '../../js/model/User.js'
+import Backbone from 'backbone'
 
 type MakeMapType = {
   cesiumOptions: any
@@ -131,7 +133,6 @@ export class CesiumLayers extends Subscribable<''> {
       on the XmlHttpRequests for CORS.
     */
     if (model.get('withCredentials')) {
-      const url = require('url')
       const parsedUrl = url.parse(provider.url)
       let port = parsedUrl.port
       if (!port) {

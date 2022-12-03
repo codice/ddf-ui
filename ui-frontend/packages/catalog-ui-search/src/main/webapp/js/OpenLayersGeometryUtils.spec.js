@@ -22,6 +22,7 @@ import {
   mock as mockProperties,
   unmock as unmockProperties,
 } from '../test/mock-api/mock-properties'
+import olUtils from './OpenLayersGeometryUtils'
 
 describe('Common', () => {
   before(() => {
@@ -33,7 +34,6 @@ describe('Common', () => {
     unmockProperties()
   })
   describe('wrapCoordinatesFromGeometry', () => {
-    const olUtils = require('./OpenLayersGeometryUtils')
     class MockGeometry {
       constructor(props) {
         this.props = props

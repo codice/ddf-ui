@@ -22,8 +22,8 @@ import { CesiumDrawings } from './drawing-and-display'
 
 //You typically don't want to use this view directly.  Instead, use the combined-map component which will handle falling back to openlayers.
 
-const $ = require('jquery')
-const featureDetection = require('../../../singletons/feature-detection.js')
+import $ from 'jquery'
+import featureDetection from '../../../singletons/feature-detection.js'
 
 const useSupportsCesium = () => {
   const [, setForceRender] = React.useState(Math.random())
@@ -77,8 +77,8 @@ export const CesiumMapViewReact = ({
           <MapViewReact
             loadMap={() => {
               const deferred = new $.Deferred()
-              require(['./map.cesium'], (CesiumMap) => {
-                deferred.resolve(CesiumMap)
+              import('./map.cesium').then(CesiumMap => {
+                deferred.resolve(CesiumMap.default)
               })
               return deferred
             }}

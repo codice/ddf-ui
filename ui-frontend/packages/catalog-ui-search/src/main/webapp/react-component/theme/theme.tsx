@@ -19,12 +19,13 @@ import {
   SpecificSizingInterface,
   ThemeColorInterface,
 } from '../styles/styled-components'
-const user = require('../../component/singletons/user-instance.js')
+//@ts-ignore
+import user from '../../component/singletons/user-instance.js'
 
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import Common from '../../js/Common'
-const $ = require('jquery')
-const _ = require('underscore')
+import $ from 'jquery'
+import _ from 'underscore'
 
 type SizingInterface = {
   comfortable: SpecificSizingInterface

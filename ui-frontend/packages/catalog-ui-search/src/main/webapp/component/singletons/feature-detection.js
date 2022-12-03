@@ -15,9 +15,9 @@
 
 //meant to be used for just in time feature detection
 
-const Backbone = require('backbone')
+import Backbone from 'backbone';
 
-module.exports = new (Backbone.Model.extend({
+export default new (Backbone.Model.extend({
   defaults: {
     cesium: true,
     localStorage: true,
@@ -28,4 +28,4 @@ module.exports = new (Backbone.Model.extend({
   addFailure(feature) {
     this.set(feature, false)
   },
-}))()
+}))();

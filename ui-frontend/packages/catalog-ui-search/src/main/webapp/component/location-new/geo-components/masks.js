@@ -48,7 +48,7 @@ const longitudeDMSMask = function (rawValue) {
   return baseMask.concat('"')
 }
 
-module.exports = {
+export default {
   latitudeDMSMask,
   longitudeDMSMask,
-}
+};

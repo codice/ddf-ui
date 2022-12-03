@@ -13,8 +13,8 @@
  *
  **/
 
-const Dropzone = require('dropzone')
-const OverwritesInstance = require('../singletons/overwrites-instance.js')
+import Dropzone from 'dropzone'
+import OverwritesInstance from '../singletons/overwrites-instance.js'
 import React from 'react'
 import styled from 'styled-components'
 import { readableColor } from 'polished'

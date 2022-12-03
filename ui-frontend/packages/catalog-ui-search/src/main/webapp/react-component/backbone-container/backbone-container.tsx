@@ -15,7 +15,7 @@
 import * as React from 'react'
 import { Subtract } from '../../typescript'
 
-const Backbone = require('backbone')
+import Backbone from 'backbone'
 
 export type WithBackboneProps = {
   listenTo: (object: any, events: string, callback: Function) => any

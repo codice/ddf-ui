@@ -16,18 +16,18 @@
 
 import wrapNum from '../../../../react-component/utils/wrap-num/wrap-num'
 
-const $ = require('jquery')
-const _ = require('underscore')
-const Map = require('../map')
-const utility = require('./utility')
-const DrawingUtility = require('../DrawingUtility')
+import $ from 'jquery'
+import _ from 'underscore'
+import Map from '../map'
+import utility from './utility'
+import DrawingUtility from '../DrawingUtility'
 
-const properties = require('../../../../js/properties.js')
-const Openlayers = require('openlayers')
+import properties from '../../../../js/properties.js'
+import Openlayers from 'openlayers'
 import { OpenlayersLayers } from '../../../../js/controllers/openlayers.layers'
-const user = require('../../../singletons/user-instance.js')
-const User = require('../../../../js/model/User.js')
-const wreqr = require('../../../../js/wreqr.js')
+import user from '../../../singletons/user-instance.js'
+import User from '../../../../js/model/User.js'
+import wreqr from '../../../../js/wreqr.js'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { ClusterType } from '../react/geometries'
 import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryResult'
@@ -305,12 +305,13 @@ export default function (
           Openlayers.extent.extend(extent, layer.getSource().getExtent())
         }
       })
-
-      map.getView().fit(extent, {
-        size: map.getSize(),
-        maxZoom: map.getView().getZoom(),
-        duration: 500,
-      })
+      if (extent[0] !== Infinity) {
+        map.getView().fit(extent, {
+          size: map.getSize(),
+          maxZoom: map.getView().getZoom(),
+          duration: 500,
+        })
+      }
     },
     getShapes() {
       return shapes

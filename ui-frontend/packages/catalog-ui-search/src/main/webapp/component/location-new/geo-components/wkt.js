@@ -12,9 +12,10 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const React = require('react')
-const TextField = require('../../../react-component/text-field/index.js')
-const { roundWktCoords } = require('../utils')
+import React from 'react';
+
+import TextField from '../../../react-component/text-field/index.js';
+import { roundWktCoords } from '../utils';
 
 const WKT = (props) => {
   const { wkt, setState } = props
@@ -31,4 +32,4 @@ const WKT = (props) => {
   )
 }
 
-module.exports = WKT
+export default WKT;

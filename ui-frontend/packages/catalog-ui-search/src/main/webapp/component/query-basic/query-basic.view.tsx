@@ -14,12 +14,12 @@
  **/
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-const _ = require('underscore')
+import _ from 'underscore'
 import IconHelper from '../../js/IconHelper'
-const properties = require('../../js/properties.js')
+import properties from '../../js/properties.js'
 import cql from '../../js/cql'
-const metacardDefinitions = require('../singletons/metacard-definitions.js')
-const CQLUtils = require('../../js/CQLUtils.js')
+import metacardDefinitions from '../singletons/metacard-definitions.js'
+import CQLUtils from '../../js/CQLUtils.js'
 import QuerySettings from '../query-settings/query-settings'
 import QueryTimeReactView, {
   BasicFilterClass,

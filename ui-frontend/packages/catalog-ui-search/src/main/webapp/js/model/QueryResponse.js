@@ -12,16 +12,17 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const $ = require('jquery')
-const Backbone = require('backbone')
-const metacardDefinitions = require('../../component/singletons/metacard-definitions.js')
-const properties = require('../properties.js')
-require('backbone-associations')
+import $ from 'jquery';
 
+import Backbone from 'backbone';
+import metacardDefinitions from '../../component/singletons/metacard-definitions.js';
+import properties from '../properties.js';
+import 'backbone-associations';
+import * as rpcwebsockets from 'rpc-websockets'
 let rpc = null
 
 if (properties.webSocketsEnabled && window.WebSocket) {
-  const Client = require('rpc-websockets').Client
+  const Client = rpcwebsockets.Client
   const protocol = { 'http:': 'ws:', 'https:': 'wss:' }
   const url = `${protocol[location.protocol]}//${location.hostname}:${
     location.port
@@ -29,7 +30,7 @@ if (properties.webSocketsEnabled && window.WebSocket) {
   rpc = new Client(url)
 }
 
-module.exports = Backbone.AssociatedModel.extend({
+export default Backbone.AssociatedModel.extend({
   defaults() {
     return {
       lazyResults: undefined,
@@ -154,4 +155,4 @@ module.exports = Backbone.AssociatedModel.extend({
 
     return {}
   },
-})
+});

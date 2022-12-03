@@ -13,8 +13,9 @@
  *
  **/
 
-const wkx = require('wkx')
-const errorMessages = require('./errors')
+import wkx from 'wkx';
+
+import errorMessages from './errors';
 import DistanceUtils from '../../../js/DistanceUtils'
 
 function convertUserValueToWKT(val) {
@@ -201,7 +202,7 @@ function roundWktCoords(wkt) {
   }
 }
 
-module.exports = {
+export default {
   validateWkt,
   roundWktCoords,
-}
+};

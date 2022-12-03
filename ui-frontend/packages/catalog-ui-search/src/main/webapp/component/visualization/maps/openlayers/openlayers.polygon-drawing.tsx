@@ -15,10 +15,10 @@
 import React from 'react'
 import DistanceUtils from '../../../../js/DistanceUtils'
 import ol from 'openlayers'
-const _ = require('underscore')
-const properties = require('../../../../js/properties.js')
-const wreqr = require('../../../../js/wreqr.js')
-const Turf = require('@turf/turf')
+import _ from 'underscore'
+import properties from '../../../../js/properties.js'
+import wreqr from '../../../../js/wreqr.js'
+import Turf from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'

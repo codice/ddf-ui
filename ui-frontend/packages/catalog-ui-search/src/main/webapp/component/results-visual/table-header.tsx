@@ -16,8 +16,8 @@ import { GridProps } from '@material-ui/core/Grid'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
-const _ = require('underscore')
-const user = require('../singletons/user-instance.js')
+import _ from 'underscore'
+import user from '../singletons/user-instance.js'
 import Button, { ButtonProps } from '@material-ui/core/Button'
 import { useSelectionOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'

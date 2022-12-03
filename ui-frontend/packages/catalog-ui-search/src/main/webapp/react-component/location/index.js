@@ -12,4 +12,5 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-module.exports = require('./location')
+import location from './location'
+export default location

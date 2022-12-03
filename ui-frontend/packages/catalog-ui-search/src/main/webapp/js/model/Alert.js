@@ -13,10 +13,12 @@
  *
  **/
 
-const Backbone = require('backbone')
+import Backbone from 'backbone';
+
 import Common from '../Common'
-require('backbone-associations')
-module.exports = Backbone.AssociatedModel.extend({
+import 'backbone-associations';
+
+export default Backbone.AssociatedModel.extend({
   defaults: {
     unseen: true,
     queryId: undefined,
@@ -31,4 +33,4 @@ module.exports = Backbone.AssociatedModel.extend({
   getTimeComparator() {
     return this.get('when')
   },
-})
+});

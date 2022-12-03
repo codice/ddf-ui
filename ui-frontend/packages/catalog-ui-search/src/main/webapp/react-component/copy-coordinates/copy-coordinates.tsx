@@ -20,7 +20,7 @@ import Popover from '@material-ui/core/Popover'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import useSnack from '../../component/hooks/useSnack'
 import { AddSnack } from '../../component/snack/snack.provider'
-const Clipboard = require('clipboard')
+import Clipboard from 'clipboard'
 
 type Props = {
   coordinateValues: {

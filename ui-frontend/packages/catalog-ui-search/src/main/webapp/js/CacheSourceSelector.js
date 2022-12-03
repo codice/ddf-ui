@@ -13,7 +13,7 @@
  *
  **/
 import cql from './cql'
-const CQLUtils = require('./CQLUtils.js')
+import CQLUtils from './CQLUtils.js';
 function buildCacheSourcesCql(sources) {
   return {
     type: 'OR',
@@ -34,7 +34,7 @@ function limitCacheSources(cql, sources) {
   }
 }
 
-module.exports = {
+export default {
   trimCacheSources(cqlString, sources) {
     return CQLUtils.sanitizeGeometryCql(
       '(' +
@@ -44,4 +44,4 @@ module.exports = {
         ')'
     )
   },
-}
+};

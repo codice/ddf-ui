@@ -13,8 +13,8 @@
  *
  **/
 
-const url = require('url')
-const qs = require('querystring')
+import url from 'url'
+import qs from 'querystring'
 
 type Options = {
   headers?: object

@@ -12,16 +12,16 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const React = require('react')
+import React from 'react';
 
 import styled from 'styled-components'
 
-const Group = require('../group')
+import Group from '../group';
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
-const Label = require('./label')
+import Label from './label';
 
 const Units = ({ value, onChange, children }) => (
   <Group>
@@ -94,9 +94,9 @@ const MinimumSpacing = styled.div`
   height: ${(props) => props.theme.minimumSpacing};
 `
 
-module.exports = {
+export default {
   Units,
   Zone,
   Hemisphere,
   MinimumSpacing,
-}
+};

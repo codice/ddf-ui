@@ -1,7 +1,7 @@
 import { LazyQueryResult } from './LazyQueryResult'
 import * as React from 'react'
 import { LazyQueryResults } from './LazyQueryResults'
-const _ = require('underscore')
+import _ from 'underscore'
 
 /**
  * If a view cares about whether or not a lazy result is selected,

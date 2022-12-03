@@ -18,10 +18,10 @@ import { LazyQueryResult } from './LazyQueryResult'
 import { QuerySortType } from './types'
 import { Status } from './status'
 import { TransformSortsComposedFunctionType } from '../TypedQuery'
-const _ = require('underscore')
+import _ from 'underscore'
 const debounceTime = 50
 
-const Backbone = require('backbone')
+import Backbone from 'backbone'
 
 export type SearchStatus = {
   [key: string]: Status

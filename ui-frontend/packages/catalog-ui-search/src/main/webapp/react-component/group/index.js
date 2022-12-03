@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const React = require('react')
+import React from 'react';
 
 const Group = (props) => (
   <div className="flex flex-row items-center flex-no-wrap w-full" {...props}>
@@ -20,4 +20,4 @@ const Group = (props) => (
   </div>
 )
 
-module.exports = Group
+export default Group;

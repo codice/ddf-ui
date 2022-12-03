@@ -12,13 +12,13 @@ import { TimelineItem } from '../../timeline/timeline'
 import moment, { Moment } from 'moment-timezone'
 import useTimePrefs from '../../fields/useTimePrefs'
 
-const metacardDefinitions = require('../../singletons/metacard-definitions.js')
-const properties = require('../../../js/properties.js')
+import metacardDefinitions from '../../singletons/metacard-definitions.js'
+import properties from '../../../js/properties.js'
 import IconHelper from '../../../js/IconHelper'
 import useSnack from '../../hooks/useSnack'
-const wreqr = require('../../../js/wreqr.js')
-const user = require('../../singletons/user-instance')
-const _ = require('lodash')
+import wreqr from '../../../js/wreqr.js'
+import user from '../../singletons/user-instance'
+import _ from 'lodash'
 
 const maxDate = moment().tz(user.getTimeZone())
 

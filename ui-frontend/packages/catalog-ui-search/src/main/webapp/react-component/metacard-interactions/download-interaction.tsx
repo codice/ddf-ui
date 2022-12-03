@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-const sources = require('../../component/singletons/sources-instance')
+import sources from '../../component/singletons/sources-instance'
 import { MetacardInteractionProps } from '.'
 import { MetacardInteraction } from './metacard-interactions'
 import { hot } from 'react-hot-loader'

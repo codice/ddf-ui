@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const $ = require('jquery')
+import $ from 'jquery'
 
 // @ts-ignore ts-migrate(7030) FIXME: Not all code paths return a value.
 export default function saveFile(name: string, type: string, data: any) {

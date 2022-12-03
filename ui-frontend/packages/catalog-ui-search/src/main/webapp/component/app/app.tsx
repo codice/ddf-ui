@@ -10,10 +10,10 @@ import {
 } from 'react-router-dom'
 import CssBaseline from '@material-ui/core/CssBaseline'
 
-const properties = require('../../js/properties.js')
+import properties from '../../js/properties.js'
 
 import Grid from '@material-ui/core/Grid'
-const $ = require('jquery')
+import $ from 'jquery'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
@@ -31,8 +31,8 @@ import { Link } from '../link/link'
 import { Memo } from '../memo/memo'
 import HelpIcon from '@material-ui/icons/Help'
 import NotificationsIcon from '@material-ui/icons/Notifications'
-const userInstance = require('../singletons/user-instance.js')
-const notifications = require('../singletons/user-notifications.js')
+import userInstance from '../singletons/user-instance.js'
+import notifications from '../singletons/user-notifications.js'
 import SystemUsageModal from '../system-usage/system-usage'
 
 import UserView, {
@@ -43,7 +43,7 @@ import UserView, {
 import UserSettings, {
   SettingsComponentType,
 } from '../../react-component/user-settings/user-settings'
-const wreqr = require('../../js/wreqr.js')
+import wreqr from '../../js/wreqr.js'
 import { GlobalStyles } from './global-styles'
 import CancelDrawing from './cancel-drawing'
 import { PermissiveComponentType } from '../../typescript'
@@ -64,7 +64,7 @@ import { useDialogState } from '../hooks/useDialogState'
 import SessionTimeout from '../../react-component/session-timeout'
 import { AjaxErrorHandling } from './ajax-error-handling'
 import { WreqrSnacks } from './wreqr-snacks'
-const sessionTimeoutModel = require('../singletons/session-timeout.js')
+import sessionTimeoutModel from '../singletons/session-timeout.js'
 
 export const handleBase64EncodedImages = (url: string) => {
   if (url && url.startsWith('data:')) {

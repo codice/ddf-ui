@@ -14,10 +14,11 @@
  **/
 
 /*jshint bitwise: false*/
-const $ = require('jquery')
+import $ from 'jquery'
 import moment from 'moment'
-require('./requestAnimationFramePolyfill')
-
+import './requestAnimationFramePolyfill'
+import properties from './properties.js'
+import user from '../component/singletons/user-instance'
 const timeZones = {
   UTC: 'Etc/UTC',
   '-12': 'Etc/GMT+12',
@@ -56,7 +57,7 @@ export const Common = {
   //randomly generated guid guaranteed to be unique ;)
   undefined: '2686dcb5-7578-4957-974d-aaa9289cd2f0',
   coreTransitionTime: 250,
-  generateUUID(properties = require('properties')) {
+  generateUUID() {
     let d = new Date().getTime()
     if (window.performance && typeof window.performance.now === 'function') {
       d += performance.now() //use high-precision timer if available
@@ -172,7 +173,6 @@ export const Common = {
     return `${moment(date).fromNow()}`
   },
   getMomentDate(date: string) {
-    const user = require('../component/singletons/user-instance')
     return `${moment(date).fromNow()} : ${user.getUserReadableDateTime(date)}`
   },
   getImageSrc(img: string) {

@@ -12,14 +12,15 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const WKT = require('./wkt')
-const LatLongDD = require('./lat-long-dd')
-const LatLongDMS = require('./lat-long-dms')
-const USNG = require('./usng-mgrs')
+import WKT from './wkt';
 
-module.exports = {
+import LatLongDD from './lat-long-dd';
+import LatLongDMS from './lat-long-dms';
+import USNG from './usng-mgrs';
+
+export default {
   WKT,
   LatLongDD,
   LatLongDMS,
   USNG,
-}
+};

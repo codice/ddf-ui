@@ -12,19 +12,14 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const React = require('react')
-const {
-  validateWkt,
-  validateDd,
-  validateDms,
-  validateUsng,
-} = require('./utils')
-const { Radio, RadioItem } = require('../../react-component/radio/index.js')
-const { WKT, LatLongDD, LatLongDMS, USNG } = require('./geo-components')
+import React from 'react'
+import { validateWkt, validateDd, validateDms, validateUsng } from './utils'
+import { Radio, RadioItem } from '../../react-component/radio/index.js'
+import { WKT, LatLongDD, LatLongDMS, USNG } from './geo-components'
 import Gazetteer from '../../react-component/location/gazetteer'
-const CQLUtils = require('../../js/CQLUtils.js')
-
-const produce = require('immer').default
+import CQLUtils from '../../js/CQLUtils.js'
+import immer from 'immer'
+const produce = immer
 import { hot } from 'react-hot-loader'
 
 const inputs = {

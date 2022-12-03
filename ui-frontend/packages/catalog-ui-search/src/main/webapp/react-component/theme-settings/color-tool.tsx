@@ -34,7 +34,7 @@ const shades = [
   'A200',
   'A100',
 ]
-const user = require('../../component/singletons/user-instance.js')
+import user from '../../component/singletons/user-instance.js'
 
 /**
  * Costly to update, so let them settle on a color first

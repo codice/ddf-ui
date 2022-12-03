@@ -16,9 +16,9 @@
 import * as React from 'react'
 import LazyMetacardInteractions from './lazy-metacard-interactions'
 import IconHelper from '../../js/IconHelper'
-const properties = require('../../js/properties.js')
-const user = require('../singletons/user-instance.js')
-const metacardDefinitions = require('../singletons/metacard-definitions.js')
+import properties from '../../js/properties.js'
+import user from '../singletons/user-instance.js'
+import metacardDefinitions from '../singletons/metacard-definitions.js'
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 
 import Button from '@material-ui/core/Button'

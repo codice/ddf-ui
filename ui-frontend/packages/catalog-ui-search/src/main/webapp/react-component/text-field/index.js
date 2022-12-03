@@ -12,4 +12,5 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-module.exports = require('./text-field')
+import textfield from './text-field'
+export default textfield

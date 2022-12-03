@@ -14,7 +14,7 @@
  **/
 import * as React from 'react'
 import Button from '@material-ui/core/Button'
-const user = require('../singletons/user-instance.js')
+import user from '../singletons/user-instance.js'
 import { hot } from 'react-hot-loader'
 import { AutoVariableSizeList } from 'react-window-components'
 import Grid from '@material-ui/core/Grid'

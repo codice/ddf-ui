@@ -1,8 +1,9 @@
 //
 import React from 'react'
 import useSnack from '../hooks/useSnack'
-const properties = require('../../js/properties.js')
-const $ = require('jquery')
+// @ts-ignore
+import properties from '../../js/properties.js'
+import $ from 'jquery'
 
 let getShortErrorMessage = function (error: any) {
   let extraMessage = error instanceof Error ? error.name : String(error)

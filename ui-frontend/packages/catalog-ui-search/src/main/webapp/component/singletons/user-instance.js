@@ -13,5 +13,6 @@
  *
  **/
 
-const User = require('../../js/model/User.js')
-module.exports = new User.Response()
+import User from '../../js/model/User.js';
+
+export default new User.Response();

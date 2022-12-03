@@ -16,8 +16,8 @@
 import _ from 'underscore'
 import DistanceUtils from '../../../../js/DistanceUtils'
 import ShapeUtils from '../../../../js/ShapeUtils'
-const Cesium = require('cesium')
-const Turf = require('@turf/turf')
+import Cesium from 'cesium'
+import Turf from '@turf/turf'
 
 const METERS = 'meters'
 
@@ -28,7 +28,7 @@ interface FeatureWithCoords extends GeoJSON.Feature {
 /*
   A variety of helpful functions for dealing with Cesium
 */
-module.exports = {
+export default {
   /*
       Calculates the center of given a geometry (WKT)
     */

@@ -13,7 +13,8 @@
  *
  **/
 
-const $ = require('jquery')
+import $ from 'jquery';
+
 $.whenAll = function () {
   let args = arguments,
     sliceDeferred = [].slice,

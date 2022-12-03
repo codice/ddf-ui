@@ -13,8 +13,8 @@
  *
  **/
 import { SortItemType } from './sort-selections'
-const metacardDefinitions = require('../../component/singletons/metacard-definitions.js')
-const properties = require('../../js/properties')
+import metacardDefinitions from '../../component/singletons/metacard-definitions.js'
+import properties from '../../js/properties'
 import { Option } from './sort-selections'
 
 const blacklist = ['anyText', 'anyGeo']

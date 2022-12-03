@@ -15,11 +15,8 @@
 import React from 'react'
 import CloseIcon from '@material-ui/icons/Close'
 import IconButton from '@material-ui/core/IconButton'
-const {
-  DmsLatitude,
-  DmsLongitude,
-} = require('../../component/location-new/geo-components/coordinates.js')
-const DirectionInput = require('../../component/location-new/geo-components/direction.js')
+import { DmsLatitude, DmsLongitude } from '../../component/location-new/geo-components/coordinates.js'
+import DirectionInput from '../../component/location-new/geo-components/direction.js'
 
 type Direction = 'N' | 'S' | 'E' | 'W'
 
@@ -96,4 +93,4 @@ const DmsTextfield = ({
   )
 }
 
-module.exports = DmsTextfield
+export default DmsTextfield

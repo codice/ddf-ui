@@ -13,11 +13,12 @@
  *
  **/
 
-const $ = require('jquery')
-const Backbone = require('backbone')
-const _ = require('underscore')
-const properties = require('../../js/properties.js')
-const moment = require('moment')
+import $ from 'jquery';
+
+import Backbone from 'backbone';
+import _ from 'underscore';
+import properties from '../../js/properties.js';
+import moment from 'moment';
 const PRIORITY_ATTRIBUTES = ['anyText', 'anyGeo']
 function transformEnumResponse(metacardTypes, response) {
   return _.reduce(
@@ -117,7 +118,7 @@ function metacardStartingTypesWithTemporal() {
   return metacardStartingTypeWithTemporal
 }
 
-module.exports = new (Backbone.Model.extend({
+export default new (Backbone.Model.extend({
   initialize() {
     this.updateSortedMetacardTypes()
     this.getMetacardTypes()
@@ -261,4 +262,4 @@ module.exports = new (Backbone.Model.extend({
   validation: {},
   enums: properties.enums,
   deprecatedEnums: {},
-}))()
+}))();

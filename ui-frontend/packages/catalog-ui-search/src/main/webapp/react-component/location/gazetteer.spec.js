@@ -18,15 +18,14 @@ import {
   mock as mockProperties,
   unmock as unmockProperties,
 } from '../../test/mock-api/mock-properties'
-
+import {getLargestBbox} from './gazetteer'
 let GetLargestBbox
 
-const testData = require('./gazetteer-france-test-data.json')
+import testData from './gazetteer-france-test-data.json';
 
 describe('getLargestBbox', () => {
   before(() => {
     mockProperties()
-    const { getLargestBbox } = require('./gazetteer')
     GetLargestBbox = getLargestBbox
   })
   after(() => {

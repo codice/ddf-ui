@@ -4,7 +4,7 @@ import { Resizable, ResizableProps } from 're-resizable'
 import styled from 'styled-components'
 import { createCtx } from '../../typescript/context'
 
-const wreqr = require('../../js/wreqr.js')
+import wreqr from '../../js/wreqr.js'
 
 export const DEFAULT_AUTO_COLLAPSE_LENGTH = 300
 export const DEFAULT_STARTING_LENGTH = 550

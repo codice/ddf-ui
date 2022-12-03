@@ -14,8 +14,8 @@
  **/
 import React from 'react'
 import { UploadBatchItemViewReact } from '../upload-batch-item/upload-batch-item.view'
-const userNotifications = require('../singletons/user-notifications.js')
-const user = require('../singletons/user-instance.js')
+import userNotifications from '../singletons/user-notifications.js'
+import user from '../singletons/user-instance.js'
 import Button from '@material-ui/core/Button'
 import CloseIcon from '@material-ui/icons/Close'
 import { useDialogState } from '../hooks/useDialogState'

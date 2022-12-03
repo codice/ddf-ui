@@ -35,7 +35,7 @@ import { AutoVariableSizeList } from 'react-window-components'
 import debounce from 'lodash.debounce'
 import { Memo } from '../../memo/memo'
 import { TypedUserInstance } from '../../singletons/TypedUser'
-const user = require('../../singletons/user-instance')
+import user from '../../singletons/user-instance'
 
 const getAmountChecked = (items: CheckedType) => {
   return Object.values(items).filter((a) => a).length

@@ -12,4 +12,5 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-module.exports = require('./radio')
+import * as radio from './radio'
+export default radio

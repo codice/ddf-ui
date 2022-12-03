@@ -14,10 +14,10 @@
  **/
 import fetch from '../../react-component/utils/fetch'
 
-const user = require('./user-instance.js')
-const Backbone = require('backbone')
+import user from './user-instance.js';
+import Backbone from 'backbone';
 
-module.exports = new (Backbone.Collection.extend({
+export default new (Backbone.Collection.extend({
   initialize() {
     const uploads = user.get('user').get('preferences').get('uploads')
     const alerts = user.get('user').get('preferences').get('alerts')
@@ -53,4 +53,4 @@ module.exports = new (Backbone.Collection.extend({
       },
     })
   },
-}))()
+}))();

@@ -15,11 +15,11 @@
 
 //allows us to get around svg security restrictions in IE11 (see using svg in opengl)
 //make our own image and manually set dimensions because of IE: https://github.com/openlayers/openlayers/issues/3939
-const _ = require('underscore')
+import _ from 'underscore';
 
 const defaultColor = '#3c6dd5'
 
-module.exports = {
+export default {
   getCircle(options) {
     _.defaults(options, {
       diameter: 22,
@@ -133,4 +133,4 @@ module.exports = {
 
     return canvas
   },
-}
+};

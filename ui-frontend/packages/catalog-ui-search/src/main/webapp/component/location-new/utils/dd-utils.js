@@ -12,9 +12,10 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const wkx = require('wkx')
-const { computeCircle, toKilometers } = require('./geo-helper')
-const errorMessages = require('./errors')
+import wkx from 'wkx';
+
+import { computeCircle, toKilometers } from './geo-helper';
+import errorMessages from './errors';
 
 const ddRegex = new RegExp('^-?[0-9]*.?[0-9]*$')
 const minimumDifference = 0.0001
@@ -224,8 +225,8 @@ function validateDd(dd) {
   return { valid, error }
 }
 
-module.exports = {
+export default {
   ddToWkt,
   validateDd,
   validateDdPoint,
-}
+};

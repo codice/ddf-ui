@@ -4,7 +4,7 @@ import SortSelections from './sort-selections'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
-const user = require('../../component/singletons/user-instance.js')
+import user from '../../component/singletons/user-instance.js'
 
 const getResultSort = () => {
   return user.get('user').get('preferences').get('resultSort') || []

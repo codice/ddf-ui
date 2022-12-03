@@ -2,8 +2,8 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { ClusterType } from './geometries'
 import { useSelectionOfLazyResults } from '../../../../js/model/LazyQueryResult/hooks'
-const _ = require('underscore')
-const calculateConvexHull = require('geo-convex-hull')
+import _ from 'underscore'
+import calculateConvexHull from 'geo-convex-hull'
 
 type Props = {
   cluster: ClusterType

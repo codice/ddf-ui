@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-const $ = require('jquery')
+import $ from 'jquery'
 
 interface Props {
   turnOffDrawing: Function

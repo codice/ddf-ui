@@ -24,7 +24,7 @@ import { InputProps } from '@material-ui/core/Input'
 import ClearIcon from '@material-ui/icons/Clear'
 import SearchIcon from '@material-ui/icons/Search'
 import { useUpdateEffect } from 'react-use'
-const properties = require('../../js/properties.js')
+import properties from '../../js/properties.js'
 
 const defaultFilterOptions = createFilterOptions()
 

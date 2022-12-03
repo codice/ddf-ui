@@ -13,13 +13,13 @@
  *
  **/
 import OverwriteModel from '../../js/model/Overwrite'
-const Backbone = require('backbone')
+import Backbone from 'backbone';
 
-module.exports = new (Backbone.Collection.extend({
+export default new (Backbone.Collection.extend({
   model: OverwriteModel,
   removeIfUnused(id) {
     if (!this.get(id).get('sending')) {
       this.remove(id)
     }
   },
-}))()
+}))();

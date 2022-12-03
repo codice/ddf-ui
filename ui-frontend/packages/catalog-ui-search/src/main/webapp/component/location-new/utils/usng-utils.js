@@ -12,12 +12,13 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const wkx = require('wkx')
-const usng = require('usng.js')
+import wkx from 'wkx';
+
+import * as usng from 'usng.js';
 const converter = new usng.Converter()
 
-const { computeCircle, toKilometers } = require('./geo-helper')
-const errorMessages = require('./errors')
+import { computeCircle, toKilometers } from './geo-helper';
+import errorMessages from './errors';
 
 function validateUsngGrid(grid) {
   return converter.isUSNG(grid) !== 0
@@ -162,8 +163,8 @@ function validateUsng(usng) {
   return { valid, error }
 }
 
-module.exports = {
+export default {
   usngToWkt,
   validateUsng,
   validateUsngGrid,
-}
+};

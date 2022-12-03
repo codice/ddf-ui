@@ -12,24 +12,22 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import $ from 'jquery'
+import _ from 'underscore'
+import Map from '../map'
+import utility from './utility'
+import DrawingUtility from '../DrawingUtility'
+import wreqr from '../../../../js/wreqr.js'
 
-const $ = require('jquery')
-const _ = require('underscore')
-const Map = require('../map')
-const utility = require('./utility')
-const DrawingUtility = require('../DrawingUtility')
-const wreqr = require('../../../../js/wreqr.js')
-
-const properties = require('../../../../js/properties.js')
-const Cesium = require('cesium')
-const Turf = require('@turf/turf')
-const DrawHelper = require('cesium-drawhelper/DrawHelper')
+import properties from '../../../../js/properties.js'
+import Cesium from 'cesium'
+import DrawHelper from 'cesium-drawhelper/DrawHelper'
 import {
   CesiumImageryProviderTypes,
   CesiumLayers,
 } from '../../../../js/controllers/cesium.layers'
-const user = require('../../../singletons/user-instance.js')
-const User = require('../../../../js/model/User.js')
+import user from '../../../singletons/user-instance.js'
+import User from '../../../../js/model/User.js'
 import { Drawing } from '../../../singletons/drawing'
 import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryResult'
 import { ClusterType } from '../react/geometries'
@@ -198,7 +196,7 @@ function isNotVisible(cartesian3CenterOfGeometry, occluder) {
   return !occluder.isPointVisible(cartesian3CenterOfGeometry)
 }
 
-module.exports = function CesiumMap(
+export default function CesiumMap(
   insertionElement,
   selectionInterface,
   notificationEl,

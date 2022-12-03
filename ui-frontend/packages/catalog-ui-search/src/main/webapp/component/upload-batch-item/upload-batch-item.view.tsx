@@ -13,7 +13,7 @@
  *
  **/
 
-const user = require('../singletons/user-instance.js')
+import user from '../singletons/user-instance.js'
 import { UploadSummaryViewReact } from '../upload-summary/upload-summary.view'
 import { Link } from 'react-router-dom'
 import * as React from 'react'

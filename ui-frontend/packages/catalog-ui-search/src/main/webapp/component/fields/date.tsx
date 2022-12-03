@@ -19,7 +19,7 @@ import { DateHelpers, DefaultMaxDate, DefaultMinDate } from './date-helpers'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
 import useTimePrefs from './useTimePrefs'
 
-const user = require('../singletons/user-instance.js')
+import user from '../singletons/user-instance.js'
 
 type DateFieldProps = {
   value: string
