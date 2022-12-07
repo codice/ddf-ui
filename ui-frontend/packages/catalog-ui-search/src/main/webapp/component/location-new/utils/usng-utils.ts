@@ -18,11 +18,10 @@ import * as usng from 'usng.js'
 // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
 const converter = new usng.Converter()
 
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"./geo-helper"' has no exported member 'co... Remove this comment to see the full error message
 import { computeCircle, toKilometers } from './geo-helper'
 import errorMessages from './errors'
 
-function validateUsngGrid(grid: any) {
+export function validateUsngGrid(grid: any) {
   return converter.isUSNG(grid) !== 0
 }
 
@@ -54,7 +53,7 @@ function usngGridToWktPoint(grid: any) {
   return new wkx.Point(LL.lon, LL.lat)
 }
 
-function usngToWkt(usng: any) {
+export function usngToWkt(usng: any) {
   if (inputIsBlank(usng)) {
     return null
   }
@@ -71,7 +70,7 @@ function usngToWkt(usng: any) {
         usngGridToWktPoint(usng.circle.point),
         distance,
         36
-      ).toWkt()
+      )?.toWkt()
       break
     case 'line':
       if (usng.line.list.length > 0) {
@@ -112,7 +111,7 @@ function usngToWkt(usng: any) {
 /*
  *  USNG/MGRS validation utils
  */
-function validateUsng(usng: any) {
+export function validateUsng(usng: any) {
   if (inputIsBlank(usng)) {
     return { valid: true, error: null }
   }
@@ -166,10 +165,4 @@ function validateUsng(usng: any) {
       break
   }
   return { valid, error }
-}
-
-export default {
-  usngToWkt,
-  validateUsng,
-  validateUsngGrid,
 }

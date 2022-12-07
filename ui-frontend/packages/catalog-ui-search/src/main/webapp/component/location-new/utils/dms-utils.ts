@@ -14,7 +14,6 @@
  **/
 import wkx from 'wkx'
 
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"./geo-helper"' has no exported member 'co... Remove this comment to see the full error message
 import { computeCircle, toKilometers } from './geo-helper'
 import errorMessages from './errors'
 

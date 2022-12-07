@@ -28,7 +28,6 @@ import {
   Direction,
 } from './dms-utils'
 
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"./usng-utils"' has no exported member 'us... Remove this comment to see the full error message
 import { usngToWkt, validateUsng, validateUsngGrid } from './usng-utils'
 import errorMessages from './errors'
 

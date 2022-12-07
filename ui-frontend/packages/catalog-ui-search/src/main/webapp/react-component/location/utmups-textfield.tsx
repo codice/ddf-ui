@@ -16,7 +16,6 @@ import React from 'react'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import TextField from '../text-field'
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"./common"' has no exported member 'Zone'.... Remove this comment to see the full error message
 import { Zone, Hemisphere } from './common'
 
 type UtmUpsPoint = {

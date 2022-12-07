@@ -12,12 +12,12 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const ddPoint = {
+export const ddPoint = {
   latitude: '',
   longitude: '',
 }
 
-const ddModel = {
+export const ddModel = {
   shape: 'point',
   point: { ...ddPoint },
   circle: {
@@ -37,9 +37,4 @@ const ddModel = {
     east: '',
     west: '',
   },
-}
-
-export default {
-  ddPoint,
-  ddModel,
 }

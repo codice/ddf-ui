@@ -76,7 +76,7 @@ function computeDestination(point: any, bearing: any, distance: any) {
  * @param distance: kilometers
  * @param n: number of points used to approximate the circle
  */
-function computeCircle(point: any, distance: any, n: any) {
+export function computeCircle(point: any, distance: any, n: any) {
   if (distance < 0 || n < 0) {
     return null
   }
@@ -95,7 +95,7 @@ function computeCircle(point: any, distance: any, n: any) {
  * international definition for nautical mile is used (1 nautical mile = 1852 meters).
  * Reference: https://www.sfei.org/it/gis/map-interpretation/conversion-constants
  */
-function toKilometers(distance: any, units: any) {
+export function toKilometers(distance: any, units: any) {
   switch (units) {
     case 'meters':
       return distance / 1000
@@ -110,9 +110,4 @@ function toKilometers(distance: any, units: any) {
     case 'nautical miles':
       return distance * 1.852
   }
-}
-
-export default {
-  computeCircle,
-  toKilometers,
 }

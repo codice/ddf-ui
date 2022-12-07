@@ -24,12 +24,12 @@ const dmsLongitude = {
   direction: Direction.East,
 }
 
-const dmsPoint = {
+export const dmsPoint = {
   latitude: { ...dmsLatitude },
   longitude: { ...dmsLongitude },
 }
 
-const dmsModel = {
+export const dmsModel = {
   shape: 'point',
   point: { ...dmsPoint },
   circle: {
@@ -49,9 +49,4 @@ const dmsModel = {
     east: { ...dmsLongitude },
     west: { ...dmsLongitude },
   },
-}
-
-export default {
-  dmsPoint,
-  dmsModel,
 }

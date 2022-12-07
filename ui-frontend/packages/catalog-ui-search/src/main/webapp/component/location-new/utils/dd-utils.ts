@@ -14,7 +14,6 @@
  **/
 import wkx from 'wkx'
 
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"./geo-helper"' has no exported member 'co... Remove this comment to see the full error message
 import { computeCircle, toKilometers } from './geo-helper'
 import errorMessages from './errors'
 
@@ -72,7 +71,7 @@ function ddToWkt(dd: any) {
       break
     case 'circle':
       const distance = toKilometers(dd.circle.radius, dd.circle.units)
-      wkt = computeCircle(ddPointToWkt(dd.circle.point), distance, 36).toWkt()
+      wkt = computeCircle(ddPointToWkt(dd.circle.point), distance, 36)?.toWkt()
       break
     case 'line':
       if (dd.line.list.length > 0) {
