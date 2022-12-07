@@ -15,128 +15,71 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import Button from '@material-ui/core/Button'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import TextField from '@material-ui/core/TextField'
 import { DarkDivider } from '../../component/dark-divider/dark-divider'
 import {
   TypedUserInstance,
   useActingRole,
 } from '../../component/singletons/TypedUser'
 import PersonIcon from '@material-ui/icons/Person'
-import { SvgIconProps } from '@material-ui/core/SvgIcon'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Switch from '@material-ui/core/Switch'
+import Typography from '@material-ui/core/Typography'
 const user = require('../../component/singletons/user-instance.js')
 
-export type AvailableRoleType = {
-  value: string
-  label: string
-}
-
-export const AvailableRolesContext = React.createContext<{
-  availableRoles: AvailableRoleType[]
+export const EnhancedRolesContext = React.createContext<{
+  enhancedRoles: string[]
 }>({
-  availableRoles: [
-    {
-      value: 'user',
-      label: 'user',
-    },
-  ],
+  enhancedRoles: [],
 })
 
-const useAvailableRoles = () => {
-  const { availableRoles } = React.useContext(AvailableRolesContext)
-  return availableRoles
-}
-
-export type RoleDisplayType = {
-  abbreviated: string
-  full: string
-  icon: React.FC<any>
-}
-
-export const RoleDisplayContext = React.createContext<{
-  [key: string]: RoleDisplayType
-}>({
-  user: {
-    abbreviated: 'user',
-    full: 'user',
-    icon: PersonIcon,
-  },
-})
-
-const useRoleDisplay = () => {
-  const roleDisplay = React.useContext(RoleDisplayContext)
-  return roleDisplay
-}
-
-export const RoleIcon = (props: SvgIconProps) => {
-  const actingRole = useActingRole()
-  const roleDisplay = useRoleDisplay()
-  const Icon = roleDisplay[actingRole]
-    ? roleDisplay[actingRole].icon
-    : PersonIcon
-  return <Icon {...props} />
-}
-
-export const SmallRoleDisplay = () => {
-  const actingRole = useActingRole()
-  const roleDisplay = useRoleDisplay()
-  const abbreviated = roleDisplay[actingRole]
-    ? roleDisplay[actingRole].abbreviated
-    : '?'
-  return <>role:{abbreviated}</>
+const useEnhancedRoles = () => {
+  const { enhancedRoles } = React.useContext(EnhancedRolesContext)
+  return enhancedRoles
 }
 
 export const RoleDisplay = () => {
   const actingRole = useActingRole()
-  const roleDisplay = useRoleDisplay()
-  const full = roleDisplay[actingRole]
-    ? roleDisplay[actingRole].full
-    : 'unknown'
+  const enhancedRoles = useEnhancedRoles()
 
-  return <>role:{full}</>
+  if (actingRole === 'enhanced' && enhancedRoles.length > 0) {
+    return <>Enhanced</>
+  }
+  return null
 }
 
-const RolesDropdown = () => {
+const RolesToggle = () => {
   const actingRole = useActingRole()
-  const availableRoles = useAvailableRoles()
-  const roleDisplay = useRoleDisplay()
+  const enhancedRoles = useEnhancedRoles()
+
+  if (!enhancedRoles || enhancedRoles.length === 0) {
+    return null
+  }
 
   return (
-    <>
-      <label>
-        <div className="pb-2 font-normal text-lg">Role</div>
-        <Autocomplete
-          data-id="role-autocomplete"
-          size="small"
-          options={availableRoles}
-          getOptionLabel={(option) => option.label}
-          getOptionSelected={(option, value) =>
-            value ? option.value === value.value : false
-          }
-          renderOption={(option) => {
-            const Icon = roleDisplay[actingRole]
-              ? roleDisplay[option.value].icon
-              : PersonIcon
-            return (
-              <div className="flex flex-row items-center">
-                <div className="pr-2">
-                  <Icon />
-                </div>
-                <div>{option.label}</div>
-              </div>
-            )
-          }}
-          onChange={(_e, newValue) => {
-            TypedUserInstance.setActingRole(newValue.value)
-          }}
-          disableClearable
-          value={availableRoles.find(
-            (roleOption) => roleOption.value === actingRole
-          )}
-          renderInput={(params) => <TextField variant="outlined" {...params} />}
-        />
-      </label>
-    </>
+    <div className="ml-1">
+      <div className="font-normal text-lg">Role</div>
+      <FormControlLabel
+        className="pb-4"
+        label={<Typography variant="body2">Enhanced</Typography>}
+        control={
+          <Switch
+            color="primary"
+            checked={actingRole === 'enhanced'}
+            onChange={(e) =>
+              TypedUserInstance.setActingRole(
+                e.target.checked ? 'enhanced' : 'user'
+              )
+            }
+          />
+        }
+      />
+      <div className={`${actingRole === 'user' ? 'opacity-50' : ''}`}>
+        <div className="pb-1 font-normal italic">My Enhanced Roles</div>
+        {enhancedRoles.map((role) => {
+          return <div className="text-sm">{role}</div>
+        })}
+      </div>
+    </div>
   )
 }
 
@@ -153,7 +96,7 @@ const UserComponent = () => {
       <div className="flex-shrink-1 overflow-auto p-2">
         <div className="pb-4 flex flex-row items-center flex-no-wrap">
           <div className="pr-2">
-            <RoleIcon />
+            <PersonIcon />
           </div>
           <div>
             <div
@@ -167,7 +110,7 @@ const UserComponent = () => {
             </div>
           </div>
         </div>
-        <RolesDropdown />
+        <RolesToggle />
       </div>
       <DarkDivider className="my-2" />
       <div className="text-right p-2">
@@ -176,8 +119,8 @@ const UserComponent = () => {
         ) : (
           <Button
             data-id="profile-signout-button"
+            color="primary"
             variant="contained"
-            color="secondary"
             onClick={signOut}
           >
             Sign Out
