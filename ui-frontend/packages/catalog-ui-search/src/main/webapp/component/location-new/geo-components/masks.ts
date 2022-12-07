@@ -47,4 +47,3 @@ export const longitudeDMSMask = function (rawValue: any) {
   }
   return baseMask.concat('"')
 }
-

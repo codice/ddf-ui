@@ -56,9 +56,8 @@ function determineIdFromPosition(position: any, map: any) {
 }
 function convertPointCoordinate(point: any) {
   const coords = [point[0], point[1]]
-  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'any[]' is not assignable to para... Remove this comment to see the full error message
   return Openlayers.proj.transform(
-    coords,
+    coords as Openlayers.Coordinate,
     'EPSG:4326',
     (properties as any).projection
   )
@@ -76,12 +75,11 @@ function offMap([longitude, latitude]) {
 }
 // The extension argument is a function used in panToExtent
 // It allows for customization of the way the map pans to results
-// @ts-expect-error ts-migrate(6133) FIXME: 'selectionInterface' is declared but its value is ... Remove this comment to see the full error message
 export default function (
   insertionElement: any,
-  selectionInterface: any,
-  notificationEl: any,
-  componentElement: any,
+  _selectionInterface: any,
+  _notificationEl: any,
+  _componentElement: any,
   mapModel: any
 ) {
   let overlays = {}
@@ -206,12 +204,10 @@ export default function (
       moveCallback: any,
       upCallback: any
     ) {
-      // @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-      $(map.getTargetElement()).on('mousedown', (e) => {
+      $(map.getTargetElement()).on('mousedown', () => {
         downCallback()
       })
-      // @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-      $(map.getTargetElement()).on('mousemove', (e) => {
+      $(map.getTargetElement()).on('mousemove', () => {
         moveCallback()
       })
       this.onLeftClick(upCallback)
@@ -260,8 +256,7 @@ export default function (
         }, 0)
       })
     },
-    // @ts-expect-error ts-migrate(6133) FIXME: 'opts' is declared but its value is never read.
-    zoomOut(opts: any, next: any) {
+    zoomOut(_opts: any, next: any) {
       next()
     },
     panToResults(results: any) {
@@ -462,8 +457,7 @@ export default function (
     /*
      * Removes the given line Layer from the map.
      */
-    // @ts-expect-error ts-migrate(6133) FIXME: 'line' is declared but its value is never read.
-    removeRulerLine(line: any) {
+    removeRulerLine() {
       map.removeLayer(this.rulerLine)
     },
     /*
@@ -678,8 +672,7 @@ export default function (
               Adds a polygon fill utilizing the passed in polygon and options.
               Options are a view to relate to, and an id.
             */
-    // @ts-expect-error ts-migrate(6133) FIXME: 'polygon' is declared but its value is never read.
-    addPolygon(polygon: any, options: any) {},
+    addPolygon() {},
     /*
              Updates a passed in geometry to reflect whether or not it is selected.
              Options passed in are color and isSelected.

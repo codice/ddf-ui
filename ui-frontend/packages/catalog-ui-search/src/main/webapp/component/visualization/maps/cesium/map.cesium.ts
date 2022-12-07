@@ -57,8 +57,7 @@ function setupTerrainProvider(viewer: any, terrainProvider: any) {
   }
   const defaultCesiumTerrainProvider = viewer.scene.terrainProvider
   const customTerrainProvider = new TerrainProvider(terrainConfig)
-  // @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-  customTerrainProvider.errorEvent.addEventListener((e: any) => {
+  customTerrainProvider.errorEvent.addEventListener(() => {
     console.warn(`
             Issue using terrain provider: ${JSON.stringify({
               type,
@@ -422,8 +421,7 @@ export default function CesiumMap(
         destination: coords,
       })
     },
-    // @ts-expect-error ts-migrate(6133) FIXME: 'coords' is declared but its value is never read.
-    panToExtent(coords: any) {},
+    panToExtent() {},
     panToShapesExtent() {
       const currentPrimitives = map.scene.primitives._primitives.filter(
         (prim: any) => prim.id
@@ -473,8 +471,7 @@ export default function CesiumMap(
     getShapes() {
       return shapes
     },
-    // @ts-expect-error ts-migrate(6133) FIXME: 'coords' is declared but its value is never read.
-    zoomToExtent(coords: any) {},
+    zoomToExtent() {},
     zoomToBoundingBox({ north, south, east, west }: any) {
       map.scene.camera.flyTo({
         duration: 0.5,
@@ -483,10 +480,7 @@ export default function CesiumMap(
     },
     getBoundingBox() {
       const viewRectangle = map.scene.camera.computeViewRectangle()
-      // @ts-expect-error ts-migrate(6133) FIXME: 'key' is declared but its value is never read.
-      return _.mapObject(viewRectangle, (val, key) =>
-        Cesium.Math.toDegrees(val)
-      )
+      return _.mapObject(viewRectangle, (val) => Cesium.Math.toDegrees(val))
     },
     overlayImage(model: LazyQueryResult) {
       const metacardId = model.plain.id
@@ -603,14 +597,9 @@ export default function CesiumMap(
       ]
       return map.entities.add({
         polyline: {
-          // @ts-expect-error ts-migrate(6133) FIXME: 'time' is declared but its value is never read.
-          positions: new Cesium.CallbackProperty(function (
-            time: any,
-            result: any
-          ) {
+          positions: new Cesium.CallbackProperty(function () {
             return Cesium.Cartesian3.fromDegreesArrayHeights(map.coordArray)
-          },
-          false),
+          }, false),
           width: 5,
           show: true,
           material: rulerColor,

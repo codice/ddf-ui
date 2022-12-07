@@ -57,8 +57,7 @@ export function SnackProvider({ children }: any) {
     return
   }, [currentSnack])
 
-  // @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-  const handleClose = (e: any, reason: string) => {
+  const handleClose = (_e: any, reason: string) => {
     if (reason === 'clickaway' && currentSnack.clickawayCloseable) {
       removeCurrentSnack()
     } else if (reason !== 'clickaway' && currentSnack.closeable) {

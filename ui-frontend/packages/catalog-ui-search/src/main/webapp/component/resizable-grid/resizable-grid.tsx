@@ -104,9 +104,7 @@ type SplitPaneProps = {
   autoCollapseLength?: number
   startingLength?: number
 }
-// @ts-expect-error ts-migrate(6133) FIXME: 'firstStyle' is declared but its value is never re... Remove this comment to see the full error message
 export const SplitPane = ({
-  firstStyle,
   secondStyle,
   variant,
   children,
@@ -197,9 +195,8 @@ export const SplitPane = ({
           })()}
           style={{
             flexShrink: 0,
-            // @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
           }}
-          onResizeStop={(e) => {
+          onResizeStop={() => {
             setDragging(false)
           }}
           onResizeStart={() => {

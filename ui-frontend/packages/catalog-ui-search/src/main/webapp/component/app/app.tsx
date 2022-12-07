@@ -19,8 +19,6 @@ import ExpandingButton from '../button/expanding-button'
 import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-// @ts-expect-error ts-migrate(6133) FIXME: 'ListItem' is declared but its value is never read... Remove this comment to see the full error message
-import ListItem from '@material-ui/core/ListItem'
 import MenuIcon from '@material-ui/icons/Menu'
 import SettingsIcon from '@material-ui/icons/Settings'
 import Drawer from '@material-ui/core/Drawer'

@@ -22,8 +22,7 @@ function convertUserValueToWKT(val: any) {
   val = val.split(' (').join('(').split(', ').join(',')
   val = val
     .split('MULTIPOINT')
-    // @ts-expect-error ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
-    .map((value: any, index: any) => {
+    .map((value: any) => {
       if (value.indexOf('((') === 0) {
         const endOfMultiPoint = value.indexOf('))') + 2
         let multipointStr = value.substring(0, endOfMultiPoint)

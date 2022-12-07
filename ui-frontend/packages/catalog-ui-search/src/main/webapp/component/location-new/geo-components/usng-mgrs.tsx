@@ -64,8 +64,7 @@ const Circle = (props: any) => {
 
 const Line = (props: any) => {
   const { usng, setState } = props
-  // @ts-expect-error ts-migrate(6133) FIXME: 'entry' is declared but its value is never read.
-  const grids = usng.line.list.map((entry: any, index: any) => (
+  const grids = usng.line.list.map((_entry: any, index: any) => (
     <UsngCoordinate
       value={usng.line.list[index]}
       onChange={setState(
@@ -91,8 +90,7 @@ const Line = (props: any) => {
 
 const Polygon = (props: any) => {
   const { usng, setState } = props
-  // @ts-expect-error ts-migrate(6133) FIXME: 'entry' is declared but its value is never read.
-  const grids = usng.polygon.list.map((entry: any, index: any) => (
+  const grids = usng.polygon.list.map((_entry: any, index: any) => (
     <UsngCoordinate
       value={usng.polygon.list[index]}
       onChange={setState(

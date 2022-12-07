@@ -112,8 +112,7 @@ const properties = {
             props.ui = uiConfig
             return props
           })
-          // @ts-expect-error ts-migrate(6133) FIXME: 'jqXHR' is declared but its value is never read.
-          .fail((jqXHR, status, errorThrown) => {
+          .fail((_jqXHR, status, errorThrown) => {
             if (console) {
               console.error(
                 'Platform UI Configuration could not be loaded: (status: ' +
@@ -125,8 +124,7 @@ const properties = {
             }
           })
       })
-      // @ts-expect-error ts-migrate(6133) FIXME: 'jqXHR' is declared but its value is never read.
-      .fail((jqXHR, status, errorThrown) => {
+      .fail((_jqXHR, status, errorThrown) => {
         throw new Error(
           'Configuration could not be loaded: (status: ' +
             status +

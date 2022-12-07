@@ -22,8 +22,7 @@ import {
   Draggable,
 } from 'react-beautiful-dnd'
 import extension from '../../../extension-points'
-// @ts-expect-error ts-migrate(6133) FIXME: 'dark' is declared but its value is never read.
-import { dark, light, Elevations } from '../../theme/theme'
+import { Elevations } from '../../theme/theme'
 import { DarkDivider } from '../../dark-divider/dark-divider'
 import LeftArrowIcon from '@material-ui/icons/ChevronLeft'
 import RightArrowIcon from '@material-ui/icons/ChevronRight'

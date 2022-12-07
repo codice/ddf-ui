@@ -117,13 +117,11 @@ const DrawHelper = (function () {
       }
     })
     // hide the highlighting when mouse is leaving the polygon
-    // @ts-expect-error ts-migrate(6133) FIXME: 'position' is declared but its value is never read... Remove this comment to see the full error message
-    setListener(surface, 'mouseOut', (position: any) => {
+    setListener(surface, 'mouseOut', () => {
       surface.setHighlighted(false)
       _self._tooltip.setVisible(false)
     })
-    // @ts-expect-error ts-migrate(6133) FIXME: 'position' is declared but its value is never read... Remove this comment to see the full error message
-    setListener(surface, 'leftClick', (position: any) => {
+    setListener(surface, 'leftClick', () => {
       surface.setEditMode(true)
     })
   }
@@ -553,8 +551,7 @@ const DrawHelper = (function () {
     _.prototype.getWidth = function () {
       return this.getAttribute('width')
     }
-    // @ts-expect-error ts-migrate(6133) FIXME: 'geodesic' is declared but its value is never read... Remove this comment to see the full error message
-    _.prototype.getGeodesic = function (geodesic: any) {
+    _.prototype.getGeodesic = function () {
       return this.getAttribute('geodesic')
     }
     _.prototype.getGeometry = function () {
@@ -693,14 +690,12 @@ const DrawHelper = (function () {
         })
       }
       if (callbacks.onDoubleClick) {
-        // @ts-expect-error ts-migrate(6133) FIXME: 'position' is declared but its value is never read... Remove this comment to see the full error message
-        setListener(billboard, 'leftDoubleClick', (position: any) => {
+        setListener(billboard, 'leftDoubleClick', () => {
           callbacks.onDoubleClick(getIndex())
         })
       }
       if (callbacks.onClick) {
-        // @ts-expect-error ts-migrate(6133) FIXME: 'position' is declared but its value is never read... Remove this comment to see the full error message
-        setListener(billboard, 'leftClick', (position: any) => {
+        setListener(billboard, 'leftClick', () => {
           callbacks.onClick(getIndex())
         })
       }
@@ -708,8 +703,7 @@ const DrawHelper = (function () {
         setListener(billboard, 'mouseMove', (position: any) => {
           _self._drawHelper._tooltip.showAt(position, callbacks.tooltip())
         })
-        // @ts-expect-error ts-migrate(6133) FIXME: 'position' is declared but its value is never read... Remove this comment to see the full error message
-        setListener(billboard, 'mouseOut', (position: any) => {
+        setListener(billboard, 'mouseOut', () => {
           _self._drawHelper._tooltip.setVisible(false)
         })
       }
@@ -1108,8 +1102,7 @@ const DrawHelper = (function () {
       function enableRotation(enable: any) {
         drawHelper._scene.screenSpaceCameraController.enableRotate = enable
       }
-      // @ts-expect-error ts-migrate(6133) FIXME: 'position' is declared but its value is never read... Remove this comment to see the full error message
-      setListener(billboard, 'leftDown', (position: any) => {
+      setListener(billboard, 'leftDown', () => {
         // TODO - start the drag handlers here
         // create handlers for mouseOut and leftUp for the billboard and a mouseMove
         function onDrag(position: any) {
@@ -1162,8 +1155,6 @@ const DrawHelper = (function () {
       this: any,
       highlighted: any
     ) {
-      // @ts-expect-error ts-migrate(6133) FIXME: 'scene' is declared but its value is never read.
-      const scene = drawHelper._scene
       // if no change
       // if already highlighted, the outline polygon will be available
       if (this._highlighted && this._highlighted == highlighted) {
@@ -1263,8 +1254,7 @@ const DrawHelper = (function () {
                 updateHalfMarkers(index, _self.positions)
                 _self._createPrimitive = true
               },
-              // @ts-expect-error ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
-              onDragEnd(index: any, position: any) {
+              onDragEnd() {
                 _self._createPrimitive = true
                 onEdited()
               },
@@ -1317,13 +1307,11 @@ const DrawHelper = (function () {
                 _self.positions.splice((this as any).index, 0, position)
                 _self._createPrimitive = true
               },
-              // @ts-expect-error ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
-              onDrag(index: any, position: any) {
+              onDrag(_index: any, position: any) {
                 _self.positions[(this as any).index] = position
                 _self._createPrimitive = true
               },
-              // @ts-expect-error ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
-              onDragEnd(index: any, position: any) {
+              onDragEnd(_index: any, position: any) {
                 // create new sets of makers for editing
                 markers.insertBillboard(
                   (this as any).index,
@@ -1409,8 +1397,6 @@ const DrawHelper = (function () {
     DrawHelper.PolygonPrimitive.prototype.setEditable = function () {
       const polygon = this
       polygon.asynchronous = false
-      // @ts-expect-error ts-migrate(6133) FIXME: 'scene' is declared but its value is never read.
-      const scene = drawHelper._scene
       drawHelper.registerEditableShape(polygon)
       polygon.setEditMode = setEditMode
       polygon.setHighlighted = setHighlighted
@@ -1460,8 +1446,7 @@ const DrawHelper = (function () {
                     getExtentCorners(extent.extent)
                   )
                 },
-                // @ts-expect-error ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
-                onDragEnd(index: any, position: any) {
+                onDragEnd() {
                   onEdited()
                 },
               },
@@ -1566,8 +1551,7 @@ const DrawHelper = (function () {
                   }
                   markers.updateBillboardsPositions(getMarkerPositions())
                 },
-                // @ts-expect-error ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
-                onDragEnd(index: any, position: any) {
+                onDragEnd() {
                   onEdited()
                 },
               },
@@ -1669,15 +1653,13 @@ const DrawHelper = (function () {
             }
             const handleMarkerChanges = {
               dragHandlers: {
-                // @ts-expect-error ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
-                onDrag(index: any, position: any) {
+                onDrag(_index: any, position: any) {
                   circle.setRadius(
                     Cesium.Cartesian3.distance(circle.getCenter(), position)
                   )
                   markers.updateBillboardsPositions(getMarkerPositions())
                 },
-                // @ts-expect-error ts-migrate(6133) FIXME: 'index' is declared but its value is never read.
-                onDragEnd(index: any, position: any) {
+                onDragEnd() {
                   onEdited()
                 },
               },
@@ -1740,8 +1722,7 @@ const DrawHelper = (function () {
       const toolbar = document.createElement('DIV')
       toolbar.className = 'toolbar'
       options.container.appendChild(toolbar)
-      // @ts-expect-error ts-migrate(6133) FIXME: 'id' is declared but its value is never read.
-      function addIcon(id: any, url: any, title: any, callback: any) {
+      function addIcon(_id: any, url: any, title: any, callback: any) {
         const div = document.createElement('DIV')
         div.className = 'button'
         div.title = title

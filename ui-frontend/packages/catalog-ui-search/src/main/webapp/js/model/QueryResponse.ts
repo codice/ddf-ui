@@ -126,8 +126,7 @@ export default Backbone.AssociatedModel.extend({
       )
     }
   },
-  // @ts-expect-error ts-migrate(6133) FIXME: 'resultModel' is declared but its value is never r... Remove this comment to see the full error message
-  handleError(resultModel: any, response: any, sent: any) {
+  handleError(_resultModel: any, response: any, sent: any) {
     const dataJSON = JSON.parse(sent.data)
     this.get('lazyResults').updateStatusWithError({
       sources: dataJSON.srcs,
@@ -136,15 +135,8 @@ export default Backbone.AssociatedModel.extend({
         : response.statusText,
     })
   },
-  // @ts-expect-error ts-migrate(6133) FIXME: 'resultModel' is declared but its value is never r... Remove this comment to see the full error message
-  handleSync(resultModel: any, response: any, sent: any) {
-    if (sent) {
-      // @ts-expect-error ts-migrate(6133) FIXME: 'dataJSON' is declared but its value is never read... Remove this comment to see the full error message
-      const dataJSON = JSON.parse(sent.data)
-    }
-  },
-  // @ts-expect-error ts-migrate(6133) FIXME: 'options' is declared but its value is never read.
-  parse(resp: any, options: any) {
+  handleSync() {},
+  parse(resp: any) {
     metacardDefinitions.addMetacardDefinitions(resp.types)
     this.get('lazyResults').addTypes(resp.types)
     this.get('lazyResults').updateStatus(resp.statusBySource)

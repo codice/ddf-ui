@@ -14,8 +14,6 @@
  **/
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
-// @ts-expect-error ts-migrate(6133) FIXME: 'useTheme' is declared but its value is never read... Remove this comment to see the full error message
-import useTheme from '@material-ui/core/styles/useTheme'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { CellComponent } from './table-header'

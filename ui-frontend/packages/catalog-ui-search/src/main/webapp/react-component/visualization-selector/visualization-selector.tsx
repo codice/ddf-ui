@@ -154,8 +154,7 @@ class VisualizationSelector extends React.Component {
   handleChoice() {
     ;(this.props as any).onClose()
   }
-  // @ts-expect-error ts-migrate(6133) FIXME: 'event' is declared but its value is never read.
-  handleMouseDown(event: any, choice: any) {
+  handleMouseDown(_event: any, choice: any) {
     unMaximize((this.props as any).goldenLayout.root)
     this.interimState = true
     this.interimChoice = choice

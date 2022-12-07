@@ -32,8 +32,7 @@ export default Backbone.AssociatedModel.extend({
     return (
       _.filter(
         this.toJSON(),
-        // @ts-expect-error ts-migrate(6133) FIXME: 'value' is declared but its value is never read.
-        (value, key) =>
+        (_value, key) =>
           (attribute === undefined || attribute === key) &&
           metacardDefinitions.metacardTypes[key] &&
           metacardDefinitions.metacardTypes[key].type === 'GEOMETRY'
@@ -61,8 +60,7 @@ export default Backbone.AssociatedModel.extend({
   getGeometries(attribute: any) {
     return _.filter(
       this.toJSON(),
-      // @ts-expect-error ts-migrate(6133) FIXME: 'value' is declared but its value is never read.
-      (value, key) =>
+      (_value, key) =>
         !properties.isHidden(key) &&
         (attribute === undefined || attribute === key) &&
         metacardDefinitions.metacardTypes[key] &&

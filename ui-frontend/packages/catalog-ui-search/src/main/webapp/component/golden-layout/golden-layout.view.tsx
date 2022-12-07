@@ -452,10 +452,9 @@ const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
           <>
             {' '}
             <Grid item>
-              {/* @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read. */}
               <Button
                 data-id="maximise-tab-button"
-                onClick={(e) => {
+                onClick={() => {
                   const prevWidth = stack.config.prevWidth || 500
                   const prevHeight = stack.config.prevHeight || 500
                   stack.contentItems[0].container.setSize(prevWidth, prevHeight)
@@ -468,10 +467,9 @@ const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
         ) : (
           <>
             <Grid item>
-              {/* @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read. */}
               <Button
                 data-id="minimise-layout-button"
-                onClick={(e) => {
+                onClick={() => {
                   stack.config.prevWidth = stack.getActiveContentItem().container.width
                   stack.config.prevHeight = stack.getActiveContentItem().container.height
                   stack.contentItems[0].container.setSize(10, 45)
@@ -481,10 +479,9 @@ const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
               </Button>
             </Grid>
             <Grid item>
-              {/* @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read. */}
               <Button
                 data-id="maximise-layout-button"
-                onClick={(e) => {
+                onClick={() => {
                   stack.toggleMaximise()
                 }}
               >
@@ -492,11 +489,10 @@ const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
               </Button>
             </Grid>
             <Grid item>
-              {/* @ts-expect-error ts-migrate(6133) FIXME: 'e' is declared but its value is never read. */}
               {stack.header._isClosable() ? (
                 <Button
                   data-id="close-layout-button"
-                  onClick={(e) => {
+                  onClick={() => {
                     if (stack.isMaximised) {
                       stack.toggleMaximise()
                     }
@@ -535,11 +531,10 @@ export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
   }, [goldenLayout])
   React.useEffect(() => {
     const randomString = Math.random().toString()
-    // @ts-expect-error ts-migrate(6133) FIXME: 'event' is declared but its value is never read.
     $(window).on(
       'resize.' + randomString,
       _debounce(
-        (event: any) => {
+        () => {
           goldenLayout.updateSize()
         },
         100,

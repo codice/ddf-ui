@@ -15,7 +15,6 @@
 
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
-import styled from 'styled-components'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Button from '@material-ui/core/Button'
 import { useDialogState } from '../../component/hooks/useDialogState'
@@ -25,12 +24,6 @@ type Props = {
   isDeleted: boolean
   loading: boolean
 }
-
-// @ts-expect-error ts-migrate(6133) FIXME: 'SubText' is declared but its value is never read.
-const SubText = styled.span`
-  display: block;
-  font-size: ${(props) => props.theme.mediumFontSize};
-`
 
 const render = (props: Props) => {
   const { onArchiveConfirm, onRestoreConfirm, isDeleted, loading } = props

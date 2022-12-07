@@ -14,12 +14,6 @@
  **/
 /*global require*/
 import * as React from 'react'
-// @ts-expect-error ts-migrate(6133) FIXME: 'styled' is declared but its value is never read.
-import styled from 'styled-components'
-// @ts-expect-error ts-migrate(6133) FIXME: 'TextField' is declared but its value is never rea... Remove this comment to see the full error message
-import TextField from '@material-ui/core/TextField'
-// @ts-expect-error ts-migrate(6133) FIXME: 'MenuItem' is declared but its value is never read... Remove this comment to see the full error message
-import MenuItem from '@material-ui/core/MenuItem'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'

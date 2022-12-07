@@ -92,8 +92,7 @@ const Circle = (props: any) => {
 
 const Line = (props: any) => {
   const { dd, setState } = props
-  // @ts-expect-error ts-migrate(6133) FIXME: 'entry' is declared but its value is never read.
-  const points = dd.line.list.map((entry: any, index: any) => (
+  const points = dd.line.list.map((_entry: any, index: any) => (
     <Group key={index}>
       <DdLatitude
         value={DistanceUtils.coordinateRound(dd.line.list[index].latitude)}
@@ -132,8 +131,7 @@ const Line = (props: any) => {
 
 const Polygon = (props: any) => {
   const { dd, setState } = props
-  // @ts-expect-error ts-migrate(6133) FIXME: 'entry' is declared but its value is never read.
-  const points = dd.polygon.list.map((entry: any, index: any) => (
+  const points = dd.polygon.list.map((_entry: any, index: any) => (
     <Group key={index}>
       <DdLatitude
         value={DistanceUtils.coordinateRound(dd.polygon.list[index].latitude)}

@@ -66,8 +66,7 @@ const Theme = Backbone.Model.extend({
     }
   },
   blacklist: ['warning'],
-  // @ts-expect-error ts-migrate(6133) FIXME: 'options' is declared but its value is never read.
-  toJSON(options: any) {
+  toJSON() {
     return _.omit(this.attributes, this.blacklist)
   },
   shouldShowLayer() {

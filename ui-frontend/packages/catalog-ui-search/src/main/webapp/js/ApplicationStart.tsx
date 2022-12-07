@@ -12,10 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
-// @ts-expect-error ts-migrate(6133) FIXME: '$' is declared but its value is never read.
-import $ from 'jquery'
-
 import BaseApp from '../component/app/base-app'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
