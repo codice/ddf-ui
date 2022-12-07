@@ -14,10 +14,9 @@
  **/
 import React from 'react'
 import Group from '../../../react-component/group/index'
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
-import MaskedInput from 'react-text-mask'
+import MaskedInput, { MaskedInputProps } from 'react-text-mask'
 import TextField from '@material-ui/core/TextField'
-class MaskedTextField extends React.Component {
+class MaskedTextField extends React.Component<MaskedInputProps> {
   ref: any
   prevEvent = undefined
   padEndWithZeros(value: any) {

@@ -16,7 +16,6 @@ import React from 'react'
 
 import TextField from '../../../react-component/text-field/index'
 import MaskedTextField from '../inputs/masked-text-field'
-// @ts-expect-error ts-migrate(2614) FIXME: Module '"./masks"' has no exported member 'latitud... Remove this comment to see the full error message
 import { latitudeDMSMask, longitudeDMSMask } from './masks'
 import { buildDmsString, parseDmsCoordinate } from '../utils/dms-utils'
 
