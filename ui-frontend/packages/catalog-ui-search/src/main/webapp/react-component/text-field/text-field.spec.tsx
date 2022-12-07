@@ -12,15 +12,15 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react';
+import React from 'react'
 
-import Enzyme from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import { expect } from 'chai';
+import Enzyme from 'enzyme'
+import Adapter from 'enzyme-adapter-react-16'
+import { expect } from 'chai'
 
 Enzyme.configure({ adapter: new Adapter() })
 
-import TextField from './text-field';
+import TextField from './text-field'
 
 const { mount } = Enzyme
 

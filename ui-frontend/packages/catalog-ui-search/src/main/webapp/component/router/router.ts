@@ -13,9 +13,9 @@
  *
  **/
 
-import $ from 'jquery';
+import $ from 'jquery'
 
-import Backbone from 'backbone';
+import Backbone from 'backbone'
 
 export default new (Backbone.Model.extend({
   defaults: {
@@ -33,4 +33,4 @@ export default new (Backbone.Model.extend({
   handleChangeName() {
     $('html').attr('data-route', this.get('name'))
   },
-}))();
+}))()

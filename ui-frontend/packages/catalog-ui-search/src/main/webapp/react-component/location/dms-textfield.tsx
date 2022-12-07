@@ -16,7 +16,10 @@ import React from 'react'
 import CloseIcon from '@material-ui/icons/Close'
 import IconButton from '@material-ui/core/IconButton'
 // @ts-expect-error ts-migrate(2614) FIXME: Module '"../../component/location-new/geo-componen... Remove this comment to see the full error message
-import { DmsLatitude, DmsLongitude } from '../../component/location-new/geo-components/coordinates'
+import {
+  DmsLatitude,
+  DmsLongitude,
+} from '../../component/location-new/geo-components/coordinates'
 import DirectionInput from '../../component/location-new/geo-components/direction'
 
 type Direction = 'N' | 'S' | 'E' | 'W'

@@ -1,4 +1,4 @@
-import userInstance from '../singletons/user-instance';
+import userInstance from '../singletons/user-instance'
 
 export const DEFAULT_DATE_TIME_FORMAT = 'DD MMMM YYYY h:mm a Z'
 

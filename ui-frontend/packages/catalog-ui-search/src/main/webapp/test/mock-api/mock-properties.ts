@@ -12,9 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import properties from '../../js/properties';
+import properties from '../../js/properties'
 
-import api from './index';
+import api from './index'
 const oldInit = properties.init
 
 const mock = () => {

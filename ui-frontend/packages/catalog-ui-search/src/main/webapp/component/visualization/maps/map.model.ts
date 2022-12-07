@@ -15,13 +15,13 @@
 
 import wrapNum from '../../../react-component/utils/wrap-num/wrap-num'
 
-import _ from 'lodash';
-import Backbone from 'backbone';
+import _ from 'lodash'
+import Backbone from 'backbone'
 // @ts-expect-error ts-migrate(6133) FIXME: 'MetacardModel' is declared but its value is never... Remove this comment to see the full error message
-import MetacardModel from '../../../js/model/Metacard';
+import MetacardModel from '../../../js/model/Metacard'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'mt-g... Remove this comment to see the full error message
-import mtgeo from 'mt-geo';
-import * as usngs  from 'usng.js';
+import mtgeo from 'mt-geo'
+import * as usngs from 'usng.js'
 // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
 const converter = new usngs.Converter()
 const usngPrecision = 6
@@ -160,4 +160,4 @@ export default Backbone.AssociatedModel.extend({
       },
     })
   },
-});
+})

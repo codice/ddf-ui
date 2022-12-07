@@ -12,35 +12,32 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import metacardDefinitions from '../../component/singletons/metacard-definitions';
-import properties from '../../js/properties';
+import metacardDefinitions from '../../component/singletons/metacard-definitions'
+import properties from '../../js/properties'
 export const getFilteredAttributeList = () => {
-    return metacardDefinitions.sortedMetacardTypes
-        .filter(({ id }: any) => !properties.isHidden(id))
-        .filter(({ id }: any) => !metacardDefinitions.isHiddenType(id))
-        .map(({ alias, id }: any) => ({
-        label: alias || id,
-        value: id,
-        description: ((properties as any).attributeDescriptions || {})[id],
+  return metacardDefinitions.sortedMetacardTypes
+    .filter(({ id }: any) => !properties.isHidden(id))
+    .filter(({ id }: any) => !metacardDefinitions.isHiddenType(id))
+    .map(({ alias, id }: any) => ({
+      label: alias || id,
+      value: id,
+      description: ((properties as any).attributeDescriptions || {})[id],
     })) as {
-        label: string;
-        value: string;
-        description: string | undefined;
-    }[];
-};
+    label: string
+    value: string
+    description: string | undefined
+  }[]
+}
 export const getAttributeType = (attribute: string): string => {
-    const type = metacardDefinitions.metacardTypes[attribute].type;
-    if (type === 'GEOMETRY')
-        return 'LOCATION';
-    if (isIntegerType(type))
-        return 'INTEGER';
-    if (isFloatType(type))
-        return 'FLOAT';
-    return type;
-};
+  const type = metacardDefinitions.metacardTypes[attribute].type
+  if (type === 'GEOMETRY') return 'LOCATION'
+  if (isIntegerType(type)) return 'INTEGER'
+  if (isFloatType(type)) return 'FLOAT'
+  return type
+}
 const isIntegerType = (type: string) => {
-    return type === 'INTEGER' || type === 'SHORT' || type === 'LONG';
-};
+  return type === 'INTEGER' || type === 'SHORT' || type === 'LONG'
+}
 const isFloatType = (type: string) => {
-    return type === 'FLOAT' || type === 'DOUBLE';
-};
+  return type === 'FLOAT' || type === 'DOUBLE'
+}

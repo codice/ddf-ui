@@ -12,9 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react';
+import React from 'react'
 
-import BaseLine from './base.line';
+import BaseLine from './base.line'
 
 const options = {
   label: 'MultiPolygon',
@@ -25,4 +25,4 @@ const options = {
 
 const MultiPolygon = (props: any) => <BaseLine {...props} {...options} />
 
-export default MultiPolygon;
+export default MultiPolygon

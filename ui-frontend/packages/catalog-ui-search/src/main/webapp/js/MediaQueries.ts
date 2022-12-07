@@ -19,10 +19,10 @@
     rem to px upon page load (using the browser's font size setting).  This means that media queries will
     not function completely as intended.
 */
-import _ from 'underscore';
+import _ from 'underscore'
 
-import $ from 'jquery';
-import user from '../component/singletons/user-instance';
+import $ from 'jquery'
+import user from '../component/singletons/user-instance'
 
 //in rem based on 16px base font size => 420 / 16
 const mobileScreenSize = 26.25 //420 px

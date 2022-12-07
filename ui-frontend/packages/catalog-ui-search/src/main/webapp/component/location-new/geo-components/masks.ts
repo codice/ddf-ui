@@ -51,4 +51,4 @@ const longitudeDMSMask = function (rawValue: any) {
 export default {
   latitudeDMSMask,
   longitudeDMSMask,
-};
+}

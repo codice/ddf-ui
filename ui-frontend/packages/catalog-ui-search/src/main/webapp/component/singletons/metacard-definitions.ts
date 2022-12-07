@@ -13,12 +13,12 @@
  *
  **/
 
-import $ from 'jquery';
+import $ from 'jquery'
 
-import Backbone from 'backbone';
-import _ from 'underscore';
-import properties from '../../js/properties';
-import moment from 'moment';
+import Backbone from 'backbone'
+import _ from 'underscore'
+import properties from '../../js/properties'
+import moment from 'moment'
 const PRIORITY_ATTRIBUTES = ['anyText', 'anyGeo']
 function transformEnumResponse(metacardTypes: any, response: any) {
   return _.reduce(
@@ -53,7 +53,7 @@ function transformEnumResponse(metacardTypes: any, response: any) {
       return result
     },
     {}
-  );
+  )
 }
 
 const metacardStartingTypes = {
@@ -252,7 +252,7 @@ export default new (Backbone.Model.extend({
         return 1
       }
       return 0
-    });
+    })
   },
   updateSortedMetacardTypes() {
     this.sortedMetacardTypes = []
@@ -276,4 +276,4 @@ export default new (Backbone.Model.extend({
   validation: {},
   enums: properties.enums,
   deprecatedEnums: {},
-}))();
+}))()

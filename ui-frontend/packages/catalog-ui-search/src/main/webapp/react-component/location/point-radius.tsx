@@ -13,18 +13,21 @@
  *
  **/
 import React, { useState, useEffect } from 'react'
-import { Radio, RadioItem } from '../radio/radio';
-import TextField from '../text-field';
+import { Radio, RadioItem } from '../radio/radio'
+import TextField from '../text-field'
 import {
   validateGeo,
   initialErrorState,
   initialErrorStateWithDefault,
   ErrorComponent,
 } from '../utils/validation'
-import { Units, Zone, Hemisphere, MinimumSpacing } from './common';
-import { DmsLatitude, DmsLongitude } from '../../component/location-new/geo-components/coordinates';
-import DirectionInput from '../../component/location-new/geo-components/direction';
-import { Direction } from '../../component/location-new/utils/dms-utils';
+import { Units, Zone, Hemisphere, MinimumSpacing } from './common'
+import {
+  DmsLatitude,
+  DmsLongitude,
+} from '../../component/location-new/geo-components/coordinates'
+import DirectionInput from '../../component/location-new/geo-components/direction'
+import { Direction } from '../../component/location-new/utils/dms-utils'
 
 const PointRadiusLatLonDd = (props: any) => {
   const { lat, lon, radius, radiusUnits, setState } = props
@@ -88,19 +91,20 @@ const PointRadiusLatLonDd = (props: any) => {
           onChange={(value) => {
             setState({ ['radius']: value })
           }}
-          onBlur={(e: any) => setRadiusError(
-            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-            validateGeo('radius', {
-              value: e.target.value,
-              units: radiusUnits,
-            })
-          )
+          onBlur={(e: any) =>
+            setRadiusError(
+              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+              validateGeo('radius', {
+                value: e.target.value,
+                units: radiusUnits,
+              })
+            )
           }
         />
       </Units>
       <ErrorComponent errorState={radiusError} />
     </div>
-  );
+  )
 }
 
 const PointRadiusLatLonDms = (props: any) => {
@@ -189,19 +193,20 @@ const PointRadiusLatLonDms = (props: any) => {
           onChange={(value) => {
             setState({ ['radius']: value })
           }}
-          onBlur={(e: any) => setRadiusError(
-            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-            validateGeo('radius', {
-              value: e.target.value,
-              units: radiusUnits,
-            })
-          )
+          onBlur={(e: any) =>
+            setRadiusError(
+              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+              validateGeo('radius', {
+                value: e.target.value,
+                units: radiusUnits,
+              })
+            )
           }
         />
       </Units>
       <ErrorComponent errorState={radiusError} />
     </div>
-  );
+  )
 }
 
 const PointRadiusUsngMgrs = (props: any) => {
@@ -249,7 +254,7 @@ const PointRadiusUsngMgrs = (props: any) => {
       </Units>
       <ErrorComponent errorState={radiusError} />
     </div>
-  );
+  )
 }
 
 const PointRadiusUtmUps = (props: any) => {
@@ -367,19 +372,20 @@ const PointRadiusUtmUps = (props: any) => {
           onChange={(value) => {
             setState({ ['radius']: value })
           }}
-          onBlur={(e: any) => setRadiusError(
-            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-            validateGeo('radius', {
-              value: e.target.value,
-              units: radiusUnits,
-            })
-          )
+          onBlur={(e: any) =>
+            setRadiusError(
+              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+              validateGeo('radius', {
+                value: e.target.value,
+                units: radiusUnits,
+              })
+            )
           }
         />
       </Units>
       <ErrorComponent errorState={radiusError} />
     </div>
-  );
+  )
 }
 
 const PointRadius = (props: any) => {
@@ -411,7 +417,7 @@ const PointRadius = (props: any) => {
         {Component !== null ? <Component {...props} /> : null}
       </div>
     </div>
-  );
+  )
 }
 
-export default PointRadius;
+export default PointRadius

@@ -12,11 +12,11 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import Backbone from 'backbone';
+import Backbone from 'backbone'
 
-import 'backbone-associations';
+import 'backbone-associations'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'urij... Remove this comment to see the full error message
-import URITemplate from 'urijs/src/URITemplate';
+import URITemplate from 'urijs/src/URITemplate'
 const DECODED_QUERY_ID_TEMPLATE = '{&queryId}'
 const ENCODED_QUERY_ID_TEMPLATE = encodeURIComponent(DECODED_QUERY_ID_TEMPLATE)
 
@@ -61,4 +61,4 @@ export default Backbone.AssociatedModel.extend({
       this.set('url', expandedUrl)
     }
   },
-});
+})

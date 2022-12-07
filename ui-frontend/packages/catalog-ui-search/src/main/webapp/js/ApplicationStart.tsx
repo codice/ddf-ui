@@ -14,12 +14,12 @@
  **/
 
 // @ts-expect-error ts-migrate(6133) FIXME: '$' is declared but its value is never read.
-import $ from 'jquery';
+import $ from 'jquery'
 
 import BaseApp from '../component/app/base-app'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import user from '../component/singletons/user-instance';
+import user from '../component/singletons/user-instance'
 import SourcesInstance from '../component/singletons/sources-instance'
 import MetacardDefinitions from '../component/tabs/metacard/metacardDefinitions'
 

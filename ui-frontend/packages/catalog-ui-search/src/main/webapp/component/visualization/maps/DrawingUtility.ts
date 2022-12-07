@@ -15,7 +15,7 @@
 
 //allows us to get around svg security restrictions in IE11 (see using svg in opengl)
 //make our own image and manually set dimensions because of IE: https://github.com/openlayers/openlayers/issues/3939
-import _ from 'underscore';
+import _ from 'underscore'
 
 const defaultColor = '#3c6dd5'
 
@@ -169,4 +169,4 @@ export default {
 
     return canvas
   },
-};
+}

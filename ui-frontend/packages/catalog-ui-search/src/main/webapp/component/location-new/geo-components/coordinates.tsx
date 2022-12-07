@@ -12,13 +12,13 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react';
+import React from 'react'
 
-import TextField from '../../../react-component/text-field/index';
-import MaskedTextField from '../inputs/masked-text-field';
+import TextField from '../../../react-component/text-field/index'
+import MaskedTextField from '../inputs/masked-text-field'
 // @ts-expect-error ts-migrate(2614) FIXME: Module '"./masks"' has no exported member 'latitud... Remove this comment to see the full error message
-import { latitudeDMSMask, longitudeDMSMask } from './masks';
-import { buildDmsString, parseDmsCoordinate } from '../utils/dms-utils';
+import { latitudeDMSMask, longitudeDMSMask } from './masks'
+import { buildDmsString, parseDmsCoordinate } from '../utils/dms-utils'
 
 const Coordinate = (props: any) => {
   const { placeholder, value, onChange, children, ...otherProps } = props
@@ -65,7 +65,7 @@ const DmsLatitude = (props: any) => {
         )
       }}
     />
-  );
+  )
 }
 
 const DmsLongitude = (props: any) => {
@@ -82,7 +82,7 @@ const DmsLongitude = (props: any) => {
         )
       }}
     />
-  );
+  )
 }
 
 const DdLatitude = (props: any) => {
@@ -121,10 +121,4 @@ const UsngCoordinate = (props: any) => {
   )
 }
 
-export {
-  DmsLatitude,
-  DmsLongitude,
-  DdLatitude,
-  DdLongitude,
-  UsngCoordinate,
-};
+export { DmsLatitude, DmsLongitude, DdLatitude, DdLongitude, UsngCoordinate }

@@ -12,11 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react';
+import React from 'react'
 
-const Label = ({
-  children
-}: any) => (
+const Label = ({ children }: any) => (
   <span
     className="p-2 flex-shrink-0 flex-grow-0"
     style={{
@@ -28,4 +26,4 @@ const Label = ({
   </span>
 )
 
-export default Label;
+export default Label

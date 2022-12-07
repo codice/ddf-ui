@@ -36,7 +36,7 @@ describe('Common', () => {
   })
   describe('wrapCoordinatesFromGeometry', () => {
     class MockGeometry {
-      props: any;
+      props: any
       constructor(props: any) {
         this.props = props
       }

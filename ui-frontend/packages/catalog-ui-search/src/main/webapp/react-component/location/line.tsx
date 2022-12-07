@@ -12,9 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react';
+import React from 'react'
 
-import BaseLine from './base.line';
+import BaseLine from './base.line'
 
 const options = {
   label: 'Line',
@@ -24,4 +24,4 @@ const options = {
 }
 const Line = (props: any) => <BaseLine {...props} {...options} />
 
-export default Line;
+export default Line

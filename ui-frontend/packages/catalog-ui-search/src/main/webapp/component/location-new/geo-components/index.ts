@@ -12,15 +12,10 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import WKT from './wkt';
+import WKT from './wkt'
 
-import LatLongDD from './lat-long-dd';
-import LatLongDMS from './lat-long-dms';
-import USNG from './usng-mgrs';
+import LatLongDD from './lat-long-dd'
+import LatLongDMS from './lat-long-dms'
+import USNG from './usng-mgrs'
 
-export {
-  WKT,
-  LatLongDD,
-  LatLongDMS,
-  USNG,
-};
+export { WKT, LatLongDD, LatLongDMS, USNG }

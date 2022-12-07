@@ -13,7 +13,7 @@
  *
  **/
 
-import Backbone from 'backbone';
+import Backbone from 'backbone'
 
 import {
   // @ts-expect-error ts-migrate(2614) FIXME: Module '"./utils"' has no exported member 'validat... Remove this comment to see the full error message
@@ -30,10 +30,10 @@ import {
   dmsToWkt,
   // @ts-expect-error ts-migrate(2614) FIXME: Module '"./utils"' has no exported member 'usngToW... Remove this comment to see the full error message
   usngToWkt,
-} from './utils';
+} from './utils'
 
 // @ts-expect-error ts-migrate(2614) FIXME: Module '"./models"' has no exported member 'ddMode... Remove this comment to see the full error message
-import { ddModel, dmsModel, usngModel } from './models';
+import { ddModel, dmsModel, usngModel } from './models'
 
 export default Backbone.AssociatedModel.extend({
   defaults: {

@@ -19,7 +19,6 @@ import DistanceInfoPresentation from './presentation'
 const LEFT_OFFSET = 390
 const TOP_OFFSET = 180
 
-
 const mapPropsToState = (props: Props) => {
   const { map } = props
   const distance = map.get('currentDistance')

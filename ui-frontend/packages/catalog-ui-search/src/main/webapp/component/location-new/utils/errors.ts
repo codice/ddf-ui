@@ -44,4 +44,4 @@ const errorMessages = {
   tooFewPointsPolygon: 'Polygons must contain 3 or more points',
 }
 
-export default errorMessages;
+export default errorMessages

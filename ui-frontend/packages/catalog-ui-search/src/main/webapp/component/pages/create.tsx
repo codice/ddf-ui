@@ -12,7 +12,7 @@ import { useMenuState } from '../menu-state/menu-state'
 import { Elevations } from '../theme/theme'
 import { OpenSearch, SaveForm } from './search'
 
-import SelectionInterfaceModel from '../selection-interface/selection-interface.model';
+import SelectionInterfaceModel from '../selection-interface/selection-interface.model'
 
 const selectionInterface = new SelectionInterfaceModel()
 

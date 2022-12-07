@@ -12,11 +12,11 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import wkx from 'wkx';
+import wkx from 'wkx'
 
 // @ts-expect-error ts-migrate(2614) FIXME: Module '"./geo-helper"' has no exported member 'co... Remove this comment to see the full error message
-import { computeCircle, toKilometers } from './geo-helper';
-import errorMessages from './errors';
+import { computeCircle, toKilometers } from './geo-helper'
+import errorMessages from './errors'
 
 const ddRegex = new RegExp('^-?[0-9]*.?[0-9]*$')
 const minimumDifference = 0.0001
@@ -227,8 +227,4 @@ function validateDd(dd: any) {
   return { valid, error }
 }
 
-export {
-  ddToWkt,
-  validateDd,
-  validateDdPoint,
-};
+export { ddToWkt, validateDd, validateDdPoint }

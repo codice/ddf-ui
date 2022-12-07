@@ -12,9 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react';
+import React from 'react'
 
-import Group from '../../../react-component/group/index';
+import Group from '../../../react-component/group/index'
 import Button from '@material-ui/core/Button'
 class ListEditor extends React.Component {
   handleAdd() {
@@ -60,4 +60,4 @@ class ListEditor extends React.Component {
   }
 }
 
-export default ListEditor;
+export default ListEditor

@@ -42,4 +42,4 @@ const ddModel = {
 export default {
   ddPoint,
   ddModel,
-};
+}

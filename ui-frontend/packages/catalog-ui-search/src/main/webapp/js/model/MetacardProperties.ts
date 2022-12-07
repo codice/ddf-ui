@@ -12,14 +12,14 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import Backbone from 'backbone';
+import Backbone from 'backbone'
 
-import _ from 'underscore';
-import metacardDefinitions from '../../component/singletons/metacard-definitions';
-import TurfMeta from '@turf/meta';
-import wkx from 'wkx';
-import properties from '../properties';
-import 'backbone-associations';
+import _ from 'underscore'
+import metacardDefinitions from '../../component/singletons/metacard-definitions'
+import TurfMeta from '@turf/meta'
+import wkx from 'wkx'
+import properties from '../properties'
+import 'backbone-associations'
 
 export default Backbone.AssociatedModel.extend({
   type: 'metacard-properties',
@@ -52,7 +52,7 @@ export default Backbone.AssociatedModel.extend({
             TurfMeta.coordAll(wkx.Geometry.parse(wkt).toGeoJSON())
           ),
         []
-      );
+      )
     } catch (err) {
       console.error(err)
       return []
@@ -69,4 +69,4 @@ export default Backbone.AssociatedModel.extend({
         metacardDefinitions.metacardTypes[key].type === 'GEOMETRY'
     )
   },
-});
+})

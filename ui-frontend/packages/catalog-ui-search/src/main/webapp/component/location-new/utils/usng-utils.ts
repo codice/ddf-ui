@@ -12,15 +12,15 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import wkx from 'wkx';
+import wkx from 'wkx'
 
-import * as usng from 'usng.js';
+import * as usng from 'usng.js'
 // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
 const converter = new usng.Converter()
 
 // @ts-expect-error ts-migrate(2614) FIXME: Module '"./geo-helper"' has no exported member 'co... Remove this comment to see the full error message
-import { computeCircle, toKilometers } from './geo-helper';
-import errorMessages from './errors';
+import { computeCircle, toKilometers } from './geo-helper'
+import errorMessages from './errors'
 
 function validateUsngGrid(grid: any) {
   return converter.isUSNG(grid) !== 0
@@ -81,7 +81,9 @@ function usngToWkt(usng: any) {
       break
     case 'polygon':
       if (usng.polygon.list.length > 0) {
-        usng.polygon.list.map((grid: any) => points.push(usngGridToWktPoint(grid)))
+        usng.polygon.list.map((grid: any) =>
+          points.push(usngGridToWktPoint(grid))
+        )
         const p1 = points[0]
         const p2 = points[points.length - 1]
         if (p1.x !== p2.x || p1.y !== p2.y) {
@@ -170,4 +172,4 @@ export default {
   usngToWkt,
   validateUsng,
   validateUsngGrid,
-};
+}

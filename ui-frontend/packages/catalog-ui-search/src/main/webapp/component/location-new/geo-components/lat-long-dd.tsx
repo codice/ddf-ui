@@ -12,15 +12,15 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react';
+import React from 'react'
 
-import Group from '../../../react-component/group/index';
-import { Radio, RadioItem } from '../../../react-component/radio/radio';
-import TextField from '../../../react-component/text-field/index';
-import { Units } from '../../../react-component/location/common';
-import ListEditor from '../inputs/list-editor';
-import { DdLatitude, DdLongitude } from './coordinates';
-import { ddPoint } from '../models';
+import Group from '../../../react-component/group/index'
+import { Radio, RadioItem } from '../../../react-component/radio/radio'
+import TextField from '../../../react-component/text-field/index'
+import { Units } from '../../../react-component/location/common'
+import ListEditor from '../inputs/list-editor'
+import { DdLatitude, DdLongitude } from './coordinates'
+import { ddPoint } from '../models'
 import DistanceUtils from '../../../js/DistanceUtils'
 
 const Point = (props: any) => {
@@ -42,7 +42,7 @@ const Point = (props: any) => {
         )}
       />
     </Group>
-  );
+  )
 }
 
 const Circle = (props: any) => {
@@ -71,7 +71,9 @@ const Circle = (props: any) => {
       </Group>
       <Units
         value={dd.circle.units}
-        onChange={setState((draft: any, value: any) => (draft.dd.circle.units = value))}
+        onChange={setState(
+          (draft: any, value: any) => (draft.dd.circle.units = value)
+        )}
       >
         <TextField
           label="Radius"
@@ -85,7 +87,7 @@ const Circle = (props: any) => {
         />
       </Units>
     </div>
-  );
+  )
 }
 
 const Line = (props: any) => {
@@ -119,11 +121,13 @@ const Line = (props: any) => {
       // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       list={dd.line.list}
       defaultItem={ddPoint}
-      onChange={setState((draft: any, value: any) => (draft.dd.line.list = value))}
+      onChange={setState(
+        (draft: any, value: any) => (draft.dd.line.list = value)
+      )}
     >
       {points}
     </ListEditor>
-  );
+  )
 }
 
 const Polygon = (props: any) => {
@@ -157,11 +161,13 @@ const Polygon = (props: any) => {
       // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       list={dd.polygon.list}
       defaultItem={ddPoint}
-      onChange={setState((draft: any, value: any) => (draft.dd.polygon.list = value))}
+      onChange={setState(
+        (draft: any, value: any) => (draft.dd.polygon.list = value)
+      )}
     >
       {points}
     </ListEditor>
-  );
+  )
 }
 
 const BoundingBox = (props: any) => {
@@ -201,7 +207,7 @@ const BoundingBox = (props: any) => {
         )}
       />
     </div>
-  );
+  )
 }
 
 const LatLongDD = (props: any) => {
@@ -222,7 +228,9 @@ const LatLongDD = (props: any) => {
     <div>
       <Radio
         value={dd.shape}
-        onChange={setState((draft: any, value: any) => (draft.dd.shape = value))}
+        onChange={setState(
+          (draft: any, value: any) => (draft.dd.shape = value)
+        )}
       >
         <RadioItem value="point">Point</RadioItem>
         <RadioItem value="circle">Circle</RadioItem>
@@ -234,7 +242,7 @@ const LatLongDD = (props: any) => {
         {Component !== null ? <Component {...props} /> : null}
       </div>
     </div>
-  );
+  )
 }
 
-export default LatLongDD;
+export default LatLongDD

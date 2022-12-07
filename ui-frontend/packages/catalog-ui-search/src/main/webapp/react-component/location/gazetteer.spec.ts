@@ -18,11 +18,11 @@ import {
   mock as mockProperties,
   unmock as unmockProperties,
 } from '../../test/mock-api/mock-properties'
-import {getLargestBbox} from './gazetteer'
+import { getLargestBbox } from './gazetteer'
 let GetLargestBbox: any
 
 // @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './gazetteer-france-test-data.j... Remove this comment to see the full error message
-import testData from './gazetteer-france-test-data.json';
+import testData from './gazetteer-france-test-data.json'
 
 describe('getLargestBbox', () => {
   before(() => {

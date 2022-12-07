@@ -12,58 +12,67 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import Common from './Common';
+import Common from './Common'
 /*jshint esversion: 6, bitwise: false*/
-import ol from 'openlayers';
-import properties from './properties';
-type CoordinateType = Array<any>;
-type PointType = Array<any>;
+import ol from 'openlayers'
+import properties from './properties'
+type CoordinateType = Array<any>
+type PointType = Array<any>
 type GeometryType = {
-    getType: () => 'LineString' | 'Polygon' | 'Circle';
-    getCoordinates: () => CoordinateType;
-    getCenter: () => any;
-    setCoordinates: (coords: CoordinateType) => void;
-    setCenter: (cords: CoordinateType) => void;
-};
+  getType: () => 'LineString' | 'Polygon' | 'Circle'
+  getCoordinates: () => CoordinateType
+  getCenter: () => any
+  setCoordinates: (coords: CoordinateType) => void
+  setCenter: (cords: CoordinateType) => void
+}
 export const OpenLayersGeometryUtils = {
-    getCoordinatesFromGeometry: (geometry: GeometryType) => {
-        const type = geometry.getType();
-        switch (type) {
-            case 'LineString':
-                return geometry.getCoordinates();
-            case 'Polygon':
-                return geometry.getCoordinates()[0];
-            case 'Circle':
-                return [geometry.getCenter()];
-            default:
-                return [];
-        }
-    },
-    setCoordinatesForGeometry: (geometry: GeometryType, coordinates: CoordinateType) => {
-        const type = geometry.getType();
-        switch (type) {
-            case 'LineString':
-                geometry.setCoordinates(coordinates);
-                break;
-            case 'Polygon':
-                geometry.setCoordinates([coordinates]);
-                break;
-            case 'Circle':
-                geometry.setCenter(coordinates[0]);
-                break;
-            default:
-                break;
-        }
-    },
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'PointType' is not assignable to ... Remove this comment to see the full error message
-    mapCoordinateToLonLat: (point: PointType) => ol.proj.transform(point, (properties as any).projection, 'EPSG:4326'),
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'PointType' is not assignable to ... Remove this comment to see the full error message
-    lonLatToMapCoordinate: (point: PointType) => ol.proj.transform(point, 'EPSG:4326', (properties as any).projection),
-    wrapCoordinatesFromGeometry: (geometry: GeometryType) => {
-        let coordinates = OpenLayersGeometryUtils.getCoordinatesFromGeometry(geometry).map(OpenLayersGeometryUtils.mapCoordinateToLonLat);
-        coordinates = Common.wrapMapCoordinatesArray(coordinates).map(OpenLayersGeometryUtils.lonLatToMapCoordinate);
-        OpenLayersGeometryUtils.setCoordinatesForGeometry(geometry, coordinates);
-        return geometry;
-    },
-};
-export default OpenLayersGeometryUtils;
+  getCoordinatesFromGeometry: (geometry: GeometryType) => {
+    const type = geometry.getType()
+    switch (type) {
+      case 'LineString':
+        return geometry.getCoordinates()
+      case 'Polygon':
+        return geometry.getCoordinates()[0]
+      case 'Circle':
+        return [geometry.getCenter()]
+      default:
+        return []
+    }
+  },
+  setCoordinatesForGeometry: (
+    geometry: GeometryType,
+    coordinates: CoordinateType
+  ) => {
+    const type = geometry.getType()
+    switch (type) {
+      case 'LineString':
+        geometry.setCoordinates(coordinates)
+        break
+      case 'Polygon':
+        geometry.setCoordinates([coordinates])
+        break
+      case 'Circle':
+        geometry.setCenter(coordinates[0])
+        break
+      default:
+        break
+    }
+  },
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'PointType' is not assignable to ... Remove this comment to see the full error message
+  mapCoordinateToLonLat: (point: PointType) =>
+    ol.proj.transform(point, (properties as any).projection, 'EPSG:4326'),
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'PointType' is not assignable to ... Remove this comment to see the full error message
+  lonLatToMapCoordinate: (point: PointType) =>
+    ol.proj.transform(point, 'EPSG:4326', (properties as any).projection),
+  wrapCoordinatesFromGeometry: (geometry: GeometryType) => {
+    let coordinates = OpenLayersGeometryUtils.getCoordinatesFromGeometry(
+      geometry
+    ).map(OpenLayersGeometryUtils.mapCoordinateToLonLat)
+    coordinates = Common.wrapMapCoordinatesArray(coordinates).map(
+      OpenLayersGeometryUtils.lonLatToMapCoordinate
+    )
+    OpenLayersGeometryUtils.setCoordinatesForGeometry(geometry, coordinates)
+    return geometry
+  },
+}
+export default OpenLayersGeometryUtils

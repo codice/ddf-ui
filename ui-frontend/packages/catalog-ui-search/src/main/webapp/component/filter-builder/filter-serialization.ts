@@ -12,11 +12,11 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import Backbone from 'backbone';
+import Backbone from 'backbone'
 
-import CQLUtils from '../../js/CQLUtils';
-import metacardDefinitions from '../singletons/metacard-definitions';
-import _ from 'underscore';
+import CQLUtils from '../../js/CQLUtils'
+import metacardDefinitions from '../singletons/metacard-definitions'
+import _ from 'underscore'
 
 const FilterBuilderModel = Backbone.Model.extend({
   defaults() {
@@ -124,9 +124,7 @@ const transformFilter = (filter: any) => {
 }
 
 const FilterBuilderCollection = Backbone.Collection.extend({
-  model(attrs: any, {
-    collection
-  }: any) {
+  model(attrs: any, { collection }: any) {
     const sortableOrder = collection.length + 1
 
     if (attrs.filterBuilder === true) {
@@ -167,7 +165,7 @@ export const serialize = (model: any) => {
     return {
       type: operator,
       filters: filters.map(serialize).filter((filter: any) => filter),
-    };
+    }
   }
 
   if (model instanceof FilterModel) {
@@ -221,8 +219,9 @@ export const deserialize = (filter = defaultFilter) => {
   return new FilterBuilderModel({
     operator: type,
     filters: new FilterBuilderCollection(
-      filters.map((filter: any) => filter.filters !== undefined ? deserialize(filter) : filter
+      filters.map((filter: any) =>
+        filter.filters !== undefined ? deserialize(filter) : filter
       )
     ),
-  });
+  })
 }

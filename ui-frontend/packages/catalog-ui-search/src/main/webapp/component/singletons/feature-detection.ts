@@ -15,7 +15,7 @@
 
 //meant to be used for just in time feature detection
 
-import Backbone from 'backbone';
+import Backbone from 'backbone'
 
 export default new (Backbone.Model.extend({
   defaults: {
@@ -28,4 +28,4 @@ export default new (Backbone.Model.extend({
   addFailure(feature: any) {
     this.set(feature, false)
   },
-}))();
+}))()

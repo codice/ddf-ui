@@ -100,7 +100,7 @@ input[type='radio'] {
 input {
   padding: 0.3125rem 0.375rem 0.3125rem 0.375rem;
   height: 2.75rem;
-  line-height: normal; 
+  line-height: normal;
 }
 
 input::-ms-clear {
@@ -263,7 +263,7 @@ label {
   writing-mode: vertical-lr;
 }
 a.outline-none {
-  outline: none !important; 
+  outline: none !important;
 }
 
 .is-bold {
@@ -275,7 +275,7 @@ a.outline-none {
 }
 
 .is-small-font {
-  font-size: .75rem;
+  font-size: 0.75rem;
 }
 
 .is-medium-font {

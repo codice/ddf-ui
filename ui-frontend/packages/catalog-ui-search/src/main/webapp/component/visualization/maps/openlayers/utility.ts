@@ -12,51 +12,66 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import _ from 'underscore';
-import Openlayers from 'openlayers';
-import properties from '../../../../js/properties';
+import _ from 'underscore'
+import Openlayers from 'openlayers'
+import properties from '../../../../js/properties'
 function convertPointCoordinate(point: any) {
-    const coords = [point[0], point[1]];
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'any[]' is not assignable to para... Remove this comment to see the full error message
-    return Openlayers.proj.transform(coords, 'EPSG:4326', (properties as any).projection);
+  const coords = [point[0], point[1]]
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'any[]' is not assignable to para... Remove this comment to see the full error message
+  return Openlayers.proj.transform(
+    coords,
+    'EPSG:4326',
+    (properties as any).projection
+  )
 }
 function unconvertPointCoordinate(point: any) {
-    return Openlayers.proj.transform(point, (properties as any).projection, 'EPSG:4326');
+  return Openlayers.proj.transform(
+    point,
+    (properties as any).projection,
+    'EPSG:4326'
+  )
 }
 /*
   A variety of helpful functions for dealing with Openlayers
 */
 export default {
-    /*
+  /*
         Calculates the center of given a geometry (WKT)
       */
-    calculateOpenlayersCenterOfGeometry(propertyModel: any) {
-        const lineObject = propertyModel
-            .getPoints()
-            .map((coordinate: any) => convertPointCoordinate(coordinate));
-        const extent = Openlayers.extent.boundingExtent(lineObject);
-        return Openlayers.extent.getCenter(extent);
-    },
-    /*
+  calculateOpenlayersCenterOfGeometry(propertyModel: any) {
+    const lineObject = propertyModel
+      .getPoints()
+      .map((coordinate: any) => convertPointCoordinate(coordinate))
+    const extent = Openlayers.extent.boundingExtent(lineObject)
+    return Openlayers.extent.getCenter(extent)
+  },
+  /*
         Calculates the center of given a geometry (WKT)
       */
-    calculateCartographicCenterOfGeometryInDegrees(propertyModel: any) {
-        const openlayersCenter = this.calculateOpenlayersCenterOfGeometry(propertyModel);
-        return unconvertPointCoordinate(openlayersCenter);
-    },
-    /*
+  calculateCartographicCenterOfGeometryInDegrees(propertyModel: any) {
+    const openlayersCenter = this.calculateOpenlayersCenterOfGeometry(
+      propertyModel
+    )
+    return unconvertPointCoordinate(openlayersCenter)
+  },
+  /*
         Calculates the center of given geometries (WKT)
       */
-    calculateOpenlayersCenterOfGeometries(propertyModels: any) {
-        const allPoints = _.flatten(propertyModels.map((propertyModel: any) => propertyModel.getPoints()), true).map((coordinate) => convertPointCoordinate(coordinate));
-        const extent = Openlayers.extent.boundingExtent(allPoints);
-        return Openlayers.extent.getCenter(extent);
-    },
-    /*
+  calculateOpenlayersCenterOfGeometries(propertyModels: any) {
+    const allPoints = _.flatten(
+      propertyModels.map((propertyModel: any) => propertyModel.getPoints()),
+      true
+    ).map((coordinate) => convertPointCoordinate(coordinate))
+    const extent = Openlayers.extent.boundingExtent(allPoints)
+    return Openlayers.extent.getCenter(extent)
+  },
+  /*
         Calculates the center of given geometries (WKT)
       */
-    calculateCartographicCenterOfGeometriesInDegrees(propertyModels: any) {
-        const openlayersCenter = this.calculateOpenlayersCenterOfGeometries(propertyModels);
-        return unconvertPointCoordinate(openlayersCenter);
-    },
-};
+  calculateCartographicCenterOfGeometriesInDegrees(propertyModels: any) {
+    const openlayersCenter = this.calculateOpenlayersCenterOfGeometries(
+      propertyModels
+    )
+    return unconvertPointCoordinate(openlayersCenter)
+  },
+}

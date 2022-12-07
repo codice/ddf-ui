@@ -1,6 +1,6 @@
 /* // http://danielstern.ca/range.css/#/ */
 input[type='range'] {
-  background: rgba(120, 120, 120, .25);
+  background: rgba(120, 120, 120, 0.25);
   -webkit-appearance: none;
   width: 100%;
   margin: 0px 0;
@@ -16,7 +16,7 @@ input[type='range']::-webkit-slider-runnable-track {
   height: 1.4rem;
   cursor: pointer;
   box-shadow: 1px 1px px #000000, 0px 0px 1px #0d0d0d;
-  background: rgba(120, 120, 120, .25);
+  background: rgba(120, 120, 120, 0.25);
   border-radius: 0px;
   border: 0px solid #010101;
 }
@@ -29,10 +29,10 @@ input[type='range']::-webkit-slider-thumb {
   background: #3c6dd5;
   cursor: pointer;
   -webkit-appearance: none;
-  margin-top: -.6875rem;
+  margin-top: -0.6875rem;
 }
 input[type='range']:focus::-webkit-slider-runnable-track {
-  background: rgba(120, 120, 120, .25);
+  background: rgba(120, 120, 120, 0.25);
 }
 input[type='range']::-moz-range-track {
   width: 100%;
@@ -61,13 +61,13 @@ input[type='range']::-ms-track {
   color: transparent;
 }
 input[type='range']::-ms-fill-lower {
-  background: rgba(120, 120, 120, .25);
+  background: rgba(120, 120, 120, 0.25);
   border: 0px solid #010101;
   border-radius: 0px;
   box-shadow: 1px 1px px #000000, 0px 0px 1px #0d0d0d;
 }
 input[type='range']::-ms-fill-upper {
-  background: rgba(120, 120, 120, .25);
+  background: rgba(120, 120, 120, 0.25);
   border: 0px solid #010101;
   border-radius: 0px;
   box-shadow: 1px 1px px #000000, 0px 0px 1px #0d0d0d;
@@ -82,9 +82,8 @@ input[type='range']::-ms-thumb {
   height: 2.75rem;
 }
 input[type='range']:focus::-ms-fill-lower {
-  background: rgba(120, 120, 120, .25);
+  background: rgba(120, 120, 120, 0.25);
 }
 input[type='range']:focus::-ms-fill-upper {
-  background: rgba(120, 120, 120, .25);
+  background: rgba(120, 120, 120, 0.25);
 }
-

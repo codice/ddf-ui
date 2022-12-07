@@ -14,7 +14,7 @@
  **/
 
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'dens... Remove this comment to see the full error message
-import clustering from 'density-clustering';
+import clustering from 'density-clustering'
 
 const dbscan = new clustering.DBSCAN()
 
@@ -28,7 +28,7 @@ function removeInvalidCenters(results: any, centers: any) {
 }
 
 function convertIndicesToResults(results: any, cluster: any) {
-  return cluster.map((index: any) => results[index]);
+  return cluster.map((index: any) => results[index])
 }
 
 export default {
@@ -40,6 +40,6 @@ export default {
     removeInvalidCenters(results, centers)
     return dbscan
       .run(centers, 44, 2)
-      .map((cluster: any) => convertIndicesToResults(results, cluster));
+      .map((cluster: any) => convertIndicesToResults(results, cluster))
   },
-};
+}

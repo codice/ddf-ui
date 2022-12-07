@@ -12,33 +12,38 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import $ from 'jquery';
-($ as any).whenAll = function () {
-    let args = arguments, sliceDeferred = [].slice, i = 0, length = args.length, count = length, rejected: any, deferred = $.Deferred();
-    function resolveFunc(i: any, reject: any) {
-        return function (value: any) {
-            rejected = rejected || reject;
-            args[i] = arguments.length > 1 ? sliceDeferred.call(arguments, 0) : value;
-            if (!--count) {
-                // Strange bug in FF4:
-                // Values changed onto the arguments object sometimes end up as undefined values
-                // outside the $.when method. Cloning the object into a fresh array solves the issue
-                const fn = rejected ? deferred.rejectWith : deferred.resolveWith;
-                fn.call(deferred, deferred, sliceDeferred.call(args, 0));
-            }
-        };
+import $ from 'jquery'
+;($ as any).whenAll = function () {
+  let args = arguments,
+    sliceDeferred = [].slice,
+    i = 0,
+    length = args.length,
+    count = length,
+    rejected: any,
+    deferred = $.Deferred()
+  function resolveFunc(i: any, reject: any) {
+    return function (value: any) {
+      rejected = rejected || reject
+      args[i] = arguments.length > 1 ? sliceDeferred.call(arguments, 0) : value
+      if (!--count) {
+        // Strange bug in FF4:
+        // Values changed onto the arguments object sometimes end up as undefined values
+        // outside the $.when method. Cloning the object into a fresh array solves the issue
+        const fn = rejected ? deferred.rejectWith : deferred.resolveWith
+        fn.call(deferred, deferred, sliceDeferred.call(args, 0))
+      }
     }
-    for (; i < length; i++) {
-        if (args[i] && $.isFunction(args[i].promise)) {
-            // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
-            args[i].promise().then(resolveFunc(i), resolveFunc(i, true));
-        }
-        else {
-            --count;
-        }
+  }
+  for (; i < length; i++) {
+    if (args[i] && $.isFunction(args[i].promise)) {
+      // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
+      args[i].promise().then(resolveFunc(i), resolveFunc(i, true))
+    } else {
+      --count
     }
-    if (count === 0) {
-        deferred.resolveWith(deferred, args);
-    }
-    return deferred.promise();
-};
+  }
+  if (count === 0) {
+    deferred.resolveWith(deferred, args)
+  }
+  return deferred.promise()
+}

@@ -12,159 +12,203 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react';
-import LocationOldModel from '../../component/location-old/location-old';
-import wreqr from '../../js/wreqr';
-import { Drawing } from '../../component/singletons/drawing';
-import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook';
-import { hot } from 'react-hot-loader';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import Line from './line';
-import Polygon from './polygon';
-import PointRadius from './point-radius';
-import BoundingBox from './bounding-box';
-import Gazetteer from './gazetteer';
-import ShapeUtils from '../../js/ShapeUtils';
+import * as React from 'react'
+import LocationOldModel from '../../component/location-old/location-old'
+import wreqr from '../../js/wreqr'
+import { Drawing } from '../../component/singletons/drawing'
+import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
+import { hot } from 'react-hot-loader'
+import Autocomplete from '@material-ui/lab/Autocomplete'
+import TextField from '@material-ui/core/TextField'
+import Button from '@material-ui/core/Button'
+import Line from './line'
+import Polygon from './polygon'
+import PointRadius from './point-radius'
+import BoundingBox from './bounding-box'
+import Gazetteer from './gazetteer'
+import ShapeUtils from '../../js/ShapeUtils'
 // @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'plugins/location' or its corre... Remove this comment to see the full error message
-import plugin from 'plugins/location';
+import plugin from 'plugins/location'
 type InputType = {
-    label: string;
-    Component: any;
-};
+  label: string
+  Component: any
+}
 type InputsType = {
-    [key: string]: InputType;
-};
+  [key: string]: InputType
+}
 const inputs = plugin({
-    line: {
-        label: 'Line',
-        Component: Line,
+  line: {
+    label: 'Line',
+    Component: Line,
+  },
+  poly: {
+    label: 'Polygon',
+    Component: Polygon,
+  },
+  circle: {
+    label: 'Point-Radius',
+    Component: PointRadius,
+  },
+  bbox: {
+    label: 'Bounding Box',
+    Component: BoundingBox,
+  },
+  keyword: {
+    label: 'Keyword',
+    Component: ({ setState, keywordValue, ...props }: any) => {
+      return (
+        // Offsets className="form-group clearfix" below
+        <div>
+          <Gazetteer
+            {...props}
+            value={keywordValue}
+            setState={({ value, ...data }: any) => {
+              setState({ keywordValue: value, ...data })
+            }}
+            setBufferState={(key: any, value: any) =>
+              setState({ [key]: value })
+            }
+            variant="outlined"
+          />
+        </div>
+      )
     },
-    poly: {
-        label: 'Polygon',
-        Component: Polygon,
-    },
-    circle: {
-        label: 'Point-Radius',
-        Component: PointRadius,
-    },
-    bbox: {
-        label: 'Bounding Box',
-        Component: BoundingBox,
-    },
-    keyword: {
-        label: 'Keyword',
-        Component: ({ setState, keywordValue, ...props }: any) => {
-            return (
-            // Offsets className="form-group clearfix" below
-            <div>
-          <Gazetteer {...props} value={keywordValue} setState={({ value, ...data }: any) => {
-                    setState({ keywordValue: value, ...data });
-                }} setBufferState={(key: any, value: any) => setState({ [key]: value })} variant="outlined"/>
-        </div>);
-        },
-    },
-}) as InputsType;
-const drawTypes = ['line', 'poly', 'circle', 'bbox'];
+  },
+}) as InputsType
+const drawTypes = ['line', 'poly', 'circle', 'bbox']
 function getCurrentValue({ locationModel }: any) {
-    const modelJSON = locationModel.toJSON();
-    let type;
-    if (modelJSON.polygon !== undefined) {
-        type = ShapeUtils.isArray3D(modelJSON.polygon) ? 'MULTIPOLYGON' : 'POLYGON';
-    }
-    else if (modelJSON.lat !== undefined &&
-        modelJSON.lon !== undefined &&
-        modelJSON.radius !== undefined) {
-        type = 'POINTRADIUS';
-    }
-    else if (modelJSON.line !== undefined &&
-        modelJSON.lineWidth !== undefined) {
-        type = 'LINE';
-    }
-    else if (modelJSON.north !== undefined &&
-        modelJSON.south !== undefined &&
-        modelJSON.east !== undefined &&
-        modelJSON.west !== undefined) {
-        type = 'BBOX';
-    }
-    return Object.assign(modelJSON, {
-        type,
-        lineWidth: modelJSON.lineWidth,
-        radius: modelJSON.radius,
-    });
+  const modelJSON = locationModel.toJSON()
+  let type
+  if (modelJSON.polygon !== undefined) {
+    type = ShapeUtils.isArray3D(modelJSON.polygon) ? 'MULTIPOLYGON' : 'POLYGON'
+  } else if (
+    modelJSON.lat !== undefined &&
+    modelJSON.lon !== undefined &&
+    modelJSON.radius !== undefined
+  ) {
+    type = 'POINTRADIUS'
+  } else if (
+    modelJSON.line !== undefined &&
+    modelJSON.lineWidth !== undefined
+  ) {
+    type = 'LINE'
+  } else if (
+    modelJSON.north !== undefined &&
+    modelJSON.south !== undefined &&
+    modelJSON.east !== undefined &&
+    modelJSON.west !== undefined
+  ) {
+    type = 'BBOX'
+  }
+  return Object.assign(modelJSON, {
+    type,
+    lineWidth: modelJSON.lineWidth,
+    radius: modelJSON.radius,
+  })
 }
 function updateMap({ locationModel }: any) {
-    const mode = locationModel.get('mode');
-    if (mode !== undefined && Drawing.isDrawing() !== true) {
-        (wreqr as any).vent.trigger('search:' + mode + 'display', locationModel);
-    }
+  const mode = locationModel.get('mode')
+  if (mode !== undefined && Drawing.isDrawing() !== true) {
+    ;(wreqr as any).vent.trigger('search:' + mode + 'display', locationModel)
+  }
 }
 export const LocationContext = React.createContext({
-    filterInputPredicate: (_name: string): boolean => {
-        return true;
-    },
-});
+  filterInputPredicate: (_name: string): boolean => {
+    return true
+  },
+})
 const LocationInput = ({ onChange, value }: any) => {
-    const locationContext = React.useContext(LocationContext);
-    const [locationModel] = React.useState(new LocationOldModel(value) as any);
-    const [state, setState] = React.useState(locationModel.toJSON() as any);
-    const { listenTo, stopListening } = useBackbone();
-    React.useEffect(() => {
-        return () => {
-            setTimeout(() => {
-                // This is to facilitate clearing out the map, it isn't about the value, but we don't want the changeCallback to fire!
-                locationModel.set(locationModel.defaults());
-                (wreqr as any).vent.trigger('search:drawend', [locationModel]);
-            }, 0);
-        };
-    }, []);
-    React.useEffect(() => {
-        const onChangeCallback = () => {
-            setState(locationModel.toJSON());
-            updateMap({ locationModel });
-            onChange(getCurrentValue({ locationModel }));
-        };
-        listenTo(locationModel, 'change', onChangeCallback);
-        return () => {
-            stopListening(locationModel, 'change', onChangeCallback);
-        };
-    }, [onChange]);
-    const ComponentToRender = inputs[state.mode]
-        ? inputs[state.mode].Component
-        : () => null;
-    const options = Object.entries(inputs)
-        .map((entry) => {
-        const [key, value] = entry;
-        return {
-            label: value.label,
-            value: key,
-        };
+  const locationContext = React.useContext(LocationContext)
+  const [locationModel] = React.useState(new LocationOldModel(value) as any)
+  const [state, setState] = React.useState(locationModel.toJSON() as any)
+  const { listenTo, stopListening } = useBackbone()
+  React.useEffect(() => {
+    return () => {
+      setTimeout(() => {
+        // This is to facilitate clearing out the map, it isn't about the value, but we don't want the changeCallback to fire!
+        locationModel.set(locationModel.defaults())
+        ;(wreqr as any).vent.trigger('search:drawend', [locationModel])
+      }, 0)
+    }
+  }, [])
+  React.useEffect(() => {
+    const onChangeCallback = () => {
+      setState(locationModel.toJSON())
+      updateMap({ locationModel })
+      onChange(getCurrentValue({ locationModel }))
+    }
+    listenTo(locationModel, 'change', onChangeCallback)
+    return () => {
+      stopListening(locationModel, 'change', onChangeCallback)
+    }
+  }, [onChange])
+  const ComponentToRender = inputs[state.mode]
+    ? inputs[state.mode].Component
+    : () => null
+  const options = Object.entries(inputs)
+    .map((entry) => {
+      const [key, value] = entry
+      return {
+        label: value.label,
+        value: key,
+      }
     })
-        .filter((value) => {
-        return locationContext.filterInputPredicate(value.value);
-    });
-    return (<div>
+    .filter((value) => {
+      return locationContext.filterInputPredicate(value.value)
+    })
+  return (
+    <div>
       <div>
-        <Autocomplete className="mb-2" data-id="filter-type-autocomplete" fullWidth size="small" options={options} getOptionLabel={(option) => option.label} getOptionSelected={(option, value) => {
-            return option.value === value.value;
-        }} onChange={(_e, newValue) => {
-            locationModel.set('mode', newValue.value);
-        }} disableClearable value={options.find((opt) => opt.value === state.mode)} renderInput={(params) => (<TextField {...params} variant="outlined" placeholder="Select Location Option"/>)}/>
+        <Autocomplete
+          className="mb-2"
+          data-id="filter-type-autocomplete"
+          fullWidth
+          size="small"
+          options={options}
+          getOptionLabel={(option) => option.label}
+          getOptionSelected={(option, value) => {
+            return option.value === value.value
+          }}
+          onChange={(_e, newValue) => {
+            locationModel.set('mode', newValue.value)
+          }}
+          disableClearable
+          value={options.find((opt) => opt.value === state.mode)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              placeholder="Select Location Option"
+            />
+          )}
+        />
 
         <div className="form-group clearfix">
           {/* this part is really weird, we splat state as seperate props, that's why we use destructuring */}
-          <ComponentToRender {...state} setState={(args: any) => {
-            locationModel.set(args); // always update the locationModel, that's our "source of truth", above we map this back into state by listening to changes
-        }}/>
-          {drawTypes.includes(state.mode) ? (<Button className="location-draw  mt-2" onMouseDown={() => {
-                (wreqr as any).vent.trigger('search:draw' + state.mode, locationModel);
-            }} fullWidth>
-              <span className="fa fa-globe"/>
+          <ComponentToRender
+            {...state}
+            setState={(args: any) => {
+              locationModel.set(args) // always update the locationModel, that's our "source of truth", above we map this back into state by listening to changes
+            }}
+          />
+          {drawTypes.includes(state.mode) ? (
+            <Button
+              className="location-draw  mt-2"
+              onMouseDown={() => {
+                ;(wreqr as any).vent.trigger(
+                  'search:draw' + state.mode,
+                  locationModel
+                )
+              }}
+              fullWidth
+            >
+              <span className="fa fa-globe" />
               <span className="ml-2">Draw</span>
-            </Button>) : null}
+            </Button>
+          ) : null}
         </div>
       </div>
-    </div>);
-};
-export default hot(module)(LocationInput);
+    </div>
+  )
+}
+export default hot(module)(LocationInput)

@@ -12,17 +12,15 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import $ from 'jquery';
+import $ from 'jquery'
 
-import api from './index';
+import api from './index'
 const oldGet = $.get
 const oldPost = $.post
 const oldAjax = $.ajax
 
 const mock = () => {
-  const httpRequest = ({
-    url
-  }: any) => {
+  const httpRequest = ({ url }: any) => {
     return Promise.resolve(api(url))
   }
   // @ts-expect-error ts-migrate(2322) FIXME: Type '(url: any) => Promise<any>' is not assignabl... Remove this comment to see the full error message

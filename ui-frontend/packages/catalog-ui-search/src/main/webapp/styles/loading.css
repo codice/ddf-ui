@@ -4,7 +4,7 @@
 
 #loading .loader {
   opacity: 1;
-  transition: opacity .25s linear;
+  transition: opacity 0.25s linear;
 }
 
 #loading .loading-welcome {
@@ -18,7 +18,7 @@
   width: 100%;
   text-align: center;
   opacity: 0;
-  transition: opacity .25s linear;
+  transition: opacity 0.25s linear;
 }
 
 #loading.show-welcome .loader {

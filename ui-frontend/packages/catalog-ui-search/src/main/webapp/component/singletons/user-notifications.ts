@@ -14,8 +14,8 @@
  **/
 import fetch from '../../react-component/utils/fetch'
 
-import user from './user-instance';
-import Backbone from 'backbone';
+import user from './user-instance'
+import Backbone from 'backbone'
 
 export default new (Backbone.Collection.extend({
   initialize() {
@@ -32,7 +32,7 @@ export default new (Backbone.Collection.extend({
     return -model.getTimeComparator()
   },
   hasUnseen() {
-    return this.some((notification: any) => notification.get('unseen'));
+    return this.some((notification: any) => notification.get('unseen'))
   },
   setSeen() {
     const setSeen: any = []
@@ -53,4 +53,4 @@ export default new (Backbone.Collection.extend({
       },
     })
   },
-}))();
+}))()

@@ -27,11 +27,11 @@ import {
 } from './validators'
 import DmsTextField from './dms-textfield'
 import UtmupsTextField from './utmups-textfield'
-import { Units } from './common';
-import TextField from '../text-field';
-import { Radio, RadioItem } from '../radio/radio';
-import { MinimumSpacing } from './common';
-import _ from 'underscore';
+import { Units } from './common'
+import TextField from '../text-field'
+import { Radio, RadioItem } from '../radio/radio'
+import { MinimumSpacing } from './common'
+import _ from 'underscore'
 
 const coordinatePairRegex = /-?\d{1,3}(\.\d*)?\s-?\d{1,3}(\.\d*)?/g
 
@@ -55,7 +55,9 @@ function convertWkt(value: any, numCoords: any) {
   if (!coordinatePairs || coordinatePairs.length < numCoords) {
     return value
   }
-  const coordinates = coordinatePairs.map((coord: any) => coord.replace(' ', ','))
+  const coordinates = coordinatePairs.map((coord: any) =>
+    coord.replace(' ', ',')
+  )
   return buildWktString(coordinates)
 }
 
@@ -72,13 +74,14 @@ function convertMultiWkt(isPolygon: any, value: any) {
     .map((shape: any) => shape.match(coordinatePairRegex))
   shapes = shapes
     .filter((shape: any) => shape !== null && shape.length >= numPoints)
-    .map((shape: any) => shape.map((coordinatePair: any) => coordinatePair.replace(' ', ','))
+    .map((shape: any) =>
+      shape.map((coordinatePair: any) => coordinatePair.replace(' ', ','))
     )
   return shapes.length === 0
     ? value
     : shapes.length === 1
     ? buildWktString(shapes[0])
-    : '[' + shapes.map((shapeCoords: any) => buildWktString(shapeCoords)) + ']';
+    : '[' + shapes.map((shapeCoords: any) => buildWktString(shapeCoords)) + ']'
 }
 
 function getPolygonValue(currentValue: any, value: any) {
@@ -198,7 +201,7 @@ const LineLatLon = (props: any) => {
         <ErrorComponent errorState={bufferError} />
       </div>
     </div>
-  );
+  )
 }
 
 const LineDms = (props: any) => {
@@ -305,7 +308,7 @@ const LineDms = (props: any) => {
       </Units>
       <ErrorComponent errorState={bufferError} />
     </div>
-  );
+  )
 }
 
 const LineMgrs = (props: any) => {
@@ -412,7 +415,7 @@ const LineMgrs = (props: any) => {
         <ErrorComponent errorState={bufferError} />
       </div>
     </div>
-  );
+  )
 }
 
 const LineUtmUps = (props: any) => {
@@ -517,7 +520,7 @@ const LineUtmUps = (props: any) => {
       </Units>
       <ErrorComponent errorState={bufferError} />
     </div>
-  );
+  )
 }
 
 const BaseLine = (props: any) => {
@@ -547,7 +550,7 @@ const BaseLine = (props: any) => {
       <MinimumSpacing />
       {Component !== null ? <Component {...props} /> : null}
     </div>
-  );
+  )
 }
 
-export default BaseLine;
+export default BaseLine

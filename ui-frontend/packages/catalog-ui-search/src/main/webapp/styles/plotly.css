@@ -19,15 +19,13 @@
   stroke: black !important;
 }
 
-
-.plotly-histogram  svg .barlayer .trace.bars:nth-of-type(1) path,
+.plotly-histogram svg .barlayer .trace.bars:nth-of-type(1) path,
 .plotly-histogram svg .barlayer .trace.bars:nth-of-type(2) path,
 .plotly-histogram svg .legend .traces:nth-of-type(1) path,
 .plotly-histogram svg .legend .traces:nth-of-type(2) path {
   fill: black !important;
   stroke: black !important;
 }
-
 
 /* dark theme */
 .theme-dark .plotly-histogram .hovertext rect,
@@ -51,7 +49,7 @@
   stroke: white !important;
 }
 
-.theme-dark .plotly-histogram  svg .barlayer .trace.bars:nth-of-type(1) path,
+.theme-dark .plotly-histogram svg .barlayer .trace.bars:nth-of-type(1) path,
 .theme-dark .plotly-histogram svg .barlayer .trace.bars:nth-of-type(2) path,
 .theme-dark .plotly-histogram svg .legend .traces:nth-of-type(1) path,
 .theme-dark .plotly-histogram svg .legend .traces:nth-of-type(2) path {

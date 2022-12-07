@@ -1,23 +1,13 @@
 const selectorParser = require('postcss-selector-parser')
 const plugin = require('tailwindcss/plugin')
 
-module.exports = plugin(({
-  theme,
-  addVariant,
-  prefix,
-  e
-}) => {
+module.exports = plugin(({ theme, addVariant, prefix, e }) => {
   const namedGroups = (theme('namedGroups') || [])
     .map((namedGroup) => `group-${namedGroup}`)
     .concat(['group']) // compatible with named groups plugin
 
-  addVariant(`focus-visible`, ({
-    modifySelectors,
-    separator
-  }) => {
-    return modifySelectors(({
-      selector
-    }) => {
+  addVariant(`focus-visible`, ({ modifySelectors, separator }) => {
+    return modifySelectors(({ selector }) => {
       return selectorParser((root) => {
         root.walkClasses((node) => {
           // Regular focus visible
@@ -39,7 +29,7 @@ module.exports = plugin(({
             )
           })
         })
-      }).processSync(selector);
-    });
+      }).processSync(selector)
+    })
   })
 })

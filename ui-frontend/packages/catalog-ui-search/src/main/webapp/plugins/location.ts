@@ -12,4 +12,4 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-export default (v: any) => v;
+export default (v: any) => v

@@ -12,9 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import { validateWkt, roundWktCoords } from './wkt-utils';
+import { validateWkt, roundWktCoords } from './wkt-utils'
 
-import { ddToWkt, validateDd, validateDdPoint } from './dd-utils';
+import { ddToWkt, validateDd, validateDdPoint } from './dd-utils'
 
 import {
   dmsToWkt,
@@ -26,11 +26,11 @@ import {
   ddToDmsCoordinateLon,
   getSecondsPrecision,
   Direction,
-} from './dms-utils';
+} from './dms-utils'
 
 // @ts-expect-error ts-migrate(2614) FIXME: Module '"./usng-utils"' has no exported member 'us... Remove this comment to see the full error message
-import { usngToWkt, validateUsng, validateUsngGrid } from './usng-utils';
-import errorMessages from './errors';
+import { usngToWkt, validateUsng, validateUsngGrid } from './usng-utils'
+import errorMessages from './errors'
 
 export {
   validateWkt,
@@ -51,4 +51,4 @@ export {
   errorMessages,
   getSecondsPrecision,
   Direction,
-};
+}

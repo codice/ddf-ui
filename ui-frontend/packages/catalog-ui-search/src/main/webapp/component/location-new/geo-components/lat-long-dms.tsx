@@ -12,17 +12,17 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react';
+import React from 'react'
 
-import Group from '../../../react-component/group/index';
-import { Radio, RadioItem } from '../../../react-component/radio/radio';
-import TextField from '../../../react-component/text-field/index';
-import { Units } from '../../../react-component/location/common';
-import ListEditor from '../inputs/list-editor';
-import { DmsLatitude, DmsLongitude } from './coordinates';
-import { dmsPoint } from '../models';
-import DirectionInput from './direction';
-import { Direction } from '../utils/dms-utils';
+import Group from '../../../react-component/group/index'
+import { Radio, RadioItem } from '../../../react-component/radio/radio'
+import TextField from '../../../react-component/text-field/index'
+import { Units } from '../../../react-component/location/common'
+import ListEditor from '../inputs/list-editor'
+import { DmsLatitude, DmsLongitude } from './coordinates'
+import { dmsPoint } from '../models'
+import DirectionInput from './direction'
+import { Direction } from '../utils/dms-utils'
 
 const latitudeDirections = [Direction.North, Direction.South]
 const longitudeDirections = [Direction.East, Direction.West]
@@ -34,7 +34,8 @@ const Point = (props: any) => {
       <DmsLatitude
         value={dms.point.latitude.coordinate}
         onChange={setState(
-          (draft: any, value: any) => (draft.dms.point.latitude.coordinate = value)
+          (draft: any, value: any) =>
+            (draft.dms.point.latitude.coordinate = value)
         )}
       >
         <DirectionInput
@@ -42,14 +43,16 @@ const Point = (props: any) => {
           options={latitudeDirections}
           value={dms.point.latitude.direction}
           onChange={setState(
-            (draft: any, value: any) => (draft.dms.point.latitude.direction = value)
+            (draft: any, value: any) =>
+              (draft.dms.point.latitude.direction = value)
           )}
         />
       </DmsLatitude>
       <DmsLongitude
         value={dms.point.longitude.coordinate}
         onChange={setState(
-          (draft: any, value: any) => (draft.dms.point.longitude.coordinate = value)
+          (draft: any, value: any) =>
+            (draft.dms.point.longitude.coordinate = value)
         )}
       >
         <DirectionInput
@@ -57,12 +60,13 @@ const Point = (props: any) => {
           options={longitudeDirections}
           value={dms.point.longitude.direction}
           onChange={setState(
-            (draft: any, value: any) => (draft.dms.point.longitude.direction = value)
+            (draft: any, value: any) =>
+              (draft.dms.point.longitude.direction = value)
           )}
         />
       </DmsLongitude>
     </Group>
-  );
+  )
 }
 
 const Circle = (props: any) => {
@@ -107,7 +111,9 @@ const Circle = (props: any) => {
       </Group>
       <Units
         value={dms.circle.units}
-        onChange={setState((draft: any, value: any) => (draft.dms.circle.units = value))}
+        onChange={setState(
+          (draft: any, value: any) => (draft.dms.circle.units = value)
+        )}
       >
         <TextField
           // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; type: string; value: any; o... Remove this comment to see the full error message
@@ -120,7 +126,7 @@ const Circle = (props: any) => {
         />
       </Units>
     </div>
-  );
+  )
 }
 
 const Line = (props: any) => {
@@ -170,11 +176,13 @@ const Line = (props: any) => {
       // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       list={dms.line.list}
       defaultItem={dmsPoint}
-      onChange={setState((draft: any, value: any) => (draft.dms.line.list = value))}
+      onChange={setState(
+        (draft: any, value: any) => (draft.dms.line.list = value)
+      )}
     >
       {points}
     </ListEditor>
-  );
+  )
 }
 
 const Polygon = (props: any) => {
@@ -224,11 +232,13 @@ const Polygon = (props: any) => {
       // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       list={dms.polygon.list}
       defaultItem={dmsPoint}
-      onChange={setState((draft: any, value: any) => (draft.dms.polygon.list = value))}
+      onChange={setState(
+        (draft: any, value: any) => (draft.dms.polygon.list = value)
+      )}
     >
       {points}
     </ListEditor>
-  );
+  )
 }
 
 const BoundingBox = (props: any) => {
@@ -239,7 +249,8 @@ const BoundingBox = (props: any) => {
         label="South"
         value={dms.boundingbox.south.coordinate}
         onChange={setState(
-          (draft: any, value: any) => (draft.dms.boundingbox.south.coordinate = value)
+          (draft: any, value: any) =>
+            (draft.dms.boundingbox.south.coordinate = value)
         )}
       >
         <DirectionInput
@@ -247,7 +258,8 @@ const BoundingBox = (props: any) => {
           options={latitudeDirections}
           value={dms.boundingbox.south.direction}
           onChange={setState(
-            (draft: any, value: any) => (draft.dms.boundingbox.south.direction = value)
+            (draft: any, value: any) =>
+              (draft.dms.boundingbox.south.direction = value)
           )}
         />
       </DmsLatitude>
@@ -255,7 +267,8 @@ const BoundingBox = (props: any) => {
         label="North"
         value={dms.boundingbox.north.coordinate}
         onChange={setState(
-          (draft: any, value: any) => (draft.dms.boundingbox.north.coordinate = value)
+          (draft: any, value: any) =>
+            (draft.dms.boundingbox.north.coordinate = value)
         )}
       >
         <DirectionInput
@@ -263,7 +276,8 @@ const BoundingBox = (props: any) => {
           options={latitudeDirections}
           value={dms.boundingbox.north.direction}
           onChange={setState(
-            (draft: any, value: any) => (draft.dms.boundingbox.north.direction = value)
+            (draft: any, value: any) =>
+              (draft.dms.boundingbox.north.direction = value)
           )}
         />
       </DmsLatitude>
@@ -271,7 +285,8 @@ const BoundingBox = (props: any) => {
         label="West"
         value={dms.boundingbox.west.coordinate}
         onChange={setState(
-          (draft: any, value: any) => (draft.dms.boundingbox.west.coordinate = value)
+          (draft: any, value: any) =>
+            (draft.dms.boundingbox.west.coordinate = value)
         )}
       >
         <DirectionInput
@@ -279,7 +294,8 @@ const BoundingBox = (props: any) => {
           options={longitudeDirections}
           value={dms.boundingbox.west.direction}
           onChange={setState(
-            (draft: any, value: any) => (draft.dms.boundingbox.west.direction = value)
+            (draft: any, value: any) =>
+              (draft.dms.boundingbox.west.direction = value)
           )}
         />
       </DmsLongitude>
@@ -287,7 +303,8 @@ const BoundingBox = (props: any) => {
         label="East"
         value={dms.boundingbox.east.coordinate}
         onChange={setState(
-          (draft: any, value: any) => (draft.dms.boundingbox.east.coordinate = value)
+          (draft: any, value: any) =>
+            (draft.dms.boundingbox.east.coordinate = value)
         )}
       >
         <DirectionInput
@@ -295,12 +312,13 @@ const BoundingBox = (props: any) => {
           options={longitudeDirections}
           value={dms.boundingbox.east.direction}
           onChange={setState(
-            (draft: any, value: any) => (draft.dms.boundingbox.east.direction = value)
+            (draft: any, value: any) =>
+              (draft.dms.boundingbox.east.direction = value)
           )}
         />
       </DmsLongitude>
     </div>
-  );
+  )
 }
 
 const LatLongDMS = (props: any) => {
@@ -321,7 +339,9 @@ const LatLongDMS = (props: any) => {
     <div>
       <Radio
         value={dms.shape}
-        onChange={setState((draft: any, value: any) => (draft.dms.shape = value))}
+        onChange={setState(
+          (draft: any, value: any) => (draft.dms.shape = value)
+        )}
       >
         <RadioItem value="point">Point</RadioItem>
         <RadioItem value="circle">Circle</RadioItem>
@@ -333,7 +353,7 @@ const LatLongDMS = (props: any) => {
         {Component !== null ? <Component {...props} /> : null}
       </div>
     </div>
-  );
+  )
 }
 
-export default LatLongDMS;
+export default LatLongDMS

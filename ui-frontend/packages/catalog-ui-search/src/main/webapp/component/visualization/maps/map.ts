@@ -13,7 +13,7 @@
  *
  **/
 
-import _ from 'underscore';
+import _ from 'underscore'
 
 function throwUnimplementedException() {
   throw 'Method has not been implemented.'

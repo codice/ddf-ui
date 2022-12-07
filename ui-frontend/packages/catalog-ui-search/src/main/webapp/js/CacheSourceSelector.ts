@@ -13,18 +13,18 @@
  *
  **/
 import cql from './cql'
-import CQLUtils from './CQLUtils';
+import CQLUtils from './CQLUtils'
 function buildCacheSourcesCql(sources: any) {
   return {
     type: 'OR',
     filters: sources
       .filter((source: any) => source !== 'cache')
       .map((source: any) => ({
-      property: '"metacard_source"',
-      type: '=',
-      value: source
-    })),
-  };
+        property: '"metacard_source"',
+        type: '=',
+        value: source,
+      })),
+  }
 }
 
 function limitCacheSources(cql: any, sources: any) {
@@ -45,4 +45,4 @@ export default {
         ')'
     )
   },
-};
+}

@@ -12,24 +12,20 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react';
+import React from 'react'
 
 import styled from 'styled-components'
 
-import Group from '../group';
+import Group from '../group'
 // @ts-expect-error ts-migrate(6133) FIXME: 'Menu' is declared but its value is never read.
 import Menu from '@material-ui/core/Menu'
 // @ts-expect-error ts-migrate(6133) FIXME: 'MenuItem' is declared but its value is never read... Remove this comment to see the full error message
 import MenuItem from '@material-ui/core/MenuItem'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
-import Label from './label';
+import Label from './label'
 
-const Units = ({
-  value,
-  onChange,
-  children
-}: any) => (
+const Units = ({ value, onChange, children }: any) => (
   <Group>
     {children}
     <Autocomplete
@@ -58,10 +54,7 @@ const Units = ({
 
 // create an array of 1-60 for zones
 const range = [...Array(61).keys()].map((val) => val.toString()).slice(1)
-const Zone = ({
-  value,
-  onChange
-}: any) => (
+const Zone = ({ value, onChange }: any) => (
   <Group>
     <Label>Zone</Label>
     <Autocomplete
@@ -80,10 +73,7 @@ const Zone = ({
   </Group>
 )
 
-const Hemisphere = ({
-  value,
-  onChange
-}: any) => (
+const Hemisphere = ({ value, onChange }: any) => (
   <Group>
     <Label>Hemisphere</Label>
     <Autocomplete
@@ -106,9 +96,4 @@ const MinimumSpacing = styled.div`
   height: ${(props) => props.theme.minimumSpacing};
 `
 
-export {
-  Units,
-  Zone,
-  Hemisphere,
-  MinimumSpacing,
-};
+export { Units, Zone, Hemisphere, MinimumSpacing }

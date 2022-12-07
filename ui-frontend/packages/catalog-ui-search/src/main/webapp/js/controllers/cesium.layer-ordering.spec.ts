@@ -16,10 +16,7 @@ import { expect } from 'chai'
 import { addLayer, shiftLayers, getShift } from './cesium.layer-ordering'
 
 describe('Cesium Layer Ordering', () => {
-  const checkOrdering = ({
-    actual,
-    expected
-  }: any) =>
+  const checkOrdering = ({ actual, expected }: any) =>
     expect(actual).to.have.same.ordered.members(expected)
 
   describe('addLayer()', () => {
@@ -141,13 +138,13 @@ describe('Cesium Layer Ordering', () => {
         prev: previousLayerOrder,
         layer,
         method,
-        count
+        count,
       }: any) => {
         const METHOD_RAISE = 'raise'
         const shiftLayerToIndex = ({
           layerOrder,
           layer: layerId,
-          index
+          index,
         }: any) => {
           const layerIdRemoved = layerOrder.filter((id: any) => id !== layerId)
           return [

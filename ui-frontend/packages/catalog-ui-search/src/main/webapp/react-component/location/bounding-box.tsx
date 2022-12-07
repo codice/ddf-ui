@@ -19,14 +19,17 @@ import {
   initialErrorState,
   initialErrorStateWithDefault,
 } from '../utils/validation'
-import Group from '../group';
-import Label from './label';
-import TextField from '../text-field';
-import { Radio, RadioItem } from '../radio/radio';
-import { Zone, Hemisphere, MinimumSpacing } from './common';
-import { DmsLatitude, DmsLongitude } from '../../component/location-new/geo-components/coordinates';
-import DirectionInput from '../../component/location-new/geo-components/direction';
-import { Direction } from '../../component/location-new/utils/dms-utils';
+import Group from '../group'
+import Label from './label'
+import TextField from '../text-field'
+import { Radio, RadioItem } from '../radio/radio'
+import { Zone, Hemisphere, MinimumSpacing } from './common'
+import {
+  DmsLatitude,
+  DmsLongitude,
+} from '../../component/location-new/geo-components/coordinates'
+import DirectionInput from '../../component/location-new/geo-components/direction'
+import { Direction } from '../../component/location-new/utils/dms-utils'
 
 const BoundingBoxLatLonDd = (props: any) => {
   const { north, east, south, west, setState } = props
@@ -130,7 +133,7 @@ const BoundingBoxLatLonDd = (props: any) => {
       />
       <ErrorComponent errorState={ddError} />
     </div>
-  );
+  )
 }
 
 const BoundingBoxLatLonDms = (props: any) => {
@@ -223,7 +226,9 @@ const BoundingBoxLatLonDms = (props: any) => {
       <DmsLongitude
         label="West"
         value={dmsWest}
-        onChange={(value: any, type: any) => validateDms('dmsWest', value, type)}
+        onChange={(value: any, type: any) =>
+          validateDms('dmsWest', value, type)
+        }
       >
         <DirectionInput
           // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
@@ -235,7 +240,9 @@ const BoundingBoxLatLonDms = (props: any) => {
       <DmsLatitude
         label="South"
         value={dmsSouth}
-        onChange={(value: any, type: any) => validateDms('dmsSouth', value, type)}
+        onChange={(value: any, type: any) =>
+          validateDms('dmsSouth', value, type)
+        }
       >
         <DirectionInput
           // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
@@ -247,7 +254,9 @@ const BoundingBoxLatLonDms = (props: any) => {
       <DmsLongitude
         label="East"
         value={dmsEast}
-        onChange={(value: any, type: any) => validateDms('dmsEast', value, type)}
+        onChange={(value: any, type: any) =>
+          validateDms('dmsEast', value, type)
+        }
       >
         <DirectionInput
           // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
@@ -259,7 +268,9 @@ const BoundingBoxLatLonDms = (props: any) => {
       <DmsLatitude
         label="North"
         value={dmsNorth}
-        onChange={(value: any, type: any) => validateDms('dmsNorth', value, type)}
+        onChange={(value: any, type: any) =>
+          validateDms('dmsNorth', value, type)
+        }
       >
         <DirectionInput
           // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
@@ -270,7 +281,7 @@ const BoundingBoxLatLonDms = (props: any) => {
       </DmsLatitude>
       <ErrorComponent errorState={dmsError} />
     </div>
-  );
+  )
 }
 
 const BoundingBoxUsngMgrs = (props: any) => {
@@ -523,7 +534,7 @@ const BoundingBoxUtmUps = (props: any) => {
         <ErrorComponent errorState={lowerRightError} />
       </div>
     </div>
-  );
+  )
 }
 
 const BoundingBox = (props: any) => {
@@ -553,7 +564,7 @@ const BoundingBox = (props: any) => {
       <MinimumSpacing />
       {Component !== null ? <Component {...props} /> : null}
     </div>
-  );
+  )
 }
 
-export default BoundingBox;
+export default BoundingBox

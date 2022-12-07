@@ -12,10 +12,10 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import Backbone from 'backbone';
+import Backbone from 'backbone'
 
-import 'backbone-associations';
-import MetacardPropertiesModel from './MetacardProperties';
+import 'backbone-associations'
+import MetacardPropertiesModel from './MetacardProperties'
 
 export default Backbone.AssociatedModel.extend({
   hasGeometry(attribute: any) {
@@ -37,4 +37,4 @@ export default Backbone.AssociatedModel.extend({
   defaults: {
     queryId: undefined,
   },
-});
+})

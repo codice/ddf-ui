@@ -12,16 +12,16 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import Backbone from 'backbone';
+import Backbone from 'backbone'
 
-import _ from 'underscore';
-import $ from 'jquery';
+import _ from 'underscore'
+import $ from 'jquery'
 import Sources from '../../component/singletons/sources-instance'
 import Common from '../Common'
 import cql from '../cql'
-import 'backbone-associations';
-import Metacard from './Metacard';
-import MetacardActionModel from './MetacardAction';
+import 'backbone-associations'
+import Metacard from './Metacard'
+import MetacardActionModel from './MetacardAction'
 
 function generateThumbnailUrl(url: any) {
   let newUrl = url
@@ -128,13 +128,13 @@ export default Backbone.AssociatedModel.extend({
     const otherActions = this.getExportActions().concat(this.getMapActions())
     return this.get('actions').filter(
       (action: any) => otherActions.indexOf(action) === -1
-    );
+    )
   },
   getExportActions() {
     const otherActions = this.getMapActions()
     return this.get('actions')
       .filter((action: any) => action.get('title').indexOf('Export') === 0)
-      .filter((action: any) => otherActions.indexOf(action) === -1);
+      .filter((action: any) => otherActions.indexOf(action) === -1)
   },
   hasMapActions() {
     return this.getMapActions().length > 0
@@ -142,7 +142,7 @@ export default Backbone.AssociatedModel.extend({
   getMapActions() {
     return this.get('actions').filter(
       (action: any) => action.id.indexOf('catalog.data.metacard.map.') === 0
-    );
+    )
   },
   refreshData(metacardProperties: any) {
     if (metacardProperties !== undefined) {
@@ -227,7 +227,7 @@ export default Backbone.AssociatedModel.extend({
       result.metacard.queryId = queryId
       result.metacard.color = color
       humanizeResourceSize(result)
-      result.actions.forEach((action: any) => action.queryId = queryId)
+      result.actions.forEach((action: any) => (action.queryId = queryId))
       const thumbnailAction = _.findWhere(result.actions, {
         id: 'catalog.data.metacard.thumbnail',
       })
@@ -242,4 +242,4 @@ export default Backbone.AssociatedModel.extend({
     this.set(response.results[0])
     this.trigger('refreshdata')
   },
-});
+})

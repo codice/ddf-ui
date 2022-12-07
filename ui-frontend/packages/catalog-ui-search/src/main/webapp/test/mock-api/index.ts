@@ -12,40 +12,41 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import User from '../../js/model/User';
-import './metacardtype.json';
-import './config.json';
-import './metacardtype.json';
-import './datatype.json';
-import './sources.json';
+import User from '../../js/model/User'
+import MetacardTypeJSON from './metacardtype'
+import Config from './config'
+import PlatformConfig from './metacardtype'
+import DatatypeJSON from './datatype'
+import Sources from './sources'
+import Enumerations from './enumerations'
 const mockDataMap = {
-    './internal/metacardtype': ,
-    './internal/config': ,
-    './internal/platform/config/ui': ,
-    './internal/enumerations/attribute/datatype': ,
-    './internal/user': (User as any).Model.prototype.defaults(),
-    './internal/localcatalogid': 'ddf.distribution',
-    './internal/forms/result': [],
-    './internal/catalog/sources': ,
-};
-import './enumerations.json';
+  './internal/metacardtype': MetacardTypeJSON,
+  './internal/config': Config,
+  './internal/platform/config/ui': PlatformConfig,
+  './internal/enumerations/attribute/datatype': DatatypeJSON,
+  './internal/user': (User as any).Model.prototype.defaults(),
+  './internal/localcatalogid': 'ddf.distribution',
+  './internal/forms/result': [],
+  './internal/catalog/sources': Sources,
+}
+import './enumerations.ts'
 const mockDataGlobs = {
-    './internal/enumerations': ,
-};
+  './internal/enumerations': Enumerations,
+}
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'url' implicitly has an 'any' type.
 export default (url) => {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-    let data = mockDataMap[url];
-    if (data === undefined) {
-        Object.keys(mockDataGlobs).forEach((glob) => {
-            if (url.startsWith(glob)) {
-                // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-                data = mockDataGlobs[glob];
-            }
-        });
-    }
-    if (data === undefined) {
-        throw new Error(`Unknown url '${url}' for mock api.`);
-    }
-    return data;
-};
+  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+  let data = mockDataMap[url]
+  if (data === undefined) {
+    Object.keys(mockDataGlobs).forEach((glob) => {
+      if (url.startsWith(glob)) {
+        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+        data = mockDataGlobs[glob]
+      }
+    })
+  }
+  if (data === undefined) {
+    throw new Error(`Unknown url '${url}' for mock api.`)
+  }
+  return data
+}

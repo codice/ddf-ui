@@ -2,9 +2,7 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import moment from 'moment'
-import withListenTo, {
-  WithBackboneProps,
-} from '../backbone-container'
+import withListenTo, { WithBackboneProps } from '../backbone-container'
 
 import TimeSettingsPresentation from './presentation'
 import { TimeZone, TimeFormat } from './types'

@@ -12,11 +12,11 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import chai from 'chai';
+import chai from 'chai'
 
 const expect = chai.expect
-import wkx from 'wkx';
-import CQLUtils from './CQLUtils';
+import wkx from 'wkx'
+import CQLUtils from './CQLUtils'
 
 const mockMetacardDefinitions = {
   metacardTypes: {

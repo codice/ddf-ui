@@ -13,7 +13,7 @@
  *
  **/
 import OverwriteModel from '../../js/model/Overwrite'
-import Backbone from 'backbone';
+import Backbone from 'backbone'
 
 export default new (Backbone.Collection.extend({
   model: OverwriteModel,
@@ -22,4 +22,4 @@ export default new (Backbone.Collection.extend({
       this.remove(id)
     }
   },
-}))();
+}))()

@@ -12,22 +12,24 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react';
+import React from 'react'
 
-import { Radio, RadioItem } from '../../../react-component/radio/radio';
-import TextField from '../../../react-component/text-field/index';
-import { Units } from '../../../react-component/location/common';
-import ListEditor from '../inputs/list-editor';
-import { UsngCoordinate } from './coordinates';
+import { Radio, RadioItem } from '../../../react-component/radio/radio'
+import TextField from '../../../react-component/text-field/index'
+import { Units } from '../../../react-component/location/common'
+import ListEditor from '../inputs/list-editor'
+import { UsngCoordinate } from './coordinates'
 
 const Point = (props: any) => {
   const { usng, setState } = props
   return (
     <UsngCoordinate
       value={usng.point}
-      onChange={setState((draft: any, value: any) => (draft.usng.point = value))}
+      onChange={setState(
+        (draft: any, value: any) => (draft.usng.point = value)
+      )}
     />
-  );
+  )
 }
 
 const Circle = (props: any) => {
@@ -36,11 +38,15 @@ const Circle = (props: any) => {
     <div className="flex flex-col flex-no-wrap space-y-2">
       <UsngCoordinate
         value={usng.circle.point}
-        onChange={setState((draft: any, value: any) => (draft.usng.circle.point = value))}
+        onChange={setState(
+          (draft: any, value: any) => (draft.usng.circle.point = value)
+        )}
       />
       <Units
         value={usng.circle.units}
-        onChange={setState((draft: any, value: any) => (draft.usng.circle.units = value))}
+        onChange={setState(
+          (draft: any, value: any) => (draft.usng.circle.units = value)
+        )}
       >
         <TextField
           // @ts-expect-error ts-migrate(2322) FIXME: Type '{ label: string; type: string; value: any; o... Remove this comment to see the full error message
@@ -53,7 +59,7 @@ const Circle = (props: any) => {
         />
       </Units>
     </div>
-  );
+  )
 }
 
 const Line = (props: any) => {
@@ -74,11 +80,13 @@ const Line = (props: any) => {
       // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       list={usng.line.list}
       defaultItem=""
-      onChange={setState((draft: any, value: any) => (draft.usng.line.list = value))}
+      onChange={setState(
+        (draft: any, value: any) => (draft.usng.line.list = value)
+      )}
     >
       {grids}
     </ListEditor>
-  );
+  )
 }
 
 const Polygon = (props: any) => {
@@ -99,11 +107,13 @@ const Polygon = (props: any) => {
       // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       list={usng.polygon.list}
       defaultItem=""
-      onChange={setState((draft: any, value: any) => (draft.usng.polygon.list = value))}
+      onChange={setState(
+        (draft: any, value: any) => (draft.usng.polygon.list = value)
+      )}
     >
       {grids}
     </ListEditor>
-  );
+  )
 }
 
 const BoundingBox = (props: any) => {
@@ -111,9 +121,11 @@ const BoundingBox = (props: any) => {
   return (
     <UsngCoordinate
       value={usng.boundingbox}
-      onChange={setState((draft: any, value: any) => (draft.usng.boundingbox = value))}
+      onChange={setState(
+        (draft: any, value: any) => (draft.usng.boundingbox = value)
+      )}
     />
-  );
+  )
 }
 
 const USNG = (props: any) => {
@@ -134,7 +146,9 @@ const USNG = (props: any) => {
     <div>
       <Radio
         value={usng.shape}
-        onChange={setState((draft: any, value: any) => (draft.usng.shape = value))}
+        onChange={setState(
+          (draft: any, value: any) => (draft.usng.shape = value)
+        )}
       >
         <RadioItem value="point">Point</RadioItem>
         <RadioItem value="circle">Circle</RadioItem>
@@ -146,7 +160,7 @@ const USNG = (props: any) => {
         {Component !== null ? <Component {...props} /> : null}
       </div>
     </div>
-  );
+  )
 }
 
-export default USNG;
+export default USNG

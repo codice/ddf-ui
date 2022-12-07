@@ -18,9 +18,9 @@ import Group from '../group'
 import TextFieldMui from '@material-ui/core/TextField'
 
 type Props = {
-    value?: string;
-    onChange?: (...args: any[]) => any;
-};
+  value?: string
+  onChange?: (...args: any[]) => any
+}
 
 const TextField = (props: Props) => {
   // @ts-expect-error ts-migrate(2339) FIXME: Property 'label' does not exist on type 'Props'.
@@ -58,4 +58,4 @@ const TextField = (props: Props) => {
   )
 }
 
-export default TextField;
+export default TextField

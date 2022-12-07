@@ -13,9 +13,9 @@
  *
  **/
 
-import wkx from 'wkx';
+import wkx from 'wkx'
 
-import errorMessages from './errors';
+import errorMessages from './errors'
 import DistanceUtils from '../../../js/DistanceUtils'
 
 function convertUserValueToWKT(val: any) {
@@ -44,7 +44,7 @@ function convertUserValueToWKT(val: any) {
 }
 
 function removeTrailingZeros(wkt: any) {
-  return wkt.replace(/[-+]?[0-9]*\.?[0-9]+/g, (number: any) => Number(number));
+  return wkt.replace(/[-+]?[0-9]*\.?[0-9]+/g, (number: any) => Number(number))
 }
 
 function checkCoordinateOrder(coordinate: any) {
@@ -62,19 +62,24 @@ function checkGeometryCoordinateOrdering(geometry: any) {
       return checkCoordinateOrder(geometry.coordinates)
     case 'LineString':
     case 'MultiPoint':
-      return geometry.coordinates.every((coordinate: any) => checkCoordinateOrder(coordinate)
-      );
+      return geometry.coordinates.every((coordinate: any) =>
+        checkCoordinateOrder(coordinate)
+      )
     case 'Polygon':
     case 'MultiLineString':
-      return geometry.coordinates.every((line: any) => line.every((coordinate: any) => checkCoordinateOrder(coordinate))
-      );
-    case 'MultiPolygon':
-      return geometry.coordinates.every((multipolygon: any) => multipolygon.every((polygon: any) => polygon.every((coordinate: any) => checkCoordinateOrder(coordinate))
+      return geometry.coordinates.every((line: any) =>
+        line.every((coordinate: any) => checkCoordinateOrder(coordinate))
       )
-      );
+    case 'MultiPolygon':
+      return geometry.coordinates.every((multipolygon: any) =>
+        multipolygon.every((polygon: any) =>
+          polygon.every((coordinate: any) => checkCoordinateOrder(coordinate))
+        )
+      )
     case 'GeometryCollection':
-      return geometry.geometries.every((subgeometry: any) => checkGeometryCoordinateOrdering(subgeometry)
-      );
+      return geometry.geometries.every((subgeometry: any) =>
+        checkGeometryCoordinateOrdering(subgeometry)
+      )
   }
 }
 
@@ -118,37 +123,45 @@ function validateWkt(wkt: any) {
 }
 
 function createCoordPair(coordinate: any) {
-  return coordinate.map((val: any) => DistanceUtils.coordinateRound(val)).join(' ');
+  return coordinate
+    .map((val: any) => DistanceUtils.coordinateRound(val))
+    .join(' ')
 }
 
 function createLineString(coordinates: any) {
-  return '(' +
-  coordinates
-    .map((coord: any) => {
-      return createCoordPair(coord)
-    })
-    .join(', ') +
-  ')';
+  return (
+    '(' +
+    coordinates
+      .map((coord: any) => {
+        return createCoordPair(coord)
+      })
+      .join(', ') +
+    ')'
+  )
 }
 
 function createMultiLineString(coordinates: any) {
-  return '(' +
-  coordinates
-    .map((line: any) => {
-      return createLineString(line)
-    })
-    .join(', ') +
-  ')';
+  return (
+    '(' +
+    coordinates
+      .map((line: any) => {
+        return createLineString(line)
+      })
+      .join(', ') +
+    ')'
+  )
 }
 
 function createMultiPolygon(coordinates: any) {
-  return '(' +
-  coordinates
-    .map((line: any) => {
-      return createMultiLineString(line)
-    })
-    .join(', ') +
-  ')';
+  return (
+    '(' +
+    coordinates
+      .map((line: any) => {
+        return createMultiLineString(line)
+      })
+      .join(', ') +
+    ')'
+  )
 }
 
 // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
@@ -174,10 +187,14 @@ function createRoundedWktGeo(geoJson: any) {
         geoJson.type.toUpperCase() + createMultiPolygon(geoJson.coordinates)
       )
     case 'GeometryCollection':
-      return geoJson.type.toUpperCase() +
-      '(' +
-      geoJson.geometries.map((geo: any) => createRoundedWktGeo(geo)).join(', ') +
-      ')';
+      return (
+        geoJson.type.toUpperCase() +
+        '(' +
+        geoJson.geometries
+          .map((geo: any) => createRoundedWktGeo(geo))
+          .join(', ') +
+        ')'
+      )
   }
 }
 
@@ -191,7 +208,4 @@ function roundWktCoords(wkt: any) {
   }
 }
 
-export {
-  validateWkt,
-  roundWktCoords,
-};
+export { validateWkt, roundWktCoords }

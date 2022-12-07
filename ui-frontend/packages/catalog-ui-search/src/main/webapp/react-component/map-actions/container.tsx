@@ -12,69 +12,91 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import { hot } from 'react-hot-loader';
-import * as React from 'react';
-import wreqr from '../../js/wreqr';
-import MapActionsPresentation from './presentation';
-import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult';
+import { hot } from 'react-hot-loader'
+import * as React from 'react'
+import wreqr from '../../js/wreqr'
+import MapActionsPresentation from './presentation'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 type Props = {
-    model: LazyQueryResult;
-};
-type State = {
-    currentOverlayUrl: string;
-};
-const getActionsWithIdPrefix = (actions: LazyQueryResult['plain']['actions'], id: string) => {
-    return actions.filter((action) => action.id.startsWith(id));
-};
-class MapActions extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            currentOverlayUrl: this.props.model.currentOverlayUrl || '',
-        };
-    }
-    getActions = () => {
-        return this.props.model.plain.actions;
-    };
-    getMapActions = () => {
-        return getActionsWithIdPrefix(this.getActions(), 'catalog.data.metacard.map.');
-    };
-    getOverlayActions = () => {
-        const modelOverlayActions = getActionsWithIdPrefix(this.getActions(), 'catalog.data.metacard.map.overlay.');
-        return modelOverlayActions.map((modelOverlayAction) => {
-            return {
-                description: modelOverlayAction.description,
-                url: modelOverlayAction.url,
-                overlayText: this.getOverlayText(modelOverlayAction.url),
-            };
-        });
-    };
-    getOverlayText = (actionUrl: String) => {
-        const overlayTransformerPrefix = 'overlay.';
-        const overlayTransformerIndex = actionUrl.lastIndexOf(overlayTransformerPrefix);
-        if (overlayTransformerIndex >= 0) {
-            const overlayName = actionUrl.substr(overlayTransformerIndex + overlayTransformerPrefix.length);
-            return 'Overlay ' + overlayName + ' on the map';
-        }
-        return '';
-    };
-    overlayImage = (event: any) => {
-        const clickedOverlayUrl = event.target.getAttribute('data-url');
-        const removeOverlay = clickedOverlayUrl === this.state.currentOverlayUrl;
-        if (removeOverlay) {
-            this.props.model.currentOverlayUrl = undefined;
-            this.setState({ currentOverlayUrl: '' });
-            (wreqr as any).vent.trigger('metacard:overlay:remove', this.props.model.plain.id);
-        }
-        else {
-            this.props.model.currentOverlayUrl = clickedOverlayUrl;
-            this.setState({ currentOverlayUrl: clickedOverlayUrl });
-            (wreqr as any).vent.trigger('metacard:overlay', this.props.model);
-        }
-    };
-    render() {
-        const hasMapActions = this.getMapActions().length !== 0;
-        return (<MapActionsPresentation hasMapActions={hasMapActions} overlayActions={this.getOverlayActions()} currentOverlayUrl={this.state.currentOverlayUrl} overlayImage={this.overlayImage}/>);
-    }
+  model: LazyQueryResult
 }
-export default hot(module)(MapActions);
+type State = {
+  currentOverlayUrl: string
+}
+const getActionsWithIdPrefix = (
+  actions: LazyQueryResult['plain']['actions'],
+  id: string
+) => {
+  return actions.filter((action) => action.id.startsWith(id))
+}
+class MapActions extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props)
+    this.state = {
+      currentOverlayUrl: this.props.model.currentOverlayUrl || '',
+    }
+  }
+  getActions = () => {
+    return this.props.model.plain.actions
+  }
+  getMapActions = () => {
+    return getActionsWithIdPrefix(
+      this.getActions(),
+      'catalog.data.metacard.map.'
+    )
+  }
+  getOverlayActions = () => {
+    const modelOverlayActions = getActionsWithIdPrefix(
+      this.getActions(),
+      'catalog.data.metacard.map.overlay.'
+    )
+    return modelOverlayActions.map((modelOverlayAction) => {
+      return {
+        description: modelOverlayAction.description,
+        url: modelOverlayAction.url,
+        overlayText: this.getOverlayText(modelOverlayAction.url),
+      }
+    })
+  }
+  getOverlayText = (actionUrl: String) => {
+    const overlayTransformerPrefix = 'overlay.'
+    const overlayTransformerIndex = actionUrl.lastIndexOf(
+      overlayTransformerPrefix
+    )
+    if (overlayTransformerIndex >= 0) {
+      const overlayName = actionUrl.substr(
+        overlayTransformerIndex + overlayTransformerPrefix.length
+      )
+      return 'Overlay ' + overlayName + ' on the map'
+    }
+    return ''
+  }
+  overlayImage = (event: any) => {
+    const clickedOverlayUrl = event.target.getAttribute('data-url')
+    const removeOverlay = clickedOverlayUrl === this.state.currentOverlayUrl
+    if (removeOverlay) {
+      this.props.model.currentOverlayUrl = undefined
+      this.setState({ currentOverlayUrl: '' })
+      ;(wreqr as any).vent.trigger(
+        'metacard:overlay:remove',
+        this.props.model.plain.id
+      )
+    } else {
+      this.props.model.currentOverlayUrl = clickedOverlayUrl
+      this.setState({ currentOverlayUrl: clickedOverlayUrl })
+      ;(wreqr as any).vent.trigger('metacard:overlay', this.props.model)
+    }
+  }
+  render() {
+    const hasMapActions = this.getMapActions().length !== 0
+    return (
+      <MapActionsPresentation
+        hasMapActions={hasMapActions}
+        overlayActions={this.getOverlayActions()}
+        currentOverlayUrl={this.state.currentOverlayUrl}
+        overlayImage={this.overlayImage}
+      />
+    )
+  }
+}
+export default hot(module)(MapActions)

@@ -13,13 +13,13 @@
  *
  **/
 
-import _ from 'underscore';
+import _ from 'underscore'
 
-import Backbone from 'backbone';
-import Metacard from '../../js/model/Metacard';
+import Backbone from 'backbone'
+import Metacard from '../../js/model/Metacard'
 import { Query as QueryModel } from '../../js/model/Query'
-import QueryResponse from '../../js/model/QueryResponse';
-import QueryResult from '../../js/model/QueryResult';
+import QueryResponse from '../../js/model/QueryResponse'
+import QueryResult from '../../js/model/QueryResult'
 
 export default Backbone.AssociatedModel.extend({
   relations: [
@@ -135,4 +135,4 @@ export default Backbone.AssociatedModel.extend({
   getCurrentQuery() {
     return this.get('currentQuery')
   },
-});
+})

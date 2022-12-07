@@ -12,11 +12,11 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react';
+import React from 'react'
 
-import TextField from '../../../react-component/text-field/index';
+import TextField from '../../../react-component/text-field/index'
 // @ts-expect-error ts-migrate(2614) FIXME: Module '"../utils"' has no exported member 'roundW... Remove this comment to see the full error message
-import { roundWktCoords } from '../utils';
+import { roundWktCoords } from '../utils'
 
 const WKT = (props: any) => {
   const { wkt, setState } = props
@@ -30,7 +30,7 @@ const WKT = (props: any) => {
         )}
       />
     </div>
-  );
+  )
 }
 
-export default WKT;
+export default WKT

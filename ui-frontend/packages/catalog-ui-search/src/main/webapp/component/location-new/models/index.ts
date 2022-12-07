@@ -13,16 +13,10 @@
  *
  **/
 // @ts-expect-error ts-migrate(2614) FIXME: Module '"./dd-model"' has no exported member 'ddPo... Remove this comment to see the full error message
-import { ddPoint, ddModel } from './dd-model';
+import { ddPoint, ddModel } from './dd-model'
 
 // @ts-expect-error ts-migrate(2614) FIXME: Module '"./dms-model"' has no exported member 'dms... Remove this comment to see the full error message
-import { dmsPoint, dmsModel } from './dms-model';
-import usngModel from './usng-model';
+import { dmsPoint, dmsModel } from './dms-model'
+import usngModel from './usng-model'
 
-export {
-  ddPoint,
-  dmsPoint,
-  ddModel,
-  dmsModel,
-  usngModel,
-};
+export { ddPoint, dmsPoint, ddModel, dmsModel, usngModel }
