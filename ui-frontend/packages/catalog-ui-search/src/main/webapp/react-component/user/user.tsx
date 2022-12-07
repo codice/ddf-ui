@@ -56,7 +56,7 @@ const RolesToggle = () => {
   }
 
   return (
-    <div className="ml-1">
+    <div className="ml-1 pt-4">
       <div className="font-normal text-lg">Role</div>
       <FormControlLabel
         className="pb-4"
@@ -94,7 +94,7 @@ const UserComponent = () => {
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex-shrink-1 overflow-auto p-2">
-        <div className="pb-4 flex flex-row items-center flex-no-wrap">
+        <div className="flex flex-row items-center flex-no-wrap">
           <div className="pr-2">
             <PersonIcon />
           </div>
