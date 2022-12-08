@@ -34,7 +34,7 @@ const Root = styled.div`
   border: 1px solid ${background};
   display: inline-block;
 `
-const Button = styled.button`
+const Button = styled.button<{ first: boolean; selected: boolean }>`
   vertical-align: top;
   opacity: ${(props) => props.theme.minimumOpacity};
   min-width: ${(props) => props.theme.minimumButtonSize};
@@ -81,7 +81,6 @@ type RadioItemProps = {
 const RadioItem = (props: RadioItemProps) => {
   // @ts-expect-error ts-migrate(2339) FIXME: Property 'first' does not exist on type 'RadioItem... Remove this comment to see the full error message
   const { value, first, children, selected, onClick } = props
-  // @ts-expect-error ts-migrate(2322) FIXME: Type '{ children: any; first: any; selected: any; ... Remove this comment to see the full error message
   return (
     <Button first={first} selected={selected} onClick={() => onClick(value)}>
       {children || value}

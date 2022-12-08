@@ -86,11 +86,10 @@ const AGM = (opts: any) => {
 const SI = (opts: any) => {
   const imageExtent =
     opts.imageExtent || ol.proj.get((properties as any).projection).getExtent()
-  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'typeof Image' is not assignable ... Remove this comment to see the full error message
   return createTile(
     { ...opts, imageExtent, ...opts.parameters },
     ol.source.ImageStatic,
-    ol.layer.Image
+    ol.layer.Image as any
   )
 }
 const sources = { OSM, BM, WMS, WMT, AGM, SI } as {

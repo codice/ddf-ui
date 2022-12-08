@@ -103,7 +103,7 @@ const validate = ({
   setState({
     ...state,
     valid: validationReport ? validationReport.valid : true,
-    error: validationReport ? validationReport.error : false,
+    error: validationReport ? validationReport.error : (false as any),
   })
 }
 

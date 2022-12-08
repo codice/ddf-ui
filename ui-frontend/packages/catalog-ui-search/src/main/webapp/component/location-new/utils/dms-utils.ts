@@ -129,7 +129,11 @@ function dmsToWkt(dms: any) {
       break
     case 'circle':
       const distance = toKilometers(dms.circle.radius, dms.circle.units)
-      wkt = computeCircle(dmsPointToWkt(dms.circle.point), distance, 36).toWkt()
+      wkt = computeCircle(
+        dmsPointToWkt(dms.circle.point),
+        distance,
+        36
+      )?.toWkt()
       break
     case 'line':
       if (dms.line.list.length > 0) {

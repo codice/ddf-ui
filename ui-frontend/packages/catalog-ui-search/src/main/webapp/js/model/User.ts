@@ -44,11 +44,13 @@ const Theme = Backbone.Model.extend({
   const equal = (a: any, b: any) =>
     _.isEqual(_.omit(a, exclude), _.omit(b, exclude))
   const layersToRemove = layers.filter((model: any) => {
-    const found = providers.some((provider) => equal(provider, model.toJSON()))
+    const found = providers.some((provider: any) =>
+      equal(provider, model.toJSON())
+    )
     return !found && !model.get('userRemovable')
   })
   layers.remove(layersToRemove)
-  providers.forEach((provider) => {
+  providers.forEach((provider: any) => {
     const found = layers
       .toArray()
       .some((model: any) => equal(provider, model.toJSON()))

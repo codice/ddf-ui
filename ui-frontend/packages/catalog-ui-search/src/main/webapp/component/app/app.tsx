@@ -295,10 +295,9 @@ const HelpButton = () => {
   const location = useLocation()
   const queryParams = queryString.parse(location.search)
   const { navOpen } = useNavContextProvider()
-  // @ts-expect-error ts-migrate(2322) FIXME: Type '"a" | ForwardRefExoticComponent<LinkProps<Un... Remove this comment to see the full error message
   return (
     <ExpandingButton
-      component={(properties as any).helpUrl ? 'a' : Link}
+      component={(properties as any).helpUrl ? 'a' : ((Link as unknown) as any)}
       href={(properties as any).helpUrl}
       to={
         (properties as any).helpUrl
@@ -315,6 +314,7 @@ const HelpButton = () => {
       className={`group-hover:opacity-100 opacity-25  hover:opacity-100 focus-visible:opacity-100 transition-opacity`}
       Icon={HelpIcon}
       expandedLabel="Help"
+      unexpandedLabel=""
       dataId={sidebarDataIdTag('help')}
       expanded={navOpen}
       focusVisibleClassName="focus-visible"
@@ -330,9 +330,8 @@ const SettingsButton = () => {
   const { navOpen } = useNavContextProvider()
   return (
     <>
-      {/* @ts-expect-error ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message */}
       <ExpandingButton
-        component={Link}
+        component={Link as any}
         to={{
           pathname: `${location.pathname}`,
           search: `${queryString.stringify({
@@ -343,6 +342,7 @@ const SettingsButton = () => {
         className={`group-hover:opacity-100 opacity-25 relative hover:opacity-100 focus-visible:opacity-100 transition-opacity`}
         Icon={SettingsIcon}
         expandedLabel="Settings"
+        unexpandedLabel=""
         dataId={sidebarDataIdTag('settings')}
         expanded={navOpen}
         focusVisibleClassName="focus-visible"
@@ -380,9 +380,8 @@ const NotificationsButton = () => {
           hasUnseenNotifications ? 'animate-wiggle Mui-text-warning' : ''
         }
       >
-        {/* @ts-expect-error ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message */}
         <ExpandingButton
-          component={Link}
+          component={Link as any}
           to={{
             pathname: `${location.pathname}`,
             search: `${queryString.stringify({
@@ -395,6 +394,7 @@ const NotificationsButton = () => {
           } group-hover:opacity-100  relative hover:opacity-100 focus-visible:opacity-100 transition-opacity`}
           Icon={NotificationsIcon}
           expandedLabel="Notifications"
+          unexpandedLabel=""
           dataId={sidebarDataIdTag('notifications')}
           expanded={navOpen}
           focusVisibleClassName="focus-visible"
@@ -429,9 +429,8 @@ const UserButton = () => {
   const { navOpen } = useNavContextProvider()
   return (
     <>
-      {/* @ts-expect-error ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message */}
       <ExpandingButton
-        component={Link}
+        component={Link as any}
         to={{
           pathname: `${location.pathname}`,
           search: `${queryString.stringify({
@@ -486,11 +485,10 @@ const RouteButton = ({ routeInfo }: { routeInfo: RouteShownInNavType }) => {
     routeInfo,
     pathname: location.pathname,
   })
-  // @ts-expect-error ts-migrate(2322) FIXME: Type 'ForwardRefExoticComponent<LinkProps<UnknownF... Remove this comment to see the full error message
   return (
     <ExpandingButton
       key={routeInfo.linkProps.to.toString()}
-      component={Link}
+      component={Link as any}
       to={routeInfo.linkProps.to}
       className={`group-hover:opacity-100 ${
         !isSelected ? 'opacity-25' : ''

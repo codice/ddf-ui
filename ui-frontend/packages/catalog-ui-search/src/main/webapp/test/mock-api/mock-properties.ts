@@ -18,7 +18,6 @@ import api from './index'
 const oldInit = properties.init
 
 const mock = () => {
-  // @ts-expect-error ts-migrate(2322) FIXME: Type '() => void' is not assignable to type '() =>... Remove this comment to see the full error message
   properties.init = function () {
     const data = api('./internal/config')
     const uiConfig = api('./internal/platform/config/ui')

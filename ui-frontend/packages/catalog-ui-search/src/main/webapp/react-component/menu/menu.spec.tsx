@@ -25,9 +25,8 @@ describe('<Menu />', () => {
     shallow(<Menu />)
   })
   it('should render the correct number of <MenuItem />s', () => {
-    // @ts-expect-error ts-migrate(2741) FIXME: Property 'onChange' is missing in type '{ children... Remove this comment to see the full error message
     const wrapper = shallow(
-      <Menu value="two">
+      <Menu value="two" onChange={() => {}}>
         <MenuItem value="one" />
         <MenuItem value="two" />
         <MenuItem value="three" />
@@ -36,9 +35,8 @@ describe('<Menu />', () => {
     expect(wrapper.find('MenuItem').length).to.equal(3)
   })
   it('should have the correct <MenuItem /> selected', () => {
-    // @ts-expect-error ts-migrate(2741) FIXME: Property 'onChange' is missing in type '{ children... Remove this comment to see the full error message
     const wrapper = shallow(
-      <Menu value="two">
+      <Menu value="two" onChange={() => {}}>
         <MenuItem value="one" />
         <MenuItem value="two" />
         <MenuItem value="three" />
@@ -109,9 +107,8 @@ describe('<Menu />', () => {
     })
   })
   it('should activate <MenuItem /> on hover', () => {
-    // @ts-expect-error ts-migrate(2741) FIXME: Property 'onChange' is missing in type '{ children... Remove this comment to see the full error message
     const wrapper = shallow(
-      <Menu value="two">
+      <Menu value="two" onChange={() => {}}>
         <MenuItem value="one" />
         <MenuItem value="two" />
         <MenuItem value="three" />

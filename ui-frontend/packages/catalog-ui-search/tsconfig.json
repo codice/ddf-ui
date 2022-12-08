@@ -17,7 +17,7 @@
     "module": "commonjs",
     "outDir": "./dist",
     "skipLibCheck": true,
-    "lib": ["es2015", "dom"],
+    "lib": ["es2019", "dom"],
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

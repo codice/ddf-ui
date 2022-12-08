@@ -464,8 +464,7 @@ export default function (
             Adds a billboard point utilizing the passed in point and options.
             Options are a view to relate to, and an id, and a color.
         */
-    // @ts-expect-error ts-migrate(6133) FIXME: 'useCustomText' is declared but its value is never... Remove this comment to see the full error message
-    addPointWithText(point: any, options: any, useCustomText = false) {
+    addPointWithText(point: any, options: any) {
       const pointObject = convertPointCoordinate(point)
       const feature = new Openlayers.Feature({
         geometry: new Openlayers.geom.Point(pointObject),

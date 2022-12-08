@@ -58,21 +58,18 @@ function transformEnumResponse(metacardTypes: any, response: any) {
 
 const metacardStartingTypes = {
   anyText: {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     alias: properties.attributeAliases['anyText'],
     id: 'anyText',
     type: 'STRING',
     multivalued: false,
   },
   anyGeo: {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     alias: properties.attributeAliases['anyGeo'],
     id: 'anyGeo',
     type: 'LOCATION',
     multivalued: false,
   },
   anyDate: {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     alias: properties.attributeAliases['anyDate'],
     id: 'anyDate',
     type: 'DATE',
@@ -80,7 +77,6 @@ const metacardStartingTypes = {
     hidden: true, // need to investigate if this is common, it looks like we defer to the properties file instead, think we need to overhaul our data structures for this
   },
   'metacard-type': {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     alias: properties.attributeAliases['metacard-type'],
     id: 'metacard-type',
     type: 'STRING',
@@ -88,7 +84,6 @@ const metacardStartingTypes = {
     readOnly: true,
   },
   'source-id': {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     alias: properties.attributeAliases['source-id'],
     id: 'source-id',
     type: 'STRING',
@@ -96,14 +91,12 @@ const metacardStartingTypes = {
     readOnly: true,
   },
   cached: {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     alias: properties.attributeAliases['cached'],
     id: 'cached',
     type: 'STRING',
     multivalued: false,
   },
   'metacard-tags': {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     alias: properties.attributeAliases['metacard-tags'],
     id: 'metacard-tags',
     type: 'STRING',
@@ -116,16 +109,17 @@ function metacardStartingTypesWithTemporal() {
   let metacardStartingTypeWithTemporal = { ...metacardStartingTypes }
 
   if (properties.basicSearchTemporalSelectionDefault) {
-    properties.basicSearchTemporalSelectionDefault.forEach((proposedType) => {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-      metacardStartingTypeWithTemporal[proposedType] = {
-        id: proposedType,
-        type: 'DATE',
+    properties.basicSearchTemporalSelectionDefault.forEach(
+      (proposedType: any) => {
         // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-        alias: properties.attributeAliases[proposedType],
-        hidden: properties.isHidden(proposedType),
+        metacardStartingTypeWithTemporal[proposedType] = {
+          id: proposedType,
+          type: 'DATE',
+          alias: properties.attributeAliases[proposedType],
+          hidden: properties.isHidden(proposedType),
+        }
       }
-    })
+    )
   }
 
   return metacardStartingTypeWithTemporal
@@ -192,7 +186,6 @@ export default new (Backbone.Model.extend({
           this.metacardTypes[type].id = this.metacardTypes[type].id || type
           this.metacardTypes[type].type =
             this.metacardTypes[type].type || this.metacardTypes[type].format
-          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           this.metacardTypes[type].alias = properties.attributeAliases[type]
           this.metacardTypes[type].hidden =
             properties.isHidden(this.metacardTypes[type].id) ||

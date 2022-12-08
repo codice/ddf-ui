@@ -17,9 +17,8 @@ import Openlayers from 'openlayers'
 import properties from '../../../../js/properties'
 function convertPointCoordinate(point: any) {
   const coords = [point[0], point[1]]
-  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'any[]' is not assignable to para... Remove this comment to see the full error message
   return Openlayers.proj.transform(
-    coords,
+    coords as any,
     'EPSG:4326',
     (properties as any).projection
   )

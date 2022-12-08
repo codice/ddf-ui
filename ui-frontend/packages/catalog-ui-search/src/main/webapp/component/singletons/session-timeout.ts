@@ -43,10 +43,9 @@ const sessionTimeoutModel = new (Backbone.Model.extend({
     this.handleShowPrompt()
   },
   handleLocalStorageChange() {
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | null' is not assignable... Remove this comment to see the full error message
     this.set(
       'idleTimeoutDate',
-      parseInt(localStorage.getItem('idleTimeoutDate'))
+      parseInt(localStorage.getItem('idleTimeoutDate') as any)
     )
     this.hidePrompt()
   },

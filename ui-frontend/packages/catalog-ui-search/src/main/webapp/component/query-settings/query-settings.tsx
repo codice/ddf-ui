@@ -37,13 +37,11 @@ const QuerySettings = ({ model }: Props) => {
   return (
     <Memo dependencies={[model]}>
       <div>
-        {/* @ts-expect-error ts-migrate(2774) FIXME: This condition will always return true since the f... Remove this comment to see the full error message */}
         {properties.isSpellcheckEnabled ? (
           <div className="pb-2">
             <Spellcheck model={model} />
           </div>
         ) : null}
-        {/* @ts-expect-error ts-migrate(2774) FIXME: This condition will always return true since the f... Remove this comment to see the full error message */}
         {properties.isPhoneticsEnabled ? (
           <div className="pb-2">
             <Phonetics model={model} />

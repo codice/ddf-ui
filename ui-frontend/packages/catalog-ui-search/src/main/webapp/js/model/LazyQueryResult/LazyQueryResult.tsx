@@ -152,15 +152,15 @@ export class LazyQueryResult {
     callback: () => void
   }) {
     const id = Math.random().toString()
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+    // @ts-ignore
     this[`subscriptionsToMe.${subscribableThing}`][id] = callback
     return () => {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+      // @ts-ignore
       delete this[`subscriptionsToMe.${subscribableThing}`][id]
     }
   }
   _notifySubscribers(subscribableThing: SubscribableType) {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+    // @ts-ignore
     const subscribers = this[
       `subscriptionsToMe.${subscribableThing}`
     ] as SubscriptionType
@@ -387,11 +387,10 @@ export class LazyQueryResult {
   }
   getPoints(attribute?: any): any {
     try {
-      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{}' is not assignable to paramet... Remove this comment to see the full error message
       return this.getGeometries(attribute).reduce(
         (pointArray: any, wkt: any) =>
           pointArray.concat(
-            TurfMeta.coordAll(wkx.Geometry.parse(wkt).toGeoJSON())
+            TurfMeta.coordAll(wkx.Geometry.parse(wkt).toGeoJSON() as any)
           ),
         []
       )

@@ -224,7 +224,7 @@ function generateFilter(
   type: any,
   property: any,
   value: any,
-  metacardDefinitions: any
+  metacardDefinitions?: any
 ) {
   if (!metacardDefinitions) {
     metacardDefinitions = defaultMetacardDefinitions
@@ -287,14 +287,7 @@ function isPointRadiusFilter(filter: any) {
 function geometryFilterContainsString(filter: any, filterSearchString: any) {
   return filter.value && filter.value.indexOf(filterSearchString) >= 0
 }
-// @ts-expect-error ts-migrate(2300) FIXME: Duplicate identifier 'this'.
-function buildIntersectCQL(
-  this: any,
-  this: any,
-  this: any,
-  this: any,
-  locationGeometry: any
-) {
+function buildIntersectCQL(this: any, locationGeometry: any) {
   let locationFilter = ''
   let locationWkt = locationGeometry.toWkt()
   const locationType = locationGeometry.toGeoJSON().type.toUpperCase()

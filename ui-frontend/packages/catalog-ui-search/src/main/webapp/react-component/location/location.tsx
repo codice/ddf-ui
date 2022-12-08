@@ -27,8 +27,7 @@ import PointRadius from './point-radius'
 import BoundingBox from './bounding-box'
 import Gazetteer from './gazetteer'
 import ShapeUtils from '../../js/ShapeUtils'
-// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'plugins/location' or its corre... Remove this comment to see the full error message
-import plugin from 'plugins/location'
+import plugin from '../../plugins/location'
 type InputType = {
   label: string
   Component: any

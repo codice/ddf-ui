@@ -60,17 +60,16 @@ class MetacardHistory extends React.Component<Props, State> {
       }
       const history = await res.json()
       history.sort((historyItem1: any, historyItem2: any) => {
-        // @ts-expect-error ts-migrate(2362) FIXME: The left-hand side of an arithmetic operation must... Remove this comment to see the full error message
         return (
-          moment.unix(historyItem2.versioned.seconds) -
-          // @ts-expect-error ts-migrate(2363) FIXME: The right-hand side of an arithmetic operation mus... Remove this comment to see the full error message
-          moment.unix(historyItem1.versioned.seconds)
+          ((moment.unix(historyItem2.versioned.seconds) as unknown) as number) -
+          ((moment.unix(historyItem1.versioned.seconds) as unknown) as number)
         )
       })
       history.forEach((historyItem: any, index: any) => {
-        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'number' is not assignable to par... Remove this comment to see the full error message
         historyItem.niceDate = Common.getMomentDate(
-          moment.unix(historyItem.versioned.seconds).valueOf()
+          (moment
+            .unix(historyItem.versioned.seconds)
+            .valueOf() as unknown) as string
         )
         historyItem.versionNumber = history.length - index
       })

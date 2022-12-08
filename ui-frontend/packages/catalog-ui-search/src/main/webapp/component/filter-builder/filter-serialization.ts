@@ -57,15 +57,13 @@ const comparatorToCQL = {
   '<=': '<=',
   '>=': '>=',
   RANGE: 'BETWEEN',
-}
+} as { [key: string]: string }
 
 const cqlToComparator = Object.keys(comparatorToCQL).reduce((mapping, key) => {
-  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const value = comparatorToCQL[key]
-  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   mapping[value] = key
   return mapping
-}, {})
+}, {} as { [key: string]: string })
 
 const transformFilter = (filter: any) => {
   const { type, property } = filter
@@ -99,8 +97,7 @@ const transformFilter = (filter: any) => {
   const comparator =
     definition && definition.type === 'DATE' && type === '='
       ? 'RELATIVE'
-      : // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-        cqlToComparator[type]
+      : cqlToComparator[type]
 
   let parsedValue
   if (type === 'DURING') {
@@ -172,7 +169,6 @@ export const serialize = (model: any) => {
     const property = model.get('type')
     const comparator = model.get('comparator')
     const value = model.get('value')[0]
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     const type = comparatorToCQL[comparator]
 
     let filter
@@ -188,7 +184,6 @@ export const serialize = (model: any) => {
         filter = CQLUtils.generateIsEmptyFilter(property)
         break
       default:
-        // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 3.
         filter = CQLUtils.generateFilter(
           type,
           property,
@@ -206,13 +201,10 @@ export const serialize = (model: any) => {
 const defaultFilter = { type: 'ILIKE', property: 'anyText', value: '' }
 
 // json->model
-// @ts-expect-error ts-migrate(7024) FIXME: Function implicitly has return type 'any' because ... Remove this comment to see the full error message
-export const deserialize = (filter = defaultFilter) => {
-  // @ts-expect-error ts-migrate(2339) FIXME: Property 'filters' does not exist on type '{ type:... Remove this comment to see the full error message
+export const deserialize = (filter: any = defaultFilter): any => {
   const { type, filters } = filter
 
   if (!filters) {
-    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ type: string; filters: { type:... Remove this comment to see the full error message
     return deserialize({ type: 'AND', filters: [filter] })
   }
 

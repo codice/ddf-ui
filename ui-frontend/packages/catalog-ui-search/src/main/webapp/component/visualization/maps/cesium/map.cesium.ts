@@ -21,8 +21,7 @@ import wreqr from '../../../../js/wreqr'
 import properties from '../../../../js/properties'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
 import Cesium from 'cesium'
-// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'cesium-drawhelper/DrawHelper' ... Remove this comment to see the full error message
-import DrawHelper from 'cesium-drawhelper/DrawHelper'
+import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import {
   CesiumImageryProviderTypes,
   CesiumLayers,
@@ -174,18 +173,17 @@ function convertPointCoordinate(coordinate: any) {
 function isNotVisible(cartesian3CenterOfGeometry: any, occluder: any) {
   return !occluder.isPointVisible(cartesian3CenterOfGeometry)
 }
-// @ts-expect-error ts-migrate(6133) FIXME: 'notificationEl' is declared but its value is neve... Remove this comment to see the full error message
 export default function CesiumMap(
   insertionElement: any,
   selectionInterface: any,
-  notificationEl: any,
+  _notificationEl: any,
   componentElement: any,
   mapModel: any
 ) {
   let overlays = {}
   let shapes: any = []
   const { map, requestRenderHandler } = createMap(insertionElement)
-  const drawHelper = new DrawHelper(map)
+  const drawHelper = new (DrawHelper as any)(map)
   map.drawHelper = drawHelper
   const billboardCollection = setupBillboardCollection()
   const labelCollection = setupLabelCollection()
@@ -632,8 +630,7 @@ export default function CesiumMap(
                 Adds a billboard point utilizing the passed in point and options.
                 Options are a view to relate to, and an id, and a color.
               */
-    // @ts-expect-error ts-migrate(6133) FIXME: 'useCustomText' is declared but its value is never... Remove this comment to see the full error message
-    addPointWithText(point: any, options: any, useCustomText = false) {
+    addPointWithText(point: any, options: any) {
       const pointObject = convertPointCoordinate(point)
       const cartographicPosition = Cesium.Cartographic.fromDegrees(
         pointObject.longitude,

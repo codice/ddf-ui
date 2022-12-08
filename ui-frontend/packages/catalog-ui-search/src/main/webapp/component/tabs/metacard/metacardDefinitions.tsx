@@ -66,7 +66,6 @@ export const TypedMetacardDefs = {
   },
   // O(1) lookup of attr alias
   getAlias({ attr }: { attr: string }): string {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     return properties.attributeAliases[attr] || attr
   },
   isMulti({ attr }: { attr: string }): boolean {

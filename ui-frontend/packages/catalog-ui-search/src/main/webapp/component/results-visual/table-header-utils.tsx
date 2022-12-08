@@ -69,7 +69,6 @@ export const getVisibleHeaders = (filteredAttributes: any) => {
   const headers = preferredHeader
     .filter((property) => availableAttributes.indexOf(property) !== -1)
     .map((property) => ({
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       label: properties.attributeAliases[property],
       id: property,
       hidden:

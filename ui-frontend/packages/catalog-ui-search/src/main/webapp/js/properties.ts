@@ -168,7 +168,6 @@ const properties = {
     return match((this as any).hiddenAttributes, attribute)
   },
   isReadOnly(attribute: any) {
-    // @ts-expect-error ts-migrate(2551) FIXME: Property 'readOnly' does not exist on type '{ comm... Remove this comment to see the full error message
     return match(this.readOnly, attribute)
   },
   hasExperimentalEnabled() {
@@ -181,15 +180,12 @@ const properties = {
     return !(this as any).queryFeedbackEnabled
   },
   isDisableLocalCatalog() {
-    // @ts-expect-error ts-migrate(2551) FIXME: Property 'disableLocalCatalog' does not exist on t... Remove this comment to see the full error message
     return this.disableLocalCatalog
   },
   isHistoricalSearchEnabled() {
-    // @ts-expect-error ts-migrate(2551) FIXME: Property 'isHistoricalSearchDisabled' does not exi... Remove this comment to see the full error message
     return !this.isHistoricalSearchDisabled
   },
   isArchiveSearchEnabled() {
-    // @ts-expect-error ts-migrate(2551) FIXME: Property 'isArchiveSearchDisabled' does not exist ... Remove this comment to see the full error message
     return !this.isArchiveSearchDisabled
   },
   isUploadEnabled() {
@@ -207,10 +203,10 @@ const properties = {
   isFuzzyResultsEnabled() {
     return this.isFuzzyResultsEnabled
   },
-  // @ts-expect-error ts-migrate(7023) FIXME: 'isMetacardPreviewEnabled' implicitly has return t... Remove this comment to see the full error message
   isMetacardPreviewEnabled() {
-    // @ts-expect-error ts-migrate(2551) FIXME: Property 'isMetacardPreviewDisabled' does not exis... Remove this comment to see the full error message
     return !this.isMetacardPreviewDisabled
   },
+} as {
+  [key: string]: any
 }
 export default properties

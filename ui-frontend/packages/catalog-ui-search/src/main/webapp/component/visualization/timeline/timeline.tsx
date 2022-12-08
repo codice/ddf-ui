@@ -144,7 +144,6 @@ const TimelineVisualization = (props: Props) => {
       } = {}
       possibleDateAttributes.forEach((dateAttribute: any) => {
         aliasMap[dateAttribute] =
-          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           properties.attributeAliases[dateAttribute] || dateAttribute
       })
       if (!_.isEqual(aliasMap, dateAttributeAliases)) {

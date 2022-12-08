@@ -351,9 +351,8 @@ export const Timeline = (props: TimelineProps) => {
     }, 100)
   }, [rootRef, width])
   useEffect(() => {
-    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     zoomBehavior.scaleTo(
-      d3.select(d3ContainerRef.current).transition().duration(0),
+      d3.select(d3ContainerRef.current).transition().duration(0) as any,
       1
     )
   }, [width])
@@ -404,16 +403,14 @@ export const Timeline = (props: TimelineProps) => {
     })
     .on('zoom', handleZoom)
   const zoomIn = () => {
-    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     zoomBehavior.scaleBy(
-      d3.select(d3ContainerRef.current).transition().duration(750),
+      d3.select(d3ContainerRef.current).transition().duration(750) as any,
       2
     )
   }
   const zoomOut = () => {
-    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     zoomBehavior.scaleBy(
-      d3.select(d3ContainerRef.current).transition().duration(750),
+      d3.select(d3ContainerRef.current).transition().duration(750) as any,
       0.5
     )
   }
@@ -439,8 +436,7 @@ export const Timeline = (props: TimelineProps) => {
     if (d3ContainerRef.current) {
       renderInitialXAxis()
       const container = d3.select(d3ContainerRef.current)
-      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'ZoomBehavior<Element, unknown>' ... Remove this comment to see the full error message
-      container.call(zoomBehavior)
+      container.call(zoomBehavior as any)
     }
   }, [height, width])
   // Add mouse handlers to listen to d3 mouse events
@@ -741,9 +737,9 @@ export const Timeline = (props: TimelineProps) => {
           .attr('height', '50')
           .attr('style', 'display: block')
       } else {
-        hideElement(leftMarker)
-        hideElement(rightMarker)
-        hideElement(brushBar)
+        hideElement(leftMarker as any)
+        hideElement(rightMarker as any)
+        hideElement(brushBar as any)
       }
     }
   }, [xScale, selectionRange, props.mode, props.height, props.timezone])

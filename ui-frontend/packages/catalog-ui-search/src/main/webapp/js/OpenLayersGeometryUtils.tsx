@@ -58,12 +58,18 @@ export const OpenLayersGeometryUtils = {
         break
     }
   },
-  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'PointType' is not assignable to ... Remove this comment to see the full error message
   mapCoordinateToLonLat: (point: PointType) =>
-    ol.proj.transform(point, (properties as any).projection, 'EPSG:4326'),
-  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'PointType' is not assignable to ... Remove this comment to see the full error message
+    ol.proj.transform(
+      point as any,
+      (properties as any).projection,
+      'EPSG:4326'
+    ),
   lonLatToMapCoordinate: (point: PointType) =>
-    ol.proj.transform(point, 'EPSG:4326', (properties as any).projection),
+    ol.proj.transform(
+      point as any,
+      'EPSG:4326',
+      (properties as any).projection
+    ),
   wrapCoordinatesFromGeometry: (geometry: GeometryType) => {
     let coordinates = OpenLayersGeometryUtils.getCoordinatesFromGeometry(
       geometry

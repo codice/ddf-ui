@@ -45,10 +45,9 @@ type Source = {
   id: string
   hits: number
 }
-// @ts-expect-error ts-migrate(6133) FIXME: 'exportSize' is declared but its value is never re... Remove this comment to see the full error message
 export function getStartIndex(
   src: string,
-  exportSize: any,
+  _exportSize: any,
   selectionInterface: any
 ) {
   const srcIndexMap = selectionInterface.getCurrentQuery()

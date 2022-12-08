@@ -36,8 +36,8 @@ import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import Paper from '@material-ui/core/Paper'
 import { Elevations } from '../theme/theme'
-// @ts-expect-error ts-migrate(7024) FIXME: Function implicitly has return type 'any' because ... Remove this comment to see the full error message
-const treeMap = (obj: any, fn: any, path = []) => {
+
+const treeMap = (obj: any, fn: any, path = []): any => {
   if (Array.isArray(obj)) {
     // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     return obj.map((v, i) => treeMap(v, fn, path.concat(i)))

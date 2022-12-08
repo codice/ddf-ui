@@ -28,15 +28,7 @@ const DrawHelper = (function () {
   // static variables
   const ellipsoid = Cesium.Ellipsoid.WGS84
   // constructor
-  // @ts-expect-error ts-migrate(2300) FIXME: Duplicate identifier 'this'.
-  function _(
-    this: any,
-    this: any,
-    this: any,
-    this: any,
-    this: any,
-    cesiumWidget: any
-  ) {
+  function _(this: any, cesiumWidget: any) {
     this._scene = cesiumWidget.scene
     this._tooltip = createTooltip(cesiumWidget.container)
     this._surfaces = []
@@ -1137,24 +1129,7 @@ const DrawHelper = (function () {
       })
       enhanceWithListeners(billboard)
     }
-    // @ts-expect-error ts-migrate(2300) FIXME: Duplicate identifier 'this'.
-    function setHighlighted(
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      highlighted: any
-    ) {
+    function setHighlighted(this: any, highlighted: any) {
       // if no change
       // if already highlighted, the outline polygon will be available
       if (this._highlighted && this._highlighted == highlighted) {
@@ -1182,27 +1157,7 @@ const DrawHelper = (function () {
         }
       }
     }
-    // @ts-expect-error ts-migrate(2300) FIXME: Duplicate identifier 'this'.
-    function setEditMode(
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      this: any,
-      editMode: any
-    ) {
+    function setEditMode(this: any, editMode: any) {
       // if no change
       if (this._editMode == editMode) {
         return

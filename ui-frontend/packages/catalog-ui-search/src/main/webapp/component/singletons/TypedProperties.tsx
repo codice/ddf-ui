@@ -19,15 +19,12 @@ export const TypedProperties = {
     return (properties as any).resultShow
   },
   getReadOnly: (): string[] => {
-    // @ts-expect-error ts-migrate(2551) FIXME: Property 'readOnly' does not exist on type '{ comm... Remove this comment to see the full error message
     return properties.readOnly
   },
   isPhoneticsEnabled: (): boolean => {
-    // @ts-expect-error ts-migrate(2322) FIXME: Type '() => ...' is not assignable to type 'boolea... Remove this comment to see the full error message
     return properties.isPhoneticsEnabled
   },
   isFuzzyResultsEnabled: (): boolean => {
-    // @ts-expect-error ts-migrate(2322) FIXME: Type '() => ...' is not assignable to type 'boolea... Remove this comment to see the full error message
     return properties.isFuzzyResultsEnabled
   },
   getIconConfig: (): {

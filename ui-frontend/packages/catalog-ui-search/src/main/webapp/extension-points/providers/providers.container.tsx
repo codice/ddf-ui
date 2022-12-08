@@ -22,8 +22,7 @@ import { SnackProvider } from '../../component/snack/snack.provider'
 import { DialogProvider } from '../../component/dialog'
 import { HashRouter as Router } from 'react-router-dom'
 
-// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module 'properties' or its correspondi... Remove this comment to see the full error message
-import properties from 'properties'
+import properties from '../../js/properties'
 
 export type Props = {
   children: React.ReactNode

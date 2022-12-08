@@ -39,13 +39,13 @@ export const LocationInputReact = ({
           onChange(state.wkt)
           break
         case 'dd':
-          onChange(ddToWkt(state.dd))
+          onChange(ddToWkt(state.dd) as any)
           break
         case 'dms':
-          onChange(dmsToWkt(state.dms))
+          onChange(dmsToWkt(state.dms) as any)
           break
         case 'usng':
-          onChange(usngToWkt(state.usng))
+          onChange(usngToWkt(state.usng) as any)
           break
         case 'keyword':
           onChange(state.keyword ? state.keyword.wkt : null)

@@ -162,13 +162,11 @@ describe('CQL Utils', () => {
     })
 
     it('builds CQL for POINT location', () => {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 1.
       const cql = CQLUtils.buildIntersectCQL(wkx.Geometry.parse('POINT(1 2)'))
       expect(cql).to.equal('(DWITHIN(anyGeo, POINT(1 2), 1, meters))')
     })
 
     it('builds CQL for LINESTRING location', () => {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 1.
       const cql = CQLUtils.buildIntersectCQL(
         wkx.Geometry.parse('LINESTRING(1 2, 3 4)')
       )
@@ -176,7 +174,6 @@ describe('CQL Utils', () => {
     })
 
     it('builds CQL for POLYGON location', () => {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 1.
       const cql = CQLUtils.buildIntersectCQL(
         wkx.Geometry.parse('POLYGON((1 2, 3 4, 5 6, 1 2))')
       )
@@ -184,7 +181,6 @@ describe('CQL Utils', () => {
     })
 
     it('builds CQL for MULTIPOINT location', () => {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 1.
       const cql = CQLUtils.buildIntersectCQL(
         wkx.Geometry.parse('MULTIPOINT((1 2), (3 4))')
       )
@@ -194,7 +190,6 @@ describe('CQL Utils', () => {
     })
 
     it('builds CQL for MULTILINESTRING location', () => {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 1.
       const cql = CQLUtils.buildIntersectCQL(
         wkx.Geometry.parse('MULTILINESTRING((1 2, 3 4), (5 6, 7 8))')
       )
@@ -204,7 +199,6 @@ describe('CQL Utils', () => {
     })
 
     it('builds CQL for MULTIPOLYGON location', () => {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 1.
       const cql = CQLUtils.buildIntersectCQL(
         wkx.Geometry.parse(
           'MULTIPOLYGON(((1 2, 3 4, 5 6, 1 2)), ((10 20, 30 40, 50 60, 10 20)))'
@@ -216,7 +210,6 @@ describe('CQL Utils', () => {
     })
 
     it('builds CQL for GEOMETRYCOLLECTION location', () => {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 4 arguments, but got 1.
       const cql = CQLUtils.buildIntersectCQL(
         wkx.Geometry.parse(
           'GEOMETRYCOLLECTION(POINT(1 2), LINESTRING(1 2, 3 4))'

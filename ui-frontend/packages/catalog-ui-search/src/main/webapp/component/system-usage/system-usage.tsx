@@ -74,9 +74,8 @@ const SystemUsageModal = () => {
                   !user.get('user').isGuestUser() &&
                   (properties.ui as any).systemUsageOncePerSession
                 ) {
-                  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | null' is not assignable... Remove this comment to see the full error message
                   const systemUsage = JSON.parse(
-                    window.sessionStorage.getItem('systemUsage')
+                    window.sessionStorage.getItem('systemUsage') as any
                   )
                   systemUsage[user.get('user').get('username')] = 'true'
                   window.sessionStorage.setItem(

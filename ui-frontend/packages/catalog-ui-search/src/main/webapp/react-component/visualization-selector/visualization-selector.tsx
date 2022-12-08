@@ -46,7 +46,6 @@ const VisualizationText = styled.div`
 const configs = Visualizations.reduce((cfg, viz) => {
   // @ts-expect-error ts-migrate(2339) FIXME: Property 'isClosable' does not exist on type 'Visu... Remove this comment to see the full error message
   const { id, title, icon, isClosable = true } = viz
-  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   cfg[id] = {
     title,
     type: 'component',
@@ -56,7 +55,7 @@ const configs = Visualizations.reduce((cfg, viz) => {
     isClosable,
   }
   return cfg
-}, {})
+}, {} as { [key: string]: any })
 const unMaximize = (contentItem: any) => {
   if (contentItem.isMaximised) {
     contentItem.toggleMaximise()
@@ -80,7 +79,7 @@ class VisualizationSelector extends React.Component {
   interimState: any
   openlayers: any
   table: any
-  dragSources = []
+  dragSources = [] as any[]
   constructor(props: any) {
     super(props)
     this.openlayers = React.createRef()
@@ -127,10 +126,12 @@ class VisualizationSelector extends React.Component {
     )
   }
   componentDidMount() {
-    this.dragSources = []
-    // @ts-expect-error ts-migrate(2322) FIXME: Type 'any[]' is not assignable to type 'never[]'.
+    this.dragSources = [] as any[]
     this.dragSources = Object.keys(configs).map((key) =>
-      (this.props as any).goldenLayout.createDragSource(this[key], configs[key])
+      (this.props as any).goldenLayout.createDragSource(
+        (this as any)[key],
+        configs[key]
+      )
     )
     this.listenToDragSources()
   }
@@ -164,11 +165,9 @@ class VisualizationSelector extends React.Component {
       if ((this.props as any).goldenLayout.root.contentItems.length === 0) {
         ;(this.props as any).goldenLayout.root.addChild({
           type: 'column',
-          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           content: [configs[choice]],
         })
       } else {
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         ;(this.props as any).goldenLayout.root.contentItems[0].addChild(
           configs[choice]
         )

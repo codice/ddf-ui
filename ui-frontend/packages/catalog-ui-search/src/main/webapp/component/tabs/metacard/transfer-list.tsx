@@ -464,12 +464,11 @@ const CustomList = ({
                           droppableId="test"
                           mode="virtual"
                           renderClone={(provided, _snapshot, rubric) => {
-                            // @ts-expect-error ts-migrate(2322) FIXME: Type '{ children: Element; ref: (element?: HTMLEle... Remove this comment to see the full error message
                             return (
                               <div
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                ref={provided.innerRef}
+                                {...(provided.draggableProps as any)}
+                                {...(provided.dragHandleProps as any)}
+                                ref={provided.innerRef as any}
                               >
                                 <ItemRow
                                   value={filteredItemArray[rubric.source.index]}
@@ -500,12 +499,11 @@ const CustomList = ({
                                         disableInteractiveElementBlocking
                                       >
                                         {(provided) => {
-                                          // @ts-expect-error ts-migrate(2322) FIXME: Type '{ children: Element; 'data-rbd-drag-handle-d... Remove this comment to see the full error message
                                           return (
                                             <div
-                                              ref={provided.innerRef}
-                                              {...provided.draggableProps}
-                                              {...provided.dragHandleProps}
+                                              ref={provided.innerRef as any}
+                                              {...(provided.draggableProps as any)}
+                                              {...(provided.dragHandleProps as any)}
                                             >
                                               <ItemRow
                                                 value={item}
