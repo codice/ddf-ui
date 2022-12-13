@@ -390,10 +390,13 @@ Implementation details
         <argument ref="socketThreadFactory"/>
     </bean>
 
+    <reference-list id="sessionPlugins" interface="org.codice.ddf.security.servlet.web.socket.SessionPlugin" availability="optional"/>
+
     <bean id="socketServlet" destroy-method="destroy"
           class="org.codice.ddf.security.servlet.web.socket.SecureWebSocketServlet">
         <argument ref="socketThreadPool"/>
         <argument ref="jsonRpc"/>
+        <argument ref="sessionPlugins"/>
     </bean>
 
     <!--
