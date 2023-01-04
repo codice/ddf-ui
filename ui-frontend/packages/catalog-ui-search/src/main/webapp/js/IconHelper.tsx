@@ -163,6 +163,6 @@ export default {
   },
   getClassByName(name: string) {
     const i = _deriveIconByName(name)
-    return _get(i, 'class', _default.class)
+    return _get(i, 'class', _default?.class)
   },
 }

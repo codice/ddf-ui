@@ -12,20 +12,23 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import BaseApp from '../component/app/base-app'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import user from '../component/singletons/user-instance'
 import SourcesInstance from '../component/singletons/sources-instance'
 import MetacardDefinitions from '../component/tabs/metacard/metacardDefinitions'
+import properties from '../js/properties'
 
 export const attemptToStart = () => {
   if (
     user.fetched &&
     SourcesInstance.fetched &&
-    MetacardDefinitions.typesFetched()
+    MetacardDefinitions.typesFetched() &&
+    properties.fetched
   ) {
-    ReactDOM.render(<BaseApp />, document.querySelector('#router'))
+    import('../component/app/base-app').then((BaseApp) => {
+      ReactDOM.render(<BaseApp.default />, document.querySelector('#router'))
+    })
   } else if (!user.fetched) {
     user.once('sync', () => {
       attemptToStart()
@@ -34,7 +37,7 @@ export const attemptToStart = () => {
     SourcesInstance.once('sync', () => {
       attemptToStart()
     })
-  } else if (!MetacardDefinitions.typesFetched()) {
+  } else if (!MetacardDefinitions.typesFetched() || !properties.fetched) {
     setTimeout(() => {
       attemptToStart() // we don't have a sync event to listen to, so this will do
     }, 250)

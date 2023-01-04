@@ -15,6 +15,7 @@
 const DEFAULT_AUTO_MERGE_TIME = 1000
 import $ from 'jquery'
 import _ from 'underscore'
+import fetch from '../react-component/utils/fetch'
 function match(regexList: any, attribute: any) {
   return (
     _.chain(regexList)
@@ -91,53 +92,28 @@ const properties = {
   },
   sourcePollInterval: 60000,
   enums: {},
-  init() {
+  fetched: false,
+  async init() {
     // use this function to initialize variables that rely on others
     let props = this
-    $.ajax({
-      async: false,
-      cache: false,
-      dataType: 'json',
-      url: './internal/config',
-    })
-      .done((data) => {
-        props = _.extend(props, data)
-        $.ajax({
-          async: false,
-          cache: false,
-          dataType: 'json',
-          url: './internal/platform/config/ui',
-        })
-          .done((uiConfig) => {
-            props.ui = uiConfig
-            return props
-          })
-          .fail((_jqXHR, status, errorThrown) => {
-            if (console) {
-              console.error(
-                'Platform UI Configuration could not be loaded: (status: ' +
-                  status +
-                  ', message: ' +
-                  (errorThrown as any).message +
-                  ')'
-              )
-            }
-          })
+
+    await fetch('./internal/config')
+      .then((res) => {
+        return res.json()
       })
-      .fail((_jqXHR, status, errorThrown) => {
-        throw new Error(
-          'Configuration could not be loaded: (status: ' +
-            status +
-            ', message: ' +
-            (errorThrown as any).message +
-            ')'
-        )
+      .then((data) => {
+        props = _.extend(props, data)
+      })
+    await fetch('./internal/platform/config/ui')
+      .then((res) => res.json())
+      .then((data) => {
+        props.ui = data
       })
     this.handleFeedback()
     this.handleExperimental()
     this.handleUpload()
     this.handleListTemplates()
-    return props
+    this.fetched = true
   },
   handleListTemplates() {
     try {
@@ -207,6 +183,7 @@ const properties = {
     return !this.isMetacardPreviewDisabled
   },
 } as {
+  fetched: boolean
   [key: string]: any
 }
 export default properties
