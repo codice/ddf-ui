@@ -29,7 +29,6 @@ const mockDataMap = {
   './internal/forms/result': [],
   './internal/catalog/sources': Sources,
 }
-import './enumerations.ts'
 const mockDataGlobs = {
   './internal/enumerations': Enumerations,
 }

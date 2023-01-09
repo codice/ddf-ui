@@ -85,12 +85,15 @@ export class LazyQueryResults {
   }) {
     const id = Math.random().toString()
 
+    // @ts-ignore remove when we upgrade ace to use latest typescript
     this[`subscriptionsToMe.${subscribableThing}`][id] = callback
     return () => {
+      // @ts-ignore remove when we upgrade ace to use latest typescript
       delete this[`subscriptionsToMe.${subscribableThing}`][id]
     }
   }
   _notifySubscribers(subscribableThing: SubscribableType) {
+    // @ts-ignore remove when we upgrade ace to use latest typescript
     const subscribers = this[
       `subscriptionsToMe.${subscribableThing}`
     ] as SubscriptionType

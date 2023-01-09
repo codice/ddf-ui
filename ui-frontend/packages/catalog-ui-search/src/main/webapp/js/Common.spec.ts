@@ -14,6 +14,7 @@
  **/
 import { expect } from 'chai'
 import Common from './Common'
+import properties from './properties'
 
 describe('Common', () => {
   describe('wrapMapCoordinates', () => {
@@ -63,13 +64,13 @@ describe('Common', () => {
   })
   describe('generateUUID', () => {
     it('has dashes', () => {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
-      const uuid = Common.generateUUID({ useHyphensInUuid: true })
+      properties.useHyphensInUuid = true
+      const uuid = Common.generateUUID()
       expect(uuid).to.satisfy((value: any) => value.indexOf('-') >= 0)
+      properties.useHyphensInUuid = false
     })
     it('does not have dashes', () => {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
-      const uuid = Common.generateUUID({})
+      const uuid = Common.generateUUID()
       expect(uuid).to.satisfy((value: any) => value.indexOf('-') === -1)
     })
   })
