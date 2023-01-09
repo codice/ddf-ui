@@ -93,7 +93,12 @@ const properties = {
   sourcePollInterval: 60000,
   enums: {},
   fetched: false,
+  initializing: false,
   async init() {
+    if (this.initializing) {
+      return
+    }
+    this.initializing = true
     // use this function to initialize variables that rely on others
     let props = this
 
@@ -184,6 +189,8 @@ const properties = {
   },
 } as {
   fetched: boolean
+  initializing: boolean
+  init: () => Promise<void> | void
   [key: string]: any
 }
 export default properties

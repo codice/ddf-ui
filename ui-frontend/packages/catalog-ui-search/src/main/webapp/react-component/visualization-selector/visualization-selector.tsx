@@ -71,7 +71,10 @@ const unMaximize = (contentItem: any) => {
     )
   }
 }
-class VisualizationSelector extends React.Component {
+class VisualizationSelector extends React.Component<{
+  goldenLayout: any
+  onClose: () => void
+}> {
   cesium: any
   histogram: any
   inspector: any
@@ -87,12 +90,12 @@ class VisualizationSelector extends React.Component {
     this.inspector = React.createRef()
     this.histogram = React.createRef()
     this.table = React.createRef()
-    ;(this.props as any).goldenLayout.on('stateChanged', () => {
+    this.props.goldenLayout.on('stateChanged', () => {
       this.forceUpdate()
     })
   }
   render() {
-    ;(window as any)._gl = (this.props as any).goldenLayout
+    ;(window as any)._gl = this.props.goldenLayout
     return (
       <CustomElement
         data-id="visualization-menu"
@@ -109,9 +112,9 @@ class VisualizationSelector extends React.Component {
               onMouseDown={this.handleMouseDown.bind(this, componentName)}
               onMouseUp={this.handleMouseUp.bind(this, componentName)}
               className={
-                JSON.stringify(
-                  (this.props as any).goldenLayout.toConfig()
-                ).includes(`"componentName":"${componentName}"`)
+                JSON.stringify(this.props.goldenLayout.toConfig()).includes(
+                  `"componentName":"${componentName}"`
+                )
                   ? '' /** change to hidden to only allow one of each visual */
                   : ''
               }
@@ -128,10 +131,7 @@ class VisualizationSelector extends React.Component {
   componentDidMount() {
     this.dragSources = [] as any[]
     this.dragSources = Object.keys(configs).map((key) =>
-      (this.props as any).goldenLayout.createDragSource(
-        (this as any)[key],
-        configs[key]
-      )
+      this.props.goldenLayout.createDragSource((this as any)[key], configs[key])
     )
     this.listenToDragSources()
   }
@@ -153,24 +153,22 @@ class VisualizationSelector extends React.Component {
     })
   }
   handleChoice() {
-    ;(this.props as any).onClose()
+    this.props.onClose()
   }
   handleMouseDown(_event: any, choice: any) {
-    unMaximize((this.props as any).goldenLayout.root)
+    unMaximize(this.props.goldenLayout.root)
     this.interimState = true
     this.interimChoice = choice
   }
   handleMouseUp(choice: any) {
     if (this.interimState) {
-      if ((this.props as any).goldenLayout.root.contentItems.length === 0) {
-        ;(this.props as any).goldenLayout.root.addChild({
+      if (this.props.goldenLayout.root.contentItems.length === 0) {
+        this.props.goldenLayout.root.addChild({
           type: 'column',
           content: [configs[choice]],
         })
       } else {
-        ;(this.props as any).goldenLayout.root.contentItems[0].addChild(
-          configs[choice]
-        )
+        this.props.goldenLayout.root.contentItems[0].addChild(configs[choice])
       }
     }
     this.interimState = false

@@ -18,4 +18,8 @@ const wreqr = {}
 ;(wreqr as any).vent = new (Backbone as any).Wreqr.EventAggregator()
 ;(wreqr as any).commands = new (Backbone as any).Wreqr.Commands()
 ;(wreqr as any).reqres = new (Backbone as any).Wreqr.RequestResponse()
-export default wreqr
+export default wreqr as {
+  vent: any
+  commands: any
+  reqres: any
+}

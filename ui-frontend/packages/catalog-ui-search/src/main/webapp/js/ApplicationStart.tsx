@@ -19,27 +19,24 @@ import SourcesInstance from '../component/singletons/sources-instance'
 import MetacardDefinitions from '../component/tabs/metacard/metacardDefinitions'
 import properties from '../js/properties'
 
-export const attemptToStart = () => {
+export const waitForReady: () => Promise<void> = async () => {
+  properties.init()
   if (
     user.fetched &&
     SourcesInstance.fetched &&
     MetacardDefinitions.typesFetched() &&
     properties.fetched
   ) {
-    import('../component/app/base-app').then((BaseApp) => {
-      ReactDOM.render(<BaseApp.default />, document.querySelector('#router'))
-    })
-  } else if (!user.fetched) {
-    user.once('sync', () => {
-      attemptToStart()
-    })
-  } else if (!SourcesInstance.fetched) {
-    SourcesInstance.once('sync', () => {
-      attemptToStart()
-    })
-  } else if (!MetacardDefinitions.typesFetched() || !properties.fetched) {
-    setTimeout(() => {
-      attemptToStart() // we don't have a sync event to listen to, so this will do
-    }, 250)
+    return
+  } else {
+    await new Promise((resolve) => setTimeout(resolve, 60))
+    return waitForReady()
   }
+}
+
+export const attemptToStart = async () => {
+  await waitForReady()
+  import('../component/app/base-app').then((BaseApp) => {
+    ReactDOM.render(<BaseApp.default />, document.querySelector('#router'))
+  })
 }

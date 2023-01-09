@@ -20,6 +20,7 @@ import Divider from '@material-ui/core/Divider'
 import IconButton from '@material-ui/core/IconButton'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import MenuIcon from '@material-ui/icons/Menu'
+import PersonIcon from '@material-ui/icons/Person'
 import SettingsIcon from '@material-ui/icons/Settings'
 import Drawer from '@material-ui/core/Drawer'
 import queryString from 'query-string'
@@ -30,11 +31,8 @@ import NotificationsIcon from '@material-ui/icons/Notifications'
 import userInstance from '../singletons/user-instance'
 import notifications from '../singletons/user-notifications'
 import SystemUsageModal from '../system-usage/system-usage'
-import UserView, {
-  RoleDisplay,
-  RoleIcon,
-  SmallRoleDisplay,
-} from '../../react-component/user/user'
+
+import UserView, { RoleDisplay } from '../../react-component/user/user'
 import UserSettings, {
   SettingsComponentType,
 } from '../../react-component/user-settings/user-settings'
@@ -233,7 +231,7 @@ const AsyncTasksComponent = () => {
         } absolute left-0 bottom-0 w-full bg-black bg-opacity-75 h-16 z-50 transition transform ease-in-out duration-500 hover:translate-y-0`}
       >
         <LinearProgress
-          className="w-full absolute h-2 absolute left-0 top-0 -mt-2"
+          className="w-full absolute h-2 left-0 top-0 -mt-2"
           variant="indeterminate"
         />
         <div className="flex flex-col overflow-auto h-full w-full items-center justify-center text-white">
@@ -427,6 +425,18 @@ const UserButton = () => {
   const queryParams = queryString.parse(location.search)
   const open = Boolean(queryParams['global-user'])
   const { navOpen } = useNavContextProvider()
+
+  const getLabel = () => {
+    return (
+      <div className="w-full">
+        <div className="w-full truncate">{userInstance.getUserName()}</div>
+        <div className="text-xs truncate w-full">
+          <RoleDisplay />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <>
       <ExpandingButton
@@ -439,23 +449,9 @@ const UserButton = () => {
           })}`,
         }}
         className={`group-hover:opacity-100 opacity-25 relative hover:opacity-100 focus-visible:opacity-100 transition-opacity`}
-        Icon={RoleIcon}
-        expandedLabel={
-          <div className="w-full">
-            <div className="truncate w-full">{userInstance.getUserName()}</div>
-            <div className="text-base truncate w-full">
-              <RoleDisplay />
-            </div>
-          </div>
-        }
-        unexpandedLabel={
-          <div className="w-full">
-            <div className="w-full truncate">{userInstance.getUserName()}</div>
-            <div className="text-xs truncate w-full">
-              <SmallRoleDisplay />
-            </div>
-          </div>
-        }
+        Icon={PersonIcon}
+        expandedLabel={getLabel()}
+        unexpandedLabel={getLabel()}
         dataId={sidebarDataIdTag('user-profile')}
         expanded={navOpen}
         focusVisibleClassName="focus-visible"

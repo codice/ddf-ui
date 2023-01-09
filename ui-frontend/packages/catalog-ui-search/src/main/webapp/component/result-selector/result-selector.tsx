@@ -207,7 +207,6 @@ const ResultSelector = ({
             <Paper className="p-3" elevation={Elevations.overlays}>
               {LayoutDropdown || (
                 <VisualizationSelector
-                  // @ts-expect-error ts-migrate(2322) FIXME: Type '{ onClose: () => void; goldenLayout: any; }'... Remove this comment to see the full error message
                   onClose={layoutMenuState.handleClose}
                   goldenLayout={goldenLayout}
                 />
