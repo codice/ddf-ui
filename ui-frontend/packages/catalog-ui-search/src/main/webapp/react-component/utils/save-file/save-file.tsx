@@ -14,10 +14,9 @@
  **/
 import $ from 'jquery'
 
-// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
 export default function saveFile(name: string, type: string, data: any) {
-  if (data != null && navigator.msSaveBlob)
-    return navigator.msSaveBlob(new Blob([data], { type: type }), name)
+  if (data != null && (navigator as any).msSaveBlob)
+    return (navigator as any).msSaveBlob(new Blob([data], { type: type }), name)
   let a = $("<a style='display: none;'/>")
   let url = window.URL.createObjectURL(new Blob([data], { type: type }))
   a.attr('href', url)
