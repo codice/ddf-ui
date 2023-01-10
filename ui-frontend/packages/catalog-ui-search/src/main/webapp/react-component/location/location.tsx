@@ -181,7 +181,12 @@ const LocationInput = ({ onChange, value }: any) => {
             locationModel.set('mode', newValue.value)
           }}
           disableClearable
-          value={options.find((opt) => opt.value === state.mode)}
+          value={
+            options.find((opt) => opt.value === state.mode) || {
+              value: '',
+              label: '',
+            }
+          }
           renderInput={(params) => (
             <TextField
               {...params}
