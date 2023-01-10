@@ -238,6 +238,7 @@ const Theme = Backbone.Model.extend({
       this.save(currentPrefs, {
         drop: true,
         withoutSet: true,
+        wait: true,
         customErrorHandling: true,
         success: () => {
           this.lastSaved = Common.duplicate(currentPrefs)

@@ -27,7 +27,7 @@ import PointRadius from './point-radius'
 import BoundingBox from './bounding-box'
 import Gazetteer from './gazetteer'
 import ShapeUtils from '../../js/ShapeUtils'
-import plugin from '../../plugins/location'
+const plugin = require('plugins/location')
 type InputType = {
   label: string
   Component: any
