@@ -18,8 +18,7 @@ import ol from 'openlayers'
 import _ from 'underscore'
 import properties from '../../../../js/properties'
 import wreqr from '../../../../js/wreqr'
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@tur... Remove this comment to see the full error message
-import Turf from '@turf/turf'
+import * as Turf from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
@@ -127,10 +126,10 @@ const drawBorderedPolygon = ({
   const turfLine = Turf.lineString(
     translateFromOpenlayersCoordinates(rectangle.getCoordinates())
   )
-  const bufferedLine = Turf.buffer(turfLine, lineWidth, 'meters')
+  const bufferedLine = Turf.buffer(turfLine, lineWidth, { units: 'meters' })
   const geometryRepresentation = new ol.geom.MultiLineString(
     (translateToOpenlayersCoordinates(
-      bufferedLine.geometry.coordinates
+      bufferedLine.geometry.coordinates as any
     ) as unknown) as any
   )
   const billboard = new ol.Feature({

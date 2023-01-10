@@ -16,7 +16,7 @@ import Backbone from 'backbone'
 
 import _ from 'underscore'
 import metacardDefinitions from '../../component/singletons/metacard-definitions'
-import TurfMeta from '@turf/meta'
+import * as TurfMeta from '@turf/meta'
 import wkx from 'wkx'
 import properties from '../properties'
 import 'backbone-associations'

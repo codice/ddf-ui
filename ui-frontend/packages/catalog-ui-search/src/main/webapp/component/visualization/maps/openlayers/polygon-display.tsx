@@ -17,8 +17,7 @@ import DistanceUtils from '../../../../js/DistanceUtils'
 import ol from 'openlayers'
 import _ from 'underscore'
 import properties from '../../../../js/properties'
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@tur... Remove this comment to see the full error message
-import Turf from '@turf/turf'
+import * as Turf from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { removeOldDrawing } from './drawing-and-display'
@@ -140,21 +139,21 @@ export const drawPolygon = ({
     const polySegment = Turf.multiLineString([
       translateFromOpenlayersCoordinates(set),
     ])
-    const bufferPolygons = Turf.buffer(
-      polySegment,
-      bufferWidth,
-      'meters'
-    ).geometry.coordinates.map((set: any) => {
+    const bufferPolygons = Turf.buffer(polySegment, bufferWidth, {
+      units: 'meters',
+    }).geometry.coordinates.map((set: any) => {
       return Turf.polygon([set])
     })
-    return Turf.union(...bufferPolygons).geometry.coordinates
+    return bufferPolygons.reduce((a, b) => Turf.union(a, b), bufferPolygons[0])
+      ?.geometry.coordinates
   })
   const bufferGeometryRepresentation =
     (bufferPolygonSegments &&
-      new ol.geom.MultiPolygon(bufferPolygonSegments)) ||
+      new ol.geom.MultiPolygon(bufferPolygonSegments as any)) ||
     coordinates
   const drawnGeometryRepresentation =
-    (drawnPolygonSegments && new ol.geom.MultiPolygon(drawnPolygonSegments)) ||
+    (drawnPolygonSegments &&
+      new ol.geom.MultiPolygon(drawnPolygonSegments as any)) ||
     coordinates
   const billboard = new ol.Feature({
     geometry: bufferGeometryRepresentation,

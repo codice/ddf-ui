@@ -16,8 +16,6 @@ import React from 'react'
 import DistanceUtils from '../../../../js/DistanceUtils'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
 import Cesium from 'cesium'
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@tur... Remove this comment to see the full error message
-import Turf from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
@@ -28,6 +26,7 @@ import {
   constructLinePrimitive,
 } from './line-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
+import * as Turf from '@turf/turf'
 
 const createBufferedPolygonPointsFromModel = ({
   polygonPoints,
@@ -52,11 +51,9 @@ const createBufferedPolygonPoints = ({
   polygonPoints: any
   width: any
 }) => {
-  return Turf.buffer(
-    Turf.lineString(polygonPoints),
-    Math.max(width, 1),
-    'meters'
-  )
+  return Turf.buffer(Turf.lineString(polygonPoints), Math.max(width, 1), {
+    units: 'meters',
+  })
 }
 
 const CAMERA_MAGNITUDE_THRESHOLD = 8000000
@@ -143,9 +140,12 @@ const drawGeometry = ({
     const bufferedPolygons = bufferedPolygonPoints.geometry.coordinates.map(
       (set: any) => Turf.polygon([set])
     )
-    const bufferedPolygon = Turf.union(...bufferedPolygons)
+    const bufferedPolygon = bufferedPolygons.reduce(
+      (a, b) => Turf.union(a, b),
+      bufferedPolygons[0]
+    )
 
-    bufferedPolygon.geometry.coordinates.forEach((set: any) =>
+    bufferedPolygon?.geometry.coordinates.forEach((set: any) =>
       primitive.add(constructLinePrimitive({ coordinates: set, model }))
     )
     drawnPolygonPoints.geometry.coordinates.forEach((set: any) =>

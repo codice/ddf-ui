@@ -17,8 +17,7 @@ import DistanceUtils from '../../../../js/DistanceUtils'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
 import Cesium from 'cesium'
 import _ from 'underscore'
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@tur... Remove this comment to see the full error message
-import Turf from '@turf/turf'
+import * as Turf from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
@@ -136,12 +135,16 @@ const drawGeometry = ({
     return
   }
 
-  const turfLine = Turf.lineString(setArr)
+  const turfLine = Turf.lineString(setArr) as
+    | Turf.Feature<Turf.LineString>
+    | Turf.Feature<Turf.Polygon | Turf.MultiPolygon>
   let bufferedLine = turfLine
   const cameraMagnitude = map.getMap().camera.getMagnitude()
   setDrawnMagnitude(cameraMagnitude)
   if (lineWidth > 100 || cameraMagnitude < CAMERA_MAGNITUDE_THRESHOLD) {
-    bufferedLine = Turf.buffer(turfLine, Math.max(lineWidth, 1), 'meters')
+    bufferedLine = Turf.buffer(turfLine, Math.max(lineWidth, 1), {
+      units: 'meters',
+    })
   }
 
   const primitive = new Cesium.PolylineCollection()

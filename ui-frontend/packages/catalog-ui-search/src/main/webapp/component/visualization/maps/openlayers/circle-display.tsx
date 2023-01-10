@@ -20,9 +20,7 @@ import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { removeOldDrawing } from './drawing-and-display'
 import DistanceUtils from '../../../../js/DistanceUtils'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@tur... Remove this comment to see the full error message
-import Turf from '@turf/turf'
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@tur... Remove this comment to see the full error message
+import * as Turf from '@turf/turf'
 import TurfCircle from '@turf/circle'
 export function translateFromOpenlayersCoordinate(coord: any) {
   return ol.proj.transform(
@@ -76,12 +74,11 @@ export const drawCircle = ({
   const point = Turf.point(
     translateFromOpenlayersCoordinate(rectangle.getCenter())
   )
-  const turfCircle = new TurfCircle(
+  const turfCircle = TurfCircle(
     point,
     rectangle.getRadius() *
       map.getMap().getView().getProjection().getMetersPerUnit(),
-    64,
-    'meters'
+    { steps: 64, units: 'meters' }
   )
   const geometryRepresentation = new ol.geom.LineString(
     translateToOpenlayersCoordinates(turfCircle.geometry.coordinates[0])

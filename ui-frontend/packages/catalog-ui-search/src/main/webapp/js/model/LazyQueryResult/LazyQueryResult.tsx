@@ -21,7 +21,7 @@ import Sources from '../../../component/singletons/sources-instance'
 import metacardDefinitions from '../../../component/singletons/metacard-definitions'
 import { TypedMetacardDefs } from '../../../component/tabs/metacard/metacardDefinitions'
 import properties from '../../properties'
-import TurfMeta from '@turf/meta'
+import * as TurfMeta from '@turf/meta'
 import wkx from 'wkx'
 import {
   FilterBuilderClass,

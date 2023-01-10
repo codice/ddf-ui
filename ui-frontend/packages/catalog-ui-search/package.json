@@ -97,9 +97,9 @@
   },
   "dependencies": {
     "@connexta/icons": "git+https://github.com/connexta/icons.git#v0.0.3",
-    "@turf/circle": "3.3.3",
-    "@turf/meta": "3.13.0",
-    "@turf/turf": "3.4.1",
+    "@turf/circle": "6.5.0",
+    "@turf/meta": "6.5.0",
+    "@turf/turf": "6.5.0",
     "@types/backbone-associations": "0.6.31",
     "@types/backbone.marionette": "3.3.2",
     "@types/lodash": "4.14.120",

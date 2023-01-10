@@ -18,8 +18,7 @@ import DistanceUtils from '../../../../js/DistanceUtils'
 import ShapeUtils from '../../../../js/ShapeUtils'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
 import Cesium from 'cesium'
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module '@tur... Remove this comment to see the full error message
-import Turf from '@turf/turf'
+import * as Turf from '@turf/turf'
 
 const METERS = 'meters'
 
@@ -112,7 +111,9 @@ export default {
           attrs.lineWidth,
           attrs.lineUnits
         )
-        return lineMeters ? Turf.buffer(line, lineMeters, METERS) : line
+        return lineMeters
+          ? Turf.buffer(line, lineMeters, { units: METERS })
+          : line
       case 'POLYGON':
         const polygon = Turf.polygon([attrs.polygon])
         const polygonMeters = DistanceUtils.getDistanceInMeters(
@@ -120,7 +121,7 @@ export default {
           attrs.polygonBufferUnits
         )
         return polygonMeters
-          ? Turf.buffer(polygon, polygonMeters, METERS)
+          ? Turf.buffer(polygon, polygonMeters, { units: METERS })
           : polygon
       case 'MULTIPOLYGON':
         const isMultiPolygon = ShapeUtils.isArray3D(attrs.polygon)
@@ -132,7 +133,7 @@ export default {
           attrs.polygonBufferUnits
         )
         return multiPolygonMeters
-          ? Turf.buffer(multiPolygon, multiPolygonMeters, METERS)
+          ? Turf.buffer(multiPolygon, multiPolygonMeters, { units: METERS })
           : multiPolygon
       case 'BBOX':
         return Turf.bboxPolygon([
@@ -148,7 +149,7 @@ export default {
           attrs.radiusUnits
         )
         return pointRadiusMeters
-          ? Turf.buffer(point, pointRadiusMeters, METERS)
+          ? Turf.buffer(point, pointRadiusMeters, { units: METERS })
           : point
       default:
         return null
