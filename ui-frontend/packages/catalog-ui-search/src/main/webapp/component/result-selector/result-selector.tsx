@@ -124,7 +124,12 @@ const ResultSelector = ({
   const layoutMenuState = useMenuState()
   return (
     <React.Fragment>
-      <Grid container alignItems="center" justify="flex-start" direction="row">
+      <Grid
+        container
+        alignItems="center"
+        justifyContent="flex-start"
+        direction="row"
+      >
         {isSearching ? (
           <LinearProgress
             variant="query"

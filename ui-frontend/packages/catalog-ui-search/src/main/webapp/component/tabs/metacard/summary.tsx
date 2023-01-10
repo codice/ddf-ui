@@ -746,7 +746,7 @@ const Summary = ({ result: selection }: Props) => {
           direction="row"
           alignItems="center"
           wrap="nowrap"
-          justify="space-between"
+          justifyContent="space-between"
           className="p-2"
         >
           <Grid item>

@@ -53,7 +53,7 @@ const ChildFilter = ({
           container
           direction="row"
           alignItems="center"
-          justify="center"
+          justifyContent="center"
           wrap="nowrap"
           className="relative"
         >

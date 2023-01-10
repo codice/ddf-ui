@@ -746,7 +746,7 @@ const TransferList = ({
         <Grid
           container
           spacing={2}
-          justify="center"
+          justifyContent="center"
           alignItems="center"
           className="m-auto"
         >

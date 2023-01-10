@@ -513,7 +513,12 @@ const SideBarRoutes = () => {
     >
       {RouteInformation.filter((routeInfo) => routeInfo.showInNav).map(
         (routeInfo: RouteShownInNavType) => {
-          return <RouteButton routeInfo={routeInfo} />
+          return (
+            <RouteButton
+              routeInfo={routeInfo}
+              key={routeInfo.routeProps.path?.toString()}
+            />
+          )
         }
       )}
     </Grid>
@@ -545,7 +550,7 @@ const SideBarToggleButton = () => {
                     container
                     direction="column"
                     className="pl-3"
-                    justify="center"
+                    justifyContent="center"
                   >
                     <Grid item>
                       <Typography>
@@ -810,7 +815,12 @@ const SessionTimeoutComponent = () => {
     <sessionTimeoutDialogState.MuiDialogComponents.Dialog
       {...sessionTimeoutDialogState.MuiDialogProps}
       disableEscapeKeyDown
-      disableBackdropClick
+      onClose={(event, reason) => {
+        if (reason === 'backdropClick') {
+          return
+        }
+        sessionTimeoutDialogState.MuiDialogProps.onClose(event, reason)
+      }}
     >
       <SessionTimeout />
     </sessionTimeoutDialogState.MuiDialogComponents.Dialog>

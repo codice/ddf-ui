@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {
-  createMuiTheme,
+  createTheme,
   MuiThemeProvider as ThemeProvider,
   darken,
   // @ts-expect-error ts-migrate(6133) FIXME: 'getContrastRatio' is declared but its value is ne... Remove this comment to see the full error message
@@ -9,7 +9,7 @@ import {
   createStyles,
   lighten,
   StylesProvider,
-  fade,
+  alpha,
 } from '@material-ui/core/styles'
 import { ThemeContext } from 'styled-components'
 import { createGlobalStyle } from 'styled-components'
@@ -431,7 +431,7 @@ export const Provider = ({ children }: { children: any }) => {
     ? lightenUntilContrasting(secondaryMain, paperColor)
     : darkenUntilContrasting(secondaryMain, paperColor)
 
-  const theme = createMuiTheme({
+  const theme = createTheme({
     palette: {
       type: darkMode ? 'dark' : 'light',
       primary: {
@@ -472,7 +472,7 @@ export const Provider = ({ children }: { children: any }) => {
               textPrimary: {
                 color: failedContrastPrimaryReplacement,
                 '&:hover': {
-                  backgroundColor: fade(failedContrastPrimaryReplacement, 0.1),
+                  backgroundColor: alpha(failedContrastPrimaryReplacement, 0.1),
                   // Reset on touch devices, it doesn't add specificity
                   '@media (hover: none)': {
                     backgroundColor: 'transparent',
@@ -486,7 +486,7 @@ export const Provider = ({ children }: { children: any }) => {
               textSecondary: {
                 color: failedContrastSecondaryReplacement,
                 '&:hover': {
-                  backgroundColor: fade(
+                  backgroundColor: alpha(
                     failedContrastSecondaryReplacement,
                     0.1
                   ),

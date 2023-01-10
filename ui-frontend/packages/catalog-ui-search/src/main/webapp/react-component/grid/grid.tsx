@@ -39,7 +39,7 @@ export const WrappedCardGrid = styled(
         container
         spacing={3}
         direction="row"
-        justify="flex-start"
+        justifyContent="flex-start"
         wrap="wrap"
         {...gridProps}
       >

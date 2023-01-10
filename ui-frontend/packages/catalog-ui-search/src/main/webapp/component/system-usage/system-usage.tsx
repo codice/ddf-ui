@@ -49,7 +49,14 @@ const SystemUsageModal = () => {
   }, [])
   const openModal = () => {
     dialogContext.setProps({
-      disableBackdropClick: true,
+      onClose: (_event, reason) => {
+        if (reason === 'backdropClick') {
+          return
+        }
+        dialogContext.setProps({
+          open: false,
+        })
+      },
       open: true,
       children: (
         <>
