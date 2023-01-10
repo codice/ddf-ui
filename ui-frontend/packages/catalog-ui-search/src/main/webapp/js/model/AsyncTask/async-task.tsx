@@ -20,7 +20,7 @@ export const convertToBackendCompatibleForm = ({
   const duplicatedProperties = JSON.parse(JSON.stringify(properties))
   Object.keys(duplicatedProperties).forEach((key) => {
     if (typeof duplicatedProperties[key] !== 'string') {
-      if (duplicatedProperties[key].constructor === Array) {
+      if (duplicatedProperties[key]?.constructor === Array) {
         duplicatedProperties[key] = (duplicatedProperties[key] as any[]).map(
           (value) => {
             if (typeof value === 'object') {
@@ -31,7 +31,7 @@ export const convertToBackendCompatibleForm = ({
           }
         )
       } else {
-        duplicatedProperties[key] = duplicatedProperties[key].toString()
+        duplicatedProperties[key] = duplicatedProperties[key]?.toString()
       }
     }
   })
