@@ -151,6 +151,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
     <Grid container direction="column" wrap="nowrap" alignItems="center">
       <Grid item className="h-full">
         <Button
+          component="div"
           data-id="result-item-more-vert-button"
           onClick={(e) => {
             e.stopPropagation()
@@ -207,6 +208,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
       <Grid item className={dynamicActionClasses}>
         {lazyResult.plain.metacard.properties['ext.link'] ? (
           <Button
+            component="div"
             title={lazyResult.plain.metacard.properties['ext.link']}
             onClick={(e) => {
               e.stopPropagation()
@@ -222,6 +224,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
       <Grid item className={dynamicActionClasses}>
         {lazyResult.isDownloadable() ? (
           <Button
+            component="div"
             data-id="download-button"
             onClick={(e) => {
               e.stopPropagation()

@@ -247,7 +247,11 @@ const Inspector = ({ selectionInterface }: InspectorType) => {
                 variant="scrollable"
               >
                 {Object.keys(possibleMetacardTabs).map((tabName) => {
-                  return <Tab value={tabName}>{tabName}</Tab>
+                  return (
+                    <Tab key={tabName} value={tabName}>
+                      {tabName}
+                    </Tab>
+                  )
                 })}
               </Tabs>
 

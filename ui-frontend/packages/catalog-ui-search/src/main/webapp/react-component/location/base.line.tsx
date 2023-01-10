@@ -232,9 +232,8 @@ const LineDms = (props: any) => {
         {dmsPointArray &&
           dmsPointArray.map((point: any, index: any) => {
             return (
-              <div>
+              <div key={'point-' + index}>
                 <DmsTextField
-                  key={'point-' + index}
                   point={point}
                   setPoint={(point) => {
                     let array = [...dmsPointArray]
@@ -445,7 +444,7 @@ const LineUtmUps = (props: any) => {
       {utmUpsPointArray &&
         utmUpsPointArray.map((point: any, index: any) => {
           return (
-            <div>
+            <div key={index}>
               <UtmupsTextField
                 point={point}
                 setPoint={(point) => {

@@ -534,7 +534,7 @@ const AttributeComponent = ({
             <Grid data-id={`${attr}-value`} item>
               {value.map((val: any, index: number) => {
                 return (
-                  <>
+                  <React.Fragment key={index}>
                     {index !== 0 ? (
                       <Divider style={{ margin: '5px 0px' }} />
                     ) : null}
@@ -626,7 +626,7 @@ const AttributeComponent = ({
                         }
                       })()}
                     </div>
-                  </>
+                  </React.Fragment>
                 )
               })}
             </Grid>
