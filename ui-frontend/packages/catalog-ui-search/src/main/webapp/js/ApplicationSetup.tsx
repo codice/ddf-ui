@@ -15,6 +15,8 @@
 import 'focus-visible'
 import '../styles/tailwind.css'
 import 'cesium/Build/Cesium/Widgets/widgets.css'
+import '@blueprintjs/core/lib/css/blueprint.css'
+import '@blueprintjs/datetime/lib/css/blueprint-datetime.css'
 import 'font-awesome/css/font-awesome.css'
 import '../lib/cesium-drawhelper/DrawHelper.css'
 import 'golden-layout/src/css/goldenlayout-base.css'
