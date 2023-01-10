@@ -153,7 +153,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
         <Button
           component="div"
           data-id="result-item-more-vert-button"
-          onClick={(e) => {
+          onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
             e.stopPropagation()
             metacardInteractionMenuState.handleClick()
           }}
@@ -210,7 +210,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
           <Button
             component="div"
             title={lazyResult.plain.metacard.properties['ext.link']}
-            onClick={(e) => {
+            onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
               e.stopPropagation()
               window.open(lazyResult.plain.metacard.properties['ext.link'])
             }}
@@ -226,7 +226,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
           <Button
             component="div"
             data-id="download-button"
-            onClick={(e) => {
+            onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
               e.stopPropagation()
               triggerDownload(e)
             }}
