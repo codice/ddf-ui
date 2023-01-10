@@ -1,5 +1,4 @@
 import Button from '@material-ui/core/Button'
-import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import Paper from '@material-ui/core/Paper'
 import Popover from '@material-ui/core/Popover'
@@ -44,6 +43,7 @@ const Open = () => {
         anchorEl={titleMenuState.anchorRef.current}
         onClose={titleMenuState.handleClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        getContentAnchorEl={null}
       >
         <Paper elevation={Elevations.overlays} className="p-2">
           <SaveForm
@@ -68,6 +68,7 @@ const Open = () => {
         anchorEl={fromExistingMenuState.anchorRef.current}
         onClose={fromExistingMenuState.handleClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        getContentAnchorEl={null}
       >
         <Paper elevation={Elevations.overlays} className="p-2 w-64">
           <OpenSearch
@@ -95,7 +96,7 @@ const Open = () => {
           />
         </Paper>
       </Popover>
-      <Menu
+      <Popover
         open={openMenuState.open}
         onClose={openMenuState.handleClose}
         anchorEl={openMenuState.anchorRef.current}
@@ -117,7 +118,7 @@ const Open = () => {
         >
           Search from existing
         </MenuItem>
-      </Menu>
+      </Popover>
     </div>
   )
 }
