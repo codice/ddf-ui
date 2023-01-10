@@ -44,6 +44,8 @@ if (process.env.NODE_ENV !== 'production') {
     $('html').addClass('is-hot-reloading')
   }
 }
+// @ts-ignore disable all react-beautiful-dnd development warnings (we have some spurious ones, but if you're working a component with this you can re-enable)
+window['__react-beautiful-dnd-disable-dev-warnings'] = true
 ;(window as any).CESIUM_BASE_URL = './cesium/assets'
 //in here we drop in any top level patches, etc.
 const toJSON = Backbone.Model.prototype.toJSON

@@ -567,16 +567,22 @@ export const useCustomReadOnlyCheck = () => {
     customEditableAttributes,
     setCustomEditableAttributes,
   ] = React.useState([] as string[])
+  const isMounted = React.useRef<boolean>(true)
   const [loading, setLoading] = React.useState(true)
   const initializeCustomEditableAttributes = async () => {
     const attrs = await extension.customEditableAttributes()
-    if (attrs !== undefined) {
-      setCustomEditableAttributes(attrs)
+    if (isMounted.current) {
+      if (attrs !== undefined) {
+        setCustomEditableAttributes(attrs)
+      }
+      setLoading(false)
     }
-    setLoading(false)
   }
   React.useEffect(() => {
     initializeCustomEditableAttributes()
+    return () => {
+      isMounted.current = false
+    }
   }, [])
   return {
     loading,
