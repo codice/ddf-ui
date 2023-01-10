@@ -305,7 +305,6 @@ const BooleanSearchBar = ({
             inputRef={inputRef}
             size={'small'}
             variant="outlined"
-            defaultValue={'*'}
             onChange={handleTextChange}
             value={value.text}
             autoFocus

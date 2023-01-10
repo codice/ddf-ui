@@ -554,6 +554,7 @@ export const ResultItem = ({ lazyResult, measure }: ResultItemFullProps) => {
                 if (detail.attribute === 'thumbnail') {
                   return (
                     <img
+                      key={detail.attribute}
                       data-id="result-item-thumbnail"
                       src={imgsrc}
                       style={{

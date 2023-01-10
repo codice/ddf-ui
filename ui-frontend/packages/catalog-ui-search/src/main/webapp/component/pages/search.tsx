@@ -1092,6 +1092,7 @@ const LeftTop = () => {
               </Paper>
             </Popover>
             <Button
+              component="div"
               className={`children-block children-h-full text-left text-2xl flex-shrink truncate ${
                 closed ? 'h-full' : ''
               }`}
@@ -1296,7 +1297,6 @@ const useSavedSearchPageMode = ({
       sources: ['local'],
     },
   })
-  console.info(task)
   React.useEffect(() => {
     if (task || restoreTask) {
       setData(true)
@@ -1402,7 +1402,6 @@ const decodeUrlIfValid = (search: string) => {
       const defaultQueryString = (queryParams['defaultQuery'] || '').toString()
       return JSON.parse(decodeURIComponent(defaultQueryString))
     } catch (err) {
-      console.error(err)
       return {}
     }
   } else {
