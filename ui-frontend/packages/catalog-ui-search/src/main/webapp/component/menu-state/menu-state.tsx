@@ -122,7 +122,7 @@ export const useMenuState = ({ maxHeight }: Props = {}) => {
         | 'open'
         | 'onClose'
         | 'anchorEl'
-        | 'onEntered'
+        | 'TransitionProps'
         | 'anchorOrigin'
         | 'transformOrigin'
         | 'action'
@@ -150,12 +150,14 @@ export const POPOVER_DEFAULTS = ({ maxHeight }: Props = {}) => {
       vertical: 'top',
       horizontal: 'center',
     },
-    onEntered: (element) => {
-      element.style.maxHeight =
-        maxHeight || `calc(100% - ${element.style.top} - 10px)`
+    TransitionProps: {
+      onEntered: (element) => {
+        element.style.maxHeight =
+          maxHeight || `calc(100% - ${element.style.top} - 10px)`
+      },
     },
   } as Required<
-    Pick<PopoverProps, 'anchorOrigin' | 'transformOrigin' | 'onEntered'>
+    Pick<PopoverProps, 'anchorOrigin' | 'transformOrigin' | 'TransitionProps'>
   >
 }
 

@@ -287,8 +287,9 @@ const IconButton = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   const isSelected = useSelectionOfLazyResult({ lazyResult })
   return (
     <Button
+      component="div"
       data-id="select-checkbox"
-      onClick={(event) => {
+      onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         event.stopPropagation() // this button takes precedence over the enclosing button, and is always additive / subtractive (no deselect of other results)
         if (event.shiftKey) {
           lazyResult.shiftSelect()
