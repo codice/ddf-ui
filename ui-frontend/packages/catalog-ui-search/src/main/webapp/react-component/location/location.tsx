@@ -35,7 +35,8 @@ type InputType = {
 type InputsType = {
   [key: string]: InputType
 }
-const inputs = plugin({
+
+const BaseInputs = {
   line: {
     label: 'Line',
     Component: Line,
@@ -73,7 +74,15 @@ const inputs = plugin({
       )
     },
   },
-}) as InputsType
+} as InputsType
+
+let inputs = BaseInputs
+try {
+  inputs = plugin(BaseInputs) as InputsType
+} catch (err) {
+  console.warn(err)
+}
+
 const drawTypes = ['line', 'poly', 'circle', 'bbox']
 function getCurrentValue({ locationModel }: any) {
   const modelJSON = locationModel.toJSON()
