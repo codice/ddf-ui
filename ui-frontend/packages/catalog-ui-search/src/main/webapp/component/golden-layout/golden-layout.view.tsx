@@ -359,7 +359,6 @@ function registerGoldenLayoutComponents({
       )
     } catch (err) {
       // likely already registered, in dev
-      console.log(err)
     }
   })
 }
