@@ -1323,22 +1323,22 @@ const useSavedSearchPageMode = ({
           ],
         })
       )
-      queryModel.startSearchFromFirstPage(undefined, () => {
-        const lazyResults = queryModel
-          .get('result')
-          .get('lazyResults') as LazyQueryResults
-        subscriptionCancel = lazyResults.subscribeTo({
-          subscribableThing: 'filteredResults',
-          callback: () => {
-            const results = Object.values(lazyResults.results)
-            if (results.length > 0) {
-              setData(results[0])
-            } else {
-              setData(false)
-            }
-          },
-        })
+      queryModel.initializeResult()
+      const lazyResults = queryModel
+        .get('result')
+        .get('lazyResults') as LazyQueryResults
+      subscriptionCancel = lazyResults.subscribeTo({
+        subscribableThing: 'filteredResults',
+        callback: () => {
+          const results = Object.values(lazyResults.results)
+          if (results.length > 0) {
+            setData(results[0])
+          } else {
+            setData(false)
+          }
+        },
       })
+      queryModel.startSearchFromFirstPage()
     } else {
       setData(false)
     }

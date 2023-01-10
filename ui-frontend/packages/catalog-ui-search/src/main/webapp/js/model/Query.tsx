@@ -54,6 +54,16 @@ export type QueryType = {
   isOutdated: () => boolean
   startSearchIfOutdated: () => void
   updateCqlBasedOnFilterTree: () => void
+  initializeResult: (
+    options?: any
+  ) => {
+    data: any
+    selectedSources: any
+    isHarvested: any
+    isFederated: any
+    result: any
+    resultOptions: any
+  }
   startSearchFromFirstPage: (options?: any, done?: any) => void
   startSearch: (options?: any, done?: any) => void
   currentSearches: Array<any>
@@ -358,12 +368,7 @@ Query.Model = Backbone.AssociatedModel.extend({
     this.resetCurrentIndexForSourceGroup()
     this.startSearch(options, done)
   },
-  startSearch(options: any, done: any) {
-    this.trigger('panToShapesExtent')
-    this.set('isOutdated', false)
-    if (this.get('cql') === '') {
-      return
-    }
+  initializeResult(options: any) {
     options = _.extend(
       {
         limitToDeleted: false,
@@ -371,7 +376,6 @@ Query.Model = Backbone.AssociatedModel.extend({
       },
       options
     )
-    this.cancelCurrentSearches()
     const data = Common.duplicate(this.buildSearchData())
     data.batchId = Common.generateUUID()
     // Data.sources is set in `buildSearchData` based on which sources you have selected.
@@ -408,10 +412,34 @@ Query.Model = Backbone.AssociatedModel.extend({
         result,
       })
     }
+    return {
+      data,
+      selectedSources,
+      isHarvested,
+      isFederated,
+      result,
+      resultOptions: options,
+    }
+  },
+  startSearch(options: any, done: any) {
+    this.trigger('panToShapesExtent')
+    this.set('isOutdated', false)
+    if (this.get('cql') === '') {
+      return
+    }
+    this.cancelCurrentSearches()
+    const {
+      data,
+      selectedSources,
+      isHarvested,
+      isFederated,
+      result,
+      resultOptions,
+    } = this.initializeResult(options)
     let cqlFilterTree = this.get('filterTree')
-    if (options.limitToDeleted) {
+    if (resultOptions.limitToDeleted) {
       cqlFilterTree = limitToDeleted(cqlFilterTree)
-    } else if (options.limitToHistoric) {
+    } else if (resultOptions.limitToHistoric) {
       cqlFilterTree = limitToHistoric(cqlFilterTree)
     }
     let cqlString = this.options.transformFilterTree({
