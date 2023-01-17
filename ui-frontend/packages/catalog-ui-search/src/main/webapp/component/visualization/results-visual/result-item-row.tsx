@@ -17,21 +17,21 @@ import Grid from '@material-ui/core/Grid'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { CellComponent } from './table-header'
-import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import {
   useRerenderOnBackboneSync,
   useSelectionOfLazyResult,
-} from '../../js/model/LazyQueryResult/hooks'
-import metacardDefinitions from '../singletons/metacard-definitions'
-import user from '../singletons/user-instance'
-import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
+} from '../../../js/model/LazyQueryResult/hooks'
+import metacardDefinitions from '../../singletons/metacard-definitions'
+import user from '../../singletons/user-instance'
+import TypedMetacardDefs from '../../tabs/metacard/metacardDefinitions'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import { SelectionBackground } from './result-item'
-import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-import { TypedUserInstance } from '../singletons/TypedUser'
-import useCoordinateFormat from '../tabs/metacard/useCoordinateFormat'
-import Common from '../../js/Common'
+import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
+import { TypedUserInstance } from '../../singletons/TypedUser'
+import useCoordinateFormat from '../../tabs/metacard/useCoordinateFormat'
+import Common from '../../../js/Common'
 type ResultItemFullProps = {
   lazyResult: LazyQueryResult
   measure: () => void

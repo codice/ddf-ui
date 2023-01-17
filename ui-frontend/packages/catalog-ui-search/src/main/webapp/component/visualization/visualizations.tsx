@@ -12,12 +12,8 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import Timeline from './timeline/timeline'
-import ResultsView from '../results-visual'
-import { OpenlayersMapViewReact } from './maps/openlayers/openlayers.view'
-import { CesiumMapViewReact } from './maps/cesium/cesium.view'
-import { Histogram } from './histogram/histogram'
-import { AuditedInspector } from './inspector/audited-inspector'
+import React from 'react'
+import { LinearProgress } from '@material-ui/core'
 
 type VisualizationType = {
   id: string
@@ -28,11 +24,39 @@ type VisualizationType = {
   singular: boolean
 }
 
+const generateGenericDynamicComponentImport = ({
+  path,
+  componentName,
+}: {
+  path: string
+  componentName: string
+}) => {
+  return (...args: any) => {
+    const [Component, setComponent] = React.useState<any>(null)
+
+    React.useEffect(() => {
+      import(`${path}`).then((code) => {
+        setComponent(() => {
+          return code[componentName]
+        })
+      })
+    }, [])
+
+    if (Component) {
+      return React.createElement(Component, ...args)
+    }
+    return <LinearProgress className="w-full h-2" variant="indeterminate" />
+  }
+}
+
 export const Visualizations = [
   {
     id: 'openlayers',
     title: '2D Map',
-    view: OpenlayersMapViewReact,
+    view: generateGenericDynamicComponentImport({
+      path: './maps/openlayers/openlayers.view',
+      componentName: 'OpenlayersMapViewReact',
+    }),
     icon: 'fa fa-map',
     options: {
       desiredContainer: 'openlayers',
@@ -42,7 +66,10 @@ export const Visualizations = [
   {
     id: 'cesium',
     title: '3D Map',
-    view: CesiumMapViewReact,
+    view: generateGenericDynamicComponentImport({
+      path: './maps/cesium/cesium.view',
+      componentName: 'CesiumMapViewReact',
+    }),
     icon: 'fa fa-globe',
     options: {
       desiredContainer: 'cesium',
@@ -53,13 +80,19 @@ export const Visualizations = [
     id: 'histogram',
     title: 'Histogram',
     icon: 'fa fa-bar-chart',
-    view: Histogram,
+    view: generateGenericDynamicComponentImport({
+      path: './histogram/histogram',
+      componentName: 'Histogram',
+    }),
     singular: true,
   },
   {
     id: 'results',
     title: 'Results',
-    view: ResultsView,
+    view: generateGenericDynamicComponentImport({
+      path: './results-visual/index',
+      componentName: 'default',
+    }),
     icon: 'fa fa-table',
     singular: true,
   },
@@ -67,14 +100,20 @@ export const Visualizations = [
     id: 'inspector',
     title: 'Inspector',
     icon: 'fa fa-info',
-    view: AuditedInspector,
+    view: generateGenericDynamicComponentImport({
+      path: './inspector/audited-inspector',
+      componentName: 'AuditedInspector',
+    }),
     singular: true,
   },
   {
     id: 'timeline',
     title: 'Timeline',
     icon: 'fa fa-hourglass-half',
-    view: Timeline,
+    view: generateGenericDynamicComponentImport({
+      path: './timeline/timeline',
+      componentName: 'default',
+    }),
     singular: true,
   },
 ] as VisualizationType[]

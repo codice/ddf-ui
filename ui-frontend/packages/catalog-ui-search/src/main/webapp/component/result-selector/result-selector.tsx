@@ -22,7 +22,7 @@ import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import user from '../singletons/user-instance'
 import MoreIcon from '@material-ui/icons/MoreVert'
 
-import LazyMetacardInteractions from '../results-visual/lazy-metacard-interactions'
+import LazyMetacardInteractions from '../visualization/results-visual/lazy-metacard-interactions'
 import { Elevations } from '../theme/theme'
 import useTheme from '@material-ui/core/styles/useTheme'
 import SelectionRipple from '../golden-layout/selection-ripple'

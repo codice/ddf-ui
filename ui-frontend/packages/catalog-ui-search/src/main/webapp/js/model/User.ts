@@ -237,7 +237,6 @@ const Theme = Backbone.Model.extend({
     } else {
       this.save(currentPrefs, {
         drop: true,
-        withoutSet: true,
         wait: true,
         customErrorHandling: true,
         success: () => {

@@ -12,12 +12,12 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import metacardDefinitions from '../singletons/metacard-definitions'
-import properties from '../../js/properties'
-import user from '../singletons/user-instance'
+import metacardDefinitions from '../../singletons/metacard-definitions'
+import properties from '../../../js/properties'
+import user from '../../singletons/user-instance'
 import Backbone from 'backbone'
 import { Header } from './table-header'
-import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
+import { LazyQueryResults } from '../../../js/model/LazyQueryResult/LazyQueryResults'
 import _ from 'underscore'
 const filteredAttributesModel = Backbone.Model.extend({
   defaults: {

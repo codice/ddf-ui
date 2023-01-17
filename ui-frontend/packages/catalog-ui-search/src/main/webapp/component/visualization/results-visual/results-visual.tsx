@@ -6,12 +6,12 @@ import TableVisual from './table'
 // @ts-expect-error ts-migrate(6133) FIXME: 'CircularProgress' is declared but its value is ne... Remove this comment to see the full error message
 import CircularProgress from '@material-ui/core/CircularProgress'
 // @ts-expect-error ts-migrate(6133) FIXME: 'useLazyResultsFromSelectionInterface' is declared... Remove this comment to see the full error message
-import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
+import { useLazyResultsFromSelectionInterface } from '../../selection-interface/hooks'
 // @ts-expect-error ts-migrate(6133) FIXME: 'useStatusOfLazyResults' is declared but its value... Remove this comment to see the full error message
-import { useStatusOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
-import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import { useStatusOfLazyResults } from '../../../js/model/LazyQueryResult/hooks'
+import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import Button from '@material-ui/core/Button'
-import BackgroundInheritingDiv from '../theme/background-inheriting-div'
+import BackgroundInheritingDiv from '../../theme/background-inheriting-div'
 type Props = {
   selectionInterface: any
 }

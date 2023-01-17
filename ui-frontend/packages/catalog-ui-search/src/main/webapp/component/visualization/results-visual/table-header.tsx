@@ -15,17 +15,17 @@
 import { GridProps } from '@material-ui/core/Grid'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
+import { LazyQueryResults } from '../../../js/model/LazyQueryResult/LazyQueryResults'
 import _ from 'underscore'
-import user from '../singletons/user-instance'
+import user from '../../singletons/user-instance'
 import Button, { ButtonProps } from '@material-ui/core/Button'
-import { useSelectionOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
+import { useSelectionOfLazyResults } from '../../../js/model/LazyQueryResult/hooks'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox'
-import { TypedUserInstance } from '../singletons/TypedUser'
-import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-import { TypedMetacardDefs } from '../tabs/metacard/metacardDefinitions'
+import { TypedUserInstance } from '../../singletons/TypedUser'
+import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
+import { TypedMetacardDefs } from '../../tabs/metacard/metacardDefinitions'
 export type Header = {
   hidden: boolean
   id: string
