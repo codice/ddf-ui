@@ -13,7 +13,7 @@
  *
  **/
 import React from 'react'
-import { LinearProgress } from '@material-ui/core'
+import LinearProgress from '@material-ui/core/LinearProgress'
 
 type VisualizationType = {
   id: string
@@ -24,39 +24,116 @@ type VisualizationType = {
   singular: boolean
 }
 
-const generateGenericDynamicComponentImport = ({
-  path,
-  componentName,
-}: {
-  path: string
-  componentName: string
-}) => {
-  return (...args: any) => {
-    const [Component, setComponent] = React.useState<any>(null)
+/**
+ * Swapping to not doing string interpolation and generation of dynamic imports, as this increases build time and ends up producing larger bundles in the end downstream.
+ */
+const DynamicCesiumImport = (...args: any) => {
+  const [Component, setComponent] = React.useState<any>(null)
 
-    React.useEffect(() => {
-      import(`${path}`).then((code) => {
-        setComponent(() => {
-          return code[componentName]
-        })
+  React.useEffect(() => {
+    import(`./maps/cesium/cesium.view`).then((code) => {
+      setComponent(() => {
+        return code.CesiumMapViewReact
       })
-    }, [])
+    })
+  }, [])
 
-    if (Component) {
-      return React.createElement(Component, ...args)
-    }
-    return <LinearProgress className="w-full h-2" variant="indeterminate" />
+  if (Component) {
+    return React.createElement(Component, ...args)
   }
+  return <LinearProgress className="w-full h-2" variant="indeterminate" />
+}
+
+const DynamicOpenlayersImport = (...args: any) => {
+  const [Component, setComponent] = React.useState<any>(null)
+
+  React.useEffect(() => {
+    import('./maps/openlayers/openlayers.view').then((code) => {
+      setComponent(() => {
+        return code.OpenlayersMapViewReact
+      })
+    })
+  }, [])
+
+  if (Component) {
+    return React.createElement(Component, ...args)
+  }
+  return <LinearProgress className="w-full h-2" variant="indeterminate" />
+}
+
+const DynamicHistogramImport = (...args: any) => {
+  const [Component, setComponent] = React.useState<any>(null)
+
+  React.useEffect(() => {
+    import('./histogram/histogram').then((code) => {
+      setComponent(() => {
+        return code.Histogram
+      })
+    })
+  }, [])
+
+  if (Component) {
+    return React.createElement(Component, ...args)
+  }
+  return <LinearProgress className="w-full h-2" variant="indeterminate" />
+}
+
+const DynamicInspectorImport = (...args: any) => {
+  const [Component, setComponent] = React.useState<any>(null)
+
+  React.useEffect(() => {
+    import('./inspector/audited-inspector').then((code) => {
+      setComponent(() => {
+        return code.AuditedInspector
+      })
+    })
+  }, [])
+
+  if (Component) {
+    return React.createElement(Component, ...args)
+  }
+  return <LinearProgress className="w-full h-2" variant="indeterminate" />
+}
+
+const DynamicResultsImport = (...args: any) => {
+  const [Component, setComponent] = React.useState<any>(null)
+
+  React.useEffect(() => {
+    import('./results-visual').then((code) => {
+      setComponent(() => {
+        return code.default
+      })
+    })
+  }, [])
+
+  if (Component) {
+    return React.createElement(Component, ...args)
+  }
+  return <LinearProgress className="w-full h-2" variant="indeterminate" />
+}
+
+const DynamicTimelineImport = (...args: any) => {
+  const [Component, setComponent] = React.useState<any>(null)
+
+  React.useEffect(() => {
+    import('./timeline/timeline').then((code) => {
+      setComponent(() => {
+        return code.default
+      })
+    })
+  }, [])
+
+  if (Component) {
+    return React.createElement(Component, ...args)
+  }
+  return <LinearProgress className="w-full h-2" variant="indeterminate" />
 }
 
 export const Visualizations = [
   {
     id: 'openlayers',
     title: '2D Map',
-    view: generateGenericDynamicComponentImport({
-      path: './maps/openlayers/openlayers.view',
-      componentName: 'OpenlayersMapViewReact',
-    }),
+    view: DynamicOpenlayersImport,
     icon: 'fa fa-map',
     options: {
       desiredContainer: 'openlayers',
@@ -66,10 +143,7 @@ export const Visualizations = [
   {
     id: 'cesium',
     title: '3D Map',
-    view: generateGenericDynamicComponentImport({
-      path: './maps/cesium/cesium.view',
-      componentName: 'CesiumMapViewReact',
-    }),
+    view: DynamicCesiumImport,
     icon: 'fa fa-globe',
     options: {
       desiredContainer: 'cesium',
@@ -80,19 +154,13 @@ export const Visualizations = [
     id: 'histogram',
     title: 'Histogram',
     icon: 'fa fa-bar-chart',
-    view: generateGenericDynamicComponentImport({
-      path: './histogram/histogram',
-      componentName: 'Histogram',
-    }),
+    view: DynamicHistogramImport,
     singular: true,
   },
   {
     id: 'results',
     title: 'Results',
-    view: generateGenericDynamicComponentImport({
-      path: './results-visual/index',
-      componentName: 'default',
-    }),
+    view: DynamicResultsImport,
     icon: 'fa fa-table',
     singular: true,
   },
@@ -100,20 +168,14 @@ export const Visualizations = [
     id: 'inspector',
     title: 'Inspector',
     icon: 'fa fa-info',
-    view: generateGenericDynamicComponentImport({
-      path: './inspector/audited-inspector',
-      componentName: 'AuditedInspector',
-    }),
+    view: DynamicInspectorImport,
     singular: true,
   },
   {
     id: 'timeline',
     title: 'Timeline',
     icon: 'fa fa-hourglass-half',
-    view: generateGenericDynamicComponentImport({
-      path: './timeline/timeline',
-      componentName: 'default',
-    }),
+    view: DynamicTimelineImport,
     singular: true,
   },
 ] as VisualizationType[]
