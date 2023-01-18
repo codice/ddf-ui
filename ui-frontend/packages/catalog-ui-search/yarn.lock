@@ -5614,14 +5614,6 @@ backbone-poller@1.1.3:
     backbone ">=0.9.*"
     underscore "*"
 
-backbone.modelbinder@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/backbone.modelbinder/-/backbone.modelbinder-1.1.0.tgz#2d209338fe37303366035c382abafd2bc74c8994"
-  dependencies:
-    backbone ">=0.9.0"
-    jquery ">=1.7.1"
-    underscore ">=1.3.1"
-
 backbone.wreqr@1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/backbone.wreqr/-/backbone.wreqr-1.4.0.tgz#7682030c9aaf090ecd873b21dbf48501693b2696"
@@ -5629,7 +5621,7 @@ backbone.wreqr@1.4.0:
     backbone ">=0.9.9 <=1.3.x"
     underscore ">=1.3.3 <=1.8.3"
 
-backbone@1.1.2, backbone@>=0.9.*, backbone@>=0.9.0, "backbone@>=0.9.9 <=1.3.x", backbone@>=1.0.0:
+backbone@1.1.2, backbone@>=0.9.*, "backbone@>=0.9.9 <=1.3.x", backbone@>=1.0.0:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/backbone/-/backbone-1.1.2.tgz#c2c04c66bf87268fb82c177acebeff7d37ba6f2d"
   dependencies:
@@ -12156,7 +12148,7 @@ jake@^10.6.1:
     filelist "^1.0.1"
     minimatch "^3.0.4"
 
-jquery@*, jquery@3.4.1, jquery@>=1.7.1:
+jquery@*, jquery@3.4.1:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.4.1.tgz#714f1f8d9dde4bdfa55764ba37ef214630d80ef2"
 
@@ -19614,7 +19606,7 @@ unassertify@^2.0.0:
     through "^2.3.7"
     unassert "^1.3.1"
 
-underscore@*, underscore@1.x.x, underscore@>=1.3.1, underscore@>=1.4.4, underscore@>=1.5.0, underscore@^1.7.0, underscore@^1.8.3:
+underscore@*, underscore@1.x.x, underscore@>=1.4.4, underscore@>=1.5.0, underscore@^1.7.0, underscore@^1.8.3:
   version "1.10.2"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.10.2.tgz#73d6aa3668f3188e4adb0f1943bd12cfd7efaaaf"
 
