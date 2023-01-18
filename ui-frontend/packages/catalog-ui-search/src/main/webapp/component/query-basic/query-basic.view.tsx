@@ -409,7 +409,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
   return (
     <>
       <div className="editor-properties px-2 py-3">
-        <div className="">
+        <div>
           <Typography className="pb-2">Keyword</Typography>
           <BooleanSearchBar
             value={anyTextValue}

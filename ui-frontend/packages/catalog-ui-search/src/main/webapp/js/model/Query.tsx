@@ -90,12 +90,6 @@ export type QueryType = {
   getCurrentStartAndEndForSourceGroup: () => QueryStartAndEndType
   [key: string]: any
 }
-export const Query = {} as {
-  Model: {
-    new (..._args: any): QueryType
-  }
-}
-export default Query
 function limitToDeleted(cqlFilterTree: any) {
   return new FilterBuilderClass({
     type: 'AND',
@@ -127,7 +121,7 @@ function limitToHistoric(cqlFilterTree: any) {
     ],
   })
 }
-Query.Model = Backbone.AssociatedModel.extend({
+export default Backbone.AssociatedModel.extend({
   relations: [
     {
       type: Backbone.One,

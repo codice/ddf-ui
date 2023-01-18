@@ -18,7 +18,7 @@ import { useListenTo } from '../../component/selection-checkbox/useBackbone.hook
 import { TypedUserInstance } from '../../component/singletons/TypedUser'
 import cql from '../cql'
 import { QueryAttributesType, SortType } from './Query.shared-types'
-import { Query as UntypedQuery, QueryType } from './Query'
+import UntypedQuery, { QueryType } from './Query'
 
 /**
  * Mainly used by lazy query results, since it gets passed a function that adds in the query ref for it
@@ -98,7 +98,7 @@ export const Query = (
     ...DEFAULT_QUERY_OPTIONS,
     ...options,
   }
-  return new UntypedQuery.Model(attributes, mergedOptions)
+  return new UntypedQuery(attributes, mergedOptions)
 }
 
 function mixinEphemeralFilter(

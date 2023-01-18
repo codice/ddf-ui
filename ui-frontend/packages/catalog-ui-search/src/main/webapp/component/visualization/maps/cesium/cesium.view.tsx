@@ -118,16 +118,3 @@ export const CesiumMapViewReact = ({
     </>
   )
 }
-
-// try {
-//   MapView.prototype.createMap.apply(this, arguments)
-// } catch (err) {
-//   console.error(err)
-//   this.$el.addClass('not-supported')
-//   setTimeout(() => {
-//     this.switchTo2DMap()
-//   }, 10000)
-//   this.endLoading()
-// }
-
-// featureDetection.addFailure('cesium')

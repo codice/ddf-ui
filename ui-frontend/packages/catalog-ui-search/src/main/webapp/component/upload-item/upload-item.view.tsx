@@ -66,15 +66,15 @@ export const UploadItemViewReact = ({ model }: UploadItemViewReactType) => {
     >
       <div className="w-full flex-shrink">
         <div className="text-center">
-          <div className="">
+          <div>
             <span className="top-filename">{modelJson.file.name}</span>
           </div>
-          <div className="">
-            <div className="">
+          <div>
+            <div>
               <span className="bottom-filesize">{modelJson.file.size}</span>
               <span className="bottom-filetype">{modelJson.file.type}</span>
             </div>
-            <div className="">{Math.floor(modelJson.percentage) + '%'}</div>
+            <div>{Math.floor(modelJson.percentage) + '%'}</div>
           </div>
         </div>
         {!hasSuccess && !hasError && isSending ? (
@@ -112,7 +112,6 @@ export const UploadItemViewReact = ({ model }: UploadItemViewReactType) => {
       <div className="upload-actions flex-shrink-0">
         {!isSending ? (
           <Button
-            className=""
             onClick={() => {
               setCancel(true)
             }}
@@ -123,7 +122,6 @@ export const UploadItemViewReact = ({ model }: UploadItemViewReactType) => {
 
         {hasSuccess ? (
           <Button
-            className=""
             onClick={() => {
               ;(wreqr as any).vent.trigger('router:navigate', {
                 fragment: 'metacards/' + model.get('id'),

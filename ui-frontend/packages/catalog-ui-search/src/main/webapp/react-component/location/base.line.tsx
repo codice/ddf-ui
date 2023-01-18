@@ -464,7 +464,6 @@ const LineUtmUps = (props: any) => {
         })}
       <Button
         fullWidth
-        className=""
         onClick={() => {
           let points = utmUpsPointArray ? [...utmUpsPointArray] : []
           points.push({

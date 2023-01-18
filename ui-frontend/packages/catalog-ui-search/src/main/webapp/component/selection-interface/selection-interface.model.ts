@@ -17,7 +17,7 @@ import _ from 'underscore'
 
 import Backbone from 'backbone'
 import Metacard from '../../js/model/Metacard'
-import { Query as QueryModel } from '../../js/model/Query'
+import QueryModel from '../../js/model/Query'
 import QueryResponse from '../../js/model/QueryResponse'
 import QueryResult from '../../js/model/QueryResult'
 
@@ -26,7 +26,7 @@ export default Backbone.AssociatedModel.extend({
     {
       type: Backbone.One,
       key: 'currentQuery',
-      relatedModel: QueryModel.Model,
+      relatedModel: QueryModel,
     },
     {
       type: Backbone.One,

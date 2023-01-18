@@ -155,7 +155,7 @@ const LocationInput = (props: LocationInputPropsType) => {
   }, [props])
 
   return (
-    <div className="">
+    <div>
       <Radio
         value={mode}
         onChange={setState((draft: any, value: any) => (draft.mode = value))}

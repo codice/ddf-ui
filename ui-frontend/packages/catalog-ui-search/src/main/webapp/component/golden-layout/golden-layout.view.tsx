@@ -241,17 +241,7 @@ function registerComponent(
     }
   )
 }
-// function isMaximised(contentItem: any) {
-//   if (contentItem.isMaximised) {
-//     return true
-//   } else if (contentItem.contentItems.length === 0) {
-//     return false
-//   } else {
-//     return _.some(contentItem.contentItems, isMaximised)
-//   }
-// }
-// @ts-expect-error ts-migrate(7023) FIXME: 'removeActiveTabInformation' implicitly has return... Remove this comment to see the full error message
-function removeActiveTabInformation(config: any) {
+function removeActiveTabInformation(config: any): any {
   if (config.activeItemIndex !== undefined) {
     config.activeItemIndex = 0
   }
@@ -304,20 +294,6 @@ type GoldenLayoutViewProps = {
   selectionInterface: any
   setGoldenLayout: (instance: any) => void
 }
-// function reconfigureLayout({
-//   goldenLayoutInstance,
-//   layout,
-// }: {
-//   goldenLayoutInstance: any
-//   layout: any
-// }) {
-//   goldenLayoutInstance.root.contentItems.forEach((item: any) => {
-//     item.remove()
-//   })
-//   layout.content.forEach((item: any) => {
-//     goldenLayoutInstance.root.addChild(item)
-//   })
-// }
 function getGoldenLayoutConfig({
   layoutResult,
   editLayoutRef,
@@ -375,10 +351,6 @@ function handleGoldenLayoutStateChange({
   options: GoldenLayoutViewProps
   lastConfig: React.MutableRefObject<any>
 }) {
-  // not sure we can do this if block with react, check if we need still
-  // if (this.isDestroyed) {
-  //   return
-  // }
   if (lastConfig.current === null) {
     // this triggers on init of golden layout
     lastConfig.current = getInstanceConfig({ goldenLayout })

@@ -172,7 +172,7 @@ const QueryStatus = ({
           Filter
         </HeaderCell>
       </tr>
-      <tbody className="">
+      <tbody>
         {statusBySource.map((status) => {
           return (
             <QueryStatusRow key={status.id} status={status} query={query} />
@@ -272,7 +272,6 @@ const QueryFeed = ({ selectionInterface }: Props) => {
             <div className="relative">
               <Button
                 data-id="heartbeat-button"
-                className=""
                 title="Show the full status for the search."
                 data-help="Show the full status for the search."
                 {...MuiButtonProps}

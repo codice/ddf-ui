@@ -130,7 +130,7 @@ export const SaveForm = ({
           />
         </div>
 
-        <DarkDivider className="" />
+        <DarkDivider />
         <div className="flex flex-row flex-no-wrap align justify-end p-2">
           <Button
             type="button"
