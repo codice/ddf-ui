@@ -144,7 +144,7 @@ const dynamicActionClasses = 'h-full'
 const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   const triggerDownload = (e: any) => {
     e.stopPropagation()
-    window.open(lazyResult.plain.metacard.properties['resource-download-url'])
+    window.open(lazyResult.getDownloadUrl())
   }
   const metacardInteractionMenuState = useMenuState()
   return (
@@ -222,7 +222,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
         ) : null}
       </Grid>
       <Grid item className={dynamicActionClasses}>
-        {lazyResult.isDownloadable() ? (
+        {lazyResult.getDownloadUrl() ? (
           <Button
             component="div"
             data-id="download-button"

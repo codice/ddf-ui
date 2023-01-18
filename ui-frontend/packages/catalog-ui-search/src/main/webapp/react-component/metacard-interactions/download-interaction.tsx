@@ -20,14 +20,13 @@ import { hot } from 'react-hot-loader'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
 const openValidUrl = (result: LazyQueryResult) => {
-  const downloadUrl = result.plain.metacard.properties['resource-download-url']
+  const downloadUrl = result.getDownloadUrl()
   downloadUrl && window.open(downloadUrl)
 }
 
-const isDownloadable = (model: LazyQueryResult[]): boolean =>
-  model.some(
-    (result) => result.plain.metacard.properties['resource-download-url']
-  )
+const isDownloadable = (model: LazyQueryResult[]): boolean => {
+  return model.some((result) => result.getDownloadUrl())
+}
 
 const handleDownload = (model: LazyQueryResult[]) => {
   model.forEach(openValidUrl)
