@@ -333,7 +333,7 @@ export class LazyQueryResult {
   getDownloadUrl(): string {
     const downloadAction = this.plain.actions.find(
       (action) =>
-        action.id === 'catalog.data.metacard.resource.deployed-download'
+        action.id === 'catalog.data.metacard.resource.alternate-download'
     )
 
     return downloadAction
