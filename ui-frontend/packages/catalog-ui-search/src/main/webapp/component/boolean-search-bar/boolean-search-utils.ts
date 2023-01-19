@@ -18,7 +18,6 @@ export const suggestionsToOptions = (suggestions: Suggestions): Option[] => {
   if (suggestions === undefined || Object.keys(suggestions).length === 0) {
     return []
   } else {
-    // @ts-ignore
     return Object.entries(suggestions).flatMap(([category, tokens]) =>
       tokens.map((token: string) => ({
         type: category,

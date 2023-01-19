@@ -3,8 +3,8 @@ import * as React from 'react'
 import { LazyQueryResult } from '../LazyQueryResult/LazyQueryResult'
 import fetch from '../../../react-component/utils/fetch'
 import { useParams } from 'react-router-dom'
-const Common = require('../../Common.js')
 import CQL from '../../cql'
+import Common from '../../Common'
 
 type PlainMetacardPropertiesType = LazyQueryResult['plain']['metacard']['properties']
 
@@ -20,14 +20,18 @@ export const convertToBackendCompatibleForm = ({
   const duplicatedProperties = JSON.parse(JSON.stringify(properties))
   Object.keys(duplicatedProperties).forEach((key) => {
     if (typeof duplicatedProperties[key] !== 'string') {
-      if (duplicatedProperties[key].constructor === Array) {
+      if (duplicatedProperties[key]?.constructor === Array) {
         duplicatedProperties[key] = (duplicatedProperties[key] as any[]).map(
           (value) => {
+            if (typeof value === 'object') {
+              // sorts on queries!
+              return value
+            }
             return value.toString()
           }
         )
       } else {
-        duplicatedProperties[key] = duplicatedProperties[key].toString()
+        duplicatedProperties[key] = duplicatedProperties[key]?.toString()
       }
     }
   })
@@ -617,7 +621,7 @@ class CreateSearchTask extends AsyncTask {
         metacards: [
           {
             attributes: {
-              ...this.data,
+              ...convertToBackendCompatibleForm({ properties: this.data }),
               'metacard-tags': ['query'],
               cql: getCqlForFilterTree(this.data.filterTree),
             },
@@ -674,7 +678,7 @@ class SaveSearchTask extends AsyncTask {
           metacards: [
             {
               attributes: {
-                ...this.data,
+                ...convertToBackendCompatibleForm({ properties: this.data }),
                 'metacard-tags': ['query'],
                 cql: getCqlForFilterTree(this.data.filterTree),
               },

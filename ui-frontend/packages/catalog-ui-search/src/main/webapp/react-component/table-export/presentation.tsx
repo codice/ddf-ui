@@ -15,16 +15,14 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import Button from '@material-ui/core/Button'
-const properties = require('../../js/properties.js')
+import properties from '../../js/properties'
 import GetAppIcon from '@material-ui/icons/GetApp'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
-
 type Option = {
   label: string
   value: string
 }
-
 type Props = {
   exportSize: string
   exportFormat: string
@@ -37,7 +35,6 @@ type Props = {
   warning: string
   customExportCount: number
 }
-
 export default hot(module)((props: Props) => {
   const {
     exportSize,
@@ -125,7 +122,7 @@ export default hot(module)((props: Props) => {
           color="primary"
           disabled={
             exportSize === 'custom' &&
-            customExportCount > properties.exportResultLimit
+            customExportCount > (properties as any).exportResultLimit
           }
           onClick={onDownloadClick}
         >

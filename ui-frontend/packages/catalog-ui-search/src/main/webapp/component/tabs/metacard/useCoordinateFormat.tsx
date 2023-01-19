@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { convertWktToPreferredCoordFormat } from './coordinateConverter'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
-const user = require('../../singletons/user-instance.js')
+import user from '../../singletons/user-instance'
 
 const FLOATING_POINT_PAIR_REGEX = /[-+]?\d*\.?\d+\s[-+]?\d*\.?\d+/g
 

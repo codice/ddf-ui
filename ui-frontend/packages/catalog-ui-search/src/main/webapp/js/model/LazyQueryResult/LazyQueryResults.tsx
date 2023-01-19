@@ -18,10 +18,10 @@ import { LazyQueryResult } from './LazyQueryResult'
 import { QuerySortType } from './types'
 import { Status } from './status'
 import { TransformSortsComposedFunctionType } from '../TypedQuery'
-const _ = require('underscore')
+import _ from 'underscore'
 const debounceTime = 50
 
-const Backbone = require('backbone')
+import Backbone from 'backbone'
 
 export type SearchStatus = {
   [key: string]: Status
@@ -85,15 +85,15 @@ export class LazyQueryResults {
   }) {
     const id = Math.random().toString()
 
-    // @ts-ignore ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
+    // @ts-ignore remove when we upgrade ace to use latest typescript
     this[`subscriptionsToMe.${subscribableThing}`][id] = callback
     return () => {
-      // @ts-ignore ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
+      // @ts-ignore remove when we upgrade ace to use latest typescript
       delete this[`subscriptionsToMe.${subscribableThing}`][id]
     }
   }
   _notifySubscribers(subscribableThing: SubscribableType) {
-    // @ts-ignore ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
+    // @ts-ignore remove when we upgrade ace to use latest typescript
     const subscribers = this[
       `subscriptionsToMe.${subscribableThing}`
     ] as SubscriptionType

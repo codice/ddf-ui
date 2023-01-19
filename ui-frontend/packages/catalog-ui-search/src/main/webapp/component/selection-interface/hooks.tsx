@@ -56,7 +56,7 @@ export const useLazyResultsFromSelectionInterface = ({
 }: useLazyResultsProps) => {
   const { listenToOnce, stopListening } = useBackbone()
 
-  // @ts-ignore ts-migrate(6133) FIXME: 'forceRender' is declared but its value is never r... Remove this comment to see the full error message
+  // @ts-expect-error ts-migrate(6133) FIXME: 'forceRender' is declared but its value is never r... Remove this comment to see the full error message
   const [forceRender, setForceRender] = React.useState(Math.random())
   const [lazyResults, setLazyResults] = React.useState(
     getLazyResultsFromSelectionInterface({

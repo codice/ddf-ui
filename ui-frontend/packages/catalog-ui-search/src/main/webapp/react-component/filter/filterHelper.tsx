@@ -12,13 +12,8 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
-// @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
-import metacardDefinitions from '../../component/singletons/metacard-definitions.js'
-
-// @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
-import properties from '../../js/properties.js'
-
+import metacardDefinitions from '../../component/singletons/metacard-definitions'
+import properties from '../../js/properties'
 export const getFilteredAttributeList = () => {
   return metacardDefinitions.sortedMetacardTypes
     .filter(({ id }: any) => !properties.isHidden(id))
@@ -26,27 +21,23 @@ export const getFilteredAttributeList = () => {
     .map(({ alias, id }: any) => ({
       label: alias || id,
       value: id,
-      description: (properties.attributeDescriptions || {})[id],
+      description: ((properties as any).attributeDescriptions || {})[id],
     })) as {
     label: string
     value: string
     description: string | undefined
   }[]
 }
-
 export const getAttributeType = (attribute: string): string => {
   const type = metacardDefinitions.metacardTypes[attribute].type
   if (type === 'GEOMETRY') return 'LOCATION'
   if (isIntegerType(type)) return 'INTEGER'
   if (isFloatType(type)) return 'FLOAT'
-
   return type
 }
-
 const isIntegerType = (type: string) => {
   return type === 'INTEGER' || type === 'SHORT' || type === 'LONG'
 }
-
 const isFloatType = (type: string) => {
   return type === 'FLOAT' || type === 'DOUBLE'
 }

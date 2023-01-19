@@ -16,7 +16,7 @@ import * as React from 'react'
 import styled from 'styled-components'
 import { readableColor, transparentize } from 'polished'
 import { hot } from 'react-hot-loader'
-const $ = require('jquery')
+import $ from 'jquery'
 
 type Props = {
   className?: string

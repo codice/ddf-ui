@@ -12,33 +12,27 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import fetch from '../utils/fetch'
-const Common = require('../../js/Common.js')
-const moment = require('moment')
-const announcement = require('component/announcement')
+import moment from 'moment'
 import MetacardHistoryPresentation from './presentation'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { TypedUserInstance } from '../../component/singletons/TypedUser'
-
+import Common from '../../js/Common'
+import wreqr from '../../js/wreqr'
 type Props = {
   result: LazyQueryResult
 }
-
 type State = {
   history: any
   selectedVersion: any
   loading: boolean
 }
-
 class MetacardHistory extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
-
     this.model = props.result
-
     this.state = {
       history: [],
       selectedVersion: undefined,
@@ -49,7 +43,6 @@ class MetacardHistory extends React.Component<Props, State> {
   componentDidMount() {
     this.loadData()
   }
-
   getSourceId() {
     const metacardSourceId = this.model.plain.metacard.properties['source-id']
     const harvestedSourceId = this.model.plain.metacard.properties[
@@ -57,64 +50,58 @@ class MetacardHistory extends React.Component<Props, State> {
     ]
     return harvestedSourceId || metacardSourceId
   }
-
   loadData() {
     setTimeout(async () => {
       const id = this.model.plain.id
       const res = await fetch(`./internal/history/${id}/${this.getSourceId()}`)
-
       if (!res.ok || res.status === 204) {
         this.setState({ history: [], loading: false })
         return
       }
-
       const history = await res.json()
       history.sort((historyItem1: any, historyItem2: any) => {
         return (
-          moment.unix(historyItem2.versioned.seconds) -
-          moment.unix(historyItem1.versioned.seconds)
+          ((moment.unix(historyItem2.versioned.seconds) as unknown) as number) -
+          ((moment.unix(historyItem1.versioned.seconds) as unknown) as number)
         )
       })
       history.forEach((historyItem: any, index: any) => {
         historyItem.niceDate = Common.getMomentDate(
-          moment.unix(historyItem.versioned.seconds).valueOf()
+          (moment
+            .unix(historyItem.versioned.seconds)
+            .valueOf() as unknown) as string
         )
         historyItem.versionNumber = history.length - index
       })
-
       this.setState({ history, loading: false })
     }, 1000)
   }
-
   onClick = (event: any) => {
     const selectedVersion = event.currentTarget.getAttribute('data-id')
     this.setState({ selectedVersion })
   }
-
   revertToSelectedVersion = async () => {
     this.setState({ loading: true })
-
     const id = this.model.plain.id
     const revertId = this.state.selectedVersion
-
     const res = await fetch(
       `./internal/history/revert/${id}/${revertId}/${this.getSourceId()}`
     )
-
     if (!res.ok) {
       this.setState({ loading: false })
-      announcement.announce({
-        title: 'Unable to revert to the selected version',
-        message: 'Something went wrong.',
-        type: 'error',
+      ;(wreqr as any).vent.trigger('snack', {
+        message: 'Unable to revert to the selected version',
+        snackProps: {
+          alertProps: {
+            severity: 'error',
+          },
+        },
       })
       return
     }
-
     this.model.plain.metacard.properties['metacard-tags'] = ['revision']
     this.model.syncWithPlain()
     this.model.refreshDataOverNetwork()
-
     setTimeout(() => {
       //let solr flush
       this.model.syncWithPlain()
@@ -123,19 +110,18 @@ class MetacardHistory extends React.Component<Props, State> {
           'revision'
         ) >= 0
       ) {
-        announcement.announce({
-          title: 'Waiting on Reverted Data',
-          message: [
-            "It's taking an unusually long time for the reverted data to come back.",
-            'The item will be put in a revision-like state (read-only) until data returns.',
-          ],
-          type: 'warn',
+        ;(wreqr as any).vent.trigger('snack', {
+          message: `Waiting on Reverted Data: It's taking an unusually long time for the reverted data to come back.  The item will be put in a revision-like state (read-only) until data returns.`,
+          snackProps: {
+            alertProps: {
+              severity: 'warn',
+            },
+          },
         })
       }
       this.loadData()
     }, 2000)
   }
-
   render() {
     const { history, selectedVersion, loading } = this.state
     return (
@@ -150,5 +136,4 @@ class MetacardHistory extends React.Component<Props, State> {
     )
   }
 }
-
 export default hot(module)(MetacardHistory)

@@ -1,7 +1,6 @@
 import * as React from 'react'
-import MRC from '../../react-component/marionette-region-container'
 import { useResizableGridContext } from '../resizable-grid/resizable-grid'
-import GoldenLayoutView from './golden-layout.view'
+import { GoldenLayoutViewReact } from './golden-layout.view'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
 import ResultSelector from '../result-selector/result-selector'
@@ -12,26 +11,20 @@ type Props = {
 }
 
 export const GoldenLayout = ({ selectionInterface }: Props) => {
-  // @ts-ignore ts-migrate(6133) FIXME: 'setGoldenlayoutInstance' is declared but its valu... Remove this comment to see the full error message
-  const [goldenlayoutInstance, setGoldenlayoutInstance] = React.useState(
-    new GoldenLayoutView({
-      selectionInterface,
-      configName: 'goldenLayout',
-    })
-  )
+  const [goldenLayout, setGoldenLayout] = React.useState<any>(null)
   const { closed } = useResizableGridContext()
 
   React.useEffect(() => {
     setTimeout(() => {
-      if (goldenlayoutInstance.goldenLayout) goldenlayoutInstance.updateSize()
+      if (goldenLayout) goldenLayout.updateSize()
     }, 100)
-  }, [closed])
+  }, [closed, goldenLayout])
 
   React.useEffect(() => {
     setTimeout(() => {
-      if (goldenlayoutInstance.goldenLayout) goldenlayoutInstance.updateSize()
+      if (goldenLayout) goldenLayout.updateSize()
     }, 1000)
-  }, [])
+  }, [goldenLayout])
   return (
     <Grid
       data-id="results-container"
@@ -45,11 +38,13 @@ export const GoldenLayout = ({ selectionInterface }: Props) => {
           elevation={Elevations.panels}
           className="w-full p-3 overflow-hidden"
         >
-          <ResultSelector
-            selectionInterface={selectionInterface}
-            model={selectionInterface.getCurrentQuery()}
-            goldenLayoutViewInstance={goldenlayoutInstance}
-          />
+          {goldenLayout ? (
+            <ResultSelector
+              selectionInterface={selectionInterface}
+              model={selectionInterface.getCurrentQuery()}
+              goldenLayout={goldenLayout}
+            />
+          ) : null}
         </Paper>
       </Grid>
 
@@ -57,10 +52,10 @@ export const GoldenLayout = ({ selectionInterface }: Props) => {
         item
         className="w-full h-full overflow-hidden flex-shrink-1 pb-2 pr-2"
       >
-        <MRC
-          className="h-full w-full"
-          view={goldenlayoutInstance}
-          style={{ background: 'inherit' }}
+        <GoldenLayoutViewReact
+          selectionInterface={selectionInterface}
+          configName="goldenLayout"
+          setGoldenLayout={setGoldenLayout}
         />
       </Grid>
     </Grid>

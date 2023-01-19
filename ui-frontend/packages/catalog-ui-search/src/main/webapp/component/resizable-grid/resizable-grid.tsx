@@ -3,29 +3,23 @@ import Grid from '@material-ui/core/Grid'
 import { Resizable, ResizableProps } from 're-resizable'
 import styled from 'styled-components'
 import { createCtx } from '../../typescript/context'
-
-const wreqr = require('../../js/wreqr.js')
-
+import wreqr from '../../js/wreqr'
 export const DEFAULT_AUTO_COLLAPSE_LENGTH = 300
 export const DEFAULT_STARTING_LENGTH = 550
 export const DEFAULT_COLLAPSED_LENGTH = 75
-
 type ResizableGridType = React.ComponentType<
   ResizableProps & {
     component: any
     item: any
   }
 >
-
 const ResizableGrid = Grid as ResizableGridType
-
 export const [
   useResizableGridContext,
   UseResizableGridContextProvider,
 ] = createCtx<useResizableGridType>({
   closed: false,
 })
-
 type useResizableGridType = {
   length: number
   closed: boolean
@@ -36,7 +30,6 @@ type useResizableGridType = {
   dragging: boolean
   setDragging: React.Dispatch<React.SetStateAction<boolean>>
 }
-
 export const useResizableGrid = ({
   startingLength,
   collapsedLength,
@@ -60,10 +53,9 @@ export const useResizableGrid = ({
         setClosed(false)
       }
     }
-
     setTimeout(() => {
-      wreqr.vent.trigger('gl-updateSize')
-      wreqr.vent.trigger('resize')
+      ;(wreqr as any).vent.trigger('gl-updateSize')
+      ;(wreqr as any).vent.trigger('resize')
     }, 500)
   }, [length, dragging])
   React.useEffect(() => {
@@ -83,7 +75,6 @@ export const useResizableGrid = ({
     setDragging,
   }
 }
-
 export const CustomResizableGrid = styled(ResizableGrid)`
   .actions {
     opacity: 0;
@@ -104,7 +95,6 @@ export const CustomResizableGrid = styled(ResizableGrid)`
     margin-top: 10px;
   }
 `
-
 type SplitPaneProps = {
   firstStyle?: React.CSSProperties | undefined
   secondStyle?: React.CSSProperties | undefined
@@ -114,10 +104,7 @@ type SplitPaneProps = {
   autoCollapseLength?: number
   startingLength?: number
 }
-
 export const SplitPane = ({
-  // @ts-ignore ts-migrate(6133) FIXME: 'firstStyle' is declared but its value is never re... Remove this comment to see the full error message
-  firstStyle,
   secondStyle,
   variant,
   children,
@@ -136,7 +123,6 @@ export const SplitPane = ({
     setDragging,
   } = useResizableGrid({ collapsedLength, startingLength, autoCollapseLength })
   const [First, Second] = children
-
   return (
     <UseResizableGridContextProvider
       value={{
@@ -210,8 +196,7 @@ export const SplitPane = ({
           style={{
             flexShrink: 0,
           }}
-          // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-          onResizeStop={(e) => {
+          onResizeStop={() => {
             setDragging(false)
           }}
           onResizeStart={() => {
@@ -221,14 +206,14 @@ export const SplitPane = ({
             switch (variant) {
               case 'horizontal':
                 setLength(
-                  // @ts-ignore ts-migrate(2339) FIXME: Property 'clientX' does not exist on type 'TouchEv... Remove this comment to see the full error message
-                  e.clientX - e.target.parentElement.getBoundingClientRect().x
+                  (e as any).clientX -
+                    (e.target as any).parentElement.getBoundingClientRect().x
                 )
                 break
               case 'vertical':
                 setLength(
-                  // @ts-ignore ts-migrate(2339) FIXME: Property 'clientY' does not exist on type 'TouchEv... Remove this comment to see the full error message
-                  e.clientY - e.target.parentElement.getBoundingClientRect().y
+                  (e as any).clientY -
+                    (e.target as any).parentElement.getBoundingClientRect().y
                 )
                 break
             }

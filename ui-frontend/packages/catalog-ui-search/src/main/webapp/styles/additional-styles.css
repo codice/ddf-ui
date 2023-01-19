@@ -1,0 +1,287 @@
+/* // override for cesium draw helper.
+// when in draw mode, this tooltip will still appear. */
+.twipsy {
+  display: none;
+}
+
+::placeholder {
+  color: inherit;
+  opacity: 0.5;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  font-family: 'Open Sans', arial, sans-serif;
+  font-size: inherit;
+  transition: font-size 0.25s ease-out;
+  overflow: hidden;
+}
+
+html.theme-dark {
+  color: white;
+  fill: white;
+}
+
+html {
+  color: black;
+  fill: black;
+}
+
+body {
+  position: relative;
+}
+
+html.no-animation,
+html.no-animation *:not(.is-critical-animation),
+html.no-animation *:not(.is-critical-animation)::before,
+html.no-animation *:not(.is-critical-animation)::after {
+  transition: none !important;
+  animation: none !important;
+}
+
+.scrollbars-hide::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+.scrollbars-hide,
+.scrollbars-min {
+  scrollbar-width: none;
+}
+.scrollbars-hide::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+.scrollbars-min::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+
+h1 {
+  font-size: 1.25rem;
+}
+
+h2 {
+  font-size: 1.17rem;
+}
+
+h3 {
+  font-size: 1.09rem;
+}
+
+h4 {
+  font-size: 1.01rem;
+}
+
+h5 {
+  font-size: 0.93rem;
+}
+
+h6 {
+  font-size: 0.85rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0px;
+  font-weight: inherit;
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  cursor: pointer;
+}
+
+input {
+  padding: 0.3125rem 0.375rem 0.3125rem 0.375rem;
+  height: 2.75rem;
+  line-height: normal;
+}
+
+input::-ms-clear {
+  display: none;
+}
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+input:focus {
+  outline: none !important;
+}
+
+/* //only to override bootstrap */
+label {
+  font-weight: normal;
+  margin-bottom: 0px;
+}
+
+.bg-inherit {
+  background: inherit !important;
+}
+.w-min {
+  width: 0.0625rem;
+}
+.w-common {
+  width: 25rem;
+}
+.h-min {
+  height: 0.0625rem;
+}
+.mt-min {
+  margin-top: 0.0625rem;
+}
+.mr-min {
+  margin-top: 0.0625rem;
+}
+.h-14 {
+  height: 3.5rem;
+}
+.h-18 {
+  height: 4.5rem;
+}
+.h-common {
+  height: 31rem;
+}
+.left-1\/2 {
+  left: 50%;
+}
+.top-1\/2 {
+  top: 50%;
+}
+.\-translate-y-200 {
+  --transform-translate-y: -200%;
+}
+.\-translate-x-3\/4 {
+  --transform-translate-x: -75%;
+}
+.\-translate-y-3\/4 {
+  --transform-translate-y: -75%;
+}
+.\translate-y-3\/4 {
+  --transform-translate-y: 75%;
+}
+.\-z-1 {
+  z-index: -1;
+}
+.z-1 {
+  z-index: 1;
+}
+.min-w-40 {
+  min-width: 10rem;
+}
+.min-w-48 {
+  min-width: 12rem;
+}
+.min-w-56 {
+  min-width: 14rem;
+}
+.min-w-64 {
+  min-width: 16rem;
+}
+.min-w-72 {
+  min-width: 18rem;
+}
+.min-w-80 {
+  min-width: 20rem;
+}
+.min-w-88 {
+  min-width: 22rem;
+}
+.min-w-96 {
+  min-width: 24rem;
+}
+.min-w-104 {
+  min-width: 26rem;
+}
+.min-w-112 {
+  min-width: 28rem;
+}
+.min-w-120 {
+  min-width: 30rem;
+}
+.min-w-1\/5 {
+  min-width: 20%;
+}
+.min-w-2\/5 {
+  min-width: 40%;
+}
+.min-w-3\/5 {
+  min-width: 60%;
+}
+.min-w-4\/5 {
+  min-width: 80%;
+}
+.max-w-1\/5 {
+  max-width: 20%;
+}
+.max-w-2\/5 {
+  max-width: 40%;
+}
+.max-w-3\/5 {
+  max-width: 60%;
+}
+.max-w-4\/5 {
+  max-width: 80%;
+}
+.min-h-1 {
+  min-height: 1rem;
+}
+.min-h-16 {
+  min-height: 4rem;
+}
+.min-h-24 {
+  min-height: 6rem;
+}
+.min-h-32 {
+  min-height: 8rem;
+}
+.min-h-48 {
+  min-height: 12rem;
+}
+.min-h-80 {
+  min-height: 20rem;
+}
+.min-h-120 {
+  min-height: 30rem;
+}
+.max-h-16 {
+  max-height: 4rem;
+}
+.writing-mode-vertical-lr {
+  writing-mode: vertical-lr;
+}
+a.outline-none {
+  outline: none !important;
+}
+
+.is-bold {
+  font-weight: bolder;
+}
+
+.is-not-bold {
+  font-weight: lighter;
+}
+
+.is-small-font {
+  font-size: 0.75rem;
+}
+
+.is-medium-font {
+  font-size: 1rem;
+}
+
+.is-large-font {
+  font-size: 1.25rem;
+}

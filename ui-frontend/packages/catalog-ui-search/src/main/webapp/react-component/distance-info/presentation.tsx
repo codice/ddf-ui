@@ -14,8 +14,7 @@
  **/
 import * as React from 'react'
 import styled from 'styled-components'
-
-const DistanceUtils = require('../../../webapp/js/DistanceUtils.js')
+import DistanceUtils from '../../js/DistanceUtils'
 
 type Props = {
   currentDistance: number

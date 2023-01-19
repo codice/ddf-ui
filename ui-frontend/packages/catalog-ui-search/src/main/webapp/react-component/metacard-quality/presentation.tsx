@@ -16,7 +16,7 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import styled from 'styled-components'
-import LoadingCompanion from '../loading-companion'
+import LinearProgress from '@material-ui/core/LinearProgress'
 
 type Props = {
   metacardValidation: any
@@ -146,8 +146,12 @@ const AttributeValidation = (props: any) => {
 
 const render = (props: Props) => {
   const { metacardValidation, attributeValidation, loading } = props
-  return (
-    <LoadingCompanion loading={loading}>
+  return loading ? (
+    <>
+      <LinearProgress className="w-full h-2" />
+    </>
+  ) : (
+    <>
       <Root>
         {metacardValidation.length > 0 ? (
           <MetacardValidation metacardValidation={metacardValidation} />
@@ -161,7 +165,7 @@ const render = (props: Props) => {
           <Header>No Attribute Validation Issues to Report</Header>
         )}
       </Root>
-    </LoadingCompanion>
+    </>
   )
 }
 

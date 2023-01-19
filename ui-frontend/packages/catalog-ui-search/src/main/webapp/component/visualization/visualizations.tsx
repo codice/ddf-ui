@@ -12,31 +12,8 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
-import HistogramView from './histogram/lazy-histogram.view'
-import Inspector from './inspector/inspector-lazy.view'
-const LowBandwidthMapView = require('./low-bandwidth-map/low-bandwidth-map.view.js')
-import Timeline from './timeline/timeline'
-import ResultsView from '../results-visual'
-const Marionette = require('marionette')
-
-const ResultsViewWrapper = Marionette.LayoutView.extend({
-  className: 'customElement bg-inherit',
-  template() {
-    return (
-      <>
-        <ResultsView selectionInterface={this.options.selectionInterface} />
-      </>
-    )
-  },
-})
-
-const TimelineViewWrapper = Marionette.LayoutView.extend({
-  className: 'customElement',
-  template() {
-    return <Timeline selectionInterface={this.options.selectionInterface} />
-  },
-})
+import React from 'react'
+import LinearProgress from '@material-ui/core/LinearProgress'
 
 type VisualizationType = {
   id: string
@@ -47,11 +24,116 @@ type VisualizationType = {
   singular: boolean
 }
 
+/**
+ * Swapping to not doing string interpolation and generation of dynamic imports, as this increases build time and ends up producing larger bundles in the end downstream.
+ */
+const DynamicCesiumImport = (...args: any) => {
+  const [Component, setComponent] = React.useState<any>(null)
+
+  React.useEffect(() => {
+    import(`./maps/cesium/cesium.view`).then((code) => {
+      setComponent(() => {
+        return code.CesiumMapViewReact
+      })
+    })
+  }, [])
+
+  if (Component) {
+    return React.createElement(Component, ...args)
+  }
+  return <LinearProgress className="w-full h-2" variant="indeterminate" />
+}
+
+const DynamicOpenlayersImport = (...args: any) => {
+  const [Component, setComponent] = React.useState<any>(null)
+
+  React.useEffect(() => {
+    import('./maps/openlayers/openlayers.view').then((code) => {
+      setComponent(() => {
+        return code.OpenlayersMapViewReact
+      })
+    })
+  }, [])
+
+  if (Component) {
+    return React.createElement(Component, ...args)
+  }
+  return <LinearProgress className="w-full h-2" variant="indeterminate" />
+}
+
+const DynamicHistogramImport = (...args: any) => {
+  const [Component, setComponent] = React.useState<any>(null)
+
+  React.useEffect(() => {
+    import('./histogram/histogram').then((code) => {
+      setComponent(() => {
+        return code.Histogram
+      })
+    })
+  }, [])
+
+  if (Component) {
+    return React.createElement(Component, ...args)
+  }
+  return <LinearProgress className="w-full h-2" variant="indeterminate" />
+}
+
+const DynamicInspectorImport = (...args: any) => {
+  const [Component, setComponent] = React.useState<any>(null)
+
+  React.useEffect(() => {
+    import('./inspector/audited-inspector').then((code) => {
+      setComponent(() => {
+        return code.AuditedInspector
+      })
+    })
+  }, [])
+
+  if (Component) {
+    return React.createElement(Component, ...args)
+  }
+  return <LinearProgress className="w-full h-2" variant="indeterminate" />
+}
+
+const DynamicResultsImport = (...args: any) => {
+  const [Component, setComponent] = React.useState<any>(null)
+
+  React.useEffect(() => {
+    import('./results-visual').then((code) => {
+      setComponent(() => {
+        return code.default
+      })
+    })
+  }, [])
+
+  if (Component) {
+    return React.createElement(Component, ...args)
+  }
+  return <LinearProgress className="w-full h-2" variant="indeterminate" />
+}
+
+const DynamicTimelineImport = (...args: any) => {
+  const [Component, setComponent] = React.useState<any>(null)
+
+  React.useEffect(() => {
+    import('./timeline/timeline').then((code) => {
+      setComponent(() => {
+        return code.default
+      })
+    })
+  }, [])
+
+  if (Component) {
+    return React.createElement(Component, ...args)
+  }
+  return <LinearProgress className="w-full h-2" variant="indeterminate" />
+}
+
 export const Visualizations = [
   {
     id: 'openlayers',
     title: '2D Map',
-    view: LowBandwidthMapView,
+    view: DynamicOpenlayersImport,
     icon: 'fa fa-map',
     options: {
       desiredContainer: 'openlayers',
@@ -61,7 +143,7 @@ export const Visualizations = [
   {
     id: 'cesium',
     title: '3D Map',
-    view: LowBandwidthMapView,
+    view: DynamicCesiumImport,
     icon: 'fa fa-globe',
     options: {
       desiredContainer: 'cesium',
@@ -72,13 +154,13 @@ export const Visualizations = [
     id: 'histogram',
     title: 'Histogram',
     icon: 'fa fa-bar-chart',
-    view: HistogramView,
+    view: DynamicHistogramImport,
     singular: true,
   },
   {
     id: 'results',
     title: 'Results',
-    view: ResultsViewWrapper,
+    view: DynamicResultsImport,
     icon: 'fa fa-table',
     singular: true,
   },
@@ -86,14 +168,14 @@ export const Visualizations = [
     id: 'inspector',
     title: 'Inspector',
     icon: 'fa fa-info',
-    view: Inspector,
+    view: DynamicInspectorImport,
     singular: true,
   },
   {
     id: 'timeline',
     title: 'Timeline',
     icon: 'fa fa-hourglass-half',
-    view: TimelineViewWrapper,
+    view: DynamicTimelineImport,
     singular: true,
   },
 ] as VisualizationType[]

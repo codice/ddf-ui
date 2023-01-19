@@ -16,6 +16,7 @@ import * as React from 'react'
 import styled from 'styled-components'
 import { CustomElement } from '../styles/mixins'
 import { hot } from 'react-hot-loader'
+import Divider from '@material-ui/core/Divider'
 
 interface Props {
   branding: string
@@ -61,7 +62,11 @@ export default hot(module)((props: Props) => {
           </span>
           <span data-id="product-label"> {props.product}</span>
         </div>
-        <div className="is-divider" />
+        <Divider
+          orientation="horizontal"
+          variant="fullWidth"
+          className="my-3"
+        />
         <div className="content-version">
           <div>
             <div className="version-title">Version</div>
@@ -72,7 +77,11 @@ export default hot(module)((props: Props) => {
               {props.version}
             </div>
           </div>
-          <div className="is-divider" />
+          <Divider
+            orientation="horizontal"
+            variant="fullWidth"
+            className="my-3"
+          />
           <div>
             <div className="version-title">Unique Identifier</div>
             <div
@@ -82,7 +91,11 @@ export default hot(module)((props: Props) => {
               {`${props.commitHash} ${props.isDirty ? 'with Changes' : ''}`}
             </div>
           </div>
-          <div className="is-divider" />
+          <Divider
+            orientation="horizontal"
+            variant="fullWidth"
+            className="my-3"
+          />
           <div>
             <div className="version-title">Release Date</div>
             <div

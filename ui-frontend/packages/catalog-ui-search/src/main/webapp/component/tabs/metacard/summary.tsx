@@ -3,13 +3,12 @@ import { hot } from 'react-hot-loader'
 import Grid from '@material-ui/core/Grid'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
-const user = require('../../singletons/user-instance')
-const properties = require('../../../js/properties.js')
+import user from '../../singletons/user-instance'
+import properties from '../../../js/properties'
 import TypedMetacardDefs from './metacardDefinitions'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import Checkbox from '@material-ui/core/Checkbox'
 import Divider from '@material-ui/core/Divider'
-const Common = require('../../../js/Common.js')
 import DeleteIcon from '@material-ui/icons/Delete'
 import TextField from '@material-ui/core/TextField'
 import { useDialog } from '../../dialog'
@@ -17,7 +16,7 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import useSnack from '../../hooks/useSnack'
 import LinearProgress from '@material-ui/core/LinearProgress'
-const $ = require('jquery')
+import $ from 'jquery'
 import PublishIcon from '@material-ui/icons/Publish'
 import Paper from '@material-ui/core/Paper'
 import useTheme from '@material-ui/core/styles/useTheme'
@@ -36,8 +35,8 @@ import { useRerenderOnBackboneSync } from '../../../js/model/LazyQueryResult/hoo
 import useCoordinateFormat from './useCoordinateFormat'
 import { MetacardAttribute } from '../../../js/model/Types'
 import ExtensionPoints from '../../../extension-points'
-import { LocationInputReact } from '../../location-new/location-new.view'
-
+import LocationInputReact from '../../location-new/location-new.view'
+import Common from '../../../js/Common'
 function getSummaryShown(): string[] {
   const userchoices = user
     .get('user')
@@ -46,16 +45,14 @@ function getSummaryShown(): string[] {
   if (userchoices.length > 0) {
     return userchoices
   }
-  if (properties.summaryShow.length > 0) {
-    return properties.summaryShow
+  if ((properties as any).summaryShow.length > 0) {
+    return (properties as any).summaryShow
   }
   return ['title', 'created', 'thumbnail']
 }
-
 type Props = {
   result: LazyQueryResult
 }
-
 const ThumbnailInput = ({
   value,
   onChange = () => {},
@@ -87,7 +84,7 @@ const ThumbnailInput = ({
             const reader = new FileReader()
             reader.onload = function (event) {
               try {
-                // @ts-ignore ts-migrate(2531) FIXME: Object is possibly 'null'.
+                // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
                 onChange(event.target.result)
               } catch (err) {
                 console.error('something wrong with file type')
@@ -96,8 +93,7 @@ const ThumbnailInput = ({
             reader.onerror = () => {
               console.error('error')
             }
-
-            // @ts-ignore ts-migrate(2531) FIXME: Object is possibly 'null'.
+            // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
             reader.readAsDataURL(e.target.files[0])
           }}
         />
@@ -130,13 +126,11 @@ const ThumbnailInput = ({
     </Grid>
   )
 }
-
 enum Mode {
   Normal = 'normal',
   Saving = 'saving',
   BadInput = 'bad-input',
 }
-
 const handleMetacardUpdate = ({
   lazyResult,
   attributes,
@@ -169,7 +163,6 @@ const handleMetacardUpdate = ({
     )
   }, 1000)
 }
-
 export const Editor = ({
   attr,
   lazyResult,
@@ -194,7 +187,6 @@ export const Editor = ({
   const attrType = TypedMetacardDefs.getType({ attr })
   const enumForAttr = TypedMetacardDefs.getEnum({ attr: attr })
   const addSnack = useSnack()
-
   return (
     <>
       {goBack && (
@@ -227,7 +219,6 @@ export const Editor = ({
                           values[index] = newValue
                           setValues([...values])
                         }}
-                        // @ts-ignore fullWidth does exist on Autocomplete
                         fullWidth
                         disableClearable
                         size="small"
@@ -394,21 +385,17 @@ export const Editor = ({
             } catch (err) {
               console.error(err)
             }
-
             const attributes = [{ attribute: attr, values: transformedValues }]
-
             const onSuccess = () =>
               setTimeout(() => {
                 addSnack('Successfully updated.')
                 onSave()
               }, 1000)
-
             const onFailure = () =>
               setTimeout(() => {
                 addSnack('Failed to update.', { status: 'error' })
                 onSave()
               }, 1000)
-
             if (ExtensionPoints.handleMetacardUpdate) {
               ExtensionPoints.handleMetacardUpdate({
                 lazyResult,
@@ -442,7 +429,6 @@ export const Editor = ({
     </>
   )
 }
-
 const AttributeComponent = ({
   lazyResult,
   attr,
@@ -467,7 +453,6 @@ const AttributeComponent = ({
   const { isNotWritable } = useCustomReadOnlyCheck()
   const dialogContext = useDialog()
   const convertToFormat = useCoordinateFormat()
-
   const isUrl = (value: any) => {
     if (value && typeof value === 'string') {
       const protocol = value.toLowerCase().split('/')[0]
@@ -475,7 +460,6 @@ const AttributeComponent = ({
     }
     return false
   }
-
   const isFiltered =
     filter !== '' ? !label.toLowerCase().includes(filter.toLowerCase()) : false
   const MemoItem = React.useMemo(() => {
@@ -550,7 +534,7 @@ const AttributeComponent = ({
             <Grid data-id={`${attr}-value`} item>
               {value.map((val: any, index: number) => {
                 return (
-                  <>
+                  <React.Fragment key={index}>
                     {index !== 0 ? (
                       <Divider style={{ margin: '5px 0px' }} />
                     ) : null}
@@ -562,10 +546,8 @@ const AttributeComponent = ({
                               'ext.audio-snippet-mimetype'
                             ]
                           const src = `data:${mimetype};base64,${val}`
-
                           return <audio controls src={src} />
                         }
-
                         switch (TypedMetacardDefs.getType({ attr })) {
                           case 'DATE':
                             return (
@@ -573,7 +555,6 @@ const AttributeComponent = ({
                                 {user.getUserReadableDateTime(val)}
                               </Typography>
                             )
-
                           case 'BINARY':
                             return (
                               <a
@@ -645,7 +626,7 @@ const AttributeComponent = ({
                         }
                       })()}
                     </div>
-                  </>
+                  </React.Fragment>
                 )
               })}
             </Grid>
@@ -658,9 +639,7 @@ const AttributeComponent = ({
     <div style={{ display: isFiltered ? 'none' : 'block' }}>{MemoItem}</div>
   )
 }
-
 let persistantFilter = ''
-
 /* Hidden attributes are simply the opposite of active */
 /* They do not currently exist on the metacard OR are not shown in the summary */
 const getHiddenAttributes = (
@@ -684,12 +663,9 @@ const getHiddenAttributes = (
       })
     })
 }
-
 let globalExpanded = false // globally track if users want this since they may be clicking between results
-
 const Summary = ({ result: selection }: Props) => {
   const theme = useTheme()
-
   const [forceRender, setForceRender] = React.useState(false)
   const [expanded, setExpanded] = React.useState(globalExpanded)
   /* Special case for when all the attributes are displayed */
@@ -697,9 +673,7 @@ const Summary = ({ result: selection }: Props) => {
   const [filter, setFilter] = React.useState(persistantFilter)
   const [summaryShown, setSummaryShown] = React.useState(getSummaryShown())
   useRerenderOnBackboneSync({ lazyResult: selection })
-
   const dialogContext = useDialog()
-
   const { listenTo } = useBackbone()
   React.useEffect(() => {
     listenTo(
@@ -753,7 +727,6 @@ const Summary = ({ result: selection }: Props) => {
           })
       : []
   }, [expanded, summaryShown])
-
   React.useEffect(() => {
     globalExpanded = expanded
   }, [expanded])
@@ -773,7 +746,7 @@ const Summary = ({ result: selection }: Props) => {
           direction="row"
           alignItems="center"
           wrap="nowrap"
-          justify="space-between"
+          justifyContent="space-between"
           className="p-2"
         >
           <Grid item>
@@ -788,7 +761,7 @@ const Summary = ({ result: selection }: Props) => {
                     elevation: Elevations.panels,
                   },
                   open: true,
-                  disableEnforceFocus: true, // otherwise we can't click inside 3rd party libraries using portals (like date picker from blueprint)
+                  disableEnforceFocus: true,
                   children: (
                     <div
                       style={{
@@ -939,5 +912,4 @@ const Summary = ({ result: selection }: Props) => {
     </Grid>
   )
 }
-
 export default hot(module)(Summary)

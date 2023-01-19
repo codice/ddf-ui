@@ -21,9 +21,8 @@ import Popover from '@material-ui/core/Popover'
 import Button from '@material-ui/core/Button'
 import Paper from '@material-ui/core/Paper'
 import { Elevations } from '../theme/theme'
-const _ = require('underscore')
-const $ = require('jquery')
-const CustomElements = require('../../js/CustomElements.js')
+import _ from 'underscore'
+import $ from 'jquery'
 
 const zeroScale = 'matrix(0, 0, 0, 0, 0, 0)'
 const zeroOpacity = '0'
@@ -99,11 +98,7 @@ function findLowestAncestorRight(element: any) {
 }
 
 function findBlockers() {
-  const blockingElements = $(
-    CustomElements.getNamespace() + 'dropdown-companion.is-open'
-  )
-    .add(CustomElements.getNamespace() + 'menu-vertical.is-open')
-    .add('.is-blocker')
+  const blockingElements = $('.is-blocker')
   return _.map(blockingElements, (blockingElement: any) => ({
     boundingRect: blockingElement.getBoundingClientRect(),
     element: blockingElement,
@@ -111,7 +106,7 @@ function findBlockers() {
 }
 
 function isBlocked(element: any, boundingRect: any) {
-  //@ts-ignore
+  // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '(blocker: any) => true | undefin... Remove this comment to see the full error message
   return _.some(findBlockers(), (blocker: any) => {
     if (
       blocker.element !== element &&
@@ -264,6 +259,7 @@ const usePaintHints = ({
   React.useEffect(() => {
     if (showHints && attachElement) {
       let $elementsWithHints = $('[data-help]').not('.is-hidden [data-help]')
+      // @ts-expect-error ts-migrate(2740) FIXME: Type 'HTMLElement[]' is missing the following prop... Remove this comment to see the full error message
       $elementsWithHints = _.shuffle($elementsWithHints)
       startPaintingHints($elementsWithHints, attachElement, setPaintedHints)
     }

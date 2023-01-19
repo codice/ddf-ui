@@ -17,7 +17,7 @@ import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import Button from '@material-ui/core/Button'
 import styled from 'styled-components'
-import LoadingCompanion from '../loading-companion'
+import LinearProgress from '@material-ui/core/LinearProgress'
 
 type Props = {
   onClick: (event: any) => void
@@ -110,8 +110,10 @@ const MetacardHistory = (props: Props) => {
     loading,
     canEdit,
   } = props
-  return (
-    <LoadingCompanion loading={loading}>
+  return loading ? (
+    <LinearProgress className="w-full h-2" />
+  ) : (
+    <>
       <Root>
         <Header>
           <Row>
@@ -132,7 +134,8 @@ have chosen."
             return (
               <Row
                 className={`${
-                  selectedVersion === historyItem.id && 'is-selected'
+                  selectedVersion === historyItem.id &&
+                  ' bg-gray-600 bg-opacity-25'
                 }`}
                 data-id={historyItem.id}
                 key={historyItem.id}
@@ -163,7 +166,7 @@ have chosen."
           </Button>
         )}
       </Root>
-    </LoadingCompanion>
+    </>
   )
 }
 

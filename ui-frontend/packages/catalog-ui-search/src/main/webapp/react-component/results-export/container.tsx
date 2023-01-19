@@ -21,7 +21,8 @@ import { getResultSetCql } from '../utils/cql'
 import saveFile from '../utils/save-file'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 
-const contentDisposition = require('content-disposition')
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
+import contentDisposition from 'content-disposition'
 
 type ExportFormat = {
   id: string
@@ -49,7 +50,7 @@ class ResultsExport extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = {
-      selectedFormat: 'Select an export option',
+      selectedFormat: 'Binary Resource',
       exportFormats: [],
       downloadDisabled: true,
     }
@@ -62,7 +63,7 @@ class ResultsExport extends React.Component<Props, State> {
     ) {
       this.fetchExportOptions()
       this.setState({
-        selectedFormat: 'Select an export option',
+        selectedFormat: 'Binary Resource',
         downloadDisabled: true,
       })
     }

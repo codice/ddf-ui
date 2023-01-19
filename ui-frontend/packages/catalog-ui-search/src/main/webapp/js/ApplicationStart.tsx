@@ -12,34 +12,31 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
-// @ts-ignore ts-migrate(6133) FIXME: '$' is declared but its value is never read.
-const $ = require('jquery')
-import BaseApp from '../component/app/base-app'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-const user = require('../component/singletons/user-instance.js')
+import user from '../component/singletons/user-instance'
 import SourcesInstance from '../component/singletons/sources-instance'
 import MetacardDefinitions from '../component/tabs/metacard/metacardDefinitions'
+import properties from '../js/properties'
 
-export const attemptToStart = () => {
+export const waitForReady: () => Promise<void> = async () => {
+  properties.init()
   if (
     user.fetched &&
     SourcesInstance.fetched &&
-    MetacardDefinitions.typesFetched()
+    MetacardDefinitions.typesFetched() &&
+    properties.fetched
   ) {
-    ReactDOM.render(<BaseApp />, document.querySelector('#router'))
-  } else if (!user.fetched) {
-    user.once('sync', () => {
-      attemptToStart()
-    })
-  } else if (!SourcesInstance.fetched) {
-    SourcesInstance.once('sync', () => {
-      attemptToStart()
-    })
-  } else if (!MetacardDefinitions.typesFetched()) {
-    setTimeout(() => {
-      attemptToStart() // we don't have a sync event to listen to, so this will do
-    }, 250)
+    return
+  } else {
+    await new Promise((resolve) => setTimeout(resolve, 60))
+    return waitForReady()
   }
+}
+
+export const attemptToStart = async () => {
+  await waitForReady()
+  import('../component/app/base-app').then((BaseApp) => {
+    ReactDOM.render(<BaseApp.default />, document.querySelector('#router'))
+  })
 }

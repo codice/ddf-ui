@@ -13,11 +13,10 @@
  *
  **/
 import React from 'react'
-import Grid from '@material-ui/core/Grid/Grid'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
-const TextField = require('../text-field')
-const { Zone, Hemisphere } = require('./common')
+import TextField from '../text-field'
+import { Zone, Hemisphere } from './common'
 
 type UtmUpsPoint = {
   easting: number
@@ -37,10 +36,11 @@ const UtmupsTextfield = ({
 }) => {
   return (
     <div>
-      <Grid container alignItems="center">
-        <Grid item xs={11}>
+      <div className="flex flex-row items-center flex-no-wrap">
+        <div className="flex flex-col space-y-2 flex-no-wrap flex-shrink w-full">
           <TextField
             label="Easting"
+            // @ts-expect-error ts-migrate(2322) FIXME: Type 'number' is not assignable to type 'string | ... Remove this comment to see the full error message
             value={point.easting}
             onChange={(value: number) => {
               setPoint({
@@ -52,6 +52,7 @@ const UtmupsTextfield = ({
           />
           <TextField
             label="Northing"
+            // @ts-expect-error ts-migrate(2322) FIXME: Type 'number' is not assignable to type 'string | ... Remove this comment to see the full error message
             value={point.northing}
             onChange={(value: number) => {
               setPoint({
@@ -79,15 +80,15 @@ const UtmupsTextfield = ({
               })
             }}
           />
-        </Grid>
-        <Grid item xs={1}>
+        </div>
+        <div className="flex-shrink-0 flex-grow-0">
           <IconButton onClick={deletePoint}>
             <CloseIcon />
           </IconButton>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </div>
   )
 }
 
-module.exports = UtmupsTextfield
+export default UtmupsTextfield

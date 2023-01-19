@@ -14,15 +14,16 @@
     "importHelpers": true,
     "declaration": true,
     "strictNullChecks": true,
-    "module": "commonjs",
+    "module": "ESNext",
+    "moduleResolution": "node",
     "outDir": "./dist",
     "skipLibCheck": true,
-    "lib": ["es2015", "dom"],
+    "lib": ["es2019", "dom"],
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "downlevelIteration": true
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "dist", "dev"]
+  "exclude": ["node_modules", "dist", "dev", "target"]
 }

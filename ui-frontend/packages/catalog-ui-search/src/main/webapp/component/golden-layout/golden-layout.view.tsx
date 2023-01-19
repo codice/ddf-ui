@@ -14,52 +14,49 @@
  **/
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-const _ = require('underscore')
-const _merge = require('lodash/merge')
-const _debounce = require('lodash/debounce')
-const $ = require('jquery')
-const wreqr = require('../../js/wreqr.js')
-// @ts-ignore ts-migrate(6133) FIXME: 'template' is declared but its value is never read... Remove this comment to see the full error message
-const template = require('./golden-layout.hbs')
-const Marionette = require('marionette')
-const CustomElements = require('../../js/CustomElements.js')
-const GoldenLayout = require('golden-layout')
-const properties = require('../../js/properties.js')
-const Common = require('../../js/Common.js')
-const user = require('../singletons/user-instance.js')
-const sanitize = require('sanitize-html')
+import _ from 'underscore'
+import _merge from 'lodash/merge'
+import _debounce from 'lodash/debounce'
+import $ from 'jquery'
+import wreqr from '../../js/wreqr'
+import GoldenLayout from 'golden-layout'
+import properties from '../../js/properties'
+import user from '../singletons/user-instance'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'sani... Remove this comment to see the full error message
+import sanitize from 'sanitize-html'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import AllOutIcon from '@material-ui/icons/AllOut'
 import MinimizeIcon from '@material-ui/icons/Minimize'
+import MaximizeIcon from '@material-ui/icons/Add'
 import CloseIcon from '@material-ui/icons/Close'
-import { providers as Providers } from '../../extension-points/providers'
+import ExtensionPoints from '../../extension-points/extension-points'
 import { Visualizations } from '../visualization/visualizations'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import { useListenTo } from '../selection-checkbox/useBackbone.hook'
+import Paper from '@material-ui/core/Paper'
+import { Elevations } from '../theme/theme'
 
-// @ts-ignore ts-migrate(7024) FIXME: Function implicitly has return type 'any' because ... Remove this comment to see the full error message
-const treeMap = (obj: any, fn: any, path = []) => {
+const treeMap = (obj: any, fn: any, path = []): any => {
   if (Array.isArray(obj)) {
-    // @ts-ignore ts-migrate(2769) FIXME: Argument of type 'number' is not assignable to par... Remove this comment to see the full error message
+    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     return obj.map((v, i) => treeMap(v, fn, path.concat(i)))
   }
-
   if (obj !== null && typeof obj === 'object') {
     return (
       Object.keys(obj)
-        // @ts-ignore ts-migrate(2769) FIXME: Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
         .map((k) => [k, treeMap(obj[k], fn, path.concat(k))])
         .reduce((o, [k, v]) => {
-          // @ts-ignore ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           o[k] = v
           return o
         }, {})
     )
   }
-
   return fn(obj, path)
 }
-
-// @ts-ignore ts-migrate(6133) FIXME: 'sanitizeTree' is declared but its value is never ... Remove this comment to see the full error message
+// @ts-expect-error ts-migrate(6133) FIXME: 'sanitizeTree' is declared but its value is never ... Remove this comment to see the full error message
 const sanitizeTree = (tree: any) =>
   treeMap(tree, (obj: any) => {
     if (typeof obj === 'string') {
@@ -70,10 +67,7 @@ const sanitizeTree = (tree: any) =>
     }
     return obj
   })
-
 function getGoldenLayoutSettings() {
-  const fontSize = parseInt(user.get('user').get('preferences').get('fontSize'))
-  const theme = user.get('user').get('preferences').get('theme').getTheme()
   return {
     settings: {
       showPopoutIcon: false,
@@ -83,7 +77,7 @@ function getGoldenLayoutSettings() {
       borderWidth: 8,
       minItemHeight: 50,
       minItemWidth: 50,
-      headerHeight: parseFloat(theme.minimumButtonSize) * fontSize,
+      headerHeight: 44,
       dragProxyWidth: 300,
       dragProxyHeight: 200,
     },
@@ -97,7 +91,96 @@ function getGoldenLayoutSettings() {
     },
   }
 }
-
+const GoldenLayoutComponentHeader = ({
+  viz,
+  tab,
+  options,
+  componentState,
+  container,
+  name,
+}: {
+  viz: any
+  tab: any
+  options: any
+  componentState: any
+  container: any
+  name: any
+}) => {
+  const [width, setWidth] = React.useState(tab.header.element.width())
+  React.useEffect(() => {
+    if (tab) {
+      tab.header.parent.on('resize', () => {
+        setWidth(tab.header.element.width())
+      })
+    }
+  }, [tab])
+  const isMinimized = width <= 100
+  return (
+    <ExtensionPoints.providers>
+      <div
+        data-id={`${name}-tab`}
+        className={`flex flex-row items-center flex-nowrap ${
+          isMinimized ? 'hidden' : ''
+        }`}
+      >
+        <Grid item className="px-2 text-lg">
+          <div>{tab.titleElement.text()}</div>
+        </Grid>
+        <Grid item>
+          {viz.header ? (
+            <viz.header
+              {..._.extend({}, options, componentState, {
+                container,
+              })}
+            />
+          ) : null}
+        </Grid>
+        <Grid item>
+          {tab.closeElement[0].style.display !== 'none' ? (
+            <Button
+              data-id="close-tab-button"
+              onClick={(e) => {
+                tab._onCloseClickFn(e)
+              }}
+            >
+              <CloseIcon />
+            </Button>
+          ) : null}
+        </Grid>
+      </div>
+    </ExtensionPoints.providers>
+  )
+}
+const GoldenLayoutComponent = ({
+  ComponentView,
+  options,
+  container,
+}: {
+  options: any
+  ComponentView: any
+  container: any
+}) => {
+  const [width, setWidth] = React.useState<number>(container.width)
+  React.useEffect(() => {
+    if (container) {
+      container.on('resize', () => {
+        setWidth(container.width)
+      })
+    }
+  }, [container])
+  const isMinimized = width <= 100
+  return (
+    <ExtensionPoints.providers>
+      <Paper
+        elevation={Elevations.panels}
+        className={`w-full h-full ${isMinimized ? 'hidden' : ''}`}
+        square
+      >
+        <ComponentView selectionInterface={options.selectionInterface} />
+      </Paper>
+    </ExtensionPoints.providers>
+  )
+}
 // see https://github.com/deepstreamIO/golden-layout/issues/239 for details on why the setTimeout is necessary
 // The short answer is it mostly has to do with making sure these ComponentViews are able to function normally (set up events, etc.)
 function registerComponent(
@@ -113,24 +196,18 @@ function registerComponent(
     (container: any, componentState: any) => {
       container.on('open', () => {
         setTimeout(() => {
-          const componentView = new ComponentView(
-            _.extend({}, options, componentState, {
-              container,
-            })
+          ReactDOM.render(
+            <GoldenLayoutComponent
+              options={options}
+              ComponentView={ComponentView}
+              container={container}
+            />,
+            container.getElement()[0]
           )
-          container.getElement().append(componentView.el)
-          componentView.render()
           container.on('destroy', () => {
-            componentView.destroy()
+            ReactDOM.unmountComponentAtNode(container.getElement()[0])
           })
         }, 0)
-      })
-      container.on('resize', () => {
-        if (container.width < 100) {
-          container.parent.parent.element.addClass('is-minimized')
-        } else {
-          container.parent.parent.element.removeClass('is-minimized')
-        }
       })
       container.on('tab', (tab: any) => {
         tab.closeElement.off('click').on('click', (event: any) => {
@@ -147,51 +224,14 @@ function registerComponent(
         let intervalId = setInterval(() => {
           try {
             ReactDOM.render(
-              <Providers>
-                <Grid
-                  data-id={`${name}-tab`}
-                  container
-                  direction="row"
-                  wrap="nowrap"
-                >
-                  <Grid item className="px-2">
-                    <div>{tab.titleElement.text()}</div>
-                  </Grid>
-                  <Grid item>
-                    {viz.header ? (
-                      <viz.header
-                        {..._.extend({}, options, componentState, {
-                          container,
-                        })}
-                      />
-                    ) : null}
-                  </Grid>
-                  {/* <Grid item>
-                    <Button
-                      onClick={e => {
-                        tab.contentItem.container.setSize(
-                          10,
-                          tab.contentItem.container.height
-                        )
-                      }}
-                    >
-                      -
-                    </Button>
-                  </Grid> */}
-                  <Grid item>
-                    {tab.closeElement[0].style.display !== 'none' ? (
-                      <Button
-                        data-id="close-tab-button"
-                        onClick={(e) => {
-                          tab._onCloseClickFn(e)
-                        }}
-                      >
-                        <CloseIcon />
-                      </Button>
-                    ) : null}
-                  </Grid>
-                </Grid>
-              </Providers>,
+              <GoldenLayoutComponentHeader
+                viz={viz}
+                tab={tab}
+                options={options}
+                componentState={componentState}
+                container={container}
+                name={name}
+              />,
               tab.element[0]
             )
             clearInterval(intervalId)
@@ -201,18 +241,7 @@ function registerComponent(
     }
   )
 }
-
-function isMaximised(contentItem: any) {
-  if (contentItem.isMaximised) {
-    return true
-  } else if (contentItem.contentItems.length === 0) {
-    return false
-  } else {
-    return _.some(contentItem.contentItems, isMaximised)
-  }
-}
-
-function removeActiveTabInformation(config: any) {
+function removeActiveTabInformation(config: any): any {
   if (config.activeItemIndex !== undefined) {
     config.activeItemIndex = 0
   }
@@ -222,17 +251,14 @@ function removeActiveTabInformation(config: any) {
     return _.forEach(config.content, removeActiveTabInformation)
   }
 }
-
 function removeMaximisedInformation(config: any) {
   delete config.maximisedItemId
 }
-
 function removeEphemeralState(config: any) {
   removeMaximisedInformation(config)
   removeActiveTabInformation(config)
   return config
 }
-
 const FALLBACK_GOLDEN_LAYOUT = [
   {
     type: 'stack',
@@ -250,11 +276,9 @@ const FALLBACK_GOLDEN_LAYOUT = [
     ],
   },
 ]
-
 export const DEFAULT_GOLDEN_LAYOUT_CONTENT = {
-  content: properties.defaultLayout || FALLBACK_GOLDEN_LAYOUT,
+  content: (properties as any).defaultLayout || FALLBACK_GOLDEN_LAYOUT,
 }
-
 export const getStringifiedDefaultLayout = () => {
   try {
     return JSON.stringify(DEFAULT_GOLDEN_LAYOUT_CONTENT)
@@ -263,262 +287,226 @@ export const getStringifiedDefaultLayout = () => {
     return JSON.stringify(FALLBACK_GOLDEN_LAYOUT)
   }
 }
-
-export default Marionette.LayoutView.extend({
-  tagName: CustomElements.register('golden-layout'),
-  template() {
-    return <div className="golden-layout-container w-full h-full" />
-  },
-  className: 'is-minimised h-full w-full',
-  lastConfig: undefined,
-  reconfigureLayout(layout: any) {
-    this.goldenLayout.root.contentItems.forEach((item: any) => {
-      item.remove()
-    })
-    layout.content.forEach((item: any) => {
-      this.goldenLayout.root.addChild(item)
-    })
-  },
-  updateFontSize() {
-    const goldenLayoutSettings = getGoldenLayoutSettings()
-    this.goldenLayout.config.dimensions.borderWidth =
-      goldenLayoutSettings.dimensions.borderWidth
-    this.goldenLayout.config.dimensions.minItemHeight =
-      goldenLayoutSettings.dimensions.minItemHeight
-    this.goldenLayout.config.dimensions.minItemWidth =
-      goldenLayoutSettings.dimensions.minItemWidth
-    this.goldenLayout.config.dimensions.headerHeight =
-      goldenLayoutSettings.dimensions.headerHeight
-    Common.repaintForTimeframe(2000, () => {
-      this.goldenLayout.updateSize()
-    })
-  },
-  updateSize() {
-    if (this.isDestroyed) {
-      return
+type GoldenLayoutViewProps = {
+  layoutResult?: LazyQueryResult['plain']
+  editLayoutRef?: React.MutableRefObject<any>
+  configName?: string
+  selectionInterface: any
+  setGoldenLayout: (instance: any) => void
+}
+function getGoldenLayoutConfig({
+  layoutResult,
+  editLayoutRef,
+  configName,
+}: GoldenLayoutViewProps) {
+  let currentConfig = undefined
+  if (layoutResult) {
+    try {
+      currentConfig = JSON.parse(layoutResult.metacard.properties.layout)
+    } catch (err) {
+      console.warn('issue parsing a saved layout, falling back to default')
     }
-    this.goldenLayout.updateSize()
-  },
-  listenToGoldenLayoutStateChange() {
-    this.goldenLayout.on(
-      'stateChanged',
-      _.debounce(this.handleGoldenLayoutStateChange.bind(this), 200)
+  } else if (editLayoutRef) {
+    currentConfig = editLayoutRef.current
+  } else {
+    currentConfig = user.get('user').get('preferences').get(configName)
+  }
+  if (currentConfig === undefined) {
+    currentConfig = DEFAULT_GOLDEN_LAYOUT_CONTENT
+  }
+  _merge(currentConfig, getGoldenLayoutSettings())
+  return currentConfig
+}
+function registerGoldenLayoutComponents({
+  goldenLayout,
+  options,
+}: {
+  goldenLayout: any
+  options: GoldenLayoutViewProps
+}) {
+  Visualizations.forEach((viz) => {
+    try {
+      registerComponent(
+        { goldenLayout, options },
+        viz.id,
+        viz.view,
+        viz.options,
+        viz
+      )
+    } catch (err) {
+      // likely already registered, in dev
+    }
+  })
+}
+export function getInstanceConfig({ goldenLayout }: { goldenLayout: any }) {
+  const currentConfig = goldenLayout.toConfig()
+  return removeEphemeralState(currentConfig)
+}
+function handleGoldenLayoutStateChange({
+  options,
+  goldenLayout,
+  lastConfig,
+}: {
+  goldenLayout: any
+  options: GoldenLayoutViewProps
+  lastConfig: React.MutableRefObject<any>
+}) {
+  if (lastConfig.current === null) {
+    // this triggers on init of golden layout
+    lastConfig.current = getInstanceConfig({ goldenLayout })
+    return
+  }
+  ;(wreqr as any).vent.trigger('resize') // do we need this?
+  if (
+    _.isEqual(
+      removeEphemeralState(lastConfig.current),
+      removeEphemeralState(getInstanceConfig({ goldenLayout }))
     )
-  },
-  showGoldenLayout() {
-    this.goldenLayout = new GoldenLayout(
-      this.getGoldenLayoutConfig(),
-      this.el.querySelector('.golden-layout-container')
-    )
-    this.registerGoldenLayoutComponents()
-    this.listenToGoldenLayoutStateChange()
-    this.goldenLayout.on('stackCreated', this.handleGoldenLayoutStackCreated)
-    this.goldenLayout.on(
-      'initialised',
-      this.handleGoldenLayoutInitialised.bind(this)
-    )
-
-    this.goldenLayout.init()
-  },
-  getGoldenLayoutConfig() {
-    let currentConfig = undefined
-    if (this.options.layoutResult) {
-      try {
-        currentConfig = JSON.parse(
-          this.options.layoutResult.metacard.properties.layout
-        )
-      } catch (err) {
-        console.warn('issue parsing a saved layout, falling back to default')
+  ) {
+    return
+  }
+  lastConfig.current = getInstanceConfig({ goldenLayout })
+  /**
+   * If we have this option, then we're editing a layout in the layout editor.
+   * Otherwise, we're using a layout (or possibly custom) and need to take a change as indication of moving to custom.
+   */
+  if (options.editLayoutRef) {
+    options.editLayoutRef.current = getInstanceConfig({ goldenLayout })
+  } else {
+    // can technically do detections of max or empty here
+    //https://github.com/deepstreamIO/golden-layout/issues/253
+    if (goldenLayout.isInitialised) {
+      const currentConfig = goldenLayout.toConfig()
+      removeEphemeralState(currentConfig)
+      user.get('user').get('preferences').set(options.configName, currentConfig)
+      ;(wreqr as any).vent.trigger('resize')
+      //do not add a window resize event, that will cause an endless loop.  If you need something like that, listen to the wreqr resize event.
+    }
+    user.get('user').get('preferences').set(
+      {
+        layoutId: 'custom',
+      },
+      {
+        internal: true,
       }
-    } else if (this.options.editLayoutRef) {
-      currentConfig = this.options.editLayoutRef.current
-    } else {
-      currentConfig = user
-        .get('user')
-        .get('preferences')
-        .get(this.options.configName)
-    }
-    if (currentConfig === undefined) {
-      currentConfig = DEFAULT_GOLDEN_LAYOUT_CONTENT
-    }
-    _merge(currentConfig, getGoldenLayoutSettings())
-    return currentConfig
-  },
-  registerGoldenLayoutComponents() {
-    Visualizations.forEach((viz) => {
-      registerComponent(this, viz.id, viz.view, viz.options, viz)
-    })
-  },
-  detectIfGoldenLayoutMaximised() {
-    this.$el.toggleClass('is-maximised', isMaximised(this.goldenLayout.root))
-  },
-  detectIfGoldenLayoutEmpty() {
-    this.$el.toggleClass(
-      'is-empty',
-      this.goldenLayout.root.contentItems.length === 0
     )
-  },
-  handleGoldenLayoutInitialised() {
-    this.detectIfGoldenLayoutMaximised()
-    this.detectIfGoldenLayoutEmpty()
-  },
-  handleGoldenLayoutStackCreated(stack: any) {
-    stack.header.controlsContainer
-      .find('.lm_close')
-      .off('click')
-      // @ts-ignore ts-migrate(6133) FIXME: 'event' is declared but its value is never read.
-      .on('click', (event: any) => {
-        if (stack.isMaximised) {
-          stack.toggleMaximise()
-        }
-        stack.remove()
+  }
+}
+/**
+ *  Replace the toolbar with our own
+ */
+function handleGoldenLayoutStackCreated(stack: any) {
+  let intervalId = setInterval(() => {
+    try {
+      ReactDOM.render(
+        <GoldenLayoutToolbar stack={stack} />,
+        stack.header.controlsContainer[0]
+      )
+      clearInterval(intervalId)
+    } catch (err) {}
+  }, 100)
+}
+const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
+  const [width, setWidth] = React.useState<number>(stack.header.element.width())
+  React.useEffect(() => {
+    if (stack) {
+      stack.on('resize', () => {
+        setWidth(stack.header.element.width())
       })
-    // const root = document.createElement('div')
-    // tab.element.append(root)
-    let intervalId = setInterval(() => {
-      try {
-        ReactDOM.render(
-          <Providers>
-            <Grid container direction="row" wrap="nowrap">
-              <Grid item>
-                <Button
-                  data-id="maximise-tab-button"
-                  // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-                  onClick={(e) => {
-                    const prevWidth = stack.config.prevWidth || 500
-                    const prevHeight = stack.config.prevHeight || 500
-                    stack.contentItems[0].container.setSize(
-                      prevWidth,
-                      prevHeight
-                    )
-                  }}
-                >
-                  +
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button
-                  data-id="minimise-layout-button"
-                  // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-                  onClick={(e) => {
-                    stack.config.prevWidth = stack.getActiveContentItem().container.width
-                    stack.config.prevHeight = stack.getActiveContentItem().container.height
-                    stack.contentItems[0].container.setSize(10, 45)
-                  }}
-                >
-                  <MinimizeIcon />
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button
-                  data-id="maximise-layout-button"
-                  // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-                  onClick={(e) => {
-                    stack.toggleMaximise()
-                  }}
-                >
-                  <AllOutIcon />
-                </Button>
-              </Grid>
-              <Grid item>
-                {stack.header._isClosable() ? (
-                  <Button
-                    data-id="close-layout-button"
-                    // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-                    onClick={(e) => {
-                      if (stack.isMaximised) {
-                        stack.toggleMaximise()
-                      }
-                      stack.remove()
-                    }}
-                  >
-                    <CloseIcon />
-                  </Button>
-                ) : null}
-              </Grid>
+    }
+  }, [stack])
+  const isMinimized = width <= 100
+  return (
+    <ExtensionPoints.providers>
+      <Grid container direction="row" wrap="nowrap">
+        {isMinimized ? (
+          <>
+            {' '}
+            <Grid item>
+              <Button
+                data-id="maximise-tab-button"
+                onClick={() => {
+                  const prevWidth = stack.config.prevWidth || 500
+                  const prevHeight = stack.config.prevHeight || 500
+                  stack.contentItems[0].container.setSize(prevWidth, prevHeight)
+                }}
+              >
+                <MaximizeIcon />
+              </Button>
             </Grid>
-          </Providers>,
-          stack.header.controlsContainer[0]
-        )
-        clearInterval(intervalId)
-      } catch (err) {}
-    }, 100)
-  },
-  // @ts-ignore ts-migrate(6133) FIXME: 'event' is declared but its value is never read.
-  handleGoldenLayoutStateChange(event: any) {
-    if (this.isDestroyed) {
-      return
+          </>
+        ) : (
+          <>
+            <Grid item>
+              <Button
+                data-id="minimise-layout-button"
+                onClick={() => {
+                  stack.config.prevWidth = stack.getActiveContentItem().container.width
+                  stack.config.prevHeight = stack.getActiveContentItem().container.height
+                  stack.contentItems[0].container.setSize(10, 45)
+                }}
+              >
+                <MinimizeIcon />
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button
+                data-id="maximise-layout-button"
+                onClick={() => {
+                  stack.toggleMaximise()
+                }}
+              >
+                <AllOutIcon />
+              </Button>
+            </Grid>
+            <Grid item>
+              {stack.header._isClosable() ? (
+                <Button
+                  data-id="close-layout-button"
+                  onClick={() => {
+                    if (stack.isMaximised) {
+                      stack.toggleMaximise()
+                    }
+                    stack.remove()
+                  }}
+                >
+                  <CloseIcon />
+                </Button>
+              ) : null}
+            </Grid>
+          </>
+        )}
+      </Grid>
+    </ExtensionPoints.providers>
+  )
+}
+export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
+  const [
+    goldenLayoutAttachElement,
+    setGoldenLayoutAttachElement,
+  ] = React.useState<HTMLDivElement | null>(null)
+  const [goldenLayout, setGoldenLayout] = React.useState<any>(null)
+  const lastConfig = React.useRef<any>(null)
+  useListenTo((wreqr as any).vent, 'gl-updateSize', () => {
+    goldenLayout.updateSize()
+  })
+  React.useEffect(() => {
+    if (goldenLayout) {
+      options.setGoldenLayout(goldenLayout)
     }
-    if (this.lastConfig === undefined) {
-      // this triggers on init of golden layout
-      this.lastConfig = this.getInstanceConfig()
-      return
-    }
-    wreqr.vent.trigger('resize') // do we need this?
-    if (
-      _.isEqual(
-        removeEphemeralState(this.lastConfig),
-        removeEphemeralState(this.getInstanceConfig())
-      )
-    ) {
-      return
-    }
-    this.lastConfig = this.getInstanceConfig()
-
-    /**
-     * If we have this option, then we're editing a layout in the layout editor.
-     * Otherwise, we're using a layout (or possibly custom) and need to take a change as indication of moving to custom.
-     */
-    if (this.options.editLayoutRef) {
-      this.options.editLayoutRef.current = this.getInstanceConfig()
-    } else {
-      this.detectIfGoldenLayoutMaximised()
-      this.detectIfGoldenLayoutEmpty()
-      //https://github.com/deepstreamIO/golden-layout/issues/253
-      if (this.goldenLayout.isInitialised) {
-        const currentConfig = this.goldenLayout.toConfig()
-        removeEphemeralState(currentConfig)
-        user
-          .get('user')
-          .get('preferences')
-          .set(this.options.configName, currentConfig)
-        wreqr.vent.trigger('resize')
-        //do not add a window resize event, that will cause an endless loop.  If you need something like that, listen to the wreqr resize event.
+    return () => {
+      if (goldenLayout) {
+        goldenLayout.destroy()
       }
-      user.get('user').get('preferences').set(
-        {
-          layoutId: 'custom',
-        },
-        {
-          internal: true,
-        }
-      )
     }
-  },
-  setupListeners() {
-    this.listenTo(
-      user.get('user').get('preferences'),
-      'change:theme',
-      this.updateFontSize
-    )
-    this.listenTo(
-      user.get('user').get('preferences'),
-      'change:fontSize',
-      this.updateFontSize
-    )
-    this.listenForResize()
-  },
-  onFirstRender() {
-    this.showGoldenLayout()
-    this.setupListeners()
-  },
-  listenForResize() {
+  }, [goldenLayout])
+  React.useEffect(() => {
+    const randomString = Math.random().toString()
     $(window).on(
-      'resize.' + this.cid,
+      'resize.' + randomString,
       _debounce(
-        // @ts-ignore ts-migrate(6133) FIXME: 'event' is declared but its value is never read.
-        (event: any) => {
-          this.updateSize()
+        () => {
+          goldenLayout.updateSize()
         },
         100,
         {
@@ -527,22 +515,54 @@ export default Marionette.LayoutView.extend({
         }
       )
     )
-    this.listenTo(wreqr.vent, 'gl-updateSize', () => {
-      this.updateSize()
-    })
-  },
-  stopListeningForResize() {
-    $(window).off('resize.' + this.cid)
-    this.stopListening(wreqr.vent)
-  },
-  getInstanceConfig() {
-    const currentConfig = this.goldenLayout.toConfig()
-    return removeEphemeralState(currentConfig)
-  },
-  onDestroy() {
-    this.stopListeningForResize()
-    if (this.goldenLayout) {
-      this.goldenLayout.destroy()
+    return () => {
+      $(window).off('resize.' + randomString)
     }
-  },
-})
+  }, [goldenLayout])
+  React.useEffect(() => {
+    if (goldenLayoutAttachElement) {
+      setGoldenLayout(
+        new GoldenLayout(
+          getGoldenLayoutConfig(options),
+          goldenLayoutAttachElement
+        )
+      )
+    }
+  }, [goldenLayoutAttachElement])
+  React.useEffect(() => {
+    if (goldenLayout) {
+      registerGoldenLayoutComponents({
+        goldenLayout,
+        options,
+      })
+      goldenLayout.on(
+        'stateChanged',
+        _.debounce(() => {
+          handleGoldenLayoutStateChange({
+            options,
+            goldenLayout,
+            lastConfig,
+          })
+        }, 200)
+      )
+      goldenLayout.on('stackCreated', handleGoldenLayoutStackCreated)
+      goldenLayout.on('initialised', () => {
+        // can do empty and max detections here
+      })
+      goldenLayout.init()
+      return () => {
+        goldenLayout.off('stateChanged')
+        goldenLayout.off('stackCreated')
+      }
+    }
+    return () => {}
+  }, [goldenLayout])
+  return (
+    <div data-element="golden-layout" className="is-minimised h-full w-full">
+      <div
+        ref={setGoldenLayoutAttachElement}
+        className="golden-layout-container w-full h-full"
+      />
+    </div>
+  )
+}

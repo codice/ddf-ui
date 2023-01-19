@@ -8,8 +8,6 @@ import Paging from './paging'
 import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
 import FilterListIcon from '@material-ui/icons/FilterList'
-// @ts-ignore ts-migrate(6133) FIXME: 'SortIcon' is declared but its value is never read... Remove this comment to see the full error message
-import SortIcon from '@material-ui/icons/Sort'
 import ResultFilter from '../result-filter/result-filter'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import EphemeralSearchSort from '../../react-component/query-sort-selection/ephemeral-search-sort'
@@ -18,14 +16,13 @@ import {
   useLazyResultsSelectedResultsFromSelectionInterface,
 } from '../selection-interface/hooks'
 
-// @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../.... Remove this comment to see the full error message
 import VisualizationSelector from '../../react-component/visualization-selector/visualization-selector'
 import ViewCompactIcon from '@material-ui/icons/ViewCompact'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
-const user = require('../singletons/user-instance.js')
+import user from '../singletons/user-instance'
 import MoreIcon from '@material-ui/icons/MoreVert'
 
-import LazyMetacardInteractions from '../results-visual/lazy-metacard-interactions'
+import LazyMetacardInteractions from '../visualization/results-visual/lazy-metacard-interactions'
 import { Elevations } from '../theme/theme'
 import useTheme from '@material-ui/core/styles/useTheme'
 import SelectionRipple from '../golden-layout/selection-ripple'
@@ -86,7 +83,7 @@ const determineHasResultSort = () => {
 type Props = {
   selectionInterface: any
   model: any
-  goldenLayoutViewInstance: any
+  goldenLayout: any
   layoutResult?: ResultType
   editLayoutRef?: any
 }
@@ -94,7 +91,7 @@ type Props = {
 const ResultSelector = ({
   selectionInterface,
   model,
-  goldenLayoutViewInstance,
+  goldenLayout,
   layoutResult,
   editLayoutRef,
 }: Props) => {
@@ -118,7 +115,7 @@ const ResultSelector = ({
   }, [])
   const theme = useTheme()
   const LayoutDropdown = Extensions.layoutDropdown({
-    goldenLayout: goldenLayoutViewInstance,
+    goldenLayout,
     layoutResult,
     editLayoutRef,
   })
@@ -127,7 +124,12 @@ const ResultSelector = ({
   const layoutMenuState = useMenuState()
   return (
     <React.Fragment>
-      <Grid container alignItems="center" justify="flex-start" direction="row">
+      <Grid
+        container
+        alignItems="center"
+        justifyContent="flex-start"
+        direction="row"
+      >
         {isSearching ? (
           <LinearProgress
             variant="query"
@@ -211,7 +213,7 @@ const ResultSelector = ({
               {LayoutDropdown || (
                 <VisualizationSelector
                   onClose={layoutMenuState.handleClose}
-                  goldenLayout={goldenLayoutViewInstance.goldenLayout}
+                  goldenLayout={goldenLayout}
                 />
               )}
             </Paper>

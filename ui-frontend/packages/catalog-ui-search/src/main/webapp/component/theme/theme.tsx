@@ -1,27 +1,19 @@
 import * as React from 'react'
 import {
-  createMuiTheme,
+  createTheme,
   MuiThemeProvider as ThemeProvider,
   darken,
-  // @ts-ignore ts-migrate(6133) FIXME: 'getContrastRatio' is declared but its value is ne... Remove this comment to see the full error message
+  // @ts-expect-error ts-migrate(6133) FIXME: 'getContrastRatio' is declared but its value is ne... Remove this comment to see the full error message
   getContrastRatio,
   Theme as ThemeInterface,
   createStyles,
   lighten,
   StylesProvider,
-  fade,
+  alpha,
 } from '@material-ui/core/styles'
 import { ThemeContext } from 'styled-components'
 import { createGlobalStyle } from 'styled-components'
-import {
-  // @ts-ignore ts-migrate(6133) FIXME: 'polishedLighten' is declared but its value is nev... Remove this comment to see the full error message
-  lighten as polishedLighten,
-  meetsContrastGuidelines,
-  // @ts-ignore ts-migrate(6133) FIXME: 'mix' is declared but its value is never read.
-  mix,
-  // @ts-ignore ts-migrate(6133) FIXME: 'rgba' is declared but its value is never read.
-  rgba,
-} from 'polished'
+import { meetsContrastGuidelines } from 'polished'
 import { useRemoveFocusStyle } from '../app/blueprint.adjust'
 
 type Theme = {
@@ -111,11 +103,15 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
           margin-left: 8px;
         }
       }
+      .lm_goldenlayout, .lm_content {
+        background: inherit;
+      }
       .lm_splitter  {
-        background: ${(props) =>
-          props.palette.type === 'dark'
-            ? dark.background
-            : light.background} !important;
+        background: ${(props) => props.palette.background.default};
+        opacity: 1;
+      }
+      .lm_splitter:hover  {
+        background: ${(props) => props.palette.primary.main} !important;
       }
       .lm_stack{
         box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
@@ -160,6 +156,9 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
         border: 1px solid fade(@contrastColor, 10%);
         margin-right: 8px !important;
         box-shadow: none !important;
+        padding: 0px !important;
+        height: 44px !important;
+        minWidth: 44px !important;
       }
       .lm_tabs .lm_tab:hover {
         color: ${(props) => props.palette.text.primary} !important;
@@ -403,7 +402,10 @@ export const Provider = ({ children }: { children: any }) => {
   const darkMode = styledTheme.theme === 'dark'
   const paperColor = darkMode ? dark.paper : light.paper
   const backgroundColor = darkMode ? dark.background : light.background
-  const customPalette = styledTheme.palette === 'custom'
+  const customPalette =
+    styledTheme.palette === 'custom' &&
+    styledTheme.primary &&
+    styledTheme.secondary
   const primaryMain = customPalette
     ? styledTheme.primary
     : darkMode
@@ -429,7 +431,7 @@ export const Provider = ({ children }: { children: any }) => {
     ? lightenUntilContrasting(secondaryMain, paperColor)
     : darkenUntilContrasting(secondaryMain, paperColor)
 
-  const theme = createMuiTheme({
+  const theme = createTheme({
     palette: {
       type: darkMode ? 'dark' : 'light',
       primary: {
@@ -470,7 +472,7 @@ export const Provider = ({ children }: { children: any }) => {
               textPrimary: {
                 color: failedContrastPrimaryReplacement,
                 '&:hover': {
-                  backgroundColor: fade(failedContrastPrimaryReplacement, 0.1),
+                  backgroundColor: alpha(failedContrastPrimaryReplacement, 0.1),
                   // Reset on touch devices, it doesn't add specificity
                   '@media (hover: none)': {
                     backgroundColor: 'transparent',
@@ -484,7 +486,7 @@ export const Provider = ({ children }: { children: any }) => {
               textSecondary: {
                 color: failedContrastSecondaryReplacement,
                 '&:hover': {
-                  backgroundColor: fade(
+                  backgroundColor: alpha(
                     failedContrastSecondaryReplacement,
                     0.1
                   ),
@@ -526,8 +528,10 @@ export const Provider = ({ children }: { children: any }) => {
     const htmlElement = document.querySelector('html') as HTMLElement
     if (styledTheme.theme === 'dark') {
       htmlElement.classList.add('bp3-dark')
+      htmlElement.classList.add('theme-dark')
     } else {
       htmlElement.classList.remove('bp3-dark')
+      htmlElement.classList.remove('theme-dark')
     }
   }, [styledTheme.theme])
   useRemoveFocusStyle()

@@ -3,8 +3,7 @@ import { hot } from 'react-hot-loader'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
 import { TimeFormat } from './types'
-
-const Common = require('../../js/Common')
+import Common from '../../js/Common'
 
 type Props = {
   timeFormat: string

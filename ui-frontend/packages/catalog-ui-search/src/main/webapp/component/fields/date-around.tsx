@@ -23,7 +23,7 @@ import { NumberField } from './number'
 import TextField from '@material-ui/core/TextField/TextField'
 import MenuItem from '@material-ui/core/MenuItem/MenuItem'
 
-const user = require('../singletons/user-instance.js')
+import user from '../singletons/user-instance'
 
 type DateAroundProps = {
   value: ValueTypes['around']

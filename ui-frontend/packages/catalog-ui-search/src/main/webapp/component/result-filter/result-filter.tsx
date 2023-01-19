@@ -23,7 +23,7 @@ import {
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import { FilterTextFieldIdentifier } from '../fields/text'
-const user = require('../singletons/user-instance.js')
+import user from '../singletons/user-instance'
 
 const getResultFilter = () => {
   return user.get('user').get('preferences').get('resultFilter')

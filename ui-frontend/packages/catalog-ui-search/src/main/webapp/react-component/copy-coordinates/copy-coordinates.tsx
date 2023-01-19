@@ -18,8 +18,10 @@ import Button from '@material-ui/core/Button'
 import { useMenuState } from '../../component/menu-state/menu-state'
 import Popover from '@material-ui/core/Popover'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-const Clipboard = require('clipboard')
-const announcement = require('component/announcement')
+import useSnack from '../../component/hooks/useSnack'
+import { AddSnack } from '../../component/snack/snack.provider'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'clip... Remove this comment to see the full error message
+import Clipboard from 'clipboard'
 
 type Props = {
   coordinateValues: {
@@ -32,7 +34,15 @@ type Props = {
   closeParent: () => void
 }
 
-const generateClipboardHandler = (text: string, closeParent: () => void) => {
+const generateClipboardHandler = ({
+  text,
+  closeParent,
+  addSnack,
+}: {
+  text: string
+  closeParent: () => void
+  addSnack: AddSnack
+}) => {
   return (e: React.MouseEvent) => {
     const clipboardInstance = new Clipboard(e.target, {
       text: () => {
@@ -40,17 +50,17 @@ const generateClipboardHandler = (text: string, closeParent: () => void) => {
       },
     })
     clipboardInstance.on('success', (e: any) => {
-      announcement.announce({
-        title: 'Copied to clipboard',
-        message: e.text,
-        type: 'success',
+      addSnack('Copied to clipboard: ' + e.text, {
+        alertProps: {
+          severity: 'success',
+        },
       })
     })
     clipboardInstance.on('error', (e: any) => {
-      announcement.announce({
-        title: 'Press Ctrl+C to copy',
-        message: e.text,
-        type: 'info',
+      addSnack('Press Ctrl+C to copy: ' + e.text, {
+        alertProps: {
+          severity: 'info',
+        },
       })
     })
     clipboardInstance.onClick(e)
@@ -63,6 +73,7 @@ const render = (props: Props) => {
   const { dms, lat, lon, mgrs, utmUps } = props.coordinateValues
   const { closeParent } = props
   const menuState = useMenuState()
+  const addSnack = useSnack()
   return (
     <>
       <Button
@@ -76,7 +87,11 @@ const render = (props: Props) => {
         <div className="flex flex-col">
           <Button
             data-help="Copies the coordinates to your clipboard."
-            onClick={generateClipboardHandler(`${lat} ${lon}`, closeParent)}
+            onClick={generateClipboardHandler({
+              text: `${lat} ${lon}`,
+              closeParent,
+              addSnack,
+            })}
           >
             <div>
               <div className="opacity-75">Decimal Degrees (DD)</div>
@@ -85,7 +100,11 @@ const render = (props: Props) => {
           </Button>
           <Button
             data-help="Copies the DMS coordinates to your clipboard."
-            onClick={generateClipboardHandler(dms, closeParent)}
+            onClick={generateClipboardHandler({
+              text: dms,
+              closeParent,
+              addSnack,
+            })}
           >
             <div>
               <div className="opacity-75">Degrees Minutes Seconds (DMS)</div>
@@ -95,7 +114,11 @@ const render = (props: Props) => {
           {mgrs ? (
             <Button
               data-help="Copies the MGRS coordinates to your clipboard."
-              onClick={generateClipboardHandler(mgrs, closeParent)}
+              onClick={generateClipboardHandler({
+                text: mgrs,
+                closeParent,
+                addSnack,
+              })}
             >
               <div>
                 <div className="opacity-75">MGRS</div>
@@ -105,7 +128,11 @@ const render = (props: Props) => {
           ) : null}
           <Button
             data-help="Copies the UTM/UPS coordinates to your clipboard."
-            onClick={generateClipboardHandler(utmUps, closeParent)}
+            onClick={generateClipboardHandler({
+              text: utmUps,
+              closeParent,
+              addSnack,
+            })}
           >
             <div>
               <div className="opacity-75">UTM/UPS</div>
@@ -114,10 +141,11 @@ const render = (props: Props) => {
           </Button>
           <Button
             data-help="Copies the WKT of the coordinates to your clipboard."
-            onClick={generateClipboardHandler(
-              `POINT (${lon} ${lat})`,
-              closeParent
-            )}
+            onClick={generateClipboardHandler({
+              text: `POINT (${lon} ${lat})`,
+              closeParent,
+              addSnack,
+            })}
           >
             <div>
               <div className="opacity-75">Well Known (WKT)</div>

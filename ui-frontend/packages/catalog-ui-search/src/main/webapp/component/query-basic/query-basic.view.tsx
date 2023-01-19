@@ -14,17 +14,16 @@
  **/
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-const _ = require('underscore')
+import _ from 'underscore'
 import IconHelper from '../../js/IconHelper'
-const properties = require('../../js/properties.js')
+import properties from '../../js/properties'
 import cql from '../../js/cql'
-const metacardDefinitions = require('../singletons/metacard-definitions.js')
-const CQLUtils = require('../../js/CQLUtils.js')
+import metacardDefinitions from '../singletons/metacard-definitions'
+import CQLUtils from '../../js/CQLUtils'
 import QuerySettings from '../query-settings/query-settings'
 import QueryTimeReactView, {
   BasicFilterClass,
 } from '../query-time/query-time.view'
-
 const METADATA_CONTENT_TYPE = 'metadata-content-type'
 import TextField from '@material-ui/core/TextField'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
@@ -43,7 +42,6 @@ import Chip from '@material-ui/core/Chip'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 import BooleanSearchBar from '../boolean-search-bar/boolean-search-bar'
-
 function isNested(filter: any) {
   let nested = false
   filter.filters.forEach((subfilter: any) => {
@@ -51,13 +49,13 @@ function isNested(filter: any) {
   })
   return nested
 }
-
 function getMatchTypeAttribute() {
-  return metacardDefinitions.metacardTypes[properties.basicSearchMatchType]
-    ? properties.basicSearchMatchType
+  return metacardDefinitions.metacardTypes[
+    (properties as any).basicSearchMatchType
+  ]
+    ? (properties as any).basicSearchMatchType
     : 'datatype'
 }
-
 function getAllValidValuesForMatchTypeAttribute(): {
   [key: string]: {
     label: string
@@ -76,16 +74,24 @@ function getAllValidValuesForMatchTypeAttribute(): {
           }
           return blob
         },
-        {} as { [key: string]: { label: string; value: string; class: string } }
+        {} as {
+          [key: string]: {
+            label: string
+            value: string
+            class: string
+          }
+        }
       )
     : {}
 }
-
 const determinePropertiesToApplyTo = ({
   value,
 }: {
   value: PropertyValueMapType['anyType']['properties']
-}): Array<{ label: string; value: string }> => {
+}): Array<{
+  label: string
+  value: string
+}> => {
   return value.map((property) => {
     return {
       label: TypedMetacardDefs.getAlias({ attr: property }),
@@ -93,7 +99,6 @@ const determinePropertiesToApplyTo = ({
     }
   })
 }
-
 function isTypeLimiter(filter: any) {
   const typesFound = _.uniq(filter.filters.map(CQLUtils.getProperty))
   const metadataContentTypeSupported = Boolean(
@@ -109,12 +114,10 @@ function isTypeLimiter(filter: any) {
     return typesFound.length === 1 && typesFound[0] === getMatchTypeAttribute()
   }
 }
-
 // strip extra quotes
 const stripQuotes = (property = 'anyText') => {
   return property?.replace(/^"(.+(?="$))"$/, '$1')
 }
-
 function isAnyDate(filter: any) {
   if (!filter.filters) {
     return (
@@ -142,7 +145,6 @@ function isAnyDate(filter: any) {
     )
   }
 }
-
 function handleAnyDateFilter(propertyValueMap: any, filter: any) {
   propertyValueMap['anyDate'] = propertyValueMap['anyDate'] || []
   let existingFilter = propertyValueMap['anyDate'].filter(
@@ -163,13 +165,11 @@ function handleAnyDateFilter(propertyValueMap: any, filter: any) {
   )
   existingFilter.type = filter.filters ? filter.filters[0].type : filter.type
   existingFilter.value = filter.filters ? filter.filters[0].value : filter.value
-
   if (existingFilter.type === 'DURING') {
     existingFilter.from = filter.filters ? filter.filters[0].from : filter.from
     existingFilter.to = filter.filters ? filter.filters[0].to : filter.to
   }
 }
-
 type PropertyValueMapType = {
   anyText: Array<FilterClass>
   anyDate: Array<BasicFilterClass>
@@ -180,7 +180,6 @@ type PropertyValueMapType = {
   }
   [key: string]: any
 }
-
 export function downgradeFilterTreeToBasic(
   filter: FilterBuilderClass
 ): FilterBuilderClass {
@@ -188,7 +187,6 @@ export function downgradeFilterTreeToBasic(
     basicFilter: translateFilterToBasicMap(filter).propertyValueMap,
   })
 }
-
 function translateFilterToBasicMap(filter: FilterBuilderClass) {
   const propertyValueMap = {
     anyDate: [],
@@ -200,11 +198,9 @@ function translateFilterToBasicMap(filter: FilterBuilderClass) {
     },
   } as PropertyValueMapType
   let downConversion = false
-
   if (!filter.filters && isAnyDate(filter)) {
     handleAnyDateFilter(propertyValueMap, filter)
   }
-
   if (filter.filters) {
     filter.filters.forEach((filter: any) => {
       if (!filter.filters && isAnyDate(filter)) {
@@ -244,7 +240,6 @@ function translateFilterToBasicMap(filter: FilterBuilderClass) {
       propertyValueMap[CQLUtils.getProperty(filter)] || []
     propertyValueMap[CQLUtils.getProperty(filter)].push(filter)
   }
-
   if (propertyValueMap.anyText.length === 0) {
     propertyValueMap.anyText.push(
       new FilterClass({
@@ -269,18 +264,15 @@ function translateFilterToBasicMap(filter: FilterBuilderClass) {
     downConversion: boolean
   }
 }
-
 function getFilterTree(model: any): FilterBuilderClass {
   if (typeof model.get('filterTree') === 'object') {
     return model.get('filterTree')
   }
   return cql.simplify(cql.read(model.get('cql')))
 }
-
 type QueryBasicProps = {
   model: any
 }
-
 const constructFilterFromBasicFilter = ({
   basicFilter,
 }: {
@@ -290,7 +282,6 @@ const constructFilterFromBasicFilter = ({
   if (basicFilter.anyText[0].value !== '') {
     filters.push(basicFilter.anyText[0])
   }
-
   if (basicFilter.anyDate[0] !== undefined) {
     filters.push(
       new FilterBuilderClass({
@@ -312,11 +303,9 @@ const constructFilterFromBasicFilter = ({
       })
     )
   }
-
   if (basicFilter.anyGeo[0] !== undefined) {
     filters.push(basicFilter.anyGeo[0])
   }
-
   if (basicFilter.anyType.on && basicFilter.anyType.properties.length > 0) {
     filters.push(
       new FilterBuilderClass({
@@ -351,13 +340,11 @@ const constructFilterFromBasicFilter = ({
       })
     )
   }
-
   return new FilterBuilderClass({
     type: 'AND',
     filters,
   })
 }
-
 /**
  * We want to reset the basic filter whenever the filter tree changes on the model.
  *
@@ -368,7 +355,6 @@ const useBasicFilterFromModel = ({ model }: QueryBasicProps) => {
     translateFilterToBasicMap(getFilterTree(model)).propertyValueMap
   )
   const { listenTo, stopListening } = useBackbone()
-
   React.useEffect(() => {
     const callback = () => {
       setBasicFilter(
@@ -382,14 +368,12 @@ const useBasicFilterFromModel = ({ model }: QueryBasicProps) => {
   }, [model])
   return basicFilter
 }
-
 const QueryBasic = ({ model }: QueryBasicProps) => {
   const inputRef = React.useRef<HTMLDivElement>()
   const basicFilter = useBasicFilterFromModel({ model })
   const [typeAttributes] = React.useState(
     getAllValidValuesForMatchTypeAttribute()
   )
-
   /**
    * Because of how things render, auto focusing to the input is more complicated than I wish.  This ensures it works everytime, whereas autoFocus prop is unreliable
    */
@@ -403,7 +387,6 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
       clearTimeout(timeoutId)
     }
   }, [])
-
   const anyTextValue: BooleanTextType = (() => {
     if (basicFilter.anyText) {
       if (typeof basicFilter.anyText[0].value === 'string') {
@@ -423,14 +406,14 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
       }
     }
   })()
-
   return (
     <>
       <div className="editor-properties px-2 py-3">
-        <div className="">
+        <div>
           <Typography className="pb-2">Keyword</Typography>
           <BooleanSearchBar
             value={anyTextValue}
+            key={model.id}
             onChange={({ text, cql, error }) => {
               // we want the string value, the cql value, and if it's correct
               basicFilter.anyText[0] = new FilterClass({
@@ -551,7 +534,6 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
               </Grid>
               <Grid item className="w-full pl-2">
                 <Autocomplete
-                  // @ts-ignore Property 'fullWidth' does not exist on type (error is wrong)
                   fullWidth
                   multiple
                   options={Object.values(typeAttributes)}
@@ -620,5 +602,4 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
     </>
   )
 }
-
 export default hot(module)(QueryBasic)

@@ -14,13 +14,12 @@
  **/
 import React from 'react'
 import CloseIcon from '@material-ui/icons/Close'
-import Grid from '@material-ui/core/Grid/Grid'
 import IconButton from '@material-ui/core/IconButton'
-const {
+import {
   DmsLatitude,
   DmsLongitude,
-} = require('../../component/location-new/geo-components/coordinates.js')
-const DirectionInput = require('../../component/location-new/geo-components/direction.js')
+} from '../../component/location-new/geo-components/coordinates'
+import DirectionInput from '../../component/location-new/geo-components/direction'
 
 type Direction = 'N' | 'S' | 'E' | 'W'
 
@@ -42,8 +41,8 @@ const DmsTextfield = ({
 }) => {
   return (
     <div>
-      <Grid container alignItems="center">
-        <Grid item xs={11}>
+      <div className="flex flex-row items-center flex-no-wrap">
+        <div className="flex flex-col space-y-2 flex-no-wrap flex-shrink w-full">
           <DmsLatitude
             label="Latitude"
             value={point.lat}
@@ -55,6 +54,7 @@ const DmsTextfield = ({
             }}
           >
             <DirectionInput
+              // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
               options={['N', 'S']}
               value={point.latDirection}
               onChange={(value: any) => {
@@ -76,6 +76,7 @@ const DmsTextfield = ({
             }}
           >
             <DirectionInput
+              // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
               options={['E', 'W']}
               value={point.lonDirection}
               onChange={(value: any) => {
@@ -86,15 +87,15 @@ const DmsTextfield = ({
               }}
             />
           </DmsLongitude>
-        </Grid>
-        <Grid item xs={1}>
+        </div>
+        <div className="flex-shrink-0 flex-grow-0">
           <IconButton onClick={deletePoint}>
             <CloseIcon />
           </IconButton>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </div>
   )
 }
 
-module.exports = DmsTextfield
+export default DmsTextfield

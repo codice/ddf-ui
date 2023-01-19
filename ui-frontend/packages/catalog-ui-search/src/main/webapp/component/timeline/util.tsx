@@ -1,7 +1,7 @@
 import * as d3 from 'd3'
 import moment, { Moment } from 'moment-timezone'
 import { TimelineItem } from './timeline'
-const user = require('../singletons/user-instance')
+import user from '../singletons/user-instance'
 
 /** Python's "range" function */
 export const range = (n: number) => Array.from(Array(n).keys())

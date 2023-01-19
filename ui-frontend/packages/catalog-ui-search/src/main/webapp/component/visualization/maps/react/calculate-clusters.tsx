@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-const _ = require('underscore')
+import _ from 'underscore'
 
-const Clustering = require('../Clustering')
+import Clustering from '../Clustering'
 import { ClusterType } from './geometries'
 import { LazyResultsType } from '../../../selection-interface/hooks'
 import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryResult'

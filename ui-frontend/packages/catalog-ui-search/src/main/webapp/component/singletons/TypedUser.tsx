@@ -6,9 +6,12 @@ import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import { TypedMetacardDefs } from '../tabs/metacard/metacardDefinitions'
 import { TypedProperties } from './TypedProperties'
 
-const userInstance = require('./user-instance')
+import userInstance from './user-instance'
 
 export const TypedUserInstance = {
+  getUserInstance: () => {
+    return userInstance
+  },
   getResultsAttributesShownList: (): string[] => {
     const userchoices = userInstance
       .get('user')
@@ -123,6 +126,9 @@ export const TypedUserInstance = {
   },
   getUserReadableDateTime: (val: any): string => {
     return userInstance.getUserReadableDateTime(val)
+  },
+  getMapHome: () => {
+    return TypedUserInstance.getPreferences().get('mapHome')
   },
 }
 

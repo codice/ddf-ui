@@ -44,8 +44,6 @@ const ChildFilter = ({
   setFilter,
   index,
   isFirst,
-  // @ts-ignore ts-migrate(6133) FIXME: 'isLast' is declared but its value is never read.
-  isLast,
 }: ChildFilterProps) => {
   return (
     <>
@@ -55,7 +53,7 @@ const ChildFilter = ({
           container
           direction="row"
           alignItems="center"
-          justify="center"
+          justifyContent="center"
           wrap="nowrap"
           className="relative"
         >

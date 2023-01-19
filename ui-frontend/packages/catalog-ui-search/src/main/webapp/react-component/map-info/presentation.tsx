@@ -17,8 +17,7 @@ import styled from 'styled-components'
 import { hot } from 'react-hot-loader'
 import { Attribute, Coordinates, Format, validCoordinates } from '.'
 import { formatAttribute, formatCoordinates } from './formatting'
-
-const DistanceUtils = require('../../../webapp/js/DistanceUtils.js')
+import DistanceUtils from '../../js/DistanceUtils'
 
 type Props = {
   format: Format
@@ -84,7 +83,7 @@ const getDistanceText = (distance: number) => {
   return distanceText
 }
 
-// @ts-ignore ts-migrate(7030) FIXME: Not all code paths return a value.
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
 const distanceInfo = (props: Props) => {
   if (props.measurementState !== 'NONE') {
     return (

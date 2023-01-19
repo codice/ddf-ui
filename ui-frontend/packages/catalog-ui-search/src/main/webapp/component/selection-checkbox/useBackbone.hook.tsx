@@ -1,4 +1,4 @@
-const Backbone = require('backbone')
+import Backbone from 'backbone'
 import * as React from 'react'
 
 export type WithBackboneProps = {
@@ -38,9 +38,13 @@ export function useListenTo(
 ) {
   const { listenTo, stopListening } = useBackbone()
   React.useEffect(() => {
-    listenTo.apply(undefined, parameters)
+    if (parameters[0]) {
+      listenTo.apply(undefined, parameters)
+    }
     return () => {
-      stopListening.apply(undefined, parameters)
+      if (parameters[0]) {
+        stopListening.apply(undefined, parameters)
+      }
     }
   }, [parameters])
 }

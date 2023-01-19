@@ -13,8 +13,8 @@
  *
  **/
 import * as React from 'react'
-const user = require('../../component/singletons/user-instance.js')
-const properties = require('../../js/properties.js')
+import user from '../../component/singletons/user-instance'
+import properties from '../../js/properties'
 import QuerySettings from '../../component/query-settings/query-settings'
 import { UserQuery } from '../../js/model/TypedQuery'
 import styled from 'styled-components'
@@ -31,22 +31,18 @@ import {
 } from '../../component/theme/theme'
 import Tooltip from '@material-ui/core/Tooltip'
 import Paper from '@material-ui/core/Paper'
-
 const Root = styled.div`
   overflow: hidden;
   padding: ${(props) => props.theme.minimumSpacing};
 `
-
 const getResultCount = () => {
   return user.get('user').get('preferences').get('resultCount') as number
 }
-
 const SearchSettings = () => {
   const [queryModel] = React.useState(
     UserQuery() // we pass this to query settings
   )
   const [resultCount, setResultCount] = React.useState(getResultCount())
-
   const { listenTo } = useBackbone()
   React.useEffect(() => {
     listenTo(user.get('user').get('preferences'), 'change:resultCount', () => {
@@ -65,7 +61,6 @@ const SearchSettings = () => {
       user.savePreferences()
     }
   }, [])
-
   return (
     <Root>
       <Tooltip
@@ -100,7 +95,7 @@ const SearchSettings = () => {
                   user.getPreferences().set({
                     resultCount: Math.min(
                       parseInt(e.target.value),
-                      properties.resultCount
+                      (properties as any).resultCount
                     ),
                   })
                 }}
@@ -108,7 +103,7 @@ const SearchSettings = () => {
                   className: 'text-center',
                   step: 10,
                   min: 1,
-                  max: properties.resultCount,
+                  max: (properties as any).resultCount,
                   type: 'number',
                   'aria-labelledby': 'resultcount-slider',
                 }}
@@ -124,7 +119,7 @@ const SearchSettings = () => {
                 }}
                 aria-labelledby="input-slider"
                 min={1}
-                max={properties.resultCount}
+                max={(properties as any).resultCount}
                 step={10}
                 marks={[
                   {
@@ -132,8 +127,8 @@ const SearchSettings = () => {
                     label: '1',
                   },
                   {
-                    value: properties.resultCount,
-                    label: `${properties.resultCount}`,
+                    value: (properties as any).resultCount,
+                    label: `${(properties as any).resultCount}`,
                   },
                 ]}
               />
@@ -149,5 +144,4 @@ const SearchSettings = () => {
     </Root>
   )
 }
-
 export default hot(module)(SearchSettings)

@@ -13,31 +13,28 @@
  *
  **/
 import { ResultType } from '../Types'
-const QueryResult = require('../QueryResult.js')
+import QueryResult from '../QueryResult'
 import { LazyQueryResults, AttributeHighlights } from './LazyQueryResults'
 import cql from '../../cql'
-const _ = require('underscore')
+import _ from 'underscore'
 import Sources from '../../../component/singletons/sources-instance'
-const metacardDefinitions = require('../../../component/singletons/metacard-definitions.js')
+import metacardDefinitions from '../../../component/singletons/metacard-definitions'
 import { TypedMetacardDefs } from '../../../component/tabs/metacard/metacardDefinitions'
-const properties = require('../../properties.js')
-const TurfMeta = require('@turf/meta')
-const wkx = require('wkx')
-const Common = require('../../Common.js')
-import { matchesCql, matchesFilters } from './filter'
+import properties from '../../properties'
+import * as TurfMeta from '@turf/meta'
+import wkx from 'wkx'
 import {
   FilterBuilderClass,
   FilterClass,
 } from '../../../component/filter-builder/filter.structure'
+import Common from '../../Common'
 const debounceTime = 50
-const $ = require('jquery')
-
+import $ from 'jquery'
 function getThumbnailAction(result: ResultType) {
   return result.actions.find(
     (action) => action.id === 'catalog.data.metacard.thumbnail'
   )
 }
-
 function cacheBustUrl(url: string): string {
   if (url && url.indexOf('_=') === -1) {
     let newUrl = url
@@ -51,14 +48,12 @@ function cacheBustUrl(url: string): string {
   }
   return url
 }
-
 function cacheBustThumbnail(plain: ResultType) {
   let url = plain.metacard.properties.thumbnail
   if (url) {
     plain.metacard.properties.thumbnail = cacheBustUrl(url)
   }
 }
-
 function humanizeResourceSize(plain: ResultType) {
   if (plain.metacard.properties['resource-size']) {
     plain.metacard.properties['resource-size'] = Common.getFileSize(
@@ -66,7 +61,6 @@ function humanizeResourceSize(plain: ResultType) {
     )
   }
 }
-
 /**
  * Add defaults, etc.  We need to make sure everything has a tag at the very least
  */
@@ -129,18 +123,27 @@ const transformPlain = ({
   plain.id = plain.metacard.properties.id
   return plain
 }
-
 type SubscribableType =
   | 'backboneCreated'
   | 'selected'
   | 'filtered'
   | 'backboneSync'
-type SubscriptionType = { [key: string]: () => void }
+type SubscriptionType = {
+  [key: string]: () => void
+}
 export class LazyQueryResult {
-  ['subscriptionsToMe.backboneCreated']: { [key: string]: () => void };
-  ['subscriptionsToMe.backboneSync']: { [key: string]: () => void };
-  ['subscriptionsToMe.selected']: { [key: string]: () => void };
-  ['subscriptionsToMe.filtered']: { [key: string]: () => void }
+  ['subscriptionsToMe.backboneCreated']: {
+    [key: string]: () => void
+  };
+  ['subscriptionsToMe.backboneSync']: {
+    [key: string]: () => void
+  };
+  ['subscriptionsToMe.selected']: {
+    [key: string]: () => void
+  };
+  ['subscriptionsToMe.filtered']: {
+    [key: string]: () => void
+  }
   subscribeTo({
     subscribableThing,
     callback,
@@ -149,16 +152,15 @@ export class LazyQueryResult {
     callback: () => void
   }) {
     const id = Math.random().toString()
-
-    // @ts-ignore ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
+    // @ts-ignore
     this[`subscriptionsToMe.${subscribableThing}`][id] = callback
     return () => {
-      // @ts-ignore ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
+      // @ts-ignore
       delete this[`subscriptionsToMe.${subscribableThing}`][id]
     }
   }
   _notifySubscribers(subscribableThing: SubscribableType) {
-    // @ts-ignore ts-migrate(7053) FIXME: No index signature with a parameter of type 'strin... Remove this comment to see the full error message
+    // @ts-ignore
     const subscribers = this[
       `subscriptionsToMe.${subscribableThing}`
     ] as SubscriptionType
@@ -238,7 +240,15 @@ export class LazyQueryResult {
   // this is a partial update (like title only or something)
   refreshFromEditResponse(
     response: [
-      { ids: string[]; attributes: [{ attribute: string; values: string[] }] }
+      {
+        ids: string[]
+        attributes: [
+          {
+            attribute: string
+            values: string[]
+          }
+        ]
+      }
     ]
   ) {
     response.forEach((part) =>
@@ -324,18 +334,10 @@ export class LazyQueryResult {
     return this.plain.metacard.properties['resource-download-url'] !== undefined
   }
   getPreview(): string {
-    return this.plain.actions.filter(
-      (action) => action.id === 'catalog.data.metacard.html.preview'
-    )[0].url
+    return this.plain.metacard.properties['ext.extracted.text']
   }
   hasPreview(): boolean {
     return this.plain.metacard.properties['ext.extracted.text'] !== undefined
-  }
-  matchesFilters(filters: FilterBuilderClass): boolean {
-    return matchesFilters(this.plain.metacard, filters)
-  }
-  matchesCql(cql: string): boolean {
-    return matchesCql(this.plain.metacard, cql)
   }
   isSearch(): boolean {
     return this.plain.metacard.properties['metacard-type'] === 'metacard.query'
@@ -388,7 +390,7 @@ export class LazyQueryResult {
       return this.getGeometries(attribute).reduce(
         (pointArray: any, wkt: any) =>
           pointArray.concat(
-            TurfMeta.coordAll(wkx.Geometry.parse(wkt).toGeoJSON())
+            TurfMeta.coordAll(wkx.Geometry.parse(wkt).toGeoJSON() as any)
           ),
         []
       )
@@ -424,7 +426,9 @@ export class LazyQueryResult {
     return Boolean(this.plain.relevance)
   }
   getRoundedRelevance() {
-    return this.plain.relevance.toPrecision(properties.relevancePrecision)
+    return this.plain.relevance.toPrecision(
+      (properties as any).relevancePrecision
+    )
   }
   hasErrors() {
     return Boolean(this.getErrors())

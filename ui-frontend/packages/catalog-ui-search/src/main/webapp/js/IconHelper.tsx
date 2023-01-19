@@ -15,7 +15,7 @@
 import { TypedProperties } from '../component/singletons/TypedProperties'
 import { LazyQueryResult } from './model/LazyQueryResult/LazyQueryResult'
 
-const _get = require('lodash/get')
+import _get from 'lodash/get'
 
 const _map = Object.keys(TypedProperties.getIconConfig()).reduce(
   (totalIconMap, iconConfigKey) => {
@@ -163,6 +163,6 @@ export default {
   },
   getClassByName(name: string) {
     const i = _deriveIconByName(name)
-    return _get(i, 'class', _default.class)
+    return _get(i, 'class', _default?.class)
   },
 }

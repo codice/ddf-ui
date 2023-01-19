@@ -16,29 +16,24 @@ import * as React from 'react'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import Sources from './presentation'
 import sources from '../../component/singletons/sources-instance'
-
 type Props = {} & WithBackboneProps
-
 type Source = {
   id: string
   sourceActions: any[]
   available: boolean
 }
-
 interface State {
   amountDown: number
   sources: Source[]
 }
-
 class SourcesSummaryContainer extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = {
-      // @ts-ignore ts-migrate(2339) FIXME: Property 'filter' does not exist on type '{ getHar... Remove this comment to see the full error message
-      amountDown: sources.filter(function (source: Backbone.Model) {
+      amountDown: (sources as any).filter(function (source: Backbone.Model) {
         return !source.get('available')
       }).length,
-      // @ts-ignore ts-migrate(2322) FIXME: Property 'sourceActions' is missing in type '{ ava... Remove this comment to see the full error message
+      // @ts-expect-error ts-migrate(2322) FIXME: Type '{ available: boolean; contentTypes: { name: ... Remove this comment to see the full error message
       sources: sources.toJSON(),
     }
   }
@@ -47,11 +42,10 @@ class SourcesSummaryContainer extends React.Component<Props, State> {
   }
   handleChange() {
     this.setState({
-      // @ts-ignore ts-migrate(2339) FIXME: Property 'filter' does not exist on type '{ getHar... Remove this comment to see the full error message
-      amountDown: sources.filter(function (source: Backbone.Model) {
+      amountDown: (sources as any).filter(function (source: Backbone.Model) {
         return !source.get('available')
       }).length,
-      // @ts-ignore ts-migrate(2322) FIXME: Type '{ available: boolean; contentTypes: { name: ... Remove this comment to see the full error message
+      // @ts-expect-error ts-migrate(2322) FIXME: Type '{ available: boolean; contentTypes: { name: ... Remove this comment to see the full error message
       sources: sources.toJSON(),
     })
   }
@@ -59,12 +53,10 @@ class SourcesSummaryContainer extends React.Component<Props, State> {
     return (
       <Sources
         sources={this.state.sources}
-        // @ts-ignore ts-migrate(2339) FIXME: Property 'fetch' does not exist on type '{ getHarv... Remove this comment to see the full error message
-        refreshSources={() => sources.fetch()}
+        refreshSources={() => (sources as any).fetch()}
         amountDown={this.state.amountDown}
       />
     )
   }
 }
-
 export default withListenTo(SourcesSummaryContainer)

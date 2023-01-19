@@ -15,13 +15,11 @@
 import * as React from 'react'
 import { DateInput, IDateInputProps } from '@blueprintjs/datetime'
 
-// @ts-ignore ts-migrate(7016) FIXME: Could not find a declaration file for module '../s... Remove this comment to see the full error message
-import user from '../singletons/user-instance'
 import { DateHelpers, DefaultMaxDate, DefaultMinDate } from './date-helpers'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
 import useTimePrefs from './useTimePrefs'
 
-const user = require('../singletons/user-instance.js')
+import user from '../singletons/user-instance'
 
 type DateFieldProps = {
   value: string

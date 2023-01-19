@@ -71,7 +71,7 @@ const FilterMenu = () => {
               return (
                 <MenuItem
                   onClick={() => {
-                    StateModel.set('filter', choice.value)
+                    StateModel.set('filter', (choice.value as unknown) as any)
                     menuState.handleClose()
                   }}
                   autoFocus={choice === currentChoice}
@@ -126,7 +126,7 @@ const DisplayMenu = () => {
               return (
                 <MenuItem
                   onClick={() => {
-                    StateModel.set('display', choice.value)
+                    StateModel.set('display', (choice.value as unknown) as any)
                     menuState.handleClose()
                   }}
                   autoFocus={choice === currentChoice}

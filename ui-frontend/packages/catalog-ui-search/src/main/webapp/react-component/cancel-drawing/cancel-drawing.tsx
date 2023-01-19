@@ -13,19 +13,18 @@
  *
  **/
 import * as React from 'react'
-const $ = require('jquery')
-
+import $ from 'jquery'
 interface Props {
   turnOffDrawing: Function
 }
-
 class CancelDrawingContainer extends React.Component<Props, {}> {
   constructor(props: Props) {
     super(props)
   }
   ref = React.createRef()
   componentDidMount() {
-    $(this.ref.current).on('mousedown', (e: Event) => {
+    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
+    ;($(this.ref.current) as any).on('mousedown', (e: Event) => {
       e.stopPropagation()
       this.props.turnOffDrawing()
     })
@@ -39,5 +38,4 @@ class CancelDrawingContainer extends React.Component<Props, {}> {
     return children
   }
 }
-
 export default CancelDrawingContainer

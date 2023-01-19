@@ -4,16 +4,15 @@ import {
   SplitPane,
   useResizableGridContext,
 } from '../resizable-grid/resizable-grid'
-const SelectionInterfaceModel = require('../selection-interface/selection-interface.model')
+import SelectionInterfaceModel from '../selection-interface/selection-interface.model'
 import { useQuery, useUserQuery } from '../../js/model/TypedQuery'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
-import QueryAddView from '../query-add/query-add'
+import { QueryAddReact } from '../query-add/query-add'
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
 import queryString from 'query-string'
 
-import MRC from '../../react-component/marionette-region-container'
 import Button, { ButtonProps } from '@material-ui/core/Button'
 import MoreVert from '@material-ui/icons/MoreVert'
 import { Elevations } from '../theme/theme'
@@ -131,7 +130,7 @@ export const SaveForm = ({
           />
         </div>
 
-        <DarkDivider className="" />
+        <DarkDivider />
         <div className="flex flex-row flex-no-wrap align justify-end p-2">
           <Button
             type="button"
@@ -1093,6 +1092,7 @@ const LeftTop = () => {
               </Paper>
             </Popover>
             <Button
+              component="div"
               className={`children-block children-h-full text-left text-2xl flex-shrink truncate ${
                 closed ? 'h-full' : ''
               }`}
@@ -1225,17 +1225,13 @@ const LeftMiddle = () => {
       {data === true ? (
         <Skeleton variant="rect" className="w-full h-full p-10"></Skeleton>
       ) : (
-        <MRC
+        <div
           className={`w-full h-full overflow-auto pb-64 ${
             closed ? 'hidden' : ''
           }`}
-          defaultStyling={false}
-          view={QueryAddView}
-          viewOptions={{
-            selectionInterface,
-            model: selectionInterface.getCurrentQuery(),
-          }}
-        />
+        >
+          <QueryAddReact model={selectionInterface.getCurrentQuery()} />
+        </div>
       )}
     </div>
   )
@@ -1301,7 +1297,6 @@ const useSavedSearchPageMode = ({
       sources: ['local'],
     },
   })
-  console.info(task)
   React.useEffect(() => {
     if (task || restoreTask) {
       setData(true)
@@ -1328,22 +1323,22 @@ const useSavedSearchPageMode = ({
           ],
         })
       )
-      queryModel.startSearchFromFirstPage(undefined, () => {
-        const lazyResults = queryModel
-          .get('result')
-          .get('lazyResults') as LazyQueryResults
-        subscriptionCancel = lazyResults.subscribeTo({
-          subscribableThing: 'filteredResults',
-          callback: () => {
-            const results = Object.values(lazyResults.results)
-            if (results.length > 0) {
-              setData(results[0])
-            } else {
-              setData(false)
-            }
-          },
-        })
+      queryModel.initializeResult()
+      const lazyResults = queryModel
+        .get('result')
+        .get('lazyResults') as LazyQueryResults
+      subscriptionCancel = lazyResults.subscribeTo({
+        subscribableThing: 'filteredResults',
+        callback: () => {
+          const results = Object.values(lazyResults.results)
+          if (results.length > 0) {
+            setData(results[0])
+          } else {
+            setData(false)
+          }
+        },
       })
+      queryModel.startSearchFromFirstPage()
     } else {
       setData(false)
     }
@@ -1407,7 +1402,6 @@ const decodeUrlIfValid = (search: string) => {
       const defaultQueryString = (queryParams['defaultQuery'] || '').toString()
       return JSON.parse(decodeURIComponent(defaultQueryString))
     } catch (err) {
-      console.error(err)
       return {}
     }
   } else {
@@ -1425,8 +1419,6 @@ export const HomePage = () => {
   const data = useSavedSearchPageMode({ id })
   const saveSearchTask = useSaveSearchTaskBasedOnParams()
   const isSaving = saveSearchTask !== null
-  console.info(searchPageMode)
-  console.info(data)
   React.useEffect(() => {
     let urlBasedQuery = location.search.split('?defaultQuery=')[1]
     if (urlBasedQuery) {

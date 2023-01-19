@@ -14,10 +14,10 @@
  **/
 
 import * as React from 'react'
-const Marionette = require('marionette')
 import QueryBasic from '../../component/query-basic/query-basic.view'
 
 import QueryAdvanced from '../../component/query-advanced/query-advanced'
+import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 export const queryForms = [
   { id: 'basic', title: 'Basic Search', view: QueryBasic },
   {
@@ -27,39 +27,37 @@ export const queryForms = [
   },
 ]
 
-export default Marionette.LayoutView.extend({
-  template() {
-    const formType = this.model.get('type')
-    const form =
-      (queryForms.find((form) => form.id === formType) as {
-        id: string
-        title: string
-        view: any
-      }) || queryForms[0]
-    return (
-      <React.Fragment>
-        <form
-          target="autocomplete"
-          action="/search/catalog/blank.html"
-          className="w-full"
-        >
-          {(() => {
-            if (form.id === 'basic') {
-              return <QueryBasic model={this.model} />
-            } else {
-              return <QueryAdvanced model={this.model} />
-            }
-          })()}
-        </form>
-      </React.Fragment>
-    )
-  },
-  className: 'w-full',
-  tagName: 'div',
-  regions: {
-    queryContent: 'form .content-form',
-  },
-  onFirstRender() {
-    this.listenTo(this.model, 'resetToDefaults change:type', this.render)
-  },
-})
+type QueryAddReactType = {
+  model: any
+}
+
+export const QueryAddReact = ({ model }: QueryAddReactType) => {
+  const [, setForceRender] = React.useState(Math.random())
+  useListenTo(model, 'resetToDefaults change:type', () => {
+    setForceRender(Math.random())
+  })
+  const formType = model.get('type')
+  const form =
+    (queryForms.find((form) => form.id === formType) as {
+      id: string
+      title: string
+      view: any
+    }) || queryForms[0]
+  return (
+    <React.Fragment>
+      <form
+        target="autocomplete"
+        action="/search/catalog/blank.html"
+        className="w-full"
+      >
+        {(() => {
+          if (form.id === 'basic') {
+            return <QueryBasic model={model} key={model.id} />
+          } else {
+            return <QueryAdvanced model={model} key={model.id} />
+          }
+        })()}
+      </form>
+    </React.Fragment>
+  )
+}

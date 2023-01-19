@@ -7,24 +7,20 @@ import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import { useSelectedResults } from '../../../js/model/LazyQueryResult/hooks'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
-
-const wreqr = require('../../../js/wreqr.js')
-const $ = require('jquery')
-const _ = require('underscore')
-const Plotly = require('plotly.js/dist/plotly.js')
-const metacardDefinitions = require('../../singletons/metacard-definitions.js')
-const Common = require('../../../js/Common.js')
-const properties = require('../../../js/properties.js')
-const moment = require('moment')
-const user = require('../../singletons/user-instance.js')
-
+import Common from '../../../js/Common'
+import wreqr from '../../../js/wreqr'
+import $ from 'jquery'
+import _ from 'underscore'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'plot... Remove this comment to see the full error message
+import Plotly from 'plotly.js/dist/plotly'
+import metacardDefinitions from '../../singletons/metacard-definitions'
+import properties from '../../../js/properties'
+import moment from 'moment'
 const zeroWidthSpace = '\u200B'
 const plotlyDateFormat = 'YYYY-MM-DD HH:mm:ss.SS'
-
 function getPlotlyDate(date: string) {
   return moment(date).format(plotlyDateFormat)
 }
-
 function calculateAvailableAttributes(results: LazyQueryResult[]) {
   let availableAttributes = [] as string[]
   results.forEach((result) => {
@@ -44,7 +40,6 @@ function calculateAvailableAttributes(results: LazyQueryResult[]) {
       value: attribute,
     }))
 }
-
 function calculateAttributeArray({
   results,
   attribute,
@@ -77,7 +72,6 @@ function calculateAttributeArray({
   })
   return values
 }
-
 function findMatchesForAttributeValues(
   results: LazyQueryResult[],
   attribute: string,
@@ -105,8 +99,7 @@ function findMatchesForAttributeValues(
     }
   })
 }
-
-// @ts-ignore ts-migrate(7030) FIXME: Not all code paths return a value.
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
 function checkIfValueIsValid(values: any[], attribute: string, value: any) {
   if (value !== undefined) {
     switch (metacardDefinitions.metacardTypes[attribute].type) {
@@ -122,7 +115,6 @@ function checkIfValueIsValid(values: any[], attribute: string, value: any) {
     }
   }
 }
-
 function addValueForAttributeToArray({
   valueArray,
   attribute,
@@ -148,14 +140,12 @@ function addValueForAttributeToArray({
     }
   }
 }
-
 function getIndexClicked(data: any) {
   return Math.max.apply(
     undefined,
     data.points.map((point: any) => point.pointNumber)
   ) as number
 }
-
 function getValueFromClick(data: any, categories: any) {
   switch (data.points[0].xaxis.type) {
     case 'category':
@@ -173,47 +163,25 @@ function getValueFromClick(data: any, categories: any) {
       })
   }
 }
-
-function getTheme(theme: any) {
-  const config = {
-    margin: {
-      t: 10,
-      l: 50,
-      r: 115,
-      b: 90,
-      pad: 0,
-      autoexpand: true,
-    },
-  }
-  switch (theme) {
-    case 'comfortable':
-      config.margin.b = 140
-      return config
-    case 'cozy':
-      config.margin.b = 115
-      return config
-    case 'compact':
-      config.margin.b = 90
-      return config
-    default:
-      return config
-  }
-}
-
 function getLayout(plot?: any) {
-  const prefs = user.get('user').get('preferences')
-  const theme = getTheme(prefs.get('theme').get('spacingMode'))
-
   const baseLayout = {
     autosize: true,
     paper_bgcolor: 'rgba(0,0,0,0)',
     plot_bgcolor: 'rgba(0,0,0,0)',
     font: {
       family: '"Open Sans Light","Helvetica Neue",Helvetica,Arial,sans-serif',
-      size: prefs.get('fontSize'),
-      color: 'white',
+      size: 16,
+      color: 'inherit',
+      fill: 'inherit',
     },
-    margin: theme.margin,
+    margin: {
+      t: 10,
+      l: 50,
+      r: 115,
+      b: 140,
+      pad: 0,
+      autoexpand: true,
+    },
     barmode: 'overlay',
     xaxis: {
       fixedrange: true,
@@ -231,11 +199,9 @@ function getLayout(plot?: any) {
   }
   return baseLayout
 }
-
 type Props = {
   selectionInterface: any
 }
-
 const getAutocompleteState = ({
   lazyResults,
   attributeToBin,
@@ -248,7 +214,6 @@ const getAutocompleteState = ({
     value: attributeToBin,
   }
 }
-
 export const Histogram = ({ selectionInterface }: Props) => {
   const { listenTo } = useBackbone()
   const [noMatchingData, setNoMatchingData] = React.useState(false)
@@ -262,23 +227,18 @@ export const Histogram = ({ selectionInterface }: Props) => {
     getAutocompleteState({ lazyResults, attributeToBin })
   )
   const results = Object.values(lazyResults.results)
-
   React.useEffect(() => {
     setNoMatchingData(false)
   }, [lazyResults.results, attributeToBin])
-
   React.useEffect(() => {
     setAutocompleteState(getAutocompleteState({ lazyResults, attributeToBin }))
   }, [lazyResults.results])
-
   React.useEffect(() => {
     showHistogram()
   }, [lazyResults.results, attributeToBin])
-
   React.useEffect(() => {
     updateHistogram()
   }, [selectedResults])
-
   const determineInitialData = () => {
     return [
       {
@@ -290,16 +250,15 @@ export const Histogram = ({ selectionInterface }: Props) => {
         type: 'histogram',
         name: 'Hits        ',
         marker: {
-          color: 'rgba(255, 255, 255, .05)',
+          color: 'rgba(120, 120, 120, .05)',
           line: {
-            color: 'rgba(255,255,255,.2)',
+            color: 'rgba(120,120,120,.2)',
             width: '2',
           },
         },
       },
     ]
   }
-
   const determineData = (plot: any) => {
     const activeResults = results
     const xbins = Common.duplicate(plot._fullData[0].xbins)
@@ -321,9 +280,9 @@ export const Histogram = ({ selectionInterface }: Props) => {
         hoverinfo: 'y+x+name',
         name: 'Hits        ',
         marker: {
-          color: 'rgba(255, 255, 255, .05)',
+          color: 'rgba(120, 120, 120, .05)',
           line: {
-            color: 'rgba(255,255,255,.2)',
+            color: 'rgba(120,120,120,.2)',
             width: '2',
           },
         },
@@ -340,21 +299,18 @@ export const Histogram = ({ selectionInterface }: Props) => {
         hoverinfo: 'y+x+name',
         name: 'Selected',
         marker: {
-          color: 'rgba(255, 255, 255, .2)',
+          color: 'rgba(120, 120, 120, .2)',
         },
         autobinx: false,
         xbins,
       },
     ]
   }
-
   const handleResize = () => {
     if (plotlyRef.current) {
       const histogramElement = plotlyRef.current
       $(histogramElement).find('rect.drag').off('mousedown')
-
-      // @ts-ignore ts-migrate(2339) FIXME: Property '_context' does not exist on type 'HTMLDi... Remove this comment to see the full error message
-      if (histogramElement._context) {
+      if ((histogramElement as any)._context) {
         Plotly.Plots.resize(histogramElement)
       }
       $(histogramElement)
@@ -366,56 +322,14 @@ export const Histogram = ({ selectionInterface }: Props) => {
         })
     }
   }
-
-  const updateTheme = (e: any) => {
-    if (plotlyRef.current) {
-      const histogramElement = plotlyRef.current
-      if (
-        histogramElement.children.length !== 0 &&
-        attributeToBin &&
-        results.length !== 0
-      ) {
-        const theme = getTheme(e.get('spacingMode'))
-
-        // @ts-ignore ts-migrate(2339) FIXME: Property 'layout' does not exist on type 'HTMLDivE... Remove this comment to see the full error message
-        histogramElement.layout.margin = theme.margin
-      }
-    }
-  }
-
-  const updateFontSize = (e: any) => {
-    if (plotlyRef.current) {
-      const histogramElement = plotlyRef.current
-
-      if (
-        histogramElement.children.length !== 0 &&
-        attributeToBin &&
-        results.length !== 0
-      ) {
-        // @ts-ignore ts-migrate(2339) FIXME: Property 'layout' does not exist on type 'HTMLDivE... Remove this comment to see the full error message
-        histogramElement.layout.font.size = e.get('fontSize')
-      }
-    }
-  }
-
-  React.useEffect(() => {
-    listenTo(
-      user.get('user').get('preferences'),
-      'change:fontSize',
-      updateFontSize
-    )
-    listenTo(user.get('user').get('preferences'), 'change:theme', updateTheme)
-  }, [])
-
   React.useEffect(() => {
     const id = (Math.random() * 100).toFixed(0).toString()
-    listenTo(wreqr.vent, 'resize', handleResize)
+    listenTo((wreqr as any).vent, 'resize', handleResize)
     $(window).on(`resize.${id}`, handleResize)
     return () => {
       $(window).off(`resize.${id}`)
     }
   }, [])
-
   const showHistogram = () => {
     if (plotlyRef.current) {
       if (results.length > 0 && attributeToBin) {
@@ -444,7 +358,6 @@ export const Histogram = ({ selectionInterface }: Props) => {
       }
     }
   }
-
   const updateHistogram = () => {
     if (plotlyRef.current) {
       const histogramElement = plotlyRef.current
@@ -462,7 +375,6 @@ export const Histogram = ({ selectionInterface }: Props) => {
       }
     }
   }
-
   const selectBetween = (firstIndex: number, lastIndex: number) => {
     for (let i = firstIndex; i <= lastIndex; i++) {
       if (pointsSelected.current.indexOf(i) === -1) {
@@ -490,15 +402,12 @@ export const Histogram = ({ selectionInterface }: Props) => {
       result.setSelected(true)
     })
   }
-
-  // @ts-ignore ts-migrate(7030) FIXME: Not all code paths return a value.
+  // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
   const retrieveCategoriesFromPlotlyForDates = () => {
     if (plotlyRef.current) {
       const histogramElement = plotlyRef.current
       const categories = []
-
-      // @ts-ignore ts-migrate(2339) FIXME: Property '_fullData' does not exist on type 'HTMLD... Remove this comment to see the full error message
-      const xbins = histogramElement._fullData[0].xbins
+      const xbins = (histogramElement as any)._fullData[0].xbins
       const min = xbins.start
       const max = xbins.end
       let start = min
@@ -519,23 +428,19 @@ export const Histogram = ({ selectionInterface }: Props) => {
       return categories
     }
   }
-
   // This is an internal variable for Plotly, so it might break if we update Plotly in the future.
   // Regardless, there was no other way to reliably get the categories.
   const retrieveCategoriesFromPlotly = () => {
     if (plotlyRef.current) {
       const histogramElement = plotlyRef.current
-
-      // @ts-ignore ts-migrate(2339) FIXME: Property '_fullLayout' does not exist on type 'HTM... Remove this comment to see the full error message
-      const xaxis = histogramElement._fullLayout.xaxis
+      const xaxis = (histogramElement as any)._fullLayout.xaxis
       switch (xaxis.type) {
         case 'category':
           return xaxis._categories
         case 'date':
           return retrieveCategoriesFromPlotlyForDates()
         default:
-          // @ts-ignore ts-migrate(2339) FIXME: Property '_fullData' does not exist on type 'HTMLD... Remove this comment to see the full error message
-          const xbins = histogramElement._fullData[0].xbins
+          const xbins = (histogramElement as any)._fullData[0].xbins
           const min = xbins.start
           const max = xbins.end
           const binSize = xbins.size
@@ -549,7 +454,6 @@ export const Histogram = ({ selectionInterface }: Props) => {
       }
     }
   }
-
   const handleControlClick = (data: any, alreadySelected: boolean) => {
     const attributeToCheck = attributeToBin
     const categories = retrieveCategoriesFromPlotly()
@@ -573,7 +477,6 @@ export const Histogram = ({ selectionInterface }: Props) => {
       pointsSelected.current.push(getIndexClicked(data))
     }
   }
-
   const handleShiftClick = (data: any) => {
     const indexClicked = getIndexClicked(data)
     const firstIndex =
@@ -601,7 +504,6 @@ export const Histogram = ({ selectionInterface }: Props) => {
       selectBetween(firstIndex, indexClicked + 1)
     }
   }
-
   const plotlyClickHandler = (data: any) => {
     const indexClicked = getIndexClicked(data)
     const alreadySelected = pointsSelected.current.indexOf(indexClicked) >= 0
@@ -616,31 +518,27 @@ export const Histogram = ({ selectionInterface }: Props) => {
     }
     resetKeyTracking()
   }
-
   const listenToHistogram = () => {
     if (plotlyRef.current) {
       const histogramElement = plotlyRef.current
-
-      // @ts-ignore ts-migrate(2339) FIXME: Property '_ev' does not exist on type 'HTMLDivElem... Remove this comment to see the full error message
-      histogramElement._ev.addListener('plotly_click', plotlyClickHandler)
+      ;(histogramElement as any)._ev.addListener(
+        'plotly_click',
+        plotlyClickHandler
+      )
     }
   }
-
   const shiftKey = React.useRef(false)
   const metaKey = React.useRef(false)
   const ctrlKey = React.useRef(false)
   const pointsSelected = React.useRef([] as number[])
-
   const resetKeyTracking = () => {
     shiftKey.current = false
     metaKey.current = false
     ctrlKey.current = false
   }
-
   const resetPointSelection = () => {
     pointsSelected.current = []
   }
-
   if (Object.keys(lazyResults.results).length === 0) {
     return <div style={{ padding: '20px' }}>No results found</div>
   }
@@ -683,5 +581,4 @@ export const Histogram = ({ selectionInterface }: Props) => {
     </>
   )
 }
-
 export default hot(module)(Histogram)

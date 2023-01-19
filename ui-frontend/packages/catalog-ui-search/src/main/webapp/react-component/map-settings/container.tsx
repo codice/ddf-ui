@@ -23,7 +23,7 @@ import Paper from '@material-ui/core/Paper'
 import { useMenuState } from '../../component/menu-state/menu-state'
 import Button from '@material-ui/core/Button'
 import Popover from '@material-ui/core/Popover'
-const user = require('../../component/singletons/user-instance.js')
+import user from '../../component/singletons/user-instance'
 import SettingsIcon from '@material-ui/icons/Settings'
 import { Elevations } from '../../component/theme/theme'
 

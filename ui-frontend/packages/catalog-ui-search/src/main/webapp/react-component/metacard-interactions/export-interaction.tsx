@@ -18,32 +18,47 @@ import { MetacardInteractionProps } from '.'
 import { MetacardInteraction } from './metacard-interactions'
 import { hot } from 'react-hot-loader'
 import { getExportResults } from '../utils/export/export'
-
-const lightboxInstance = require('../../component/lightbox/lightbox.view.instance.js')
-
-const onExport = (props: MetacardInteractionProps) => {
-  if (!props.model || props.model.length <= 0) {
-    return
-  }
-  props.onClose()
-  lightboxInstance.model.updateTitle('Export Results')
-  lightboxInstance.model.open()
-  lightboxInstance.showContent(
-    <ResultsExport results={getExportResults(props.model)} />
-  )
-}
+import { useDialogState } from '../../component/hooks/useDialogState'
+import Button from '@material-ui/core/Button'
+import CloseIcon from '@material-ui/icons/Close'
+import Divider from '@material-ui/core/Divider'
 
 export const ExportActions = (props: MetacardInteractionProps) => {
+  const exportDialogState = useDialogState()
   if (!props.model || props.model.length <= 0) {
     return null
   }
   return (
-    <MetacardInteraction
-      onClick={() => onExport(props)}
-      icon="fa fa-share"
-      text="Export as"
-      help="Starts the export process for the selected results."
-    />
+    <>
+      <exportDialogState.MuiDialogComponents.Dialog
+        {...exportDialogState.MuiDialogProps}
+      >
+        <exportDialogState.MuiDialogComponents.DialogTitle>
+          <div className="flex flex-row items-center justify-between flex-nowrap w-full">
+            Export Results
+            <Button
+              className="ml-auto"
+              onClick={() => {
+                exportDialogState.handleClose()
+              }}
+            >
+              <CloseIcon />
+            </Button>
+          </div>
+        </exportDialogState.MuiDialogComponents.DialogTitle>
+        <Divider></Divider>
+        <ResultsExport results={getExportResults(props.model)} />
+      </exportDialogState.MuiDialogComponents.Dialog>
+      <MetacardInteraction
+        onClick={() => {
+          props.onClose()
+          exportDialogState.handleClick()
+        }}
+        icon="fa fa-share"
+        text="Export as"
+        help="Starts the export process for the selected results."
+      />
+    </>
   )
 }
 

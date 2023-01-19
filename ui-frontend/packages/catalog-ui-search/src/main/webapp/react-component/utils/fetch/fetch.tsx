@@ -12,20 +12,14 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
-const url = require('url')
-const qs = require('querystring')
-
+import url from 'url'
+import qs from 'querystring'
 type Options = {
   headers?: object
   [key: string]: unknown
 }
-
 const fetch = window.fetch
-
-// @ts-ignore ts-migrate(2339) FIXME: Property '__global__fetch' does not exist on type ... Remove this comment to see the full error message
-window.__global__fetch = fetch
-
+;(window as any).__global__fetch = fetch
 // patch global fetch to warn about usage during development
 if (process.env.NODE_ENV !== 'production') {
   window.fetch = (...args: any[]) => {
@@ -38,22 +32,19 @@ if (process.env.NODE_ENV !== 'production') {
       ].join(' ')
     )
     console.warn(error)
-
-    // @ts-ignore ts-migrate(2556) FIXME: Expected 1-2 arguments, but got 0 or more.
+    // @ts-expect-error ts-migrate(2556) FIXME: Expected 1-2 arguments, but got 0 or more.
     return fetch(...args)
   }
 }
-
 const cacheBust = (urlString: string) => {
   const { query, ...rest } = url.parse(urlString)
   return url.format({
     ...rest,
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | null' is not assignable... Remove this comment to see the full error message
     search: '?' + qs.stringify({ ...qs.parse(query), _: Date.now() }),
   })
 }
-
 export type FetchProps = (url: string, options?: Options) => Promise<Response>
-
 export default function (url: string, { headers, ...opts }: Options = {}) {
   return fetch(cacheBust(url), {
     credentials: 'same-origin',

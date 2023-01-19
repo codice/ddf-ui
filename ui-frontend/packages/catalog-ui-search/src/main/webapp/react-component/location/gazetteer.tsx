@@ -16,8 +16,8 @@ import { TextFieldProps } from '@material-ui/core/TextField'
 import * as React from 'react'
 import defaultFetch from '../utils/fetch'
 import Keyword from './keyword'
-const onlineGazetteer = require('../../js/properties.js').onlineGazetteer
-
+import properties from '../../js/properties'
+const onlineGazetteer = (properties as any).onlineGazetteer
 export const getLargestBbox = (
   polygonCoordinates: any[],
   isMultiPolygon: boolean
@@ -33,8 +33,14 @@ export const getLargestBbox = (
   }
   let maxArea = -1
   let currentArea = -1
-  let currentMax: { x: number; y: number }
-  let currentMin: { x: number; y: number }
+  let currentMax: {
+    x: number
+    y: number
+  }
+  let currentMin: {
+    x: number
+    y: number
+  }
   polygonCoordinates.map((rowCoordinates) => {
     currentMax = { x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER }
     currentMin = { x: Number.MAX_SAFE_INTEGER, y: Number.MAX_SAFE_INTEGER }
@@ -106,7 +112,6 @@ export const getLargestBbox = (
       }
     : encompassingBoundingBox
 }
-
 type Props = {
   value?: string
   setState: any
@@ -115,7 +120,6 @@ type Props = {
   loadingMessage?: string
   variant?: TextFieldProps['variant']
 }
-
 type Place = {
   boundingbox: string[]
   class: string
@@ -129,26 +133,24 @@ type Place = {
   place_id: number
   type: string
 }
-
 type OsmType = 'node' | 'way' | 'relation'
-
 export type Suggestion = {
   id: string
   name: string
   geo?: any
   extensionGeo?: GeoFeature
 }
-
 export type GeoFeature = {
   type: string
-  geometry: { type: string; coordinates: any[][][] }
+  geometry: {
+    type: string
+    coordinates: any[][][]
+  }
   properties?: any
   id: string
 }
-
 const Gazetteer = (props: Props) => {
   const fetch = props.fetch || defaultFetch
-
   const expandPoint = (geo: any) => {
     const offset = 0.1
     if (geo.length === 1) {
@@ -174,7 +176,6 @@ const Gazetteer = (props: Props) => {
     }
     return geo
   }
-
   const extractGeo = (suggestion: Suggestion) => {
     return {
       type: 'Feature',
@@ -191,14 +192,12 @@ const Gazetteer = (props: Props) => {
       id: suggestion.id,
     }
   }
-
   const suggesterWithLiteralSupport = async (input: string) => {
     const res = await fetch(
       `./internal/geofeature/suggestions?q=${encodeURIComponent(input)}`
     )
     return await res.json()
   }
-
   const geofeatureWithLiteralSupport = async (suggestion: Suggestion) => {
     if (suggestion.id.startsWith('LITERAL')) {
       return extractGeo(suggestion)
@@ -227,7 +226,6 @@ const Gazetteer = (props: Props) => {
       id: data.display_name,
     }
   }
-
   const getOsmTypeSymbol = (type: OsmType) => {
     switch (type) {
       case 'node':
@@ -240,7 +238,6 @@ const Gazetteer = (props: Props) => {
         throw 'Unexpected OSM type ' + type
     }
   }
-
   const suggester = async (input: string) => {
     const res = await (window as any).__global__fetch(
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
@@ -248,7 +245,6 @@ const Gazetteer = (props: Props) => {
       )}`
     )
     const suggestions = await res.json()
-
     return suggestions.map((place: Place) => {
       return {
         id: getOsmTypeSymbol(place.osm_type) + ':' + place.osm_id,
@@ -256,14 +252,12 @@ const Gazetteer = (props: Props) => {
       }
     })
   }
-
   const isMultiPolygon = (coordinates: any[]) => {
     return (
       coordinates[0][0][0] !== undefined &&
       coordinates[0][0][0][0] !== undefined
     )
   }
-
   const geofeature = async (suggestion: Suggestion) => {
     const [type, id] = suggestion.id.split(':')
     const res = await (window as any).__global__fetch(
@@ -304,7 +298,6 @@ const Gazetteer = (props: Props) => {
       id: data.display_name,
     }
   }
-
   return (
     <>
       {onlineGazetteer ? (
@@ -331,5 +324,4 @@ const Gazetteer = (props: Props) => {
     </>
   )
 }
-
 export default Gazetteer

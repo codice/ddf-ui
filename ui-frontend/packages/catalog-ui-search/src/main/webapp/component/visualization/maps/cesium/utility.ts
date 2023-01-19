@@ -14,10 +14,11 @@
  **/
 
 import _ from 'underscore'
-const Cesium = require('cesium')
-const DistanceUtils = require('../../../../js/DistanceUtils')
-const ShapeUtils = require('../../../../js/ShapeUtils.js')
-const Turf = require('@turf/turf')
+import DistanceUtils from '../../../../js/DistanceUtils'
+import ShapeUtils from '../../../../js/ShapeUtils'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
+import Cesium from 'cesium'
+import * as Turf from '@turf/turf'
 
 const METERS = 'meters'
 
@@ -28,7 +29,7 @@ interface FeatureWithCoords extends GeoJSON.Feature {
 /*
   A variety of helpful functions for dealing with Cesium
 */
-module.exports = {
+export default {
   /*
       Calculates the center of given a geometry (WKT)
     */
@@ -110,7 +111,9 @@ module.exports = {
           attrs.lineWidth,
           attrs.lineUnits
         )
-        return lineMeters ? Turf.buffer(line, lineMeters, METERS) : line
+        return lineMeters
+          ? Turf.buffer(line, lineMeters, { units: METERS })
+          : line
       case 'POLYGON':
         const polygon = Turf.polygon([attrs.polygon])
         const polygonMeters = DistanceUtils.getDistanceInMeters(
@@ -118,7 +121,7 @@ module.exports = {
           attrs.polygonBufferUnits
         )
         return polygonMeters
-          ? Turf.buffer(polygon, polygonMeters, METERS)
+          ? Turf.buffer(polygon, polygonMeters, { units: METERS })
           : polygon
       case 'MULTIPOLYGON':
         const isMultiPolygon = ShapeUtils.isArray3D(attrs.polygon)
@@ -130,7 +133,7 @@ module.exports = {
           attrs.polygonBufferUnits
         )
         return multiPolygonMeters
-          ? Turf.buffer(multiPolygon, multiPolygonMeters, METERS)
+          ? Turf.buffer(multiPolygon, multiPolygonMeters, { units: METERS })
           : multiPolygon
       case 'BBOX':
         return Turf.bboxPolygon([
@@ -146,7 +149,7 @@ module.exports = {
           attrs.radiusUnits
         )
         return pointRadiusMeters
-          ? Turf.buffer(point, pointRadiusMeters, METERS)
+          ? Turf.buffer(point, pointRadiusMeters, { units: METERS })
           : point
       default:
         return null

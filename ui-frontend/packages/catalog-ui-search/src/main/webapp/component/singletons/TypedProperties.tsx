@@ -1,5 +1,4 @@
-const properties = require('../../js/properties')
-
+import properties from '../../js/properties'
 export const TypedProperties = {
   isHidden: (attribute: string): boolean => {
     return properties.isHidden(attribute)
@@ -8,16 +7,16 @@ export const TypedProperties = {
     return properties.isReadOnly(attribute)
   },
   getHiddenAttributes: (): string[] => {
-    return properties.hiddenAttributes
+    return (properties as any).hiddenAttributes
   },
   getSummaryShow: (): string[] => {
-    return properties.summaryShow
+    return (properties as any).summaryShow
   },
   getResultsAttributesShownTable: (): string[] => {
-    return properties.defaultTableColumns
+    return (properties as any).defaultTableColumns
   },
   getResultsAttributesShownList: (): string[] => {
-    return properties.resultShow
+    return (properties as any).resultShow
   },
   getReadOnly: (): string[] => {
     return properties.readOnly
@@ -38,17 +37,19 @@ export const TypedProperties = {
   } => {
     return properties.iconConfig
   },
-  getEnums: (): { [key: string]: string[] } => {
+  getEnums: (): {
+    [key: string]: string[]
+  } => {
     return properties.enums
   },
   getBasicSearchMatchType: (): string => {
-    return properties.basicSearchMatchType
+    return (properties as any).basicSearchMatchType
   },
   getBasicSearchTemporalSelectionDefault: (): string[] => {
     return properties.basicSearchTemporalSelectionDefault
   },
   getWebSocketsEnabled: (): boolean => {
-    return properties.webSocketsEnabled
+    return (properties as any).webSocketsEnabled
   },
   isDevelopment: (): boolean => {
     return properties.isDevelopment()

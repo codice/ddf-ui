@@ -20,8 +20,8 @@ import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResu
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
-import { getIconClassName } from '../../results-visual/result-item'
-import LazyMetacardInteractions from '../../results-visual/lazy-metacard-interactions'
+import { getIconClassName } from '../results-visual/result-item'
+import LazyMetacardInteractions from '../results-visual/lazy-metacard-interactions'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import { useMenuState } from '../../menu-state/menu-state'
 import Popover from '@material-ui/core/Popover'
@@ -137,7 +137,6 @@ const usePossibleMetacardTabs = ({ result }: { result: LazyQueryResult }) => {
         delete copyOfMetacardTabs[TabNames.History]
         delete copyOfMetacardTabs[TabNames.Overwrite]
         delete copyOfMetacardTabs[TabNames.Delete]
-        delete copyOfMetacardTabs[TabNames.Associations]
         delete copyOfMetacardTabs[TabNames.Quality]
       }
       if (!result.hasPreview()) {
@@ -248,7 +247,11 @@ const Inspector = ({ selectionInterface }: InspectorType) => {
                 variant="scrollable"
               >
                 {Object.keys(possibleMetacardTabs).map((tabName) => {
-                  return <Tab value={tabName}>{tabName}</Tab>
+                  return (
+                    <Tab key={tabName} value={tabName}>
+                      {tabName}
+                    </Tab>
+                  )
                 })}
               </Tabs>
 

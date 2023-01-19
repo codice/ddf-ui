@@ -5,14 +5,12 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
 import Divider from '@material-ui/core/Divider'
-const properties = require('../../js/properties.js')
-const user = require('../singletons/user-instance.js')
+import properties from '../../js/properties'
+import user from '../singletons/user-instance'
 import { useDialog } from '../dialog'
-
 function hasMessage() {
-  return properties.ui.systemUsageTitle
+  return (properties.ui as any).systemUsageTitle
 }
-
 function hasNotSeenMessage() {
   const systemUsage = window.sessionStorage.getItem('systemUsage')
   if (systemUsage === null) {
@@ -24,11 +22,9 @@ function hasNotSeenMessage() {
     )
   }
 }
-
 function shownOncePerSession() {
-  return properties.ui.systemUsageOncePerSession
+  return (properties.ui as any).systemUsageOncePerSession
 }
-
 function shouldDisplayMessage() {
   if (hasMessage()) {
     if (!shownOncePerSession() || user.get('user').isGuestUser()) {
@@ -40,10 +36,8 @@ function shouldDisplayMessage() {
     return false
   }
 }
-
 const SystemUsageModal = () => {
   const dialogContext = useDialog()
-
   React.useEffect(() => {
     if (user.fetched && shouldDisplayMessage()) {
       openModal()
@@ -53,21 +47,27 @@ const SystemUsageModal = () => {
       })
     }
   }, [])
-
   const openModal = () => {
     dialogContext.setProps({
-      disableBackdropClick: true,
+      onClose: (_event, reason) => {
+        if (reason === 'backdropClick') {
+          return
+        }
+        dialogContext.setProps({
+          open: false,
+        })
+      },
       open: true,
       children: (
         <>
           <DialogTitle style={{ textAlign: 'center' }}>
-            {properties.ui.systemUsageTitle}
+            {(properties.ui as any).systemUsageTitle}
           </DialogTitle>
           <Divider />
           <DialogContent style={{ minHeight: '30em', minWidth: '60vh' }}>
             <div
               dangerouslySetInnerHTML={{
-                __html: properties.ui.systemUsageMessage,
+                __html: (properties.ui as any).systemUsageMessage,
               }}
             />
           </DialogContent>
@@ -79,11 +79,10 @@ const SystemUsageModal = () => {
               onClick={() => {
                 if (
                   !user.get('user').isGuestUser() &&
-                  properties.ui.systemUsageOncePerSession
+                  (properties.ui as any).systemUsageOncePerSession
                 ) {
                   const systemUsage = JSON.parse(
-                    // @ts-ignore ts-migrate(2345) FIXME: Type 'null' is not assignable to type 'string'.
-                    window.sessionStorage.getItem('systemUsage')
+                    window.sessionStorage.getItem('systemUsage') as any
                   )
                   systemUsage[user.get('user').get('username')] = 'true'
                   window.sessionStorage.setItem(
@@ -103,8 +102,6 @@ const SystemUsageModal = () => {
       ),
     })
   }
-
   return <></>
 }
-
 export default hot(module)(SystemUsageModal)

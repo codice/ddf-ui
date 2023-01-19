@@ -7,11 +7,12 @@ import CalculateClusters from './calculate-clusters'
 import Cluster from './cluster'
 import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryResult'
 import ZoomToSelection from './zoom-to-selection'
+import { SHAPE_ID_PREFIX } from '../drawing-and-display'
 type Props = {
   selectionInterface: any
   map: any
   isClustering: boolean
-  mapView: any
+  zoomToHome: (props: { map: any }) => void
 }
 
 export type ClusterType = {
@@ -20,7 +21,7 @@ export type ClusterType = {
 }
 
 const Geometries = (props: Props) => {
-  const { map, selectionInterface, isClustering, mapView } = props
+  const { map, selectionInterface, isClustering, zoomToHome } = props
   const lazyResults = useLazyResultsFromSelectionInterface({
     selectionInterface,
   })
@@ -68,7 +69,7 @@ const Geometries = (props: Props) => {
         // we get click events on normal drawn features from the location drawing
         if (
           mapEvent.mapTarget.constructor === String &&
-          mapEvent.mapTarget.length < 8
+          (mapEvent.mapTarget as string).startsWith(SHAPE_ID_PREFIX)
         ) {
           return
         }
@@ -118,7 +119,11 @@ const Geometries = (props: Props) => {
 
   const ZoomToSelectionMemo = React.useMemo(() => {
     return (
-      <ZoomToSelection map={map} lazyResults={lazyResults} mapView={mapView} />
+      <ZoomToSelection
+        map={map}
+        lazyResults={lazyResults}
+        zoomToHome={zoomToHome}
+      />
     )
   }, [lazyResults])
 

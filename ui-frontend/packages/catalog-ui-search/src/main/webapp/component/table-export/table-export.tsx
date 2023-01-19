@@ -20,7 +20,7 @@ import {
   getExportOptions,
   Transformer,
 } from '../../react-component/utils/export'
-const user = require('../../component/singletons/user-instance.js')
+import user from '../../component/singletons/user-instance'
 import {
   exportResultSet,
   ExportCountInfo,
@@ -28,35 +28,30 @@ import {
 } from '../../react-component/utils/export'
 import saveFile from '../../react-component/utils/save-file'
 import { DEFAULT_USER_QUERY_OPTIONS } from '../../js/model/TypedQuery'
-const announcement = require('../../component/announcement/index.jsx')
-const properties = require('../../js/properties.js')
-const contentDisposition = require('content-disposition')
-
+import useSnack from '../hooks/useSnack'
+import { AddSnack } from '../snack/snack.provider'
+import properties from '../../js/properties'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
+import contentDisposition from 'content-disposition'
 type ExportResponse = {
   displayName: string
   id: string
 }
-
 export type Props = {
   selectionInterface: any
   filteredAttributes: string[]
 }
-
 type Source = {
   id: string
   hits: number
 }
-
 export function getStartIndex(
-  // @ts-ignore ts-migrate(6133) FIXME: 'src' is declared but its value is never read.
   src: string,
-  // @ts-ignore ts-migrate(6133) FIXME: 'exportSize' is declared but its value is never re... Remove this comment to see the full error message
-  exportSize: any,
+  _exportSize: any,
   selectionInterface: any
 ) {
   const srcIndexMap = selectionInterface.getCurrentQuery()
     .nextIndexForSourceGroup
-
   if (src === Sources.localCatalog) {
     return srcIndexMap['local']
   }
@@ -145,16 +140,18 @@ export const getWarning = (exportCountInfo: ExportCountInfo): string => {
     .getCurrentQuery()
     .get('result')
   const totalHits = getHits(Object.values(result.get('lazyResults').status))
-  const limitWarning = `You cannot export more than the administrator configured limit of ${properties.exportResultLimit}.`
+  const limitWarning = `You cannot export more than the administrator configured limit of ${
+    (properties as any).exportResultLimit
+  }.`
   let warningMessage = ''
-  if (exportCount > properties.exportResultLimit) {
+  if (exportCount > (properties as any).exportResultLimit) {
     if (exportCountInfo.exportSize === 'custom') {
       return limitWarning
     }
     warningMessage =
       limitWarning +
-      `  Only ${properties.exportResultLimit} ${
-        properties.exportResultLimit === 1 ? `result` : `results`
+      `  Only ${(properties as any).exportResultLimit} ${
+        (properties as any).exportResultLimit === 1 ? `result` : `results`
       } will be exported.`
   }
   if (exportCountInfo.exportSize === 'custom') {
@@ -169,13 +166,12 @@ export const getWarning = (exportCountInfo: ExportCountInfo): string => {
   if (
     totalHits > 100 &&
     exportCount > 100 &&
-    properties.exportResultLimit > 100
+    (properties as any).exportResultLimit > 100
   ) {
     warningMessage += `  This may take a long time.`
   }
   return warningMessage
 }
-
 export const getDownloadBody = (downloadInfo: DownloadInfo) => {
   const {
     exportSize,
@@ -190,9 +186,8 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
   )
   const count = Math.min(
     getExportCount({ exportSize, selectionInterface, customExportCount }),
-    properties.exportResultLimit
+    (properties as any).exportResultLimit
   )
-
   const query = selectionInterface.getCurrentQuery()
   const cql = DEFAULT_USER_QUERY_OPTIONS.transformFilterTree({
     originalFilterTree: query.get('filterTree'),
@@ -207,9 +202,7 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
     columnOrder: columnOrder.length > 0 ? columnOrder : [],
     columnAliasMap: properties.attributeAliases,
   }
-
   const searches = getSearches(exportSize, srcs, cql, count, selectionInterface)
-
   return {
     phonetics,
     spellcheck,
@@ -219,37 +212,32 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
     args,
   }
 }
-
-export const onDownloadClick = async (downloadInfo: DownloadInfo) => {
-  const exportFormat = encodeURIComponent(downloadInfo.exportFormat)
-  try {
-    const body = getDownloadBody(downloadInfo)
-    const response = await exportResultSet(exportFormat, body)
-    onDownloadSuccess(response)
-  } catch (error) {
-    console.error(error)
+const generateOnDownloadClick = ({ addSnack }: { addSnack: AddSnack }) => {
+  return async (downloadInfo: DownloadInfo) => {
+    const exportFormat = encodeURIComponent(downloadInfo.exportFormat)
+    try {
+      const body = getDownloadBody(downloadInfo)
+      const response = await exportResultSet(exportFormat, body)
+      if (response.status === 200) {
+        const data = await response.blob()
+        const contentType = response.headers.get('content-type')
+        const filename = contentDisposition.parse(
+          response.headers.get('content-disposition')
+        ).parameters.filename
+        saveFile(filename, 'data:' + contentType, data)
+      } else {
+        addSnack('Error: Could not export results.', {
+          alertProps: { severity: 'error' },
+        })
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
 }
-export const onDownloadSuccess = async (response: Response) => {
-  if (response.status === 200) {
-    const data = await response.blob()
-    const contentType = response.headers.get('content-type')
-    const filename = contentDisposition.parse(
-      response.headers.get('content-disposition')
-    ).parameters.filename
-    saveFile(filename, 'data:' + contentType, data)
-  } else {
-    announcement.announce({
-      title: 'Error',
-      message: 'Could not export results.',
-      type: 'error',
-    })
-  }
-}
-
 const TableExports = (props: Props) => {
   const [formats, setFormats] = useState([])
-
+  const addSnack = useSnack()
   useEffect(() => {
     const fetchFormats = async () => {
       const exportFormats = await getExportOptions(Transformer.Query)
@@ -267,16 +255,14 @@ const TableExports = (props: Props) => {
     }
     fetchFormats()
   }, [])
-
   return (
     <TableExport
       exportFormats={formats}
       selectionInterface={props.selectionInterface}
       getWarning={getWarning}
-      onDownloadClick={onDownloadClick}
+      onDownloadClick={generateOnDownloadClick({ addSnack })}
       filteredAttributes={props.filteredAttributes}
     />
   )
 }
-
 export default TableExports

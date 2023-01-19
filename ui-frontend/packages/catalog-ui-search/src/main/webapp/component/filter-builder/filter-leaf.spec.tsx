@@ -11,7 +11,6 @@ import {
   PolygonLocation,
 } from './filter.structure'
 import moment from 'moment'
-//@ts-ignore
 import user from '../singletons/user-instance'
 import TypedMetacardDefinitions from '../tabs/metacard/metacardDefinitions'
 TypedMetacardDefinitions.addMetacardDefinitions({

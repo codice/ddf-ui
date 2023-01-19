@@ -21,10 +21,10 @@ import {
   useActingRole,
 } from '../../component/singletons/TypedUser'
 import PersonIcon from '@material-ui/icons/Person'
+import user from '../../component/singletons/user-instance'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Switch from '@material-ui/core/Switch'
 import Typography from '@material-ui/core/Typography'
-const user = require('../../component/singletons/user-instance.js')
 
 export const EnhancedRolesContext = React.createContext<{
   enhancedRoles: string[]

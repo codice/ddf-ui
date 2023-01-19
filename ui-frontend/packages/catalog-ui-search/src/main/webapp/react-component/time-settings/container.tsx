@@ -2,17 +2,13 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import moment from 'moment'
-//@ts-ignore
-import withListenTo, {
-  WithBackboneProps,
-  //@ts-ignore
-} from '../backbone-container'
+import withListenTo, { WithBackboneProps } from '../backbone-container'
 
 import TimeSettingsPresentation from './presentation'
 import { TimeZone, TimeFormat } from './types'
 
 import momentTimezone from 'moment-timezone'
-const user = require('../../component/singletons/user-instance')
+import user from '../../component/singletons/user-instance'
 
 type UserPreferences = {
   get: (key: string) => any
@@ -59,7 +55,7 @@ const generateZoneObjects = (): TimeZone[] => {
     const zone = momentTimezone.tz.zone(zoneName)
     const zonedDate = momentTimezone.tz(timestamp, zoneName)
     const offsetAsString = zonedDate.format('Z')
-    //@ts-ignore
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     const abbr = zone.abbr(timestamp)
 
     return {

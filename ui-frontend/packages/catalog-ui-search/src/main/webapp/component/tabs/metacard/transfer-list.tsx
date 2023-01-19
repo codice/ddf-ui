@@ -22,8 +22,7 @@ import {
   Draggable,
 } from 'react-beautiful-dnd'
 import extension from '../../../extension-points'
-// @ts-ignore ts-migrate(6133) FIXME: 'dark' is declared but its value is never read.
-import { dark, light, Elevations } from '../../theme/theme'
+import { Elevations } from '../../theme/theme'
 import { DarkDivider } from '../../dark-divider/dark-divider'
 import LeftArrowIcon from '@material-ui/icons/ChevronLeft'
 import RightArrowIcon from '@material-ui/icons/ChevronRight'
@@ -35,12 +34,10 @@ import { AutoVariableSizeList } from 'react-window-components'
 import debounce from 'lodash.debounce'
 import { Memo } from '../../memo/memo'
 import { TypedUserInstance } from '../../singletons/TypedUser'
-const user = require('../../singletons/user-instance')
-
+import user from '../../singletons/user-instance'
 const getAmountChecked = (items: CheckedType) => {
   return Object.values(items).filter((a) => a).length
 }
-
 const handleShiftClick = ({
   items,
   filteredItemArray,
@@ -115,7 +112,6 @@ const handleShiftClick = ({
     })
   }
 }
-
 const ItemRow = ({
   value,
   lazyResult,
@@ -134,11 +130,9 @@ const ItemRow = ({
     CustomListContext
   )
   const { isNotWritable } = useCustomReadOnlyCheck()
-
   React.useEffect(() => {
     if (measure) measure()
   }, [])
-
   const alias = TypedMetacardDefs.getAlias({ attr: value })
   const isReadonly = lazyResult
     ? isNotWritable({
@@ -146,7 +140,6 @@ const ItemRow = ({
         lazyResult,
       })
     : true
-
   if (filter && !alias.toLowerCase().includes(filter.toLowerCase())) {
     return null
   }
@@ -256,19 +249,19 @@ const ItemRow = ({
     </div>
   )
 }
-
 const CustomListContext = React.createContext({
   items: {} as CheckedType,
   setItems: (() => {}) as SetCheckedType,
   filteredItemArray: [] as string[],
 })
-
 const filterUpdate = ({
   filter,
   setItemArray,
   items,
 }: {
-  items: { [key: string]: boolean }
+  items: {
+    [key: string]: boolean
+  }
   filter: string
   setItemArray: (val: string[]) => void
 }) => {
@@ -283,11 +276,9 @@ const filterUpdate = ({
     })
   )
 }
-
 const generateDebouncedFilterUpdate = () => {
   return debounce(filterUpdate, 500)
 }
-
 /**
  * At the moment, we only virtualize the right side since that's likely to be huge whereas the left isn't (it also has DND on left, which makes things diff to virtualize)
  */
@@ -348,8 +339,7 @@ const CustomList = ({
   return (
     <CustomListContext.Provider value={memoProviderValue}>
       <Paper
-        // @ts-ignore ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
-        data-id={`${title.toLowerCase()}-container`}
+        data-id={`${(title as any).toLowerCase()}-container`}
         elevation={Elevations.paper}
       >
         <Grid
@@ -361,8 +351,7 @@ const CustomList = ({
         >
           <Grid item className="absolute left-0 top-0 ml-2 mt-min">
             <Button
-              // @ts-ignore ts-migrate(2533) FIXME: Object is possibly 'null' or 'undefined'.
-              data-id={`${title.toLowerCase()}-select-all-checkbox`}
+              data-id={`${(title as any).toLowerCase()}-select-all-checkbox`}
               disabled={Object.keys(items).length === 0}
               onClick={handleToggleAll(items)}
               color={
@@ -476,11 +465,10 @@ const CustomList = ({
                           mode="virtual"
                           renderClone={(provided, _snapshot, rubric) => {
                             return (
-                              // @ts-ignore ts-migrate(2322) FIXME: Type 'DragEvent<HTMLDivElement>' is missing the fo... Remove this comment to see the full error message
                               <div
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                ref={provided.innerRef}
+                                {...(provided.draggableProps as any)}
+                                {...(provided.dragHandleProps as any)}
+                                ref={provided.innerRef as any}
                               >
                                 <ItemRow
                                   value={filteredItemArray[rubric.source.index]}
@@ -512,11 +500,10 @@ const CustomList = ({
                                       >
                                         {(provided) => {
                                           return (
-                                            // @ts-ignore ts-migrate(2322) FIXME: Type 'DragEvent<HTMLDivElement>' is missing the fo... Remove this comment to see the full error message
                                             <div
-                                              ref={provided.innerRef}
-                                              {...provided.draggableProps}
-                                              {...provided.dragHandleProps}
+                                              ref={provided.innerRef as any}
+                                              {...(provided.draggableProps as any)}
+                                              {...(provided.dragHandleProps as any)}
                                             >
                                               <ItemRow
                                                 value={item}
@@ -575,26 +562,28 @@ const CustomList = ({
     </CustomListContext.Provider>
   )
 }
-
 export const useCustomReadOnlyCheck = () => {
   const [
     customEditableAttributes,
     setCustomEditableAttributes,
   ] = React.useState([] as string[])
+  const isMounted = React.useRef<boolean>(true)
   const [loading, setLoading] = React.useState(true)
-
   const initializeCustomEditableAttributes = async () => {
     const attrs = await extension.customEditableAttributes()
-    if (attrs !== undefined) {
-      setCustomEditableAttributes(attrs)
+    if (isMounted.current) {
+      if (attrs !== undefined) {
+        setCustomEditableAttributes(attrs)
+      }
+      setLoading(false)
     }
-    setLoading(false)
   }
-
   React.useEffect(() => {
     initializeCustomEditableAttributes()
+    return () => {
+      isMounted.current = false
+    }
   }, [])
-
   return {
     loading,
     isNotWritable: ({
@@ -621,18 +610,21 @@ export const useCustomReadOnlyCheck = () => {
     },
   }
 }
-
 const convertAttrListToMap = (attrs: string[]) => {
-  return attrs.reduce((blob, attr) => {
-    blob[attr] = false
-    return blob
-  }, {} as { [key: string]: boolean })
+  return attrs.reduce(
+    (blob, attr) => {
+      blob[attr] = false
+      return blob
+    },
+    {} as {
+      [key: string]: boolean
+    }
+  )
 }
 type CheckedType = {
   [key: string]: boolean
 }
 type SetCheckedType = React.Dispatch<React.SetStateAction<CheckedType>>
-
 const TransferList = ({
   startingLeft,
   startingRight,
@@ -656,7 +648,6 @@ const TransferList = ({
       setMode('normal')
     }
   }, [loading])
-
   const generateHandleToggleAll = ({
     setState,
     state,
@@ -682,7 +673,6 @@ const TransferList = ({
       }
     }
   }
-
   const moveRight = () => {
     const checkedLeft = Object.entries(left)
       .filter((a) => a[1])
@@ -702,7 +692,6 @@ const TransferList = ({
     })
     setLeft(nonCheckedLeft)
   }
-
   const moveLeft = () => {
     const checkedRight = Object.entries(right)
       .filter((a) => a[1])
@@ -722,7 +711,6 @@ const TransferList = ({
     })
     setRight(nonCheckedRight)
   }
-
   const hasLeftChecked = Object.entries(left).find((a) => a[1]) !== undefined
   const hasRightChecked = Object.entries(right).find((a) => a[1]) !== undefined
   const startOver = () => {
@@ -739,7 +727,6 @@ const TransferList = ({
     })
   }
   const totalPossible = startingLeft.length + startingRight.length
-
   return (
     <>
       <div className="text-2xl text-center px-2 pb-2 pt-4 font-normal relative">
@@ -765,7 +752,7 @@ const TransferList = ({
         <Grid
           container
           spacing={2}
-          justify="center"
+          justifyContent="center"
           alignItems="center"
           className="m-auto"
         >
@@ -876,5 +863,4 @@ const TransferList = ({
     </>
   )
 }
-
 export default hot(module)(TransferList)

@@ -1,6 +1,8 @@
 import { TypedUserInstance } from '../../singletons/TypedUser'
-const mtgeo = require('mt-geo')
-const usngs = require('usng.js')
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'mt-g... Remove this comment to see the full error message
+import mtgeo from 'mt-geo'
+import * as usngs from 'usng.js'
+// @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
 const converter = new usngs.Converter()
 
 const usngPrecision = 6

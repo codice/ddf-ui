@@ -38,7 +38,6 @@ type ScreenSizes = {
 
 type ZIndexes = {
   zIndexMenubar: number
-  zIndexLightbox: number
   zIndexLoadingCompanion: number
   zIndexSlideout: number
   zIndexContent: number

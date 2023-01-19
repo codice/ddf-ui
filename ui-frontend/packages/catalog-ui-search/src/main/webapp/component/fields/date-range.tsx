@@ -19,7 +19,7 @@ import { ValueTypes } from '../filter-builder/filter.structure'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
 import useTimePrefs from './useTimePrefs'
 
-const user = require('../singletons/user-instance.js')
+import user from '../singletons/user-instance'
 
 type Props = {
   value: ValueTypes['during']

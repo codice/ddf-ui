@@ -12,19 +12,14 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const React = require('react')
-const {
-  validateWkt,
-  validateDd,
-  validateDms,
-  validateUsng,
-} = require('./utils')
-const { Radio, RadioItem } = require('../../react-component/radio/index.js')
-const { WKT, LatLongDD, LatLongDMS, USNG } = require('./geo-components')
+import React from 'react'
+import { validateWkt, validateDd, validateDms, validateUsng } from './utils'
+import { Radio, RadioItem } from '../../react-component/radio/radio'
+import { WKT, LatLongDD, LatLongDMS, USNG } from './geo-components'
 import Gazetteer from '../../react-component/location/gazetteer'
-const CQLUtils = require('../../js/CQLUtils.js')
-
-const produce = require('immer').default
+import CQLUtils from '../../js/CQLUtils'
+import immer from 'immer'
+const produce = immer
 import { hot } from 'react-hot-loader'
 
 const inputs = {
@@ -48,7 +43,6 @@ const inputs = {
     label: 'Keyword',
     Component: (props: LocationInputPropsType) => {
       const { keyword } = props
-      console.log(props)
       return (
         <Gazetteer
           placeholder={'Enter a location'}
@@ -83,10 +77,6 @@ const inputs = {
   }
 }
 
-const Form = ({ children }: any) => (
-  <div className="form-group clearfix">{children}</div>
-)
-
 const validate = ({
   state,
   setState,
@@ -113,7 +103,7 @@ const validate = ({
   setState({
     ...state,
     valid: validationReport ? validationReport.valid : true,
-    error: validationReport ? validationReport.error : false,
+    error: validationReport ? validationReport.error : (false as any),
   })
 }
 
@@ -176,7 +166,7 @@ const LocationInput = (props: LocationInputPropsType) => {
           </RadioItem>
         ))}
       </Radio>
-      <Form>
+      <div className="form-group clearfix mt-2">
         {Component !== null ? <Component {...props} /> : null}
         <div
           className={`for-error whitespace-pre-line ${
@@ -189,7 +179,7 @@ const LocationInput = (props: LocationInputPropsType) => {
         >
           <span className="fa fa-exclamation-triangle" /> {error}
         </div>
-      </Form>
+      </div>
     </div>
   )
 }

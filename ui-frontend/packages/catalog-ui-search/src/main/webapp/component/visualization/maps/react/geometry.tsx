@@ -2,10 +2,10 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryResult'
 import { ClusterType } from './geometries'
-const _ = require('underscore')
-const _debounce = require('lodash/debounce')
-const wkx = require('wkx')
-const metacardDefinitions = require('../../../singletons/metacard-definitions.js')
+import _ from 'underscore'
+import _debounce from 'lodash/debounce'
+import wkx from 'wkx'
+import metacardDefinitions from '../../../singletons/metacard-definitions'
 import iconHelper from '../../../../js/IconHelper'
 import { useUpdateEffect } from 'react-use'
 import { useSelectionOfLazyResult } from '../../../../js/model/LazyQueryResult/hooks'

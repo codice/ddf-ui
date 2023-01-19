@@ -18,8 +18,8 @@ import * as React from 'react'
 import ResultSortPresentation from './presentation'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 
-const Backbone = require('backbone')
-const user = require('../../component/singletons/user-instance.js')
+import Backbone from 'backbone'
+import user from '../../component/singletons/user-instance'
 
 type Props = {
   closeDropdown: any

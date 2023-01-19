@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import Paper from '@material-ui/core/Paper'
-const moment = require('moment')
+import moment from 'moment'
 import styled from 'styled-components'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
@@ -21,6 +21,7 @@ type Props = {
 
 const Cell = styled.td`
   padding: 20px;
+  border: solid 1px rgba(120, 120, 120, 0.2);
 `
 
 const HeaderCell = styled.th`
@@ -86,7 +87,6 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
   let successful = status.successful
   let message = status.message
 
-  // @ts-ignore ts-migrate(2339) FIXME: Property 'warnings' does not exist on type 'Status... Remove this comment to see the full error message
   let warnings = status.warnings
   let id = status.id
 
@@ -172,7 +172,7 @@ const QueryStatus = ({
           Filter
         </HeaderCell>
       </tr>
-      <tbody className="is-list">
+      <tbody>
         {statusBySource.map((status) => {
           return (
             <QueryStatusRow key={status.id} status={status} query={query} />
@@ -272,7 +272,6 @@ const QueryFeed = ({ selectionInterface }: Props) => {
             <div className="relative">
               <Button
                 data-id="heartbeat-button"
-                className="details-view is-button"
                 title="Show the full status for the search."
                 data-help="Show the full status for the search."
                 {...MuiButtonProps}

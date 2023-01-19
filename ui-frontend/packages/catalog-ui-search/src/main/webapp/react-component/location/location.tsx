@@ -13,24 +13,21 @@
  *
  **/
 import * as React from 'react'
-const LocationOldModel = require('../../component/location-old/location-old')
-const CustomElements = require('../../js/CustomElements.js')
-const wreqr = require('../../js/wreqr.js')
+import LocationOldModel from '../../component/location-old/location-old'
+import wreqr from '../../js/wreqr'
 import { Drawing } from '../../component/singletons/drawing'
-const ShapeUtils = require('../../js/ShapeUtils.js')
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 import { hot } from 'react-hot-loader'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
-
-const Line = require('./line')
-const Polygon = require('./polygon')
-const PointRadius = require('./point-radius')
-const BoundingBox = require('./bounding-box')
+import Line from './line'
+import Polygon from './polygon'
+import PointRadius from './point-radius'
+import BoundingBox from './bounding-box'
 import Gazetteer from './gazetteer'
+import ShapeUtils from '../../js/ShapeUtils'
 const plugin = require('plugins/location')
-
 type InputType = {
   label: string
   Component: any
@@ -38,7 +35,8 @@ type InputType = {
 type InputsType = {
   [key: string]: InputType
 }
-const inputs = plugin({
+
+const BaseInputs = {
   line: {
     label: 'Line',
     Component: Line,
@@ -76,10 +74,16 @@ const inputs = plugin({
       )
     },
   },
-}) as InputsType
+} as InputsType
+
+let inputs = BaseInputs
+try {
+  inputs = plugin(BaseInputs) as InputsType
+} catch (err) {
+  console.warn(err)
+}
 
 const drawTypes = ['line', 'poly', 'circle', 'bbox']
-
 function getCurrentValue({ locationModel }: any) {
   const modelJSON = locationModel.toJSON()
   let type
@@ -110,20 +114,17 @@ function getCurrentValue({ locationModel }: any) {
     radius: modelJSON.radius,
   })
 }
-
 function updateMap({ locationModel }: any) {
   const mode = locationModel.get('mode')
   if (mode !== undefined && Drawing.isDrawing() !== true) {
-    wreqr.vent.trigger('search:' + mode + 'display', locationModel)
+    ;(wreqr as any).vent.trigger('search:' + mode + 'display', locationModel)
   }
 }
-
 export const LocationContext = React.createContext({
   filterInputPredicate: (_name: string): boolean => {
     return true
   },
 })
-const Component = CustomElements.registerReact('location')
 const LocationInput = ({ onChange, value }: any) => {
   const locationContext = React.useContext(LocationContext)
   const [locationModel] = React.useState(new LocationOldModel(value) as any)
@@ -134,7 +135,7 @@ const LocationInput = ({ onChange, value }: any) => {
       setTimeout(() => {
         // This is to facilitate clearing out the map, it isn't about the value, but we don't want the changeCallback to fire!
         locationModel.set(locationModel.defaults())
-        wreqr.vent.trigger('search:drawend', locationModel)
+        ;(wreqr as any).vent.trigger('search:drawend', [locationModel])
       }, 0)
     }
   }, [])
@@ -149,7 +150,6 @@ const LocationInput = ({ onChange, value }: any) => {
       stopListening(locationModel, 'change', onChangeCallback)
     }
   }, [onChange])
-
   const ComponentToRender = inputs[state.mode]
     ? inputs[state.mode].Component
     : () => null
@@ -166,11 +166,10 @@ const LocationInput = ({ onChange, value }: any) => {
     })
   return (
     <div>
-      <Component>
+      <div>
         <Autocomplete
           className="mb-2"
           data-id="filter-type-autocomplete"
-          // @ts-ignore fullWidth does exist on Autocomplete
           fullWidth
           size="small"
           options={options}
@@ -182,7 +181,12 @@ const LocationInput = ({ onChange, value }: any) => {
             locationModel.set('mode', newValue.value)
           }}
           disableClearable
-          value={options.find((opt) => opt.value === state.mode)}
+          value={
+            options.find((opt) => opt.value === state.mode) || {
+              value: '',
+              label: '',
+            }
+          }
           renderInput={(params) => (
             <TextField
               {...params}
@@ -202,19 +206,22 @@ const LocationInput = ({ onChange, value }: any) => {
           />
           {drawTypes.includes(state.mode) ? (
             <Button
-              className="location-draw is-primary"
+              className="location-draw  mt-2"
               onMouseDown={() => {
-                wreqr.vent.trigger('search:draw' + state.mode, locationModel)
+                ;(wreqr as any).vent.trigger(
+                  'search:draw' + state.mode,
+                  locationModel
+                )
               }}
+              fullWidth
             >
               <span className="fa fa-globe" />
-              <span>Draw</span>
+              <span className="ml-2">Draw</span>
             </Button>
           ) : null}
         </div>
-      </Component>
+      </div>
     </div>
   )
 }
-
 export default hot(module)(LocationInput)

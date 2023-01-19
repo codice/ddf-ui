@@ -4,21 +4,18 @@ import Paper from '@material-ui/core/Paper'
 import { hot } from 'react-hot-loader'
 import { Elevations } from '../theme/theme'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-const wreqr = require('../../js/wreqr.js')
-
+import wreqr from '../../js/wreqr'
 type OverflowTipType = {
   children: React.ReactNode
   tooltipProps?: Partial<TooltipProps>
   refOfThingToMeasure?: HTMLDivElement | null
   className?: string
 }
-
 export type OverflowTooltipHTMLElement = HTMLDivElement & {
   overflowTooltip: {
     setOpen: (open: boolean) => void
   }
 }
-
 function areDescendentsTruncated(element?: Element): boolean {
   if (!element) {
     return false
@@ -39,7 +36,6 @@ function areDescendentsTruncated(element?: Element): boolean {
   }
   return false
 }
-
 export function useIsTruncated<T extends HTMLElement>(
   passedInRef: T | null = null
 ) {
@@ -56,7 +52,7 @@ export function useIsTruncated<T extends HTMLElement>(
     compareSizeRef.current = compareSize
     if (ref.current) {
       compareSize()
-      listenTo(wreqr.vent, 'resize', compareSize)
+      listenTo((wreqr as any).vent, 'resize', compareSize)
       window.addEventListener('resize', compareSize)
       ref.current.addEventListener('mouseenter', compareSize)
     } else {
@@ -65,7 +61,7 @@ export function useIsTruncated<T extends HTMLElement>(
       )
     }
     return () => {
-      stopListening(wreqr.vent, 'resize', compareSize)
+      stopListening((wreqr as any).vent, 'resize', compareSize)
       window.removeEventListener('resize', compareSize)
       ref.current?.removeEventListener('mouseenter', compareSize)
     }
@@ -76,7 +72,6 @@ export function useIsTruncated<T extends HTMLElement>(
     compareSize: compareSizeRef,
   }
 }
-
 const OverflowTip = ({
   children,
   tooltipProps = {},
@@ -86,7 +81,6 @@ const OverflowTip = ({
   const { title, ...otherTooltipProps } = tooltipProps
   const [open, setOpen] = React.useState(false)
   const isTruncatedState = useIsTruncated(refOfThingToMeasurePassedIn)
-
   React.useEffect(() => {
     // expose this ugly thing when no other way will work (autocompletes unfortunately)
     ;(isTruncatedState.ref
@@ -96,7 +90,6 @@ const OverflowTip = ({
       },
     }
   }, [isTruncatedState.ref.current])
-
   return (
     <Tooltip
       title={
@@ -127,5 +120,4 @@ const OverflowTip = ({
     </Tooltip>
   )
 }
-
 export default hot(module)(OverflowTip)

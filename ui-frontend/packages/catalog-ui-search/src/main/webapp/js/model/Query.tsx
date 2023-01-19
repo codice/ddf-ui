@@ -12,19 +12,14 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
-const Backbone = require('backbone')
-const _ = require('underscore')
-const properties = require('../properties.js')
-const QueryResponse = require('./QueryResponse.js')
+import Backbone from 'backbone'
+import _ from 'underscore'
+import properties from '../properties'
+import QueryResponse from './QueryResponse'
 import Sources from '../../component/singletons/sources-instance'
-const Common = require('../Common.js')
-const announcement = require('../../component/announcement/index.jsx')
 import cql from '../cql'
-const _merge = require('lodash/merge')
-require('backbone-associations')
-import React from 'react'
-import { readableColor } from 'polished'
+import _merge from 'lodash/merge'
+import 'backbone-associations'
 import { LazyQueryResults } from './LazyQueryResult/LazyQueryResults'
 import {
   FilterBuilderClass,
@@ -41,8 +36,8 @@ import {
   IndexForSourceGroupType,
   QueryStartAndEndType,
 } from './Query.methods'
-const wreqr = require('../wreqr')
-
+import { Common } from '../Common'
+import wreqr from '../wreqr'
 export type QueryType = {
   constructor: (_attributes: any, options: any) => void
   set: (p1: any, p2?: any) => void
@@ -59,6 +54,16 @@ export type QueryType = {
   isOutdated: () => boolean
   startSearchIfOutdated: () => void
   updateCqlBasedOnFilterTree: () => void
+  initializeResult: (
+    options?: any
+  ) => {
+    data: any
+    selectedSources: any
+    isHarvested: any
+    isFederated: any
+    result: any
+    resultOptions: any
+  }
   startSearchFromFirstPage: (options?: any, done?: any) => void
   startSearch: (options?: any, done?: any) => void
   currentSearches: Array<any>
@@ -85,14 +90,6 @@ export type QueryType = {
   getCurrentStartAndEndForSourceGroup: () => QueryStartAndEndType
   [key: string]: any
 }
-
-export const Query = {} as {
-  Model: {
-    new (..._args: any): QueryType
-  }
-}
-export default Query
-
 function limitToDeleted(cqlFilterTree: any) {
   return new FilterBuilderClass({
     type: 'AND',
@@ -111,7 +108,6 @@ function limitToDeleted(cqlFilterTree: any) {
     ],
   })
 }
-
 function limitToHistoric(cqlFilterTree: any) {
   return new FilterBuilderClass({
     type: 'AND',
@@ -125,8 +121,7 @@ function limitToHistoric(cqlFilterTree: any) {
     ],
   })
 }
-
-Query.Model = Backbone.AssociatedModel.extend({
+export default Backbone.AssociatedModel.extend({
   relations: [
     {
       type: Backbone.One,
@@ -182,7 +177,7 @@ Query.Model = Backbone.AssociatedModel.extend({
         cql: "anyText ILIKE '*'",
         associatedFormModel: undefined,
         excludeUnnecessaryAttributes: true,
-        count: properties.resultCount,
+        count: (properties as any).resultCount,
         start: 1,
         sorts: [
           {
@@ -242,6 +237,7 @@ Query.Model = Backbone.AssociatedModel.extend({
     }
   },
   initialize(attributes: any) {
+    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     _.bindAll.apply(_, [this].concat(_.functions(this))) // underscore bindAll does not take array arg
     const filterTree = this.get('filterTree')
     if (filterTree && typeof filterTree === 'string') {
@@ -252,7 +248,7 @@ Query.Model = Backbone.AssociatedModel.extend({
       this.set('filterTree', cql.read(this.get('cql'))) // reconstruct
       console.warn('migrating a filter tree to the latest structure')
       // allow downstream projects to handle how they want to inform users of migrations
-      wreqr.vent.trigger('filterTree:migration', {
+      ;(wreqr as any).vent.trigger('filterTree:migration', {
         search: this,
       })
     } else {
@@ -304,17 +300,14 @@ Query.Model = Backbone.AssociatedModel.extend({
   buildSearchData() {
     const data = this.toJSON()
     data.sources = this.getSelectedSources()
-
     data.count = this.options.transformCount({
       originalCount: this.get('count'),
       queryRef: this,
     })
-
     data.sorts = this.options.transformSorts({
       originalSorts: this.get('sorts'),
       queryRef: this,
     })
-
     return _.pick(
       data,
       'sources',
@@ -369,13 +362,7 @@ Query.Model = Backbone.AssociatedModel.extend({
     this.resetCurrentIndexForSourceGroup()
     this.startSearch(options, done)
   },
-  startSearch(options: any, done: any) {
-    console.log(this)
-    this.trigger('panToShapesExtent')
-    this.set('isOutdated', false)
-    if (this.get('cql') === '') {
-      return
-    }
+  initializeResult(options: any) {
     options = _.extend(
       {
         limitToDeleted: false,
@@ -383,15 +370,11 @@ Query.Model = Backbone.AssociatedModel.extend({
       },
       options
     )
-    this.cancelCurrentSearches()
-
     const data = Common.duplicate(this.buildSearchData())
     data.batchId = Common.generateUUID()
-
     // Data.sources is set in `buildSearchData` based on which sources you have selected.
     let selectedSources = data.sources
     const harvestedSources = Sources.getHarvested()
-
     const isHarvested = (id: any) => harvestedSources.includes(id)
     const isFederated = (id: any) => !harvestedSources.includes(id)
     if (options.limitToDeleted) {
@@ -423,19 +406,40 @@ Query.Model = Backbone.AssociatedModel.extend({
         result,
       })
     }
-
+    return {
+      data,
+      selectedSources,
+      isHarvested,
+      isFederated,
+      result,
+      resultOptions: options,
+    }
+  },
+  startSearch(options: any, done: any) {
+    this.trigger('panToShapesExtent')
+    this.set('isOutdated', false)
+    if (this.get('cql') === '') {
+      return
+    }
+    this.cancelCurrentSearches()
+    const {
+      data,
+      selectedSources,
+      isHarvested,
+      isFederated,
+      result,
+      resultOptions,
+    } = this.initializeResult(options)
     let cqlFilterTree = this.get('filterTree')
-    if (options.limitToDeleted) {
+    if (resultOptions.limitToDeleted) {
       cqlFilterTree = limitToDeleted(cqlFilterTree)
-    } else if (options.limitToHistoric) {
+    } else if (resultOptions.limitToHistoric) {
       cqlFilterTree = limitToHistoric(cqlFilterTree)
     }
-
     let cqlString = this.options.transformFilterTree({
       originalFilterTree: cqlFilterTree,
       queryRef: this,
     })
-
     this.currentIndexForSourceGroup = this.nextIndexForSourceGroup
     const localSearchToRun = {
       ...data,
@@ -443,7 +447,6 @@ Query.Model = Backbone.AssociatedModel.extend({
       srcs: selectedSources.filter(isHarvested),
       start: this.currentIndexForSourceGroup.local,
     }
-
     const federatedSearchesToRun = selectedSources
       .filter(isFederated)
       .map((source: any) => ({
@@ -452,24 +455,17 @@ Query.Model = Backbone.AssociatedModel.extend({
         srcs: [source],
         start: this.currentIndexForSourceGroup[source],
       }))
-
     const searchesToRun = [localSearchToRun, ...federatedSearchesToRun].filter(
       (search) => search.srcs.length > 0
     )
-
     if (searchesToRun.length === 0) {
-      announcement.announce({
-        title: 'Search "' + this.get('title') + '" cannot be run.',
-        message: properties.i18n['search.sources.selected.none.message'],
-        type: 'warn',
-      })
-      this.currentSearches = []
+      // reset to all and run
+      this.set('sources', ['all'])
+      this.startSearchFromFirstPage()
       return
     }
-
     this.currentSearches = searchesToRun.map((search) => {
       delete search.sources // This key isn't used on the backend and only serves to confuse those debugging this code.
-
       // `result` is QueryResponse
       return result.fetch({
         customErrorHandling: true,
@@ -479,34 +475,11 @@ Query.Model = Backbone.AssociatedModel.extend({
         contentType: 'application/json',
         method: 'POST',
         processData: false,
-        timeout: properties.timeout,
+        timeout: (properties as any).timeout,
         success(_model: any, response: any, options: any) {
           response.options = options
         },
         error(_model: any, response: any, options: any) {
-          if (response.status === 401) {
-            const providerUrl = response.responseJSON.url
-            const sourceId = response.responseJSON.id
-
-            const link = React.createElement(
-              'a',
-              {
-                href: providerUrl,
-                target: '_blank',
-                style: {
-                  color: `${(props: any) =>
-                    readableColor(props.theme.negativeColor)}`,
-                },
-              },
-              `Click Here To Authenticate ${sourceId}`
-            )
-            announcement.announce({
-              title: `Source ${sourceId} is Not Authenticated`,
-              message: link,
-              type: 'error',
-            })
-          }
-
           response.options = options
         },
       })
@@ -603,7 +576,6 @@ Query.Model = Backbone.AssociatedModel.extend({
       },
       count: this.get('count'),
     })
-    console.log(this.nextIndexForSourceGroup)
     this.startSearch()
   },
   resetCurrentIndexForSourceGroup() {

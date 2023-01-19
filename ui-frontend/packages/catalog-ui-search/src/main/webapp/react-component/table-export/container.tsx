@@ -14,9 +14,9 @@
  **/
 import * as React from 'react'
 import TableExportComponent from './presentation'
-import LoadingCompanion from '../loading-companion'
+import LinearProgress from '@material-ui/core/LinearProgress'
 import { hot } from 'react-hot-loader'
-const properties = require('../../js/properties.js')
+import properties from '../../js/properties'
 import {
   ExportCountInfo,
   DownloadInfo,
@@ -59,7 +59,7 @@ export default hot(module)(
         ],
         exportSize: 'all',
         exportFormat: 'csv',
-        customExportCount: properties.exportResultLimit,
+        customExportCount: (properties as any).exportResultLimit,
       }
     }
     transformUrl = './internal/cql/transform/'
@@ -90,35 +90,43 @@ export default hot(module)(
         getWarning,
         filteredAttributes,
       } = this.props
-      return (
-        <LoadingCompanion loading={exportFormats.length === 0}>
-          {exportFormats.length > 0 ? (
-            <TableExportComponent
-              exportFormatOptions={exportFormats}
-              exportFormat={exportFormat}
-              exportSizeOptions={exportSizes}
-              exportSize={exportSize}
-              handleExportFormatChange={this.handleExportFormatChange}
-              handleExportSizeChange={this.handleExportSizeChange}
-              handleCustomExportCountChange={this.handleCustomExportCountChange}
-              onDownloadClick={() =>
-                onDownloadClick({
-                  exportFormat,
+      return exportFormats.length === 0 ? (
+        <>
+          <LinearProgress className="w-full h-2"></LinearProgress>
+        </>
+      ) : (
+        <>
+          <>
+            {exportFormats.length > 0 ? (
+              <TableExportComponent
+                exportFormatOptions={exportFormats}
+                exportFormat={exportFormat}
+                exportSizeOptions={exportSizes}
+                exportSize={exportSize}
+                handleExportFormatChange={this.handleExportFormatChange}
+                handleExportSizeChange={this.handleExportSizeChange}
+                handleCustomExportCountChange={
+                  this.handleCustomExportCountChange
+                }
+                onDownloadClick={() =>
+                  onDownloadClick({
+                    exportFormat,
+                    exportSize,
+                    selectionInterface,
+                    customExportCount,
+                    filteredAttributes,
+                  })
+                }
+                warning={getWarning({
                   exportSize,
                   selectionInterface,
                   customExportCount,
-                  filteredAttributes,
-                })
-              }
-              warning={getWarning({
-                exportSize,
-                selectionInterface,
-                customExportCount,
-              })}
-              customExportCount={customExportCount}
-            />
-          ) : null}
-        </LoadingCompanion>
+                })}
+                customExportCount={customExportCount}
+              />
+            ) : null}
+          </>
+        </>
       )
     }
   }

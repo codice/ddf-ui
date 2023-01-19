@@ -6,7 +6,7 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import Portal from '@material-ui/core/Portal'
 
-type AddSnack = (message: string, props?: SnackProps) => void
+export type AddSnack = (message: string, props?: SnackProps) => void
 
 type Snack = {
   message?: string
@@ -57,8 +57,7 @@ export function SnackProvider({ children }: any) {
     return
   }, [currentSnack])
 
-  // @ts-ignore ts-migrate(6133) FIXME: 'e' is declared but its value is never read.
-  const handleClose = (e: any, reason: string) => {
+  const handleClose = (_e: any, reason: string) => {
     if (reason === 'clickaway' && currentSnack.clickawayCloseable) {
       removeCurrentSnack()
     } else if (reason !== 'clickaway' && currentSnack.closeable) {
@@ -119,7 +118,7 @@ export function SnackProvider({ children }: any) {
                     </Button>
                   )}
                   {closeable && (
-                    // @ts-ignore ts-migrate(2769) FIXME: Type '(e: any, reason: string) => void' is not ass... Remove this comment to see the full error message
+                    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
                     <IconButton
                       style={{ padding: '3px' }}
                       color="inherit"
