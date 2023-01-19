@@ -619,9 +619,11 @@ const DrawHelper = (function () {
       var _self = this
       const screenSpaceCameraController = this._scene
         .screenSpaceCameraController
+      // @ts-expect-error ts-migrate(1252) FIXME: Function declarations are not allowed inside block... Remove this comment to see the full error message
       function enableRotation(enable: any) {
         screenSpaceCameraController.enableRotate = enable
       }
+      // @ts-expect-error ts-migrate(1252) FIXME: Function declarations are not allowed inside block... Remove this comment to see the full error message
       function getIndex() {
         // find index
         for (
@@ -1177,6 +1179,7 @@ const DrawHelper = (function () {
             dragHalfBillboard
           )
           // function for updating the edit markers around a certain point
+          // @ts-expect-error ts-migrate(1252) FIXME: Function declarations are not allowed inside block... Remove this comment to see the full error message
           function updateHalfMarkers(index: any, positions: any) {
             // update the half markers before and after the index
             let editIndex = index - 1 < 0 ? positions.length - 1 : index - 1
@@ -1192,6 +1195,7 @@ const DrawHelper = (function () {
               ).position = calculateHalfMarkerPosition(editIndex)
             }
           }
+          // @ts-expect-error ts-migrate(1252) FIXME: Function declarations are not allowed inside block... Remove this comment to see the full error message
           function onEdited() {
             _self.executeListeners({
               name: 'onEdited',
@@ -1232,6 +1236,7 @@ const DrawHelper = (function () {
           // add billboards and keep an ordered list of them for the polygon edges
           markers.addBillboards(_self.positions, handleMarkerChanges)
           this._markers = markers
+          // @ts-expect-error ts-migrate(1252) FIXME: Function declarations are not allowed inside block... Remove this comment to see the full error message
           function calculateHalfMarkerPosition(index: any) {
             const positions = _self.positions
             return ellipsoid.cartographicToCartesian(
@@ -1375,6 +1380,7 @@ const DrawHelper = (function () {
           if (this._markers == null) {
             // @ts-expect-error ts-migrate(7009) FIXME: 'new' expression, whose target lacks a construct s... Remove this comment to see the full error message
             const markers = new _.BillboardGroup(drawHelper, dragBillboard)
+            // @ts-expect-error ts-migrate(1252) FIXME: Function declarations are not allowed inside block... Remove this comment to see the full error message
             function onEdited() {
               extent.executeListeners({
                 name: 'onEdited',
@@ -1465,6 +1471,7 @@ const DrawHelper = (function () {
           if (this._markers == null) {
             // @ts-expect-error ts-migrate(7009) FIXME: 'new' expression, whose target lacks a construct s... Remove this comment to see the full error message
             const markers = new _.BillboardGroup(drawHelper, dragBillboard)
+            // @ts-expect-error ts-migrate(1252) FIXME: Function declarations are not allowed inside block... Remove this comment to see the full error message
             function getMarkerPositions() {
               return Cesium.Shapes.computeEllipseBoundary(
                 ellipsoid,
@@ -1475,6 +1482,7 @@ const DrawHelper = (function () {
                 Math.PI / 2.0
               ).splice(0, 4)
             }
+            // @ts-expect-error ts-migrate(1252) FIXME: Function declarations are not allowed inside block... Remove this comment to see the full error message
             function onEdited() {
               ellipse.executeListeners({
                 name: 'onEdited',
@@ -1584,11 +1592,13 @@ const DrawHelper = (function () {
           if (this._markers == null) {
             // @ts-expect-error ts-migrate(7009) FIXME: 'new' expression, whose target lacks a construct s... Remove this comment to see the full error message
             const markers = new _.BillboardGroup(drawHelper, dragBillboard)
+            // @ts-expect-error ts-migrate(1252) FIXME: Function declarations are not allowed inside block... Remove this comment to see the full error message
             function getMarkerPositions() {
               return _self.getCircleCartesianCoordinates(
                 Cesium.Math.PI_OVER_TWO
               )
             }
+            // @ts-expect-error ts-migrate(1252) FIXME: Function declarations are not allowed inside block... Remove this comment to see the full error message
             function onEdited() {
               circle.executeListeners({
                 name: 'onEdited',
