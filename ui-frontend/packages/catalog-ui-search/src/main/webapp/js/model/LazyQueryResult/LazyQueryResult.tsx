@@ -330,8 +330,15 @@ export class LazyQueryResult {
     })
     this.syncWithPlain()
   }
-  isDownloadable(): boolean {
-    return this.plain.metacard.properties['resource-download-url'] !== undefined
+  getDownloadUrl(): string {
+    const downloadAction = this.plain.actions.find(
+      (action) =>
+        action.id === 'catalog.data.metacard.resource.alternate-download'
+    )
+
+    return downloadAction
+      ? downloadAction.url
+      : this.plain.metacard.properties['resource-download-url']
   }
   getPreview(): string {
     return this.plain.metacard.properties['ext.extracted.text']
