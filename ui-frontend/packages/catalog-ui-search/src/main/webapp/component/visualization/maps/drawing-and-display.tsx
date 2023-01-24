@@ -221,9 +221,11 @@ export const useDrawingAndDisplayModels = ({
   }, [])
   const callback = React.useMemo(() => {
     return () => {
-      const shapesExist = map.panToShapesExtent()
-      if (!shapesExist) {
-        zoomToHome({ map })
+      if (map) {
+        const shapesExist = map.panToShapesExtent()
+        if (!shapesExist) {
+          zoomToHome({ map })
+        }
       }
     }
   }, [filterModels, models, map])
