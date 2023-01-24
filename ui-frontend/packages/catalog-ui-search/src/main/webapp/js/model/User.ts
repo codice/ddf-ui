@@ -235,13 +235,10 @@ const Theme = Backbone.Model.extend({
     if (this.parents[0].isGuestUser()) {
       window.localStorage.setItem('preferences', JSON.stringify(currentPrefs))
     } else {
+      this.lastSaved = Common.duplicate(currentPrefs)
       this.save(currentPrefs, {
         drop: true,
-        wait: true,
         customErrorHandling: true,
-        success: () => {
-          this.lastSaved = Common.duplicate(currentPrefs)
-        },
         error: () => {
           ;(wreqr as any).vent.trigger('snack', {
             message:
