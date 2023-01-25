@@ -14,6 +14,7 @@
  **/
 import Backbone from 'backbone'
 import $ from 'jquery'
+import fetch from '../../react-component/utils/fetch'
 import '../jquery.whenAll'
 function fileMatches(file: any, model: any) {
   return file === model.get('file')
@@ -25,20 +26,22 @@ function checkValidation(model: any) {
     setTimeout(function (this: any) {
       ;($ as any).whenAll
         .apply(this, [
-          $.get(
+          fetch(
             './internal/metacard/' + model.get('id') + '/attribute/validation'
-          ).then((response) => {
-            model.set({
-              issues: model.get('issues') || response.length > 0,
-            })
-          }),
-          $.get('./internal/metacard/' + model.get('id') + '/validation').then(
-            (response) => {
+          )
+            .then((response) => response.json())
+            .then((response) => {
               model.set({
                 issues: model.get('issues') || response.length > 0,
               })
-            }
-          ),
+            }),
+          fetch('./internal/metacard/' + model.get('id') + '/validation')
+            .then((response) => response.json())
+            .then((response) => {
+              model.set({
+                issues: model.get('issues') || response.length > 0,
+              })
+            }),
         ])
         .always(() => {
           model.set({

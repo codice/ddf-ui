@@ -29,6 +29,7 @@ import UploadBatch from './UploadBatch'
 import moment from 'moment-timezone'
 import QuerySettings from './QuerySettings'
 import 'backbone-associations'
+import { CommonAjaxSettings } from '../AjaxSettings'
 const User = {}
 const Theme = Backbone.Model.extend({
   defaults() {
@@ -110,7 +111,6 @@ const Theme = Backbone.Model.extend({
   },
 })
 ;(User as any).Preferences = Backbone.AssociatedModel.extend({
-  useAjaxSync: true,
   url: './internal/user/preferences',
   defaults() {
     return {
@@ -237,6 +237,7 @@ const Theme = Backbone.Model.extend({
     } else {
       this.lastSaved = Common.duplicate(currentPrefs)
       this.save(currentPrefs, {
+        ...CommonAjaxSettings,
         drop: true,
         customErrorHandling: true,
         error: () => {
@@ -356,7 +357,6 @@ const Theme = Backbone.Model.extend({
   },
 })
 ;(User as any).Response = Backbone.AssociatedModel.extend({
-  useAjaxSync: true,
   url: './internal/user',
   relations: [
     {
@@ -369,7 +369,7 @@ const Theme = Backbone.Model.extend({
   initialize() {
     this.listenTo(this, 'sync', this.handleSync)
     this.set('user', new (User as any).Model())
-    this.fetch()
+    this.fetch(CommonAjaxSettings)
   },
   handleSync() {
     this.fetched = true

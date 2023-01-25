@@ -132,7 +132,6 @@
     "plotly.js": "1.16.0",
     "postcss-focus-visible": "5.0.0",
     "prop-types": "15.7.2",
-    "q": "1.5.0",
     "query-string": "6.13.1",
     "react-beautiful-dnd": "git+https://github.com/andrewkfiedler/react-beautiful-dnd#5703284223ee68ae8543c3f27495824389d2c82a",
     "react-intl": "2.7.2",

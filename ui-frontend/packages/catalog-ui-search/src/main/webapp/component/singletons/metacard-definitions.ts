@@ -13,12 +13,11 @@
  *
  **/
 
-import $ from 'jquery'
-
 import Backbone from 'backbone'
 import _ from 'underscore'
 import properties from '../../js/properties'
 import moment from 'moment'
+import fetch from '../../react-component/utils/fetch'
 const PRIORITY_ATTRIBUTES = ['anyText', 'anyGeo']
 function transformEnumResponse(metacardTypes: any, response: any) {
   return _.reduce(
@@ -148,29 +147,31 @@ export default new (Backbone.Model.extend({
     )
   },
   getDatatypeEnum() {
-    $.get('./internal/enumerations/attribute/datatype').then((response) => {
-      _.extend(this.enums, response)
-    })
+    fetch('./internal/enumerations/attribute/datatype')
+      .then((response) => response.json())
+      .then((response) => {
+        _.extend(this.enums, response)
+      })
   },
   getEnumForMetacardDefinition(metacardDefinition: any) {
-    $.get('./internal/enumerations/metacardtype/' + metacardDefinition).then(
-      (response) => {
+    fetch('./internal/enumerations/metacardtype/' + metacardDefinition)
+      .then((response) => response.json())
+      .then((response) => {
         _.extend(
           this.enums,
           transformEnumResponse(this.metacardTypes, response)
         )
-      }
-    )
+      })
   },
   getDeprecatedEnumForMetacardDefinition(metacardDefinition: any) {
-    $.get('./internal/enumerations/deprecated/' + metacardDefinition).then(
-      (response) => {
+    fetch('./internal/enumerations/deprecated/' + metacardDefinition)
+      .then((response) => response.json())
+      .then((response) => {
         _.extend(
           this.deprecatedEnums,
           transformEnumResponse(this.metacardTypes, response)
         )
-      }
-    )
+      })
   },
   addMetacardDefinition(metacardDefinitionName: any, metacardDefinition: any) {
     if (
@@ -216,10 +217,12 @@ export default new (Backbone.Model.extend({
   },
   typesFetched: false,
   getMetacardTypes() {
-    $.get('./internal/metacardtype').then((metacardDefinitions) => {
-      this.addMetacardDefinitions(metacardDefinitions)
-      this.typesFetched = true
-    })
+    fetch('./internal/metacardtype')
+      .then((response) => response.json())
+      .then((metacardDefinitions) => {
+        this.addMetacardDefinitions(metacardDefinitions)
+        this.typesFetched = true
+      })
   },
   attributeComparator(a: any, b: any) {
     const attrToCompareA = this.getLabel(a).toLowerCase()

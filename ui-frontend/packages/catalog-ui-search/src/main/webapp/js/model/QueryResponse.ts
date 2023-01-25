@@ -36,7 +36,6 @@ export default Backbone.AssociatedModel.extend({
     }
   },
   url: './internal/cql',
-  useAjaxSync: true,
   initialize() {
     this.listenTo(this, 'error', this.handleError)
   },

@@ -38,6 +38,7 @@ import {
 } from './Query.methods'
 import { Common } from '../Common'
 import wreqr from '../wreqr'
+import { CommonAjaxSettings } from '../AjaxSettings'
 export type QueryType = {
   constructor: (_attributes: any, options: any) => void
   set: (p1: any, p2?: any) => void
@@ -468,6 +469,7 @@ export default Backbone.AssociatedModel.extend({
       delete search.sources // This key isn't used on the backend and only serves to confuse those debugging this code.
       // `result` is QueryResponse
       return result.fetch({
+        ...CommonAjaxSettings,
         customErrorHandling: true,
         data: JSON.stringify(search),
         remove: false,

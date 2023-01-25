@@ -78,7 +78,9 @@ const BaseInputs = {
 
 let inputs = BaseInputs
 try {
-  inputs = plugin(BaseInputs) as InputsType
+  if (plugin) {
+    inputs = plugin(BaseInputs) as InputsType
+  }
 } catch (err) {
   console.warn(err)
 }
