@@ -32,12 +32,6 @@ import '@connexta/icons/icons/codice.font'
 import './MediaQueries'
 import '../component/singletons/session-auto-renew'
 import $ from 'jquery'
-$.ajaxSetup({
-  cache: false,
-  headers: {
-    'X-Requested-With': 'XMLHttpRequest',
-  },
-})
 if (process.env.NODE_ENV !== 'production') {
   $('html').addClass('is-development')
   if (module.hot) {
@@ -49,30 +43,6 @@ if (process.env.NODE_ENV !== 'production') {
 window['__react-beautiful-dnd-disable-dev-warnings'] = true
 ;(window as any).CESIUM_BASE_URL = './cesium/assets'
 //in here we drop in any top level patches, etc.
-const toJSON = Backbone.Model.prototype.toJSON
-Backbone.Model.prototype.toJSON = function (options: any) {
-  const originalJSON = toJSON.call(this, options)
-  if (options && options.additionalProperties !== undefined) {
-    const backboneModel = this
-    options.additionalProperties.forEach((property: any) => {
-      // @ts-expect-error ts-migrate(7052) FIXME: Element implicitly has an 'any' type because type ... Remove this comment to see the full error message
-      originalJSON[property] = backboneModel[property]
-    })
-  }
-  return originalJSON
-}
-const clone = Backbone.Model.prototype.clone
-Backbone.Model.prototype.clone = function () {
-  const cloneRef = clone.call(this)
-  cloneRef._cloneOf = this.id || this.cid
-  return cloneRef
-}
-const associationsClone = Backbone.AssociatedModel.prototype.clone
-Backbone.AssociatedModel.prototype.clone = function () {
-  const cloneRef = associationsClone.call(this)
-  cloneRef._cloneOf = this.id || this.cid
-  return cloneRef
-}
 const associationsSet = Backbone.AssociatedModel.prototype.set
 // @ts-expect-error ts-migrate(2322) FIXME: Type '(key: any, value: any, options: any) => any'... Remove this comment to see the full error message
 Backbone.AssociatedModel.prototype.set = function (

@@ -17,7 +17,8 @@ import Backbone from 'backbone'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'back... Remove this comment to see the full error message
 import poller from 'backbone-poller'
 import properties from '../properties'
-import $ from 'jquery'
+import { CommonAjaxSettings } from '../AjaxSettings'
+import fetch from '../../react-component/utils/fetch'
 function removeLocalCatalogIfNeeded(response: any, localCatalog: any) {
   if (properties.isDisableLocalCatalog()) {
     response = _.filter(response, (source) => source.id !== localCatalog)
@@ -56,7 +57,6 @@ const computeTypes = function (sources: any) {
 }
 export default Backbone.Collection.extend({
   url: './internal/catalog/sources',
-  useAjaxSync: true,
   // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
   comparator(a: any, b: any) {
     const aName = a.id.toLowerCase()
@@ -101,17 +101,19 @@ export default Backbone.Collection.extend({
     return [this.localCatalog]
   },
   determineLocalCatalog() {
-    $.get('./internal/localcatalogid').then((data) => {
-      this.localCatalog = data['local-catalog-id']
-      poller
-        .get(this, {
-          delay: properties.sourcePollInterval,
-          delayed: properties.sourcePollInterval,
-          continueOnError: true,
-        })
-        .start()
-      this.fetch()
-    })
+    fetch('./internal/localcatalogid')
+      .then((data) => data.json())
+      .then((data) => {
+        this.localCatalog = data['local-catalog-id']
+        poller
+          .get(this, {
+            delay: properties.sourcePollInterval,
+            delayed: properties.sourcePollInterval,
+            continueOnError: true,
+          })
+          .start()
+        this.fetch(CommonAjaxSettings)
+      })
   },
   updateLocalCatalog() {
     if (this.get(this.localCatalog)) {

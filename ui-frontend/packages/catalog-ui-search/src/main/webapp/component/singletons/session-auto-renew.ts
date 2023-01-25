@@ -16,8 +16,7 @@
 //meant to be used for just in time feature detection
 
 import Backbone from 'backbone'
-
-import $ from 'jquery'
+import fetch from '../../react-component/utils/fetch'
 
 const sessionExpiryUrl = './internal/session/expiry'
 
@@ -30,9 +29,10 @@ const sessionAutoRenewModel = new (Backbone.Model.extend({
     this.listenTo(this, 'change:sessionRenewDate', this.handleSessionRenewDate)
   },
   initializeSessionRenewDate() {
-    $.get(sessionExpiryUrl)
-      .done(this.handleExpiryTimeResponse.bind(this))
-      .fail(() => {
+    fetch(sessionExpiryUrl)
+      .then((response) => response.json())
+      .then(this.handleExpiryTimeResponse.bind(this))
+      .catch(() => {
         console.warn('what do we do on failure')
       })
   },
@@ -58,9 +58,10 @@ const sessionAutoRenewModel = new (Backbone.Model.extend({
     clearTimeout(this.sessionRenewTimer)
   },
   renewSession() {
-    $.get(sessionExpiryUrl)
-      .done(this.handleExpiryTimeResponse.bind(this))
-      .fail(() => {
+    fetch(sessionExpiryUrl)
+      .then((response) => response.json())
+      .then(this.handleExpiryTimeResponse.bind(this))
+      .catch(() => {
         console.warn('what do we do on a failure')
       })
   },

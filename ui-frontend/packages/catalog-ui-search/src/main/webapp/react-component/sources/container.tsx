@@ -16,6 +16,7 @@ import * as React from 'react'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import Sources from './presentation'
 import sources from '../../component/singletons/sources-instance'
+import { CommonAjaxSettings } from '../../js/AjaxSettings'
 type Props = {} & WithBackboneProps
 type Source = {
   id: string
@@ -53,7 +54,7 @@ class SourcesSummaryContainer extends React.Component<Props, State> {
     return (
       <Sources
         sources={this.state.sources}
-        refreshSources={() => (sources as any).fetch()}
+        refreshSources={() => (sources as any).fetch(CommonAjaxSettings)}
         amountDown={this.state.amountDown}
       />
     )
