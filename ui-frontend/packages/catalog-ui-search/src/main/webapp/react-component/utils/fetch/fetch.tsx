@@ -14,6 +14,7 @@
  **/
 import url from 'url'
 import qs from 'querystring'
+import { Environment } from '../../../js/Environment'
 type Options = {
   headers?: object
   [key: string]: unknown
@@ -45,7 +46,18 @@ const cacheBust = (urlString: string) => {
   })
 }
 export type FetchProps = (url: string, options?: Options) => Promise<Response>
-export default function (url: string, { headers, ...opts }: Options = {}) {
+export default async function (
+  url: string,
+  { headers, ...opts }: Options = {}
+) {
+  if (Environment.isTest()) {
+    const { default: MockApi } = await import('../../../test/mock-api')
+    return Promise.resolve({
+      json: await function () {
+        return MockApi(url)
+      },
+    }) as Promise<Response>
+  }
   return fetch(cacheBust(url), {
     credentials: 'same-origin',
     cache: 'no-cache',
