@@ -486,6 +486,23 @@ describe('read & write parity for capabilities, as well as boolean logic', () =>
       )
     })
 
+    it('does handles a simple boolean search that is empty', () => {
+      const testFilter = new FilterBuilderClass({
+        type: 'AND',
+        filters: [
+          new FilterClass({
+            type: 'BOOLEAN_TEXT_SEARCH',
+            value: {
+              cql: ``,
+              error: false,
+              text: '',
+            },
+          }),
+        ],
+      })
+      expect(cql.write(testFilter)).to.equal(`((anyText ILIKE '*'))`)
+    })
+
     it('does handles a simple boolean search with not', () => {
       const testFilter = new FilterBuilderClass({
         type: 'AND',
