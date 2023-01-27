@@ -105,7 +105,11 @@ class ResultsExport extends React.Component<Props, State> {
   }
 
   getResultSources() {
-    return new Set(this.props.results.map((result: Result) => result.source))
+    return new Set(
+      this.props.results
+        .map((result: Result) => result.source)
+        .map((source: string) => decodeURIComponent(source))
+    )
   }
 
   getSelectedExportFormatId() {
