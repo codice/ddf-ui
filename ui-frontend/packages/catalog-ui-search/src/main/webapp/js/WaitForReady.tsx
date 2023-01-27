@@ -12,13 +12,17 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
-import * as ReactDOM from 'react-dom'
-import { waitForReady } from './WaitForReady'
+import properties from '../js/properties'
 
-export const attemptToStart = async () => {
-  await waitForReady()
-  import('../component/app/base-app').then((BaseApp) => {
-    ReactDOM.render(<BaseApp.default />, document.querySelector('#router'))
-  })
+export const waitForReady: () => Promise<void> = async () => {
+  properties.init()
+  if (properties.fetched) {
+    const { propertyDependentWaitForReady } = await (
+      await import('./PropertiesDependentDependencies')
+    ).default
+    await propertyDependentWaitForReady()
+  } else {
+    await new Promise((resolve) => setTimeout(resolve, 60))
+    return waitForReady()
+  }
 }
