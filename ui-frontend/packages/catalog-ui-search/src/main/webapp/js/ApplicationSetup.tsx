@@ -29,7 +29,6 @@ import Backbone from 'backbone'
 import properties from './properties'
 import './extensions/application.patches'
 import '@connexta/icons/icons/codice.font'
-import './MediaQueries'
 import '../component/singletons/session-auto-renew'
 import $ from 'jquery'
 if (process.env.NODE_ENV !== 'production') {

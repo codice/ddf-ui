@@ -101,7 +101,7 @@ const SettingsScreen = ({
         .filter((name) => name !== 'Settings')
         .map((name) => {
           return (
-            <Grid item className="w-full">
+            <Grid key={name} item className="w-full">
               <Button
                 component={Link}
                 to={`${location.pathname}?${queryString.stringify({
