@@ -794,6 +794,8 @@ function write(filter: any): any {
       const booleanTextSearchFilter = filter.value as BooleanTextType
       if (booleanTextSearchFilter.error) {
         return
+      } else if (booleanTextSearchFilter.cql === '') {
+        return "(anyText ILIKE '*')"
       } else {
         return booleanTextSearchFilter.cql
       }
