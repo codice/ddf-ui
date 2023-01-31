@@ -215,6 +215,7 @@ const LocationInput = ({ onChange, value }: any) => {
                   locationModel
                 )
               }}
+              color="primary"
               fullWidth
             >
               <span className="fa fa-globe" />
