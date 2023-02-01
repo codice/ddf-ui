@@ -239,6 +239,7 @@ const Theme = Backbone.Model.extend({
       this.save(currentPrefs, {
         ...CommonAjaxSettings,
         drop: true,
+        withoutSet: true,
         customErrorHandling: true,
         error: () => {
           ;(wreqr as any).vent.trigger('snack', {
