@@ -111,11 +111,9 @@ const sessionTimeoutModel = new (Backbone.Model.extend({
     }
     fetch(invalidateUrl + window.location.href, {
       redirect: 'manual',
+    }).finally(() => {
+      window.location.reload()
     })
-      .then((response) => response.text())
-      .then((text) => {
-        window.location.replace(text)
-      })
   },
   renew() {
     this.hidePrompt()
