@@ -13,7 +13,7 @@
  *
  **/
 // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name '__ENV__'.
-console.log(__ENV__) // moving this here as it's useful to see at least once
+console.info(__ENV__) // moving this here as it's useful to see at least once
 export const Environment = {
   isTest() {
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name '__ENV__'.

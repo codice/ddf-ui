@@ -1049,6 +1049,12 @@ export default function CesiumMap(
     getMap() {
       return map
     },
+    zoomIn() {
+      map.scene.camera.zoomIn(map.scene.camera.defaultZoomAmount * 10)
+    },
+    zoomOut() {
+      map.scene.camera.zoomOut(map.scene.camera.defaultZoomAmount * 10)
+    },
     destroy() {
       ;(wreqr as any).vent.off('map:requestRender', requestRenderHandler)
       map.destroy()

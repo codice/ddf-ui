@@ -179,10 +179,6 @@ export class CesiumLayers extends Subscribable<''> {
       prev: this.layerOrder,
       cur: newLayerOrder,
     })
-    // const name = this.collection.models
-    //   .find(model => model.id === layer)
-    //   .get('name')
-    //console.log(method + ' ' + name + ' ' + count) // useful for debugging!
     _.times(
       count,
       () => {

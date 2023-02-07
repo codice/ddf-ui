@@ -109,7 +109,7 @@ export const getMaxIndexForSourceGroup = ({
   isLocal: (id: string) => boolean
 }): IndexForSourceGroupType => {
   if (Object.keys(queryStatus).length === 0) {
-    console.log(
+    console.warn(
       'Invalid invocation:  queryStatus is required to determine max index for a query'
     )
     return {}
