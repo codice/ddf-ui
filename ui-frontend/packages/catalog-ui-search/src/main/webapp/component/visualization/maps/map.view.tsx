@@ -497,24 +497,26 @@ export const MapViewReact = (props: MapViewReactType) => {
           <>
             <Paper
               elevation={Elevations.overlays}
-              className="py-2 z-10 absolute right-0 bottom-0 mr-4 mb-4"
+              className="p-2 z-10 absolute right-0 bottom-0 mr-4 mb-4"
             >
               <div>
                 <Button
+                  size="small"
                   onClick={() => {
                     map.zoomIn()
                   }}
                 >
-                  <PlusIcon />
+                  <PlusIcon className="  h-5 w-5" />
                 </Button>
               </div>
               <div>
                 <Button
+                  size="small"
                   onClick={() => {
                     map.zoomOut()
                   }}
                 >
-                  <MinusIcon />
+                  <MinusIcon className="  h-5 w-5" />
                 </Button>
               </div>
             </Paper>
