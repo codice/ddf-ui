@@ -36,7 +36,7 @@ const SelectedResults = ({ selectionInterface }: any) => {
     selectionInterface,
   })
   const selectedResultsArray = Object.values(selectedResults)
-  const { MuiButtonProps, MuiPopoverProps } = useMenuState()
+  const { MuiButtonProps, MuiPopoverProps, handleClose } = useMenuState()
 
   return (
     <>
@@ -60,11 +60,11 @@ const SelectedResults = ({ selectionInterface }: any) => {
           <MoreIcon />
         </div>
       </Button>
-      <Popover {...MuiPopoverProps}>
+      <Popover {...MuiPopoverProps} keepMounted={true}>
         <Paper>
           <LazyMetacardInteractions
             lazyResults={selectedResultsArray}
-            onClose={() => {}}
+            onClose={handleClose}
           />
         </Paper>
       </Popover>
