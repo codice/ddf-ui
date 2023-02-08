@@ -250,13 +250,13 @@ export default function (
     },
     doPanZoom(coords: any) {
       const that = this
-      that.zoomOut({ duration: 1000 }, () => {
+      that.panZoomOut({ duration: 1000 }, () => {
         setTimeout(() => {
           that.zoomToExtent(coords, { duration: 2000 })
         }, 0)
       })
     },
-    zoomOut(_opts: any, next: any) {
+    panZoomOut(_opts: any, next: any) {
       next()
     },
     panToResults(results: any) {
@@ -917,6 +917,16 @@ export default function (
     },
     getMap() {
       return map
+    },
+    zoomIn() {
+      const view = map.getView()
+      const zoom = view.getZoom()
+      view.setZoom(zoom + 1)
+    },
+    zoomOut() {
+      const view = map.getView()
+      const zoom = view.getZoom()
+      view.setZoom(zoom - 1)
     },
     destroy() {
       unlistenToResize()

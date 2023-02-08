@@ -72,6 +72,9 @@ export const MuiOutlinedInputBorderClasses =
   'MuiOutlinedInput-root MuiOutlinedInput-multiline MuiOutlinedInput-inputMarginDense MuiOutlinedInput-notchedOutline border'
 
 const GlobalStyles = createGlobalStyle<ThemeInterface>`
+      .ol-overlaycontainer-stopevent {
+        display: none;
+      }
       a {
         color: inherit !important;
       }

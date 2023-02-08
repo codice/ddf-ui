@@ -31,6 +31,12 @@ import { SHAPE_ID_PREFIX } from './drawing-and-display'
 import useSnack from '../../hooks/useSnack'
 import { zoomToHome } from './home'
 import featureDetection from '../../singletons/feature-detection'
+import Paper from '@material-ui/core/Paper'
+import { Elevations } from '../../theme/theme'
+import Button from '@material-ui/core/Button'
+import PlusIcon from '@material-ui/icons/Add'
+import MinusIcon from '@material-ui/icons/Remove'
+
 const useMapCode = (props: MapViewReactType) => {
   const [mapCode, setMapCode] = React.useState<any>(null)
   React.useEffect(() => {
@@ -486,6 +492,35 @@ export const MapViewReact = (props: MapViewReactType) => {
               setIsClustering(!isClustering)
             }}
           />
+        ) : null}
+        {map ? (
+          <>
+            <Paper
+              elevation={Elevations.overlays}
+              className="p-2 z-10 absolute right-0 bottom-0 mr-4 mb-4"
+            >
+              <div>
+                <Button
+                  size="small"
+                  onClick={() => {
+                    map.zoomIn()
+                  }}
+                >
+                  <PlusIcon className="  h-5 w-5" />
+                </Button>
+              </div>
+              <div>
+                <Button
+                  size="small"
+                  onClick={() => {
+                    map.zoomOut()
+                  }}
+                >
+                  <MinusIcon className="  h-5 w-5" />
+                </Button>
+              </div>
+            </Paper>
+          </>
         ) : null}
       </div>
       <div
