@@ -120,6 +120,7 @@ const Theme = Backbone.Model.extend({
       resultPreview: ['modified'],
       resultFilter: undefined,
       resultSort: undefined,
+      'inspector-showEmpty': true,
       'inspector-summaryShown': [],
       'inspector-summaryOrder': [],
       'inspector-detailsOrder': ['title', 'created', 'modified', 'thumbnail'],
