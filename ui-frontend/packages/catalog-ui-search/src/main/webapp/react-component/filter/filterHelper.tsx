@@ -14,19 +14,60 @@
  **/
 import metacardDefinitions from '../../component/singletons/metacard-definitions'
 import properties from '../../js/properties'
-export const getFilteredAttributeList = () => {
+export type Attribute = {
+  label: string
+  value: string
+  description: string | undefined
+  group?: string
+}
+const toAttribute = (
+  attribute: { id: string; alias: string },
+  group?: string
+): Attribute => {
+  return {
+    label: attribute.alias || attribute.id,
+    value: attribute.id,
+    description: (properties.attributeDescriptions || {})[attribute.id],
+    group,
+  }
+}
+export const getGroupedFilteredAttributes = (): { groups: string[], attributes: Attribute[] } => {
+  const allAttributes = metacardDefinitions.sortedMetacardTypes.reduce(
+    (
+      attributes: { [key: string]: { id: string; alias: string } },
+      attr: { id: string; alias: string }
+    ) => {
+      attributes[attr.id] = attr
+      return attributes
+    },
+    {}
+  )
+  const validFeaturedAttributes = (properties.featuredAttributes as string[]).reduce(
+    (attributes: Attribute[], featuredId: string) => {
+      const attribute = allAttributes[featuredId]
+      if (attribute) {
+        attributes.push(toAttribute(attribute, 'Common Attributes'))
+      }
+      return attributes
+    },
+    []
+  )
+  const groupedFilteredAttributes = validFeaturedAttributes.concat(
+    getFilteredAttributeList('All Attributes')
+  )
+  const groups = validFeaturedAttributes.length > 0 ? ['Common Attributes', 'All Attributes'] : []
+  return {
+    groups,
+    attributes: groupedFilteredAttributes,
+  }
+}
+export const getFilteredAttributeList = (group?: string): Attribute[] => {
   return metacardDefinitions.sortedMetacardTypes
-    .filter(({ id }: any) => !properties.isHidden(id))
-    .filter(({ id }: any) => !metacardDefinitions.isHiddenType(id))
-    .map(({ alias, id }: any) => ({
-      label: alias || id,
-      value: id,
-      description: ((properties as any).attributeDescriptions || {})[id],
-    })) as {
-    label: string
-    value: string
-    description: string | undefined
-  }[]
+    .filter(
+      ({ id }: any) =>
+        !properties.isHidden(id) && !metacardDefinitions.isHiddenType(id)
+    )
+    .map((attr: { id: string; alias: string }) => toAttribute(attr, group))
 }
 export const getAttributeType = (attribute: string): string => {
   const type = metacardDefinitions.metacardTypes[attribute].type
