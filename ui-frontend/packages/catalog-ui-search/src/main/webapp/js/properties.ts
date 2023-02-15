@@ -75,6 +75,7 @@ const properties = {
     'form.title': 'title',
   },
   attributeAliases: {},
+  featuredAttributes: [],
   filters: {
     METADATA_CONTENT_TYPE: 'metadata-content-type',
     SOURCE_ID: 'source-id',

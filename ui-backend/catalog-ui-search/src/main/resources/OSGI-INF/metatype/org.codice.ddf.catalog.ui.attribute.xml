@@ -44,16 +44,33 @@ Note: Attributes must also be listed under the Facet Attribute Whitelist for thi
             />
     </OCD>
 
+    <OCD name="Catalog UI Search Featured Attributes" id="org.codice.ddf.catalog.ui.attribute.featuredAttributes">
+        <AD id="featuredAttributes"
+            name="Featured Attributes"
+            description="The attributes that will be placed at the top of the drop-down list displayed when choosing an
+            attribute in the advanced search menu. Useful when there are commonly-used attributes you would like to
+            feature to make searching easier for users. The attributes will be displayed in the order in which they are
+            set here. The remaining attributes will be displayed below these in alphabetical order."
+            type="String"
+            cardinality="10000"
+            required="false"
+        />
+    </OCD>
+
     <Designate pid="org.codice.ddf.catalog.ui.attribute.suggestionList">
         <Object ocdref="org.codice.ddf.catalog.ui.attribute.suggestionList"/>
     </Designate>
-    
+
     <Designate pid="org.codice.ddf.catalog.ui.attribute.hidden">
         <Object ocdref="org.codice.ddf.catalog.ui.attribute.hidden"/>
     </Designate>
 
     <Designate pid="org.codice.ddf.catalog.ui.attribute.descriptions">
         <Object ocdref="org.codice.ddf.catalog.ui.attribute.descriptions"/>
+    </Designate>
+
+    <Designate pid="org.codice.ddf.catalog.ui.attribute.featuredAttributes">
+        <Object ocdref="org.codice.ddf.catalog.ui.attribute.featuredAttributes"/>
     </Designate>
 
 </metatype:MetaData>

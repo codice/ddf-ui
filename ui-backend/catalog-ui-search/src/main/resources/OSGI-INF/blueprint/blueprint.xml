@@ -117,6 +117,10 @@ Implementation details
                 update-strategy="container-managed"/>
 
         <cm:managed-properties
+                persistent-id="org.codice.ddf.catalog.ui.attribute.featuredAttributes"
+                update-strategy="container-managed"/>
+
+        <cm:managed-properties
                 persistent-id="org.codice.ddf.catalog.ui.attribute.descriptions"
                 update-strategy="container-managed"/>
 
