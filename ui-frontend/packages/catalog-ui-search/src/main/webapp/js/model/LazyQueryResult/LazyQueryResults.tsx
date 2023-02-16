@@ -19,7 +19,7 @@ import { QuerySortType } from './types'
 import { Status } from './status'
 import { TransformSortsComposedFunctionType } from '../TypedQuery'
 import _ from 'underscore'
-const debounceTime = 50
+const debounceTime = 250
 
 import Backbone from 'backbone'
 
@@ -283,6 +283,7 @@ export class LazyQueryResults {
     sources = [],
     transformSorts,
   }: ConstructorProps = {}) {
+    this._turnOnDebouncing()
     this.reset({ results, sorts, sources, transformSorts })
 
     this.backboneModel = new Backbone.Model({
