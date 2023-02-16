@@ -446,7 +446,7 @@ const AttributeComponent = ({
 }) => {
   let value = lazyResult.plain.metacard.properties[attr]
   if (!showEmpty) {
-    if (!value) {
+    if (value === undefined || value === null) {
       return null
     } else if (typeof value === 'string' && !value.trim()) {
       return null
