@@ -432,17 +432,28 @@ export const Editor = ({
 const AttributeComponent = ({
   lazyResult,
   attr,
+  showEmpty,
   summaryShown = [],
   filter = '',
   forceRender,
 }: {
   attr: string
   lazyResult: LazyQueryResult
+  showEmpty: boolean
   summaryShown?: string[]
   filter?: string
   forceRender: boolean
 }) => {
   let value = lazyResult.plain.metacard.properties[attr]
+  if (!showEmpty) {
+    if (value === undefined || value === null) {
+      return null
+    } else if (typeof value === 'string' && !value.trim()) {
+      return null
+    } else if (Array.isArray(value) && value.length === 0) {
+      return null
+    }
+  }
   if (value === undefined || value === null) {
     value = []
   }
@@ -733,6 +744,10 @@ const Summary = ({ result: selection }: Props) => {
   if (!selection) {
     return <div>No result selected</div>
   }
+  const showEmpty: boolean = user
+    .get('user')
+    .get('preferences')
+    .get('inspector-showEmpty')
   return (
     <Grid
       container
@@ -778,12 +793,13 @@ const Summary = ({ result: selection }: Props) => {
                             return attr.id
                           })
                           .sort()}
+                        startingShowEmpty={showEmpty}
                         lazyResult={selection}
-                        onSave={(active) => {
-                          user
-                            .get('user')
-                            .get('preferences')
-                            .set('inspector-summaryShown', active)
+                        onSave={(active, newShowEmpty) => {
+                          user.get('user').get('preferences').set({
+                            'inspector-summaryShown': active,
+                            'inspector-showEmpty': newShowEmpty,
+                          })
                           user.savePreferences()
                           // Force re-render after save to update values on page
                           // This is more reliable than "refreshing" the result which
@@ -835,6 +851,7 @@ const Summary = ({ result: selection }: Props) => {
                 <AttributeComponent
                   lazyResult={selection}
                   attr={attr}
+                  showEmpty={showEmpty}
                   summaryShown={summaryShown}
                   filter={filter}
                   forceRender={forceRender}
@@ -857,6 +874,7 @@ const Summary = ({ result: selection }: Props) => {
                     <AttributeComponent
                       lazyResult={selection}
                       attr={attr}
+                      showEmpty={showEmpty}
                       summaryShown={summaryShown}
                       filter={filter}
                       forceRender={forceRender}
@@ -874,6 +892,7 @@ const Summary = ({ result: selection }: Props) => {
                     <AttributeComponent
                       lazyResult={selection}
                       attr={attr.id}
+                      showEmpty={showEmpty}
                       summaryShown={summaryShown}
                       filter={filter}
                       forceRender={forceRender}

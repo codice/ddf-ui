@@ -30,6 +30,8 @@ import CloseIcon from '@material-ui/icons/Close'
 import CheckBoxIcon from '@material-ui/icons/CheckBox'
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
 import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Switch from '@material-ui/core/Switch'
 import { AutoVariableSizeList } from 'react-window-components'
 import debounce from 'lodash.debounce'
 import { Memo } from '../../memo/memo'
@@ -628,13 +630,15 @@ type SetCheckedType = React.Dispatch<React.SetStateAction<CheckedType>>
 const TransferList = ({
   startingLeft,
   startingRight,
+  startingShowEmpty,
   lazyResult,
   onSave,
 }: {
   startingLeft: string[]
   startingRight: string[]
+  startingShowEmpty?: boolean
   lazyResult?: LazyQueryResult
-  onSave: (arg: string[]) => void
+  onSave: (arg: string[], showEmpty: boolean | undefined) => void
 }) => {
   const dialogContext = useDialog()
   const [mode, setMode] = React.useState(
@@ -642,6 +646,7 @@ const TransferList = ({
   )
   const [left, setLeft] = React.useState(convertAttrListToMap(startingLeft))
   const [right, setRight] = React.useState(convertAttrListToMap(startingRight))
+  const [showEmpty, setShowEmpty] = React.useState(startingShowEmpty)
   const { loading } = useCustomReadOnlyCheck()
   React.useEffect(() => {
     if (!loading) {
@@ -720,6 +725,7 @@ const TransferList = ({
         <TransferList
           startingLeft={Object.keys(left)}
           startingRight={Object.keys(right)}
+          startingShowEmpty={showEmpty}
           lazyResult={lazyResult}
           onSave={onSave}
         />
@@ -816,6 +822,21 @@ const TransferList = ({
       </DialogContent>
       <DarkDivider className="w-full h-min" />
       <DialogActions>
+        {showEmpty !== undefined && (
+          <>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={showEmpty}
+                  onChange={(e) => setShowEmpty(e.target.checked)}
+                />
+              }
+              label="Show empty attributes in inspector"
+              style={{ paddingLeft: '10px' }}
+            />
+            <div style={{ flex: '1 0 0' }} />
+          </>
+        )}
         <Button
           data-id="dialog-save-button"
           disabled={mode === 'saving'}
@@ -836,7 +857,7 @@ const TransferList = ({
           disabled={mode === 'saving'}
           onClick={() => {
             setMode('saving')
-            onSave(Object.keys(left))
+            onSave(Object.keys(left), showEmpty)
             dialogContext.setProps({
               open: false,
               children: null,
