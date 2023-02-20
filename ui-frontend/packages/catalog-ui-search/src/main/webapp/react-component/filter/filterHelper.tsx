@@ -31,7 +31,10 @@ const toAttribute = (
     group,
   }
 }
-export const getGroupedFilteredAttributes = (): { groups: string[], attributes: Attribute[] } => {
+export const getGroupedFilteredAttributes = (): {
+  groups: string[]
+  attributes: Attribute[]
+} => {
   const allAttributes = metacardDefinitions.sortedMetacardTypes.reduce(
     (
       attributes: { [key: string]: { id: string; alias: string } },
@@ -55,7 +58,10 @@ export const getGroupedFilteredAttributes = (): { groups: string[], attributes: 
   const groupedFilteredAttributes = validFeaturedAttributes.concat(
     getFilteredAttributeList('All Attributes')
   )
-  const groups = validFeaturedAttributes.length > 0 ? ['Common Attributes', 'All Attributes'] : []
+  const groups =
+    validFeaturedAttributes.length > 0
+      ? ['Common Attributes', 'All Attributes']
+      : []
   return {
     groups,
     attributes: groupedFilteredAttributes,
