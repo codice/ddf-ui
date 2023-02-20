@@ -47,7 +47,7 @@ const Filter = ({ filter, setFilter }: Props) => {
   const currentSelectedAttribute = attributeList.find(
     (attrInfo) => attrInfo.value === property
   )
-  const groupBy = groups > 1 ? (option: Attribute) => option.group : undefined
+  const groupBy = groups > 1 ? (option: Attribute) => option.group! : undefined
   return (
     <Grid container direction="column" alignItems="center" className="w-full">
       <Grid item className="w-full pb-2">
