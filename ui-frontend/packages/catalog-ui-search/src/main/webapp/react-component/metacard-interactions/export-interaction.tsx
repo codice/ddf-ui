@@ -28,7 +28,7 @@ export const ExportActions = (props: MetacardInteractionProps) => {
   if (!props.model || props.model.length <= 0) {
     return null
   }
-  if (!props.model[0].parent || !props.model[0].parent.persistantSorts) {
+  if (!props.model[0].parent) {
     return null
   }
   return (
@@ -52,7 +52,7 @@ export const ExportActions = (props: MetacardInteractionProps) => {
         <Divider></Divider>
         <ResultsExport
           results={getExportResults(props.model)}
-          sorts={props.model[0].parent.persistantSorts}
+          lazyQueryResults={props.model[0].parent}
         />
       </exportDialogState.MuiDialogComponents.Dialog>
       <MetacardInteraction
