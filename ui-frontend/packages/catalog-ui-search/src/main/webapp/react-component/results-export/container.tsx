@@ -20,6 +20,7 @@ import { exportResult, exportResultSet } from '../utils/export'
 import { getResultSetCql } from '../utils/cql'
 import saveFile from '../utils/save-file'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
+import { QuerySortType } from '../../js/model/LazyQueryResult/types'
 
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
 import contentDisposition from 'content-disposition'
@@ -37,6 +38,7 @@ type Result = {
 
 type Props = {
   results: Result[]
+  sorts: QuerySortType[]
   isZipped?: boolean
 } & WithBackboneProps
 
@@ -159,7 +161,7 @@ class ResultsExport extends React.Component<Props, State> {
       response = await exportResultSet(uriEncodedTransformerId, {
         searches,
         count,
-        sorts: [],
+        sorts: this.props.sorts,
       })
     } else {
       const result = this.props.results[0]

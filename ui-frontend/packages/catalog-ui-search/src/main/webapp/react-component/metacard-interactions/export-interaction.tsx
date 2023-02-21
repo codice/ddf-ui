@@ -28,6 +28,9 @@ export const ExportActions = (props: MetacardInteractionProps) => {
   if (!props.model || props.model.length <= 0) {
     return null
   }
+  if (!props.model[0].parent || !props.model[0].parent.persistantSorts) {
+    return null
+  }
   return (
     <>
       <exportDialogState.MuiDialogComponents.Dialog
@@ -47,7 +50,10 @@ export const ExportActions = (props: MetacardInteractionProps) => {
           </div>
         </exportDialogState.MuiDialogComponents.DialogTitle>
         <Divider></Divider>
-        <ResultsExport results={getExportResults(props.model)} />
+        <ResultsExport
+          results={getExportResults(props.model)}
+          sorts={props.model[0].parent.persistantSorts}
+        />
       </exportDialogState.MuiDialogComponents.Dialog>
       <MetacardInteraction
         onClick={() => {
