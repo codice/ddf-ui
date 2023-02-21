@@ -44,9 +44,9 @@ Note: Attributes must also be listed under the Facet Attribute Whitelist for thi
             />
     </OCD>
 
-    <OCD name="Catalog UI Search Featured Attributes" id="org.codice.ddf.catalog.ui.attribute.featuredAttributes">
-        <AD id="featuredAttributes"
-            name="Featured Attributes"
+    <OCD name="Catalog UI Search Common Attributes" id="org.codice.ddf.catalog.ui.attribute.commonAttributes">
+        <AD id="commonAttributes"
+            name="Common Attributes"
             description="The attributes that will be placed at the top of the drop-down list displayed when choosing an
             attribute in the advanced search menu. Setting this will cause the attributes in this menu to be grouped.
             The first group is 'Common Attributes' and consists solely of the attributes set here, in the specified
@@ -71,8 +71,8 @@ Note: Attributes must also be listed under the Facet Attribute Whitelist for thi
         <Object ocdref="org.codice.ddf.catalog.ui.attribute.descriptions"/>
     </Designate>
 
-    <Designate pid="org.codice.ddf.catalog.ui.attribute.featuredAttributes">
-        <Object ocdref="org.codice.ddf.catalog.ui.attribute.featuredAttributes"/>
+    <Designate pid="org.codice.ddf.catalog.ui.attribute.commonAttributes">
+        <Object ocdref="org.codice.ddf.catalog.ui.attribute.commonAttributes"/>
     </Designate>
 
 </metatype:MetaData>
