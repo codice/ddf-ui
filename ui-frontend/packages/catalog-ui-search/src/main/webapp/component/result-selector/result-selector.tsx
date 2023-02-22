@@ -24,12 +24,12 @@ import MoreIcon from '@material-ui/icons/MoreVert'
 
 import LazyMetacardInteractions from '../visualization/results-visual/lazy-metacard-interactions'
 import { Elevations } from '../theme/theme'
-import useTheme from '@material-ui/core/styles/useTheme'
 import SelectionRipple from '../golden-layout/selection-ripple'
 import { ResultType } from '../../js/model/Types'
 import Extensions from '../../extension-points'
 import { useMenuState } from '../menu-state/menu-state'
 import Popover from '@material-ui/core/Popover'
+import Badge from '@material-ui/core/Badge'
 
 const SelectedResults = ({ selectionInterface }: any) => {
   const selectedResults = useLazyResultsSelectedResultsFromSelectionInterface({
@@ -72,12 +72,20 @@ const SelectedResults = ({ selectionInterface }: any) => {
   )
 }
 
-const determineHasResultFilter = () => {
-  return user.get('user').get('preferences').get('resultFilter') !== undefined
+const determineResultFilterSize = () => {
+  const resultFilters = user.get('user').get('preferences').get('resultFilter')
+  if (!resultFilters || !resultFilters.filters) {
+    return 0
+  }
+  return resultFilters.filters.length
 }
 
-const determineHasResultSort = () => {
-  return user.get('user').get('preferences').get('resultSort') !== undefined
+const determineResultSortSize = () => {
+  const resultSorts = user.get('user').get('preferences').get('resultSort')
+  if (!resultSorts) {
+    return 0
+  }
+  return resultSorts.length
 }
 
 type Props = {
@@ -98,22 +106,21 @@ const ResultSelector = ({
   const { isSearching } = useLazyResultsStatusFromSelectionInterface({
     selectionInterface,
   })
-  const [hasResultFilter, setHasResultFilter] = React.useState(
-    determineHasResultFilter()
+  const [resultFilterSize, setResultFilterSize] = React.useState(
+    determineResultFilterSize()
   )
-  const [hasResultSort, setHasResultSort] = React.useState(
-    determineHasResultSort()
+  const [resultSortSize, setResultSortSize] = React.useState(
+    determineResultSortSize()
   )
   const { listenTo } = useBackbone()
   React.useEffect(() => {
     listenTo(user.get('user').get('preferences'), 'change:resultFilter', () => {
-      setHasResultFilter(determineHasResultFilter())
+      setResultFilterSize(determineResultFilterSize())
     })
     listenTo(user.get('user').get('preferences'), 'change:resultSort', () => {
-      setHasResultSort(determineHasResultSort())
+      setResultSortSize(determineResultSortSize())
     })
   }, [])
-  const theme = useTheme()
   const LayoutDropdown = Extensions.layoutDropdown({
     goldenLayout,
     layoutResult,
@@ -160,15 +167,19 @@ const ResultSelector = ({
             data-id="filter-button"
             variant="text"
             color="primary"
-            style={{
-              borderBottom: hasResultFilter
-                ? `1px solid ${theme.palette.warning.main}`
-                : '0px',
-            }}
             {...resultFilterMenuState.MuiButtonProps}
           >
-            <FilterListIcon className="Mui-text-text-primary" />
-            Filter
+            <Badge
+              color="secondary"
+              badgeContent={resultFilterSize}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+            >
+              <FilterListIcon className="Mui-text-text-primary" />
+              Filter
+            </Badge>
           </Button>
           <Popover {...resultFilterMenuState.MuiPopoverProps}>
             <Paper className="p-3" elevation={Elevations.overlays}>
@@ -181,15 +192,19 @@ const ResultSelector = ({
             data-id="sort-button"
             variant="text"
             color="primary"
-            style={{
-              borderBottom: hasResultSort
-                ? `1px solid ${theme.palette.warning.main}`
-                : '0px',
-            }}
             {...resultSortMenuState.MuiButtonProps}
           >
-            <ArrowDownwardIcon className="Mui-text-text-primary" />
-            Sort
+            <Badge
+              color="secondary"
+              badgeContent={resultSortSize}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+            >
+              <ArrowDownwardIcon className="Mui-text-text-primary" />
+              Sort
+            </Badge>
           </Button>
           <Popover {...resultSortMenuState.MuiPopoverProps}>
             <Paper className="p-3" elevation={Elevations.overlays}>
