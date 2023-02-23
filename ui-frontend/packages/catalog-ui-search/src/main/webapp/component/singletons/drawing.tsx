@@ -22,6 +22,7 @@ export const Drawing = new (Backbone.Model.extend({
     this.listenTo((wreqr as any).vent, 'search:drawcircle', this.turnOnDrawing)
     this.listenTo((wreqr as any).vent, 'search:drawpoly', this.turnOnDrawing)
     this.listenTo((wreqr as any).vent, 'search:drawbbox', this.turnOnDrawing)
+    this.listenTo((wreqr as any).vent, 'search:drawcancel', this.turnOffDrawing)
     this.listenTo((wreqr as any).vent, 'search:drawend', this.turnOffDrawing)
   },
   turnOnDrawing(model: Backbone.Model) {

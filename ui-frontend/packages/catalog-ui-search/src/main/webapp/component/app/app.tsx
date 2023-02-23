@@ -38,7 +38,6 @@ import UserSettings, {
 } from '../../react-component/user-settings/user-settings'
 import wreqr from '../../js/wreqr'
 import { GlobalStyles } from './global-styles'
-import CancelDrawing from './cancel-drawing'
 import { PermissiveComponentType } from '../../typescript'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { Elevations } from '../theme/theme'
@@ -844,7 +843,6 @@ const App = ({
           {/* Don't move CSSBaseline or GlobalStyles to providers, since we have multiple react roots.   */}
           <CssBaseline />
           <GlobalStyles />
-          <CancelDrawing />
           <SystemUsageModal />
           <SessionTimeoutComponent />
           <AjaxErrorHandling />

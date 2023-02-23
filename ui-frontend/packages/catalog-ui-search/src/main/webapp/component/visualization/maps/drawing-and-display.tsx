@@ -26,7 +26,7 @@ export const getIdFromModelForDisplay = ({ model }: { model: any }) => {
 export const getIdFromModelForDrawing = ({ model }: { model: any }) => {
   return `${SHAPE_ID_PREFIX}-${model.cid}-drawing`
 }
-type DrawModeType = 'line' | 'poly' | 'circle' | 'bbox' | 'keyword'
+export type DrawModeType = 'line' | 'poly' | 'circle' | 'bbox' | 'keyword'
 // from these all other drawings are constructed
 const BasicDrawModeTypes: Array<DrawModeType> = [
   'bbox',
@@ -185,7 +185,7 @@ export const useDrawingAndDisplayModels = ({
   )
   useListenTo(
     (wreqr as any).vent,
-    'search:drawline-end search:drawpoly-end search:drawbbox-end search:drawcircle-end',
+    'search:drawline-end search:drawpoly-end search:drawbbox-end search:drawcircle-end search:drawcancel',
     (model: any) => {
       if (drawingModels.includes(model)) {
         setDrawingModels(
