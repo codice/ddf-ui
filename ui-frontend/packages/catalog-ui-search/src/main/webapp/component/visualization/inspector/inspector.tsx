@@ -126,7 +126,6 @@ const usePossibleMetacardTabs = ({ result }: { result: LazyQueryResult }) => {
         delete copyOfMetacardTabs[TabNames.History]
         delete copyOfMetacardTabs[TabNames.Actions]
         delete copyOfMetacardTabs[TabNames.Overwrite]
-        delete copyOfMetacardTabs[TabNames.Delete]
       }
       if (result.isDeleted()) {
         delete copyOfMetacardTabs[TabNames.History]
@@ -136,7 +135,6 @@ const usePossibleMetacardTabs = ({ result }: { result: LazyQueryResult }) => {
       if (result.isRemote()) {
         delete copyOfMetacardTabs[TabNames.History]
         delete copyOfMetacardTabs[TabNames.Overwrite]
-        delete copyOfMetacardTabs[TabNames.Delete]
         delete copyOfMetacardTabs[TabNames.Quality]
       }
       if (!result.hasPreview()) {
@@ -146,7 +144,6 @@ const usePossibleMetacardTabs = ({ result }: { result: LazyQueryResult }) => {
         delete copyOfMetacardTabs[TabNames.Preview]
       }
       if (!TypedUserInstance.canWrite(result)) {
-        delete copyOfMetacardTabs[TabNames.Delete]
         delete copyOfMetacardTabs[TabNames.Overwrite]
       }
       setPossibleMetacardTabs(copyOfMetacardTabs)
