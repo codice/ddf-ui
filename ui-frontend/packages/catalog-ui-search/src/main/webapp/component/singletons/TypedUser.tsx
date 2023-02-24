@@ -103,6 +103,10 @@ export const TypedUserInstance = {
     userInstance.get('user').get('preferences').set('resultFilter', undefined)
     TypedUserInstance.savePreferences()
   },
+  removeEphemeralSorts() {
+    userInstance.get('user').get('preferences').set('resultSort', undefined)
+    TypedUserInstance.savePreferences()
+  },
   getPreferences(): Backbone.Model<any> {
     return userInstance.get('user').get('preferences')
   },
