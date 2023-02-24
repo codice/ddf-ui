@@ -28,6 +28,9 @@ export const ExportActions = (props: MetacardInteractionProps) => {
   if (!props.model || props.model.length <= 0) {
     return null
   }
+  if (!props.model[0].parent) {
+    return null
+  }
   return (
     <>
       <exportDialogState.MuiDialogComponents.Dialog
@@ -47,7 +50,10 @@ export const ExportActions = (props: MetacardInteractionProps) => {
           </div>
         </exportDialogState.MuiDialogComponents.DialogTitle>
         <Divider></Divider>
-        <ResultsExport results={getExportResults(props.model)} />
+        <ResultsExport
+          results={getExportResults(props.model)}
+          lazyQueryResults={props.model[0].parent}
+        />
       </exportDialogState.MuiDialogComponents.Dialog>
       <MetacardInteraction
         onClick={() => {
