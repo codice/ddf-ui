@@ -201,6 +201,8 @@ public class ConfigurationApplication implements SparkApplication {
 
   private List<String> attributeSuggestionList = Collections.emptyList();
 
+  private List<String> commonAttributes = Collections.emptyList();
+
   private Map<String, String> attributeDescriptions = Collections.emptyMap();
 
   private List<String> listTemplates = Collections.emptyList();
@@ -437,6 +439,10 @@ public class ConfigurationApplication implements SparkApplication {
     this.attributeSuggestionList = list;
   }
 
+  public void setCommonAttributes(List<String> commonAttributes) {
+    this.commonAttributes = commonAttributes;
+  }
+
   public void setListTemplates(List<String> listTemplates) {
     this.listTemplates = listTemplates;
   }
@@ -603,6 +609,7 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("useHyphensInUuid", uuidGenerator.useHyphens());
     config.put("i18n", i18n);
     config.put("attributeSuggestionList", attributeSuggestionList);
+    config.put("commonAttributes", commonAttributes);
     config.put("defaultSources", defaultSources);
     config.put("defaultTableColumns", defaultTableColumns);
     config.put("helpUrl", helpUrl);

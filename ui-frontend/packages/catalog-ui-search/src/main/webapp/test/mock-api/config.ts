@@ -92,6 +92,7 @@ export default {
   hiddenAttributes: ['^sorts$', '^cql$', '^polling$', '^cached$'],
   timeout: 300000,
   attributeAliases: {},
+  commonAttributes: [],
   enums: {},
   queryFeedbackEnabled: false,
   editorAttributes: [],

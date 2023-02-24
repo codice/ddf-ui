@@ -17,7 +17,7 @@ import * as React from 'react'
 
 import FilterComparator from './filter-comparator'
 import FilterInput from './filter-input'
-import { getFilteredAttributeList } from './filterHelper'
+import { Attribute, getGroupedFilteredAttributes } from './filterHelper'
 import Grid from '@material-ui/core/Grid'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 
@@ -32,24 +32,22 @@ type Props = {
 }
 
 export const FilterContext = React.createContext({
-  limitedAttributeList: undefined as
-    | undefined
-    | {
-        label: string
-        value: string
-        description: string | undefined
-      }[],
+  limitedAttributeList: undefined as undefined | Attribute[],
 })
 const Filter = ({ filter, setFilter }: Props) => {
   const { limitedAttributeList } = React.useContext(FilterContext)
+  let attributeList = limitedAttributeList
+  let groups = 1
+  if (!attributeList) {
+    const groupedFilteredAttributes = getGroupedFilteredAttributes()
+    attributeList = groupedFilteredAttributes.attributes
+    groups = groupedFilteredAttributes.groups.length
+  }
   const { property } = filter
-  const attributeList =
-    limitedAttributeList !== undefined
-      ? limitedAttributeList
-      : getFilteredAttributeList()
   const currentSelectedAttribute = attributeList.find(
     (attrInfo) => attrInfo.value === property
   )
+  const groupBy = groups > 1 ? (option: Attribute) => option.group! : undefined
   return (
     <Grid container direction="column" alignItems="center" className="w-full">
       <Grid item className="w-full pb-2">
@@ -58,6 +56,7 @@ const Filter = ({ filter, setFilter }: Props) => {
           fullWidth
           size="small"
           options={attributeList}
+          groupBy={groupBy}
           getOptionLabel={(option) => option.label}
           getOptionSelected={(option, value) => option.value === value.value}
           onChange={(_e, newValue) => {
