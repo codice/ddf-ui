@@ -630,15 +630,15 @@ type SetCheckedType = React.Dispatch<React.SetStateAction<CheckedType>>
 const TransferList = ({
   startingLeft,
   startingRight,
-  startingShowEmpty,
+  startingHideEmpty,
   lazyResult,
   onSave,
 }: {
   startingLeft: string[]
   startingRight: string[]
-  startingShowEmpty?: boolean
+  startingHideEmpty?: boolean
   lazyResult?: LazyQueryResult
-  onSave: (arg: string[], showEmpty: boolean | undefined) => void
+  onSave: (arg: string[], hideEmpty: boolean | undefined) => void
 }) => {
   const dialogContext = useDialog()
   const [mode, setMode] = React.useState(
@@ -646,7 +646,7 @@ const TransferList = ({
   )
   const [left, setLeft] = React.useState(convertAttrListToMap(startingLeft))
   const [right, setRight] = React.useState(convertAttrListToMap(startingRight))
-  const [showEmpty, setShowEmpty] = React.useState(startingShowEmpty)
+  const [hideEmpty, setHideEmpty] = React.useState(startingHideEmpty)
   const { loading } = useCustomReadOnlyCheck()
   React.useEffect(() => {
     if (!loading) {
@@ -725,7 +725,7 @@ const TransferList = ({
         <TransferList
           startingLeft={Object.keys(left)}
           startingRight={Object.keys(right)}
-          startingShowEmpty={showEmpty}
+          startingHideEmpty={hideEmpty}
           lazyResult={lazyResult}
           onSave={onSave}
         />
@@ -822,16 +822,16 @@ const TransferList = ({
       </DialogContent>
       <DarkDivider className="w-full h-min" />
       <DialogActions>
-        {showEmpty !== undefined && (
+        {hideEmpty !== undefined && (
           <>
             <FormControlLabel
               control={
                 <Switch
-                  checked={showEmpty}
-                  onChange={(e) => setShowEmpty(e.target.checked)}
+                  checked={hideEmpty}
+                  onChange={(e) => setHideEmpty(e.target.checked)}
                 />
               }
-              label="Show empty attributes in inspector"
+              label="Hide empty attributes in inspector"
               style={{ paddingLeft: '10px' }}
             />
             <div style={{ flex: '1 0 0' }} />
@@ -857,7 +857,7 @@ const TransferList = ({
           disabled={mode === 'saving'}
           onClick={() => {
             setMode('saving')
-            onSave(Object.keys(left), showEmpty)
+            onSave(Object.keys(left), hideEmpty)
             dialogContext.setProps({
               open: false,
               children: null,
