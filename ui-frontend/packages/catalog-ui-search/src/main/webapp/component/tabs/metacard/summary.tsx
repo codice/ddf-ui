@@ -97,17 +97,11 @@ const ThumbnailInput = ({
             reader.readAsDataURL(e.target.files[0])
           }}
         />
-        <a
-          target="_blank"
-          href={TypedMetacardDefs.getImageSrc({ val: value })}
-          style={{ padding: '0px' }}
-        >
-          <img
-            src={TypedMetacardDefs.getImageSrc({ val: value })}
-            ref={imgRef}
-            style={{ maxWidth: '100%', maxHeight: '50vh' }}
-          />
-        </a>
+        <img
+          src={TypedMetacardDefs.getImageSrc({ val: value })}
+          ref={imgRef}
+          style={{ maxWidth: '100%', maxHeight: '50vh' }}
+        />
       </Grid>
       <Grid item>
         <Button
@@ -568,19 +562,13 @@ const AttributeComponent = ({
                             )
                           case 'BINARY':
                             return (
-                              <a
-                                target="_blank"
-                                href={TypedMetacardDefs.getImageSrc({ val })}
-                                style={{ padding: '0px' }}
-                              >
-                                <img
-                                  src={TypedMetacardDefs.getImageSrc({ val })}
-                                  style={{
-                                    maxWidth: '100%',
-                                    maxHeight: '50vh',
-                                  }}
-                                />
-                              </a>
+                              <img
+                                src={TypedMetacardDefs.getImageSrc({ val })}
+                                style={{
+                                  maxWidth: '100%',
+                                  maxHeight: '50vh',
+                                }}
+                              />
                             )
                           case 'BOOLEAN':
                             return (
