@@ -42,7 +42,7 @@ export const RoleDisplay = () => {
   const enhancedRoles = useEnhancedRoles()
 
   if (actingRole === 'enhanced' && enhancedRoles.length > 0) {
-    return <>Enhanced</>
+    return <>Advanced</>
   }
   return null
 }
@@ -60,7 +60,7 @@ const RolesToggle = () => {
       <div className="font-normal text-lg">Role</div>
       <FormControlLabel
         className="pb-4"
-        label={<Typography variant="body2">Enhanced</Typography>}
+        label={<Typography variant="body2">Advanced</Typography>}
         control={
           <Switch
             color="primary"
@@ -74,7 +74,7 @@ const RolesToggle = () => {
         }
       />
       <div className={`${actingRole === 'user' ? 'opacity-50' : ''}`}>
-        <div className="pb-1 font-normal italic">My Enhanced Roles</div>
+        <div className="pb-1 font-normal italic">My Advanced Roles</div>
         {enhancedRoles.map((role) => {
           return <div className="text-sm">{role}</div>
         })}
