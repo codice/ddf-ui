@@ -12,16 +12,4 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import ExpandMetacard from '../../react-component/metacard-interactions/expand-interaction'
-import DownloadProduct from '../../react-component/metacard-interactions/download-interaction'
-import ExportActions from '../../react-component/metacard-interactions/export-interaction'
-import ArchiveAction from '../../react-component/metacard-interactions/archive-interaction'
-
-const DefaultItems = [
-  ExpandMetacard,
-  DownloadProduct,
-  ExportActions,
-  ArchiveAction,
-]
-
-export default DefaultItems
+export { default } from './progress-button'

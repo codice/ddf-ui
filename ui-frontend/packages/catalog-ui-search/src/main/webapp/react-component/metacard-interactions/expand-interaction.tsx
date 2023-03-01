@@ -18,6 +18,7 @@ import { MetacardInteractionProps } from '.'
 import { hot } from 'react-hot-loader'
 import Button from '@material-ui/core/Button'
 import { Link } from '../../component/link/link'
+import { Divider } from './metacard-interactions'
 
 const ExpandMetacard = (props: MetacardInteractionProps) => {
   const isRouted = router && router.toJSON().name === 'openMetacard'
@@ -33,16 +34,19 @@ const ExpandMetacard = (props: MetacardInteractionProps) => {
       : `/metacards/${id}`
 
   return (
-    <Button
-      fullWidth
-      component={Link}
-      to={to}
-      variant="text"
-      color="primary"
-      target="_blank"
-    >
-      Open Metacard View
-    </Button>
+    <>
+      <Button
+        fullWidth
+        component={Link}
+        to={to}
+        variant="text"
+        color="primary"
+        target="_blank"
+      >
+        Open Metacard View
+      </Button>
+      <Divider />
+    </>
   )
 }
 

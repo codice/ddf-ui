@@ -34,6 +34,7 @@ class MetacardArchive extends React.Component<Props, State> {
     const isDeleted = collection.some((result) => {
       return result.isDeleted()
     })
+
     this.state = {
       collection,
       isDeleted,

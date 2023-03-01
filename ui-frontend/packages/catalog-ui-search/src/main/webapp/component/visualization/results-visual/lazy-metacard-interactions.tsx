@@ -24,7 +24,11 @@ type Props = {
 }
 
 const LazyMetacardInteractions = ({ lazyResults, onClose }: Props) => {
-  return <MetacardInteractions model={lazyResults} onClose={onClose} />
+  return (
+    <div className="py-3">
+      <MetacardInteractions model={lazyResults} onClose={onClose} />
+    </div>
+  )
 }
 
 export default hot(module)(LazyMetacardInteractions)

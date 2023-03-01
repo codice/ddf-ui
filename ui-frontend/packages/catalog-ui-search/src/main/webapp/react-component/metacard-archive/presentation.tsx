@@ -15,9 +15,15 @@
 
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
-import LinearProgress from '@material-ui/core/LinearProgress'
 import Button from '@material-ui/core/Button'
-import { useDialogState } from '../../component/hooks/useDialogState'
+import ProgressButton from '../progress-button'
+import { useDialog } from '../../component/dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import useSnack from '../../component/hooks/useSnack'
+
 type Props = {
   onArchiveConfirm: () => Promise<void>
   onRestoreConfirm: () => Promise<void>
@@ -27,92 +33,61 @@ type Props = {
 
 const render = (props: Props) => {
   const { onArchiveConfirm, onRestoreConfirm, isDeleted, loading } = props
-  const archiveDialogState = useDialogState()
-  const restoreDialogState = useDialogState()
-  return !loading ? (
+  const addSnack = useSnack()
+  const dialogContext = useDialog()
+  return (
     <>
-      <archiveDialogState.MuiDialogComponents.Dialog
-        {...archiveDialogState.MuiDialogProps}
-      >
-        <archiveDialogState.MuiDialogComponents.DialogTitle>
-          Are you sure you want to delete?
-          <div>
-            Doing so will remove the item(s) from future search results.
-          </div>
-        </archiveDialogState.MuiDialogComponents.DialogTitle>
-        <archiveDialogState.MuiDialogComponents.DialogActions>
-          <Button
-            onClick={() => {
-              archiveDialogState.handleClose()
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              archiveDialogState.handleClose()
-              onArchiveConfirm()
-            }}
-          >
-            Delete
-          </Button>
-        </archiveDialogState.MuiDialogComponents.DialogActions>
-      </archiveDialogState.MuiDialogComponents.Dialog>
-      <archiveDialogState.MuiDialogComponents.Dialog
-        {...restoreDialogState.MuiDialogProps}
-      >
-        <archiveDialogState.MuiDialogComponents.DialogTitle>
-          Are you sure you want to restore? Doing so will include the item(s) in
-          future search results.
-        </archiveDialogState.MuiDialogComponents.DialogTitle>
-        <archiveDialogState.MuiDialogComponents.DialogActions>
-          <Button
-            onClick={() => {
-              restoreDialogState.handleClose()
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              restoreDialogState.handleClose()
-              onRestoreConfirm()
-            }}
-          >
-            Restore
-          </Button>
-        </archiveDialogState.MuiDialogComponents.DialogActions>
-      </archiveDialogState.MuiDialogComponents.Dialog>
-      {!isDeleted ? (
+      <DialogTitle>{isDeleted ? 'Restore' : 'Delete'} Item(s)</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Are you sure you want to {isDeleted ? 'restore' : 'delete'}?
+        </DialogContentText>
+        <DialogContentText>
+          Doing so will {isDeleted ? 'include' : 'remove'} the item(s){' '}
+          {isDeleted ? 'in' : 'from'} future search results.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
         <Button
-          {...archiveDialogState.MuiButtonProps}
-          data-id="archive-items-button"
-          fullWidth
-          variant="contained"
-          color="secondary"
-          data-help="This will remove the item(s) from standard search results.
-To restore deleted items, you can click on 'File' in the toolbar,
-and then click 'Restore Deleted Items'."
+          onClick={() => {
+            dialogContext.setProps({ open: false })
+          }}
         >
-          <div className="w-full">Delete item(s)</div>
-          <div>
-            WARNING: This will remove the item(s) from standard search results.
-          </div>
+          Cancel
         </Button>
-      ) : (
-        <Button
-          {...restoreDialogState.MuiButtonProps}
-          fullWidth
+        <ProgressButton
+          dataId="archive-confirm"
+          onClick={async () => {
+            try {
+              dialogContext.setProps({
+                disableBackdropClick: true,
+                disableEscapeKeyDown: true,
+              })
+              isDeleted ? await onRestoreConfirm() : await onArchiveConfirm()
+              addSnack(`Successfully ${isDeleted ? `restored` : `deleted`}`)
+            } catch (err) {
+              console.log('Error: ', err)
+              addSnack(
+                `An error occurred while trying to ${
+                  isDeleted ? 'restore' : 'delete'
+                }.`,
+                {
+                  status: 'error',
+                }
+              )
+            } finally {
+              if (!loading) dialogContext.setProps({ open: false })
+            }
+          }}
           variant="contained"
           color="primary"
-          data-help="This will restore the item(s) to standard search results."
+          disabled={loading}
+          loading={loading}
         >
-          <div>Restore item(s)</div>
-        </Button>
-      )}
+          {isDeleted ? 'Restore' : 'Delete'}
+        </ProgressButton>
+      </DialogActions>
     </>
-  ) : (
-    <LinearProgress className="w-full h-2" />
   )
 }
 
