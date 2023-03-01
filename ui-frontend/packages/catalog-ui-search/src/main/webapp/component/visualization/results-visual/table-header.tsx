@@ -164,7 +164,60 @@ export const Header = ({ lazyResults }: HeaderProps) => {
   const [shownAttributes, setShownAttributes] = React.useState(
     TypedUserInstance.getResultsAttributesShownTable()
   )
+  const [activeIndex, setActiveIndex] = React.useState(null);
+  const minCellWidth = 200
+  
+  const createHeaders = () => {
+    return shownAttributes.map((item) => ({
+      attr: item,
+      ref: React.useRef<HTMLDivElement>(null)
+    }))
+  }
+
+  const columns = createHeaders()
+
+  const mouseDown = (index:any) => {
+    setActiveIndex(index);
+  }
+
   const { listenTo } = useBackbone()
+
+  const mouseMove = React.useCallback((e) => {
+
+    columns.map((col, i) => {
+      if (i === activeIndex) {
+        if (col.ref.current){
+          const width = e.clientX - col.ref.current?.getBoundingClientRect().x
+          if (width > minCellWidth){
+            col.ref.current.style.width = `${width}px`
+          }
+        }   
+      }
+  
+    });
+  
+  }, [activeIndex, columns])
+
+  const removeListeners = React.useCallback(() => {
+    window.removeEventListener('mousemove', mouseMove)
+    window.removeEventListener('mouseup', removeListeners)
+  }, [mouseMove])
+  
+  const mouseUp = React.useCallback(() => {
+    setActiveIndex(null)
+    removeListeners()
+  }, [setActiveIndex, removeListeners])
+
+  React.useEffect(() => {
+    if (activeIndex !== null) {
+      window.addEventListener('mousemove', mouseMove)
+      window.addEventListener('mouseup', mouseUp)
+    }
+  
+    return () => {
+      removeListeners()
+    }
+  }, [activeIndex, mouseMove, mouseUp, removeListeners])
 
   React.useEffect(() => {
     listenTo(
@@ -182,6 +235,8 @@ export const Header = ({ lazyResults }: HeaderProps) => {
         className="bg-inherit whitespace-no-wrap flex items-strech flex-no-wrap"
         style={{
           width: shownAttributes.length * 200 + 'px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(12, 1fr)'
         }}
       >
         <div className="sticky left-0 w-auto z-10 bg-inherit Mui-border-divider border border-t-0 border-l-0 border-b-0">
@@ -192,42 +247,44 @@ export const Header = ({ lazyResults }: HeaderProps) => {
             <HeaderCheckbox lazyResults={lazyResults} />
           </CellComponent>
         </div>
-        {shownAttributes.map((attr) => {
+        {columns.map(({attr, ref}, index) => {
           const label = TypedMetacardDefs.getAlias({ attr })
           const sortable = true
           return (
-            <CellComponent
-              key={attr}
-              className={`${
-                sortable ? 'is-sortable' : ''
-              } Mui-border-divider border border-t-0 border-l-0 border-b-0`}
-              data-propertyid={`${attr}`}
-              data-propertytext={`${label ? `${label}` : `${attr}`}`}
-              style={{
-                padding: 0,
-                minWidth: '200px',
-              }}
+            <div key={index} ref={ref} className={`${
+              sortable ? 'is-sortable' : ''
+            } Mui-border-divider border border-t-0 border-l-0 border-b-0`}
+            style={{cursor: 'col-resize', display: 'flex'}}
+            onMouseDown={() => mouseDown(index)}
             >
-              <Button
-                disabled={!sortable}
-                className="w-full outline-none is-bold h-full"
-                onClick={() => handleSortClick(attr)}
-                style={{ width: '100%' }}
-              >
-                <div className="w-full text-left">
-                  <span
-                    className="column-text is-bold"
-                    title={`${label ? `${label}` : `${attr}`}`}
-                  >
-                    {`${label ? `${label}` : `${attr}`}`}
-                  </span>
-                  <span
-                    className={getSortDirectionClass(attr)}
-                    style={{ paddingLeft: '3px' }}
-                  />
-                </div>
-              </Button>
-            </CellComponent>
+                <CellComponent
+                  data-propertyid={`${attr}`}
+                  data-propertytext={`${label ? `${label}` : `${attr}`}`}
+                  style={{
+                    minWidth: '200px',
+                  }}
+                >                    
+                    <Button
+                      disabled={!sortable}
+                      className="w-full outline-none is-bold h-full"
+                      onClick={() => handleSortClick(attr)}
+                      style={{ width: '100%'}}
+                    >
+                      <div className="w-full text-left">
+                        <span
+                          className="column-text is-bold"
+                          title={`${label ? `${label}` : `${attr}`}`}
+                        >
+                          {`${label ? `${label}` : `${attr}`}`}
+                        </span>
+                        <span
+                          className={getSortDirectionClass(attr)}
+                          style={{ paddingLeft: '3px' }}
+                        />
+                      </div>
+                    </Button>            
+                </CellComponent>
+            </div>
           )
         })}
         <CellComponent style={{ width: '8px' }}></CellComponent>{' '}
