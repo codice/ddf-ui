@@ -35,6 +35,7 @@ import TransferList from '../../tabs/metacard/transfer-list'
 import { useDialog } from '../../dialog'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import useTimePrefs from '../../fields/useTimePrefs'
+import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 type Props = {
   selectionInterface: any
   mode: any
@@ -106,6 +107,11 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
    * This is solely to keep the illusion of responsiveness when switching from table mode to list mode (or dropping a new result visual in)
    */
   const [isMounted, setIsMounted] = React.useState(false)
+  const [shownAttributes, setShownAttributes] = React.useState(
+    TypedUserInstance.getResultsAttributesShownTable()
+  )
+  const { listenTo } = useBackbone()
+
   React.useEffect(() => {
     const mountedTimeout = setTimeout(() => {
       setIsMounted(true)
@@ -114,6 +120,73 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
       clearTimeout(mountedTimeout)
     }
   }, [])
+
+  // const shownAttributes = React.useState(
+  //   TypedUserInstance.getResultsAttributesShownTable()
+  // )
+  const [activeIndex, setActiveIndex] = React.useState(null)
+  const minCellWidth = 200
+  
+  const createHeaders = () => {
+    return shownAttributes.map((item) => ({
+      attr: item,
+      ref: React.useRef<HTMLDivElement>(null)
+    }))
+  }
+
+  const columns = createHeaders()
+
+  const mouseDown = (index:any) => {
+    setActiveIndex(index);
+  }
+
+  const mouseMove = React.useCallback((e) => {
+
+    columns.map((col, i) => {
+      if (i === activeIndex) {
+        if (col.ref.current){
+          const width = e.clientX - col.ref.current?.getBoundingClientRect().x
+          if (width > minCellWidth){
+            col.ref.current.style.width = `${width}px`
+          }
+        }   
+      }
+  
+    });
+  
+  }, [activeIndex, columns, minCellWidth])
+
+  const removeListeners = React.useCallback(() => {
+    window.removeEventListener('mousemove', mouseMove)
+    window.removeEventListener('mouseup', removeListeners)
+  }, [mouseMove])
+  
+  const mouseUp = React.useCallback(() => {
+    setActiveIndex(null)
+    removeListeners()
+  }, [setActiveIndex, removeListeners])
+
+  React.useEffect(() => {
+    if (activeIndex !== null) {
+      window.addEventListener('mousemove', mouseMove)
+      window.addEventListener('mouseup', mouseUp)
+    }
+  
+    return () => {
+      removeListeners()
+    }
+  }, [activeIndex, mouseMove, mouseUp, removeListeners])
+
+  React.useEffect(() => {
+    listenTo(
+      user.get('user').get('preferences'),
+      'change:results-attributesShownTable',
+      () => {
+        setShownAttributes(TypedUserInstance.getResultsAttributesShownTable())
+      }
+    )
+  }, [])
+
   return (
     <Grid
       container
@@ -195,7 +268,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                   className="w-auto overflow-auto scrollbars-hide bg-inherit"
                   ref={headerRef}
                 >
-                  <Header lazyResults={lazyResults} />
+                  <Header lazyResults={lazyResults} columns={columns} mouseDownMain={mouseDown} attributes={shownAttributes}/>
                 </div>
               </Grid>
               <Grid item>
@@ -222,6 +295,8 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                           measure={measure}
                           index={index}
                           results={results}
+                          activeIndexMain={activeIndex}
+                          mouseDownMain={mouseDown}
                         />
                       </div>
                     )
