@@ -345,39 +345,34 @@ export function getInstanceConfig({ goldenLayout }: { goldenLayout: any }) {
 function handleGoldenLayoutStateChange({
   options,
   goldenLayout,
+  currentConfig,
   lastConfig,
 }: {
   goldenLayout: any
+  currentConfig: any
   options: GoldenLayoutViewProps
   lastConfig: React.MutableRefObject<any>
 }) {
-  if (lastConfig.current === null) {
-    // this triggers on init of golden layout
-    lastConfig.current = getInstanceConfig({ goldenLayout })
-    return
-  }
   ;(wreqr as any).vent.trigger('resize') // do we need this?
   if (
     _.isEqual(
       removeEphemeralState(lastConfig.current),
-      removeEphemeralState(getInstanceConfig({ goldenLayout }))
+      removeEphemeralState(currentConfig)
     )
   ) {
     return
   }
-  lastConfig.current = getInstanceConfig({ goldenLayout })
+  lastConfig.current = currentConfig
   /**
    * If we have this option, then we're editing a layout in the layout editor.
    * Otherwise, we're using a layout (or possibly custom) and need to take a change as indication of moving to custom.
    */
   if (options.editLayoutRef) {
-    options.editLayoutRef.current = getInstanceConfig({ goldenLayout })
+    options.editLayoutRef.current = currentConfig
   } else {
     // can technically do detections of max or empty here
     //https://github.com/deepstreamIO/golden-layout/issues/253
     if (goldenLayout.isInitialised) {
-      const currentConfig = goldenLayout.toConfig()
-      removeEphemeralState(currentConfig)
       user.get('user').get('preferences').set(options.configName, currentConfig)
       ;(wreqr as any).vent.trigger('resize')
       //do not add a window resize event, that will cause an endless loop.  If you need something like that, listen to the wreqr resize event.
@@ -535,19 +530,43 @@ export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
         goldenLayout,
         options,
       })
-      goldenLayout.on(
-        'stateChanged',
-        _.debounce(() => {
+
+      const debouncedHandleGoldenLayoutStateChange = _.debounce(
+        ({ currentConfig }: { currentConfig: any }) => {
           handleGoldenLayoutStateChange({
             options,
+            currentConfig,
             goldenLayout,
             lastConfig,
           })
-        }, 200)
+        },
+        200
       )
+      /**
+       *  There is a bug in golden layout as follows:
+       *  If you have a layout with 2 items (inspector above inspector for instance), close an item, then close the other,
+       *  the final state change event is not triggered to show content as [] or empty.  Oddly enough it works in other scenarios.
+       *  I haven't determined a workaround for this, but it's not bothering users as far as I know at the moment.
+       *  Basically the bug is that empty layouts aren't guaranteed to be saved, but non empty will always save appropriately.
+       */
+      goldenLayout.on('stateChanged', () => {
+        const currentConfig = getInstanceConfig({ goldenLayout })
+        /**
+         *  Get the config instantly, that way if we navigate away and the component is removed from the document we still get the correct config
+         *  However, delay the actual attempt to save the config, so we don't save too often.
+         */
+        debouncedHandleGoldenLayoutStateChange({
+          currentConfig,
+        })
+      })
       goldenLayout.on('stackCreated', handleGoldenLayoutStackCreated)
       goldenLayout.on('initialised', () => {
         // can do empty and max detections here
+        /**
+         *  This is necessary to properly save pref on the first change that happens from a completely empty layout on first load.
+         *  Used to be done in handleStateChange (if null, set), but that did not trigger for empty layouts on first load.
+         */
+        lastConfig.current = getInstanceConfig({ goldenLayout })
       })
       goldenLayout.init()
       return () => {
