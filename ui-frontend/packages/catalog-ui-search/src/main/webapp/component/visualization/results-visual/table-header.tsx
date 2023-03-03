@@ -35,8 +35,6 @@ export type Header = {
 
 type HeaderProps = {
   lazyResults: LazyQueryResults
-  mouseDownMain: Function
-  activeIndexMain: any
   headerWidth: Function
 }
 
@@ -162,14 +160,14 @@ export const HeaderCheckbox = ({
   )
 }
 
-export const Header = ({ lazyResults, mouseDownMain,activeIndexMain, headerWidth }: HeaderProps) => {
+export const Header = ({ lazyResults, headerWidth }: HeaderProps) => {
   const handleSortClick = _.debounce(updateSort, 500, true)
   const [shownAttributes, setShownAttributes] = React.useState(
     TypedUserInstance.getResultsAttributesShownTable()
   )
   const { listenTo } = useBackbone()
 
-  const [activeIndex, setActiveIndex] = React.useState(activeIndexMain)
+  const [activeIndex, setActiveIndex] = React.useState(null)
   const minCellWidth = 200
   
   const createHeaders = () => {
@@ -195,13 +193,10 @@ export const Header = ({ lazyResults, mouseDownMain,activeIndexMain, headerWidth
           if (width > minCellWidth){
             col.ref.current.style.width = `${width}px`
             columnsWidth[i] = `${width}px`
-            // headerWidth(width + 'px')
           }
         }   
       }
-      
       columnsWidth[i] = width + 'px'
-      console.log(columnsWidth)
     });
     headerWidth(columnsWidth)
   
@@ -266,7 +261,6 @@ export const Header = ({ lazyResults, mouseDownMain,activeIndexMain, headerWidth
             style={{cursor: 'col-resize', display: 'flex'}}
             onMouseDown={() => {
               mouseDown(index)
-              mouseDownMain(index)
             }}
             >
                 <CellComponent

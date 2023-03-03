@@ -37,8 +37,6 @@ type ResultItemFullProps = {
   measure: () => void
   index: number
   results: LazyQueryResult[]
-  activeIndexMain: any
-  mouseDownMain: Function
   headerWidth: Array<string>
 }
 export function clearSelection() {
@@ -85,8 +83,6 @@ const RowComponent = ({
   measure,
   index,
   results,
-  activeIndexMain,
-  mouseDownMain,
   headerWidth
 }: ResultItemFullProps) => {
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
@@ -97,69 +93,6 @@ const RowComponent = ({
   const { listenTo } = useBackbone()
   const convertToFormat = useCoordinateFormat()
   useRerenderOnBackboneSync({ lazyResult })
-
-  const [activeIndex, setActiveIndex] = React.useState(activeIndexMain)
-  const minCellWidth = 200
-  const [cellWidth, setWidth] = React.useState('200px')
-  
-  const createHeaders = () => {
-    return shownAttributes.map((item) => ({
-      property: item,
-      ref: React.useRef<HTMLDivElement>(null)
-    }))
-  }
-
-  const columns = createHeaders()
-
-  // const mouseDown = (index:any) => {
-  //   setActiveIndex(index);
-  // }
-
-  // const mouseMove = React.useCallback((e) => {
-
-  //   columns.map((col, i) => {
-  //     if (i === activeIndex) {
-  //       if (col.ref.current){
-  //         const width = e.clientX - col.ref.current?.getBoundingClientRect().x
-  //         if (width > minCellWidth){
-  //           col.ref.current.style.width = `${width}px`
-  //           // console.log(width +" "+ i)
-  //           console.log("WIDTH: " + col.ref.current.style.width)
-  //           console.log("HEIGHT: " + col.ref.current.style.height)
-  //           // setWidth(`${headerWidth}px`)
-
-  //         }
-  //       }   
-  //     }
-  
-  //   });
-  //   console.log(headerWidth)
-  
-  // }, [activeIndex, columns])
-
-  // const removeListeners = React.useCallback(() => {
-  //   window.removeEventListener('mousemove', mouseMove)
-  //   window.removeEventListener('mouseup', removeListeners)
-  // }, [mouseMove])
-  
-  // const mouseUp = React.useCallback(() => {
-  //   setActiveIndex(null)
-  //   removeListeners()
-  //   console.log("MOUSE UP")
-  //   // columns[activeIndex].ref.current?.style
-  // }, [setActiveIndex, removeListeners])
-
-  // React.useEffect(() => {
-  //   if (activeIndex !== null) {
-  //     window.addEventListener('mousemove', mouseMove)
-  //     // window.addEventListener('mouseup', mouseUp)
-  //     console.log("ROW")
-  //   }
-  
-  //   return () => {
-  //     removeListeners()
-  //   }
-  // }, [activeIndex, mouseMove, removeListeners])  
 
   React.useEffect(() => {
     listenTo(
@@ -246,7 +179,7 @@ const RowComponent = ({
                 wrap="nowrap"
                 
               >
-                {columns.map(({property, ref}, index) => {
+                {shownAttributes.map((property, index) => {
                   let value = lazyResult.plain.metacard.properties[
                     property
                   ] as any
@@ -270,7 +203,7 @@ const RowComponent = ({
                     }
                   }
                   return (
-                    <div key={index} ref={ref} 
+                    <div key={index} 
                   >
                       <CellComponent
                         key={property}
