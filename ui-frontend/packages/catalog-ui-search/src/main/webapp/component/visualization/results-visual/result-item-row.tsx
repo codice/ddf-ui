@@ -37,6 +37,9 @@ type ResultItemFullProps = {
   measure: () => void
   index: number
   results: LazyQueryResult[]
+  activeIndexMain: any
+  mouseDownMain: Function
+  headerWidth: Array<string>
 }
 export function clearSelection() {
   if (window.getSelection) {
@@ -82,6 +85,9 @@ const RowComponent = ({
   measure,
   index,
   results,
+  activeIndexMain,
+  mouseDownMain,
+  headerWidth
 }: ResultItemFullProps) => {
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const [shownAttributes, setShownAttributes] = React.useState(
@@ -91,6 +97,70 @@ const RowComponent = ({
   const { listenTo } = useBackbone()
   const convertToFormat = useCoordinateFormat()
   useRerenderOnBackboneSync({ lazyResult })
+
+  const [activeIndex, setActiveIndex] = React.useState(activeIndexMain)
+  const minCellWidth = 200
+  const [cellWidth, setWidth] = React.useState('200px')
+  
+  const createHeaders = () => {
+    return shownAttributes.map((item) => ({
+      property: item,
+      ref: React.useRef<HTMLDivElement>(null)
+    }))
+  }
+
+  const columns = createHeaders()
+
+  // const mouseDown = (index:any) => {
+  //   setActiveIndex(index);
+  // }
+
+  // const mouseMove = React.useCallback((e) => {
+
+  //   columns.map((col, i) => {
+  //     if (i === activeIndex) {
+  //       if (col.ref.current){
+  //         const width = e.clientX - col.ref.current?.getBoundingClientRect().x
+  //         if (width > minCellWidth){
+  //           col.ref.current.style.width = `${width}px`
+  //           // console.log(width +" "+ i)
+  //           console.log("WIDTH: " + col.ref.current.style.width)
+  //           console.log("HEIGHT: " + col.ref.current.style.height)
+  //           // setWidth(`${headerWidth}px`)
+
+  //         }
+  //       }   
+  //     }
+  
+  //   });
+  //   console.log(headerWidth)
+  
+  // }, [activeIndex, columns])
+
+  // const removeListeners = React.useCallback(() => {
+  //   window.removeEventListener('mousemove', mouseMove)
+  //   window.removeEventListener('mouseup', removeListeners)
+  // }, [mouseMove])
+  
+  // const mouseUp = React.useCallback(() => {
+  //   setActiveIndex(null)
+  //   removeListeners()
+  //   console.log("MOUSE UP")
+  //   // columns[activeIndex].ref.current?.style
+  // }, [setActiveIndex, removeListeners])
+
+  // React.useEffect(() => {
+  //   if (activeIndex !== null) {
+  //     window.addEventListener('mousemove', mouseMove)
+  //     // window.addEventListener('mouseup', mouseUp)
+  //     console.log("ROW")
+  //   }
+  
+  //   return () => {
+  //     removeListeners()
+  //   }
+  // }, [activeIndex, mouseMove, removeListeners])  
+
   React.useEffect(() => {
     listenTo(
       user.get('user').get('preferences'),
@@ -119,6 +189,8 @@ const RowComponent = ({
         className="bg-inherit flex items-strech flex-no-wrap"
         style={{
           width: shownAttributes.length * 200 + 'px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(12, 1fr)'
         }}
       >
         <div
@@ -172,11 +244,9 @@ const RowComponent = ({
                 direction="row"
                 className="h-full"
                 wrap="nowrap"
-                style={{
-                  width: shownAttributes.length * 200 + 'px',
-                }}
+                
               >
-                {shownAttributes.map((property) => {
+                {columns.map(({property, ref}, index) => {
                   let value = lazyResult.plain.metacard.properties[
                     property
                   ] as any
@@ -200,63 +270,71 @@ const RowComponent = ({
                     }
                   }
                   return (
-                    <CellComponent
-                      key={property}
-                      data-property={`${property}`}
-                      className={`Mui-border-divider border border-t-0 border-l-0 ${
-                        isLast ? '' : 'border-b-0'
-                      } h-full`}
-                      data-value={`${value}`}
-                    >
-                      {property === 'thumbnail' && thumbnail ? (
-                        <img
-                          data-id="thumbnail-value"
-                          src={imgsrc}
-                          style={{
-                            maxWidth: '100%',
-                            maxHeight: '100%',
-                          }}
-                          onLoad={() => {
-                            measure()
-                          }}
-                          onError={() => {
-                            measure()
-                          }}
-                        />
-                      ) : (
-                        <React.Fragment>
-                          <div
-                            data-id={`${property}-value`}
-                            style={{ wordBreak: 'break-word' }}
-                          >
-                            {value.map((curValue: any, index: number) => {
-                              return (
-                                <span key={index} data-value={`${curValue}`}>
-                                  {curValue.toString().startsWith('http') ? (
-                                    <a
-                                      href={`${curValue}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      {TypedMetacardDefs.getAlias({
-                                        attr: property,
-                                      })}
-                                    </a>
-                                  ) : (
-                                    `${
-                                      value.length > 1 &&
-                                      index < value.length - 1
-                                        ? curValue + ', '
-                                        : getDisplayValue(curValue, property)
-                                    }`
-                                  )}
-                                </span>
-                              )
-                            })}
-                          </div>
-                        </React.Fragment>
-                      )}
-                    </CellComponent>
+                    <div key={index} ref={ref} 
+                  >
+                      <CellComponent
+                        key={property}
+                        data-property={`${property}`}
+                        className={`Mui-border-divider border border-t-0 border-l-0 ${
+                          isLast ? '' : 'border-b-0'
+                        } h-full`}
+                        data-value={`${value}`}
+                        style={{
+                          width: `${headerWidth[index]}`,
+                          minWidth: '200px',
+                          height: '100%'
+                        }}
+                      >
+                        {property === 'thumbnail' && thumbnail ? (
+                          <img
+                            data-id="thumbnail-value"
+                            src={imgsrc}
+                            style={{
+                              maxWidth: '100%',
+                              maxHeight: '100%',
+                            }}
+                            onLoad={() => {
+                              measure()
+                            }}
+                            onError={() => {
+                              measure()
+                            }}
+                          />
+                        ) : (
+                          <React.Fragment>
+                            <div
+                              data-id={`${property}-value`}
+                              style={{ wordBreak: 'break-word' }}
+                            >
+                              {value.map((curValue: any, index: number) => {
+                                return (
+                                  <span key={index} data-value={`${curValue}`}>
+                                    {curValue.toString().startsWith('http') ? (
+                                      <a
+                                        href={`${curValue}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                      >
+                                        {TypedMetacardDefs.getAlias({
+                                          attr: property,
+                                        })}
+                                      </a>
+                                    ) : (
+                                      `${
+                                        value.length > 1 &&
+                                        index < value.length - 1
+                                          ? curValue + ', '
+                                          : getDisplayValue(curValue, property)
+                                      }`
+                                    )}
+                                  </span>
+                                )
+                              })}
+                            </div>
+                          </React.Fragment>
+                        )}
+                      </CellComponent>
+                    </div>
                   )
                 })}
               </Grid>

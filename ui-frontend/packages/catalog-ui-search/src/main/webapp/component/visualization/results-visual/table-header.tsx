@@ -35,9 +35,9 @@ export type Header = {
 
 type HeaderProps = {
   lazyResults: LazyQueryResults
-  columns: Array<any>
   mouseDownMain: Function
-  attributes: any
+  activeIndexMain: any
+  headerWidth: Function
 }
 
 type Sort = {
@@ -162,82 +162,88 @@ export const HeaderCheckbox = ({
   )
 }
 
-export const Header = ({ lazyResults, columns, mouseDownMain,attributes }: HeaderProps) => {
+export const Header = ({ lazyResults, mouseDownMain,activeIndexMain, headerWidth }: HeaderProps) => {
   const handleSortClick = _.debounce(updateSort, 500, true)
-  // const [shownAttributes, setShownAttributes] = React.useState(
-  //   TypedUserInstance.getResultsAttributesShownTable()
-  // )
-  // const { listenTo } = useBackbone()
+  const [shownAttributes, setShownAttributes] = React.useState(
+    TypedUserInstance.getResultsAttributesShownTable()
+  )
+  const { listenTo } = useBackbone()
 
-  // const [activeIndex, setActiveIndex] = React.useState(activeIndexMain)
-  // const minCellWidth = 200
+  const [activeIndex, setActiveIndex] = React.useState(activeIndexMain)
+  const minCellWidth = 200
   
-  // const createHeaders = () => {
-  //   return shownAttributes.map((item) => ({
-  //     attr: item,
-  //     ref: React.useRef<HTMLDivElement>(null)
-  //   }))
-  // }
+  const createHeaders = () => {
+    return shownAttributes.map((item) => ({
+      attr: item,
+      ref: React.useRef<HTMLDivElement>(null)
+    }))
+  }
 
-  // const columns = createHeaders()
+  const columns = createHeaders()
 
-  // const mouseDown = (index:any) => {
-  //   setActiveIndex(index);
-  // }
+  const mouseDown = (index:any) => {
+    setActiveIndex(index);
+  }
 
-  // const mouseMove = React.useCallback((e) => {
-
-  //   columns.map((col, i) => {
-  //     if (i === activeIndex) {
-  //       if (col.ref.current){
-  //         const width = e.clientX - col.ref.current?.getBoundingClientRect().x
-  //         if (width > minCellWidth){
-  //           col.ref.current.style.width = `${width}px`
-  //         }
-  //       }   
-  //     }
+  const mouseMove = React.useCallback((e) => {
+    const columnsWidth : string[] = [] 
+    columns.map((col, i) => {
+      const width = col.ref.current?.clientWidth
+      if (i === activeIndex) {
+        if (col.ref.current){
+          const width = e.clientX - col.ref.current?.getBoundingClientRect().x
+          if (width > minCellWidth){
+            col.ref.current.style.width = `${width}px`
+            columnsWidth[i] = `${width}px`
+            // headerWidth(width + 'px')
+          }
+        }   
+      }
+      
+      columnsWidth[i] = width + 'px'
+      console.log(columnsWidth)
+    });
+    headerWidth(columnsWidth)
   
-  //   });
-  
-  // }, [activeIndex, columns])
+  }, [activeIndex, columns])
 
-  // const removeListeners = React.useCallback(() => {
-  //   window.removeEventListener('mousemove', mouseMove)
-  //   window.removeEventListener('mouseup', removeListeners)
-  // }, [mouseMove])
+  const removeListeners = React.useCallback(() => {
+    window.removeEventListener('mousemove', mouseMove)
+    window.removeEventListener('mouseup', removeListeners)
+  }, [mouseMove])
   
-  // const mouseUp = React.useCallback(() => {
-  //   setActiveIndex(null)
-  //   removeListeners()
-  // }, [setActiveIndex, removeListeners])
+  const mouseUp = React.useCallback(() => {
+    setActiveIndex(null)
+    removeListeners()
+  }, [setActiveIndex, removeListeners])
 
-  // React.useEffect(() => {
-  //   if (activeIndex !== null) {
-  //     window.addEventListener('mousemove', mouseMove)
-  //     window.addEventListener('mouseup', mouseUp)
-  //   }
+  React.useEffect(() => {
+    if (activeIndex !== null) {
+      window.addEventListener('mousemove', mouseMove)
+      window.addEventListener('mouseup', mouseUp)
+    }
   
-  //   return () => {
-  //     removeListeners()
-  //   }
-  // }, [activeIndex, mouseMove, mouseUp, removeListeners])
+    return () => {
+      removeListeners()
+    }
+  }, [activeIndex, mouseMove, mouseUp, removeListeners])
 
-  // React.useEffect(() => {
-  //   listenTo(
-  //     user.get('user').get('preferences'),
-  //     'change:results-attributesShownTable',
-  //     () => {
-  //       setShownAttributes(TypedUserInstance.getResultsAttributesShownTable())
-  //     }
-  //   )
-  // }, [])
+  React.useEffect(() => {
+    listenTo(
+      user.get('user').get('preferences'),
+      'change:results-attributesShownTable',
+      () => {
+        setShownAttributes(TypedUserInstance.getResultsAttributesShownTable())
+      }
+    )
+  }, [])
   return (
     <React.Fragment>
       <div
         data-id="table-container"
         className="bg-inherit whitespace-no-wrap flex items-strech flex-no-wrap"
         style={{
-          width: attributes.length * 200 + 'px',
+          width: shownAttributes.length * 200 + 'px',
           display: 'grid',
           gridTemplateColumns: 'repeat(12, 1fr)'
         }}
@@ -259,7 +265,7 @@ export const Header = ({ lazyResults, columns, mouseDownMain,attributes }: Heade
             } Mui-border-divider border border-t-0 border-l-0 border-b-0`}
             style={{cursor: 'col-resize', display: 'flex'}}
             onMouseDown={() => {
-              // mouseDown(index)
+              mouseDown(index)
               mouseDownMain(index)
             }}
             >
