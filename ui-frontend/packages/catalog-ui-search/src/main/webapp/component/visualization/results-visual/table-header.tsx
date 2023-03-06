@@ -184,6 +184,7 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
     setActiveIndex(index);
   }
 
+
   const mouseMove = React.useCallback((e) => {
     const columnsWidth = [...headerColWidth]
     columns.map((col, i) => {
@@ -203,6 +204,13 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
     setHeaderColWidth(columnsWidth)
   
   }, [activeIndex, columns])
+
+  const resetColumnWidth = (index:number) => {
+    const columnsWidth = [...headerColWidth]
+    columnsWidth[index] = '200px'
+    setHeaderColWidth(columnsWidth)
+    
+  }
 
   const removeListeners = React.useCallback(() => {
     window.removeEventListener('mousemove', mouseMove)
@@ -270,7 +278,9 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
                   style={{
                     width: '100%',
                     minWidth: '200px',
-                    display: 'flex'
+                    display: 'flex',
+                    padding: 0,
+                    borderRightWidth: `${index===activeIndex ? 'thick' : '1px'}`
                   }}
                 >                    
                     <Button
@@ -292,10 +302,16 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
                         />
                       </div>
                     </Button>
-                    <div style={{width: '10px', cursor: 'col-resize', 
-                      borderRightWidth: `${index===activeIndex ? 'thick' : '1px'}`, 
+                    <div style={{width: '10px', cursor: 'col-resize'
                       }}
                       className='hover:border-solid'
+                      onDoubleClick={() => {
+                        resetColumnWidth(index)
+                        if(ref.current){
+                          ref.current.style.width = '200px'
+                        }
+                        
+                      }}
                       onMouseDown={() => {
                         mouseDown(index)
                         }}
