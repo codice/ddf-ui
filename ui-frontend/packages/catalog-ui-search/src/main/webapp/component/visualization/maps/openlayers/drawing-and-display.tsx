@@ -39,9 +39,10 @@ import Common from '../../../../js/Common'
 import wreqr from '../../../../js/wreqr'
 import { Drawing } from '../../../../component/singletons/drawing'
 import * as Turf from '@turf/turf'
-import { Point, Polygon, LineString } from '@turf/turf'
+import { Position, Point, Polygon, LineString } from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import ShapeUtils from '../../../../js/ShapeUtils'
+import _ from 'lodash'
 
 // TODO should move all the common code to ddf-ui and have downstream import it
 
@@ -288,7 +289,9 @@ const createPolygonModel = (geo: GeometryJSON) => {
     position.length > 2 ? position.slice(0, 2) : position
   )
   return {
-    polygon,
+    polygon: Common.wrapMapCoordinatesArray(polygon as any).map((coords) =>
+      coords.map((coord) => Number(coord.toFixed(6)))
+    ),
     polygonBufferWidth: geo.properties.buffer?.toString() || '0',
     polygonBufferUnits: geo.properties.bufferUnit,
   }
@@ -300,9 +303,37 @@ const createLineStringModel = (geo: GeometryJSON) => {
     position.length > 2 ? position.slice(0, 2) : position
   )
   return {
-    line,
+    line: Common.wrapMapCoordinatesArray(line as any).map((coords) =>
+      coords.map((coord) => Number(coord.toFixed(6)))
+    ),
     lineWidth: geo.properties.buffer?.toString() || '0',
     lineUnits: geo.properties.bufferUnit,
+  }
+}
+
+const createPointRadiusModel = (geo: GeometryJSON) => {
+  const wrapped = Common.wrapMapCoordinatesArray([
+    (geo.geometry as Point).coordinates,
+  ] as any)
+  return {
+    lon: Number(wrapped[0][0].toFixed(6)),
+    lat: Number(wrapped[0][1].toFixed(6)),
+    radius: geo.properties.buffer?.toString() || '1',
+    radiusUnits: geo.properties.bufferUnit,
+  }
+}
+
+const createBoundingBoxModel = (geo: GeometryJSON) => {
+  // bbox order: west, south, east, north
+  const wrapped = Common.wrapMapCoordinatesArray([
+    [geo.bbox[0], geo.bbox[1]],
+    [geo.bbox[2], geo.bbox[3]],
+  ])
+  return {
+    west: Number(wrapped[0][0].toFixed(6)),
+    south: Number(wrapped[0][1].toFixed(6)),
+    east: Number(wrapped[1][0].toFixed(6)),
+    north: Number(wrapped[1][1].toFixed(6)),
   }
 }
 
@@ -314,19 +345,9 @@ const createGeoModel = (geo: GeometryJSON) => {
       return createLineStringModel(geo)
     case 'Point':
     case 'Point Radius':
-      return {
-        lon: (geo.geometry as Point).coordinates[0],
-        lat: (geo.geometry as Point).coordinates[1],
-        radius: geo.properties.buffer?.toString() || '1',
-        radiusUnits: geo.properties.bufferUnit,
-      }
+      return createPointRadiusModel(geo)
     case 'Bounding Box':
-      return {
-        west: geo.bbox[0],
-        south: geo.bbox[1],
-        east: geo.bbox[2],
-        north: geo.bbox[3],
-      }
+      return createBoundingBoxModel(geo)
     default:
       return {}
   }
@@ -406,20 +427,61 @@ const modelToBoundingBox = (model: any): GeometryJSON | null => {
   return makeBBoxGeo(Common.generateUUID(), [west, south, east, north])
 }
 
+const adjustGeoCoords = (geo: GeometryJSON) => {
+  const geometry = geo.geometry
+  switch (geo.properties.shape) {
+    case 'Point':
+      const pointCoords = [(geometry as Point).coordinates]
+      geometry.coordinates = convertCoordsToDisplay(pointCoords)[0]
+      return geo
+    case 'Line':
+      const lineStringCoords = (geometry as LineString).coordinates
+      geometry.coordinates = convertCoordsToDisplay(lineStringCoords)
+      return geo
+    case 'Bounding Box':
+    case 'Polygon':
+      const coords = (geometry as Polygon).coordinates[0]
+      geometry.coordinates[0] = convertCoordsToDisplay(coords)
+      return geo
+    default:
+      return geo
+  }
+}
+
+const convertCoordsToDisplay = (coordinates: Position[]) => {
+  const coords = _.cloneDeep(coordinates)
+  for (let i = 0; i + 1 < coords.length; i++) {
+    const east = Number(coords[i + 1][0])
+    const west = Number(coords[i][0])
+    if (east - west < -180) {
+      coords[i + 1][0] = east + 360
+    } else if (east - west > 180) {
+      coords[i][0] = west + 360
+    }
+  }
+  return coords
+}
+
 const getDrawingGeometryFromModel = (model: any): GeometryJSON | null => {
   const mode = model.get('mode')
+  let geo
   switch (mode) {
     case 'bbox':
-      return modelToBoundingBox(model)
+      geo = modelToBoundingBox(model)
+      break
     case 'circle':
-      return modelToPointRadius(model)
+      geo = modelToPointRadius(model)
+      break
     case 'line':
-      return modelToLine(model)
+      geo = modelToLine(model)
+      break
     case 'poly':
-      return modelToPolygon(model)
+      geo = modelToPolygon(model)
+      break
     default:
       return null
   }
+  return geo ? adjustGeoCoords(geo) : null
 }
 
 // This is not a piece of state because the geospatialdraw
