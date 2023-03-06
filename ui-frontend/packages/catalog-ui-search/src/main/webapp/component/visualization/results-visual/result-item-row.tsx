@@ -37,7 +37,7 @@ type ResultItemFullProps = {
   measure: () => void
   index: number
   results: LazyQueryResult[]
-  headerWidth: Array<string>
+  headerColWidth: Array<string>
 }
 export function clearSelection() {
   if (window.getSelection) {
@@ -83,7 +83,7 @@ const RowComponent = ({
   measure,
   index,
   results,
-  headerWidth
+  headerColWidth
 }: ResultItemFullProps) => {
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const [shownAttributes, setShownAttributes] = React.useState(
@@ -122,8 +122,9 @@ const RowComponent = ({
         className="bg-inherit flex items-strech flex-no-wrap"
         style={{
           width: shownAttributes.length * 200 + 'px',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(12, 1fr)'
+          // display: 'grid',
+          // gridTemplateColumns: 'repeat(12, 1fr)'
+
         }}
       >
         <div
@@ -213,7 +214,7 @@ const RowComponent = ({
                         } h-full`}
                         data-value={`${value}`}
                         style={{
-                          width: `${headerWidth[index]}`,
+                          width: `${headerColWidth[index]}`,
                           minWidth: '200px',
                           height: '100%'
                         }}

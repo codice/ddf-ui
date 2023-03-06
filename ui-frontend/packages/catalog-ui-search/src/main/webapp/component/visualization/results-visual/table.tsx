@@ -116,17 +116,12 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
     }
   }, [])
 
-  // const [activeIndex, setActiveIndex] = React.useState(null)
   const columnsWidth : string[] = []
-  const [headerWidth, setHeaderWidth] = React.useState(columnsWidth)
-
-  // const mouseDown = (index:any) => {
-  //   setActiveIndex(index);
-  // }
+  const [headerColWidth, setHeaderColWidth] = React.useState(columnsWidth)
   
   const setWidth = (width:Array<string>) => {
-    setHeaderWidth(width)
-    console.log("WIDTH: " + width)
+    setHeaderColWidth(width)
+    // console.log(width)
   }
   
   return (
@@ -210,7 +205,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                   className="w-auto overflow-auto scrollbars-hide bg-inherit"
                   ref={headerRef}
                 >
-                  <Header lazyResults={lazyResults}   headerWidth={setWidth}/>
+                  <Header lazyResults={lazyResults}   setHeaderColWidth={setWidth} headerColWidth={headerColWidth}/>
                 </div>
               </Grid>
               <Grid item>
@@ -237,7 +232,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                           measure={measure}
                           index={index}
                           results={results}
-                          headerWidth={headerWidth}
+                          headerColWidth={headerColWidth}
                         />
                       </div>
                     )

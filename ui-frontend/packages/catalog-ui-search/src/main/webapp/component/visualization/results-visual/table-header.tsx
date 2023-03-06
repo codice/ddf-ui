@@ -35,7 +35,8 @@ export type Header = {
 
 type HeaderProps = {
   lazyResults: LazyQueryResults
-  headerWidth: Function
+  setHeaderColWidth: Function
+  headerColWidth: Array<string>
 }
 
 type Sort = {
@@ -160,7 +161,7 @@ export const HeaderCheckbox = ({
   )
 }
 
-export const Header = ({ lazyResults, headerWidth }: HeaderProps) => {
+export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: HeaderProps) => {
   const handleSortClick = _.debounce(updateSort, 500, true)
   const [shownAttributes, setShownAttributes] = React.useState(
     TypedUserInstance.getResultsAttributesShownTable()
@@ -184,21 +185,22 @@ export const Header = ({ lazyResults, headerWidth }: HeaderProps) => {
   }
 
   const mouseMove = React.useCallback((e) => {
-    const columnsWidth : string[] = [] 
+    const columnsWidth = [...headerColWidth]
     columns.map((col, i) => {
-      const width = col.ref.current?.clientWidth
+      const width = col.ref.current?.offsetWidth
       if (i === activeIndex) {
         if (col.ref.current){
           const width = e.clientX - col.ref.current?.getBoundingClientRect().x
           if (width > minCellWidth){
             col.ref.current.style.width = `${width}px`
             columnsWidth[i] = `${width}px`
+            setHeaderColWidth(columnsWidth)
           }
         }   
       }
       columnsWidth[i] = width + 'px'
     });
-    headerWidth(columnsWidth)
+    setHeaderColWidth(columnsWidth)
   
   }, [activeIndex, columns])
 
@@ -255,20 +257,22 @@ export const Header = ({ lazyResults, headerWidth }: HeaderProps) => {
           const label = TypedMetacardDefs.getAlias({ attr })
           const sortable = true
           return (
-            <div key={index} ref={ref} className={`${
-              sortable ? 'is-sortable' : ''
-            } Mui-border-divider border border-t-0 border-l-0 border-b-0`}
-            style={{cursor: 'col-resize', display: 'flex'}}
+            <div key={index} ref={ref}
+            style={{display: 'flex'}}
             onMouseDown={() => {
               mouseDown(index)
             }}
             >
                 <CellComponent
+                className={`${
+                  sortable ? 'is-sortable' : ''
+                } Mui-border-divider border border-t-0 border-l-0 border-b-0`}
                   data-propertyid={`${attr}`}
                   data-propertytext={`${label ? `${label}` : `${attr}`}`}
                   style={{
                     width: '100%',
-                    minWidth: '200px'
+                    minWidth: '200px',
+                    cursor: 'col-resize',
                   }}
                 >                    
                     <Button
