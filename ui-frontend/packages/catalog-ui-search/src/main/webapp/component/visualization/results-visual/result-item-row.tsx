@@ -216,7 +216,8 @@ const RowComponent = ({
                         style={{
                           width: `${headerColWidth[index]}`,
                           minWidth: '200px',
-                          height: '100%'
+                          height: '100%',
+                          // borderRightWidth: `${index===activeIndex ? 'thick' : '1px'}`
                         }}
                       >
                         {property === 'thumbnail' && thumbnail ? (

@@ -187,18 +187,18 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
   const mouseMove = React.useCallback((e) => {
     const columnsWidth = [...headerColWidth]
     columns.map((col, i) => {
-      const width = col.ref.current?.offsetWidth
+      let width = col.ref.current?.offsetWidth
       if (i === activeIndex) {
         if (col.ref.current){
-          const width = e.clientX - col.ref.current?.getBoundingClientRect().x
+          width = e.clientX - col.ref.current?.getBoundingClientRect().x
           if (width > minCellWidth){
             col.ref.current.style.width = `${width}px`
             columnsWidth[i] = `${width}px`
-            setHeaderColWidth(columnsWidth)
           }
         }   
       }
       columnsWidth[i] = width + 'px'
+      
     });
     setHeaderColWidth(columnsWidth)
   
@@ -259,9 +259,7 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
           return (
             <div key={index} ref={ref}
             style={{display: 'flex'}}
-            onMouseDown={() => {
-              mouseDown(index)
-            }}
+            
             >
                 <CellComponent
                 className={`${
@@ -272,14 +270,14 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
                   style={{
                     width: '100%',
                     minWidth: '200px',
-                    cursor: 'col-resize',
+                    display: 'flex'
                   }}
                 >                    
                     <Button
                       disabled={!sortable}
                       className="w-full outline-none is-bold h-full"
                       onClick={() => handleSortClick(attr)}
-                      style={{ width: '100%'}}
+                      style={{ width: '100%', marginRight: '5px'}}
                     >
                       <div className="w-full text-left">
                         <span
@@ -293,7 +291,16 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
                           style={{ paddingLeft: '3px'}}
                         />
                       </div>
-                    </Button>            
+                    </Button>
+                    <div style={{width: '10px', cursor: 'col-resize', 
+                      borderRightWidth: `${index===activeIndex ? 'thick' : '1px'}`, 
+                      }}
+                      className='hover:border-solid'
+                      onMouseDown={() => {
+                        mouseDown(index)
+                        }}
+                     >
+                    </div>            
                 </CellComponent>
             </div>
           )
