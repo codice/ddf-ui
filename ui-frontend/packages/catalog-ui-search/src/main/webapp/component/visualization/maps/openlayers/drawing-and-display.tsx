@@ -268,8 +268,7 @@ const getDrawModeFromShape = (shape: Shape): DrawModeType => {
   }
 }
 
-// TODO I see a reference to 'POINTRADIUS' for the type in location-old
-// see generateAnyGeoFilter in CQLUtils.ts
+// see generateAnyGeoFilter in CQLUtils.ts for types
 const getGeoType = (geo: GeometryJSON) => {
   switch (geo.properties.shape) {
     case 'Line':
@@ -505,7 +504,6 @@ export const OpenlayersDrawings = ({
     map,
   })
 
-  // TODO does this need to be state?
   const [drawingModel] =
     drawingModels.length > 0 ? drawingModels.slice(-1) : [undefined]
 
@@ -516,7 +514,6 @@ export const OpenlayersDrawings = ({
   )
 
   useEffect(() => {
-    console.log('running drawingModel effect!', drawingModel)
     setIsDrawing(!!drawingModel)
     if (drawingModel) {
       setDrawingShape(
@@ -524,7 +521,7 @@ export const OpenlayersDrawings = ({
       )
       setDrawingGeometry(getDrawingGeometryFromModel(drawingModel))
     }
-  }, [drawingModel]) // TODO should this be [drawingModels] instead?
+  }, [drawingModel])
 
   const cancelDrawing = () => {
     drawingModel.set('drawing', false)
@@ -536,9 +533,7 @@ export const OpenlayersDrawings = ({
     drawingLocation = null
   }
 
-  // TODO what is type for?
   const convertToModel = (geo: GeometryJSON) => {
-    console.log('geo', JSON.parse(JSON.stringify(geo)))
     return {
       ...createGeoModel(geo),
       type: getGeoType(geo),
