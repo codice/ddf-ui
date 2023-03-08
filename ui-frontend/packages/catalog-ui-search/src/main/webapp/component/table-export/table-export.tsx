@@ -33,6 +33,7 @@ import { AddSnack } from '../snack/snack.provider'
 import properties from '../../js/properties'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
 import contentDisposition from 'content-disposition'
+
 type ExportResponse = {
   displayName: string
   id: string
@@ -80,6 +81,9 @@ function getColumnOrder(): string[] {
 }
 function getHiddenFields(): string[] {
   return user.get('user').get('preferences').get('columnHide')
+}
+function getSorts() {
+  return user.get('user').get('preferences').get('resultSort')
 }
 function getSearches(
   exportSize: string,
@@ -130,9 +134,6 @@ function getExportCount({
   return exportSize === 'all'
     ? getHits(Object.values(result.get('lazyResults').status))
     : Object.keys(result.get('lazyResults').results).length
-}
-function getSorts(selectionInterface: any) {
-  return selectionInterface.getCurrentQuery().get('sorts')
 }
 export const getWarning = (exportCountInfo: ExportCountInfo): string => {
   const exportCount = getExportCount(exportCountInfo)
@@ -194,7 +195,7 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
     queryRef: query,
   })
   const srcs = getSrcs(selectionInterface)
-  const sorts = getSorts(selectionInterface)
+  const sorts = getSorts()
   const phonetics = query.get('phonetics')
   const spellcheck = query.get('spellcheck')
   const args = {
