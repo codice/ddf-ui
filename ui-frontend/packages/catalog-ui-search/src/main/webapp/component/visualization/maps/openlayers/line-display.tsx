@@ -89,21 +89,12 @@ const adjustLinePoints = (line: ol.geom.LineString) => {
   }
 }
 const adjustMultiLinePoints = (lines: ol.geom.MultiLineString) => {
-  const extent = lines.getExtent()
-  const lon1 = extent[0]
-  const lon2 = extent[2]
-  const width = Math.abs(lon2 - lon1)
-  if (width > 180) {
-    const adjusted = lines.getCoordinates()
-    adjusted.forEach((line) => {
-      line.forEach((coord) => {
-        if (coord[0] < 0) {
-          coord[0] += 360
-        }
-      })
-    })
-    lines.setCoordinates(adjusted)
-  }
+  const adjusted: ol.Coordinate[][] = []
+  lines.getLineStrings().forEach(line => {
+    adjustLinePoints(line)
+    adjusted.push(line.getCoordinates())
+  })
+  lines.setCoordinates(adjusted)
 }
 export const drawLine = ({
   map,
