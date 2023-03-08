@@ -171,39 +171,34 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
   const [activeIndex, setActiveIndex] = React.useState(null)
   const minCellWidth = 200
   
-  const createHeaders = () => {
-    return shownAttributes.map((item) => ({
-      attr: item,
-      ref: React.useRef<HTMLDivElement>(null)
-    }))
-  }
-
-  const columns = createHeaders()
+  const columnRefs = React.useRef(shownAttributes.map(() =>  React.createRef<HTMLDivElement>()))
 
   const mouseDown = (index:any) => {
     setActiveIndex(index);
   }
 
-
   const mouseMove = React.useCallback((e) => {
     const columnsWidth = [...headerColWidth]
-    columns.map((col, i) => {
-      let width = col.ref.current?.offsetWidth
+    shownAttributes.map((col, i) => {
+      let width = columnRefs.current[i].current?.offsetWidth
       if (i === activeIndex) {
-        if (col.ref.current){
-          width = e.clientX - col.ref.current?.getBoundingClientRect().x
-          if (width > minCellWidth){
-            col.ref.current.style.width = `${width}px`
+        const currRef = columnRefs.current[i].current
+        const offset = currRef?.getBoundingClientRect().x
+        if(offset){
+          width = e.clientX - offset
+          if (width > minCellWidth && currRef){
+            currRef.style.width = `${width}px`
             columnsWidth[i] = `${width}px`
           }
-        }   
+        }
+      
       }
       columnsWidth[i] = width + 'px'
       
     });
     setHeaderColWidth(columnsWidth)
   
-  }, [activeIndex, columns])
+  }, [activeIndex, shownAttributes])
 
   const resetColumnWidth = (index:number) => {
     const columnsWidth = [...headerColWidth]
@@ -239,6 +234,7 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
       'change:results-attributesShownTable',
       () => {
         setShownAttributes(TypedUserInstance.getResultsAttributesShownTable())
+        columnRefs.current = TypedUserInstance.getResultsAttributesShownTable().map(() => React.createRef<HTMLDivElement>())
       }
     )
   }, [])
@@ -261,13 +257,13 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
             <HeaderCheckbox lazyResults={lazyResults} />
           </CellComponent>
         </div>
-        {columns.map(({attr, ref}, index) => {
+        {shownAttributes.map((attr, index) => {
           const label = TypedMetacardDefs.getAlias({ attr })
           const sortable = true
           return (
-            <div key={index} ref={ref}
+            <div key={index} 
             style={{display: 'flex'}}
-            
+            ref={columnRefs.current[index]}
             >
                 <CellComponent
                 className={`${
@@ -280,7 +276,7 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
                     minWidth: '200px',
                     display: 'flex',
                     padding: 0,
-                    borderRightWidth: `${index===activeIndex ? 'thick' : '1px'}`
+                    // borderRightWidth: `${index===activeIndex ? 'thick' : '1px'}`
                   }}
                 >                    
                     <Button
@@ -307,8 +303,9 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
                       className='hover:border-solid'
                       onDoubleClick={() => {
                         resetColumnWidth(index)
-                        if(ref.current){
-                          ref.current.style.width = '200px'
+                        const currRef = columnRefs.current[index].current
+                        if(currRef){
+                          currRef.style.width = '200px'
                         }
                         
                       }}
