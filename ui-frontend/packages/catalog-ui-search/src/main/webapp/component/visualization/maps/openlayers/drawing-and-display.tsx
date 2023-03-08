@@ -352,7 +352,6 @@ const createGeoModel = (geo: GeometryJSON) => {
   }
 }
 
-// TODO do we need to do any polygon 'fixing' here? Or does the validation take care of that?
 const modelToPolygon = (model: any): GeometryJSON | null => {
   const coords = model.get('polygon')
   if (
@@ -428,36 +427,38 @@ const modelToBoundingBox = (model: any): GeometryJSON | null => {
 
 const adjustGeoCoords = (geo: GeometryJSON) => {
   const geometry = geo.geometry
+  const width = Math.abs(geo.bbox[0] - geo.bbox[2])
+  const crossesAntiMeridian = width > 180
   switch (geo.properties.shape) {
     case 'Point':
       const pointCoords = [(geometry as Point).coordinates]
-      geometry.coordinates = convertCoordsToDisplay(pointCoords)[0]
-      return geo
+      if (crossesAntiMeridian) {
+        geometry.coordinates = convertCoordsToDisplay(pointCoords)[0]
+      }
+      break
     case 'Line':
       const lineStringCoords = (geometry as LineString).coordinates
-      geometry.coordinates = convertCoordsToDisplay(lineStringCoords)
-      return geo
+      if (crossesAntiMeridian) {
+        geometry.coordinates = convertCoordsToDisplay(lineStringCoords)
+      }
+      break
     case 'Bounding Box':
     case 'Polygon':
       const coords = (geometry as Polygon).coordinates[0]
-      geometry.coordinates[0] = convertCoordsToDisplay(coords)
-      return geo
-    default:
-      return geo
+      if (crossesAntiMeridian) {
+        geometry.coordinates[0] = convertCoordsToDisplay(coords)
+      }
+      break
   }
 }
 
 const convertCoordsToDisplay = (coordinates: Position[]) => {
   const coords = _.cloneDeep(coordinates)
-  for (let i = 0; i + 1 < coords.length; i++) {
-    const east = Number(coords[i + 1][0])
-    const west = Number(coords[i][0])
-    if (east - west < -180) {
-      coords[i + 1][0] = east + 360
-    } else if (east - west > 180) {
-      coords[i][0] = west + 360
+  coords.forEach((coord) => {
+    if (coord[0] < 0) {
+      coord[0] += 360
     }
-  }
+  })
   return coords
 }
 
@@ -480,7 +481,10 @@ const getDrawingGeometryFromModel = (model: any): GeometryJSON | null => {
     default:
       return null
   }
-  return geo ? adjustGeoCoords(geo) : null
+  if (geo) {
+    adjustGeoCoords(geo)
+  }
+  return geo
 }
 
 // This is not a piece of state because the geospatialdraw
