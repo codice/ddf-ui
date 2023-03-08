@@ -90,7 +90,7 @@ const adjustLinePoints = (line: ol.geom.LineString) => {
 }
 const adjustMultiLinePoints = (lines: ol.geom.MultiLineString) => {
   const adjusted: ol.Coordinate[][] = []
-  lines.getLineStrings().forEach(line => {
+  lines.getLineStrings().forEach((line) => {
     adjustLinePoints(line)
     adjusted.push(line.getCoordinates())
   })
