@@ -46,20 +46,17 @@ export const translateFromOpenlayersCoordinates = (coords: any) => {
     .flatten()
 }
 const coordsToLineString = (rawCoords: any) => {
-  const coords = [] as any[]
   const setArr = _.uniq(rawCoords)
   if (setArr.length < 3) {
     return
   }
-  setArr.forEach((item: any) => {
-    coords.push(
-      ol.proj.transform(
-        [item[0], item[1]],
-        'EPSG:4326',
-        (properties as any).projection
-      )
+  const coords = setArr.map((item: any) =>
+    ol.proj.transform(
+      [item[0], item[1]],
+      'EPSG:4326',
+      (properties as any).projection
     )
-  })
+  )
   // Ensure that the first and last coordinate are the same
   if (!_.isEqual(coords[0], coords[coords.length - 1])) {
     coords.push(coords[0])
@@ -76,56 +73,57 @@ const modelToPolygon = (model: any) => {
   }
   const isMultiPolygon = ShapeUtils.isArray3D(coords)
   const multiPolygon = isMultiPolygon ? coords : [coords]
-  const polygons = [] as any[]
+  const polygons: ol.Coordinate[][][] = []
   multiPolygon.forEach((polygon: any) => {
-    polygons.push(coordsToLineString(polygon))
+    const lineString = coordsToLineString(polygon)
+    if (lineString) {
+      polygons.push(lineString)
+    }
   })
-  return polygons
+  return new ol.geom.MultiPolygon(polygons)
 }
-const adjustPoints = (geometries: any) => {
-  // Structure of geometries is [geometry, geometry, ... ]
-  geometries.forEach((geometry: any, outerIndex: any) => {
-    // Structure of geometry is [coordinatePair, coordinatePair, ... ]
-    geometry.forEach((_coordinatePair: any, innerIndex: any) => {
-      // Structure of coordinatePair is [x, y]
-      if (innerIndex + 1 < geometry.length) {
-        const east = Number(geometry[innerIndex + 1][0])
-        const west = Number(geometry[innerIndex][0])
-        if (east - west < -180) {
-          geometries[outerIndex][innerIndex + 1][0] = east + 360
-        } else if (east - west > 180) {
-          geometries[outerIndex][innerIndex][0] = west + 360
+const adjustPolygonPoints = (polygon: ol.geom.Polygon) => {
+  const extent = polygon.getExtent()
+  const lon1 = extent[0]
+  const lon2 = extent[2]
+  const width = Math.abs(lon1 - lon2)
+  if (width > 180) {
+    const adjusted = polygon.getCoordinates()
+    adjusted.forEach((ring) => {
+      ring.forEach((coord) => {
+        if (coord[0] < 0) {
+          coord[0] += 360
         }
-      }
+      })
     })
-    // Ensure that the first and last coordinate are the same
-    geometries[outerIndex][0][0] =
-      geometries[outerIndex][geometry.length - 1][0]
+    polygon.setCoordinates(adjusted)
+  }
+}
+const adjustMultiPolygonPoints = (polygons: ol.geom.MultiPolygon) => {
+  const adjusted: ol.Coordinate[][][] = []
+  polygons.getPolygons().forEach((polygon) => {
+    adjustPolygonPoints(polygon)
+    adjusted.push(polygon.getCoordinates())
   })
-  return geometries
+  polygons.setCoordinates(adjusted)
 }
 export const drawPolygon = ({
   map,
   model,
-  rectangle,
+  polygon,
   id,
 }: {
   map: any
   model: any
-  rectangle: any
+  polygon: ol.geom.MultiPolygon
   id: string
 }) => {
-  if (!rectangle) {
+  if (!polygon) {
     // Handles case where model changes to empty vars and we don't want to draw anymore
     return
   }
-  const coordinates = (Array.isArray(rectangle) && rectangle) || [
-    rectangle.getCoordinates(),
-  ]
-  // Structure of coordinates is [geometries, geometries, ... ]
-  coordinates.forEach(
-    (geometries, index) => (coordinates[index] = adjustPoints(geometries))
-  )
+  adjustMultiPolygonPoints(polygon)
+  const coordinates = polygon.getCoordinates()
   const bufferWidth =
     DistanceUtils.getDistanceInMeters(
       model.get('polygonBufferWidth'),
@@ -139,22 +137,33 @@ export const drawPolygon = ({
     const polySegment = Turf.multiLineString([
       translateFromOpenlayersCoordinates(set),
     ])
-    const bufferPolygons = Turf.buffer(polySegment, bufferWidth, {
+    const bufferedSegment = Turf.buffer(polySegment, bufferWidth, {
       units: 'meters',
-    }).geometry.coordinates.map((set: any) => {
-      return Turf.polygon([set])
     })
+    const extent = Turf.bbox(bufferedSegment)
+    const width = Math.abs(extent[0] - extent[2])
+    // need to adjust the points again AFTER buffering, since buffering undoes the antimeridian adjustments
+    if (width > 180) {
+      Turf.coordEach(bufferedSegment, (coord) => {
+        if (coord[0] < 0) {
+          coord[0] += 360
+        }
+      })
+    }
+    const bufferPolygons = bufferedSegment.geometry.coordinates.map(
+      (set: any) => {
+        return Turf.polygon([set])
+      }
+    )
     return bufferPolygons.reduce((a, b) => Turf.union(a, b), bufferPolygons[0])
       ?.geometry.coordinates
   })
-  const bufferGeometryRepresentation =
-    (bufferPolygonSegments &&
-      new ol.geom.MultiPolygon(bufferPolygonSegments as any)) ||
-    coordinates
-  const drawnGeometryRepresentation =
-    (drawnPolygonSegments &&
-      new ol.geom.MultiPolygon(drawnPolygonSegments as any)) ||
-    coordinates
+  const bufferGeometryRepresentation = new ol.geom.MultiPolygon(
+    bufferPolygonSegments as any
+  )
+  const drawnGeometryRepresentation = new ol.geom.MultiPolygon(
+    drawnPolygonSegments as any
+  )
   const billboard = new ol.Feature({
     geometry: bufferGeometryRepresentation,
   })
@@ -203,7 +212,7 @@ const updatePrimitive = ({
   const polygon = modelToPolygon(model)
   // Make sure the current model has width and height before drawing
   if (polygon !== undefined) {
-    drawPolygon({ map, model, rectangle: polygon, id })
+    drawPolygon({ map, model, polygon, id })
   }
 }
 const useListenToPolygonModel = ({ model, map }: { model: any; map: any }) => {
