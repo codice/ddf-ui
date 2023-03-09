@@ -23,7 +23,8 @@ import { OpenlayersBboxDisplay } from './bbox-display'
 import { OpenlayersCircleDisplay } from './circle-display'
 import { OpenlayersLineDisplay } from './line-display'
 import { OpenlayersPolygonDisplay } from './polygon-display'
-import styled from 'styled-components'
+import { Editor } from '../draw-menu'
+import { DRAWING_STYLE } from './draw-styles'
 import { menu, geometry } from 'geospatialdraw'
 import { Shape } from 'geospatialdraw/target/webapp/shape-utils'
 import {
@@ -33,7 +34,6 @@ import {
   makeLineGeo,
   makeBBoxGeo,
 } from 'geospatialdraw/target/webapp/geometry'
-import { transparentize } from 'polished'
 import * as ol from 'openlayers'
 import Common from '../../../../js/Common'
 import wreqr from '../../../../js/wreqr'
@@ -46,23 +46,6 @@ import _ from 'lodash'
 
 // TODO should move all the common code to ddf-ui and have downstream import it
 
-const Editor = styled.div`
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  height: 38px;
-  z-index: 1;
-  > div:first-of-type {
-    flex-wrap: wrap;
-    > div:nth-of-type(2) {
-      flex-wrap: wrap;
-      width: 100%;
-      background: inherit;
-    }
-  }
-`
-
 const DrawingMenu = menu.DrawingMenu
 const makeEmptyGeometry = geometry.makeEmptyGeometry
 
@@ -73,124 +56,6 @@ const SHAPES: Shape[] = [
   'Point Radius',
   'Polygon',
 ]
-
-const LINE_WIDTH = 2.5
-const POINT_SIZE = 4.5
-const SCALE_FACTOR = 1.5
-
-const {
-  CIRCLE_BUFFER_PROPERTY_VALUE,
-  POLYGON_LINE_BUFFER_PROPERTY_VALUE,
-  BUFFER_SHAPE_PROPERTY,
-} = geometry
-
-const CIRCLE_DRAWING_STYLE = (feature: ol.Feature): ol.style.Style =>
-  new ol.style.Style({
-    stroke: new ol.style.Stroke({
-      color: 'rgba(0, 0, 0, 0)',
-    }),
-    fill: new ol.style.Fill({
-      color: 'rgba(0, 0, 0, 0)',
-    }),
-    image: new ol.style.Circle({
-      radius: POINT_SIZE,
-      fill: new ol.style.Fill({
-        color: feature.get('color'),
-      }),
-    }),
-  })
-
-const CIRCLE_BUFFER_PROPERTY_VALUE_DRAWING_STYLE = (
-  feature: ol.Feature
-): ol.style.Style =>
-  new ol.style.Style({
-    stroke: new ol.style.Stroke({
-      color: feature.get('color'),
-      width: LINE_WIDTH * SCALE_FACTOR,
-    }),
-    fill: new ol.style.Fill({
-      color: transparentize(0.95, feature.get('color') || 'blue'),
-    }),
-  })
-
-const GENERIC_DRAWING_STYLE = (feature: ol.Feature): ol.style.Style[] => [
-  new ol.style.Style({
-    stroke: new ol.style.Stroke({
-      color: feature.get('color'),
-      width: LINE_WIDTH * SCALE_FACTOR,
-    }),
-    fill: new ol.style.Fill({
-      color: transparentize(0.95, feature.get('color') || 'blue'),
-    }),
-    ...(feature.getGeometry().getType() === 'Point' && feature.get('buffer') > 0
-      ? {}
-      : {
-          image: new ol.style.Circle({
-            radius: POINT_SIZE * SCALE_FACTOR,
-            fill: new ol.style.Fill({
-              color: feature.get('color'),
-            }),
-          }),
-        }),
-  }),
-  new ol.style.Style({
-    image: new ol.style.Circle({
-      radius: POINT_SIZE,
-      fill: new ol.style.Fill({
-        color: feature.get('color'),
-      }),
-    }),
-    geometry: (feature: ol.Feature): ol.geom.Geometry => {
-      const geometry = feature.getGeometry()
-      let coordinates: [number, number][] = []
-      if (geometry.getType() === 'Polygon') {
-        coordinates = (geometry as ol.geom.Polygon).getCoordinates()[0]
-      } else if (geometry.getType() === 'LineString') {
-        coordinates = (geometry as ol.geom.LineString).getCoordinates()
-      }
-      return new ol.geom.MultiPoint(coordinates)
-    },
-  }),
-]
-
-const RENDERER_STYLE = (feature: ol.Feature): ol.style.Style =>
-  new ol.style.Style({
-    stroke: new ol.style.Stroke({
-      color: feature.get('color'),
-      width: LINE_WIDTH,
-    }),
-    fill: new ol.style.Fill({
-      color: 'rgba(0, 0, 0, 0)',
-    }),
-    ...(feature.get(BUFFER_SHAPE_PROPERTY) === CIRCLE_BUFFER_PROPERTY_VALUE
-      ? {}
-      : {
-          image: new ol.style.Circle({
-            radius: POINT_SIZE,
-            fill: new ol.style.Fill({
-              color: feature.get('color'),
-            }),
-          }),
-        }),
-  })
-
-const DRAWING_STYLE = (
-  feature: ol.Feature
-): ol.style.Style[] | ol.style.Style => {
-  if (feature.getGeometry().getType() === 'Circle') {
-    return CIRCLE_DRAWING_STYLE(feature)
-  } else {
-    const bufferShape = feature.get(BUFFER_SHAPE_PROPERTY)
-    switch (bufferShape) {
-      case POLYGON_LINE_BUFFER_PROPERTY_VALUE:
-        return RENDERER_STYLE(feature)
-      case CIRCLE_BUFFER_PROPERTY_VALUE:
-        return CIRCLE_BUFFER_PROPERTY_VALUE_DRAWING_STYLE(feature)
-      default:
-        return GENERIC_DRAWING_STYLE(feature)
-    }
-  }
-}
 
 const DEFAULT_SHAPE = 'Polygon'
 const DRAWING_COLOR = 'blue'
