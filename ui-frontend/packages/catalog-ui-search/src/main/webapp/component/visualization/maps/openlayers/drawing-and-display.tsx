@@ -45,8 +45,6 @@ import ShapeUtils from '../../../../js/ShapeUtils'
 import _ from 'lodash'
 import utility from './utility'
 
-// TODO should move all the common code to ddf-ui and have downstream import it
-
 const DrawingMenu = menu.DrawingMenu
 const makeEmptyGeometry = geometry.makeEmptyGeometry
 
