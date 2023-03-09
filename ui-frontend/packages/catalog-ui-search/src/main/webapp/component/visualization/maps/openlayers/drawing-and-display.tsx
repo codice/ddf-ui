@@ -193,39 +193,7 @@ const DRAWING_STYLE = (
 }
 
 const DEFAULT_SHAPE = 'Polygon'
-
-class TemporaryColorGeneratorUntilWeGetAColorPicker {
-  colors: string[]
-  selectedIndex: number
-  constructor() {
-    this.colors = [
-      '#ff0000',
-      '#00ff00',
-      '#a020f0',
-      '#ffd700',
-      '#ff00ff',
-      '#ffff00',
-      '#a52a2a',
-      '#ffa500',
-      '#ffc0cb',
-      '#000064',
-      '#006400',
-      '#640000',
-      '#0000ff',
-    ]
-    this.selectedIndex = 0
-  }
-  nextColor(): string {
-    const selected = this.colors[this.selectedIndex]
-    this.selectedIndex++
-    if (this.selectedIndex >= this.colors.length) {
-      this.selectedIndex = 0
-    }
-    return selected
-  }
-}
-
-const ColorGenerator = new TemporaryColorGeneratorUntilWeGetAColorPicker()
+const DRAWING_COLOR = 'blue'
 
 export const removeOldDrawing = ({ map, id }: { map: ol.Map; id: string }) => {
   const oldLayers = map
@@ -367,7 +335,7 @@ const modelToPolygon = (model: any): GeometryJSON | null => {
   return makeGeometry(
     Common.generateUUID(),
     Turf.polygon(polygon).geometry,
-    ColorGenerator.nextColor(),
+    DRAWING_COLOR,
     'Polygon',
     buffer ? parseInt(buffer) : undefined,
     bufferUnit || undefined
