@@ -39,10 +39,11 @@ import Common from '../../../../js/Common'
 import wreqr from '../../../../js/wreqr'
 import { Drawing } from '../../../../component/singletons/drawing'
 import * as Turf from '@turf/turf'
-import { Position, Point, Polygon, LineString } from '@turf/turf'
+import { Point, Polygon, LineString } from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import ShapeUtils from '../../../../js/ShapeUtils'
 import _ from 'lodash'
+import utility from './utility'
 
 // TODO should move all the common code to ddf-ui and have downstream import it
 
@@ -258,43 +259,6 @@ const modelToBoundingBox = (model: any): GeometryJSON | null => {
   return makeBBoxGeo(Common.generateUUID(), [west, south, east, north])
 }
 
-const adjustGeoCoords = (geo: GeometryJSON) => {
-  const geometry = geo.geometry
-  const width = Math.abs(geo.bbox[0] - geo.bbox[2])
-  const crossesAntiMeridian = width > 180
-  switch (geo.properties.shape) {
-    case 'Point':
-      const pointCoords = [(geometry as Point).coordinates]
-      if (crossesAntiMeridian) {
-        geometry.coordinates = convertCoordsToDisplay(pointCoords)[0]
-      }
-      break
-    case 'Line':
-      const lineStringCoords = (geometry as LineString).coordinates
-      if (crossesAntiMeridian) {
-        geometry.coordinates = convertCoordsToDisplay(lineStringCoords)
-      }
-      break
-    case 'Bounding Box':
-    case 'Polygon':
-      const coords = (geometry as Polygon).coordinates[0]
-      if (crossesAntiMeridian) {
-        geometry.coordinates[0] = convertCoordsToDisplay(coords)
-      }
-      break
-  }
-}
-
-const convertCoordsToDisplay = (coordinates: Position[]) => {
-  const coords = _.cloneDeep(coordinates)
-  coords.forEach((coord) => {
-    if (coord[0] < 0) {
-      coord[0] += 360
-    }
-  })
-  return coords
-}
-
 const getDrawingGeometryFromModel = (model: any): GeometryJSON | null => {
   const mode = model.get('mode')
   let geo
@@ -315,7 +279,7 @@ const getDrawingGeometryFromModel = (model: any): GeometryJSON | null => {
       return null
   }
   if (geo) {
-    adjustGeoCoords(geo)
+    utility.adjustGeoCoords(geo)
   }
   return geo
 }
