@@ -116,12 +116,11 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
     }
   }, [])
 
-  const columnsWidth : string[] = []
+  const columnsWidth = new Map<string, string>()
   const [headerColWidth, setHeaderColWidth] = React.useState(columnsWidth)
   
-  const setWidth = (width:Array<string>) => {
+  const setWidth = (width:Map<string, string>) => {
     setHeaderColWidth(width)
-    // console.log(width)
   }
   
   return (

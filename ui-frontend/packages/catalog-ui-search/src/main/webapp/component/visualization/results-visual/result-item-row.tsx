@@ -37,7 +37,7 @@ type ResultItemFullProps = {
   measure: () => void
   index: number
   results: LazyQueryResult[]
-  headerColWidth: Array<string>
+  headerColWidth: Map<string, string>
 }
 export function clearSelection() {
   if (window.getSelection) {
@@ -121,9 +121,7 @@ const RowComponent = ({
       <div
         className="bg-inherit flex items-strech flex-no-wrap"
         style={{
-          width: shownAttributes.length * 200 + 'px',
-          // display: 'grid',
-          // gridTemplateColumns: 'repeat(12, 1fr)'
+          width: shownAttributes.length * 200 + 'px'
 
         }}
       >
@@ -214,10 +212,8 @@ const RowComponent = ({
                         } h-full`}
                         data-value={`${value}`}
                         style={{
-                          width: `${headerColWidth[index]}`,
-                          minWidth: '200px',
-                          height: '100%',
-                          // borderRightWidth: `${index===activeIndex ? 'thick' : '1px'}`
+                          width: `${headerColWidth.get(property)}`,
+                          minWidth: '200px'
                         }}
                       >
                         {property === 'thumbnail' && thumbnail ? (

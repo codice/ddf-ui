@@ -36,7 +36,7 @@ export type Header = {
 type HeaderProps = {
   lazyResults: LazyQueryResults
   setHeaderColWidth: Function
-  headerColWidth: Array<string>
+  headerColWidth: Map<string, string>
 }
 
 type Sort = {
@@ -171,14 +171,25 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
   const [activeIndex, setActiveIndex] = React.useState(null)
   const minCellWidth = 200
   
-  const columnRefs = React.useRef(shownAttributes.map(() =>  React.createRef<HTMLDivElement>()))
+  const columnRefs = React.useRef(shownAttributes.map(() => React.createRef<HTMLDivElement>()))
+
+
 
   const mouseDown = (index:any) => {
     setActiveIndex(index);
+    // console.log(attr)
   }
 
   const mouseMove = React.useCallback((e) => {
-    const columnsWidth = [...headerColWidth]
+
+    const columnsWidth = new Map<string, string>([...headerColWidth])
+
+    if(headerColWidth.size === 0){
+      shownAttributes.map((col) => {
+        columnsWidth.set(col, '200px')
+      })
+    }
+   
     shownAttributes.map((col, i) => {
       let width = columnRefs.current[i].current?.offsetWidth
       if (i === activeIndex) {
@@ -188,23 +199,20 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
           width = e.clientX - offset
           if (width > minCellWidth && currRef){
             currRef.style.width = `${width}px`
-            columnsWidth[i] = `${width}px`
+            columnsWidth.set(col, `${width}px`)
           }
+      
         }
-      
-      }
-      columnsWidth[i] = width + 'px'
-      
+        columnsWidth.set(col, `${width}px`)
+      }  
     });
     setHeaderColWidth(columnsWidth)
-  
   }, [activeIndex, shownAttributes])
 
-  const resetColumnWidth = (index:number) => {
-    const columnsWidth = [...headerColWidth]
-    columnsWidth[index] = '200px'
+  const resetColumnWidth = (col:string) => {
+    const columnsWidth = new Map<string, string>([...headerColWidth])
+    columnsWidth.set(col, '200px')
     setHeaderColWidth(columnsWidth)
-    
   }
 
   const removeListeners = React.useCallback(() => {
@@ -246,7 +254,7 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
         style={{
           width: shownAttributes.length * 200 + 'px',
           display: 'grid',
-          gridTemplateColumns: 'repeat(12, 1fr)'
+          gridTemplateColumns: `repeat(${shownAttributes.length + 2}, 1fr)`
         }}
       >
         <div className="sticky left-0 w-auto z-10 bg-inherit Mui-border-divider border border-t-0 border-l-0 border-b-0">
@@ -262,7 +270,7 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
           const sortable = true
           return (
             <div key={index} 
-            style={{display: 'flex'}}
+            style={{display: 'flex', width: `${headerColWidth.get(attr)}`, minWidth: '200px'}}
             ref={columnRefs.current[index]}
             >
                 <CellComponent
@@ -275,10 +283,9 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
                     width: '100%',
                     minWidth: '200px',
                     display: 'flex',
-                    padding: 0,
-                    // borderRightWidth: `${index===activeIndex ? 'thick' : '1px'}`
+                    padding: 0
                   }}
-                >                    
+                >                   
                     <Button
                       disabled={!sortable}
                       className="w-full outline-none is-bold h-full"
@@ -302,12 +309,11 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
                       }}
                       className='hover:border-solid'
                       onDoubleClick={() => {
-                        resetColumnWidth(index)
+                        resetColumnWidth(attr)
                         const currRef = columnRefs.current[index].current
                         if(currRef){
                           currRef.style.width = '200px'
-                        }
-                        
+                        } 
                       }}
                       onMouseDown={() => {
                         mouseDown(index)
