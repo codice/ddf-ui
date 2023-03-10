@@ -178,7 +178,7 @@ const RowComponent = ({
                 wrap="nowrap"
                 
               >
-                {shownAttributes.map((property, index) => {
+                {shownAttributes.map((property) => {
                   let value = lazyResult.plain.metacard.properties[
                     property
                   ] as any
@@ -202,7 +202,7 @@ const RowComponent = ({
                     }
                   }
                   return (
-                    <div key={index} 
+                    <div key={property} 
                   >
                       <CellComponent
                         key={property}

@@ -188,19 +188,16 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
     }
    
     shownAttributes.map((col, i) => {
-      let width = columnRefs.current[i].current?.offsetWidth
       if (i === activeIndex) {
         const currRef = columnRefs.current[i].current
         const offset = currRef?.getBoundingClientRect().x
         if(offset){
-          width = e.clientX - offset
+          const width = e.clientX - offset
           if (currRef){
             currRef.style.width = `${width}px`
             columnsWidth.set(col, `${width}px`)
           }
-      
-        }
-        columnsWidth.set(col, `${width}px`)
+        }  
       }  
     });
     setHeaderColWidth(columnsWidth)
@@ -266,7 +263,7 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
           const label = TypedMetacardDefs.getAlias({ attr })
           const sortable = true
           return (
-            <div key={index} 
+            <div key={attr} 
             style={{display: 'flex', width: `${headerColWidth.get(attr)}`, minWidth: '200px'}}
             ref={columnRefs.current[index]}
             >
