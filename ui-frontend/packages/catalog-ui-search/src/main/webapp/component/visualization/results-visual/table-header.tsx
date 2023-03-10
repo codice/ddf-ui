@@ -169,15 +169,12 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
   const { listenTo } = useBackbone()
 
   const [activeIndex, setActiveIndex] = React.useState(null)
-  const minCellWidth = 200
   
   const columnRefs = React.useRef(shownAttributes.map(() => React.createRef<HTMLDivElement>()))
 
 
-
   const mouseDown = (index:any) => {
     setActiveIndex(index);
-    // console.log(attr)
   }
 
   const mouseMove = React.useCallback((e) => {
@@ -197,7 +194,7 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
         const offset = currRef?.getBoundingClientRect().x
         if(offset){
           width = e.clientX - offset
-          if (width > minCellWidth && currRef){
+          if (currRef){
             currRef.style.width = `${width}px`
             columnsWidth.set(col, `${width}px`)
           }

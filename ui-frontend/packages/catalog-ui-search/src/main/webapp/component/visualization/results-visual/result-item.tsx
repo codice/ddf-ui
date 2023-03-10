@@ -270,7 +270,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
 }
 export const SelectionBackground = ({
   lazyResult,
-  style,
+  // style,
 }: {
   lazyResult: LazyQueryResult
   style?: React.CSSProperties
@@ -281,7 +281,7 @@ export const SelectionBackground = ({
       className="absolute left-0 top-0 z-0 w-full h-full Mui-bg-secondary"
       style={{
         opacity: isSelected ? 0.05 : 0,
-        ...style,
+        // ...style,
       }}
     />
   )
