@@ -319,7 +319,6 @@ const BooleanSearchBar = ({
               variant="outlined"
               onChange={handleTextChange}
               value={value.text}
-              autoFocus
               helperText={value.error ? <>{errorMessage}</> : ''}
               InputProps={{
                 ...params.InputProps,
