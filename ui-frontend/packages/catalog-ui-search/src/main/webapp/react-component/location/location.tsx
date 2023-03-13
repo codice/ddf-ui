@@ -27,7 +27,6 @@ import PointRadius from './point-radius'
 import BoundingBox from './bounding-box'
 import Gazetteer from './gazetteer'
 import ShapeUtils from '../../js/ShapeUtils'
-import _ from 'lodash'
 const plugin = require('plugins/location')
 type InputType = {
   label: string
@@ -209,11 +208,7 @@ const LocationInput = ({ onChange, value }: any) => {
             }}
           />
           {drawTypes.includes(state.mode) ? (
-            isDrawing &&
-            _.isEqual(
-              locationModel.attributes,
-              Drawing.getDrawModel().attributes
-            ) ? (
+            isDrawing && locationModel === Drawing.getDrawModel() ? (
               <Button
                 className="location-draw mt-2"
                 onMouseDown={() => {
