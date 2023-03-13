@@ -211,7 +211,7 @@ const LocationInput = ({ onChange, value }: any) => {
             isDrawing && locationModel === Drawing.getDrawModel() ? (
               <Button
                 className="location-draw mt-2"
-                onMouseDown={() => {
+                onClick={() => {
                   ;(wreqr as any).vent.trigger(
                     'search:drawcancel',
                     locationModel
@@ -225,7 +225,7 @@ const LocationInput = ({ onChange, value }: any) => {
             ) : (
               <Button
                 className="location-draw mt-2"
-                onMouseDown={() => {
+                onClick={() => {
                   ;(wreqr as any).vent.trigger(
                     'search:draw' + state.mode,
                     locationModel
