@@ -29,11 +29,11 @@ import { IntegerField } from '../../../component/fields/integer'
 import { FloatField } from '../../../component/fields/float'
 import { BooleanField } from '../../../component/fields/boolean'
 import MetacardDefinitions from '../../../component/tabs/metacard/metacardDefinitions'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import MuiTextField from '@material-ui/core/TextField'
 import { DateAroundField } from '../../../component/fields/date-around'
 import { CustomInputOrDefault } from './customInputOrDefault'
 import BooleanSearchBar from '../../../component/boolean-search-bar/boolean-search-bar'
+import { EnterKeySubmitProps } from '../../../component/custom-events/enter-key-submit'
+import { EnumInput } from './enum-input'
 export type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
@@ -138,18 +138,11 @@ const FilterInput = ({ filter, setFilter }: Props) => {
       allEnumForAttr = allEnumForAttr.concat(deprecatedEnumForAttr)
     }
     return (
-      <Autocomplete
-        fullWidth
-        size="small"
+      <EnumInput
         options={allEnumForAttr}
-        onChange={(_e: any, newValue: string) => {
-          onChange(newValue)
-        }}
-        disableClearable
+        onChange={onChange}
         value={textValue}
-        renderInput={(params) => (
-          <MuiTextField {...params} variant="outlined" />
-        )}
+        {...EnterKeySubmitProps}
       />
     )
   }

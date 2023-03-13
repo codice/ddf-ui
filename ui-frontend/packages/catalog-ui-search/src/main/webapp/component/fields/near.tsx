@@ -18,6 +18,7 @@ import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
 import { ValueTypes } from '../filter-builder/filter.structure'
 import { CustomInputOrDefault } from '../../react-component/filter/filter-input/customInputOrDefault'
+import { EnterKeySubmitProps } from '../custom-events/enter-key-submit'
 
 type NearFieldProps = {
   value: ValueTypes['proximity']
@@ -63,8 +64,6 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
           }}
           props={{
             fullWidth: true,
-            multiline: true,
-            rowsMax: 3,
             variant: 'outlined',
             type: 'text',
             size: 'small',
@@ -87,6 +86,7 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
             })
           }}
           size="small"
+          {...EnterKeySubmitProps}
         />
       </Grid>
       <Grid item className="w-full pb-2 pl-2">
@@ -103,8 +103,6 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
           }}
           props={{
             fullWidth: true,
-            multiline: true,
-            rowsMax: 3,
             variant: 'outlined',
             type: 'text',
             size: 'small',

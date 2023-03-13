@@ -16,6 +16,7 @@ import * as React from 'react'
 
 import TextField from '@material-ui/core/TextField'
 import { ValueTypes } from '../filter-builder/filter.structure'
+import { EnterKeySubmitProps } from '../custom-events/enter-key-submit'
 
 type FloatFieldProps = {
   value: ValueTypes['float']
@@ -44,6 +45,7 @@ export const FloatField = ({ value, onChange }: FloatFieldProps) => {
         onChange(parseFloat(e.target.value))
       }}
       size="small"
+      {...EnterKeySubmitProps}
     />
   )
 }

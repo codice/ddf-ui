@@ -20,6 +20,7 @@ import { MuiOutlinedInputBorderClasses } from '../theme/theme'
 import useTimePrefs from './useTimePrefs'
 
 import user from '../singletons/user-instance'
+import { EnterKeySubmitProps } from '../custom-events/enter-key-submit'
 
 type Props = {
   value: ValueTypes['during']
@@ -65,10 +66,12 @@ export const DateRangeField = ({
       endInputProps={{
         fill: true,
         className: MuiOutlinedInputBorderClasses,
+        ...EnterKeySubmitProps,
       }}
       startInputProps={{
         fill: true,
         className: MuiOutlinedInputBorderClasses,
+        ...EnterKeySubmitProps,
       }}
       className="where"
       closeOnSelection={false}

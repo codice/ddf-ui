@@ -20,6 +20,7 @@ import { MuiOutlinedInputBorderClasses } from '../theme/theme'
 import useTimePrefs from './useTimePrefs'
 
 import user from '../singletons/user-instance'
+import { EnterKeySubmitProps } from '../custom-events/enter-key-submit'
 
 type DateFieldProps = {
   value: string
@@ -60,6 +61,9 @@ export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
         outOfRangeMessage="Out of range"
         timePickerProps={{
           useAmPm: user.getAmPmDisplay(),
+        }}
+        inputProps={{
+          ...EnterKeySubmitProps,
         }}
         popoverProps={{
           modifiers: {

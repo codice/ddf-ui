@@ -25,6 +25,7 @@ import ClearIcon from '@material-ui/icons/Clear'
 import SearchIcon from '@material-ui/icons/Search'
 import { useUpdateEffect } from 'react-use'
 import properties from '../../js/properties'
+import { dispatchEnterKeySubmitEvent } from '../custom-events/enter-key-submit'
 const defaultFilterOptions = createFilterOptions()
 type Props = {
   value: BooleanTextType
@@ -32,7 +33,6 @@ type Props = {
   property?: string
   disableClearable?: boolean
   placeholder?: TextFieldProps['placeholder']
-  onSubmit?: (event?: any) => void
   FormControlProps?: FormControlProps
   TextFieldProps?: Partial<TextFieldProps>
   AutocompleteProps?: AutocompleteProps<Option, false, true, true>
@@ -77,6 +77,7 @@ const BooleanSearchBar = ({
   disableClearable,
   ...props
 }: Props) => {
+  const [isOpen, setIsOpen] = React.useState(false)
   const { errorMessage } = useBooleanSearchError(value)
   const [loading, setLoading] = React.useState(false)
   const [suggestion, setSuggestion] = React.useState('')
@@ -158,16 +159,19 @@ const BooleanSearchBar = ({
     if (option.length === 0) return ''
     return option.token
   }
-  const handleSubmit = () => {
-    if (!value.error && props.onSubmit) {
-      props.onSubmit()
+  const handleSubmit = (e: React.SyntheticEvent) => {
+    if (!value.error && (!isOpen || currentOptions.length === 0)) {
+      console.log('submit the query')
+      dispatchEnterKeySubmitEvent(e)
     }
   }
   // Used to determine what we can go for next in context the the previous.
   const filterOptions = React.useCallback(
     (optionsToFilter) => {
       const lastToken = tokens[tokens.length - 1]
-      if (lastToken === '') {
+      if (lastToken === undefined) {
+        return []
+      } else if (lastToken === '') {
         return optionsToFilter
       } else {
         const strippedOptions = optionsToFilter.map((o: any) => ({
@@ -224,15 +228,21 @@ const BooleanSearchBar = ({
     }
     return tokenToRemove
   }
+  const currentOptions = filterOptions(
+    getLogicalOperators(options)
+  ).sort((o1: any) => (o1?.type === 'mandatory' ? -1 : 1))
   return (
     <FormControl fullWidth {...props.FormControlProps}>
       <Autocomplete
-        filterOptions={(optionsToFilter) =>
-          filterOptions(optionsToFilter).sort((o1: any) =>
-            o1.type === 'mandatory' ? -1 : 1
-          )
-        }
-        options={getLogicalOperators(options)}
+        filterOptions={(optionsToFilter) => optionsToFilter}
+        onOpen={() => {
+          setIsOpen(true)
+        }}
+        open={isOpen}
+        onClose={() => {
+          setIsOpen(false)
+        }}
+        options={currentOptions}
         includeInputInList={true}
         onChange={(_e: any, suggestion: any) => {
           if (
@@ -292,66 +302,71 @@ const BooleanSearchBar = ({
         renderOption={(option) => (
           <Typography noWrap>{optionToValue(option)}</Typography>
         )}
-        renderInput={(params) => (
-          <TextField
-            data-id="search-input"
-            {...params}
-            onKeyDown={(e) => {
-              if (e.keyCode === 13) {
-                handleSubmit()
-              }
-            }}
-            placeholder={placeholder}
-            inputRef={inputRef}
-            size={'small'}
-            variant="outlined"
-            onChange={handleTextChange}
-            value={value.text}
-            autoFocus
-            helperText={value.error ? <>{errorMessage}</> : ''}
-            InputProps={{
-              ...params.InputProps,
-              startAdornment: (
-                <>
-                  {loading ? (
-                    <CircularProgress
-                      size={20}
-                      style={{ marginRight: 13, marginLeft: 2 }}
-                    />
-                  ) : (
-                    <ValidationIndicator
-                      helperMessage={value.error ? errorMessage : 'Valid'}
-                      error={value.error}
-                    />
-                  )}
-                </>
-              ),
-              endAdornment: (
-                <>
-                  {!disableClearable && !!value.text && (
+        renderInput={(params) => {
+          return (
+            <TextField
+              data-id="search-input"
+              {...params}
+              onKeyUp={(e) => {
+                if (e.key === 'Enter') {
+                  handleSubmit(e)
+                  setIsOpen(false)
+                }
+              }}
+              placeholder={placeholder}
+              inputRef={inputRef}
+              size={'small'}
+              variant="outlined"
+              onChange={handleTextChange}
+              value={value.text}
+              autoFocus
+              helperText={value.error ? <>{errorMessage}</> : ''}
+              InputProps={{
+                ...params.InputProps,
+                startAdornment: (
+                  <>
+                    {loading ? (
+                      <CircularProgress
+                        size={20}
+                        style={{ marginRight: 13, marginLeft: 2 }}
+                      />
+                    ) : (
+                      <ValidationIndicator
+                        helperMessage={value.error ? errorMessage : 'Valid'}
+                        error={value.error}
+                      />
+                    )}
+                  </>
+                ),
+                endAdornment: (
+                  <>
+                    {!disableClearable && !!value.text && (
+                      <IconButton
+                        onClick={handleTextClear}
+                        style={{ padding: '2px' }}
+                      >
+                        <ClearIcon fontSize="small" />
+                      </IconButton>
+                    )}
                     <IconButton
-                      onClick={handleTextClear}
-                      style={{ padding: '2px' }}
-                    >
-                      <ClearIcon fontSize="small" />
-                    </IconButton>
-                  )}
-                  {props.onSubmit && (
-                    <IconButton
-                      onClick={handleSubmit}
+                      onClick={(e) => {
+                        setIsOpen(false)
+                        handleSubmit(e)
+                      }}
                       disabled={value.error}
                       style={{ padding: '2px' }}
                     >
                       <SearchIcon fontSize="small" />
                     </IconButton>
-                  )}
-                </>
-              ),
-              ...props.InputProps,
-            }}
-            {...props.TextFieldProps}
-          />
-        )}
+                  </>
+                ),
+
+                ...props.InputProps,
+              }}
+              {...props.TextFieldProps}
+            />
+          )
+        }}
         {...props.AutocompleteProps}
       />
     </FormControl>

@@ -17,6 +17,7 @@ import * as React from 'react'
 import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
 import { ValueTypes } from '../filter-builder/filter.structure'
+import { EnterKeySubmitProps } from '../custom-events/enter-key-submit'
 
 type NumberRangeFieldProps = {
   value: ValueTypes['between']
@@ -66,6 +67,7 @@ export const NumberRangeField = ({
             })
           }}
           size="small"
+          {...EnterKeySubmitProps}
         />
       </Grid>
       <Grid item className="w-full py-1">
@@ -89,6 +91,7 @@ export const NumberRangeField = ({
             })
           }}
           size="small"
+          {...EnterKeySubmitProps}
         />
       </Grid>
     </Grid>

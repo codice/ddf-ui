@@ -22,8 +22,8 @@ import {
 } from '../filter-builder/filter.structure'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
-import { FilterTextFieldIdentifier } from '../fields/text'
 import user from '../singletons/user-instance'
+import { useListenToEnterKeySubmitEvent } from '../custom-events/enter-key-submit'
 
 const getResultFilter = () => {
   return user.get('user').get('preferences').get('resultFilter')
@@ -67,20 +67,15 @@ const saveFilter = ({ filter }: any) => {
 
 const ResultFilter = ({ closeDropdown }: { closeDropdown: () => void }) => {
   const [filter, setFilter] = React.useState(getBaseFilter())
+  const { setElement } = useListenToEnterKeySubmitEvent({
+    callback: () => {
+      saveFilter({ filter })
+      closeDropdown()
+    },
+  })
   return (
     <>
-      <div
-        className="min-w-120 max-w-120"
-        onKeyUp={(e) => {
-          if (e.keyCode === 13) {
-            const targetElement = e.target as HTMLInputElement
-            if (targetElement.classList.contains(FilterTextFieldIdentifier)) {
-              saveFilter({ filter })
-              closeDropdown()
-            }
-          }
-        }}
-      >
+      <div className="min-w-120 max-w-120" ref={setElement}>
         <FilterBranch root={true} filter={filter} setFilter={setFilter} />
       </div>
       <Grid

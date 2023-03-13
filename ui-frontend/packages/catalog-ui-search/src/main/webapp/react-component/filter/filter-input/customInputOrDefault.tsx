@@ -16,6 +16,7 @@ import * as React from 'react'
 import extension from '../../../extension-points'
 import TextField from '@material-ui/core/TextField'
 import { TextFieldProps } from '@material-ui/core/TextField'
+import { EnterKeySubmitProps } from '../../../component/custom-events/enter-key-submit'
 
 export const CustomInputOrDefault = ({
   value,
@@ -45,6 +46,7 @@ export const CustomInputOrDefault = ({
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           onChange(e.target.value)
         }}
+        {...EnterKeySubmitProps}
         {...props}
       />
     )
