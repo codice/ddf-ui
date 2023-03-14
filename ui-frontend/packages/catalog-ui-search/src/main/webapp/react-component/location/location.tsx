@@ -15,7 +15,7 @@
 import * as React from 'react'
 import LocationOldModel from '../../component/location-old/location-old'
 import wreqr from '../../js/wreqr'
-import { Drawing } from '../../component/singletons/drawing'
+import { Drawing, useIsDrawing } from '../../component/singletons/drawing'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 import { hot } from 'react-hot-loader'
 import Autocomplete from '@material-ui/lab/Autocomplete'
@@ -131,6 +131,7 @@ const LocationInput = ({ onChange, value }: any) => {
   const locationContext = React.useContext(LocationContext)
   const [locationModel] = React.useState(new LocationOldModel(value) as any)
   const [state, setState] = React.useState(locationModel.toJSON() as any)
+  const isDrawing = useIsDrawing()
   const { listenTo, stopListening } = useBackbone()
   React.useEffect(() => {
     return () => {
@@ -207,20 +208,36 @@ const LocationInput = ({ onChange, value }: any) => {
             }}
           />
           {drawTypes.includes(state.mode) ? (
-            <Button
-              className="location-draw  mt-2"
-              onMouseDown={() => {
-                ;(wreqr as any).vent.trigger(
-                  'search:draw' + state.mode,
-                  locationModel
-                )
-              }}
-              color="primary"
-              fullWidth
-            >
-              <span className="fa fa-globe" />
-              <span className="ml-2">Draw</span>
-            </Button>
+            isDrawing && locationModel === Drawing.getDrawModel() ? (
+              <Button
+                className="location-draw mt-2"
+                onClick={() => {
+                  ;(wreqr as any).vent.trigger(
+                    'search:drawcancel',
+                    locationModel
+                  )
+                }}
+                color="secondary"
+                fullWidth
+              >
+                <span className="ml-2">Cancel Drawing</span>
+              </Button>
+            ) : (
+              <Button
+                className="location-draw mt-2"
+                onClick={() => {
+                  ;(wreqr as any).vent.trigger(
+                    'search:draw' + state.mode,
+                    locationModel
+                  )
+                }}
+                color="primary"
+                fullWidth
+              >
+                <span className="fa fa-globe" />
+                <span className="ml-2">Draw</span>
+              </Button>
+            )
           ) : null}
         </div>
       </div>

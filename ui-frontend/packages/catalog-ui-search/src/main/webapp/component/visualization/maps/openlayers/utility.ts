@@ -12,9 +12,12 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import _ from 'underscore'
+import _ from 'lodash'
 import Openlayers from 'openlayers'
 import properties from '../../../../js/properties'
+import { Position, Point, LineString, Polygon } from '@turf/turf'
+import { GeometryJSON } from 'geospatialdraw/target/webapp/geometry'
+
 function convertPointCoordinate(point: any) {
   const coords = [point[0], point[1]]
   return Openlayers.proj.transform(
@@ -58,8 +61,7 @@ export default {
       */
   calculateOpenlayersCenterOfGeometries(propertyModels: any) {
     const allPoints = _.flatten(
-      propertyModels.map((propertyModel: any) => propertyModel.getPoints()),
-      true
+      propertyModels.map((propertyModel: any) => propertyModel.getPoints())
     ).map((coordinate) => convertPointCoordinate(coordinate))
     const extent = Openlayers.extent.boundingExtent(allPoints)
     return Openlayers.extent.getCenter(extent)
@@ -72,5 +74,40 @@ export default {
       propertyModels
     )
     return unconvertPointCoordinate(openlayersCenter)
+  },
+  convertCoordsToDisplay(coordinates: Position[]) {
+    const coords = _.cloneDeep(coordinates)
+    coords.forEach((coord) => {
+      if (coord[0] < 0) {
+        coord[0] += 360
+      }
+    })
+    return coords
+  },
+  adjustGeoCoords(geo: GeometryJSON) {
+    const geometry = geo.geometry
+    const width = Math.abs(geo.bbox[0] - geo.bbox[2])
+    const crossesAntiMeridian = width > 180
+    switch (geo.properties.shape) {
+      case 'Point':
+        const pointCoords = [(geometry as Point).coordinates]
+        if (crossesAntiMeridian) {
+          geometry.coordinates = this.convertCoordsToDisplay(pointCoords)[0]
+        }
+        break
+      case 'Line':
+        const lineStringCoords = (geometry as LineString).coordinates
+        if (crossesAntiMeridian) {
+          geometry.coordinates = this.convertCoordsToDisplay(lineStringCoords)
+        }
+        break
+      case 'Bounding Box':
+      case 'Polygon':
+        const coords = (geometry as Polygon).coordinates[0]
+        if (crossesAntiMeridian) {
+          geometry.coordinates[0] = this.convertCoordsToDisplay(coords)
+        }
+        break
+    }
   },
 }

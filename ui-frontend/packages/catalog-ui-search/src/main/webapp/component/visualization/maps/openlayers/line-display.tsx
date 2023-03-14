@@ -71,38 +71,43 @@ const modelToLineString = (model: any) => {
   if (setArr.length < 2) {
     return
   }
-  const rectangle = new ol.geom.LineString(
-    translateToOpenlayersCoordinates(setArr)
-  )
-  return rectangle
+  return new ol.geom.LineString(translateToOpenlayersCoordinates(setArr))
 }
-const adjustPoints = (coordinates: any) => {
-  // Structure of coordinates is [x, y, x, y, ... ]
-  coordinates.forEach((_coord: any, index: any) => {
-    if (index + 2 < coordinates.length) {
-      const east = Number(coordinates[index + 2])
-      const west = Number(coordinates[index])
-      if (east - west < -180) {
-        coordinates[index + 2] = east + 360
-      } else if (east - west > 180) {
-        coordinates[index] = west + 360
+const adjustLinePoints = (line: ol.geom.LineString) => {
+  const extent = line.getExtent()
+  const lon1 = extent[0]
+  const lon2 = extent[2]
+  const width = Math.abs(lon2 - lon1)
+  if (width > 180) {
+    const adjusted = line.getCoordinates()
+    adjusted.forEach((coord) => {
+      if (coord[0] < 0) {
+        coord[0] += 360
       }
-    }
+    })
+    line.setCoordinates(adjusted)
+  }
+}
+const adjustMultiLinePoints = (lines: ol.geom.MultiLineString) => {
+  const adjusted: ol.Coordinate[][] = []
+  lines.getLineStrings().forEach((line) => {
+    adjustLinePoints(line)
+    adjusted.push(line.getCoordinates())
   })
-  return coordinates
+  lines.setCoordinates(adjusted)
 }
 export const drawLine = ({
   map,
   model,
-  rectangle,
+  line,
   id,
 }: {
   map: any
   model: any
-  rectangle: any
+  line: ol.geom.LineString
   id: string
 }) => {
-  if (!rectangle) {
+  if (!line) {
     // Handles case where model changes to empty vars and we don't want to draw anymore
     return
   }
@@ -111,9 +116,9 @@ export const drawLine = ({
       model.get('lineWidth'),
       model.get('lineUnits')
     ) || 1
-  rectangle.A = adjustPoints(rectangle.A)
+  adjustLinePoints(line)
   const turfLine = Turf.lineString(
-    translateFromOpenlayersCoordinates(rectangle.getCoordinates())
+    translateFromOpenlayersCoordinates(line.getCoordinates())
   )
   const bufferedLine = Turf.buffer(turfLine, lineWidth, { units: 'meters' })
   const geometryRepresentation = new ol.geom.MultiLineString(
@@ -121,6 +126,8 @@ export const drawLine = ({
       bufferedLine.geometry.coordinates as any
     ) as unknown) as any
   )
+  // need to adjust the points again AFTER buffering, since buffering undoes the antimeridian adjustments
+  adjustMultiLinePoints(geometryRepresentation)
   const billboard = new ol.Feature({
     geometry: geometryRepresentation,
   })
@@ -153,13 +160,13 @@ const updatePrimitive = ({
   model: any
   id: string
 }) => {
-  const polygon = modelToLineString(model)
+  const line = modelToLineString(model)
   // Make sure the current model has width and height before drawing
   if (
-    polygon !== undefined &&
-    !validateGeo('line', JSON.stringify(polygon.getCoordinates()))?.error
+    line !== undefined &&
+    !validateGeo('line', JSON.stringify(line.getCoordinates()))?.error
   ) {
-    drawLine({ map, model, rectangle: polygon, id })
+    drawLine({ map, model, line, id })
   }
 }
 const useListenToLineModel = ({ model, map }: { model: any; map: any }) => {
