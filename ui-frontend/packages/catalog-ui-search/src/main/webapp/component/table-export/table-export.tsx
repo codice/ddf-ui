@@ -82,8 +82,11 @@ function getColumnOrder(): string[] {
 function getHiddenFields(): string[] {
   return user.get('user').get('preferences').get('columnHide')
 }
-function getSorts() {
-  return user.get('user').get('preferences').get('resultSort')
+function getSorts(selectionInterface: any) {
+  return (
+    user.get('user').get('preferences').get('resultSort') ||
+    selectionInterface.getCurrentQuery().get('sorts')
+  )
 }
 function getSearches(
   exportSize: string,
@@ -195,7 +198,7 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
     queryRef: query,
   })
   const srcs = getSrcs(selectionInterface)
-  const sorts = getSorts()
+  const sorts = getSorts(selectionInterface)
   const phonetics = query.get('phonetics')
   const spellcheck = query.get('spellcheck')
   const args = {
