@@ -161,7 +161,11 @@ export const HeaderCheckbox = ({
   )
 }
 
-export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: HeaderProps) => {
+export const Header = ({
+  lazyResults,
+  setHeaderColWidth,
+  headerColWidth,
+}: HeaderProps) => {
   const handleSortClick = _.debounce(updateSort, 500, true)
   const [shownAttributes, setShownAttributes] = React.useState(
     TypedUserInstance.getResultsAttributesShownTable()
@@ -169,41 +173,44 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
   const { listenTo } = useBackbone()
 
   const [activeIndex, setActiveIndex] = React.useState(null)
-  
-  const columnRefs = React.useRef(shownAttributes.map(() => React.createRef<HTMLDivElement>()))
 
+  const columnRefs = React.useRef(
+    shownAttributes.map(() => React.createRef<HTMLDivElement>())
+  )
 
-  const mouseDown = (index:any) => {
-    setActiveIndex(index);
+  const mouseDown = (index: any) => {
+    setActiveIndex(index)
   }
 
-  const mouseMove = React.useCallback((e) => {
+  const mouseMove = React.useCallback(
+    (e) => {
+      const columnsWidth = new Map<string, string>([...headerColWidth])
 
-    const columnsWidth = new Map<string, string>([...headerColWidth])
+      if (headerColWidth.size === 0) {
+        shownAttributes.map((col) => {
+          columnsWidth.set(col, '200px')
+        })
+      }
 
-    if(headerColWidth.size === 0){
-      shownAttributes.map((col) => {
-        columnsWidth.set(col, '200px')
-      })
-    }
-   
-    shownAttributes.map((col, i) => {
-      if (i === activeIndex) {
-        const currRef = columnRefs.current[i].current
-        const offset = currRef?.getBoundingClientRect().x
-        if(offset){
-          const width = e.clientX - offset
-          if (currRef){
-            currRef.style.width = `${width}px`
-            columnsWidth.set(col, `${width}px`)
+      shownAttributes.map((col, i) => {
+        if (i === activeIndex) {
+          const currRef = columnRefs.current[i].current
+          const offset = currRef?.getBoundingClientRect().x
+          if (offset) {
+            const width = e.clientX - offset
+            if (currRef) {
+              currRef.style.width = `${width}px`
+              columnsWidth.set(col, `${width}px`)
+            }
           }
-        }  
-      }  
-    });
-    setHeaderColWidth(columnsWidth)
-  }, [activeIndex, shownAttributes])
+        }
+      })
+      setHeaderColWidth(columnsWidth)
+    },
+    [activeIndex, shownAttributes]
+  )
 
-  const resetColumnWidth = (col:string) => {
+  const resetColumnWidth = (col: string) => {
     const columnsWidth = new Map<string, string>([...headerColWidth])
     columnsWidth.set(col, '200px')
     setHeaderColWidth(columnsWidth)
@@ -213,7 +220,7 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
     window.removeEventListener('mousemove', mouseMove)
     window.removeEventListener('mouseup', removeListeners)
   }, [mouseMove])
-  
+
   const mouseUp = React.useCallback(() => {
     setActiveIndex(null)
     removeListeners()
@@ -224,7 +231,7 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
       window.addEventListener('mousemove', mouseMove)
       window.addEventListener('mouseup', mouseUp)
     }
-  
+
     return () => {
       removeListeners()
     }
@@ -236,7 +243,9 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
       'change:results-attributesShownTable',
       () => {
         setShownAttributes(TypedUserInstance.getResultsAttributesShownTable())
-        columnRefs.current = TypedUserInstance.getResultsAttributesShownTable().map(() => React.createRef<HTMLDivElement>())
+        columnRefs.current = TypedUserInstance.getResultsAttributesShownTable().map(
+          () => React.createRef<HTMLDivElement>()
+        )
       }
     )
   }, [])
@@ -248,7 +257,7 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
         style={{
           width: shownAttributes.length * 200 + 'px',
           display: 'grid',
-          gridTemplateColumns: `repeat(${shownAttributes.length + 2}, 1fr)`
+          gridTemplateColumns: `repeat(${shownAttributes.length + 2}, 1fr)`,
         }}
       >
         <div className="sticky left-0 w-auto z-10 bg-inherit Mui-border-divider border border-t-0 border-l-0 border-b-0">
@@ -263,58 +272,62 @@ export const Header = ({ lazyResults, setHeaderColWidth, headerColWidth }: Heade
           const label = TypedMetacardDefs.getAlias({ attr })
           const sortable = true
           return (
-            <div key={attr} 
-            style={{display: 'flex', width: `${headerColWidth.get(attr)}`, minWidth: '200px'}}
-            ref={columnRefs.current[index]}
+            <div
+              key={attr}
+              style={{
+                display: 'flex',
+                width: `${headerColWidth.get(attr)}`,
+                minWidth: '200px',
+              }}
+              ref={columnRefs.current[index]}
             >
-                <CellComponent
+              <CellComponent
                 className={`${
                   sortable ? 'is-sortable' : ''
                 } Mui-border-divider border border-t-0 border-l-0 border-b-0`}
-                  data-propertyid={`${attr}`}
-                  data-propertytext={`${label ? `${label}` : `${attr}`}`}
-                  style={{
-                    width: '100%',
-                    minWidth: '200px',
-                    display: 'flex',
-                    padding: 0
-                  }}
-                >                   
-                    <Button
-                      disabled={!sortable}
-                      className="w-full outline-none is-bold h-full"
-                      onClick={() => handleSortClick(attr)}
-                      style={{ width: '100%', marginRight: '5px'}}
+                data-propertyid={`${attr}`}
+                data-propertytext={`${label ? `${label}` : `${attr}`}`}
+                style={{
+                  width: '100%',
+                  minWidth: '200px',
+                  display: 'flex',
+                  padding: 0,
+                }}
+              >
+                <Button
+                  disabled={!sortable}
+                  className="w-full outline-none is-bold h-full"
+                  onClick={() => handleSortClick(attr)}
+                  style={{ width: '100%', marginRight: '5px' }}
+                >
+                  <div className="w-full text-left">
+                    <span
+                      className="column-text is-bold"
+                      title={`${label ? `${label}` : `${attr}`}`}
                     >
-                      <div className="w-full text-left">
-                        <span
-                          className="column-text is-bold"
-                          title={`${label ? `${label}` : `${attr}`}`}
-                        >
-                          {`${label ? `${label}` : `${attr}`}`}
-                        </span>
-                        <span
-                          className={getSortDirectionClass(attr)}
-                          style={{ paddingLeft: '3px'}}
-                        />
-                      </div>
-                    </Button>
-                    <div style={{width: '10px', cursor: 'col-resize'
-                      }}
-                      className='hover:border-solid'
-                      onDoubleClick={() => {
-                        resetColumnWidth(attr)
-                        const currRef = columnRefs.current[index].current
-                        if(currRef){
-                          currRef.style.width = '200px'
-                        } 
-                      }}
-                      onMouseDown={() => {
-                        mouseDown(index)
-                        }}
-                     >
-                    </div>            
-                </CellComponent>
+                      {`${label ? `${label}` : `${attr}`}`}
+                    </span>
+                    <span
+                      className={getSortDirectionClass(attr)}
+                      style={{ paddingLeft: '3px' }}
+                    />
+                  </div>
+                </Button>
+                <div
+                  style={{ width: '10px', cursor: 'col-resize' }}
+                  className="hover:border-solid"
+                  onDoubleClick={() => {
+                    resetColumnWidth(attr)
+                    const currRef = columnRefs.current[index].current
+                    if (currRef) {
+                      currRef.style.width = '200px'
+                    }
+                  }}
+                  onMouseDown={() => {
+                    mouseDown(index)
+                  }}
+                ></div>
+              </CellComponent>
             </div>
           )
         })}

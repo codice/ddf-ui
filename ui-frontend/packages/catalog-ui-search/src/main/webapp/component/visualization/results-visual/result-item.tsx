@@ -270,8 +270,8 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
 }
 export const SelectionBackground = ({
   lazyResult,
-  // style,
-}: {
+}: // style,
+{
   lazyResult: LazyQueryResult
   style?: React.CSSProperties
 }) => {
