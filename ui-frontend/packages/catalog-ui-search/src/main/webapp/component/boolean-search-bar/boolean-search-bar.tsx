@@ -161,7 +161,6 @@ const BooleanSearchBar = ({
   }
   const handleSubmit = (e: React.SyntheticEvent) => {
     if (!value.error && (!isOpen || currentOptions.length === 0)) {
-      console.log('submit the query')
       dispatchEnterKeySubmitEvent(e)
     }
   }
