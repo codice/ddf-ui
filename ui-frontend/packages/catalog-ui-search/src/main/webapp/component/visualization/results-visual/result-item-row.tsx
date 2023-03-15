@@ -83,7 +83,7 @@ const RowComponent = ({
   measure,
   index,
   results,
-  headerColWidth
+  headerColWidth,
 }: ResultItemFullProps) => {
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const [shownAttributes, setShownAttributes] = React.useState(
@@ -121,8 +121,7 @@ const RowComponent = ({
       <div
         className="bg-inherit flex items-strech flex-no-wrap"
         style={{
-          width: shownAttributes.length * 200 + 'px'
-
+          width: shownAttributes.length * 200 + 'px',
         }}
       >
         <div
@@ -171,13 +170,7 @@ const RowComponent = ({
             className="outline-none rounded-none select-text p-0 text-left break-words h-full children-h-full"
           >
             <div className="w-full h-full">
-              <Grid
-                container
-                direction="row"
-                className="h-full"
-                wrap="nowrap"
-                
-              >
+              <Grid container direction="row" className="h-full" wrap="nowrap">
                 {shownAttributes.map((property) => {
                   let value = lazyResult.plain.metacard.properties[
                     property
@@ -202,8 +195,7 @@ const RowComponent = ({
                     }
                   }
                   return (
-                    <div key={property} 
-                  >
+                    <div key={property}>
                       <CellComponent
                         key={property}
                         data-property={`${property}`}
@@ -213,7 +205,7 @@ const RowComponent = ({
                         data-value={`${value}`}
                         style={{
                           width: `${headerColWidth.get(property)}`,
-                          minWidth: '200px'
+                          minWidth: '200px',
                         }}
                       >
                         {property === 'thumbnail' && thumbnail ? (

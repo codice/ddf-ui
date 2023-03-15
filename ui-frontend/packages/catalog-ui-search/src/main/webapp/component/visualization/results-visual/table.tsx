@@ -118,11 +118,11 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
 
   const columnsWidth = new Map<string, string>()
   const [headerColWidth, setHeaderColWidth] = React.useState(columnsWidth)
-  
-  const setWidth = (width:Map<string, string>) => {
+
+  const setWidth = (width: Map<string, string>) => {
     setHeaderColWidth(width)
   }
-  
+
   return (
     <Grid
       container
@@ -204,7 +204,11 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                   className="w-auto overflow-auto scrollbars-hide bg-inherit"
                   ref={headerRef}
                 >
-                  <Header lazyResults={lazyResults}   setHeaderColWidth={setWidth} headerColWidth={headerColWidth}/>
+                  <Header
+                    lazyResults={lazyResults}
+                    setHeaderColWidth={setWidth}
+                    headerColWidth={headerColWidth}
+                  />
                 </div>
               </Grid>
               <Grid item>
