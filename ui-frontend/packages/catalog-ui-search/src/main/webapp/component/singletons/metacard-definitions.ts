@@ -18,7 +18,7 @@ import _ from 'underscore'
 import properties from '../../js/properties'
 import moment from 'moment'
 import fetch from '../../react-component/utils/fetch'
-const PRIORITY_ATTRIBUTES = ['anyText', 'anyGeo']
+
 function transformEnumResponse(metacardTypes: any, response: any) {
   return _.reduce(
     response,
@@ -239,8 +239,6 @@ export default new (Backbone.Model.extend({
     return metacardTypes.sort((a: any, b: any) => {
       const attrToCompareA = (a.alias || a.id).toLowerCase()
       const attrToCompareB = (b.alias || b.id).toLowerCase()
-      if (PRIORITY_ATTRIBUTES.includes(a.id)) return -1
-      if (PRIORITY_ATTRIBUTES.includes(b.id)) return 1
       if (attrToCompareA < attrToCompareB) {
         return -1
       }

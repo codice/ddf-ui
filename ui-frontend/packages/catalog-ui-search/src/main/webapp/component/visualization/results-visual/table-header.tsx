@@ -209,7 +209,8 @@ export const Header = ({
       setHeaderColWidth(columnsWidth)
       prefs.set('columnWidths', columnsWidth)
       prefs.savePreferences()
-    },[activeIndex, shownAttributes]
+    },
+    [activeIndex, shownAttributes]
   )
   const resetColumnWidth = (col: string) => {
     const columnsWidth = new Map<string, string>([...headerColWidth])
