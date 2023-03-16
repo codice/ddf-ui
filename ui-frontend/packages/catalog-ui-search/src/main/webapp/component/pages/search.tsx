@@ -62,6 +62,7 @@ import {
   useSaveSearchTaskBasedOnParams,
 } from '../../js/model/AsyncTask/async-task'
 import { Memo } from '../memo/memo'
+import { useListenToEnterKeySubmitEvent } from '../custom-events/enter-key-submit'
 
 type SaveFormType = {
   selectionInterface: any
@@ -1447,6 +1448,11 @@ export const HomePage = () => {
       }
     }
   }, [searchPageMode, location.search])
+  const { setElement } = useListenToEnterKeySubmitEvent({
+    callback: () => {
+      ;(selectionInterface.getCurrentQuery() as any).startSearchFromFirstPage()
+    },
+  })
   return (
     <SavedSearchModeContext.Provider
       value={{
@@ -1469,7 +1475,10 @@ export const HomePage = () => {
                 elevation={Elevations.panels}
                 className="h-full overflow-hidden w-full"
               >
-                <div className="flex flex-col flex-no-wrap w-full h-full">
+                <div
+                  className="flex flex-col flex-no-wrap w-full h-full"
+                  ref={setElement}
+                >
                   <LeftTop />
 
                   <LeftMiddle />

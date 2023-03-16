@@ -16,6 +16,7 @@ import * as React from 'react'
 
 import TextField from '@material-ui/core/TextField'
 import { ValueTypes } from '../filter-builder/filter.structure'
+import { EnterKeySubmitProps } from '../custom-events/enter-key-submit'
 
 type IntegerFieldProps = {
   value: ValueTypes['integer']
@@ -44,6 +45,7 @@ export const IntegerField = ({ value, onChange }: IntegerFieldProps) => {
       onChange={(e) => {
         onChange(parseInt(e.target.value))
       }}
+      {...EnterKeySubmitProps}
     />
   )
 }

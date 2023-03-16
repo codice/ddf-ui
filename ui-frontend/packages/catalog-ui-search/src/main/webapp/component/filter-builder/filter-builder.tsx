@@ -18,7 +18,6 @@ import FilterBranch from './filter-branch'
 
 import { FilterBuilderClass, isFilterBuilderClass } from './filter.structure'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-import { FilterTextFieldIdentifier } from '../fields/text'
 
 type Props = {
   model: any
@@ -66,16 +65,7 @@ export const FilterBuilderRoot = ({ model }: Props) => {
     }
   }, [model])
   return (
-    <div
-      onKeyUp={(e) => {
-        if (e.keyCode === 13) {
-          const targetElement = e.target as HTMLInputElement
-          if (targetElement.classList.contains(FilterTextFieldIdentifier)) {
-            model.startSearchFromFirstPage()
-          }
-        }
-      }}
-    >
+    <div>
       <FilterBranch
         filter={filter}
         setFilter={(update) => {

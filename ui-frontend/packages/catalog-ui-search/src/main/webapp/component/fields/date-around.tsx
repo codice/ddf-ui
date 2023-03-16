@@ -24,6 +24,7 @@ import TextField from '@material-ui/core/TextField/TextField'
 import MenuItem from '@material-ui/core/MenuItem/MenuItem'
 
 import user from '../singletons/user-instance'
+import { EnterKeySubmitProps } from '../custom-events/enter-key-submit'
 
 type DateAroundProps = {
   value: ValueTypes['around']
@@ -83,6 +84,9 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
           placeholder={'M/D/YYYY'}
           shortcuts
           timePrecision="millisecond"
+          inputProps={{
+            ...EnterKeySubmitProps,
+          }}
           {...(value.date
             ? {
                 value: DateHelpers.Blueprint.DateProps.generateValue(

@@ -1,5 +1,6 @@
 import * as React from 'react'
 import TextField, { TextFieldProps } from '@material-ui/core/TextField'
+import { EnterKeySubmitProps } from '../custom-events/enter-key-submit'
 
 type Props = {
   value?: string
@@ -31,6 +32,7 @@ export const NumberField = ({
         }
       }}
       {...TextFieldProps}
+      {...EnterKeySubmitProps}
     />
   )
 }

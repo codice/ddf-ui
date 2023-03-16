@@ -16,20 +16,52 @@ import * as React from 'react'
 import extension from '../../../extension-points'
 import TextField from '@material-ui/core/TextField'
 import { TextFieldProps } from '@material-ui/core/TextField'
+import { EnterKeySubmitProps } from '../../../component/custom-events/enter-key-submit'
+import { BooleanTextType } from '../../../component/filter-builder/filter.structure'
 
-export const CustomInputOrDefault = ({
-  value,
-  onChange,
-  props,
-}: {
+type CustomInputOrDefaultType = {
   value: string
   onChange: (e: string) => void
   props?: Partial<TextFieldProps>
-}) => {
+}
+
+const validateShape = ({ value, onChange }: CustomInputOrDefaultType) => {
+  if (typeof value !== 'string') {
+    const booleanText = (value as BooleanTextType)?.text
+    if (booleanText) {
+      onChange(booleanText)
+    } else {
+      onChange('')
+    }
+  }
+}
+
+const ShapeValidator = (props: CustomInputOrDefaultType) => {
+  const { value } = props
+  const [isValid, setIsValid] = React.useState(false)
+  React.useEffect(() => {
+    if (typeof value !== 'string') {
+      setIsValid(false)
+      validateShape(props)
+    } else {
+      setIsValid(true)
+    }
+  }, [value])
+  if (isValid) {
+    return <CustomInputOrDefaultPostValidation {...props} />
+  }
+  return null
+}
+
+export const CustomInputOrDefaultPostValidation = ({
+  value,
+  onChange,
+  props,
+}: CustomInputOrDefaultType) => {
   let textValue = value
   //Clear out value when switching between structured string inputs (e.g. NEAR)
   if (typeof textValue !== 'string') {
-    textValue = ''
+    textValue = (value as any)?.text || ''
   }
   // call out to extension, if extension handles it, great, if not fallback to this
   const componentToReturn = extension.customFilterInput({
@@ -45,8 +77,11 @@ export const CustomInputOrDefault = ({
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           onChange(e.target.value)
         }}
+        {...EnterKeySubmitProps}
         {...props}
       />
     )
   }
 }
+
+export const CustomInputOrDefault = ShapeValidator
