@@ -26,6 +26,7 @@ import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import { TypedMetacardDefs } from '../../tabs/metacard/metacardDefinitions'
+import debounce from 'lodash.debounce'
 export type Header = {
   hidden: boolean
   id: string
@@ -182,8 +183,8 @@ export const Header = ({
     setActiveIndex(index)
   }
 
-  const mouseMove = React.useCallback(
-    (e) => {
+  const mouseMove = 
+    (e:any) => {
       const columnsWidth = new Map<string, string>([...headerColWidth])
 
       if (headerColWidth.size === 0) {
@@ -206,9 +207,11 @@ export const Header = ({
         }
       })
       setHeaderColWidth(columnsWidth)
-    },
-    [activeIndex, shownAttributes]
-  )
+    }
+   
+  const debounceMouseMove = React.useCallback(
+    debounce(mouseMove, 100)
+  ,[activeIndex, shownAttributes])
 
   const resetColumnWidth = (col: string) => {
     const columnsWidth = new Map<string, string>([...headerColWidth])
@@ -217,9 +220,9 @@ export const Header = ({
   }
 
   const removeListeners = React.useCallback(() => {
-    window.removeEventListener('mousemove', mouseMove)
+    window.removeEventListener('mousemove', debounceMouseMove)
     window.removeEventListener('mouseup', removeListeners)
-  }, [mouseMove])
+  }, [debounceMouseMove])
 
   const mouseUp = React.useCallback(() => {
     setActiveIndex(null)
@@ -228,14 +231,15 @@ export const Header = ({
 
   React.useEffect(() => {
     if (activeIndex !== null) {
-      window.addEventListener('mousemove', mouseMove)
+      window.addEventListener('mousemove', debounceMouseMove)
       window.addEventListener('mouseup', mouseUp)
     }
 
     return () => {
       removeListeners()
+      debounceMouseMove.cancel()
     }
-  }, [activeIndex, mouseMove, mouseUp, removeListeners])
+  }, [activeIndex, debounceMouseMove, mouseUp, removeListeners])
 
   React.useEffect(() => {
     listenTo(
