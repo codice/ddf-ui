@@ -116,7 +116,8 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
     }
   }, [])
 
-  const columnsWidth = new Map<string, string>()
+  const prefs = user.get('user').get('preferences')
+  const columnsWidth = new Map<string, string>(prefs.get('columnWidths'))
   const [headerColWidth, setHeaderColWidth] = React.useState(columnsWidth)
 
   const setWidth = (width: Map<string, string>) => {

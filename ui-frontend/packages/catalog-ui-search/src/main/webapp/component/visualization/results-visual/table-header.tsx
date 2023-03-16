@@ -26,7 +26,6 @@ import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import { TypedMetacardDefs } from '../../tabs/metacard/metacardDefinitions'
-import debounce from 'lodash.debounce'
 export type Header = {
   hidden: boolean
   id: string
@@ -178,13 +177,14 @@ export const Header = ({
   const columnRefs = React.useRef(
     shownAttributes.map(() => React.createRef<HTMLDivElement>())
   )
+  const prefs = user.get('user').get('preferences')
 
   const mouseDown = (index: any) => {
     setActiveIndex(index)
   }
 
-  const mouseMove = 
-    (e:any) => {
+  const mouseMove = React.useCallback(
+    (e) => {
       const columnsWidth = new Map<string, string>([...headerColWidth])
 
       if (headerColWidth.size === 0) {
@@ -207,22 +207,22 @@ export const Header = ({
         }
       })
       setHeaderColWidth(columnsWidth)
-    }
-   
-  const debounceMouseMove = React.useCallback(
-    debounce(mouseMove, 100)
-  ,[activeIndex, shownAttributes])
-
+      prefs.set('columnWidths', columnsWidth)
+      prefs.savePreferences()
+    },[activeIndex, shownAttributes]
+  )
   const resetColumnWidth = (col: string) => {
     const columnsWidth = new Map<string, string>([...headerColWidth])
     columnsWidth.set(col, '200px')
     setHeaderColWidth(columnsWidth)
+    prefs.set('columnWidths', columnsWidth)
+    prefs.savePreferences()
   }
 
   const removeListeners = React.useCallback(() => {
-    window.removeEventListener('mousemove', debounceMouseMove)
+    window.removeEventListener('mousemove', mouseMove)
     window.removeEventListener('mouseup', removeListeners)
-  }, [debounceMouseMove])
+  }, [mouseMove])
 
   const mouseUp = React.useCallback(() => {
     setActiveIndex(null)
@@ -231,15 +231,14 @@ export const Header = ({
 
   React.useEffect(() => {
     if (activeIndex !== null) {
-      window.addEventListener('mousemove', debounceMouseMove)
+      window.addEventListener('mousemove', mouseMove)
       window.addEventListener('mouseup', mouseUp)
     }
 
     return () => {
       removeListeners()
-      debounceMouseMove.cancel()
     }
-  }, [activeIndex, debounceMouseMove, mouseUp, removeListeners])
+  }, [activeIndex, mouseMove, mouseUp, removeListeners])
 
   React.useEffect(() => {
     listenTo(
