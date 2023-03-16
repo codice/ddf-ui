@@ -37,6 +37,7 @@ type ResultItemFullProps = {
   measure: () => void
   index: number
   results: LazyQueryResult[]
+  headerColWidth: Map<string, string>
 }
 export function clearSelection() {
   if (window.getSelection) {
@@ -82,6 +83,7 @@ const RowComponent = ({
   measure,
   index,
   results,
+  headerColWidth,
 }: ResultItemFullProps) => {
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const [shownAttributes, setShownAttributes] = React.useState(
@@ -91,6 +93,7 @@ const RowComponent = ({
   const { listenTo } = useBackbone()
   const convertToFormat = useCoordinateFormat()
   useRerenderOnBackboneSync({ lazyResult })
+
   React.useEffect(() => {
     listenTo(
       user.get('user').get('preferences'),
@@ -167,15 +170,7 @@ const RowComponent = ({
             className="outline-none rounded-none select-text p-0 text-left break-words h-full children-h-full"
           >
             <div className="w-full h-full">
-              <Grid
-                container
-                direction="row"
-                className="h-full"
-                wrap="nowrap"
-                style={{
-                  width: shownAttributes.length * 200 + 'px',
-                }}
-              >
+              <Grid container direction="row" className="h-full" wrap="nowrap">
                 {shownAttributes.map((property) => {
                   let value = lazyResult.plain.metacard.properties[
                     property
@@ -200,63 +195,69 @@ const RowComponent = ({
                     }
                   }
                   return (
-                    <CellComponent
-                      key={property}
-                      data-property={`${property}`}
-                      className={`Mui-border-divider border border-t-0 border-l-0 ${
-                        isLast ? '' : 'border-b-0'
-                      } h-full`}
-                      data-value={`${value}`}
-                    >
-                      {property === 'thumbnail' && thumbnail ? (
-                        <img
-                          data-id="thumbnail-value"
-                          src={imgsrc}
-                          style={{
-                            maxWidth: '100%',
-                            maxHeight: '100%',
-                          }}
-                          onLoad={() => {
-                            measure()
-                          }}
-                          onError={() => {
-                            measure()
-                          }}
-                        />
-                      ) : (
-                        <React.Fragment>
-                          <div
-                            data-id={`${property}-value`}
-                            style={{ wordBreak: 'break-word' }}
-                          >
-                            {value.map((curValue: any, index: number) => {
-                              return (
-                                <span key={index} data-value={`${curValue}`}>
-                                  {curValue.toString().startsWith('http') ? (
-                                    <a
-                                      href={`${curValue}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                    >
-                                      {TypedMetacardDefs.getAlias({
-                                        attr: property,
-                                      })}
-                                    </a>
-                                  ) : (
-                                    `${
-                                      value.length > 1 &&
-                                      index < value.length - 1
-                                        ? curValue + ', '
-                                        : getDisplayValue(curValue, property)
-                                    }`
-                                  )}
-                                </span>
-                              )
-                            })}
-                          </div>
-                        </React.Fragment>
-                      )}
-                    </CellComponent>
+                    <div key={property}>
+                      <CellComponent
+                        key={property}
+                        data-property={`${property}`}
+                        className={`Mui-border-divider border border-t-0 border-l-0 ${
+                          isLast ? '' : 'border-b-0'
+                        } h-full`}
+                        data-value={`${value}`}
+                        style={{
+                          width: `${headerColWidth.get(property)}`,
+                          minWidth: '200px',
+                        }}
+                      >
+                        {property === 'thumbnail' && thumbnail ? (
+                          <img
+                            data-id="thumbnail-value"
+                            src={imgsrc}
+                            style={{
+                              maxWidth: '100%',
+                              maxHeight: '100%',
+                            }}
+                            onLoad={() => {
+                              measure()
+                            }}
+                            onError={() => {
+                              measure()
+                            }}
+                          />
+                        ) : (
+                          <React.Fragment>
+                            <div
+                              data-id={`${property}-value`}
+                              style={{ wordBreak: 'break-word' }}
+                            >
+                              {value.map((curValue: any, index: number) => {
+                                return (
+                                  <span key={index} data-value={`${curValue}`}>
+                                    {curValue.toString().startsWith('http') ? (
+                                      <a
+                                        href={`${curValue}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                      >
+                                        {TypedMetacardDefs.getAlias({
+                                          attr: property,
+                                        })}
+                                      </a>
+                                    ) : (
+                                      `${
+                                        value.length > 1 &&
+                                        index < value.length - 1
+                                          ? curValue + ', '
+                                          : getDisplayValue(curValue, property)
+                                      }`
+                                    )}
+                                  </span>
+                                )
+                              })}
+                            </div>
+                          </React.Fragment>
+                        )}
+                      </CellComponent>
+                    </div>
                   )
                 })}
               </Grid>

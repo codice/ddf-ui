@@ -136,6 +136,7 @@ const Theme = Backbone.Model.extend({
       visualization: '3dmap',
       columnHide: [],
       columnOrder: ['title', 'created', 'modified', 'thumbnail'],
+      columnWidths: [],
       hasSelectedColumns: false,
       uploads: [],
       oauth: [],
