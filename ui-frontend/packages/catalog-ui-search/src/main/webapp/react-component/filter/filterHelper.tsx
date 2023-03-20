@@ -49,7 +49,7 @@ export const getGroupedFilteredAttributes = (): {
     (attributes: Attribute[], id: string) => {
       const attribute = allAttributes[id]
       if (attribute) {
-        attributes.push(toAttribute(attribute, 'Common Attributes'))
+        attributes.push(toAttribute(attribute, 'Commonly Used Attributes'))
       }
       return attributes
     },
@@ -60,7 +60,7 @@ export const getGroupedFilteredAttributes = (): {
   )
   const groups =
     validCommonAttributes.length > 0
-      ? ['Common Attributes', 'All Attributes']
+      ? ['Commonly Used Attributes', 'All Attributes']
       : []
   return {
     groups,

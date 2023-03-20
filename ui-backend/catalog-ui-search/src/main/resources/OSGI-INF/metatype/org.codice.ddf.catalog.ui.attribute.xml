@@ -49,7 +49,7 @@ Note: Attributes must also be listed under the Facet Attribute Whitelist for thi
             name="Common Attributes"
             description="The attributes that will be placed at the top of the drop-down list displayed when choosing an
             attribute in the advanced search menu. Setting this will cause the attributes in this menu to be grouped.
-            The first group is 'Common Attributes' and consists solely of the attributes set here, in the specified
+            The first group is 'Commonly Used Attributes' and consists solely of the attributes set here, in the specified
             order. The second group is 'All Attributes' and contains every searchable attribute in alphabetical order,
             including the ones specified here. Use this setting when there are commonly-used attributes you would like
             to feature to make searching easier for users."
