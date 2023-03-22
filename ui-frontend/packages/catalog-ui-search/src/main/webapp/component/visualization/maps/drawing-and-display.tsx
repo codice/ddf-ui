@@ -19,6 +19,7 @@ import { useIsDrawing } from '../../singletons/drawing'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import { zoomToHome } from './home'
 import LocationModel from '../../location-old/location-old'
+import { Shape } from 'geospatialdraw/target/webapp/shape-utils'
 export const SHAPE_ID_PREFIX = 'shape'
 export const getIdFromModelForDisplay = ({ model }: { model: any }) => {
   return `${SHAPE_ID_PREFIX}-${model.cid}-display`
@@ -68,6 +69,33 @@ export const getDrawModeFromModel = ({
       return 'circle'
     case 'POLYGON':
       return 'poly'
+    default:
+      return 'poly'
+  }
+}
+export const getShapeFromDrawMode = (drawMode: DrawModeType): Shape => {
+  switch (drawMode) {
+    case 'bbox':
+      return 'Bounding Box'
+    case 'circle':
+      return 'Point Radius'
+    case 'line':
+      return 'Line'
+    case 'poly':
+    default:
+      return 'Polygon'
+  }
+}
+export const getDrawModeFromShape = (shape: Shape): DrawModeType => {
+  switch (shape) {
+    case 'Bounding Box':
+      return 'bbox'
+    case 'Point':
+    case 'Point Radius':
+      return 'circle'
+    case 'Line':
+      return 'line'
+    case 'Polygon':
     default:
       return 'poly'
   }

@@ -24,6 +24,11 @@
 /* eslint-disable */
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
 import Cesium from 'cesium'
+import * as Turf from '@turf/turf'
+import utility from '../../component/visualization/maps/cesium/utility'
+import _ from 'lodash'
+// Avoid conflict with the name _, which DrawHelper uses a lot
+const lodash = _
 const DrawHelper = (function () {
   // static variables
   const ellipsoid = Cesium.Ellipsoid.WGS84
@@ -37,11 +42,9 @@ const DrawHelper = (function () {
   }
   _.prototype.initialiseHandlers = function () {
     const scene = this._scene
-    const _self = this
     // scene events
     const handler = new Cesium.ScreenSpaceEventHandler(scene.canvas)
     function callPrimitiveCallback(name: any, position: any) {
-      if (_self._handlersMuted == true) return
       const pickedObject = scene.pick(position)
       if (
         pickedObject &&
@@ -57,9 +60,11 @@ const DrawHelper = (function () {
     handler.setInputAction((movement: any) => {
       callPrimitiveCallback('leftDoubleClick', movement.position)
     }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK)
+    handler.setInputAction((movement: any) => {
+      callPrimitiveCallback('rightClick', movement.position)
+    }, Cesium.ScreenSpaceEventType.RIGHT_CLICK)
     let mouseOutObject: any
     handler.setInputAction((movement: any) => {
-      if (_self._handlersMuted == true) return
       let pickedObject = scene.pick(movement.endPosition)
       if (
         mouseOutObject &&
@@ -93,9 +98,6 @@ const DrawHelper = (function () {
   ) {
     primitive[type] = callback
   }
-  _.prototype.muteHandlers = function (muted: any) {
-    this._handlersMuted = muted
-  }
   // register event handling for an editable shape
   // shape should implement setEditMode and setHighlighted
   _.prototype.registerEditableShape = function (surface: any) {
@@ -118,14 +120,11 @@ const DrawHelper = (function () {
     })
   }
   _.prototype.startDrawing = function (cleanUp: any) {
-    // undo any current edit of shapes
-    this.disableAllEditMode()
     // check for cleanUp first
     if (this.editCleanUp) {
       this.editCleanUp()
     }
     this.editCleanUp = cleanUp
-    this.muteHandlers(true)
   }
   _.prototype.stopDrawing = function () {
     // check for cleanUp first
@@ -133,7 +132,6 @@ const DrawHelper = (function () {
       this.editCleanUp()
       this.editCleanUp = null
     }
-    this.muteHandlers(false)
   }
   // make sure only one shape is highlighted at a time
   _.prototype.disableAllHighlights = function () {
@@ -271,38 +269,35 @@ const DrawHelper = (function () {
         })
         this._outlinePolygon =
           this._outlinePolygon && this._outlinePolygon.destroy()
-        if (this.strokeColor && this.getOutlineGeometry) {
-          // create the highlighting frame
-          this._outlinePolygon = new Cesium.Primitive({
-            geometryInstances: new Cesium.GeometryInstance({
-              geometry: this.getOutlineGeometry(),
-              attributes: {
-                color: Cesium.ColorGeometryInstanceAttribute.fromColor(
-                  this.strokeColor
-                ),
-              },
-            }),
-            appearance: new Cesium.PerInstanceColorAppearance({
-              flat: true,
-              renderState: {
-                depthTest: {
-                  enabled: true,
+        if (this.buffer && this.getOutlineGeometry) {
+          const outlineGeometry = this.getOutlineGeometry()
+          if (outlineGeometry) {
+            // create the highlighting frame
+            this._outlinePolygon = new Cesium.Primitive({
+              geometryInstances: new Cesium.GeometryInstance({
+                geometry: outlineGeometry,
+                attributes: {
+                  color: Cesium.ColorGeometryInstanceAttribute.fromColor(
+                    Cesium.Color.BLUE
+                  ),
                 },
-                lineWidth: Math.min(
-                  this.strokeWidth || 4.0,
-                  context._aliasedLineWidthRange[1]
-                ),
-              },
-            }),
-          })
+              }),
+              appearance: new Cesium.PolylineMaterialAppearance({
+                material: Cesium.Material.fromType('Color', {
+                  color: Cesium.Color.BLUE,
+                }),
+              }),
+            })
+          }
         }
       }
       const primitive = this._primitive
       primitive.appearance.material = this.material
       primitive.debugShowBoundingVolume = this.debugShowBoundingVolume
       primitive.update(context, frameState, commandList)
-      this._outlinePolygon &&
+      if (this._outlinePolygon) {
         this._outlinePolygon.update(context, frameState, commandList)
+      }
     }
     _.prototype.isDestroyed = function () {
       return false
@@ -346,10 +341,18 @@ const DrawHelper = (function () {
       if (!Cesium.defined(this.extent)) {
         return
       }
-      return new Cesium.RectangleGeometry({
-        rectangle: this.extent,
+      const positions = [
+        Cesium.Cartesian3.fromRadians(this.extent.west, this.extent.south),
+        Cesium.Cartesian3.fromRadians(this.extent.west, this.extent.north),
+        Cesium.Cartesian3.fromRadians(this.extent.east, this.extent.north),
+        Cesium.Cartesian3.fromRadians(this.extent.east, this.extent.south),
+        Cesium.Cartesian3.fromRadians(this.extent.west, this.extent.south),
+      ]
+      // Display a PolygonGeometry instead of a RectangleGeometry because RectangleGeometries
+      // appear to always wrap the long way around the antimeridian.
+      return Cesium.PolygonGeometry.fromPositions({
+        positions,
         height: this.height,
-        vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
         stRotation: this.textureRotationAngle,
         ellipsoid: this.ellipsoid,
         granularity: this.granularity,
@@ -384,15 +387,52 @@ const DrawHelper = (function () {
       return Cesium.PolygonGeometry.fromPositions({
         positions: this.positions,
         height: this.height,
-        vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
         stRotation: this.textureRotationAngle,
         ellipsoid: this.ellipsoid,
         granularity: this.granularity,
       })
     }
     _.prototype.getOutlineGeometry = function () {
-      return Cesium.PolygonOutlineGeometry.fromPositions({
-        positions: this.getPositions(),
+      if (
+        !Cesium.defined(this.positions) ||
+        this.positions.length < 3 ||
+        !this.buffer
+      ) {
+        return
+      }
+      const coordinates = this.positions.map((pos: Cesium.Cartesian3) => {
+        const cartographic = Cesium.Cartographic.fromCartesian(pos)
+        return [
+          Cesium.Math.toDegrees(cartographic.longitude),
+          Cesium.Math.toDegrees(cartographic.latitude),
+          cartographic.altitude,
+        ]
+      })
+
+      const adjustedPolygon = Turf.polygon([coordinates])
+      utility.adjustGeoCoords(adjustedPolygon)
+
+      const bufferedPolygon = Turf.buffer(
+        adjustedPolygon,
+        Math.max(this.buffer, 1),
+        {
+          units: 'meters',
+        }
+      )
+      if (!bufferedPolygon) {
+        return
+      }
+      // need to adjust the points again AFTER buffering, since buffering undoes the antimeridian adjustments
+      utility.adjustGeoCoords(bufferedPolygon)
+      const outlinePositions = bufferedPolygon.geometry.coordinates[0].map(
+        (coord) => Cesium.Cartesian3.fromDegrees(coord[0], coord[1], coord[2])
+      )
+      return new Cesium.PolylineGeometry({
+        positions: outlinePositions,
+        height: this.height,
+        width: this.width < 1 ? 1 : this.width,
+        ellipsoid: this.ellipsoid,
+        followSurface: false,
       })
     }
     return _
@@ -429,7 +469,6 @@ const DrawHelper = (function () {
         center: this.center,
         radius: this.radius,
         height: this.height,
-        vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
         stRotation: this.textureRotationAngle,
         ellipsoid: this.ellipsoid,
         granularity: this.granularity,
@@ -556,22 +595,90 @@ const DrawHelper = (function () {
         width: this.width < 1 ? 1 : this.width,
         vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
         ellipsoid: this.ellipsoid,
+        followSurface: false,
+      })
+    }
+    _.prototype.getOutlineGeometry = function () {
+      if (
+        !Cesium.defined(this.positions) ||
+        this.positions.length < 2 ||
+        !this.buffer
+      ) {
+        return
+      }
+      const coordinates = this.positions.map((pos: Cesium.Cartesian3) => {
+        const cartographic = Cesium.Cartographic.fromCartesian(pos)
+        return [
+          Cesium.Math.toDegrees(cartographic.longitude),
+          Cesium.Math.toDegrees(cartographic.latitude),
+          cartographic.altitude,
+        ]
+      })
+      const turfLine = Turf.lineString(coordinates)
+      utility.adjustGeoCoords(turfLine)
+      const bufferedLine = Turf.buffer(turfLine, Math.max(this.buffer, 1), {
+        units: 'meters',
+      })
+      if (!bufferedLine) {
+        return
+      }
+      // need to adjust the points again AFTER buffering, since buffering undoes the antimeridian adjustments
+      utility.adjustGeoCoords(bufferedLine)
+      const outlinePositions = bufferedLine.geometry.coordinates[0].map(
+        (coord) => Cesium.Cartesian3.fromDegrees(coord[0], coord[1], coord[2])
+      )
+      return new Cesium.PolylineGeometry({
+        positions: outlinePositions,
+        height: this.height,
+        width: this.width < 1 ? 1 : this.width,
+        vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
+        ellipsoid: this.ellipsoid,
+        followSurface: false,
       })
     }
     return _
   })()
+  const vertexSvg = `
+  <svg width="10" height="10" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="5" cy="5" r="5" fill="blue"/>
+  </svg>
+  `
+  const dragHalfSvg = `
+  <svg width="8" height="8" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="8" height="8" fill="blue"/>
+    <line x1="1" y1="4" x2="7" y2="4" stroke-width="2" stroke="white"/>
+    <line x1="4" y1="1" x2="4" y2="7" stroke-width="2" stroke="white"/>
+  </svg>
+  `
+  /*
+    Create our own Image objects and pass them, instead of URLS, to the
+    BillboardCollections. This ensures the shape editing controls will always
+    be displayed immediately after the user clicks the Draw button, and without
+    requiring any user interaction with the map. If we used unloaded images
+    (e.g., image URLs), as we did previously, then sometimes the shape editing
+    controls would not be displayed until the user interacted with the map,
+    like moving it or zooming in or out. This is because we have Cesium's
+    requestRenderMode enabled. Sometimes, the image was not loaded by the time
+    the render request for the drawing primitive was made, and another render
+    request (triggered, for example, by moving the map) had to be made for
+    it to be shown.
+  */
+  const vertexImage = new Image()
+  vertexImage.src = `data:image/svg+xml;base64,${window.btoa(vertexSvg)}`
+  const dragHalfImage = new Image()
+  dragHalfImage.src = `data:image/svg+xml;base64,${window.btoa(dragHalfSvg)}`
   const defaultBillboard = {
-    iconUrl: './img/dragIcon.png',
+    image: vertexImage,
     shiftX: 0,
     shiftY: 0,
   }
-  let dragBillboard = {
-    iconUrl: './img/dragIcon.png',
+  const dragBillboard = {
+    image: vertexImage,
     shiftX: 0,
     shiftY: 0,
   }
-  let dragHalfBillboard = {
-    iconUrl: './img/dragIconLight.png',
+  const dragHalfBillboard = {
+    image: dragHalfImage,
     shiftX: 0,
     shiftY: 0,
   }
@@ -611,7 +718,7 @@ const DrawHelper = (function () {
       horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
       verticalOrigin: Cesium.VerticalOrigin.CENTER,
       scale: 1.0,
-      image: this._options.iconUrl,
+      image: this._options.image,
       color: new Cesium.Color(1.0, 1.0, 1.0, 1.0),
     })
     // if editable
@@ -681,9 +788,9 @@ const DrawHelper = (function () {
             )
         })
       }
-      if (callbacks.onDoubleClick) {
-        setListener(billboard, 'leftDoubleClick', () => {
-          callbacks.onDoubleClick(getIndex())
+      if (callbacks.onRightClick) {
+        setListener(billboard, 'rightClick', () => {
+          callbacks.onRightClick(getIndex())
         })
       }
       if (callbacks.onClick) {
@@ -749,6 +856,7 @@ const DrawHelper = (function () {
   _.BillboardGroup.prototype.remove = function () {
     this._billboards =
       this._billboards &&
+      this._scene.primitives.remove(this._billboards) &&
       this._billboards.removeAll() &&
       this._billboards.destroy()
   }
@@ -853,6 +961,8 @@ const DrawHelper = (function () {
         if (cartesian) {
           // first click
           if (positions.length == 0) {
+            // If user clicks, they have started drawing, so disable editing
+            _self.disableAllEditMode()
             positions.push(cartesian.clone())
             markers.addBillboard(positions[0])
           }
@@ -872,7 +982,12 @@ const DrawHelper = (function () {
       const position = movement.endPosition
       if (position != null) {
         if (positions.length == 0) {
-          tooltip.showAt(position, '<p>Click to add first point</p>')
+          const feature = scene.pick(position)
+          const isBillboard =
+            feature?.primitive && feature.primitive instanceof Cesium.Billboard
+          if (!isBillboard) {
+            tooltip.showAt(position, 'Click to add first point')
+          }
         } else {
           const cartesian = scene.camera.pickEllipsoid(position, ellipsoid)
           if (cartesian) {
@@ -889,13 +1004,21 @@ const DrawHelper = (function () {
             // show tooltip
             tooltip.showAt(
               position,
-              '<p>Click to add new point (' +
-                positions.length +
-                ')</p>' +
-                (positions.length > minPoints
-                  ? '<p>Double click to finish drawing</p>'
-                  : '')
+              `Click to add new point (${positions.length})
+               ${
+                 positions.length >= minPoints
+                   ? '<br>Double click to finish drawing'
+                   : ''
+               }`
             )
+            if (isPolygon && positions.length === 2) {
+              // Request a render so the first polygon point will be displayed before the user
+              // has clicked the second point. After the user has clicked to create a point,
+              // the length of positions will be (# of points) + 1, because the last point is
+              // wherever the mouse is. Renders will always happen on mouse movement when
+              // positions.length is greater than 2, due to _createPrimitive being enabled above.
+              scene.requestRender()
+            }
           }
         }
       }
@@ -934,7 +1057,7 @@ const DrawHelper = (function () {
       if (extent != null) {
         primitives.remove(extent)
       }
-      markers.remove()
+      markers?.remove()
       mouseHandler.destroy()
       tooltip.setVisible(false)
     })
@@ -948,11 +1071,12 @@ const DrawHelper = (function () {
     const mouseHandler = new Cesium.ScreenSpaceEventHandler(scene.canvas)
     function updateExtent(value: any) {
       if (extent == null) {
-        extent = new Cesium.RectanglePrimitive()
+        // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
+        extent = new DrawHelper.ExtentPrimitive({ ...options, extent: value })
         extent.asynchronous = false
         primitives.add(extent)
       }
-      extent.rectangle = value
+      extent.extent = value
       // update the markers
       const corners = getExtentCorners(value)
       // create if they do not yet exist
@@ -973,6 +1097,8 @@ const DrawHelper = (function () {
         )
         if (cartesian) {
           if (extent == null) {
+            // If user clicks, they have started drawing, so disable editing
+            _self.disableAllEditMode()
             // create the rectangle
             firstPoint = ellipsoid.cartesianToCartographic(cartesian)
             const value = getExtent(firstPoint, firstPoint)
@@ -990,15 +1116,21 @@ const DrawHelper = (function () {
           }
         }
       }
-    }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
     mouseHandler.setInputAction((movement: any) => {
       const position = movement.endPosition
       if (position != null) {
         if (extent == null) {
-          tooltip.showAt(position, '<p>Click to start drawing rectangle</p>')
+          const feature = scene.pick(position)
+          const isBillboard =
+            feature?.primitive && feature.primitive instanceof Cesium.Billboard
+          if (!isBillboard) {
+            tooltip.showAt(position, 'Click to start drawing rectangle')
+          }
         } else {
           const cartesian = scene.camera.pickEllipsoid(position, ellipsoid)
           if (cartesian) {
+            extent._createPrimitive = true
             const value = getExtent(
               firstPoint,
               ellipsoid.cartesianToCartographic(cartesian)
@@ -1006,7 +1138,7 @@ const DrawHelper = (function () {
             updateExtent(value)
             tooltip.showAt(
               position,
-              '<p>Drag to change rectangle extent</p><p>Click again to finish drawing</p>'
+              'Drag to change rectangle extent<br>Click again to finish drawing'
             )
           }
         }
@@ -1020,7 +1152,7 @@ const DrawHelper = (function () {
       if (circle != null) {
         primitives.remove(circle)
       }
-      markers.remove()
+      markers?.remove()
       mouseHandler.destroy()
       tooltip.setVisible(false)
     })
@@ -1040,6 +1172,8 @@ const DrawHelper = (function () {
         )
         if (cartesian) {
           if (circle == null) {
+            // If user clicks, they have started drawing, so disable editing
+            _self.disableAllEditMode()
             // create the circle
             // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
             circle = new _.CirclePrimitive({
@@ -1060,12 +1194,17 @@ const DrawHelper = (function () {
           }
         }
       }
-    }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
     mouseHandler.setInputAction((movement: any) => {
       const position = movement.endPosition
       if (position != null) {
         if (circle == null) {
-          tooltip.showAt(position, '<p>Click to start drawing the circle</p>')
+          const feature = scene.pick(position)
+          const isBillboard =
+            feature?.primitive && feature.primitive instanceof Cesium.Billboard
+          if (!isBillboard) {
+            tooltip.showAt(position, 'Click to start drawing the circle')
+          }
         } else {
           const cartesian = scene.camera.pickEllipsoid(position, ellipsoid)
           if (cartesian) {
@@ -1075,7 +1214,7 @@ const DrawHelper = (function () {
             markers.updateBillboardsPositions(cartesian)
             tooltip.showAt(
               position,
-              '<p>Move mouse to change circle radius</p><p>Click again to finish drawing</p>'
+              'Move mouse to change circle radius<br>Click again to finish drawing'
             )
           }
         }
@@ -1167,7 +1306,6 @@ const DrawHelper = (function () {
       // display markers
       if (editMode) {
         drawHelper.setEdited(this)
-        const scene = drawHelper._scene
         const _self = this
         // create the markers and handlers for the editing
         if (this._markers == null) {
@@ -1214,8 +1352,14 @@ const DrawHelper = (function () {
                 onEdited()
               },
             },
-            onDoubleClick(index: any) {
-              if (_self.positions.length < 4) {
+            onRightClick(index: any) {
+              // Need to count unique points because polygon-display adds the first point to the end.
+              const uniquePoints = lodash.uniqWith(
+                _self.positions,
+                Cesium.Cartesian3.equals
+              ).length
+              const minPointsForRemoval = _self.isPolygon ? 4 : 3
+              if (uniquePoints < minPointsForRemoval) {
                 return
               }
               // remove the point and the corresponding markers
@@ -1225,12 +1369,20 @@ const DrawHelper = (function () {
               editMarkers.removeBillboard(index)
               updateHalfMarkers(index, _self.positions)
               onEdited()
+              drawHelper._scene.requestRender()
             },
-            // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
             tooltip() {
-              if (_self.positions.length > 3) {
-                return 'Double click to remove this point'
+              let msg = 'Drag to move'
+              // Need to count unique points because polygon-display adds the first point to the end.
+              const uniquePoints = lodash.uniqWith(
+                _self.positions,
+                Cesium.Cartesian3.equals
+              ).length
+              const minPointsForRemoval = _self.isPolygon ? 4 : 3
+              if (uniquePoints >= minPointsForRemoval) {
+                msg += '<br>Right click to remove'
               }
+              return msg
             },
           }
           // add billboards and keep an ordered list of them for the polygon edges
@@ -1293,16 +1445,6 @@ const DrawHelper = (function () {
           }
           editMarkers.addBillboards(halfPositions, handleEditMarkerChanges)
           this._editMarkers = editMarkers
-          // add a handler for clicking in the globe
-          this._globeClickhandler = new Cesium.ScreenSpaceEventHandler(
-            scene.canvas
-          )
-          this._globeClickhandler.setInputAction((movement: any) => {
-            const pickedObject = scene.pick(movement.position)
-            if (!(pickedObject && pickedObject.primitive)) {
-              _self.setEditMode(false)
-            }
-          }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
           // set on top of the polygon
           markers.setOnTop()
           editMarkers.setOnTop()
@@ -1314,7 +1456,6 @@ const DrawHelper = (function () {
           this._editMarkers.remove()
           this._markers = null
           this._editMarkers = null
-          this._globeClickhandler.destroy()
         }
         this._editMode = false
       }
@@ -1326,7 +1467,6 @@ const DrawHelper = (function () {
       const polyline = this
       polyline.isPolygon = false
       polyline.asynchronous = false
-      drawHelper.registerEditableShape(polyline)
       polyline.setEditMode = setEditMode
       const originalWidth = this.width
       polyline.setHighlighted = function (highlighted: any) {
@@ -1347,24 +1487,24 @@ const DrawHelper = (function () {
         )
       }
       enhanceWithListeners(polyline)
-      polyline.setEditMode(false)
+      polyline.setEditMode(true)
     }
     DrawHelper.PolygonPrimitive.prototype.setEditable = function () {
+      if (this.setEditMode) {
+        return
+      }
       const polygon = this
       polygon.asynchronous = false
-      drawHelper.registerEditableShape(polygon)
       polygon.setEditMode = setEditMode
       polygon.setHighlighted = setHighlighted
       enhanceWithListeners(polygon)
-      polygon.setEditMode(false)
+      polygon.setEditMode(true)
     }
     DrawHelper.ExtentPrimitive.prototype.setEditable = function () {
       if (this.setEditMode) {
         return
       }
       const extent = this
-      const scene = drawHelper._scene
-      drawHelper.registerEditableShape(extent)
       extent.asynchronous = false
       extent.setEditMode = function (editMode: any) {
         // if no change
@@ -1414,24 +1554,6 @@ const DrawHelper = (function () {
               handleMarkerChanges
             )
             this._markers = markers
-            // add a handler for clicking in the globe
-            this._globeClickhandler = new Cesium.ScreenSpaceEventHandler(
-              scene.canvas
-            )
-            this._globeClickhandler.setInputAction((movement: any) => {
-              const pickedObject = scene.pick(movement.position)
-              // disable edit if pickedobject is different or not an object
-              if (
-                !(
-                  pickedObject &&
-                  !pickedObject.isDestroyed() &&
-                  pickedObject.primitive
-                )
-              ) {
-                extent.setEditMode(false)
-              }
-            }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
-            // set on top of the polygon
             markers.setOnTop()
           }
           this._editMode = true
@@ -1439,14 +1561,13 @@ const DrawHelper = (function () {
           if (this._markers != null) {
             this._markers.remove()
             this._markers = null
-            this._globeClickhandler.destroy()
           }
           this._editMode = false
         }
       }
       extent.setHighlighted = setHighlighted
       enhanceWithListeners(extent)
-      extent.setEditMode(false)
+      extent.setEditMode(true)
     }
     _.EllipsePrimitive.prototype.setEditable = function () {
       if (this.setEditMode) {
@@ -1574,9 +1695,7 @@ const DrawHelper = (function () {
         return
       }
       const circle = this
-      const scene = drawHelper._scene
       circle.asynchronous = false
-      drawHelper.registerEditableShape(circle)
       circle.setEditMode = function (editMode: any) {
         // if no change
         if (this._editMode == editMode) {
@@ -1624,17 +1743,6 @@ const DrawHelper = (function () {
             }
             markers.addBillboards(getMarkerPositions(), handleMarkerChanges)
             this._markers = markers
-            // add a handler for clicking in the globe
-            this._globeClickhandler = new Cesium.ScreenSpaceEventHandler(
-              scene.canvas
-            )
-            this._globeClickhandler.setInputAction((movement: any) => {
-              const pickedObject = scene.pick(movement.position)
-              if (!(pickedObject && pickedObject.primitive)) {
-                _self.setEditMode(false)
-              }
-            }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
-            // set on top of the polygon
             markers.setOnTop()
           }
           this._editMode = true
@@ -1642,14 +1750,13 @@ const DrawHelper = (function () {
           if (this._markers != null) {
             this._markers.remove()
             this._markers = null
-            this._globeClickhandler.destroy()
           }
           this._editMode = false
         }
       }
       circle.setHighlighted = setHighlighted
       enhanceWithListeners(circle)
-      circle.setEditMode(false)
+      circle.setEditMode(true)
     }
   }
   _.DrawHelperWidget = (function () {
