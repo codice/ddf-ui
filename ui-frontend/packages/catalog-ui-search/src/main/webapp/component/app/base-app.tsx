@@ -1,5 +1,9 @@
 import * as React from 'react'
-import App, { IndividualRouteType, useDefaultWelcome } from './app'
+import App, {
+  IndividualRouteType,
+  useDefaultWelcome,
+  useIndicateHasUnseenNotifications,
+} from './app'
 import Help from '../help/help.view'
 
 import { hot } from 'react-hot-loader/root'
@@ -292,6 +296,7 @@ const BaseApp = () => {
       <App
         RouteInformation={RouteInformation}
         NotificationsComponent={UserNotifications}
+        hasUnseenNotificiations={useIndicateHasUnseenNotifications}
         SettingsComponents={BaseSettings}
       />
     </>

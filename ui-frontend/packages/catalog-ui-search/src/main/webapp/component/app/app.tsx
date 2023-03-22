@@ -106,6 +106,7 @@ const matchesRoute = ({
 type AppPropsType = {
   RouteInformation: IndividualRouteType[]
   NotificationsComponent: PermissiveComponentType
+  hasUnseenNotificiations: () => boolean
   SettingsComponents: SettingsComponentType
 }
 function sidebarDataIdTag(name: string) {
@@ -363,8 +364,11 @@ const SettingsButton = () => {
   )
 }
 const NotificationsButton = () => {
-  const hasUnseenNotifications = useIndicateHasUnseenNotifications()
-  const { NotificationsComponent } = useTopLevelAppContext()
+  const {
+    NotificationsComponent,
+    hasUnseenNotificiations: hasUnseenNotificationsHook,
+  } = useTopLevelAppContext()
+  const hasUnseenNotifications = hasUnseenNotificationsHook()
   const location = useLocation()
   const history = useHistory()
   const queryParams = queryString.parse(location.search)
@@ -746,7 +750,7 @@ const useScrollCurrentRouteIntoViewOnLocationChange = () => {
     scrollCurrentRouteIntoView()
   }, [location])
 }
-const useIndicateHasUnseenNotifications = () => {
+export const useIndicateHasUnseenNotifications = () => {
   const { listenTo } = useBackbone()
   const [hasUnseenNotifications, setHasUnseenNotifications] = React.useState(
     notifications.hasUnseen() as boolean
@@ -795,6 +799,7 @@ const useNavOpen = () => {
 const TopLevelAppContext = React.createContext({
   RouteInformation: [],
   NotificationsComponent: () => null,
+  hasUnseenNotificiations: () => false,
   SettingsComponents: {},
 } as AppPropsType)
 const useTopLevelAppContext = () => {
@@ -828,6 +833,7 @@ const SessionTimeoutComponent = () => {
 const App = ({
   RouteInformation,
   NotificationsComponent,
+  hasUnseenNotificiations,
   SettingsComponents,
 }: AppPropsType) => {
   const { navOpen, setNavOpen } = useNavOpen()
@@ -836,7 +842,12 @@ const App = ({
   useScrollCurrentRouteIntoViewOnLocationChange()
   return (
     <TopLevelAppContext.Provider
-      value={{ RouteInformation, NotificationsComponent, SettingsComponents }}
+      value={{
+        RouteInformation,
+        NotificationsComponent,
+        SettingsComponents,
+        hasUnseenNotificiations,
+      }}
     >
       <NavContextProvider.Provider value={{ navOpen, setNavOpen }}>
         <div className="h-full w-full overflow-hidden Mui-bg-default">
