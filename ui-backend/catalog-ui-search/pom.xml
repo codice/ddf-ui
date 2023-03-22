@@ -214,6 +214,11 @@
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
+            <groupId>ddf.platform</groupId>
+            <artifactId>preferences-api</artifactId>
+            <version>${ddf.version}</version>
+        </dependency>
+        <dependency>
             <groupId>ddf.security.core</groupId>
             <artifactId>security-core-api</artifactId>
             <version>${ddf.version}</version>
@@ -382,6 +387,11 @@
         <dependency>
             <groupId>ddf.security.servlet</groupId>
             <artifactId>security-servlet-web-socket-api</artifactId>
+            <version>${ddf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ddf.platform</groupId>
+            <artifactId>preferences-api</artifactId>
             <version>${ddf.version}</version>
         </dependency>
     </dependencies>

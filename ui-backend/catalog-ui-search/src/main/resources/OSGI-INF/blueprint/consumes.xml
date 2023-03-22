@@ -32,6 +32,8 @@ Services (OSGi) that catalog-ui-search CONSUMES from DDF
     <reference id="attributeRegistry" interface="ddf.catalog.data.AttributeRegistry"/>
 
     <reference id="persistentStore" interface="org.codice.ddf.persistence.PersistentStore"/>
+    <reference id="preferences" interface="org.codice.ddf.preferences.Preferences"/>
+
     <reference id="subjectIdentity" interface="ddf.security.SubjectIdentity"/>
 
     <reference id="uuidGenerator"
