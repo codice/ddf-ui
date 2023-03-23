@@ -136,6 +136,15 @@ label {
 .w-common {
   width: 25rem;
 }
+
+.w-medium {
+  width: 50rem;
+}
+
+.w-large {
+  width: 75rem;
+}
+
 .h-min {
   height: 0.0625rem;
 }

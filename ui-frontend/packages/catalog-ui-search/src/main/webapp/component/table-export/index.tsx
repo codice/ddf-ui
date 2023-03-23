@@ -12,11 +12,4 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-export {
-  default as tableExport,
-  Props,
-  getWarning,
-  getDownloadBody,
-  getStartIndex,
-  getSrcCount,
-} from './table-export'
+export { default } from './table-export'

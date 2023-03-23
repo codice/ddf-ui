@@ -21,4 +21,8 @@ export {
   ResultSet,
   ExportCountInfo,
   DownloadInfo,
+  Option,
+  ExportResponse,
+  getWarning,
+  generateOnDownloadClick,
 } from './export'
