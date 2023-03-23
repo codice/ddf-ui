@@ -28,7 +28,7 @@ import '../styles/plotly.css'
 import Backbone from 'backbone'
 import properties from './properties'
 import './extensions/application.patches'
-import '@connexta/icons/icons/codice.font'
+// import '@connexta/icons/icons/codice.font'
 import '../component/singletons/session-auto-renew'
 import $ from 'jquery'
 if (process.env.NODE_ENV !== 'production') {
@@ -61,13 +61,13 @@ $(window.document).ready(() => {
   window.document.title =
     (properties as any).customBranding + ' ' + (properties as any).product
   // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-  window.document.querySelector(
-    '.welcome-branding'
-  ).textContent = (properties as any).customBranding
+  window.document.querySelector('.welcome-branding').textContent = (
+    properties as any
+  ).customBranding
   // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-  window.document.querySelector(
-    '.welcome-branding-name'
-  ).textContent = (properties as any).product
+  window.document.querySelector('.welcome-branding-name').textContent = (
+    properties as any
+  ).product
   // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   window.document.querySelector('#loading').classList.add('show-welcome')
 })

@@ -36,7 +36,7 @@ export const UploadBatchItemViewReact = ({ model }: { model: any }) => {
     <Paper
       className={`${
         finished ? 'is-finished' : ''
-      }  flex flex-row items-stretch flex-no-wrap w-full justify-between p-2`}
+      }  flex flex-row items-stretch flex-nowrap w-full justify-between p-2`}
     >
       <Link
         to={`/uploads/${id}`}
@@ -54,7 +54,7 @@ export const UploadBatchItemViewReact = ({ model }: { model: any }) => {
           </div>
         </div>
       </Link>
-      <div className="upload-actions flex-shrink-0 ">
+      <div className="upload-actions shrink-0 ">
         {finished || interrupted ? (
           <>
             <Button

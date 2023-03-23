@@ -53,9 +53,8 @@ const getAttributes = (map: Backbone.Model) => {
   }
   return properties.summaryShow
     .map((attribute: string) => {
-      const value = map.get('targetMetacard').plain.metacard.properties[
-        attribute
-      ]
+      const value =
+        map.get('targetMetacard').plain.metacard.properties[attribute]
       return { name: attribute, value }
     })
     .filter(({ value }: Attribute) => value !== undefined)

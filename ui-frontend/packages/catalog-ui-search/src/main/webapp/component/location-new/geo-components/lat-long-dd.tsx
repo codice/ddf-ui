@@ -48,24 +48,22 @@ const Point = (props: any) => {
 const Circle = (props: any) => {
   const { dd, setState } = props
   return (
-    <div className="flex flex-col flex-no-wrap space-y-2">
+    <div className="flex flex-col flex-nowrap space-y-2">
       <Group>
         <DdLatitude
           value={DistanceUtils.coordinateRound(dd.circle.point.latitude)}
           onChange={setState(
             (draft: any, value: any) =>
-              (draft.dd.circle.point.latitude = DistanceUtils.coordinateRound(
-                value
-              ))
+              (draft.dd.circle.point.latitude =
+                DistanceUtils.coordinateRound(value))
           )}
         />
         <DdLongitude
           value={DistanceUtils.coordinateRound(dd.circle.point.longitude)}
           onChange={setState(
             (draft: any, value: any) =>
-              (draft.dd.circle.point.longitude = DistanceUtils.coordinateRound(
-                value
-              ))
+              (draft.dd.circle.point.longitude =
+                DistanceUtils.coordinateRound(value))
           )}
         />
       </Group>
@@ -98,18 +96,16 @@ const Line = (props: any) => {
         value={DistanceUtils.coordinateRound(dd.line.list[index].latitude)}
         onChange={setState(
           (draft: any, value: any) =>
-            (draft.dd.line.list[index].latitude = DistanceUtils.coordinateRound(
-              value
-            ))
+            (draft.dd.line.list[index].latitude =
+              DistanceUtils.coordinateRound(value))
         )}
       />
       <DdLongitude
         value={DistanceUtils.coordinateRound(dd.line.list[index].longitude)}
         onChange={setState(
           (draft: any, value: any) =>
-            (draft.dd.line.list[
-              index
-            ].longitude = DistanceUtils.coordinateRound(value))
+            (draft.dd.line.list[index].longitude =
+              DistanceUtils.coordinateRound(value))
         )}
       />
     </Group>
@@ -137,18 +133,16 @@ const Polygon = (props: any) => {
         value={DistanceUtils.coordinateRound(dd.polygon.list[index].latitude)}
         onChange={setState(
           (draft: any, value: any) =>
-            (draft.dd.polygon.list[
-              index
-            ].latitude = DistanceUtils.coordinateRound(value))
+            (draft.dd.polygon.list[index].latitude =
+              DistanceUtils.coordinateRound(value))
         )}
       />
       <DdLongitude
         value={DistanceUtils.coordinateRound(dd.polygon.list[index].longitude)}
         onChange={setState(
           (draft: any, value: any) =>
-            (draft.dd.polygon.list[
-              index
-            ].longitude = DistanceUtils.coordinateRound(value))
+            (draft.dd.polygon.list[index].longitude =
+              DistanceUtils.coordinateRound(value))
         )}
       />
     </Group>

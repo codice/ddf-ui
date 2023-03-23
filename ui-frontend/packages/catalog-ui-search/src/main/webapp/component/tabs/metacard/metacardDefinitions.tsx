@@ -80,11 +80,7 @@ export const TypedMetacardDefs = {
     }
     return Common.getImageSrc(val)
   },
-  getDefinition({
-    type,
-  }: {
-    type: string
-  }): {
+  getDefinition({ type }: { type: string }): {
     [key: string]: {
       alias: undefined | string
       hidden: boolean

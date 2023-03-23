@@ -116,7 +116,7 @@ const RowComponent = ({
   return (
     <React.Fragment>
       <div
-        className="bg-inherit flex items-strech flex-no-wrap"
+        className="bg-inherit flex items-strech flex-nowrap"
         style={{
           width: shownAttributes.length * 200 + 'px',
         }}

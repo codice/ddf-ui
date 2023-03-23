@@ -48,9 +48,8 @@ export default {
         Calculates the center of given a geometry (WKT)
       */
   calculateCartographicCenterOfGeometryInDegrees(propertyModel: any) {
-    const openlayersCenter = this.calculateOpenlayersCenterOfGeometry(
-      propertyModel
-    )
+    const openlayersCenter =
+      this.calculateOpenlayersCenterOfGeometry(propertyModel)
     return unconvertPointCoordinate(openlayersCenter)
   },
   /*
@@ -68,9 +67,8 @@ export default {
         Calculates the center of given geometries (WKT)
       */
   calculateCartographicCenterOfGeometriesInDegrees(propertyModels: any) {
-    const openlayersCenter = this.calculateOpenlayersCenterOfGeometries(
-      propertyModels
-    )
+    const openlayersCenter =
+      this.calculateOpenlayersCenterOfGeometries(propertyModels)
     return unconvertPointCoordinate(openlayersCenter)
   },
 }

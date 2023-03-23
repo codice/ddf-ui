@@ -740,7 +740,7 @@ const Summary = ({ result: selection }: Props) => {
       wrap="nowrap"
       className="overflow-hidden w-full h-full"
     >
-      <Grid item className="flex-shrink-0">
+      <Grid item className="shrink-0">
         <Grid
           container
           direction="row"
@@ -827,7 +827,7 @@ const Summary = ({ result: selection }: Props) => {
         </Grid>
       </Grid>
       <DarkDivider className="w-full h-min" />
-      <Grid item className="flex-shrink-1 overflow-auto p-2">
+      <Grid item className="shrink-1 overflow-auto p-2">
         <Paper elevation={Elevations.paper}>
           {summaryShown.map((attr, index) => {
             return (
@@ -895,7 +895,7 @@ const Summary = ({ result: selection }: Props) => {
       {!fullyExpanded && (
         <>
           <DarkDivider className="w-full h-min" />
-          <Grid item className="flex-shrink-0 p-2">
+          <Grid item className="shrink-0 p-2">
             <Button
               data-id="see-all-collapse-button"
               onClick={() => {

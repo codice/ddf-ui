@@ -49,7 +49,7 @@ class ListEditor extends React.Component {
     )
     return (
       <div>
-        <ul className="list flex flex-col flex-no-wrap space-y-2">
+        <ul className="list flex flex-col flex-nowrap space-y-2">
           {listItems}
         </ul>
         <Button onClick={this.handleAdd.bind(this)} className="mt-2" fullWidth>

@@ -206,7 +206,9 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                   outerElementProps={{
                     onScroll: (e) => {
                       if (headerRef.current) {
-                        headerRef.current.scrollLeft = (e.target as any).scrollLeft
+                        headerRef.current.scrollLeft = (
+                          e.target as any
+                        ).scrollLeft
                       }
                     },
                   }}

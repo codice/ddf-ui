@@ -72,7 +72,7 @@ const Point = (props: any) => {
 const Circle = (props: any) => {
   const { dms, setState } = props
   return (
-    <div className="flex flex-col flex-no-wrap space-y-2">
+    <div className="flex flex-col flex-nowrap space-y-2">
       <Group>
         <DmsLatitude
           value={dms.circle.point.latitude.coordinate}
@@ -242,7 +242,7 @@ const Polygon = (props: any) => {
 const BoundingBox = (props: any) => {
   const { dms, setState } = props
   return (
-    <div className="flex flex-col flex-no-wrap space-y-2">
+    <div className="flex flex-col flex-nowrap space-y-2">
       <DmsLatitude
         label="South"
         value={dms.boundingbox.south.coordinate}

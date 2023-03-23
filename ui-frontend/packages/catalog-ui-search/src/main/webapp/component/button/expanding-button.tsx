@@ -74,19 +74,19 @@ const ExpandingButton = ({
       <Button
         data-id={dataId}
         fullWidth
-        className={`${className} children-block children-h-full transition-all duration-200 ease-in-out whitespace-no-wrap max-w-full overflow-hidden relative outline-none ${
+        className={`${className} children-block children-h-full transition-all duration-200 ease-in-out whitespace-nowrap max-w-full overflow-hidden relative outline-none ${
           expanded ? '' : 'p-0'
         }`}
         {...otherButtonProps}
       >
         <div
-          className={`flex flex-row flex-no-wrap items-center w-full h-full`}
+          className={`flex flex-row flex-nowrap items-center w-full h-full`}
           ref={isTruncatedState.ref}
         >
           <div
             className={` ${
               expanded ? 'hidden' : ''
-            } w-full flex flex-col flex-shrink-0 items-center justify-start flex-no-wrap py-2`}
+            } w-full flex flex-col shrink-0 items-center justify-start flex-nowrap py-2`}
           >
             {Icon ? <Icon className={`py-1`} /> : null}
             <div
@@ -103,15 +103,15 @@ const ExpandingButton = ({
           <div
             className={`${
               expanded ? '' : 'hidden'
-            } pl-4 flex-shrink-1 w-full truncate`}
+            } pl-4 shrink-1 w-full truncate`}
           >
-            <div className="flex flex-row items-center flex-no-wrap w-full">
+            <div className="flex flex-row items-center flex-nowrap w-full">
               {Icon ? (
-                <Icon className="transition duration-200 ease-in-out mr-2 flex-shrink-0" />
+                <Icon className="transition duration-200 ease-in-out mr-2 shrink-0" />
               ) : (
-                <FakeIcon className="transition duration-200 ease-in-out mr-2 opacity-0 flex-shrink-0" />
+                <FakeIcon className="transition duration-200 ease-in-out mr-2 opacity-0 shrink-0" />
               )}
-              <div className="flex flex-col items-start flex-no-wrap text-lg w-full flex-shrink-1 truncate">
+              <div className="flex flex-col items-start flex-nowrap text-lg w-full shrink-1 truncate">
                 {expandedLabel}
               </div>
             </div>

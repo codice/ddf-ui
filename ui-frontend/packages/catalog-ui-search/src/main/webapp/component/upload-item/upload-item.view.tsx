@@ -52,7 +52,7 @@ export const UploadItemViewReact = ({ model }: UploadItemViewReactType) => {
   const isValidating = modelJson.validating
   return (
     <div
-      className={`flex flex-row items-center flex-no-wrap w-full p-4 border-gray-600 border border-opacity-25`}
+      className={`flex flex-row items-center flex-nowrap w-full p-4 border-gray-600 border border-opacity-25`}
       onClick={() => {
         if (model.get('success') && !model.hasChildren()) {
           ;(wreqr as any).vent.trigger('router:navigate', {
@@ -109,7 +109,7 @@ export const UploadItemViewReact = ({ model }: UploadItemViewReactType) => {
         ) : null}
       </div>
 
-      <div className="upload-actions flex-shrink-0">
+      <div className="upload-actions shrink-0">
         {!isSending ? (
           <Button
             onClick={() => {

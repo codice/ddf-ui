@@ -50,8 +50,8 @@ export function getStartIndex(
   _exportSize: any,
   selectionInterface: any
 ) {
-  const srcIndexMap = selectionInterface.getCurrentQuery()
-    .nextIndexForSourceGroup
+  const srcIndexMap =
+    selectionInterface.getCurrentQuery().nextIndexForSourceGroup
   if (src === Sources.localCatalog) {
     return srcIndexMap['local']
   }

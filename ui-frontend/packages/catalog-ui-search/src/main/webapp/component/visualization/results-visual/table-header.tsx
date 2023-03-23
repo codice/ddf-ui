@@ -179,7 +179,7 @@ export const Header = ({ lazyResults }: HeaderProps) => {
     <React.Fragment>
       <div
         data-id="table-container"
-        className="bg-inherit whitespace-no-wrap flex items-strech flex-no-wrap"
+        className="bg-inherit whitespace-nowrap flex items-strech flex-nowrap"
         style={{
           width: shownAttributes.length * 200 + 'px',
         }}

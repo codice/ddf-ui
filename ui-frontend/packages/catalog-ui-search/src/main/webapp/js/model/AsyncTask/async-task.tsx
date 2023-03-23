@@ -6,7 +6,8 @@ import { useParams } from 'react-router-dom'
 import CQL from '../../cql'
 import Common from '../../Common'
 
-type PlainMetacardPropertiesType = LazyQueryResult['plain']['metacard']['properties']
+type PlainMetacardPropertiesType =
+  LazyQueryResult['plain']['metacard']['properties']
 
 type MinimalPropertySet = Partial<PlainMetacardPropertiesType> & {
   title: PlainMetacardPropertiesType['title']
@@ -422,12 +423,10 @@ class RestoreTask extends AsyncTask {
     const unsubscibeCallback = this.lazyResult.subscribeTo({
       subscribableThing: 'backboneSync',
       callback: () => {
-        const deletedId = this.lazyResult.plain.metacard.properties[
-          'metacard.deleted.id'
-        ]
-        const deletedVersion = this.lazyResult.plain.metacard.properties[
-          'metacard.deleted.version'
-        ]
+        const deletedId =
+          this.lazyResult.plain.metacard.properties['metacard.deleted.id']
+        const deletedVersion =
+          this.lazyResult.plain.metacard.properties['metacard.deleted.version']
         const sourceId = this.lazyResult.plain.metacard.properties['source-id']
         if (!deletedId) {
           window.setTimeout(() => {

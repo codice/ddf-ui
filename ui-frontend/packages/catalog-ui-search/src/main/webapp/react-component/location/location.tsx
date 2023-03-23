@@ -57,7 +57,7 @@ const BaseInputs = {
     label: 'Keyword',
     Component: ({ setState, keywordValue, ...props }: any) => {
       return (
-        // Offsets className="form-group clearfix" below
+        // Offsets className="form-group flow-root" below
         <div>
           <Gazetteer
             {...props}
@@ -198,7 +198,7 @@ const LocationInput = ({ onChange, value }: any) => {
           )}
         />
 
-        <div className="form-group clearfix">
+        <div className="form-group flow-root">
           {/* this part is really weird, we splat state as seperate props, that's why we use destructuring */}
           <ComponentToRender
             {...state}

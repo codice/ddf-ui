@@ -92,12 +92,9 @@ const drawGeometry = ({
   const rectangle = modelToRectangle({ model })
   if (
     !rectangle ||
-    [
-      rectangle.north,
-      rectangle.south,
-      rectangle.west,
-      rectangle.east,
-    ].some((coordinate) => isNaN(coordinate)) ||
+    [rectangle.north, rectangle.south, rectangle.west, rectangle.east].some(
+      (coordinate) => isNaN(coordinate)
+    ) ||
     rectangle.north <= rectangle.south ||
     rectangle.east === rectangle.west
   ) {
