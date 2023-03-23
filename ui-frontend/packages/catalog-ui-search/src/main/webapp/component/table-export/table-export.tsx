@@ -14,228 +14,68 @@
  **/
 import * as React from 'react'
 import { useEffect, useState } from 'react'
-import TableExport from '../../react-component/table-export'
-import Sources from '../../component/singletons/sources-instance'
+import { useDialog } from '../../component/dialog'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogActions from '@material-ui/core/DialogActions'
+import Typography from '@material-ui/core/Typography'
+import Divider from '@material-ui/core/Divider'
+import Autocomplete from '@material-ui/lab/Autocomplete'
+import ProgressButton from '../../react-component/progress-button'
+import TextField from '@material-ui/core/TextField'
+import Button from '@material-ui/core/Button'
+import properties from '../../js/properties'
+import useSnack from '../hooks/useSnack'
 import {
   getExportOptions,
   Transformer,
-} from '../../react-component/utils/export'
-import user from '../../component/singletons/user-instance'
-import {
-  exportResultSet,
-  ExportCountInfo,
   DownloadInfo,
+  Option,
+  ExportResponse,
+  getWarning,
+  generateOnDownloadClick,
 } from '../../react-component/utils/export'
-import saveFile from '../../react-component/utils/save-file'
-import { DEFAULT_USER_QUERY_OPTIONS } from '../../js/model/TypedQuery'
-import useSnack from '../hooks/useSnack'
-import { AddSnack } from '../snack/snack.provider'
-import properties from '../../js/properties'
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
-import contentDisposition from 'content-disposition'
 
-type ExportResponse = {
-  displayName: string
-  id: string
-}
-export type Props = {
+type Props = {
   selectionInterface: any
   filteredAttributes: string[]
 }
-type Source = {
-  id: string
-  hits: number
-}
-export function getStartIndex(
-  src: string,
-  selectionInterface: any
-) {
-  const srcIndexMap = selectionInterface.getCurrentQuery().nextIndexForSourceGroup
-  if (src === Sources.localCatalog) {
-    return srcIndexMap['local']
-  }
-  return srcIndexMap[src]
-}
-function getSrcs(selectionInterface: any) {
-  return selectionInterface.getCurrentQuery().getSelectedSources()
-}
-export function getSrcCount(src: any, selectionInterface: any) {
-  const result = selectionInterface.getCurrentQuery().get('result')
-  return Object.values(result.get('lazyResults').status as {
-          [key: string]: any
-        }
-      ).find((status: any) => status.id === src).count
-}
-function getColumnOrder(): string[] {
-  return user.get('user').get('preferences').get('columnOrder')
-}
-function getHiddenFields(): string[] {
-  return user.get('user').get('preferences').get('columnHide')
-}
-function getSorts(selectionInterface: any) {
-  return (
-    user.get('user').get('preferences').get('resultSort') ||
-    selectionInterface.getCurrentQuery().get('sorts')
-  )
-}
-function getSearches(
-  exportSize: string,
-  srcs: string[],
-  cql: string,
-  selectionInterface: any
-): any {
-  const cacheId = selectionInterface.getCurrentQuery().get('cacheId')
-  if (exportSize !== 'currentPage') {
-    const result = selectionInterface.getCurrentQuery().get('result')
-    const pageSize = Object.keys(result.get('lazyResults').results).length
-    return srcs.length > 0
-      ? [
-          {
-            srcs,
-            cql,
-            count: pageSize,
-            cacheId,
-          },
-        ]
-      : []
-  }
-  return srcs.map((src: string) => {
-    const start = getStartIndex(src, selectionInterface)
-    const srcCount = getSrcCount(src, selectionInterface)
-    return {
-      src,
-      cql,
-      start,
-      count: srcCount,
-      cacheId,
-    }
-  })
-}
-function getHits(sources: Source[]): number {
-  return sources
-    .filter((source) => source.id !== 'cache')
-    .reduce((hits, source) => (source.hits ? hits + source.hits : hits), 0)
-}
-function getExportCount({
-  exportSize,
-  selectionInterface,
-  customExportCount,
-}: ExportCountInfo): number {
-  if (exportSize === 'custom') {
-    return customExportCount
-  }
-  const result = selectionInterface.getCurrentQuery().get('result')
-  return exportSize === 'all'
-    ? getHits(Object.values(result.get('lazyResults').status))
-    : Object.keys(result.get('lazyResults').results).length
-}
-export const getWarning = (exportCountInfo: ExportCountInfo): string => {
-  const exportCount = getExportCount(exportCountInfo)
-  const result = exportCountInfo.selectionInterface
-    .getCurrentQuery()
-    .get('result')
-  const totalHits = getHits(Object.values(result.get('lazyResults').status))
-  const limitWarning = `You cannot export more than the administrator configured limit of ${
-    (properties as any).exportResultLimit
-  }.`
-  let warningMessage = ''
-  if (exportCount > (properties as any).exportResultLimit) {
-    if (exportCountInfo.exportSize === 'custom') {
-      return limitWarning
-    }
-    warningMessage =
-      limitWarning +
-      `  Only ${(properties as any).exportResultLimit} ${
-        (properties as any).exportResultLimit === 1 ? `result` : `results`
-      } will be exported.`
-  }
-  if (exportCountInfo.exportSize === 'custom') {
-    if (exportCount > totalHits) {
-      warningMessage = `You are trying to export ${exportCount} results but there ${
-        totalHits === 1 ? `is` : `are`
-      } only ${totalHits}.  Only ${totalHits} ${
-        totalHits === 1 ? `result` : `results`
-      } will be exported.`
-    }
-  }
-  if (
-    totalHits > 100 &&
-    exportCount > 100 &&
-    (properties as any).exportResultLimit > 100
-  ) {
-    warningMessage += `  This may take a long time.`
-  }
-  return warningMessage
-}
-export const getDownloadBody = (downloadInfo: DownloadInfo) => {
-  const {
-    exportSize,
-    customExportCount,
-    selectionInterface,
-    filteredAttributes,
-  } = downloadInfo
-  const hiddenFields = getHiddenFields()
-  const columnOrder = getColumnOrder().filter(
-    (property: string) =>
-      filteredAttributes.includes(property) && !properties.isHidden(property)
-  )
-  const count = Math.min(
-    getExportCount({ exportSize, selectionInterface, customExportCount }),
-    (properties as any).exportResultLimit
-  )
-  const query = selectionInterface.getCurrentQuery()
-  const cql = DEFAULT_USER_QUERY_OPTIONS.transformFilterTree({
-    originalFilterTree: query.get('filterTree'),
-    queryRef: query,
-  })
-  const srcs = getSrcs(selectionInterface)
-  const sorts = getSorts(selectionInterface)
-  const phonetics = query.get('phonetics')
-  const spellcheck = query.get('spellcheck')
-  const args = {
-    hiddenFields: hiddenFields.length > 0 ? hiddenFields : [],
-    columnOrder: columnOrder.length > 0 ? columnOrder : [],
-    columnAliasMap: properties.attributeAliases,
-  }
-  const searches = getSearches(exportSize, srcs, cql, selectionInterface)
-  return {
-    phonetics,
-    spellcheck,
-    searches,
-    count,
-    sorts,
-    args,
-  }
-}
-const generateOnDownloadClick = ({ addSnack }: { addSnack: AddSnack }) => {
-  return async (downloadInfo: DownloadInfo) => {
-    const exportFormat = encodeURIComponent(downloadInfo.exportFormat)
-    try {
-      const body = getDownloadBody(downloadInfo)
-      const response = await exportResultSet(exportFormat, body)
-      if (response.status === 200) {
-        const data = await response.blob()
-        const contentType = response.headers.get('content-type')
-        const filename = contentDisposition.parse(
-          response.headers.get('content-disposition')
-        ).parameters.filename
-        saveFile(filename, 'data:' + contentType, data)
-      } else {
-        addSnack('Error: Could not export results.', {
-          alertProps: { severity: 'error' },
-        })
-      }
-    } catch (error) {
-      console.error(error)
-    }
-  }
-}
-const TableExports = ({
-selectionInterface,
-filteredAttributes
-}: Props) => {
-  const [formats, setFormats] = useState([])
+
+const TableExport = ({ selectionInterface, filteredAttributes }: Props) => {
+  const [formatOptions, setFormatOptions] = useState<Option[]>([])
+  const [exportFormat, setExportFormat] = useState<string>('csv')
+  const [exportSize, setExportSize] = useState<string>('all')
+  const [customExportCount, setCustomExportCount] = useState<any>(null)
+  const [downloading, setDownloading] = useState<boolean>(false)
   const addSnack = useSnack()
+  const dialogContext = useDialog()
+
+  const exportSizes = [
+    {
+      label: 'Current Page',
+      value: 'currentPage',
+    },
+    {
+      label: 'All Results',
+      value: 'all',
+    },
+    {
+      label: 'Specific Number of Results',
+      value: 'custom',
+    },
+  ]
+
+  const onDownloadClick = (downloadInfo: DownloadInfo) =>
+    generateOnDownloadClick({ addSnack })(downloadInfo)
+
+  const warning = () =>
+    getWarning({
+      exportSize,
+      selectionInterface,
+      customExportCount,
+    })
+
   useEffect(() => {
     const fetchFormats = async () => {
       const exportFormats = await getExportOptions(Transformer.Query)
@@ -244,7 +84,7 @@ filteredAttributes
           return format1.displayName.localeCompare(format2.displayName)
         }
       )
-      setFormats(
+      setFormatOptions(
         sortedExportFormats.map((exportFormat: ExportResponse) => ({
           label: exportFormat.displayName,
           value: exportFormat.id,
@@ -253,14 +93,112 @@ filteredAttributes
     }
     fetchFormats()
   }, [])
-  return (
-    <TableExport
-      exportFormats={formats}
-      selectionInterface={selectionInterface}
-      getWarning={getWarning}
-      onDownloadClick={generateOnDownloadClick({ addSnack })}
-      filteredAttributes={filteredAttributes}
-    />
+
+  return formatOptions.length === 0 ? null : (
+    <div className="w-medium">
+      <DialogTitle disableTypography>
+        <Typography align={'center'} variant={'h5'}>
+          Export
+        </Typography>
+      </DialogTitle>
+      <Divider />
+      <DialogContent>
+        <div className="py-2">
+          <Autocomplete
+            size="small"
+            options={exportSizes}
+            onChange={(_e: any, newValue) => {
+              setExportSize(newValue.value)
+            }}
+            getOptionSelected={(option) => option.value === exportSize}
+            getOptionLabel={(option) => option.label}
+            disableClearable
+            value={exportSizes.find((choice) => choice.value === exportSize)}
+            renderInput={(params) => (
+              <TextField {...params} label="Export" variant="outlined" />
+            )}
+          />
+        </div>
+        {exportSize === 'custom' ? (
+          <div className="py-2">
+            <TextField
+              fullWidth
+              size="small"
+              type="number"
+              label=""
+              placeholder="Enter number of results you would like to export"
+              name="customExport"
+              value={customExportCount}
+              onChange={(e) => {
+                let value: any = Number(e.target.value)
+                if (value === 0) value = null
+                setCustomExportCount(value)
+              }}
+              variant="outlined"
+            />
+          </div>
+        ) : (
+          <div />
+        )}
+        <div className="py-2">
+          <Autocomplete
+            size="small"
+            options={formatOptions}
+            onChange={(_e: any, newValue) => {
+              setExportFormat(newValue.value)
+            }}
+            getOptionSelected={(option) => option.value === exportFormat}
+            getOptionLabel={(option) => option.label}
+            disableClearable
+            value={formatOptions.find((choice) => choice.value == exportFormat)}
+            renderInput={(params) => (
+              <TextField {...params} label="as" variant="outlined" />
+            )}
+          />
+        </div>
+        <DialogContentText>
+          {warning() && (
+            <div className="warning pt-1">
+              <i className="fa fa-warning" />
+              {warning()}
+            </div>
+          )}
+        </DialogContentText>
+      </DialogContent>
+
+      <DialogActions>
+        <Button
+          onClick={() => {
+            dialogContext.setProps({ open: false })
+          }}
+        >
+          Cancel
+        </Button>
+
+        <ProgressButton
+          variant="contained"
+          color="primary"
+          disabled={
+            exportSize === 'custom' &&
+            customExportCount > (properties as any).exportResultLimit
+          }
+          onClick={async () => {
+            setDownloading(true)
+            await onDownloadClick({
+              exportFormat,
+              exportSize,
+              selectionInterface,
+              customExportCount,
+              filteredAttributes,
+            })
+            dialogContext.setProps({ open: false })
+          }}
+          loading={downloading}
+        >
+          Export
+        </ProgressButton>
+      </DialogActions>
+    </div>
   )
 }
-export default TableExports
+export default TableExport
