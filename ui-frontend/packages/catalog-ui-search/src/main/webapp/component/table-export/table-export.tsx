@@ -48,11 +48,9 @@ type Source = {
 }
 export function getStartIndex(
   src: string,
-  _exportSize: any,
   selectionInterface: any
 ) {
-  const srcIndexMap = selectionInterface.getCurrentQuery()
-    .nextIndexForSourceGroup
+  const srcIndexMap = selectionInterface.getCurrentQuery().nextIndexForSourceGroup
   if (src === Sources.localCatalog) {
     return srcIndexMap['local']
   }
@@ -61,20 +59,12 @@ export function getStartIndex(
 function getSrcs(selectionInterface: any) {
   return selectionInterface.getCurrentQuery().getSelectedSources()
 }
-export function getSrcCount(
-  src: any,
-  count: any,
-  exportSize: any,
-  selectionInterface: any
-) {
+export function getSrcCount(src: any, selectionInterface: any) {
   const result = selectionInterface.getCurrentQuery().get('result')
-  return exportSize === 'currentPage'
-    ? Object.values(
-        result.get('lazyResults').status as {
+  return Object.values(result.get('lazyResults').status as {
           [key: string]: any
         }
       ).find((status: any) => status.id === src).count
-    : count
 }
 function getColumnOrder(): string[] {
   return user.get('user').get('preferences').get('columnOrder')
@@ -92,25 +82,26 @@ function getSearches(
   exportSize: string,
   srcs: string[],
   cql: string,
-  count: any,
   selectionInterface: any
 ): any {
   const cacheId = selectionInterface.getCurrentQuery().get('cacheId')
   if (exportSize !== 'currentPage') {
+    const result = selectionInterface.getCurrentQuery().get('result')
+    const pageSize = Object.keys(result.get('lazyResults').results).length
     return srcs.length > 0
       ? [
           {
             srcs,
             cql,
-            count,
+            count: pageSize,
             cacheId,
           },
         ]
       : []
   }
   return srcs.map((src: string) => {
-    const start = getStartIndex(src, exportSize, selectionInterface)
-    const srcCount = getSrcCount(src, count, exportSize, selectionInterface)
+    const start = getStartIndex(src, selectionInterface)
+    const srcCount = getSrcCount(src, selectionInterface)
     return {
       src,
       cql,
@@ -206,7 +197,7 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
     columnOrder: columnOrder.length > 0 ? columnOrder : [],
     columnAliasMap: properties.attributeAliases,
   }
-  const searches = getSearches(exportSize, srcs, cql, count, selectionInterface)
+  const searches = getSearches(exportSize, srcs, cql, selectionInterface)
   return {
     phonetics,
     spellcheck,
@@ -239,7 +230,10 @@ const generateOnDownloadClick = ({ addSnack }: { addSnack: AddSnack }) => {
     }
   }
 }
-const TableExports = (props: Props) => {
+const TableExports = ({
+selectionInterface,
+filteredAttributes
+}: Props) => {
   const [formats, setFormats] = useState([])
   const addSnack = useSnack()
   useEffect(() => {
@@ -262,10 +256,10 @@ const TableExports = (props: Props) => {
   return (
     <TableExport
       exportFormats={formats}
-      selectionInterface={props.selectionInterface}
+      selectionInterface={selectionInterface}
       getWarning={getWarning}
       onDownloadClick={generateOnDownloadClick({ addSnack })}
-      filteredAttributes={props.filteredAttributes}
+      filteredAttributes={filteredAttributes}
     />
   )
 }
