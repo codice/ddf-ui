@@ -15,7 +15,8 @@
 import _ from 'lodash'
 import Openlayers from 'openlayers'
 import properties from '../../../../js/properties'
-import { Position, Point, LineString, Polygon } from '@turf/turf'
+import * as Turf from '@turf/turf'
+import { Position, LineString, Polygon } from '@turf/turf'
 import { GeometryJSON } from 'geospatialdraw/target/webapp/geometry'
 
 function convertPointCoordinate(point: any) {
@@ -86,28 +87,20 @@ export default {
   },
   adjustGeoCoords(geo: GeometryJSON) {
     const geometry = geo.geometry
-    const width = Math.abs(geo.bbox[0] - geo.bbox[2])
+    const bbox = geo.bbox || Turf.bbox(geo.geometry)
+    const width = Math.abs(bbox[0] - bbox[2])
     const crossesAntiMeridian = width > 180
-    switch (geo.properties.shape) {
-      case 'Point':
-        const pointCoords = [(geometry as Point).coordinates]
-        if (crossesAntiMeridian) {
-          geometry.coordinates = this.convertCoordsToDisplay(pointCoords)[0]
-        }
-        break
-      case 'Line':
+    if (crossesAntiMeridian) {
+      if (geo.properties.shape === 'Line') {
         const lineStringCoords = (geometry as LineString).coordinates
-        if (crossesAntiMeridian) {
-          geometry.coordinates = this.convertCoordsToDisplay(lineStringCoords)
-        }
-        break
-      case 'Bounding Box':
-      case 'Polygon':
+        geometry.coordinates = this.convertCoordsToDisplay(lineStringCoords)
+      } else if (
+        geo.properties.shape === 'Bounding Box' ||
+        geo.properties.shape === 'Polygon'
+      ) {
         const coords = (geometry as Polygon).coordinates[0]
-        if (crossesAntiMeridian) {
-          geometry.coordinates[0] = this.convertCoordsToDisplay(coords)
-        }
-        break
+        geometry.coordinates[0] = this.convertCoordsToDisplay(coords)
+      }
     }
   },
 }
