@@ -522,7 +522,7 @@ const SideBarRoutes = () => {
           )
         }
       )}
-      {<Extensions.extraRoutes/>}
+      {<Extensions.extraRoutes />}
     </Grid>
   )
 }

@@ -91,7 +91,7 @@ const ExtensionPoints: ExtensionPointsType = {
   handleFilter: () => null,
   suggester: () => null,
   handleMetacardUpdate: null,
-  extraRoutes: () => null
+  extraRoutes: () => null,
 }
 
 export default ExtensionPoints
