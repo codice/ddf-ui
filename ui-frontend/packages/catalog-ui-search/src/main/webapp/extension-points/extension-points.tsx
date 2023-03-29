@@ -21,6 +21,7 @@ import { MetacardAttribute, ResultType } from '../js/model/Types'
 import { ValueTypes } from '../component/filter-builder/filter.structure'
 import { Suggestion } from '../react-component/location/gazetteer'
 import { MetacardInteractionProps } from '../react-component/metacard-interactions'
+import { PermissiveComponentType } from '../typescript'
 
 export type ExtensionPointsType = {
   providers: SFC<ProviderProps>
@@ -72,6 +73,7 @@ export type ExtensionPointsType = {
         attributesToUpdate: MetacardAttribute[]
       }) => Promise<void>)
     | null
+  extraRoutes: PermissiveComponentType
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -89,6 +91,7 @@ const ExtensionPoints: ExtensionPointsType = {
   handleFilter: () => null,
   suggester: () => null,
   handleMetacardUpdate: null,
+  extraRoutes: () => null
 }
 
 export default ExtensionPoints
