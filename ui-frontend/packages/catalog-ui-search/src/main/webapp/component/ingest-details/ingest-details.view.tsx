@@ -45,8 +45,8 @@ const useDropzone = ({
   }, [dropzone])
   React.useEffect(() => {
     if (dropzoneElement) {
-      if (((dropzoneElement as unknown) as any).dropzone) {
-        setDropzone(((dropzoneElement as unknown) as any).dropzone)
+      if ((dropzoneElement as unknown as any).dropzone) {
+        setDropzone((dropzoneElement as unknown as any).dropzone)
       } else {
         setDropzone(
           new Dropzone(dropzoneElement, {
@@ -82,9 +82,8 @@ const useUploadBatchModel = ({
   setGetNewUploadBatchModel: (val: boolean) => void
 }): { model: any; json: any } => {
   const [uploadBatchModel, setUploadBatchModel] = React.useState<any>(dropzone)
-  const [uploadBatchModelJSON, setUploadBatchModelJSON] = React.useState<any>(
-    null
-  )
+  const [uploadBatchModelJSON, setUploadBatchModelJSON] =
+    React.useState<any>(null)
   const callback = React.useMemo(() => {
     return () => {
       setUploadBatchModelJSON(uploadBatchModel.toJSON())
@@ -176,17 +175,14 @@ function useIngestMode({
 }
 
 export const IngestDetailsViewReact = (props: IngestDetailsViewReactType) => {
-  const [
-    dropzoneElement,
-    setDropzoneElement,
-  ] = React.useState<HTMLDivElement | null>(null)
+  const [dropzoneElement, setDropzoneElement] =
+    React.useState<HTMLDivElement | null>(null)
   const dropzone = useDropzone({
     dropzoneElement,
     ...props,
   })
-  const [getNewUploadBatchModel, setGetNewUploadBatchModel] = React.useState(
-    true
-  )
+  const [getNewUploadBatchModel, setGetNewUploadBatchModel] =
+    React.useState(true)
   const uploadBatchModel = useUploadBatchModel({
     dropzone,
     getNewUploadBatchModel,
@@ -195,7 +191,7 @@ export const IngestDetailsViewReact = (props: IngestDetailsViewReactType) => {
   const [mode] = useIngestMode({ uploadBatchModel, dropzone })
 
   return (
-    <div className="ingest-details p-2 w-full h-full flex flex-col items-center flex-no-wrap overflow-hidden space-y-2">
+    <div className="ingest-details p-2 w-full h-full flex flex-col items-center flex-nowrap overflow-hidden space-y-2">
       <div
         className={`details-files w-full overflow-auto ${
           mode === 'empty' ? '' : 'h-full'
@@ -231,7 +227,7 @@ export const IngestDetailsViewReact = (props: IngestDetailsViewReactType) => {
           ) : null}
         </div>
       ) : null}
-      <div className="details-footer w-full flex flex-row items-center flex-no-wrap overflow-hidden flex-shrink-0 mt-2">
+      <div className="details-footer w-full flex flex-row items-center flex-nowrap overflow-hidden shrink-0 mt-2">
         {mode === 'has-files' ? (
           <>
             <Button

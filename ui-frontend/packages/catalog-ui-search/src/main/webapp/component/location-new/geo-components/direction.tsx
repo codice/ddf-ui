@@ -36,7 +36,7 @@ class Direction extends React.Component {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'value' does not exist on type 'Readonly<... Remove this comment to see the full error message
     const { value } = this.props
     return (
-      <div className="flex-shrink-0 flex-grow-0">
+      <div className="shrink-0 grow-0">
         <TextField
           size="small"
           variant="outlined"

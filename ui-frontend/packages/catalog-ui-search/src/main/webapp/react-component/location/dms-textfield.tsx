@@ -41,8 +41,8 @@ const DmsTextfield = ({
 }) => {
   return (
     <div>
-      <div className="flex flex-row items-center flex-no-wrap">
-        <div className="flex flex-col space-y-2 flex-no-wrap flex-shrink w-full">
+      <div className="flex flex-row items-center flex-nowrap">
+        <div className="flex flex-col space-y-2 flex-nowrap flex-shrink w-full">
           <DmsLatitude
             label="Latitude"
             value={point.lat}
@@ -88,7 +88,7 @@ const DmsTextfield = ({
             />
           </DmsLongitude>
         </div>
-        <div className="flex-shrink-0 flex-grow-0">
+        <div className="shrink-0 grow-0">
           <IconButton onClick={deletePoint}>
             <CloseIcon />
           </IconButton>

@@ -132,7 +132,7 @@ export const SaveForm = ({
         </div>
 
         <DarkDivider />
-        <div className="flex flex-row flex-no-wrap align justify-end p-2">
+        <div className="flex flex-row flex-nowrap align justify-end p-2">
           <Button
             type="button"
             variant="text"
@@ -317,10 +317,8 @@ export const OpenSearch = ({
   const [value, setValue] = React.useState('')
   const [open, setOpen] = React.useState(true)
   const inputRef = React.useRef<HTMLDivElement>(null)
-  const [
-    currentHighlight,
-    setCurrentHighlight,
-  ] = React.useState<OverflowTooltipHTMLElement | null>(null)
+  const [currentHighlight, setCurrentHighlight] =
+    React.useState<OverflowTooltipHTMLElement | null>(null)
   const [options, setOptions] = React.useState<LazyQueryResult[]>([])
   const { lazyResults, loading } = useSearchResults({
     searchText: value,
@@ -365,16 +363,16 @@ export const OpenSearch = ({
       autoHighlight
       onHighlightChange={() => {
         if (inputRef.current) {
-          const highlightedElementString = (inputRef.current.querySelector(
-            'input'
-          ) as HTMLInputElement).getAttribute('aria-activedescendant')
+          const highlightedElementString = (
+            inputRef.current.querySelector('input') as HTMLInputElement
+          ).getAttribute('aria-activedescendant')
           if (highlightedElementString) {
             setCurrentHighlight(
-              (document.querySelector(
-                `#${highlightedElementString}`
-              ) as HTMLLIElement).querySelector(
-                'div'
-              ) as OverflowTooltipHTMLElement
+              (
+                document.querySelector(
+                  `#${highlightedElementString}`
+                ) as HTMLLIElement
+              ).querySelector('div') as OverflowTooltipHTMLElement
             )
           } else {
             setCurrentHighlight(null)
@@ -633,7 +631,7 @@ const OptionsButton = () => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Paper elevation={Elevations.overlays} className="p-2">
-          <div className="flex flex-row flex-no-wrap">
+          <div className="flex flex-row flex-nowrap">
             <OpenSearch
               label="Open a saved search"
               constructLink={(result) => {
@@ -844,7 +842,7 @@ const LeftBottom = () => {
 
   if (closed) {
     return (
-      <div className="flex flex-col items-center w-full py-4  flex-no-wrap flex-shrink-0 overflow-hidden">
+      <div className="flex flex-col items-center w-full py-4  flex-nowrap shrink-0 overflow-hidden">
         <div className="px-2">
           <Button
             fullWidth
@@ -961,7 +959,7 @@ const SaveIndicator = () => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Paper elevation={Elevations.overlays}>
-          <div className="flex flex-row flex-no-wrap items-center p-4 text-2xl Mui-text-primary">
+          <div className="flex flex-row flex-nowrap items-center p-4 text-2xl Mui-text-primary">
             {isSaving ? (
               <>
                 <CircularProgress
@@ -984,7 +982,7 @@ const SaveIndicator = () => {
         </Paper>
       </Popover>
       <Button
-        className="flex-shrink-0"
+        className="shrink-0"
         onClick={(e) => {
           e.stopPropagation()
           popupState.handleClick()
@@ -992,7 +990,7 @@ const SaveIndicator = () => {
         innerRef={popupState.anchorRef}
       >
         <span
-          className={`opacity-75 text-sm flex-shrink-0 flex items-center flex-no-wrap ${
+          className={`opacity-75 text-sm shrink-0 flex items-center flex-nowrap ${
             closed ? 'mr-min flex-col' : 'mt-min flex-row'
           }`}
         >
@@ -1048,8 +1046,8 @@ const LeftTop = () => {
       <div
         className={`h-full w-full relative p-2 ${
           closed
-            ? 'flex flex-col flex-no-wrap items-center'
-            : 'flex flex-row flex-no-wrap items-center'
+            ? 'flex flex-col flex-nowrap items-center'
+            : 'flex flex-row flex-nowrap items-center'
         }`}
       >
         {searchPageMode === 'adhoc' ? (
@@ -1102,7 +1100,7 @@ const LeftTop = () => {
               innerRef={adhocMenuState.anchorRef}
             >
               <div
-                className={`flex items-center flex-no-wrap ${
+                className={`flex items-center flex-nowrap ${
                   closed ? 'flex-col h-full' : 'flex-row w-full'
                 }`}
               >
@@ -1174,7 +1172,7 @@ const LeftTop = () => {
               innerRef={savedMenuState.anchorRef}
             >
               <div
-                className={`flex items-center flex-no-wrap ${
+                className={`flex items-center flex-nowrap ${
                   closed ? 'flex-col h-full' : 'w-full flex-row'
                 }`}
               >
@@ -1195,7 +1193,7 @@ const LeftTop = () => {
           <></>
         )}
         <div
-          className={`ml-auto flex-shrink-0 ${
+          className={`ml-auto shrink-0 ${
             closed ? 'w-full order-first pt-1 h-16' : ''
           }`}
         >
@@ -1476,7 +1474,7 @@ export const HomePage = () => {
                 className="h-full overflow-hidden w-full"
               >
                 <div
-                  className="flex flex-col flex-no-wrap w-full h-full"
+                  className="flex flex-col flex-nowrap w-full h-full"
                   ref={setElement}
                 >
                   <LeftTop />

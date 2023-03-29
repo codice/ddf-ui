@@ -79,12 +79,8 @@ const keepNotificationsOptions = [
 ] as { label: string; value: boolean }[]
 
 const render = (props: Props) => {
-  const {
-    persistence,
-    expiration,
-    onExpirationChange,
-    onPersistenceChange,
-  } = props
+  const { persistence, expiration, onExpirationChange, onPersistenceChange } =
+    props
 
   return (
     <div className="p-2 w-full h-full overflow-auto">

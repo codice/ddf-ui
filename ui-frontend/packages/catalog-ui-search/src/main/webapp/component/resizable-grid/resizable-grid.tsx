@@ -14,12 +14,10 @@ type ResizableGridType = React.ComponentType<
   }
 >
 const ResizableGrid = Grid as ResizableGridType
-export const [
-  useResizableGridContext,
-  UseResizableGridContextProvider,
-] = createCtx<useResizableGridType>({
-  closed: false,
-})
+export const [useResizableGridContext, UseResizableGridContextProvider] =
+  createCtx<useResizableGridType>({
+    closed: false,
+  })
 type useResizableGridType = {
   length: number
   closed: boolean

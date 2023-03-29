@@ -147,8 +147,8 @@ class BaseFilterBuilderClass extends SpreadOperatorProtectedClass {
   }
 }
 export class FilterBuilderClass extends BaseFilterBuilderClass {
-  readonly type: 'AND' | 'OR'
-  readonly filters: Array<FilterBuilderClass | FilterClass>
+  declare readonly type: 'AND' | 'OR'
+  declare readonly filters: Array<FilterBuilderClass | FilterClass>
   constructor({
     type = 'AND',
     filters = [new FilterClass()],
@@ -165,8 +165,8 @@ export class FilterBuilderClass extends BaseFilterBuilderClass {
 }
 
 export class CQLStandardFilterBuilderClass extends BaseFilterBuilderClass {
-  readonly type: 'AND' | 'OR' | 'NOT'
-  readonly filters: Array<
+  declare readonly type: 'AND' | 'OR' | 'NOT'
+  declare readonly filters: Array<
     FilterClass | CQLStandardFilterBuilderClass | FilterBuilderClass
   >
   constructor({

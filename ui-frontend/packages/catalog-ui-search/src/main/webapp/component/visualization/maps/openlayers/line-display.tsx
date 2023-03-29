@@ -49,9 +49,9 @@ export function translateToOpenlayersCoordinates(coords: CoordinatesType) {
   coords.forEach((item) => {
     if (item[0].constructor === Array) {
       coordinates.push(
-        (translateToOpenlayersCoordinates(
-          (item as unknown) as CoordinatesType
-        ) as unknown) as CoordinateType
+        translateToOpenlayersCoordinates(
+          item as unknown as CoordinatesType
+        ) as unknown as CoordinateType
       )
     } else {
       coordinates.push(
@@ -122,9 +122,9 @@ export const drawLine = ({
   )
   const bufferedLine = Turf.buffer(turfLine, lineWidth, { units: 'meters' })
   const geometryRepresentation = new ol.geom.MultiLineString(
-    (translateToOpenlayersCoordinates(
+    translateToOpenlayersCoordinates(
       bufferedLine.geometry.coordinates as any
-    ) as unknown) as any
+    ) as unknown as any
   )
   // need to adjust the points again AFTER buffering, since buffering undoes the antimeridian adjustments
   adjustMultiLinePoints(geometryRepresentation)

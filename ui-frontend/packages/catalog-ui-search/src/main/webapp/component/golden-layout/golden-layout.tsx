@@ -33,7 +33,7 @@ export const GoldenLayout = ({ selectionInterface }: Props) => {
       className="w-full h-full"
       wrap="nowrap"
     >
-      <Grid item className="w-full relative z-1 pb-2 pt-2 pr-2 flex-shrink-0">
+      <Grid item className="w-full relative z-1 pb-2 pt-2 pr-2 shrink-0">
         <Paper
           elevation={Elevations.panels}
           className="w-full p-3 overflow-hidden"
@@ -48,10 +48,7 @@ export const GoldenLayout = ({ selectionInterface }: Props) => {
         </Paper>
       </Grid>
 
-      <Grid
-        item
-        className="w-full h-full overflow-hidden flex-shrink-1 pb-2 pr-2"
-      >
+      <Grid item className="w-full h-full overflow-hidden shrink-1 pb-2 pr-2">
         <GoldenLayoutViewReact
           selectionInterface={selectionInterface}
           configName="goldenLayout"

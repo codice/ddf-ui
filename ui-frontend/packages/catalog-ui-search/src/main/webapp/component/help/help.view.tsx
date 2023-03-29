@@ -180,10 +180,7 @@ const paintHints = (
   setPaintedHints: (paintedHints: PaintedHintType[]) => void
 ) => {
   animationFrameId = window.requestAnimationFrame(() => {
-    const elements = ($elementsWithHints.splice(
-      0,
-      4
-    ) as unknown) as HTMLElement[]
+    const elements = $elementsWithHints.splice(0, 4) as unknown as HTMLElement[]
     if (elements.length > 0) {
       const newHints = elements
         .map((element: HTMLElement) => {

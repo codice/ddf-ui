@@ -10,7 +10,7 @@
     "url": "https://github.com/codice/ddf.git"
   },
   "engines": {
-    "node": ">=0.10.5"
+    "node": ">=19.6.1"
   },
   "devDependencies": {
     "@types/react": "16.9.34",

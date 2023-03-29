@@ -166,7 +166,7 @@ const LocationInput = (props: LocationInputPropsType) => {
           </RadioItem>
         ))}
       </Radio>
-      <div className="form-group clearfix mt-2">
+      <div className="form-group flow-root mt-2">
         {Component !== null ? <Component {...props} /> : null}
         <div
           className={`for-error whitespace-pre-line ${

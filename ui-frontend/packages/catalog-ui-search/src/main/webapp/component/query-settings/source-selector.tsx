@@ -156,7 +156,7 @@ const SourceSelector = ({ search }: Props) => {
         onChange={(e) => {
           // first of all I'm sorry, second of all, order matters in these cases.  Should really just make a state machine out of this.
           // https://xstate.js.org/docs/  perhaps?
-          let newSources = (e.target.value as unknown) as string[]
+          let newSources = e.target.value as unknown as string[]
           // these first three if only apply if the value didn't previous exist (user is going from not all to 'all', etc.)
           const newLocalSources = newSources
             .filter((src) => !['all', 'remote', 'local'].includes(src))
