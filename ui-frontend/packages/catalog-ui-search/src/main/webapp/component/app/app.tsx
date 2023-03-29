@@ -57,6 +57,8 @@ import SessionTimeout from '../../react-component/session-timeout'
 import { AjaxErrorHandling } from './ajax-error-handling'
 import { WreqrSnacks } from './wreqr-snacks'
 import sessionTimeoutModel from '../singletons/session-timeout'
+import Extensions from '../../extension-points'
+
 export const handleBase64EncodedImages = (url: string) => {
   if (url && url.startsWith('data:')) {
     return url
@@ -520,6 +522,7 @@ const SideBarRoutes = () => {
           )
         }
       )}
+      {<Extensions.extraRoutes/>}
     </Grid>
   )
 }
