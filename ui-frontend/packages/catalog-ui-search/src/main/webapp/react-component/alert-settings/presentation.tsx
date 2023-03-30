@@ -97,7 +97,9 @@ const render = (props: Props) => {
               onPersistenceChange(newValue.value)
             }}
             getOptionSelected={(option) => option.value === persistence}
-            getOptionLabel={(option) => option.label}
+            getOptionLabel={(option) => {
+              return option.label
+            }}
             disableClearable
             value={keepNotificationsOptions.find(
               (choice) => choice.value === persistence
@@ -120,7 +122,9 @@ const render = (props: Props) => {
                 onExpirationChange(newValue.value)
               }}
               getOptionSelected={(option) => option.value === expiration}
-              getOptionLabel={(option) => option.label}
+              getOptionLabel={(option) => {
+                return option.label
+              }}
               disableClearable
               value={expireOptions.find(
                 (choice) => choice.value === expiration

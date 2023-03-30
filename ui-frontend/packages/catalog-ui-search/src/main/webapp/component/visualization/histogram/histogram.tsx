@@ -552,7 +552,9 @@ export const Histogram = ({ selectionInterface }: Props) => {
             setAttributeToBin(newValue.value)
           }}
           getOptionSelected={(option) => option.value === attributeToBin}
-          getOptionLabel={(option) => option.label}
+          getOptionLabel={(option) => {
+            return option.label
+          }}
           disableClearable
           value={autocompleteState.choices.find(
             (choice) => choice.value === attributeToBin
