@@ -201,9 +201,11 @@ const BrandingContents = () => {
 
   React.useEffect(() => {
     if (brandingService !== undefined) {
-      const currentProperties = (brandingService.configurations
-        ? brandingService.configurations[0].properties
-        : {}) as BrandingPropertiesType
+      const currentProperties = (
+        brandingService.configurations
+          ? brandingService.configurations[0].properties
+          : {}
+      ) as BrandingPropertiesType
       setState({
         ...currentProperties,
       })

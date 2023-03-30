@@ -247,9 +247,10 @@ export const Header = ({
       'change:results-attributesShownTable',
       () => {
         setShownAttributes(TypedUserInstance.getResultsAttributesShownTable())
-        columnRefs.current = TypedUserInstance.getResultsAttributesShownTable().map(
-          () => React.createRef<HTMLDivElement>()
-        )
+        columnRefs.current =
+          TypedUserInstance.getResultsAttributesShownTable().map(() =>
+            React.createRef<HTMLDivElement>()
+          )
       }
     )
   }, [])
