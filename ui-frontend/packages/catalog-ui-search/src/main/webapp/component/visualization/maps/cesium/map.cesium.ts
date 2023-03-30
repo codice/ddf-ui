@@ -20,7 +20,7 @@ import DrawingUtility from '../DrawingUtility'
 import wreqr from '../../../../js/wreqr'
 import properties from '../../../../js/properties'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
-import Cesium from 'cesium'
+import Cesium from 'cesium/Build/Cesium/Cesium'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import {
   CesiumImageryProviderTypes,

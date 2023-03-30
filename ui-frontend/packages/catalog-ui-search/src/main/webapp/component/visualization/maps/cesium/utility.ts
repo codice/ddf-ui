@@ -17,7 +17,7 @@ import _ from 'underscore'
 import DistanceUtils from '../../../../js/DistanceUtils'
 import ShapeUtils from '../../../../js/ShapeUtils'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
-import Cesium from 'cesium'
+import Cesium from 'cesium/Build/Cesium/Cesium'
 import * as Turf from '@turf/turf'
 
 const METERS = 'meters'
