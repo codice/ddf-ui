@@ -432,7 +432,6 @@ const DrawHelper = (function () {
         height: this.height,
         width: this.width < 1 ? 1 : this.width,
         ellipsoid: this.ellipsoid,
-        followSurface: false,
       })
     }
     return _
@@ -595,7 +594,6 @@ const DrawHelper = (function () {
         width: this.width < 1 ? 1 : this.width,
         vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
         ellipsoid: this.ellipsoid,
-        followSurface: false,
       })
     }
     _.prototype.getOutlineGeometry = function () {
@@ -633,7 +631,6 @@ const DrawHelper = (function () {
         width: this.width < 1 ? 1 : this.width,
         vertexFormat: Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT,
         ellipsoid: this.ellipsoid,
-        followSurface: false,
       })
     }
     return _
@@ -985,6 +982,8 @@ const DrawHelper = (function () {
           const feature = scene.pick(position)
           const isBillboard =
             feature?.primitive && feature.primitive instanceof Cesium.Billboard
+          // Show this tooltip only if the mouse isn't over a billboard. The billboards shown for
+          // editing have their own tooltips and we want to show those instead.
           if (!isBillboard) {
             tooltip.showAt(position, 'Click to add first point')
           }
@@ -1124,6 +1123,8 @@ const DrawHelper = (function () {
           const feature = scene.pick(position)
           const isBillboard =
             feature?.primitive && feature.primitive instanceof Cesium.Billboard
+          // Show this tooltip only if the mouse isn't over a billboard. The billboards shown for
+          // editing have their own tooltips and we want to show those instead.
           if (!isBillboard) {
             tooltip.showAt(position, 'Click to start drawing rectangle')
           }
@@ -1202,6 +1203,8 @@ const DrawHelper = (function () {
           const feature = scene.pick(position)
           const isBillboard =
             feature?.primitive && feature.primitive instanceof Cesium.Billboard
+          // Show this tooltip only if the mouse isn't over a billboard. The billboards shown for
+          // editing have their own tooltips and we want to show those instead.
           if (!isBillboard) {
             tooltip.showAt(position, 'Click to start drawing the circle')
           }
