@@ -110,6 +110,26 @@ const positionsToPolygon = (
   }
 }
 
+const validateAndFixPolygon = (polygonPoints: Position[]): boolean => {
+  if (!polygonPoints || polygonPoints.length < 3) {
+    return false
+  }
+  if (
+    polygonPoints[0].toString() !==
+    polygonPoints[polygonPoints.length - 1].toString()
+  ) {
+    polygonPoints.push(polygonPoints[0])
+  }
+  if (validateGeo('polygon', JSON.stringify(polygonPoints))?.error) {
+    return false
+  }
+  polygonPoints.forEach((point: any) => {
+    point[0] = DistanceUtils.coordinateRound(point[0])
+    point[1] = DistanceUtils.coordinateRound(point[1])
+  })
+  return true
+}
+
 const drawGeometry = ({
   model,
   map,
@@ -146,22 +166,9 @@ const drawGeometry = ({
 
   if (onDraw) {
     polygons.forEach((polygonPoints) => {
-      if (!polygonPoints || polygonPoints.length < 3) {
+      if (!validateAndFixPolygon(polygonPoints)) {
         return
       }
-      if (
-        polygonPoints[0].toString() !==
-        polygonPoints[polygonPoints.length - 1].toString()
-      ) {
-        polygonPoints.push(polygonPoints[0])
-      }
-      if (validateGeo('polygon', JSON.stringify(polygonPoints))?.error) {
-        return
-      }
-      polygonPoints.forEach((point: any) => {
-        point[0] = DistanceUtils.coordinateRound(point[0])
-        point[1] = DistanceUtils.coordinateRound(point[1])
-      })
 
       const drawPrimitive = new (DrawHelper.PolygonPrimitive as any)(
         constructSolidLinePrimitive({
@@ -186,22 +193,9 @@ const drawGeometry = ({
     const pc = new Cesium.PolylineCollection()
     pc.id = id
     polygons.forEach((polygonPoints) => {
-      if (!polygonPoints || polygonPoints.length < 3) {
+      if (!validateAndFixPolygon(polygonPoints)) {
         return
       }
-      if (
-        polygonPoints[0].toString() !==
-        polygonPoints[polygonPoints.length - 1].toString()
-      ) {
-        polygonPoints.push(polygonPoints[0])
-      }
-      if (validateGeo('polygon', JSON.stringify(polygonPoints))?.error) {
-        return
-      }
-      polygonPoints.forEach((point: any) => {
-        point[0] = DistanceUtils.coordinateRound(point[0])
-        point[1] = DistanceUtils.coordinateRound(point[1])
-      })
 
       if (buffer > 0) {
         const adjustedPolygon = Turf.polygon([polygonPoints])
