@@ -116,10 +116,6 @@ export const CesiumDrawings = ({
     drawingLocation = null
   }
 
-  console.log('filterModels', filterModels)
-  console.log('models', models)
-  console.log('drawingModels', drawingModels)
-
   const pickLocation = (attributes?: any) => {
     const mode = attributes?.mode
     switch (mode) {

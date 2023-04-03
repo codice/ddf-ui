@@ -307,14 +307,10 @@ const useListenToLineModel = ({
   useListenTo(model, 'change:line change:lineWidth change:lineUnits', callback)
   React.useEffect(() => {
     if (map && needsRedraw({ map, drawnMagnitude })) {
-      console.log(
-        '[cameraMagnitude, drawnMagnitude, callback, map] useEffect()'
-      )
       callback()
     }
   }, [cameraMagnitude, drawnMagnitude, callback, map])
   React.useEffect(() => {
-    console.log('[callback] useEffect()')
     callback()
   }, [callback])
 }
