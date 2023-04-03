@@ -377,7 +377,6 @@ const useStartMapDrawing = ({
         material,
       })
     }
-    return () => {}
   }, [map, model])
 }
 

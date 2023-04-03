@@ -295,7 +295,6 @@ const useStartMapDrawing = ({
         }),
       })
     }
-    return () => {}
   }, [map, model])
 }
 
