@@ -15,3 +15,13 @@
 /// <reference path="globals/webworkers/index.d.tsx" />
 
 /// <reference path="globals/promise/index.d.tsx" />
+
+declare module '*.svg' {
+  const content: any
+  export default content
+}
+
+declare module '!!raw-loader!*' {
+  const contents: string
+  export = contents
+}

@@ -27,6 +27,8 @@ import Cesium from 'cesium'
 import * as Turf from '@turf/turf'
 import utility from '../../component/visualization/maps/cesium/utility'
 import _ from 'lodash'
+import dragHalfSvg from '!!raw-loader!./drag-half.svg'
+import vertexSvg from '!!raw-loader!./vertex.svg'
 // Avoid conflict with the name _, which DrawHelper uses a lot
 const lodash = _
 const DrawHelper = (function () {
@@ -635,18 +637,6 @@ const DrawHelper = (function () {
     }
     return _
   })()
-  const vertexSvg = `
-  <svg width="10" height="10" version="1.1" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="5" cy="5" r="5" fill="blue"/>
-  </svg>
-  `
-  const dragHalfSvg = `
-  <svg width="8" height="8" version="1.1" xmlns="http://www.w3.org/2000/svg">
-    <rect x="0" y="0" width="8" height="8" fill="blue"/>
-    <line x1="1" y1="4" x2="7" y2="4" stroke-width="2" stroke="white"/>
-    <line x1="4" y1="1" x2="4" y2="7" stroke-width="2" stroke="white"/>
-  </svg>
-  `
   /*
     Create our own Image objects and pass them, instead of URLS, to the
     BillboardCollections. This ensures the shape editing controls will always
