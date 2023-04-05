@@ -21,23 +21,28 @@ import { Units } from '../../../react-component/location/common'
 import ListEditor from '../inputs/list-editor'
 import { DdLatitude, DdLongitude } from './coordinates'
 import { ddPoint } from '../models'
+import DistanceUtils from '../../../js/DistanceUtils'
 
 const Point = (props: any) => {
   const { dd, setState } = props
   return (
     <Group>
       <DdLatitude
-        value={dd.point.latitude}
+        value={dd.point.latitude.toString()}
         onChange={setState(
           (draft: any, value: any) =>
             (draft.dd.point.latitude = value)
         )}
+        onBlur={setState(
+          (draft: any, value: any) =>
+            (draft.dd.point.latitude = DistanceUtils.coordinateRound(value))
+        )}
       />
       <DdLongitude
-        value={dd.point.longitude}
+        value={DistanceUtils.coordinateRound(dd.point.longitude)}
         onChange={setState(
           (draft: any, value: any) =>
-            (draft.dd.point.longitude = value)
+            (draft.dd.point.longitude = DistanceUtils.coordinateRound(value))
         )}
       />
     </Group>
@@ -50,17 +55,21 @@ const Circle = (props: any) => {
     <div className="flex flex-col flex-nowrap space-y-2">
       <Group>
         <DdLatitude
-          value={dd.circle.point.latitude}
+          value={DistanceUtils.coordinateRound(dd.circle.point.latitude)}
           onChange={setState(
             (draft: any, value: any) =>
-              (draft.dd.circle.point.latitude = value)
+              (draft.dd.circle.point.latitude = DistanceUtils.coordinateRound(
+                value
+              ))
           )}
         />
         <DdLongitude
-          value={dd.circle.point.longitude}
+          value={DistanceUtils.coordinateRound(dd.circle.point.longitude)}
           onChange={setState(
             (draft: any, value: any) =>
-              (draft.dd.circle.point.longitude = value)
+              (draft.dd.circle.point.longitude = DistanceUtils.coordinateRound(
+                value
+              ))
           )}
         />
       </Group>
@@ -74,10 +83,10 @@ const Circle = (props: any) => {
           label="Radius"
           type="number"
           // @ts-expect-error ts-migrate(2322) FIXME: Type 'number' is not assignable to type 'string | ... Remove this comment to see the full error message
-          value={dd.circle.radius}
+          value={DistanceUtils.coordinateRound(dd.circle.radius)}
           onChange={setState(
             (draft: any, value: any) =>
-              (draft.dd.circle.radius = value)
+              (draft.dd.circle.radius = DistanceUtils.coordinateRound(value))
           )}
         />
       </Units>
@@ -90,19 +99,21 @@ const Line = (props: any) => {
   const points = dd.line.list.map((_entry: any, index: any) => (
     <Group key={index}>
       <DdLatitude
-        value={dd.line.list[index].latitude}
+        value={DistanceUtils.coordinateRound(dd.line.list[index].latitude)}
         onChange={setState(
           (draft: any, value: any) =>
-            (draft.dd.line.list[index].latitude = value)
+            (draft.dd.line.list[index].latitude = DistanceUtils.coordinateRound(
+              value
+            ))
         )}
       />
       <DdLongitude
-        value={dd.line.list[index].longitude}
+        value={DistanceUtils.coordinateRound(dd.line.list[index].longitude)}
         onChange={setState(
           (draft: any, value: any) =>
             (draft.dd.line.list[
               index
-            ].longitude = value)
+            ].longitude = DistanceUtils.coordinateRound(value))
         )}
       />
     </Group>
@@ -127,21 +138,21 @@ const Polygon = (props: any) => {
   const points = dd.polygon.list.map((_entry: any, index: any) => (
     <Group key={index}>
       <DdLatitude
-        value={dd.polygon.list[index].latitude}
+        value={DistanceUtils.coordinateRound(dd.polygon.list[index].latitude)}
         onChange={setState(
           (draft: any, value: any) =>
             (draft.dd.polygon.list[
               index
-            ].latitude = value)
+            ].latitude = DistanceUtils.coordinateRound(value))
         )}
       />
       <DdLongitude
-        value={dd.polygon.list[index].longitude}
+        value={DistanceUtils.coordinateRound(dd.polygon.list[index].longitude)}
         onChange={setState(
           (draft: any, value: any) =>
             (draft.dd.polygon.list[
               index
-            ].longitude = value)
+            ].longitude = DistanceUtils.coordinateRound(value))
         )}
       />
     </Group>
@@ -167,34 +178,34 @@ const BoundingBox = (props: any) => {
     <div className="flex flex-col space-y-2">
       <DdLatitude
         label="South"
-        value={dd.boundingbox.south}
+        value={DistanceUtils.coordinateRound(dd.boundingbox.south)}
         onChange={setState(
           (draft: any, value: any) =>
-            (draft.dd.boundingbox.south = value)
+            (draft.dd.boundingbox.south = DistanceUtils.coordinateRound(value))
         )}
       />
       <DdLatitude
         label="North"
-        value={dd.boundingbox.north}
+        value={DistanceUtils.coordinateRound(dd.boundingbox.north)}
         onChange={setState(
           (draft: any, value: any) =>
-            (draft.dd.boundingbox.north = value)
+            (draft.dd.boundingbox.north = DistanceUtils.coordinateRound(value))
         )}
       />
       <DdLongitude
         label="West"
-        value={dd.boundingbox.west}
+        value={DistanceUtils.coordinateRound(dd.boundingbox.west)}
         onChange={setState(
           (draft: any, value: any) =>
-            (draft.dd.boundingbox.west = value)
+            (draft.dd.boundingbox.west = DistanceUtils.coordinateRound(value))
         )}
       />
       <DdLongitude
         label="East"
-        value={dd.boundingbox.east}
+        value={DistanceUtils.coordinateRound(dd.boundingbox.east)}
         onChange={setState(
           (draft: any, value: any) =>
-            (draft.dd.boundingbox.east = value)
+            (draft.dd.boundingbox.east = DistanceUtils.coordinateRound(value))
         )}
       />
     </div>
