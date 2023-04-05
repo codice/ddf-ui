@@ -29,21 +29,28 @@ const Point = (props: any) => {
     <Group>
       <DdLatitude
         value={dd.point.latitude.toString()}
-        onChange={setState(
-          (draft: any, value: any) =>
-            (draft.dd.point.latitude = value)
-        )}
-        onBlur={setState(
-          (draft: any, value: any) =>
-            (draft.dd.point.latitude = DistanceUtils.coordinateRound(value))
-        )}
+        onChange={setState((draft: any, value: any) => {
+          // console.log(`DdLatitude onChange.`, draft, value)
+          draft.dd.point.latitude = value
+        })}
+        onBlur={setState((draft: any) => {
+          console.log('DdLatitude onBlur', draft, dd)
+          draft.dd.point.latitude = DistanceUtils.coordinateRound(
+            draft.dd.point.latitude
+          )
+        })}
       />
       <DdLongitude
-        value={DistanceUtils.coordinateRound(dd.point.longitude)}
+        value={dd.point.longitude.toString()}
         onChange={setState(
-          (draft: any, value: any) =>
-            (draft.dd.point.longitude = DistanceUtils.coordinateRound(value))
+          (draft: any, value: any) => (draft.dd.point.longitude = value)
         )}
+        onBlur={setState((draft: any) => {
+          // console.log('DdLongitude onBlur', draft)
+          draft.dd.point.longitude = DistanceUtils.coordinateRound(
+            draft.dd.point.longitude
+          )
+        })}
       />
     </Group>
   )
@@ -55,22 +62,27 @@ const Circle = (props: any) => {
     <div className="flex flex-col flex-nowrap space-y-2">
       <Group>
         <DdLatitude
-          value={DistanceUtils.coordinateRound(dd.circle.point.latitude)}
+          value={dd.circle.point.latitude.toString()}
           onChange={setState(
-            (draft: any, value: any) =>
-              (draft.dd.circle.point.latitude = DistanceUtils.coordinateRound(
-                value
-              ))
+            (draft: any, value: any) => (draft.dd.circle.point.latitude = value)
           )}
+          onBlur={setState((draft: any) => {
+            draft.dd.circle.point.latitude = DistanceUtils.coordinateRound(
+              draft.dd.circle.point.latitude
+            )
+          })}
         />
         <DdLongitude
-          value={DistanceUtils.coordinateRound(dd.circle.point.longitude)}
+          value={dd.circle.point.longitude.toString()}
           onChange={setState(
             (draft: any, value: any) =>
-              (draft.dd.circle.point.longitude = DistanceUtils.coordinateRound(
-                value
-              ))
+              (draft.dd.circle.point.longitude = value)
           )}
+          onBlur={setState((draft: any) => {
+            draft.dd.circle.point.longitude = DistanceUtils.coordinateRound(
+              draft.dd.circle.point.longitude
+            )
+          })}
         />
       </Group>
       <Units
@@ -99,21 +111,30 @@ const Line = (props: any) => {
   const points = dd.line.list.map((_entry: any, index: any) => (
     <Group key={index}>
       <DdLatitude
-        value={DistanceUtils.coordinateRound(dd.line.list[index].latitude)}
+        value={dd.line.list[index].latitude}
         onChange={setState(
           (draft: any, value: any) =>
-            (draft.dd.line.list[index].latitude = DistanceUtils.coordinateRound(
-              value
-            ))
+            (draft.dd.line.list[index].latitude = value)
         )}
+        onBlur={setState((draft: any) => {
+          draft.dd.line.list[index].latitude = DistanceUtils.coordinateRound(
+            draft.dd.line.list[index].latitude
+          )
+        })}
       />
       <DdLongitude
-        value={DistanceUtils.coordinateRound(dd.line.list[index].longitude)}
+        value={dd.line.list[index].longitude}
         onChange={setState(
           (draft: any, value: any) =>
+            (draft.dd.line.list[index].longitude = value)
+        )}
+        onBlur={setState(
+          (draft: any) =>
             (draft.dd.line.list[
               index
-            ].longitude = DistanceUtils.coordinateRound(value))
+            ].longitude = DistanceUtils.coordinateRound(
+              draft.dd.line.list[index].longitude
+            ))
         )}
       />
     </Group>
@@ -138,21 +159,33 @@ const Polygon = (props: any) => {
   const points = dd.polygon.list.map((_entry: any, index: any) => (
     <Group key={index}>
       <DdLatitude
-        value={DistanceUtils.coordinateRound(dd.polygon.list[index].latitude)}
+        value={dd.polygon.list[index].latitude.toString()}
         onChange={setState(
           (draft: any, value: any) =>
+            (draft.dd.polygon.list[index].latitude = value)
+        )}
+        onBlur={setState(
+          (draft: any) =>
             (draft.dd.polygon.list[
               index
-            ].latitude = DistanceUtils.coordinateRound(value))
+            ].latitude = DistanceUtils.coordinateRound(
+              draft.dd.polygon.list[index].latitude
+            ))
         )}
       />
       <DdLongitude
-        value={DistanceUtils.coordinateRound(dd.polygon.list[index].longitude)}
+        value={dd.polygon.list[index].longitude.toString()}
         onChange={setState(
           (draft: any, value: any) =>
+            (draft.dd.polygon.list[index].longitude = value)
+        )}
+        onBlur={setState(
+          (draft: any) =>
             (draft.dd.polygon.list[
               index
-            ].longitude = DistanceUtils.coordinateRound(value))
+            ].longitude = DistanceUtils.coordinateRound(
+              draft.dd.polygon.list[index].longitude
+            ))
         )}
       />
     </Group>
