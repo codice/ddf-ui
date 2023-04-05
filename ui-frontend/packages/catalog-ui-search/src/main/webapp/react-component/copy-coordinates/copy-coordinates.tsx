@@ -20,8 +20,6 @@ import Popover from '@material-ui/core/Popover'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import useSnack from '../../component/hooks/useSnack'
 import { AddSnack } from '../../component/snack/snack.provider'
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'clip... Remove this comment to see the full error message
-import Clipboard from 'clipboard'
 
 type Props = {
   coordinateValues: {
@@ -43,29 +41,25 @@ const generateClipboardHandler = ({
   closeParent: () => void
   addSnack: AddSnack
 }) => {
-  return (e: React.MouseEvent) => {
-    const clipboardInstance = new Clipboard(e.target, {
-      text: () => {
-        return text
-      },
-    })
-    clipboardInstance.on('success', (e: any) => {
-      addSnack('Copied to clipboard: ' + e.text, {
+  return async () => {
+    try {
+      await navigator.clipboard.writeText(text)
+      addSnack(`Copied to clipboard: ${text}`, {
         alertProps: {
           severity: 'success',
         },
       })
-    })
-    clipboardInstance.on('error', (e: any) => {
-      addSnack('Press Ctrl+C to copy: ' + e.text, {
+    } catch (e) {
+      addSnack(`Unable to copy ${text} to clipboard.`, {
         alertProps: {
-          severity: 'info',
+          severity: 'error',
         },
+        // Longer timeout to give the user a chance to copy the coordinates from the snack.
+        timeout: 10000,
       })
-    })
-    clipboardInstance.onClick(e)
-    clipboardInstance.destroy()
-    closeParent()
+    } finally {
+      closeParent()
+    }
   }
 }
 
