@@ -42,7 +42,7 @@ const DmsTextfield = ({
   return (
     <div>
       <div className="flex flex-row items-center flex-nowrap">
-        <div className="flex flex-col space-y-2 flex-nowrap flex-shrink w-full">
+        <div className="flex flex-col space-y-2 flex-nowrap shrink w-full">
           <DmsLatitude
             label="Latitude"
             value={point.lat}

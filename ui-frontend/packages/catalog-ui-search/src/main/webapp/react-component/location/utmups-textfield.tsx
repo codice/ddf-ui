@@ -37,7 +37,7 @@ const UtmupsTextfield = ({
   return (
     <div>
       <div className="flex flex-row items-center flex-nowrap">
-        <div className="flex flex-col space-y-2 flex-nowrap flex-shrink w-full">
+        <div className="flex flex-col space-y-2 flex-nowrap shrink w-full">
           <TextField
             label="Easting"
             // @ts-expect-error ts-migrate(2322) FIXME: Type 'number' is not assignable to type 'string | ... Remove this comment to see the full error message

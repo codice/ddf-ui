@@ -42,7 +42,7 @@ export const UploadBatchItemViewReact = ({ model }: { model: any }) => {
       <Link
         to={`/uploads/${id}`}
         style={{ display: 'block', padding: '0px' }}
-        className="w-full flex-shrink no-underline"
+        className="w-full shrink no-underline"
         title={specificWhen}
       >
         <div className="upload-details">

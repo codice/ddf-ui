@@ -105,7 +105,7 @@ const GazetteerAutoComplete = ({
         avatar={<RoomIcon />}
         label={
           <div className="flex flex-row flex-nowrap items-center">
-            <div className="flex-shrink w-full truncate">{value}</div>
+            <div className="shrink w-full truncate">{value}</div>
             <Button
               color="primary"
               className="shrink-0"

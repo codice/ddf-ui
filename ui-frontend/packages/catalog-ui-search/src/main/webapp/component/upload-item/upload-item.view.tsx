@@ -52,7 +52,7 @@ export const UploadItemViewReact = ({ model }: UploadItemViewReactType) => {
   const isValidating = modelJson.validating
   return (
     <div
-      className={`flex flex-row items-center flex-nowrap w-full p-4 border-gray-600 border border-opacity-25`}
+      className={`flex flex-row items-center flex-nowrap w-full p-4 border-gray-600/25 border`}
       onClick={() => {
         if (model.get('success') && !model.hasChildren()) {
           ;(wreqr as any).vent.trigger('router:navigate', {
@@ -64,7 +64,7 @@ export const UploadItemViewReact = ({ model }: UploadItemViewReactType) => {
         }
       }}
     >
-      <div className="w-full flex-shrink">
+      <div className="w-full shrink">
         <div className="text-center">
           <div>
             <span className="top-filename">{modelJson.file.name}</span>

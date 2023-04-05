@@ -255,7 +255,7 @@ const SavedSearches = () => {
         </Paper>
       </div>
       <DarkDivider />
-      <div className="relative h-full overflow-hidden w-full flex-shrink">
+      <div className="relative h-full overflow-hidden w-full shrink">
         {isUpdating ? (
           <LinearProgress
             variant="indeterminate"

@@ -1039,9 +1039,7 @@ const LeftTop = () => {
   const savedMenuState = useMenuState()
   return (
     <div
-      className={`min-h-16 ${
-        closed ? 'h-full flex-shrink overflow-hidden' : ''
-      }`}
+      className={`min-h-16 ${closed ? 'h-full shrink overflow-hidden' : ''}`}
     >
       <div
         className={`h-full w-full relative p-2 ${
@@ -1092,7 +1090,7 @@ const LeftTop = () => {
             </Popover>
             <Button
               component="div"
-              className={`children-block children-h-full text-left text-2xl flex-shrink truncate ${
+              className={`children-block children-h-full text-left text-2xl shrink truncate ${
                 closed ? 'h-full' : ''
               }`}
               onClick={adhocMenuState.handleClick}
@@ -1105,7 +1103,7 @@ const LeftTop = () => {
                 }`}
               >
                 <span
-                  className={`opacity-50 flex-shrink truncate ${
+                  className={`opacity-50 shrink truncate ${
                     closed ? 'writing-mode-vertical-lr mb-2' : 'mr-2'
                   }`}
                 >
@@ -1164,7 +1162,7 @@ const LeftTop = () => {
             </Popover>
             <Button
               fullWidth
-              className={`children-block children-h-full text-left text-2xl flex-shrink overflow-hidden ${
+              className={`children-block children-h-full text-left text-2xl shrink overflow-hidden ${
                 closed ? 'h-full' : ''
               }`}
               onClick={savedMenuState.handleClick}
@@ -1178,9 +1176,7 @@ const LeftTop = () => {
               >
                 <span
                   className={`truncate ${
-                    closed
-                      ? 'writing-mode-vertical-lr mb-2 flex-shrink'
-                      : 'mr-2'
+                    closed ? 'writing-mode-vertical-lr mb-2 shrink' : 'mr-2'
                   }`}
                 >
                   {data.plain.metacard.properties.title}
@@ -1213,12 +1209,12 @@ const LeftMiddle = () => {
 
   if (data === false && searchPageMode === 'saved') {
     // eventually add something?
-    return <div className="overflow-hidden w-full h-full flex-shrink"></div>
+    return <div className="overflow-hidden w-full h-full shrink"></div>
   }
   return (
     <div
       className={`overflow-hidden w-full ${
-        closed ? 'flex-shrink hidden' : 'h-full'
+        closed ? 'shrink hidden' : 'h-full'
       }`}
     >
       {data === true ? (

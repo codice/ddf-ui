@@ -228,7 +228,7 @@ const Inspector = ({ selectionInterface }: InspectorType) => {
         {currentResult ? (
           <>
             <TitleView lazyResult={currentResult} />
-            <div className="flex flex-col flex-nowrap flex-shrink overflow-hidden h-full">
+            <div className="flex flex-col flex-nowrap shrink overflow-hidden h-full">
               <Tabs
                 value={activeTab}
                 onChange={(_e, newValue) => {
@@ -247,7 +247,7 @@ const Inspector = ({ selectionInterface }: InspectorType) => {
                 })}
               </Tabs>
 
-              <div className="h-full w-full flex-shrink overflow-hidden">
+              <div className="h-full w-full shrink overflow-hidden">
                 <TabContent
                   result={currentResult}
                   selectionInterface={selectionInterface}

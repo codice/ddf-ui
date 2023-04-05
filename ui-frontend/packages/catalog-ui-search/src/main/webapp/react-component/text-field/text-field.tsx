@@ -42,7 +42,7 @@ const TextField = (props: Props) => {
         size="small"
         variant="outlined"
         fullWidth
-        className="flex-shrink overflow-hidden"
+        className="shrink overflow-hidden"
         value={value !== undefined ? value : ''}
         type={type}
         onChange={(e) => {

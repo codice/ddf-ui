@@ -82,7 +82,7 @@ class MaskedTextField extends React.Component<MaskedInputProps> {
             </div>
           ) : null}
           <MaskedInput
-            className="inline-block w-full whitespace-nowrap flex-shrink overflow-hidden"
+            className="inline-block w-full whitespace-nowrap shrink overflow-hidden"
             value={value}
             keepCharPositions
             onChange={(e: any) => {
