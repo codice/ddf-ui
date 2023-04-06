@@ -299,7 +299,7 @@ const IconButton = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
         }
       }}
       focusVisibleClassName="focus-visible"
-      className="relative p-2 min-w-0 outline-none h-full group-1 flex-shrink-0"
+      className="relative p-2 min-w-0 outline-none h-full group-1 shrink-0"
     >
       {(() => {
         if (isSelected) {
@@ -397,9 +397,11 @@ export const ResultItem = ({ lazyResult, measure }: ResultItemFullProps) => {
       switch (metacardDefinitions.metacardTypes[detail].type) {
         case 'DATE':
           if (value.constructor === Array) {
-            value = value.map((val: any) => Common.getMomentDate(val))
+            value = value.map((val: any) =>
+              TypedUserInstance.getMomentDate(val)
+            )
           } else {
-            value = Common.getMomentDate(value)
+            value = TypedUserInstance.getMomentDate(value)
           }
           break
         case 'GEOMETRY':
@@ -511,7 +513,7 @@ export const ResultItem = ({ lazyResult, measure }: ResultItemFullProps) => {
               title={`${TypedMetacardDefs.getAlias({
                 attr: shownAttributes[0],
               })}`}
-              className="flex-shrink-1 w-full overflow-auto self-center"
+              className="shrink-1 w-full overflow-auto self-center"
               style={{ maxHeight: '200px', minHeight: '21px' }} // firefox will show scrollbars always without this minHeight :S
             >
               {shownAttributes[0] === 'thumbnail' && thumbnail ? (

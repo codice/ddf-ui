@@ -4,7 +4,7 @@
  * I noticed we don't keep the coordinate system stored anywhere in the location
  * json at the moment.  Need to add whatever keyword looks like.
  */
-
+//@ts-ignore
 const examples = [
   {
     type: 'AND',

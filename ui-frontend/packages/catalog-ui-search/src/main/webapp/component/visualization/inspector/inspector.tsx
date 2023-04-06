@@ -73,7 +73,7 @@ export const TitleView = ({ lazyResult }: TitleViewType) => {
   const menuState = useMenuState()
   useRerenderOnBackboneSync({ lazyResult })
   return (
-    <div className="flex flex-row items-center justify-center flex-no-wrap p-2">
+    <div className="flex flex-row items-center justify-center flex-nowrap p-2">
       <span
         className={`${getIconClassName({ lazyResult })} font-awesome-span`}
       ></span>
@@ -115,9 +115,8 @@ const useIndexForSelectedResults = (
 }
 
 const usePossibleMetacardTabs = ({ result }: { result: LazyQueryResult }) => {
-  const [possibleMetacardTabs, setPossibleMetacardTabs] = React.useState(
-    MetacardTabs
-  )
+  const [possibleMetacardTabs, setPossibleMetacardTabs] =
+    React.useState(MetacardTabs)
 
   React.useEffect(() => {
     if (result) {
@@ -185,18 +184,14 @@ const Inspector = ({ selectionInterface }: InspectorType) => {
   const amountSelected = selectedResults.length
 
   const currentResult = selectedResults[index]
-  const {
-    possibleMetacardTabs,
-    activeTab,
-    setActiveTab,
-    TabContent,
-  } = useMetacardTabs({ result: currentResult })
+  const { possibleMetacardTabs, activeTab, setActiveTab, TabContent } =
+    useMetacardTabs({ result: currentResult })
 
   return (
     <>
-      <div className="flex flex-col flex-no-wrap h-full overflow-hidden">
+      <div className="flex flex-col flex-nowrap h-full overflow-hidden">
         {amountSelected > 1 ? (
-          <div className="flex flex-row items-center justify-center flex-no-wrap flex-shrink-0 flex-grow-0">
+          <div className="flex flex-row items-center justify-center flex-nowrap shrink-0 grow-0">
             <Button
               onClick={() => {
                 setIndex(index - 1)
@@ -233,13 +228,13 @@ const Inspector = ({ selectionInterface }: InspectorType) => {
         {currentResult ? (
           <>
             <TitleView lazyResult={currentResult} />
-            <div className="flex flex-col flex-no-wrap flex-shrink overflow-hidden h-full">
+            <div className="flex flex-col flex-nowrap shrink overflow-hidden h-full">
               <Tabs
                 value={activeTab}
                 onChange={(_e, newValue) => {
                   setActiveTab(newValue)
                 }}
-                className="flex-shrink-0 w-full"
+                className="shrink-0 w-full"
                 scrollButtons="auto"
                 variant="scrollable"
               >
@@ -252,7 +247,7 @@ const Inspector = ({ selectionInterface }: InspectorType) => {
                 })}
               </Tabs>
 
-              <div className="h-full w-full flex-shrink overflow-hidden">
+              <div className="h-full w-full shrink overflow-hidden">
                 <TabContent
                   result={currentResult}
                   selectionInterface={selectionInterface}

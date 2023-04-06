@@ -436,8 +436,10 @@ const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
               <Button
                 data-id="minimise-layout-button"
                 onClick={() => {
-                  stack.config.prevWidth = stack.getActiveContentItem().container.width
-                  stack.config.prevHeight = stack.getActiveContentItem().container.height
+                  stack.config.prevWidth =
+                    stack.getActiveContentItem().container.width
+                  stack.config.prevHeight =
+                    stack.getActiveContentItem().container.height
                   stack.contentItems[0].container.setSize(10, 45)
                 }}
               >
@@ -476,10 +478,8 @@ const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
   )
 }
 export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
-  const [
-    goldenLayoutAttachElement,
-    setGoldenLayoutAttachElement,
-  ] = React.useState<HTMLDivElement | null>(null)
+  const [goldenLayoutAttachElement, setGoldenLayoutAttachElement] =
+    React.useState<HTMLDivElement | null>(null)
   const [goldenLayout, setGoldenLayout] = React.useState<any>(null)
   const lastConfig = React.useRef<any>(null)
   useListenTo((wreqr as any).vent, 'gl-updateSize', () => {

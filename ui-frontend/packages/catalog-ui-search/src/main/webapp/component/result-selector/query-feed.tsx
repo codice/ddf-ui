@@ -201,13 +201,10 @@ const LastRan = ({ currentAsOf }: { currentAsOf: number }) => {
 
 const QueryFeed = ({ selectionInterface }: Props) => {
   const { MuiButtonProps, MuiPopoverProps } = useMenuState()
-  const {
-    status,
-    currentAsOf,
-    isSearching,
-  } = useLazyResultsStatusFromSelectionInterface({
-    selectionInterface,
-  })
+  const { status, currentAsOf, isSearching } =
+    useLazyResultsStatusFromSelectionInterface({
+      selectionInterface,
+    })
 
   const statusBySource = Object.values(status)
   let resultMessage = '',

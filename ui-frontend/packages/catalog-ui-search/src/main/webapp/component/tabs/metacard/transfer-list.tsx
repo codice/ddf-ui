@@ -128,9 +128,8 @@ const ItemRow = ({
   filter?: string
 }) => {
   const dialogContext = useDialog()
-  const { setItems, items, filteredItemArray } = React.useContext(
-    CustomListContext
-  )
+  const { setItems, items, filteredItemArray } =
+    React.useContext(CustomListContext)
   const { isNotWritable } = useCustomReadOnlyCheck()
   React.useEffect(() => {
     if (measure) measure()
@@ -417,7 +416,7 @@ const CustomList = ({
             ) : null}
             {isDnD ? (
               <Memo dependencies={[filteredItemArray]}>
-                <div className="flex flex-col flex-no-wrap h-full w-full overflow-hidden">
+                <div className="flex flex-col flex-nowrap h-full w-full overflow-hidden">
                   <div className="italic px-4 text-xs font-normal">
                     Click and drag attributes to reorder.
                   </div>
@@ -435,9 +434,8 @@ const CustomList = ({
                         }
                         // complicated by the fact that we filter, so we need to find the original and dest index ourselves :(
                         if (result.reason === 'DROP' && result.destination) {
-                          const shiftedOriginalIndex = unfilteredItemArray.indexOf(
-                            result.draggableId
-                          )
+                          const shiftedOriginalIndex =
+                            unfilteredItemArray.indexOf(result.draggableId)
                           const shiftedDestIndex = unfilteredItemArray.indexOf(
                             filteredItemArray[result.destination.index]
                           )
@@ -565,10 +563,8 @@ const CustomList = ({
   )
 }
 export const useCustomReadOnlyCheck = () => {
-  const [
-    customEditableAttributes,
-    setCustomEditableAttributes,
-  ] = React.useState([] as string[])
+  const [customEditableAttributes, setCustomEditableAttributes] =
+    React.useState([] as string[])
   const isMounted = React.useRef<boolean>(true)
   const [loading, setLoading] = React.useState(true)
   const initializeCustomEditableAttributes = async () => {

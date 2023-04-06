@@ -47,8 +47,8 @@ type Source = {
   hits: number
 }
 export function getStartIndex(src: string, selectionInterface: any) {
-  const srcIndexMap = selectionInterface.getCurrentQuery()
-    .nextIndexForSourceGroup
+  const srcIndexMap =
+    selectionInterface.getCurrentQuery().nextIndexForSourceGroup
   if (src === Sources.localCatalog) {
     return srcIndexMap['local']
   }

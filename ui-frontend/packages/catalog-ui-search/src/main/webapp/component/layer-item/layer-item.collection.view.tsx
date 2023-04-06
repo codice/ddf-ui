@@ -59,10 +59,8 @@ export const LayerItemCollectionViewReact = ({
   focusModel: any
 }) => {
   const [, setForceRender] = React.useState(Math.random())
-  const [
-    sortableElement,
-    setSortableElement,
-  ] = React.useState<HTMLDivElement | null>(null)
+  const [sortableElement, setSortableElement] =
+    React.useState<HTMLDivElement | null>(null)
   const sortable = useSortable({ sortableElement, updateOrdering, focusModel })
   useListenTo(collection, 'sort', () => {
     setForceRender(Math.random())

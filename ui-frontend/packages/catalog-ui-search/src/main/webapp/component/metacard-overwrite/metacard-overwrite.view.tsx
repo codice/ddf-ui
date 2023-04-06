@@ -227,10 +227,8 @@ export const MetacardOverwrite = ({
   const dialogState = useDialogState()
   const [overwriteModel, setOverwriteModel] = React.useState<any>(null)
   const [dropzone, setDropzone] = React.useState<any>(null)
-  const [
-    dropzoneElement,
-    setDropdownElement,
-  ] = React.useState<HTMLDivElement | null>(null)
+  const [dropzoneElement, setDropdownElement] =
+    React.useState<HTMLDivElement | null>(null)
   const { listenTo, stopListening } = useBackbone()
   const [state, setState] = React.useState(defaultState)
 

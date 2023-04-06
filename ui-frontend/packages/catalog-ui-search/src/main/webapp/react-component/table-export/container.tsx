@@ -77,12 +77,8 @@ export default hot(module)(
       this.setState({ customExportCount: value })
     }
     render() {
-      const {
-        exportFormat,
-        exportSizes,
-        exportSize,
-        customExportCount,
-      } = this.state
+      const { exportFormat, exportSizes, exportSize, customExportCount } =
+        this.state
       const {
         exportFormats,
         selectionInterface,

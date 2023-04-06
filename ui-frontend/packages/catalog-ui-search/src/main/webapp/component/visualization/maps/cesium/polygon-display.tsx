@@ -15,7 +15,7 @@
 import React from 'react'
 import DistanceUtils from '../../../../js/DistanceUtils'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
-import Cesium from 'cesium'
+import Cesium from 'cesium/Build/Cesium/Cesium'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'

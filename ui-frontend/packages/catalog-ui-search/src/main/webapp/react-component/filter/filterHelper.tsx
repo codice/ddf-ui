@@ -45,16 +45,15 @@ export const getGroupedFilteredAttributes = (): {
     },
     {}
   )
-  const validCommonAttributes = (properties.commonAttributes as string[]).reduce(
-    (attributes: Attribute[], id: string) => {
-      const attribute = allAttributes[id]
-      if (attribute) {
-        attributes.push(toAttribute(attribute, 'Commonly Used Attributes'))
-      }
-      return attributes
-    },
-    []
-  )
+  const validCommonAttributes = (
+    properties.commonAttributes as string[]
+  ).reduce((attributes: Attribute[], id: string) => {
+    const attribute = allAttributes[id]
+    if (attribute) {
+      attributes.push(toAttribute(attribute, 'Commonly Used Attributes'))
+    }
+    return attributes
+  }, [])
   const groupedFilteredAttributes = validCommonAttributes.concat(
     getFilteredAttributeList('All Attributes')
   )

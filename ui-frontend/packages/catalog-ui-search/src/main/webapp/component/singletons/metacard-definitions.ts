@@ -39,10 +39,12 @@ function transformEnumResponse(metacardTypes: any, response: any) {
         case 'INTEGER':
         case 'SHORT': //needed until enum response correctly returns numbers as numbers
           // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-          result[key] = value.map((
-            //handle cases of unnecessary number padding -> 22.0000
-            subval: any
-          ) => Number(subval))
+          result[key] = value.map(
+            (
+              //handle cases of unnecessary number padding -> 22.0000
+              subval: any
+            ) => Number(subval)
+          )
           break
         default:
           // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message

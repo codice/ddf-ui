@@ -20,7 +20,7 @@ import DrawingUtility from '../DrawingUtility'
 import wreqr from '../../../../js/wreqr'
 import properties from '../../../../js/properties'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
-import Cesium from 'cesium'
+import Cesium from 'cesium/Build/Cesium/Cesium'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import {
   CesiumImageryProviderTypes,
@@ -152,9 +152,8 @@ function expandRectangle(rectangle: any) {
 function getDestinationForVisiblePan(rectangle: any, map: any) {
   let destinationForZoom = expandRectangle(rectangle)
   if (map.scene.mode === Cesium.SceneMode.SCENE3D) {
-    destinationForZoom = map.camera.getRectangleCameraCoordinates(
-      destinationForZoom
-    )
+    destinationForZoom =
+      map.camera.getRectangleCameraCoordinates(destinationForZoom)
   }
   return destinationForZoom
 }
@@ -312,9 +311,8 @@ export default function CesiumMap(
       moveCallback: any,
       upCallback: any
     ) {
-      map.screenSpaceEventHandlerForPopupPreview = new Cesium.ScreenSpaceEventHandler(
-        map.canvas
-      )
+      map.screenSpaceEventHandlerForPopupPreview =
+        new Cesium.ScreenSpaceEventHandler(map.canvas)
       map.screenSpaceEventHandlerForPopupPreview.setInputAction(() => {
         downCallback()
       }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
@@ -534,9 +532,8 @@ export default function CesiumMap(
         )
       }
       return results.map((result) => {
-        const cartesian3CenterOfGeometry = utility.calculateCartesian3CenterOfGeometry(
-          result
-        )
+        const cartesian3CenterOfGeometry =
+          utility.calculateCartesian3CenterOfGeometry(result)
         if (occluder && isNotVisible(cartesian3CenterOfGeometry, occluder)) {
           return undefined
         }
@@ -637,9 +634,8 @@ export default function CesiumMap(
         pointObject.latitude,
         pointObject.altitude
       )
-      let cartesianPosition = map.scene.globe.ellipsoid.cartographicToCartesian(
-        cartographicPosition
-      )
+      let cartesianPosition =
+        map.scene.globe.ellipsoid.cartographicToCartesian(cartographicPosition)
       const billboardRef = billboardCollection.add({
         image: undefined,
         position: cartesianPosition,
@@ -682,9 +678,10 @@ export default function CesiumMap(
         ])
         Cesium.when(promise, (updatedCartographic: any) => {
           if (updatedCartographic[0].height && !options.view.isDestroyed) {
-            cartesianPosition = map.scene.globe.ellipsoid.cartographicToCartesian(
-              updatedCartographic[0]
-            )
+            cartesianPosition =
+              map.scene.globe.ellipsoid.cartographicToCartesian(
+                updatedCartographic[0]
+              )
             billboardRef.position = cartesianPosition
           }
         })
@@ -703,9 +700,8 @@ export default function CesiumMap(
         pointObject.latitude,
         pointObject.altitude
       )
-      const cartesianPosition = map.scene.globe.ellipsoid.cartographicToCartesian(
-        cartographicPosition
-      )
+      const cartesianPosition =
+        map.scene.globe.ellipsoid.cartographicToCartesian(cartographicPosition)
       const billboardRef = billboardCollection.add({
         image: undefined,
         position: cartesianPosition,
@@ -739,9 +735,10 @@ export default function CesiumMap(
         ])
         Cesium.when(promise, (updatedCartographic: any) => {
           if (updatedCartographic[0].height && !options.view.isDestroyed) {
-            billboardRef.position = map.scene.globe.ellipsoid.cartographicToCartesian(
-              updatedCartographic[0]
-            )
+            billboardRef.position =
+              map.scene.globe.ellipsoid.cartographicToCartesian(
+                updatedCartographic[0]
+              )
           }
         })
       }
@@ -759,9 +756,8 @@ export default function CesiumMap(
         pointObject.latitude,
         pointObject.altitude
       )
-      const cartesianPosition = map.scene.globe.ellipsoid.cartographicToCartesian(
-        cartographicPosition
-      )
+      const cartesianPosition =
+        map.scene.globe.ellipsoid.cartographicToCartesian(cartographicPosition)
       // X, Y offset values for the label
       const offset = new Cesium.Cartesian2(20, -15)
       // Cesium measurement for determining how to render the size of the label based on zoom
@@ -799,9 +795,8 @@ export default function CesiumMap(
           point.altitude
         )
       )
-      const cartesian = map.scene.globe.ellipsoid.cartographicArrayToCartesianArray(
-        cartPoints
-      )
+      const cartesian =
+        map.scene.globe.ellipsoid.cartographicArrayToCartesianArray(cartPoints)
       const polylineCollection = new Cesium.PolylineCollection()
       polylineCollection.unselectedMaterial = Cesium.Material.fromType(
         'PolylineOutline',
@@ -834,9 +829,10 @@ export default function CesiumMap(
           cartPoints
         )
         Cesium.when(promise, (updatedCartographic: any) => {
-          const positions = map.scene.globe.ellipsoid.cartographicArrayToCartesianArray(
-            updatedCartographic
-          )
+          const positions =
+            map.scene.globe.ellipsoid.cartographicArrayToCartesianArray(
+              updatedCartographic
+            )
           if (updatedCartographic[0].height && !options.view.isDestroyed) {
             polyline.positions = positions
           }
@@ -860,9 +856,8 @@ export default function CesiumMap(
           point.altitude
         )
       )
-      let cartesian = map.scene.globe.ellipsoid.cartographicArrayToCartesianArray(
-        cartPoints
-      )
+      let cartesian =
+        map.scene.globe.ellipsoid.cartographicArrayToCartesianArray(cartPoints)
       const unselectedPolygonRef = map.entities.add({
         polygon: {
           hierarchy: cartesian,
@@ -902,9 +897,10 @@ export default function CesiumMap(
           cartPoints
         )
         Cesium.when(promise, (updatedCartographic: any) => {
-          cartesian = map.scene.globe.ellipsoid.cartographicArrayToCartesianArray(
-            updatedCartographic
-          )
+          cartesian =
+            map.scene.globe.ellipsoid.cartographicArrayToCartesianArray(
+              updatedCartographic
+            )
           if (updatedCartographic[0].height && !options.view.isDestroyed) {
             unselectedPolygonRef.polygon.hierarchy.setValue(cartesian)
             selectedPolygonRef.polygon.hierarchy.setValue(cartesian)

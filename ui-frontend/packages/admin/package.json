@@ -10,13 +10,13 @@
     "url": "https://github.com/codice/ddf.git"
   },
   "engines": {
-    "node": ">=0.10.5"
+    "node": "16.x.x"
   },
   "devDependencies": {
     "@types/react": "16.9.34",
     "@types/react-dom": "16.9.7",
     "@types/styled-components": "5.1.0",
-    "@connexta/ace": "git+https://github.com/connexta/ace.git#729a01ccb2bb0fbfe25251041efed11e5a0226a9"
+    "@connexta/ace": "git+https://github.com/connexta/ace.git#dd6665cb31dc9041ef32983f1e0e246e4a97e889"
   },
   "dependencies": {
     "@connexta/kanri": "connexta/kanri#3218c8bc07b22d1c583c504acbdbb2fb0b099339",

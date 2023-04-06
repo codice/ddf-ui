@@ -10,10 +10,15 @@ export const EnterKeySubmitEventHandler = (e: React.KeyboardEvent) => {
   }
 }
 
-export const EnterKeySubmitProps: Required<Pick<
-  React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
-  'onKeyUp'
->> = {
+export const EnterKeySubmitProps: Required<
+  Pick<
+    React.DetailedHTMLProps<
+      React.HTMLAttributes<HTMLDivElement>,
+      HTMLDivElement
+    >,
+    'onKeyUp'
+  >
+> = {
   onKeyUp: EnterKeySubmitEventHandler,
 }
 

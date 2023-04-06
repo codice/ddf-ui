@@ -93,8 +93,8 @@ const UserComponent = () => {
   }
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="flex-shrink-1 overflow-auto p-2">
-        <div className="flex flex-row items-center flex-no-wrap">
+      <div className="shrink-1 overflow-auto p-2">
+        <div className="flex flex-row items-center flex-nowrap">
           <div className="pr-2">
             <PersonIcon />
           </div>

@@ -54,7 +54,7 @@ const Zone = ({ value, onChange }: any) => (
   <Group>
     <Label>Zone</Label>
     <Autocomplete
-      className="w-full flex-shrink"
+      className="w-full shrink"
       disableClearable
       options={range}
       renderInput={(params) => {
@@ -73,7 +73,7 @@ const Hemisphere = ({ value, onChange }: any) => (
   <Group>
     <Label>Hemisphere</Label>
     <Autocomplete
-      className="w-full flex-shrink"
+      className="w-full shrink"
       disableClearable
       options={['Northern', 'Southern']}
       renderInput={(params) => {

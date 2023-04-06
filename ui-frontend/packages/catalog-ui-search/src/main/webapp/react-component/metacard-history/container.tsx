@@ -19,7 +19,6 @@ import moment from 'moment'
 import MetacardHistoryPresentation from './presentation'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { TypedUserInstance } from '../../component/singletons/TypedUser'
-import Common from '../../js/Common'
 import wreqr from '../../js/wreqr'
 type Props = {
   result: LazyQueryResult
@@ -45,9 +44,8 @@ class MetacardHistory extends React.Component<Props, State> {
   }
   getSourceId() {
     const metacardSourceId = this.model.plain.metacard.properties['source-id']
-    const harvestedSourceId = this.model.plain.metacard.properties[
-      'ext.harvested-from'
-    ]
+    const harvestedSourceId =
+      this.model.plain.metacard.properties['ext.harvested-from']
     return harvestedSourceId || metacardSourceId
   }
   loadData() {
@@ -61,15 +59,15 @@ class MetacardHistory extends React.Component<Props, State> {
       const history = await res.json()
       history.sort((historyItem1: any, historyItem2: any) => {
         return (
-          ((moment.unix(historyItem2.versioned.seconds) as unknown) as number) -
-          ((moment.unix(historyItem1.versioned.seconds) as unknown) as number)
+          (moment.unix(historyItem2.versioned.seconds) as unknown as number) -
+          (moment.unix(historyItem1.versioned.seconds) as unknown as number)
         )
       })
       history.forEach((historyItem: any, index: any) => {
-        historyItem.niceDate = Common.getMomentDate(
-          (moment
+        historyItem.niceDate = TypedUserInstance.getMomentDate(
+          moment
             .unix(historyItem.versioned.seconds)
-            .valueOf() as unknown) as string
+            .valueOf() as unknown as string
         )
         historyItem.versionNumber = history.length - index
       })
