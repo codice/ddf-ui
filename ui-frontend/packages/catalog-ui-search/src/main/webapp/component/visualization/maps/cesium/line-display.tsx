@@ -23,8 +23,15 @@ import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
 import { removeOldDrawing } from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
+import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
+import utility from './utility'
+const toDeg = Cesium.Math.toDegrees
 
 const CAMERA_MAGNITUDE_THRESHOLD = 8000000
+
+type Line = {
+  line: [number, number][]
+}
 
 const getCurrentMagnitudeFromMap = ({ map }: { map: any }) => {
   return map.getMap().camera.getMagnitude()
@@ -55,49 +62,75 @@ const needsRedraw = ({
   return false
 }
 
-export const constructLinePrimitive = ({
+export const constructSolidLinePrimitive = ({
   coordinates,
   model,
+  id,
+  color,
+  buffer,
 }: {
   coordinates: any
   model: any
+  id: string
+  color?: string
+  buffer?: number
 }) => {
-  const color = model.get('color')
+  const _color = color || model.get('color')
 
   return {
+    width: 4,
+    material: Cesium.Material.fromType('Color', {
+      color: _color
+        ? Cesium.Color.fromCssColorString(_color)
+        : Cesium.Color.KHAKI,
+    }),
+    id,
+    positions: Cesium.Cartesian3.fromDegreesArray(_.flatten(coordinates)),
+    buffer,
+  }
+}
+
+export const constructOutlinedLinePrimitive = ({
+  coordinates,
+  model,
+  id,
+  color,
+  buffer,
+}: {
+  coordinates: any
+  model: any
+  id: string
+  color?: string
+  buffer?: number
+}) => {
+  const _color = color || model.get('color')
+  return {
+    ...constructSolidLinePrimitive({ coordinates, model, id, color, buffer }),
     width: 8,
     material: Cesium.Material.fromType('PolylineOutline', {
-      color: color
-        ? Cesium.Color.fromCssColorString(color)
+      color: _color
+        ? Cesium.Color.fromCssColorString(_color)
         : Cesium.Color.KHAKI,
       outlineColor: Cesium.Color.WHITE,
       outlineWidth: 4,
     }),
-    id: 'userDrawing',
-    positions: Cesium.Cartesian3.fromDegreesArray(_.flatten(coordinates)),
   }
 }
 
-export const constructDottedLinePrimitive = ({
-  coordinates,
-  model,
-}: {
-  coordinates: any
-  model: any
-}) => {
-  const color = model.get('color')
-
+const positionsToLine = (
+  positions: Cesium.Cartesian3[],
+  ellipsoid: Cesium.Ellipsoid
+): Line => {
   return {
-    width: 4,
-    material: Cesium.Material.fromType('PolylineDash', {
-      color: color
-        ? Cesium.Color.fromCssColorString(color)
-        : Cesium.Color.KHAKI,
-      dashLength: 16.0,
-      dashPattern: 7.0,
+    line: positions.map((cartPos) => {
+      const latLon = ellipsoid.cartesianToCartographic(cartPos)
+      const lon = toDeg(latLon.longitude)
+      const lat = toDeg(latLon.latitude)
+      return [
+        DistanceUtils.coordinateRound(lon),
+        DistanceUtils.coordinateRound(lat),
+      ]
     }),
-    id: 'userDrawing',
-    positions: Cesium.Cartesian3.fromDegreesArray(_.flatten(coordinates)),
   }
 }
 
@@ -106,17 +139,16 @@ const drawGeometry = ({
   map,
   id,
   setDrawnMagnitude,
+  onDraw,
 }: {
   model: any
   map: any
   id: any
   setDrawnMagnitude: (number: any) => void
+  onDraw?: (drawingLocation: Line) => void
 }) => {
   const json = model.toJSON()
   let linePoints = json.line
-  const lineWidth =
-    DistanceUtils.getDistanceInMeters(json.lineWidth, model.get('lineUnits')) ||
-    1
   if (
     linePoints === undefined ||
     validateGeo('line', JSON.stringify(linePoints))?.error
@@ -124,6 +156,9 @@ const drawGeometry = ({
     map.getMap().scene.requestRender()
     return
   }
+
+  // Create a deep copy since we may modify some of these positions for display purposes
+  linePoints = JSON.parse(JSON.stringify(json.line))
 
   linePoints.forEach((point: any) => {
     point[0] = DistanceUtils.coordinateRound(point[0])
@@ -138,24 +173,61 @@ const drawGeometry = ({
   const turfLine = Turf.lineString(setArr) as
     | Turf.Feature<Turf.LineString>
     | Turf.Feature<Turf.Polygon | Turf.MultiPolygon>
-  let bufferedLine = turfLine
+  const lineWidth = DistanceUtils.getDistanceInMeters(
+    json.lineWidth,
+    model.get('lineUnits')
+  )
   const cameraMagnitude = map.getMap().camera.getMagnitude()
   setDrawnMagnitude(cameraMagnitude)
-  if (lineWidth > 100 || cameraMagnitude < CAMERA_MAGNITUDE_THRESHOLD) {
-    bufferedLine = Turf.buffer(turfLine, Math.max(lineWidth, 1), {
-      units: 'meters',
+
+  removeOldDrawing({ map, id })
+
+  let primitive
+
+  if (onDraw) {
+    primitive = new (DrawHelper.PolylinePrimitive as any)(
+      constructSolidLinePrimitive({
+        coordinates: turfLine.geometry.coordinates,
+        model,
+        id,
+        color: 'blue',
+        buffer: lineWidth,
+      })
+    )
+    primitive.setEditable()
+    primitive.addListener('onEdited', function (event: any) {
+      const line = positionsToLine(
+        event.positions,
+        map.getMap().scene.globe.ellipsoid
+      )
+      onDraw(line)
     })
+  } else {
+    let bufferedLine = turfLine
+    const isBuffered = lineWidth > 0
+    if (isBuffered) {
+      utility.adjustGeoCoords(turfLine)
+      bufferedLine = Turf.buffer(turfLine, Math.max(lineWidth, 1), {
+        units: 'meters',
+      })
+      if (!bufferedLine) {
+        return
+      }
+      // need to adjust the points again AFTER buffering, since buffering undoes the antimeridian adjustments
+      utility.adjustGeoCoords(bufferedLine)
+    }
+
+    primitive = new Cesium.PolylineCollection()
+    primitive.id = id
+    primitive.add(
+      constructOutlinedLinePrimitive({
+        coordinates: bufferedLine.geometry.coordinates,
+        model,
+        id,
+      })
+    )
   }
 
-  const primitive = new Cesium.PolylineCollection()
-  primitive.id = id
-  primitive.add(
-    constructLinePrimitive({
-      coordinates: bufferedLine.geometry.coordinates,
-      model,
-    })
-  )
-  removeOldDrawing({ map, id })
   map.getMap().scene.primitives.add(primitive)
   map.getMap().scene.requestRender()
 }
@@ -169,15 +241,14 @@ const useCameraMagnitude = ({
   const [isMoving, setIsMoving] = React.useState(false)
   const render = useRender()
   React.useEffect(() => {
-    if (map) {
-      map.getMap().scene.camera.moveStart.addEventListener(() => {
-        setIsMoving(true)
-      })
-      map.getMap().scene.camera.moveEnd.addEventListener(() => {
-        setIsMoving(false)
-      })
+    const startListener = () => setIsMoving(true)
+    const endListener = () => setIsMoving(false)
+    map?.getMap().scene.camera.moveStart.addEventListener(startListener)
+    map?.getMap().scene.camera.moveEnd.addEventListener(endListener)
+    return () => {
+      map?.getMap().scene.camera.moveStart.removeEventListener(startListener)
+      map?.getMap().scene.camera.moveEnd.removeEventListener(endListener)
     }
-    return () => {}
   }, [map])
   React.useEffect(() => {
     if (isMoving) {
@@ -193,21 +264,46 @@ const useCameraMagnitude = ({
   return [cameraMagnitude, setCameraMagnitude]
 }
 
-const useListenToLineModel = ({ model, map }: { model: any; map: any }) => {
+const useListenToLineModel = ({
+  model,
+  map,
+  onDraw,
+  newLine,
+}: {
+  model: any
+  map: any
+  onDraw?: (drawingLocation: Line) => void
+  newLine: Line | null
+}) => {
   const [cameraMagnitude] = useCameraMagnitude({ map })
   const [drawnMagnitude, setDrawnMagnitude] = React.useState(0)
   const callback = React.useMemo(() => {
     return () => {
-      if (map && model) {
-        drawGeometry({
-          map,
-          model,
-          id: getIdFromModelForDisplay({ model }),
-          setDrawnMagnitude,
-        })
+      if (map) {
+        if (newLine) {
+          // Clone the model to display the new line drawn because we don't
+          // want to update the existing model unless the user clicks Apply.
+          const newModel = model.clone()
+          newModel.set(newLine)
+          drawGeometry({
+            map,
+            model: newModel,
+            id: getIdFromModelForDisplay({ model }),
+            setDrawnMagnitude,
+            onDraw,
+          })
+        } else if (model) {
+          drawGeometry({
+            map,
+            model,
+            id: getIdFromModelForDisplay({ model }),
+            setDrawnMagnitude,
+            onDraw,
+          })
+        }
       }
     }
-  }, [model, map])
+  }, [model, map, newLine])
   useListenTo(model, 'change:line change:lineWidth change:lineUnits', callback)
   React.useEffect(() => {
     if (map && needsRedraw({ map, drawnMagnitude })) {
@@ -219,12 +315,69 @@ const useListenToLineModel = ({ model, map }: { model: any; map: any }) => {
   }, [callback])
 }
 
-export const CesiumLineDisplay = ({ map, model }: { map: any; model: any }) => {
-  useListenToLineModel({ map, model })
+const useStartMapDrawing = ({
+  map,
+  model,
+  setNewLine,
+  onDraw,
+}: {
+  map: any
+  model: any
+  setNewLine: (newLine: Line) => void
+  onDraw: (newLine: Line) => void
+}) => {
+  React.useEffect(() => {
+    if (map && model) {
+      map.getMap().drawHelper[`startDrawingPolyline`]({
+        callback: (positions: Cesium.Cartesian3[]) => {
+          const drawnLine = positionsToLine(
+            positions,
+            map.getMap().scene.globe.ellipsoid
+          )
+          const line = drawnLine.line
+          //this shouldn't ever get hit because the draw library should protect against it, but just in case it does, remove the point
+          if (
+            line.length > 3 &&
+            line[line.length - 1][0] === line[line.length - 2][0] &&
+            line[line.length - 1][1] === line[line.length - 2][1]
+          ) {
+            line.pop()
+          }
+          setNewLine(drawnLine)
+          onDraw(drawnLine)
+        },
+        material: Cesium.Material.fromType('Color', {
+          color: Cesium.Color.BLUE,
+        }),
+      })
+    }
+  }, [map, model])
+}
+
+export const CesiumLineDisplay = ({
+  map,
+  model,
+  onDraw,
+}: {
+  map: any
+  model: any
+  onDraw?: (newLine: Line) => void
+}) => {
+  // Use state to store the line drawn by the user before they click Apply or Cancel.
+  // When the user clicks Draw, they are allowed to edit the existing line (if it
+  // exists), or draw a new line. If they draw a new line, save it to state then show
+  // it instead of the draw model because we don't want to update the draw model
+  // unless the user clicks Apply.
+  const [newLine, setNewLine] = React.useState<Line | null>(null)
+  if (onDraw) {
+    useStartMapDrawing({ map, model, onDraw, setNewLine })
+  }
+  useListenToLineModel({ map, model, onDraw, newLine })
   React.useEffect(() => {
     return () => {
       if (model && map) {
         removeOldDrawing({ map, id: getIdFromModelForDisplay({ model }) })
+        map.getMap().drawHelper.stopDrawing()
       }
     }
   }, [map, model])

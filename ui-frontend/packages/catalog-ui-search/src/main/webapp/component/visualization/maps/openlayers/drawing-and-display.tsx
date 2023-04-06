@@ -17,7 +17,8 @@ import { useState, useEffect } from 'react'
 import {
   getDrawModeFromModel,
   useDrawingAndDisplayModels,
-  DrawModeType,
+  getShapeFromDrawMode,
+  getDrawModeFromShape,
 } from '../drawing-and-display'
 import { OpenlayersBboxDisplay } from './bbox-display'
 import { OpenlayersCircleDisplay } from './circle-display'
@@ -69,35 +70,6 @@ export const removeOldDrawing = ({ map, id }: { map: ol.Map; id: string }) => {
   oldLayers.forEach((layer) => {
     map.removeLayer(layer)
   })
-}
-
-const getShapeFromDrawMode = (drawMode: DrawModeType): Shape => {
-  switch (drawMode) {
-    case 'bbox':
-      return 'Bounding Box'
-    case 'circle':
-      return 'Point Radius'
-    case 'line':
-      return 'Line'
-    case 'poly':
-    default:
-      return 'Polygon'
-  }
-}
-
-const getDrawModeFromShape = (shape: Shape): DrawModeType => {
-  switch (shape) {
-    case 'Bounding Box':
-      return 'bbox'
-    case 'Point':
-    case 'Point Radius':
-      return 'circle'
-    case 'Line':
-      return 'line'
-    case 'Polygon':
-    default:
-      return 'poly'
-  }
 }
 
 // see generateAnyGeoFilter in CQLUtils.ts for types

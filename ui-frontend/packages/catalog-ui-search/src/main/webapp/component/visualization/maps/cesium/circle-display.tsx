@@ -23,8 +23,17 @@ import { useRender } from '../../../hooks/useRender'
 import { removeOldDrawing } from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import TurfCircle from '@turf/circle'
+import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
+const toDeg = Cesium.Math.toDegrees
 
 const CAMERA_MAGNITUDE_THRESHOLD = 8000000
+
+type Circle = {
+  lon: number
+  lat: number
+  radius: number
+  radiusUnits: string
+}
 
 const getCurrentMagnitudeFromMap = ({ map }: { map: any }) => {
   return map.getMap().camera.getMagnitude()
@@ -67,15 +76,38 @@ const isModelReset = ({ modelProp }: { modelProp: any }) => {
   return false
 }
 
+const cartesian3ToCircle = (
+  center: Cesium.Cartesian3,
+  radius: number,
+  ellipsoid: Cesium.Ellipsoid
+): Circle => {
+  const latLon = ellipsoid.cartesianToCartographic(center)
+  const lon = toDeg(latLon.longitude)
+  const lat = toDeg(latLon.latitude)
+  let radiusUnits = 'meters'
+  if (radius >= 1000) {
+    radius /= 1000
+    radiusUnits = 'kilometers'
+  }
+  return {
+    lon: DistanceUtils.coordinateRound(lon),
+    lat: DistanceUtils.coordinateRound(lat),
+    radius,
+    radiusUnits,
+  }
+}
+
 const drawGeometry = ({
   model,
   map,
   id,
+  onDraw,
 }: {
   model: any
   map: any
   id: any
   setDrawnMagnitude: (number: any) => void
+  onDraw?: (drawingLocation: Circle) => void
 }) => {
   // if model has been reset
 
@@ -91,33 +123,63 @@ const drawGeometry = ({
     return
   }
 
-  const color = model.get('color')
+  removeOldDrawing({ map, id })
 
-  const centerPt = Turf.point([modelProp.lon, modelProp.lat])
-  const circleToCheck = TurfCircle(
-    centerPt,
-    DistanceUtils.getDistanceInMeters(modelProp.radius, modelProp.radiusUnits),
-    { units: 'meters', steps: 64 }
-  )
+  let primitive
 
-  const primitive = new Cesium.PolylineCollection()
-  primitive.add({
-    width: 8,
-    material: Cesium.Material.fromType('PolylineOutline', {
-      color: color
-        ? Cesium.Color.fromCssColorString(color)
-        : Cesium.Color.KHAKI,
-      outlineColor: Cesium.Color.WHITE,
-      outlineWidth: 4,
-    }),
-    id: 'userDrawing',
-    positions: Cesium.Cartesian3.fromDegreesArray(
-      _.flatten(circleToCheck.geometry.coordinates)
-    ),
-  })
+  if (onDraw) {
+    primitive = new (DrawHelper.CirclePrimitive as any)({
+      center: Cesium.Cartesian3.fromDegrees(modelProp.lon, modelProp.lat),
+      radius: DistanceUtils.getDistanceInMeters(
+        modelProp.radius,
+        modelProp.radiusUnits
+      ),
+      height: 0,
+      id,
+      material: Cesium.Material.fromType('Color', {
+        color: Cesium.Color.fromAlpha(Cesium.Color.BLUE, 0.2),
+      }),
+    })
+    primitive.setEditable()
+    primitive.addListener('onEdited', function (event: any) {
+      const circle = cartesian3ToCircle(
+        event.center,
+        event.radius,
+        map.getMap().scene.globe.ellipsoid
+      )
+      onDraw(circle)
+    })
+  } else {
+    const color = model.get('color')
+
+    const centerPt = Turf.point([modelProp.lon, modelProp.lat])
+    const circleToCheck = TurfCircle(
+      centerPt,
+      DistanceUtils.getDistanceInMeters(
+        modelProp.radius,
+        modelProp.radiusUnits
+      ),
+      { units: 'meters', steps: 64 }
+    )
+
+    primitive = new Cesium.PolylineCollection()
+    primitive.add({
+      width: 8,
+      material: Cesium.Material.fromType('PolylineOutline', {
+        color: color
+          ? Cesium.Color.fromCssColorString(color)
+          : Cesium.Color.KHAKI,
+        outlineColor: Cesium.Color.WHITE,
+        outlineWidth: 4,
+      }),
+      id: 'userDrawing',
+      positions: Cesium.Cartesian3.fromDegreesArray(
+        _.flatten(circleToCheck.geometry.coordinates)
+      ),
+    })
+  }
 
   primitive.id = id
-  removeOldDrawing({ map, id })
   map.getMap().scene.primitives.add(primitive)
   map.getMap().scene.requestRender()
 }
@@ -131,15 +193,14 @@ const useCameraMagnitude = ({
   const [isMoving, setIsMoving] = React.useState(false)
   const render = useRender()
   React.useEffect(() => {
-    if (map) {
-      map.getMap().scene.camera.moveStart.addEventListener(() => {
-        setIsMoving(true)
-      })
-      map.getMap().scene.camera.moveEnd.addEventListener(() => {
-        setIsMoving(false)
-      })
+    const startListener = () => setIsMoving(true)
+    const endListener = () => setIsMoving(false)
+    map?.getMap().scene.camera.moveStart.addEventListener(startListener)
+    map?.getMap().scene.camera.moveEnd.addEventListener(endListener)
+    return () => {
+      map?.getMap().scene.camera.moveStart.removeEventListener(startListener)
+      map?.getMap().scene.camera.moveEnd.removeEventListener(endListener)
     }
-    return () => {}
   }, [map])
   React.useEffect(() => {
     if (isMoving) {
@@ -155,21 +216,46 @@ const useCameraMagnitude = ({
   return [cameraMagnitude, setCameraMagnitude]
 }
 
-const useListenToModel = ({ model, map }: { model: any; map: any }) => {
+const useListenToModel = ({
+  model,
+  map,
+  newCircle,
+  onDraw,
+}: {
+  model: any
+  map: any
+  newCircle: Circle | null
+  onDraw?: (drawingLocation: Circle) => void
+}) => {
   const [cameraMagnitude] = useCameraMagnitude({ map })
   const [drawnMagnitude, setDrawnMagnitude] = React.useState(0)
   const callback = React.useMemo(() => {
     return () => {
-      if (map && model) {
-        drawGeometry({
-          map,
-          model,
-          id: getIdFromModelForDisplay({ model }),
-          setDrawnMagnitude,
-        })
+      if (map) {
+        if (newCircle) {
+          // Clone the model to display the new circle drawn because we don't
+          // want to update the existing model unless the user clicks Apply.
+          const newModel = model.clone()
+          newModel.set(newCircle)
+          drawGeometry({
+            map,
+            model: newModel,
+            id: getIdFromModelForDisplay({ model }),
+            setDrawnMagnitude,
+            onDraw,
+          })
+        } else if (model) {
+          drawGeometry({
+            map,
+            model,
+            id: getIdFromModelForDisplay({ model }),
+            setDrawnMagnitude,
+            onDraw,
+          })
+        }
       }
     }
-  }, [model, map])
+  }, [model, map, newCircle])
   useListenTo(model, 'change:lat change:lon change:radius', callback)
   React.useEffect(() => {
     if (map && needsRedraw({ map, drawnMagnitude })) {
@@ -181,18 +267,61 @@ const useListenToModel = ({ model, map }: { model: any; map: any }) => {
   }, [callback])
 }
 
-export const CesiumCircleDisplay = ({
+const useStartMapDrawing = ({
   map,
   model,
+  setNewCircle,
+  onDraw,
 }: {
   map: any
   model: any
+  setNewCircle: (newCircle: Circle) => void
+  onDraw: (newCircle: Circle) => void
 }) => {
-  useListenToModel({ map, model })
+  React.useEffect(() => {
+    if (map && model) {
+      map.getMap().drawHelper[`startDrawingCircle`]({
+        callback: (center: Cesium.Cartesian3, radius: number) => {
+          const circle = cartesian3ToCircle(
+            center,
+            radius,
+            map.getMap().scene.globe.ellipsoid
+          )
+          setNewCircle(circle)
+          onDraw(circle)
+        },
+        material: Cesium.Material.fromType('Color', {
+          color: Cesium.Color.fromAlpha(Cesium.Color.BLUE, 0.2),
+        }),
+      })
+    }
+  }, [map, model])
+}
+
+export const CesiumCircleDisplay = ({
+  map,
+  model,
+  onDraw,
+}: {
+  map: any
+  model: any
+  onDraw?: (newCircle: Circle) => void
+}) => {
+  // Use state to store the circle drawn by the user before they click Apply or Cancel.
+  // When the user clicks Draw, they are allowed to edit the existing circle (if it
+  // exists), or draw a new circle. If they draw a new circle, save it to state then show
+  // it instead of the draw model because we don't want to update the draw model
+  // unless the user clicks Apply.
+  const [newCircle, setNewCircle] = React.useState<Circle | null>(null)
+  if (onDraw) {
+    useStartMapDrawing({ map, model, setNewCircle, onDraw })
+  }
+  useListenToModel({ map, model, newCircle, onDraw })
   React.useEffect(() => {
     return () => {
       if (model && map) {
         removeOldDrawing({ map, id: getIdFromModelForDisplay({ model }) })
+        map.getMap().drawHelper.stopDrawing()
       }
     }
   }, [map, model])

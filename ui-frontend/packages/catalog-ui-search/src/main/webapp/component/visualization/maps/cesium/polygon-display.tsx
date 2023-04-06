@@ -22,39 +22,18 @@ import { useRender } from '../../../hooks/useRender'
 import { removeOldDrawing } from './drawing-and-display'
 import ShapeUtils from '../../../../js/ShapeUtils'
 import {
-  constructDottedLinePrimitive,
-  constructLinePrimitive,
+  constructSolidLinePrimitive,
+  constructOutlinedLinePrimitive,
 } from './line-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import * as Turf from '@turf/turf'
+import { Position } from '@turf/turf'
+import _ from 'underscore'
+import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
+import utility from './utility'
+const toDeg = Cesium.Math.toDegrees
 
-const createBufferedPolygonPointsFromModel = ({
-  polygonPoints,
-  model,
-}: {
-  polygonPoints: any
-  model: any
-}) => {
-  const width =
-    DistanceUtils.getDistanceInMeters(
-      model.toJSON().polygonBufferWidth,
-      model.get('polygonBufferUnits')
-    ) || 1
-
-  return createBufferedPolygonPoints({ polygonPoints, width })
-}
-
-const createBufferedPolygonPoints = ({
-  polygonPoints,
-  width,
-}: {
-  polygonPoints: any
-  width: any
-}) => {
-  return Turf.buffer(Turf.lineString(polygonPoints), Math.max(width, 1), {
-    units: 'meters',
-  })
-}
+const polygonFillColor = 'rgba(0,0,255,0.2)'
 
 const CAMERA_MAGNITUDE_THRESHOLD = 8000000
 
@@ -87,16 +66,82 @@ const needsRedraw = ({
   return false
 }
 
+const constructDottedLinePrimitive = ({
+  coordinates,
+  model,
+}: {
+  coordinates: any
+  model: any
+}) => {
+  const color = model.get('color')
+
+  return {
+    width: 4,
+    material: Cesium.Material.fromType('PolylineDash', {
+      color: color
+        ? Cesium.Color.fromCssColorString(color)
+        : Cesium.Color.KHAKI,
+      dashLength: 16.0,
+      dashPattern: 7.0,
+    }),
+    id: 'userDrawing',
+    positions: Cesium.Cartesian3.fromDegreesArray(_.flatten(coordinates)),
+  }
+}
+
+type Polygon = {
+  polygon: [number, number][]
+}
+
+const positionsToPolygon = (
+  positions: Cesium.Cartesian3[],
+  ellipsoid: Cesium.Ellipsoid
+): Polygon => {
+  return {
+    polygon: positions.map((cartPos) => {
+      const latLon = ellipsoid.cartesianToCartographic(cartPos)
+      const lon = toDeg(latLon.longitude)
+      const lat = toDeg(latLon.latitude)
+      return [
+        DistanceUtils.coordinateRound(lon),
+        DistanceUtils.coordinateRound(lat),
+      ]
+    }),
+  }
+}
+
+const validateAndFixPolygon = (polygonPoints: Position[]): boolean => {
+  if (!polygonPoints || polygonPoints.length < 3) {
+    return false
+  }
+  if (
+    polygonPoints[0].toString() !==
+    polygonPoints[polygonPoints.length - 1].toString()
+  ) {
+    polygonPoints.push(polygonPoints[0])
+  }
+  if (validateGeo('polygon', JSON.stringify(polygonPoints))?.error) {
+    return false
+  }
+  polygonPoints.forEach((point: any) => {
+    point[0] = DistanceUtils.coordinateRound(point[0])
+    point[1] = DistanceUtils.coordinateRound(point[1])
+  })
+  return true
+}
+
 const drawGeometry = ({
   model,
   map,
   id,
   setDrawnMagnitude,
+  onDraw,
 }: {
   model: any
   map: any
   id: any
   setDrawnMagnitude: (number: any) => void
+  onDraw?: (drawingLocation: Polygon) => void
 }) => {
   const json = model.toJSON()
   if (!Array.isArray(json.polygon)) {
@@ -104,57 +149,104 @@ const drawGeometry = ({
     return
   }
   const isMultiPolygon = ShapeUtils.isArray3D(json.polygon)
-  const polygons = isMultiPolygon ? json.polygon : [json.polygon]
+  // Create a deep copy since we may modify some of these positions for display purposes
+  const polygons: Position[][] = JSON.parse(
+    JSON.stringify(isMultiPolygon ? json.polygon : [json.polygon])
+  )
 
-  const primitive = new Cesium.PolylineCollection()
-  primitive.id = id
   const cameraMagnitude = map.getMap().camera.getMagnitude()
   setDrawnMagnitude(cameraMagnitude)
-  ;(polygons || []).forEach((polygonPoints: any) => {
-    if (!polygonPoints || polygonPoints.length < 3) {
-      return
-    }
-    if (
-      polygonPoints[0].toString() !==
-      polygonPoints[polygonPoints.length - 1].toString()
-    ) {
-      polygonPoints.push(polygonPoints[0])
-    }
-    if (validateGeo('polygon', JSON.stringify(polygonPoints))?.error) {
-      return
-    }
-    polygonPoints.forEach((point: any) => {
-      point[0] = DistanceUtils.coordinateRound(point[0])
-      point[1] = DistanceUtils.coordinateRound(point[1])
-    })
-
-    const drawnPolygonPoints = createBufferedPolygonPoints({
-      polygonPoints,
-      width: 1,
-    })
-
-    const bufferedPolygonPoints = createBufferedPolygonPointsFromModel({
-      polygonPoints,
-      model,
-    })
-    const bufferedPolygons = bufferedPolygonPoints.geometry.coordinates.map(
-      (set: any) => Turf.polygon([set])
-    )
-    const bufferedPolygon = bufferedPolygons.reduce(
-      (a, b) => Turf.union(a, b),
-      bufferedPolygons[0]
-    )
-
-    bufferedPolygon?.geometry.coordinates.forEach((set: any) =>
-      primitive.add(constructLinePrimitive({ coordinates: set, model }))
-    )
-    drawnPolygonPoints.geometry.coordinates.forEach((set: any) =>
-      primitive.add(constructDottedLinePrimitive({ coordinates: set, model }))
-    )
-  })
 
   removeOldDrawing({ map, id })
-  map.getMap().scene.primitives.add(primitive)
+
+  const buffer = DistanceUtils.getDistanceInMeters(
+    json.polygonBufferWidth,
+    model.get('polygonBufferUnits')
+  )
+
+  if (onDraw) {
+    polygons.forEach((polygonPoints) => {
+      if (!validateAndFixPolygon(polygonPoints)) {
+        return
+      }
+
+      const drawPrimitive = new (DrawHelper.PolygonPrimitive as any)(
+        constructSolidLinePrimitive({
+          coordinates: polygonPoints,
+          model,
+          id,
+          color: polygonFillColor,
+          buffer,
+        })
+      )
+      drawPrimitive.setEditable()
+      drawPrimitive.addListener('onEdited', function (event: any) {
+        const polygon = positionsToPolygon(
+          event.positions,
+          map.getMap().scene.globe.ellipsoid
+        )
+        onDraw(polygon)
+      })
+      map.getMap().scene.primitives.add(drawPrimitive)
+    })
+  } else {
+    const pc = new Cesium.PolylineCollection()
+    pc.id = id
+    polygons.forEach((polygonPoints) => {
+      if (!validateAndFixPolygon(polygonPoints)) {
+        return
+      }
+
+      if (buffer > 0) {
+        const adjustedPolygon = Turf.polygon([polygonPoints])
+        utility.adjustGeoCoords(adjustedPolygon)
+
+        const bufferedPolygonPoints = Turf.buffer(
+          adjustedPolygon,
+          Math.max(buffer, 1),
+          {
+            units: 'meters',
+          }
+        )
+
+        if (!bufferedPolygonPoints) {
+          return
+        }
+
+        // need to adjust the points again AFTER buffering, since buffering undoes the antimeridian adjustments
+        utility.adjustGeoCoords(bufferedPolygonPoints)
+
+        const bufferedPolygons = bufferedPolygonPoints.geometry.coordinates.map(
+          (set) => Turf.polygon([set])
+        )
+
+        const bufferedPolygon = bufferedPolygons.reduce(
+          (a, b) => Turf.union(a, b),
+          bufferedPolygons[0]
+        )
+
+        bufferedPolygon?.geometry.coordinates.forEach((coords: any) =>
+          pc.add(
+            constructOutlinedLinePrimitive({ coordinates: coords, model, id })
+          )
+        )
+        pc.add(
+          constructDottedLinePrimitive({ coordinates: polygonPoints, model })
+        )
+      } else {
+        pc.add(
+          constructOutlinedLinePrimitive({
+            coordinates: polygonPoints,
+            model,
+            id,
+          })
+        )
+      }
+    })
+
+    map.getMap().scene.primitives.add(pc)
+  }
+
   map.getMap().scene.requestRender()
 }
 
@@ -167,15 +259,14 @@ const useCameraMagnitude = ({
   const [isMoving, setIsMoving] = React.useState(false)
   const render = useRender()
   React.useEffect(() => {
-    if (map) {
-      map.getMap().scene.camera.moveStart.addEventListener(() => {
-        setIsMoving(true)
-      })
-      map.getMap().scene.camera.moveEnd.addEventListener(() => {
-        setIsMoving(false)
-      })
+    const startListener = () => setIsMoving(true)
+    const endListener = () => setIsMoving(false)
+    map?.getMap().scene.camera.moveStart.addEventListener(startListener)
+    map?.getMap().scene.camera.moveEnd.addEventListener(endListener)
+    return () => {
+      map?.getMap().scene.camera.moveStart.removeEventListener(startListener)
+      map?.getMap().scene.camera.moveEnd.removeEventListener(endListener)
     }
-    return () => {}
   }, [map])
   React.useEffect(() => {
     if (isMoving) {
@@ -191,21 +282,46 @@ const useCameraMagnitude = ({
   return [cameraMagnitude, setCameraMagnitude]
 }
 
-const useListenToLineModel = ({ model, map }: { model: any; map: any }) => {
+const useListenToLineModel = ({
+  model,
+  map,
+  onDraw,
+  newPoly,
+}: {
+  model: any
+  map: any
+  onDraw?: (drawingLocation: Polygon) => void
+  newPoly: Polygon | null
+}) => {
   const [cameraMagnitude] = useCameraMagnitude({ map })
   const [drawnMagnitude, setDrawnMagnitude] = React.useState(0)
   const callback = React.useMemo(() => {
     return () => {
-      if (map && model) {
-        drawGeometry({
-          map,
-          model,
-          id: getIdFromModelForDisplay({ model }),
-          setDrawnMagnitude,
-        })
+      if (map) {
+        if (newPoly) {
+          // Clone the model to display the new polygon drawn because we don't
+          // want to update the existing model unless the user clicks Apply.
+          const newModel = model.clone()
+          newModel.set(newPoly)
+          drawGeometry({
+            map,
+            model: newModel,
+            id: getIdFromModelForDisplay({ model }),
+            setDrawnMagnitude,
+            onDraw,
+          })
+        } else if (model) {
+          drawGeometry({
+            map,
+            model,
+            id: getIdFromModelForDisplay({ model }),
+            setDrawnMagnitude,
+            onDraw,
+          })
+        }
       }
     }
-  }, [model, map])
+  }, [model, map, newPoly])
   useListenTo(
     model,
     'change:polygon change:polygonBufferWidth change:polygonBufferUnits',
@@ -221,18 +337,73 @@ const useListenToLineModel = ({ model, map }: { model: any; map: any }) => {
   }, [callback])
 }
 
-export const CesiumPolygonDisplay = ({
+const useStartMapDrawing = ({
   map,
   model,
+  setNewPoly,
+  onDraw,
 }: {
   map: any
   model: any
+  setNewPoly: (newPoly: Polygon) => void
+  onDraw: (newPoly: Polygon) => void
 }) => {
-  useListenToLineModel({ map, model })
+  React.useEffect(() => {
+    if (map && model) {
+      const material = Cesium.Material.fromType('Color', {
+        color: Cesium.Color.fromCssColorString(polygonFillColor),
+      })
+      map.getMap().drawHelper[`startDrawingPolygon`]({
+        callback: (positions: Cesium.Cartesian3[]) => {
+          const drawnPolygon = positionsToPolygon(
+            positions,
+            map.getMap().scene.globe.ellipsoid
+          )
+          const polygon = drawnPolygon.polygon
+          //this shouldn't ever get hit because the draw library should protect against it, but just in case it does, remove the point
+          if (
+            polygon.length > 3 &&
+            polygon[polygon.length - 1][0] === polygon[polygon.length - 2][0] &&
+            polygon[polygon.length - 1][1] === polygon[polygon.length - 2][1]
+          ) {
+            polygon.pop()
+          }
+          setNewPoly(drawnPolygon)
+          onDraw(drawnPolygon)
+        },
+        appearance: new Cesium.MaterialAppearance({
+          material,
+        }),
+        material,
+      })
+    }
+  }, [map, model])
+}
+
+export const CesiumPolygonDisplay = ({
+  map,
+  model,
+  onDraw,
+}: {
+  map: any
+  model: any
+  onDraw?: (newPoly: Polygon) => void
+}) => {
+  // Use state to store the polygon drawn by the user before they click Apply or Cancel.
+  // When the user clicks Draw, they are allowed to edit the existing polygon (if it
+  // exists), or draw a new polygon. If they draw a new polygon, save it to state then show
+  // it instead of the draw model because we don't want to update the draw model
+  // unless the user clicks Apply.
+  const [newPoly, setNewPoly] = React.useState<Polygon | null>(null)
+  if (onDraw) {
+    useStartMapDrawing({ map, model, setNewPoly, onDraw })
+  }
+  useListenToLineModel({ map, model, newPoly, onDraw })
   React.useEffect(() => {
     return () => {
       if (model && map) {
         removeOldDrawing({ map, id: getIdFromModelForDisplay({ model }) })
+        map.getMap().drawHelper.stopDrawing()
       }
     }
   }, [map, model])

@@ -314,14 +314,18 @@ const useMapListeners = ({
         })
       })
       map.onRightClick((event: any, _mapEvent: any) => {
-        event.preventDefault()
-        mapModel.set({
-          mouseX: event.offsetX,
-          mouseY: event.offsetY,
-          open: true,
-        })
-        mapModel.updateClickCoordinates()
-        updateDistance({ map, mapModel, updateOnMenu: true })
+        // Right click is used in drawing on the 3D map, so let's ignore it here
+        // while drawing.
+        if (!Drawing.isDrawing()) {
+          event.preventDefault()
+          mapModel.set({
+            mouseX: event.offsetX,
+            mouseY: event.offsetY,
+            open: true,
+          })
+          mapModel.updateClickCoordinates()
+          updateDistance({ map, mapModel, updateOnMenu: true })
+        }
       })
     }
   }, [map, mapModel, selectionInterface])
