@@ -30,7 +30,6 @@ const Point = (props: any) => {
       <DdLatitude
         value={dd.point.latitude.toString()}
         onChange={setState((draft: any, value: any) => {
-          // console.log(`DdLatitude onChange.`, draft, value)
           draft.dd.point.latitude = value
         })}
         onBlur={setState((draft: any) => {
@@ -46,7 +45,6 @@ const Point = (props: any) => {
           (draft: any, value: any) => (draft.dd.point.longitude = value)
         )}
         onBlur={setState((draft: any) => {
-          // console.log('DdLongitude onBlur', draft)
           draft.dd.point.longitude = DistanceUtils.coordinateRound(
             draft.dd.point.longitude
           )
@@ -130,11 +128,10 @@ const Line = (props: any) => {
         )}
         onBlur={setState(
           (draft: any) =>
-            (draft.dd.line.list[
-              index
-            ].longitude = DistanceUtils.coordinateRound(
-              draft.dd.line.list[index].longitude
-            ))
+            (draft.dd.line.list[index].longitude =
+              DistanceUtils.coordinateRound(
+                draft.dd.line.list[index].longitude
+              ))
         )}
       />
     </Group>
@@ -166,11 +163,10 @@ const Polygon = (props: any) => {
         )}
         onBlur={setState(
           (draft: any) =>
-            (draft.dd.polygon.list[
-              index
-            ].latitude = DistanceUtils.coordinateRound(
-              draft.dd.polygon.list[index].latitude
-            ))
+            (draft.dd.polygon.list[index].latitude =
+              DistanceUtils.coordinateRound(
+                draft.dd.polygon.list[index].latitude
+              ))
         )}
       />
       <DdLongitude
@@ -181,11 +177,10 @@ const Polygon = (props: any) => {
         )}
         onBlur={setState(
           (draft: any) =>
-            (draft.dd.polygon.list[
-              index
-            ].longitude = DistanceUtils.coordinateRound(
-              draft.dd.polygon.list[index].longitude
-            ))
+            (draft.dd.polygon.list[index].longitude =
+              DistanceUtils.coordinateRound(
+                draft.dd.polygon.list[index].longitude
+              ))
         )}
       />
     </Group>
