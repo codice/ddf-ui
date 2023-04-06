@@ -16,7 +16,7 @@ import React from 'react'
 
 const Label = ({ children }: any) => (
   <span
-    className="p-2 flex-shrink-0 flex-grow-0"
+    className="p-2 shrink-0 grow-0"
     style={{
       minWidth: '120px',
     }}

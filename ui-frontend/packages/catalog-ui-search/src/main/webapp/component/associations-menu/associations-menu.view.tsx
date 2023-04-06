@@ -71,7 +71,7 @@ const FilterMenu = () => {
               return (
                 <MenuItem
                   onClick={() => {
-                    StateModel.set('filter', (choice.value as unknown) as any)
+                    StateModel.set('filter', choice.value as unknown as any)
                     menuState.handleClose()
                   }}
                   autoFocus={choice === currentChoice}
@@ -126,7 +126,7 @@ const DisplayMenu = () => {
               return (
                 <MenuItem
                   onClick={() => {
-                    StateModel.set('display', (choice.value as unknown) as any)
+                    StateModel.set('display', choice.value as unknown as any)
                     menuState.handleClose()
                   }}
                   autoFocus={choice === currentChoice}
@@ -144,7 +144,7 @@ const DisplayMenu = () => {
 
 const AssociationsMenu = () => {
   return (
-    <div className="flex flex-row flex-no-wrap items-center justify-center w-full">
+    <div className="flex flex-row flex-nowrap items-center justify-center w-full">
       <div className="p-2 ">
         <FilterMenu />
       </div>

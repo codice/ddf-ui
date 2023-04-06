@@ -247,9 +247,10 @@ export const Header = ({
       'change:results-attributesShownTable',
       () => {
         setShownAttributes(TypedUserInstance.getResultsAttributesShownTable())
-        columnRefs.current = TypedUserInstance.getResultsAttributesShownTable().map(
-          () => React.createRef<HTMLDivElement>()
-        )
+        columnRefs.current =
+          TypedUserInstance.getResultsAttributesShownTable().map(() =>
+            React.createRef<HTMLDivElement>()
+          )
       }
     )
   }, [])
@@ -257,7 +258,7 @@ export const Header = ({
     <React.Fragment>
       <div
         data-id="table-container"
-        className="bg-inherit whitespace-no-wrap flex items-strech flex-no-wrap"
+        className="bg-inherit whitespace-nowrap flex items-strech flex-nowrap"
         style={{
           width: shownAttributes.length * 200 + 'px',
           display: 'grid',

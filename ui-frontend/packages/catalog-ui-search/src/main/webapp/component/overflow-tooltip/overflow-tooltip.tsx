@@ -83,8 +83,9 @@ const OverflowTip = ({
   const isTruncatedState = useIsTruncated(refOfThingToMeasurePassedIn)
   React.useEffect(() => {
     // expose this ugly thing when no other way will work (autocompletes unfortunately)
-    ;(isTruncatedState.ref
-      .current as OverflowTooltipHTMLElement).overflowTooltip = {
+    ;(
+      isTruncatedState.ref.current as OverflowTooltipHTMLElement
+    ).overflowTooltip = {
       setOpen: (open: boolean) => {
         if (isTruncatedState.isTruncated) setOpen(open)
       },

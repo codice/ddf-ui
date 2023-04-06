@@ -5,6 +5,7 @@ import { FilterBuilderClass } from '../filter-builder/filter.structure'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import { TypedMetacardDefs } from '../tabs/metacard/metacardDefinitions'
 import { TypedProperties } from './TypedProperties'
+import moment from 'moment'
 
 import userInstance from './user-instance'
 
@@ -40,7 +41,8 @@ export const TypedUserInstance = {
   },
   // basically, what could be shown that currently isn't
   getResultsAttributesPossibleTable: (): string[] => {
-    const currentAttributesShown = TypedUserInstance.getResultsAttributesShownTable()
+    const currentAttributesShown =
+      TypedUserInstance.getResultsAttributesShownTable()
     const allKnownAttributes = TypedMetacardDefs.getSortedMetacardTypes()
     const searchOnlyAttributes = TypedMetacardDefs.getSearchOnlyAttributes()
     const attributesPossible = allKnownAttributes.filter((attr) => {
@@ -54,7 +56,8 @@ export const TypedUserInstance = {
   },
   // basically, what could be shown that currently isn't
   getResultsAttributesPossibleList: (): string[] => {
-    const currentAttributesShown = TypedUserInstance.getResultsAttributesShownList()
+    const currentAttributesShown =
+      TypedUserInstance.getResultsAttributesShownList()
     const allKnownAttributes = TypedMetacardDefs.getSortedMetacardTypes()
     const searchOnlyAttributes = TypedMetacardDefs.getSearchOnlyAttributes()
     const attributesPossible = allKnownAttributes.filter((attr) => {
@@ -136,6 +139,11 @@ export const TypedUserInstance = {
   },
   getMapHome: () => {
     return TypedUserInstance.getPreferences().get('mapHome')
+  },
+  getMomentDate(date: string) {
+    return `${moment(date).fromNow()} : ${userInstance.getUserReadableDateTime(
+      date
+    )}`
   },
 }
 

@@ -55,9 +55,7 @@ export type QueryType = {
   isOutdated: () => boolean
   startSearchIfOutdated: () => void
   updateCqlBasedOnFilterTree: () => void
-  initializeResult: (
-    options?: any
-  ) => {
+  initializeResult: (options?: any) => {
     data: any
     selectedSources: any
     isHarvested: any

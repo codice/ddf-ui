@@ -35,7 +35,7 @@ const Point = (props: any) => {
 const Circle = (props: any) => {
   const { usng, setState } = props
   return (
-    <div className="flex flex-col flex-no-wrap space-y-2">
+    <div className="flex flex-col flex-nowrap space-y-2">
       <UsngCoordinate
         value={usng.circle.point}
         onChange={setState(

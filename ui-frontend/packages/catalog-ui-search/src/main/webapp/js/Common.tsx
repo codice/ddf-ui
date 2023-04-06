@@ -17,7 +17,6 @@ import $ from 'jquery'
 import moment from 'moment'
 import './requestAnimationFramePolyfill'
 import properties from './properties'
-import user from '../component/singletons/user-instance'
 const timeZones = {
   UTC: 'Etc/UTC',
   '-12': 'Etc/GMT+12',
@@ -165,9 +164,6 @@ export const Common = {
   },
   getRelativeDate(date: string) {
     return `${moment(date).fromNow()}`
-  },
-  getMomentDate(date: string) {
-    return `${moment(date).fromNow()} : ${user.getUserReadableDateTime(date)}`
   },
   getImageSrc(img: string) {
     if (

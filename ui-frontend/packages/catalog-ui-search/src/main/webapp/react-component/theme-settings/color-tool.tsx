@@ -165,19 +165,17 @@ function ColorTool(props: any) {
     })
   }
 
-  const handleChangeShade = (name: string) => (
-    _event: any,
-    shade: string | number
-  ) => {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-    const color = colors[state[`${name}Hue`]][shades[shade]]
-    setState({
-      ...state,
-      [`${name}Shade`]: shade,
-      [name]: color,
-      [`${name}Input`]: color,
-    })
-  }
+  const handleChangeShade =
+    (name: string) => (_event: any, shade: string | number) => {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+      const color = colors[state[`${name}Hue`]][shades[shade]]
+      setState({
+        ...state,
+        [`${name}Shade`]: shade,
+        [name]: color,
+        [`${name}Input`]: color,
+      })
+    }
 
   React.useEffect(() => {
     updateTheme(state)

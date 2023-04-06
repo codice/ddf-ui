@@ -390,9 +390,8 @@ export default function (
     },
     getWindowLocationsOfResults(results: any) {
       return results.map((result: any) => {
-        const openlayersCenterOfGeometry = utility.calculateOpenlayersCenterOfGeometry(
-          result
-        )
+        const openlayersCenterOfGeometry =
+          utility.calculateOpenlayersCenterOfGeometry(result)
         const center = map.getPixelFromCoordinate(openlayersCenterOfGeometry)
         if (center) {
           return center

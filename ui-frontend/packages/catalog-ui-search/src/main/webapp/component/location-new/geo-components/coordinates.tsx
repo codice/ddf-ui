@@ -22,7 +22,7 @@ import { buildDmsString, parseDmsCoordinate } from '../utils/dms-utils'
 const Coordinate = (props: any) => {
   const { placeholder, value, onChange, children, ...otherProps } = props
   return (
-    <div className="flex flex-row items-center w-full flex-no-wrap">
+    <div className="flex flex-row items-center w-full flex-nowrap">
       <TextField
         placeholder={placeholder}
         value={value}
@@ -37,7 +37,7 @@ const Coordinate = (props: any) => {
 const MaskedCoordinate = (props: any) => {
   const { placeholder, mask, value, onChange, children, ...otherProps } = props
   return (
-    <div className="flex flex-row items-center w-full flex-no-wrap">
+    <div className="flex flex-row items-center w-full flex-nowrap">
       <MaskedTextField
         placeholder={placeholder}
         mask={mask}

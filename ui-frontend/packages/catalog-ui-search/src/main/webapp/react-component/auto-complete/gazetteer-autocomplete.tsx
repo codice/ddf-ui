@@ -104,11 +104,11 @@ const GazetteerAutoComplete = ({
         style={{ height: '42px' }}
         avatar={<RoomIcon />}
         label={
-          <div className="flex flex-row flex-no-wrap items-center">
-            <div className="flex-shrink w-full truncate">{value}</div>
+          <div className="flex flex-row flex-nowrap items-center">
+            <div className="shrink w-full truncate">{value}</div>
             <Button
               color="primary"
-              className="flex-shrink-0"
+              className="shrink-0"
               onClick={() => {
                 props.onChange(undefined)
               }}

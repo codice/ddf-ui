@@ -50,14 +50,10 @@ const ResendQuery = styled.a`
 `
 
 const Spellcheck = (props: Props) => {
-  const [
-    expandShowingResultForText,
-    setExpandShowingResultForText,
-  ] = React.useState(false)
-  const [
-    expandDidYouMeanFieldText,
-    setExpandDidYouMeanFieldText,
-  ] = React.useState(false)
+  const [expandShowingResultForText, setExpandShowingResultForText] =
+    React.useState(false)
+  const [expandDidYouMeanFieldText, setExpandDidYouMeanFieldText] =
+    React.useState(false)
 
   const createShowResultText = (showingResultsForFields: any[]) => {
     let showingResultsFor = 'Showing Results for '

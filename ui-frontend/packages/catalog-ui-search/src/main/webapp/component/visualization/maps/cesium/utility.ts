@@ -17,7 +17,7 @@ import _ from 'underscore'
 import DistanceUtils from '../../../../js/DistanceUtils'
 import ShapeUtils from '../../../../js/ShapeUtils'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
-import Cesium from 'cesium'
+import Cesium from 'cesium/Build/Cesium/Cesium'
 import * as Turf from '@turf/turf'
 import { Feature, Geometry } from '@turf/turf'
 
@@ -51,9 +51,8 @@ export default {
       Calculates the center of given a geometry (WKT)
     */
   calculateCartographicCenterOfGeometryInDegrees(propertyModel: any) {
-    const cartographicCenterInRadians = this.calculateCartographicCenterOfGeometryInRadians(
-      propertyModel
-    )
+    const cartographicCenterInRadians =
+      this.calculateCartographicCenterOfGeometryInRadians(propertyModel)
     return [
       Cesium.Math.toDegrees(cartographicCenterInRadians.longitude),
       Cesium.Math.toDegrees(cartographicCenterInRadians.latitude),
@@ -62,9 +61,8 @@ export default {
   calculateWindowCenterOfGeometry(geometry: any, map: any) {
     let cartesian3position = geometry
     if (cartesian3position.constructor !== Cesium.Cartesian3) {
-      cartesian3position = this.calculateCartesian3CenterOfGeometry(
-        cartesian3position
-      )
+      cartesian3position =
+        this.calculateCartesian3CenterOfGeometry(cartesian3position)
     }
     return Cesium.SceneTransforms.wgs84ToWindowCoordinates(
       map.scene,
@@ -94,9 +92,8 @@ export default {
       Calculates the center of given geometries (WKT)
     */
   calculateCartographicCenterOfGeometriesInDegrees(propertyModels: any) {
-    const cartographicCenterInRadians = this.calculateCartographicCenterOfGeometriesInRadians(
-      propertyModels
-    )
+    const cartographicCenterInRadians =
+      this.calculateCartographicCenterOfGeometriesInRadians(propertyModels)
     return [
       Cesium.Math.toDegrees(cartographicCenterInRadians.longitude),
       Cesium.Math.toDegrees(cartographicCenterInRadians.latitude),

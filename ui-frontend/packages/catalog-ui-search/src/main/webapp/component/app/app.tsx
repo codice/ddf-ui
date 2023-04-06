@@ -296,7 +296,7 @@ const HelpButton = () => {
   const { navOpen } = useNavContextProvider()
   return (
     <ExpandingButton
-      component={(properties as any).helpUrl ? 'a' : ((Link as unknown) as any)}
+      component={(properties as any).helpUrl ? 'a' : (Link as unknown as any)}
       href={(properties as any).helpUrl}
       to={
         (properties as any).helpUrl
@@ -507,7 +507,7 @@ const SideBarRoutes = () => {
   return (
     <Grid
       item
-      className="overflow-auto p-0 flex-shrink-0 scrollbars-min"
+      className="overflow-auto p-0 shrink-0 scrollbars-min"
       style={{
         maxHeight: `calc(100% - ${7 * 4}rem)`, //
       }}
@@ -530,7 +530,7 @@ const SideBarToggleButton = () => {
   const { navOpen, setNavOpen } = useNavContextProvider()
   return (
     <>
-      <Grid item className="w-full h-16 flex-shrink-0">
+      <Grid item className="w-full h-16 shrink-0">
         {navOpen ? (
           <>
             <Grid
@@ -611,7 +611,7 @@ const SideBar = () => {
       item
       className={`${
         navOpen ? 'w-64' : 'w-20'
-      } transition-all duration-200 ease-in-out relative z-10 mr-2 flex-shrink-0 pb-2 pt-2 pl-2 group`}
+      } transition-all duration-200 ease-in-out relative z-10 mr-2 shrink-0 pb-2 pt-2 pl-2 group`}
       onMouseLeave={() => {
         scrollCurrentRouteIntoView()
       }}
@@ -629,10 +629,7 @@ const SideBar = () => {
           <Divider />
           <SideBarBackground />
           <Divider />
-          <Grid
-            item
-            className="mt-auto overflow-hidden w-full flex-shrink-0 flex-grow-0"
-          >
+          <Grid item className="mt-auto overflow-hidden w-full shrink-0 grow-0">
             <HelpButton />
             <SettingsButton />
 
@@ -680,10 +677,7 @@ const Footer = () => {
 }
 const SideBarBackground = () => {
   return (
-    <Grid
-      item
-      className="relative overflow-hidden flex-shrink-1 h-full min-w-full"
-    >
+    <Grid item className="relative overflow-hidden shrink-1 h-full min-w-full">
       {(properties as any).bottomLeftBackgroundSrc ? (
         <img
           className={`group-hover:opacity-100 opacity-50 duration-200 ease-in-out transition-all w-auto h-full absolute max-w-none m-auto min-h-80`}
@@ -710,7 +704,7 @@ const RouteContents = () => {
   return (
     <Grid
       item
-      className="w-full h-full relative z-0 flex-shrink-1 overflow-x-hidden" // do not remove this overflow hidden, see comment above for more
+      className="w-full h-full relative z-0 shrink-1 overflow-x-hidden" // do not remove this overflow hidden, see comment above for more
     >
       <Memo>
         <Switch>

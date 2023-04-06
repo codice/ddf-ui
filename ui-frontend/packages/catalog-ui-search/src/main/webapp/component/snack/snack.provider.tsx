@@ -76,14 +76,8 @@ export function SnackProvider({ children }: any) {
   }
 
   const value = useMemo(() => addSnack, [])
-  const {
-    message,
-    status,
-    closeable,
-    undo,
-    snackBarProps,
-    alertProps,
-  } = currentSnack
+  const { message, status, closeable, undo, snackBarProps, alertProps } =
+    currentSnack
   return (
     <SnackBarContext.Provider value={value}>
       {children}

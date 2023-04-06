@@ -72,7 +72,7 @@ class MaskedTextField extends React.Component<MaskedInputProps> {
         <Group>
           {label != null ? (
             <div
-              className="p-2 flex-shrink-0 flex-grow-0"
+              className="p-2 shrink-0 grow-0"
               style={{
                 minWidth: '120px',
               }}
@@ -82,7 +82,7 @@ class MaskedTextField extends React.Component<MaskedInputProps> {
             </div>
           ) : null}
           <MaskedInput
-            className="inline-block w-full whitespace-no-wrap flex-shrink overflow-hidden"
+            className="inline-block w-full whitespace-nowrap shrink overflow-hidden"
             value={value}
             keepCharPositions
             onChange={(e: any) => {
@@ -108,7 +108,7 @@ class MaskedTextField extends React.Component<MaskedInputProps> {
             {...args}
           />
           {addon != null ? (
-            <label className="p-2 flex-shrink-0 flex-grow-0">{addon}</label>
+            <label className="p-2 shrink-0 grow-0">{addon}</label>
           ) : null}
         </Group>
       </div>

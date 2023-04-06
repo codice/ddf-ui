@@ -191,11 +191,11 @@ const SavedSearches = () => {
     setSortDirection(sortAttribute === 'title' ? 'ascending' : 'descending')
   }, [sortAttribute])
   return (
-    <div className="w-full h-full flex flex-col flex-no-wrap overflow-hidden ">
-      <div className="flex-shrink-0 w-full pt-2 pr-2">
+    <div className="w-full h-full flex flex-col flex-nowrap overflow-hidden ">
+      <div className="shrink-0 w-full pt-2 pr-2">
         <Paper
           elevation={Elevations.panels}
-          className="min-h-16 w-full flex-shrink-0 p-2 flex flex-row items-center flex-wrap"
+          className="min-h-16 w-full shrink-0 p-2 flex flex-row items-center flex-wrap"
         >
           <TextField
             label="Filter"
@@ -255,7 +255,7 @@ const SavedSearches = () => {
         </Paper>
       </div>
       <DarkDivider />
-      <div className="relative h-full overflow-hidden w-full flex-shrink">
+      <div className="relative h-full overflow-hidden w-full shrink">
         {isUpdating ? (
           <LinearProgress
             variant="indeterminate"

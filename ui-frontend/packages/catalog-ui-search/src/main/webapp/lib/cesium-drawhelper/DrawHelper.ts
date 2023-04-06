@@ -23,7 +23,7 @@
  */
 /* eslint-disable */
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
-import Cesium from 'cesium'
+import Cesium from 'cesium/Build/Cesium/Cesium'
 import * as Turf from '@turf/turf'
 import utility from '../../component/visualization/maps/cesium/utility'
 import _ from 'lodash'
@@ -711,8 +711,8 @@ const DrawHelper = (function () {
     // if editable
     if (callbacks) {
       var _self = this
-      const screenSpaceCameraController = this._scene
-        .screenSpaceCameraController
+      const screenSpaceCameraController =
+        this._scene.screenSpaceCameraController
       // @ts-expect-error ts-migrate(1252) FIXME: Function declarations are not allowed inside block... Remove this comment to see the full error message
       function enableRotation(enable: any) {
         screenSpaceCameraController.enableRotate = enable
@@ -1315,15 +1315,13 @@ const DrawHelper = (function () {
             // update the half markers before and after the index
             let editIndex = index - 1 < 0 ? positions.length - 1 : index - 1
             if (editIndex < editMarkers.countBillboards()) {
-              editMarkers.getBillboard(
-                editIndex
-              ).position = calculateHalfMarkerPosition(editIndex)
+              editMarkers.getBillboard(editIndex).position =
+                calculateHalfMarkerPosition(editIndex)
             }
             editIndex = index
             if (editIndex < editMarkers.countBillboards()) {
-              editMarkers.getBillboard(
-                editIndex
-              ).position = calculateHalfMarkerPosition(editIndex)
+              editMarkers.getBillboard(editIndex).position =
+                calculateHalfMarkerPosition(editIndex)
             }
           }
           // @ts-expect-error ts-migrate(1252) FIXME: Function declarations are not allowed inside block... Remove this comment to see the full error message
@@ -1418,11 +1416,8 @@ const DrawHelper = (function () {
                   position,
                   handleMarkerChanges
                 )
-                editMarkers.getBillboard(
-                  (this as any).index - 1
-                ).position = calculateHalfMarkerPosition(
-                  (this as any).index - 1
-                )
+                editMarkers.getBillboard((this as any).index - 1).position =
+                  calculateHalfMarkerPosition((this as any).index - 1)
                 editMarkers.insertBillboard(
                   (this as any).index,
                   calculateHalfMarkerPosition((this as any).index),

@@ -253,11 +253,10 @@ export class LazyQueryResult {
   ) {
     response.forEach((part) =>
       part.attributes.forEach((attribute) => {
-        this.plain.metacard.properties[
-          attribute.attribute
-        ] = TypedMetacardDefs.isMulti({ attr: attribute.attribute })
-          ? attribute.values
-          : attribute.values[0]
+        this.plain.metacard.properties[attribute.attribute] =
+          TypedMetacardDefs.isMulti({ attr: attribute.attribute })
+            ? attribute.values
+            : attribute.values[0]
       })
     )
     this.syncWithPlain()

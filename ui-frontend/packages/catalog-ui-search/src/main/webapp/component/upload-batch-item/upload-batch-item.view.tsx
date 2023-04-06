@@ -22,6 +22,7 @@ import Button from '@material-ui/core/Button'
 import Paper from '@material-ui/core/Paper'
 import CloseIcon from '@material-ui/icons/Close'
 import Common from '../../js/Common'
+import { TypedUserInstance } from '../singletons/TypedUser'
 
 export const UploadBatchItemViewReact = ({ model }: { model: any }) => {
   const [modelJson, setModelJson] = React.useState(model.toJSON())
@@ -30,18 +31,18 @@ export const UploadBatchItemViewReact = ({ model }: { model: any }) => {
   })
   const { id, finished, sentAt, interrupted } = modelJson
   const when = Common.getRelativeDate(sentAt)
-  const specificWhen = Common.getMomentDate(sentAt)
+  const specificWhen = TypedUserInstance.getMomentDate(sentAt)
 
   return (
     <Paper
       className={`${
         finished ? 'is-finished' : ''
-      }  flex flex-row items-stretch flex-no-wrap w-full justify-between p-2`}
+      }  flex flex-row items-stretch flex-nowrap w-full justify-between p-2`}
     >
       <Link
         to={`/uploads/${id}`}
         style={{ display: 'block', padding: '0px' }}
-        className="w-full flex-shrink no-underline"
+        className="w-full shrink no-underline"
         title={specificWhen}
       >
         <div className="upload-details">
@@ -54,7 +55,7 @@ export const UploadBatchItemViewReact = ({ model }: { model: any }) => {
           </div>
         </div>
       </Link>
-      <div className="upload-actions flex-shrink-0 ">
+      <div className="upload-actions shrink-0 ">
         {finished || interrupted ? (
           <>
             <Button

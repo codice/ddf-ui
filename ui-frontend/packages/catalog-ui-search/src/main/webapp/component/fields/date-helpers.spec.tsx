@@ -19,12 +19,10 @@ user.get('user').get('preferences').set('timeZone', 'America/St_Johns')
 const date = new Date()
 describe('verify that transforming to and from timezone is accurate (no loss)', () => {
   it(`shifts and unshifts without losing information ${date.toISOString()}`, () => {
-    const timeShiftedDated = DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
-      date.toISOString()
-    )
-    const unshiftedDate = DateHelpers.Blueprint.converters.TimeshiftedDateToISO(
-      timeShiftedDated
-    )
+    const timeShiftedDated =
+      DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(date.toISOString())
+    const unshiftedDate =
+      DateHelpers.Blueprint.converters.TimeshiftedDateToISO(timeShiftedDated)
     expect(date.toISOString(), 'Unexpected difference').to.equal(unshiftedDate)
   })
 })

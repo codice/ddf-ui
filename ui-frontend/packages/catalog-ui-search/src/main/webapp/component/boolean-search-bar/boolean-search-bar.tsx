@@ -227,9 +227,9 @@ const BooleanSearchBar = ({
     }
     return tokenToRemove
   }
-  const currentOptions = filterOptions(
-    getLogicalOperators(options)
-  ).sort((o1: any) => (o1?.type === 'mandatory' ? -1 : 1))
+  const currentOptions = filterOptions(getLogicalOperators(options)).sort(
+    (o1: any) => (o1?.type === 'mandatory' ? -1 : 1)
+  )
   return (
     <FormControl fullWidth {...props.FormControlProps}>
       <Autocomplete

@@ -29,7 +29,7 @@ const TextField = (props: Props) => {
     <Group>
       {label !== undefined ? (
         <span
-          className="p-2 flex-shrink-0 flex-grow-0"
+          className="p-2 shrink-0 grow-0"
           style={{
             minWidth: '120px',
           }}
@@ -42,7 +42,7 @@ const TextField = (props: Props) => {
         size="small"
         variant="outlined"
         fullWidth
-        className="flex-shrink overflow-hidden"
+        className="shrink overflow-hidden"
         value={value !== undefined ? value : ''}
         type={type}
         onChange={(e) => {
@@ -52,7 +52,7 @@ const TextField = (props: Props) => {
         {...rest}
       />
       {addon !== undefined ? (
-        <label className="p-2 flex-shrink-0 flex-grow-0">{addon}</label>
+        <label className="p-2 shrink-0 grow-0">{addon}</label>
       ) : null}
     </Group>
   )

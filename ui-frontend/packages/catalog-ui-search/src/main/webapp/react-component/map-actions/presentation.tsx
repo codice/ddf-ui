@@ -56,12 +56,8 @@ const OverlayActionLink = styled.a`
 `
 
 const render = (props: Props) => {
-  const {
-    hasMapActions,
-    overlayActions,
-    overlayImage,
-    currentOverlayUrl,
-  } = props
+  const { hasMapActions, overlayActions, overlayImage, currentOverlayUrl } =
+    props
 
   if (!hasMapActions) {
     return null

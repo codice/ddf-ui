@@ -410,14 +410,10 @@ const useChangeCursorOnDrawing = ({
 export const MapViewReact = (props: MapViewReactType) => {
   const [isClustering, setIsClustering] = React.useState(false)
   const mapModel = useMapModel()
-  const [
-    mapDrawingPopupElement,
-    setMapDrawingPopupElement,
-  ] = React.useState<HTMLDivElement | null>(null)
-  const [
-    containerElement,
-    setContainerElement,
-  ] = React.useState<HTMLDivElement | null>(null)
+  const [mapDrawingPopupElement, setMapDrawingPopupElement] =
+    React.useState<HTMLDivElement | null>(null)
+  const [containerElement, setContainerElement] =
+    React.useState<HTMLDivElement | null>(null)
   const [mapElement, setMapElement] = React.useState<HTMLDivElement | null>(
     null
   )
