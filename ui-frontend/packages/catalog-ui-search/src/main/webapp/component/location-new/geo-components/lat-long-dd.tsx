@@ -33,7 +33,6 @@ const Point = (props: any) => {
           draft.dd.point.latitude = value
         })}
         onBlur={setState((draft: any) => {
-          console.log('DdLatitude onBlur', draft, dd)
           draft.dd.point.latitude = DistanceUtils.coordinateRound(
             draft.dd.point.latitude
           )
