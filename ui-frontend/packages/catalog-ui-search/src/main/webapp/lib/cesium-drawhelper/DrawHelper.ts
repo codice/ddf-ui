@@ -1897,7 +1897,7 @@ const DrawHelper = (function () {
     // @ts-expect-error ts-migrate(2300) FIXME: Duplicate identifier 'this'.
     const tooltip = function (this: any, this: any, frameDiv: any) {
       const div = document.createElement('DIV')
-      div.className = 'twipsy right'
+      div.className = 'twipsy right pointer-events-none'
       const arrow = document.createElement('DIV')
       arrow.className = 'twipsy-arrow'
       div.appendChild(arrow)
@@ -1916,8 +1916,8 @@ const DrawHelper = (function () {
       if (position && message) {
         this.setVisible(true)
         this._title.innerHTML = message
-        this._div.style.left = position.x + 10 + 'px'
-        this._div.style.top = position.y - this._div.clientHeight / 2 + 'px'
+        this._div.style.left = position.x + 15 + 'px'
+        this._div.style.top = position.y + 7 - this._div.clientHeight / 2 + 'px'
       }
     }
     // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
