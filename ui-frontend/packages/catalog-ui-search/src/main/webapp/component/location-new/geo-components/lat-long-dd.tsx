@@ -205,34 +205,54 @@ const BoundingBox = (props: any) => {
     <div className="flex flex-col space-y-2">
       <DdLatitude
         label="South"
-        value={DistanceUtils.coordinateRound(dd.boundingbox.south)}
+        value={dd.boundingbox.south.toString()}
         onChange={setState(
-          (draft: any, value: any) =>
-            (draft.dd.boundingbox.south = DistanceUtils.coordinateRound(value))
+          (draft: any, value: any) => (draft.dd.boundingbox.south = value)
+        )}
+        onBlur={setState(
+          (draft: any) =>
+            (draft.dd.boundingbox.south = DistanceUtils.coordinateRound(
+              draft.dd.boundingbox.south
+            ))
         )}
       />
       <DdLatitude
         label="North"
-        value={DistanceUtils.coordinateRound(dd.boundingbox.north)}
+        value={dd.boundingbox.north.toString()}
         onChange={setState(
-          (draft: any, value: any) =>
-            (draft.dd.boundingbox.north = DistanceUtils.coordinateRound(value))
+          (draft: any, value: any) => (draft.dd.boundingbox.north = value)
+        )}
+        onBlur={setState(
+          (draft: any) =>
+            (draft.dd.boundingbox.north = DistanceUtils.coordinateRound(
+              draft.dd.boundingbox.north
+            ))
         )}
       />
       <DdLongitude
         label="West"
-        value={DistanceUtils.coordinateRound(dd.boundingbox.west)}
+        value={dd.boundingbox.west.toString()}
         onChange={setState(
-          (draft: any, value: any) =>
-            (draft.dd.boundingbox.west = DistanceUtils.coordinateRound(value))
+          (draft: any, value: any) => (draft.dd.boundingbox.west = value)
+        )}
+        onBlur={setState(
+          (draft: any) =>
+            (draft.dd.boundingbox.west = DistanceUtils.coordinateRound(
+              draft.dd.boundingbox.west
+            ))
         )}
       />
       <DdLongitude
         label="East"
-        value={DistanceUtils.coordinateRound(dd.boundingbox.east)}
+        value={dd.boundingbox.east.toString()}
         onChange={setState(
-          (draft: any, value: any) =>
-            (draft.dd.boundingbox.east = DistanceUtils.coordinateRound(value))
+          (draft: any, value: any) => (draft.dd.boundingbox.east = value)
+        )}
+        onBlur={setState(
+          (draft: any) =>
+            (draft.dd.boundingbox.east = DistanceUtils.coordinateRound(
+              draft.dd.boundingbox.east
+            ))
         )}
       />
     </div>
