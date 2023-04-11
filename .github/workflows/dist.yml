@@ -9,7 +9,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          path: 'ui-frontend'
+          path: "ui-frontend"
 
       - name: Install dependencies
         working-directory: ui-frontend/packages/catalog-ui-search
