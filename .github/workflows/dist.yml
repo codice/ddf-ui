@@ -12,18 +12,17 @@ jobs:
         with:
           path: "ddf-ui"
 
-      - name: Change directory to subdirectory
-        working-directory: ddf-ui/ui-frontend/packages/catalog-ui-search
-        run: cd ddf-ui/ui-frontend/packages/catalog-ui-search
-
       - name: Install dependencies
         run: yarn install
+        working-directory: ./ddf-ui/ui-frontend/packages/catalog-ui-search
 
       - name: Build project
         run: yarn run publish:build
+        working-directory: ./ddf-ui/ui-frontend/packages/catalog-ui-search
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
+        working-directory: ./ddf-ui/ui-frontend/packages/catalog-ui-search
         with:
           name: my-artifact
           path: dist
