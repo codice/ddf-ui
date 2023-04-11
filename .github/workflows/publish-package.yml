@@ -27,10 +27,24 @@ jobs:
           cd ./ddf-ui/ui-frontend/packages/catalog-ui-search
           yarn run publish:build
 
-      - name: Publish to GitHub Packages
-        uses: docker/build-push-action@v2
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          context: ./ddf-ui/ui-frontend/packages/catalog-ui-search/dist
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ github.event.pull_request.head.repo.name }}:${{ github.event.pull_request.number }}
+          tag_name: ${{ github.event.pull_request.number }}
+          release_name: Release ${{ github.event.pull_request.number }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Asset
+        id: upload_asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./ddf-ui/ui-frontend/packages/catalog-ui-search/dist
+          asset_name: catalog-ui-search-${{ github.event.pull_request.number }}.tgz
+          asset_content_type: application/gzip
