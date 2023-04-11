@@ -1,0 +1,23 @@
+name: Build distribution for downstream consumption
+working-directory: ${{ github.workspace }}
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build project
+        run: yarn run publish:build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: my-artifact
+          path: dist
