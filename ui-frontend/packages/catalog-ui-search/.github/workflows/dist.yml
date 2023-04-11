@@ -1,4 +1,4 @@
-name: Build distribution for downstream consumption
+name: dist
 working-directory: ${{ github.workspace }}
 on: [push]
 
