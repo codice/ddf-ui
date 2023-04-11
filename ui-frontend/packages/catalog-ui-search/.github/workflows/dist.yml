@@ -5,7 +5,7 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    working-directory: ui-frontend/packages/catalog-ui-search
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
