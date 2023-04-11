@@ -1,5 +1,7 @@
 name: dist
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
 
 jobs:
   build:
@@ -7,8 +9,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          path: "ddf-ui"
 
-      - name: Change directory
+      - name: Change directory to subdirectory
         run: cd ddf-ui/ui-frontend/packages/catalog-ui-search
 
       - name: Install dependencies
@@ -21,4 +25,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: my-artifact
-          path: ui-frontend/packages/catalog-ui-search/dist
+          path: dist
