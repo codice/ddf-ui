@@ -1,5 +1,4 @@
 name: dist
-working-directory: ${{ github.workspace }}
 on: [push, pull_request]
 
 jobs:
@@ -8,15 +7,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          path: "ui-frontend"
+
+      - name: Change directory
+        run: cd ui-frontend/packages/catalog-ui-search
 
       - name: Install dependencies
-        working-directory: ui-frontend/packages/catalog-ui-search
         run: yarn install
 
       - name: Build project
-        working-directory: ui-frontend/packages/catalog-ui-search
         run: yarn run publish:build
 
       - name: Upload artifact
