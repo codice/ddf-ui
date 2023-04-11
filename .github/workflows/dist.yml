@@ -9,7 +9,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Change directory
-        run: cd ui-frontend/packages/catalog-ui-search
+        run: cd ../../ui-frontend/packages/catalog-ui-search
 
       - name: Install dependencies
         run: yarn install
