@@ -13,6 +13,7 @@ jobs:
           path: "ddf-ui"
 
       - name: Change directory to subdirectory
+        working-directory: ddf-ui/ui-frontend/packages/catalog-ui-search
         run: cd ddf-ui/ui-frontend/packages/catalog-ui-search
 
       - name: Install dependencies
