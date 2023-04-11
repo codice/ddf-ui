@@ -1,23 +1,26 @@
 name: dist
 working-directory: ${{ github.workspace }}
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    working-directory: ui-frontend/packages/catalog-ui-search
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          path: 'ui-frontend'
 
       - name: Install dependencies
+        working-directory: ui-frontend/packages/catalog-ui-search
         run: yarn install
 
       - name: Build project
+        working-directory: ui-frontend/packages/catalog-ui-search
         run: yarn run publish:build
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: my-artifact
-          path: dist
+          path: ui-frontend/packages/catalog-ui-search/dist
