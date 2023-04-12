@@ -69,3 +69,9 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git push -f origin ${{ steps.set_branch_name.outputs.branch_name }}
+
+      - name: Add branch name to pull request
+        uses: peter-evans/create-pull-request-comment@v2
+        with:
+          message: 'The dist branch has been created and pushed to origin. You can use `"catalog-ui-search": "codice/ddf-ui#catalog-ui-search-dist-${{ github.event.pull_request.number }}"` in your package.json to use this version in your project.'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
