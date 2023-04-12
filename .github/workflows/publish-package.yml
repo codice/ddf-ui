@@ -69,10 +69,19 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           git push -f origin ${{ steps.set_branch_name.outputs.branch_name }}
-      - name: Add branch name to pull request
-        run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
-            -d "{\"body\":\"The dist branch has been created and pushed to origin. You can use: \n \"catalog-ui-search\": \"codice/ddf-ui#catalog-ui-search-dist-${{ github.event.pull_request.number }}\" \n in your package.json to use this version in your project.\"}"
+
+      - name: Add comment to pull request
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const { context, github } = require('@actions/github');
+            const message = 'The dist branch has been created and pushed to origin. You can use: \n \"catalog-ui-search\": \"codice/ddf-ui#catalog-ui-search-dist-${{ github.event.pull_request.number }}\" \n in your package.json to use this version in your project.';
+            const prNumber = context.payload.pull_request.number;
+            github.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: message
+            });
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
