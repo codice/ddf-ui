@@ -37,6 +37,7 @@ jobs:
           release_name: Release ${{ github.event.pull_request.number }}
           draft: false
           prerelease: false
+          overwrite: true
 
       - name: Upload Asset
         id: upload_asset
