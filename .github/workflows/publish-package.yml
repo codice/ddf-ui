@@ -74,12 +74,12 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const { context, github } = require('@actions/github');
+            const githubActions = require('@actions/github');
             const message = 'The dist branch has been created and pushed to origin. You can use: \n \"catalog-ui-search\": \"codice/ddf-ui#catalog-ui-search-dist-${{ github.event.pull_request.number }}\" \n in your package.json to use this version in your project.';
-            const prNumber = context.payload.pull_request.number;
-            github.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
+            const prNumber = githubActions.context.payload.pull_request.number;
+            githubActions.github.issues.createComment({
+              owner: githubActions.context.repo.owner,
+              repo: githubActions.context.repo.repo,
               issue_number: prNumber,
               body: message
             });
