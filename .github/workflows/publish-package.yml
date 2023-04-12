@@ -33,7 +33,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: pr-${{ github.event.pull_request.number }}-${{ github.sha.substr(0,5) }}
+          tag_name: pr-${{ github.event.pull_request.number }}-${{ github.sha.substr(0, 5) }}
           release_name: Release ${{ github.sha }}
           draft: false
           prerelease: false
