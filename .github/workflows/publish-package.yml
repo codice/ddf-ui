@@ -27,17 +27,43 @@ jobs:
           cd ./ddf-ui/ui-frontend/packages/catalog-ui-search
           yarn run build
 
+      - name: Check if tag exists
+        id: check_tag
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const { Octokit } = require('@octokit/core');
+            const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+            const tag = `pr-${github.event.pull_request.number}`;
+            const { data: releases } = await octokit.request('GET /repos/{owner}/{repo}/releases', {
+              owner: github.repository_owner,
+              repo: github.repository,
+            });
+            const release = releases.find((r) => r.tag_name === tag);
+            console.log(JSON.stringify({ release }));
+            if (release) {
+              console.log(`Release already exists for tag ${tag}, updating...`);
+              const { data } = await octokit.repos.updateRelease({
+                owner: github.repository_owner,
+                repo: github.repository,
+                release_id: release.id,
+                tag_name: tag,
+                body: `This is an updated release for PR ${github.event.pull_request.number}`,
+              });
+              console.log(JSON.stringify({ data }));
+            }
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.event.pull_request.number }}
+          tag_name: pr-${{ github.event.pull_request.number }}
           release_name: Release ${{ github.event.pull_request.number }}
           draft: false
           prerelease: false
-          overwrite: true
+          commitish: ${{ github.event.pull_request.head.sha }}
 
       - name: Upload Asset
         id: upload_asset
