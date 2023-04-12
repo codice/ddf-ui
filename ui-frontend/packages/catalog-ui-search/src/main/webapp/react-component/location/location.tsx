@@ -119,7 +119,9 @@ export const LocationContext = React.createContext({
   },
 })
 const LocationInput = ({ onChange, value }: any) => {
-  const inputs = ExtensionPoints.locationTypes(BaseInputs)
+  const inputs = React.useMemo(() => {
+    return ExtensionPoints.locationTypes(BaseInputs)
+  }, [ExtensionPoints.locationTypes])
   const locationContext = React.useContext(LocationContext)
   const [locationModel] = React.useState(new LocationOldModel(value) as any)
   const [state, setState] = React.useState(locationModel.toJSON() as any)
