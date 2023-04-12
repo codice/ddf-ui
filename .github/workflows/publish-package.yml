@@ -47,6 +47,13 @@ jobs:
         run: |
           cp -R ./dist/. ./ddf-ui/
 
+      - name: Create branch
+        run: |
+          cd ./ddf-ui
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git branch -b ${{ steps.set_branch_name.outputs.branch_name }}
+
       - name: Commit and push changes
         run: |
           cd ./ddf-ui
@@ -54,4 +61,4 @@ jobs:
           git config --global user.email "actions@github.com"
           git add .
           git commit -m "Update catalog-ui-search package for PR #${{ github.event.pull_request.number }}"
-          git push origin ${{ steps.set_branch_name.outputs.branch_name }} --force
+          git push origin ${{ steps.set_branch_name.outputs.branch_name }}
