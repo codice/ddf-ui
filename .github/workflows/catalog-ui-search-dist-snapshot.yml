@@ -1,0 +1,88 @@
+name: catalog-ui-search-dist-snapshot
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: "ddf-ui"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+
+      - name: Install dependencies
+        run: |
+          cd ./ddf-ui/ui-frontend/packages/catalog-ui-search
+          yarn install
+
+      - name: Build project
+        run: |
+          cd ./ddf-ui/ui-frontend/packages/catalog-ui-search
+          yarn run build
+
+      - name: Set branch name
+        id: set_branch_name
+        run: echo ::set-output name=branch_name::main-dist-snapshot
+
+      - name: Create temporary directory
+        run: |
+          mkdir -p ./dist
+
+      - name: Copy dist directory to temporary directory
+        run: |
+          cp -R ./ddf-ui/ui-frontend/packages/catalog-ui-search/dist/. ./dist/
+
+      - name: Remove original contents
+        run: |
+          rm -rf ./ddf-ui/*
+
+      - name: Copy contents of temporary directory to ./ddf-ui
+        run: |
+          cp -R ./dist/. ./ddf-ui/
+
+      - name: Create and switch to branch
+        run: |
+          cd ./ddf-ui
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git branch ${{ steps.set_branch_name.outputs.branch_name }}
+          git checkout ${{ steps.set_branch_name.outputs.branch_name }}
+
+      - name: Commit changes
+        run: |
+          cd ./ddf-ui
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add .
+          git commit -m "Update catalog-ui-search package for main branch snapshot"
+
+      - name: Push changes
+        run: |
+          cd ./ddf-ui
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git push -f origin ${{ steps.set_branch_name.outputs.branch_name }}
+
+      - name: Add comment to pull request
+        if: github.ref == 'refs/heads/main'
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const message = 'The dist branch has been created and pushed to origin. You can use: \n \"catalog-ui-search\": \"codice/ddf-ui#main-dist-snapshot\" \n in your package.json to use this version in your project.';
+            const repo = context.repo;
+            github.repos.createCommitComment({
+              ...repo,
+              commit_sha: context.sha,
+              body: message
+            });
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
