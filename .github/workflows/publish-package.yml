@@ -75,4 +75,4 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
-            -d "{\"body\":\"The dist branch has been created and pushed to origin. You can use "catalog-ui-search": "codice/ddf-ui#catalog-ui-search-dist-${{ github.event.pull_request.number }}" in your package.json to use this version in your project.\"}"
+            -d "{\"body\":\"The dist branch has been created and pushed to origin. You can use:\\n \"catalog-ui-search\": \"codice/ddf-ui#catalog-ui-search-dist-${{ github.event.pull_request.number }}\" \\n in your package.json to use this version in your project.\"}"
