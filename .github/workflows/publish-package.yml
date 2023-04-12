@@ -27,17 +27,13 @@ jobs:
           cd ./ddf-ui/ui-frontend/packages/catalog-ui-search
           yarn run build
 
-      - name: Generate Release Tag Name
-        id: generate_tag_name
-        run: echo "::set-output name=tag_name::pr-${{ github.event.pull_request.number }}-${{ github.sha:0:5 }}"
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.generate_tag_name.outputs.tag_name }}
+          tag_name: pr-${{ github.event.pull_request.number }}-$(echo ${{ github.sha }} | cut -c1-5)
           release_name: Release ${{ github.sha }}
           draft: false
           prerelease: false
