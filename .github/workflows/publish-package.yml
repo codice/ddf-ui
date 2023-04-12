@@ -9,6 +9,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          path: "ddf-ui"
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
