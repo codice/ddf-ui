@@ -68,6 +68,7 @@ jobs:
           cd ./ddf-ui
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
+          git push --delete origin ${{ steps.set_branch_name.outputs.branch_name }}
           git push -f origin ${{ steps.set_branch_name.outputs.branch_name }}
 
       - name: Add comment to pull request
