@@ -14,9 +14,8 @@ jobs:
           node-version: "16.x"
 
       - name: Delete branch
-        uses: actions/github-script@v4
+        uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const prNumber = context.payload.pull_request.number;
             const branchName = `catalog-ui-search-dist-${prNumber}`;
@@ -39,6 +38,7 @@ jobs:
                 throw error;
               }
             }
+          ad: {}
 
       - name: Add comment to pull request
         uses: actions/github-script@v4
