@@ -18,7 +18,8 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const branchName = `catalog-ui-search-dist-${github.event.pull_request.number}`;
+            const prNumber = parseInt(process.env.GITHUB_REF.split('/')[2]);
+            const branchName = `catalog-ui-search-dist-${prNumber}`;
             const {data: ref} = await github.git.getRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
