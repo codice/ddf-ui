@@ -27,12 +27,12 @@ import PointRadius from './point-radius'
 import BoundingBox from './bounding-box'
 import Gazetteer from './gazetteer'
 import ShapeUtils from '../../js/ShapeUtils'
-const plugin = require('plugins/location')
+import ExtensionPoints from '../../extension-points/extension-points'
 type InputType = {
   label: string
   Component: any
 }
-type InputsType = {
+export type InputsType = {
   [key: string]: InputType
 }
 
@@ -75,15 +75,6 @@ const BaseInputs = {
     },
   },
 } as InputsType
-
-let inputs = BaseInputs
-try {
-  if (plugin) {
-    inputs = plugin(BaseInputs) as InputsType
-  }
-} catch (err) {
-  console.warn(err)
-}
 
 const drawTypes = ['line', 'poly', 'circle', 'bbox']
 function getCurrentValue({ locationModel }: any) {
@@ -128,6 +119,9 @@ export const LocationContext = React.createContext({
   },
 })
 const LocationInput = ({ onChange, value }: any) => {
+  const inputs = React.useMemo(() => {
+    return ExtensionPoints.locationTypes(BaseInputs)
+  }, [ExtensionPoints.locationTypes])
   const locationContext = React.useContext(LocationContext)
   const [locationModel] = React.useState(new LocationOldModel(value) as any)
   const [state, setState] = React.useState(locationModel.toJSON() as any)
