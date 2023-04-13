@@ -20,16 +20,25 @@ jobs:
           script: |
             const prNumber = context.payload.pull_request.number;
             const branchName = `catalog-ui-search-dist-${prNumber}`;
-            const {data: ref} = await github.git.getRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: `heads/${branchName}`
-            });
-            await github.git.deleteRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: ref.ref
-            });
+            try {
+              const {data: ref} = await github.git.getRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `heads/${branchName}`
+              });
+              await github.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: ref.ref
+              });
+              console.log(`Deleted branch ${branchName}`);
+            } catch (error) {
+              if (error.status === 404) {
+                console.log(`Branch ${branchName} not found`);
+              } else {
+                throw error;
+              }
+            }
 
       - name: Add comment to pull request
         uses: actions/github-script@v4
