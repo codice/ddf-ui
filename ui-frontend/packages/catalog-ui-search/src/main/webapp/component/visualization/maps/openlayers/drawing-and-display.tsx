@@ -229,7 +229,7 @@ const modelToBoundingBox = (model: any): GeometryJSON | null => {
   return makeBBoxGeo(Common.generateUUID(), [west, south, east, north])
 }
 
-const getDrawingGeometryFromModel = (model: any): GeometryJSON | null => {
+export const getDrawingGeometryFromModel = (model: any): GeometryJSON | null => {
   const mode = model.get('mode')
   let geo
   switch (mode) {
@@ -252,6 +252,14 @@ const getDrawingGeometryFromModel = (model: any): GeometryJSON | null => {
     utility.adjustGeoCoords(geo)
   }
   return geo
+}
+
+export const convertToModel = (geo: GeometryJSON, shape: Shape) => {
+  return {
+    ...createGeoModel(geo),
+    type: getGeoType(geo),
+    mode: getDrawModeFromShape(shape),
+  }
 }
 
 // This is not a piece of state because the geospatialdraw
@@ -304,14 +312,6 @@ export const OpenlayersDrawings = ({
     drawingLocation = null
   }
 
-  const convertToModel = (geo: GeometryJSON) => {
-    return {
-      ...createGeoModel(geo),
-      type: getGeoType(geo),
-      mode: getDrawModeFromShape(drawingShape),
-    }
-  }
-
   // called when the user clicks apply during geo drawing
   const finishDrawing = () => {
     if (drawingLocation === null) {
@@ -324,7 +324,7 @@ export const OpenlayersDrawings = ({
     )
     Drawing.turnOffDrawing()
     drawingModel.set('drawing', false)
-    drawingModel.set(convertToModel(drawingLocation))
+    drawingModel.set(convertToModel(drawingLocation, drawingShape))
     setIsDrawing(false)
     setDrawingGeometry(drawingLocation)
     drawingLocation = null
