@@ -20,15 +20,10 @@ jobs:
             const prNumber = context.payload.pull_request.number;
             const branchName = `catalog-ui-search-dist-${prNumber}`;
             try {
-              const {data: ref} = await github.git.getRef({
+              await github.rest.git.deleteRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 ref: `heads/${branchName}`
-              });
-              await github.git.deleteRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: ref.ref
               });
               console.log(`Deleted branch ${branchName}`);
             } catch (error) {
@@ -40,7 +35,7 @@ jobs:
             }
 
       - name: Add comment to pull request
-        uses: actions/github-script@v4
+        uses: actions/github-script@v6
         with:
           script: |
             const message = 'You can no longer use: \n \"catalog-ui-search\": \"codice/ddf-ui#catalog-ui-search-dist-${{ github.event.pull_request.number }}\" \n in your package.json to use this version in your project, as it has been deleted now that the pull request is closed. \n \n Instead, if the pr was merged you can now access these changes by using: \n \"catalog-ui-search\": \"codice/ddf-ui#catalog-ui-search-dist-snapshot\" \n \n Remember to use "yarn install --force" if you want to pick up changes to this version.';
@@ -51,5 +46,3 @@ jobs:
               issue_number: prNumber,
               body: message
             });
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
