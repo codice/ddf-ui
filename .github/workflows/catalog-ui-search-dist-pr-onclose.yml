@@ -38,7 +38,6 @@ jobs:
                 throw error;
               }
             }
-          ad: {}
 
       - name: Add comment to pull request
         uses: actions/github-script@v4
