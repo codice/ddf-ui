@@ -30,9 +30,11 @@ const loadOpenLayersCode = () => {
 export const OpenlayersMapViewReact = ({
   selectionInterface,
   setMap: outerSetMap,
+  includeDrawings = true,
 }: {
   selectionInterface: any
   setMap?: (map: any) => void
+  includeDrawings?: boolean
 }) => {
   const [map, setMap] = React.useState<any>(null)
   React.useEffect(() => {
@@ -49,7 +51,9 @@ export const OpenlayersMapViewReact = ({
           setMap={setMap}
         />
       </Memo>
-      <OpenlayersDrawings selectionInterface={selectionInterface} map={map} />
+      {includeDrawings && (
+        <OpenlayersDrawings selectionInterface={selectionInterface} map={map} />
+      )}
     </>
   )
 }
