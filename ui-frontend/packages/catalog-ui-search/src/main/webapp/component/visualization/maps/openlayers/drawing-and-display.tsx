@@ -229,7 +229,9 @@ const modelToBoundingBox = (model: any): GeometryJSON | null => {
   return makeBBoxGeo(Common.generateUUID(), [west, south, east, north])
 }
 
-export const getDrawingGeometryFromModel = (model: any): GeometryJSON | null => {
+export const getDrawingGeometryFromModel = (
+  model: any
+): GeometryJSON | null => {
   const mode = model.get('mode')
   let geo
   switch (mode) {
