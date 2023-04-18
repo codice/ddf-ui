@@ -1,0 +1,88 @@
+name: catalog-ui-search-dist-pr
+
+on:
+  pull_request:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: "ddf-ui"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+
+      - name: Install dependencies
+        run: |
+          cd ./ddf-ui/ui-frontend/packages/catalog-ui-search
+          yarn install
+
+      - name: Build project
+        run: |
+          cd ./ddf-ui/ui-frontend/packages/catalog-ui-search
+          yarn run build
+
+      - name: Set branch name
+        id: set_branch_name
+        run: echo ::set-output name=branch_name::catalog-ui-search-dist-${{ github.event.pull_request.number }}
+
+      - name: Create temporary directory
+        run: |
+          mkdir -p ./dist
+
+      - name: Copy dist directory to temporary directory
+        run: |
+          cp -R ./ddf-ui/ui-frontend/packages/catalog-ui-search/dist/. ./dist/
+
+      - name: Remove original contents
+        run: |
+          rm -rf ./ddf-ui/*
+
+      - name: Copy contents of temporary directory to ./ddf-ui
+        run: |
+          cp -R ./dist/. ./ddf-ui/
+
+      - name: Create and switch to branch
+        run: |
+          cd ./ddf-ui
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git branch ${{ steps.set_branch_name.outputs.branch_name }}
+          git checkout ${{ steps.set_branch_name.outputs.branch_name }}
+
+      - name: Commit changes
+        run: |
+          cd ./ddf-ui
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add .
+          git commit -m "Update catalog-ui-search package for PR #${{ github.event.pull_request.number }}"
+
+      - name: Push changes
+        run: |
+          cd ./ddf-ui
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          # Try to delete the branch, but ignore errors if it doesn't exist
+          git push --delete origin ${{ steps.set_branch_name.outputs.branch_name }} || true
+          git push -f origin ${{ steps.set_branch_name.outputs.branch_name }}
+
+      - name: Add comment to pull request
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const message = 'An updated dist branch has been created and pushed to origin. \n You can use: \n \"catalog-ui-search\": \"codice/ddf-ui#catalog-ui-search-dist-${{ github.event.pull_request.number }}\" \n in your package.json to use this version in your project. \n \n Remember to use "yarn install --force" if you want to pick up changes each time you make a change to this branch by committing.';
+            const prNumber = context.payload.pull_request.number;
+            github.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: message
+            });
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

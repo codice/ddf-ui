@@ -22,6 +22,7 @@ import { ValueTypes } from '../component/filter-builder/filter.structure'
 import { Suggestion } from '../react-component/location/gazetteer'
 import { MetacardInteractionProps } from '../react-component/metacard-interactions'
 import { PermissiveComponentType } from '../typescript'
+import { InputsType } from '../react-component/location/location'
 
 export type ExtensionPointsType = {
   providers: SFC<ProviderProps>
@@ -57,7 +58,6 @@ export type ExtensionPointsType = {
   customSourcesPage:
     | ((props: { onChange?: () => void }) => JSX.Element | null)
     | null
-  navigationRight: any[]
   serializeLocation: (
     property: string,
     value: ValueTypes['location']
@@ -74,6 +74,7 @@ export type ExtensionPointsType = {
       }) => Promise<void>)
     | null
   extraRoutes: PermissiveComponentType
+  locationTypes: (baseTypes: InputsType) => InputsType
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -86,12 +87,12 @@ const ExtensionPoints: ExtensionPointsType = {
   resultItemRowAddOn: () => null,
   layoutDropdown: () => null,
   customSourcesPage: null,
-  navigationRight: [],
   serializeLocation: () => null,
   handleFilter: () => null,
   suggester: () => null,
   handleMetacardUpdate: null,
   extraRoutes: () => null,
+  locationTypes: (baseTypes: InputsType) => baseTypes,
 }
 
 export default ExtensionPoints
