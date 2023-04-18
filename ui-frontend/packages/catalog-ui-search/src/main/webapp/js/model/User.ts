@@ -420,7 +420,9 @@ const Theme = Backbone.Model.extend({
       )
   },
   getAmPmDisplay() {
-    const timefmt = this.get('user').get('preferences').get('dateTimeFormat')['timefmt']
+    const timefmt = this.get('user').get('preferences').get('dateTimeFormat')[
+      'timefmt'
+    ]
     return Common.getTimeFormatsReverseMap()[timefmt].format === '12'
   },
   getDateTimeFormat() {
