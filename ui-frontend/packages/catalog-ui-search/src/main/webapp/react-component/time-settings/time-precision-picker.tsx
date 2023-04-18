@@ -24,27 +24,29 @@ type Props = {
 }
 
 type PrecisionOption = {
-  label: string,
+  label: string
   value: TimePrecision
 }
 
 const Options = [
   {
-    label: "Milliseconds",
-    value: "millisecond"
+    label: 'Milliseconds',
+    value: 'millisecond',
   },
   {
-    label: "Seconds",
-    value: "second"
+    label: 'Seconds',
+    value: 'second',
   },
   {
-    label: "Minutes",
-    value: "minute"
-  }
+    label: 'Minutes',
+    value: 'minute',
+  },
 ] as PrecisionOption[]
 
 const TimePrecisionSelector = (props: Props) => {
-  const initState = Options.find((option) => option.value === props.timePrecision)
+  const initState = Options.find(
+    (option) => option.value === props.timePrecision
+  )
 
   const [timePrecision, setTimePrecision] = React.useState(initState)
 

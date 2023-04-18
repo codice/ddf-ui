@@ -85,7 +85,9 @@ class TimeSettingsContainer extends React.Component<WithBackboneProps, State> {
       currentTime: getCurrentTime(),
       timeZones: generateZoneObjects(),
       timeZone: getCurrentTimeZone(),
-      timeFormat: Common.getDateTimeFormatsReverseMap()[getCurrentDateTimeFormat()].format,
+      timeFormat:
+        Common.getDateTimeFormatsReverseMap()[getCurrentDateTimeFormat()]
+          .format,
       timePrecision: getCurrentTimePrecision(),
     }
   }
@@ -112,14 +114,18 @@ class TimeSettingsContainer extends React.Component<WithBackboneProps, State> {
         savePreferences({ timeZone: timeZone.zoneName })
       }}
       handleTimeFormatUpdate={(timeFormat: TimeFormat) => {
-        const dateTimeFormat = Common.getDateTimeFormats()[timeFormat.value][this.state.timePrecision]
+        const dateTimeFormat =
+          Common.getDateTimeFormats()[timeFormat.value][
+            this.state.timePrecision
+          ]
         this.setState({ timeFormat: timeFormat.value })
         savePreferences({ dateTimeFormat })
       }}
       timeFormat={this.state.timeFormat}
       handleTimePrecisionUpdate={(timePrecision: TimePrecision) => {
         this.setState({ timePrecision })
-        const dateTimeFormat = Common.getDateTimeFormats()[this.state.timeFormat][timePrecision]
+        const dateTimeFormat =
+          Common.getDateTimeFormats()[this.state.timeFormat][timePrecision]
         savePreferences({ timePrecision, dateTimeFormat })
       }}
       timePrecision={this.state.timePrecision}
