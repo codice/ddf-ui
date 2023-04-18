@@ -57,7 +57,7 @@ export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
         parseDate={DateHelpers.Blueprint.commonProps.parseDate}
         placeholder={'M/D/YYYY'}
         shortcuts
-        timePrecision="millisecond"
+        timePrecision={DateHelpers.General.getTimePrecision()}
         outOfRangeMessage="Out of range"
         timePickerProps={{
           useAmPm: user.getAmPmDisplay(),

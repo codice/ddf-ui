@@ -9,7 +9,7 @@ const useTimePrefs = () => {
   useEffect(() => {
     listenTo(
       user.getPreferences(),
-      'change:dateTimeFormat change:timeZone',
+      'change:dateTimeFormat change:timePrecision change:timeZone',
       () => {
         setForceRender(Math.random())
       }

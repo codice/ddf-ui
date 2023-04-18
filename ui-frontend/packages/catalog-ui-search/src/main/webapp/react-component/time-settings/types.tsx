@@ -10,5 +10,5 @@ export type TimeZone = {
 
 export type TimeFormat = {
   label: string
-  value: any
+  value: string
 }

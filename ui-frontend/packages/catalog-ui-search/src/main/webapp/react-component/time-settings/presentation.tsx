@@ -5,7 +5,9 @@ import styled from 'styled-components'
 
 import TimeZoneSelector from './time-zone-picker'
 import TimeFormatSelector from './time-format-picker'
+import TimePrecisionSelector from './time-precision-picker'
 import { TimeZone, TimeFormat } from './types'
+import { TimePrecision } from '@blueprintjs/datetime'
 
 const Root = styled.div`
   overflow: auto;
@@ -36,8 +38,10 @@ type Props = {
   timeZone: string
   timeFormat: string
   timeZones: TimeZone[]
+  timePrecision: TimePrecision
   handleTimeZoneUpdate: (timeZone: TimeZone) => any
   handleTimeFormatUpdate: (timeFormat: TimeFormat) => any
+  handleTimePrecisionUpdate: (timePrecision: TimePrecision) => any
 }
 
 class TimeSettingsPresentation extends React.Component<Props, {}> {
@@ -52,6 +56,10 @@ class TimeSettingsPresentation extends React.Component<Props, {}> {
         <TimeFormatSelector
           timeFormat={this.props.timeFormat}
           handleTimeFormatUpdate={this.props.handleTimeFormatUpdate}
+        />
+        <TimePrecisionSelector
+          timePrecision={this.props.timePrecision}
+          handleTimePrecisionUpdate={this.props.handleTimePrecisionUpdate}
         />
         <Time>
           <TimeLabel>Current Time</TimeLabel>

@@ -3,7 +3,6 @@ import { hot } from 'react-hot-loader'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
 import { TimeFormat } from './types'
-import Common from '../../js/Common'
 
 type Props = {
   timeFormat: string
@@ -13,26 +12,22 @@ type Props = {
 const timeFormats = [
   {
     label: 'ISO 8601',
-    value: Common.getDateTimeFormats()['ISO'],
+    value: 'ISO',
   },
   {
     label: '24 Hour Standard',
-    value: Common.getDateTimeFormats()['24'],
+    value: '24',
   },
   {
     label: '12 Hour Standard',
-    value: Common.getDateTimeFormats()['12'],
+    value: '12',
   },
 ] as TimeFormat[]
 
 const TimeFormatSelector = (props: Props) => {
-  const getDefaultFormat = (timeFormat: string) => {
-    return timeFormats.find((format) => format.value.datetimefmt === timeFormat)
-  }
+  const initState = timeFormats.find((tf) => tf.value === props.timeFormat)
 
-  let [currentTimeFormat, setCurrentTimeFormat] = React.useState(
-    getDefaultFormat(props.timeFormat)
-  )
+  const [currentTimeFormat, setCurrentTimeFormat] = React.useState(initState)
 
   return (
     <div>
@@ -45,11 +40,11 @@ const TimeFormatSelector = (props: Props) => {
           props.handleTimeFormatUpdate(newTimeFormat)
           setCurrentTimeFormat(newTimeFormat)
         }}
-        getOptionSelected={(oldFormat: TimeFormat, newFormat: TimeFormat) => {
-          return oldFormat.value.datetimefmt !== newFormat.value.datetimefmt
+        getOptionSelected={(option: TimeFormat, value: TimeFormat) => {
+          return option.value === value.value
         }}
         options={timeFormats}
-        getOptionLabel={(format) => `${format.label}`}
+        getOptionLabel={(format) => format.label}
         style={{ width: '100%', paddingTop: '2em' }}
         renderInput={(params) => (
           <TextField {...params} label="Time Format" variant="outlined" />
