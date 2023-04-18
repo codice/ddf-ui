@@ -70,6 +70,8 @@ jobs:
           cd ./ddf-ui
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
+          # Try to delete the branch, but ignore errors if it doesn't exist
+          git push --delete origin ${{ steps.set_branch_name.outputs.branch_name }} || true
           git push -f origin ${{ steps.set_branch_name.outputs.branch_name }}
 
       - name: Add comment to pull request
