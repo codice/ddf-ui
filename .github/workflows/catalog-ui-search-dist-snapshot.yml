@@ -3,7 +3,7 @@ name: catalog-ui-search-dist-snapshot
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   publish:
