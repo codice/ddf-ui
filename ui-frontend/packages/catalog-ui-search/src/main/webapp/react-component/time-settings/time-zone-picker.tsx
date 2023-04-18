@@ -31,7 +31,7 @@ const TimeZoneSelector = (props: Props) => {
           setCurrentTimeZone(newTimeZone)
         }}
         getOptionSelected={(oldZone: TimeZone, newZone: TimeZone) => {
-          return oldZone.zoneName !== newZone.zoneName
+          return oldZone.zoneName === newZone.zoneName
         }}
         options={props.timeZones}
         getOptionLabel={(zone) =>

@@ -1,6 +1,7 @@
 import { ValueTypes } from '../filter-builder/filter.structure'
 import { IDateInputProps } from '@blueprintjs/datetime'
 import { IDateRangeInputProps } from '@blueprintjs/datetime'
+import { TimePrecision } from '@blueprintjs/datetime'
 import user from '../singletons/user-instance'
 import moment from 'moment-timezone'
 import {
@@ -24,6 +25,12 @@ export const DateHelpers = {
     },
     getTimeZone: () => {
       return user.get('user').get('preferences').get('timeZone') as string
+    },
+    getTimePrecision: () => {
+      return user
+        .get('user')
+        .get('preferences')
+        .get('timePrecision') as TimePrecision
     },
   },
   Blueprint: {
@@ -134,8 +141,13 @@ export const DateHelpers = {
         try {
           const originalDate = new Date(value)
           let momentShiftedDate = moment.utc(originalDate.toUTCString())
-          // we lose milliseconds with utc, so add them back in here
-          momentShiftedDate.add(originalDate.getMilliseconds(), 'milliseconds')
+          if (DateHelpers.General.getTimePrecision() === 'millisecond') {
+            // we lose milliseconds with utc, so add them back in here
+            momentShiftedDate.add(
+              originalDate.getMilliseconds(),
+              'milliseconds'
+            )
+          }
           const utcOffsetMinutesLocal = new Date().getTimezoneOffset()
           const utcOffsetMinutesTimezone = moment
             .tz(value, DateHelpers.General.getTimeZone()) // pass in the value, otherwise it won't account for daylight savings time!
@@ -173,8 +185,10 @@ export const DateHelpers = {
       TimeshiftedDateToISO: (value: Date) => {
         try {
           let momentShiftedDate = moment.utc(value.toUTCString())
-          // we lose milliseconds with utc, so add them back in here
-          momentShiftedDate.add(value.getMilliseconds(), 'milliseconds')
+          if (DateHelpers.General.getTimePrecision() === 'millisecond') {
+            // we lose milliseconds with utc, so add them back in here
+            momentShiftedDate.add(value.getMilliseconds(), 'milliseconds')
+          }
           const utcOffsetMinutesLocal = new Date().getTimezoneOffset()
           const utcOffsetMinutesTimezone = moment
             .tz(value, DateHelpers.General.getTimeZone()) // pass in the value, otherwise it won't account for daylight savings time!

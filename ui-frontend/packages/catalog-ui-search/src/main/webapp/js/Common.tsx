@@ -17,6 +17,7 @@ import $ from 'jquery'
 import moment from 'moment'
 import './requestAnimationFramePolyfill'
 import properties from './properties'
+import { TimePrecision } from '@blueprintjs/datetime'
 const timeZones = {
   UTC: 'Etc/UTC',
   '-12': 'Etc/GMT+12',
@@ -45,10 +46,73 @@ const timeZones = {
   12: 'Etc/GMT-12',
 }
 const dateTimeFormats = {
-  ISO: { datetimefmt: 'YYYY-MM-DD[T]HH:mm:ss.SSSZ', timefmt: 'HH:mm:ssZ' },
-  24: { datetimefmt: 'DD MMM YYYY HH:mm:ss.SSS Z', timefmt: 'HH:mm:ss Z' },
-  12: { datetimefmt: 'DD MMM YYYY hh:mm:ss.SSS a Z', timefmt: 'hh:mm:ss a Z' },
+  ISO: {
+    millisecond: {
+      datetimefmt: 'YYYY-MM-DD[T]HH:mm:ss.SSSZ',
+      timefmt: 'HH:mm:ssZ',
+    },
+    second: { datetimefmt: 'YYYY-MM-DD[T]HH:mm:ssZ', timefmt: 'HH:mm:ssZ' },
+    minute: { datetimefmt: 'YYYY-MM-DD[T]HH:mmZ', timefmt: 'HH:mmZ' },
+  },
+  '24': {
+    millisecond: {
+      datetimefmt: 'DD MMM YYYY HH:mm:ss.SSS Z',
+      timefmt: 'HH:mm:ss Z',
+    },
+    second: {
+      datetimefmt: 'DD MMM YYYY HH:mm:ss Z',
+      timefmt: 'HH:mm:ss Z',
+    },
+    minute: {
+      datetimefmt: 'DD MMM YYYY HH:mm Z',
+      timefmt: 'HH:mm Z',
+    },
+  },
+  '12': {
+    millisecond: {
+      datetimefmt: 'DD MMM YYYY hh:mm:ss.SSS a Z',
+      timefmt: 'hh:mm:ss a Z',
+    },
+    second: {
+      datetimefmt: 'DD MMM YYYY hh:mm:ss a Z',
+      timefmt: 'hh:mm:ss a Z',
+    },
+    minute: {
+      datetimefmt: 'DD MMM YYYY hh:mm a Z',
+      timefmt: 'hh:mm a Z',
+    },
+  },
+} as {
+  [key: string]: {
+    [key in keyof TimePrecision as TimePrecision]: {
+      datetimefmt: string
+      timefmt: string
+    }
+  }
 }
+const dateTimeFormatsReverseMap = Object.entries(dateTimeFormats).reduce(
+  (map, val) => {
+    const format = val[0]
+    for (const [precision, formats] of Object.entries(val[1])) {
+      map[formats.datetimefmt] = {
+        format,
+        precision: precision as TimePrecision,
+      }
+    }
+    return map
+  },
+  {} as { [key: string]: { format: string; precision: TimePrecision } }
+)
+const timeFormatsReverseMap = Object.entries(dateTimeFormats).reduce(
+  (map, val) => {
+    const format = val[0]
+    for (const [precision, formats] of Object.entries(val[1])) {
+      map[formats.timefmt] = { format, precision: precision as TimePrecision }
+    }
+    return map
+  },
+  {} as { [key: string]: { format: string; precision: TimePrecision } }
+)
 export const Common = {
   //randomly generated guid guaranteed to be unique ;)
   undefined: '2686dcb5-7578-4957-974d-aaa9289cd2f0',
@@ -154,10 +218,16 @@ export const Common = {
   },
   //can be deleted once histogram changes are merged
   getHumanReadableDateTime(date: string) {
-    return moment(date).format(dateTimeFormats['24']['datetimefmt'])
+    return moment(date).format(dateTimeFormats['24']['second']['datetimefmt'])
   },
   getDateTimeFormats() {
     return dateTimeFormats
+  },
+  getDateTimeFormatsReverseMap() {
+    return dateTimeFormatsReverseMap
+  },
+  getTimeFormatsReverseMap() {
+    return timeFormatsReverseMap
   },
   getTimeZones() {
     return timeZones

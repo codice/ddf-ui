@@ -83,7 +83,7 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
           parseDate={DateHelpers.Blueprint.commonProps.parseDate}
           placeholder={'M/D/YYYY'}
           shortcuts
-          timePrecision="millisecond"
+          timePrecision={DateHelpers.General.getTimePrecision()}
           inputProps={{
             ...EnterKeySubmitProps,
           }}

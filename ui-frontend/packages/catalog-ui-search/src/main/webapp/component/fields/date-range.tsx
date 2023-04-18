@@ -79,7 +79,7 @@ export const DateRangeField = ({
       onChange={DateHelpers.Blueprint.DateRangeProps.generateOnChange(onChange)}
       parseDate={DateHelpers.Blueprint.commonProps.parseDate}
       shortcuts
-      timePrecision="millisecond"
+      timePrecision={DateHelpers.General.getTimePrecision()}
       {...(value
         ? {
             value: DateHelpers.Blueprint.DateRangeProps.generateValue(value),
