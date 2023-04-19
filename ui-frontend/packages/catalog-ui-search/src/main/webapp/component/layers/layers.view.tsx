@@ -22,7 +22,7 @@ import user from '../singletons/user-instance'
 import { hot } from 'react-hot-loader'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import debounce from 'lodash.debounce'
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
 
 // this is to track focus, since on reordering rerenders and loses focus
 const FocusModel = Backbone.Model.extend({

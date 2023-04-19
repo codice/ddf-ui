@@ -16,7 +16,7 @@ import * as React from 'react'
 import router from '../../component/router/router'
 import { MetacardInteractionProps } from '.'
 import { hot } from 'react-hot-loader'
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
 import { Link } from '../../component/link/link'
 import { Divider } from './metacard-interactions'
 

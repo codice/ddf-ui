@@ -1,20 +1,20 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import Paper from '@material-ui/core/Paper'
-import Box from '@material-ui/core/Box'
-import Button from '@material-ui/core/Button'
-import Grid from '@material-ui/core/Grid'
+import Paper from '@mui/material/Paper'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
 import FilterLeaf from './filter-leaf'
-import useTheme from '@material-ui/core/styles/useTheme'
+import { useTheme } from '@mui/material/styles';
 import { HoverButton } from '../button/hover'
 import {
   FilterBuilderClass,
   FilterClass,
   isFilterBuilderClass,
 } from './filter.structure'
-import TextField from '@material-ui/core/TextField'
-import MenuItem from '@material-ui/core/MenuItem'
-import AddIcon from '@material-ui/icons/Add'
+import TextField from '@mui/material/TextField'
+import MenuItem from '@mui/material/MenuItem'
+import AddIcon from '@mui/icons-material/Add'
 import _ from 'lodash'
 import { Memo } from '../memo/memo'
 import { Elevations } from '../theme/theme'

@@ -33,19 +33,21 @@ const ProviderContainer = (props: Props) => {
     <React.Fragment>
       <ThemeContainer>
         <IntlProvider locale={navigator.language} messages={properties.i18n}>
-          <ThemeProvider>
-            <Router>
-              <SnackProvider>
-                <DialogProvider>
-                  <>{props.children}</>
-                </DialogProvider>
-              </SnackProvider>
-            </Router>
-          </ThemeProvider>
+          <StyledEngineProvider injectFirst>
+            <ThemeProvider>
+              <Router>
+                <SnackProvider>
+                  <DialogProvider>
+                    <>{props.children}</>
+                  </DialogProvider>
+                </SnackProvider>
+              </Router>
+            </ThemeProvider>
+          </StyledEngineProvider>
         </IntlProvider>
       </ThemeContainer>
     </React.Fragment>
-  )
+  );
 }
 
 export default hot(module)(ProviderContainer)

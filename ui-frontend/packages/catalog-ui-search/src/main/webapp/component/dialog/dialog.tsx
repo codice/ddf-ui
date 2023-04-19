@@ -1,5 +1,5 @@
 import * as React from 'react'
-import Dialog, { DialogProps } from '@material-ui/core/Dialog'
+import Dialog, { DialogProps } from '@mui/material/Dialog'
 import { createCtx } from './../../typescript/context'
 import { Omit } from 'utility-types'
 import { setType } from '../../typescript/hooks'

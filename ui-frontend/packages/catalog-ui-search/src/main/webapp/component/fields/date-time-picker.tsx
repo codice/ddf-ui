@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { IDateInputProps } from '@blueprintjs/datetime'
-import TextField, { TextFieldProps } from '@material-ui/core/TextField'
+import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { DateField } from './date'
-import CalendarIcon from '@material-ui/icons/Event'
+import CalendarIcon from '@mui/icons-material/Event'
 import { hot } from 'react-hot-loader'
-import InputAdornment from '@material-ui/core/InputAdornment'
+import InputAdornment from '@mui/material/InputAdornment'
 
 type DateFieldProps = {
   value: string

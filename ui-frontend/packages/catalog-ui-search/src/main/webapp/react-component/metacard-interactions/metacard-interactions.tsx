@@ -14,7 +14,7 @@
  **/
 import * as React from 'react'
 import styled from 'styled-components'
-import MuiDivider from '@material-ui/core/Divider'
+import MuiDivider from '@mui/material/Divider'
 
 export const Divider = () => {
   return (

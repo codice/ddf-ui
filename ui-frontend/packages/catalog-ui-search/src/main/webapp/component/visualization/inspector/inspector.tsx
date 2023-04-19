@@ -13,25 +13,25 @@
  *
  **/
 
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../../selection-interface/hooks'
-import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
-import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import { getIconClassName } from '../results-visual/result-item'
 import LazyMetacardInteractions from '../results-visual/lazy-metacard-interactions'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { useMenuState } from '../../menu-state/menu-state'
-import Popover from '@material-ui/core/Popover'
-import Paper from '@material-ui/core/Paper'
+import Popover from '@mui/material/Popover'
+import Paper from '@mui/material/Paper'
 import { Elevations } from '../../theme/theme'
 import OverflowTooltip from '../../overflow-tooltip/overflow-tooltip'
-import Tabs from '@material-ui/core/Tabs'
+import Tabs from '@mui/material/Tabs'
 import MaterialTab, {
   TabProps as MaterialTabProps,
-} from '@material-ui/core/Tab'
+} from '@mui/material/Tab'
 import MetacardTabs, { TabNames } from '../../tabs/metacard/tabs-metacard'
 import { TypedProperties } from '../../singletons/TypedProperties'
 import { TypedUserInstance } from '../../singletons/TypedUser'

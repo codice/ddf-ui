@@ -13,8 +13,8 @@
  *
  **/
 import React from 'react'
-import CloseIcon from '@material-ui/icons/Close'
-import IconButton from '@material-ui/core/IconButton'
+import CloseIcon from '@mui/icons-material/Close'
+import IconButton from '@mui/material/IconButton'
 import {
   DmsLatitude,
   DmsLongitude,
@@ -89,13 +89,13 @@ const DmsTextfield = ({
           </DmsLongitude>
         </div>
         <div className="shrink-0 grow-0">
-          <IconButton onClick={deletePoint}>
+          <IconButton onClick={deletePoint} size="large">
             <CloseIcon />
           </IconButton>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default DmsTextfield

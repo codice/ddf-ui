@@ -25,21 +25,21 @@ import QueryTimeReactView, {
   BasicFilterClass,
 } from '../query-time/query-time.view'
 const METADATA_CONTENT_TYPE = 'metadata-content-type'
-import TextField from '@material-ui/core/TextField'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox'
+import TextField from '@mui/material/TextField'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Checkbox from '@mui/material/Checkbox'
 import {
   BooleanTextType,
   FilterBuilderClass,
   FilterClass,
 } from '../filter-builder/filter.structure'
-import Typography from '@material-ui/core/Typography'
+import Typography from '@mui/material/Typography'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import FilterInput from '../../react-component/filter/filter-input'
 import Swath from '../swath/swath'
-import Grid from '@material-ui/core/Grid'
-import Chip from '@material-ui/core/Chip'
-import Autocomplete from '@material-ui/lab/Autocomplete'
+import Grid from '@mui/material/Grid'
+import Chip from '@mui/material/Chip'
+import Autocomplete from '@mui/material/Autocomplete'
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 import BooleanSearchBar from '../boolean-search-bar/boolean-search-bar'
 function isNested(filter: any) {
@@ -116,7 +116,7 @@ function isTypeLimiter(filter: any) {
 }
 // strip extra quotes
 const stripQuotes = (property = 'anyText') => {
-  return property?.replace(/^"(.+(?="$))"$/, '$1')
+  return property?.replace(/^"(.+(?="$))"$/, '$1');
 }
 function isAnyDate(filter: any) {
   if (!filter.filters) {
@@ -406,200 +406,198 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
       }
     }
   })()
-  return (
-    <>
-      <div className="editor-properties px-2 py-3">
-        <div>
-          <Typography className="pb-2">Keyword</Typography>
-          <BooleanSearchBar
-            value={anyTextValue}
-            key={model.id}
-            onChange={({ text, cql, error }) => {
-              // we want the string value, the cql value, and if it's correct
-              basicFilter.anyText[0] = new FilterClass({
-                ...basicFilter.anyText[0],
-                type: 'BOOLEAN_TEXT_SEARCH',
-                value: {
-                  text,
-                  cql,
-                  error,
-                },
-              })
-              model.set(
-                'filterTree',
-                constructFilterFromBasicFilter({ basicFilter })
-              )
-            }}
-          />
-        </div>
-        <div className="pt-2">
-          <QueryTimeReactView
-            value={basicFilter.anyDate[0]}
-            onChange={(newValue) => {
-              basicFilter.anyDate[0] = newValue
-              model.set(
-                'filterTree',
-                constructFilterFromBasicFilter({ basicFilter })
-              )
-            }}
-          />
-        </div>
-        <div className="pt-2">
-          <FormControlLabel
-            labelPlacement="end"
-            control={
-              <Checkbox
-                color="default"
-                checked={Boolean(basicFilter.anyGeo[0])}
-                onChange={(e) => {
-                  if (!e.target.checked) {
-                    basicFilter.anyGeo.pop()
-                  } else {
-                    basicFilter.anyGeo.push(
-                      new FilterClass({
-                        type: 'GEOMETRY',
-                        property: 'anyGeo',
-                        value: '',
-                      })
-                    )
-                  }
-                  model.set(
-                    'filterTree',
-                    constructFilterFromBasicFilter({ basicFilter })
-                  )
-                }}
-              />
-            }
-            label="Location"
-          />
-          {basicFilter.anyGeo[0] ? (
-            <Grid
-              container
-              alignItems="stretch"
-              direction="row"
-              wrap="nowrap"
-              className="pt-2"
-            >
-              <Grid item>
-                <Swath className="w-1 h-full" />
-              </Grid>
-              <Grid item className="w-full pl-2">
-                <FilterInput
-                  filter={
-                    new FilterClass({
-                      ...basicFilter.anyGeo[0],
-                      property: basicFilter.anyGeo[0].property,
-                    })
-                  }
-                  setFilter={(val: any) => {
-                    basicFilter.anyGeo[0] = val
-                    model.set(
-                      'filterTree',
-                      constructFilterFromBasicFilter({ basicFilter })
-                    )
-                  }}
-                />
-              </Grid>
-            </Grid>
-          ) : null}
-        </div>
-        <div className="pt-2">
-          <FormControlLabel
-            labelPlacement="end"
-            control={
-              <Checkbox
-                color="default"
-                checked={basicFilter.anyType.on}
-                onChange={(e) => {
-                  basicFilter.anyType.on = e.target.checked
-                  model.set(
-                    'filterTree',
-                    constructFilterFromBasicFilter({ basicFilter })
-                  )
-                }}
-              />
-            }
-            label="Types"
-          />
-          {basicFilter.anyType.on ? (
-            <Grid
-              container
-              alignItems="stretch"
-              direction="row"
-              wrap="nowrap"
-              className="pt-2"
-            >
-              <Grid item>
-                <Swath className="w-1 h-full" />
-              </Grid>
-              <Grid item className="w-full pl-2">
-                <Autocomplete
-                  fullWidth
-                  multiple
-                  options={Object.values(typeAttributes)}
-                  disableCloseOnSelect
-                  getOptionLabel={(option) => option.label}
-                  getOptionSelected={(option, value) =>
-                    option.value === value.value
-                  }
-                  onChange={(_e, newValue) => {
-                    basicFilter.anyType.properties = newValue.map(
-                      (val) => val.value
-                    )
-                    model.set(
-                      'filterTree',
-                      constructFilterFromBasicFilter({ basicFilter })
-                    )
-                  }}
-                  size="small"
-                  renderOption={({ label, value }) => {
-                    return (
-                      <>
-                        <div
-                          className={`pr-2 icon ${typeAttributes[value].class}`}
-                        />
-                        {label}
-                      </>
-                    )
-                  }}
-                  renderTags={(tagValue, getTagProps) =>
-                    tagValue.map((option, index) => (
-                      <Chip
-                        variant="outlined"
-                        color="default"
-                        label={
-                          <>
-                            <div
-                              className={`pr-2 icon ${
-                                typeAttributes[option.value].class
-                              }`}
-                            />
-                            {option.label}
-                          </>
-                        }
-                        {...getTagProps({ index })}
-                      />
-                    ))
-                  }
-                  value={determinePropertiesToApplyTo({
-                    value: basicFilter.anyType.properties,
-                  })}
-                  renderInput={(params) => (
-                    <TextField {...params} variant="outlined" />
-                  )}
-                />
-              </Grid>
-            </Grid>
-          ) : null}
-        </div>
-        <div className="py-5 w-full">
-          <Swath className="w-full h-1" />
-        </div>
-        <div className="basic-settings">
-          <QuerySettings model={model} />
-        </div>
+  return <>
+    <div className="editor-properties px-2 py-3">
+      <div>
+        <Typography className="pb-2">Keyword</Typography>
+        <BooleanSearchBar
+          value={anyTextValue}
+          key={model.id}
+          onChange={({ text, cql, error }) => {
+            // we want the string value, the cql value, and if it's correct
+            basicFilter.anyText[0] = new FilterClass({
+              ...basicFilter.anyText[0],
+              type: 'BOOLEAN_TEXT_SEARCH',
+              value: {
+                text,
+                cql,
+                error,
+              },
+            })
+            model.set(
+              'filterTree',
+              constructFilterFromBasicFilter({ basicFilter })
+            )
+          }}
+        />
       </div>
-    </>
-  )
+      <div className="pt-2">
+        <QueryTimeReactView
+          value={basicFilter.anyDate[0]}
+          onChange={(newValue) => {
+            basicFilter.anyDate[0] = newValue
+            model.set(
+              'filterTree',
+              constructFilterFromBasicFilter({ basicFilter })
+            )
+          }}
+        />
+      </div>
+      <div className="pt-2">
+        <FormControlLabel
+          labelPlacement="end"
+          control={
+            <Checkbox
+              color="default"
+              checked={Boolean(basicFilter.anyGeo[0])}
+              onChange={(e) => {
+                if (!e.target.checked) {
+                  basicFilter.anyGeo.pop()
+                } else {
+                  basicFilter.anyGeo.push(
+                    new FilterClass({
+                      type: 'GEOMETRY',
+                      property: 'anyGeo',
+                      value: '',
+                    })
+                  )
+                }
+                model.set(
+                  'filterTree',
+                  constructFilterFromBasicFilter({ basicFilter })
+                )
+              }}
+            />
+          }
+          label="Location"
+        />
+        {basicFilter.anyGeo[0] ? (
+          <Grid
+            container
+            alignItems="stretch"
+            direction="row"
+            wrap="nowrap"
+            className="pt-2"
+          >
+            <Grid item>
+              <Swath className="w-1 h-full" />
+            </Grid>
+            <Grid item className="w-full pl-2">
+              <FilterInput
+                filter={
+                  new FilterClass({
+                    ...basicFilter.anyGeo[0],
+                    property: basicFilter.anyGeo[0].property,
+                  })
+                }
+                setFilter={(val: any) => {
+                  basicFilter.anyGeo[0] = val
+                  model.set(
+                    'filterTree',
+                    constructFilterFromBasicFilter({ basicFilter })
+                  )
+                }}
+              />
+            </Grid>
+          </Grid>
+        ) : null}
+      </div>
+      <div className="pt-2">
+        <FormControlLabel
+          labelPlacement="end"
+          control={
+            <Checkbox
+              color="default"
+              checked={basicFilter.anyType.on}
+              onChange={(e) => {
+                basicFilter.anyType.on = e.target.checked
+                model.set(
+                  'filterTree',
+                  constructFilterFromBasicFilter({ basicFilter })
+                )
+              }}
+            />
+          }
+          label="Types"
+        />
+        {basicFilter.anyType.on ? (
+          <Grid
+            container
+            alignItems="stretch"
+            direction="row"
+            wrap="nowrap"
+            className="pt-2"
+          >
+            <Grid item>
+              <Swath className="w-1 h-full" />
+            </Grid>
+            <Grid item className="w-full pl-2">
+              <Autocomplete
+                fullWidth
+                multiple
+                options={Object.values(typeAttributes)}
+                disableCloseOnSelect
+                getOptionLabel={(option) => option.label}
+                isOptionEqualToValue={(option, value) =>
+                  option.value === value.value
+                }
+                onChange={(_e, newValue) => {
+                  basicFilter.anyType.properties = newValue.map(
+                    (val) => val.value
+                  )
+                  model.set(
+                    'filterTree',
+                    constructFilterFromBasicFilter({ basicFilter })
+                  )
+                }}
+                size="small"
+                renderOption={({ label, value }) => {
+                  return (
+                    <>
+                      <div
+                        className={`pr-2 icon ${typeAttributes[value].class}`}
+                      />
+                      {label}
+                    </>
+                  )
+                }}
+                renderTags={(tagValue, getTagProps) =>
+                  tagValue.map((option, index) => (
+                    <Chip
+                      variant="outlined"
+                      color="default"
+                      label={
+                        <>
+                          <div
+                            className={`pr-2 icon ${
+                              typeAttributes[option.value].class
+                            }`}
+                          />
+                          {option.label}
+                        </>
+                      }
+                      {...getTagProps({ index })}
+                    />
+                  ))
+                }
+                value={determinePropertiesToApplyTo({
+                  value: basicFilter.anyType.properties,
+                })}
+                renderInput={(params) => (
+                  <TextField {...params} variant="outlined" />
+                )}
+              />
+            </Grid>
+          </Grid>
+        ) : null}
+      </div>
+      <div className="py-5 w-full">
+        <Swath className="w-full h-1" />
+      </div>
+      <div className="basic-settings">
+        <QuerySettings model={model} />
+      </div>
+    </div>
+  </>;
 }
 export default hot(module)(QueryBasic)

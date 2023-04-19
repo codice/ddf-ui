@@ -13,8 +13,8 @@
  *
  **/
 import React from 'react'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import TextField from '@material-ui/core/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
 import { dispatchEnterKeySubmitEvent } from '../../../component/custom-events/enter-key-submit'
 
 export const EnumInput = ({

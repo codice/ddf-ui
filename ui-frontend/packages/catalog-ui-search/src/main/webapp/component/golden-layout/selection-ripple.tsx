@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
-import useTheme from '@material-ui/core/styles/useTheme'
+import { useTheme } from '@mui/material/styles';
 
 const SelectionRipple = ({
   selectionInterface,
@@ -30,7 +30,7 @@ const SelectionRipple = ({
           : 'scale(1) translateX(0%) translateY(0%)',
         background: theme.palette.secondary.main,
         opacity: hasSelection
-          ? theme.palette.type === 'dark'
+          ? theme.palette.mode === 'dark'
             ? 0.05
             : 0.05
           : 0,

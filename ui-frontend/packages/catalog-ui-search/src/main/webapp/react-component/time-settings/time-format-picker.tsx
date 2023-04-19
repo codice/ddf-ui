@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import TextField from '@material-ui/core/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
 import { TimeFormat } from './types'
 import Common from '../../js/Common'
 
@@ -45,7 +45,7 @@ const TimeFormatSelector = (props: Props) => {
           props.handleTimeFormatUpdate(newTimeFormat)
           setCurrentTimeFormat(newTimeFormat)
         }}
-        getOptionSelected={(oldFormat: TimeFormat, newFormat: TimeFormat) => {
+        isOptionEqualToValue={(oldFormat: TimeFormat, newFormat: TimeFormat) => {
           return oldFormat.value.datetimefmt !== newFormat.value.datetimefmt
         }}
         options={timeFormats}
@@ -57,7 +57,7 @@ const TimeFormatSelector = (props: Props) => {
         value={currentTimeFormat}
       />
     </div>
-  )
+  );
 }
 
 export default hot(module)(TimeFormatSelector)

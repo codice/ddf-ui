@@ -1,5 +1,5 @@
-import { ButtonProps } from '@material-ui/core/Button'
-import { PopoverActions, PopoverProps } from '@material-ui/core/Popover'
+import { ButtonProps } from '@mui/material/Button'
+import { PopoverActions, PopoverProps } from '@mui/material/Popover'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import debounce from 'lodash.debounce'

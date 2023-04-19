@@ -15,7 +15,7 @@
 import React from 'react'
 
 import Group from '../group'
-import TextFieldMui from '@material-ui/core/TextField'
+import TextFieldMui from '@mui/material/TextField'
 
 type Props = {
   value?: string

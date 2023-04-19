@@ -657,10 +657,10 @@ function getDefaultingErrorMessage(
   return `${value.replace(
     /_/g,
     '0'
-  )} is not an acceptable ${label} value. Defaulting to ${defaultValue}`
+  )} is not an acceptable ${label} value. Defaulting to ${defaultValue}`;
 }
 function getEmptyErrorMessage(label: string) {
-  return `${label.replace(/^\w/, (c) => c.toUpperCase())} cannot be empty`
+  return `${label.replace(/^\w/, (c) => c.toUpperCase())} cannot be empty`;
 }
 const Invalid = styled.div`
   border: 1px solid ${(props) => props.theme.negativeColor};

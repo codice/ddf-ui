@@ -1,5 +1,5 @@
 import * as React from 'react'
-import Grid from '@material-ui/core/Grid'
+import Grid from '@mui/material/Grid'
 import { Resizable, ResizableProps } from 're-resizable'
 import styled from 'styled-components'
 import { createCtx } from '../../typescript/context'

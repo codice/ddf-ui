@@ -14,10 +14,10 @@
  **/
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import Button from '@material-ui/core/Button'
-import GetAppIcon from '@material-ui/icons/GetApp'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import TextField from '@material-ui/core/TextField'
+import Button from '@mui/material/Button'
+import GetAppIcon from '@mui/icons-material/GetApp'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
 
 type ExportFormat = {
   id: string
@@ -55,7 +55,7 @@ const ResultsExport = (props: Props) => {
           size="small"
           options={exportFormats}
           getOptionLabel={(option) => option.displayName}
-          getOptionSelected={(option, value) =>
+          isOptionEqualToValue={(option, value) =>
             option.displayName === value.displayName
           }
           onChange={(_e, newValue) => {
@@ -82,7 +82,7 @@ const ResultsExport = (props: Props) => {
         <GetAppIcon /> Download
       </Button>
     </div>
-  )
+  );
 }
 
 export default hot(module)(ResultsExport)

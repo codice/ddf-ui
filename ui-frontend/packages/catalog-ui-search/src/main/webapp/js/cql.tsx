@@ -387,9 +387,9 @@ function buildTree(postfix: Array<TokenType>): any {
       if (match) {
         if (unwrap(postfix[0].text) === 'id') {
           // don't escape ids
-          return match[1].replace(/''/g, "'")
+          return match[1].replace(/''/g, "'");
         } else {
-          return translateCqlToUserql(match[1].replace(/''/g, "'"))
+          return translateCqlToUserql(match[1].replace(/''/g, "'"));
         }
       } else {
         return Number(tok.text)
@@ -662,7 +662,7 @@ function wrap(property: string): string {
 
 function unwrap(property: string): string {
   // Remove single and double quotes if they exist in property name
-  return property.replace(/^'|'$/g, '').replace(/^"|"$/g, '')
+  return property.replace(/^'|'$/g, '').replace(/^"|"$/g, '');
 }
 
 // really could use some refactoring to enable better typing, right now it's recursive and calls itself with so many different types / return types
@@ -804,7 +804,7 @@ function write(filter: any): any {
       break
     case undefined:
       if (typeof filter === 'string') {
-        return translateUserqlToCql("'" + filter.replace(/'/g, "''") + "'")
+        return translateUserqlToCql("'" + filter.replace(/'/g, "''") + "'");
       } else if (typeof filter === 'number') {
         return String(filter)
       } else if (typeof filter === 'boolean') {

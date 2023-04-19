@@ -14,7 +14,7 @@
  **/
 import * as React from 'react'
 import TableExportComponent from './presentation'
-import LinearProgress from '@material-ui/core/LinearProgress'
+import LinearProgress from '@mui/material/LinearProgress'
 import { hot } from 'react-hot-loader'
 import properties from '../../js/properties'
 import {

@@ -12,17 +12,17 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import { GridProps } from '@material-ui/core/Grid'
+import { GridProps } from '@mui/material/Grid'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { LazyQueryResults } from '../../../js/model/LazyQueryResult/LazyQueryResults'
 import _ from 'underscore'
 import user from '../../singletons/user-instance'
-import Button, { ButtonProps } from '@material-ui/core/Button'
+import Button, { ButtonProps } from '@mui/material/Button'
 import { useSelectionOfLazyResults } from '../../../js/model/LazyQueryResult/hooks'
-import CheckBoxIcon from '@material-ui/icons/CheckBox'
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
-import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox'
+import CheckBoxIcon from '@mui/icons-material/CheckBox'
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
+import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import { TypedMetacardDefs } from '../../tabs/metacard/metacardDefinitions'

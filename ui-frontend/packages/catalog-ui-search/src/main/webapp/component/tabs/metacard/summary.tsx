@@ -1,32 +1,32 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import Grid from '@material-ui/core/Grid'
-import Typography from '@material-ui/core/Typography'
-import Button from '@material-ui/core/Button'
+import Grid from '@mui/material/Grid'
+import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
 import user from '../../singletons/user-instance'
 import properties from '../../../js/properties'
 import TypedMetacardDefs from './metacardDefinitions'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import Checkbox from '@material-ui/core/Checkbox'
-import Divider from '@material-ui/core/Divider'
-import DeleteIcon from '@material-ui/icons/Delete'
-import TextField from '@material-ui/core/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import Checkbox from '@mui/material/Checkbox'
+import Divider from '@mui/material/Divider'
+import DeleteIcon from '@mui/icons-material/Delete'
+import TextField from '@mui/material/TextField'
 import { useDialog } from '../../dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
 import useSnack from '../../hooks/useSnack'
-import LinearProgress from '@material-ui/core/LinearProgress'
+import LinearProgress from '@mui/material/LinearProgress'
 import $ from 'jquery'
-import PublishIcon from '@material-ui/icons/Publish'
-import Paper from '@material-ui/core/Paper'
-import useTheme from '@material-ui/core/styles/useTheme'
+import PublishIcon from '@mui/icons-material/Publish'
+import Paper from '@mui/material/Paper'
+import { useTheme } from '@mui/material/styles';
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import TransferList, { useCustomReadOnlyCheck } from './transfer-list'
-import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace'
-import AddIcon from '@material-ui/icons/Add'
-import EditIcon from '@material-ui/icons/Edit'
-import Box from '@material-ui/core/Box'
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace'
+import AddIcon from '@mui/icons-material/Add'
+import EditIcon from '@mui/icons-material/Edit'
+import Box from '@mui/material/Box'
 import { Elevations } from '../../theme/theme'
 import { DarkDivider } from '../../dark-divider/dark-divider'
 import { displayHighlightedAttrInFull } from './highlightUtil'
@@ -181,247 +181,245 @@ export const Editor = ({
   const attrType = TypedMetacardDefs.getType({ attr })
   const enumForAttr = TypedMetacardDefs.getEnum({ attr: attr })
   const addSnack = useSnack()
-  return (
-    <>
-      {goBack && (
-        <Button
-          variant="text"
-          color="primary"
-          startIcon={<KeyboardBackspaceIcon />}
-          onClick={goBack}
-        >
-          Cancel and return to manage
-        </Button>
-      )}
-      <div className="text-2xl text-center px-2 pb-2 pt-4 font-normal truncate">
-        Editing {label} of "{lazyResult.plain.metacard.properties.title}"
-      </div>
-      <Divider />
-      <DialogContent style={{ minHeight: '30em', minWidth: '60vh' }}>
-        {values.map((val: any, index: number) => {
-          return (
-            <Grid container direction="row" className="my-2">
-              {index !== 0 ? <Divider style={{ margin: '5px 0px' }} /> : null}
-              <Grid item md={11}>
-                {(() => {
-                  if (enumForAttr) {
+  return <>
+    {goBack && (
+      <Button
+        variant="text"
+        color="primary"
+        startIcon={<KeyboardBackspaceIcon />}
+        onClick={goBack}
+      >
+        Cancel and return to manage
+      </Button>
+    )}
+    <div className="text-2xl text-center px-2 pb-2 pt-4 font-normal truncate">
+      Editing {label} of "{lazyResult.plain.metacard.properties.title}"
+    </div>
+    <Divider />
+    <DialogContent style={{ minHeight: '30em', minWidth: '60vh' }}>
+      {values.map((val: any, index: number) => {
+        return (
+          <Grid container direction="row" className="my-2">
+            {index !== 0 ? <Divider style={{ margin: '5px 0px' }} /> : null}
+            <Grid item md={11}>
+              {(() => {
+                if (enumForAttr) {
+                  return (
+                    <Autocomplete
+                      disabled={mode === 'saving'}
+                      value={val}
+                      onChange={(_e: any, newValue: string) => {
+                        values[index] = newValue
+                        setValues([...values])
+                      }}
+                      fullWidth
+                      disableClearable
+                      size="small"
+                      options={enumForAttr}
+                      renderInput={(params) => (
+                        <TextField {...params} variant="outlined" />
+                      )}
+                    />
+                  )
+                }
+                switch (attrType) {
+                  case 'DATE':
                     return (
-                      <Autocomplete
-                        disabled={mode === 'saving'}
+                      <DateTimePicker
                         value={val}
-                        onChange={(_e: any, newValue: string) => {
-                          values[index] = newValue
+                        onChange={(value) => {
+                          values[index] = value
                           setValues([...values])
                         }}
-                        fullWidth
-                        disableClearable
-                        size="small"
-                        options={enumForAttr}
-                        renderInput={(params) => (
-                          <TextField {...params} variant="outlined" />
-                        )}
+                        TextFieldProps={{
+                          disabled: mode !== Mode.Normal,
+                          label: label,
+                          variant: 'outlined',
+                        }}
+                        BPDateProps={{
+                          disabled: mode !== Mode.Normal,
+                        }}
                       />
                     )
-                  }
-                  switch (attrType) {
-                    case 'DATE':
-                      return (
-                        <DateTimePicker
-                          value={val}
-                          onChange={(value) => {
-                            values[index] = value
-                            setValues([...values])
-                          }}
-                          TextFieldProps={{
-                            disabled: mode !== Mode.Normal,
-                            label: label,
-                            variant: 'outlined',
-                          }}
-                          BPDateProps={{
-                            disabled: mode !== Mode.Normal,
-                          }}
-                        />
-                      )
-                    case 'BINARY':
-                      return (
-                        <ThumbnailInput
-                          disabled={mode !== Mode.Normal}
-                          value={val}
-                          onChange={(update) => {
-                            values[index] = update
-                            setValues([...values])
-                          }}
-                        />
-                      )
-                    case 'BOOLEAN':
-                      return (
-                        <Checkbox
-                          disabled={mode !== Mode.Normal}
-                          checked={val}
-                          onChange={(e) => {
-                            values[index] = e.target.checked
-                            setValues([...values])
-                          }}
-                          color="primary"
-                        />
-                      )
-                    case 'LONG':
-                    case 'DOUBLE':
-                    case 'FLOAT':
-                    case 'INTEGER':
-                    case 'SHORT':
-                      return (
-                        <TextField
-                          disabled={mode !== Mode.Normal}
-                          value={val}
-                          onChange={(e) => {
-                            values[index] = e.target.value
-                            setValues([...values])
-                          }}
-                          type="number"
-                          fullWidth
-                        />
-                      )
-                    case 'GEOMETRY':
-                      return (
-                        <LocationInputReact
-                          onChange={(location: any) => {
-                            if (location === null || location === 'INVALID') {
-                              setMode(Mode.BadInput)
-                            } else {
-                              setMode(Mode.Normal)
-                            }
-                            values[index] = location
-                            setValues([...values])
-                          }}
-                          value={val}
-                        />
-                      )
-                    default:
-                      return (
-                        <TextField
-                          disabled={mode !== Mode.Normal}
-                          value={val}
-                          onChange={(e: any) => {
-                            values[index] = e.target.value
-                            setValues([...values])
-                          }}
-                          style={{ whiteSpace: 'pre-line', flexGrow: 50 }}
-                          fullWidth
-                          multiline={true}
-                          rowsMax={1000}
-                        />
-                      )
-                  }
-                })()}
-              </Grid>
-              {isMultiValued ? (
-                <Grid item md={1}>
-                  <Button
-                    disabled={mode === Mode.Saving}
-                    onClick={() => {
-                      values.splice(index, 1)
-                      setValues([...values])
-                    }}
-                  >
-                    <DeleteIcon />
-                  </Button>
-                </Grid>
-              ) : null}
+                  case 'BINARY':
+                    return (
+                      <ThumbnailInput
+                        disabled={mode !== Mode.Normal}
+                        value={val}
+                        onChange={(update) => {
+                          values[index] = update
+                          setValues([...values])
+                        }}
+                      />
+                    )
+                  case 'BOOLEAN':
+                    return (
+                      <Checkbox
+                        disabled={mode !== Mode.Normal}
+                        checked={val}
+                        onChange={(e) => {
+                          values[index] = e.target.checked
+                          setValues([...values])
+                        }}
+                        color="primary"
+                      />
+                    )
+                  case 'LONG':
+                  case 'DOUBLE':
+                  case 'FLOAT':
+                  case 'INTEGER':
+                  case 'SHORT':
+                    return (
+                      <TextField
+                        disabled={mode !== Mode.Normal}
+                        value={val}
+                        onChange={(e) => {
+                          values[index] = e.target.value
+                          setValues([...values])
+                        }}
+                        type="number"
+                        fullWidth
+                      />
+                    )
+                  case 'GEOMETRY':
+                    return (
+                      <LocationInputReact
+                        onChange={(location: any) => {
+                          if (location === null || location === 'INVALID') {
+                            setMode(Mode.BadInput)
+                          } else {
+                            setMode(Mode.Normal)
+                          }
+                          values[index] = location
+                          setValues([...values])
+                        }}
+                        value={val}
+                      />
+                    )
+                  default:
+                    return (
+                      <TextField
+                        disabled={mode !== Mode.Normal}
+                        value={val}
+                        onChange={(e: any) => {
+                          values[index] = e.target.value
+                          setValues([...values])
+                        }}
+                        style={{ whiteSpace: 'pre-line', flexGrow: 50 }}
+                        fullWidth
+                        multiline={true}
+                        maxRows={1000}
+                      />
+                    );
+                }
+              })()}
             </Grid>
-          )
-        })}
-        {isMultiValued && values.length > 0 && (
-          <Button
-            disabled={mode === Mode.Saving}
-            variant="text"
-            color="primary"
-            onClick={() => {
-              let defaultValue = ''
-              switch (attrType) {
-                case 'DATE':
-                  defaultValue = new Date().toISOString()
-                  break
-              }
-              setValues([...values, defaultValue])
-            }}
-          >
-            <Box color="text.primary">
-              <AddIcon />
-            </Box>
-            Add New Value
-          </Button>
-        )}
-      </DialogContent>
-      <Divider />
-      <DialogActions>
+            {isMultiValued ? (
+              <Grid item md={1}>
+                <Button
+                  disabled={mode === Mode.Saving}
+                  onClick={() => {
+                    values.splice(index, 1)
+                    setValues([...values])
+                  }}
+                >
+                  <DeleteIcon />
+                </Button>
+              </Grid>
+            ) : null}
+          </Grid>
+        );
+      })}
+      {isMultiValued && values.length > 0 && (
         <Button
           disabled={mode === Mode.Saving}
           variant="text"
-          onClick={() => {
-            onCancel()
-          }}
-        >
-          Cancel
-        </Button>
-        <Button
-          disabled={mode !== Mode.Normal}
-          variant="contained"
           color="primary"
           onClick={() => {
-            setMode(Mode.Saving)
-            let transformedValues = values
-            try {
-              transformedValues =
-                attrType === 'BINARY'
-                  ? values.map((subval: any) => subval.split(',')[1])
-                  : values
-            } catch (err) {
-              console.error(err)
+            let defaultValue = ''
+            switch (attrType) {
+              case 'DATE':
+                defaultValue = new Date().toISOString()
+                break
             }
-            const attributes = [{ attribute: attr, values: transformedValues }]
-            const onSuccess = () =>
-              setTimeout(() => {
-                addSnack('Successfully updated.')
-                onSave()
-              }, 1000)
-            const onFailure = () =>
-              setTimeout(() => {
-                addSnack('Failed to update.', { status: 'error' })
-                onSave()
-              }, 1000)
-            if (ExtensionPoints.handleMetacardUpdate) {
-              ExtensionPoints.handleMetacardUpdate({
-                lazyResult,
-                attributesToUpdate: attributes,
-              }).then(onSuccess, onFailure)
-            } else {
-              handleMetacardUpdate({
-                lazyResult,
-                attributes,
-                onSuccess,
-                onFailure,
-              })
-            }
+            setValues([...values, defaultValue])
           }}
         >
-          Save
+          <Box color="text.primary">
+            <AddIcon />
+          </Box>
+          Add New Value
         </Button>
-      </DialogActions>
-      {mode === Mode.Saving ? (
-        <LinearProgress
-          style={{
-            width: '100%',
-            height: '10px',
-            position: 'absolute',
-            left: '0px',
-            bottom: '0%',
-          }}
-          variant="indeterminate"
-        />
-      ) : null}
-    </>
-  )
+      )}
+    </DialogContent>
+    <Divider />
+    <DialogActions>
+      <Button
+        disabled={mode === Mode.Saving}
+        variant="text"
+        onClick={() => {
+          onCancel()
+        }}
+      >
+        Cancel
+      </Button>
+      <Button
+        disabled={mode !== Mode.Normal}
+        variant="contained"
+        color="primary"
+        onClick={() => {
+          setMode(Mode.Saving)
+          let transformedValues = values
+          try {
+            transformedValues =
+              attrType === 'BINARY'
+                ? values.map((subval: any) => subval.split(',')[1])
+                : values
+          } catch (err) {
+            console.error(err)
+          }
+          const attributes = [{ attribute: attr, values: transformedValues }]
+          const onSuccess = () =>
+            setTimeout(() => {
+              addSnack('Successfully updated.')
+              onSave()
+            }, 1000)
+          const onFailure = () =>
+            setTimeout(() => {
+              addSnack('Failed to update.', { status: 'error' })
+              onSave()
+            }, 1000)
+          if (ExtensionPoints.handleMetacardUpdate) {
+            ExtensionPoints.handleMetacardUpdate({
+              lazyResult,
+              attributesToUpdate: attributes,
+            }).then(onSuccess, onFailure)
+          } else {
+            handleMetacardUpdate({
+              lazyResult,
+              attributes,
+              onSuccess,
+              onFailure,
+            })
+          }
+        }}
+      >
+        Save
+      </Button>
+    </DialogActions>
+    {mode === Mode.Saving ? (
+      <LinearProgress
+        style={{
+          width: '100%',
+          height: '10px',
+          position: 'absolute',
+          left: '0px',
+          bottom: '0%',
+        }}
+        variant="indeterminate"
+      />
+    ) : null}
+  </>;
 }
 const AttributeComponent = ({
   lazyResult,

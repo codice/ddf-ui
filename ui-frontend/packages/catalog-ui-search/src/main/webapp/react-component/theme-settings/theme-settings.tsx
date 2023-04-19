@@ -14,12 +14,12 @@
  **/
 /*global require*/
 import * as React from 'react'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Checkbox from '@mui/material/Checkbox'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 import user from '../../component/singletons/user-instance'
 import { hot } from 'react-hot-loader'
-import Grid from '@material-ui/core/Grid'
+import Grid from '@mui/material/Grid'
 import ColorTool from './color-tool'
 ;(window as any).user = user
 type ThemeType = {

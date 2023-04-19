@@ -16,8 +16,8 @@ import React from 'react'
 import { UploadBatchItemViewReact } from '../upload-batch-item/upload-batch-item.view'
 import userNotifications from '../singletons/user-notifications'
 import user from '../singletons/user-instance'
-import Button from '@material-ui/core/Button'
-import CloseIcon from '@material-ui/icons/Close'
+import Button from '@mui/material/Button'
+import CloseIcon from '@mui/icons-material/Close'
 import { useDialogState } from '../hooks/useDialogState'
 
 type NotificationGroupViewReactType = {

@@ -1,12 +1,12 @@
 /* Copyright (c) Connexta, LLC */
-import Typography from '@material-ui/core/Typography'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import FormControl, { FormControlProps } from '@material-ui/core/FormControl'
-import TextField, { TextFieldProps } from '@material-ui/core/TextField'
+import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
+import FormControl, { FormControlProps } from '@mui/material/FormControl'
+import TextField, { TextFieldProps } from '@mui/material/TextField'
 import Autocomplete, {
   AutocompleteProps,
   createFilterOptions,
-} from '@material-ui/lab/Autocomplete'
+} from '@mui/material/Autocomplete'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { useState } from 'react'
@@ -19,10 +19,10 @@ import {
   getRandomId,
   Option,
 } from './boolean-search-utils'
-import IconButton from '@material-ui/core/IconButton'
-import { InputProps } from '@material-ui/core/Input'
-import ClearIcon from '@material-ui/icons/Clear'
-import SearchIcon from '@material-ui/icons/Search'
+import IconButton from '@mui/material/IconButton'
+import { InputProps } from '@mui/material/Input'
+import ClearIcon from '@mui/icons-material/Clear'
+import SearchIcon from '@mui/icons-material/Search'
 import { useUpdateEffect } from 'react-use'
 import properties from '../../js/properties'
 import { dispatchEnterKeySubmitEvent } from '../custom-events/enter-key-submit'
@@ -339,10 +339,7 @@ const BooleanSearchBar = ({
                 endAdornment: (
                   <>
                     {!disableClearable && !!value.text && (
-                      <IconButton
-                        onClick={handleTextClear}
-                        style={{ padding: '2px' }}
-                      >
+                      <IconButton onClick={handleTextClear} style={{ padding: '2px' }} size="large">
                         <ClearIcon fontSize="small" />
                       </IconButton>
                     )}
@@ -353,7 +350,7 @@ const BooleanSearchBar = ({
                       }}
                       disabled={value.error}
                       style={{ padding: '2px' }}
-                    >
+                      size="large">
                       <SearchIcon fontSize="small" />
                     </IconButton>
                   </>
@@ -363,11 +360,11 @@ const BooleanSearchBar = ({
               }}
               {...props.TextFieldProps}
             />
-          )
+          );
         }}
         {...props.AutocompleteProps}
       />
     </FormControl>
-  )
+  );
 }
 export default hot(module)(ShapeValidator)

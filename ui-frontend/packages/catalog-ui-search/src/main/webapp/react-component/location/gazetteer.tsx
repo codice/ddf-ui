@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import { TextFieldProps } from '@material-ui/core/TextField'
+import { TextFieldProps } from '@mui/material/TextField'
 import * as React from 'react'
 import defaultFetch from '../utils/fetch'
 import Keyword from './keyword'

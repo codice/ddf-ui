@@ -14,21 +14,21 @@
  **/
 /* eslint-disable no-var */
 import * as React from 'react'
-import TextField from '@material-ui/core/TextField'
-import MenuItem from '@material-ui/core/MenuItem'
+import TextField from '@mui/material/TextField'
+import MenuItem from '@mui/material/MenuItem'
 import { hot } from 'react-hot-loader'
 import { FilterClass } from '../filter-builder/filter.structure'
 import { Omit } from '../../typescript'
-import Autocomplete from '@material-ui/lab/Autocomplete'
+import Autocomplete from '@mui/material/Autocomplete'
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
-import Chip from '@material-ui/core/Chip'
-import Grid from '@material-ui/core/Grid'
+import Chip from '@mui/material/Chip'
+import Grid from '@mui/material/Grid'
 import Swath from '../swath/swath'
 import properties from '../../js/properties'
 import metacardDefinitions from '../singletons/metacard-definitions'
 import FilterInput from '../../react-component/filter/filter-input'
-import Checkbox from '@material-ui/core/Checkbox'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
 export interface BasicFilterClass extends Omit<FilterClass, 'property'> {
   property: string[]
 }
@@ -101,123 +101,121 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
   if (value && value.property === undefined) {
     return null // the use effect above should fire to take care of setting a default
   }
-  return (
-    <>
-      <div>
-        <FormControlLabel
-          labelPlacement="end"
-          control={
-            <Checkbox
-              color="default"
-              checked={value ? true : false}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  onChange({
-                    ...value,
-                    type: 'AFTER',
-                    property: getDefaultPropertiesToApplyTo().map(
-                      (val) => val.value
-                    ),
-                  })
-                } else {
-                  onChange(undefined)
-                }
+  return <>
+    <div>
+      <FormControlLabel
+        labelPlacement="end"
+        control={
+          <Checkbox
+            color="default"
+            checked={value ? true : false}
+            onChange={(e) => {
+              if (e.target.checked) {
+                onChange({
+                  ...value,
+                  type: 'AFTER',
+                  property: getDefaultPropertiesToApplyTo().map(
+                    (val) => val.value
+                  ),
+                })
+              } else {
+                onChange(undefined)
+              }
+            }}
+          />
+        }
+        label="Time"
+      />
+      {value ? (
+        <Grid
+          container
+          alignItems="stretch"
+          direction="column"
+          wrap="nowrap"
+          className="pt-2"
+        >
+          <Grid item className="w-full pb-2">
+            <Autocomplete
+              fullWidth
+              multiple
+              options={getPossibleProperties()}
+              disableCloseOnSelect
+              getOptionLabel={(option) => option.label}
+              isOptionEqualToValue={(option, value) =>
+                option.value === value.value
+              }
+              onChange={(_e, newValue) => {
+                onChange({
+                  ...value,
+                  property: newValue.map((val) => val.value),
+                })
               }}
+              size="small"
+              renderTags={(tagValue, getTagProps) =>
+                tagValue.map((option, index) => (
+                  <Chip
+                    variant="outlined"
+                    color="default"
+                    label={option.label}
+                    {...getTagProps({ index })}
+                  />
+                ))
+              }
+              value={determinePropertiesToApplyTo({ value })}
+              renderInput={(params) => (
+                <TextField {...params} variant="outlined" />
+              )}
             />
-          }
-          label="Time"
-        />
-        {value ? (
+          </Grid>
           <Grid
             container
             alignItems="stretch"
-            direction="column"
+            direction="row"
             wrap="nowrap"
             className="pt-2"
           >
-            <Grid item className="w-full pb-2">
-              <Autocomplete
-                fullWidth
-                multiple
-                options={getPossibleProperties()}
-                disableCloseOnSelect
-                getOptionLabel={(option) => option.label}
-                getOptionSelected={(option, value) =>
-                  option.value === value.value
-                }
-                onChange={(_e, newValue) => {
-                  onChange({
-                    ...value,
-                    property: newValue.map((val) => val.value),
-                  })
-                }}
-                size="small"
-                renderTags={(tagValue, getTagProps) =>
-                  tagValue.map((option, index) => (
-                    <Chip
-                      variant="outlined"
-                      color="default"
-                      label={option.label}
-                      {...getTagProps({ index })}
-                    />
-                  ))
-                }
-                value={determinePropertiesToApplyTo({ value })}
-                renderInput={(params) => (
-                  <TextField {...params} variant="outlined" />
-                )}
-              />
+            <Grid item>
+              <Swath className="w-1 h-full" />
             </Grid>
-            <Grid
-              container
-              alignItems="stretch"
-              direction="row"
-              wrap="nowrap"
-              className="pt-2"
-            >
-              <Grid item>
-                <Swath className="w-1 h-full" />
+            <Grid container direction="column">
+              <Grid item className="w-full pl-2 pb-2">
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                  select
+                  value={value.type}
+                  onChange={(e) => {
+                    onChange({
+                      ...value,
+                      type: e.target.value,
+                    })
+                  }}
+                >
+                  <MenuItem value="AFTER">After</MenuItem>
+                  <MenuItem value="BEFORE">Before</MenuItem>
+                  <MenuItem value="DURING">Between</MenuItem>
+                  <MenuItem value="RELATIVE">Within the last</MenuItem>
+                  <MenuItem value="AROUND">Around</MenuItem>
+                </TextField>
               </Grid>
-              <Grid container direction="column">
-                <Grid item className="w-full pl-2 pb-2">
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    size="small"
-                    select
-                    value={value.type}
-                    onChange={(e) => {
-                      onChange({
-                        ...value,
-                        type: e.target.value,
-                      })
-                    }}
-                  >
-                    <MenuItem value="AFTER">After</MenuItem>
-                    <MenuItem value="BEFORE">Before</MenuItem>
-                    <MenuItem value="DURING">Between</MenuItem>
-                    <MenuItem value="RELATIVE">Within the last</MenuItem>
-                    <MenuItem value="AROUND">Around</MenuItem>
-                  </TextField>
-                </Grid>
-                <Grid item className="w-full pl-2">
-                  <FilterInput
-                    filter={{ ...value, property: value.property[0] }}
-                    setFilter={(val: any) => {
-                      onChange({
-                        ...value,
-                        value: val.value,
-                      })
-                    }}
-                  />
-                </Grid>
+              <Grid item className="w-full pl-2">
+                <FilterInput
+                  filter={{ ...value, property: value.property[0] }}
+                  setFilter={(val: any) => {
+                    onChange({
+                      ...value,
+                      value: val.value,
+                    })
+                  }}
+                />
               </Grid>
             </Grid>
           </Grid>
-        ) : null}
-      </div>
-    </>
-  )
+        </Grid>
+      ) : null}
+    </div>
+  </>;
 }
 
 export default hot(module)(QueryTime)

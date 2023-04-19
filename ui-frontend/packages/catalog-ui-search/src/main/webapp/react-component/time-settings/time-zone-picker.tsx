@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import TextField from '@material-ui/core/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
 import { TimeZone } from './types'
 
 type Props = {
@@ -30,7 +30,7 @@ const TimeZoneSelector = (props: Props) => {
           props.handleTimeZoneUpdate(newTimeZone)
           setCurrentTimeZone(newTimeZone)
         }}
-        getOptionSelected={(oldZone: TimeZone, newZone: TimeZone) => {
+        isOptionEqualToValue={(oldZone: TimeZone, newZone: TimeZone) => {
           return oldZone.zoneName !== newZone.zoneName
         }}
         options={props.timeZones}
@@ -44,7 +44,7 @@ const TimeZoneSelector = (props: Props) => {
         value={currentTimeZone}
       />
     </div>
-  )
+  );
 }
 
 export default hot(module)(TimeZoneSelector)

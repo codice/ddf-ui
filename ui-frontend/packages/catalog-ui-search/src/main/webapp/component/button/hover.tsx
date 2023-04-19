@@ -1,5 +1,5 @@
 import * as React from 'react'
-import Button, { ButtonProps } from '@material-ui/core/Button'
+import Button, { ButtonProps } from '@mui/material/Button'
 
 /**
  * Allows a button that displays different components when hovering.

@@ -20,7 +20,7 @@ import Dropzone from 'dropzone'
 import { UploadItemCollection } from '../upload-item/upload-item.collection.view'
 import UploadBatchModel from '../../js/model/UploadBatch'
 import { UploadSummaryViewReact } from '../upload-summary/upload-summary.view'
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
 
 type IngestModeType = 'empty' | 'has-files' | 'is-uploading' | 'is-finished'
 

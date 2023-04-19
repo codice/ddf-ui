@@ -15,7 +15,7 @@
 import React from 'react'
 
 import Group from '../../../react-component/group/index'
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
 class ListEditor extends React.Component {
   handleAdd() {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'list' does not exist on type 'Readonly<{... Remove this comment to see the full error message

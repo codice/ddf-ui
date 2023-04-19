@@ -19,15 +19,15 @@ import properties from '../../../js/properties'
 import user from '../../singletons/user-instance'
 import metacardDefinitions from '../../singletons/metacard-definitions'
 import TypedMetacardDefs from '../../tabs/metacard/metacardDefinitions'
-import Button from '@material-ui/core/Button'
-import LinkIcon from '@material-ui/icons/Link'
-import GetAppIcon from '@material-ui/icons/GetApp'
-import Grid from '@material-ui/core/Grid'
+import Button from '@mui/material/Button'
+import LinkIcon from '@mui/icons-material/Link'
+import GetAppIcon from '@mui/icons-material/GetApp'
+import Grid from '@mui/material/Grid'
 import { hot } from 'react-hot-loader'
-import Paper from '@material-ui/core/Paper'
-import Tooltip from '@material-ui/core/Tooltip'
-import MoreIcon from '@material-ui/icons/MoreVert'
-import WarningIcon from '@material-ui/icons/Warning'
+import Paper from '@mui/material/Paper'
+import Tooltip from '@mui/material/Tooltip'
+import MoreIcon from '@mui/icons-material/MoreVert'
+import WarningIcon from '@mui/icons-material/Warning'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import {
@@ -35,19 +35,19 @@ import {
   useSelectionOfLazyResult,
 } from '../../../js/model/LazyQueryResult/hooks'
 import Extensions from '../../../extension-points'
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
-import CheckIcon from '@material-ui/icons/Check'
-import CheckBoxIcon from '@material-ui/icons/CheckBox'
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
+import CheckIcon from '@mui/icons-material/Check'
+import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import { Elevations } from '../../theme/theme'
-import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple'
+import TouchRipple from '@mui/material/ButtonBase/TouchRipple'
 import { clearSelection, hasSelection } from './result-item-row'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import useCoordinateFormat from '../../tabs/metacard/useCoordinateFormat'
-import EditIcon from '@material-ui/icons/Edit'
+import EditIcon from '@mui/icons-material/Edit'
 import { Link } from '../../link/link'
 import { useMenuState } from '../../menu-state/menu-state'
-import Popover from '@material-ui/core/Popover'
+import Popover from '@mui/material/Popover'
 import Common from '../../../js/Common'
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (
@@ -507,7 +507,7 @@ export const ResultItem = ({ lazyResult, measure }: ResultItemFullProps) => {
         <SelectionBackground lazyResult={lazyResult} />
         <div className="w-full relative z-0">
           <div className="w-full flex items-start">
-            <IconButton lazyResult={lazyResult} />
+            <IconButton lazyResult={lazyResult} size="large" />
             <div
               data-id={`result-item-${shownAttributes[0]}-label`}
               title={`${TypedMetacardDefs.getAlias({
@@ -705,6 +705,6 @@ export const ResultItem = ({ lazyResult, measure }: ResultItemFullProps) => {
         ) : null}
       </div>
     </button>
-  )
+  );
 }
 export default hot(module)(ResultItem)

@@ -2,8 +2,8 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import SortSelections from './sort-selections'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
-import Grid from '@material-ui/core/Grid'
-import Button from '@material-ui/core/Button'
+import Grid from '@mui/material/Grid'
+import Button from '@mui/material/Button'
 import user from '../../component/singletons/user-instance'
 
 const getResultSort = () => {

@@ -6,17 +6,17 @@ import {
 } from '../resizable-grid/resizable-grid'
 import SelectionInterfaceModel from '../selection-interface/selection-interface.model'
 import { useQuery, useUserQuery } from '../../js/model/TypedQuery'
-import Grid from '@material-ui/core/Grid'
-import Paper from '@material-ui/core/Paper'
+import Grid from '@mui/material/Grid'
+import Paper from '@mui/material/Paper'
 import { QueryAddReact } from '../query-add/query-add'
-import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
-import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import queryString from 'query-string'
 
-import Button, { ButtonProps } from '@material-ui/core/Button'
-import MoreVert from '@material-ui/icons/MoreVert'
+import Button, { ButtonProps } from '@mui/material/Button'
+import MoreVert from '@mui/icons-material/MoreVert'
 import { Elevations } from '../theme/theme'
-import SearchIcon from '@material-ui/icons/SearchTwoTone'
+import SearchIcon from '@mui/icons-material/SearchTwoTone'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import {
   Link,
@@ -26,9 +26,9 @@ import {
   useParams,
 } from 'react-router-dom'
 import _ from 'lodash'
-import TextField from '@material-ui/core/TextField'
+import TextField from '@mui/material/TextField'
 import { DarkDivider } from '../dark-divider/dark-divider'
-import LinearProgress from '@material-ui/core/LinearProgress'
+import LinearProgress from '@mui/material/LinearProgress'
 import { useUpdateEffect } from 'react-use'
 import {
   FilterBuilderClass,
@@ -36,21 +36,21 @@ import {
 } from '../filter-builder/filter.structure'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
-import Skeleton from '@material-ui/lab/Skeleton'
-import CircularProgress from '@material-ui/core/CircularProgress'
+import Skeleton from '@mui/material/Skeleton'
+import CircularProgress from '@mui/material/CircularProgress'
 import {
   useRerenderOnBackboneSync,
   useStatusOfLazyResults,
 } from '../../js/model/LazyQueryResult/hooks'
-import CloudDoneIcon from '@material-ui/icons/CloudDone'
-import SaveIcon from '@material-ui/icons/Save'
+import CloudDoneIcon from '@mui/icons-material/CloudDone'
+import SaveIcon from '@mui/icons-material/Save'
 import { useMenuState } from '../menu-state/menu-state'
-import MenuItem from '@material-ui/core/MenuItem'
-import Menu from '@material-ui/core/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import Menu from '@mui/material/Menu'
 import { TypedUserInstance } from '../singletons/TypedUser'
 import useSnack from '../hooks/useSnack'
-import Popover from '@material-ui/core/Popover'
-import Autocomplete, { AutocompleteProps } from '@material-ui/lab/Autocomplete'
+import Popover from '@mui/material/Popover'
+import Autocomplete, { AutocompleteProps } from '@mui/material/Autocomplete'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import OverflowTooltip, {
   OverflowTooltipHTMLElement,
@@ -348,7 +348,7 @@ export const OpenSearch = ({
   return (
     <Autocomplete
       className="w-64"
-      getOptionSelected={(option) => option.plain.id === option.plain.id}
+      isOptionEqualToValue={(option) => option.plain.id === option.plain.id}
       getOptionLabel={(option) => option.plain.metacard.properties.title}
       options={options}
       innerRef={inputRef}
@@ -439,7 +439,7 @@ export const OpenSearch = ({
       }}
       {...autocompleteProps}
     />
-  )
+  );
 }
 
 const OptionsButton = () => {
@@ -1125,7 +1125,7 @@ const LeftTop = () => {
         ) : null}
         {data === true ? (
           <>
-            <Skeleton variant="rect" className="w-full h-full" />
+            <Skeleton variant="rectangular" className="w-full h-full" />
           </>
         ) : null}
         {typeof data !== 'boolean' ? (
@@ -1198,7 +1198,7 @@ const LeftTop = () => {
       </div>
       {closed ? null : <DarkDivider className="h-min w-full" />}
     </div>
-  )
+  );
 }
 
 const LeftMiddle = () => {
@@ -1218,7 +1218,7 @@ const LeftMiddle = () => {
       }`}
     >
       {data === true ? (
-        <Skeleton variant="rect" className="w-full h-full p-10"></Skeleton>
+        <Skeleton variant="rectangular" className="w-full h-full p-10"></Skeleton>
       ) : (
         <div
           className={`w-full h-full overflow-auto pb-64 ${
@@ -1229,7 +1229,7 @@ const LeftMiddle = () => {
         </div>
       )}
     </div>
-  )
+  );
 }
 
 const useKeepSearchInUrl = ({

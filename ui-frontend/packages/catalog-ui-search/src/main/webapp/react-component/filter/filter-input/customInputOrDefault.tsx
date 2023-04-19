@@ -14,8 +14,8 @@
  **/
 import * as React from 'react'
 import extension from '../../../extension-points'
-import TextField from '@material-ui/core/TextField'
-import { TextFieldProps } from '@material-ui/core/TextField'
+import TextField from '@mui/material/TextField'
+import { TextFieldProps } from '@mui/material/TextField'
 import { EnterKeySubmitProps } from '../../../component/custom-events/enter-key-submit'
 import { BooleanTextType } from '../../../component/filter-builder/filter.structure'
 

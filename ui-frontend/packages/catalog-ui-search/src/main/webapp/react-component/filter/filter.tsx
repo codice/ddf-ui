@@ -18,11 +18,11 @@ import * as React from 'react'
 import FilterComparator from './filter-comparator'
 import FilterInput from './filter-input'
 import { Attribute, getGroupedFilteredAttributes } from './filterHelper'
-import Grid from '@material-ui/core/Grid'
-import Autocomplete from '@material-ui/lab/Autocomplete'
+import Grid from '@mui/material/Grid'
+import Autocomplete from '@mui/material/Autocomplete'
 
 import { hot } from 'react-hot-loader'
-import TextField from '@material-ui/core/TextField'
+import TextField from '@mui/material/TextField'
 import { FilterClass } from '../../component/filter-builder/filter.structure'
 import { getComparators } from './filter-comparator/comparatorUtils'
 
@@ -58,7 +58,7 @@ const Filter = ({ filter, setFilter }: Props) => {
           options={attributeList}
           groupBy={groupBy}
           getOptionLabel={(option) => option.label}
-          getOptionSelected={(option, value) => option.value === value.value}
+          isOptionEqualToValue={(option, value) => option.value === value.value}
           onChange={(_e, newValue) => {
             /**
              * should update both the property and the type, since type is restricted based on property
@@ -93,7 +93,7 @@ const Filter = ({ filter, setFilter }: Props) => {
         <FilterInput filter={filter} setFilter={setFilter} />
       </Grid>
     </Grid>
-  )
+  );
 }
 
 export default hot(module)(Filter)

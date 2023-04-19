@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { BoxProps } from '@material-ui/core/Box'
+import { BoxProps } from '@mui/material/Box'
 import { hot } from 'react-hot-loader'
 
 const Swath = (props: BoxProps) => {

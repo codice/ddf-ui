@@ -1,14 +1,14 @@
 import * as React from 'react'
-import Card, { CardProps } from '@material-ui/core/Card'
-import CardHeader, { CardHeaderProps } from '@material-ui/core/CardHeader'
-import CardActions, { CardActionsProps } from '@material-ui/core/CardActions'
-import CardContent, { CardContentProps } from '@material-ui/core/CardContent'
+import Card, { CardProps } from '@mui/material/Card'
+import CardHeader, { CardHeaderProps } from '@mui/material/CardHeader'
+import CardActions, { CardActionsProps } from '@mui/material/CardActions'
+import CardContent, { CardContentProps } from '@mui/material/CardContent'
 import CardActionArea, {
   CardActionAreaProps,
-} from '@material-ui/core/CardActionArea'
-import Typography, { TypographyProps } from '@material-ui/core/Typography'
+} from '@mui/material/CardActionArea'
+import Typography, { TypographyProps } from '@mui/material/Typography'
 import styled from 'styled-components'
-import CreateIcon from '@material-ui/icons/AddBox'
+import CreateIcon from '@mui/icons-material/AddBox'
 
 export const ZeroWidthSpace = () => {
   return <>{String.fromCharCode(8203)}</>

@@ -43,7 +43,7 @@ function convertUserValueToWKT(val: any) {
 }
 
 function removeTrailingZeros(wkt: any) {
-  return wkt.replace(/[-+]?[0-9]*\.?[0-9]+/g, (number: any) => Number(number))
+  return wkt.replace(/[-+]?[0-9]*\.?[0-9]+/g, (number: any) => Number(number));
 }
 
 function checkCoordinateOrder(coordinate: any) {

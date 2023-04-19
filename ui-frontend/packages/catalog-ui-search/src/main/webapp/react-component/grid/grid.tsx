@@ -1,5 +1,5 @@
 import * as React from 'react'
-import Grid, { GridProps } from '@material-ui/core/Grid'
+import Grid, { GridProps } from '@mui/material/Grid'
 import styled from 'styled-components'
 
 export const WrappedGrid = styled(
