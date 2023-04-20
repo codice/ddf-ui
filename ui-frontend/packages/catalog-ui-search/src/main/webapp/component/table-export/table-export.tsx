@@ -15,7 +15,6 @@
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import TableExport from '../../react-component/table-export'
-import Sources from '../../component/singletons/sources-instance'
 import {
   getExportOptions,
   Transformer,
@@ -33,88 +32,55 @@ import { AddSnack } from '../snack/snack.provider'
 import properties from '../../js/properties'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
 import contentDisposition from 'content-disposition'
+import { getResultSetCql } from '../../react-component/utils/cql'
 
 type ExportResponse = {
   displayName: string
   id: string
 }
+
 export type Props = {
   selectionInterface: any
   filteredAttributes: string[]
 }
+
 type Source = {
   id: string
   hits: number
 }
-export function getStartIndex(src: string, selectionInterface: any) {
-  const srcIndexMap =
-    selectionInterface.getCurrentQuery().nextIndexForSourceGroup
-  if (src === Sources.localCatalog) {
-    return srcIndexMap['local']
-  }
-  return srcIndexMap[src]
-}
+
 function getSrcs(selectionInterface: any) {
   return selectionInterface.getCurrentQuery().getSelectedSources()
 }
-export function getSrcCount(src: any, selectionInterface: any) {
-  const result = selectionInterface.getCurrentQuery().get('result')
-  return Object.values(
-    result.get('lazyResults').status as {
-      [key: string]: any
-    }
-  ).find((status: any) => status.id === src).count
+
+function getColumnOrder(filteredAttributes: any[]): string[] {
+  return user
+    .get('user')
+    .get('preferences')
+    .get('columnOrder')
+    .filter(
+      (property: string) =>
+        filteredAttributes.includes(property) && !properties.isHidden(property)
+    )
 }
-function getColumnOrder(): string[] {
-  return user.get('user').get('preferences').get('columnOrder')
-}
+
 function getHiddenFields(): string[] {
   return user.get('user').get('preferences').get('columnHide')
 }
+
 function getSorts(selectionInterface: any) {
   return (
     user.get('user').get('preferences').get('resultSort') ||
     selectionInterface.getCurrentQuery().get('sorts')
   )
 }
-function getSearches(
-  exportSize: string,
-  srcs: string[],
-  cql: string,
-  selectionInterface: any
-): any {
-  const cacheId = selectionInterface.getCurrentQuery().get('cacheId')
-  if (exportSize !== 'currentPage') {
-    const result = selectionInterface.getCurrentQuery().get('result')
-    const pageSize = Object.keys(result.get('lazyResults').results).length
-    return srcs.length > 0
-      ? [
-          {
-            srcs,
-            cql,
-            count: pageSize,
-            cacheId,
-          },
-        ]
-      : []
-  }
-  return srcs.map((src: string) => {
-    const start = getStartIndex(src, selectionInterface)
-    const srcCount = getSrcCount(src, selectionInterface)
-    return {
-      src,
-      cql,
-      start,
-      count: srcCount,
-      cacheId,
-    }
-  })
-}
+
 function getHits(sources: Source[]): number {
   return sources
     .filter((source) => source.id !== 'cache')
     .reduce((hits, source) => (source.hits ? hits + source.hits : hits), 0)
 }
+
 function getExportCount({
   exportSize,
   selectionInterface,
@@ -128,6 +94,7 @@ function getExportCount({
     ? getHits(Object.values(result.get('lazyResults').status))
     : Object.keys(result.get('lazyResults').results).length
 }
+
 export const getWarning = (exportCountInfo: ExportCountInfo): string => {
   const exportCount = getExportCount(exportCountInfo)
   const result = exportCountInfo.selectionInterface
@@ -166,6 +133,7 @@ export const getWarning = (exportCountInfo: ExportCountInfo): string => {
   }
   return warningMessage
 }
+
 export const getDownloadBody = (downloadInfo: DownloadInfo) => {
   const {
     exportSize,
@@ -173,40 +141,57 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
     selectionInterface,
     filteredAttributes,
   } = downloadInfo
+
   const hiddenFields = getHiddenFields()
-  const columnOrder = getColumnOrder().filter(
-    (property: string) =>
-      filteredAttributes.includes(property) && !properties.isHidden(property)
-  )
-  const count = Math.min(
+  const columnOrder = getColumnOrder(filteredAttributes)
+  const srcs = getSrcs(selectionInterface)
+  const sorts = getSorts(selectionInterface)
+  const query = selectionInterface.getCurrentQuery()
+  const cacheId = query.get('cacheId')
+  const phonetics = query.get('phonetics')
+  const spellcheck = query.get('spellcheck')
+  const results = Object.keys(query.get('result').get('lazyResults').results)
+  const pageSize = results.length
+  const exportCount = Math.min(
     getExportCount({ exportSize, selectionInterface, customExportCount }),
     (properties as any).exportResultLimit
   )
-  const query = selectionInterface.getCurrentQuery()
-  const cql = DEFAULT_USER_QUERY_OPTIONS.transformFilterTree({
-    originalFilterTree: query.get('filterTree'),
-    queryRef: query,
-  })
-  const srcs = getSrcs(selectionInterface)
-  const sorts = getSorts(selectionInterface)
-  const phonetics = query.get('phonetics')
-  const spellcheck = query.get('spellcheck')
   const args = {
     hiddenFields: hiddenFields.length > 0 ? hiddenFields : [],
     columnOrder: columnOrder.length > 0 ? columnOrder : [],
     columnAliasMap: properties.attributeAliases,
   }
-  const searches = getSearches(exportSize, srcs, cql, selectionInterface)
+
+  let queryCount = exportCount
+  let cql = DEFAULT_USER_QUERY_OPTIONS.transformFilterTree({
+    originalFilterTree: query.get('filterTree'),
+    queryRef: query,
+  })
+  if (downloadInfo.exportSize !== 'all') {
+    queryCount = pageSize
+    cql = getResultSetCql(results)
+  }
+
+  const searches = [
+    {
+      srcs,
+      cql,
+      count: queryCount,
+      cacheId,
+    },
+  ]
+
   return {
     phonetics,
     spellcheck,
     searches,
-    count,
+    count: exportCount,
     sorts,
     args,
   }
 }
-const generateOnDownloadClick = ({ addSnack }: { addSnack: AddSnack }) => {
+
+const generateOnDownloadClick = (addSnack: AddSnack) => {
   return async (downloadInfo: DownloadInfo) => {
     const exportFormat = encodeURIComponent(downloadInfo.exportFormat)
     try {
@@ -229,6 +214,7 @@ const generateOnDownloadClick = ({ addSnack }: { addSnack: AddSnack }) => {
     }
   }
 }
+
 const TableExports = ({ selectionInterface, filteredAttributes }: Props) => {
   const [formats, setFormats] = useState([])
   const addSnack = useSnack()
@@ -249,12 +235,13 @@ const TableExports = ({ selectionInterface, filteredAttributes }: Props) => {
     }
     fetchFormats()
   }, [])
+
   return (
     <TableExport
       exportFormats={formats}
       selectionInterface={selectionInterface}
       getWarning={getWarning}
-      onDownloadClick={generateOnDownloadClick({ addSnack })}
+      onDownloadClick={generateOnDownloadClick(addSnack)}
       filteredAttributes={filteredAttributes}
     />
   )

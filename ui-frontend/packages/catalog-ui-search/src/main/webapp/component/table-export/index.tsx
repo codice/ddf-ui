@@ -17,6 +17,4 @@ export {
   Props,
   getWarning,
   getDownloadBody,
-  getStartIndex,
-  getSrcCount,
 } from './table-export'
