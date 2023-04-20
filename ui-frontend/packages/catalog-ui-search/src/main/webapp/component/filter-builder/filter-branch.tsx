@@ -1,11 +1,10 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import Paper from '@mui/material/Paper'
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import FilterLeaf from './filter-leaf'
-import { useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles'
 import { HoverButton } from '../button/hover'
 import {
   FilterBuilderClass,
@@ -167,7 +166,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
     })
   }, [filter])
 
-  const EnclosingElement = root ? Box : Paper
+  const EnclosingElement = root ? Paper : Paper // might need to account for change from box
   return (
     <div
       onMouseOver={() => {

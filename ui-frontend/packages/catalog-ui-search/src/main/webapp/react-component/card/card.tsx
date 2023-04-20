@@ -64,7 +64,7 @@ export const WrappedCardContentValue = ({
 
 export const WrappedCardActionArea = styled(
   React.forwardRef((props: CardActionAreaProps, ref: React.Ref<any>) => {
-    return <CardActionArea {...props} buttonRef={ref} />
+    return <CardActionArea {...props} ref={ref} />
   })
 )<CardActionAreaProps>``
 

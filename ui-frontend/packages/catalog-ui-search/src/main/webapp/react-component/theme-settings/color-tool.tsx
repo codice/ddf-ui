@@ -182,7 +182,11 @@ function ColorTool(props: any) {
   }, [state])
 
   const colorBar = (color: any, intent: string) => {
-    const background = theme.palette.augmentColor({ main: color })
+    const background = theme.palette.augmentColor({
+      color: {
+        main: color,
+      },
+    })
 
     return (
       <Grid container className={classes.colorBar}>

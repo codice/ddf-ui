@@ -1,7 +1,6 @@
 import * as React from 'react'
 import Dialog, { DialogProps } from '@mui/material/Dialog'
 import { createCtx } from './../../typescript/context'
-import { Omit } from 'utility-types'
 import { setType } from '../../typescript/hooks'
 
 const [useDialogContext, DialogContextProvider] = createCtx<{
@@ -44,65 +43,5 @@ export const DialogProvider = (props: DialogProviderProps) => {
       {props.children}
       <Dialog {...dialogProps} />
     </DialogContextProvider>
-  )
-}
-
-const [, ControlledDialogContextProvider] = createCtx<{
-  props: DialogProps
-  setProps: setType<Partial<DialogProps>>
-}>()
-
-type ControlledDialogProps = {
-  children: ({
-    setProps,
-    props,
-  }: {
-    setProps: setType<Partial<DialogProps>>
-    props: DialogProps
-  }) => DialogProps['children']
-  content: ({
-    setProps,
-    props,
-  }: {
-    setProps: setType<Partial<DialogProps>>
-    props: DialogProps
-  }) => DialogProps['children']
-} & Omit<Partial<DialogProps>, 'children'>
-
-export const ControlledDialog = ({
-  content,
-  children,
-  ...initialDialogProps
-}: ControlledDialogProps) => {
-  const [dialogProps, setDialogProps] = React.useState({
-    open: false,
-    onClose: () => {
-      setDialogProps({
-        ...dialogProps,
-        open: false,
-      })
-    },
-    ...initialDialogProps,
-  } as DialogProps)
-
-  const setProps = (props: Partial<DialogProps>) => {
-    setDialogProps({
-      ...dialogProps,
-      ...props,
-    })
-  }
-
-  return (
-    <ControlledDialogContextProvider
-      value={{
-        setProps,
-        props: dialogProps,
-      }}
-    >
-      {children({ setProps, props: dialogProps })}
-      <Dialog {...dialogProps}>
-        {content({ setProps, props: dialogProps })}
-      </Dialog>
-    </ControlledDialogContextProvider>
   )
 }

@@ -115,6 +115,7 @@ const MultiSelectActions = ({
   return (
     <>
       <Button
+        component="div"
         className={selectedResultsArray.length === 0 ? 'relative' : 'relative'}
         color="primary"
         disabled={selectedResultsArray.length === 0}
@@ -122,7 +123,7 @@ const MultiSelectActions = ({
           e.stopPropagation()
           metacardInteractionMenuState.handleClick()
         }}
-        innerRef={metacardInteractionMenuState.anchorRef}
+        ref={metacardInteractionMenuState.anchorRef}
         style={{ height: '100%' }}
         size="small"
       >
@@ -159,7 +160,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
           }}
           style={{ height: '100%' }}
           size="small"
-          innerRef={metacardInteractionMenuState.anchorRef}
+          ref={metacardInteractionMenuState.anchorRef}
         >
           <MoreIcon />
         </Button>
@@ -507,7 +508,7 @@ export const ResultItem = ({ lazyResult, measure }: ResultItemFullProps) => {
         <SelectionBackground lazyResult={lazyResult} />
         <div className="w-full relative z-0">
           <div className="w-full flex items-start">
-            <IconButton lazyResult={lazyResult} size="large" />
+            <IconButton lazyResult={lazyResult} />
             <div
               data-id={`result-item-${shownAttributes[0]}-label`}
               title={`${TypedMetacardDefs.getAlias({
@@ -705,6 +706,6 @@ export const ResultItem = ({ lazyResult, measure }: ResultItemFullProps) => {
         ) : null}
       </div>
     </button>
-  );
+  )
 }
 export default hot(module)(ResultItem)

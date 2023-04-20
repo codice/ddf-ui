@@ -60,8 +60,17 @@ const render = (props: Props) => {
           onClick={async () => {
             try {
               dialogContext.setProps({
-                disableBackdropClick: true,
-                disableEscapeKeyDown: true,
+                onClose: (_event, reason) => {
+                  if (
+                    reason === 'backdropClick' ||
+                    reason === 'escapeKeyDown'
+                  ) {
+                    return
+                  }
+                  dialogContext.setProps({
+                    open: false,
+                  })
+                },
               })
               isDeleted ? await onRestoreConfirm() : await onArchiveConfirm()
               addSnack(`Successfully ${isDeleted ? `restored` : `deleted`}`)

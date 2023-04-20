@@ -29,22 +29,11 @@ import Paper from '@mui/material/Paper'
 import { Elevations } from '../../theme/theme'
 import OverflowTooltip from '../../overflow-tooltip/overflow-tooltip'
 import Tabs from '@mui/material/Tabs'
-import MaterialTab, {
-  TabProps as MaterialTabProps,
-} from '@mui/material/Tab'
+import MaterialTab from '@mui/material/Tab'
 import MetacardTabs, { TabNames } from '../../tabs/metacard/tabs-metacard'
 import { TypedProperties } from '../../singletons/TypedProperties'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import { useRerenderOnBackboneSync } from '../../../js/model/LazyQueryResult/hooks'
-
-type TabType = Omit<MaterialTabProps, 'label'> & {
-  children: MaterialTabProps['label']
-}
-
-const Tab = (props: TabType) => {
-  const { children, ...otherProps } = props
-  return <MaterialTab label={children} {...otherProps}></MaterialTab>
-}
 
 type InspectorType = {
   selectionInterface: any
@@ -240,9 +229,11 @@ const Inspector = ({ selectionInterface }: InspectorType) => {
               >
                 {Object.keys(possibleMetacardTabs).map((tabName) => {
                   return (
-                    <Tab key={tabName} value={tabName}>
-                      {tabName}
-                    </Tab>
+                    <MaterialTab
+                      key={tabName}
+                      value={tabName}
+                      label={tabName}
+                    />
                   )
                 })}
               </Tabs>

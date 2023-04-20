@@ -13,16 +13,15 @@
  *
  **/
 import * as React from 'react'
-import { ThemeContext, ThemeProvider, Theme, StyledEngineProvider } from 'styled-components';
+import { StyledEngineProvider, Theme } from '@mui/material'
+import { ThemeContext, ThemeProvider } from 'styled-components'
 import { ThemeInterface } from '../styles/styled-components'
 import { hot } from 'react-hot-loader'
-
 
 declare module '@mui/styles/defaultTheme' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {}
 }
-
 
 type Props = {
   children?: any
@@ -41,7 +40,7 @@ const render = (props: Props) => {
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={modifiedTheme}>{children}</ThemeProvider>
     </StyledEngineProvider>
-  );
+  )
 }
 
 export default hot(module)(render)

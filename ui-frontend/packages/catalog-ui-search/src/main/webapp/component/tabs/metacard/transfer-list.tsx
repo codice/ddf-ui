@@ -356,7 +356,7 @@ const CustomList = ({
               disabled={Object.keys(items).length === 0}
               onClick={handleToggleAll(items)}
               color={
-                isIndeterminate || isCompletelySelected ? 'default' : 'default'
+                isIndeterminate || isCompletelySelected ? 'primary' : 'primary'
               }
             >
               {(() => {
@@ -729,151 +729,154 @@ const TransferList = ({
     })
   }
   const totalPossible = startingLeft.length + startingRight.length
-  return <>
-    <div className="text-2xl text-center px-2 pb-2 pt-4 font-normal relative">
-      Manage Attributes
-      <Button
-        data-id="close-button"
-        className="absolute right-0 top-0 mr-1 mt-1"
-        variant="text"
-        size="small"
-        onClick={() => {
-          dialogContext.setProps({
-            open: false,
-            children: null,
-          })
-        }}>
-        <CloseIcon />
-      </Button>
-    </div>
-    <DarkDivider className="w-full h-min" />
-    <DialogContent>
-      <Grid
-        container
-        spacing={2}
-        justifyContent="center"
-        alignItems="center"
-        className="m-auto"
-      >
-        <Grid item>
-          <CustomList
-            title="Active"
-            items={left}
-            lazyResult={lazyResult}
-            updateItems={setLeft}
-            isDnD={true}
-            startOver={startOver}
-            handleToggleAll={generateHandleToggleAll({
-              setState: setLeft,
-              state: left,
-            })}
-            totalPossible={totalPossible}
-            mode={mode}
-          />
-        </Grid>
-        <Grid item>
-          <Grid container direction="column" alignItems="center">
-            <Button
-              data-id="move-right-button"
-              variant="outlined"
-              className="m-1"
-              onClick={moveRight}
-              disabled={!hasLeftChecked}
-              aria-label="move selected right"
-            >
-              <RightArrowIcon />
-            </Button>
-            <Button
-              data-id="move-left-button"
-              variant="outlined"
-              className="m-1"
-              onClick={moveLeft}
-              disabled={!hasRightChecked}
-              aria-label="move selected left"
-            >
-              <LeftArrowIcon />
-            </Button>
+  return (
+    <>
+      <div className="text-2xl text-center px-2 pb-2 pt-4 font-normal relative">
+        Manage Attributes
+        <Button
+          data-id="close-button"
+          className="absolute right-0 top-0 mr-1 mt-1"
+          variant="text"
+          size="small"
+          onClick={() => {
+            dialogContext.setProps({
+              open: false,
+              children: null,
+            })
+          }}
+        >
+          <CloseIcon />
+        </Button>
+      </div>
+      <DarkDivider className="w-full h-min" />
+      <DialogContent>
+        <Grid
+          container
+          spacing={2}
+          justifyContent="center"
+          alignItems="center"
+          className="m-auto"
+        >
+          <Grid item>
+            <CustomList
+              title="Active"
+              items={left}
+              lazyResult={lazyResult}
+              updateItems={setLeft}
+              isDnD={true}
+              startOver={startOver}
+              handleToggleAll={generateHandleToggleAll({
+                setState: setLeft,
+                state: left,
+              })}
+              totalPossible={totalPossible}
+              mode={mode}
+            />
+          </Grid>
+          <Grid item>
+            <Grid container direction="column" alignItems="center">
+              <Button
+                data-id="move-right-button"
+                variant="outlined"
+                className="m-1"
+                onClick={moveRight}
+                disabled={!hasLeftChecked}
+                aria-label="move selected right"
+              >
+                <RightArrowIcon />
+              </Button>
+              <Button
+                data-id="move-left-button"
+                variant="outlined"
+                className="m-1"
+                onClick={moveLeft}
+                disabled={!hasRightChecked}
+                aria-label="move selected left"
+              >
+                <LeftArrowIcon />
+              </Button>
+            </Grid>
+          </Grid>
+          <Grid item>
+            <CustomList
+              title="Hidden"
+              items={right}
+              lazyResult={lazyResult}
+              updateItems={setRight}
+              isDnD={false}
+              startOver={startOver}
+              handleToggleAll={generateHandleToggleAll({
+                setState: setRight,
+                state: right,
+              })}
+              mode={mode}
+              totalPossible={totalPossible}
+            />
           </Grid>
         </Grid>
-        <Grid item>
-          <CustomList
-            title="Hidden"
-            items={right}
-            lazyResult={lazyResult}
-            updateItems={setRight}
-            isDnD={false}
-            startOver={startOver}
-            handleToggleAll={generateHandleToggleAll({
-              setState: setRight,
-              state: right,
-            })}
-            mode={mode}
-            totalPossible={totalPossible}
-          />
-        </Grid>
-      </Grid>
-    </DialogContent>
-    <DarkDivider className="w-full h-min" />
-    <DialogActions>
-      {hideEmpty !== undefined && (
-        <>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={hideEmpty}
-                onChange={(e) => setHideEmpty(e.target.checked)}
-              />
-            }
-            label="Hide empty attributes in inspector"
-            style={{ paddingLeft: '10px' }}
-          />
-          <div style={{ flex: '1 0 0' }} />
-        </>
-      )}
-      <Button
-        data-id="dialog-save-button"
-        disabled={mode === 'saving'}
-        onClick={() => {
-          dialogContext.setProps({
-            open: false,
-            children: null,
-          })
-        }}
-        variant="text"
-        color="secondary"
-        className="mr-2"
-      >
-        Cancel
-      </Button>
-      <Button
-        className="ml-2"
-        disabled={mode === 'saving'}
-        onClick={() => {
-          setMode('saving')
-          onSave(Object.keys(left), hideEmpty)
-          dialogContext.setProps({
-            open: false,
-            children: null,
-          })
-        }}
-        variant="contained"
-        color="primary"
-      >
-        Save
-      </Button>
-    </DialogActions>
-    {mode === 'saving' ? (
-      <LinearProgress
-        style={{
-          width: '100%',
-          height: '10px',
-          position: 'absolute',
-          left: '0px',
-          bottom: '0%',
-        }}
-        variant="indeterminate"
-      />
-    ) : null}
-  </>;
+      </DialogContent>
+      <DarkDivider className="w-full h-min" />
+      <DialogActions>
+        {hideEmpty !== undefined && (
+          <>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={hideEmpty}
+                  onChange={(e) => setHideEmpty(e.target.checked)}
+                />
+              }
+              label="Hide empty attributes in inspector"
+              style={{ paddingLeft: '10px' }}
+            />
+            <div style={{ flex: '1 0 0' }} />
+          </>
+        )}
+        <Button
+          data-id="dialog-save-button"
+          disabled={mode === 'saving'}
+          onClick={() => {
+            dialogContext.setProps({
+              open: false,
+              children: null,
+            })
+          }}
+          variant="text"
+          color="secondary"
+          className="mr-2"
+        >
+          Cancel
+        </Button>
+        <Button
+          className="ml-2"
+          disabled={mode === 'saving'}
+          onClick={() => {
+            setMode('saving')
+            onSave(Object.keys(left), hideEmpty)
+            dialogContext.setProps({
+              open: false,
+              children: null,
+            })
+          }}
+          variant="contained"
+          color="primary"
+        >
+          Save
+        </Button>
+      </DialogActions>
+      {mode === 'saving' ? (
+        <LinearProgress
+          style={{
+            width: '100%',
+            height: '10px',
+            position: 'absolute',
+            left: '0px',
+            bottom: '0%',
+          }}
+          variant="indeterminate"
+        />
+      ) : null}
+    </>
+  )
 }
 export default hot(module)(TransferList)

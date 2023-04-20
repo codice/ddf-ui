@@ -351,7 +351,7 @@ export const OpenSearch = ({
       isOptionEqualToValue={(option) => option.plain.id === option.plain.id}
       getOptionLabel={(option) => option.plain.metacard.properties.title}
       options={options}
-      innerRef={inputRef}
+      ref={inputRef}
       open={open && positioningDone}
       onOpen={() => {
         setOpen(true)
@@ -382,26 +382,28 @@ export const OpenSearch = ({
         }
       }}
       noOptionsText="Nothing found."
-      renderOption={(option) => {
+      renderOption={(props, option) => {
         return (
-          <Link
-            className="w-full p-0 font-normal no-underline hover:font-normal hover:no-underline"
-            to={constructLink(option)}
-          >
-            <OverflowTooltip
-              tooltipProps={{
-                title: (
-                  <div className="w-full p-2">
-                    {option.plain.metacard.properties.title}
-                  </div>
-                ),
-              }}
+          <li {...props}>
+            <Link
+              className="w-full p-0 font-normal no-underline hover:font-normal hover:no-underline"
+              to={constructLink(option)}
             >
-              <div className="truncate w-full p-2">
-                {option.plain.metacard.properties.title}
-              </div>
-            </OverflowTooltip>
-          </Link>
+              <OverflowTooltip
+                tooltipProps={{
+                  title: (
+                    <div className="w-full p-2">
+                      {option.plain.metacard.properties.title}
+                    </div>
+                  ),
+                }}
+              >
+                <div className="truncate w-full p-2">
+                  {option.plain.metacard.properties.title}
+                </div>
+              </OverflowTooltip>
+            </Link>
+          </li>
         )
       }}
       ListboxProps={{
@@ -439,7 +441,7 @@ export const OpenSearch = ({
       }}
       {...autocompleteProps}
     />
-  );
+  )
 }
 
 const OptionsButton = () => {
@@ -467,8 +469,9 @@ const OptionsButton = () => {
   return (
     <>
       <Button
+        component="div"
         fullWidth
-        innerRef={menuState.anchorRef}
+        ref={menuState.anchorRef}
         onClick={menuState.handleClick}
       >
         {closed ? null : <span className="Mui-text-primary">Options</span>}
@@ -666,7 +669,6 @@ const OptionsButton = () => {
       </Popover>
       <Menu
         anchorEl={menuState.anchorRef.current}
-        getContentAnchorEl={null}
         open={menuState.open}
         onClose={menuState.handleClose}
         keepMounted={true}
@@ -691,7 +693,8 @@ const OptionsButton = () => {
           New
         </MenuItem>
         <MenuItem
-          innerRef={menuStateNewFromExisting.anchorRef}
+          component="div"
+          ref={menuStateNewFromExisting.anchorRef}
           onClick={() => {
             menuState.handleClose()
             menuStateNewFromExisting.handleClick()
@@ -700,7 +703,8 @@ const OptionsButton = () => {
           New from existing
         </MenuItem>
         <MenuItem
-          innerRef={menuStateOpenSearch.anchorRef}
+          component="div"
+          ref={menuStateOpenSearch.anchorRef}
           onClick={() => {
             menuState.handleClose()
             menuStateOpenSearch.handleClick()
@@ -982,12 +986,13 @@ const SaveIndicator = () => {
         </Paper>
       </Popover>
       <Button
+        component="div"
         className="shrink-0"
         onClick={(e) => {
           e.stopPropagation()
           popupState.handleClick()
         }}
-        innerRef={popupState.anchorRef}
+        ref={popupState.anchorRef}
       >
         <span
           className={`opacity-75 text-sm shrink-0 flex items-center flex-nowrap ${
@@ -1095,7 +1100,7 @@ const LeftTop = () => {
               }`}
               onClick={adhocMenuState.handleClick}
               size="small"
-              innerRef={adhocMenuState.anchorRef}
+              ref={adhocMenuState.anchorRef}
             >
               <div
                 className={`flex items-center flex-nowrap ${
@@ -1161,13 +1166,14 @@ const LeftTop = () => {
               </Paper>
             </Popover>
             <Button
+              component="div"
               fullWidth
               className={`children-block children-h-full text-left text-2xl shrink overflow-hidden ${
                 closed ? 'h-full' : ''
               }`}
               onClick={savedMenuState.handleClick}
               size="small"
-              innerRef={savedMenuState.anchorRef}
+              ref={savedMenuState.anchorRef}
             >
               <div
                 className={`flex items-center flex-nowrap ${
@@ -1198,7 +1204,7 @@ const LeftTop = () => {
       </div>
       {closed ? null : <DarkDivider className="h-min w-full" />}
     </div>
-  );
+  )
 }
 
 const LeftMiddle = () => {
@@ -1218,7 +1224,10 @@ const LeftMiddle = () => {
       }`}
     >
       {data === true ? (
-        <Skeleton variant="rectangular" className="w-full h-full p-10"></Skeleton>
+        <Skeleton
+          variant="rectangular"
+          className="w-full h-full p-10"
+        ></Skeleton>
       ) : (
         <div
           className={`w-full h-full overflow-auto pb-64 ${
@@ -1229,7 +1238,7 @@ const LeftMiddle = () => {
         </div>
       )}
     </div>
-  );
+  )
 }
 
 const useKeepSearchInUrl = ({

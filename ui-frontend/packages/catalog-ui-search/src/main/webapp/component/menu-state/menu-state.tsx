@@ -130,9 +130,9 @@ export const useMenuState = ({ maxHeight }: Props = {}) => {
       >
     >,
     MuiButtonProps: {
-      innerRef: anchorRef,
+      ref: anchorRef as unknown as ButtonProps['ref'], // todo: see if we need to change type instead
       onClick: handleClick,
-    } as Required<Pick<ButtonProps, 'innerRef' | 'onClick'>>,
+    } as Required<Pick<ButtonProps, 'ref' | 'onClick'>>,
     buttonProps: {
       ref: anchorRef,
       onClick: handleClick,

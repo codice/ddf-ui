@@ -148,9 +148,7 @@ const SourceSelector = ({ search }: Props) => {
               </Grid>
             )
           },
-          MenuProps: {
-            getContentAnchorEl: null, // makes it so this menu doesn't jump around, see https://stackoverflow.com/questions/48157863/how-to-make-a-dropdown-menu-open-below-the-appbar-using-material-ui && https://github.com/mui-org/material-ui/issues/20755
-          },
+          MenuProps: {},
         }}
         value={sources}
         onChange={(e) => {

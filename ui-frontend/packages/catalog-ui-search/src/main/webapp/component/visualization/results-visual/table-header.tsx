@@ -12,7 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import { GridProps } from '@mui/material/Grid'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { LazyQueryResults } from '../../../js/model/LazyQueryResult/LazyQueryResults'
@@ -44,7 +43,12 @@ type Sort = {
   direction: 'ascending' | 'descending'
 }
 
-export const CellComponent = (props: GridProps) => {
+export const CellComponent = (
+  props: React.DetailedHTMLProps<
+    React.HTMLAttributes<HTMLDivElement>,
+    HTMLDivElement
+  >
+) => {
   const { style, className, ...otherProps } = props
   return (
     <div

@@ -13,7 +13,8 @@
  *
  **/
 import * as React from 'react'
-import { ThemeProvider, Theme, StyledEngineProvider } from 'styled-components';
+import { StyledEngineProvider, Theme } from '@mui/material'
+import { ThemeProvider } from 'styled-components'
 import {
   ThemeInterface,
   SpecificSizingInterface,
@@ -26,12 +27,10 @@ import Common from '../../js/Common'
 import $ from 'jquery'
 import _ from 'underscore'
 
-
 declare module '@mui/styles/defaultTheme' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {}
 }
-
 
 type SizingInterface = {
   comfortable: SpecificSizingInterface
@@ -300,7 +299,7 @@ class ThemeContainer extends React.Component<
           {this.props.children as React.ReactElement}
         </ThemeProvider>
       </StyledEngineProvider>
-    );
+    )
   }
 }
 

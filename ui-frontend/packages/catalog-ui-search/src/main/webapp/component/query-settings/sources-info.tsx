@@ -23,12 +23,13 @@ const SourcesInfo = () => {
   return (
     <React.Fragment>
       <Button
+        component="div"
         data-id="sources-button"
         fullWidth
         variant="text"
         color="primary"
         onClick={handleClick}
-        innerRef={anchorRef}
+        ref={anchorRef}
       >
         <Grid container direction="row" alignItems="center" wrap="nowrap">
           <Grid item className="pr-1">

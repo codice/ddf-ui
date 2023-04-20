@@ -100,7 +100,6 @@ const render = ({
               vertical: 'top',
               horizontal: 'left',
             },
-            getContentAnchorEl: null,
           }}
         >
           {coordinateFormatOptions.map((option) => {

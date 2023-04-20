@@ -1,8 +1,12 @@
 import * as React from 'react'
-import { BoxProps } from '@mui/material/Box'
 import { hot } from 'react-hot-loader'
 
-const Swath = (props: BoxProps) => {
+const Swath = (
+  props: React.DetailedHTMLProps<
+    React.HTMLAttributes<HTMLDivElement>,
+    HTMLDivElement
+  >
+) => {
   const { className, ...otherProps } = props
   return (
     <div

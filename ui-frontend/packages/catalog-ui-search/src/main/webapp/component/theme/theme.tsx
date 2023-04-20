@@ -9,21 +9,17 @@ import {
   Theme as ThemeInterface,
   lighten,
   alpha,
-  adaptV4Theme,
-} from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import StylesProvider from '@mui/styles/StylesProvider';
+} from '@mui/material/styles'
+import StylesProvider from '@mui/styles/StylesProvider'
 import { ThemeContext } from 'styled-components'
 import { createGlobalStyle } from 'styled-components'
 import { meetsContrastGuidelines } from 'polished'
 import { useRemoveFocusStyle } from '../app/blueprint.adjust'
 
-
 declare module '@mui/styles/defaultTheme' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {}
 }
-
 
 type Theme = {
   primary: string
@@ -443,7 +439,7 @@ export const Provider = ({ children }: { children: any }) => {
     ? lightenUntilContrasting(secondaryMain, paperColor)
     : darkenUntilContrasting(secondaryMain, paperColor)
 
-  const theme = createTheme(adaptV4Theme({
+  const theme = createTheme({
     palette: {
       mode: darkMode ? 'dark' : 'light',
       primary: {
@@ -467,64 +463,77 @@ export const Provider = ({ children }: { children: any }) => {
         textTransform: 'none',
       },
     },
-    overrides: {
-      MuiChip: createStyles({
-        root: {
-          fontSize: '1rem',
+    components: {
+      MuiChip: {
+        styleOverrides: {
+          root: {
+            fontSize: '1rem',
+          },
         },
-      }),
-      MuiButton: createStyles({
-        root: {
-          lineHeight: 'inherit', // maybe open a ticket on MUI, seems like the default they use doesn't center text quite right with icons
-          minWidth: '0px', // usually more annoying than not
-        },
-        ...(primaryContrastScores.AA
-          ? { textPrimary: {} } // weird requirement due to types, need textPrimary here but empty
-          : {
-              textPrimary: {
-                color: failedContrastPrimaryReplacement,
-                '&:hover': {
-                  backgroundColor: alpha(failedContrastPrimaryReplacement, 0.1),
-                  // Reset on touch devices, it doesn't add specificity
-                  '@media (hover: none)': {
-                    backgroundColor: 'transparent',
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            lineHeight: 'inherit', // maybe open a ticket on MUI, seems like the default they use doesn't center text quite right with icons
+            minWidth: '0px', // usually more annoying than not
+          },
+          ...(primaryContrastScores.AA
+            ? { textPrimary: {} } // weird requirement due to types, need textPrimary here but empty
+            : {
+                textPrimary: {
+                  color: failedContrastPrimaryReplacement,
+                  '&:hover': {
+                    backgroundColor: alpha(
+                      failedContrastPrimaryReplacement,
+                      0.1
+                    ),
+                    // Reset on touch devices, it doesn't add specificity
+                    '@media (hover: none)': {
+                      backgroundColor: 'transparent',
+                    },
                   },
                 },
-              },
-            }),
-        ...(secondaryContrastScores.AA
-          ? { textSecondary: {} } // weird requirement due to types, need textPrimary here but empty
-          : {
-              textSecondary: {
-                color: failedContrastSecondaryReplacement,
-                '&:hover': {
-                  backgroundColor: alpha(
-                    failedContrastSecondaryReplacement,
-                    0.1
-                  ),
-                  // Reset on touch devices, it doesn't add specificity
-                  '@media (hover: none)': {
-                    backgroundColor: 'transparent',
+              }),
+          ...(secondaryContrastScores.AA
+            ? { textSecondary: {} } // weird requirement due to types, need textPrimary here but empty
+            : {
+                textSecondary: {
+                  color: failedContrastSecondaryReplacement,
+                  '&:hover': {
+                    backgroundColor: alpha(
+                      failedContrastSecondaryReplacement,
+                      0.1
+                    ),
+                    // Reset on touch devices, it doesn't add specificity
+                    '@media (hover: none)': {
+                      backgroundColor: 'transparent',
+                    },
                   },
                 },
-              },
-            }),
-      }),
-      MuiCardActionArea: createStyles({
-        root: {
-          height: 'auto',
+              }),
         },
-      }),
-      MuiCardHeader: createStyles({
-        content: {
-          minWidth: '0px',
+      },
+      MuiCardActionArea: {
+        styleOverrides: {
+          root: {
+            height: 'auto',
+          },
         },
-      }),
-      MuiTooltip: createStyles({
-        tooltip: {
-          fontSize: '1rem',
+      },
+      MuiCardHeader: {
+        styleOverrides: {
+          content: {
+            minWidth: '0px',
+          },
         },
-      }),
+      },
+      MuiTooltip: {
+        styleOverrides: {
+          tooltip: {
+            fontSize: '1rem',
+          },
+        },
+      },
     },
     zIndex: {
       mobileStepper: 101,
@@ -534,7 +543,7 @@ export const Provider = ({ children }: { children: any }) => {
       snackbar: 101,
       tooltip: 101,
     },
-  }))
+  })
 
   React.useEffect(() => {
     const htmlElement = document.querySelector('html') as HTMLElement
@@ -547,12 +556,14 @@ export const Provider = ({ children }: { children: any }) => {
     }
   }, [styledTheme.theme])
   useRemoveFocusStyle()
-  return <>
-    <StylesProvider injectFirst>
-      <GlobalStyles {...theme} />
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={theme}>{children}</ThemeProvider>
-      </StyledEngineProvider>
-    </StylesProvider>
-  </>;
+  return (
+    <>
+      <StylesProvider injectFirst>
+        <GlobalStyles {...theme} />
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>{children}</ThemeProvider>
+        </StyledEngineProvider>
+      </StylesProvider>
+    </>
+  )
 }
