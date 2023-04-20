@@ -71,7 +71,7 @@ const CheckboxCell = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
             lazyResult.controlSelect()
           }
         }}
-        className="h-full children-block children-h-full"
+        className="h-full"
       >
         {isSelected ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
       </Button>
@@ -167,7 +167,7 @@ const RowComponent = ({
             disableFocusRipple
             disableRipple
             disableTouchRipple
-            className="outline-none rounded-none select-text p-0 text-left break-words h-full children-h-full"
+            className="outline-none rounded-none select-text p-0 text-left break-words h-full"
           >
             <div className="w-full h-full">
               <Grid container direction="row" className="h-full" wrap="nowrap">

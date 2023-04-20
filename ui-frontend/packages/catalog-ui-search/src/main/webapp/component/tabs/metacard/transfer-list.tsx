@@ -178,7 +178,7 @@ const ItemRow = ({
       <Button
         fullWidth
         size="medium"
-        className="children-block text-left"
+        className=" justify-start"
         onClick={(event) => {
           if (event.shiftKey) {
             handleShiftClick({

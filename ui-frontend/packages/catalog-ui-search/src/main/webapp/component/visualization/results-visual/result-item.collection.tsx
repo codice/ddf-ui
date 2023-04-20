@@ -23,7 +23,7 @@ import Paper from '@mui/material/Paper'
 import { Elevations } from '../../theme/theme'
 import { useLazyResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import { useStatusOfLazyResults } from '../../../js/model/LazyQueryResult/hooks'
-import { useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles'
 import LinearProgress from '@mui/material/LinearProgress'
 import ViewAgendaIcon from '@mui/icons-material/ViewAgenda'
 import TableChartIcon from '@mui/icons-material/TableChart'

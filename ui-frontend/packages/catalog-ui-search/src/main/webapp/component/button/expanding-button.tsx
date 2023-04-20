@@ -74,7 +74,7 @@ const ExpandingButton = ({
       <Button
         data-id={dataId}
         fullWidth
-        className={`${className} children-block children-h-full transition-all duration-200 ease-in-out whitespace-nowrap max-w-full overflow-hidden relative outline-none ${
+        className={`${className} transition-all duration-200 ease-in-out whitespace-nowrap max-w-full overflow-hidden relative outline-none ${
           expanded ? '' : 'p-0'
         }`}
         {...otherButtonProps}

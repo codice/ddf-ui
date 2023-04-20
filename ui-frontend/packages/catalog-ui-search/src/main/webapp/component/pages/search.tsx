@@ -1094,8 +1094,9 @@ const LeftTop = () => {
               </Paper>
             </Popover>
             <Button
+              color="inherit"
               component="div"
-              className={`children-block children-h-full text-left text-2xl shrink truncate ${
+              className={` text-left text-2xl shrink truncate ${
                 closed ? 'h-full' : ''
               }`}
               onClick={adhocMenuState.handleClick}
@@ -1168,7 +1169,7 @@ const LeftTop = () => {
             <Button
               component="div"
               fullWidth
-              className={`children-block children-h-full text-left text-2xl shrink overflow-hidden ${
+              className={`text-left text-2xl shrink overflow-hidden ${
                 closed ? 'h-full' : ''
               }`}
               onClick={savedMenuState.handleClick}
