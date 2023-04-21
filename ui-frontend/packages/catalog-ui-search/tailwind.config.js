@@ -50,10 +50,6 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require('tailwindcss-named-groups'),
-    require('./tailwindcss-group-focus-visible'),
-  ],
   corePlugins: {
     preflight: false,
   },

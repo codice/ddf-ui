@@ -300,7 +300,7 @@ const IconButton = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
         }
       }}
       focusVisibleClassName="focus-visible"
-      className="relative p-2 min-w-0 outline-none h-full group-1 shrink-0"
+      className="relative p-2 min-w-0 outline-none h-full group/checkbox shrink-0"
     >
       {(() => {
         if (isSelected) {
@@ -309,14 +309,14 @@ const IconButton = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
               <div
                 className={`absolute w-full h-full left-0 top-0 opacity-0 transform transition duration-200 ease-in-out -translate-x-full`}
               >
-                <CheckBoxIcon className="group-1-hover:block group-1-focus-visible:block hidden" />
-                <CheckIcon className="group-1-hover:hidden group-1-focus-visible:hidden block" />
+                <CheckBoxIcon className="group-hover/checkbox:block group-focus-visible/checkbox:block hidden" />
+                <CheckIcon className="group-hover/checkbox:hidden group-focus-visible/checkbox:hidden block" />
               </div>
               <div
-                className={`transform transition duration-200 ease-in-out -translate-x-full group-1-focus-visible:translate-x-0 group-1-hover:translate-x-0`}
+                className={`transform transition duration-200 ease-in-out -translate-x-full group-focus-visible/checkbox:translate-x-0 group-hover/checkbox:translate-x-0`}
               >
-                <CheckBoxIcon className="group-1-hover:block group-1-focus-visible:block hidden" />
-                <CheckIcon className="group-1-hover:hidden group-1-focus-visible:hidden block" />
+                <CheckBoxIcon className="group-hover/checkbox:block group-focus-visible/checkbox:block hidden" />
+                <CheckIcon className="group-hover/checkbox:hidden group-focus-visible/checkbox:hidden block" />
               </div>
             </>
           )
@@ -324,7 +324,7 @@ const IconButton = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
           return (
             <div className="transform ">
               <CheckBoxOutlineBlankIcon
-                className={`group-1-hover:visible group-1-focus-visible:visible invisible`}
+                className={`group-hover/checkbox:visible group-focus-visible/checkbox:visible invisible`}
               />
             </div>
           )
@@ -334,7 +334,7 @@ const IconButton = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
       <span
         className={`${getIconClassName({
           lazyResult,
-        })} font-awesome-span group-1-focus-visible:invisible group-1-hover:invisible absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
+        })} font-awesome-span group-focus-visible/checkbox:invisible group-hover/checkbox:invisible absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
         data-help={TypedMetacardDefs.getAlias({
           attr: 'title',
         })}
@@ -697,7 +697,7 @@ export const ResultItem = ({ lazyResult, measure }: ResultItemFullProps) => {
                   e.stopPropagation()
                 }}
                 elevation={Elevations.overlays}
-                className="p-2 group-1"
+                className="p-2"
               >
                 <DynamicActions lazyResult={lazyResult} />
               </Paper>
