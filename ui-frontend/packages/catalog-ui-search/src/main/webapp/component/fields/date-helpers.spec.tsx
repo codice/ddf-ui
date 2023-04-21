@@ -13,16 +13,18 @@
  *
  **/
 import { expect } from 'chai'
-import { DateHelpers } from './date-helpers'
+import { DateHelpers, ISO_8601_FORMAT_ZONED } from './date-helpers'
 import user from '../singletons/user-instance'
+// TODO do I need to set a format for this?
+// TODO tests for precision
 user.get('user').get('preferences').set('timeZone', 'America/St_Johns')
 const date = new Date()
 describe('verify that transforming to and from timezone is accurate (no loss)', () => {
   it(`shifts and unshifts without losing information ${date.toISOString()}`, () => {
-    const timeShiftedDated =
-      DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(date.toISOString())
+    const timeShiftedDate =
+      DateHelpers.Blueprint.converters.TimeshiftForDatePicker(date.toISOString(), ISO_8601_FORMAT_ZONED)
     const unshiftedDate =
-      DateHelpers.Blueprint.converters.TimeshiftedDateToISO(timeShiftedDated)
-    expect(date.toISOString(), 'Unexpected difference').to.equal(unshiftedDate)
+      DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(timeShiftedDate)
+    expect(date.toISOString(), 'Unexpected difference').to.equal(unshiftedDate.toISOString())
   })
 })
