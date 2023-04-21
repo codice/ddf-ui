@@ -8,7 +8,7 @@ import moment from 'moment'
 import { expect } from 'chai'
 
 import user from '../singletons/user-instance'
-import { DateHelpers } from './date-helpers'
+import { DateHelpers, ISO_8601_FORMAT_ZONED } from './date-helpers'
 import Common from '../../js/Common'
 
 /**
@@ -145,8 +145,9 @@ describe('verify date field works', () => {
     )
     const dateFieldInstance = wrapper.children().get(0)
     dateFieldInstance.props.onChange(
-      DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
-        data.date4.originalISO
+      DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
+        data.date4.originalISO,
+        ISO_8601_FORMAT_ZONED
       ),
       true
     )
@@ -162,8 +163,9 @@ describe('verify date field works', () => {
     )
     const dateFieldInstance = wrapper.children().get(0)
     dateFieldInstance.props.onChange(
-      DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
-        data.date1.originalISO
+      DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
+        data.date1.originalISO,
+        ISO_8601_FORMAT_ZONED
       ),
       true
     )

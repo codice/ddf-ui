@@ -13,6 +13,7 @@
  *
  **/
 import * as React from 'react'
+import { useRef } from 'react'
 import { DateInput, IDateInputProps } from '@blueprintjs/datetime'
 
 import { DateHelpers, DefaultMaxDate, DefaultMinDate } from './date-helpers'
@@ -21,6 +22,8 @@ import useTimePrefs from './useTimePrefs'
 
 import user from '../singletons/user-instance'
 import { EnterKeySubmitProps } from '../custom-events/enter-key-submit'
+
+import moment from 'moment-timezone'
 
 type DateFieldProps = {
   value: string
@@ -31,17 +34,43 @@ type DateFieldProps = {
   BPDateProps?: Partial<IDateInputProps>
 }
 
-const validateShape = ({ value, onChange }: DateFieldProps) => {
-  const dateValue = new Date(value)
-  if (dateValue.toString() === 'Invalid Date') {
-    onChange(new Date().toISOString())
+const validateDate = (
+  { value, onChange }: DateFieldProps,
+  valueRef: React.MutableRefObject<string>
+) => {
+  console.log('validating', value, DateHelpers.General.getDateFormat())
+  const date = moment(value, DateHelpers.General.getDateFormat())
+  if (!date.isValid()) {
+    console.log('INVALID DATE', value, DateHelpers.General.getDateFormat())
+    const newDate = new Date()
+    switch (DateHelpers.General.getTimePrecision()) {
+      case 'minute':
+        newDate.setUTCSeconds(0)
+      // Intentional fall-through
+      case 'second':
+        newDate.setUTCMilliseconds(0)
+    }
+    onChange(newDate.toISOString())
+    valueRef.current = newDate.toISOString()
   }
 }
 
 export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
-  useTimePrefs()
+  console.log('DateField', value)
+
+  const valueRef = useRef(value)
+
+  useTimePrefs(() => {
+    const shiftedDate = DateHelpers.Blueprint.DateProps.generateValue(
+      valueRef.current
+    )
+    const unshiftedDate =
+      DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(shiftedDate)
+    onChange(unshiftedDate.toISOString())
+  })
   React.useEffect(() => {
-    validateShape({ onChange, value })
+    console.log('RUNNING DateField EFFECT')
+    validateDate({ onChange, value }, valueRef)
   }, [])
 
   return (
@@ -53,9 +82,12 @@ export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
         closeOnSelection={false}
         fill
         formatDate={DateHelpers.Blueprint.commonProps.formatDate}
-        onChange={DateHelpers.Blueprint.DateProps.generateOnChange(onChange)}
+        onChange={DateHelpers.Blueprint.DateProps.generateOnChange((value) => {
+          onChange(value)
+          valueRef.current = value
+        })}
         parseDate={DateHelpers.Blueprint.commonProps.parseDate}
-        placeholder={'M/D/YYYY'}
+        placeholder={DateHelpers.General.getDateFormat()}
         shortcuts
         timePrecision={DateHelpers.General.getTimePrecision()}
         outOfRangeMessage="Out of range"

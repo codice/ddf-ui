@@ -9,7 +9,7 @@ import moment from 'moment'
 
 import user from '../singletons/user-instance'
 import { ValueTypes } from '../filter-builder/filter.structure'
-import { DateHelpers } from './date-helpers'
+import { DateHelpers, ISO_8601_FORMAT_ZONED } from './date-helpers'
 import Common from '../../js/Common'
 
 const UncontrolledDateRangeField = ({
@@ -208,11 +208,13 @@ describe('verify date field works', () => {
     const dateFieldInstance = wrapper.children().get(0)
     dateFieldInstance.props.onChange(
       [
-        DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
-          data.date5.originalISO
+        DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
+          data.date5.originalISO,
+          ISO_8601_FORMAT_ZONED
         ),
-        DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
-          data.date5.originalISO
+        DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
+          data.date5.originalISO,
+          ISO_8601_FORMAT_ZONED
         ),
       ],
       true
@@ -234,11 +236,13 @@ describe('verify date field works', () => {
     const dateFieldInstance = wrapper.children().get(0)
     dateFieldInstance.props.onChange(
       [
-        DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
-          data.date1.originalISO
+        DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
+          data.date1.originalISO,
+          ISO_8601_FORMAT_ZONED
         ),
-        DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
-          data.date1.originalISO
+        DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
+          data.date1.originalISO,
+          ISO_8601_FORMAT_ZONED
         ),
       ],
       true
