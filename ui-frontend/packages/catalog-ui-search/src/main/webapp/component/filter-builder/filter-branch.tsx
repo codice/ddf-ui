@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import Paper from '@mui/material/Paper'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import FilterLeaf from './filter-leaf'
@@ -16,7 +15,6 @@ import MenuItem from '@mui/material/MenuItem'
 import AddIcon from '@mui/icons-material/Add'
 import _ from 'lodash'
 import { Memo } from '../memo/memo'
-import { Elevations } from '../theme/theme'
 const OperatorData = [
   {
     label: 'AND',
@@ -175,9 +173,12 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
         setHover(false)
       }}
     >
-      <Paper
-        elevation={Elevations.panels}
-        className={root ? ' shadow-none' : 'px-3 py-2'}
+      <div
+        className={
+          root
+            ? ' shadow-none'
+            : 'px-3 py-2 MuiPaper-box-shadow border-black border-2 border-opacity-30'
+        }
       >
         <div className=" relative">
           <div
@@ -321,7 +322,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
             </Memo>
           </div>
         </div>
-      </Paper>
+      </div>
     </div>
   )
 }
