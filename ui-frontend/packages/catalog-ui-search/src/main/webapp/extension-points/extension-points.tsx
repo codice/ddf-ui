@@ -75,6 +75,7 @@ export type ExtensionPointsType = {
     | null
   extraRoutes: PermissiveComponentType
   locationTypes: (baseTypes: InputsType) => InputsType
+  userInformation: PermissiveComponentType
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -93,6 +94,7 @@ const ExtensionPoints: ExtensionPointsType = {
   handleMetacardUpdate: null,
   extraRoutes: () => null,
   locationTypes: (baseTypes: InputsType) => baseTypes,
+  userInformation: () => null,
 }
 
 export default ExtensionPoints
