@@ -17,7 +17,7 @@ import {
 } from '../selection-interface/hooks'
 
 import VisualizationSelector from '../../react-component/visualization-selector/visualization-selector'
-import ViewCompactIcon from '@mui/icons-material/ViewCompact'
+import LayoutDropdownIcon from '@mui/icons-material/ViewComfy'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import user from '../singletons/user-instance'
 import MoreIcon from '@mui/icons-material/MoreVert'
@@ -220,7 +220,7 @@ const ResultSelector = ({
             color="primary"
             {...layoutMenuState.MuiButtonProps}
           >
-            <ViewCompactIcon className="Mui-text-text-primary" />
+            <LayoutDropdownIcon className="Mui-text-text-primary" />
             <div className="pl-1">Layout</div>
           </Button>
           <Popover {...layoutMenuState.MuiPopoverProps}>
