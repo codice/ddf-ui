@@ -31,38 +31,58 @@ type DateAroundProps = {
   onChange: (val: ValueTypes['around']) => void
 }
 
-const defaultValue = {
-  date: new Date().toISOString(),
-  buffer: {
-    amount: '1',
-    unit: 'd',
-  },
-  direction: 'both',
-} as ValueTypes['around']
+const defaultValue = () => {
+  return {
+    date: new Date().toISOString(),
+    buffer: {
+      amount: '1',
+      unit: 'd',
+    },
+    direction: 'both',
+  } as ValueTypes['around']
+}
 
-const validateShape = ({ value, onChange }: DateAroundProps) => {
+const validateDate = ({ value, onChange }: DateAroundProps) => {
   if (
     !value.date ||
     !value.buffer ||
     !value.direction ||
     DateHelpers.Blueprint.commonProps.parseDate(value.date) === null
   ) {
-    onChange(defaultValue)
+    // TODO create helper method for this
+    const newDate = new Date()
+    switch (DateHelpers.General.getTimePrecision()) {
+      case 'minute':
+        newDate.setUTCSeconds(0)
+      // Intentional fall-through
+      case 'second':
+        newDate.setUTCMilliseconds(0)
+    }
+    onChange({ ...defaultValue(), date: newDate.toISOString() })
   }
 }
 
 export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
   const [date, setDate] = React.useState(new Date().toISOString())
 
-  useTimePrefs()
+  useTimePrefs(() => {
+    const shiftedDate = DateHelpers.Blueprint.DateProps.generateValue(date)
+    const unshiftedDate =
+      DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(shiftedDate)
+    onChange({
+      ...defaultValue(),
+      ...value,
+      date: unshiftedDate.toISOString(),
+    })
+  })
   React.useEffect(() => {
-    validateShape({ onChange, value })
+    validateDate({ onChange, value })
   }, [])
   React.useEffect(() => {
     onChange({
-      ...defaultValue,
+      ...defaultValue(),
       ...value,
-      date: date,
+      date,
     })
   }, [date])
 
@@ -81,7 +101,7 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
           formatDate={DateHelpers.Blueprint.commonProps.formatDate}
           onChange={DateHelpers.Blueprint.DateProps.generateOnChange(setDate)}
           parseDate={DateHelpers.Blueprint.commonProps.parseDate}
-          placeholder={'M/D/YYYY'}
+          placeholder={DateHelpers.General.getDateFormat()}
           shortcuts
           timePrecision={DateHelpers.General.getTimePrecision()}
           inputProps={{
@@ -106,10 +126,10 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
             onChange={(val) => {
               if (onChange)
                 onChange({
-                  ...defaultValue,
+                  ...defaultValue(),
                   ...value,
                   buffer: {
-                    ...defaultValue.buffer,
+                    ...defaultValue().buffer,
                     ...value.buffer,
                     amount: val,
                   },
@@ -130,10 +150,10 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
             onChange={(e) => {
               if (onChange)
                 onChange({
-                  ...defaultValue,
+                  ...defaultValue(),
                   ...value,
                   buffer: {
-                    ...defaultValue.buffer,
+                    ...defaultValue().buffer,
                     ...value.buffer,
                     unit: e.target
                       .value as ValueTypes['around']['buffer']['unit'],
@@ -164,7 +184,7 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
         onChange={(e) => {
           if (onChange)
             onChange({
-              ...defaultValue,
+              ...defaultValue(),
               ...value,
               direction: e.target.value as ValueTypes['around']['direction'],
             })
