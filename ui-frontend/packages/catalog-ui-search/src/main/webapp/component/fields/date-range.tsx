@@ -31,18 +31,33 @@ type Props = {
   BPDateRangeProps?: Partial<IDateRangeInputProps>
 }
 
-const validateShape = ({ value, onChange }: Props) => {
+const validateDates = (
+  { value, onChange }: Props,
+  valueRef: React.MutableRefObject<{ start: string; end: string }>
+) => {
   if (
     value === undefined ||
     value.start === undefined ||
     value.end === undefined
   ) {
-    const start = new Date()
+    const end = new Date()
+    const start = new Date(end)
     start.setDate(start.getDate() - 1) // start and end can't be equal or the backend will throw a fit
-    onChange({
+    switch (DateHelpers.General.getTimePrecision()) {
+      case 'minute':
+        start.setUTCSeconds(0)
+        end.setUTCSeconds(0)
+      // Intentional fall-through
+      case 'second':
+        start.setUTCMilliseconds(0)
+        end.setUTCMilliseconds(0)
+    }
+    const newValue = {
       start: start.toISOString(),
-      end: new Date().toISOString(),
-    })
+      end: end.toISOString(),
+    }
+    valueRef.current = newValue
+    onChange(newValue)
   }
 }
 
@@ -51,9 +66,23 @@ export const DateRangeField = ({
   onChange,
   BPDateRangeProps,
 }: Props) => {
-  useTimePrefs()
+  const valueRef = React.useRef(value)
+
+  useTimePrefs(() => {
+    const shiftedDates = DateHelpers.Blueprint.DateRangeProps.generateValue(
+      valueRef.current
+    )
+    onChange({
+      start: DateHelpers.Blueprint.converters
+        .UntimeshiftFromDatePicker(shiftedDates![0]!)
+        .toISOString(),
+      end: DateHelpers.Blueprint.converters
+        .UntimeshiftFromDatePicker(shiftedDates![1]!)
+        .toISOString(),
+    })
+  })
   React.useEffect(() => {
-    validateShape({ value, onChange, BPDateRangeProps })
+    validateDates({ value, onChange, BPDateRangeProps }, valueRef)
   }, [])
   return (
     <DateRangeInput
@@ -76,7 +105,12 @@ export const DateRangeField = ({
       className="where"
       closeOnSelection={false}
       formatDate={DateHelpers.Blueprint.commonProps.formatDate}
-      onChange={DateHelpers.Blueprint.DateRangeProps.generateOnChange(onChange)}
+      onChange={DateHelpers.Blueprint.DateRangeProps.generateOnChange(
+        (value) => {
+          valueRef.current = value
+          onChange(value)
+        }
+      )}
       parseDate={DateHelpers.Blueprint.commonProps.parseDate}
       shortcuts
       timePrecision={DateHelpers.General.getTimePrecision()}
