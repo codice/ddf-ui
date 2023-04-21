@@ -176,6 +176,7 @@ const ResultSelector = ({
                 vertical: 'top',
                 horizontal: 'left',
               }}
+              className="items-center"
             >
               <FilterListIcon className="Mui-text-text-primary" />
               Filter
@@ -201,6 +202,7 @@ const ResultSelector = ({
                 vertical: 'top',
                 horizontal: 'left',
               }}
+              className="items-center"
             >
               <ArrowDownwardIcon className="Mui-text-text-primary" />
               Sort
