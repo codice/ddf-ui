@@ -22,9 +22,16 @@ const date = new Date()
 describe('verify that transforming to and from timezone is accurate (no loss)', () => {
   it(`shifts and unshifts without losing information ${date.toISOString()}`, () => {
     const timeShiftedDate =
-      DateHelpers.Blueprint.converters.TimeshiftForDatePicker(date.toISOString(), ISO_8601_FORMAT_ZONED)
+      DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
+        date.toISOString(),
+        ISO_8601_FORMAT_ZONED
+      )
     const unshiftedDate =
-      DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(timeShiftedDate)
-    expect(date.toISOString(), 'Unexpected difference').to.equal(unshiftedDate.toISOString())
+      DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(
+        timeShiftedDate
+      )
+    expect(date.toISOString(), 'Unexpected difference').to.equal(
+      unshiftedDate.toISOString()
+    )
   })
 })
