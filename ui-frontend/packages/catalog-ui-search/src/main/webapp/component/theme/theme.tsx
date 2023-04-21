@@ -439,7 +439,7 @@ export const Provider = ({ children }: { children: any }) => {
     ? lightenUntilContrasting(secondaryMain, paperColor)
     : darkenUntilContrasting(secondaryMain, paperColor)
 
-  const theme = createTheme({
+  const initialTheme = createTheme({
     palette: {
       mode: darkMode ? 'dark' : 'light',
       primary: {
@@ -452,7 +452,15 @@ export const Provider = ({ children }: { children: any }) => {
         default: backgroundColor,
         paper: paperColor,
       },
+      grey: {
+        // We do this to emulate v4 MUI behavior for default button color
+        // @ts-ignore
+        main: '#fff',
+      },
     },
+  })
+
+  const theme = createTheme(initialTheme, {
     typography: {
       fontFamily: `'Open Sans', arial, sans-serif`,
       h6: {
@@ -472,6 +480,54 @@ export const Provider = ({ children }: { children: any }) => {
         },
       },
       MuiButton: {
+        defaultProps: {
+          color: 'grey',
+        },
+        variants: [
+          {
+            props: { variant: 'contained', color: 'grey' },
+            style: {
+              color: initialTheme.palette.getContrastText(
+                initialTheme.palette.grey[300]
+              ),
+            },
+          },
+          {
+            props: { variant: 'outlined', color: 'grey' },
+            style: {
+              color: initialTheme.palette.text.primary,
+              borderColor:
+                initialTheme.palette.mode === 'light'
+                  ? 'rgba(0, 0, 0, 0.23)'
+                  : 'rgba(255, 255, 255, 0.23)',
+              '&.Mui-disabled': {
+                border: `1px solid ${initialTheme.palette.action.disabledBackground}`,
+              },
+              '&:hover': {
+                borderColor:
+                  initialTheme.palette.mode === 'light'
+                    ? 'rgba(0, 0, 0, 0.23)'
+                    : 'rgba(255, 255, 255, 0.23)',
+                backgroundColor: alpha(
+                  initialTheme.palette.text.primary,
+                  initialTheme.palette.action.hoverOpacity
+                ),
+              },
+            },
+          },
+          {
+            props: { color: 'grey', variant: 'text' },
+            style: {
+              color: initialTheme.palette.text.primary,
+              '&:hover': {
+                backgroundColor: alpha(
+                  initialTheme.palette.text.primary,
+                  initialTheme.palette.action.hoverOpacity
+                ),
+              },
+            },
+          },
+        ],
         styleOverrides: {
           root: {
             lineHeight: 'inherit', // maybe open a ticket on MUI, seems like the default they use doesn't center text quite right with icons
