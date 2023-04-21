@@ -114,6 +114,7 @@ export const DateRangeField = ({
       parseDate={DateHelpers.Blueprint.commonProps.parseDate}
       shortcuts
       timePrecision={DateHelpers.General.getTimePrecision()}
+      placeholder={DateHelpers.General.getDateFormat()}
       {...(value
         ? {
             value: DateHelpers.Blueprint.DateRangeProps.generateValue(value),
