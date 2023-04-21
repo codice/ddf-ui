@@ -583,6 +583,11 @@ export const Provider = ({ children }: { children: any }) => {
           },
         },
       },
+      MuiPaper: {
+        styleOverrides: {
+          root: { backgroundImage: 'unset' },
+        },
+      },
       MuiTooltip: {
         styleOverrides: {
           tooltip: {
