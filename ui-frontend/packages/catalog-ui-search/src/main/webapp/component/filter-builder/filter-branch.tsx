@@ -166,7 +166,6 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
     })
   }, [filter])
 
-  const EnclosingElement = root ? Paper : Paper // might need to account for change from box
   return (
     <div
       onMouseOver={() => {
@@ -176,9 +175,9 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
         setHover(false)
       }}
     >
-      <EnclosingElement
+      <Paper
         elevation={Elevations.panels}
-        className={root ? '' : 'px-3 py-2'}
+        className={root ? ' shadow-none' : 'px-3 py-2'}
       >
         <div className=" relative">
           <div
@@ -322,7 +321,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
             </Memo>
           </div>
         </div>
-      </EnclosingElement>
+      </Paper>
     </div>
   )
 }
