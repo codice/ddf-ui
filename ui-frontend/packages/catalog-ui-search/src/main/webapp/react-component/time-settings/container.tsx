@@ -11,6 +11,7 @@ import { TimePrecision } from '@blueprintjs/datetime'
 import momentTimezone from 'moment-timezone'
 import user from '../../component/singletons/user-instance'
 import Common from '../../js/Common'
+import { DateHelpers } from '../../component/fields/date-helpers'
 
 type UserPreferences = {
   get: (key: string) => any
@@ -42,7 +43,7 @@ const savePreferences = (model: {}) => {
 const getCurrentDateTimeFormat = () =>
   getUserPreferences().get('dateTimeFormat').datetimefmt
 
-const getCurrentTimePrecision = () => getUserPreferences().get('timePrecision')
+const getCurrentTimePrecision = DateHelpers.General.getTimePrecision
 
 const getCurrentTimeZone = () => getUserPreferences().get('timeZone')
 
@@ -126,7 +127,7 @@ class TimeSettingsContainer extends React.Component<WithBackboneProps, State> {
         this.setState({ timePrecision })
         const dateTimeFormat =
           Common.getDateTimeFormats()[this.state.timeFormat][timePrecision]
-        savePreferences({ timePrecision, dateTimeFormat })
+        savePreferences({ dateTimeFormat })
       }}
       timePrecision={this.state.timePrecision}
     />
