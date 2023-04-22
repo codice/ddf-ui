@@ -72,19 +72,19 @@ describe('verify date field works', () => {
     user
       .get('user')
       .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO'])
+      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
   })
   afterEach(() => {
     user
       .get('user')
       .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO'])
+      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
   })
   it(`should render with user's pref format of ISO`, () => {
     user
       .get('user')
       .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO'])
+      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
     const wrapper = mount(
       <DateField value={data.date1.originalISO} onChange={() => {}} />
     )
@@ -96,7 +96,7 @@ describe('verify date field works', () => {
     user
       .get('user')
       .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['12'])
+      .set('dateTimeFormat', Common.getDateTimeFormats()['12']['millisecond'])
 
     const wrapper = mount(
       <DateField value={data.date1.originalISO} onChange={() => {}} />
@@ -109,7 +109,7 @@ describe('verify date field works', () => {
     user
       .get('user')
       .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['24'])
+      .set('dateTimeFormat', Common.getDateTimeFormats()['24']['millisecond'])
 
     const wrapper = mount(
       <DateField value={data.date1.originalISO} onChange={() => {}} />
@@ -123,7 +123,7 @@ describe('verify date field works', () => {
     user
       .get('user')
       .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['24'])
+      .set('dateTimeFormat', Common.getDateTimeFormats()['24']['millisecond'])
 
     const wrapper = mount(
       <UncontrolledDateField startingValue={data.date1.originalISO} />

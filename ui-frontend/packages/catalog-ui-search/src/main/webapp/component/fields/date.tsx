@@ -38,10 +38,10 @@ const validateDate = (
   { value, onChange }: DateFieldProps,
   valueRef: React.MutableRefObject<string>
 ) => {
-  console.log('validating', value, DateHelpers.General.getDateFormat())
+  //console.log('validating', value, DateHelpers.General.getDateFormat())
   const date = moment(value, DateHelpers.General.getDateFormat())
   if (!date.isValid()) {
-    console.log('INVALID DATE', value, DateHelpers.General.getDateFormat())
+    //console.log('INVALID DATE', value, DateHelpers.General.getDateFormat())
     const newDate = new Date()
     switch (DateHelpers.General.getTimePrecision()) {
       case 'minute':
@@ -50,13 +50,13 @@ const validateDate = (
       case 'second':
         newDate.setUTCMilliseconds(0)
     }
-    onChange(newDate.toISOString())
     valueRef.current = newDate.toISOString()
+    onChange(newDate.toISOString())
   }
 }
 
 export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
-  console.log('DateField', value)
+  //console.log('DateField', value)
 
   const valueRef = useRef(value)
 
@@ -69,7 +69,7 @@ export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
     onChange(unshiftedDate.toISOString())
   })
   React.useEffect(() => {
-    console.log('RUNNING DateField EFFECT')
+    //console.log('RUNNING DateField EFFECT')
     validateDate({ onChange, value }, valueRef)
   }, [])
 
@@ -83,8 +83,8 @@ export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
         fill
         formatDate={DateHelpers.Blueprint.commonProps.formatDate}
         onChange={DateHelpers.Blueprint.DateProps.generateOnChange((value) => {
-          onChange(value)
           valueRef.current = value
+          onChange(value)
         })}
         parseDate={DateHelpers.Blueprint.commonProps.parseDate}
         placeholder={DateHelpers.General.getDateFormat()}
