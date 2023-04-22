@@ -115,11 +115,11 @@ class TimeSettingsContainer extends React.Component<WithBackboneProps, State> {
         savePreferences({ timeZone: timeZone.zoneName })
       }}
       handleTimeFormatUpdate={(timeFormat: TimeFormat) => {
+        this.setState({ timeFormat: timeFormat.value })
         const dateTimeFormat =
           Common.getDateTimeFormats()[timeFormat.value][
             this.state.timePrecision
           ]
-        this.setState({ timeFormat: timeFormat.value })
         savePreferences({ dateTimeFormat })
       }}
       timeFormat={this.state.timeFormat}
