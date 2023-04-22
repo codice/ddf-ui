@@ -679,7 +679,7 @@ const Summary = ({ result: selection }: Props) => {
   React.useEffect(() => {
     listenTo(
       user.get('user').get('preferences'),
-      'change:inspector-summaryShown change:dateTimeFormat change:timePrecision change:timeZone',
+      'change:inspector-summaryShown change:dateTimeFormat change:timeZone',
       () => {
         setSummaryShown([...getSummaryShown()])
       }

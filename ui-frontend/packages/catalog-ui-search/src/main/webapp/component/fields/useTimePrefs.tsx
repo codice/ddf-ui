@@ -13,13 +13,13 @@ const useTimePrefs = (action?: () => void) => {
     }
     listenTo(
       user.getPreferences(),
-      'change:dateTimeFormat change:timePrecision change:timeZone',
+      'change:dateTimeFormat change:timeZone',
       callback
     )
     return () =>
       stopListening(
         user.getPreferences(),
-        'change:dateTimeFormat change:timePrecision change:timeZone',
+        'change:dateTimeFormat change:timeZone',
         callback
       )
   }, [])

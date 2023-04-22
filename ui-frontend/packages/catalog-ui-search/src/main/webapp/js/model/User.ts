@@ -143,7 +143,6 @@ const Theme = Backbone.Model.extend({
       fontSize: 16,
       resultCount: (properties as any).resultCount,
       dateTimeFormat: Common.getDateTimeFormats()['ISO']['millisecond'],
-      timePrecision: 'millisecond',
       timeZone: Common.getTimeZones()['UTC'],
       coordinateFormat: 'degrees',
       autoPan: true,
@@ -430,9 +429,6 @@ const Theme = Backbone.Model.extend({
     return this.get('user').get('preferences').get('dateTimeFormat')[
       'datetimefmt'
     ]
-  },
-  getTimePrecision() {
-    return this.get('user').get('preferences').get('timePrecision')
   },
   getTimeZone() {
     return this.get('user').get('preferences').get('timeZone')

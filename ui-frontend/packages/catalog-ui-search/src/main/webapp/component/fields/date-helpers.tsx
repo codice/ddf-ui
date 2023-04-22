@@ -1,7 +1,6 @@
 import { ValueTypes } from '../filter-builder/filter.structure'
 import { IDateInputProps } from '@blueprintjs/datetime'
 import { IDateRangeInputProps } from '@blueprintjs/datetime'
-import { TimePrecision } from '@blueprintjs/datetime'
 import user from '../singletons/user-instance'
 import moment from 'moment-timezone'
 import {
@@ -9,6 +8,7 @@ import {
   isDayInRange,
 } from '@blueprintjs/datetime/lib/esm/common/dateUtils'
 import { getDefaultMaxDate } from '@blueprintjs/datetime/lib/esm/datePickerCore'
+import Common from '../../js/Common'
 
 export const ISO_8601_FORMAT_ZONED = 'YYYY-MM-DDTHH:mm:ss.SSSZ'
 
@@ -29,10 +29,9 @@ export const DateHelpers = {
       return user.get('user').get('preferences').get('timeZone') as string
     },
     getTimePrecision: () => {
-      return user
-        .get('user')
-        .get('preferences')
-        .get('timePrecision') as TimePrecision
+      return Common.getDateTimeFormatsReverseMap()[
+        DateHelpers.General.getDateFormat()
+      ].precision
     },
   },
   Blueprint: {
@@ -45,7 +44,7 @@ export const DateHelpers = {
        * TLDR: this function is only called when the user manually types in a date
        */
       parseDate: (input?: string) => {
-        console.log('parseDate', input)
+        //console.log('parseDate', input)
         try {
           return DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
             input || '',
@@ -59,7 +58,7 @@ export const DateHelpers = {
        * Basically undoes the value shift to make sure the date is displayed in user's chosen timezone
        */
       formatDate: (date: Date) => {
-        console.log('formatDate', date)
+        //console.log('formatDate', date)
         try {
           const unshiftedDate =
             DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(date)
@@ -93,7 +92,7 @@ export const DateHelpers = {
         }) as IDateInputProps['onChange']
       },
       generateValue: (value: string, minDate?: Date, maxDate?: Date) => {
-        console.log('generateValue', value)
+        //console.log('generateValue', value)
         return DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
           value,
           ISO_8601_FORMAT_ZONED,
@@ -105,6 +104,7 @@ export const DateHelpers = {
     DateRangeProps: {
       generateOnChange: (onChange: (value: ValueTypes['during']) => void) => {
         return (([start, end]) => {
+          console.log('onChange', start, end)
           if (onChange) {
             onChange({
               start: start
@@ -157,14 +157,14 @@ export const DateHelpers = {
       ): Date => {
         try {
           const unshiftedDate = moment(value, format)
-          console.log(
+          /*console.log(
             'before timeshifting date',
             value,
             unshiftedDate,
             unshiftedDate.toDate()
-          )
+          )*/
           if (!unshiftedDate.isValid()) {
-            console.log('INVALID DATE FOR DATE PICKER')
+            //console.log('INVALID DATE FOR DATE PICKER')
             return DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
               moment.utc().toISOString(),
               ISO_8601_FORMAT_ZONED
@@ -183,12 +183,12 @@ export const DateHelpers = {
             .utcOffset()
           const totalOffset = utcOffsetMinutesLocal + utcOffsetMinutesTimezone
           const shiftedDate = unshiftedDate.add(totalOffset, 'minutes')
-          console.log(
+          /*console.log(
             'after timeshifting date',
             value,
             shiftedDate,
             shiftedDate.toDate()
-          )
+          )*/
           if (
             shiftedDate.isValid() &&
             DateHelpers.Blueprint.commonProps.isValid(
@@ -221,7 +221,7 @@ export const DateHelpers = {
       UntimeshiftFromDatePicker: (value: Date) => {
         try {
           const shiftedDate = moment(value)
-          console.log('before untimeshifting date', value, shiftedDate)
+          //console.log('before untimeshifting date', value, shiftedDate)
           switch (DateHelpers.General.getTimePrecision()) {
             case 'minute':
               shiftedDate.seconds(0)
@@ -235,7 +235,7 @@ export const DateHelpers = {
             .utcOffset()
           const totalOffset = utcOffsetMinutesLocal + utcOffsetMinutesTimezone
           const temp = shiftedDate.subtract(totalOffset, 'minutes').toDate()
-          console.log('after untimeshifting date', value, temp)
+          //console.log('after untimeshifting date', value, temp)
           return temp
         } catch (err) {
           console.error(err)
