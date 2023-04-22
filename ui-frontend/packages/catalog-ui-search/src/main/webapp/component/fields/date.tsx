@@ -16,7 +16,7 @@ import * as React from 'react'
 import { useRef } from 'react'
 import { DateInput, IDateInputProps } from '@blueprintjs/datetime'
 
-import { DateHelpers, DefaultMaxDate, DefaultMinDate } from './date-helpers'
+import { DateHelpers, DefaultMaxDate, DefaultMinDate, ISO_8601_FORMAT_ZONED } from './date-helpers'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
 import useTimePrefs from './useTimePrefs'
 
@@ -39,7 +39,7 @@ const validateDate = (
   valueRef: React.MutableRefObject<string>
 ) => {
   //console.log('validating', value, DateHelpers.General.getDateFormat())
-  const date = moment(value, DateHelpers.General.getDateFormat())
+  const date = moment(value, ISO_8601_FORMAT_ZONED)
   if (!date.isValid()) {
     //console.log('INVALID DATE', value, DateHelpers.General.getDateFormat())
     const newDate = new Date()
