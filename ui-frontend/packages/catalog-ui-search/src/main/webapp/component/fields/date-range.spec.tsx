@@ -73,19 +73,19 @@ describe('verify date field works', () => {
     user
       .get('user')
       .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO'])
+      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
   })
   afterEach(() => {
     user
       .get('user')
       .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO'])
+      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
   })
   it(`should not allow overlapping dates`, () => {
     user
       .get('user')
       .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO'])
+      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
     const wrapper = mount(
       <DateRangeField
         value={{
@@ -106,7 +106,7 @@ describe('verify date field works', () => {
     user
       .get('user')
       .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO'])
+      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
     const wrapper = mount(
       <DateRangeField
         value={{
@@ -127,7 +127,7 @@ describe('verify date field works', () => {
     user
       .get('user')
       .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['12'])
+      .set('dateTimeFormat', Common.getDateTimeFormats()['12']['millisecond'])
 
     const wrapper = mount(
       <DateRangeField
@@ -149,7 +149,7 @@ describe('verify date field works', () => {
     user
       .get('user')
       .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['24'])
+      .set('dateTimeFormat', Common.getDateTimeFormats()['24']['millisecond'])
 
     const wrapper = mount(
       <DateRangeField
@@ -172,7 +172,7 @@ describe('verify date field works', () => {
     user
       .get('user')
       .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['24'])
+      .set('dateTimeFormat', Common.getDateTimeFormats()['24']['millisecond'])
 
     const wrapper = mount(
       <UncontrolledDateRangeField
@@ -266,18 +266,21 @@ describe('verify date field works', () => {
     })
   })
   it(`should allow dates up to max future`, () => {
+    const initValue = {
+      start: new Date().toISOString(),
+      end: new Date().toISOString(),
+    }
+    console.log('initValue', initValue)
     const wrapper = mount(
       <DateRangeField
-        value={{
-          start: new Date().toISOString(),
-          end: new Date().toISOString(),
-        }}
+        value={initValue}
         onChange={(updatedValue) => {
-          expect(updatedValue.start).to.equal(data.date3.maxFuture)
+          console.log('TEST onChange', updatedValue)
+          expect(updatedValue.end).to.equal(data.date3.maxFuture)
         }}
       />
     )
-    const input = wrapper.find('input').first()
+    const input = wrapper.find('input').last()
     input.simulate('change', {
       target: { value: data.date3.maxFuture },
     })

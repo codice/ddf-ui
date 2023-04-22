@@ -41,8 +41,7 @@ const validateDates = (
     value.end === undefined
   ) {
     const end = new Date()
-    const start = new Date(end)
-    start.setDate(start.getDate() - 1) // start and end can't be equal or the backend will throw a fit
+    const start = new Date(end.valueOf() - 86_400_000) // start and end can't be equal or the backend will throw a fit
     switch (DateHelpers.General.getTimePrecision()) {
       case 'minute':
         start.setUTCSeconds(0)
@@ -69,6 +68,7 @@ export const DateRangeField = ({
   const valueRef = React.useRef(value)
 
   useTimePrefs(() => {
+    console.log('useTimePrefs callback', valueRef.current)
     const shiftedDates = DateHelpers.Blueprint.DateRangeProps.generateValue(
       valueRef.current
     )
