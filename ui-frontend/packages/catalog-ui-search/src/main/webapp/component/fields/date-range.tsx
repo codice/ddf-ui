@@ -40,17 +40,10 @@ const validateDates = (
     value.start === undefined ||
     value.end === undefined
   ) {
-    const end = new Date()
-    const start = new Date(end.valueOf() - 86_400_000) // start and end can't be equal or the backend will throw a fit
-    switch (DateHelpers.General.getTimePrecision()) {
-      case 'minute':
-        start.setUTCSeconds(0)
-        end.setUTCSeconds(0)
-      // Intentional fall-through
-      case 'second':
-        start.setUTCMilliseconds(0)
-        end.setUTCMilliseconds(0)
-    }
+    const end = DateHelpers.General.withPrecision(new Date())
+    const start = DateHelpers.General.withPrecision(
+      new Date(end.valueOf() - 86_400_000)
+    ) // start and end can't be equal or the backend will throw a fit
     const newValue = {
       start: start.toISOString(),
       end: end.toISOString(),

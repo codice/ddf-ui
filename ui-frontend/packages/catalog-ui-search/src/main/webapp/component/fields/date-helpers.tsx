@@ -33,6 +33,16 @@ export const DateHelpers = {
         DateHelpers.General.getDateFormat()
       ].precision
     },
+    withPrecision: (date: Date) => {
+      switch (DateHelpers.General.getTimePrecision()) {
+        case 'minute':
+          date.setUTCSeconds(0)
+        // Intentional fall-through
+        case 'second':
+          date.setUTCMilliseconds(0)
+      }
+      return date
+    },
   },
   Blueprint: {
     commonProps: {
@@ -44,7 +54,6 @@ export const DateHelpers = {
        * TLDR: this function is only called when the user manually types in a date
        */
       parseDate: (input?: string) => {
-        //console.log('parseDate', input)
         try {
           return DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
             input || '',
@@ -58,7 +67,6 @@ export const DateHelpers = {
        * Basically undoes the value shift to make sure the date is displayed in user's chosen timezone
        */
       formatDate: (date: Date) => {
-        //console.log('formatDate', date)
         try {
           const unshiftedDate =
             DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(date)
@@ -92,7 +100,6 @@ export const DateHelpers = {
         }) as IDateInputProps['onChange']
       },
       generateValue: (value: string, minDate?: Date, maxDate?: Date) => {
-        //console.log('generateValue', value)
         return DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
           value,
           ISO_8601_FORMAT_ZONED,
@@ -104,7 +111,6 @@ export const DateHelpers = {
     DateRangeProps: {
       generateOnChange: (onChange: (value: ValueTypes['during']) => void) => {
         return (([start, end]) => {
-          console.log('onChange', start, end)
           if (onChange) {
             onChange({
               start: start
@@ -157,14 +163,7 @@ export const DateHelpers = {
       ): Date => {
         try {
           const unshiftedDate = moment(value, format)
-          /*console.log(
-            'before timeshifting date',
-            value,
-            unshiftedDate,
-            unshiftedDate.toDate()
-          )*/
           if (!unshiftedDate.isValid()) {
-            //console.log('INVALID DATE FOR DATE PICKER')
             return DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
               moment.utc().toISOString(),
               ISO_8601_FORMAT_ZONED
@@ -183,12 +182,6 @@ export const DateHelpers = {
             .utcOffset()
           const totalOffset = utcOffsetMinutesLocal + utcOffsetMinutesTimezone
           const shiftedDate = unshiftedDate.add(totalOffset, 'minutes')
-          /*console.log(
-            'after timeshifting date',
-            value,
-            shiftedDate,
-            shiftedDate.toDate()
-          )*/
           if (
             shiftedDate.isValid() &&
             DateHelpers.Blueprint.commonProps.isValid(
@@ -221,7 +214,6 @@ export const DateHelpers = {
       UntimeshiftFromDatePicker: (value: Date) => {
         try {
           const shiftedDate = moment(value)
-          //console.log('before untimeshifting date', value, shiftedDate)
           switch (DateHelpers.General.getTimePrecision()) {
             case 'minute':
               shiftedDate.seconds(0)
@@ -234,20 +226,10 @@ export const DateHelpers = {
             .tz(value, DateHelpers.General.getTimeZone()) // pass in the value, otherwise it won't account for daylight savings time!
             .utcOffset()
           const totalOffset = utcOffsetMinutesLocal + utcOffsetMinutesTimezone
-          const temp = shiftedDate.subtract(totalOffset, 'minutes').toDate()
-          //console.log('after untimeshifting date', value, temp)
-          return temp
+          return shiftedDate.subtract(totalOffset, 'minutes').toDate()
         } catch (err) {
           console.error(err)
-          const now = new Date()
-          switch (DateHelpers.General.getTimePrecision()) {
-            case 'minute':
-              now.setUTCSeconds(0)
-            // Intentional fall-through
-            case 'second':
-              now.setUTCMilliseconds(0)
-          }
-          return now
+          return DateHelpers.General.withPrecision(new Date())
         }
       },
       /**
