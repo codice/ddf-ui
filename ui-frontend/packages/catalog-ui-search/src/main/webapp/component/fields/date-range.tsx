@@ -68,7 +68,6 @@ export const DateRangeField = ({
   const valueRef = React.useRef(value)
 
   useTimePrefs(() => {
-    console.log('useTimePrefs callback', valueRef.current)
     const shiftedDates = DateHelpers.Blueprint.DateRangeProps.generateValue(
       valueRef.current
     )

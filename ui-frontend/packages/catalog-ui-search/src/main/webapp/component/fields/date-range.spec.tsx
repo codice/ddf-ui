@@ -11,6 +11,7 @@ import user from '../singletons/user-instance'
 import { ValueTypes } from '../filter-builder/filter.structure'
 import { DateHelpers, ISO_8601_FORMAT_ZONED } from './date-helpers'
 import Common from '../../js/Common'
+import { TimePrecision } from '@blueprintjs/datetime'
 
 const UncontrolledDateRangeField = ({
   startingValue,
@@ -34,9 +35,21 @@ const data = {
     timezone: 'America/St_Johns',
     originalISO: '2021-01-15T06:53:54.316Z',
     originalDate: new Date('2021-01-15T06:53:54.316Z'),
-    userFormatISO: '2021-01-15T03:23:54.316-03:30',
-    userFormat24: '15 Jan 2021 03:23:54.316 -03:30',
-    userFormat12: '15 Jan 2021 03:23:54.316 am -03:30',
+    userFormatISO: {
+      millisecond: '2021-01-15T03:23:54.316-03:30',
+      second: '2021-01-15T03:23:54-03:30',
+      minute: '2021-01-15T03:23-03:30',
+    },
+    userFormat24: {
+      millisecond: '15 Jan 2021 03:23:54.316 -03:30',
+      second: '15 Jan 2021 03:23:54 -03:30',
+      minute: '15 Jan 2021 03:23 -03:30',
+    },
+    userFormat12: {
+      millisecond: '15 Jan 2021 03:23:54.316 am -03:30',
+      second: '15 Jan 2021 03:23:54 am -03:30',
+      minute: '15 Jan 2021 03:23 am -03:30',
+    },
   },
   date2: {
     timezone: 'America/St_Johns',
@@ -52,9 +65,21 @@ const data = {
     timezone: 'America/St_Johns',
     originalISO: '2021-01-14T06:53:54.316Z',
     originalDate: new Date('2021-01-14T06:53:54.316Z'),
-    userFormatISO: '2021-01-14T03:23:54.316-03:30',
-    userFormat24: '14 Jan 2021 03:23:54.316 -03:30',
-    userFormat12: '14 Jan 2021 03:23:54.316 am -03:30',
+    userFormatISO: {
+      millisecond: '2021-01-14T03:23:54.316-03:30',
+      second: '2021-01-14T03:23:54-03:30',
+      minute: '2021-01-14T03:23-03:30',
+    },
+    userFormat24: {
+      millisecond: '14 Jan 2021 03:23:54.316 -03:30',
+      second: '14 Jan 2021 03:23:54 -03:30',
+      minute: '14 Jan 2021 03:23 -03:30',
+    },
+    userFormat12: {
+      millisecond: '14 Jan 2021 03:23:54.316 am -03:30',
+      second: '14 Jan 2021 03:23:54 am -03:30',
+      minute: '14 Jan 2021 03:23 am -03:30',
+    },
   },
   // this is useful for testing daylist savings (date 1 is pre, this is post)
   date5: {
@@ -62,7 +87,8 @@ const data = {
     originalISO: '2021-04-15T05:53:54.316Z', // use the converter to find the appropriate shifted date
   },
 }
-describe('verify date field works', () => {
+let wrapper: Enzyme.ReactWrapper
+describe('verify date range field works', () => {
   before(() => {
     user.get('user').get('preferences').set('timeZone', data.date1.timezone)
   })
@@ -80,13 +106,15 @@ describe('verify date field works', () => {
       .get('user')
       .get('preferences')
       .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
+    // Must unmount to stop listening to the user prefs model (the useTimePrefs() hook)
+    wrapper.unmount()
   })
   it(`should not allow overlapping dates`, () => {
     user
       .get('user')
       .get('preferences')
       .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
-    const wrapper = mount(
+    wrapper = mount(
       <DateRangeField
         value={{
           start: data.date1.originalISO,
@@ -96,77 +124,119 @@ describe('verify date field works', () => {
       />
     )
     expect(wrapper.render().find('input').first().val()).to.equal(
-      data.date1.userFormatISO
+      data.date1.userFormatISO.millisecond
     )
     expect(wrapper.render().find('input').last().val()).to.equal(
       'Overlapping dates'
     )
   })
-  it(`should allow non-overlapping dates`, () => {
-    user
-      .get('user')
-      .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
-    const wrapper = mount(
-      <DateRangeField
-        value={{
-          start: data.date4.originalISO,
-          end: data.date1.originalISO,
-        }}
-        onChange={() => {}}
-      />
+  const verifyDateRender = (
+    format: string,
+    precision: TimePrecision,
+    expectedStart: string,
+    expectedEnd: string
+  ) => {
+    return () => {
+      user
+        .get('user')
+        .get('preferences')
+        .set('dateTimeFormat', Common.getDateTimeFormats()[format][precision])
+      wrapper = mount(
+        <DateRangeField
+          value={{
+            start: data.date4.originalISO,
+            end: data.date1.originalISO,
+          }}
+          onChange={() => {}}
+        />
+      )
+      expect(wrapper.render().find('input').first().val()).to.equal(
+        expectedStart
+      )
+      expect(wrapper.render().find('input').last().val()).to.equal(expectedEnd)
+    }
+  }
+  it(
+    'should render with ISO format and millisecond precision',
+    verifyDateRender(
+      'ISO',
+      'millisecond',
+      data.date4.userFormatISO.millisecond,
+      data.date1.userFormatISO.millisecond
     )
-    expect(wrapper.render().find('input').first().val()).to.equal(
-      data.date4.userFormatISO
+  )
+  it(
+    'should render with ISO format and second precision',
+    verifyDateRender(
+      'ISO',
+      'second',
+      data.date4.userFormatISO.second,
+      data.date1.userFormatISO.second
     )
-    expect(wrapper.render().find('input').last().val()).to.equal(
-      data.date1.userFormatISO
+  )
+  it(
+    'should render with ISO format and minute precision',
+    verifyDateRender(
+      'ISO',
+      'minute',
+      data.date4.userFormatISO.minute,
+      data.date1.userFormatISO.minute
     )
-  })
-  it(`should render with user's pref format of 12hr standard`, () => {
-    user
-      .get('user')
-      .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['12']['millisecond'])
-
-    const wrapper = mount(
-      <DateRangeField
-        value={{
-          start: data.date4.originalISO,
-          end: data.date1.originalISO,
-        }}
-        onChange={() => {}}
-      />
+  )
+  it(
+    'should render with 24hr format and millisecond precision',
+    verifyDateRender(
+      '24',
+      'millisecond',
+      data.date4.userFormat24.millisecond,
+      data.date1.userFormat24.millisecond
     )
-    expect(wrapper.render().find('input').first().val()).to.equal(
-      data.date4.userFormat12
+  )
+  it(
+    'should render with 24hr format and second precision',
+    verifyDateRender(
+      '24',
+      'second',
+      data.date4.userFormat24.second,
+      data.date1.userFormat24.second
     )
-    expect(wrapper.render().find('input').last().val()).to.equal(
-      data.date1.userFormat12
+  )
+  it(
+    'should render with 24hr format and minute precision',
+    verifyDateRender(
+      '24',
+      'minute',
+      data.date4.userFormat24.minute,
+      data.date1.userFormat24.minute
     )
-  })
-  it(`should render with user's pref format of 24hr standard`, () => {
-    user
-      .get('user')
-      .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['24']['millisecond'])
-
-    const wrapper = mount(
-      <DateRangeField
-        value={{
-          start: data.date4.originalISO,
-          end: data.date1.originalISO,
-        }}
-        onChange={() => {}}
-      />
+  )
+  it(
+    'should render with 12hr format and millisecond precision',
+    verifyDateRender(
+      '12',
+      'millisecond',
+      data.date4.userFormat12.millisecond,
+      data.date1.userFormat12.millisecond
     )
-    expect(wrapper.render().find('input').first().val()).to.equal(
-      data.date4.userFormat24
+  )
+  it(
+    'should render with 12hr format and second precision',
+    verifyDateRender(
+      '12',
+      'second',
+      data.date4.userFormat12.second,
+      data.date1.userFormat12.second
     )
-    expect(wrapper.render().find('input').last().val()).to.equal(
-      data.date1.userFormat24
+  )
+  it(
+    'should render with 12hr format and minute precision',
+    verifyDateRender(
+      '12',
+      'minute',
+      data.date4.userFormat12.minute,
+      data.date1.userFormat12.minute
     )
-  })
+  )
   it(`should parse with user's pref timezone`, () => {
     // gist is user enters a time in a diff time from their pref, on blur we adjust it to their preference
     user
@@ -174,7 +244,7 @@ describe('verify date field works', () => {
       .get('preferences')
       .set('dateTimeFormat', Common.getDateTimeFormats()['24']['millisecond'])
 
-    const wrapper = mount(
+    wrapper = mount(
       <UncontrolledDateRangeField
         startingValue={{
           start: data.date2.userSuppliedInput,
@@ -193,7 +263,7 @@ describe('verify date field works', () => {
     expect(input.last().render().val()).to.equal(data.date2.parsedOutput)
   })
   it(`should generate appropriately shifted ISO strings on change (DST)`, () => {
-    const wrapper = mount(
+    wrapper = mount(
       <DateRangeField
         value={{
           start: new Date().toISOString(),
@@ -221,7 +291,7 @@ describe('verify date field works', () => {
     )
   })
   it(`should generate appropriately shifted ISO strings on change`, () => {
-    const wrapper = mount(
+    wrapper = mount(
       <DateRangeField
         value={{
           start: new Date().toISOString(),
@@ -249,7 +319,7 @@ describe('verify date field works', () => {
     )
   })
   it(`should not allow dates beyond max future`, () => {
-    const wrapper = mount(
+    wrapper = mount(
       <DateRangeField
         value={{
           start: new Date().toISOString(),
@@ -270,17 +340,15 @@ describe('verify date field works', () => {
       start: new Date().toISOString(),
       end: new Date().toISOString(),
     }
-    console.log('initValue', initValue)
-    const wrapper = mount(
+    wrapper = mount(
       <DateRangeField
         value={initValue}
         onChange={(updatedValue) => {
-          console.log('TEST onChange', updatedValue)
-          expect(updatedValue.end).to.equal(data.date3.maxFuture)
+          expect(updatedValue.start).to.equal(data.date3.maxFuture)
         }}
       />
     )
-    const input = wrapper.find('input').last()
+    const input = wrapper.find('input').first()
     input.simulate('change', {
       target: { value: data.date3.maxFuture },
     })

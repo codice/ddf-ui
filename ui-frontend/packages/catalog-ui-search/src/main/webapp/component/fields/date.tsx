@@ -16,7 +16,12 @@ import * as React from 'react'
 import { useRef } from 'react'
 import { DateInput, IDateInputProps } from '@blueprintjs/datetime'
 
-import { DateHelpers, DefaultMaxDate, DefaultMinDate, ISO_8601_FORMAT_ZONED } from './date-helpers'
+import {
+  DateHelpers,
+  DefaultMaxDate,
+  DefaultMinDate,
+  ISO_8601_FORMAT_ZONED,
+} from './date-helpers'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
 import useTimePrefs from './useTimePrefs'
 

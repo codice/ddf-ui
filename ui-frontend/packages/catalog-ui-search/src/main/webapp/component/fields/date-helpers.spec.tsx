@@ -15,8 +15,8 @@
 import { expect } from 'chai'
 import { DateHelpers, ISO_8601_FORMAT_ZONED } from './date-helpers'
 import user from '../singletons/user-instance'
-// TODO do I need to set a format for this?
-// TODO tests for precision
+import Common from '../../js/Common'
+
 user.get('user').get('preferences').set('timeZone', 'America/St_Johns')
 const date = new Date()
 describe('verify that transforming to and from timezone is accurate (no loss)', () => {
@@ -33,5 +33,30 @@ describe('verify that transforming to and from timezone is accurate (no loss)', 
     expect(date.toISOString(), 'Unexpected difference').to.equal(
       unshiftedDate.toISOString()
     )
+  })
+})
+describe('untimeshifting respects the time precision', () => {
+  it('milliseconds are 0 when time precision is seconds', () => {
+    user
+      .get('user')
+      .get('preferences')
+      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['second'])
+    const unshiftedDate =
+      DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(
+        new Date('2023-04-23T22:39:46.117Z')
+      )
+    expect(unshiftedDate.getUTCMilliseconds()).to.equal(0)
+  })
+  it('seconds and milliseconds are 0 when time precision is minutes', () => {
+    user
+      .get('user')
+      .get('preferences')
+      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['minute'])
+    const unshiftedDate =
+      DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(
+        new Date('2023-04-23T22:39:46.117Z')
+      )
+    expect(unshiftedDate.getUTCMilliseconds()).to.equal(0)
+    expect(unshiftedDate.getUTCSeconds()).to.equal(0)
   })
 })
