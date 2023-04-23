@@ -49,15 +49,7 @@ const validateDate = ({ value, onChange }: DateAroundProps) => {
     !value.direction ||
     DateHelpers.Blueprint.commonProps.parseDate(value.date) === null
   ) {
-    // TODO create helper method for this
-    const newDate = new Date()
-    switch (DateHelpers.General.getTimePrecision()) {
-      case 'minute':
-        newDate.setUTCSeconds(0)
-      // Intentional fall-through
-      case 'second':
-        newDate.setUTCMilliseconds(0)
-    }
+    const newDate = DateHelpers.General.withPrecision(new Date())
     onChange({ ...defaultValue(), date: newDate.toISOString() })
   }
 }

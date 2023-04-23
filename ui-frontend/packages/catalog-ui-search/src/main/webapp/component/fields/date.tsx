@@ -43,26 +43,15 @@ const validateDate = (
   { value, onChange }: DateFieldProps,
   valueRef: React.MutableRefObject<string>
 ) => {
-  //console.log('validating', value, DateHelpers.General.getDateFormat())
   const date = moment(value, ISO_8601_FORMAT_ZONED)
   if (!date.isValid()) {
-    //console.log('INVALID DATE', value, DateHelpers.General.getDateFormat())
-    const newDate = new Date()
-    switch (DateHelpers.General.getTimePrecision()) {
-      case 'minute':
-        newDate.setUTCSeconds(0)
-      // Intentional fall-through
-      case 'second':
-        newDate.setUTCMilliseconds(0)
-    }
+    const newDate = DateHelpers.General.withPrecision(new Date())
     valueRef.current = newDate.toISOString()
     onChange(newDate.toISOString())
   }
 }
 
 export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
-  //console.log('DateField', value)
-
   const valueRef = useRef(value)
 
   useTimePrefs(() => {
@@ -74,7 +63,6 @@ export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
     onChange(unshiftedDate.toISOString())
   })
   React.useEffect(() => {
-    //console.log('RUNNING DateField EFFECT')
     validateDate({ onChange, value }, valueRef)
   }, [])
 
