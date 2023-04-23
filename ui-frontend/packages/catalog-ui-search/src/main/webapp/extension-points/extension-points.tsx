@@ -76,6 +76,8 @@ export type ExtensionPointsType = {
   extraRoutes: PermissiveComponentType
   locationTypes: (baseTypes: InputsType) => InputsType
   userInformation: PermissiveComponentType
+  extraHeader: PermissiveComponentType
+  extraFooter: PermissiveComponentType
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -95,6 +97,8 @@ const ExtensionPoints: ExtensionPointsType = {
   extraRoutes: () => null,
   locationTypes: (baseTypes: InputsType) => baseTypes,
   userInformation: () => null,
+  extraFooter: () => null,
+  extraHeader: () => null,
 }
 
 export default ExtensionPoints
