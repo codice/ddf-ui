@@ -35,6 +35,7 @@ const data = {
     timezone: 'America/St_Johns',
     originalISO: '2021-01-15T06:53:54.316Z',
     originalDate: new Date('2021-01-15T06:53:54.316Z'),
+    utcISOMinutes: '2021-01-15T06:53:00.000Z',
     userFormatISO: {
       millisecond: '2021-01-15T03:23:54.316-03:30',
       second: '2021-01-15T03:23:54-03:30',
@@ -65,6 +66,7 @@ const data = {
     timezone: 'America/St_Johns',
     originalISO: '2021-01-14T06:53:54.316Z',
     originalDate: new Date('2021-01-14T06:53:54.316Z'),
+    utcISOMinutes: '2021-01-14T06:53:00.000Z',
     userFormatISO: {
       millisecond: '2021-01-14T03:23:54.316-03:30',
       second: '2021-01-14T03:23:54-03:30',
@@ -102,12 +104,14 @@ describe('verify date range field works', () => {
       .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
   })
   afterEach(() => {
+    // Must unmount to stop listening to the user prefs model (the useTimePrefs() hook)
+    // Has to be unmounted before we set any preferences so we don't trigger any onChange
+    // callbacks again.
+    wrapper.unmount()
     user
       .get('user')
       .get('preferences')
       .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
-    // Must unmount to stop listening to the user prefs model (the useTimePrefs() hook)
-    wrapper.unmount()
   })
   it(`should not allow overlapping dates`, () => {
     user
@@ -352,5 +356,23 @@ describe('verify date range field works', () => {
     input.simulate('change', {
       target: { value: data.date3.maxFuture },
     })
+  })
+  it('calls onChange with updated value when precision changes', () => {
+    wrapper = mount(
+      <DateRangeField
+        value={{
+          start: data.date4.originalISO,
+          end: data.date1.originalISO,
+        }}
+        onChange={(updatedValue) => {
+          expect(updatedValue.start).to.equal(data.date4.utcISOMinutes)
+          expect(updatedValue.end).to.equal(data.date1.utcISOMinutes)
+        }}
+      />
+    )
+    user
+      .get('user')
+      .get('preferences')
+      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['minute'])
   })
 })
