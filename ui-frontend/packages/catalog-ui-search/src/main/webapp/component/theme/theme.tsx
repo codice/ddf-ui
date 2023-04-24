@@ -74,7 +74,7 @@ export const Elevations = {
 }
 
 export const MuiOutlinedInputBorderClasses =
-  'MuiOutlinedInput-root MuiOutlinedInput-multiline MuiOutlinedInput-inputMarginDense MuiOutlinedInput-notchedOutline border'
+  'px-[14px] py-[8.5px] border rounded dark:border-white/20 border-black/20 dark:hover:border-white hover:border-black'
 
 const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .ol-overlaycontainer-stopevent {
@@ -614,9 +614,11 @@ export const Provider = ({ children }: { children: any }) => {
     if (styledTheme.theme === 'dark') {
       htmlElement.classList.add('bp3-dark')
       htmlElement.classList.add('theme-dark')
+      htmlElement.classList.add('dark')
     } else {
       htmlElement.classList.remove('bp3-dark')
       htmlElement.classList.remove('theme-dark')
+      htmlElement.classList.remove('dark')
     }
   }, [styledTheme.theme])
   useRemoveFocusStyle()

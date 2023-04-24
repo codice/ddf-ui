@@ -1,4 +1,5 @@
 module.exports = {
+  darkMode: 'class',
   content: ['./src/**/*.{tsx,js,jsx,ts}'],
   theme: {
     namedGroups: ['1', '2'],
