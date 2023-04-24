@@ -411,7 +411,6 @@ const Theme = Backbone.Model.extend({
   getSummaryShown() {
     return this.get('user').getSummaryShown()
   },
-  // TODO watch for unsupported formats
   getUserReadableDateTime(date: any) {
     return moment
       .tz(date, this.get('user').get('preferences').get('timeZone'))
