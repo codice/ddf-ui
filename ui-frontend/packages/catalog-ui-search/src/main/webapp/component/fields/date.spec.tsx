@@ -42,6 +42,7 @@ const data = {
     timezone: 'America/St_Johns',
     originalISO: '2021-01-15T06:53:54.316Z',
     originalDate: new Date('2021-01-15T06:53:54.316Z'),
+    utcISOMinutes: '2021-01-15T06:53:00.000Z',
     userFormatISO: {
       millisecond: '2021-01-15T03:23:54.316-03:30',
       second: '2021-01-15T03:23:54-03:30',
@@ -89,12 +90,14 @@ describe('verify date field works', () => {
       .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
   })
   afterEach(() => {
+    // Must unmount to stop listening to the user prefs model (the useTimePrefs() hook)
+    // Has to be unmounted before we set any preferences so we don't trigger any onChange
+    // callbacks again.
+    wrapper.unmount()
     user
       .get('user')
       .get('preferences')
       .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
-    // Must unmount to stop listening to the user prefs model (the useTimePrefs() hook)
-    wrapper.unmount()
   })
   const verifyDateRender = (
     format: string,
@@ -227,5 +230,19 @@ describe('verify date field works', () => {
     input.simulate('change', {
       target: { value: data.date3.maxFuture },
     })
+  })
+  it('calls onChange with updated value when precision changes', () => {
+    wrapper = mount(
+      <DateField
+        value={data.date1.userFormatISO.millisecond}
+        onChange={(updatedValue) => {
+          expect(updatedValue).to.equal(data.date1.utcISOMinutes)
+        }}
+      />
+    )
+    user
+      .get('user')
+      .get('preferences')
+      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['minute'])
   })
 })
