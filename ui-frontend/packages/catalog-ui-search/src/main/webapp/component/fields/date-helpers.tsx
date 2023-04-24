@@ -99,14 +99,13 @@ export const DateHelpers = {
           }
         }) as IDateInputProps['onChange']
       },
-      generateValue: (value: string, minDate?: Date, maxDate?: Date) => {
-        return DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
+      generateValue: (value: string, minDate?: Date, maxDate?: Date) =>
+        DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
           value,
           ISO_8601_FORMAT_ZONED,
           minDate,
           maxDate
-        )
-      },
+        ),
     },
     DateRangeProps: {
       generateOnChange: (onChange: (value: ValueTypes['during']) => void) => {
@@ -153,7 +152,7 @@ export const DateHelpers = {
        * chosen timezone, we have to shift the date ourselves.  So what we do is pretend the value is utc, then calculate the offset of the computer's local timezone and the timezone the user wants to create a total offset.  This is because the datepicker internally
        * uses date, so we have to pretend we're in local time.  We then take that utc date and add the totaloffset, then tell the datepicker that is our value.  As a result, when the datepicker internally uses Date it will shift back to the correct timezone.
        *
-       * TLDR: Use this on a date string formatted by the user's preference going INTO the blueprint datepicker (the value prop).  Use the sibling function TimeshiftedDateToFormattedDate to reverse this.
+       * TLDR: Use this on a date string formatted in the manner specified by the provided format going INTO the blueprint datepicker (the value prop).  Use the sibling function UntimeshiftFromDatePicker to reverse this.
        */
       TimeshiftForDatePicker: (
         value: string,
