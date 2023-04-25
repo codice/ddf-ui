@@ -15,6 +15,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import * as usngs from 'usng.js'
+import _ from 'lodash'
 // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
 const converter = new usngs.Converter()
 const NORTHING_OFFSET = 10000000
@@ -26,6 +27,7 @@ import {
   dmsCoordinateToDD,
 } from '../../../component/location-new/utils/dms-utils'
 import wreqr from '../../../js/wreqr'
+import { errorMessages } from '../../../component/location-new/utils'
 export function showErrorMessages(errors: any) {
   if (errors.length === 0) {
     return
@@ -116,9 +118,17 @@ export const ErrorComponent = (props: any) => {
   ) : null
 }
 export function validateListOfPoints(coordinates: any[], mode: string) {
-  let message = ''
+  let message = null
   const isLine = mode.includes('line')
   const numPoints = isLine ? 2 : 4
+  if (
+    !mode.includes('multi') &&
+    !isLine &&
+    coordinates.length >= numPoints &&
+    !_.isEqual(coordinates[0], coordinates.slice(-1)[0])
+  ) {
+    message = errorMessages.firstLastPointMismatch
+  }
   if (
     !mode.includes('multi') &&
     !coordinates.some((coords) => coords.length > 2) &&
@@ -144,7 +154,7 @@ export function validateListOfPoints(coordinates: any[], mode: string) {
       }
     }
   })
-  return { error: message.length > 0, message }
+  return { error: !!message, message }
 }
 export const initialErrorState = {
   error: false,

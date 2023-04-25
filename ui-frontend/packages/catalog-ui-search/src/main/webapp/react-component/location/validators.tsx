@@ -17,6 +17,7 @@ import * as usng from 'usng.js'
 const converter = new usng.Converter()
 import errorMessages from '../../component/location-new/utils/errors'
 import { validateGeo } from '../utils/validation'
+import _ from 'lodash'
 
 const dmsRegex = new RegExp('^([0-9_]*)°([0-9_]*)\'([0-9_]*\\.?[0-9_]*)"$')
 
@@ -149,9 +150,12 @@ function validateDmsLineOrPoly(dms: Point[], type: 'line' | 'polygon') {
       if (!dms.every(validateDmsPoint)) {
         error = true
         message = errorMessages.invalidList
-      } else if (dms.length < 3) {
+      } else if (dms.length < 4) {
         error = true
         message = errorMessages.tooFewPointsPolygon
+      } else if (!_.isEqual(dms[0], dms.slice(-1)[0])) {
+        error = true
+        message = errorMessages.firstLastPointMismatch
       }
       break
   }
@@ -179,9 +183,12 @@ function validateUsngLineOrPoly(usng: string[], type: 'line' | 'polygon') {
       if (!usng.every(validateUsngGrid)) {
         error = true
         message = errorMessages.invalidList
-      } else if (usng.length < 3) {
+      } else if (usng.length < 4) {
         error = true
         message = errorMessages.tooFewPointsPolygon
+      } else if (!_.isEqual(usng[0], usng.slice(-1)[0])) {
+        error = true
+        message = errorMessages.firstLastPointMismatch
       }
       break
   }
@@ -212,9 +219,12 @@ function validateUtmUpsLineOrPoly(
       if (!utmups.every(validateUtmUpsPoint)) {
         error = true
         message = errorMessages.invalidList
-      } else if (utmups.length < 3) {
+      } else if (utmups.length < 4) {
         error = true
         message = errorMessages.tooFewPointsPolygon
+      } else if (!_.isEqual(utmups[0], utmups.slice(-1)[0])) {
+        error = true
+        message = errorMessages.firstLastPointMismatch
       }
       break
   }

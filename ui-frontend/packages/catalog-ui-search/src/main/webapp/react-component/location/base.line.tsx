@@ -115,6 +115,7 @@ const LineLatLon = (props: any) => {
     widthKey,
     mode,
     polyType,
+    errorListener,
   } = props
   const [currentValue, setCurrentValue] = useState(
     JSON.stringify(props[geometryKey])
@@ -124,13 +125,18 @@ const LineLatLon = (props: any) => {
 
   useEffect(() => {
     const { geometryKey } = props
-    setCurrentValue(
+    const newValue =
       typeof props[geometryKey] === 'string'
         ? props[geometryKey]
         : JSON.stringify(props[geometryKey])
-    )
+    setCurrentValue(newValue)
     if (props.drawing) {
       setBaseLineError(initialErrorState)
+    } else {
+      const validationResult = validateGeo(mode || polyType, newValue)
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+      setBaseLineError(validationResult || initialErrorState)
+      errorListener && errorListener(validationResult)
     }
   }, [props.polygon, props.line])
 
@@ -154,10 +160,6 @@ const LineLatLon = (props: any) => {
               setState({ [geometryKey]: value })
             }
           }}
-          onBlur={() =>
-            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-            setBaseLineError(validateGeo(mode || polyType, currentValue))
-          }
         />
         <ErrorComponent errorState={baseLineError} />
         <Units
@@ -166,14 +168,14 @@ const LineLatLon = (props: any) => {
             typeof setBufferState === 'function'
               ? setBufferState(unitKey, value)
               : setState({ [unitKey]: value })
-            if (widthKey === 'lineWidth' || 'bufferWidth') {
-              setBufferError(
-                // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-                validateGeo(widthKey, {
-                  value: props[widthKey],
-                  units: value,
-                })
-              )
+            if (widthKey === 'lineWidth' || widthKey === 'bufferWidth') {
+              const validationResult = validateGeo(widthKey, {
+                value: props[widthKey],
+                units: value,
+              })
+              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+              setBufferError(validationResult)
+              errorListener && errorListener(validationResult)
             }
           }}
         >
@@ -186,15 +188,13 @@ const LineLatLon = (props: any) => {
               typeof setBufferState === 'function'
                 ? setBufferState(widthKey, value)
                 : setState({ [widthKey]: value })
-            }}
-            onBlur={(e: any) => {
-              setBufferError(
-                // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-                validateGeo(widthKey, {
-                  value: e.target.value,
-                  units: props[unitKey],
-                })
-              )
+              const validationResult = validateGeo(widthKey, {
+                value: value,
+                units: props[unitKey],
+              })
+              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+              setBufferError(validationResult)
+              errorListener && errorListener(validationResult)
             }}
           />
         </Units>
@@ -212,6 +212,7 @@ const LineDms = (props: any) => {
     unitKey,
     setBufferState,
     widthKey,
+    errorListener,
   } = props
   const [baseLineError, setBaseLineError] = useState(initialErrorState)
   const [bufferError, setBufferError] = useState(initialErrorState)
@@ -221,8 +222,10 @@ const LineDms = (props: any) => {
       setBaseLineError(initialErrorState)
     }
     if (dmsPointArray) {
+      const validationResult = validateDmsLineOrPoly(dmsPointArray, geometryKey)
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-      setBaseLineError(validateDmsLineOrPoly(dmsPointArray, geometryKey))
+      setBaseLineError(validationResult)
+      errorListener && errorListener(validationResult)
     }
   }, [props.polygon, props.line, dmsPointArray])
 
@@ -273,14 +276,14 @@ const LineDms = (props: any) => {
           typeof setBufferState === 'function'
             ? setBufferState(unitKey, value)
             : setState({ [unitKey]: value })
-          if (widthKey === 'lineWidth' || 'bufferWidth') {
-            setBufferError(
-              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-              validateGeo(widthKey, {
-                value: props[widthKey],
-                units: value,
-              })
-            )
+          if (widthKey === 'lineWidth' || widthKey === 'bufferWidth') {
+            const validationResult = validateGeo(widthKey, {
+              value: props[widthKey],
+              units: value,
+            })
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+            setBufferError(validationResult)
+            errorListener && errorListener(validationResult)
           }
         }}
       >
@@ -293,15 +296,13 @@ const LineDms = (props: any) => {
             typeof setBufferState === 'function'
               ? setBufferState(widthKey, value)
               : setState({ [widthKey]: value })
-          }}
-          onBlur={(e: any) => {
-            setBufferError(
-              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-              validateGeo(widthKey, {
-                value: e.target.value,
-                units: props[unitKey],
-              })
-            )
+            const validationResult = validateGeo(widthKey, {
+              value,
+              units: props[unitKey],
+            })
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+            setBufferError(validationResult)
+            errorListener && errorListener(validationResult)
           }}
         />
       </Units>
@@ -318,6 +319,7 @@ const LineMgrs = (props: any) => {
     unitKey,
     setBufferState,
     widthKey,
+    errorListener,
   } = props
   const [baseLineError, setBaseLineError] = useState(initialErrorState)
   const [bufferError, setBufferError] = useState(initialErrorState)
@@ -327,8 +329,13 @@ const LineMgrs = (props: any) => {
       setBaseLineError(initialErrorState)
     }
     if (usngPointArray) {
+      const validationResult = validateUsngLineOrPoly(
+        usngPointArray,
+        geometryKey
+      )
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-      setBaseLineError(validateUsngLineOrPoly(usngPointArray, geometryKey))
+      setBaseLineError(validationResult)
+      errorListener && errorListener(validationResult)
     }
   }, [props.polygon, props.line, usngPointArray])
 
@@ -379,14 +386,14 @@ const LineMgrs = (props: any) => {
             typeof setBufferState === 'function'
               ? setBufferState(unitKey, value)
               : setState({ [unitKey]: value })
-            if (widthKey === 'lineWidth' || 'bufferWidth') {
-              setBufferError(
-                // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-                validateGeo(widthKey, {
-                  value: props[widthKey],
-                  units: value,
-                })
-              )
+            if (widthKey === 'lineWidth' || widthKey === 'bufferWidth') {
+              const validationResult = validateGeo(widthKey, {
+                value: props[widthKey],
+                units: value,
+              })
+              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+              setBufferError(validationResult)
+              errorListener && errorListener(validationResult)
             }
           }}
         >
@@ -399,15 +406,13 @@ const LineMgrs = (props: any) => {
               typeof setBufferState === 'function'
                 ? setBufferState(widthKey, value)
                 : setState({ [widthKey]: value })
-            }}
-            onBlur={(e: any) => {
-              setBufferError(
-                // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-                validateGeo(widthKey, {
-                  value: e.target.value,
-                  units: props[unitKey],
-                })
-              )
+              const validationResult = validateGeo(widthKey, {
+                value,
+                units: props[unitKey],
+              })
+              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+              setBufferError(validationResult)
+              errorListener && errorListener(validationResult)
             }}
           />
         </Units>
@@ -425,6 +430,7 @@ const LineUtmUps = (props: any) => {
     unitKey,
     setBufferState,
     widthKey,
+    errorListener,
   } = props
   const [baseLineError, setBaseLineError] = useState(initialErrorState)
   const [bufferError, setBufferError] = useState(initialErrorState)
@@ -434,8 +440,13 @@ const LineUtmUps = (props: any) => {
       setBaseLineError(initialErrorState)
     }
     if (utmUpsPointArray) {
+      const validationResult = validateUtmUpsLineOrPoly(
+        utmUpsPointArray,
+        geometryKey
+      )
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-      setBaseLineError(validateUtmUpsLineOrPoly(utmUpsPointArray, geometryKey))
+      setBaseLineError(validationResult)
+      errorListener && errorListener(validationResult)
     }
   }, [props.polygon, props.line, utmUpsPointArray])
 
@@ -484,14 +495,14 @@ const LineUtmUps = (props: any) => {
           typeof setBufferState === 'function'
             ? setBufferState(unitKey, value)
             : setState({ [unitKey]: value })
-          if (widthKey === 'lineWidth' || 'bufferWidth') {
-            setBufferError(
-              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-              validateGeo(widthKey, {
-                value: props[widthKey],
-                units: value,
-              })
-            )
+          if (widthKey === 'lineWidth' || widthKey === 'bufferWidth') {
+            const validationResult = validateGeo(widthKey, {
+              value: props[widthKey],
+              units: value,
+            })
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+            setBufferError(validationResult)
+            errorListener && errorListener(validationResult)
           }
         }}
       >
@@ -504,15 +515,13 @@ const LineUtmUps = (props: any) => {
             typeof setBufferState === 'function'
               ? setBufferState(widthKey, value)
               : setState({ [widthKey]: value })
-          }}
-          onBlur={(e: any) => {
-            setBufferError(
-              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-              validateGeo(widthKey, {
-                value: e.target.value,
-                units: props[unitKey],
-              })
-            )
+            const validationResult = validateGeo(widthKey, {
+              value,
+              units: props[unitKey],
+            })
+            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+            setBufferError(validationResult)
+            errorListener && errorListener(validationResult)
           }}
         />
       </Units>

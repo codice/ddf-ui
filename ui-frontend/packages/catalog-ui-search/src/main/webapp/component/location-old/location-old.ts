@@ -310,7 +310,7 @@ export default Backbone.AssociatedModel.extend({
     }
   },
   convertLatLonLinePolyToUsng(points: any) {
-    return points
+    return Array.isArray(points)
       ? points.map((point: any) => {
           // A little bit unintuitive, but lat/lon is swapped here
           return converter.LLtoMGRSUPS(point[1], point[0], usngPrecision)
@@ -318,7 +318,7 @@ export default Backbone.AssociatedModel.extend({
       : undefined
   },
   convertLatLonLinePolyToDms(points: any) {
-    return points
+    return Array.isArray(points)
       ? points.map((point: any) => {
           const lat = dmsUtils.ddToDmsCoordinateLat(point[1])
           const lon = dmsUtils.ddToDmsCoordinateLon(point[0])
@@ -336,7 +336,7 @@ export default Backbone.AssociatedModel.extend({
       : undefined
   },
   convertLatLonLinePolyToUtm(points: any) {
-    return points
+    return Array.isArray(points)
       ? points.map((point: any) => {
           let llPoint = this.LLtoUtmUps(point[1], point[0])
           return {
