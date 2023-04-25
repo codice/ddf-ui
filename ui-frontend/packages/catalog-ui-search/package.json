@@ -32,17 +32,7 @@
   "engines": {
     "node": "16.x.x"
   },
-  "peerDependencies": {
-    "@blueprintjs/core": ">3.0.0",
-    "@blueprintjs/datetime": ">3.0.0",
-    "moment": ">=2.22.0",
-    "moment-timezone": ">=0.5.31",
-    "polished": "4.2.2",
-    "react": ">=17",
-    "react-dom": ">=17",
-    "styled-components": ">=4",
-    "tailwindcss": "3.2.7"
-  },
+  "peerDependencies": {},
   "devDependencies": {
     "@blueprintjs/core": "3.29.0",
     "@blueprintjs/datetime": "3.18.3",
@@ -50,7 +40,6 @@
     "@types/chai": "4.2.14",
     "@types/d3": "5.0.0",
     "@types/enzyme": "3.10.8",
-    "@types/enzyme-adapter-react-16": "1.0.2",
     "@types/lodash.debounce": "4.0.6",
     "@types/lodash.isequalwith": "4.4.7",
     "@types/mocha": "8.0.3",
@@ -68,11 +57,9 @@
     "chokidar": "3.5.0",
     "cpx": "1.5.0",
     "enzyme": "3.11.0",
-    "enzyme-adapter-react-16": "1.15.5",
+    "@wojtekmaj/enzyme-adapter-react-17": "0.8.0",
     "jsdom": "11.12.0",
     "json": "9.0.6",
-    "moment": "2.22.0",
-    "moment-timezone": "0.5.31",
     "move-cli": "1.2.1",
     "polished": "3.6.5",
     "re-resizable": "6.1.0",
@@ -125,6 +112,8 @@
     "lodash.get": "4.4.2",
     "lodash.isequalwith": "4.4.0",
     "modern-normalize": "1.1.0",
+    "moment": "^2.27.0",
+    "moment-timezone": "0.5.31",
     "mt-geo": "1.0.1",
     "openlayers": "4.6.5",
     "plotly.js": "1.16.0",
