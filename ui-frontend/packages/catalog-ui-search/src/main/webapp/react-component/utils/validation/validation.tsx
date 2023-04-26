@@ -418,7 +418,7 @@ function validateBoundingBox(key: string, value: any) {
 function validateDDLatLon(label: string, value: string, defaultCoord: number) {
   let message = ''
   let defaultValue
-  if (value !== undefined && value.length === 0) {
+  if (value === undefined || value === null || value === '') {
     message = getEmptyErrorMessage(label)
     return { error: true, message, defaultValue }
   }
@@ -433,7 +433,7 @@ function validateDmsLatLon(label: string, value: string) {
   let message = ''
   let defaultValue
   const validator = label === LATITUDE ? 'dd°mm\'ss.s"' : 'ddd°mm\'ss.s"'
-  if (value !== undefined && value.length === 0) {
+  if (value === undefined || value === null || value === '') {
     message = getEmptyErrorMessage(label)
     return { error: true, message, defaultValue }
   }

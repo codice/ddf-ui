@@ -132,11 +132,19 @@ const createBoundingBoxModel = (geo: GeometryJSON) => {
     [geo.bbox[0], geo.bbox[1]],
     [geo.bbox[2], geo.bbox[3]],
   ])
+  const west = Number(wrapped[0][0].toFixed(6))
+  const south = Number(wrapped[0][1].toFixed(6))
+  const east = Number(wrapped[1][0].toFixed(6))
+  const north = Number(wrapped[1][1].toFixed(6))
   return {
-    west: Number(wrapped[0][0].toFixed(6)),
-    south: Number(wrapped[0][1].toFixed(6)),
-    east: Number(wrapped[1][0].toFixed(6)),
-    north: Number(wrapped[1][1].toFixed(6)),
+    west,
+    mapWest: west,
+    south,
+    mapSouth: south,
+    east,
+    mapEast: east,
+    north,
+    mapNorth: north,
   }
 }
 
@@ -213,17 +221,16 @@ const modelToPointRadius = (model: any): GeometryJSON | null => {
   )
 }
 
+const isAnyNaN = (numbers: number[]) => {
+  return numbers.some((n) => n === undefined || n === null || Number.isNaN(n))
+}
+
 const modelToBoundingBox = (model: any): GeometryJSON | null => {
   const west = model.get('west')
   const south = model.get('south')
   const east = model.get('east')
   const north = model.get('north')
-  if (
-    west === undefined ||
-    south === undefined ||
-    east === undefined ||
-    north === undefined
-  ) {
+  if (isAnyNaN([west, south, east, north])) {
     return null
   }
   return makeBBoxGeo(Common.generateUUID(), [west, south, east, north])
