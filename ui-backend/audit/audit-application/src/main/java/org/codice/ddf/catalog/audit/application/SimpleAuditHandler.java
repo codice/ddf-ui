@@ -41,7 +41,8 @@ public class SimpleAuditHandler implements Handler {
       auditService.log(requestBasic.getAction(), requestBasic.getComponent());
       context.status(HttpStatus.SC_OK);
     } catch (AuditException e) {
-      LOGGER.error("Unable to log the user's action. Error message: {}", e.getLocalizedMessage());
+      LOGGER.error(
+          "Unable to log the user's action. Error message: {}", e.getLocalizedMessage(), e);
       context.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
     }
   }
