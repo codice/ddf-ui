@@ -56,9 +56,9 @@ const PointRadiusLatLonDd = (props: any) => {
     }
   }, [props.lat, props.lon, props.radius, props.radiusUnits])
 
-  function validateDd(key: any, value: any) {
+  function clampDd(key: any, value: any) {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'error' does not exist on type '{ error: ... Remove this comment to see the full error message
-    const { error, message, defaultValue } = validateGeo(key, value)
+    const { defaultValue } = validateGeo(key, value)
     setState({ [key]: defaultValue || value })
   }
 
@@ -69,7 +69,7 @@ const PointRadiusLatLonDd = (props: any) => {
         type="number"
         label="Latitude"
         value={lat !== undefined ? String(lat) : lat}
-        onChange={(value) => validateDd('lat', value)}
+        onChange={(value) => clampDd('lat', value)}
         addon="°"
       />
       <TextField
@@ -77,7 +77,7 @@ const PointRadiusLatLonDd = (props: any) => {
         type="number"
         label="Longitude"
         value={lon !== undefined ? String(lon) : lon}
-        onChange={(value) => validateDd('lon', value)}
+        onChange={(value) => clampDd('lon', value)}
         addon="°"
       />
       <ErrorComponent errorState={ddError} />
@@ -136,9 +136,9 @@ const PointRadiusLatLonDms = (props: any) => {
     }
   }, [props.dmsLat, props.dmsLon, props.radius, props.radiusUnits])
 
-  function validateDms(key: any, value: any) {
+  function clampDms(key: any, value: any) {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'error' does not exist on type '{ error: ... Remove this comment to see the full error message
-    const { error, message, defaultValue } = validateGeo(key, value)
+    const { defaultValue } = validateGeo(key, value)
     setState({ [key]: defaultValue || value })
   }
 
@@ -147,7 +147,7 @@ const PointRadiusLatLonDms = (props: any) => {
       <DmsLatitude
         label="Latitude"
         value={dmsLat}
-        onChange={(value: any) => validateDms('dmsLat', value)}
+        onChange={(value: any) => clampDms('dmsLat', value)}
       >
         <DirectionInput
           // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
@@ -159,7 +159,7 @@ const PointRadiusLatLonDms = (props: any) => {
       <DmsLongitude
         label="Longitude"
         value={dmsLon}
-        onChange={(value: any) => validateDms('dmsLon', value)}
+        onChange={(value: any) => clampDms('dmsLon', value)}
       >
         <DirectionInput
           // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
