@@ -262,10 +262,10 @@ const PointRadiusUtmUps = (props: any) => {
         hemisphere: utmUpsHemisphere,
       }
       const utmUpsValidationResult = [
-        validateGeo('utmUpsEasting', utmUps),
-        validateGeo('utmUpsNorthing', utmUps),
-        validateGeo('utmUpsZone', utmUps),
-        validateGeo('utmUpsHemisphere', utmUps),
+        validateGeo('easting', utmUps),
+        validateGeo('northing', utmUps),
+        validateGeo('zoneNumber', utmUps),
+        validateGeo('hemisphere', utmUps),
       ].find((validation) => validation?.error)
       // @ts-expect-error ts-migrate(2339) FIXME: Property 'error' does not exist on type '{ error: ... Remove this comment to see the full error message
       setUtmError(utmUpsValidationResult || initialErrorStateWithDefault)
