@@ -6,6 +6,7 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.head.repo.full_name == 'codice/ddf-ui' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
