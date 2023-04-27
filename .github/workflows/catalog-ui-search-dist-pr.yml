@@ -10,6 +10,7 @@ jobs:
       - name: Print GitHub event payload
         env:
           GITHUB_EVENT: ${{ toJson(github.event) }}
+        run: echo "$GITHUB_EVENT"
 
       - name: Checkout code
         uses: actions/checkout@v2
