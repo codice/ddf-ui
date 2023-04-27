@@ -7,7 +7,7 @@ on:
 jobs:
   delete-branch:
     runs-on: ubuntu-latest
-    if: "! git config --get remote.$(git remote | grep -v '^origin$' | head -n1).url | grep -q 'github.com/$(echo $GITHUB_REPOSITORY | cut -d '/' -f 2-)'"
+    if: ${{ github.event.repository_fork == 'false' }} # Only run job if pull request comes from origin
     steps:
       - name: Set up Node.js
         uses: actions/setup-node@v2
