@@ -17,6 +17,7 @@ import _ from 'underscore'
 import properties from '../properties'
 import QueryResponse from './QueryResponse'
 import Sources from '../../component/singletons/sources-instance'
+import { postSimpleAuditLog } from '../../react-component/utils/audit/audit-endpoint'
 import cql from '../cql'
 import _merge from 'lodash/merge'
 import 'backbone-associations'
@@ -440,6 +441,13 @@ export default Backbone.AssociatedModel.extend({
       queryRef: this,
     })
     this.currentIndexForSourceGroup = this.nextIndexForSourceGroup
+
+    postSimpleAuditLog({
+      action: 'SEARCH_SUBMITTED',
+      component:
+        'query: [' + cqlString + '] sources: [' + selectedSources + ']',
+    })
+
     const localSearchToRun = {
       ...data,
       cql: cqlString,

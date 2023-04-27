@@ -11,6 +11,11 @@ export type AuditLog = {
   items: AuditItem[]
 }
 
+export type SimpleAuditLog = {
+  action: string
+  component: string
+}
+
 export const postAuditLog = async ({ action, component, items }: AuditLog) => {
   const body = {
     action,
@@ -18,6 +23,20 @@ export const postAuditLog = async ({ action, component, items }: AuditLog) => {
     items,
   }
   await fetch(`./internal/audit/`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  })
+}
+
+export const postSimpleAuditLog = async ({
+  action,
+  component,
+}: SimpleAuditLog) => {
+  const body = {
+    action,
+    component,
+  }
+  await fetch(`./internal/audit/simple`, {
     method: 'POST',
     body: JSON.stringify(body),
   })

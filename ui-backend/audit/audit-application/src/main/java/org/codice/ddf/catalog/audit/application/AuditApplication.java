@@ -33,10 +33,11 @@ public class AuditApplication extends HttpServlet {
 
   private final JavalinServlet javalinServlet = JavalinUtils.createServlet(LOOKUP_PATH);
 
-  public AuditApplication(Handler auditHandler) {
+  public AuditApplication(Handler auditHandler, Handler simpleAuditHandler) {
     final Javalin app = javalinServlet.getJavalin();
     JavalinUtils.initializeStandardExceptionHandlers(app);
     app.post("/", auditHandler);
+    app.post("/simple", simpleAuditHandler);
   }
 
   @Override
