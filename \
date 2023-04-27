@@ -1,9 +1,0 @@
-Update if
-# Please enter the commit message for your changes. Lines starting
-# with '#' will be ignored, and an empty message aborts the commit.
-#
-# On branch WorkflowsDist2
-# Changes to be committed:
-#	modified:   .github/workflows/catalog-ui-search-dist-pr-onclose.yml
-#	modified:   .github/workflows/catalog-ui-search-dist-pr.yml
-#
