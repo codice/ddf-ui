@@ -6,8 +6,10 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    if: ${{ github.event.repository_fork == 'false' }} # Only run job if pull request comes from origin
     steps:
+      - name: Debug
+        run: echo ${{ github.event.repository_fork }}
+
       - name: Checkout code
         uses: actions/checkout@v2
         with:
