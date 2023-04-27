@@ -44,6 +44,12 @@ type UtmUpsPoint = {
   hemisphere: 'NORTHERN' | 'SOUTHERN'
 }
 
+export type ValidationResult = {
+  error: boolean
+  message?: string
+  defaultValue?: any
+}
+
 function isUPS(input: string) {
   try {
     converter.deserializeUPS(input)

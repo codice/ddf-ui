@@ -31,6 +31,15 @@ import {
 import DirectionInput from '../../component/location-new/geo-components/direction'
 import { Direction } from '../../component/location-new/utils/dms-utils'
 
+const clearValidationResults = (errorListener?: any) => {
+  errorListener &&
+    errorListener({
+      bbox: undefined,
+      bboxUL: undefined,
+      bboxLR: undefined,
+    })
+}
+
 const BoundingBoxLatLonDd = (props: any) => {
   const { north, east, south, west, setState, errorListener } = props
   const [ddError, setDdError] = useState(initialErrorStateWithDefault)
@@ -51,8 +60,9 @@ const BoundingBoxLatLonDd = (props: any) => {
       )
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
       setDdError(validationResult || initialErrorStateWithDefault)
-      errorListener && errorListener([validationResult])
+      errorListener && errorListener({ bbox: validationResult })
     }
+    return () => clearValidationResults(errorListener)
   }, [props.east, props.west, props.south, props.north])
 
   function clampDd(key: any, value: any) {
@@ -157,8 +167,9 @@ const BoundingBoxLatLonDms = (props: any) => {
       )
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
       setDmsError(validationResult || initialErrorStateWithDefault)
-      errorListener && errorListener([validationResult])
+      errorListener && errorListener({ bbox: validationResult })
     }
+    return () => clearValidationResults(errorListener)
   }, [props.dmsWest, props.dmsSouth, props.dmsEast, props.dmsNorth])
 
   function clampDms(key: any, value: any) {
@@ -243,8 +254,9 @@ const BoundingBoxUsngMgrs = (props: any) => {
       ].find((validation) => validation?.error)
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
       setUsngError(validationResult || initialErrorState)
-      errorListener && errorListener([validationResult])
+      errorListener && errorListener({ bbox: validationResult })
     }
+    return () => clearValidationResults(errorListener)
   }, [props.usngbbUpperLeft, props.usngbbLowerRight])
 
   return (
@@ -319,8 +331,12 @@ const BoundingBoxUtmUps = (props: any) => {
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
       setLowerRightError(lowerRightValidationResult || initialErrorState)
       errorListener &&
-        errorListener([upperLeftValidationResult, lowerRightValidationResult])
+        errorListener({
+          bboxUL: upperLeftValidationResult,
+          bboxLR: lowerRightValidationResult,
+        })
     }
+    return () => clearValidationResults(errorListener)
   }, [
     props.utmUpsUpperLeftEasting,
     props.utmUpsUpperLeftNorthing,

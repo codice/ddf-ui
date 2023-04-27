@@ -267,7 +267,10 @@ function getGeometryErrors(filter: any): Set<string> {
 }
 function validateLinePolygon(mode: string, currentValue: string) {
   if (currentValue === undefined) {
-    return initialErrorState
+    return {
+      error: true,
+      message: `${mode === 'line' ? 'Line' : 'Polygon'} cannot be empty`,
+    }
   }
   try {
     const parsedCoords = JSON.parse(currentValue)
@@ -531,12 +534,30 @@ function validateUtmUps(key: string, value: any) {
   return error
 }
 function validateRadiusLineBuffer(key: string, value: any) {
+  const parsed = Number(value.value)
+  const buffer = Number.isNaN(parsed) ? 0 : parsed
+  const bufferMeters = DistanceUtils.getDistanceInMeters(buffer, value.units)
+  if (key === 'lineWidth' && bufferMeters < 75) {
+    const minDistance = DistanceUtils.getDistanceFromMeters(75, value.units)
+    const minDistanceDisplay = Number.isInteger(minDistance)
+      ? minDistance.toString()
+      : // Add 0.01 to account for decimal places beyond hundredths. For example, if
+        // the selected unit is feet, then the required value is 246.063, and if we only
+        // showed (246.063).toFixed(2), then the user would see 246.06, but if they typed
+        // that in, they would still be shown this error.
+        (minDistance + 0.01).toFixed(2)
+    return {
+      error: true,
+      message: `Line buffer must be at least ${minDistanceDisplay} ${value.units}`,
+    }
+  }
+
   const label = key === 'radius' ? 'Radius ' : 'Buffer width '
   if (value.value.toString().length === 0) {
     return initialErrorState
   }
-  const buffer = DistanceUtils.getDistanceInMeters(value.value, value.units)
-  if (key.includes('Width') && buffer < 1 && buffer !== 0) {
+
+  if (key.includes('Width') && bufferMeters < 1 && bufferMeters !== 0) {
     return {
       error: true,
       message:
@@ -546,7 +567,7 @@ function validateRadiusLineBuffer(key: string, value: any) {
         ' ' +
         value.units,
     }
-  } else if (key.includes('radius') && buffer < 1) {
+  } else if (key.includes('radius') && bufferMeters < 1) {
     return {
       error: true,
       message:

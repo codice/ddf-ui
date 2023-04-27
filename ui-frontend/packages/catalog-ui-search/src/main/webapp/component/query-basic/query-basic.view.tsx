@@ -42,6 +42,7 @@ import Chip from '@material-ui/core/Chip'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 import BooleanSearchBar from '../boolean-search-bar/boolean-search-bar'
+import { ValidationResult } from '../../react-component/location/validators'
 function isNested(filter: any) {
   let nested = false
   filter.filters.forEach((subfilter: any) => {
@@ -272,6 +273,9 @@ function getFilterTree(model: any): FilterBuilderClass {
 }
 type QueryBasicProps = {
   model: any
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
 }
 const constructFilterFromBasicFilter = ({
   basicFilter,
@@ -368,7 +372,7 @@ const useBasicFilterFromModel = ({ model }: QueryBasicProps) => {
   }, [model])
   return basicFilter
 }
-const QueryBasic = ({ model }: QueryBasicProps) => {
+const QueryBasic = ({ model, errorListener }: QueryBasicProps) => {
   const inputRef = React.useRef<HTMLDivElement>()
   const basicFilter = useBasicFilterFromModel({ model })
   const [typeAttributes] = React.useState(
@@ -498,6 +502,7 @@ const QueryBasic = ({ model }: QueryBasicProps) => {
                       constructFilterFromBasicFilter({ basicFilter })
                     )
                   }}
+                  errorListener={errorListener}
                 />
               </Grid>
             </Grid>

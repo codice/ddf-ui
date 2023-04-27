@@ -105,6 +105,14 @@ function getPolygonValue(currentValue: any, value: any) {
   }
 }
 
+const clearValidationResults = (errorListener?: any) => {
+  errorListener &&
+    errorListener({
+      line: undefined,
+      buffer: undefined,
+    })
+}
+
 const LineLatLon = (props: any) => {
   const {
     label,
@@ -144,8 +152,12 @@ const LineLatLon = (props: any) => {
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
       setBufferError(bufferValidationResult || initialErrorState)
       errorListener &&
-        errorListener([lineValidationResult, bufferValidationResult])
+        errorListener({
+          line: lineValidationResult,
+          buffer: bufferValidationResult,
+        })
     }
+    return () => clearValidationResults(errorListener)
   }, [
     props.polygon,
     props.line,
@@ -221,7 +233,7 @@ const LineDms = (props: any) => {
     if (props.drawing) {
       setBaseLineError(initialErrorState)
       setBufferError(initialErrorState)
-    } else if (dmsPointArray) {
+    } else {
       const lineValidationResult = validateDmsLineOrPoly(
         dmsPointArray,
         geometryKey
@@ -235,8 +247,12 @@ const LineDms = (props: any) => {
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
       setBufferError(bufferValidationResult || initialErrorState)
       errorListener &&
-        errorListener([lineValidationResult, bufferValidationResult])
+        errorListener({
+          line: lineValidationResult,
+          buffer: bufferValidationResult,
+        })
     }
+    return () => clearValidationResults(errorListener)
   }, [
     props.polygon,
     props.line,
@@ -331,7 +347,7 @@ const LineMgrs = (props: any) => {
     if (props.drawing) {
       setBaseLineError(initialErrorState)
       setBufferError(initialErrorState)
-    } else if (usngPointArray) {
+    } else {
       const lineValidationResult = validateUsngLineOrPoly(
         usngPointArray,
         geometryKey
@@ -345,8 +361,12 @@ const LineMgrs = (props: any) => {
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
       setBufferError(bufferValidationResult || initialErrorState)
       errorListener &&
-        errorListener([lineValidationResult, bufferValidationResult])
+        errorListener({
+          line: lineValidationResult,
+          buffer: bufferValidationResult,
+        })
     }
+    return () => clearValidationResults(errorListener)
   }, [
     props.polygon,
     props.line,
@@ -442,7 +462,7 @@ const LineUtmUps = (props: any) => {
     if (props.drawing) {
       setBaseLineError(initialErrorState)
       setBufferError(initialErrorState)
-    } else if (utmUpsPointArray) {
+    } else {
       const lineValidationResult = validateUtmUpsLineOrPoly(
         utmUpsPointArray,
         geometryKey
@@ -456,8 +476,12 @@ const LineUtmUps = (props: any) => {
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
       setBufferError(bufferValidationResult || initialErrorState)
       errorListener &&
-        errorListener([lineValidationResult, bufferValidationResult])
+        errorListener({
+          line: lineValidationResult,
+          buffer: bufferValidationResult,
+        })
     }
+    return () => clearValidationResults(errorListener)
   }, [
     props.polygon,
     props.line,

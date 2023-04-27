@@ -29,6 +29,14 @@ import {
 import DirectionInput from '../../component/location-new/geo-components/direction'
 import { Direction } from '../../component/location-new/utils/dms-utils'
 
+const clearValidationResults = (errorListener?: any) => {
+  errorListener &&
+    errorListener({
+      point: undefined,
+      radius: undefined,
+    })
+}
+
 const PointRadiusLatLonDd = (props: any) => {
   const { lat, lon, radius, radiusUnits, setState, errorListener } = props
   const [ddError, setDdError] = useState(initialErrorStateWithDefault)
@@ -52,8 +60,12 @@ const PointRadiusLatLonDd = (props: any) => {
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
       setRadiusError(radiusValidationResult || initialErrorState)
       errorListener &&
-        errorListener([ddValidationResult, radiusValidationResult])
+        errorListener({
+          point: ddValidationResult,
+          radius: radiusValidationResult,
+        })
     }
+    return () => clearValidationResults(errorListener)
   }, [props.lat, props.lon, props.radius, props.radiusUnits])
 
   function clampDd(key: any, value: any) {
@@ -132,8 +144,12 @@ const PointRadiusLatLonDms = (props: any) => {
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
       setRadiusError(radiusValidationResult || initialErrorState)
       errorListener &&
-        errorListener([dmsValidationResult, radiusValidationResult])
+        errorListener({
+          point: dmsValidationResult,
+          radius: radiusValidationResult,
+        })
     }
+    return () => clearValidationResults(errorListener)
   }, [props.dmsLat, props.dmsLon, props.radius, props.radiusUnits])
 
   function clampDms(key: any, value: any) {
@@ -206,8 +222,12 @@ const PointRadiusUsngMgrs = (props: any) => {
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
       setRadiusError(radiusValidationResult || initialErrorState)
       errorListener &&
-        errorListener([usngValidationResult, radiusValidationResult])
+        errorListener({
+          point: usngValidationResult,
+          radius: radiusValidationResult,
+        })
     }
+    return () => clearValidationResults(errorListener)
   }, [props.usng, props.radius, props.radiusUnits])
 
   return (
@@ -276,8 +296,12 @@ const PointRadiusUtmUps = (props: any) => {
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
       setRadiusError(radiusValidationResult || initialErrorState)
       errorListener &&
-        errorListener([utmUpsValidationResult, radiusValidationResult])
+        errorListener({
+          point: utmUpsValidationResult,
+          radius: radiusValidationResult,
+        })
     }
+    return () => clearValidationResults(errorListener)
   }, [
     props.utmUpsEasting,
     props.utmUpsNorthing,

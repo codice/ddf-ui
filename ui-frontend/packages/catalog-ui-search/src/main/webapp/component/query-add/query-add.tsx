@@ -18,6 +18,7 @@ import QueryBasic from '../../component/query-basic/query-basic.view'
 
 import QueryAdvanced from '../../component/query-advanced/query-advanced'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
+import { ValidationResult } from '../../react-component/location/validators'
 export const queryForms = [
   { id: 'basic', title: 'Basic Search', view: QueryBasic },
   {
@@ -29,9 +30,12 @@ export const queryForms = [
 
 type QueryAddReactType = {
   model: any
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
 }
 
-export const QueryAddReact = ({ model }: QueryAddReactType) => {
+export const QueryAddReact = ({ model, errorListener }: QueryAddReactType) => {
   const [, setForceRender] = React.useState(Math.random())
   useListenTo(model, 'resetToDefaults change:type', () => {
     setForceRender(Math.random())
@@ -52,7 +56,13 @@ export const QueryAddReact = ({ model }: QueryAddReactType) => {
       >
         {(() => {
           if (form.id === 'basic') {
-            return <QueryBasic model={model} key={model.id} />
+            return (
+              <QueryBasic
+                model={model}
+                key={model.id}
+                errorListener={errorListener}
+              />
+            )
           } else {
             return <QueryAdvanced model={model} key={model.id} />
           }
