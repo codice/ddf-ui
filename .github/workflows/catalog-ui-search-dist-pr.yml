@@ -8,13 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.head.repo.full_name == 'codice/ddf-ui' }}
     steps:
-      - name: Print GitHub event payload
-        env:
-          GITHUB_EVENT: ${{ toJson(github.event) }}
-        run: |
-          echo "$GITHUB_EVENT"
-          echo "${{github.event.pull_request.head.repo.for}}""
-
       - name: Checkout code
         uses: actions/checkout@v2
         with:
