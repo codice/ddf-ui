@@ -1,0 +1,1 @@
+{"version":3,"file":"network.proxy.js","sourceRoot":"","sources":["../../../../../../src/main/webapp/js/extensions/network.proxy.tsx"],"names":[],"mappings":"AAAA;;;;GAIG;AACH,OAAO,EAAE,WAAW,EAAE,MAAM,gBAAgB,CAAA;AAC5C,OAAO,KAAK,QAAQ,MAAM,UAAU,CAAA;AAEpC,IAAI,WAAW,CAAC,MAAM,EAAE,EAAE;IACxB,mJAAmJ;IACnJ,QAAQ,CAAC,KAAK,CAAC,SAAS,CAAC,KAAK,GAAG;QAC/B,iBAAiB;IACnB,CAAC,CAAA;CACF"}
