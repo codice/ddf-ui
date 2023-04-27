@@ -53,6 +53,7 @@ const validateDate = (
 
 export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
   const valueRef = useRef(value)
+  const blueprintDateRef = useRef<DateInput>(null)
 
   useTimePrefs(() => {
     const shiftedDate = DateHelpers.Blueprint.DateProps.generateValue(
@@ -69,6 +70,7 @@ export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
   return (
     <>
       <DateInput
+        ref={blueprintDateRef}
         className={MuiOutlinedInputBorderClasses}
         minDate={DefaultMinDate}
         maxDate={DefaultMaxDate}
@@ -94,6 +96,11 @@ export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
           modifiers: {
             preventOverflow: { enabled: false },
             hide: { enabled: false },
+          },
+          onClose: () => {
+            setTimeout(() => {
+              blueprintDateRef.current?.setState({ isOpen: false })
+            }, 0)
           },
         }}
         {...(value
