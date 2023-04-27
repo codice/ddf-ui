@@ -6,7 +6,7 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.head.repo.full_name == 'codice/ddf-ui }}
+    if: ${{ github.event.pull_request.head.repo.full_name == 'codice/ddf-ui' }}
     steps:
       - name: Print GitHub event payload
         env:
