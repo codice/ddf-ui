@@ -7,12 +7,8 @@ on:
 jobs:
   delete-branch:
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.head.repo.fork == 'false' }} # Only run job if pull request comes from origin
     steps:
-      - name: Print GitHub event payload
-        env:
-          GITHUB_EVENT: ${{ toJson(github.event) }}
-        run: echo "$GITHUB_EVENT"
-
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
