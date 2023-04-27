@@ -64,7 +64,13 @@ export const QueryAddReact = ({ model, errorListener }: QueryAddReactType) => {
               />
             )
           } else {
-            return <QueryAdvanced model={model} key={model.id} />
+            return (
+              <QueryAdvanced
+                model={model}
+                key={model.id}
+                errorListener={errorListener}
+              />
+            )
           }
         })()}
       </form>

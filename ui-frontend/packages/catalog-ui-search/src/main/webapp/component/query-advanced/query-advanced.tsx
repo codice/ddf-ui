@@ -17,11 +17,15 @@ import QuerySettings from '../query-settings/query-settings'
 import { FilterBuilderRoot } from '../filter-builder/filter-builder'
 import { hot } from 'react-hot-loader'
 import Swath from '../swath/swath'
+import { ValidationResult } from '../../react-component/location/validators'
 type Props = {
   model: any
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
 }
 
-export const QueryAdvanced = ({ model }: Props) => {
+export const QueryAdvanced = ({ model, errorListener }: Props) => {
   return (
     <div className="w-full h-full">
       <div
@@ -29,7 +33,7 @@ export const QueryAdvanced = ({ model }: Props) => {
         className="w-full h-full px-2 pt-2 overflow-auto"
       >
         <div className="query-advanced w-full">
-          <FilterBuilderRoot model={model} />
+          <FilterBuilderRoot model={model} errorListener={errorListener} />
         </div>
         <div className="py-5 w-full">
           <Swath className="w-full h-1" />
