@@ -21,6 +21,9 @@ const converter = new usngs.Converter()
 const NORTHING_OFFSET = 10000000
 const LATITUDE = 'latitude'
 const LONGITUDE = 'longitude'
+// 75 meters was determined to be a reasonable min for linestring searches based on testing against known
+// data sources
+export const LINE_BUFFER_MININUM_METERS = 75
 import DistanceUtils from '../../../js/DistanceUtils'
 import {
   parseDmsCoordinate,
@@ -537,8 +540,11 @@ function validateRadiusLineBuffer(key: string, value: any) {
   const parsed = Number(value.value)
   const buffer = Number.isNaN(parsed) ? 0 : parsed
   const bufferMeters = DistanceUtils.getDistanceInMeters(buffer, value.units)
-  if (key === 'lineWidth' && bufferMeters < 75) {
-    const minDistance = DistanceUtils.getDistanceFromMeters(75, value.units)
+  if (key === 'lineWidth' && bufferMeters < LINE_BUFFER_MININUM_METERS) {
+    const minDistance = DistanceUtils.getDistanceFromMeters(
+      LINE_BUFFER_MININUM_METERS,
+      value.units
+    )
     const minDistanceDisplay = Number.isInteger(minDistance)
       ? minDistance.toString()
       : // Add 0.01 to account for decimal places beyond hundredths. For example, if
