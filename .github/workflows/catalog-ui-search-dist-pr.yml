@@ -6,12 +6,12 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.base.repo.full_name == github.repository
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           path: "ddf-ui"
-          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
