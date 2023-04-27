@@ -7,8 +7,11 @@ on:
 jobs:
   delete-branch:
     runs-on: ubuntu-latest
-    if: ${{ github.event.repository.name == 'codice/ddf-ui' }} # Only run job if pull request comes from origin
     steps:
+      - name: Print GitHub event payload
+        env:
+          GITHUB_EVENT: ${{ toJson(github.event) }}
+
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
