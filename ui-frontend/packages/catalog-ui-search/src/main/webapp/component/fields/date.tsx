@@ -13,14 +13,22 @@
  *
  **/
 import * as React from 'react'
+import { useRef } from 'react'
 import { DateInput, IDateInputProps } from '@blueprintjs/datetime'
 
-import { DateHelpers, DefaultMaxDate, DefaultMinDate } from './date-helpers'
+import {
+  DateHelpers,
+  DefaultMaxDate,
+  DefaultMinDate,
+  ISO_8601_FORMAT_ZONED,
+} from './date-helpers'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
 import useTimePrefs from './useTimePrefs'
 
 import user from '../singletons/user-instance'
 import { EnterKeySubmitProps } from '../custom-events/enter-key-submit'
+
+import moment from 'moment-timezone'
 
 type DateFieldProps = {
   value: string
@@ -31,17 +39,31 @@ type DateFieldProps = {
   BPDateProps?: Partial<IDateInputProps>
 }
 
-const validateShape = ({ value, onChange }: DateFieldProps) => {
-  const dateValue = new Date(value)
-  if (dateValue.toString() === 'Invalid Date') {
-    onChange(new Date().toISOString())
+const validateDate = (
+  { value, onChange }: DateFieldProps,
+  valueRef: React.MutableRefObject<string>
+) => {
+  const date = moment(value, ISO_8601_FORMAT_ZONED)
+  if (!date.isValid()) {
+    const newDate = DateHelpers.General.withPrecision(new Date())
+    valueRef.current = newDate.toISOString()
+    onChange(newDate.toISOString())
   }
 }
 
 export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
-  useTimePrefs()
+  const valueRef = useRef(value)
+
+  useTimePrefs(() => {
+    const shiftedDate = DateHelpers.Blueprint.DateProps.generateValue(
+      valueRef.current
+    )
+    const unshiftedDate =
+      DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(shiftedDate)
+    onChange(unshiftedDate.toISOString())
+  })
   React.useEffect(() => {
-    validateShape({ onChange, value })
+    validateDate({ onChange, value }, valueRef)
   }, [])
 
   return (
@@ -53,11 +75,14 @@ export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
         closeOnSelection={false}
         fill
         formatDate={DateHelpers.Blueprint.commonProps.formatDate}
-        onChange={DateHelpers.Blueprint.DateProps.generateOnChange(onChange)}
+        onChange={DateHelpers.Blueprint.DateProps.generateOnChange((value) => {
+          valueRef.current = value
+          onChange(value)
+        })}
         parseDate={DateHelpers.Blueprint.commonProps.parseDate}
-        placeholder={'M/D/YYYY'}
+        placeholder={DateHelpers.General.getDateFormat()}
         shortcuts
-        timePrecision="millisecond"
+        timePrecision={DateHelpers.General.getTimePrecision()}
         outOfRangeMessage="Out of range"
         timePickerProps={{
           useAmPm: user.getAmPmDisplay(),

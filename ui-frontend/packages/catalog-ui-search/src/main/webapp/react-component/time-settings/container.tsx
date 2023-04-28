@@ -6,9 +6,12 @@ import withListenTo, { WithBackboneProps } from '../backbone-container'
 
 import TimeSettingsPresentation from './presentation'
 import { TimeZone, TimeFormat } from './types'
+import { TimePrecision } from '@blueprintjs/datetime'
 
 import momentTimezone from 'moment-timezone'
 import user from '../../component/singletons/user-instance'
+import Common from '../../js/Common'
+import { DateHelpers } from '../../component/fields/date-helpers'
 
 type UserPreferences = {
   get: (key: string) => any
@@ -21,6 +24,7 @@ type State = {
   timeZones: TimeZone[]
   timeZone: string
   timeFormat: string
+  timePrecision: TimePrecision
 }
 
 const getUserPreferences = (): UserPreferences => {
@@ -38,6 +42,8 @@ const savePreferences = (model: {}) => {
 
 const getCurrentDateTimeFormat = () =>
   getUserPreferences().get('dateTimeFormat').datetimefmt
+
+const getCurrentTimePrecision = DateHelpers.General.getTimePrecision
 
 const getCurrentTimeZone = () => getUserPreferences().get('timeZone')
 
@@ -80,7 +86,10 @@ class TimeSettingsContainer extends React.Component<WithBackboneProps, State> {
       currentTime: getCurrentTime(),
       timeZones: generateZoneObjects(),
       timeZone: getCurrentTimeZone(),
-      timeFormat: getCurrentDateTimeFormat(),
+      timeFormat:
+        Common.getDateTimeFormatsReverseMap()[getCurrentDateTimeFormat()]
+          .format,
+      timePrecision: getCurrentTimePrecision(),
     }
   }
 
@@ -106,9 +115,21 @@ class TimeSettingsContainer extends React.Component<WithBackboneProps, State> {
         savePreferences({ timeZone: timeZone.zoneName })
       }}
       handleTimeFormatUpdate={(timeFormat: TimeFormat) => {
-        savePreferences({ dateTimeFormat: timeFormat.value })
+        this.setState({ timeFormat: timeFormat.value })
+        const dateTimeFormat =
+          Common.getDateTimeFormats()[timeFormat.value][
+            this.state.timePrecision
+          ]
+        savePreferences({ dateTimeFormat })
       }}
       timeFormat={this.state.timeFormat}
+      handleTimePrecisionUpdate={(timePrecision: TimePrecision) => {
+        this.setState({ timePrecision })
+        const dateTimeFormat =
+          Common.getDateTimeFormats()[this.state.timeFormat][timePrecision]
+        savePreferences({ dateTimeFormat })
+      }}
+      timePrecision={this.state.timePrecision}
     />
   )
 }

@@ -15,33 +15,30 @@ package org.codice.ddf.catalog.audit.application;
 
 import io.javalin.Context;
 import io.javalin.Handler;
-import java.util.List;
 import org.apache.http.HttpStatus;
 import org.codice.ddf.catalog.audit.api.AuditException;
-import org.codice.ddf.catalog.audit.api.AuditItemBasic;
-import org.codice.ddf.catalog.audit.api.AuditItemRequestBasic;
+import org.codice.ddf.catalog.audit.api.AuditRequestBasic;
 import org.codice.ddf.catalog.audit.api.AuditService;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AuditHandler implements Handler {
+public class SimpleAuditHandler implements Handler {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AuditHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleAuditHandler.class);
 
   private final AuditService auditService;
 
-  public AuditHandler(AuditService auditService) {
+  public SimpleAuditHandler(AuditService auditService) {
     this.auditService = auditService;
   }
 
   @Override
-  public void handle(@NotNull Context context) throws AuditException {
-    AuditItemRequestBasic requestBasic = context.bodyAsClass(AuditItemRequestBasic.class);
+  public void handle(@NotNull Context context) {
+    AuditRequestBasic requestBasic = context.bodyAsClass(AuditRequestBasic.class);
 
     try {
-      List<AuditItemBasic> items = requestBasic.getItems();
-      auditService.log(requestBasic.getAction(), requestBasic.getComponent(), items);
+      auditService.log(requestBasic.getAction(), requestBasic.getComponent());
       context.status(HttpStatus.SC_OK);
     } catch (AuditException e) {
       LOGGER.error(

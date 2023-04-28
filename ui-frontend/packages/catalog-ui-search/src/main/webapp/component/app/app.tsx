@@ -850,6 +850,7 @@ const App = ({
             wrap="nowrap"
           >
             <Header />
+            <Extensions.extraHeader />
             <Grid item className="w-full h-full relative overflow-hidden">
               <AsyncTasksComponent />
               <Grid
@@ -863,6 +864,7 @@ const App = ({
                 <RouteContents />
               </Grid>
             </Grid>
+            <Extensions.extraFooter />
             <Footer />
           </Grid>
         </div>

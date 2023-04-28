@@ -25,9 +25,14 @@
         <argument ref="auditService"/>
     </bean>
 
+    <bean id="simpleAuditHandler" class="org.codice.ddf.catalog.audit.application.SimpleAuditHandler">
+        <argument ref="auditService"/>
+    </bean>
+
     <bean id="auditApplication"
           class="org.codice.ddf.catalog.audit.application.AuditApplication">
         <argument ref="auditHandler"/>
+        <argument ref="simpleAuditHandler"/>
     </bean>
 
     <service ref="auditApplication" interface="javax.servlet.Servlet">

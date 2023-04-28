@@ -20,7 +20,7 @@
   <name>DDF :: UI</name>
   <artifactId>catalog-ui</artifactId>
   <groupId>org.codice.ddf.search</groupId>
-  <version>5.0.39-SNAPSHOT</version>
+  <version>5.0.41-SNAPSHOT</version>
 
   <organization>
     <name>Codice Foundation</name>

@@ -13,16 +13,50 @@
  *
  **/
 import { expect } from 'chai'
-import { DateHelpers } from './date-helpers'
+import { DateHelpers, ISO_8601_FORMAT_ZONED } from './date-helpers'
 import user from '../singletons/user-instance'
+import Common from '../../js/Common'
+
 user.get('user').get('preferences').set('timeZone', 'America/St_Johns')
 const date = new Date()
 describe('verify that transforming to and from timezone is accurate (no loss)', () => {
   it(`shifts and unshifts without losing information ${date.toISOString()}`, () => {
-    const timeShiftedDated =
-      DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(date.toISOString())
+    const timeShiftedDate =
+      DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
+        date.toISOString(),
+        ISO_8601_FORMAT_ZONED
+      )
     const unshiftedDate =
-      DateHelpers.Blueprint.converters.TimeshiftedDateToISO(timeShiftedDated)
-    expect(date.toISOString(), 'Unexpected difference').to.equal(unshiftedDate)
+      DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(
+        timeShiftedDate
+      )
+    expect(date.toISOString(), 'Unexpected difference').to.equal(
+      unshiftedDate.toISOString()
+    )
+  })
+})
+describe('untimeshifting respects the time precision', () => {
+  it('milliseconds are 0 when time precision is seconds', () => {
+    user
+      .get('user')
+      .get('preferences')
+      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['second'])
+    const unshiftedDate =
+      DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(
+        new Date('2023-04-23T22:39:46.117Z')
+      )
+    expect(unshiftedDate.getUTCMilliseconds()).to.equal(0)
+  })
+  it('seconds and milliseconds are 0 when time precision is minutes', () => {
+    user
+      .get('user')
+      .get('preferences')
+      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['minute'])
+    const unshiftedDate =
+      DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(
+        new Date('2023-04-23T22:39:46.117Z')
+      )
+    expect(unshiftedDate.getUTCMilliseconds()).to.equal(0)
+    expect(unshiftedDate.getUTCSeconds()).to.equal(0)
   })
 })

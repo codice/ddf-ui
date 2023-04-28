@@ -8,8 +8,9 @@ import moment from 'moment'
 import { expect } from 'chai'
 
 import user from '../singletons/user-instance'
-import { DateHelpers } from './date-helpers'
+import { DateHelpers, ISO_8601_FORMAT_ZONED } from './date-helpers'
 import Common from '../../js/Common'
+import { TimePrecision } from '@blueprintjs/datetime'
 
 /**
  * Useful for seeing if updates are called correctly.
@@ -41,9 +42,22 @@ const data = {
     timezone: 'America/St_Johns',
     originalISO: '2021-01-15T06:53:54.316Z',
     originalDate: new Date('2021-01-15T06:53:54.316Z'),
-    userFormatISO: '2021-01-15T03:23:54.316-03:30',
-    userFormat24: '15 Jan 2021 03:23:54.316 -03:30',
-    userFormat12: '15 Jan 2021 03:23:54.316 am -03:30',
+    utcISOMinutes: '2021-01-15T06:53:00.000Z',
+    userFormatISO: {
+      millisecond: '2021-01-15T03:23:54.316-03:30',
+      second: '2021-01-15T03:23:54-03:30',
+      minute: '2021-01-15T03:23-03:30',
+    },
+    userFormat24: {
+      millisecond: '15 Jan 2021 03:23:54.316 -03:30',
+      second: '15 Jan 2021 03:23:54 -03:30',
+      minute: '15 Jan 2021 03:23 -03:30',
+    },
+    userFormat12: {
+      millisecond: '15 Jan 2021 03:23:54.316 am -03:30',
+      second: '15 Jan 2021 03:23:54 am -03:30',
+      minute: '15 Jan 2021 03:23 am -03:30',
+    },
   },
   date2: {
     timezone: 'America/St_Johns',
@@ -61,6 +75,7 @@ const data = {
     originalISO: '2021-04-15T05:53:54.316Z',
   },
 }
+let wrapper: Enzyme.ReactWrapper
 describe('verify date field works', () => {
   before(() => {
     user.get('user').get('preferences').set('timeZone', data.date1.timezone)
@@ -72,60 +87,78 @@ describe('verify date field works', () => {
     user
       .get('user')
       .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO'])
+      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
   })
   afterEach(() => {
+    // Must unmount to stop listening to the user prefs model (the useTimePrefs() hook)
+    // Has to be unmounted before we set any preferences so we don't trigger any onChange
+    // callbacks again.
+    wrapper.unmount()
     user
       .get('user')
       .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO'])
+      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
   })
-  it(`should render with user's pref format of ISO`, () => {
-    user
-      .get('user')
-      .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO'])
-    const wrapper = mount(
-      <DateField value={data.date1.originalISO} onChange={() => {}} />
-    )
-    expect(wrapper.render().find('input').val()).to.equal(
-      data.date1.userFormatISO
-    )
-  })
-  it(`should render with user's pref format of 12hr standard`, () => {
-    user
-      .get('user')
-      .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['12'])
-
-    const wrapper = mount(
-      <DateField value={data.date1.originalISO} onChange={() => {}} />
-    )
-    expect(wrapper.render().find('input').val()).to.equal(
-      data.date1.userFormat12
-    )
-  })
-  it(`should render with user's pref format of 24hr standard`, () => {
-    user
-      .get('user')
-      .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['24'])
-
-    const wrapper = mount(
-      <DateField value={data.date1.originalISO} onChange={() => {}} />
-    )
-    expect(wrapper.render().find('input').val()).to.equal(
-      data.date1.userFormat24
-    )
-  })
+  const verifyDateRender = (
+    format: string,
+    precision: TimePrecision,
+    expected: string
+  ) => {
+    return () => {
+      user
+        .get('user')
+        .get('preferences')
+        .set('dateTimeFormat', Common.getDateTimeFormats()[format][precision])
+      wrapper = mount(
+        <DateField value={data.date1.originalISO} onChange={() => {}} />
+      )
+      expect(wrapper.render().find('input').val()).to.equal(expected)
+    }
+  }
+  it(
+    'should render with ISO format and millisecond precision',
+    verifyDateRender('ISO', 'millisecond', data.date1.userFormatISO.millisecond)
+  )
+  it(
+    'should render with ISO format and second precision',
+    verifyDateRender('ISO', 'second', data.date1.userFormatISO.second)
+  )
+  it(
+    'should render with ISO format and minute precision',
+    verifyDateRender('ISO', 'minute', data.date1.userFormatISO.minute)
+  )
+  it(
+    'should render with 24hr format and millisecond precision',
+    verifyDateRender('24', 'millisecond', data.date1.userFormat24.millisecond)
+  )
+  it(
+    'should render with 24hr format and second precision',
+    verifyDateRender('24', 'second', data.date1.userFormat24.second)
+  )
+  it(
+    'should render with 24hr format and minute precision',
+    verifyDateRender('24', 'minute', data.date1.userFormat24.minute)
+  )
+  it(
+    'should render with 12hr format and millisecond precision',
+    verifyDateRender('12', 'millisecond', data.date1.userFormat12.millisecond)
+  )
+  it(
+    'should render with 12hr format and second precision',
+    verifyDateRender('12', 'second', data.date1.userFormat12.second)
+  )
+  it(
+    'should render with 12hr format and minute precision',
+    verifyDateRender('12', 'minute', data.date1.userFormat12.minute)
+  )
   it(`should parse with user's pref timezone`, () => {
     // gist is user enters a time in a diff time from their pref, on blur we adjust it to their preference
     user
       .get('user')
       .get('preferences')
-      .set('dateTimeFormat', Common.getDateTimeFormats()['24'])
+      .set('dateTimeFormat', Common.getDateTimeFormats()['24']['millisecond'])
 
-    const wrapper = mount(
+    wrapper = mount(
       <UncontrolledDateField startingValue={data.date1.originalISO} />
     )
     const input = wrapper.find('input').at(0)
@@ -135,7 +168,7 @@ describe('verify date field works', () => {
     expect(input.render().val()).to.equal(data.date2.parsedOutput)
   })
   it(`should generate appropriately shifted ISO strings on change (DST)`, () => {
-    const wrapper = mount(
+    wrapper = mount(
       <DateField
         value={new Date().toISOString()}
         onChange={(updatedValue) => {
@@ -145,14 +178,15 @@ describe('verify date field works', () => {
     )
     const dateFieldInstance = wrapper.children().get(0)
     dateFieldInstance.props.onChange(
-      DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
-        data.date4.originalISO
+      DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
+        data.date4.originalISO,
+        ISO_8601_FORMAT_ZONED
       ),
       true
     )
   })
   it(`should generate appropriately shifted ISO strings on change`, () => {
-    const wrapper = mount(
+    wrapper = mount(
       <DateField
         value={new Date().toISOString()}
         onChange={(updatedValue) => {
@@ -162,14 +196,15 @@ describe('verify date field works', () => {
     )
     const dateFieldInstance = wrapper.children().get(0)
     dateFieldInstance.props.onChange(
-      DateHelpers.Blueprint.converters.ISOToTimeshiftedDate(
-        data.date1.originalISO
+      DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
+        data.date1.originalISO,
+        ISO_8601_FORMAT_ZONED
       ),
       true
     )
   })
   it(`should not allow dates beyond max future`, () => {
-    const wrapper = mount(
+    wrapper = mount(
       <DateField
         value={new Date().toISOString()}
         onChange={(updatedValue) => {
@@ -183,7 +218,7 @@ describe('verify date field works', () => {
     })
   })
   it(`should allow dates up to max future`, () => {
-    const wrapper = mount(
+    wrapper = mount(
       <DateField
         value={new Date().toISOString()}
         onChange={(updatedValue) => {
@@ -195,5 +230,19 @@ describe('verify date field works', () => {
     input.simulate('change', {
       target: { value: data.date3.maxFuture },
     })
+  })
+  it('calls onChange with updated value when precision changes', () => {
+    wrapper = mount(
+      <DateField
+        value={data.date1.userFormatISO.millisecond}
+        onChange={(updatedValue) => {
+          expect(updatedValue).to.equal(data.date1.utcISOMinutes)
+        }}
+      />
+    )
+    user
+      .get('user')
+      .get('preferences')
+      .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['minute'])
   })
 })

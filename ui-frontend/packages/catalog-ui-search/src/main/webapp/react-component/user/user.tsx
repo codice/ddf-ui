@@ -25,6 +25,7 @@ import user from '../../component/singletons/user-instance'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
+import ExtensionPoints from '../../extension-points/extension-points'
 
 export const EnhancedRolesContext = React.createContext<{
   enhancedRoles: string[]
@@ -111,9 +112,10 @@ const UserComponent = () => {
           </div>
         </div>
         <RolesToggle />
+        <ExtensionPoints.userInformation />
       </div>
-      <DarkDivider className="my-2" />
-      <div className="text-right p-2">
+      <DarkDivider className="my-2 shrink-0" />
+      <div className="text-right p-2 shrink-0">
         {isGuest ? (
           <div />
         ) : (

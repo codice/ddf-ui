@@ -31,40 +31,53 @@ type DateAroundProps = {
   onChange: (val: ValueTypes['around']) => void
 }
 
-const defaultValue = {
-  date: new Date().toISOString(),
-  buffer: {
-    amount: '1',
-    unit: 'd',
-  },
-  direction: 'both',
-} as ValueTypes['around']
+const defaultValue = () => {
+  return {
+    date: new Date().toISOString(),
+    buffer: {
+      amount: '1',
+      unit: 'd',
+    },
+    direction: 'both',
+  } as ValueTypes['around']
+}
 
-const validateShape = ({ value, onChange }: DateAroundProps) => {
+const validateDate = (
+  { value, onChange }: DateAroundProps,
+  dateRef: React.MutableRefObject<string>
+) => {
   if (
     !value.date ||
     !value.buffer ||
     !value.direction ||
     DateHelpers.Blueprint.commonProps.parseDate(value.date) === null
   ) {
-    onChange(defaultValue)
+    const newDate = DateHelpers.General.withPrecision(new Date())
+    dateRef.current = newDate.toISOString()
+    onChange({ ...defaultValue(), date: newDate.toISOString() })
   }
 }
 
 export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
-  const [date, setDate] = React.useState(new Date().toISOString())
+  const dateRef = React.useRef(value.date)
 
-  useTimePrefs()
-  React.useEffect(() => {
-    validateShape({ onChange, value })
-  }, [])
-  React.useEffect(() => {
+  useTimePrefs(() => {
+    const shiftedDate = DateHelpers.Blueprint.DateProps.generateValue(
+      dateRef.current
+    )
+    const unshiftedDate =
+      DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(shiftedDate)
+    dateRef.current = unshiftedDate.toISOString()
     onChange({
-      ...defaultValue,
+      ...defaultValue(),
       ...value,
-      date: date,
+      date: unshiftedDate.toISOString(),
     })
-  }, [date])
+  })
+
+  React.useEffect(() => {
+    validateDate({ onChange, value }, dateRef)
+  }, [])
 
   return (
     <Grid container alignItems="stretch" direction="column" wrap="nowrap">
@@ -79,11 +92,18 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
           closeOnSelection={false}
           fill
           formatDate={DateHelpers.Blueprint.commonProps.formatDate}
-          onChange={DateHelpers.Blueprint.DateProps.generateOnChange(setDate)}
+          onChange={DateHelpers.Blueprint.DateProps.generateOnChange((date) => {
+            dateRef.current = date
+            onChange({
+              ...defaultValue(),
+              ...value,
+              date,
+            })
+          })}
           parseDate={DateHelpers.Blueprint.commonProps.parseDate}
-          placeholder={'M/D/YYYY'}
+          placeholder={DateHelpers.General.getDateFormat()}
           shortcuts
-          timePrecision="millisecond"
+          timePrecision={DateHelpers.General.getTimePrecision()}
           inputProps={{
             ...EnterKeySubmitProps,
           }}
@@ -106,10 +126,10 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
             onChange={(val) => {
               if (onChange)
                 onChange({
-                  ...defaultValue,
+                  ...defaultValue(),
                   ...value,
                   buffer: {
-                    ...defaultValue.buffer,
+                    ...defaultValue().buffer,
                     ...value.buffer,
                     amount: val,
                   },
@@ -130,10 +150,10 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
             onChange={(e) => {
               if (onChange)
                 onChange({
-                  ...defaultValue,
+                  ...defaultValue(),
                   ...value,
                   buffer: {
-                    ...defaultValue.buffer,
+                    ...defaultValue().buffer,
                     ...value.buffer,
                     unit: e.target
                       .value as ValueTypes['around']['buffer']['unit'],
@@ -164,7 +184,7 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
         onChange={(e) => {
           if (onChange)
             onChange({
-              ...defaultValue,
+              ...defaultValue(),
               ...value,
               direction: e.target.value as ValueTypes['around']['direction'],
             })

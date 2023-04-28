@@ -142,7 +142,7 @@ const Theme = Backbone.Model.extend({
       oauth: [],
       fontSize: 16,
       resultCount: (properties as any).resultCount,
-      dateTimeFormat: Common.getDateTimeFormats()['ISO'],
+      dateTimeFormat: Common.getDateTimeFormats()['ISO']['millisecond'],
       timeZone: Common.getTimeZones()['UTC'],
       coordinateFormat: 'degrees',
       autoPan: true,
@@ -419,10 +419,10 @@ const Theme = Backbone.Model.extend({
       )
   },
   getAmPmDisplay() {
-    return (
-      this.get('user').get('preferences').get('dateTimeFormat')['timefmt'] ===
-      Common.getDateTimeFormats()[12].timefmt
-    )
+    const timefmt = this.get('user').get('preferences').get('dateTimeFormat')[
+      'timefmt'
+    ]
+    return Common.getTimeFormatsReverseMap()[timefmt].format === '12'
   },
   getDateTimeFormat() {
     return this.get('user').get('preferences').get('dateTimeFormat')[

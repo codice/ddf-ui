@@ -31,7 +31,7 @@ const TimeZoneSelector = (props: Props) => {
           setCurrentTimeZone(newTimeZone)
         }}
         isOptionEqualToValue={(oldZone: TimeZone, newZone: TimeZone) => {
-          return oldZone.zoneName !== newZone.zoneName
+          return oldZone.zoneName === newZone.zoneName
         }}
         options={props.timeZones}
         getOptionLabel={(zone) =>
@@ -44,7 +44,7 @@ const TimeZoneSelector = (props: Props) => {
         value={currentTimeZone}
       />
     </div>
-  );
+  )
 }
 
 export default hot(module)(TimeZoneSelector)
