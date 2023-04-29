@@ -369,8 +369,8 @@ export const OpenSearch = ({
           if (highlightedElementString) {
             setCurrentHighlight(
               (
-                document.querySelector(
-                  `#${highlightedElementString}`
+                document.getElementById(
+                  `${highlightedElementString}`
                 ) as HTMLLIElement
               ).querySelector('div') as OverflowTooltipHTMLElement
             )

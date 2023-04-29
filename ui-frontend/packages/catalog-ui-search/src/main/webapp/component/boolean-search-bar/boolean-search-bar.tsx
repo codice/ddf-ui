@@ -166,7 +166,7 @@ const BooleanSearchBar = ({
   }
   // Used to determine what we can go for next in context the the previous.
   const filterOptions = React.useCallback(
-    (optionsToFilter) => {
+    (optionsToFilter: any) => {
       const lastToken = tokens[tokens.length - 1]
       if (lastToken === undefined) {
         return []

@@ -6,7 +6,7 @@ import Button, { ButtonProps } from '@mui/material/Button'
  * Otherwise everything else is the same.
  */
 export const HoverButton = (
-  props: ButtonProps & {
+  props: Omit<ButtonProps, 'children'> & {
     children: ({ hover }: { hover: boolean }) => JSX.Element
   }
 ) => {

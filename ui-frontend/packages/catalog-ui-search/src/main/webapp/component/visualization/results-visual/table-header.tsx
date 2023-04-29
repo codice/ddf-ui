@@ -188,7 +188,7 @@ export const Header = ({
   }
 
   const mouseMove = React.useCallback(
-    (e) => {
+    (e: any) => {
       const columnsWidth = new Map<string, string>([...headerColWidth])
 
       if (headerColWidth.size === 0) {

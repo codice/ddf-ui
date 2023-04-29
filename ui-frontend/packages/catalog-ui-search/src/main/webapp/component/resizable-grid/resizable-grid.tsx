@@ -7,12 +7,10 @@ import wreqr from '../../js/wreqr'
 export const DEFAULT_AUTO_COLLAPSE_LENGTH = 300
 export const DEFAULT_STARTING_LENGTH = 550
 export const DEFAULT_COLLAPSED_LENGTH = 75
-type ResizableGridType = React.ComponentType<
-  ResizableProps & {
-    component: any
-    item: any
-  }
->
+type ResizableGridType = React.ComponentType<React.PropsWithChildren<ResizableProps & {
+  component: any
+  item: any
+}>>
 const ResizableGrid = Grid as ResizableGridType
 export const [useResizableGridContext, UseResizableGridContextProvider] =
   createCtx<useResizableGridType>({

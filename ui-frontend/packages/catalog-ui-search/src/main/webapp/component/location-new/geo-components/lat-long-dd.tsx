@@ -138,7 +138,6 @@ const Line = (props: any) => {
 
   return (
     <ListEditor
-      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       list={dd.line.list}
       defaultItem={ddPoint}
       onChange={setState(
@@ -187,7 +186,6 @@ const Polygon = (props: any) => {
 
   return (
     <ListEditor
-      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       list={dd.polygon.list}
       defaultItem={ddPoint}
       onChange={setState(

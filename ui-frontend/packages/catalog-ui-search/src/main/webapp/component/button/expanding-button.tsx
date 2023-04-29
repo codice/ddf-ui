@@ -9,7 +9,7 @@ import { Elevations } from '../theme/theme'
 import { useIsTruncated } from '../overflow-tooltip/overflow-tooltip'
 
 export type BaseProps = {
-  Icon?: React.FC<any>
+  Icon?: React.FC<React.PropsWithChildren<any>>
   expandedLabel: React.ReactNode
   unexpandedLabel: React.ReactNode
   dataId?: string

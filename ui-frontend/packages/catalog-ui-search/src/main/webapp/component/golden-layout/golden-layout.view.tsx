@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-import * as ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import _ from 'underscore'
 import _merge from 'lodash/merge'
 import _debounce from 'lodash/debounce'
@@ -196,16 +196,16 @@ function registerComponent(
     (container: any, componentState: any) => {
       container.on('open', () => {
         setTimeout(() => {
-          ReactDOM.render(
+          const root = createRoot(container.getElement()[0])
+          root.render(
             <GoldenLayoutComponent
               options={options}
               ComponentView={ComponentView}
               container={container}
-            />,
-            container.getElement()[0]
+            />
           )
           container.on('destroy', () => {
-            ReactDOM.unmountComponentAtNode(container.getElement()[0])
+            root.unmount()
           })
         }, 0)
       })
@@ -223,7 +223,8 @@ function registerComponent(
         tab.element.append(root)
         let intervalId = setInterval(() => {
           try {
-            ReactDOM.render(
+            const renderRoot = createRoot(tab.element[0])
+            renderRoot.render(
               <GoldenLayoutComponentHeader
                 viz={viz}
                 tab={tab}
@@ -231,8 +232,7 @@ function registerComponent(
                 componentState={componentState}
                 container={container}
                 name={name}
-              />,
-              tab.element[0]
+              />
             )
             clearInterval(intervalId)
           } catch (err) {}
@@ -393,10 +393,8 @@ function handleGoldenLayoutStateChange({
 function handleGoldenLayoutStackCreated(stack: any) {
   let intervalId = setInterval(() => {
     try {
-      ReactDOM.render(
-        <GoldenLayoutToolbar stack={stack} />,
-        stack.header.controlsContainer[0]
-      )
+      const renderRoot = createRoot(stack.header.controlsContainer[0])
+      renderRoot.render(<GoldenLayoutToolbar stack={stack} />)
       clearInterval(intervalId)
     } catch (err) {}
   }, 100)

@@ -76,7 +76,6 @@ const Line = (props: any) => {
 
   return (
     <ListEditor
-      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       list={usng.line.list}
       defaultItem=""
       onChange={setState(
@@ -102,7 +101,6 @@ const Polygon = (props: any) => {
 
   return (
     <ListEditor
-      // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
       list={usng.polygon.list}
       defaultItem=""
       onChange={setState(
