@@ -60,6 +60,7 @@ const validateDate = (
 
 export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
   const dateRef = React.useRef(value.date)
+  const blueprintDateRef = React.useRef<DateInput>(null)
 
   useTimePrefs(() => {
     const shiftedDate = DateHelpers.Blueprint.DateProps.generateValue(
@@ -83,6 +84,7 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
     <Grid container alignItems="stretch" direction="column" wrap="nowrap">
       <Grid item className="w-full pb-2">
         <DateInput
+          ref={blueprintDateRef}
           timePickerProps={{
             useAmPm: user.getAmPmDisplay(),
           }}
@@ -106,6 +108,17 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
           timePrecision={DateHelpers.General.getTimePrecision()}
           inputProps={{
             ...EnterKeySubmitProps,
+          }}
+          popoverProps={{
+            modifiers: {
+              preventOverflow: { enabled: false },
+              hide: { enabled: false },
+            },
+            onClose: () => {
+              setTimeout(() => {
+                blueprintDateRef.current?.setState({ isOpen: false })
+              }, 0)
+            },
           }}
           {...(value.date
             ? {
