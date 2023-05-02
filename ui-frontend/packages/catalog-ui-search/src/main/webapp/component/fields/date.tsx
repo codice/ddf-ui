@@ -54,7 +54,12 @@ const validateDate = (
   }
 }
 
-export const DateField = ({ value, onChange, BPDateProps, isNullable }: DateFieldProps) => {
+export const DateField = ({
+  value,
+  onChange,
+  BPDateProps,
+  isNullable,
+}: DateFieldProps) => {
   const valueRef = useRef(value)
   const blueprintDateRef = useRef<DateInput>(null)
 
