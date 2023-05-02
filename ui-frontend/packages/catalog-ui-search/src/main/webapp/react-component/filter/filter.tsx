@@ -25,16 +25,20 @@ import { hot } from 'react-hot-loader'
 import TextField from '@material-ui/core/TextField'
 import { FilterClass } from '../../component/filter-builder/filter.structure'
 import { getComparators } from './filter-comparator/comparatorUtils'
+import { ValidationResult } from '../location/validators'
 
 type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
 }
 
 export const FilterContext = React.createContext({
   limitedAttributeList: undefined as undefined | Attribute[],
 })
-const Filter = ({ filter, setFilter }: Props) => {
+const Filter = ({ filter, setFilter, errorListener }: Props) => {
   const { limitedAttributeList } = React.useContext(FilterContext)
   let attributeList = limitedAttributeList
   let groups = 1
@@ -90,7 +94,11 @@ const Filter = ({ filter, setFilter }: Props) => {
         <FilterComparator filter={filter} setFilter={setFilter} />
       </Grid>
       <Grid data-id="filter-input" item className="w-full">
-        <FilterInput filter={filter} setFilter={setFilter} />
+        <FilterInput
+          filter={filter}
+          setFilter={setFilter}
+          errorListener={errorListener}
+        />
       </Grid>
     </Grid>
   )

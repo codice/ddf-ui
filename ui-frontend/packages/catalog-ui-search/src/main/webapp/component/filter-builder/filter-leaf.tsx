@@ -6,13 +6,17 @@ import { HoverButton } from '../button/hover'
 import { FilterClass } from './filter.structure'
 import Filter from '../../react-component/filter/filter'
 import { Memo } from '../memo/memo'
+import { ValidationResult } from '../../react-component/location/validators'
 
 type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
 }
 
-const FilterLeaf = ({ filter, setFilter }: Props) => {
+const FilterLeaf = ({ filter, setFilter, errorListener }: Props) => {
   const [hover, setHover] = React.useState(false)
   const theme = useTheme()
   return (
@@ -77,7 +81,11 @@ const FilterLeaf = ({ filter, setFilter }: Props) => {
         }}
       >
         <Memo dependencies={[filter, setFilter]}>
-          <Filter filter={filter} setFilter={setFilter} />
+          <Filter
+            filter={filter}
+            setFilter={setFilter}
+            errorListener={errorListener}
+          />
         </Memo>
       </div>
     </div>

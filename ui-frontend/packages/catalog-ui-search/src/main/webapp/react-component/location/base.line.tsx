@@ -105,6 +105,14 @@ function getPolygonValue(currentValue: any, value: any) {
   }
 }
 
+const clearValidationResults = (errorListener?: any) => {
+  errorListener &&
+    errorListener({
+      line: undefined,
+      buffer: undefined,
+    })
+}
+
 const LineLatLon = (props: any) => {
   const {
     label,
@@ -115,6 +123,7 @@ const LineLatLon = (props: any) => {
     widthKey,
     mode,
     polyType,
+    errorListener,
   } = props
   const [currentValue, setCurrentValue] = useState(
     JSON.stringify(props[geometryKey])
@@ -124,15 +133,40 @@ const LineLatLon = (props: any) => {
 
   useEffect(() => {
     const { geometryKey } = props
-    setCurrentValue(
+    const newValue =
       typeof props[geometryKey] === 'string'
         ? props[geometryKey]
         : JSON.stringify(props[geometryKey])
-    )
+    setCurrentValue(newValue)
     if (props.drawing) {
       setBaseLineError(initialErrorState)
+      setBufferError(initialErrorState)
+    } else {
+      const lineValidationResult = validateGeo(mode || polyType, newValue)
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+      setBaseLineError(lineValidationResult || initialErrorState)
+      const bufferValidationResult = validateGeo(widthKey, {
+        value: props[widthKey],
+        units: props[unitKey],
+      })
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+      setBufferError(bufferValidationResult || initialErrorState)
+      errorListener &&
+        errorListener({
+          line: lineValidationResult,
+          buffer: bufferValidationResult,
+        })
     }
-  }, [props.polygon, props.line])
+    return () => clearValidationResults(errorListener)
+  }, [
+    props.polygon,
+    props.line,
+    props.lineWidth,
+    props.bufferWidth,
+    props.polygonBufferWidth,
+    props.lineUnits,
+    props.polygonBufferUnits,
+  ])
 
   return (
     <div>
@@ -154,10 +188,6 @@ const LineLatLon = (props: any) => {
               setState({ [geometryKey]: value })
             }
           }}
-          onBlur={() =>
-            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-            setBaseLineError(validateGeo(mode || polyType, currentValue))
-          }
         />
         <ErrorComponent errorState={baseLineError} />
         <Units
@@ -166,15 +196,6 @@ const LineLatLon = (props: any) => {
             typeof setBufferState === 'function'
               ? setBufferState(unitKey, value)
               : setState({ [unitKey]: value })
-            if (widthKey === 'lineWidth' || 'bufferWidth') {
-              setBufferError(
-                // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-                validateGeo(widthKey, {
-                  value: props[widthKey],
-                  units: value,
-                })
-              )
-            }
           }}
         >
           <TextField
@@ -186,15 +207,6 @@ const LineLatLon = (props: any) => {
               typeof setBufferState === 'function'
                 ? setBufferState(widthKey, value)
                 : setState({ [widthKey]: value })
-            }}
-            onBlur={(e: any) => {
-              setBufferError(
-                // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-                validateGeo(widthKey, {
-                  value: e.target.value,
-                  units: props[unitKey],
-                })
-              )
             }}
           />
         </Units>
@@ -212,6 +224,7 @@ const LineDms = (props: any) => {
     unitKey,
     setBufferState,
     widthKey,
+    errorListener,
   } = props
   const [baseLineError, setBaseLineError] = useState(initialErrorState)
   const [bufferError, setBufferError] = useState(initialErrorState)
@@ -219,12 +232,37 @@ const LineDms = (props: any) => {
   useEffect(() => {
     if (props.drawing) {
       setBaseLineError(initialErrorState)
-    }
-    if (dmsPointArray) {
+      setBufferError(initialErrorState)
+    } else {
+      const lineValidationResult = validateDmsLineOrPoly(
+        dmsPointArray,
+        geometryKey
+      )
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-      setBaseLineError(validateDmsLineOrPoly(dmsPointArray, geometryKey))
+      setBaseLineError(lineValidationResult || initialErrorState)
+      const bufferValidationResult = validateGeo(widthKey, {
+        value: props[widthKey],
+        units: props[unitKey],
+      })
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+      setBufferError(bufferValidationResult || initialErrorState)
+      errorListener &&
+        errorListener({
+          line: lineValidationResult,
+          buffer: bufferValidationResult,
+        })
     }
-  }, [props.polygon, props.line, dmsPointArray])
+    return () => clearValidationResults(errorListener)
+  }, [
+    props.polygon,
+    props.line,
+    dmsPointArray,
+    props.lineWidth,
+    props.bufferWidth,
+    props.polygonBufferWidth,
+    props.lineUnits,
+    props.polygonBufferUnits,
+  ])
 
   return (
     <div>
@@ -273,15 +311,6 @@ const LineDms = (props: any) => {
           typeof setBufferState === 'function'
             ? setBufferState(unitKey, value)
             : setState({ [unitKey]: value })
-          if (widthKey === 'lineWidth' || 'bufferWidth') {
-            setBufferError(
-              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-              validateGeo(widthKey, {
-                value: props[widthKey],
-                units: value,
-              })
-            )
-          }
         }}
       >
         <TextField
@@ -293,15 +322,6 @@ const LineDms = (props: any) => {
             typeof setBufferState === 'function'
               ? setBufferState(widthKey, value)
               : setState({ [widthKey]: value })
-          }}
-          onBlur={(e: any) => {
-            setBufferError(
-              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-              validateGeo(widthKey, {
-                value: e.target.value,
-                units: props[unitKey],
-              })
-            )
           }}
         />
       </Units>
@@ -318,6 +338,7 @@ const LineMgrs = (props: any) => {
     unitKey,
     setBufferState,
     widthKey,
+    errorListener,
   } = props
   const [baseLineError, setBaseLineError] = useState(initialErrorState)
   const [bufferError, setBufferError] = useState(initialErrorState)
@@ -325,12 +346,37 @@ const LineMgrs = (props: any) => {
   useEffect(() => {
     if (props.drawing) {
       setBaseLineError(initialErrorState)
-    }
-    if (usngPointArray) {
+      setBufferError(initialErrorState)
+    } else {
+      const lineValidationResult = validateUsngLineOrPoly(
+        usngPointArray,
+        geometryKey
+      )
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-      setBaseLineError(validateUsngLineOrPoly(usngPointArray, geometryKey))
+      setBaseLineError(lineValidationResult || initialErrorState)
+      const bufferValidationResult = validateGeo(widthKey, {
+        value: props[widthKey],
+        units: props[unitKey],
+      })
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+      setBufferError(bufferValidationResult || initialErrorState)
+      errorListener &&
+        errorListener({
+          line: lineValidationResult,
+          buffer: bufferValidationResult,
+        })
     }
-  }, [props.polygon, props.line, usngPointArray])
+    return () => clearValidationResults(errorListener)
+  }, [
+    props.polygon,
+    props.line,
+    usngPointArray,
+    props.lineWidth,
+    props.bufferWidth,
+    props.polygonBufferWidth,
+    props.lineUnits,
+    props.polygonBufferUnits,
+  ])
 
   return (
     <div>
@@ -379,15 +425,6 @@ const LineMgrs = (props: any) => {
             typeof setBufferState === 'function'
               ? setBufferState(unitKey, value)
               : setState({ [unitKey]: value })
-            if (widthKey === 'lineWidth' || 'bufferWidth') {
-              setBufferError(
-                // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-                validateGeo(widthKey, {
-                  value: props[widthKey],
-                  units: value,
-                })
-              )
-            }
           }}
         >
           <TextField
@@ -399,15 +436,6 @@ const LineMgrs = (props: any) => {
               typeof setBufferState === 'function'
                 ? setBufferState(widthKey, value)
                 : setState({ [widthKey]: value })
-            }}
-            onBlur={(e: any) => {
-              setBufferError(
-                // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-                validateGeo(widthKey, {
-                  value: e.target.value,
-                  units: props[unitKey],
-                })
-              )
             }}
           />
         </Units>
@@ -425,6 +453,7 @@ const LineUtmUps = (props: any) => {
     unitKey,
     setBufferState,
     widthKey,
+    errorListener,
   } = props
   const [baseLineError, setBaseLineError] = useState(initialErrorState)
   const [bufferError, setBufferError] = useState(initialErrorState)
@@ -432,12 +461,37 @@ const LineUtmUps = (props: any) => {
   useEffect(() => {
     if (props.drawing) {
       setBaseLineError(initialErrorState)
-    }
-    if (utmUpsPointArray) {
+      setBufferError(initialErrorState)
+    } else {
+      const lineValidationResult = validateUtmUpsLineOrPoly(
+        utmUpsPointArray,
+        geometryKey
+      )
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-      setBaseLineError(validateUtmUpsLineOrPoly(utmUpsPointArray, geometryKey))
+      setBaseLineError(lineValidationResult || initialErrorState)
+      const bufferValidationResult = validateGeo(widthKey, {
+        value: props[widthKey],
+        units: props[unitKey],
+      })
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
+      setBufferError(bufferValidationResult || initialErrorState)
+      errorListener &&
+        errorListener({
+          line: lineValidationResult,
+          buffer: bufferValidationResult,
+        })
     }
-  }, [props.polygon, props.line, utmUpsPointArray])
+    return () => clearValidationResults(errorListener)
+  }, [
+    props.polygon,
+    props.line,
+    utmUpsPointArray,
+    props.lineWidth,
+    props.bufferWidth,
+    props.polygonBufferWidth,
+    props.lineUnits,
+    props.polygonBufferUnits,
+  ])
 
   return (
     <div className="flex flex-col flex-nowrap space-y-2">
@@ -484,15 +538,6 @@ const LineUtmUps = (props: any) => {
           typeof setBufferState === 'function'
             ? setBufferState(unitKey, value)
             : setState({ [unitKey]: value })
-          if (widthKey === 'lineWidth' || 'bufferWidth') {
-            setBufferError(
-              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-              validateGeo(widthKey, {
-                value: props[widthKey],
-                units: value,
-              })
-            )
-          }
         }}
       >
         <TextField
@@ -504,15 +549,6 @@ const LineUtmUps = (props: any) => {
             typeof setBufferState === 'function'
               ? setBufferState(widthKey, value)
               : setState({ [widthKey]: value })
-          }}
-          onBlur={(e: any) => {
-            setBufferError(
-              // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: boolean; message: strin... Remove this comment to see the full error message
-              validateGeo(widthKey, {
-                value: e.target.value,
-                units: props[unitKey],
-              })
-            )
           }}
         />
       </Units>
