@@ -171,7 +171,7 @@ const useMetacardTabs = ({ result }: { result: LazyQueryResult }) => {
     possibleMetacardTabs,
     activeTab,
     setActiveTab,
-    TabContent: possibleMetacardTabs[activeTab] || (() => null),
+    TabContent: possibleMetacardTabs[activeTab]?.content || (() => null),
   }
 }
 
@@ -238,13 +238,16 @@ const Inspector = ({ selectionInterface }: InspectorType) => {
                 scrollButtons="auto"
                 variant="scrollable"
               >
-                {Object.keys(possibleMetacardTabs).map((tabName) => {
-                  return (
-                    <Tab key={tabName} value={tabName}>
-                      {tabName}
-                    </Tab>
-                  )
-                })}
+                {Object.entries(possibleMetacardTabs).map(
+                  ([tabName, tabDefinition]) => {
+                    return (
+                      <Tab key={tabName} value={tabName}>
+                        {tabDefinition.header?.({ result: currentResult }) ||
+                          tabName}
+                      </Tab>
+                    )
+                  }
+                )}
               </Tabs>
 
               <div className="h-full w-full shrink overflow-hidden">

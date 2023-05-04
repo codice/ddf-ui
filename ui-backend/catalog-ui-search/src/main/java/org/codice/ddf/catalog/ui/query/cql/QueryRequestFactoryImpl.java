@@ -41,7 +41,8 @@ public class QueryRequestFactoryImpl implements QueryRequestFactory {
       boolean isSpellcheck,
       boolean isPhonetics,
       @Nullable String cacheId,
-      @Nullable Set<String> facets)
+      @Nullable Set<String> facets,
+      boolean fromUI)
       throws CqlParseException {
 
     QueryRequestBuilder builder =
@@ -56,6 +57,8 @@ public class QueryRequestFactoryImpl implements QueryRequestFactory {
     }
 
     builder.setExcludeUnnecessaryAttributes(isExcludeUnnecessaryAttribute);
+
+    builder.setFromUI(fromUI);
 
     if (batchId != null) {
       builder.setBatchId(batchId);

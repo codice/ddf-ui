@@ -96,6 +96,10 @@ public interface CqlRequest {
 
   void setExcludeUnnecessaryAttributes(boolean excludeUnnecessaryAttributes);
 
+  boolean isFromUI();
+
+  void setFromUI(boolean fromUI);
+
   public static class Sort {
 
     private String attribute;

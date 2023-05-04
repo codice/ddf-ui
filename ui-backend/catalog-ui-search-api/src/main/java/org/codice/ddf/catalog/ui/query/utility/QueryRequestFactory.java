@@ -45,6 +45,7 @@ public interface QueryRequestFactory {
       boolean isSpellcheck,
       boolean isPhonetics,
       @Nullable String cacheId,
-      @Nullable Set<String> facets)
+      @Nullable Set<String> facets,
+      boolean fromUI)
       throws CqlParseException;
 }

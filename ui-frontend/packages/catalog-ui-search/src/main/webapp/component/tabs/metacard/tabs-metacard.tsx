@@ -26,9 +26,12 @@ export type TabContentProps = {
   selectionInterface?: any
 }
 
-type TabContentType =
-  | (({ result }: TabContentProps) => React.ReactNode | any)
-  | React.ComponentClass<TabContentProps, any>
+type TabDefinition = {
+  content:
+    | (({ result }: TabContentProps) => React.ReactNode | any)
+    | React.ComponentClass<TabContentProps, any>
+  header?: ({ result }: TabContentProps) => React.ReactNode
+}
 
 export const TabNames = {
   Details: 'Details',
@@ -40,18 +43,22 @@ export const TabNames = {
 }
 
 const Tabs = {
-  Details: Summary,
-  Preview: ({ result }) => {
-    return <MetacardPreviewReact result={result} />
+  Details: { content: Summary },
+  Preview: {
+    content: ({ result }) => {
+      return <MetacardPreviewReact result={result} />
+    },
   },
-  History: MetacardHistory,
-  Quality: MetacardQuality,
-  Actions: MetacardActions,
-  Overwrite: ({ result }) => {
-    return <MetacardOverwrite lazyResult={result} />
+  History: { content: MetacardHistory },
+  Quality: { content: MetacardQuality },
+  Actions: { content: MetacardActions },
+  Overwrite: {
+    content: ({ result }) => {
+      return <MetacardOverwrite lazyResult={result} />
+    },
   },
 } as {
-  [key: string]: TabContentType
+  [key: string]: TabDefinition
 }
 
 export default Tabs
