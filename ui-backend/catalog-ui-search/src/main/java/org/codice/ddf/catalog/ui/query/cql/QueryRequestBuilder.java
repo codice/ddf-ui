@@ -77,6 +77,8 @@ public class QueryRequestBuilder {
 
   private boolean excludeUnnecessaryAttributes = true;
 
+  private boolean fromUI = false;
+
   private final String id;
 
   private String batchId;
@@ -125,6 +127,11 @@ public class QueryRequestBuilder {
   public QueryRequestBuilder setExcludeUnnecessaryAttributes(
       boolean isExcludeUnnecessaryAttributes) {
     this.excludeUnnecessaryAttributes = isExcludeUnnecessaryAttributes;
+    return this;
+  }
+
+  public QueryRequestBuilder setFromUI(boolean fromUI) {
+    this.fromUI = fromUI;
     return this;
   }
 
@@ -228,6 +235,8 @@ public class QueryRequestBuilder {
     if (cacheId != null) {
       queryRequest.getProperties().put("cacheId", cacheId);
     }
+
+    queryRequest.getProperties().put("fromUI", fromUI);
 
     return queryRequest;
   }
