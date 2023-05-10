@@ -32,12 +32,15 @@ import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import useCoordinateFormat from '../../tabs/metacard/useCoordinateFormat'
 import Common from '../../../js/Common'
+import Extensions from '../../../extension-points'
 type ResultItemFullProps = {
   lazyResult: LazyQueryResult
   measure: () => void
   index: number
   results: LazyQueryResult[]
   headerColWidth: Map<string, string>
+  addOnWidth: number
+  setMaxAddOnWidth: (width: number) => void
 }
 export function clearSelection() {
   if (window.getSelection) {
@@ -84,6 +87,8 @@ const RowComponent = ({
   index,
   results,
   headerColWidth,
+  addOnWidth,
+  setMaxAddOnWidth,
 }: ResultItemFullProps) => {
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const [shownAttributes, setShownAttributes] = React.useState(
@@ -93,6 +98,12 @@ const RowComponent = ({
   const { listenTo } = useBackbone()
   const convertToFormat = useCoordinateFormat()
   useRerenderOnBackboneSync({ lazyResult })
+
+  const addOnRef = React.useRef<HTMLDivElement>(null)
+  React.useEffect(() => {
+    const width = addOnRef.current?.getBoundingClientRect().width || 0
+    setMaxAddOnWidth(width)
+  })
 
   React.useEffect(() => {
     listenTo(
@@ -116,6 +127,7 @@ const RowComponent = ({
     }
     return value
   }
+  const ResultItemAddOnInstance = Extensions.resultItemRowAddOn({ lazyResult })
   return (
     <React.Fragment>
       <div
@@ -171,6 +183,30 @@ const RowComponent = ({
           >
             <div className="w-full h-full">
               <Grid container direction="row" className="h-full" wrap="nowrap">
+                <div
+                  key="resultItemAddOn"
+                  className={`Mui-border-divider border border-t-0 border-l-0 ${
+                    isLast ? '' : 'border-b-0'
+                  } h-full`}
+                >
+                  {ResultItemAddOnInstance ? (
+                    // The sole purpose of this div is to attach the ref, since functional components
+                    // (in this case, CellComponent) can't accept refs.
+                    <div ref={addOnRef}>
+                      <CellComponent
+                        key="resultItemAddOn"
+                        style={{
+                          width: 'auto',
+                        }}
+                        className="pt-3 pr-4"
+                      >
+                        <div>{ResultItemAddOnInstance}</div>
+                      </CellComponent>
+                    </div>
+                  ) : (
+                    <div style={{ width: addOnWidth }} />
+                  )}
+                </div>
                 {shownAttributes.map((property) => {
                   let value = lazyResult.plain.metacard.properties[
                     property
