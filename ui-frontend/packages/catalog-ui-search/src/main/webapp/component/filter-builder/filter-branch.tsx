@@ -15,6 +15,7 @@ import MenuItem from '@mui/material/MenuItem'
 import AddIcon from '@mui/icons-material/Add'
 import _ from 'lodash'
 import { Memo } from '../memo/memo'
+import { ValidationResult } from '../../react-component/location/validators'
 const OperatorData = [
   {
     label: 'AND',
@@ -33,6 +34,9 @@ type ChildFilterProps = {
   index: number
   isFirst: boolean
   isLast: boolean
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
 }
 
 const ChildFilter = ({
@@ -41,6 +45,7 @@ const ChildFilter = ({
   setFilter,
   index,
   isFirst,
+  errorListener,
 }: ChildFilterProps) => {
   return (
     <>
@@ -113,6 +118,7 @@ const ChildFilter = ({
               })
             )
           }}
+          errorListener={errorListener}
         />
       ) : (
         <FilterLeaf
@@ -127,6 +133,7 @@ const ChildFilter = ({
               })
             )
           }}
+          errorListener={errorListener}
         />
       )}
     </>
@@ -137,9 +144,17 @@ type Props = {
   filter: FilterBuilderClass
   setFilter: (filter: FilterBuilderClass) => void
   root?: boolean
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
 }
 
-const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
+const FilterBranch = ({
+  filter,
+  setFilter,
+  root = false,
+  errorListener,
+}: Props) => {
   const [hover, setHover] = React.useState(false)
   const theme = useTheme()
 
@@ -315,6 +330,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                       index={index}
                       isFirst={index === 0}
                       isLast={index === filter.filters.length - 1}
+                      errorListener={errorListener}
                     />
                   )
                 })}

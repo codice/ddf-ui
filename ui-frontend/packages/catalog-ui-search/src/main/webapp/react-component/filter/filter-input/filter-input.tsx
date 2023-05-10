@@ -34,12 +34,16 @@ import { CustomInputOrDefault } from './customInputOrDefault'
 import BooleanSearchBar from '../../../component/boolean-search-bar/boolean-search-bar'
 import { EnterKeySubmitProps } from '../../../component/custom-events/enter-key-submit'
 import { EnumInput } from './enum-input'
+import { ValidationResult } from '../../location/validators'
 export type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
 }
 
-const FilterInput = ({ filter, setFilter }: Props) => {
+const FilterInput = ({ filter, setFilter, errorListener }: Props) => {
   const type = getAttributeType(filter.property)
   const { value } = filter
   const onChange = (val: any) => {
@@ -110,7 +114,13 @@ const FilterInput = ({ filter, setFilter }: Props) => {
     case 'DATE':
       return <DateField onChange={onChange} value={value as string} />
     case 'LOCATION':
-      return <LocationInput value={value} onChange={onChange} />
+      return (
+        <LocationInput
+          value={value}
+          onChange={onChange}
+          errorListener={errorListener}
+        />
+      )
     case 'FLOAT':
       return (
         <FloatField value={value as ValueTypes['float']} onChange={onChange} />

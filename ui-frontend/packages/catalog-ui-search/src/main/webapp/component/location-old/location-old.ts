@@ -310,7 +310,7 @@ export default Backbone.AssociatedModel.extend({
     }
   },
   convertLatLonLinePolyToUsng(points: any) {
-    return points
+    return Array.isArray(points)
       ? points.map((point: any) => {
           // A little bit unintuitive, but lat/lon is swapped here
           return converter.LLtoMGRSUPS(point[1], point[0], usngPrecision)
@@ -318,7 +318,7 @@ export default Backbone.AssociatedModel.extend({
       : undefined
   },
   convertLatLonLinePolyToDms(points: any) {
-    return points
+    return Array.isArray(points)
       ? points.map((point: any) => {
           const lat = dmsUtils.ddToDmsCoordinateLat(point[1])
           const lon = dmsUtils.ddToDmsCoordinateLon(point[0])
@@ -336,7 +336,7 @@ export default Backbone.AssociatedModel.extend({
       : undefined
   },
   convertLatLonLinePolyToUtm(points: any) {
-    return points
+    return Array.isArray(points)
       ? points.map((point: any) => {
           let llPoint = this.LLtoUtmUps(point[1], point[0])
           return {
@@ -528,10 +528,10 @@ export default Backbone.AssociatedModel.extend({
     const west = parseFloat(model.get('west'))
     const east = parseFloat(model.get('east'))
     model.set({
-      mapNorth: north,
-      mapSouth: south,
-      mapEast: east,
-      mapWest: west,
+      mapNorth: Number.isNaN(north) ? undefined : north,
+      mapSouth: Number.isNaN(south) ? undefined : north,
+      mapEast: Number.isNaN(east) ? undefined : east,
+      mapWest: Number.isNaN(west) ? undefined : west,
     })
   },
   setBboxLatLon() {
@@ -654,20 +654,20 @@ export default Backbone.AssociatedModel.extend({
     const west = parseFloat(this.get('west'))
     const east = parseFloat(this.get('east'))
     if (
-      north !== undefined &&
-      south !== undefined &&
-      east !== undefined &&
-      west !== undefined
+      !Number.isNaN(north) &&
+      !Number.isNaN(south) &&
+      !Number.isNaN(east) &&
+      !Number.isNaN(west)
     ) {
       this.set('bbox', [west, south, east, north].join(','), {
         silent: this.isLocationTypeUtmUps() && !this.get('drawing'),
       })
     }
     this.set({
-      mapNorth: north,
-      mapSouth: south,
-      mapEast: east,
-      mapWest: west,
+      mapNorth: Number.isNaN(north) ? undefined : north,
+      mapSouth: Number.isNaN(south) ? undefined : south,
+      mapEast: Number.isNaN(east) ? undefined : east,
+      mapWest: Number.isNaN(west) ? undefined : west,
     })
   },
   setRadiusUsng() {
