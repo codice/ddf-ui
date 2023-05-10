@@ -37,6 +37,7 @@ type HeaderProps = {
   lazyResults: LazyQueryResults
   setHeaderColWidth: Function
   headerColWidth: Map<string, string>
+  addOnWidth: number
 }
 
 type Sort = {
@@ -165,6 +166,7 @@ export const Header = ({
   lazyResults,
   setHeaderColWidth,
   headerColWidth,
+  addOnWidth,
 }: HeaderProps) => {
   const handleSortClick = _.debounce(updateSort, 500, true)
   const [shownAttributes, setShownAttributes] = React.useState(
@@ -262,7 +264,7 @@ export const Header = ({
         style={{
           width: shownAttributes.length * 200 + 'px',
           display: 'grid',
-          gridTemplateColumns: `repeat(${shownAttributes.length + 2}, 1fr)`,
+          gridTemplateColumns: `repeat(${shownAttributes.length + 3}, 1fr)`,
         }}
       >
         <div className="sticky left-0 w-auto z-10 bg-inherit Mui-border-divider border border-t-0 border-l-0 border-b-0">
@@ -272,6 +274,16 @@ export const Header = ({
           >
             <HeaderCheckbox lazyResults={lazyResults} />
           </CellComponent>
+        </div>
+        <div
+          key="resultItemAddOn"
+          className="bg-inherit Mui-border-divider border border-t-0 border-l-0 border-b-0"
+        >
+          <div
+            style={{
+              width: addOnWidth,
+            }}
+          />
         </div>
         {shownAttributes.map((attr, index) => {
           const label = TypedMetacardDefs.getAlias({ attr })
