@@ -430,6 +430,7 @@ export default Backbone.AssociatedModel.extend({
       result,
       resultOptions,
     } = this.initializeResult(options)
+    data.fromUI = true
     let cqlFilterTree = this.get('filterTree')
     if (resultOptions.limitToDeleted) {
       cqlFilterTree = limitToDeleted(cqlFilterTree)
