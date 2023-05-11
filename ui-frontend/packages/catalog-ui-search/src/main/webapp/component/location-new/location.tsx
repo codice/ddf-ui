@@ -18,7 +18,7 @@ import { Radio, RadioItem } from '../../react-component/radio/radio'
 import { WKT, LatLongDD, LatLongDMS, USNG } from './geo-components'
 import Gazetteer from '../../react-component/location/gazetteer'
 import CQLUtils from '../../js/CQLUtils'
-import immer from 'immer/1.5.0'
+import immer from 'immer.1.5.0'
 const produce = immer
 import { hot } from 'react-hot-loader'
 
