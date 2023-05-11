@@ -45,20 +45,23 @@ type Sort = {
   direction: 'ascending' | 'descending'
 }
 
-export const CellComponent = (props: GridProps) => {
-  const { style, className, ...otherProps } = props
-  return (
-    <div
-      {...otherProps}
-      className={`inline-block ${className} p-2 overflow-auto whitespace-normal break-all `}
-      style={{
-        width: '200px',
-        maxHeight: '200px',
-        ...style,
-      }}
-    />
-  )
-}
+export const CellComponent = React.forwardRef(
+  (props: GridProps, ref: React.Ref<any>) => {
+    const { style, className, ...otherProps } = props
+    return (
+      <div
+        {...otherProps}
+        className={`inline-block ${className} p-2 overflow-auto whitespace-normal break-all `}
+        style={{
+          width: '200px',
+          maxHeight: '200px',
+          ...style,
+        }}
+        ref={ref}
+      />
+    )
+  }
+)
 
 const updateSort = (attribute: string) => {
   const prefs = user.get('user').get('preferences')

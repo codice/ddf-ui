@@ -190,19 +190,16 @@ const RowComponent = ({
                   } h-full`}
                 >
                   {ResultItemAddOnInstance ? (
-                    // The sole purpose of this div is to attach the ref, since functional components
-                    // (in this case, CellComponent) can't accept refs.
-                    <div ref={addOnRef}>
-                      <CellComponent
-                        key="resultItemAddOn"
-                        style={{
-                          width: 'auto',
-                        }}
-                        className="pt-3 pr-4"
-                      >
-                        <div>{ResultItemAddOnInstance}</div>
-                      </CellComponent>
-                    </div>
+                    <CellComponent
+                      key="resultItemAddOn"
+                      style={{
+                        width: 'auto',
+                      }}
+                      className="pt-3 pr-4"
+                      ref={addOnRef}
+                    >
+                      {ResultItemAddOnInstance}
+                    </CellComponent>
                   ) : (
                     <div style={{ width: addOnWidth }} />
                   )}
