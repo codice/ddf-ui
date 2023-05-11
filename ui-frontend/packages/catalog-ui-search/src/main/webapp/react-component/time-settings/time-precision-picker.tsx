@@ -73,7 +73,7 @@ const TimePrecisionSelector = (props: Props) => {
         value={timePrecision}
       />
     </div>
-  );
+  )
 }
 
 export default hot(module)(TimePrecisionSelector)

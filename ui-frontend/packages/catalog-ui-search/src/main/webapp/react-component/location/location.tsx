@@ -237,6 +237,6 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
         </div>
       </div>
     </div>
-  );
+  )
 }
 export default hot(module)(LocationInput)

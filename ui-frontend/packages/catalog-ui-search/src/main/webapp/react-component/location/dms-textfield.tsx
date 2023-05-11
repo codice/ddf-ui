@@ -95,7 +95,7 @@ const DmsTextfield = ({
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default DmsTextfield

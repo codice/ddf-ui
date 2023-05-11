@@ -42,15 +42,15 @@ const withListenTo = <P extends WithBackboneProps>(
     render() {
       return (
         // @ts-expect-error ts-migrate(2322) FIXME: Type '{ listenTo: any; stopListening: any; listenT... Remove this comment to see the full error message
-        (<Component
+        <Component
           listenTo={this.backbone.listenTo.bind(this.backbone)}
           stopListening={this.backbone.stopListening.bind(this.backbone)}
           listenToOnce={this.backbone.listenToOnce.bind(this.backbone)}
           {...this.props}
-        />)
-      );
+        />
+      )
     }
-  };
+  }
 }
 
 export default withListenTo

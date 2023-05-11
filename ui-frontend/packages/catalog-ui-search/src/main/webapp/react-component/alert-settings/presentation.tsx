@@ -137,7 +137,7 @@ const render = (props: Props) => {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default hot(module)(render)

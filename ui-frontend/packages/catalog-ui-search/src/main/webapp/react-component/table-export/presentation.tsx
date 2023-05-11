@@ -130,5 +130,5 @@ export default hot(module)((props: Props) => {
         </Button>
       </div>
     </div>
-  );
+  )
 })

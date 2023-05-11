@@ -101,121 +101,123 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
   if (value && value.property === undefined) {
     return null // the use effect above should fire to take care of setting a default
   }
-  return <>
-    <div>
-      <FormControlLabel
-        labelPlacement="end"
-        control={
-          <Checkbox
-            color="default"
-            checked={value ? true : false}
-            onChange={(e) => {
-              if (e.target.checked) {
-                onChange({
-                  ...value,
-                  type: 'AFTER',
-                  property: getDefaultPropertiesToApplyTo().map(
-                    (val) => val.value
-                  ),
-                })
-              } else {
-                onChange(undefined)
-              }
-            }}
-          />
-        }
-        label="Time"
-      />
-      {value ? (
-        <Grid
-          container
-          alignItems="stretch"
-          direction="column"
-          wrap="nowrap"
-          className="pt-2"
-        >
-          <Grid item className="w-full pb-2">
-            <Autocomplete
-              fullWidth
-              multiple
-              options={getPossibleProperties()}
-              disableCloseOnSelect
-              getOptionLabel={(option) => option.label}
-              isOptionEqualToValue={(option, value) =>
-                option.value === value.value
-              }
-              onChange={(_e, newValue) => {
-                onChange({
-                  ...value,
-                  property: newValue.map((val) => val.value),
-                })
+  return (
+    <>
+      <div>
+        <FormControlLabel
+          labelPlacement="end"
+          control={
+            <Checkbox
+              color="default"
+              checked={value ? true : false}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  onChange({
+                    ...value,
+                    type: 'AFTER',
+                    property: getDefaultPropertiesToApplyTo().map(
+                      (val) => val.value
+                    ),
+                  })
+                } else {
+                  onChange(undefined)
+                }
               }}
-              size="small"
-              renderTags={(tagValue, getTagProps) =>
-                tagValue.map((option, index) => (
-                  <Chip
-                    variant="outlined"
-                    color="default"
-                    label={option.label}
-                    {...getTagProps({ index })}
-                  />
-                ))
-              }
-              value={determinePropertiesToApplyTo({ value })}
-              renderInput={(params) => (
-                <TextField {...params} variant="outlined" />
-              )}
             />
-          </Grid>
+          }
+          label="Time"
+        />
+        {value ? (
           <Grid
             container
             alignItems="stretch"
-            direction="row"
+            direction="column"
             wrap="nowrap"
             className="pt-2"
           >
-            <Grid item>
-              <Swath className="w-1 h-full" />
+            <Grid item className="w-full pb-2">
+              <Autocomplete
+                fullWidth
+                multiple
+                options={getPossibleProperties()}
+                disableCloseOnSelect
+                getOptionLabel={(option) => option.label}
+                isOptionEqualToValue={(option, value) =>
+                  option.value === value.value
+                }
+                onChange={(_e, newValue) => {
+                  onChange({
+                    ...value,
+                    property: newValue.map((val) => val.value),
+                  })
+                }}
+                size="small"
+                renderTags={(tagValue, getTagProps) =>
+                  tagValue.map((option, index) => (
+                    <Chip
+                      variant="outlined"
+                      color="default"
+                      label={option.label}
+                      {...getTagProps({ index })}
+                    />
+                  ))
+                }
+                value={determinePropertiesToApplyTo({ value })}
+                renderInput={(params) => (
+                  <TextField {...params} variant="outlined" />
+                )}
+              />
             </Grid>
-            <Grid container direction="column">
-              <Grid item className="w-full pl-2 pb-2">
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  size="small"
-                  select
-                  value={value.type}
-                  onChange={(e) => {
-                    onChange({
-                      ...value,
-                      type: e.target.value,
-                    })
-                  }}
-                >
-                  <MenuItem value="AFTER">After</MenuItem>
-                  <MenuItem value="BEFORE">Before</MenuItem>
-                  <MenuItem value="DURING">Between</MenuItem>
-                  <MenuItem value="RELATIVE">Within the last</MenuItem>
-                  <MenuItem value="AROUND">Around</MenuItem>
-                </TextField>
+            <Grid
+              container
+              alignItems="stretch"
+              direction="row"
+              wrap="nowrap"
+              className="pt-2"
+            >
+              <Grid item>
+                <Swath className="w-1 h-full" />
               </Grid>
-              <Grid item className="w-full pl-2">
-                <FilterInput
-                  filter={{ ...value, property: value.property[0] }}
-                  setFilter={(val: any) => {
-                    onChange({
-                      ...value,
-                      value: val.value,
-                    })
-                  }}
-                />
+              <Grid container direction="column">
+                <Grid item className="w-full pl-2 pb-2">
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    size="small"
+                    select
+                    value={value.type}
+                    onChange={(e) => {
+                      onChange({
+                        ...value,
+                        type: e.target.value,
+                      })
+                    }}
+                  >
+                    <MenuItem value="AFTER">After</MenuItem>
+                    <MenuItem value="BEFORE">Before</MenuItem>
+                    <MenuItem value="DURING">Between</MenuItem>
+                    <MenuItem value="RELATIVE">Within the last</MenuItem>
+                    <MenuItem value="AROUND">Around</MenuItem>
+                  </TextField>
+                </Grid>
+                <Grid item className="w-full pl-2">
+                  <FilterInput
+                    filter={{ ...value, property: value.property[0] }}
+                    setFilter={(val: any) => {
+                      onChange({
+                        ...value,
+                        value: val.value,
+                      })
+                    }}
+                  />
+                </Grid>
               </Grid>
             </Grid>
           </Grid>
-        </Grid>
-      ) : null}
-    </div>
-  </>;
+        ) : null}
+      </div>
+    </>
+  )
 }
 
 export default hot(module)(QueryTime)

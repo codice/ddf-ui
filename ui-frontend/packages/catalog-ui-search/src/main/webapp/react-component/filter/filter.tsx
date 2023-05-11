@@ -101,7 +101,7 @@ const Filter = ({ filter, setFilter, errorListener }: Props) => {
         />
       </Grid>
     </Grid>
-  );
+  )
 }
 
 export default hot(module)(Filter)

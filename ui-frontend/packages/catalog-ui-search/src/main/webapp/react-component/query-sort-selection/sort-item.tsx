@@ -41,81 +41,83 @@ const SortItem = ({
   onRemove,
   showRemove,
 }: Props) => {
-  return <>
-    <div>
-      <Grid container direction="row" wrap="nowrap" alignItems="center">
-        <Grid item className="w-full">
-          <Autocomplete
-            data-id="sort-type-autocomplete"
-            size="small"
-            fullWidth
-            options={attributeOptions}
-            getOptionLabel={(option) => option.label}
-            isOptionEqualToValue={(option, value) => {
-              return option.value === value.value
-            }}
-            onChange={(_e: any, newValue: Option) => {
-              const newProperty = newValue.value
-              updateAttribute(newProperty)
-            }}
-            disableClearable
-            value={sortItem.attribute}
-            renderInput={(params) => (
-              <TextField {...params} variant="outlined" />
-            )}
-          />
-        </Grid>
-        {showRemove ? (
-          <Grid item className="pl-2">
-            <Button
-              data-id="remove-sort-button"
-              onClick={onRemove}
-              variant="text"
-              color="primary"
-            >
-              Remove
-            </Button>
-          </Grid>
-        ) : null}
-      </Grid>
-      {isDirectionalSort(sortItem.attribute.value) ? (
-        <Grid
-          container
-          alignItems="stretch"
-          direction="row"
-          wrap="nowrap"
-          className="pt-2"
-        >
-          <Grid item>
-            <Swath className="w-1 h-full" />
-          </Grid>
-          <Grid item className="w-full pl-2">
+  return (
+    <>
+      <div>
+        <Grid container direction="row" wrap="nowrap" alignItems="center">
+          <Grid item className="w-full">
             <Autocomplete
-              data-id="sort-order-autocomplete"
+              data-id="sort-type-autocomplete"
               size="small"
               fullWidth
-              options={directionOptions}
+              options={attributeOptions}
               getOptionLabel={(option) => option.label}
-              isOptionEqualToValue={(option, value) =>
-                option.value === value.value
-              }
+              isOptionEqualToValue={(option, value) => {
+                return option.value === value.value
+              }}
               onChange={(_e: any, newValue: Option) => {
                 const newProperty = newValue.value
-                updateDirection(newProperty)
+                updateAttribute(newProperty)
               }}
               disableClearable
-              value={directionOptions.find(
-                (option) => option.value === sortItem.direction
-              )}
+              value={sortItem.attribute}
               renderInput={(params) => (
                 <TextField {...params} variant="outlined" />
               )}
             />
           </Grid>
+          {showRemove ? (
+            <Grid item className="pl-2">
+              <Button
+                data-id="remove-sort-button"
+                onClick={onRemove}
+                variant="text"
+                color="primary"
+              >
+                Remove
+              </Button>
+            </Grid>
+          ) : null}
         </Grid>
-      ) : null}
-    </div>
-  </>;
+        {isDirectionalSort(sortItem.attribute.value) ? (
+          <Grid
+            container
+            alignItems="stretch"
+            direction="row"
+            wrap="nowrap"
+            className="pt-2"
+          >
+            <Grid item>
+              <Swath className="w-1 h-full" />
+            </Grid>
+            <Grid item className="w-full pl-2">
+              <Autocomplete
+                data-id="sort-order-autocomplete"
+                size="small"
+                fullWidth
+                options={directionOptions}
+                getOptionLabel={(option) => option.label}
+                isOptionEqualToValue={(option, value) =>
+                  option.value === value.value
+                }
+                onChange={(_e: any, newValue: Option) => {
+                  const newProperty = newValue.value
+                  updateDirection(newProperty)
+                }}
+                disableClearable
+                value={directionOptions.find(
+                  (option) => option.value === sortItem.direction
+                )}
+                renderInput={(params) => (
+                  <TextField {...params} variant="outlined" />
+                )}
+              />
+            </Grid>
+          </Grid>
+        ) : null}
+      </div>
+    </>
+  )
 }
 
 export default SortItem

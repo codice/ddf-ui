@@ -244,7 +244,7 @@ export const Common = {
     return 'data:image/png;base64,' + img
   },
   getResourceUrlFromThumbUrl(url: string) {
-    return url.replace(/=thumbnail[_=&\d\w\s;]+/, '=resource');
+    return url.replace(/=thumbnail[_=&\d\w\s;]+/, '=resource')
   },
   cancelRepaintForTimeframe(requestDetails: any) {
     if (requestDetails) {

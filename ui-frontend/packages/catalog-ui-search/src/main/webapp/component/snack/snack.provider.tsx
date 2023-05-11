@@ -117,7 +117,8 @@ export function SnackProvider({ children }: any) {
                       style={{ padding: '3px' }}
                       color="inherit"
                       onClick={handleClose}
-                      size="large">
+                      size="large"
+                    >
                       <CloseIcon fontSize="small" />
                     </IconButton>
                   )}
@@ -132,5 +133,5 @@ export function SnackProvider({ children }: any) {
         </Portal>
       )}
     </SnackBarContext.Provider>
-  );
+  )
 }

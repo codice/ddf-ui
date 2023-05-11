@@ -14,7 +14,9 @@ export const WrappedSnackbar = styled(
   React.forwardRef((props: SnackbarProps & ExtraProps, ref: React.Ref<any>) => {
     return <Snackbar {...props} ref={ref} />
   })
-)<SnackbarProps>`` as React.ComponentType<React.PropsWithChildren<SnackbarProps>>
+)<SnackbarProps>`` as React.ComponentType<
+  React.PropsWithChildren<SnackbarProps>
+>
 
 export const WrappedSnackbarContent = styled(
   React.forwardRef(
@@ -36,4 +38,6 @@ export const WrappedSnackbarContent = styled(
       return <SnackbarContent {...baseProps} ref={ref} style={style} />
     }
   )
-)<SnackbarContentProps>`` as React.ComponentType<React.PropsWithChildren<SnackbarContentProps & ExtraProps>>
+)<SnackbarContentProps>`` as React.ComponentType<
+  React.PropsWithChildren<SnackbarContentProps & ExtraProps>
+>

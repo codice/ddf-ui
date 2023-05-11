@@ -82,7 +82,7 @@ const ResultsExport = (props: Props) => {
         <GetAppIcon /> Download
       </Button>
     </div>
-  );
+  )
 }
 
 export default hot(module)(ResultsExport)

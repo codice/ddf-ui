@@ -6,8 +6,8 @@ import CreateableSelect from 'react-select/creatable'
 import AsyncCreateableSelect from 'react-select/async-creatable'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import AsyncSelect from 'react-select/async'
-import { emphasize, useTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { emphasize, useTheme } from '@mui/material/styles'
+import makeStyles from '@mui/styles/makeStyles'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Paper from '@mui/material/Paper'

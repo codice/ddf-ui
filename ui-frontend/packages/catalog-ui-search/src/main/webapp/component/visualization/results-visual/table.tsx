@@ -28,7 +28,7 @@ import { useLazyResultsFromSelectionInterface } from '../../selection-interface/
 import { useStatusOfLazyResults } from '../../../js/model/LazyQueryResult/hooks'
 import LinearProgress from '@mui/material/LinearProgress'
 import { DarkDivider } from '../../dark-divider/dark-divider'
-import { useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles'
 import ViewAgendaIcon from '@mui/icons-material/ViewAgenda'
 import TableChartIcon from '@mui/icons-material/TableChart'
 import TransferList from '../../tabs/metacard/transfer-list'

@@ -339,7 +339,11 @@ const BooleanSearchBar = ({
                 endAdornment: (
                   <>
                     {!disableClearable && !!value.text && (
-                      <IconButton onClick={handleTextClear} style={{ padding: '2px' }} size="large">
+                      <IconButton
+                        onClick={handleTextClear}
+                        style={{ padding: '2px' }}
+                        size="large"
+                      >
                         <ClearIcon fontSize="small" />
                       </IconButton>
                     )}
@@ -350,7 +354,8 @@ const BooleanSearchBar = ({
                       }}
                       disabled={value.error}
                       style={{ padding: '2px' }}
-                      size="large">
+                      size="large"
+                    >
                       <SearchIcon fontSize="small" />
                     </IconButton>
                   </>
@@ -360,11 +365,11 @@ const BooleanSearchBar = ({
               }}
               {...props.TextFieldProps}
             />
-          );
+          )
         }}
         {...props.AutocompleteProps}
       />
     </FormControl>
-  );
+  )
 }
 export default hot(module)(ShapeValidator)

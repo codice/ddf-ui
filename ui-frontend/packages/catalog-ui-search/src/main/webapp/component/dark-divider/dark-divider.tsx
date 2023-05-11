@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import { useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles'
 import Divider, { DividerProps } from '@mui/material/Divider'
 import { dark, light } from '../theme/theme'
 

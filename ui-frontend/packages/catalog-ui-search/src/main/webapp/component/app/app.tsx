@@ -528,79 +528,82 @@ const SideBarRoutes = () => {
 }
 const SideBarToggleButton = () => {
   const { navOpen, setNavOpen } = useNavContextProvider()
-  return <>
-    <Grid item className="w-full h-16 shrink-0">
-      {navOpen ? (
-        <>
-          <Grid
-            container
-            wrap="nowrap"
-            alignItems="center"
-            className="w-full h-full overflow-hidden"
-          >
-            <Grid item className="pl-3 py-1 pr-1 w-full relative h-full">
-              {(properties as any).topLeftLogoSrc ? (
-                <img
-                  className="max-h-full max-w-full absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 top-1/2 p-4"
-                  src={handleBase64EncodedImages(
-                    (properties as any).topLeftLogoSrc
-                  )}
-                />
-              ) : (
-                <Grid
-                  container
-                  direction="column"
-                  className="pl-3"
-                  justifyContent="center"
-                >
-                  <Grid item>
-                    <Typography>
-                      {(properties as any).customBranding}
-                    </Typography>
+  return (
+    <>
+      <Grid item className="w-full h-16 shrink-0">
+        {navOpen ? (
+          <>
+            <Grid
+              container
+              wrap="nowrap"
+              alignItems="center"
+              className="w-full h-full overflow-hidden"
+            >
+              <Grid item className="pl-3 py-1 pr-1 w-full relative h-full">
+                {(properties as any).topLeftLogoSrc ? (
+                  <img
+                    className="max-h-full max-w-full absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 top-1/2 p-4"
+                    src={handleBase64EncodedImages(
+                      (properties as any).topLeftLogoSrc
+                    )}
+                  />
+                ) : (
+                  <Grid
+                    container
+                    direction="column"
+                    className="pl-3"
+                    justifyContent="center"
+                  >
+                    <Grid item>
+                      <Typography>
+                        {(properties as any).customBranding}
+                      </Typography>
+                    </Grid>
+                    <Grid item>
+                      <Typography>{(properties as any).product}</Typography>
+                    </Grid>
                   </Grid>
-                  <Grid item>
-                    <Typography>{(properties as any).product}</Typography>
-                  </Grid>
-                </Grid>
-              )}
-            </Grid>
-            <Grid item className="ml-auto">
-              <IconButton
-                className="h-auto"
-                onClick={() => {
-                  setNavOpen(false)
-                }}
-                size="large">
-                <ChevronLeftIcon />
-              </IconButton>
-            </Grid>
-          </Grid>
-        </>
-      ) : (
-        <Button
-          color="inherit"
-          aria-label="open drawer"
-          onClick={() => {
-            setNavOpen(true)
-          }}
-          className="w-full h-full p-2"
-        >
-          {(properties as any).menuIconSrc ? (
-            <>
-              <img
-                src={handleBase64EncodedImages(
-                  (properties as any).menuIconSrc
                 )}
-                className="max-h-16 max-w-full"
-              />
-            </>
-          ) : (
-            <MenuIcon />
-          )}
-        </Button>
-      )}
-    </Grid>
-  </>;
+              </Grid>
+              <Grid item className="ml-auto">
+                <IconButton
+                  className="h-auto"
+                  onClick={() => {
+                    setNavOpen(false)
+                  }}
+                  size="large"
+                >
+                  <ChevronLeftIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
+          </>
+        ) : (
+          <Button
+            color="inherit"
+            aria-label="open drawer"
+            onClick={() => {
+              setNavOpen(true)
+            }}
+            className="w-full h-full p-2"
+          >
+            {(properties as any).menuIconSrc ? (
+              <>
+                <img
+                  src={handleBase64EncodedImages(
+                    (properties as any).menuIconSrc
+                  )}
+                  className="max-h-16 max-w-full"
+                />
+              </>
+            ) : (
+              <MenuIcon />
+            )}
+          </Button>
+        )}
+      </Grid>
+    </>
+  )
 }
 const SideBar = () => {
   const { navOpen } = useNavContextProvider()

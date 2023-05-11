@@ -542,41 +542,43 @@ export const Histogram = ({ selectionInterface }: Props) => {
   if (Object.keys(lazyResults.results).length === 0) {
     return <div style={{ padding: '20px' }}>No results found</div>
   }
-  return <>
-    <div className="p-2">
-      <Autocomplete
-        size="small"
-        options={autocompleteState.choices}
-        onChange={(_e: any, newValue) => {
-          setAttributeToBin(newValue.value)
-        }}
-        isOptionEqualToValue={(option) => option.value === attributeToBin}
-        getOptionLabel={(option) => {
-          return option.label
-        }}
-        disableClearable
-        value={autocompleteState.choices.find(
-          (choice) => choice.value === attributeToBin
-        )}
-        renderInput={(params) => (
-          <TextField {...params} label="Group by" variant="outlined" />
-        )}
-      />
-    </div>
-    <div
-      className="plotly-histogram"
-      ref={plotlyRef as any}
-      style={{
-        height: 'calc(100% - 135px)',
-        width: '100%',
-        display: noMatchingData ? 'none' : 'block',
-      }}
-    />
-    {noMatchingData ? (
-      <div style={{ padding: '20px' }}>
-        No data in this result set has that attribute
+  return (
+    <>
+      <div className="p-2">
+        <Autocomplete
+          size="small"
+          options={autocompleteState.choices}
+          onChange={(_e: any, newValue) => {
+            setAttributeToBin(newValue.value)
+          }}
+          isOptionEqualToValue={(option) => option.value === attributeToBin}
+          getOptionLabel={(option) => {
+            return option.label
+          }}
+          disableClearable
+          value={autocompleteState.choices.find(
+            (choice) => choice.value === attributeToBin
+          )}
+          renderInput={(params) => (
+            <TextField {...params} label="Group by" variant="outlined" />
+          )}
+        />
       </div>
-    ) : null}
-  </>;
+      <div
+        className="plotly-histogram"
+        ref={plotlyRef as any}
+        style={{
+          height: 'calc(100% - 135px)',
+          width: '100%',
+          display: noMatchingData ? 'none' : 'block',
+        }}
+      />
+      {noMatchingData ? (
+        <div style={{ padding: '20px' }}>
+          No data in this result set has that attribute
+        </div>
+      ) : null}
+    </>
+  )
 }
 export default hot(module)(Histogram)

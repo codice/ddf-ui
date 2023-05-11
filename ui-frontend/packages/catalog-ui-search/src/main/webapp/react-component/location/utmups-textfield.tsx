@@ -88,7 +88,7 @@ const UtmupsTextfield = ({
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default UtmupsTextfield

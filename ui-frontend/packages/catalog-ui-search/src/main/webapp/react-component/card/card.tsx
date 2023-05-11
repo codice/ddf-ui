@@ -38,13 +38,17 @@ export const WrappedCardActions = styled(
   React.forwardRef((props: CardActionsProps, ref: React.Ref<any>) => {
     return <CardActions {...props} ref={ref} />
   })
-)<CardActionsProps>`` as React.ComponentType<React.PropsWithChildren<CardActionsProps>>
+)<CardActionsProps>`` as React.ComponentType<
+  React.PropsWithChildren<CardActionsProps>
+>
 
 export const WrappedCardContent = styled(
   React.forwardRef((props: CardContentProps, ref: React.Ref<any>) => {
     return <CardContent {...props} ref={ref} />
   })
-)<CardContentProps>`` as React.ComponentType<React.PropsWithChildren<CardContentProps>>
+)<CardContentProps>`` as React.ComponentType<
+  React.PropsWithChildren<CardContentProps>
+>
 
 export const WrappedCardContentLabel = (props: TypographyProps) => {
   return <Typography {...props} noWrap style={{ opacity: 0.6 }} />
