@@ -98,7 +98,7 @@
     "geolib": "^3.2.1",
     "geospatialdraw": "0.4.2",
     "golden-layout": "1.5.8",
-    "immer": "1.5.0",
+    "immer/1.5.0": "https://registry.npmjs.org/immer/-/immer-1.5.0.tgz",
     "jquery": "3.4.1",
     "lodash": "4.17.15",
     "lodash.debounce": "4.0.8",
@@ -145,7 +145,7 @@
     "polished": "4.2.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "styled-components": "4.3.2"
+    "styled-components": "5.3.10"
   },
   "main": "src/main/webapp/index.tsx",
   "ace": {
