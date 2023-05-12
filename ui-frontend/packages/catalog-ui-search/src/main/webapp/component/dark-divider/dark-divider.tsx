@@ -11,7 +11,7 @@ export const DarkDivider = (props: DividerProps) => {
     <Divider
       {...otherProps}
       style={{
-        backgroundColor:
+        borderColor:
           theme.palette.mode === 'dark' ? dark.background : light.background,
         ...style,
       }}
