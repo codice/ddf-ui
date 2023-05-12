@@ -19,11 +19,11 @@ const Cluster = ({ cluster, map }: Props) => {
     switch (isSelected) {
       case 'selected':
         map.updateCluster(geometries.current, {
-          color: cluster.results[0].getColor(),
+          color: 'orange',
           isSelected,
           count: cluster.results.length,
-          outline: 'black',
-          textFill: 'black',
+          outline: 'white',
+          textFill: 'white',
         })
         break
       case 'partially':
