@@ -21,12 +21,6 @@ type DateFieldProps = {
   BPDateProps?: Partial<IDateInputProps>
 }
 
-export const MuiInputClasses =
-  'MuiOutlinedInput-root MuiOutlinedInput-inputMarginDense MuiOutlinedInput-notchedOutline'
-
-export const MuiOutlinedInputClasses =
-  'MuiOutlinedInput-root MuiOutlinedInput-multiline MuiOutlinedInput-inputMarginDense MuiOutlinedInput-notchedOutline'
-
 /**
  * DateTimePicker that combines Mui TextField with BlueprintJs DatePicker
  *
@@ -40,7 +34,7 @@ const DateTimePicker = ({
   TextFieldProps,
   BPDateProps,
 }: DateFieldProps) => {
-  const inputRef = React.useRef<HTMLInputElement>()
+  const inputRef = React.useRef<HTMLDivElement>(null)
   /**
    * We want to avoid causing the TextField below to percieve a change to inputComponent when possible, because that mucks with focus.
    *
@@ -49,11 +43,7 @@ const DateTimePicker = ({
    * only pick up real changes.
    */
   const inputComponent = React.useMemo(() => {
-    let classes = MuiInputClasses
-
-    if (TextFieldProps?.variant === 'outlined') {
-      classes = MuiOutlinedInputClasses
-    }
+    let classes = 'px-[14px] py-[8.5px]'
 
     return (props: any) => {
       return (
@@ -79,24 +69,21 @@ const DateTimePicker = ({
       InputLabelProps={{ shrink: true }}
       value={value}
       onChange={onChange as any}
-      inputRef={inputRef}
+      ref={inputRef}
       InputProps={{
         inputComponent: inputComponent,
         endAdornment: (
           <InputAdornment
+            component="button"
             className="cursor-pointer"
             position="end"
             onClick={() => {
               if (inputRef.current) {
-                inputRef.current.focus()
+                inputRef.current.querySelector('input')?.focus()
               }
             }}
           >
-            <CalendarIcon
-              className={
-                TextFieldProps?.variant === 'outlined' ? 'mr-1' : 'mr-4'
-              }
-            />
+            <CalendarIcon />
           </InputAdornment>
         ),
       }}
