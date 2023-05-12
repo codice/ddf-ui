@@ -3,12 +3,14 @@ import { IDateInputProps } from '@blueprintjs/datetime'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { DateField } from './date'
 import CalendarIcon from '@mui/icons-material/Event'
+import ClearIcon from '@mui/icons-material/Clear'
 import { hot } from 'react-hot-loader'
 import InputAdornment from '@mui/material/InputAdornment'
 
 type DateFieldProps = {
-  value: string
-  onChange: (value: string) => void
+  value: string | null
+  onChange: (value: string | null) => void
+  isNullable?: boolean
   TextFieldProps?: Partial<TextFieldProps>
   /**
    * Override if you absolutely must.
@@ -31,6 +33,7 @@ type DateFieldProps = {
 const DateTimePicker = ({
   value,
   onChange,
+  isNullable,
   TextFieldProps,
   BPDateProps,
 }: DateFieldProps) => {
@@ -49,6 +52,7 @@ const DateTimePicker = ({
       return (
         <DateField
           {...props}
+          isNullable
           BPDateProps={{
             ...BPDateProps,
             className: classes,
@@ -83,6 +87,15 @@ const DateTimePicker = ({
               }
             }}
           >
+            {isNullable && (
+              <ClearIcon
+                className={`${value ? '' : 'hidden'}`}
+                onClick={(e) => {
+                  onChange(null)
+                  e.stopPropagation()
+                }}
+              />
+            )}
             <CalendarIcon />
           </InputAdornment>
         ),
