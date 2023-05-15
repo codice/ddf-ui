@@ -17,7 +17,7 @@
     <parent>
         <artifactId>backend</artifactId>
         <groupId>org.codice.ddf.search</groupId>
-        <version>5.0.42-SNAPSHOT</version>
+        <version>5.0.42</version>
     </parent>
     <packaging>bundle</packaging>
 
