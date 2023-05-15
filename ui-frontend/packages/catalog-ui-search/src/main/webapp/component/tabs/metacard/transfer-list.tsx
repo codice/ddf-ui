@@ -178,7 +178,7 @@ const ItemRow = ({
       <Button
         fullWidth
         size="medium"
-        className=" justify-start"
+        className="justify-start"
         onClick={(event) => {
           if (event.shiftKey) {
             handleShiftClick({
@@ -355,9 +355,7 @@ const CustomList = ({
               data-id={`${(title as any).toLowerCase()}-select-all-checkbox`}
               disabled={Object.keys(items).length === 0}
               onClick={handleToggleAll(items)}
-              color={
-                isIndeterminate || isCompletelySelected ? 'primary' : 'primary'
-              }
+              color="primary"
             >
               {(() => {
                 if (isCompletelySelected) {

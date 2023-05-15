@@ -370,7 +370,7 @@ export const OpenSearch = ({
             setCurrentHighlight(
               (
                 document.getElementById(
-                  `${highlightedElementString}`
+                  highlightedElementString
                 ) as HTMLLIElement
               ).querySelector('div') as OverflowTooltipHTMLElement
             )
@@ -1096,7 +1096,7 @@ const LeftTop = () => {
             <Button
               color="inherit"
               component="div"
-              className={` text-left text-2xl shrink truncate ${
+              className={`text-left text-2xl shrink truncate ${
                 closed ? 'h-full' : ''
               }`}
               onClick={adhocMenuState.handleClick}
