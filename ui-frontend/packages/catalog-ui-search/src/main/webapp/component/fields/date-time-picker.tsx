@@ -48,7 +48,7 @@ const DateTimePicker = ({
   const inputComponent = React.useMemo(() => {
     let classes = 'px-[14px] py-[8.5px]'
 
-    return (props: any) => {
+    return React.forwardRef((props: any, ref: any) => {
       return (
         <DateField
           {...props}
@@ -57,12 +57,12 @@ const DateTimePicker = ({
             ...BPDateProps,
             className: classes,
             inputProps: {
-              inputRef: props.inputRef,
+              inputRef: ref,
             },
           }}
         />
       )
-    }
+    })
   }, [JSON.stringify(BPDateProps)])
 
   return (
