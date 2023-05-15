@@ -79,6 +79,7 @@ const DateTimePicker = ({
         endAdornment: (
           <InputAdornment
             component="button"
+            type="button"
             className="cursor-pointer"
             position="end"
             onClick={() => {
