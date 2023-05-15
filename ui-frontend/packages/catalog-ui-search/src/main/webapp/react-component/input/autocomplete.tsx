@@ -6,13 +6,14 @@ import CreateableSelect from 'react-select/creatable'
 import AsyncCreateableSelect from 'react-select/async-creatable'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import AsyncSelect from 'react-select/async'
-import { emphasize, makeStyles, useTheme } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import TextField from '@material-ui/core/TextField'
-import Paper from '@material-ui/core/Paper'
-import Chip from '@material-ui/core/Chip'
-import MenuItem from '@material-ui/core/MenuItem'
-import CancelIcon from '@material-ui/icons/Cancel'
+import { emphasize, useTheme } from '@mui/material/styles'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
+import TextField from '@mui/material/TextField'
+import Paper from '@mui/material/Paper'
+import Chip from '@mui/material/Chip'
+import MenuItem from '@mui/material/MenuItem'
+import CancelIcon from '@mui/icons-material/Cancel'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import { Props as CreatableProps } from 'react-select/src/Creatable'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'reac... Remove this comment to see the full error message
@@ -54,7 +55,7 @@ const useStyles = makeStyles((theme: any) => ({
   },
   chipFocused: {
     backgroundColor: emphasize(
-      theme.palette.type === 'light'
+      theme.palette.mode === 'light'
         ? theme.palette.grey[300]
         : theme.palette.grey[700],
       0.08

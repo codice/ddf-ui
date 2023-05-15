@@ -19,9 +19,9 @@ import { MetacardInteraction } from './metacard-interactions'
 import { hot } from 'react-hot-loader'
 import { getExportResults } from '../utils/export/export'
 import { useDialogState } from '../../component/hooks/useDialogState'
-import Button from '@material-ui/core/Button'
-import CloseIcon from '@material-ui/icons/Close'
-import Divider from '@material-ui/core/Divider'
+import Button from '@mui/material/Button'
+import CloseIcon from '@mui/icons-material/Close'
+import Divider from '@mui/material/Divider'
 
 export const ExportActions = (props: MetacardInteractionProps) => {
   const exportDialogState = useDialogState()

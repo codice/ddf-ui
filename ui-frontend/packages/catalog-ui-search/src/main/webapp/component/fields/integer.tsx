@@ -14,7 +14,7 @@
  **/
 import * as React from 'react'
 
-import TextField from '@material-ui/core/TextField'
+import TextField from '@mui/material/TextField'
 import { ValueTypes } from '../filter-builder/filter.structure'
 import { EnterKeySubmitProps } from '../custom-events/enter-key-submit'
 

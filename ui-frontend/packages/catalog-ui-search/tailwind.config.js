@@ -1,4 +1,5 @@
 module.exports = {
+  darkMode: 'class',
   content: ['./src/**/*.{tsx,js,jsx,ts}'],
   theme: {
     namedGroups: ['1', '2'],
@@ -50,10 +51,6 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require('tailwindcss-named-groups'),
-    require('./tailwindcss-group-focus-visible'),
-  ],
   corePlugins: {
     preflight: false,
   },

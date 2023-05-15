@@ -245,10 +245,10 @@ $(window).on(`resize.themeContainer`, _.throttle(updateMediaQueries, 30))
 user.get('user').get('preferences').on('change:theme', updateSharedTheme)
 user.get('user').get('preferences').on('change:fontSize', updateMediaQueries)
 class ThemeContainer extends React.Component<
-  WithBackboneProps,
+  WithBackboneProps & { children: React.ReactNode },
   ThemeInterface
 > {
-  constructor(props: WithBackboneProps) {
+  constructor(props: WithBackboneProps & { children: React.ReactNode }) {
     super(props)
     this.state = sharedState
   }
@@ -288,9 +288,7 @@ class ThemeContainer extends React.Component<
   }
   render() {
     return (
-      <ThemeProvider theme={this.state}>
-        {this.props.children as React.ReactElement}
-      </ThemeProvider>
+      <ThemeProvider theme={this.state}>{this.props.children}</ThemeProvider>
     )
   }
 }

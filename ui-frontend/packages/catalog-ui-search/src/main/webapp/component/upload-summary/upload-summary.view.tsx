@@ -14,8 +14,8 @@
  **/
 import React from 'react'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
-import LinearProgress from '@material-ui/core/LinearProgress'
-import Button from '@material-ui/core/Button'
+import LinearProgress from '@mui/material/LinearProgress'
+import Button from '@mui/material/Button'
 import wreqr from '../../js/wreqr'
 type UploadSummaryViewReactType = {
   model: any

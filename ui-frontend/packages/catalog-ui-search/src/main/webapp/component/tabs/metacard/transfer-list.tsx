@@ -1,18 +1,18 @@
 /* https://material-ui.com/components/transfer-list/ */
 import { hot } from 'react-hot-loader'
 import React from 'react'
-import Grid from '@material-ui/core/Grid'
-import List from '@material-ui/core/List'
-import Button from '@material-ui/core/Button'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogActions from '@material-ui/core/DialogActions'
-import TextField from '@material-ui/core/TextField'
-import LinearProgress from '@material-ui/core/LinearProgress'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import Paper from '@material-ui/core/Paper'
+import Grid from '@mui/material/Grid'
+import List from '@mui/material/List'
+import Button from '@mui/material/Button'
+import DialogContent from '@mui/material/DialogContent'
+import DialogActions from '@mui/material/DialogActions'
+import TextField from '@mui/material/TextField'
+import LinearProgress from '@mui/material/LinearProgress'
+import CircularProgress from '@mui/material/CircularProgress'
+import Paper from '@mui/material/Paper'
 import { useDialog } from '../../dialog'
 import TypedMetacardDefs from './metacardDefinitions'
-import EditIcon from '@material-ui/icons/Edit'
+import EditIcon from '@mui/icons-material/Edit'
 import { Editor } from './summary'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import {
@@ -24,14 +24,14 @@ import {
 import extension from '../../../extension-points'
 import { Elevations } from '../../theme/theme'
 import { DarkDivider } from '../../dark-divider/dark-divider'
-import LeftArrowIcon from '@material-ui/icons/ChevronLeft'
-import RightArrowIcon from '@material-ui/icons/ChevronRight'
-import CloseIcon from '@material-ui/icons/Close'
-import CheckBoxIcon from '@material-ui/icons/CheckBox'
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
-import IndeterminateCheckBoxIcon from '@material-ui/icons/IndeterminateCheckBox'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Switch from '@material-ui/core/Switch'
+import LeftArrowIcon from '@mui/icons-material/ChevronLeft'
+import RightArrowIcon from '@mui/icons-material/ChevronRight'
+import CloseIcon from '@mui/icons-material/Close'
+import CheckBoxIcon from '@mui/icons-material/CheckBox'
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
+import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Switch from '@mui/material/Switch'
 import { AutoVariableSizeList } from 'react-window-components'
 import debounce from 'lodash.debounce'
 import { Memo } from '../../memo/memo'
@@ -178,7 +178,7 @@ const ItemRow = ({
       <Button
         fullWidth
         size="medium"
-        className="children-block text-left"
+        className="justify-start"
         onClick={(event) => {
           if (event.shiftKey) {
             handleShiftClick({
@@ -355,9 +355,7 @@ const CustomList = ({
               data-id={`${(title as any).toLowerCase()}-select-all-checkbox`}
               disabled={Object.keys(items).length === 0}
               onClick={handleToggleAll(items)}
-              color={
-                isIndeterminate || isCompletelySelected ? 'default' : 'default'
-              }
+              color="primary"
             >
               {(() => {
                 if (isCompletelySelected) {
@@ -737,7 +735,6 @@ const TransferList = ({
           data-id="close-button"
           className="absolute right-0 top-0 mr-1 mt-1"
           variant="text"
-          color="default"
           size="small"
           onClick={() => {
             dialogContext.setProps({

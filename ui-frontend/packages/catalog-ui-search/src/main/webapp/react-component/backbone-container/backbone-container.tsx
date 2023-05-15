@@ -28,7 +28,7 @@ export type WithBackboneProps = {
 }
 
 const withListenTo = <P extends WithBackboneProps>(
-  Component: React.ComponentType<P>
+  Component: React.ComponentType<React.PropsWithChildren<P>>
 ) => {
   return class BackboneContainer extends React.Component<
     Subtract<P, WithBackboneProps>,

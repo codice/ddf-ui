@@ -15,11 +15,11 @@
 import * as React from 'react'
 import LinearProgress, {
   LinearProgressProps,
-} from '@material-ui/core/LinearProgress'
-import Button, { ButtonProps } from '@material-ui/core/Button'
+} from '@mui/material/LinearProgress'
+import Button, { ButtonProps } from '@mui/material/Button'
 import CircularProgress, {
   CircularProgressProps,
-} from '@material-ui/core/CircularProgress'
+} from '@mui/material/CircularProgress'
 
 type Props = {
   children: React.ReactNode

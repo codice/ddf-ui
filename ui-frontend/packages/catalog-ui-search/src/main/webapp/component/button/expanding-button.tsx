@@ -1,15 +1,15 @@
 import * as React from 'react'
-import FakeIcon from '@material-ui/icons/AcUnit'
-import Button, { ButtonProps } from '@material-ui/core/Button'
+import FakeIcon from '@mui/icons-material/AcUnit'
+import Button, { ButtonProps } from '@mui/material/Button'
 import { LinkProps, Link } from 'react-router-dom'
 import { hot } from 'react-hot-loader'
-import Tooltip from '@material-ui/core/Tooltip'
-import Paper from '@material-ui/core/Paper'
+import Tooltip from '@mui/material/Tooltip'
+import Paper from '@mui/material/Paper'
 import { Elevations } from '../theme/theme'
 import { useIsTruncated } from '../overflow-tooltip/overflow-tooltip'
 
 export type BaseProps = {
-  Icon?: React.FC<any>
+  Icon?: React.FC<React.PropsWithChildren<any>>
   expandedLabel: React.ReactNode
   unexpandedLabel: React.ReactNode
   dataId?: string
@@ -74,7 +74,7 @@ const ExpandingButton = ({
       <Button
         data-id={dataId}
         fullWidth
-        className={`${className} children-block children-h-full transition-all duration-200 ease-in-out whitespace-nowrap max-w-full overflow-hidden relative outline-none ${
+        className={`${className} transition-all duration-200 ease-in-out whitespace-nowrap max-w-full overflow-hidden relative outline-none ${
           expanded ? '' : 'p-0'
         }`}
         {...otherButtonProps}

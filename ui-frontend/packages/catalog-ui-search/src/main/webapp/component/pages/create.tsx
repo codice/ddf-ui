@@ -1,7 +1,7 @@
-import Button from '@material-ui/core/Button'
-import MenuItem from '@material-ui/core/MenuItem'
-import Paper from '@material-ui/core/Paper'
-import Popover from '@material-ui/core/Popover'
+import Button from '@mui/material/Button'
+import MenuItem from '@mui/material/MenuItem'
+import Paper from '@mui/material/Paper'
+import Popover from '@mui/material/Popover'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { useHistory } from 'react-router-dom'
@@ -30,11 +30,12 @@ const Open = () => {
   return (
     <div className="w-full h-full p-2">
       <Button
+        component="div"
         onClick={openMenuState.handleClick}
         className="text-2xl pb-2"
         variant="contained"
         color="primary"
-        innerRef={openMenuState.anchorRef}
+        ref={openMenuState.anchorRef}
       >
         Create
       </Button>
@@ -43,7 +44,6 @@ const Open = () => {
         anchorEl={titleMenuState.anchorRef.current}
         onClose={titleMenuState.handleClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        getContentAnchorEl={null}
       >
         <Paper elevation={Elevations.overlays} className="p-2">
           <SaveForm
@@ -68,7 +68,6 @@ const Open = () => {
         anchorEl={fromExistingMenuState.anchorRef.current}
         onClose={fromExistingMenuState.handleClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        getContentAnchorEl={null}
       >
         <Paper elevation={Elevations.overlays} className="p-2 w-64">
           <OpenSearch
@@ -103,7 +102,8 @@ const Open = () => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <MenuItem
-          innerRef={titleMenuState.anchorRef}
+          component="div"
+          ref={titleMenuState.anchorRef}
           onClick={() => {
             titleMenuState.handleClick()
           }}
@@ -111,7 +111,8 @@ const Open = () => {
           Search
         </MenuItem>
         <MenuItem
-          innerRef={fromExistingMenuState.anchorRef}
+          component="div"
+          ref={fromExistingMenuState.anchorRef}
           onClick={() => {
             fromExistingMenuState.handleClick()
           }}

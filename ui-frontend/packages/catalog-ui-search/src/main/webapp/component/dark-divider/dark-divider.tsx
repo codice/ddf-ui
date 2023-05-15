@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import useTheme from '@material-ui/core/styles/useTheme'
-import Divider, { DividerProps } from '@material-ui/core/Divider'
+import { useTheme } from '@mui/material/styles'
+import Divider, { DividerProps } from '@mui/material/Divider'
 import { dark, light } from '../theme/theme'
 
 export const DarkDivider = (props: DividerProps) => {
@@ -11,8 +11,8 @@ export const DarkDivider = (props: DividerProps) => {
     <Divider
       {...otherProps}
       style={{
-        backgroundColor:
-          theme.palette.type === 'dark' ? dark.background : light.background,
+        borderColor:
+          theme.palette.mode === 'dark' ? dark.background : light.background,
         ...style,
       }}
     />

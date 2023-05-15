@@ -18,9 +18,9 @@ import wreqr from '../../js/wreqr'
 import { Drawing, useIsDrawing } from '../../component/singletons/drawing'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 import { hot } from 'react-hot-loader'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import TextField from '@material-ui/core/TextField'
-import Button from '@material-ui/core/Button'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
 import Line from './line'
 import Polygon from './polygon'
 import PointRadius from './point-radius'
@@ -171,7 +171,7 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
           size="small"
           options={options}
           getOptionLabel={(option) => option.label}
-          getOptionSelected={(option, value) => {
+          isOptionEqualToValue={(option, value) => {
             return option.value === value.value
           }}
           onChange={(_e, newValue) => {

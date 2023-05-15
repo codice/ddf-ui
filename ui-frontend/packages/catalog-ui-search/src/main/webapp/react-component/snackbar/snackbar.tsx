@@ -1,10 +1,10 @@
 import * as React from 'react'
-import Snackbar, { SnackbarProps } from '@material-ui/core/Snackbar'
+import Snackbar, { SnackbarProps } from '@mui/material/Snackbar'
 import SnackbarContent, {
   SnackbarContentProps,
-} from '@material-ui/core/SnackbarContent'
+} from '@mui/material/SnackbarContent'
 import styled from 'styled-components'
-import { useTheme } from '@material-ui/core/styles'
+import { useTheme } from '@mui/material/styles'
 
 type ExtraProps = {
   variant?: 'error' | 'success'
@@ -14,7 +14,9 @@ export const WrappedSnackbar = styled(
   React.forwardRef((props: SnackbarProps & ExtraProps, ref: React.Ref<any>) => {
     return <Snackbar {...props} ref={ref} />
   })
-)<SnackbarProps>`` as React.ComponentType<SnackbarProps>
+)<SnackbarProps>`` as React.ComponentType<
+  React.PropsWithChildren<SnackbarProps>
+>
 
 export const WrappedSnackbarContent = styled(
   React.forwardRef(
@@ -37,5 +39,5 @@ export const WrappedSnackbarContent = styled(
     }
   )
 )<SnackbarContentProps>`` as React.ComponentType<
-  SnackbarContentProps & ExtraProps
+  React.PropsWithChildren<SnackbarContentProps & ExtraProps>
 >

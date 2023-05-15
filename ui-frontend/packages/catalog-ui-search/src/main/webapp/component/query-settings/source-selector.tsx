@@ -1,18 +1,18 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-import TextField from '@material-ui/core/TextField'
-import MenuItem from '@material-ui/core/MenuItem'
+import TextField from '@mui/material/TextField'
+import MenuItem from '@mui/material/MenuItem'
 import sourcesInstance from '../../component/singletons/sources-instance'
-import Typography from '@material-ui/core/Typography'
+import Typography from '@mui/material/Typography'
 import Swath from '../swath/swath'
-import Grid from '@material-ui/core/Grid'
-import HomeIcon from '@material-ui/icons/Home'
-import CloudIcon from '@material-ui/icons/Cloud'
-import WarningIcon from '@material-ui/icons/Warning'
-import CheckBoxIcon from '@material-ui/icons/CheckBox'
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
-import Chip from '@material-ui/core/Chip'
+import Grid from '@mui/material/Grid'
+import HomeIcon from '@mui/icons-material/Home'
+import CloudIcon from '@mui/icons-material/Cloud'
+import WarningIcon from '@mui/icons-material/Warning'
+import CheckBoxIcon from '@mui/icons-material/CheckBox'
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
+import Chip from '@mui/material/Chip'
 import _ from 'lodash'
 type Props = {
   search: any
@@ -148,9 +148,7 @@ const SourceSelector = ({ search }: Props) => {
               </Grid>
             )
           },
-          MenuProps: {
-            getContentAnchorEl: null, // makes it so this menu doesn't jump around, see https://stackoverflow.com/questions/48157863/how-to-make-a-dropdown-menu-open-below-the-appbar-using-material-ui && https://github.com/mui-org/material-ui/issues/20755
-          },
+          MenuProps: {},
         }}
         value={sources}
         onChange={(e) => {

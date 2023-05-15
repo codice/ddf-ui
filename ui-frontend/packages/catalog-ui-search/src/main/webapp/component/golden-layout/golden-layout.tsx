@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { useResizableGridContext } from '../resizable-grid/resizable-grid'
 import { GoldenLayoutViewReact } from './golden-layout.view'
-import Grid from '@material-ui/core/Grid'
-import Paper from '@material-ui/core/Paper'
+import Grid from '@mui/material/Grid'
+import Paper from '@mui/material/Paper'
 import ResultSelector from '../result-selector/result-selector'
 import { Elevations } from '../theme/theme'
 

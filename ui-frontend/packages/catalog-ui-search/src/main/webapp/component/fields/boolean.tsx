@@ -14,9 +14,9 @@
  **/
 import * as React from 'react'
 
-import TextField from '@material-ui/core/TextField'
+import TextField from '@mui/material/TextField'
 import { ValueTypes } from '../filter-builder/filter.structure'
-import MenuItem from '@material-ui/core/MenuItem'
+import MenuItem from '@mui/material/MenuItem'
 
 type Props = {
   value: ValueTypes['boolean']

@@ -3,20 +3,18 @@
  */
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import { rgbToHex } from '@material-ui/core/styles'
-import withStyles from '@material-ui/core/styles/withStyles'
-import useTheme from '@material-ui/core/styles/useTheme'
+import { rgbToHex, useTheme } from '@mui/material/styles'
+import withStyles from '@mui/styles/withStyles'
 import colors from './typed-colors'
-import capitalize from '@material-ui/core/utils/capitalize'
-import Grid from '@material-ui/core/Grid'
-import Input from '@material-ui/core/Input'
-import Radio from '@material-ui/core/Radio'
-import Tooltip from '@material-ui/core/Tooltip'
-import Typography from '@material-ui/core/Typography'
-import Button from '@material-ui/core/Button'
+import Grid from '@mui/material/Grid'
+import Input from '@mui/material/Input'
+import Radio from '@mui/material/Radio'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
 import _ from 'lodash'
-import CheckIcon from '@material-ui/icons/Check'
-import Slider from '@material-ui/core/Slider'
+import CheckIcon from '@mui/icons-material/Check'
+import Slider from '@mui/material/Slider'
 const hues = Object.keys(colors).slice(1, 17)
 const shades = [
   900,
@@ -35,6 +33,8 @@ const shades = [
   'A100',
 ]
 import user from '../../component/singletons/user-instance'
+
+import { capitalize } from '@mui/material/utils'
 
 /**
  * Costly to update, so let them settle on a color first
@@ -182,7 +182,11 @@ function ColorTool(props: any) {
   }, [state])
 
   const colorBar = (color: any, intent: string) => {
-    const background = theme.palette.augmentColor({ main: color })
+    const background = theme.palette.augmentColor({
+      color: {
+        main: color,
+      },
+    })
 
     return (
       <Grid container className={classes.colorBar}>

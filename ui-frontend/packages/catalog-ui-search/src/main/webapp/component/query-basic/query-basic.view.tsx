@@ -25,21 +25,21 @@ import QueryTimeReactView, {
   BasicFilterClass,
 } from '../query-time/query-time.view'
 const METADATA_CONTENT_TYPE = 'metadata-content-type'
-import TextField from '@material-ui/core/TextField'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox'
+import TextField from '@mui/material/TextField'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Checkbox from '@mui/material/Checkbox'
 import {
   BooleanTextType,
   FilterBuilderClass,
   FilterClass,
 } from '../filter-builder/filter.structure'
-import Typography from '@material-ui/core/Typography'
+import Typography from '@mui/material/Typography'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import FilterInput from '../../react-component/filter/filter-input'
 import Swath from '../swath/swath'
-import Grid from '@material-ui/core/Grid'
-import Chip from '@material-ui/core/Chip'
-import Autocomplete from '@material-ui/lab/Autocomplete'
+import Grid from '@mui/material/Grid'
+import Chip from '@mui/material/Chip'
+import Autocomplete from '@mui/material/Autocomplete'
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 import BooleanSearchBar from '../boolean-search-bar/boolean-search-bar'
 import { ValidationResult } from '../../react-component/location/validators'
@@ -544,7 +544,7 @@ const QueryBasic = ({ model, errorListener }: QueryBasicProps) => {
                   options={Object.values(typeAttributes)}
                   disableCloseOnSelect
                   getOptionLabel={(option) => option.label}
-                  getOptionSelected={(option, value) =>
+                  isOptionEqualToValue={(option, value) =>
                     option.value === value.value
                   }
                   onChange={(_e, newValue) => {
@@ -557,14 +557,14 @@ const QueryBasic = ({ model, errorListener }: QueryBasicProps) => {
                     )
                   }}
                   size="small"
-                  renderOption={({ label, value }) => {
+                  renderOption={(props, { label, value }) => {
                     return (
-                      <>
+                      <li {...props}>
                         <div
                           className={`pr-2 icon ${typeAttributes[value].class}`}
                         />
                         {label}
-                      </>
+                      </li>
                     )
                   }}
                   renderTags={(tagValue, getTagProps) =>

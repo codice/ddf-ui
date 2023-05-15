@@ -16,10 +16,10 @@ import * as React from 'react'
 
 import { isDirectionalSort } from './sort-selection-helpers'
 import { SortItemType, Option } from './sort-selections'
-import TextField from '@material-ui/core/TextField'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import Grid from '@material-ui/core/Grid'
-import Button from '@material-ui/core/Button'
+import TextField from '@mui/material/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import Grid from '@mui/material/Grid'
+import Button from '@mui/material/Button'
 import Swath from '../../component/swath/swath'
 
 type Props = {
@@ -52,7 +52,7 @@ const SortItem = ({
               fullWidth
               options={attributeOptions}
               getOptionLabel={(option) => option.label}
-              getOptionSelected={(option, value) => {
+              isOptionEqualToValue={(option, value) => {
                 return option.value === value.value
               }}
               onChange={(_e: any, newValue: Option) => {
@@ -97,7 +97,7 @@ const SortItem = ({
                 fullWidth
                 options={directionOptions}
                 getOptionLabel={(option) => option.label}
-                getOptionSelected={(option, value) =>
+                isOptionEqualToValue={(option, value) =>
                   option.value === value.value
                 }
                 onChange={(_e: any, newValue: Option) => {

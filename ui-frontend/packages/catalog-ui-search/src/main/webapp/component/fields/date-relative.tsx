@@ -1,7 +1,7 @@
 import * as React from 'react'
-import Grid from '@material-ui/core/Grid'
-import TextField from '@material-ui/core/TextField'
-import MenuItem from '@material-ui/core/MenuItem'
+import Grid from '@mui/material/Grid'
+import TextField from '@mui/material/TextField'
+import MenuItem from '@mui/material/MenuItem'
 import { NumberField } from './number'
 import { ValueTypes } from '../filter-builder/filter.structure'
 

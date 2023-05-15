@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react'
-import Tooltip, { TooltipProps } from '@material-ui/core/Tooltip'
-import Paper from '@material-ui/core/Paper'
+import Tooltip, { TooltipProps } from '@mui/material/Tooltip'
+import Paper from '@mui/material/Paper'
 import { hot } from 'react-hot-loader'
 import { Elevations } from '../theme/theme'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'

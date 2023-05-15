@@ -13,12 +13,12 @@
  *
  **/
 import * as React from 'react'
-import Button from '@material-ui/core/Button'
-import Popover from '@material-ui/core/Popover'
+import Button from '@mui/material/Button'
+import Popover from '@mui/material/Popover'
 import { useMenuState } from '../menu-state/menu-state'
 import LayersView from './layers.view'
-import LayersIcon from '@material-ui/icons/Layers'
-import Paper from '@material-ui/core/Paper'
+import LayersIcon from '@mui/icons-material/Layers'
+import Paper from '@mui/material/Paper'
 import { Elevations } from '../theme/theme'
 
 export const LayersDropdown = () => {

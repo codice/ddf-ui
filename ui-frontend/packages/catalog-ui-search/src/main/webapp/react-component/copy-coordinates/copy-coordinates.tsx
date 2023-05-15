@@ -14,10 +14,10 @@
  **/
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
 import { useMenuState } from '../../component/menu-state/menu-state'
-import Popover from '@material-ui/core/Popover'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import Popover from '@mui/material/Popover'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import useSnack from '../../component/hooks/useSnack'
 import { AddSnack } from '../../component/snack/snack.provider'
 

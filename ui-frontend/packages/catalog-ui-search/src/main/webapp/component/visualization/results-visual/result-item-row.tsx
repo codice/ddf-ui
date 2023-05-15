@@ -12,8 +12,8 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import Button from '@material-ui/core/Button'
-import Grid from '@material-ui/core/Grid'
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { CellComponent } from './table-header'
@@ -25,8 +25,8 @@ import {
 import metacardDefinitions from '../../singletons/metacard-definitions'
 import user from '../../singletons/user-instance'
 import TypedMetacardDefs from '../../tabs/metacard/metacardDefinitions'
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
-import CheckBoxIcon from '@material-ui/icons/CheckBox'
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
+import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import { SelectionBackground } from './result-item'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import { TypedUserInstance } from '../../singletons/TypedUser'
@@ -71,7 +71,7 @@ const CheckboxCell = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
             lazyResult.controlSelect()
           }
         }}
-        className="h-full children-block children-h-full"
+        className="h-full"
       >
         {isSelected ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
       </Button>
@@ -167,7 +167,7 @@ const RowComponent = ({
             disableFocusRipple
             disableRipple
             disableTouchRipple
-            className="outline-none rounded-none select-text p-0 text-left break-words h-full children-h-full"
+            className="outline-none rounded-none select-text p-0 text-left break-words h-full"
           >
             <div className="w-full h-full">
               <Grid container direction="row" className="h-full" wrap="nowrap">
