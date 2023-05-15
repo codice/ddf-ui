@@ -13,7 +13,6 @@
  *
  **/
 import * as React from 'react'
-import { StyledEngineProvider, Theme } from '@mui/material'
 import { ThemeProvider } from 'styled-components'
 import {
   ThemeInterface,
@@ -26,11 +25,6 @@ import withListenTo, { WithBackboneProps } from '../backbone-container'
 import Common from '../../js/Common'
 import $ from 'jquery'
 import _ from 'underscore'
-
-declare module '@mui/styles/defaultTheme' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
 
 type SizingInterface = {
   comfortable: SpecificSizingInterface
@@ -294,9 +288,7 @@ class ThemeContainer extends React.Component<
   }
   render() {
     return (
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={this.state}>{this.props.children}</ThemeProvider>
-      </StyledEngineProvider>
+      <ThemeProvider theme={this.state}>{this.props.children}</ThemeProvider>
     )
   }
 }

@@ -16,11 +16,6 @@ import { createGlobalStyle } from 'styled-components'
 import { meetsContrastGuidelines } from 'polished'
 import { useRemoveFocusStyle } from '../app/blueprint.adjust'
 
-declare module '@mui/styles/defaultTheme' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
-
 type Theme = {
   primary: string
   secondary: string
