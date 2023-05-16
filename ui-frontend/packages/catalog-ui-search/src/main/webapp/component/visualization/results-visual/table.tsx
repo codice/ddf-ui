@@ -220,7 +220,12 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
               </Grid>
               <Grid item className="w-full h-full overflow-hidden bg-inherit">
                 <Memo
-                  dependencies={[listRef.current, results, isSearching, status]}
+                  dependencies={[
+                    listRef.current,
+                    lazyResults.results,
+                    isSearching,
+                    status,
+                  ]}
                 >
                   <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
                     outerElementProps={{

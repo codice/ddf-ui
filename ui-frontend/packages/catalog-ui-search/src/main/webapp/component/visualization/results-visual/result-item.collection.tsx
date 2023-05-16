@@ -239,7 +239,12 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
         <Paper elevation={Elevations.paper} className="w-full h-full">
           {isMounted ? (
             <Memo
-              dependencies={[listRef.current, results, isSearching, status]}
+              dependencies={[
+                listRef.current,
+                lazyResults.results,
+                isSearching,
+                status,
+              ]}
             >
               <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
                 controlledMeasuring={true}
