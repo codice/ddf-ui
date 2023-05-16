@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import _debounce from 'lodash/debounce'
 import { Suggestion } from '../location/gazetteer'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import TextField, { TextFieldProps } from '@material-ui/core/TextField'
-import Button from '@material-ui/core/Button'
-import Chip from '@material-ui/core/Chip'
-import RoomIcon from '@material-ui/icons/Room'
-import DeleteIcon from '@material-ui/icons/Clear'
+import Autocomplete from '@mui/material/Autocomplete'
+import CircularProgress from '@mui/material/CircularProgress'
+import TextField, { TextFieldProps } from '@mui/material/TextField'
+import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
+import RoomIcon from '@mui/icons-material/Room'
+import DeleteIcon from '@mui/icons-material/Clear'
 
 type Props = {
   suggester: (input: string) => Promise<Suggestion[]>

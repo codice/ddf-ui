@@ -1,5 +1,5 @@
 import * as React from 'react'
-import TextField, { TextFieldProps } from '@material-ui/core/TextField'
+import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { EnterKeySubmitProps } from '../custom-events/enter-key-submit'
 
 type Props = {

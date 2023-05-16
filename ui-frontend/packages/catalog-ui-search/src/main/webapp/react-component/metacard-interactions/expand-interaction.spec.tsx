@@ -2,7 +2,7 @@ import React from 'react'
 import { HashRouter as Router } from 'react-router-dom'
 import ExpandInteraction from './expand-interaction'
 import Enzyme, { mount } from 'enzyme'
-import Adapter from 'enzyme-adapter-react-16'
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17'
 Enzyme.configure({ adapter: new Adapter() })
 import { expect } from 'chai'
 

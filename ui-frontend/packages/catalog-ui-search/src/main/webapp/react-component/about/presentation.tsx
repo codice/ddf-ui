@@ -16,7 +16,7 @@ import * as React from 'react'
 import styled from 'styled-components'
 import { CustomElement } from '../styles/mixins'
 import { hot } from 'react-hot-loader'
-import Divider from '@material-ui/core/Divider'
+import Divider from '@mui/material/Divider'
 
 interface Props {
   branding: string

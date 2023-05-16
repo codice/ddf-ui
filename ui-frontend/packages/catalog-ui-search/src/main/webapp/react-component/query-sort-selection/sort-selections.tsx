@@ -12,10 +12,10 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import Button from '@material-ui/core/Button'
-import Grid from '@material-ui/core/Grid'
-import Typography from '@material-ui/core/Typography'
-import AddIcon from '@material-ui/icons/Add'
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
+import Typography from '@mui/material/Typography'
+import AddIcon from '@mui/icons-material/Add'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import SortItem from './sort-item'

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import ClickAwayListener, {
   ClickAwayListenerProps,
-} from '@material-ui/core/ClickAwayListener'
+} from '@mui/material/ClickAwayListener'
 import { Drawing } from '../singletons/drawing'
 
 type BetterClickAwayListenerProps = ClickAwayListenerProps & {

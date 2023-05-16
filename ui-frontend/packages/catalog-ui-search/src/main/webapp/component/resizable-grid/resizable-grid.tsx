@@ -1,5 +1,5 @@
 import * as React from 'react'
-import Grid from '@material-ui/core/Grid'
+import Grid from '@mui/material/Grid'
 import { Resizable, ResizableProps } from 're-resizable'
 import styled from 'styled-components'
 import { createCtx } from '../../typescript/context'
@@ -8,10 +8,12 @@ export const DEFAULT_AUTO_COLLAPSE_LENGTH = 300
 export const DEFAULT_STARTING_LENGTH = 550
 export const DEFAULT_COLLAPSED_LENGTH = 75
 type ResizableGridType = React.ComponentType<
-  ResizableProps & {
-    component: any
-    item: any
-  }
+  React.PropsWithChildren<
+    ResizableProps & {
+      component: any
+      item: any
+    }
+  >
 >
 const ResizableGrid = Grid as ResizableGridType
 export const [useResizableGridContext, UseResizableGridContextProvider] =

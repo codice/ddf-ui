@@ -67,6 +67,8 @@ const defaultExamples = {
   mgrs: '4Q FL 23009 12331',
   utm: '14N 1925mE 1513mN',
   wkt: 'POINT (50 40)',
+} as {
+  [index: string]: string
 }
 
 const render = (props: Props) => {

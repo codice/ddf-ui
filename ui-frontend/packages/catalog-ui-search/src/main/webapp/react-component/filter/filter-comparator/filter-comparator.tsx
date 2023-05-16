@@ -14,8 +14,8 @@
  **/
 import React, { useEffect } from 'react'
 import { getComparators } from './comparatorUtils'
-import MenuItem from '@material-ui/core/MenuItem'
-import TextField from '@material-ui/core/TextField'
+import MenuItem from '@mui/material/MenuItem'
+import TextField from '@mui/material/TextField'
 import { FilterClass } from '../../../component/filter-builder/filter.structure'
 
 type Props = {

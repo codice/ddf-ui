@@ -13,7 +13,7 @@
  *
  **/
 import React from 'react'
-import TextField from '@material-ui/core/TextField'
+import TextField from '@mui/material/TextField'
 class Direction extends React.Component {
   getToggledOption() {
     return (this.props as any).value === (this.props as any).options[0]

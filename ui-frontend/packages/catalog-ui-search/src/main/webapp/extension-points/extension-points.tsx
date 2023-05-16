@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-import { SFC } from '../react-component/hoc/utils'
+import { FC } from '../react-component/hoc/utils'
 import { providers, Props as ProviderProps } from './providers'
 import metacardInteractions from './metacard-interactions'
 import { LazyQueryResult } from '../js/model/LazyQueryResult/LazyQueryResult'
@@ -25,7 +25,7 @@ import { PermissiveComponentType } from '../typescript'
 import { InputsType } from '../react-component/location/location'
 
 export type ExtensionPointsType = {
-  providers: SFC<ProviderProps>
+  providers: FC<React.PropsWithChildren<ProviderProps>>
   metacardInteractions: ((
     props: MetacardInteractionProps
   ) => React.ReactNode | any)[]

@@ -14,11 +14,11 @@
  **/
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
 import properties from '../../js/properties'
-import GetAppIcon from '@material-ui/icons/GetApp'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import TextField from '@material-ui/core/TextField'
+import GetAppIcon from '@mui/icons-material/GetApp'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
 type Option = {
   label: string
   value: string
@@ -57,7 +57,7 @@ export default hot(module)((props: Props) => {
           onChange={(_e: any, newValue) => {
             handleExportSizeChange(newValue.value)
           }}
-          getOptionSelected={(option) => option.value === exportSize}
+          isOptionEqualToValue={(option) => option.value === exportSize}
           getOptionLabel={(option) => {
             return option.label
           }}
@@ -96,7 +96,7 @@ export default hot(module)((props: Props) => {
           onChange={(_e: any, newValue) => {
             handleExportFormatChange(newValue.value)
           }}
-          getOptionSelected={(option) => option.value === exportFormat}
+          isOptionEqualToValue={(option) => option.value === exportFormat}
           getOptionLabel={(option) => {
             return option.label
           }}

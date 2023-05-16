@@ -5,8 +5,8 @@ import { LazyQueryResults } from '../../../js/model/LazyQueryResult/LazyQueryRes
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import { useSelectedResults } from '../../../js/model/LazyQueryResult/hooks'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import TextField from '@material-ui/core/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
 import Common from '../../../js/Common'
 import wreqr from '../../../js/wreqr'
 import $ from 'jquery'
@@ -551,7 +551,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
           onChange={(_e: any, newValue) => {
             setAttributeToBin(newValue.value)
           }}
-          getOptionSelected={(option) => option.value === attributeToBin}
+          isOptionEqualToValue={(option) => option.value === attributeToBin}
           getOptionLabel={(option) => {
             return option.label
           }}

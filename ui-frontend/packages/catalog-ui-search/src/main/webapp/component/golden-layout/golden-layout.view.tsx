@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-import * as ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import _ from 'underscore'
 import _merge from 'lodash/merge'
 import _debounce from 'lodash/debounce'
@@ -24,17 +24,17 @@ import properties from '../../js/properties'
 import user from '../singletons/user-instance'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'sani... Remove this comment to see the full error message
 import sanitize from 'sanitize-html'
-import Button from '@material-ui/core/Button'
-import Grid from '@material-ui/core/Grid'
-import AllOutIcon from '@material-ui/icons/AllOut'
-import MinimizeIcon from '@material-ui/icons/Minimize'
-import MaximizeIcon from '@material-ui/icons/Add'
-import CloseIcon from '@material-ui/icons/Close'
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
+import AllOutIcon from '@mui/icons-material/AllOut'
+import MinimizeIcon from '@mui/icons-material/Minimize'
+import MaximizeIcon from '@mui/icons-material/Add'
+import CloseIcon from '@mui/icons-material/Close'
 import ExtensionPoints from '../../extension-points/extension-points'
 import { Visualizations } from '../visualization/visualizations'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
-import Paper from '@material-ui/core/Paper'
+import Paper from '@mui/material/Paper'
 import { Elevations } from '../theme/theme'
 
 const treeMap = (obj: any, fn: any, path = []): any => {
@@ -196,16 +196,16 @@ function registerComponent(
     (container: any, componentState: any) => {
       container.on('open', () => {
         setTimeout(() => {
-          ReactDOM.render(
+          const root = createRoot(container.getElement()[0])
+          root.render(
             <GoldenLayoutComponent
               options={options}
               ComponentView={ComponentView}
               container={container}
-            />,
-            container.getElement()[0]
+            />
           )
           container.on('destroy', () => {
-            ReactDOM.unmountComponentAtNode(container.getElement()[0])
+            root.unmount()
           })
         }, 0)
       })
@@ -223,7 +223,8 @@ function registerComponent(
         tab.element.append(root)
         let intervalId = setInterval(() => {
           try {
-            ReactDOM.render(
+            const renderRoot = createRoot(tab.element[0])
+            renderRoot.render(
               <GoldenLayoutComponentHeader
                 viz={viz}
                 tab={tab}
@@ -231,8 +232,7 @@ function registerComponent(
                 componentState={componentState}
                 container={container}
                 name={name}
-              />,
-              tab.element[0]
+              />
             )
             clearInterval(intervalId)
           } catch (err) {}
@@ -393,10 +393,8 @@ function handleGoldenLayoutStateChange({
 function handleGoldenLayoutStackCreated(stack: any) {
   let intervalId = setInterval(() => {
     try {
-      ReactDOM.render(
-        <GoldenLayoutToolbar stack={stack} />,
-        stack.header.controlsContainer[0]
-      )
+      const renderRoot = createRoot(stack.header.controlsContainer[0])
+      renderRoot.render(<GoldenLayoutToolbar stack={stack} />)
       clearInterval(intervalId)
     } catch (err) {}
   }, 100)

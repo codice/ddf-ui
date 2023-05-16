@@ -6,17 +6,17 @@ import {
 } from '../resizable-grid/resizable-grid'
 import SelectionInterfaceModel from '../selection-interface/selection-interface.model'
 import { useQuery, useUserQuery } from '../../js/model/TypedQuery'
-import Grid from '@material-ui/core/Grid'
-import Paper from '@material-ui/core/Paper'
+import Grid from '@mui/material/Grid'
+import Paper from '@mui/material/Paper'
 import { QueryAddReact } from '../query-add/query-add'
-import KeyboardArrowLeftIcon from '@material-ui/icons/KeyboardArrowLeft'
-import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight'
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight'
 import queryString from 'query-string'
 
-import Button, { ButtonProps } from '@material-ui/core/Button'
-import MoreVert from '@material-ui/icons/MoreVert'
+import Button, { ButtonProps } from '@mui/material/Button'
+import MoreVert from '@mui/icons-material/MoreVert'
 import { Elevations } from '../theme/theme'
-import SearchIcon from '@material-ui/icons/SearchTwoTone'
+import SearchIcon from '@mui/icons-material/SearchTwoTone'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import {
   Link,
@@ -26,9 +26,9 @@ import {
   useParams,
 } from 'react-router-dom'
 import _ from 'lodash'
-import TextField from '@material-ui/core/TextField'
+import TextField from '@mui/material/TextField'
 import { DarkDivider } from '../dark-divider/dark-divider'
-import LinearProgress from '@material-ui/core/LinearProgress'
+import LinearProgress from '@mui/material/LinearProgress'
 import { useUpdateEffect } from 'react-use'
 import {
   FilterBuilderClass,
@@ -36,21 +36,21 @@ import {
 } from '../filter-builder/filter.structure'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
-import Skeleton from '@material-ui/lab/Skeleton'
-import CircularProgress from '@material-ui/core/CircularProgress'
+import Skeleton from '@mui/material/Skeleton'
+import CircularProgress from '@mui/material/CircularProgress'
 import {
   useRerenderOnBackboneSync,
   useStatusOfLazyResults,
 } from '../../js/model/LazyQueryResult/hooks'
-import CloudDoneIcon from '@material-ui/icons/CloudDone'
-import SaveIcon from '@material-ui/icons/Save'
+import CloudDoneIcon from '@mui/icons-material/CloudDone'
+import SaveIcon from '@mui/icons-material/Save'
 import { useMenuState } from '../menu-state/menu-state'
-import MenuItem from '@material-ui/core/MenuItem'
-import Menu from '@material-ui/core/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import Menu from '@mui/material/Menu'
 import { TypedUserInstance } from '../singletons/TypedUser'
 import useSnack from '../hooks/useSnack'
-import Popover from '@material-ui/core/Popover'
-import Autocomplete, { AutocompleteProps } from '@material-ui/lab/Autocomplete'
+import Popover from '@mui/material/Popover'
+import Autocomplete, { AutocompleteProps } from '@mui/material/Autocomplete'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import OverflowTooltip, {
   OverflowTooltipHTMLElement,
@@ -348,10 +348,10 @@ export const OpenSearch = ({
   return (
     <Autocomplete
       className="w-64"
-      getOptionSelected={(option) => option.plain.id === option.plain.id}
+      isOptionEqualToValue={(option) => option.plain.id === option.plain.id}
       getOptionLabel={(option) => option.plain.metacard.properties.title}
       options={options}
-      innerRef={inputRef}
+      ref={inputRef}
       open={open && positioningDone}
       onOpen={() => {
         setOpen(true)
@@ -369,8 +369,8 @@ export const OpenSearch = ({
           if (highlightedElementString) {
             setCurrentHighlight(
               (
-                document.querySelector(
-                  `#${highlightedElementString}`
+                document.getElementById(
+                  highlightedElementString
                 ) as HTMLLIElement
               ).querySelector('div') as OverflowTooltipHTMLElement
             )
@@ -382,26 +382,28 @@ export const OpenSearch = ({
         }
       }}
       noOptionsText="Nothing found."
-      renderOption={(option) => {
+      renderOption={(props, option) => {
         return (
-          <Link
-            className="w-full p-0 font-normal no-underline hover:font-normal hover:no-underline"
-            to={constructLink(option)}
-          >
-            <OverflowTooltip
-              tooltipProps={{
-                title: (
-                  <div className="w-full p-2">
-                    {option.plain.metacard.properties.title}
-                  </div>
-                ),
-              }}
+          <li {...props}>
+            <Link
+              className="w-full p-0 font-normal no-underline hover:font-normal hover:no-underline"
+              to={constructLink(option)}
             >
-              <div className="truncate w-full p-2">
-                {option.plain.metacard.properties.title}
-              </div>
-            </OverflowTooltip>
-          </Link>
+              <OverflowTooltip
+                tooltipProps={{
+                  title: (
+                    <div className="w-full p-2">
+                      {option.plain.metacard.properties.title}
+                    </div>
+                  ),
+                }}
+              >
+                <div className="truncate w-full p-2">
+                  {option.plain.metacard.properties.title}
+                </div>
+              </OverflowTooltip>
+            </Link>
+          </li>
         )
       }}
       ListboxProps={{
@@ -467,8 +469,9 @@ const OptionsButton = () => {
   return (
     <>
       <Button
+        component="div"
         fullWidth
-        innerRef={menuState.anchorRef}
+        ref={menuState.anchorRef}
         onClick={menuState.handleClick}
       >
         {closed ? null : <span className="Mui-text-primary">Options</span>}
@@ -666,7 +669,6 @@ const OptionsButton = () => {
       </Popover>
       <Menu
         anchorEl={menuState.anchorRef.current}
-        getContentAnchorEl={null}
         open={menuState.open}
         onClose={menuState.handleClose}
         keepMounted={true}
@@ -691,7 +693,8 @@ const OptionsButton = () => {
           New
         </MenuItem>
         <MenuItem
-          innerRef={menuStateNewFromExisting.anchorRef}
+          component="div"
+          ref={menuStateNewFromExisting.anchorRef}
           onClick={() => {
             menuState.handleClose()
             menuStateNewFromExisting.handleClick()
@@ -700,7 +703,8 @@ const OptionsButton = () => {
           New from existing
         </MenuItem>
         <MenuItem
-          innerRef={menuStateOpenSearch.anchorRef}
+          component="div"
+          ref={menuStateOpenSearch.anchorRef}
           onClick={() => {
             menuState.handleClose()
             menuStateOpenSearch.handleClick()
@@ -982,12 +986,13 @@ const SaveIndicator = () => {
         </Paper>
       </Popover>
       <Button
+        component="div"
         className="shrink-0"
         onClick={(e) => {
           e.stopPropagation()
           popupState.handleClick()
         }}
-        innerRef={popupState.anchorRef}
+        ref={popupState.anchorRef}
       >
         <span
           className={`opacity-75 text-sm shrink-0 flex items-center flex-nowrap ${
@@ -1089,13 +1094,14 @@ const LeftTop = () => {
               </Paper>
             </Popover>
             <Button
+              color="inherit"
               component="div"
-              className={`children-block children-h-full text-left text-2xl shrink truncate ${
+              className={`text-left text-2xl shrink truncate ${
                 closed ? 'h-full' : ''
               }`}
               onClick={adhocMenuState.handleClick}
               size="small"
-              innerRef={adhocMenuState.anchorRef}
+              ref={adhocMenuState.anchorRef}
             >
               <div
                 className={`flex items-center flex-nowrap ${
@@ -1125,7 +1131,7 @@ const LeftTop = () => {
         ) : null}
         {data === true ? (
           <>
-            <Skeleton variant="rect" className="w-full h-full" />
+            <Skeleton variant="rectangular" className="w-full h-full" />
           </>
         ) : null}
         {typeof data !== 'boolean' ? (
@@ -1161,13 +1167,14 @@ const LeftTop = () => {
               </Paper>
             </Popover>
             <Button
+              component="div"
               fullWidth
-              className={`children-block children-h-full text-left text-2xl shrink overflow-hidden ${
+              className={`text-left text-2xl shrink overflow-hidden ${
                 closed ? 'h-full' : ''
               }`}
               onClick={savedMenuState.handleClick}
               size="small"
-              innerRef={savedMenuState.anchorRef}
+              ref={savedMenuState.anchorRef}
             >
               <div
                 className={`flex items-center flex-nowrap ${
@@ -1218,7 +1225,10 @@ const LeftMiddle = () => {
       }`}
     >
       {data === true ? (
-        <Skeleton variant="rect" className="w-full h-full p-10"></Skeleton>
+        <Skeleton
+          variant="rectangular"
+          className="w-full h-full p-10"
+        ></Skeleton>
       ) : (
         <div
           className={`w-full h-full overflow-auto pb-64 ${

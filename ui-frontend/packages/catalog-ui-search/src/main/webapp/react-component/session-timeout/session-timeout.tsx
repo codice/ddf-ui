@@ -13,7 +13,7 @@
  *
  **/
 
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
 import * as React from 'react'
 import styled from 'styled-components'
 import sessionTimeoutModel from '../../component/singletons/session-timeout'

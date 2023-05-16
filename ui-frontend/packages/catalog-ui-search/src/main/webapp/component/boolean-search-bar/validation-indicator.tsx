@@ -1,11 +1,11 @@
 /* Copyright (c) Connexta, LLC */
-import { green, red } from '@material-ui/core/colors'
-import InputAdornment from '@material-ui/core/InputAdornment'
-import Tooltip from '@material-ui/core/Tooltip'
-import Check from '@material-ui/icons/Check'
-import Close from '@material-ui/icons/Close'
+import { green, red } from '@mui/material/colors'
+import InputAdornment from '@mui/material/InputAdornment'
+import Tooltip from '@mui/material/Tooltip'
+import Check from '@mui/icons-material/Check'
+import Close from '@mui/icons-material/Close'
 import * as React from 'react'
-import Paper from '@material-ui/core/Paper'
+import Paper from '@mui/material/Paper'
 import { Elevations } from '../theme/theme'
 
 type ValidationIndicatorProps = {

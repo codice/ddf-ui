@@ -3,16 +3,16 @@ import { hot } from 'react-hot-loader'
 import { useParams } from 'react-router-dom'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { useStatusOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
-import CircularProgress from '@material-ui/core/CircularProgress'
+import CircularProgress from '@mui/material/CircularProgress'
 import SelectionInterfaceModel from '../selection-interface/selection-interface.model'
-import Grid from '@material-ui/core/Grid'
+import Grid from '@mui/material/Grid'
 import { DEFAULT_QUERY_OPTIONS, useUserQuery } from '../../js/model/TypedQuery'
 import {
   FilterBuilderClass,
   FilterClass,
 } from '../filter-builder/filter.structure'
 import { TypedUserInstance, useEphemeralFilter } from '../singletons/TypedUser'
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
 import { TitleView } from '../visualization/inspector/inspector'
 
 export const getFilterTreeForId = ({ id }: { id: string }) => {

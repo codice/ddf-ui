@@ -14,21 +14,21 @@
  **/
 /* eslint-disable no-var */
 import * as React from 'react'
-import TextField from '@material-ui/core/TextField'
-import MenuItem from '@material-ui/core/MenuItem'
+import TextField from '@mui/material/TextField'
+import MenuItem from '@mui/material/MenuItem'
 import { hot } from 'react-hot-loader'
 import { FilterClass } from '../filter-builder/filter.structure'
 import { Omit } from '../../typescript'
-import Autocomplete from '@material-ui/lab/Autocomplete'
+import Autocomplete from '@mui/material/Autocomplete'
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
-import Chip from '@material-ui/core/Chip'
-import Grid from '@material-ui/core/Grid'
+import Chip from '@mui/material/Chip'
+import Grid from '@mui/material/Grid'
 import Swath from '../swath/swath'
 import properties from '../../js/properties'
 import metacardDefinitions from '../singletons/metacard-definitions'
 import FilterInput from '../../react-component/filter/filter-input'
-import Checkbox from '@material-ui/core/Checkbox'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
 export interface BasicFilterClass extends Omit<FilterClass, 'property'> {
   property: string[]
 }
@@ -142,7 +142,7 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
                 options={getPossibleProperties()}
                 disableCloseOnSelect
                 getOptionLabel={(option) => option.label}
-                getOptionSelected={(option, value) =>
+                isOptionEqualToValue={(option, value) =>
                   option.value === value.value
                 }
                 onChange={(_e, newValue) => {
