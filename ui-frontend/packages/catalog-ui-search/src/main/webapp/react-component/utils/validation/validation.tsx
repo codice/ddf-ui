@@ -15,17 +15,22 @@
 import React from 'react'
 import styled from 'styled-components'
 import * as usngs from 'usng.js'
+import _ from 'lodash'
 // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
 const converter = new usngs.Converter()
 const NORTHING_OFFSET = 10000000
 const LATITUDE = 'latitude'
 const LONGITUDE = 'longitude'
+// 75 meters was determined to be a reasonable min for linestring searches based on testing against known
+// data sources
+export const LINE_BUFFER_MININUM_METERS = 75
 import DistanceUtils from '../../../js/DistanceUtils'
 import {
   parseDmsCoordinate,
   dmsCoordinateToDD,
 } from '../../../component/location-new/utils/dms-utils'
 import wreqr from '../../../js/wreqr'
+import { errorMessages } from '../../../component/location-new/utils'
 export function showErrorMessages(errors: any) {
   if (errors.length === 0) {
     return
@@ -116,9 +121,17 @@ export const ErrorComponent = (props: any) => {
   ) : null
 }
 export function validateListOfPoints(coordinates: any[], mode: string) {
-  let message = ''
+  let message = null
   const isLine = mode.includes('line')
   const numPoints = isLine ? 2 : 4
+  if (
+    !mode.includes('multi') &&
+    !isLine &&
+    coordinates.length >= numPoints &&
+    !_.isEqual(coordinates[0], coordinates.slice(-1)[0])
+  ) {
+    message = errorMessages.firstLastPointMismatch
+  }
   if (
     !mode.includes('multi') &&
     !coordinates.some((coords) => coords.length > 2) &&
@@ -144,7 +157,7 @@ export function validateListOfPoints(coordinates: any[], mode: string) {
       }
     }
   })
-  return { error: message.length > 0, message }
+  return { error: !!message, message }
 }
 export const initialErrorState = {
   error: false,
@@ -257,7 +270,10 @@ function getGeometryErrors(filter: any): Set<string> {
 }
 function validateLinePolygon(mode: string, currentValue: string) {
   if (currentValue === undefined) {
-    return initialErrorState
+    return {
+      error: true,
+      message: `${mode === 'line' ? 'Line' : 'Polygon'} cannot be empty`,
+    }
   }
   try {
     const parsedCoords = JSON.parse(currentValue)
@@ -408,7 +424,7 @@ function validateBoundingBox(key: string, value: any) {
 function validateDDLatLon(label: string, value: string, defaultCoord: number) {
   let message = ''
   let defaultValue
-  if (value !== undefined && value.length === 0) {
+  if (value === undefined || value === null || value === '') {
     message = getEmptyErrorMessage(label)
     return { error: true, message, defaultValue }
   }
@@ -423,7 +439,7 @@ function validateDmsLatLon(label: string, value: string) {
   let message = ''
   let defaultValue
   const validator = label === LATITUDE ? 'dd°mm\'ss.s"' : 'ddd°mm\'ss.s"'
-  if (value !== undefined && value.length === 0) {
+  if (value === undefined || value === null || value === '') {
     message = getEmptyErrorMessage(label)
     return { error: true, message, defaultValue }
   }
@@ -521,12 +537,33 @@ function validateUtmUps(key: string, value: any) {
   return error
 }
 function validateRadiusLineBuffer(key: string, value: any) {
+  const parsed = Number(value.value)
+  const buffer = Number.isNaN(parsed) ? 0 : parsed
+  const bufferMeters = DistanceUtils.getDistanceInMeters(buffer, value.units)
+  if (key === 'lineWidth' && bufferMeters < LINE_BUFFER_MININUM_METERS) {
+    const minDistance = DistanceUtils.getDistanceFromMeters(
+      LINE_BUFFER_MININUM_METERS,
+      value.units
+    )
+    const minDistanceDisplay = Number.isInteger(minDistance)
+      ? minDistance.toString()
+      : // Add 0.01 to account for decimal places beyond hundredths. For example, if
+        // the selected unit is feet, then the required value is 246.063, and if we only
+        // showed (246.063).toFixed(2), then the user would see 246.06, but if they typed
+        // that in, they would still be shown this error.
+        (minDistance + 0.01).toFixed(2)
+    return {
+      error: true,
+      message: `Line buffer must be at least ${minDistanceDisplay} ${value.units}`,
+    }
+  }
+
   const label = key === 'radius' ? 'Radius ' : 'Buffer width '
   if (value.value.toString().length === 0) {
     return initialErrorState
   }
-  const buffer = DistanceUtils.getDistanceInMeters(value.value, value.units)
-  if (key.includes('Width') && buffer < 1 && buffer !== 0) {
+
+  if (key.includes('Width') && bufferMeters < 1 && bufferMeters !== 0) {
     return {
       error: true,
       message:
@@ -536,7 +573,7 @@ function validateRadiusLineBuffer(key: string, value: any) {
         ' ' +
         value.units,
     }
-  } else if (key.includes('radius') && buffer < 1) {
+  } else if (key.includes('radius') && bufferMeters < 1) {
     return {
       error: true,
       message:

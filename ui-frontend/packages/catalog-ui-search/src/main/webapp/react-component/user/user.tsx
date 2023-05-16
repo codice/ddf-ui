@@ -14,17 +14,17 @@
  **/
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
 import { DarkDivider } from '../../component/dark-divider/dark-divider'
 import {
   TypedUserInstance,
   useActingRole,
 } from '../../component/singletons/TypedUser'
-import PersonIcon from '@material-ui/icons/Person'
+import PersonIcon from '@mui/icons-material/Person'
 import user from '../../component/singletons/user-instance'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Switch from '@material-ui/core/Switch'
-import Typography from '@material-ui/core/Typography'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Switch from '@mui/material/Switch'
+import Typography from '@mui/material/Typography'
 import ExtensionPoints from '../../extension-points/extension-points'
 
 export const EnhancedRolesContext = React.createContext<{

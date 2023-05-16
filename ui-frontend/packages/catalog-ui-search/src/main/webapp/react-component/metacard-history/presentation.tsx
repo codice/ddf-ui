@@ -15,9 +15,9 @@
 
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
 import styled from 'styled-components'
-import LinearProgress from '@material-ui/core/LinearProgress'
+import LinearProgress from '@mui/material/LinearProgress'
 
 type Props = {
   onClick: (event: any) => void

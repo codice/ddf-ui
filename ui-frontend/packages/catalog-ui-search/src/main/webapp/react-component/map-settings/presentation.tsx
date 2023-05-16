@@ -16,12 +16,12 @@ import * as React from 'react'
 import styled from 'styled-components'
 import { hot } from 'react-hot-loader'
 import ExampleCoordinates from './example-coordinates'
-import FormGroup from '@material-ui/core/FormGroup'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox'
-import Typography from '@material-ui/core/Typography'
-import Select from '@material-ui/core/Select'
-import MenuItem from '@material-ui/core/MenuItem'
+import FormGroup from '@mui/material/FormGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Checkbox from '@mui/material/Checkbox'
+import Typography from '@mui/material/Typography'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
 
 type Props = {
   coordFormat: string
@@ -100,7 +100,6 @@ const render = ({
               vertical: 'top',
               horizontal: 'left',
             },
-            getContentAnchorEl: null,
           }}
         >
           {coordinateFormatOptions.map((option) => {

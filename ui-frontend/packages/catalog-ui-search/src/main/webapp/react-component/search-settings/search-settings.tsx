@@ -19,18 +19,18 @@ import QuerySettings from '../../component/query-settings/query-settings'
 import { UserQuery } from '../../js/model/TypedQuery'
 import styled from 'styled-components'
 import { hot } from 'react-hot-loader'
-import Typography from '@material-ui/core/Typography'
-import Grid from '@material-ui/core/Grid'
-import Slider from '@material-ui/core/Slider'
-import Input from '@material-ui/core/Input'
+import Typography from '@mui/material/Typography'
+import Grid from '@mui/material/Grid'
+import Slider from '@mui/material/Slider'
+import Input from '@mui/material/Input'
 import Swath from '../../component/swath/swath'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 import {
   MuiOutlinedInputBorderClasses,
   Elevations,
 } from '../../component/theme/theme'
-import Tooltip from '@material-ui/core/Tooltip'
-import Paper from '@material-ui/core/Paper'
+import Tooltip from '@mui/material/Tooltip'
+import Paper from '@mui/material/Paper'
 const Root = styled.div`
   overflow: hidden;
   padding: ${(props) => props.theme.minimumSpacing};

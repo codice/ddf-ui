@@ -8,26 +8,26 @@ import {
   RouteProps,
   LinkProps,
 } from 'react-router-dom'
-import CssBaseline from '@material-ui/core/CssBaseline'
+import CssBaseline from '@mui/material/CssBaseline'
 import properties from '../../js/properties'
-import Grid from '@material-ui/core/Grid'
+import Grid from '@mui/material/Grid'
 import $ from 'jquery'
-import Paper from '@material-ui/core/Paper'
-import Typography from '@material-ui/core/Typography'
-import Button from '@material-ui/core/Button'
+import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
 import ExpandingButton from '../button/expanding-button'
-import Divider from '@material-ui/core/Divider'
-import IconButton from '@material-ui/core/IconButton'
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import MenuIcon from '@material-ui/icons/Menu'
-import PersonIcon from '@material-ui/icons/Person'
-import SettingsIcon from '@material-ui/icons/Settings'
-import Drawer from '@material-ui/core/Drawer'
+import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import MenuIcon from '@mui/icons-material/Menu'
+import PersonIcon from '@mui/icons-material/Person'
+import SettingsIcon from '@mui/icons-material/Settings'
+import Drawer from '@mui/material/Drawer'
 import queryString from 'query-string'
 import { Link } from '../link/link'
 import { Memo } from '../memo/memo'
-import HelpIcon from '@material-ui/icons/Help'
-import NotificationsIcon from '@material-ui/icons/Notifications'
+import HelpIcon from '@mui/icons-material/Help'
+import NotificationsIcon from '@mui/icons-material/Notifications'
 import userInstance from '../singletons/user-instance'
 import notifications from '../singletons/user-notifications'
 import SystemUsageModal from '../system-usage/system-usage'
@@ -50,7 +50,7 @@ import {
   useRenderOnAsyncTasksAddOrRemove,
 } from '../../js/model/AsyncTask/async-task'
 import useSnack from '../hooks/useSnack'
-import LinearProgress from '@material-ui/core/LinearProgress'
+import LinearProgress from '@mui/material/LinearProgress'
 import { BaseProps } from '../button/expanding-button'
 import { useDialogState } from '../hooks/useDialogState'
 import SessionTimeout from '../../react-component/session-timeout'
@@ -571,6 +571,7 @@ const SideBarToggleButton = () => {
                   onClick={() => {
                     setNavOpen(false)
                   }}
+                  size="large"
                 >
                   <ChevronLeftIcon />
                 </IconButton>

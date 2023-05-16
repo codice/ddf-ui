@@ -20,8 +20,8 @@ import {
   FilterBuilderClass,
   FilterClass,
 } from '../filter-builder/filter.structure'
-import Button from '@material-ui/core/Button'
-import Grid from '@material-ui/core/Grid'
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
 import user from '../singletons/user-instance'
 import { useListenToEnterKeySubmitEvent } from '../custom-events/enter-key-submit'
 

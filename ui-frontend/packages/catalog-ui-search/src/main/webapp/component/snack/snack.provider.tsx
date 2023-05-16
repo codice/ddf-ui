@@ -1,10 +1,10 @@
 import React, { createContext, useState, useEffect, useMemo } from 'react'
-import Button from '@material-ui/core/Button'
-import SnackBar, { SnackbarProps } from '@material-ui/core/Snackbar'
-import Alert, { AlertProps } from '@material-ui/lab/Alert'
-import IconButton from '@material-ui/core/IconButton'
-import CloseIcon from '@material-ui/icons/Close'
-import Portal from '@material-ui/core/Portal'
+import Button from '@mui/material/Button'
+import SnackBar, { SnackbarProps } from '@mui/material/Snackbar'
+import Alert, { AlertProps } from '@mui/material/Alert'
+import IconButton from '@mui/material/IconButton'
+import CloseIcon from '@mui/icons-material/Close'
+import Portal from '@mui/material/Portal'
 
 export type AddSnack = (message: string, props?: SnackProps) => void
 
@@ -117,6 +117,7 @@ export function SnackProvider({ children }: any) {
                       style={{ padding: '3px' }}
                       color="inherit"
                       onClick={handleClose}
+                      size="large"
                     >
                       <CloseIcon fontSize="small" />
                     </IconButton>

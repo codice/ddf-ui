@@ -1,14 +1,14 @@
 import * as React from 'react'
-import Card, { CardProps } from '@material-ui/core/Card'
-import CardHeader, { CardHeaderProps } from '@material-ui/core/CardHeader'
-import CardActions, { CardActionsProps } from '@material-ui/core/CardActions'
-import CardContent, { CardContentProps } from '@material-ui/core/CardContent'
+import Card, { CardProps } from '@mui/material/Card'
+import CardHeader, { CardHeaderProps } from '@mui/material/CardHeader'
+import CardActions, { CardActionsProps } from '@mui/material/CardActions'
+import CardContent, { CardContentProps } from '@mui/material/CardContent'
 import CardActionArea, {
   CardActionAreaProps,
-} from '@material-ui/core/CardActionArea'
-import Typography, { TypographyProps } from '@material-ui/core/Typography'
+} from '@mui/material/CardActionArea'
+import Typography, { TypographyProps } from '@mui/material/Typography'
 import styled from 'styled-components'
-import CreateIcon from '@material-ui/icons/AddBox'
+import CreateIcon from '@mui/icons-material/AddBox'
 
 export const ZeroWidthSpace = () => {
   return <>{String.fromCharCode(8203)}</>
@@ -32,19 +32,23 @@ export const WrappedCard = styled(
   React.forwardRef((props: CardProps, ref: React.Ref<any>) => {
     return <Card {...props} ref={ref} />
   })
-)<CardProps>`` as React.ComponentType<CardProps>
+)<CardProps>`` as React.ComponentType<React.PropsWithChildren<CardProps>>
 
 export const WrappedCardActions = styled(
   React.forwardRef((props: CardActionsProps, ref: React.Ref<any>) => {
     return <CardActions {...props} ref={ref} />
   })
-)<CardActionsProps>`` as React.ComponentType<CardActionsProps>
+)<CardActionsProps>`` as React.ComponentType<
+  React.PropsWithChildren<CardActionsProps>
+>
 
 export const WrappedCardContent = styled(
   React.forwardRef((props: CardContentProps, ref: React.Ref<any>) => {
     return <CardContent {...props} ref={ref} />
   })
-)<CardContentProps>`` as React.ComponentType<CardContentProps>
+)<CardContentProps>`` as React.ComponentType<
+  React.PropsWithChildren<CardContentProps>
+>
 
 export const WrappedCardContentLabel = (props: TypographyProps) => {
   return <Typography {...props} noWrap style={{ opacity: 0.6 }} />
@@ -64,7 +68,7 @@ export const WrappedCardContentValue = ({
 
 export const WrappedCardActionArea = styled(
   React.forwardRef((props: CardActionAreaProps, ref: React.Ref<any>) => {
-    return <CardActionArea {...props} buttonRef={ref} />
+    return <CardActionArea {...props} ref={ref} />
   })
 )<CardActionAreaProps>``
 

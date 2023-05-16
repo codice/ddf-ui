@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
 import React from 'react'
 import { Memo } from '../../../memo/memo'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'

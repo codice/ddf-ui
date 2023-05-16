@@ -19,15 +19,15 @@ import properties from '../../../js/properties'
 import user from '../../singletons/user-instance'
 import metacardDefinitions from '../../singletons/metacard-definitions'
 import TypedMetacardDefs from '../../tabs/metacard/metacardDefinitions'
-import Button from '@material-ui/core/Button'
-import LinkIcon from '@material-ui/icons/Link'
-import GetAppIcon from '@material-ui/icons/GetApp'
-import Grid from '@material-ui/core/Grid'
+import Button from '@mui/material/Button'
+import LinkIcon from '@mui/icons-material/Link'
+import GetAppIcon from '@mui/icons-material/GetApp'
+import Grid from '@mui/material/Grid'
 import { hot } from 'react-hot-loader'
-import Paper from '@material-ui/core/Paper'
-import Tooltip from '@material-ui/core/Tooltip'
-import MoreIcon from '@material-ui/icons/MoreVert'
-import WarningIcon from '@material-ui/icons/Warning'
+import Paper from '@mui/material/Paper'
+import Tooltip from '@mui/material/Tooltip'
+import MoreIcon from '@mui/icons-material/MoreVert'
+import WarningIcon from '@mui/icons-material/Warning'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import {
@@ -35,19 +35,19 @@ import {
   useSelectionOfLazyResult,
 } from '../../../js/model/LazyQueryResult/hooks'
 import Extensions from '../../../extension-points'
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank'
-import CheckIcon from '@material-ui/icons/Check'
-import CheckBoxIcon from '@material-ui/icons/CheckBox'
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
+import CheckIcon from '@mui/icons-material/Check'
+import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import { Elevations } from '../../theme/theme'
-import TouchRipple from '@material-ui/core/ButtonBase/TouchRipple'
+import TouchRipple from '@mui/material/ButtonBase/TouchRipple'
 import { clearSelection, hasSelection } from './result-item-row'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import useCoordinateFormat from '../../tabs/metacard/useCoordinateFormat'
-import EditIcon from '@material-ui/icons/Edit'
+import EditIcon from '@mui/icons-material/Edit'
 import { Link } from '../../link/link'
 import { useMenuState } from '../../menu-state/menu-state'
-import Popover from '@material-ui/core/Popover'
+import Popover from '@mui/material/Popover'
 import Common from '../../../js/Common'
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (
@@ -115,6 +115,7 @@ const MultiSelectActions = ({
   return (
     <>
       <Button
+        component="div"
         className={selectedResultsArray.length === 0 ? 'relative' : 'relative'}
         color="primary"
         disabled={selectedResultsArray.length === 0}
@@ -122,7 +123,7 @@ const MultiSelectActions = ({
           e.stopPropagation()
           metacardInteractionMenuState.handleClick()
         }}
-        innerRef={metacardInteractionMenuState.anchorRef}
+        ref={metacardInteractionMenuState.anchorRef}
         style={{ height: '100%' }}
         size="small"
       >
@@ -159,7 +160,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
           }}
           style={{ height: '100%' }}
           size="small"
-          innerRef={metacardInteractionMenuState.anchorRef}
+          ref={metacardInteractionMenuState.anchorRef}
         >
           <MoreIcon />
         </Button>
@@ -299,7 +300,7 @@ const IconButton = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
         }
       }}
       focusVisibleClassName="focus-visible"
-      className="relative p-2 min-w-0 outline-none h-full group-1 shrink-0"
+      className="relative p-2 min-w-0 outline-none h-full group/checkbox shrink-0"
     >
       {(() => {
         if (isSelected) {
@@ -308,14 +309,14 @@ const IconButton = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
               <div
                 className={`absolute w-full h-full left-0 top-0 opacity-0 transform transition duration-200 ease-in-out -translate-x-full`}
               >
-                <CheckBoxIcon className="group-1-hover:block group-1-focus-visible:block hidden" />
-                <CheckIcon className="group-1-hover:hidden group-1-focus-visible:hidden block" />
+                <CheckBoxIcon className="group-hover/checkbox:block group-focus-visible/checkbox:block hidden" />
+                <CheckIcon className="group-hover/checkbox:hidden group-focus-visible/checkbox:hidden block" />
               </div>
               <div
-                className={`transform transition duration-200 ease-in-out -translate-x-full group-1-focus-visible:translate-x-0 group-1-hover:translate-x-0`}
+                className={`transform transition duration-200 ease-in-out -translate-x-full group-focus-visible/checkbox:translate-x-0 group-hover/checkbox:translate-x-0`}
               >
-                <CheckBoxIcon className="group-1-hover:block group-1-focus-visible:block hidden" />
-                <CheckIcon className="group-1-hover:hidden group-1-focus-visible:hidden block" />
+                <CheckBoxIcon className="group-hover/checkbox:block group-focus-visible/checkbox:block hidden" />
+                <CheckIcon className="group-hover/checkbox:hidden group-focus-visible/checkbox:hidden block" />
               </div>
             </>
           )
@@ -323,7 +324,7 @@ const IconButton = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
           return (
             <div className="transform ">
               <CheckBoxOutlineBlankIcon
-                className={`group-1-hover:visible group-1-focus-visible:visible invisible`}
+                className={`group-hover/checkbox:visible group-focus-visible/checkbox:visible invisible`}
               />
             </div>
           )
@@ -333,7 +334,7 @@ const IconButton = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
       <span
         className={`${getIconClassName({
           lazyResult,
-        })} font-awesome-span group-1-focus-visible:invisible group-1-hover:invisible absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
+        })} font-awesome-span group-focus-visible/checkbox:invisible group-hover/checkbox:invisible absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
         data-help={TypedMetacardDefs.getAlias({
           attr: 'title',
         })}
@@ -696,7 +697,7 @@ export const ResultItem = ({ lazyResult, measure }: ResultItemFullProps) => {
                   e.stopPropagation()
                 }}
                 elevation={Elevations.overlays}
-                className="p-2 group-1"
+                className="p-2"
               >
                 <DynamicActions lazyResult={lazyResult} />
               </Paper>

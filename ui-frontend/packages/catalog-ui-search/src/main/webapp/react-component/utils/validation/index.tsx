@@ -19,4 +19,5 @@ export {
   validateGeo,
   initialErrorState,
   initialErrorStateWithDefault,
+  LINE_BUFFER_MININUM_METERS,
 } from './validation'

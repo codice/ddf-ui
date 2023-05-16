@@ -37,12 +37,15 @@ type DateFieldProps = {
    * Override if you absolutely must
    */
   BPDateProps?: Partial<IDateInputProps>
+  isNullable?: boolean
 }
 
 const validateDate = (
-  { value, onChange }: DateFieldProps,
+  { value, onChange, isNullable }: DateFieldProps,
   valueRef: React.MutableRefObject<string>
 ) => {
+  if (value === null && isNullable) return
+
   const date = moment(value, ISO_8601_FORMAT_ZONED)
   if (!date.isValid()) {
     const newDate = DateHelpers.General.withPrecision(new Date())
@@ -51,7 +54,12 @@ const validateDate = (
   }
 }
 
-export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
+export const DateField = ({
+  value,
+  onChange,
+  BPDateProps,
+  isNullable,
+}: DateFieldProps) => {
   const valueRef = useRef(value)
   const blueprintDateRef = useRef<DateInput>(null)
 
@@ -64,7 +72,7 @@ export const DateField = ({ value, onChange, BPDateProps }: DateFieldProps) => {
     onChange(unshiftedDate.toISOString())
   })
   React.useEffect(() => {
-    validateDate({ onChange, value }, valueRef)
+    validateDate({ onChange, value, isNullable }, valueRef)
   }, [])
 
   return (

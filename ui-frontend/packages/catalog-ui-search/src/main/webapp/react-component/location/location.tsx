@@ -18,9 +18,9 @@ import wreqr from '../../js/wreqr'
 import { Drawing, useIsDrawing } from '../../component/singletons/drawing'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 import { hot } from 'react-hot-loader'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import TextField from '@material-ui/core/TextField'
-import Button from '@material-ui/core/Button'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
+import Button from '@mui/material/Button'
 import Line from './line'
 import Polygon from './polygon'
 import PointRadius from './point-radius'
@@ -118,7 +118,7 @@ export const LocationContext = React.createContext({
     return true
   },
 })
-const LocationInput = ({ onChange, value }: any) => {
+const LocationInput = ({ onChange, value, errorListener }: any) => {
   const inputs = React.useMemo(() => {
     return ExtensionPoints.locationTypes(BaseInputs)
   }, [ExtensionPoints.locationTypes])
@@ -171,7 +171,7 @@ const LocationInput = ({ onChange, value }: any) => {
           size="small"
           options={options}
           getOptionLabel={(option) => option.label}
-          getOptionSelected={(option, value) => {
+          isOptionEqualToValue={(option, value) => {
             return option.value === value.value
           }}
           onChange={(_e, newValue) => {
@@ -200,6 +200,7 @@ const LocationInput = ({ onChange, value }: any) => {
             setState={(args: any) => {
               locationModel.set(args) // always update the locationModel, that's our "source of truth", above we map this back into state by listening to changes
             }}
+            errorListener={errorListener}
           />
           {drawTypes.includes(state.mode) ? (
             isDrawing && locationModel === Drawing.getDrawModel() ? (

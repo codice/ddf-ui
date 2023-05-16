@@ -18,9 +18,13 @@ import FilterBranch from './filter-branch'
 
 import { FilterBuilderClass, isFilterBuilderClass } from './filter.structure'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import { ValidationResult } from '../../react-component/location/validators'
 
 type Props = {
   model: any
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
 }
 
 const convertToFilterIfNecessary = ({
@@ -52,7 +56,7 @@ const getBaseFilter = ({ model }: { model: any }): FilterBuilderClass => {
  * We use the filterTree of the model as the single source of truth, so it's always up to date.
  * As a result, we have to listen to updates to it.
  */
-export const FilterBuilderRoot = ({ model }: Props) => {
+export const FilterBuilderRoot = ({ model, errorListener }: Props) => {
   const [filter, setFilter] = React.useState(getBaseFilter({ model }))
   const { listenTo, stopListening } = useBackbone()
   React.useEffect(() => {
@@ -72,6 +76,7 @@ export const FilterBuilderRoot = ({ model }: Props) => {
           model.set('filterTree', update) // update the filterTree directly so it's always in sync and we're ready to search
         }}
         root={true}
+        errorListener={errorListener}
       />
     </div>
   )

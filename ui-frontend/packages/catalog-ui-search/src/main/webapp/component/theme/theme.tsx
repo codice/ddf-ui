@@ -1,16 +1,16 @@
 import * as React from 'react'
 import {
   createTheme,
-  MuiThemeProvider as ThemeProvider,
+  ThemeProvider,
+  StyledEngineProvider,
   darken,
   // @ts-expect-error ts-migrate(6133) FIXME: 'getContrastRatio' is declared but its value is ne... Remove this comment to see the full error message
   getContrastRatio,
   Theme as ThemeInterface,
-  createStyles,
   lighten,
-  StylesProvider,
   alpha,
-} from '@material-ui/core/styles'
+} from '@mui/material/styles'
+import StylesProvider from '@mui/styles/StylesProvider'
 import { ThemeContext } from 'styled-components'
 import { createGlobalStyle } from 'styled-components'
 import { meetsContrastGuidelines } from 'polished'
@@ -69,7 +69,7 @@ export const Elevations = {
 }
 
 export const MuiOutlinedInputBorderClasses =
-  'MuiOutlinedInput-root MuiOutlinedInput-multiline MuiOutlinedInput-inputMarginDense MuiOutlinedInput-notchedOutline border'
+  'px-[14px] py-[8.5px] border rounded dark:border-white/20 border-black/20 dark:hover:border-white hover:border-black'
 
 const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .ol-overlaycontainer-stopevent {
@@ -119,7 +119,7 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .lm_stack{
         box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
         background: ${(props) =>
-          props.palette.type === 'dark'
+          props.palette.mode === 'dark'
             ? dark.panels
             : light.panels} !important;
         border-radius: 4px;
@@ -128,13 +128,13 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .lm_header {
         z-index: 0 !important;
         background: ${(props) =>
-          props.palette.type === 'dark'
+          props.palette.mode === 'dark'
             ? dark.background
             : light.background} !important;
       }
       .lm_tab.lm_active {
         background: ${(props) =>
-          props.palette.type === 'dark'
+          props.palette.mode === 'dark'
             ? dark.panels
             : light.panels} !important;
             box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12) !important;
@@ -146,11 +146,11 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       }
       .lm_tab:not(.lm_active) {
         color: ${(props) =>
-          props.palette.type === 'dark'
+          props.palette.mode === 'dark'
             ? props.palette.text.secondary
             : props.palette.text.secondary} !important;
         background: ${(props) =>
-          props.palette.type === 'dark' ? dark.tabs : light.tabs} !important;
+          props.palette.mode === 'dark' ? dark.tabs : light.tabs} !important;
         button {
           visibility: hidden;
         }
@@ -221,35 +221,38 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       textarea.MuiInputBase-input {
         min-height: 21px;
       }
+      .MuiPaper-box-shadow {
+        box-shadow: 0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12);
+      }
       .MuiPaper-elevation0 {
         background-color: ${(props) =>
-          props.palette.type === 'dark' ? dark.background : light.background};
+          props.palette.mode === 'dark' ? dark.background : light.background};
       }
       .MuiPaper-elevation8 {
         background-color: ${(props) =>
-          props.palette.type === 'dark' ? dark.navbar : light.navbar};
+          props.palette.mode === 'dark' ? dark.navbar : light.navbar};
       }
       .MuiPaper-elevation6 {
         background-color: ${(props) =>
-          props.palette.type === 'dark' ? dark.panels : light.panels};
+          props.palette.mode === 'dark' ? dark.panels : light.panels};
       }
       .MuiPaper-elevation16 {
         background-color: ${(props) =>
-          props.palette.type === 'dark' ? dark.overlays : light.overlays};
+          props.palette.mode === 'dark' ? dark.overlays : light.overlays};
       }
       .MuiPaper-elevation2 {
         border-width: 1px;
         border-style: solid;
         border-color: ${(props) =>
-          props.palette.type === 'dark'
+          props.palette.mode === 'dark'
             ? props.palette.divider
             : props.palette.divider};
           background-color: ${(props) =>
-            props.palette.type === 'dark' ? dark.paper : light.paper};
+            props.palette.mode === 'dark' ? dark.paper : light.paper};
       }
       [data-behavior-dropdown] {
         background-color: ${(props) =>
-          props.palette.type === 'dark' ? dark.overlays : light.overlays};
+          props.palette.mode === 'dark' ? dark.overlays : light.overlays};
       }
       .font-awesome-span {
         && {
@@ -269,13 +272,13 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       }
       ::-webkit-scrollbar-track {
         background: ${(props) =>
-          props.palette.type === 'dark'
+          props.palette.mode === 'dark'
             ? 'rgb(30, 44, 53)'
             : 'rgb(229, 229, 229)'};
       }
       ::-webkit-scrollbar-thumb {
         background: ${(props) =>
-          props.palette.type === 'dark'
+          props.palette.mode === 'dark'
             ? 'linear-gradient(-180deg, rgb(229, 229, 229) 0%, rgb(206, 206, 206) 100%)'
             : 'linear-gradient(-180deg, rgb(153, 153, 153) 0%, rgb(187, 187, 187) 100%)'};
             border-radius: 4px;
@@ -301,7 +304,7 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       [disabled] .Mui-text-primary,
       [disabled] .Mui-text-secondary {
         color: ${(props) =>
-          props.palette.type === 'dark'
+          props.palette.mode === 'dark'
             ? 'rgba(255, 255, 255, 0.3)'
             : 'rgba(0, 0, 0, 0.26)'};
       }
@@ -335,13 +338,13 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .Mui-bg-button:hover,
       .Mui-bg-button:focus-within {
         background: ${(props) =>
-          props.palette.type === 'dark'
+          props.palette.mode === 'dark'
             ? 'rgba(255, 255, 255, 0.08)'
             : 'rgba(0, 0, 0, 0.04)'};
       }
       .theme-bg-overlays {
         background: ${(props) =>
-          props.palette.type === 'dark' ? dark.overlays : light.overlays};
+          props.palette.mode === 'dark' ? dark.overlays : light.overlays};
       }
       .children-max-h-full {
         > * {
@@ -434,9 +437,9 @@ export const Provider = ({ children }: { children: any }) => {
     ? lightenUntilContrasting(secondaryMain, paperColor)
     : darkenUntilContrasting(secondaryMain, paperColor)
 
-  const theme = createTheme({
+  const initialTheme = createTheme({
     palette: {
-      type: darkMode ? 'dark' : 'light',
+      mode: darkMode ? 'dark' : 'light',
       primary: {
         main: primaryMain,
       },
@@ -447,7 +450,15 @@ export const Provider = ({ children }: { children: any }) => {
         default: backgroundColor,
         paper: paperColor,
       },
+      grey: {
+        // We do this to emulate v4 MUI behavior for default button color
+        // @ts-ignore
+        main: '#fff',
+      },
     },
+  })
+
+  const theme = createTheme(initialTheme, {
     typography: {
       fontFamily: `'Open Sans', arial, sans-serif`,
       h6: {
@@ -458,64 +469,130 @@ export const Provider = ({ children }: { children: any }) => {
         textTransform: 'none',
       },
     },
-    overrides: {
-      MuiChip: createStyles({
-        root: {
-          fontSize: '1rem',
+    components: {
+      MuiChip: {
+        styleOverrides: {
+          root: {
+            fontSize: '1rem',
+          },
         },
-      }),
-      MuiButton: createStyles({
-        root: {
-          lineHeight: 'inherit', // maybe open a ticket on MUI, seems like the default they use doesn't center text quite right with icons
-          minWidth: '0px', // usually more annoying than not
+      },
+      MuiButton: {
+        defaultProps: {
+          color: 'grey',
         },
-        ...(primaryContrastScores.AA
-          ? { textPrimary: {} } // weird requirement due to types, need textPrimary here but empty
-          : {
-              textPrimary: {
-                color: failedContrastPrimaryReplacement,
-                '&:hover': {
-                  backgroundColor: alpha(failedContrastPrimaryReplacement, 0.1),
-                  // Reset on touch devices, it doesn't add specificity
-                  '@media (hover: none)': {
-                    backgroundColor: 'transparent',
+        variants: [
+          {
+            props: { variant: 'contained', color: 'grey' },
+            style: {
+              color: initialTheme.palette.getContrastText(
+                initialTheme.palette.grey[300]
+              ),
+            },
+          },
+          {
+            props: { variant: 'outlined', color: 'grey' },
+            style: {
+              color: initialTheme.palette.text.primary,
+              borderColor:
+                initialTheme.palette.mode === 'light'
+                  ? 'rgba(0, 0, 0, 0.23)'
+                  : 'rgba(255, 255, 255, 0.23)',
+              '&.Mui-disabled': {
+                border: `1px solid ${initialTheme.palette.action.disabledBackground}`,
+              },
+              '&:hover': {
+                borderColor:
+                  initialTheme.palette.mode === 'light'
+                    ? 'rgba(0, 0, 0, 0.23)'
+                    : 'rgba(255, 255, 255, 0.23)',
+                backgroundColor: alpha(
+                  initialTheme.palette.text.primary,
+                  initialTheme.palette.action.hoverOpacity
+                ),
+              },
+            },
+          },
+          {
+            props: { color: 'grey', variant: 'text' },
+            style: {
+              color: initialTheme.palette.text.primary,
+              '&:hover': {
+                backgroundColor: alpha(
+                  initialTheme.palette.text.primary,
+                  initialTheme.palette.action.hoverOpacity
+                ),
+              },
+            },
+          },
+        ],
+        styleOverrides: {
+          root: {
+            lineHeight: 'inherit', // maybe open a ticket on MUI, seems like the default they use doesn't center text quite right with icons
+            minWidth: '0px', // usually more annoying than not
+          },
+          ...(primaryContrastScores.AA
+            ? { textPrimary: {} } // weird requirement due to types, need textPrimary here but empty
+            : {
+                textPrimary: {
+                  color: failedContrastPrimaryReplacement,
+                  '&:hover': {
+                    backgroundColor: alpha(
+                      failedContrastPrimaryReplacement,
+                      0.1
+                    ),
+                    // Reset on touch devices, it doesn't add specificity
+                    '@media (hover: none)': {
+                      backgroundColor: 'transparent',
+                    },
                   },
                 },
-              },
-            }),
-        ...(secondaryContrastScores.AA
-          ? { textSecondary: {} } // weird requirement due to types, need textPrimary here but empty
-          : {
-              textSecondary: {
-                color: failedContrastSecondaryReplacement,
-                '&:hover': {
-                  backgroundColor: alpha(
-                    failedContrastSecondaryReplacement,
-                    0.1
-                  ),
-                  // Reset on touch devices, it doesn't add specificity
-                  '@media (hover: none)': {
-                    backgroundColor: 'transparent',
+              }),
+          ...(secondaryContrastScores.AA
+            ? { textSecondary: {} } // weird requirement due to types, need textPrimary here but empty
+            : {
+                textSecondary: {
+                  color: failedContrastSecondaryReplacement,
+                  '&:hover': {
+                    backgroundColor: alpha(
+                      failedContrastSecondaryReplacement,
+                      0.1
+                    ),
+                    // Reset on touch devices, it doesn't add specificity
+                    '@media (hover: none)': {
+                      backgroundColor: 'transparent',
+                    },
                   },
                 },
-              },
-            }),
-      }),
-      MuiCardActionArea: createStyles({
-        root: {
-          height: 'auto',
+              }),
         },
-      }),
-      MuiCardHeader: createStyles({
-        content: {
-          minWidth: '0px',
+      },
+      MuiCardActionArea: {
+        styleOverrides: {
+          root: {
+            height: 'auto',
+          },
         },
-      }),
-      MuiTooltip: createStyles({
-        tooltip: {
-          fontSize: '1rem',
+      },
+      MuiCardHeader: {
+        styleOverrides: {
+          content: {
+            minWidth: '0px',
+          },
         },
-      }),
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: { backgroundImage: 'unset' },
+        },
+      },
+      MuiTooltip: {
+        styleOverrides: {
+          tooltip: {
+            fontSize: '1rem',
+          },
+        },
+      },
     },
     zIndex: {
       mobileStepper: 101,
@@ -532,9 +609,11 @@ export const Provider = ({ children }: { children: any }) => {
     if (styledTheme.theme === 'dark') {
       htmlElement.classList.add('bp3-dark')
       htmlElement.classList.add('theme-dark')
+      htmlElement.classList.add('dark')
     } else {
       htmlElement.classList.remove('bp3-dark')
       htmlElement.classList.remove('theme-dark')
+      htmlElement.classList.remove('dark')
     }
   }, [styledTheme.theme])
   useRemoveFocusStyle()
@@ -542,7 +621,9 @@ export const Provider = ({ children }: { children: any }) => {
     <>
       <StylesProvider injectFirst>
         <GlobalStyles {...theme} />
-        <ThemeProvider theme={theme}>{children}</ThemeProvider>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>{children}</ThemeProvider>
+        </StyledEngineProvider>
       </StylesProvider>
     </>
   )

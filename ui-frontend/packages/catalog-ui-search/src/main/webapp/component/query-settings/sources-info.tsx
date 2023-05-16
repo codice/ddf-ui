@@ -1,8 +1,8 @@
-import Button from '@material-ui/core/Button'
-import Grid from '@material-ui/core/Grid'
-import Paper from '@material-ui/core/Paper'
-import Popover, { PopoverActions } from '@material-ui/core/Popover'
-import StorageIcon from '@material-ui/icons/Storage'
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
+import Paper from '@mui/material/Paper'
+import Popover, { PopoverActions } from '@mui/material/Popover'
+import StorageIcon from '@mui/icons-material/Storage'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import ExtensionPoints from '../../extension-points'
@@ -23,12 +23,13 @@ const SourcesInfo = () => {
   return (
     <React.Fragment>
       <Button
+        component="div"
         data-id="sources-button"
         fullWidth
         variant="text"
         color="primary"
         onClick={handleClick}
-        innerRef={anchorRef}
+        ref={anchorRef}
       >
         <Grid container direction="row" alignItems="center" wrap="nowrap">
           <Grid item className="pr-1">

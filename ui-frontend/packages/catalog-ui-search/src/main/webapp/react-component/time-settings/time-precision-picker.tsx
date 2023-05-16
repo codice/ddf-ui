@@ -14,8 +14,8 @@
  **/
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import TextField from '@material-ui/core/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
 import { TimePrecision } from '@blueprintjs/datetime'
 
 type Props = {
@@ -61,7 +61,7 @@ const TimePrecisionSelector = (props: Props) => {
           props.handleTimePrecisionUpdate(newPrecision.value)
           setTimePrecision(newPrecision)
         }}
-        getOptionSelected={(option, value) => {
+        isOptionEqualToValue={(option, value) => {
           return option.value === value.value
         }}
         options={Options}

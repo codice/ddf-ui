@@ -1,14 +1,16 @@
 import * as React from 'react'
 import { IDateInputProps } from '@blueprintjs/datetime'
-import TextField, { TextFieldProps } from '@material-ui/core/TextField'
+import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { DateField } from './date'
-import CalendarIcon from '@material-ui/icons/Event'
+import CalendarIcon from '@mui/icons-material/Event'
+import ClearIcon from '@mui/icons-material/Clear'
 import { hot } from 'react-hot-loader'
-import InputAdornment from '@material-ui/core/InputAdornment'
+import InputAdornment from '@mui/material/InputAdornment'
 
 type DateFieldProps = {
-  value: string
-  onChange: (value: string) => void
+  value: string | null
+  onChange: (value: string | null) => void
+  isNullable?: boolean
   TextFieldProps?: Partial<TextFieldProps>
   /**
    * Override if you absolutely must.
@@ -21,12 +23,6 @@ type DateFieldProps = {
   BPDateProps?: Partial<IDateInputProps>
 }
 
-export const MuiInputClasses =
-  'MuiOutlinedInput-root MuiOutlinedInput-inputMarginDense MuiOutlinedInput-notchedOutline'
-
-export const MuiOutlinedInputClasses =
-  'MuiOutlinedInput-root MuiOutlinedInput-multiline MuiOutlinedInput-inputMarginDense MuiOutlinedInput-notchedOutline'
-
 /**
  * DateTimePicker that combines Mui TextField with BlueprintJs DatePicker
  *
@@ -37,10 +33,11 @@ export const MuiOutlinedInputClasses =
 const DateTimePicker = ({
   value,
   onChange,
+  isNullable,
   TextFieldProps,
   BPDateProps,
 }: DateFieldProps) => {
-  const inputRef = React.useRef<HTMLInputElement>()
+  const inputRef = React.useRef<HTMLDivElement>(null)
   /**
    * We want to avoid causing the TextField below to percieve a change to inputComponent when possible, because that mucks with focus.
    *
@@ -49,26 +46,23 @@ const DateTimePicker = ({
    * only pick up real changes.
    */
   const inputComponent = React.useMemo(() => {
-    let classes = MuiInputClasses
+    let classes = 'px-[14px] py-[8.5px]'
 
-    if (TextFieldProps?.variant === 'outlined') {
-      classes = MuiOutlinedInputClasses
-    }
-
-    return (props: any) => {
+    return React.forwardRef((props: any, ref: any) => {
       return (
         <DateField
           {...props}
+          isNullable
           BPDateProps={{
             ...BPDateProps,
             className: classes,
             inputProps: {
-              inputRef: props.inputRef,
+              inputRef: ref,
             },
           }}
         />
       )
-    }
+    })
   }, [JSON.stringify(BPDateProps)])
 
   return (
@@ -79,24 +73,31 @@ const DateTimePicker = ({
       InputLabelProps={{ shrink: true }}
       value={value}
       onChange={onChange as any}
-      inputRef={inputRef}
+      ref={inputRef}
       InputProps={{
         inputComponent: inputComponent,
         endAdornment: (
           <InputAdornment
+            component="button"
+            type="button"
             className="cursor-pointer"
             position="end"
             onClick={() => {
               if (inputRef.current) {
-                inputRef.current.focus()
+                inputRef.current.querySelector('input')?.focus()
               }
             }}
           >
-            <CalendarIcon
-              className={
-                TextFieldProps?.variant === 'outlined' ? 'mr-1' : 'mr-4'
-              }
-            />
+            {isNullable && (
+              <ClearIcon
+                className={`${value ? '' : 'hidden'}`}
+                onClick={(e) => {
+                  onChange(null)
+                  e.stopPropagation()
+                }}
+              />
+            )}
+            <CalendarIcon />
           </InputAdornment>
         ),
       }}

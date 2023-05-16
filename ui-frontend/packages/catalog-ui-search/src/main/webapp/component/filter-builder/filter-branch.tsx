@@ -1,23 +1,21 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import Paper from '@material-ui/core/Paper'
-import Box from '@material-ui/core/Box'
-import Button from '@material-ui/core/Button'
-import Grid from '@material-ui/core/Grid'
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
 import FilterLeaf from './filter-leaf'
-import useTheme from '@material-ui/core/styles/useTheme'
+import { useTheme } from '@mui/material/styles'
 import { HoverButton } from '../button/hover'
 import {
   FilterBuilderClass,
   FilterClass,
   isFilterBuilderClass,
 } from './filter.structure'
-import TextField from '@material-ui/core/TextField'
-import MenuItem from '@material-ui/core/MenuItem'
-import AddIcon from '@material-ui/icons/Add'
+import TextField from '@mui/material/TextField'
+import MenuItem from '@mui/material/MenuItem'
+import AddIcon from '@mui/icons-material/Add'
 import _ from 'lodash'
 import { Memo } from '../memo/memo'
-import { Elevations } from '../theme/theme'
+import { ValidationResult } from '../../react-component/location/validators'
 const OperatorData = [
   {
     label: 'AND',
@@ -36,6 +34,9 @@ type ChildFilterProps = {
   index: number
   isFirst: boolean
   isLast: boolean
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
 }
 
 const ChildFilter = ({
@@ -44,6 +45,7 @@ const ChildFilter = ({
   setFilter,
   index,
   isFirst,
+  errorListener,
 }: ChildFilterProps) => {
   return (
     <>
@@ -116,6 +118,7 @@ const ChildFilter = ({
               })
             )
           }}
+          errorListener={errorListener}
         />
       ) : (
         <FilterLeaf
@@ -130,6 +133,7 @@ const ChildFilter = ({
               })
             )
           }}
+          errorListener={errorListener}
         />
       )}
     </>
@@ -140,9 +144,17 @@ type Props = {
   filter: FilterBuilderClass
   setFilter: (filter: FilterBuilderClass) => void
   root?: boolean
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
 }
 
-const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
+const FilterBranch = ({
+  filter,
+  setFilter,
+  root = false,
+  errorListener,
+}: Props) => {
   const [hover, setHover] = React.useState(false)
   const theme = useTheme()
 
@@ -167,7 +179,6 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
     })
   }, [filter])
 
-  const EnclosingElement = root ? Box : Paper
   return (
     <div
       onMouseOver={() => {
@@ -177,9 +188,12 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
         setHover(false)
       }}
     >
-      <EnclosingElement
-        elevation={Elevations.panels}
-        className={root ? '' : 'px-3 py-2'}
+      <div
+        className={
+          root
+            ? ' shadow-none'
+            : 'px-3 py-2 MuiPaper-box-shadow border-black border-2 border-opacity-30'
+        }
       >
         <div className=" relative">
           <div
@@ -316,6 +330,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                       index={index}
                       isFirst={index === 0}
                       isLast={index === filter.filters.length - 1}
+                      errorListener={errorListener}
                     />
                   )
                 })}
@@ -323,7 +338,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
             </Memo>
           </div>
         </div>
-      </EnclosingElement>
+      </div>
     </div>
   )
 }

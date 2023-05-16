@@ -17,8 +17,8 @@ import React from 'react'
 import styled from 'styled-components'
 
 import Group from '../group'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import TextField from '@material-ui/core/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
 import Label from './label'
 
 const Units = ({ value, onChange, children }: any) => (

@@ -13,12 +13,14 @@
  *
  **/
 import * as React from 'react'
-import * as ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
+
 import { waitForReady } from './WaitForReady'
 
 export const attemptToStart = async () => {
   await waitForReady()
   import('../component/app/base-app').then((BaseApp) => {
-    ReactDOM.render(<BaseApp.default />, document.querySelector('#router'))
+    const root = createRoot(document.querySelector('#router') as any)
+    root.render(<BaseApp.default />)
   })
 }

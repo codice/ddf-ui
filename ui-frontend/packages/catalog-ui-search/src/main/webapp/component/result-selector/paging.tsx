@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { useLazyResultsStatusFromSelectionInterface } from '../selection-interface/hooks'
 import { Elevations } from '../theme/theme'
-import CloseIcon from '@material-ui/icons/Close'
+import CloseIcon from '@mui/icons-material/Close'
 import TableExport from '../table-export/table-export'
 import { useDialog } from '../dialog'
 import { DarkDivider } from '../dark-divider/dark-divider'
@@ -106,7 +106,6 @@ const Paging = ({ selectionInterface }: Props) => {
                     data-id="close-button"
                     className="absolute right-0 top-0 mr-1 mt-1"
                     variant="text"
-                    color="default"
                     size="small"
                     onClick={() => {
                       dialogContext.setProps({

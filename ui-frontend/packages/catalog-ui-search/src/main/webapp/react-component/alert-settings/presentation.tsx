@@ -14,8 +14,8 @@
  **/
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import Autocomplete from '@material-ui/lab/Autocomplete'
-import TextField from '@material-ui/core/TextField'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
 
 type Props = {
   persistence: boolean
@@ -92,7 +92,7 @@ const render = (props: Props) => {
             onChange={(_e: any, newValue) => {
               onPersistenceChange(newValue.value)
             }}
-            getOptionSelected={(option) => option.value === persistence}
+            isOptionEqualToValue={(option) => option.value === persistence}
             getOptionLabel={(option) => {
               return option.label
             }}
@@ -117,7 +117,7 @@ const render = (props: Props) => {
               onChange={(_e: any, newValue) => {
                 onExpirationChange(newValue.value)
               }}
-              getOptionSelected={(option) => option.value === expiration}
+              isOptionEqualToValue={(option) => option.value === expiration}
               getOptionLabel={(option) => {
                 return option.label
               }}
