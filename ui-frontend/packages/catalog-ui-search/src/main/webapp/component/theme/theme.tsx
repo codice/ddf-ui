@@ -479,6 +479,7 @@ export const Provider = ({ children }: { children: any }) => {
       },
       MuiButton: {
         defaultProps: {
+          size: 'small',
           color: 'grey',
         },
         variants: [
@@ -581,6 +582,16 @@ export const Provider = ({ children }: { children: any }) => {
           },
         },
       },
+      // MuiCheckbox: {
+      //   defaultProps: {
+      //     size: 'small',
+      //   },
+      // },
+      // MuiTextField: {
+      //   defaultProps: {
+      //     size: 'small',
+      //   },
+      // },
       MuiPaper: {
         styleOverrides: {
           root: { backgroundImage: 'unset' },
