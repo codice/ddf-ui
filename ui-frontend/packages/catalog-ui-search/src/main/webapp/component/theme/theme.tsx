@@ -9,6 +9,7 @@ import {
   Theme as ThemeInterface,
   lighten,
   alpha,
+  ThemeOptions,
 } from '@mui/material/styles'
 import StylesProvider from '@mui/styles/StylesProvider'
 import { ThemeContext } from 'styled-components'
@@ -403,6 +404,13 @@ const darkenUntilContrasting = (color: string, background: string): string => {
   return darkenUntilContrasting(darken(color, 0.1), background)
 }
 
+// https://stackoverflow.com/questions/72720524/typescript-react-mui-use-custom-color-on-button-component
+declare module '@mui/material' {
+  interface ButtonPropsColorOverrides {
+    grey: true
+  }
+}
+
 export const Provider = ({ children }: { children: any }) => {
   const styledTheme = React.useContext(ThemeContext)
   const darkMode = styledTheme.theme === 'dark'
@@ -458,7 +466,10 @@ export const Provider = ({ children }: { children: any }) => {
     },
   })
 
-  const theme = createTheme(initialTheme, {
+  /**
+   *  We split these out to so that we can access theme variables within our custom theme
+   */
+  const themeBasedTheme: ThemeOptions = {
     typography: {
       fontFamily: `'Open Sans', arial, sans-serif`,
       h6: {
@@ -613,7 +624,9 @@ export const Provider = ({ children }: { children: any }) => {
       snackbar: 101,
       tooltip: 101,
     },
-  })
+  }
+
+  const theme = createTheme(initialTheme, themeBasedTheme)
 
   React.useEffect(() => {
     const htmlElement = document.querySelector('html') as HTMLElement
