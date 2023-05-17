@@ -36,7 +36,7 @@ export const GoldenLayout = ({ selectionInterface }: Props) => {
       <Grid item className="w-full relative z-1 pb-2 pt-2 pr-2 shrink-0">
         <Paper
           elevation={Elevations.panels}
-          className="w-full p-3 overflow-hidden"
+          className="w-full py-1 px-2 overflow-hidden"
         >
           {goldenLayout ? (
             <ResultSelector
