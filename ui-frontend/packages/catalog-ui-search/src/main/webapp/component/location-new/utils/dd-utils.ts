@@ -72,8 +72,8 @@ function ddToWkt(dd: any) {
     case 'circle':
       if (
           dd.circle.radius > 0 && 
-          dd.circle.point.latitude === "" && 
-          dd.circle.point.longitude === ""
+          isNaN(dd.circle.point.latitude) === false && 
+          isNaN(dd.circle.point.longitude) === false
       ) {
         const distance = toKilometers(dd.circle.radius, dd.circle.units)
         wkt = computeCircle(ddPointToWkt(dd.circle.point), distance, 36)?.toWkt()
