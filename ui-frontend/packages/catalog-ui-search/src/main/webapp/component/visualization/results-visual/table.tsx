@@ -127,6 +127,8 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
     setHeaderColWidth(width)
   }
 
+  const [maxAddOnWidth, setMaxAddOnWidth] = React.useState(0)
+
   return (
     <Grid
       container
@@ -212,6 +214,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                     lazyResults={lazyResults}
                     setHeaderColWidth={setWidth}
                     headerColWidth={headerColWidth}
+                    addOnWidth={maxAddOnWidth}
                   />
                 </div>
               </Grid>
@@ -250,6 +253,12 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                             index={index}
                             results={results}
                             headerColWidth={headerColWidth}
+                            addOnWidth={maxAddOnWidth}
+                            setMaxAddOnWidth={(width) =>
+                              setMaxAddOnWidth((maxWidth) =>
+                                Math.max(width, maxWidth)
+                              )
+                            }
                           />
                         </div>
                       )
