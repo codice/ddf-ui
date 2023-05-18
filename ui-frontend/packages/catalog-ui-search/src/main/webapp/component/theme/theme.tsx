@@ -593,16 +593,6 @@ export const Provider = ({ children }: { children: any }) => {
           },
         },
       },
-      // MuiCheckbox: {
-      //   defaultProps: {
-      //     size: 'small',
-      //   },
-      // },
-      // MuiTextField: {
-      //   defaultProps: {
-      //     size: 'small',
-      //   },
-      // },
       MuiPaper: {
         styleOverrides: {
           root: { backgroundImage: 'unset' },
