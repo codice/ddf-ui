@@ -3,7 +3,6 @@ import { hot } from 'react-hot-loader'
 import Paper from '@mui/material/Paper'
 import moment from 'moment'
 import styled from 'styled-components'
-import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
 import { Status } from '../../js/model/LazyQueryResult/status'
 import { useLazyResultsStatusFromSelectionInterface } from '../selection-interface/hooks'
@@ -247,12 +246,12 @@ const QueryFeed = ({ selectionInterface }: Props) => {
 
   return (
     <>
-      <Grid container direction="row" alignItems="center" wrap="nowrap">
-        <Grid item>
+      <div className="flex flex-row items-center flex-nowrap">
+        <div className="leading-5">
           <div
             data-id="results-count-label"
             title={resultMessage}
-            style={{ whiteSpace: 'nowrap' }}
+            className=" whitespace-nowrap"
           >
             {pending ? (
               <i className="fa fa-circle-o-notch fa-spin is-critical-animation" />
@@ -263,8 +262,8 @@ const QueryFeed = ({ selectionInterface }: Props) => {
             {resultMessage}
           </div>
           <LastRan currentAsOf={currentAsOf} />
-        </Grid>
-        <Grid item>
+        </div>
+        <div>
           <div>
             <div className="relative">
               <Button
@@ -294,8 +293,8 @@ const QueryFeed = ({ selectionInterface }: Props) => {
               )}
             </div>
           </div>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </>
   )
 }
