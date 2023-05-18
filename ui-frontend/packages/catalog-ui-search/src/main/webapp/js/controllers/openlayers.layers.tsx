@@ -39,31 +39,42 @@ const WMS = (opts: any) => {
   return createTile({ ...opts, params }, ol.source.TileWMS)
 }
 const WMT = async (opts: any) => {
-  const { url, withCredentials } = opts
-  const parser = new ol.format.WMTSCapabilities()
-  const res = await window.fetch(url, {
+  const { url, withCredentials, proxyEnabled } = opts
+  const originalUrl = proxyEnabled
+    ? new URL(url, window.location.origin + window.location.pathname)
+    : new URL(url)
+  const getCapabilitiesUrl = new URL(originalUrl)
+  getCapabilitiesUrl.searchParams.set('request', 'GetCapabilities')
+  const res = await window.fetch(getCapabilitiesUrl, {
     credentials: withCredentials ? 'include' : 'same-origin',
   })
   const text = await res.text()
+  const parser = new ol.format.WMTSCapabilities()
   const result = parser.read(text)
   if ((result as any).Contents.Layer.length === 0) {
     throw new Error('WMTS map layer source has no layers.')
   }
   let { layer, matrixSet } = opts
   /* If tileMatrixSetID is present (Cesium WMTS keyword) set matrixSet (OpenLayers WMTS keyword) */
-  if (opts.tileMatrixSetID !== undefined) {
+  if (opts.tileMatrixSetID) {
     matrixSet = opts.tileMatrixSetID
   }
-  if (layer === undefined) {
+  if (!layer) {
     layer = (result as any).Contents.Layer[0].Identifier
   }
   const options = ol.source.WMTS.optionsFromCapabilities(result, {
+    ...opts,
     layer,
     matrixSet,
-    ...opts,
   })
   if (options === null) {
     throw new Error('WMTS map layer source could not be setup.')
+  }
+  if (proxyEnabled) {
+    // Set this to the proxy URL. Otherwise, OpenLayers will use the URL provided by the
+    // GetCapabilities response.
+    options.url = originalUrl.toString()
+    options.urls = [originalUrl.toString()]
   }
   return createTile(opts, () => new ol.source.WMTS(options))
 }
