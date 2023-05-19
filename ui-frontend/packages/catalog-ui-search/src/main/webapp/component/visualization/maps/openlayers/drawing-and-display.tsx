@@ -174,14 +174,14 @@ const modelToPolygon = (model: any): GeometryJSON | null => {
   }
   const isMultiPolygon = ShapeUtils.isArray3D(coords)
   const polygon = isMultiPolygon ? coords : [coords]
-  const buffer = model.get('polygonBufferWidth')
+  const buffer = Number(model.get('polygonBufferWidth'))
   const bufferUnit = model.get('polygonBufferUnits')
   return makeGeometry(
     Common.generateUUID(),
     Turf.polygon(polygon).geometry,
     DRAWING_COLOR,
     'Polygon',
-    buffer ? parseInt(buffer) : undefined,
+    Number.isNaN(buffer) ? 0 : buffer,
     bufferUnit || undefined
   )
 }
@@ -194,12 +194,12 @@ const modelToLine = (model: any): GeometryJSON | null => {
   ) {
     return null
   }
-  const buffer = model.get('lineWidth')
+  const buffer = Number(model.get('lineWidth'))
   const bufferUnit = model.get('lineUnits')
   return makeLineGeo(
     Common.generateUUID(),
     coords,
-    buffer ? parseInt(buffer) : 0,
+    Number.isNaN(buffer) ? 0 : buffer,
     bufferUnit || 'meters'
   )
 }
@@ -210,13 +210,13 @@ const modelToPointRadius = (model: any): GeometryJSON | null => {
   if (lon === undefined || lat === undefined) {
     return null
   }
-  const radius = model.get('radius')
+  const radius = Number(model.get('radius'))
   const radiusUnits = model.get('radiusUnits')
   return makePointRadiusGeo(
     Common.generateUUID(),
     lat,
     lon,
-    radius ? parseInt(radius) : 1,
+    Number.isNaN(radius) ? 1 : radius,
     radiusUnits || 'meters'
   )
 }
