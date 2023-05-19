@@ -70,8 +70,18 @@ function ddToWkt(dd: any) {
       wkt = ddPointToWkt(dd.point).toWkt()
       break
     case 'circle':
-      const distance = toKilometers(dd.circle.radius, dd.circle.units)
-      wkt = computeCircle(ddPointToWkt(dd.circle.point), distance, 36)?.toWkt()
+      if (
+        !isNaN(dd.circle.point.latitude) &&
+        !isNaN(dd.circle.point.longitude) &&
+        dd.circle.radius > 0
+      ) {
+        const distance = toKilometers(dd.circle.radius, dd.circle.units)
+        wkt = computeCircle(
+          ddPointToWkt(dd.circle.point),
+          distance,
+          36
+        )?.toWkt()
+      }
       break
     case 'line':
       if (dd.line.list.length > 0) {
