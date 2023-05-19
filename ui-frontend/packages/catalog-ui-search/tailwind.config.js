@@ -1,6 +1,6 @@
 module.exports = {
   darkMode: 'class',
-  content: ['./src/**/*.{tsx,js,jsx,ts}'],
+  content: ['./src/**/*.{tsx,js,jsx,ts,html}'],
   theme: {
     namedGroups: ['1', '2'],
     minWidth: {

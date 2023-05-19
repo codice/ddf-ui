@@ -448,7 +448,7 @@ const QueryBasic = ({ model, errorListener }: QueryBasicProps) => {
             }}
           />
         </div>
-        <div className="pt-2">
+        <div className="">
           <FormControlLabel
             labelPlacement="end"
             control={
@@ -508,7 +508,7 @@ const QueryBasic = ({ model, errorListener }: QueryBasicProps) => {
             </Grid>
           ) : null}
         </div>
-        <div className="pt-2">
+        <div className="">
           <FormControlLabel
             labelPlacement="end"
             control={
@@ -597,7 +597,7 @@ const QueryBasic = ({ model, errorListener }: QueryBasicProps) => {
             </Grid>
           ) : null}
         </div>
-        <div className="py-5 w-full">
+        <div className="py-2 w-full">
           <Swath className="w-full h-1" />
         </div>
         <div className="basic-settings">
