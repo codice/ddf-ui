@@ -492,10 +492,10 @@ export default function (
       ;(feature as any).selectedStyle = new Openlayers.style.Style({
         image: new Openlayers.style.Icon({
           img: DrawingUtility.getCircleWithText({
-            fillColor: options.color,
+            fillColor: 'orange',
             text: options.id.length,
-            strokeColor: 'black',
-            textColor: 'black',
+            strokeColor: 'white',
+            textColor: 'white',
           }),
           imgSize: [44, 44],
         }),
@@ -554,8 +554,7 @@ export default function (
       ;(feature as any).selectedStyle = new Openlayers.style.Style({
         image: new Openlayers.style.Icon({
           img: DrawingUtility.getPin({
-            fillColor: options.color,
-            strokeColor: 'black',
+            fillColor: 'orange',
             icon: options.icon,
           }),
           imgSize: [x, y],
@@ -758,8 +757,8 @@ export default function (
             new Openlayers.style.Style({
               image: new Openlayers.style.Icon({
                 img: DrawingUtility.getPin({
-                  fillColor: options.color,
-                  strokeColor: options.isSelected ? 'black' : 'white',
+                  fillColor: options.isSelected ? 'orange' : options.color,
+                  strokeColor: 'white',
                   icon: options.icon,
                 }),
                 imgSize: [pointWidth, pointHeight],
@@ -789,7 +788,7 @@ export default function (
         const styles = [
           new Openlayers.style.Style({
             stroke: new Openlayers.style.Stroke({
-              color: options.isSelected ? 'black' : 'white',
+              color: 'white',
               width: 8,
             }),
           }),

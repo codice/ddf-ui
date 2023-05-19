@@ -655,10 +655,10 @@ export default function CesiumMap(
         textColor: 'white',
       })
       billboardRef.selectedImage = DrawingUtility.getCircleWithText({
-        fillColor: options.color,
+        fillColor: 'orange',
         text: options.id.length,
-        strokeColor: 'black',
-        textColor: 'black',
+        strokeColor: 'white',
+        textColor: 'white',
       })
       switch (options.isSelected) {
         case 'selected':
@@ -721,8 +721,7 @@ export default function CesiumMap(
         icon: options.icon,
       })
       billboardRef.selectedImage = DrawingUtility.getPin({
-        fillColor: options.color,
-        strokeColor: 'black',
+        fillColor: 'orange',
         icon: options.icon,
       })
       billboardRef.image = options.isSelected

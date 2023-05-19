@@ -35,6 +35,8 @@ import TransferList from '../../tabs/metacard/transfer-list'
 import { useDialog } from '../../dialog'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import useTimePrefs from '../../fields/useTimePrefs'
+import { useScrollToItemOnSelection } from './result-item.collection'
+import { Memo } from '../../memo/memo'
 type Props = {
   selectionInterface: any
   mode: any
@@ -106,6 +108,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
    * This is solely to keep the illusion of responsiveness when switching from table mode to list mode (or dropping a new result visual in)
    */
   const [isMounted, setIsMounted] = React.useState(false)
+  const { listRef } = useScrollToItemOnSelection({ selectionInterface })
 
   React.useEffect(() => {
     const mountedTimeout = setTimeout(() => {
@@ -219,55 +222,67 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                 <Divider className="w-full h-min" />
               </Grid>
               <Grid item className="w-full h-full overflow-hidden bg-inherit">
-                <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
-                  outerElementProps={{
-                    onScroll: (e) => {
-                      if (headerRef.current) {
-                        headerRef.current.scrollLeft = (
-                          e.target as any
-                        ).scrollLeft
-                      }
-                    },
-                  }}
-                  defaultSize={76}
-                  overscanCount={10}
-                  controlledMeasuring={true}
-                  items={results}
-                  Item={({ itemRef, item, measure, index }) => {
-                    return (
-                      <div ref={itemRef} className="bg-inherit">
-                        <ResultItemRow
-                          lazyResult={item}
-                          measure={measure}
-                          index={index}
-                          results={results}
-                          headerColWidth={headerColWidth}
-                          addOnWidth={maxAddOnWidth}
-                          setMaxAddOnWidth={(width) =>
-                            setMaxAddOnWidth((maxWidth) =>
-                              Math.max(width, maxWidth)
-                            )
-                          }
-                        />
-                      </div>
-                    )
-                  }}
-                  Empty={() => {
-                    if (Object.values(status).length === 0) {
+                <Memo
+                  dependencies={[
+                    listRef.current,
+                    lazyResults.results,
+                    isSearching,
+                    status,
+                  ]}
+                >
+                  <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
+                    outerElementProps={{
+                      onScroll: (e) => {
+                        if (headerRef.current) {
+                          headerRef.current.scrollLeft = (
+                            e.target as any
+                          ).scrollLeft
+                        }
+                      },
+                    }}
+                    defaultSize={76}
+                    overscanCount={10}
+                    controlledMeasuring={true}
+                    items={results}
+                    Item={({ itemRef, item, measure, index }) => {
                       return (
-                        <div className="p-2">Search has not yet been run.</div>
+                        <div ref={itemRef} className="bg-inherit">
+                          <ResultItemRow
+                            lazyResult={item}
+                            measure={measure}
+                            index={index}
+                            results={results}
+                            headerColWidth={headerColWidth}
+                            addOnWidth={maxAddOnWidth}
+                            setMaxAddOnWidth={(width) =>
+                              setMaxAddOnWidth((maxWidth) =>
+                                Math.max(width, maxWidth)
+                              )
+                            }
+                          />
+                        </div>
                       )
-                    }
-                    if (isSearching) {
-                      return <LinearProgress variant="indeterminate" />
-                    }
-                    return (
-                      <div className="result-item-collection-empty p-2">
-                        No Results Found
-                      </div>
-                    )
-                  }}
-                />
+                    }}
+                    Empty={() => {
+                      if (Object.values(status).length === 0) {
+                        return (
+                          <div className="p-2">
+                            Search has not yet been run.
+                          </div>
+                        )
+                      }
+                      if (isSearching) {
+                        return <LinearProgress variant="indeterminate" />
+                      }
+                      return (
+                        <div className="result-item-collection-empty p-2">
+                          No Results Found
+                        </div>
+                      )
+                    }}
+                    variableSizeListRef={listRef}
+                  />
+                </Memo>
               </Grid>
             </Grid>
           ) : (
