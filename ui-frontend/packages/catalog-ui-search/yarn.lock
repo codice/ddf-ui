@@ -2158,7 +2158,7 @@
     d3-geo "1.7.1"
     turf-jsts "*"
 
-"@turf/buffer@^6.5.0":
+"@turf/buffer@6.5.0", "@turf/buffer@^6.5.0":
   version "6.5.0"
   resolved "https://registry.yarnpkg.com/@turf/buffer/-/buffer-6.5.0.tgz#22bd0d05b4e1e73eaebc69b8f574a410ff704842"
   integrity sha512-qeX4N6+PPWbKqp1AVkBVWFerGjMYMUyencwfnkCesoznU6qvfugFHNAngNqIBVnJjZ5n8IFyOf+akcxnrt9sNg==
@@ -9953,14 +9953,15 @@ geolib@^3.2.1:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/geolib/-/geolib-3.3.1.tgz#f144a53b6a6858e81111ff71d137318389927611"
 
-geospatialdraw@0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/geospatialdraw/-/geospatialdraw-0.4.2.tgz#a524d0d5f141952cd719da14ce9b8d6f91439108"
-  integrity sha512-WCj1/sFoG3u9MgX6yTCExHoIggbiTCnxG3DjAhwCeIBbSM+NmhKZ2zKNaUaSa6T9J2Bdr6iGKeosgdIco/PXfw==
+geospatialdraw@0.4.4:
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/geospatialdraw/-/geospatialdraw-0.4.4.tgz#3d0312f1146085791919543f3a6621c75cda553c"
+  integrity sha512-PgQgzPez4xmwBYloCCoGE714vpOrwbYE5LYXigsNrxzUwgEdPMR8Ie00L39g27l/W3lE6e2hPzoq7gQ03uKtZA==
   dependencies:
     "@fortawesome/fontawesome-svg-core" "1.2.21"
     "@fortawesome/free-solid-svg-icons" "5.10.1"
     "@fortawesome/react-fontawesome" "0.1.4"
+    "@turf/buffer" "6.5.0"
     "@turf/nearest-point-to-line" "6.0.0"
     "@turf/point-to-line-distance" "6.0.0"
     "@turf/turf" "5.1.6"
