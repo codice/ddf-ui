@@ -78,6 +78,8 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
 
   private final Set<String> warnings = new HashSet<>();
 
+  private final Map<String, List<String>> unsupportedSortBys;
+
   // Transient so as not to be serialized to/from JSON
   private final transient QueryResponse queryResponse;
 
@@ -161,6 +163,16 @@ public class CqlQueryResponseImpl implements CqlQueryResponse {
     this.highlights =
         (List<ResultHighlight>) queryResponse.getProperties().get(Constants.QUERY_HIGHLIGHT_KEY);
     this.statusBySource = (Map<String, Status>) queryResponse.getProperties().get("statusBySource");
+    //noinspection unchecked
+    this.unsupportedSortBys =
+        queryResponse
+            .getProperties()
+            .entrySet()
+            .stream()
+            .filter(
+                stringSerializableEntry ->
+                    stringSerializableEntry.getKey().startsWith("unsupported-sort-by-removed"))
+            .collect(Collectors.toMap(Map.Entry::getKey, e -> (List<String>) e.getValue()));
   }
 
   private Map<String, List<FacetValueCount>> getFacetResults(Serializable facetResults) {
