@@ -823,6 +823,35 @@ const SessionTimeoutComponent = () => {
     </sessionTimeoutDialogState.MuiDialogComponents.Dialog>
   )
 }
+
+/**
+ *  Ensures that subwindows don't lose important query string information when navigating to a new page.
+ * @returns
+ */
+const PatchRouterToPreserveGoldenLayoutSubwindowQueryString = () => {
+  const history = useHistory()
+  React.useEffect(() => {
+    if (history) {
+      const oldReplace = history.replace
+      history.replace = (...args) => {
+        if (args[0].search) {
+          // @ts-ignore
+          const newSearch = queryString.parse(args[0].search)
+          const currentSearch = queryString.parse(history.location.search)
+          if (currentSearch['gl-window']) {
+            args[0].search = queryString.stringify({
+              ...newSearch,
+              'gl-window': currentSearch['gl-window'],
+            })
+          }
+        }
+        oldReplace.apply(history, args)
+      }
+    }
+  }, [history])
+  return null
+}
+
 const App = ({
   RouteInformation,
   NotificationsComponent,
@@ -856,6 +885,7 @@ const App = ({
             <Extensions.extraHeader />
             <Grid item className="w-full h-full relative overflow-hidden">
               <AsyncTasksComponent />
+              <PatchRouterToPreserveGoldenLayoutSubwindowQueryString />
               <Grid
                 container
                 direction="row"

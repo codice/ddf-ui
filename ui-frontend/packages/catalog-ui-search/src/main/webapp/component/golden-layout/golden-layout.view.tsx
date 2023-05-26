@@ -36,7 +36,8 @@ import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import Paper from '@mui/material/Paper'
 import { Elevations } from '../theme/theme'
-
+import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
+import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 const treeMap = (obj: any, fn: any, path = []): any => {
   if (Array.isArray(obj)) {
     // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
@@ -151,6 +152,22 @@ const GoldenLayoutComponentHeader = ({
     </ExtensionPoints.providers>
   )
 }
+
+/**
+ *  For some reason golden layout removes configs from local storage upon first load of popout window, which means refreshing doesn't work.
+ *  This prevents this line from doing so: https://github.com/golden-layout/golden-layout/blob/v1.5.9/src/js/LayoutManager.js#L797
+ */
+;(function preventRemovalFromStorage() {
+  const normalRemoveItem = window.localStorage.removeItem
+  window.localStorage.removeItem = (key: string) => {
+    if (key.includes('gl-window')) {
+      return
+    } else {
+      normalRemoveItem(key)
+    }
+  }
+})()
+
 const GoldenLayoutComponent = ({
   ComponentView,
   options,
@@ -455,6 +472,17 @@ const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
               </Button>
             </Grid>
             <Grid item>
+              <Button
+                data-id="maximise-layout-button"
+                onClick={() => {
+                  stack.getActiveContentItem().popout()
+                  // stack.popout()
+                }}
+              >
+                <AllOutIcon />
+              </Button>
+            </Grid>
+            <Grid item>
               {stack.header._isClosable() ? (
                 <Button
                   data-id="close-layout-button"
@@ -475,14 +503,48 @@ const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
     </ExtensionPoints.providers>
   )
 }
-export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
-  const [goldenLayoutAttachElement, setGoldenLayoutAttachElement] =
-    React.useState<HTMLDivElement | null>(null)
-  const [goldenLayout, setGoldenLayout] = React.useState<any>(null)
-  const lastConfig = React.useRef<any>(null)
+
+const useUpdateGoldenLayoutSize = ({
+  wreqr,
+  goldenLayout,
+}: {
+  wreqr: any
+  goldenLayout: any
+}) => {
   useListenTo((wreqr as any).vent, 'gl-updateSize', () => {
-    goldenLayout.updateSize()
+    if (goldenLayout && goldenLayout.isInitialised) goldenLayout.updateSize()
   })
+  React.useEffect(() => {
+    if (goldenLayout) {
+      const randomString = Math.random().toString()
+      $(window).on(
+        'resize.' + randomString,
+        _debounce(
+          () => {
+            if (goldenLayout.isInitialised) goldenLayout.updateSize()
+          },
+          100,
+          {
+            leading: false,
+            trailing: true,
+          }
+        )
+      )
+      return () => {
+        $(window).off('resize.' + randomString)
+      }
+    }
+    return () => {}
+  }, [goldenLayout])
+}
+
+const useSendGoldenLayoutReferenceUpwards = ({
+  options,
+  goldenLayout,
+}: {
+  goldenLayout: any
+  options: GoldenLayoutViewProps
+}) => {
   React.useEffect(() => {
     if (goldenLayout) {
       options.setGoldenLayout(goldenLayout)
@@ -493,25 +555,17 @@ export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
       }
     }
   }, [goldenLayout])
-  React.useEffect(() => {
-    const randomString = Math.random().toString()
-    $(window).on(
-      'resize.' + randomString,
-      _debounce(
-        () => {
-          goldenLayout.updateSize()
-        },
-        100,
-        {
-          leading: false,
-          trailing: true,
-        }
-      )
-    )
-    return () => {
-      $(window).off('resize.' + randomString)
-    }
-  }, [goldenLayout])
+}
+
+const useAttachGoldenLayout = ({
+  goldenLayoutAttachElement,
+  setGoldenLayout,
+  options,
+}: {
+  options: GoldenLayoutViewProps
+  setGoldenLayout: React.Dispatch<any>
+  goldenLayoutAttachElement: HTMLDivElement | null
+}) => {
   React.useEffect(() => {
     if (goldenLayoutAttachElement) {
       setGoldenLayout(
@@ -522,13 +576,41 @@ export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
       )
     }
   }, [goldenLayoutAttachElement])
+}
+
+const useRegisterGoldenLayoutComponents = ({
+  options,
+  goldenLayout,
+}: {
+  options: GoldenLayoutViewProps
+  goldenLayout: any
+}) => {
+  const [finished, setFinished] = React.useState(false)
   React.useEffect(() => {
     if (goldenLayout) {
       registerGoldenLayoutComponents({
         goldenLayout,
         options,
       })
+      setFinished(true)
+    }
+  }, [goldenLayout])
+  return finished
+}
 
+const useListenToGoldenLayoutStateChanges = ({
+  options,
+  goldenLayout,
+  lastConfig,
+}: {
+  options: GoldenLayoutViewProps
+  goldenLayout: any
+  lastConfig: React.MutableRefObject<any>
+}) => {
+  const [finished, setFinished] = React.useState(false)
+
+  React.useEffect(() => {
+    if (goldenLayout) {
       const debouncedHandleGoldenLayoutStateChange = _.debounce(
         ({ currentConfig }: { currentConfig: any }) => {
           handleGoldenLayoutStateChange({
@@ -547,7 +629,21 @@ export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
        *  I haven't determined a workaround for this, but it's not bothering users as far as I know at the moment.
        *  Basically the bug is that empty layouts aren't guaranteed to be saved, but non empty will always save appropriately.
        */
-      goldenLayout.on('stateChanged', () => {
+      goldenLayout.on('stateChanged', (event: any) => {
+        if (!event) {
+          return
+        }
+        const fullyInitialized =
+          goldenLayout.isInitialised &&
+          !(goldenLayout?.openPopouts as Array<any>)?.some(
+            (popout: any) => !popout.isInitialised
+          )
+        if (!fullyInitialized) {
+          setTimeout(() => {
+            goldenLayout.emit('stateChanged', 'retry')
+          }, 200)
+          return
+        }
         const currentConfig = getInstanceConfig({ goldenLayout })
         /**
          *  Get the config instantly, that way if we navigate away and the component is removed from the document we still get the correct config
@@ -557,23 +653,388 @@ export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
           currentConfig,
         })
       })
-      goldenLayout.on('stackCreated', handleGoldenLayoutStackCreated)
-      goldenLayout.on('initialised', () => {
-        // can do empty and max detections here
-        /**
-         *  This is necessary to properly save pref on the first change that happens from a completely empty layout on first load.
-         *  Used to be done in handleStateChange (if null, set), but that did not trigger for empty layouts on first load.
-         */
-        lastConfig.current = getInstanceConfig({ goldenLayout })
-      })
-      goldenLayout.init()
+      setFinished(true)
       return () => {
         goldenLayout.off('stateChanged')
+      }
+    }
+    return () => {}
+  }, [goldenLayout])
+  return finished
+}
+
+/**
+ *  This will attach our custom toolbar to the golden layout stack header
+ */
+const useListenToGoldenLayoutStackCreated = ({
+  goldenLayout,
+}: {
+  goldenLayout: any
+}) => {
+  const [finished, setFinished] = React.useState(false)
+
+  React.useEffect(() => {
+    if (goldenLayout) {
+      goldenLayout.on('stackCreated', handleGoldenLayoutStackCreated)
+      setFinished(true)
+      return () => {
         goldenLayout.off('stackCreated')
       }
     }
     return () => {}
   }, [goldenLayout])
+  return finished
+}
+
+// const useSetStartingPointForConfig = ({
+//   goldenLayout,
+//   lastConfig,
+// }: {
+//   goldenLayout: any
+//   lastConfig: React.MutableRefObject<any>
+// }) => {
+//   const [finished, setFinished] = React.useState(false)
+//   React.useEffect(() => {
+//     if (goldenLayout) {
+//       goldenLayout.on('initialised', () => {
+//         // can do empty and max detections here
+//         /**
+//          *  This is necessary to properly save pref on the first change that happens from a completely empty layout on first load.
+//          *  Used to be done in handleStateChange (if null, set), but that did not trigger for empty layouts on first load.
+//          */
+//         const fullyInitialized =
+//           goldenLayout.isInitialised &&
+//           !(goldenLayout?.openPopouts as Array<any>)?.some(
+//             (popout: any) => !popout.isInitialised
+//           )
+//         if (!fullyInitialized) {
+//           setTimeout(() => {
+//             goldenLayout.emit('initialised', 'retry')
+//           }, 200)
+//           return
+//         }
+//         lastConfig.current = getInstanceConfig({ goldenLayout })
+//         setFinished(true)
+//       })
+//     }
+//     return () => {}
+//   }, [goldenLayout])
+//   return finished
+// }
+
+const useInitGoldenLayout = ({
+  dependencies,
+  goldenLayout,
+}: {
+  dependencies: Array<boolean>
+  goldenLayout: any
+}) => {
+  const [finished, setFinished] = React.useState(false)
+
+  React.useEffect(() => {
+    if (dependencies.every((dependency) => dependency)) {
+      const onInit = () => {
+        setFinished(true)
+      }
+      goldenLayout.on('initialised', onInit)
+      goldenLayout.init()
+      return () => {
+        goldenLayout.off('initialised', onInit)
+      }
+    }
+    return () => {}
+  }, dependencies)
+  return finished
+}
+
+const GoldenLayoutWindowCommunicationEvents = {
+  requestInitialState: 'requestInitialState',
+  provideInitialState: 'provideInitialState',
+  consumeInitialState: 'consumeInitialState',
+  consumeStateChange: 'consumeStateChange',
+  provideStateChange: 'provideStateChange',
+}
+
+const useProvideStateChange = ({
+  goldenLayout,
+  lazyResults,
+  isInitialized,
+}: {
+  goldenLayout: any
+  lazyResults: LazyQueryResults
+  isInitialized: boolean
+}) => {
+  React.useEffect(() => {
+    if (isInitialized && goldenLayout && lazyResults) {
+      const callback = () => {
+        goldenLayout.eventHub._childEventSource = null
+        goldenLayout.eventHub.emit(
+          GoldenLayoutWindowCommunicationEvents.consumeStateChange,
+          {
+            lazyResults,
+          }
+        )
+      }
+
+      const filteredResultsSubscription = lazyResults.subscribeTo({
+        subscribableThing: 'filteredResults',
+        callback: () => {
+          if (!goldenLayout.isSubWindow) {
+            callback()
+          }
+        },
+      })
+      const selectedResultsSubscription = lazyResults.subscribeTo({
+        subscribableThing: 'selectedResults',
+        callback: () => {
+          if (document.hasFocus()) {
+            callback()
+          }
+        },
+      })
+      const statusSubscription = lazyResults.subscribeTo({
+        subscribableThing: 'status',
+        callback: () => {
+          if (!goldenLayout.isSubWindow) {
+            callback()
+          }
+        },
+      })
+      return () => {
+        filteredResultsSubscription()
+        selectedResultsSubscription()
+        statusSubscription()
+      }
+    }
+    return () => {}
+  }, [lazyResults, lazyResults?.results, isInitialized, goldenLayout])
+}
+
+const useProvideInitialState = ({
+  goldenLayout,
+  isInitialized,
+  lazyResults,
+}: {
+  goldenLayout: any
+  isInitialized: boolean
+  lazyResults: LazyQueryResults
+}) => {
+  React.useEffect(() => {
+    if (
+      isInitialized &&
+      goldenLayout &&
+      lazyResults &&
+      !goldenLayout.isSubWindow
+    ) {
+      const handleInitializeState = () => {
+        // golden layout doesn't properly clear this flag
+        goldenLayout.eventHub._childEventSource = null
+        goldenLayout.eventHub.emit(
+          GoldenLayoutWindowCommunicationEvents.consumeInitialState,
+          {
+            lazyResults,
+          }
+        )
+      }
+
+      goldenLayout.eventHub.on(
+        GoldenLayoutWindowCommunicationEvents.requestInitialState,
+        handleInitializeState
+      )
+      return () => {
+        try {
+          goldenLayout.eventHub.off(
+            GoldenLayoutWindowCommunicationEvents.requestInitialState
+          )
+        } catch (err) {
+          console.log(err)
+        }
+      }
+    }
+    return () => {}
+  }, [isInitialized, goldenLayout, lazyResults, lazyResults?.results])
+}
+
+const useConsumeInitialState = ({
+  goldenLayout,
+  lazyResults,
+  isInitialized,
+}: {
+  goldenLayout: any
+  lazyResults: LazyQueryResults
+  isInitialized: boolean
+}) => {
+  const [hasConsumedInitialState, setHasConsumedInitialState] =
+    React.useState(false)
+
+  React.useEffect(() => {
+    if (
+      isInitialized &&
+      !hasConsumedInitialState &&
+      goldenLayout &&
+      lazyResults &&
+      goldenLayout.isSubWindow
+    ) {
+      const onSyncStateCallback = (eventData: {
+        lazyResults: LazyQueryResults
+      }) => {
+        setHasConsumedInitialState(true)
+        lazyResults.reset({
+          results: Object.values(eventData.lazyResults.results).map(
+            (result) => result.plain
+          ),
+          sorts: eventData.lazyResults.persistantSorts,
+          sources: eventData.lazyResults.sources,
+          status: eventData.lazyResults.status,
+        })
+        lazyResults._resetSelectedResults()
+        Object.values(eventData.lazyResults.selectedResults).forEach(
+          (result) => {
+            lazyResults.results[result.plain.id].controlSelect()
+          }
+        )
+      }
+
+      goldenLayout.eventHub.on(
+        GoldenLayoutWindowCommunicationEvents.consumeInitialState,
+        onSyncStateCallback
+      )
+      goldenLayout.eventHub.emit(
+        GoldenLayoutWindowCommunicationEvents.requestInitialState,
+        {}
+      )
+      return () => {
+        goldenLayout.eventHub.off(
+          GoldenLayoutWindowCommunicationEvents.consumeInitialState,
+          onSyncStateCallback
+        )
+      }
+    }
+    return () => {}
+  }, [goldenLayout, lazyResults, isInitialized])
+}
+
+const useConsumeStateChange = ({
+  goldenLayout,
+  lazyResults,
+  isInitialized,
+}: {
+  goldenLayout: any
+  lazyResults: LazyQueryResults
+  isInitialized: boolean
+}) => {
+  React.useEffect(() => {
+    if (goldenLayout && lazyResults && isInitialized) {
+      const onSyncStateCallback = (eventData: {
+        lazyResults: LazyQueryResults
+      }) => {
+        if (
+          JSON.stringify(
+            Object.values(lazyResults.results).map((lazyResult) => {
+              return {
+                plain: lazyResult.plain,
+                isSelected: lazyResult.isSelected,
+              }
+            })
+          ) !==
+          JSON.stringify(
+            Object.values(eventData.lazyResults.results).map((lazyResult) => {
+              return {
+                plain: lazyResult.plain,
+                isSelected: lazyResult.isSelected,
+              }
+            })
+          )
+        ) {
+          lazyResults.reset({
+            results: Object.values(eventData.lazyResults.results).map(
+              (result) => result.plain
+            ),
+            sorts: eventData.lazyResults.persistantSorts,
+            sources: eventData.lazyResults.sources,
+            status: eventData.lazyResults.status,
+          })
+          lazyResults._resetSelectedResults()
+          Object.values(eventData.lazyResults.selectedResults).forEach(
+            (result) => {
+              lazyResults.results[result.plain.id].controlSelect()
+            }
+          )
+        }
+      }
+
+      goldenLayout.eventHub.on(
+        GoldenLayoutWindowCommunicationEvents.consumeStateChange,
+        onSyncStateCallback
+      )
+      return () => {
+        goldenLayout.eventHub.off(
+          GoldenLayoutWindowCommunicationEvents.consumeStateChange,
+          onSyncStateCallback
+        )
+      }
+    }
+    return () => {}
+  }, [goldenLayout, lazyResults, isInitialized])
+}
+
+const useCrossWindowGoldenLayoutCommunication = ({
+  goldenLayout,
+  isInitialized,
+  options,
+}: {
+  goldenLayout: any
+  isInitialized: boolean
+  options: GoldenLayoutViewProps
+}) => {
+  const lazyResults = useLazyResultsFromSelectionInterface({
+    selectionInterface: options.selectionInterface,
+  })
+  console.log(`LazyResults: ${lazyResults.backboneModel.cid}`)
+
+  console.log(`SelectionInterface: ${options.selectionInterface.cid}`)
+  useProvideStateChange({
+    goldenLayout,
+    lazyResults,
+    isInitialized,
+  })
+  useProvideInitialState({ goldenLayout, isInitialized, lazyResults })
+  useConsumeInitialState({ goldenLayout, lazyResults, isInitialized })
+  useConsumeStateChange({ goldenLayout, lazyResults, isInitialized })
+}
+
+export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
+  const [goldenLayoutAttachElement, setGoldenLayoutAttachElement] =
+    React.useState<HTMLDivElement | null>(null)
+  const [goldenLayout, setGoldenLayout] = React.useState<any>(null)
+  const lastConfig = React.useRef<any>(getGoldenLayoutConfig(options))
+  useUpdateGoldenLayoutSize({ wreqr, goldenLayout })
+  useSendGoldenLayoutReferenceUpwards({ options, goldenLayout })
+  useAttachGoldenLayout({ goldenLayoutAttachElement, setGoldenLayout, options })
+  const goldenLayoutComponentsRegistered = useRegisterGoldenLayoutComponents({
+    options,
+    goldenLayout,
+  })
+  const listeningToGoldenLayoutStateChanges =
+    useListenToGoldenLayoutStateChanges({ options, goldenLayout, lastConfig })
+  const listeningToGoldenLayoutStackCreated =
+    useListenToGoldenLayoutStackCreated({ goldenLayout })
+
+  const isInitialized = useInitGoldenLayout({
+    dependencies: [
+      goldenLayoutComponentsRegistered,
+      listeningToGoldenLayoutStateChanges,
+      listeningToGoldenLayoutStackCreated,
+    ],
+    goldenLayout,
+  })
+
+  useCrossWindowGoldenLayoutCommunication({
+    goldenLayout,
+    isInitialized,
+    options,
+  })
+
   return (
     <div data-element="golden-layout" className="is-minimised h-full w-full">
       <div

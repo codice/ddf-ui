@@ -4649,6 +4649,11 @@
   version "1.10.22"
   resolved "https://registry.yarnpkg.com/@types/underscore/-/underscore-1.10.22.tgz#8e0a134a2df0afe8da24bcf006e7f94925a3e15f"
 
+"@types/uuid@8.3.3":
+  version "8.3.3"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-8.3.3.tgz#c6a60686d953dbd1b1d45e66f4ecdbd5d471b4d0"
+  integrity sha512-0LbEEx1zxrYB3pgpd1M5lEhLcXjKJnYghvhTRgaBeUivLHMDM1TzF3IJ6hXU2+8uA4Xz+5BA63mtZo5DjVT8iA==
+
 "@types/ws@^8.5.1":
   version "8.5.4"
   resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.5.4.tgz#bb10e36116d6e570dd943735f86c933c1587b8a5"
@@ -10729,9 +10734,10 @@ glslify@^7.0.0:
     through2 "^2.0.1"
     xtend "^4.0.0"
 
-golden-layout@1.5.8:
-  version "1.5.8"
-  resolved "https://registry.yarnpkg.com/golden-layout/-/golden-layout-1.5.8.tgz#320963eabdefec4fe143e2b769af918c7791c83c"
+golden-layout@1.5.9:
+  version "1.5.9"
+  resolved "https://registry.yarnpkg.com/golden-layout/-/golden-layout-1.5.9.tgz#a39bc1f6a67e6f886b797c016dd924e9426ba77f"
+  integrity sha512-iBXDQCXOTgUEQJo96zPbjDoy5bRIk9XW5l+q+pDgLnIyReqaa1aiQctNud4epsskyLt952BG521dew5Z1liSxA==
   dependencies:
     jquery "*"
 
@@ -17954,9 +17960,10 @@ utils-merge@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
 
-uuid@2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-2.0.2.tgz#48bd5698f0677e3c7901a1c46ef15b1643794726"
+uuid@9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.0.tgz#592f550650024a38ceb0c562f2f6aa435761efb5"
+  integrity sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==
 
 uuid@^3.0.0, uuid@^3.2.1, uuid@^3.3.2:
   version "3.4.0"

@@ -10,21 +10,25 @@ type Props = {
   selectionInterface: any
 }
 
+const useUpdateGoldenLayoutSize = ({
+  goldenLayout,
+  closed,
+}: {
+  closed: boolean
+  goldenLayout: any
+}) => {
+  React.useEffect(() => {
+    setTimeout(() => {
+      if (goldenLayout && goldenLayout.isInitialised) goldenLayout.updateSize()
+    }, 100)
+  }, [closed, goldenLayout])
+}
+
 export const GoldenLayout = ({ selectionInterface }: Props) => {
   const [goldenLayout, setGoldenLayout] = React.useState<any>(null)
   const { closed } = useResizableGridContext()
 
-  React.useEffect(() => {
-    setTimeout(() => {
-      if (goldenLayout) goldenLayout.updateSize()
-    }, 100)
-  }, [closed, goldenLayout])
-
-  React.useEffect(() => {
-    setTimeout(() => {
-      if (goldenLayout) goldenLayout.updateSize()
-    }, 1000)
-  }, [goldenLayout])
+  useUpdateGoldenLayoutSize({ goldenLayout, closed })
   return (
     <Grid
       data-id="results-container"

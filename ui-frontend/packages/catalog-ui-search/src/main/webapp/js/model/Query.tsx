@@ -186,7 +186,19 @@ export default Backbone.AssociatedModel.extend({
           },
         ],
         sources: ['all'],
-        result: undefined,
+        // initialize this here so we can avoid creating spurious references to LazyQueryResults objects
+        result: new QueryResponse({
+          lazyResults: new LazyQueryResults({
+            sorts: [],
+            sources: [],
+            transformSorts: ({ originalSorts }) => {
+              return this.options.transformSorts({
+                originalSorts,
+                queryRef: this,
+              })
+            },
+          }),
+        }),
         type: 'text',
         isLocal: false,
         isOutdated: false,
@@ -381,31 +393,13 @@ export default Backbone.AssociatedModel.extend({
       selectedSources = data.sources.filter(isHarvested)
     }
     let result = this.get('result')
-    if (result) {
-      result.get('lazyResults').reset({
-        sorts: this.get('sorts'),
-        sources: selectedSources,
-        transformSorts: ({ originalSorts }: any) => {
-          return this.options.transformSorts({ originalSorts, queryRef: this })
-        },
-      })
-    } else {
-      result = new QueryResponse({
-        lazyResults: new LazyQueryResults({
-          sorts: this.get('sorts'),
-          sources: selectedSources,
-          transformSorts: ({ originalSorts }) => {
-            return this.options.transformSorts({
-              originalSorts,
-              queryRef: this,
-            })
-          },
-        }),
-      })
-      this.set({
-        result,
-      })
-    }
+    result.get('lazyResults').reset({
+      sorts: this.get('sorts'),
+      sources: selectedSources,
+      transformSorts: ({ originalSorts }: any) => {
+        return this.options.transformSorts({ originalSorts, queryRef: this })
+      },
+    })
     return {
       data,
       selectedSources,

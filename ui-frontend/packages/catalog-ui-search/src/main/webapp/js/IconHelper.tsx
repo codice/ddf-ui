@@ -70,7 +70,7 @@ function _formatAttribute(attr: string) {
 
 /* Checks if the attribute value exists in the icon map. */
 function _iconExistsInMap(attr: any, map: any) {
-  if (attr instanceof Array) {
+  if (Array.isArray(attr)) {
     attr = attr[0]
   }
   if (
