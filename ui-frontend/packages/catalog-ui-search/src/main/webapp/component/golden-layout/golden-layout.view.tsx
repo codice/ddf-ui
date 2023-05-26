@@ -749,10 +749,8 @@ const useInitGoldenLayout = ({
 
 const GoldenLayoutWindowCommunicationEvents = {
   requestInitialState: 'requestInitialState',
-  provideInitialState: 'provideInitialState',
   consumeInitialState: 'consumeInitialState',
   consumeStateChange: 'consumeStateChange',
-  provideStateChange: 'provideStateChange',
 }
 
 const useProvideStateChange = ({
