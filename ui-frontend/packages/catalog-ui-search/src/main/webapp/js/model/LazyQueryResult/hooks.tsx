@@ -14,6 +14,7 @@ export const useSelectionOfLazyResult = ({
 }) => {
   const [isSelected, setIsSelected] = React.useState(lazyResult.isSelected)
   React.useEffect(() => {
+    setIsSelected(lazyResult.isSelected)
     const unsubscribe = lazyResult.subscribeTo({
       subscribableThing: 'selected',
       callback: () => {
