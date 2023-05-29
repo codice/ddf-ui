@@ -38,6 +38,7 @@ import Paper from '@mui/material/Paper'
 import { Elevations } from '../theme/theme'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
+import { TypedUserInstance } from '../singletons/TypedUser'
 const treeMap = (obj: any, fn: any, path = []): any => {
   if (Array.isArray(obj)) {
     // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
@@ -751,6 +752,7 @@ const GoldenLayoutWindowCommunicationEvents = {
   requestInitialState: 'requestInitialState',
   consumeInitialState: 'consumeInitialState',
   consumeStateChange: 'consumeStateChange',
+  consumePreferencesChange: 'consumePreferencesChange',
 }
 
 const useProvideStateChange = ({
@@ -976,6 +978,37 @@ const useConsumeStateChange = ({
   }, [goldenLayout, lazyResults, isInitialized])
 }
 
+const useConsumePreferencesChange = ({
+  goldenLayout,
+  isInitialized,
+}: {
+  goldenLayout: any
+  isInitialized: boolean
+}) => {
+  useListenTo(TypedUserInstance.getPreferences(), 'sync', () => {
+    if (goldenLayout && isInitialized) {
+      goldenLayout.eventHub.emit(
+        GoldenLayoutWindowCommunicationEvents.consumePreferencesChange,
+        {
+          preferences: TypedUserInstance.getPreferences().toJSON(),
+        }
+      )
+    }
+  })
+  React.useEffect(() => {
+    if (goldenLayout && isInitialized) {
+      goldenLayout.eventHub.on(
+        GoldenLayoutWindowCommunicationEvents.consumePreferencesChange,
+        ({ preferences }: { preferences: any }) => {
+          TypedUserInstance.sync(preferences)
+        }
+      )
+      return () => {}
+    }
+    return () => {}
+  }, [goldenLayout, isInitialized])
+}
+
 const useCrossWindowGoldenLayoutCommunication = ({
   goldenLayout,
   isInitialized,
@@ -988,9 +1021,6 @@ const useCrossWindowGoldenLayoutCommunication = ({
   const lazyResults = useLazyResultsFromSelectionInterface({
     selectionInterface: options.selectionInterface,
   })
-  console.log(`LazyResults: ${lazyResults.backboneModel.cid}`)
-
-  console.log(`SelectionInterface: ${options.selectionInterface.cid}`)
   useProvideStateChange({
     goldenLayout,
     lazyResults,
@@ -999,6 +1029,7 @@ const useCrossWindowGoldenLayoutCommunication = ({
   useProvideInitialState({ goldenLayout, isInitialized, lazyResults })
   useConsumeInitialState({ goldenLayout, lazyResults, isInitialized })
   useConsumeStateChange({ goldenLayout, lazyResults, isInitialized })
+  useConsumePreferencesChange({ goldenLayout, isInitialized })
 }
 
 export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {

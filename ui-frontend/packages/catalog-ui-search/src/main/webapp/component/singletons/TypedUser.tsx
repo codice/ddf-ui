@@ -110,7 +110,9 @@ export const TypedUserInstance = {
     userInstance.get('user').get('preferences').set('resultSort', undefined)
     TypedUserInstance.savePreferences()
   },
-  getPreferences(): Backbone.Model<any> {
+  getPreferences(): Backbone.Model<any> & {
+    needsUpdate: (update: any) => boolean
+  } {
     return userInstance.get('user').get('preferences')
   },
   savePreferences() {
@@ -144,6 +146,14 @@ export const TypedUserInstance = {
     return `${moment(date).fromNow()} : ${userInstance.getUserReadableDateTime(
       date
     )}`
+  },
+  needsUpdate(upToDatePrefs: any) {
+    return this.getPreferences().needsUpdate(upToDatePrefs)
+  },
+  sync(upToDatePrefs: any) {
+    if (this.needsUpdate(upToDatePrefs)) {
+      this.getPreferences().set(upToDatePrefs)
+    }
   },
 }
 

@@ -229,9 +229,15 @@ const Theme = Backbone.Model.extend({
     })
     this.savePreferences()
   },
+  needsUpdate(upToDatePrefs: any) {
+    if (_.isEqual(Common.duplicate(upToDatePrefs), this.lastSaved)) {
+      return false
+    }
+    return true
+  },
   savePreferences() {
     const currentPrefs = this.toJSON()
-    if (_.isEqual(Common.duplicate(currentPrefs), this.lastSaved)) {
+    if (!this.needsUpdate(currentPrefs)) {
       return
     }
     if (this.parents[0].isGuestUser()) {
@@ -372,6 +378,9 @@ const Theme = Backbone.Model.extend({
   initialize() {
     this.listenTo(this, 'sync', this.handleSync)
     this.set('user', new (User as any).Model())
+    this.refetch()
+  },
+  refetch() {
     this.fetch(CommonAjaxSettings)
   },
   handleSync() {
