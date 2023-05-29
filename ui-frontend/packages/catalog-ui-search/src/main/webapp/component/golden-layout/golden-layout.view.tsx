@@ -778,27 +778,15 @@ const useProvideStateChange = ({
 
       const filteredResultsSubscription = lazyResults.subscribeTo({
         subscribableThing: 'filteredResults',
-        callback: () => {
-          if (!goldenLayout.isSubWindow) {
-            callback()
-          }
-        },
+        callback,
       })
       const selectedResultsSubscription = lazyResults.subscribeTo({
         subscribableThing: 'selectedResults',
-        callback: () => {
-          if (document.hasFocus()) {
-            callback()
-          }
-        },
+        callback,
       })
       const statusSubscription = lazyResults.subscribeTo({
         subscribableThing: 'status',
-        callback: () => {
-          if (!goldenLayout.isSubWindow) {
-            callback()
-          }
-        },
+        callback,
       })
       return () => {
         filteredResultsSubscription()
