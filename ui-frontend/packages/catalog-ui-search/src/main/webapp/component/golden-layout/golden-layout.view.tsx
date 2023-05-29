@@ -272,9 +272,20 @@ function removeActiveTabInformation(config: any): any {
 function removeMaximisedInformation(config: any) {
   delete config.maximisedItemId
 }
+
+function removeOpenPopoutDimensionInformation(config: any): any {
+  delete config.dimensions
+  if (config.openPopouts === undefined || config.openPopouts.length === 0) {
+    return
+  } else {
+    return _.forEach(config.openPopouts, removeOpenPopoutDimensionInformation)
+  }
+}
+
 function removeEphemeralState(config: any) {
   removeMaximisedInformation(config)
   removeActiveTabInformation(config)
+  removeOpenPopoutDimensionInformation(config)
   return config
 }
 const FALLBACK_GOLDEN_LAYOUT = [
