@@ -40,6 +40,8 @@ import { Elevations } from '../theme/theme'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 import { TypedUserInstance } from '../singletons/TypedUser'
+import PopoutIcon from '@mui/icons-material/OpenInNew'
+
 const treeMap = (obj: any, fn: any, path = []): any => {
   if (Array.isArray(obj)) {
     // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
@@ -137,6 +139,19 @@ const GoldenLayoutComponentHeader = ({
                 container,
               })}
             />
+          ) : null}
+        </Grid>
+        <Grid item>
+          {!tab.contentItem.layoutManager.isSubWindow &&
+          tab.closeElement[0].style.display !== 'none' ? (
+            <Button
+              data-id="popout-tab-button"
+              onClick={() => {
+                tab.contentItem.popout()
+              }}
+            >
+              <PopoutIcon />
+            </Button>
           ) : null}
         </Grid>
         <Grid item>
@@ -488,13 +503,12 @@ const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
             {stack.layoutManager.isSubWindow ? null : (
               <Grid item>
                 <Button
-                  data-id="maximise-layout-button"
+                  data-id="popout-layout-button"
                   onClick={() => {
-                    // stack.getActiveContentItem().popout()
                     stack.popout()
                   }}
                 >
-                  <AllOutIcon />
+                  <PopoutIcon />
                 </Button>
               </Grid>
             )}

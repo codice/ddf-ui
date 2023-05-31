@@ -218,6 +218,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
   const { listenTo } = useBackbone()
   const [noMatchingData, setNoMatchingData] = React.useState(false)
   const plotlyRef = React.useRef<HTMLDivElement>()
+  const plotlyReadyForUpdatesRef = React.useRef(false)
   const lazyResults = useLazyResultsFromSelectionInterface({
     selectionInterface,
   })
@@ -237,7 +238,10 @@ export const Histogram = ({ selectionInterface }: Props) => {
     showHistogram()
   }, [lazyResults.results, attributeToBin])
   React.useEffect(() => {
-    updateHistogram()
+    if (plotlyReadyForUpdatesRef.current) {
+      // avoid updating the histogram if it's not ready yet
+      updateHistogram()
+    }
   }, [selectedResults])
   const determineInitialData = () => {
     return [
@@ -331,6 +335,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
     }
   }, [])
   const showHistogram = () => {
+    plotlyReadyForUpdatesRef.current = false
     if (plotlyRef.current) {
       if (results.length > 0 && attributeToBin) {
         const histogramElement = plotlyRef.current
@@ -351,6 +356,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
             )
             handleResize()
             listenToHistogram()
+            plotlyReadyForUpdatesRef.current = true
           })
         }
       } else {
