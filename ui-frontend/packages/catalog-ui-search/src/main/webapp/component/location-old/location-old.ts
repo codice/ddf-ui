@@ -583,7 +583,6 @@ export default Backbone.AssociatedModel.extend({
   setRadiusLatLon() {
     const lat = this.get('lat'),
       lon = this.get('lon')
-    if (!Drawing.isDrawing() && this.get('locationType') !== 'latlon') return
     this.updateCoordPointRadiusValues(lat, lon)
   },
   setRadiusDmsLat() {
