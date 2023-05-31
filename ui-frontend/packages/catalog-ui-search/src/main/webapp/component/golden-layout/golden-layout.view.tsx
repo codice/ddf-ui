@@ -418,7 +418,6 @@ function handleGoldenLayoutStateChange({
   options: GoldenLayoutViewProps
   lastConfig: React.MutableRefObject<any>
 }) {
-  ;(wreqr as any).vent.trigger('resize') // do we need this?
   if (
     _.isEqual(
       removeEphemeralState(lastConfig.current),
@@ -663,6 +662,7 @@ const useListenToGoldenLayoutStateChanges = ({
     if (goldenLayout) {
       const debouncedHandleGoldenLayoutStateChange = _.debounce(
         ({ currentConfig }: { currentConfig: any }) => {
+          ;(wreqr as any).vent.trigger('resize') // trigger resize of things like map
           if (!goldenLayout.isSubWindow) {
             // this function applies only to the main window, we have to communicate subwindow updates back to the original window instead
             handleGoldenLayoutStateChange({
