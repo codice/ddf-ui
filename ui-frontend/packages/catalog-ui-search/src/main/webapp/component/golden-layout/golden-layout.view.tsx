@@ -340,6 +340,12 @@ type GoldenLayoutViewProps = {
   selectionInterface: any
   setGoldenLayout: (instance: any) => void
 }
+
+// // sometimes we need to check this without having access to a current instance
+// function isGoldenLayoutSubwindow() {
+//   return window.location.href.includes('gl-window')
+// }
+
 function getGoldenLayoutConfig({
   layoutResult,
   editLayoutRef,
@@ -388,6 +394,19 @@ export function getInstanceConfig({ goldenLayout }: { goldenLayout: any }) {
   const currentConfig = goldenLayout.toConfig()
   return removeEphemeralState(currentConfig)
 }
+
+function handleGoldenLayoutStateChangeInSubwindow({
+  goldenLayout,
+}: {
+  goldenLayout: any
+}) {
+  // shouldn't need to send anything, as the main window can determine the config from the subwindow
+  goldenLayout.eventHub.emit(
+    GoldenLayoutWindowCommunicationEvents.consumeSubwindowLayoutChange,
+    null
+  )
+}
+
 function handleGoldenLayoutStateChange({
   options,
   goldenLayout,
@@ -644,7 +663,7 @@ const useListenToGoldenLayoutStateChanges = ({
     if (goldenLayout) {
       const debouncedHandleGoldenLayoutStateChange = _.debounce(
         ({ currentConfig }: { currentConfig: any }) => {
-          if (!goldenLayout.isSubWindow)
+          if (!goldenLayout.isSubWindow) {
             // this function applies only to the main window, we have to communicate subwindow updates back to the original window instead
             handleGoldenLayoutStateChange({
               options,
@@ -652,6 +671,9 @@ const useListenToGoldenLayoutStateChanges = ({
               goldenLayout,
               lastConfig,
             })
+          } else {
+            handleGoldenLayoutStateChangeInSubwindow({ goldenLayout })
+          }
         },
         200
       )
@@ -789,6 +811,7 @@ const GoldenLayoutWindowCommunicationEvents = {
   consumeInitialState: 'consumeInitialState',
   consumeStateChange: 'consumeStateChange',
   consumePreferencesChange: 'consumePreferencesChange',
+  consumeSubwindowLayoutChange: 'consumeSubwindowLayoutChange',
 }
 
 const useProvideStateChange = ({
@@ -1033,6 +1056,31 @@ const useConsumePreferencesChange = ({
   }, [goldenLayout, isInitialized])
 }
 
+function useConsumeSubwindowLayoutChange({
+  goldenLayout,
+  isInitialized,
+}: {
+  goldenLayout: any
+  isInitialized: boolean
+}) {
+  React.useEffect(() => {
+    if (goldenLayout && isInitialized && !goldenLayout.isSubWindow) {
+      goldenLayout.eventHub.on(
+        GoldenLayoutWindowCommunicationEvents.consumeSubwindowLayoutChange,
+        () => {
+          goldenLayout.emit('stateChanged', 'subwindow')
+        }
+      )
+      return () => {
+        goldenLayout.eventHub.off(
+          GoldenLayoutWindowCommunicationEvents.consumeSubwindowLayoutChange
+        )
+      }
+    }
+    return () => {}
+  }, [goldenLayout, isInitialized])
+}
+
 const useCrossWindowGoldenLayoutCommunication = ({
   goldenLayout,
   isInitialized,
@@ -1054,6 +1102,7 @@ const useCrossWindowGoldenLayoutCommunication = ({
   useConsumeInitialState({ goldenLayout, lazyResults, isInitialized })
   useConsumeStateChange({ goldenLayout, lazyResults, isInitialized })
   useConsumePreferencesChange({ goldenLayout, isInitialized })
+  useConsumeSubwindowLayoutChange({ goldenLayout, isInitialized })
 }
 
 export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
