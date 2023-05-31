@@ -45,7 +45,7 @@ const Geometry = ({ lazyResult, map, clusters }: Props) => {
 
   React.useEffect(() => {
     checkIfClustered()
-  }, [clusters])
+  }, [clusters, lazyResult.plain])
   React.useEffect(() => {
     updateGeometries()
 
@@ -141,7 +141,7 @@ const Geometry = ({ lazyResult, map, clusters }: Props) => {
         }
       }
     }
-  }, [clusters])
+  }, [clusters, lazyResult.plain])
 
   const color = React.useMemo(() => {
     return lazyResult.getColor()
@@ -199,7 +199,7 @@ const Geometry = ({ lazyResult, map, clusters }: Props) => {
         checkIfClustered()
       }
     }
-  }, [])
+  }, [lazyResult.plain])
 
   const destroyGeometries = React.useMemo(() => {
     return () => {
