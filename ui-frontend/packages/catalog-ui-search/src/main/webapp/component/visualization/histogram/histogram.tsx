@@ -7,7 +7,7 @@ import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import { useSelectedResults } from '../../../js/model/LazyQueryResult/hooks'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
-import Common from '../../../js/Common'
+import _cloneDeep from 'lodash.clonedeep'
 import wreqr from '../../../js/wreqr'
 import $ from 'jquery'
 import _ from 'underscore'
@@ -261,7 +261,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
   }
   const determineData = (plot: any) => {
     const activeResults = results
-    const xbins = Common.duplicate(plot._fullData[0].xbins)
+    const xbins = _cloneDeep(plot._fullData[0].xbins)
     if (xbins.size.constructor !== String) {
       xbins.end = xbins.end + xbins.size //https://github.com/plotly/plotly.js/issues/1229
     } else {

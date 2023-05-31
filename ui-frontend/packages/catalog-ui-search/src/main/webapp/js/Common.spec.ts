@@ -14,7 +14,6 @@
  **/
 import { expect } from 'chai'
 import Common from './Common'
-import properties from './properties'
 
 describe('Common', () => {
   describe('wrapMapCoordinates', () => {
@@ -60,18 +59,6 @@ describe('Common', () => {
       expect(results[2][0]).to.equal(0)
       expect(results[2][1]).to.equal(0)
       expect(results.length).to.equal(3)
-    })
-  })
-  describe('generateUUID', () => {
-    it('has dashes', () => {
-      properties.useHyphensInUuid = true
-      const uuid = Common.generateUUID()
-      expect(uuid).to.satisfy((value: any) => value.indexOf('-') >= 0)
-      properties.useHyphensInUuid = false
-    })
-    it('does not have dashes', () => {
-      const uuid = Common.generateUUID()
-      expect(uuid).to.satisfy((value: any) => value.indexOf('-') === -1)
     })
   })
   describe('getImageSrc', () => {

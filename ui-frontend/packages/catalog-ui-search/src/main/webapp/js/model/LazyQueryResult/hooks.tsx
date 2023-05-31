@@ -210,6 +210,7 @@ export const useRerenderOnBackboneSync = ({
 }) => {
   const [, setRandomNumber] = React.useState(Math.random())
   React.useEffect(() => {
+    setRandomNumber(Math.random())
     const unsubscribeCall = lazyResult
       ? lazyResult.subscribeTo({
           subscribableThing: 'backboneSync',

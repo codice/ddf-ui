@@ -17,6 +17,7 @@ import { createRoot } from 'react-dom/client'
 import _ from 'underscore'
 import _merge from 'lodash/merge'
 import _debounce from 'lodash/debounce'
+import _cloneDeep from 'lodash.clonedeep'
 import $ from 'jquery'
 import wreqr from '../../js/wreqr'
 import GoldenLayout from 'golden-layout'
@@ -879,8 +880,8 @@ const useConsumeInitialState = ({
       }) => {
         setHasConsumedInitialState(true)
         lazyResults.reset({
-          results: Object.values(eventData.lazyResults.results).map(
-            (result) => result.plain
+          results: Object.values(eventData.lazyResults.results).map((result) =>
+            _cloneDeep(result.plain)
           ),
           sorts: eventData.lazyResults.persistantSorts,
           sources: eventData.lazyResults.sources,
@@ -947,7 +948,7 @@ const useConsumeStateChange = ({
         ) {
           lazyResults.reset({
             results: Object.values(eventData.lazyResults.results).map(
-              (result) => result.plain
+              (result) => _cloneDeep(result.plain)
             ),
             sorts: eventData.lazyResults.persistantSorts,
             sources: eventData.lazyResults.sources,

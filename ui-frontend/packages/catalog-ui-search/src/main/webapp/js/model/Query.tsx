@@ -20,6 +20,8 @@ import Sources from '../../component/singletons/sources-instance'
 import { postSimpleAuditLog } from '../../react-component/utils/audit/audit-endpoint'
 import cql from '../cql'
 import _merge from 'lodash/merge'
+import _cloneDeep from 'lodash.clonedeep'
+import { v4 } from 'uuid'
 import 'backbone-associations'
 import { LazyQueryResults } from './LazyQueryResult/LazyQueryResults'
 import {
@@ -37,7 +39,6 @@ import {
   IndexForSourceGroupType,
   QueryStartAndEndType,
 } from './Query.methods'
-import { Common } from '../Common'
 import wreqr from '../wreqr'
 import { CommonAjaxSettings } from '../AjaxSettings'
 export type QueryType = {
@@ -382,8 +383,8 @@ export default Backbone.AssociatedModel.extend({
       },
       options
     )
-    const data = Common.duplicate(this.buildSearchData())
-    data.batchId = Common.generateUUID()
+    const data = _cloneDeep(this.buildSearchData())
+    data.batchId = v4()
     // Data.sources is set in `buildSearchData` based on which sources you have selected.
     let selectedSources = data.sources
     const harvestedSources = Sources.getHarvested()
