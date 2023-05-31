@@ -74,6 +74,7 @@ function getGoldenLayoutSettings() {
   return {
     settings: {
       showPopoutIcon: false,
+      popoutWholeStack: true,
       responsiveMode: 'none',
     },
     dimensions: {
@@ -484,17 +485,20 @@ const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
                 <AllOutIcon />
               </Button>
             </Grid>
-            <Grid item>
-              <Button
-                data-id="maximise-layout-button"
-                onClick={() => {
-                  stack.getActiveContentItem().popout()
-                  // stack.popout()
-                }}
-              >
-                <AllOutIcon />
-              </Button>
-            </Grid>
+            {stack.layoutManager.isSubWindow ? null : (
+              <Grid item>
+                <Button
+                  data-id="maximise-layout-button"
+                  onClick={() => {
+                    // stack.getActiveContentItem().popout()
+                    stack.popout()
+                  }}
+                >
+                  <AllOutIcon />
+                </Button>
+              </Grid>
+            )}
+
             <Grid item>
               {stack.header._isClosable() ? (
                 <Button
@@ -626,12 +630,14 @@ const useListenToGoldenLayoutStateChanges = ({
     if (goldenLayout) {
       const debouncedHandleGoldenLayoutStateChange = _.debounce(
         ({ currentConfig }: { currentConfig: any }) => {
-          handleGoldenLayoutStateChange({
-            options,
-            currentConfig,
-            goldenLayout,
-            lastConfig,
-          })
+          if (!goldenLayout.isSubWindow)
+            // this function applies only to the main window, we have to communicate subwindow updates back to the original window instead
+            handleGoldenLayoutStateChange({
+              options,
+              currentConfig,
+              goldenLayout,
+              lastConfig,
+            })
         },
         200
       )
@@ -750,6 +756,10 @@ const useInitGoldenLayout = ({
         setFinished(true)
       }
       goldenLayout.on('initialised', onInit)
+      if (goldenLayout.isSubWindow) {
+        // for some reason subwindow stacks lose dimensions, specifically the header height (see _createConfig in golden layout source code)
+        goldenLayout.config.dimensions = getGoldenLayoutSettings().dimensions
+      }
       goldenLayout.init()
       return () => {
         goldenLayout.off('initialised', onInit)
