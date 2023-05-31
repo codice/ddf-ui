@@ -185,7 +185,7 @@ export default Backbone.AssociatedModel.extend({
     this.initializeValues(props)
   },
   initializeValues(props: any) {
-    if (props.type === 'POINTRADIUS' && props.lat && props.lon) {
+    if ((props.type === 'POINTRADIUS' || props.type === 'POINT') && props.lat && props.lon) {
       if (!props.usng || !props.utmUpsEasting) {
         // initializes dms/usng/utmUps using lat/lon
         this.updateCoordPointRadiusValues(props.lat, props.lon)
