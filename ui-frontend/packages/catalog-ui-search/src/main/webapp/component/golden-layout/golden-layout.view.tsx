@@ -718,6 +718,30 @@ const useListenToGoldenLayoutStateChanges = ({
   return finished
 }
 
+const useListenToGoldenLayoutWindowClosed = ({
+  goldenLayout,
+  isInitialized,
+}: {
+  goldenLayout: any
+  isInitialized: boolean
+}) => {
+  React.useEffect(() => {
+    if (goldenLayout && isInitialized && !goldenLayout.isSubWindow) {
+      goldenLayout.on('windowClosed', (event: any) => {
+        // order of eventing is a bit off in golden layout, so we need to wait for reconciliation of windows to actually finish
+        // while gl does emit a stateChanged, it's missing an event, and it's before the popouts reconcile
+        setTimeout(() => {
+          goldenLayout.emit('stateChanged', event)
+        }, 0)
+      })
+      return () => {
+        goldenLayout.off('windowClosed')
+      }
+    }
+    return () => {}
+  }, [goldenLayout, isInitialized])
+}
+
 /**
  *  This will attach our custom toolbar to the golden layout stack header
  */
@@ -1103,6 +1127,7 @@ const useCrossWindowGoldenLayoutCommunication = ({
   useConsumeStateChange({ goldenLayout, lazyResults, isInitialized })
   useConsumePreferencesChange({ goldenLayout, isInitialized })
   useConsumeSubwindowLayoutChange({ goldenLayout, isInitialized })
+  useListenToGoldenLayoutWindowClosed({ goldenLayout, isInitialized })
 }
 
 export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
