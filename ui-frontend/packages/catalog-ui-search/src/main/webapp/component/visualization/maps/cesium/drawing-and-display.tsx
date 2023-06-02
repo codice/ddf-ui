@@ -116,28 +116,24 @@ export const CesiumDrawings = ({
     drawingLocation = null
   }
 
-  const pickLocation = (attributes?: any) => {
-    const mode = attributes?.mode
+  const pickLocation = (model?: any) => {
+    const mode = getDrawModeFromModel(model)
     switch (mode) {
       case 'bbox':
-        return _.pick(attributes, 'north', 'south', 'east', 'west')
+        return _.pick(model.attributes, 'north', 'south', 'east', 'west')
       case 'circle':
-        return _.pick(attributes, 'lat', 'lon')
+        return _.pick(model.attributes, 'lat', 'lon')
       case 'line':
-        return _.pick(attributes, 'line')
+        return _.pick(model.attributes, 'line')
       case 'poly':
-        return _.pick(attributes, 'polygon')
+        return _.pick(model.attributes, 'polygon')
       default:
         return {}
     }
   }
 
-  const drawModelAttributes = drawingModel?.attributes
   const isNotBeingEdited = (model: any) =>
-    !_.isEqual(
-      pickLocation(model.attributes),
-      pickLocation(drawModelAttributes)
-    )
+    !drawingModel || !_.isEqual(pickLocation(model), pickLocation(drawingModel))
 
   /*
     When editing a shape, don't display the other models that correspond to that shape. Because
