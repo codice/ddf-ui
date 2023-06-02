@@ -41,6 +41,7 @@ import { useLazyResultsFromSelectionInterface } from '../selection-interface/hoo
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 import { TypedUserInstance } from '../singletons/TypedUser'
 import PopoutIcon from '@mui/icons-material/OpenInNew'
+import { useHistory } from 'react-router-dom'
 
 const treeMap = (obj: any, fn: any, path = []): any => {
   if (Array.isArray(obj)) {
@@ -97,6 +98,16 @@ function getGoldenLayoutSettings() {
     },
   }
 }
+
+const GoldenLayoutWindowCommunicationEvents = {
+  requestInitialState: 'requestInitialState',
+  consumeInitialState: 'consumeInitialState',
+  consumeStateChange: 'consumeStateChange',
+  consumePreferencesChange: 'consumePreferencesChange',
+  consumeSubwindowLayoutChange: 'consumeSubwindowLayoutChange',
+  consumeNavigationChange: 'consumeNavigationChange',
+}
+
 const GoldenLayoutComponentHeader = ({
   viz,
   tab,
@@ -186,11 +197,111 @@ const GoldenLayoutComponentHeader = ({
   }
 })()
 
+/**
+ *  Overrides navigation functionality within subwindows of golden layout, so that navigation is handled by the main window.
+ *
+ *  Notice we do this as a component rather than a hook so we can override the same useHistory instance that the visualization is using.
+ *  (we temporarily eject from react to use golden layout, and rewrap each visual in it's own instance of the various providers, like react router)
+ *
+ *  We could rewrite it as a hook and put it further down in the tree, but this is the same thing so no need.
+ *
+ *  Also notice we attach this at the visual level for that reason, rather than at the single golden layout instance level.
+ */
+const UseSubwindowConsumeNavigationChange = ({
+  goldenLayout,
+}: {
+  goldenLayout: any
+}) => {
+  const history = useHistory()
+  React.useEffect(() => {
+    if (goldenLayout && history && goldenLayout.isSubWindow) {
+      const callback = (e: MouseEvent) => {
+        if (e.target?.constructor === HTMLAnchorElement) {
+          e.preventDefault()
+          goldenLayout.eventHub.emit(
+            GoldenLayoutWindowCommunicationEvents.consumeNavigationChange,
+            {
+              href: (e.target as HTMLAnchorElement).href,
+            }
+          )
+        }
+      }
+      document.addEventListener('click', callback)
+      history.replace = (...args) => {
+        goldenLayout.eventHub.emit(
+          GoldenLayoutWindowCommunicationEvents.consumeNavigationChange,
+          {
+            replace: args,
+          }
+        )
+      }
+      history.push = (...args) => {
+        goldenLayout.eventHub.emit(
+          GoldenLayoutWindowCommunicationEvents.consumeNavigationChange,
+          {
+            push: args,
+          }
+        )
+      }
+      return () => {
+        document.removeEventListener('click', callback)
+      }
+    }
+    return () => {}
+  }, [history, goldenLayout])
+  return null
+}
+
+/**
+ *  Tells the main window of golden layout to listen for navigation changes in the subwindow.  These are translated to be handled by the main window instead.
+ *  Notice we attach this in the single instance of gl, not the individual components like the subwindows who send the event.
+ */
+const useWindowConsumeNavigationChange = ({
+  goldenLayout,
+  isInitialized,
+}: {
+  goldenLayout: any
+  isInitialized: boolean
+}) => {
+  const history = useHistory()
+  React.useEffect(() => {
+    if (isInitialized && goldenLayout && history && !goldenLayout.isSubWindow) {
+      const callback = (params: any) => {
+        if (params.href && params.href.startsWith('http')) {
+          // didn't not see a way to handle full urls with react router dom, but location works just as well I think
+          location = params.href
+        } else if (params.href) {
+          history.location = params.href
+        } else if (params.replace) {
+          history.replace.apply(undefined, params.replace)
+        } else if (params.push) {
+          history.push.apply(undefined, params.push)
+        }
+      }
+      goldenLayout.eventHub.on(
+        GoldenLayoutWindowCommunicationEvents.consumeNavigationChange,
+        callback
+      )
+
+      return () => {
+        goldenLayout.eventHub.off(
+          GoldenLayoutWindowCommunicationEvents.consumeNavigationChange,
+          callback
+        )
+      }
+    }
+    return () => {}
+  }, [history, goldenLayout, isInitialized])
+  return null
+}
+
 const GoldenLayoutComponent = ({
   ComponentView,
   options,
   container,
+  goldenLayout,
 }: {
+  goldenLayout: any
   options: any
   ComponentView: any
   container: any
@@ -206,6 +317,8 @@ const GoldenLayoutComponent = ({
   const isMinimized = width <= 100
   return (
     <ExtensionPoints.providers>
+      <UseSubwindowConsumeNavigationChange goldenLayout={goldenLayout} />
+
       <Paper
         elevation={Elevations.panels}
         className={`w-full h-full ${isMinimized ? 'hidden' : ''}`}
@@ -219,7 +332,7 @@ const GoldenLayoutComponent = ({
 // see https://github.com/deepstreamIO/golden-layout/issues/239 for details on why the setTimeout is necessary
 // The short answer is it mostly has to do with making sure these ComponentViews are able to function normally (set up events, etc.)
 function registerComponent(
-  marionetteView: any,
+  marionetteView: { goldenLayout: any; options: any },
   name: any,
   ComponentView: any,
   componentOptions: any,
@@ -234,6 +347,7 @@ function registerComponent(
           const root = createRoot(container.getElement()[0])
           root.render(
             <GoldenLayoutComponent
+              goldenLayout={marionetteView.goldenLayout}
               options={options}
               ComponentView={ComponentView}
               container={container}
@@ -340,11 +454,6 @@ type GoldenLayoutViewProps = {
   selectionInterface: any
   setGoldenLayout: (instance: any) => void
 }
-
-// // sometimes we need to check this without having access to a current instance
-// function isGoldenLayoutSubwindow() {
-//   return window.location.href.includes('gl-window')
-// }
 
 function getGoldenLayoutConfig({
   layoutResult,
@@ -765,42 +874,6 @@ const useListenToGoldenLayoutStackCreated = ({
   return finished
 }
 
-// const useSetStartingPointForConfig = ({
-//   goldenLayout,
-//   lastConfig,
-// }: {
-//   goldenLayout: any
-//   lastConfig: React.MutableRefObject<any>
-// }) => {
-//   const [finished, setFinished] = React.useState(false)
-//   React.useEffect(() => {
-//     if (goldenLayout) {
-//       goldenLayout.on('initialised', () => {
-//         // can do empty and max detections here
-//         /**
-//          *  This is necessary to properly save pref on the first change that happens from a completely empty layout on first load.
-//          *  Used to be done in handleStateChange (if null, set), but that did not trigger for empty layouts on first load.
-//          */
-//         const fullyInitialized =
-//           goldenLayout.isInitialised &&
-//           !(goldenLayout?.openPopouts as Array<any>)?.some(
-//             (popout: any) => !popout.isInitialised
-//           )
-//         if (!fullyInitialized) {
-//           setTimeout(() => {
-//             goldenLayout.emit('initialised', 'retry')
-//           }, 200)
-//           return
-//         }
-//         lastConfig.current = getInstanceConfig({ goldenLayout })
-//         setFinished(true)
-//       })
-//     }
-//     return () => {}
-//   }, [goldenLayout])
-//   return finished
-// }
-
 const useInitGoldenLayout = ({
   dependencies,
   goldenLayout,
@@ -828,14 +901,6 @@ const useInitGoldenLayout = ({
     return () => {}
   }, dependencies)
   return finished
-}
-
-const GoldenLayoutWindowCommunicationEvents = {
-  requestInitialState: 'requestInitialState',
-  consumeInitialState: 'consumeInitialState',
-  consumeStateChange: 'consumeStateChange',
-  consumePreferencesChange: 'consumePreferencesChange',
-  consumeSubwindowLayoutChange: 'consumeSubwindowLayoutChange',
 }
 
 const useProvideStateChange = ({
@@ -1128,6 +1193,7 @@ const useCrossWindowGoldenLayoutCommunication = ({
   useConsumePreferencesChange({ goldenLayout, isInitialized })
   useConsumeSubwindowLayoutChange({ goldenLayout, isInitialized })
   useListenToGoldenLayoutWindowClosed({ goldenLayout, isInitialized })
+  useWindowConsumeNavigationChange({ goldenLayout, isInitialized })
 }
 
 export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {

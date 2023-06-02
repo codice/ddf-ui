@@ -36,7 +36,6 @@ import UserView, { RoleDisplay } from '../../react-component/user/user'
 import UserSettings, {
   SettingsComponentType,
 } from '../../react-component/user-settings/user-settings'
-import wreqr from '../../js/wreqr'
 import { GlobalStyles } from './global-styles'
 import { PermissiveComponentType } from '../../typescript'
 import scrollIntoView from 'scroll-into-view-if-needed'
@@ -756,15 +755,7 @@ const useIndicateHasUnseenNotifications = () => {
   }, [])
   return hasUnseenNotifications
 }
-const useBackboneRouteReactRouterCompatibility = () => {
-  const { listenTo } = useBackbone()
-  const history = useHistory()
-  React.useEffect(() => {
-    listenTo((wreqr as any).vent, 'router:navigate', ({ fragment }: any) => {
-      history.push(`/${fragment}`)
-    })
-  }, [])
-}
+
 const useFaviconBranding = () => {
   // todo favicon branding
   // $(window.document).ready(() => {
@@ -824,34 +815,6 @@ const SessionTimeoutComponent = () => {
   )
 }
 
-/**
- *  Ensures that subwindows don't lose important query string information when navigating to a new page.
- * @returns
- */
-const PatchRouterToPreserveGoldenLayoutSubwindowQueryString = () => {
-  const history = useHistory()
-  React.useEffect(() => {
-    if (history) {
-      const oldReplace = history.replace
-      history.replace = (...args) => {
-        if (args[0].search) {
-          // @ts-ignore
-          const newSearch = queryString.parse(args[0].search)
-          const currentSearch = queryString.parse(history.location.search)
-          if (currentSearch['gl-window']) {
-            args[0].search = queryString.stringify({
-              ...newSearch,
-              'gl-window': currentSearch['gl-window'],
-            })
-          }
-        }
-        oldReplace.apply(history, args)
-      }
-    }
-  }, [history])
-  return null
-}
-
 const App = ({
   RouteInformation,
   NotificationsComponent,
@@ -859,7 +822,6 @@ const App = ({
 }: AppPropsType) => {
   const { navOpen, setNavOpen } = useNavOpen()
   useFaviconBranding()
-  useBackboneRouteReactRouterCompatibility()
   useScrollCurrentRouteIntoViewOnLocationChange()
   return (
     <TopLevelAppContext.Provider
@@ -885,7 +847,6 @@ const App = ({
             <Extensions.extraHeader />
             <Grid item className="w-full h-full relative overflow-hidden">
               <AsyncTasksComponent />
-              <PatchRouterToPreserveGoldenLayoutSubwindowQueryString />
               <Grid
                 container
                 direction="row"
