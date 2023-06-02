@@ -185,11 +185,17 @@ export default Backbone.AssociatedModel.extend({
     this.initializeValues(props)
   },
   initializeValues(props: any) {
-    if (props.type === 'POINTRADIUS' && props.lat && props.lon) {
+    if (
+      (props.type === 'POINTRADIUS' || props.type === 'POINT') &&
+      props.lat &&
+      props.lon
+    ) {
       if (!props.usng || !props.utmUpsEasting) {
         // initializes dms/usng/utmUps using lat/lon
         this.updateCoordPointRadiusValues(props.lat, props.lon)
       }
+    } else if (props.mode === 'bbox') {
+      this.setBBox()
     } else {
       this.setUsngDmsUtmWithLineOrPoly(this)
     }
@@ -577,7 +583,6 @@ export default Backbone.AssociatedModel.extend({
   setRadiusLatLon() {
     const lat = this.get('lat'),
       lon = this.get('lon')
-    if (!Drawing.isDrawing() && this.get('locationType') !== 'latlon') return
     this.updateCoordPointRadiusValues(lat, lon)
   },
   setRadiusDmsLat() {
@@ -659,9 +664,7 @@ export default Backbone.AssociatedModel.extend({
       !Number.isNaN(east) &&
       !Number.isNaN(west)
     ) {
-      this.set('bbox', [west, south, east, north].join(','), {
-        silent: this.isLocationTypeUtmUps() && !this.get('drawing'),
-      })
+      this.set('bbox', [west, south, east, north].join(','))
     }
     this.set({
       mapNorth: Number.isNaN(north) ? undefined : north,
