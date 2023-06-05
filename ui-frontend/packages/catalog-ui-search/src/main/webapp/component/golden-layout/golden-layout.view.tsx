@@ -42,6 +42,12 @@ import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResult
 import { TypedUserInstance } from '../singletons/TypedUser'
 import PopoutIcon from '@mui/icons-material/OpenInNew'
 import { useHistory } from 'react-router-dom'
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from '@mui/material'
 
 const treeMap = (obj: any, fn: any, path = []): any => {
   if (Array.isArray(obj)) {
@@ -253,6 +259,41 @@ const UseSubwindowConsumeNavigationChange = ({
 }
 
 /**
+ *  We attach this at the component level due to how popouts work.
+ *  Essentially golden layout disconnects us from React and our providers in popouts to fullscreen visuals,
+ *  so we can't use Dialog further up the tree.
+ */
+const UseMissingParentWindow = ({ goldenLayout }: { goldenLayout: any }) => {
+  const [missingWindow, setMissingWindow] = React.useState(false)
+  React.useEffect(() => {
+    if (goldenLayout && goldenLayout.isSubWindow && window.opener === null) {
+      setMissingWindow(true)
+    }
+  }, [goldenLayout])
+
+  if (missingWindow) {
+    return (
+      <Dialog open={true} className=" z-[1000000]">
+        <DialogTitle>Could not find parent visualization</DialogTitle>
+        <DialogContent>Please close the window.</DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            onClick={() => {
+              window.close()
+            }}
+            color="primary"
+          >
+            Close Window
+          </Button>
+        </DialogActions>
+      </Dialog>
+    )
+  }
+  return null
+}
+
+/**
  *  Tells the main window of golden layout to listen for navigation changes in the subwindow.  These are translated to be handled by the main window instead.
  *  Notice we attach this in the single instance of gl, not the individual components like the subwindows who send the event.
  */
@@ -318,7 +359,7 @@ const GoldenLayoutComponent = ({
   return (
     <ExtensionPoints.providers>
       <UseSubwindowConsumeNavigationChange goldenLayout={goldenLayout} />
-
+      <UseMissingParentWindow goldenLayout={goldenLayout} />
       <Paper
         elevation={Elevations.panels}
         className={`w-full h-full ${isMinimized ? 'hidden' : ''}`}
@@ -882,9 +923,13 @@ const useInitGoldenLayout = ({
   goldenLayout: any
 }) => {
   const [finished, setFinished] = React.useState(false)
+  const [error, setError] = React.useState(false)
 
   React.useEffect(() => {
     if (dependencies.every((dependency) => dependency)) {
+      if (goldenLayout.isSubWindow && window.opener === null) {
+        setError(true)
+      }
       const onInit = () => {
         setFinished(true)
       }
@@ -900,7 +945,7 @@ const useInitGoldenLayout = ({
     }
     return () => {}
   }, dependencies)
-  return finished
+  return { finished, error }
 }
 
 const useProvideStateChange = ({
@@ -1213,7 +1258,7 @@ export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
   const listeningToGoldenLayoutStackCreated =
     useListenToGoldenLayoutStackCreated({ goldenLayout })
 
-  const isInitialized = useInitGoldenLayout({
+  const { finished, error } = useInitGoldenLayout({
     dependencies: [
       goldenLayoutComponentsRegistered,
       listeningToGoldenLayoutStateChanges,
@@ -1224,7 +1269,7 @@ export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
 
   useCrossWindowGoldenLayoutCommunication({
     goldenLayout,
-    isInitialized,
+    isInitialized: !error && finished,
     options,
   })
 
