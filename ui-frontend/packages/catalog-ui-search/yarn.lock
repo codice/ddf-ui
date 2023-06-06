@@ -1147,9 +1147,9 @@
   dependencies:
     commander "^2.15.1"
 
-"@connexta/ace@git+https://github.com/connexta/ace.git#dd6665cb31dc9041ef32983f1e0e246e4a97e889":
+"@connexta/ace@git+https://github.com/connexta/ace.git#4cc376863e82757699cdaa1301f30266e66a1efe":
   version "1.0.0"
-  resolved "git+https://github.com/connexta/ace.git#dd6665cb31dc9041ef32983f1e0e246e4a97e889"
+  resolved "git+https://github.com/connexta/ace.git#4cc376863e82757699cdaa1301f30266e66a1efe"
   dependencies:
     "@babel/core" "7.21.3"
     "@babel/preset-env" "7.20.2"
@@ -1179,7 +1179,6 @@
     eslint-plugin-node "11.1.0"
     eslint-plugin-react "7.32.2"
     exports-loader "4.0.0"
-    file-loader "6.2.0"
     find-up "2.1.0"
     glob "7.1.2"
     html-loader "4.2.0"
@@ -1219,7 +1218,6 @@
     tailwindcss "3.2.7"
     ts-loader "9.4.2"
     typescript "4.9.5"
-    url-loader "4.1.1"
     username "3.0.0"
     vkbeautify "0.99.3"
     webpack "5.75.0"
@@ -8322,6 +8320,11 @@ destroy@~1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.0.4.tgz#978857442c44749e4206613e37946205826abd80"
 
+detect-browser@5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/detect-browser/-/detect-browser-5.3.0.tgz#9705ef2bddf46072d0f7265a1fe300e36fe7ceca"
+  integrity sha512-53rsFbGdwMwlF7qvCt0ypLM5V5/Mbl0szB7GPN8y9NCcbknYOeVVXdrXEq+90IwAfrrzt6Hd+u2E2ntakICU8w==
+
 detect-indent@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/detect-indent/-/detect-indent-4.0.0.tgz#f76d064352cdf43a1cb6ce619c4ee3a9475de208"
@@ -9543,14 +9546,6 @@ file-entry-cache@^6.0.1:
   integrity sha512-7Gps/XWymbLk2QLYK4NzpMOrYjMhdIxXuIvy2QBsLE6ljuodKvdkWs/cpyJJ3CVIVpH0Oi1Hvg1ovbMzLdFBBg==
   dependencies:
     flat-cache "^3.0.4"
-
-file-loader@6.2.0:
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/file-loader/-/file-loader-6.2.0.tgz#baef7cf8e1840df325e4390b4484879480eebe4d"
-  integrity sha512-qo3glqyTa61Ytg4u73GultjHGjdRyig3tG6lPtyX/jOEJvHif9uB0/OCI2Kif6ctF3caQTW2G5gym21oAsI4pw==
-  dependencies:
-    loader-utils "^2.0.0"
-    schema-utils "^3.0.0"
 
 file-uri-to-path@1.0.0:
   version "1.0.0"
@@ -17875,15 +17870,6 @@ urijs@1.19.1:
 urix@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/urix/-/urix-0.1.0.tgz#da937f7a62e21fec1fd18d49b35c2935067a6c72"
-
-url-loader@4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/url-loader/-/url-loader-4.1.1.tgz#28505e905cae158cf07c92ca622d7f237e70a4e2"
-  integrity sha512-3BTV812+AVHHOJQO8O5MkWgZ5aosP7GnROJwvzLS9hWDj00lZ6Z0wNak423Lp9PBZN05N+Jk/N5Si8jRAlGyWA==
-  dependencies:
-    loader-utils "^2.0.0"
-    mime-types "^2.1.27"
-    schema-utils "^3.0.0"
 
 url@^0.11.0:
   version "0.11.0"
