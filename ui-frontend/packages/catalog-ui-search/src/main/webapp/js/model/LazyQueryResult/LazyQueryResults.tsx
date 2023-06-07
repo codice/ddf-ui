@@ -107,6 +107,8 @@ type ConstructorProps = {
   transformSorts?: TransformSortsComposedFunctionType
   status?: SearchStatus
   highlights?: TransformedHighlightsType
+  showingResultsForFields?: any[]
+  didYouMeanFields?: any[]
 }
 
 type SubscribableType =
@@ -345,9 +347,20 @@ export class LazyQueryResults {
     transformSorts,
     status = {},
     highlights = {},
+    didYouMeanFields = [],
+    showingResultsForFields = [],
   }: ConstructorProps = {}) {
     this._turnOnDebouncing()
-    this.reset({ results, sorts, sources, transformSorts, status, highlights })
+    this.reset({
+      results,
+      sorts,
+      sources,
+      transformSorts,
+      status,
+      highlights,
+      didYouMeanFields,
+      showingResultsForFields,
+    })
 
     this.backboneModel = new Backbone.Model({
       id: Math.random().toString(),
@@ -395,6 +408,8 @@ export class LazyQueryResults {
     },
     status = {},
     highlights = {},
+    didYouMeanFields = [],
+    showingResultsForFields = [],
   }: ConstructorProps = {}) {
     this.init()
     this.resetHighlights()
@@ -403,6 +418,8 @@ export class LazyQueryResults {
     this._resetSources(sources)
     this._updatePersistantSorts(sorts)
     this._updateTransformSorts(transformSorts)
+    this.updateDidYouMeanFields(didYouMeanFields)
+    this.updateShowingResultsForFields(showingResultsForFields)
     this.addHighlights(highlights)
     this.add({ results })
     this.updateStatus(status)

@@ -1087,6 +1087,9 @@ const useConsumeInitialState = ({
           sorts: eventData.lazyResults.persistantSorts,
           sources: eventData.lazyResults.sources,
           status: eventData.lazyResults.status,
+          didYouMeanFields: eventData.lazyResults.didYouMeanFields,
+          showingResultsForFields:
+            eventData.lazyResults.showingResultsForFields,
         })
         lazyResults._resetSelectedResults()
         Object.values(eventData.lazyResults.selectedResults).forEach(
@@ -1155,6 +1158,9 @@ const useConsumeStateChange = ({
             sorts: eventData.lazyResults.persistantSorts,
             sources: eventData.lazyResults.sources,
             status: eventData.lazyResults.status,
+            didYouMeanFields: eventData.lazyResults.didYouMeanFields,
+            showingResultsForFields:
+              eventData.lazyResults.showingResultsForFields,
           })
           lazyResults._resetSelectedResults()
           Object.values(eventData.lazyResults.selectedResults).forEach(
