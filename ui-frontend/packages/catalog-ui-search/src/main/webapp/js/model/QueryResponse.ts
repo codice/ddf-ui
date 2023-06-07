@@ -19,6 +19,10 @@ import properties from '../properties'
 import 'backbone-associations'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'rpc-... Remove this comment to see the full error message
 import * as rpcwebsockets from 'rpc-websockets'
+import {
+  LazyQueryResults,
+  transformResponseHighlightsToMap,
+} from './LazyQueryResult/LazyQueryResults'
 let rpc: any = null
 if ((properties as any).webSocketsEnabled && window.WebSocket) {
   const Client = rpcwebsockets.Client
@@ -137,15 +141,18 @@ export default Backbone.AssociatedModel.extend({
   handleSync() {},
   parse(resp: any) {
     metacardDefinitions.addMetacardDefinitions(resp.types)
-    this.get('lazyResults').addTypes(resp.types)
-    this.get('lazyResults').updateStatus(resp.statusBySource)
-    this.get('lazyResults').updateDidYouMeanFields(resp.didYouMeanFields)
-    this.get('lazyResults').updateShowingResultsForFields(
-      resp.showingResultsForFields
+    const lazyResults = this.get('lazyResults') as LazyQueryResults
+    lazyResults.addTypes(resp.types)
+    lazyResults.updateStatus(resp.statusBySource)
+    lazyResults.updateDidYouMeanFields(resp.didYouMeanFields)
+    lazyResults.updateShowingResultsForFields(resp.showingResultsForFields)
+    lazyResults.addHighlights(
+      transformResponseHighlightsToMap({
+        highlights: resp.highlights,
+      })
     )
-    this.get('lazyResults').add({
+    lazyResults.add({
       results: resp.results,
-      highlights: resp.highlights || [], // ensure highlights is not null
     })
     return {}
   },

@@ -39,14 +39,65 @@ export type AttributeHighlights = {
   [key: string]: Array<AttributeHighlight>
 }
 
+/**
+ * Example:
+ * [
+    {
+        "id": "29c0c0e9-b205-49bb-9649-ddf3b31e46f7",
+        "highlights": [
+            {
+                "valueIndex": "0",
+                "highlight": "Windham County, <span class=\"highlight\">Vermont</span>",
+                "startIndex": "16",
+                "endIndex": "23",
+                "attribute": "title"
+            }
+        ]
+    }
+  ]
+ */
 export type ResponseHighlightType = Array<{
   id: string
   highlights: Array<AttributeHighlight>
 }>
 
-// update to store as attr map to highlight details
+/** store highlights in a map
+ * Example:
+ * {
+    "29c0c0e9-b205-49bb-9649-ddf3b31e46f7": {
+        "title": [
+            {
+                "valueIndex": "0",
+                "highlight": "Windham County, <span class=\"highlight\">Vermont</span>",
+                "startIndex": "16",
+                "endIndex": "23",
+                "attribute": "title"
+            }
+        ]
+    }
+   }
+ */
 type TransformedHighlightsType = {
   [key: string]: AttributeHighlights
+}
+
+export const transformResponseHighlightsToMap = ({
+  highlights = [],
+}: {
+  highlights?: ResponseHighlightType
+}) => {
+  return highlights.reduce((blob, highlight) => {
+    blob[highlight.id] = highlight.highlights.reduce(
+      (innerblob, subhighlight) => {
+        innerblob[subhighlight.attribute] = highlight.highlights.filter(
+          (hl) => hl.attribute === subhighlight.attribute
+        )
+        return innerblob
+      },
+      {} as { [key: string]: Array<AttributeHighlight> }
+    )
+    return blob
+  }, {} as TransformedHighlightsType)
 }
 
 type ConstructorProps = {
@@ -55,6 +106,7 @@ type ConstructorProps = {
   sources?: string[]
   transformSorts?: TransformSortsComposedFunctionType
   status?: SearchStatus
+  highlights?: TransformedHighlightsType
 }
 
 type SubscribableType =
@@ -278,15 +330,24 @@ export class LazyQueryResults {
       {} as { [key: string]: LazyQueryResult }
     )
   }
+  highlights: TransformedHighlightsType = {}
+  // we can do a shallow merge because there will be no overlap between the two objects (separate queries, seperate results i.e. ids)
+  addHighlights(highlights: TransformedHighlightsType) {
+    this.highlights = { ...this.highlights, ...highlights }
+  }
+  resetHighlights() {
+    this.highlights = {}
+  }
   constructor({
     results = [],
     sorts = [],
     sources = [],
     transformSorts,
     status = {},
+    highlights = {},
   }: ConstructorProps = {}) {
     this._turnOnDebouncing()
-    this.reset({ results, sorts, sources, transformSorts, status })
+    this.reset({ results, sorts, sources, transformSorts, status, highlights })
 
     this.backboneModel = new Backbone.Model({
       id: Math.random().toString(),
@@ -333,13 +394,16 @@ export class LazyQueryResults {
       return originalSorts
     },
     status = {},
+    highlights = {},
   }: ConstructorProps = {}) {
     this.init()
+    this.resetHighlights()
     this.resetDidYouMeanFields()
     this.resetShowingResultsForFields()
     this._resetSources(sources)
     this._updatePersistantSorts(sorts)
     this._updateTransformSorts(transformSorts)
+    this.addHighlights(highlights)
     this.add({ results })
     this.updateStatus(status)
   }
@@ -351,24 +415,13 @@ export class LazyQueryResults {
   }
   add({
     results = [],
-    highlights = [],
-  }: { results?: ResultType[]; highlights?: ResponseHighlightType } = {}) {
-    const highlightMap = highlights.reduce((blob, highlight) => {
-      blob[highlight.id] = highlight.highlights.reduce(
-        (innerblob, subhighlight) => {
-          innerblob[subhighlight.attribute] = highlight.highlights.filter(
-            (hl) => hl.attribute === subhighlight.attribute
-          )
-          return innerblob
-        },
-        {} as { [key: string]: Array<AttributeHighlight> }
-      )
-      return blob
-    }, {} as TransformedHighlightsType)
+  }: {
+    results?: ResultType[]
+  } = {}) {
     results.forEach((result) => {
       const lazyResult = new LazyQueryResult(
         result,
-        highlightMap[result.metacard.properties.id]
+        this.highlights[result.metacard.properties.id]
       )
       this.results[lazyResult['metacard.id']] = lazyResult
       lazyResult.parent = this

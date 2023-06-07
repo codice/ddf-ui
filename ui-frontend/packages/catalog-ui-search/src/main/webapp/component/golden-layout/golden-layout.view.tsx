@@ -1083,6 +1083,7 @@ const useConsumeInitialState = ({
           results: Object.values(eventData.lazyResults.results).map((result) =>
             _cloneDeep(result.plain)
           ),
+          highlights: eventData.lazyResults.highlights,
           sorts: eventData.lazyResults.persistantSorts,
           sources: eventData.lazyResults.sources,
           status: eventData.lazyResults.status,
@@ -1150,6 +1151,7 @@ const useConsumeStateChange = ({
             results: Object.values(eventData.lazyResults.results).map(
               (result) => _cloneDeep(result.plain)
             ),
+            highlights: eventData.lazyResults.highlights,
             sorts: eventData.lazyResults.persistantSorts,
             sources: eventData.lazyResults.sources,
             status: eventData.lazyResults.status,
