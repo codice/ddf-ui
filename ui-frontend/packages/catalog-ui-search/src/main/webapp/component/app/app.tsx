@@ -239,7 +239,7 @@ const AsyncTasksComponent = () => {
           {AsyncTasks.list.map((asyncTask) => {
             if (AsyncTasks.isRestoreTask(asyncTask)) {
               return (
-                <div className="bg-black p-2">
+                <div className="bg-black p-2" key={asyncTask.id}>
                   Restoring '
                   {asyncTask.lazyResult.plain.metacard.properties.title}'
                 </div>
@@ -247,7 +247,7 @@ const AsyncTasksComponent = () => {
             }
             if (AsyncTasks.isDeleteTask(asyncTask)) {
               return (
-                <div className="bg-black p-2">
+                <div className="bg-black p-2" key={asyncTask.id}>
                   Deleting '
                   {asyncTask.lazyResult.plain.metacard.properties.title}'
                 </div>
@@ -255,28 +255,28 @@ const AsyncTasksComponent = () => {
             }
             if (AsyncTasks.isCreateSearchTask(asyncTask)) {
               return (
-                <div className="bg-black p-2">
+                <div className="bg-black p-2" key={asyncTask.id}>
                   Creating '{asyncTask.data.title}'
                 </div>
               )
             }
             if (AsyncTasks.isSaveSearchTask(asyncTask)) {
               return (
-                <div className="bg-black p-2">
+                <div className="bg-black p-2" key={asyncTask.id}>
                   Saving '{asyncTask.data.title}'
                 </div>
               )
             }
             if (AsyncTasks.isCreateTask(asyncTask)) {
               return (
-                <div className="bg-black p-2">
+                <div className="bg-black p-2" key={asyncTask.id}>
                   Creating '{asyncTask.data.title}'
                 </div>
               )
             }
             if (AsyncTasks.isSaveTask(asyncTask)) {
               return (
-                <div className="bg-black p-2">
+                <div className="bg-black p-2" key={asyncTask.id}>
                   Saving '{asyncTask.data.title}'
                 </div>
               )

@@ -4,6 +4,7 @@ import { LazyQueryResult } from '../LazyQueryResult/LazyQueryResult'
 import fetch from '../../../react-component/utils/fetch'
 import { useParams } from 'react-router-dom'
 import CQL from '../../cql'
+import { v4 as uuidv4 } from 'uuid'
 import Common from '../../Common'
 
 type PlainMetacardPropertiesType =
@@ -172,8 +173,10 @@ export const AsyncTasks = new AsyncTasksClass()
  * Through subscriptions, we'll allow views to track progress if necessary. (useTaskProgress hooks?)
  */
 abstract class AsyncTask extends Subscribable<AsyncSubscriptionsType> {
+  id: string
   constructor() {
     super()
+    this.id = uuidv4()
   }
 }
 
