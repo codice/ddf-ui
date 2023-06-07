@@ -30,10 +30,15 @@ export const isSupportedBrowser = () => {
     const version = parseInt(browser.version.split('.')[0])
     switch (browser && browser.name) {
       case 'chrome':
+        // https://chromium.cypress.io/mac/ for those devs who wish to test old chromium versions
         return version >= 90
       case 'firefox':
+        // https://ftp.mozilla.org/pub/firefox/releases/
         return version >= 78
       case 'edge':
+      case 'edge-chromium':
+        // https://officecdnmac.microsoft.com/pr/03adf619-38c6-4249-95ff-4a01c0ffc962/MacAutoupdate/MicrosoftEdge-90.0.818.39.pkg
+        // change version on end to get to old versions
         return version >= 91
       default:
         return false
