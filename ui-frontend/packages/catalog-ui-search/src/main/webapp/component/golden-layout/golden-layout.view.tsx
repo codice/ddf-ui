@@ -915,6 +915,8 @@ const useListenToGoldenLayoutStackCreated = ({
   return finished
 }
 
+type popupHandlingStateType = 'allowed' | 'blocked' | 'proceed'
+
 const useInitGoldenLayout = ({
   dependencies,
   goldenLayout,
@@ -924,6 +926,8 @@ const useInitGoldenLayout = ({
 }) => {
   const [finished, setFinished] = React.useState(false)
   const [error, setError] = React.useState(false)
+  const [popupHandlingState, setPopupHandlingState] =
+    React.useState<popupHandlingStateType>('allowed')
 
   React.useEffect(() => {
     if (dependencies.every((dependency) => dependency)) {
@@ -938,14 +942,29 @@ const useInitGoldenLayout = ({
         // for some reason subwindow stacks lose dimensions, specifically the header height (see _createConfig in golden layout source code)
         goldenLayout.config.dimensions = getGoldenLayoutSettings().dimensions
       }
-      goldenLayout.init()
+      try {
+        goldenLayout.init()
+      } catch (e) {
+        if (e.type === 'popoutBlocked') {
+          setPopupHandlingState('blocked')
+          goldenLayout.openPopouts?.forEach((popout: any) => {
+            popout.close()
+          })
+        }
+      }
+
       return () => {
         goldenLayout.off('initialised', onInit)
       }
     }
     return () => {}
-  }, dependencies)
-  return { finished, error }
+  }, [...dependencies, popupHandlingState])
+  return {
+    finished,
+    error,
+    setPopupHandlingState,
+    popupHandlingState,
+  }
 }
 
 const useProvideStateChange = ({
@@ -1241,6 +1260,51 @@ const useCrossWindowGoldenLayoutCommunication = ({
   useWindowConsumeNavigationChange({ goldenLayout, isInitialized })
 }
 
+const HandlePopoutsBlocked = ({
+  setPopupHandlingState,
+  goldenLayout,
+}: {
+  goldenLayout: any
+  setPopupHandlingState: React.Dispatch<popupHandlingStateType>
+}) => {
+  return (
+    <Dialog open={true}>
+      <DialogTitle>Visualization popups blocked</DialogTitle>
+      <DialogContent>
+        Please allow popups for this site, then click the button below to retry
+        loading your visualization layout.
+      </DialogContent>
+      <DialogActions>
+        <Button
+          color="error"
+          onClick={() => {
+            goldenLayout.config.openPopouts = []
+            setPopupHandlingState('proceed')
+          }}
+        >
+          Proceed without popups
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            // try opening two windows, as one is allowed since the user interacts with the button
+            const window1 = window.open('', '_blank')
+            const window2 = window.open('', '_blank')
+            if (window1 && window2) {
+              setPopupHandlingState('allowed')
+            }
+            window1?.close()
+            window2?.close()
+          }}
+        >
+          Retry
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
+
 export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
   const [goldenLayoutAttachElement, setGoldenLayoutAttachElement] =
     React.useState<HTMLDivElement | null>(null)
@@ -1258,14 +1322,15 @@ export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
   const listeningToGoldenLayoutStackCreated =
     useListenToGoldenLayoutStackCreated({ goldenLayout })
 
-  const { finished, error } = useInitGoldenLayout({
-    dependencies: [
-      goldenLayoutComponentsRegistered,
-      listeningToGoldenLayoutStateChanges,
-      listeningToGoldenLayoutStackCreated,
-    ],
-    goldenLayout,
-  })
+  const { finished, error, setPopupHandlingState, popupHandlingState } =
+    useInitGoldenLayout({
+      dependencies: [
+        goldenLayoutComponentsRegistered,
+        listeningToGoldenLayoutStateChanges,
+        listeningToGoldenLayoutStackCreated,
+      ],
+      goldenLayout,
+    })
 
   useCrossWindowGoldenLayoutCommunication({
     goldenLayout,
@@ -1275,6 +1340,12 @@ export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
 
   return (
     <div data-element="golden-layout" className="is-minimised h-full w-full">
+      {popupHandlingState === 'blocked' ? (
+        <HandlePopoutsBlocked
+          goldenLayout={goldenLayout}
+          setPopupHandlingState={setPopupHandlingState}
+        />
+      ) : null}
       <div
         ref={setGoldenLayoutAttachElement}
         className="golden-layout-container w-full h-full"
