@@ -58,6 +58,12 @@ export const handleUnsupportedBrowser = () => {
     })
 }
 
+export const handleSupportedBrowser = () => {
+  document.querySelector('#incompatible-browser-bg')?.remove()
+}
+
 if (!isSupportedBrowser()) {
   handleUnsupportedBrowser()
+} else {
+  handleSupportedBrowser()
 }
