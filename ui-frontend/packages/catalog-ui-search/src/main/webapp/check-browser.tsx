@@ -44,6 +44,11 @@ export const isSupportedBrowser = () => {
         return false
     }
   } else {
+    /**
+     *  Assumption is that this would happen only in a new browser version where the user agent deprecation
+     *  has gone through (thus it should be a relatively new version of chrome or whatever browser),
+     *  so we let it through as supported.
+     */
     return true
   }
 }
