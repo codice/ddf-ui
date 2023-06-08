@@ -222,7 +222,10 @@ const UseSubwindowConsumeNavigationChange = ({
   React.useEffect(() => {
     if (goldenLayout && history && goldenLayout.isSubWindow) {
       const callback = (e: MouseEvent) => {
-        if (e.target?.constructor === HTMLAnchorElement) {
+        if (
+          e.target?.constructor === HTMLAnchorElement &&
+          !(e.target as HTMLAnchorElement)?.href.startsWith('blob')
+        ) {
           e.preventDefault()
           goldenLayout.eventHub.emit(
             GoldenLayoutWindowCommunicationEvents.consumeNavigationChange,
