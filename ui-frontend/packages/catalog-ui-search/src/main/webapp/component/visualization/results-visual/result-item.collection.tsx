@@ -109,8 +109,10 @@ export const useScrollToItemOnSelection = ({
 }: {
   selectionInterface: Props['selectionInterface']
 }) => {
+  const [lastInteraction, setLastInteraction] = React.useState<number | null>(
+    null
+  )
   const listRef = React.useRef<VariableSizeList | null>(null)
-
   const lazyResults = useLazyResultsFromSelectionInterface({
     selectionInterface,
   })
@@ -122,7 +124,11 @@ export const useScrollToItemOnSelection = ({
   React.useEffect(() => {
     const allResults = Object.values(lazyResults.results)
     const selected = Object.values(selectedResults)
-    if (listRef.current && selected.length >= 1) {
+    if (
+      listRef.current &&
+      selected.length >= 1 &&
+      Date.now() - (lastInteraction || 0) > 500
+    ) {
       startScrollingToItem({
         listRef: listRef.current,
         index: allResults.indexOf(selected[0]),
@@ -134,8 +140,8 @@ export const useScrollToItemOnSelection = ({
     return () => {
       window.cancelAnimationFrame(animationFrameId.current as number)
     }
-  }, [selectedResults, lazyResults])
-  return { listRef }
+  }, [selectedResults, lazyResults, lastInteraction])
+  return { listRef, setLastInteraction }
 }
 
 const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
@@ -153,7 +159,9 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
    */
   const [isMounted, setIsMounted] = React.useState(false)
 
-  const { listRef } = useScrollToItemOnSelection({ selectionInterface })
+  const { listRef, setLastInteraction } = useScrollToItemOnSelection({
+    selectionInterface,
+  })
 
   React.useEffect(() => {
     const mountedTimeout = setTimeout(() => {
@@ -289,6 +297,14 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
                       No Results Found
                     </div>
                   )
+                }}
+                outerElementProps={{
+                  onMouseEnter: () => {
+                    setLastInteraction(Date.now())
+                  },
+                  onMouseUp: () => {
+                    setLastInteraction(Date.now())
+                  },
                 }}
                 variableSizeListRef={listRef}
               />

@@ -108,7 +108,9 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
    * This is solely to keep the illusion of responsiveness when switching from table mode to list mode (or dropping a new result visual in)
    */
   const [isMounted, setIsMounted] = React.useState(false)
-  const { listRef } = useScrollToItemOnSelection({ selectionInterface })
+  const { listRef, setLastInteraction } = useScrollToItemOnSelection({
+    selectionInterface,
+  })
 
   React.useEffect(() => {
     const mountedTimeout = setTimeout(() => {
@@ -238,6 +240,12 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                             e.target as any
                           ).scrollLeft
                         }
+                      },
+                      onMouseEnter: () => {
+                        setLastInteraction(Date.now())
+                      },
+                      onMouseUp: () => {
+                        setLastInteraction(Date.now())
                       },
                     }}
                     defaultSize={76}
