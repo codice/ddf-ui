@@ -12,10 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-// check browser before loading the rest of the app
-import { isSupportedBrowser } from './check-browser'
-;(() => {
-  if (isSupportedBrowser()) {
-    import('./app')
-  }
-})()
+import Entry from './js/Entry'
+
+Entry()

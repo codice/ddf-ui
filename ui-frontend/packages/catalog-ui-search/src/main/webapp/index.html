@@ -23,21 +23,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-
-    <script>
-      // hacky but working way to suppress certain html (this is the only foolproof method working on all browsers, including ancient ie versions)
-      // things like setAttribute, className etc just aren't guaranteed to work, so stick to using this!
-      window.suppressNextTag = function() {
-        document.write("<script type='application/x-suppress'>");
-      };
-      // feature detection as opposed to browser sniffing, lookBehind is only supported in relatively recent releases of popular browsers
-      window.isLookBehindSupported = false;
-
-      try {
-          new RegExp("(?<=)");
-          window.isLookBehindSupported = true;
-      } catch (err) {}
-    </script>
 </head>
 
 <body>
@@ -187,12 +172,6 @@
 
         </style>
     </header>
-    <script>
-      // this will suppress the incompatible browser element if we're on a compatible browser
-      if (window.isLookBehindSupported) {
-        window.suppressNextTag();
-      }
-    </script>
     <div id="incompatible-browser-bg" style="color: white;">
       <div style="display: table; width: 100%; height: 100%;">
         <div id="incompatible-browser">
@@ -202,28 +181,27 @@
             system.
           </p>
           <ul id="supported-browsers" style="list-style-type:none; padding: 0px">
-            <li class="browser">
+            <li class="browser" title=">=91">
               <img src="./img/edge.png" alt="edge" style="margin-right: 24px;" />
               <label style="font-size: 12px;">Microsoft Edge</label>
             </li>
-            <li class="browser">
+            <li class="browser" title=">=78">
               <img src="./img/firefox.png" alt="firefox" style="margin-right: 24px;" />
               <label style="font-size: 12px;">Mozilla Firefox</label>
             </li>
-            <li class="browser">
+            <li class="browser" title=">=90">
               <img src="./img/chrome.png" alt="chrome" style="margin-right: 24px;" />
               <label style="font-size: 12px;">Google Chrome</label>
             </li>
           </ul>
+          <div class="">
+            <button  class="px-3 text-base py-2 rounded border-slate-700 border hover:bg-slate-800">
+              Continue anyways?
+            </button>
+          </div>
         </div>
       </div>
     </div>
-    <script>
-      // this will suppress the loading element if we're on an incompatible browser
-      if (window.isLookBehindSupported === false) {
-        window.suppressNextTag();
-      }
-    </script>
     <div id="loading" class="flow-root is-open">
         <div class="loader is-critical-animation"></div>
         <div class="loading-welcome">
@@ -234,12 +212,6 @@
     </div>
     <iframe name="autocomplete" style="display:none" src="./blank.html"></iframe>
     <footer></footer>
-    <script>
-      // this will suppress the first webpack bundle from loading, if we're on an incompatible browser
-      if (window.isLookBehindSupported === false) {
-        window.suppressNextTag();
-      }
-    </script>
 </body>
 
 </html>
