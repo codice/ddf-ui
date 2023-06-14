@@ -117,7 +117,7 @@ export const CesiumDrawings = ({
   }
 
   const pickLocation = (model?: any) => {
-    const mode = getDrawModeFromModel(model)
+    const mode = getDrawModeFromModel({ model })
     switch (mode) {
       case 'bbox':
         return _.pick(model.attributes, 'north', 'south', 'east', 'west')
