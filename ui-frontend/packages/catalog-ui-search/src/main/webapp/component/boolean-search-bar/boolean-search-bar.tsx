@@ -38,7 +38,7 @@ type Props = {
   AutocompleteProps?: AutocompleteProps<Option, false, true, true>
   InputProps?: InputProps
 }
-const WILD_CARD = '"*"'
+const WILD_CARD = '*'
 const defaultValue: BooleanTextType = {
   text: '',
   cql: '',
@@ -48,8 +48,7 @@ const validateShape = ({ value, onChange }: Props) => {
   if (
     value.text === undefined ||
     value.cql === undefined ||
-    value.error === undefined ||
-    value.text === '*'
+    value.error === undefined
   ) {
     onChange(defaultValue)
   }
@@ -58,7 +57,7 @@ const ShapeValidator = (props: Props) => {
   React.useEffect(() => {
     validateShape(props)
   })
-  if (props.value.text !== undefined || props.value.text === '*') {
+  if (props.value.text !== undefined) {
     return <BooleanSearchBar {...props} />
   }
   return null
@@ -191,11 +190,6 @@ const BooleanSearchBar = ({
   )
   React.useEffect(() => {
     if (value.text) {
-      const replaceIndex = value.text.indexOf('?')
-      if (replaceIndex > -1) {
-        // Make the selection around "?"
-        inputRef?.current?.setSelectionRange(replaceIndex, replaceIndex + 1)
-      }
       if (suggestion === 'AND' || suggestion === 'OR') {
         inputRef?.current?.setSelectionRange(cursorLocation, cursorLocation)
         setSuggestion('')
@@ -251,7 +245,7 @@ const BooleanSearchBar = ({
           ) {
             let selectedSuggestion = optionToValue(suggestion).toUpperCase()
             if (selectedSuggestion === 'NOT') {
-              selectedSuggestion = 'NOT (?)'
+              selectedSuggestion = 'NOT ()'
             }
             setSuggestion(selectedSuggestion)
             const cursor = inputRef.current?.selectionStart

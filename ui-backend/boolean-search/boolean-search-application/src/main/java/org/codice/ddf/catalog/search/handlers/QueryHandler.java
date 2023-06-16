@@ -40,7 +40,7 @@ public class QueryHandler implements Handler {
     }
 
     try {
-      String query = parser.SearchExpression();
+      final String query = parser.SearchExpression();
       final Map<String, Object> response = new HashMap<>();
       response.put("cql", query);
 
@@ -49,7 +49,7 @@ public class QueryHandler implements Handler {
       ctx.contentType("application/json");
       ctx.result(GSON.toJson(response));
     } catch (ParseException | TokenMgrError e) {
-      LOGGER.debug("Error parsing expression '{}' : '{}'", searchExpression, e);
+      LOGGER.debug("Error parsing expression '{}'", searchExpression, e);
       ctx.status(400);
       ctx.json(message("Invalid Syntax"));
     }
