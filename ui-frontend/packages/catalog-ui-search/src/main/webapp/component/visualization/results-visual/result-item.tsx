@@ -67,6 +67,8 @@ type ResultItemBasicProps = {
   lazyResults: LazyQueryResult[]
   lazyResult: LazyQueryResult
   selectionInterface: any
+  draggable?: boolean
+  onDragStart?: (event: React.DragEvent) => void
 }
 type ResultItemFullProps = ResultItemBasicProps & {
   measure: () => void
@@ -352,7 +354,12 @@ const diagonalHoverClasses =
 const fakeEvent = {
   type: '',
 } as any
-export const ResultItem = ({ lazyResult, measure }: ResultItemFullProps) => {
+export const ResultItem = ({
+  lazyResult,
+  measure,
+  draggable,
+  onDragStart,
+}: ResultItemFullProps) => {
   const rippleRef = React.useRef<{
     pulsate: () => void
     stop: (e: any) => void
@@ -502,6 +509,8 @@ export const ResultItem = ({ lazyResult, measure }: ResultItemFullProps) => {
       }}
       ref={buttonRef}
       className={`select-text outline-none px-6 pr-12 p-2 text-left break-words group w-full Mui-bg-button`}
+      draggable={draggable}
+      onDragStart={onDragStart}
     >
       <div className="w-full">
         <TouchRipple ref={rippleRef} />
