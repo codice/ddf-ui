@@ -163,6 +163,14 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
     selectionInterface,
   })
 
+  const selectedResults = useSelectedResults({ lazyResults })
+
+  const selectedResultsRef = React.useRef(selectedResults)
+
+  React.useEffect(() => {
+    selectedResultsRef.current = selectedResults
+  }, [selectedResults])
+
   React.useEffect(() => {
     const mountedTimeout = setTimeout(() => {
       setIsMounted(true)
@@ -171,6 +179,7 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
       clearTimeout(mountedTimeout)
     }
   }, [])
+
   return (
     <Grid container className="w-full h-full" direction="column" wrap="nowrap">
       <Grid item className="w-full">
@@ -274,6 +283,43 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
                         measure={measure}
                         index={index}
                         width={width}
+                        draggable={true}
+                        onDragStart={(event: React.DragEvent) => {
+                          // if they drag a selected item drag all of them
+                          const dragPayload: any = {
+                            action: 'add',
+                          }
+
+                          const selectedResults = selectedResultsRef.current
+
+                          if (Object.entries(selectedResults).length > 0) {
+                            dragPayload['items'] = Object.values(
+                              selectedResults
+                            ).map((result) => {
+                              return {
+                                id: result.plain.id,
+                                // TODO leave this blank or set to 'resource'?
+                                metacardType: '',
+                                sourceId:
+                                  result.plain.metacard.properties['source-id'],
+                              }
+                            })
+                          } else {
+                            dragPayload['items'] = [
+                              {
+                                id: item.plain.id,
+                                metacardType: '',
+                                sourceId:
+                                  item.plain.metacard.properties['source-id'],
+                              },
+                            ]
+                          }
+
+                          event.dataTransfer.setData(
+                            'text/plain',
+                            JSON.stringify(dragPayload)
+                          )
+                        }}
                       />
                       {index === results.length - 1 ? (
                         <>
