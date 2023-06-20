@@ -35,6 +35,8 @@ public class StatusImpl implements Status {
 
   private List<String> warnings = new ArrayList<>();
 
+  private List<String> errors = new ArrayList<>();
+
   public StatusImpl(QueryResponse response, String source, long elapsedTime) {
     elapsed = elapsedTime;
     id = source;
@@ -43,6 +45,7 @@ public class StatusImpl implements Status {
     hits = response.getHits();
     successful = isSuccessful(response.getProcessingDetails());
     warnings = getWarnings(response.getProcessingDetails());
+    errors = getErrors(response.getProcessingDetails());
   }
 
   public StatusImpl(
@@ -53,6 +56,7 @@ public class StatusImpl implements Status {
     this.elapsed = elapsedTime;
     this.successful = isSuccessful(details);
     this.warnings = getWarnings(details);
+    this.errors = getErrors(details);
   }
 
   private boolean isSuccessful(final Set<ProcessingDetails> details) {
@@ -68,6 +72,15 @@ public class StatusImpl implements Status {
     return details
         .stream()
         .filter(detail -> !detail.hasException())
+        .map(detail -> detail.getWarnings())
+        .flatMap(procesingWarnings -> procesingWarnings.stream())
+        .collect(Collectors.toList());
+  }
+
+  private List<String> getErrors(final Set<ProcessingDetails> details) {
+    return details
+        .stream()
+        .filter(detail -> detail.hasException())
         .map(detail -> detail.getWarnings())
         .flatMap(procesingWarnings -> procesingWarnings.stream())
         .collect(Collectors.toList());

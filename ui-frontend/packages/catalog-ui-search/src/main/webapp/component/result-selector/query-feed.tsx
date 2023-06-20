@@ -10,6 +10,7 @@ import Tooltip from '@mui/material/Tooltip'
 import { Elevations } from '../theme/theme'
 import FilterListIcon from '@mui/icons-material/FilterList'
 import { fuzzyHits, fuzzyResultCount } from './fuzzy-results'
+import WarningIcon from '@mui/icons-material/Warning'
 import ErrorIcon from '@mui/icons-material/Error'
 import { useMenuState } from '../menu-state/menu-state'
 import Popover from '@mui/material/Popover'
@@ -33,6 +34,7 @@ type CellValueProps = {
   successful: boolean
   message: string
   warnings: string[]
+  errors: string[]
   alwaysShowValue?: boolean
 }
 
@@ -40,6 +42,7 @@ const CellValue = (props: CellValueProps) => {
   const {
     value,
     warnings = [],
+    errors = [],
     message,
     alwaysShowValue,
     hasReturned,
@@ -47,17 +50,13 @@ const CellValue = (props: CellValueProps) => {
   } = props
   return (
     <React.Fragment>
-      {(!successful || message || (warnings && warnings.length > 0)) && (
+      {(errors.length > 0 || !successful) && (
         <Tooltip
           title={
             <Paper elevation={Elevations.overlays} className="p-2">
               {(() => {
                 if (message) {
                   return message
-                } else if (warnings.length > 0) {
-                  return warnings.map((warning) => (
-                    <div key={warning}>{warning}</div>
-                  ))
                 } else {
                   return 'Something went wrong searching this source.'
                 }
@@ -65,7 +64,22 @@ const CellValue = (props: CellValueProps) => {
             </Paper>
           }
         >
-          <span className="fa fa-warning" style={{ paddingRight: '5px' }} />
+          <ErrorIcon style={{ paddingRight: '5px' }} />
+        </Tooltip>
+      )}
+      {warnings.length > 0 && (
+        <Tooltip
+          title={
+            <Paper elevation={Elevations.overlays} className="p-2">
+              {(() => {
+                return warnings.map((warning) => (
+                  <div key={warning}>{warning}</div>
+                ))
+              })()}
+            </Paper>
+          }
+        >
+          <WarningIcon style={{ paddingRight: '5px' }} />
         </Tooltip>
       )}
       {alwaysShowValue || (!message && hasReturned && successful)
@@ -87,6 +101,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
   let message = status.message
 
   let warnings = status.warnings
+  let errors = status.errors
   let id = status.id
 
   return (
@@ -97,6 +112,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
           hasReturned={hasReturned}
           successful={successful}
           warnings={warnings}
+          errors={errors}
           message={message}
           alwaysShowValue
         />
@@ -107,6 +123,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
           hasReturned={hasReturned}
           successful={successful}
           warnings={warnings}
+          errors={errors}
           message={message}
         />
       </Cell>
@@ -116,6 +133,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
           hasReturned={hasReturned}
           successful={successful}
           warnings={warnings}
+          errors={errors}
           message={message}
         />
       </Cell>
@@ -125,6 +143,7 @@ const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
           hasReturned={hasReturned}
           successful={successful}
           warnings={warnings}
+          errors={errors}
           message={message}
         />
       </Cell>
@@ -209,7 +228,8 @@ const QueryFeed = ({ selectionInterface }: Props) => {
   let resultMessage = '',
     pending = false,
     failed = false,
-    warnings = false
+    warnings = false,
+    errors = false
   if (statusBySource.length === 0) {
     resultMessage = 'Has not been run'
   } else {
@@ -241,6 +261,9 @@ const QueryFeed = ({ selectionInterface }: Props) => {
     warnings = sourcesThatHaveReturned.some(
       (status) => status.warnings && status.warnings.length > 0
     )
+    errors = sourcesThatHaveReturned.some((status) => {
+      return status.errors && status.errors.length > 0
+    })
     pending = isSearching
   }
 
@@ -253,12 +276,6 @@ const QueryFeed = ({ selectionInterface }: Props) => {
             title={resultMessage}
             className=" whitespace-nowrap"
           >
-            {pending ? (
-              <i className="fa fa-circle-o-notch fa-spin is-critical-animation" />
-            ) : (
-              ''
-            )}
-            {failed ? <i className="fa fa-warning" /> : ''}
             {resultMessage}
           </div>
           <LastRan currentAsOf={currentAsOf} />
@@ -272,6 +289,16 @@ const QueryFeed = ({ selectionInterface }: Props) => {
                 data-help="Show the full status for the search."
                 {...MuiButtonProps}
               >
+                {pending && (
+                  <i
+                    className="fa fa-circle-o-notch fa-spin is-critical-animation"
+                    style={{ paddingRight: '2px' }}
+                  />
+                )}
+                {(errors || failed) && (
+                  <ErrorIcon fontSize="inherit" color="error" />
+                )}
+                {warnings && <WarningIcon fontSize="inherit" color="warning" />}
                 <span className="fa fa-heartbeat" />
               </Button>
               <Popover {...MuiPopoverProps}>
@@ -286,11 +313,6 @@ const QueryFeed = ({ selectionInterface }: Props) => {
                   />
                 </Paper>
               </Popover>
-              {warnings && (
-                <div className="absolute bottom-0 right-0 text-sm">
-                  <ErrorIcon fontSize="inherit" color="error" />
-                </div>
-              )}
             </div>
           </div>
         </div>
