@@ -34,6 +34,7 @@ import MetacardTabs, { TabNames } from '../../tabs/metacard/tabs-metacard'
 import { TypedProperties } from '../../singletons/TypedProperties'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import { useRerenderOnBackboneSync } from '../../../js/model/LazyQueryResult/hooks'
+import Extensions from '../../../extension-points'
 
 type InspectorType = {
   selectionInterface: any
@@ -66,6 +67,7 @@ export const TitleView = ({ lazyResult }: TitleViewType) => {
       <span
         className={`${getIconClassName({ lazyResult })} font-awesome-span`}
       ></span>
+      <Extensions.inspectorTitleAddOn lazyResult={lazyResult} />
       <OverflowTooltip className={'truncate'}>
         {lazyResult.plain.metacard.properties.title}
       </OverflowTooltip>
