@@ -55,7 +55,9 @@ const CellValue = (props: CellValueProps) => {
           title={
             <Paper elevation={Elevations.overlays} className="p-2">
               {(() => {
-                if (message) {
+                if (errors.length > 0) {
+                  return errors.map((error) => <div key={error}>{error}</div>)
+                } else if (message) {
                   return message
                 } else {
                   return 'Something went wrong searching this source.'
@@ -64,22 +66,20 @@ const CellValue = (props: CellValueProps) => {
             </Paper>
           }
         >
-          <ErrorIcon style={{ paddingRight: '5px' }} />
+          <ErrorIcon style={{ paddingRight: '5px' }} color="error" />
         </Tooltip>
       )}
       {warnings.length > 0 && (
         <Tooltip
           title={
             <Paper elevation={Elevations.overlays} className="p-2">
-              {(() => {
-                return warnings.map((warning) => (
-                  <div key={warning}>{warning}</div>
-                ))
-              })()}
+              {warnings.map((warning) => (
+                <div key={warning}>{warning}</div>
+              ))}
             </Paper>
           }
         >
-          <WarningIcon style={{ paddingRight: '5px' }} />
+          <WarningIcon style={{ paddingRight: '5px' }} color="warning" />
         </Tooltip>
       )}
       {alwaysShowValue || (!message && hasReturned && successful)
