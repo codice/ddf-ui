@@ -20,7 +20,7 @@ TOKENS
 }
 
 <DEFAULT> TOKEN : {
-<STRING: (["A"-"Z","a"-"z","0"-"9"])+>
+<STRING: (["A"-"Z","a"-"z","0"-"9","*","?"])+>
 | <QUOTED_STRING: "\"" (~["\""])+ "\"">
 }
 
