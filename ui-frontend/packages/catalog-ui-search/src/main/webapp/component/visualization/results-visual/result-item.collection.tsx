@@ -285,7 +285,6 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
                         width={width}
                         draggable={true}
                         onDragStart={(event: React.DragEvent) => {
-                          // if they drag a selected item drag all of them
                           const dragPayload: any = {
                             action: 'add',
                           }
@@ -298,7 +297,6 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
                             ).map((result) => {
                               return {
                                 id: result.plain.id,
-                                // TODO leave this blank or set to 'resource'?
                                 metacardType: '',
                                 sourceId:
                                   result.plain.metacard.properties['source-id'],
