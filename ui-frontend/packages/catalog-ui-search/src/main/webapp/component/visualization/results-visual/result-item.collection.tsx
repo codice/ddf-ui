@@ -297,7 +297,6 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
                             ).map((result) => {
                               return {
                                 id: result.plain.id,
-                                metacardType: '',
                                 sourceId:
                                   result.plain.metacard.properties['source-id'],
                               }
@@ -306,7 +305,6 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
                             dragPayload['items'] = [
                               {
                                 id: item.plain.id,
-                                metacardType: '',
                                 sourceId:
                                   item.plain.metacard.properties['source-id'],
                               },
