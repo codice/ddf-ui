@@ -126,7 +126,7 @@
     "react-window": "git+https://github.com/andrewkfiedler/react-window#8a68a2508c79044be33f6f743261b069d7fd9cc1",
     "react-window-components": "0.0.7",
     "re-resizable": "6.1.0",
-    "rpc-websockets": "4.0.0",
+    "rpc-websockets": "7.5.1",
     "sanitize-html": "1.15.0",
     "scroll-into-view-if-needed": "^2.2.25",
     "sortablejs": "1.4.2",

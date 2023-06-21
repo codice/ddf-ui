@@ -17,17 +17,20 @@ import Backbone from 'backbone'
 import metacardDefinitions from '../../component/singletons/metacard-definitions'
 import properties from '../properties'
 import 'backbone-associations'
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'rpc-... Remove this comment to see the full error message
-import * as rpcwebsockets from 'rpc-websockets'
-let rpc: any = null
+import { Client } from 'rpc-websockets'
+let rpc: Client | null = null
 if ((properties as any).webSocketsEnabled && window.WebSocket) {
-  const Client = rpcwebsockets.Client
   const protocol = { 'http:': 'ws:', 'https:': 'wss:' }
   // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const url = `${protocol[location.protocol]}//${location.hostname}:${
     location.port
   }${location.pathname}ws`
-  rpc = new Client(url)
+  // Only set rpc if the connection succeeds
+  const localRpc = new Client(url, { autoconnect: false })
+  localRpc.once('open', () => {
+    rpc = localRpc
+  })
+  localRpc.connect()
 }
 export default Backbone.AssociatedModel.extend({
   defaults() {
