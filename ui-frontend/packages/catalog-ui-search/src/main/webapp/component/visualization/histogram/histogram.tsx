@@ -16,6 +16,8 @@ import Plotly from 'plotly.js/dist/plotly'
 import metacardDefinitions from '../../singletons/metacard-definitions'
 import properties from '../../../js/properties'
 import moment from 'moment'
+import { useTheme } from '@mui/material/styles'
+import extension from '../../../extension-points'
 const zeroWidthSpace = '\u200B'
 const plotlyDateFormat = 'YYYY-MM-DD HH:mm:ss.SS'
 function getPlotlyDate(date: string) {
@@ -163,7 +165,7 @@ function getValueFromClick(data: any, categories: any) {
       })
   }
 }
-function getLayout(plot?: any) {
+function getLayout(fontColor: string, plot?: any) {
   const baseLayout = {
     autosize: true,
     paper_bgcolor: 'rgba(0,0,0,0)',
@@ -185,11 +187,16 @@ function getLayout(plot?: any) {
     barmode: 'overlay',
     xaxis: {
       fixedrange: true,
+      color: fontColor,
     },
     yaxis: {
       fixedrange: true,
+      color: fontColor,
     },
     showlegend: true,
+    legend: {
+      font: { color: fontColor },
+    },
   } as any
   if (plot) {
     baseLayout.xaxis.autorange = false
@@ -216,6 +223,8 @@ const getAutocompleteState = ({
 }
 export const Histogram = ({ selectionInterface }: Props) => {
   const { listenTo } = useBackbone()
+  const theme = useTheme()
+  const isDarkTheme = theme.palette.mode === 'dark'
   const [noMatchingData, setNoMatchingData] = React.useState(false)
   const plotlyRef = React.useRef<HTMLDivElement>()
   const lazyResults = useLazyResultsFromSelectionInterface({
@@ -235,10 +244,26 @@ export const Histogram = ({ selectionInterface }: Props) => {
   }, [lazyResults.results])
   React.useEffect(() => {
     showHistogram()
-  }, [lazyResults.results, attributeToBin])
+  }, [lazyResults.results, attributeToBin, theme])
   React.useEffect(() => {
     updateHistogram()
   }, [selectedResults])
+
+  React.useEffect(() => {
+    console.log('theme change in histogram')
+  }, [theme])
+
+  const defaultFontColor = isDarkTheme ? 'white' : 'black'
+  const defaultHoverlabel = {
+    bgcolor: isDarkTheme ? 'black' : 'white',
+    font: {
+      color: defaultFontColor,
+    },
+  }
+  const hoverAddOn = extension.histogramHoverAddOn({
+    results,
+  })
+
   const determineInitialData = () => {
     return [
       {
@@ -256,6 +281,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
             width: '2',
           },
         },
+        hoverlabel: defaultHoverlabel,
       },
     ]
   }
@@ -277,8 +303,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
         }),
         opacity: 1,
         type: 'histogram',
-        hoverinfo: 'y+x+name',
-        name: 'Hits        ',
+        name: 'Hits',
         marker: {
           color: 'rgba(120, 120, 120, .05)',
           line: {
@@ -286,9 +311,28 @@ export const Histogram = ({ selectionInterface }: Props) => {
             width: '2',
           },
         },
+        hoverlabel: defaultHoverlabel,
+        // hoverlabel: { bgcolor: '#fff59d', font: { color: 'black' }},
+        hovertemplate: `%{y} Hits${hoverAddOn ?? ''}<extra></extra>`,
         autobinx: false,
         xbins,
       },
+      // {
+      //   x: calculateAttributeArray({
+      //     results: activeResults,
+      //     attribute: attributeToBin,
+      //   }),
+      //   opacity: 1,
+      //   type: 'histogram',
+      //   name: 'Exercise Hits',
+      //   marker: {
+      //     color: 'rgba(120, 120, 120, .1)',
+      //   },
+      //   hoverlabel: { bgcolor: '#fff59d', font: { color: 'black' }},
+      //   hovertemplate: `(<i>includes ${val} exercise items</i>)<extra></extra>`,
+      //   autobinx: false,
+      //   xbins,
+      // },
       {
         x: calculateAttributeArray({
           results: Object.values(selectedResults),
@@ -296,11 +340,12 @@ export const Histogram = ({ selectionInterface }: Props) => {
         }),
         opacity: 1,
         type: 'histogram',
-        hoverinfo: 'y+x+name',
         name: 'Selected',
         marker: {
           color: 'rgba(120, 120, 120, .2)',
         },
+        hoverlabel: defaultHoverlabel,
+        hovertemplate: '%{y} Selected<extra></extra>',
         autobinx: false,
         xbins,
       },
@@ -338,13 +383,18 @@ export const Histogram = ({ selectionInterface }: Props) => {
         if (initialData[0].x.length === 0) {
           setNoMatchingData(true)
         } else {
-          Plotly.newPlot(histogramElement, initialData, getLayout(), {
-            displayModeBar: false,
-          }).then((plot: any) => {
+          Plotly.newPlot(
+            histogramElement,
+            initialData,
+            getLayout(defaultFontColor),
+            {
+              displayModeBar: false,
+            }
+          ).then((plot: any) => {
             Plotly.newPlot(
               histogramElement,
               determineData(plot),
-              getLayout(plot),
+              getLayout(defaultFontColor, plot),
               {
                 displayModeBar: false,
               }

@@ -110,6 +110,9 @@ export type ExtensionPointsType = {
     result: LazyQueryResult,
     attribute: string
   ) => React.FC<EditorProps> | null
+  histogramHoverAddOn: (props: {
+    results: LazyQueryResult[]
+  }) => string | undefined
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -139,6 +142,7 @@ const ExtensionPoints: ExtensionPointsType = {
     itemContentRef: _containerRef,
   }) => null,
   attributeEditor: () => null,
+  histogramHoverAddOn: () => undefined,
 }
 
 export default ExtensionPoints
