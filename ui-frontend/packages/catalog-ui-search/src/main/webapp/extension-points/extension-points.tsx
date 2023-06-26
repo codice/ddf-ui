@@ -23,6 +23,8 @@ import { Suggestion } from '../react-component/location/gazetteer'
 import { MetacardInteractionProps } from '../react-component/metacard-interactions'
 import { PermissiveComponentType } from '../typescript'
 import { InputsType } from '../react-component/location/location'
+import Button from '@mui/material/Button'
+import { DragIndicator } from '@mui/icons-material'
 
 export type ExtensionPointsType = {
   providers: FC<React.PropsWithChildren<ProviderProps>>
@@ -78,6 +80,13 @@ export type ExtensionPointsType = {
   userInformation: PermissiveComponentType
   extraHeader: PermissiveComponentType
   extraFooter: PermissiveComponentType
+  useExtraResultItemAction: ({
+    lazyResult,
+    selectionInterface,
+  }: {
+    lazyResult: LazyQueryResult
+    selectionInterface: any
+  }) => null | PermissiveComponentType
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -99,6 +108,29 @@ const ExtensionPoints: ExtensionPointsType = {
   userInformation: () => null,
   extraFooter: () => null,
   extraHeader: () => null,
+  useExtraResultItemAction: ({
+    selectionInterface: _selectionInterface,
+    lazyResult: _lazyResult,
+  }) => {
+    // could have this be conditional, such as only showing for X type of result or on X page (using useLocation hook or something)
+    const [shouldShow] = React.useState(Math.random() > 0.5)
+    if (!shouldShow) {
+      return null
+    }
+    return () => {
+      return (
+        <div className="scale-0 absolute z-10 left-0 -translate-x-full ml-[3px] group-hover:scale-100 transition pt-1">
+          <Button
+            className="cursor-grab"
+            draggable={true}
+            onDragStart={() => {}}
+          >
+            <DragIndicator />
+          </Button>
+        </div>
+      )
+    }
+  },
 }
 
 export default ExtensionPoints
