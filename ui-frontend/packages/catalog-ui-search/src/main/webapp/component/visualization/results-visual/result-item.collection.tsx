@@ -163,14 +163,6 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
     selectionInterface,
   })
 
-  const selectedResults = useSelectedResults({ lazyResults })
-
-  const selectedResultsRef = React.useRef(selectedResults)
-
-  React.useEffect(() => {
-    selectedResultsRef.current = selectedResults
-  }, [selectedResults])
-
   React.useEffect(() => {
     const mountedTimeout = setTimeout(() => {
       setIsMounted(true)
@@ -283,39 +275,6 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
                         measure={measure}
                         index={index}
                         width={width}
-                        draggable={true}
-                        onDragStart={(event: React.DragEvent) => {
-                          const dragPayload: any = {
-                            action: 'add',
-                          }
-
-                          const selectedResults = selectedResultsRef.current
-
-                          if (Object.entries(selectedResults).length > 0) {
-                            dragPayload['items'] = Object.values(
-                              selectedResults
-                            ).map((result) => {
-                              return {
-                                id: result.plain.id,
-                                sourceId:
-                                  result.plain.metacard.properties['source-id'],
-                              }
-                            })
-                          } else {
-                            dragPayload['items'] = [
-                              {
-                                id: item.plain.id,
-                                sourceId:
-                                  item.plain.metacard.properties['source-id'],
-                              },
-                            ]
-                          }
-
-                          event.dataTransfer.setData(
-                            'text/plain',
-                            JSON.stringify(dragPayload)
-                          )
-                        }}
                       />
                       {index === results.length - 1 ? (
                         <>
