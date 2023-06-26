@@ -68,8 +68,6 @@ type ResultItemBasicProps = {
   lazyResults: LazyQueryResult[]
   lazyResult: LazyQueryResult
   selectionInterface: any
-  draggable?: boolean
-  onDragStart?: (event: React.DragEvent) => void
 }
 type ResultItemFullProps = ResultItemBasicProps & {
   measure: () => void
@@ -291,26 +289,30 @@ export const SelectionBackground = ({
 const IconButton = ({
   lazyResult,
   selectionInterface,
+  itemContentRef,
 }: {
   lazyResult: LazyQueryResult
   selectionInterface: any
+  itemContentRef: React.RefObject<HTMLElement>
 }) => {
   const isSelected = useSelectionOfLazyResult({ lazyResult })
-  const ResultItemExtra = ExtensionPoints.useExtraResultItemAction({
+  const ResultItemAction = ExtensionPoints.resultItemAction({
     lazyResult,
     selectionInterface,
+    itemContentRef,
   })
-  const extraClasses = ResultItemExtra
-    ? `group-hover:scale-50 group-hover:-translate-x-[85%]`
-    : ``
+  const extraClasses = ResultItemAction
+    ? 'group-hover:scale-50 group-hover:-translate-x-[85%]'
+    : ''
   return (
     <>
-      {ResultItemExtra ? (
-        <ResultItemExtra
+      {ResultItemAction && (
+        <ResultItemAction
           lazyResult={lazyResult}
           selectionInterface={selectionInterface}
+          itemContentRef={itemContentRef}
         />
-      ) : null}
+      )}
       <Button
         component="div"
         data-id="select-checkbox"
@@ -408,6 +410,7 @@ export const ResultItem = ({
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const imgsrc = Common.getImageSrc(thumbnail)
   const buttonRef = React.useRef<HTMLButtonElement>(null)
+  const itemContentRef = React.useRef<HTMLDivElement>(null)
   const ResultItemAddOnInstance = Extensions.resultItemRowAddOn({ lazyResult })
   const shouldShowRelevance = showRelevanceScore({ lazyResult })
   const shouldShowSource = showSource()
@@ -535,10 +538,11 @@ export const ResultItem = ({
         <TouchRipple ref={rippleRef} />
         <SelectionBackground lazyResult={lazyResult} />
         <div className="w-full relative z-0">
-          <div className="w-full flex items-start">
+          <div className="w-full flex items-start" ref={itemContentRef}>
             <IconButton
               lazyResult={lazyResult}
               selectionInterface={selectionInterface}
+              itemContentRef={itemContentRef}
             />
             <div
               data-id={`result-item-${shownAttributes[0]}-label`}
