@@ -195,7 +195,7 @@ const RowComponent = ({
                       style={{
                         width: 'auto',
                       }}
-                      className="pt-3 pr-4"
+                      className="pt-3"
                       ref={addOnRef}
                     >
                       {ResultItemAddOnInstance}

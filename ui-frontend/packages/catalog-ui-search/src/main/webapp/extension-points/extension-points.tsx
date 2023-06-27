@@ -50,6 +50,11 @@ export type ExtensionPointsType = {
   }: {
     lazyResult: LazyQueryResult
   }) => JSX.Element | null
+  inspectorTitleAddOn: ({
+    lazyResult,
+  }: {
+    lazyResult: LazyQueryResult
+  }) => JSX.Element | null
   layoutDropdown: (props: {
     goldenLayout: any
     layoutResult?: ResultType
@@ -78,6 +83,10 @@ export type ExtensionPointsType = {
   userInformation: PermissiveComponentType
   extraHeader: PermissiveComponentType
   extraFooter: PermissiveComponentType
+  customMapBadge: (props: {
+    results: LazyQueryResult[]
+    isCluster: boolean
+  }) => { text: string; color: string } | undefined
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -87,6 +96,7 @@ const ExtensionPoints: ExtensionPointsType = {
   customCanWritePermission: () => undefined,
   customEditableAttributes: async () => undefined,
   resultItemTitleAddOn: () => null,
+  inspectorTitleAddOn: () => null,
   resultItemRowAddOn: () => null,
   layoutDropdown: () => null,
   customSourcesPage: null,
@@ -99,6 +109,7 @@ const ExtensionPoints: ExtensionPointsType = {
   userInformation: () => null,
   extraFooter: () => null,
   extraHeader: () => null,
+  customMapBadge: () => undefined,
 }
 
 export default ExtensionPoints

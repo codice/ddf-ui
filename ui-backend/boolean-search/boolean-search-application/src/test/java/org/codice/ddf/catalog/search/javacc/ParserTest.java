@@ -57,4 +57,28 @@ public class ParserTest {
 
     assertEquals(result, expectedQuery);
   }
+
+  @Test
+  public void testAllowSingleCharWildcard() throws ParseException {
+    final String searchExpression = "not (?at or b?d) and i?";
+    final String expectedQuery =
+        "(NOT ((anyText ILIKE '?at') or (anyText ILIKE 'b?d'))) and (anyText ILIKE 'i?')";
+
+    final Parser parser = new Parser(new StringReader(searchExpression));
+    String result = parser.SearchExpression();
+
+    assertEquals(result, expectedQuery);
+  }
+
+  @Test
+  public void testAllowMultiCharWildcard() throws ParseException {
+    final String searchExpression = "not (*at or b*d) and i*";
+    final String expectedQuery =
+        "(NOT ((anyText ILIKE '*at') or (anyText ILIKE 'b*d'))) and (anyText ILIKE 'i*')";
+
+    final Parser parser = new Parser(new StringReader(searchExpression));
+    String result = parser.SearchExpression();
+
+    assertEquals(result, expectedQuery);
+  }
 }
