@@ -65,6 +65,17 @@ const updateDrawingLocation = (newDrawingLocation: any) => {
   drawingLocation = newDrawingLocation
 }
 
+const ensurePolygonIsClosed = (polygon: any) => {
+  const points = polygon?.polygon
+  if (Array.isArray(points) && points.length > 0) {
+    const first = points[0]
+    const last = points[points.length - 1]
+    if (!_.isEqual(first, last)) {
+      points.push(first)
+    }
+  }
+}
+
 export const CesiumDrawings = ({
   map,
   selectionInterface,
@@ -111,6 +122,9 @@ export const CesiumDrawings = ({
       drawingModel
     )
     Drawing.turnOffDrawing()
+    if (drawingShape === 'Polygon') {
+      ensurePolygonIsClosed(drawingLocation)
+    }
     drawingModel.set({ ...drawingLocation, drawing: false })
     setIsDrawing(false)
     drawingLocation = null
