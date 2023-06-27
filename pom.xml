@@ -97,6 +97,7 @@
 
     <!-- Command line argument properties for the maven-surefire-plugin -->
     <codice-test.version>0.3</codice-test.version>
+    <codice-maven.version>0.3</codice-maven.version>
 
     <!--Test properties-->
     <hamcrest-junit.version>2.0.0.0</hamcrest-junit.version>
@@ -117,6 +118,8 @@
     <picocontainer.version>1.3_1</picocontainer.version>
     <underscore.version>1.8.3</underscore.version>
     <yarn.version>v1.22.4</yarn.version>
+
+    <project.report.output.directory>project-info</project.report.output.directory>
   </properties>
 
   <scm>
@@ -217,10 +220,9 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.0.0-M3</version>
+          <version>3.1.2</version>
           <configuration>
-            <argLine>-Djava.awt.headless=true -noverify</argLine>
-            <forkCount>0</forkCount>
+            <argLine>@{argLine} -Djava.awt.headless=true -noverify</argLine>
             <includes>
               <include>**/*Test.java</include>
               <include>**/*Spec.class</include>
@@ -257,8 +259,33 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.4</version>
+          <version>0.8.10</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.codice.maven</groupId>
+              <artifactId>jacoco</artifactId>
+              <version>${codice-maven.version}</version>
+            </dependency>
+          </dependencies>
           <executions>
+            <execution>
+              <id>default-prepare-agent</id>
+              <goals>
+                <goal>prepare-agent</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>default-report</id>
+              <phase>prepare-package</phase>
+              <configuration>
+                <outputDirectory>
+                  ${project.build.directory}/site/${project.report.output.directory}/jacoco/
+                </outputDirectory>
+              </configuration>
+              <goals>
+                <goal>report</goal>
+              </goals>
+            </execution>
             <execution>
               <id>default-check</id>
               <goals>
@@ -270,17 +297,20 @@
                   <rule>
                     <element>BUNDLE</element>
                     <limits>
-                      <limit>
+                      <limit implementation="org.codice.jacoco.LenientLimit">
                         <counter>INSTRUCTION</counter>
-                        <minimum>0</minimum>
+                        <value>COVEREDRATIO</value>
+                        <minimum>0.75</minimum>
                       </limit>
-                      <limit>
+                      <limit implementation="org.codice.jacoco.LenientLimit">
                         <counter>BRANCH</counter>
-                        <minimum>0</minimum>
+                        <value>COVEREDRATIO</value>
+                        <minimum>0.75</minimum>
                       </limit>
-                      <limit>
+                      <limit implementation="org.codice.jacoco.LenientLimit">
                         <counter>COMPLEXITY</counter>
-                        <minimum>0</minimum>
+                        <value>COVEREDRATIO</value>
+                        <minimum>0.75</minimum>
                       </limit>
                     </limits>
                   </rule>
