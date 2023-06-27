@@ -23,6 +23,7 @@ import { DialogProvider } from '../../component/dialog'
 import { HashRouter as Router } from 'react-router-dom'
 
 import properties from '../../js/properties'
+import { StartupProvider } from '../../js/model/Startup/startup.hooks'
 
 export type Props = {
   children: React.ReactNode
@@ -31,19 +32,21 @@ export type Props = {
 const ProviderContainer = (props: Props) => {
   return (
     <React.Fragment>
-      <ThemeContainer>
-        <IntlProvider locale={navigator.language} messages={properties.i18n}>
-          <ThemeProvider>
-            <Router>
-              <SnackProvider>
-                <DialogProvider>
-                  <>{props.children}</>
-                </DialogProvider>
-              </SnackProvider>
-            </Router>
-          </ThemeProvider>
-        </IntlProvider>
-      </ThemeContainer>
+      <StartupProvider>
+        <ThemeContainer>
+          <IntlProvider locale={navigator.language} messages={properties.i18n}>
+            <ThemeProvider>
+              <Router>
+                <SnackProvider>
+                  <DialogProvider>
+                    <>{props.children}</>
+                  </DialogProvider>
+                </SnackProvider>
+              </Router>
+            </ThemeProvider>
+          </IntlProvider>
+        </ThemeContainer>
+      </StartupProvider>
     </React.Fragment>
   )
 }

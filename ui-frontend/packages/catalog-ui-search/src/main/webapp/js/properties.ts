@@ -15,7 +15,8 @@
 const DEFAULT_AUTO_MERGE_TIME = 1000
 import $ from 'jquery'
 import _ from 'underscore'
-import fetch from '../react-component/utils/fetch'
+import { StartupDataStore } from './model/Startup/startup'
+
 function match(regexList: any, attribute: any) {
   return (
     _.chain(regexList)
@@ -102,19 +103,8 @@ const properties = {
     this.initializing = true
     // use this function to initialize variables that rely on others
     let props = this
-
-    await fetch('./internal/config')
-      .then((res) => {
-        return res.json()
-      })
-      .then((data) => {
-        props = _.extend(props, data)
-      })
-    await fetch('./internal/platform/config/ui')
-      .then((res) => res.json())
-      .then((data) => {
-        props.ui = data
-      })
+    _.extend(props, StartupDataStore.data?.config)
+    props.ui = StartupDataStore.data?.platformUiConfiguration
     this.handleFeedback()
     this.handleExperimental()
     this.handleUpload()

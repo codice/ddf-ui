@@ -14,8 +14,20 @@
  **/
 // check browser before loading the rest of the app
 import { isSupportedBrowser } from './check-browser'
-;(() => {
-  if (isSupportedBrowser()) {
-    import('./app')
+import { StartupDataStore } from './js/model/Startup/startup'
+
+function start() {
+  import('./app')
+}
+
+function attemptToStart() {
+  if (isSupportedBrowser() && StartupDataStore.data) {
+    start()
   }
-})()
+}
+
+StartupDataStore.subscribeTo({
+  subscribableThing: 'fetched',
+  callback: attemptToStart,
+})
+attemptToStart()

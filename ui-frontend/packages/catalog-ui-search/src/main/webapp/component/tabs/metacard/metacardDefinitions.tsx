@@ -6,6 +6,7 @@ import { hot } from 'react-hot-loader'
 import Common from '../../../js/Common'
 import metacardDefinitions from '../../singletons/metacard-definitions'
 import properties from '../../../js/properties'
+import { StartupDataStore } from '../../../js/model/Startup/startup'
 type Attributetypes =
   | 'BINARY'
   | 'DATE'
@@ -19,7 +20,6 @@ type Attributetypes =
   | 'STRING'
   | 'BOOLEAN'
   | 'XML'
-// window.metacardDefinitions = metacardDefinitions
 
 export const TypedMetacardDefs = {
   /**
@@ -94,10 +94,14 @@ export const TypedMetacardDefs = {
     return metacardDefinitions.metacardDefinitions[type] || {}
   },
   getEnum({ attr }: { attr: string }) {
-    return metacardDefinitions.enums[attr] as string[] | undefined
+    return StartupDataStore.data?.attributeMap[attr].enumerations as
+      | string[]
+      | undefined
   },
   getDeprecatedEnum({ attr }: { attr: string }) {
-    return metacardDefinitions.deprecatedEnums[attr] as string[] | undefined
+    return StartupDataStore.data?.attributeMap[attr].deprecatedEnumerations as
+      | string[]
+      | undefined
   },
   typesFetched() {
     return metacardDefinitions.typesFetched as boolean

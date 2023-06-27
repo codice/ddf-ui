@@ -292,6 +292,29 @@ Implementation details
         <property name="securityLogger" ref="securityLogger" />
     </bean>
 
+    <bean id="composeApplication" class="org.codice.ddf.catalog.ui.compose.ComposeApplication">
+        <argument ref="catalogFramework"/>
+        <argument ref="filterBuilder"/>
+        <argument ref="endpointUtil"/>
+        <argument ref="validator"/>
+        <argument ref="workspaceTransformer"/>
+        <argument ref="enumerationExtractor"/>
+        <argument ref="workspacePersistentStore"/>
+        <argument ref="metacardTypes"/>
+        <argument ref="associated"/>
+        <argument ref="csvQueryResponseTransformer"/>
+        <argument ref="attributeRegistry"/>
+        <argument ref="configurationApplication"/>
+        <argument ref="noteUtil"/>
+        <argument ref="subjectIdentity"/>
+        <argument ref="queryWorkspaceService"/>
+        <argument ref="queryMetacardsHandler"/>
+        <argument ref="ddfSecurity" />
+        <argument ref="userApplication"/>
+        <argument ref="platformApplication"/>
+        <argument ref="catalogApplication"/>
+    </bean>
+
     <!--
     =============================================================
     QUERY APPLICATION
@@ -448,6 +471,7 @@ Implementation details
             <list>
                 <ref component-id="queryApplication"/>
                 <ref component-id="metacardApplication"/>
+                <ref component-id="composeApplication"/>
                 <ref component-id="platformApplication"/>
                 <ref component-id="userApplication"/>
                 <ref component-id="catalogApplication"/>

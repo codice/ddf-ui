@@ -18,6 +18,7 @@ import _ from 'underscore'
 import properties from '../../js/properties'
 import moment from 'moment'
 import fetch from '../../react-component/utils/fetch'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 
 function transformEnumResponse(metacardTypes: any, response: any) {
   return _.reduce(
@@ -128,9 +129,10 @@ function metacardStartingTypesWithTemporal() {
 
 export default new (Backbone.Model.extend({
   initialize() {
-    this.updateSortedMetacardTypes()
-    this.getMetacardTypes()
-    this.getDatatypeEnum()
+    this.sortedMetacardTypes = StartupDataStore.data?.sortedAttributes
+    this.metacardTypes = StartupDataStore.data?.attributeMap
+    this.metacardDefinitions = StartupDataStore.data?.metacardTypes
+    this.typesFetched = true
   },
   isHiddenTypeExceptThumbnail(id: any) {
     if (id === 'thumbnail') {

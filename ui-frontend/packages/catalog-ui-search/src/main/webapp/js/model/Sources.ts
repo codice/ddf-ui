@@ -29,32 +29,7 @@ function removeCache(response: any) {
   response = _.filter(response, (source) => source.id !== 'cache')
   return response
 }
-const Types = Backbone.Collection.extend({})
-const computeTypes = function (sources: any) {
-  if (_.size((properties as any).typeNameMapping) > 0) {
-    // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
-    return _.map((properties as any).typeNameMapping, (value, key) => {
-      if (_.isArray(value)) {
-        return {
-          name: key,
-          value: value.join(','),
-        }
-      }
-    })
-  } else {
-    return _.chain(sources)
-      .map((source) => source.contentTypes)
-      .flatten()
-      .filter((element) => element.name !== '')
-      .sortBy((element) => element.name.toUpperCase())
-      .uniq(false, (type) => type.name)
-      .map((element) => {
-        element.value = element.name
-        return element
-      })
-      .value()
-  }
-}
+
 export default Backbone.Collection.extend({
   url: './internal/catalog/sources',
   // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
@@ -79,12 +54,8 @@ export default Backbone.Collection.extend({
   },
   initialize() {
     this.listenTo(this, 'change', this.sort)
-    this._types = new Types()
     this.determineLocalCatalog()
     this.listenTo(this, 'sync', this.updateLocalCatalog)
-  },
-  types() {
-    return this._types
   },
   fetched: false,
   parse(response: any) {
@@ -93,7 +64,6 @@ export default Backbone.Collection.extend({
     response.sort((a: any, b: any) => {
       return a.id.toLowerCase().localeCompare(b.id.toLowerCase()) // case insensitive sort
     })
-    this._types.set(computeTypes(response))
     this.fetched = true
     return response
   },
