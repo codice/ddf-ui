@@ -36,6 +36,7 @@ type HeaderProps = {
   lazyResults: LazyQueryResults
   setHeaderColWidth: Function
   headerColWidth: Map<string, string>
+  actionWidth: number
   addOnWidth: number
 }
 
@@ -174,6 +175,7 @@ export const Header = ({
   lazyResults,
   setHeaderColWidth,
   headerColWidth,
+  actionWidth,
   addOnWidth,
 }: HeaderProps) => {
   const handleSortClick = _.debounce(updateSort, 500, true)
@@ -272,9 +274,16 @@ export const Header = ({
         style={{
           width: shownAttributes.length * 200 + 'px',
           display: 'grid',
-          gridTemplateColumns: `repeat(${shownAttributes.length + 3}, 1fr)`,
+          gridTemplateColumns: `repeat(${shownAttributes.length + 4}, 1fr)`,
         }}
       >
+        <div key="resultItemAction" className="bg-inherit Mui-border-divider border border-t-0 border-l-0 border-b-0">
+          <div
+            style={{
+              width: actionWidth,
+            }}
+          />
+        </div>
         <div className="sticky left-0 w-auto z-10 bg-inherit Mui-border-divider border border-t-0 border-l-0 border-b-0">
           <CellComponent
             className="bg-inherit"

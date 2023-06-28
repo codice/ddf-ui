@@ -300,6 +300,8 @@ const IconButton = ({
     lazyResult,
     selectionInterface,
     itemContentRef,
+    className:
+      'scale-0 absolute z-10 left-0 -translate-x-full ml-[3px] group-hover:scale-100 transition pt-1',
   })
   const extraClasses = ResultItemAction
     ? 'group-hover:scale-50 group-hover:-translate-x-[85%]'

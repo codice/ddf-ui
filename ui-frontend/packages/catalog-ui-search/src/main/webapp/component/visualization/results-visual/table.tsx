@@ -129,6 +129,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
     setHeaderColWidth(width)
   }
 
+  const [maxActionWidth, setMaxActionWidth] = React.useState(0)
   const [maxAddOnWidth, setMaxAddOnWidth] = React.useState(0)
 
   return (
@@ -216,6 +217,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                     lazyResults={lazyResults}
                     setHeaderColWidth={setWidth}
                     headerColWidth={headerColWidth}
+                    actionWidth={maxActionWidth}
                     addOnWidth={maxAddOnWidth}
                   />
                 </div>
@@ -260,7 +262,14 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                             measure={measure}
                             index={index}
                             results={results}
+                            selectionInterface={selectionInterface}
                             headerColWidth={headerColWidth}
+                            actionWidth={maxActionWidth}
+                            setMaxActionWidth={(width) =>
+                              setMaxActionWidth((maxWidth) =>
+                                Math.max(width, maxWidth)
+                              )
+                            }
                             addOnWidth={maxAddOnWidth}
                             setMaxAddOnWidth={(width) =>
                               setMaxAddOnWidth((maxWidth) =>
