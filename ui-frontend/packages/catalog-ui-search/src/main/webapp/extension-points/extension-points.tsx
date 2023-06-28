@@ -91,10 +91,12 @@ export type ExtensionPointsType = {
     lazyResult,
     selectionInterface,
     itemContentRef,
+    className,
   }: {
     lazyResult: LazyQueryResult
     selectionInterface: any
     itemContentRef: React.RefObject<HTMLElement>
+    className?: string
   }) => null | PermissiveComponentType
 }
 
