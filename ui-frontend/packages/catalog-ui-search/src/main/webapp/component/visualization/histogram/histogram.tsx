@@ -260,9 +260,6 @@ export const Histogram = ({ selectionInterface }: Props) => {
       color: defaultFontColor,
     },
   }
-  const hoverAddOn = extension.histogramHoverAddOn({
-    results,
-  })
 
   const determineInitialData = () => {
     return [
@@ -295,12 +292,31 @@ export const Histogram = ({ selectionInterface }: Props) => {
       xbins.end =
         xbins.end + parseInt(xbins.size.substring(1)) * 31 * 24 * 3600000 //https://github.com/plotly/plotly.js/issues/1229
     }
+
+    const x = calculateAttributeArray({
+      results: activeResults,
+      attribute: attributeToBin,
+    })
+
+    const categories: any[] = retrieveCategoriesFromPlotly()
+
+    const getHoverAddOn = (index: number) => {
+      const category = categories[index]
+      const matchedResults = findMatchesForAttributeValues(
+        results,
+        attributeToBin,
+        category.constructor === Array ? category : [category]
+      )
+      return (
+        extension.histogramHoverAddOn({
+          results: matchedResults,
+        }) || ''
+      )
+    }
+
     return [
       {
-        x: calculateAttributeArray({
-          results: activeResults,
-          attribute: attributeToBin,
-        }),
+        x,
         opacity: 1,
         type: 'histogram',
         name: 'Hits',
@@ -313,7 +329,9 @@ export const Histogram = ({ selectionInterface }: Props) => {
         },
         hoverlabel: defaultHoverlabel,
         // hoverlabel: { bgcolor: '#fff59d', font: { color: 'black' }},
-        hovertemplate: `%{y} Hits${hoverAddOn ?? ''}<extra></extra>`,
+        hovertemplate: categories.map(
+          (_category: any, i) => `%{y} Hits${getHoverAddOn(i)}<extra></extra>`
+        ),
         autobinx: false,
         xbins,
       },
@@ -459,8 +477,8 @@ export const Histogram = ({ selectionInterface }: Props) => {
       const categories = []
       const xbins = (histogramElement as any)._fullData[0].xbins
       const min = xbins.start
-      const max = xbins.end
-      let start = min
+      const max = parseInt(moment(xbins.end).format('x'))
+      let start = parseInt(moment(min).format('x'))
       const inMonths = xbins.size.constructor === String
       const binSize = inMonths ? parseInt(xbins.size.substring(1)) : xbins.size
       while (start < max) {
