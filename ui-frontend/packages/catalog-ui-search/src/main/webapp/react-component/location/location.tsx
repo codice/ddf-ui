@@ -138,8 +138,7 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
   }
   const setColor = (color: string) => {
     locationModel.set('color', color)
-    ;(wreqr as any).vent.trigger('search:drawend', locationModel)
-    onChange(getCurrentValue({ locationModel }))
+    ;(wreqr as any).vent.trigger('search:drawend', [locationModel])
   }
   React.useEffect(() => {
     return () => {
