@@ -55,10 +55,12 @@ export type ExtensionPointsType = {
   }) => JSX.Element | null
   resultItemRowAddOn: ({
     lazyResult,
+    isTableView,
   }: {
     lazyResult: LazyQueryResult
+    isTableView?: boolean
   }) => JSX.Element | null
-  inspectorTitleAddOn: ({
+  resultTitleIconAddOn: ({
     lazyResult,
   }: {
     lazyResult: LazyQueryResult
@@ -110,9 +112,11 @@ export type ExtensionPointsType = {
     result: LazyQueryResult,
     attribute: string
   ) => React.FC<EditorProps> | null
-  histogramHoverAddOn: (props: {
-    results: LazyQueryResult[]
-  }) => string | undefined
+  histogramHoverAddOn:
+    | ((props: {
+        results: LazyQueryResult[]
+      }) => { text: string; bgColor: string; fontColor: string } | undefined)
+    | undefined
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -122,7 +126,7 @@ const ExtensionPoints: ExtensionPointsType = {
   customCanWritePermission: () => undefined,
   customEditableAttributes: async () => undefined,
   resultItemTitleAddOn: () => null,
-  inspectorTitleAddOn: () => null,
+  resultTitleIconAddOn: () => null,
   resultItemRowAddOn: () => null,
   layoutDropdown: () => null,
   customSourcesPage: null,
@@ -142,7 +146,7 @@ const ExtensionPoints: ExtensionPointsType = {
     itemContentRef: _containerRef,
   }) => null,
   attributeEditor: () => null,
-  histogramHoverAddOn: () => undefined,
+  histogramHoverAddOn: undefined,
 }
 
 export default ExtensionPoints

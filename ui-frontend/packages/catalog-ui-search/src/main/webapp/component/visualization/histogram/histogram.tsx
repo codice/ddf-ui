@@ -16,8 +16,13 @@ import Plotly from 'plotly.js/dist/plotly'
 import metacardDefinitions from '../../singletons/metacard-definitions'
 import properties from '../../../js/properties'
 import moment from 'moment'
-import { useTheme } from '@mui/material/styles'
 import extension from '../../../extension-points'
+import { useTheme } from '@mui/material/styles'
+import {
+  getCustomHoverLabels,
+  getCustomHoverTemplates,
+  getHoverAddOn,
+} from './add-on-helpers'
 const zeroWidthSpace = '\u200B'
 const plotlyDateFormat = 'YYYY-MM-DD HH:mm:ss.SS'
 function getPlotlyDate(date: string) {
@@ -249,12 +254,8 @@ export const Histogram = ({ selectionInterface }: Props) => {
     updateHistogram()
   }, [selectedResults])
 
-  React.useEffect(() => {
-    console.log('theme change in histogram')
-  }, [theme])
-
   const defaultFontColor = isDarkTheme ? 'white' : 'black'
-  const defaultHoverlabel = {
+  const defaultHoverLabel = {
     bgcolor: isDarkTheme ? 'black' : 'white',
     font: {
       color: defaultFontColor,
@@ -270,7 +271,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
         }),
         opacity: 1,
         type: 'histogram',
-        name: 'Hits        ',
+        name: 'Hits',
         marker: {
           color: 'rgba(120, 120, 120, .05)',
           line: {
@@ -278,45 +279,47 @@ export const Histogram = ({ selectionInterface }: Props) => {
             width: '2',
           },
         },
-        hoverlabel: defaultHoverlabel,
+        hovertemplate: '%{y} Hits<extra></extra>',
+        hoverlabel: defaultHoverLabel,
       },
     ]
   }
   const determineData = (plot: any) => {
     const activeResults = results
     const xbins = Common.duplicate(plot._fullData[0].xbins)
-    if (xbins.size.constructor !== String) {
-      xbins.end = xbins.end + xbins.size //https://github.com/plotly/plotly.js/issues/1229
-    } else {
-      // soooo plotly introduced this cool bin size shorthand where M3 means 3 months, M6 6 months etc.
-      xbins.end =
-        xbins.end + parseInt(xbins.size.substring(1)) * 31 * 24 * 3600000 //https://github.com/plotly/plotly.js/issues/1229
-    }
-
-    const x = calculateAttributeArray({
-      results: activeResults,
-      attribute: attributeToBin,
-    })
 
     const categories: any[] = retrieveCategoriesFromPlotly()
 
-    const getHoverAddOn = (index: number) => {
-      const category = categories[index]
-      const matchedResults = findMatchesForAttributeValues(
-        results,
-        attributeToBin,
-        category.constructor === Array ? category : [category]
-      )
-      return (
-        extension.histogramHoverAddOn({
-          results: matchedResults,
-        }) || ''
-      )
+    let hoverAddOnArray: any = undefined
+    let selectedHoverAddOnArray: any = undefined
+
+    if (extension.histogramHoverAddOn) {
+      hoverAddOnArray = categories.map((category) => {
+        const matchedResults = findMatchesForAttributeValues(
+          results,
+          attributeToBin,
+          category.constructor === Array ? category : [category]
+        )
+        return getHoverAddOn(matchedResults, defaultHoverLabel)
+      })
+
+      selectedHoverAddOnArray = categories.map((category) => {
+        const matchedResults = findMatchesForAttributeValues(
+          Object.values(selectedResults),
+          attributeToBin,
+          category.constructor === Array ? category : [category]
+        )
+
+        return getHoverAddOn(matchedResults, defaultHoverLabel)
+      })
     }
 
     return [
       {
-        x,
+        x: calculateAttributeArray({
+          results: activeResults,
+          attribute: attributeToBin,
+        }),
         opacity: 1,
         type: 'histogram',
         name: 'Hits',
@@ -327,30 +330,15 @@ export const Histogram = ({ selectionInterface }: Props) => {
             width: '2',
           },
         },
-        hoverlabel: defaultHoverlabel,
-        // hoverlabel: { bgcolor: '#fff59d', font: { color: 'black' }},
-        hovertemplate: categories.map(
-          (_category: any, i) => `%{y} Hits${getHoverAddOn(i)}<extra></extra>`
-        ),
+        hoverlabel: hoverAddOnArray
+          ? getCustomHoverLabels(hoverAddOnArray)
+          : defaultHoverLabel,
+        hovertemplate: hoverAddOnArray
+          ? getCustomHoverTemplates('Hits', hoverAddOnArray)
+          : '%{y} Hits<extra></extra>',
         autobinx: false,
         xbins,
       },
-      // {
-      //   x: calculateAttributeArray({
-      //     results: activeResults,
-      //     attribute: attributeToBin,
-      //   }),
-      //   opacity: 1,
-      //   type: 'histogram',
-      //   name: 'Exercise Hits',
-      //   marker: {
-      //     color: 'rgba(120, 120, 120, .1)',
-      //   },
-      //   hoverlabel: { bgcolor: '#fff59d', font: { color: 'black' }},
-      //   hovertemplate: `(<i>includes ${val} exercise items</i>)<extra></extra>`,
-      //   autobinx: false,
-      //   xbins,
-      // },
       {
         x: calculateAttributeArray({
           results: Object.values(selectedResults),
@@ -362,8 +350,12 @@ export const Histogram = ({ selectionInterface }: Props) => {
         marker: {
           color: 'rgba(120, 120, 120, .2)',
         },
-        hoverlabel: defaultHoverlabel,
-        hovertemplate: '%{y} Selected<extra></extra>',
+        hoverlabel: selectedHoverAddOnArray
+          ? getCustomHoverLabels(selectedHoverAddOnArray)
+          : defaultHoverLabel,
+        hovertemplate: selectedHoverAddOnArray
+          ? getCustomHoverTemplates('Selected', selectedHoverAddOnArray)
+          : '%{y} Selected<extra></extra>',
         autobinx: false,
         xbins,
       },
@@ -435,7 +427,11 @@ export const Histogram = ({ selectionInterface }: Props) => {
         attributeToBin &&
         results.length > 0
       ) {
-        Plotly.deleteTraces(histogramElement, 1)
+        try {
+          Plotly.deleteTraces(histogramElement, 1)
+        } catch (err) {
+          console.error('Unable to delete trace', err)
+        }
         Plotly.addTraces(histogramElement, determineData(histogramElement)[1])
         handleResize()
       } else {

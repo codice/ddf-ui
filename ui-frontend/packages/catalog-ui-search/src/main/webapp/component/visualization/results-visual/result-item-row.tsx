@@ -136,13 +136,19 @@ const RowComponent = ({
     }
     return value
   }
+
   const containerRef = React.useRef<HTMLDivElement>(null)
   const ResultItemActionInstance = Extensions.resultItemAction({
     lazyResult,
     selectionInterface,
     itemContentRef: containerRef,
   })
-  const ResultItemAddOnInstance = Extensions.resultItemRowAddOn({ lazyResult })
+  
+  const ResultItemAddOnInstance = Extensions.resultItemRowAddOn({
+    lazyResult,
+    isTableView: true,
+  })
+
   return (
     <div ref={containerRef}>
       <div
