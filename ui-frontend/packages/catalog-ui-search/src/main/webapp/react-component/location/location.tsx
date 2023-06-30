@@ -28,6 +28,10 @@ import BoundingBox from './bounding-box'
 import Gazetteer from './gazetteer'
 import ShapeUtils from '../../js/ShapeUtils'
 import ExtensionPoints from '../../extension-points/extension-points'
+import { useTheme } from '@mui/material/styles'
+import { Popover } from '@mui/material'
+import { ColorSquare, LocationColorSelector } from './location-color-selector'
+
 type InputType = {
   label: string
   Component: any
@@ -127,6 +131,16 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
   const [state, setState] = React.useState(locationModel.toJSON() as any)
   const isDrawing = useIsDrawing()
   const { listenTo, stopListening } = useBackbone()
+  const [openColors, setOpenColors] = React.useState(false)
+  const anchorEl = React.useRef(null)
+  const handleOpenColorSelector = () => {
+    setOpenColors((openColors) => !openColors)
+  }
+  const setColor = (color: string) => {
+    locationModel.set('color', color)
+    ;(wreqr as any).vent.trigger('search:drawend', locationModel)
+    onChange(getCurrentValue({ locationModel }))
+  }
   React.useEffect(() => {
     return () => {
       setTimeout(() => {
@@ -203,36 +217,66 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
             errorListener={errorListener}
           />
           {drawTypes.includes(state.mode) ? (
-            isDrawing && locationModel === Drawing.getDrawModel() ? (
-              <Button
-                className="location-draw mt-2"
-                onClick={() => {
-                  ;(wreqr as any).vent.trigger(
-                    'search:drawcancel',
-                    locationModel
-                  )
-                }}
-                color="secondary"
-                fullWidth
-              >
-                <span className="ml-2">Cancel Drawing</span>
-              </Button>
-            ) : (
-              <Button
-                className="location-draw mt-2"
-                onClick={() => {
-                  ;(wreqr as any).vent.trigger(
-                    'search:draw' + state.mode,
-                    locationModel
-                  )
-                }}
-                color="primary"
-                fullWidth
-              >
-                <span className="fa fa-globe" />
-                <span className="ml-2">Draw</span>
-              </Button>
-            )
+            <div>
+              <div className="flex my-1.5 ml-2 align-middle">
+                <div className="align-middle my-auto pr-16 mr-1">Color</div>
+                <ColorSquare
+                  disabled={isDrawing}
+                  color={state.color}
+                  ref={anchorEl}
+                  onClick={handleOpenColorSelector}
+                  {...useTheme()}
+                  size={'1.8rem'}
+                />
+                <Popover
+                  open={openColors}
+                  anchorEl={anchorEl.current}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                  }}
+                  onBlur={() => {
+                    handleOpenColorSelector()
+                  }}
+                >
+                  <LocationColorSelector setColor={setColor} />
+                </Popover>
+              </div>
+              {isDrawing && locationModel === Drawing.getDrawModel() ? (
+                <Button
+                  className="location-draw mt-2"
+                  onClick={() => {
+                    ;(wreqr as any).vent.trigger(
+                      'search:drawcancel',
+                      locationModel
+                    )
+                  }}
+                  color="secondary"
+                  fullWidth
+                >
+                  <span className="ml-2">Cancel Drawing</span>
+                </Button>
+              ) : (
+                <Button
+                  className="location-draw mt-2"
+                  onClick={() => {
+                    ;(wreqr as any).vent.trigger(
+                      'search:draw' + state.mode,
+                      locationModel
+                    )
+                  }}
+                  color="primary"
+                  fullWidth
+                >
+                  <span className="fa fa-globe" />
+                  <span className="ml-2">Draw</span>
+                </Button>
+              )}
+            </div>
           ) : null}
         </div>
       </div>
