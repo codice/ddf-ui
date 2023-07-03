@@ -171,7 +171,6 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
       clearTimeout(mountedTimeout)
     }
   }, [])
-
   return (
     <Grid container className="w-full h-full" direction="column" wrap="nowrap">
       <Grid item className="w-full">
