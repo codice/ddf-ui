@@ -33,7 +33,6 @@ import { TypedUserInstance } from '../../singletons/TypedUser'
 import useCoordinateFormat from '../../tabs/metacard/useCoordinateFormat'
 import Common from '../../../js/Common'
 import Extensions from '../../../extension-points'
-import { SxProps, Theme } from '@mui/material'
 type ResultItemFullProps = {
   lazyResult: LazyQueryResult
   measure: () => void
@@ -145,7 +144,7 @@ const RowComponent = ({
   })
   const ResultItemAddOnInstance = Extensions.resultItemRowAddOn({ lazyResult })
   return (
-    <React.Fragment>
+    <div ref={containerRef}>
       <div
         className="bg-inherit flex items-strech flex-nowrap"
         style={{
@@ -220,13 +219,7 @@ const RowComponent = ({
             className="outline-none rounded-none select-text p-0 text-left break-words h-full"
           >
             <div className="w-full h-full">
-              <Grid
-                container
-                direction="row"
-                className="h-full"
-                wrap="nowrap"
-                ref={containerRef}
-              >
+              <Grid container direction="row" className="h-full" wrap="nowrap">
                 <div
                   key="resultItemAddOn"
                   className={`Mui-border-divider border border-t-0 border-l-0 ${
@@ -342,7 +335,7 @@ const RowComponent = ({
           </Button>
         </div>
       </div>
-    </React.Fragment>
+    </div>
   )
 }
 export default hot(module)(RowComponent)

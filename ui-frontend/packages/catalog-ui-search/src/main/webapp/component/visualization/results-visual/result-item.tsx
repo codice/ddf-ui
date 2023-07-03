@@ -539,8 +539,8 @@ export const ResultItem = ({
       <div className="w-full">
         <TouchRipple ref={rippleRef} />
         <SelectionBackground lazyResult={lazyResult} />
-        <div className="w-full relative z-0">
-          <div className="w-full flex items-start" ref={itemContentRef}>
+        <div className="w-full relative z-0" ref={itemContentRef}>
+          <div className="w-full flex items-start">
             <IconButton
               lazyResult={lazyResult}
               selectionInterface={selectionInterface}
