@@ -551,45 +551,42 @@ class SaveTask extends AsyncTask {
     this.attemptSave()
   }
   update({ data }: { data: PlainMetacardPropertiesType }) {
-    clearTimeout(this.timeoutid)
     this.controller.abort()
     this.data = data
     this.attemptSave()
   }
   attemptSave() {
     this.controller = new AbortController()
-    this.timeoutid = window.setTimeout(() => {
-      const payload = {
-        id: '1',
-        jsonrpc: '2.0',
-        method: 'ddf.catalog/update',
-        params: {
-          metacards: [
-            {
-              attributes: {
-                ...convertToBackendCompatibleForm({ properties: this.data }),
-              },
-              metacardType: this.metacardType,
+    const payload = {
+      id: '1',
+      jsonrpc: '2.0',
+      method: 'ddf.catalog/update',
+      params: {
+        metacards: [
+          {
+            attributes: {
+              ...convertToBackendCompatibleForm({ properties: this.data }),
             },
-          ],
-        },
-      }
-
-      fetch('/direct', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        signal: this.controller.signal,
-      }).then(() => {
-        this.lazyResult.refreshDataOverNetwork()
-        const unsub = this.lazyResult.subscribeTo({
-          subscribableThing: 'backboneSync',
-          callback: () => {
-            this._notifySubscribers('update')
-            unsub()
+            metacardType: this.metacardType,
           },
-        })
+        ],
+      },
+    }
+
+    fetch('/direct', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      signal: this.controller.signal,
+    }).then(() => {
+      this.lazyResult.refreshDataOverNetwork()
+      const unsub = this.lazyResult.subscribeTo({
+        subscribableThing: 'backboneSync',
+        callback: () => {
+          this._notifySubscribers('update')
+          unsub()
+        },
       })
-    }, 3000)
+    })
   }
   static isInstanceOf(task: any): task is SaveTask {
     return task.constructor === SaveTask
