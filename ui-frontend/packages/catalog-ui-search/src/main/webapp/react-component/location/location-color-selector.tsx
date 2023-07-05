@@ -18,8 +18,6 @@ export const ColorSquare = styled(ColorSwatch)`
   height: ${(props: any) => props.size};
   width: ${(props: any) => props.size};
   min-width: ${(props: any) => props.size};
-  background-color: ${(props: any) => props.color};
-  border-radius: 4px;
   background-clip: padding-box;
   &:enabled {
     border: 0.12rem solid
@@ -44,7 +42,11 @@ type ColorSwatchProps = {
   title?: string
 } & LocationColorSelectorProps
 
-const ColorPaletItem = ({ title, colorValue, setColor }: ColorSwatchProps) => {
+const ColorPaletteItem = ({
+  title,
+  colorValue,
+  setColor,
+}: ColorSwatchProps) => {
   return (
     <Tooltip title={title || ''} disableInteractive>
       <ColorSwatch color={colorValue} onClick={() => setColor(colorValue)} />
@@ -78,66 +80,66 @@ export const LocationColorSelector = ({
       alignItems="flex-start"
     >
       <Grid item>
-        <ColorPaletItem
+        <ColorPaletteItem
           title={'White'}
           colorValue={locationColors.white}
           setColor={setColor}
         />
-        <ColorPaletItem
+        <ColorPaletteItem
           title={'Grey'}
           colorValue={locationColors.grey}
           setColor={setColor}
         />
-        <ColorPaletItem
+        <ColorPaletteItem
           title={'Black'}
           colorValue={locationColors.black}
           setColor={setColor}
         />
-        <ColorPaletItem
+        <ColorPaletteItem
           title={'Yellow'}
           colorValue={locationColors.yellow}
           setColor={setColor}
         />
       </Grid>
       <Grid item>
-        <ColorPaletItem
+        <ColorPaletteItem
           title={'Red'}
           colorValue={locationColors.red}
           setColor={setColor}
         />
-        <ColorPaletItem
+        <ColorPaletteItem
           title={'Green'}
           colorValue={locationColors.green}
           setColor={setColor}
         />
-        <ColorPaletItem
+        <ColorPaletteItem
           title={'Blue'}
           colorValue={locationColors.blue}
           setColor={setColor}
         />
-        <ColorPaletItem
+        <ColorPaletteItem
           title={'Orange'}
           colorValue={locationColors.orange}
           setColor={setColor}
         />
       </Grid>
       <Grid item>
-        <ColorPaletItem
+        <ColorPaletteItem
           title={'Cyan'}
           colorValue={locationColors.cyan}
           setColor={setColor}
         />
-        <ColorPaletItem
+        <ColorPaletteItem
           title={'Violet'}
           colorValue={locationColors.violet}
           setColor={setColor}
         />
-        <ColorPaletItem
+        <ColorPaletteItem
           title={'Teal'}
           colorValue={locationColors.teal}
           setColor={setColor}
         />
-        <ColorPaletItem
+        <ColorPaletteItem
           title={'Purple'}
           colorValue={locationColors.purple}
           setColor={setColor}

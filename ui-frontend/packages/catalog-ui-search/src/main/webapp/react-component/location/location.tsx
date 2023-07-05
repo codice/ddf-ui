@@ -133,9 +133,6 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
   const { listenTo, stopListening } = useBackbone()
   const [openColors, setOpenColors] = React.useState(false)
   const anchorEl = React.useRef(null)
-  const handleOpenColorSelector = () => {
-    setOpenColors((openColors) => !openColors)
-  }
   const setColor = (color: string) => {
     locationModel.set('color', color)
     ;(wreqr as any).vent.trigger('search:drawend', [locationModel])
@@ -223,7 +220,9 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
                   disabled={isDrawing}
                   color={state.color}
                   ref={anchorEl}
-                  onClick={handleOpenColorSelector}
+                  onClick={() => {
+                    setOpenColors(true)
+                  }}
                   {...useTheme()}
                   size={'1.8rem'}
                 />
@@ -239,7 +238,7 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
                     horizontal: 'center',
                   }}
                   onBlur={() => {
-                    handleOpenColorSelector()
+                    setOpenColors(false)
                   }}
                 >
                   <LocationColorSelector setColor={setColor} />
