@@ -31,6 +31,7 @@ import ExtensionPoints from '../../extension-points/extension-points'
 import { useTheme } from '@mui/material/styles'
 import { Popover } from '@mui/material'
 import { ColorSquare, LocationColorSelector } from './location-color-selector'
+import { useMenuState } from '../../component/menu-state/menu-state'
 
 type InputType = {
   label: string
@@ -131,8 +132,7 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
   const [state, setState] = React.useState(locationModel.toJSON() as any)
   const isDrawing = useIsDrawing()
   const { listenTo, stopListening } = useBackbone()
-  const [openColors, setOpenColors] = React.useState(false)
-  const anchorEl = React.useRef(null)
+  const { MuiButtonProps, MuiPopoverProps } = useMenuState()
   const setColor = (color: string) => {
     locationModel.set('color', color)
     ;(wreqr as any).vent.trigger('search:drawend', [locationModel])
@@ -219,28 +219,11 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
                 <ColorSquare
                   disabled={isDrawing}
                   color={state.color}
-                  ref={anchorEl}
-                  onClick={() => {
-                    setOpenColors(true)
-                  }}
+                  {...MuiButtonProps}
                   {...useTheme()}
                   size={'1.8rem'}
                 />
-                <Popover
-                  open={openColors}
-                  anchorEl={anchorEl.current}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                  }}
-                  onBlur={() => {
-                    setOpenColors(false)
-                  }}
-                >
+                <Popover {...MuiPopoverProps}>
                   <LocationColorSelector setColor={setColor} />
                 </Popover>
               </div>
