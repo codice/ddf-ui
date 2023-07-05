@@ -64,7 +64,8 @@ export const fetchSuggestions = async ({
 
 type BooleanEndpointReturnType = {
   cql?: string
-  message?: string
+  error?: boolean
+  errorMessage?: string
 }
 
 export const fetchCql = async ({
