@@ -277,7 +277,10 @@ export const Header = ({
           gridTemplateColumns: `repeat(${shownAttributes.length + 4}, 1fr)`,
         }}
       >
-        <div key="resultItemAction" className="bg-inherit Mui-border-divider border border-t-0 border-l-0 border-b-0">
+        <div
+          key="resultItemAction"
+          className="bg-inherit Mui-border-divider border border-t-0 border-l-0 border-b-0"
+        >
           <div
             style={{
               width: actionWidth,
