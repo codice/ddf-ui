@@ -188,6 +188,7 @@ export type BooleanTextType = {
   text: string
   cql: string
   error: boolean
+  errorMessage?: string
 }
 
 export type ValueTypes = {

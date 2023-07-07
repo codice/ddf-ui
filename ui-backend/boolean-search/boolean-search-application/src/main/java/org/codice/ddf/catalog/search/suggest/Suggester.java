@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.codice.ddf.catalog.search.javacc.CustomParseException;
 import org.codice.ddf.catalog.search.javacc.ParseException;
 import org.codice.ddf.catalog.search.javacc.Parser;
 import org.codice.ddf.catalog.search.javacc.TokenMgrError;
@@ -64,6 +65,12 @@ public class Suggester {
       } catch (TokenMgrError e) {
         LOGGER.warn("There was an issue parsing the search expression.", e);
         return emptyMap();
+      } catch (CustomParseException e) {
+        // This case should not happen, since parsing "\n" should throw a ParseException.
+        // CustomParseException is handled separately from ParseException because
+        // CustomParseException is not intended to be
+        // used for suggestions at this time.
+        LOGGER.debug("This case shouldn't happen.", e);
       }
     }
 
@@ -92,7 +99,15 @@ public class Suggester {
             searchExpressionWithoutLastWord,
             ex);
         return responsePayload(errorIndex);
+      } catch (CustomParseException ex) {
+        LOGGER.debug(
+            "Couldn't parse the expression, but can't get suggestions from this exception type. Continuing.",
+            ex);
       }
+    } catch (CustomParseException e) {
+      LOGGER.debug(
+          "Couldn't parse the expression, but can't get suggestions from this exception type. Continuing.",
+          e);
     }
 
     try {
@@ -101,12 +116,15 @@ public class Suggester {
       return responsePayload(getCategorizedSuggestions(e));
     } catch (TokenMgrError e) {
       LOGGER.warn("There was an issue parsing the search expression.", e);
+    } catch (CustomParseException e) {
+      LOGGER.debug(
+          "Couldn't parse the expression, but can't get suggestions from this exception type.", e);
     }
 
     return emptyMap();
   }
 
-  private void parse(final String searchExpression) throws ParseException {
+  private void parse(final String searchExpression) throws ParseException, CustomParseException {
     final Parser parser = new Parser(new StringReader(searchExpression));
     parser.SearchExpression();
   }

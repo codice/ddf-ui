@@ -29,6 +29,7 @@ const ERROR_MESSAGES = {
       <div>Check that syntax of AND / OR / NOT is used correctly.</div>
     </div>
   ),
+  custom: (message: string) => <div>Invalid Query: {message}</div>,
 }
 
 const useBooleanSearchError = (value: BooleanTextType) => {
@@ -36,7 +37,11 @@ const useBooleanSearchError = (value: BooleanTextType) => {
 
   useEffect(() => {
     if (value.error) {
-      setErrorMessage(ERROR_MESSAGES.syntax)
+      if (value.errorMessage) {
+        setErrorMessage(ERROR_MESSAGES.custom(value.errorMessage))
+      } else {
+        setErrorMessage(ERROR_MESSAGES.syntax)
+      }
     }
   }, [value])
 

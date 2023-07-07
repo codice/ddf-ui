@@ -1,7 +1,7 @@
 /* Copyright (c) Connexta, LLC */
 package org.codice.ddf.catalog.search.handlers;
 
-import static org.codice.ddf.catalog.javalin.utils.JavalinUtils.message;
+import static java.util.Collections.singletonMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -10,6 +10,7 @@ import io.javalin.Handler;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import org.codice.ddf.catalog.search.javacc.CustomParseException;
 import org.codice.ddf.catalog.search.javacc.ParseException;
 import org.codice.ddf.catalog.search.javacc.Parser;
 import org.codice.ddf.catalog.search.javacc.TokenMgrError;
@@ -51,7 +52,14 @@ public class QueryHandler implements Handler {
     } catch (ParseException | TokenMgrError e) {
       LOGGER.debug("Error parsing expression '{}'", searchExpression, e);
       ctx.status(400);
-      ctx.json(message("Invalid Syntax"));
+      ctx.json(singletonMap("error", true));
+    } catch (CustomParseException e) {
+      LOGGER.debug("Error parsing expression '{}'", searchExpression, e);
+      ctx.status(400);
+      final Map<String, Object> json = new HashMap<>();
+      json.put("error", true);
+      json.put("errorMessage", e.getMessage());
+      ctx.json(json);
     }
   }
 }

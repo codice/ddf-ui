@@ -106,11 +106,12 @@ const BooleanSearchBar = ({
       fetchCql({
         searchText: searchVal,
         searchProperty: property,
-        callback: ({ cql = '', message }) => {
+        callback: ({ cql = '', error, errorMessage }) => {
           onChange({
             ...value,
             cql,
-            error: Boolean(message),
+            error: !!error,
+            errorMessage,
           })
           setLoading(false)
         },
