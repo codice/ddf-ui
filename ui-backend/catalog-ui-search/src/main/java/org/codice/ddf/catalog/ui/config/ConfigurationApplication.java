@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import ddf.catalog.configuration.HistorianConfiguration;
 import ddf.platform.resource.bundle.locator.ResourceBundleLocator;
 import java.io.IOException;
@@ -265,6 +266,8 @@ public class ConfigurationApplication implements SparkApplication {
   private Set<String> requiredAttributes = Collections.emptySet();
   private Map<String, Set<String>> attributeEnumMap = Collections.emptyMap();
 
+  private Map<String, Object> extra;
+
   private static final String INTRIGUE_BASE_NAME = "IntrigueBundle";
 
   private volatile Map<String, String> i18n = Collections.emptyMap();
@@ -368,6 +371,23 @@ public class ConfigurationApplication implements SparkApplication {
     setEditorAttributes(attributeSet);
     mergedEntryMap.entrySet().removeIf(entry -> entry.getValue().isEmpty());
     setAttributeEnumMap(mergedEntryMap);
+  }
+
+  public void setExtra(String json) {
+    if (StringUtils.isBlank(json)) {
+      extra = Collections.emptyMap();
+      return;
+    }
+    try {
+      extra = GSON.fromJson(json, Map.class);
+    } catch (JsonSyntaxException e) {
+      LOGGER.warn("Extra is not valid map JSON: {}", json, e);
+      extra = Collections.emptyMap();
+    }
+  }
+
+  public Map<String, Object> getExtra() {
+    return extra;
   }
 
   public ConfigurationApplication(UuidGenerator uuidGenerator, AttributeAliases attributeAliases) {
@@ -619,6 +639,7 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("bottomLeftBackgroundSrc", bottomLeftBackgroundSrc);
     config.put("menuIconSrc", menuIconSrc);
     config.put("customBranding", customBranding);
+    config.put("extra", extra);
 
     return config;
   }

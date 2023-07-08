@@ -93,6 +93,7 @@ const properties = {
   },
   sourcePollInterval: 60000,
   enums: {},
+  extra: {},
   fetched: false,
   initializing: false,
   async init() {
