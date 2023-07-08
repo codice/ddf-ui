@@ -94,6 +94,7 @@ export default {
   attributeAliases: {},
   commonAttributes: [],
   enums: {},
+  extra: {},
   queryFeedbackEnabled: false,
   editorAttributes: [],
   resultShow: [],
