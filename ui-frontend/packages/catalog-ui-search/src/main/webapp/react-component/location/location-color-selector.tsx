@@ -69,6 +69,9 @@ export const locationColors = {
   white: '#FFFFFF',
 }
 
+// a color that is not similar looking to the ones above
+export const contrastingColor = '#996600'
+
 export const LocationColorSelector = ({
   setColor,
 }: LocationColorSelectorProps) => {

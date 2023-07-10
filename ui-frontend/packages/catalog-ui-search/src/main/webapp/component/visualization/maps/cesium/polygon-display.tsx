@@ -33,7 +33,7 @@ import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import utility from './utility'
 const toDeg = Cesium.Math.toDegrees
 
-const polygonFillColor = 'rgba(0,0,255,0.2)'
+const polygonFillColor = 'rgba(153,102,0,0.2)'
 
 const CAMERA_MAGNITUDE_THRESHOLD = 8000000
 
