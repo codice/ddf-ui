@@ -28,6 +28,11 @@ import BoundingBox from './bounding-box'
 import Gazetteer from './gazetteer'
 import ShapeUtils from '../../js/ShapeUtils'
 import ExtensionPoints from '../../extension-points/extension-points'
+import { useTheme } from '@mui/material/styles'
+import { Popover } from '@mui/material'
+import { ColorSquare, LocationColorSelector } from './location-color-selector'
+import { useMenuState } from '../../component/menu-state/menu-state'
+
 type InputType = {
   label: string
   Component: any
@@ -127,6 +132,11 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
   const [state, setState] = React.useState(locationModel.toJSON() as any)
   const isDrawing = useIsDrawing()
   const { listenTo, stopListening } = useBackbone()
+  const { MuiButtonProps, MuiPopoverProps } = useMenuState()
+  const setColor = (color: string) => {
+    locationModel.set('color', color)
+    ;(wreqr as any).vent.trigger('search:drawend', [locationModel])
+  }
   React.useEffect(() => {
     return () => {
       setTimeout(() => {
@@ -203,36 +213,51 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
             errorListener={errorListener}
           />
           {drawTypes.includes(state.mode) ? (
-            isDrawing && locationModel === Drawing.getDrawModel() ? (
-              <Button
-                className="location-draw mt-2"
-                onClick={() => {
-                  ;(wreqr as any).vent.trigger(
-                    'search:drawcancel',
-                    locationModel
-                  )
-                }}
-                color="secondary"
-                fullWidth
-              >
-                <span className="ml-2">Cancel Drawing</span>
-              </Button>
-            ) : (
-              <Button
-                className="location-draw mt-2"
-                onClick={() => {
-                  ;(wreqr as any).vent.trigger(
-                    'search:draw' + state.mode,
-                    locationModel
-                  )
-                }}
-                color="primary"
-                fullWidth
-              >
-                <span className="fa fa-globe" />
-                <span className="ml-2">Draw</span>
-              </Button>
-            )
+            <div>
+              <div className="flex my-1.5 ml-2 align-middle">
+                <div className="align-middle my-auto pr-16 mr-1">Color</div>
+                <ColorSquare
+                  disabled={isDrawing}
+                  color={state.color}
+                  {...MuiButtonProps}
+                  {...useTheme()}
+                  size={'1.8rem'}
+                />
+                <Popover {...MuiPopoverProps}>
+                  <LocationColorSelector setColor={setColor} />
+                </Popover>
+              </div>
+              {isDrawing && locationModel === Drawing.getDrawModel() ? (
+                <Button
+                  className="location-draw mt-2"
+                  onClick={() => {
+                    ;(wreqr as any).vent.trigger(
+                      'search:drawcancel',
+                      locationModel
+                    )
+                  }}
+                  color="secondary"
+                  fullWidth
+                >
+                  <span className="ml-2">Cancel Drawing</span>
+                </Button>
+              ) : (
+                <Button
+                  className="location-draw mt-2"
+                  onClick={() => {
+                    ;(wreqr as any).vent.trigger(
+                      'search:draw' + state.mode,
+                      locationModel
+                    )
+                  }}
+                  color="primary"
+                  fullWidth
+                >
+                  <span className="fa fa-globe" />
+                  <span className="ml-2">Draw</span>
+                </Button>
+              )}
+            </div>
           ) : null}
         </div>
       </div>

@@ -9930,10 +9930,10 @@ geolib@^3.2.1:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/geolib/-/geolib-3.3.1.tgz#f144a53b6a6858e81111ff71d137318389927611"
 
-geospatialdraw@0.4.4:
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/geospatialdraw/-/geospatialdraw-0.4.4.tgz#3d0312f1146085791919543f3a6621c75cda553c"
-  integrity sha512-PgQgzPez4xmwBYloCCoGE714vpOrwbYE5LYXigsNrxzUwgEdPMR8Ie00L39g27l/W3lE6e2hPzoq7gQ03uKtZA==
+geospatialdraw@0.4.5:
+  version "0.4.5"
+  resolved "https://registry.yarnpkg.com/geospatialdraw/-/geospatialdraw-0.4.5.tgz#3ba79d4b5c34c336a12a274bbd705edd9f3b2794"
+  integrity sha512-H/LIg1uT5w7WJcaHIS+alrz8TBYrdLwaLmqXSsxohI2Jb25GtoqyH423WOiGIMm6IonV+wm0ZFbLzse2ZnBwVA==
   dependencies:
     "@fortawesome/fontawesome-svg-core" "1.2.21"
     "@fortawesome/free-solid-svg-icons" "5.10.1"
