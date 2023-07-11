@@ -24,6 +24,14 @@ import { MetacardInteractionProps } from '../react-component/metacard-interactio
 import { PermissiveComponentType } from '../typescript'
 import { InputsType } from '../react-component/location/location'
 
+type EditorProps = {
+  result: LazyQueryResult
+  attribute: string
+  onCancel?: () => void
+  onSave?: () => void
+  goBack?: () => void
+}
+
 export type ExtensionPointsType = {
   providers: FC<React.PropsWithChildren<ProviderProps>>
   metacardInteractions: ((
@@ -87,6 +95,7 @@ export type ExtensionPointsType = {
     results: LazyQueryResult[]
     isCluster: boolean
   }) => { text: string; color: string } | undefined
+  attributeEditor: (props: EditorProps) => React.FC<EditorProps> | null
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -110,6 +119,7 @@ const ExtensionPoints: ExtensionPointsType = {
   extraFooter: () => null,
   extraHeader: () => null,
   customMapBadge: () => undefined,
+  attributeEditor: () => null,
 }
 
 export default ExtensionPoints
