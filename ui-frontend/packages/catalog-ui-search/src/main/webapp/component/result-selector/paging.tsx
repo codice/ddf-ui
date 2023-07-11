@@ -118,10 +118,7 @@ const Paging = ({ selectionInterface }: Props) => {
                   </Button>
                 </div>
                 <DarkDivider className="w-full h-min" />
-                <TableExport
-                  selectionInterface={selectionInterface}
-                  filteredAttributes={[]}
-                />
+                <TableExport selectionInterface={selectionInterface} />
               </div>
             ),
           })

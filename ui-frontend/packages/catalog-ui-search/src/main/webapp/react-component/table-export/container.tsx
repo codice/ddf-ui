@@ -26,7 +26,6 @@ type Props = {
   exportFormats: Option[]
   getWarning: (exportCountInfo: ExportCountInfo) => string
   onDownloadClick: (downloadInfo: DownloadInfo) => void
-  filteredAttributes: string[]
 }
 type Option = {
   label: string
@@ -79,13 +78,8 @@ export default hot(module)(
     render() {
       const { exportFormat, exportSizes, exportSize, customExportCount } =
         this.state
-      const {
-        exportFormats,
-        selectionInterface,
-        onDownloadClick,
-        getWarning,
-        filteredAttributes,
-      } = this.props
+      const { exportFormats, selectionInterface, onDownloadClick, getWarning } =
+        this.props
       return exportFormats.length === 0 ? (
         <>
           <LinearProgress className="w-full h-2"></LinearProgress>
@@ -110,7 +104,6 @@ export default hot(module)(
                     exportSize,
                     selectionInterface,
                     customExportCount,
-                    filteredAttributes,
                   })
                 }
                 warning={getWarning({

@@ -21,6 +21,7 @@ import {
 } from '../../react-component/utils/export'
 import user from '../../component/singletons/user-instance'
 import {
+  getExportAttributes,
   exportResultSet,
   ExportCountInfo,
   DownloadInfo,
@@ -33,6 +34,7 @@ import properties from '../../js/properties'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
 import contentDisposition from 'content-disposition'
 import { getResultSetCql } from '../../react-component/utils/cql'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
 type ExportResponse = {
   displayName: string
@@ -41,7 +43,6 @@ type ExportResponse = {
 
 export type Props = {
   selectionInterface: any
-  filteredAttributes: string[]
 }
 
 type Source = {
@@ -53,15 +54,15 @@ function getSrcs(selectionInterface: any) {
   return selectionInterface.getCurrentQuery().getSelectedSources()
 }
 
-function getColumnOrder(filteredAttributes: any[]): string[] {
-  return user
+function getColumnOrder(selectionInterface: any): string[] {
+  const columnOrder = user
     .get('user')
     .get('preferences')
-    .get('columnOrder')
-    .filter(
-      (property: string) =>
-        filteredAttributes.includes(property) && !properties.isHidden(property)
-    )
+    .get('inspector-summaryShown')
+    .filter((property: string) => !properties.isHidden(property))
+    const result = selectionInterface.getCurrentQuery().get('result')
+    const lazyResults = Object.values(result.get('lazyResults').results) as LazyQueryResult[]
+    return getExportAttributes(lazyResults[0], columnOrder)
 }
 
 function getHiddenFields(): string[] {
@@ -135,15 +136,10 @@ export const getWarning = (exportCountInfo: ExportCountInfo): string => {
 }
 
 export const getDownloadBody = (downloadInfo: DownloadInfo) => {
-  const {
-    exportSize,
-    customExportCount,
-    selectionInterface,
-    filteredAttributes,
-  } = downloadInfo
+  const { exportSize, customExportCount, selectionInterface } = downloadInfo
 
   const hiddenFields = getHiddenFields()
-  const columnOrder = getColumnOrder(filteredAttributes)
+  const columnOrder = getColumnOrder(selectionInterface)
   const srcs = getSrcs(selectionInterface)
   const sorts = getSorts(selectionInterface)
   const query = selectionInterface.getCurrentQuery()
@@ -215,7 +211,7 @@ const generateOnDownloadClick = (addSnack: AddSnack) => {
   }
 }
 
-const TableExports = ({ selectionInterface, filteredAttributes }: Props) => {
+const TableExports = ({ selectionInterface }: Props) => {
   const [formats, setFormats] = useState([])
   const addSnack = useSnack()
   useEffect(() => {
@@ -242,7 +238,6 @@ const TableExports = ({ selectionInterface, filteredAttributes }: Props) => {
       selectionInterface={selectionInterface}
       getWarning={getWarning}
       onDownloadClick={generateOnDownloadClick(addSnack)}
-      filteredAttributes={filteredAttributes}
     />
   )
 }

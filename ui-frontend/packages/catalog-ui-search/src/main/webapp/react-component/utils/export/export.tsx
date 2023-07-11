@@ -16,6 +16,7 @@ import fetch from '../fetch'
 import { postAuditLog } from '../audit/audit-endpoint'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 
+
 export enum Transformer {
   Metacard = 'metacard',
   Query = 'query',
@@ -47,7 +48,16 @@ export type DownloadInfo = {
   exportSize: string
   customExportCount: number
   selectionInterface: any
-  filteredAttributes: any[]
+}
+
+export const getExportAttributes = (selection: LazyQueryResult, currentAttrOrder: string[]) => {
+  const inactiveAttrs = getExportResult(selection).attributes.filter((val) => {
+    if (currentAttrOrder.includes(val)) {
+      return false
+    }
+    return true
+    })
+   return currentAttrOrder.concat(inactiveAttrs)
 }
 
 export const getExportResults = (results: LazyQueryResult[]) => {
