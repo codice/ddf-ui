@@ -95,7 +95,10 @@ export type ExtensionPointsType = {
     results: LazyQueryResult[]
     isCluster: boolean
   }) => { text: string; color: string } | undefined
-  attributeEditor: (props: EditorProps) => React.FC<EditorProps> | null
+  attributeEditor: (
+    result: LazyQueryResult,
+    attribute: string
+  ) => React.FC<EditorProps> | null
 }
 
 const ExtensionPoints: ExtensionPointsType = {

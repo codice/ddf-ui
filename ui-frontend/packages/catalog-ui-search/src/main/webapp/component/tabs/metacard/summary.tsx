@@ -479,12 +479,10 @@ const AttributeComponent = ({
       children: null,
     })
   }
-  const CustomAttributeEditor = ExtensionPoints.attributeEditor({
-    result: lazyResult,
-    attribute: attr,
-    onCancel,
-    onSave,
-  })
+  const CustomAttributeEditor = ExtensionPoints.attributeEditor(
+    lazyResult,
+    attr
+  )
   const MemoItem = React.useMemo(() => {
     return (
       <Grid
