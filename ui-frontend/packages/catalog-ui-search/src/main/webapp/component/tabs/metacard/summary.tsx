@@ -467,6 +467,22 @@ const AttributeComponent = ({
   }
   const isFiltered =
     filter !== '' ? !label.toLowerCase().includes(filter.toLowerCase()) : false
+  const onCancel = () => {
+    dialogContext.setProps({
+      open: false,
+      children: null,
+    })
+  }
+  const onSave = () => {
+    dialogContext.setProps({
+      open: false,
+      children: null,
+    })
+  }
+  const CustomAttributeEditor = ExtensionPoints.attributeEditor(
+    lazyResult,
+    attr
+  )
   const MemoItem = React.useMemo(() => {
     return (
       <Grid
@@ -482,22 +498,19 @@ const AttributeComponent = ({
                 dialogContext.setProps({
                   open: true,
                   disableEnforceFocus: true,
-                  children: (
+                  children: CustomAttributeEditor ? (
+                    <CustomAttributeEditor
+                      result={lazyResult}
+                      attribute={attr}
+                      onCancel={onCancel}
+                      onSave={onSave}
+                    />
+                  ) : (
                     <Editor
                       attr={attr}
                       lazyResult={lazyResult}
-                      onCancel={() => {
-                        dialogContext.setProps({
-                          open: false,
-                          children: null,
-                        })
-                      }}
-                      onSave={() => {
-                        dialogContext.setProps({
-                          open: false,
-                          children: null,
-                        })
-                      }}
+                      onCancel={onCancel}
+                      onSave={onSave}
                     />
                   ),
                 })

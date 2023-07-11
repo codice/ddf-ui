@@ -24,6 +24,14 @@ import { MetacardInteractionProps } from '../react-component/metacard-interactio
 import { PermissiveComponentType } from '../typescript'
 import { InputsType } from '../react-component/location/location'
 
+type EditorProps = {
+  result: LazyQueryResult
+  attribute: string
+  onCancel?: () => void
+  onSave?: () => void
+  goBack?: () => void
+}
+
 export type ExtensionPointsType = {
   providers: FC<React.PropsWithChildren<ProviderProps>>
   metacardInteractions: ((
@@ -98,6 +106,10 @@ export type ExtensionPointsType = {
     itemContentRef: React.RefObject<HTMLElement>
     className?: string
   }) => null | PermissiveComponentType
+  attributeEditor: (
+    result: LazyQueryResult,
+    attribute: string
+  ) => React.FC<EditorProps> | null
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -126,6 +138,7 @@ const ExtensionPoints: ExtensionPointsType = {
     lazyResult: _lazyResult,
     itemContentRef: _containerRef,
   }) => null,
+  attributeEditor: () => null,
 }
 
 export default ExtensionPoints
