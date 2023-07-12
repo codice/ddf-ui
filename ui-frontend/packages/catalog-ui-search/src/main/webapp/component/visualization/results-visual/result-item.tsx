@@ -554,7 +554,9 @@ export const ResultItem = ({
               selectionInterface={selectionInterface}
               itemContentRef={itemContentRef}
             />
-            <div className="pt-2 pr-1">{ResultTitleIconAddOnInstance}</div>
+            {ResultTitleIconAddOnInstance && (
+              <div className="pt-2 pr-1">{ResultTitleIconAddOnInstance}</div>
+            )}
             <div
               data-id={`result-item-${shownAttributes[0]}-label`}
               title={`${TypedMetacardDefs.getAlias({

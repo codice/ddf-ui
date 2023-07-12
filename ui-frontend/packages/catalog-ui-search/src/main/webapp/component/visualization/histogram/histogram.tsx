@@ -19,6 +19,7 @@ import moment from 'moment'
 import extension from '../../../extension-points'
 import { useTheme } from '@mui/material/styles'
 import {
+  HoverCustomization,
   getCustomHoverLabels,
   getCustomHoverTemplates,
   getHoverAddOn,
@@ -262,6 +263,28 @@ export const Histogram = ({ selectionInterface }: Props) => {
     },
   }
 
+  const getCustomHoverAddOnArray = (
+    categories: any[],
+    results: LazyQueryResult[]
+  ) => {
+    const addOnArray: HoverCustomization[] = []
+    categories.forEach((category) => {
+      const matchedResults = findMatchesForAttributeValues(
+        results,
+        attributeToBin,
+        category.constructor === Array ? category : [category]
+      )
+
+      if (
+        (matchedResults && matchedResults.length > 0) ||
+        addOnArray.length > 0
+      ) {
+        addOnArray.push(getHoverAddOn(matchedResults, defaultHoverLabel))
+      }
+    })
+    return addOnArray.length > 0 ? addOnArray : undefined
+  }
+
   const determineInitialData = () => {
     return [
       {
@@ -294,24 +317,12 @@ export const Histogram = ({ selectionInterface }: Props) => {
     let selectedHoverAddOnArray: any = undefined
 
     if (extension.histogramHoverAddOn) {
-      hoverAddOnArray = categories.map((category) => {
-        const matchedResults = findMatchesForAttributeValues(
-          results,
-          attributeToBin,
-          category.constructor === Array ? category : [category]
-        )
-        return getHoverAddOn(matchedResults, defaultHoverLabel)
-      })
+      hoverAddOnArray = getCustomHoverAddOnArray(categories, results)
 
-      selectedHoverAddOnArray = categories.map((category) => {
-        const matchedResults = findMatchesForAttributeValues(
-          Object.values(selectedResults),
-          attributeToBin,
-          category.constructor === Array ? category : [category]
-        )
-
-        return getHoverAddOn(matchedResults, defaultHoverLabel)
-      })
+      selectedHoverAddOnArray = getCustomHoverAddOnArray(
+        categories,
+        Object.values(selectedResults)
+      )
     }
 
     return [
@@ -349,6 +360,10 @@ export const Histogram = ({ selectionInterface }: Props) => {
         name: 'Selected',
         marker: {
           color: 'rgba(120, 120, 120, .2)',
+          line: {
+            color: 'rgba(120,120,120,.5)',
+            width: '2',
+          },
         },
         hoverlabel: selectedHoverAddOnArray
           ? getCustomHoverLabels(selectedHoverAddOnArray)
