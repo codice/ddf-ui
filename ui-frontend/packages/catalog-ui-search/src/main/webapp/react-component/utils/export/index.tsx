@@ -13,7 +13,6 @@
  *
  **/
 export {
-  getExportAttributes,
   getExportOptions,
   exportResult,
   exportResultSet,

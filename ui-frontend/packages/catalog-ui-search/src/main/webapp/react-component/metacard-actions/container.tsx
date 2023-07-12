@@ -18,7 +18,6 @@ import * as React from 'react'
 import _ from 'underscore'
 import MetacardActionsPresentation from './presentation'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
-import { getExportAttributes } from '../utils/export/export'
 import user from '../../component/singletons/user-instance'
 
 type Props = {
@@ -27,7 +26,7 @@ type Props = {
 
 const MetacardActions = (props: Props) => {
   const model = props.result
-  const columnOrder = getExportAttributes(model, user.get('user').get('preferences').get('inspector-summaryShown'))
+  const columnOrder = user.get('user').get('preferences').get('inspector-summaryShown')
   const exportActions = _.sortBy(
     model.getExportActions().map((action) => ({
       url: action.url + `&columnOrder=${columnOrder}`,

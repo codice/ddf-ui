@@ -50,16 +50,6 @@ export type DownloadInfo = {
   selectionInterface: any
 }
 
-export const getExportAttributes = (selection: LazyQueryResult, currentAttrOrder: string[]) => {
-  const inactiveAttrs = getExportResult(selection).attributes.filter((val) => {
-    if (currentAttrOrder.includes(val)) {
-      return false
-    }
-    return true
-    })
-   return currentAttrOrder.concat(inactiveAttrs)
-}
-
 export const getExportResults = (results: LazyQueryResult[]) => {
   return results.map((result) => getExportResult(result))
 }

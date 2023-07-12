@@ -147,20 +147,10 @@ class ResultsExport extends React.Component<Props, State> {
         count,
       },
     ]
-    const currentAttrs = user
+    const columnOrder = user
       .get('user')
       .get('preferences')
       .get('inspector-summaryShown')
-    const columnOrder = currentAttrs.concat(
-      this.props.results[0].attributes.filter(
-        (val) => {
-          if (currentAttrs.includes(val)) {
-            return false
-          }
-          return true
-        }
-        )
-        )
     if (this.props.isZipped) {
       response = await exportResultSet('zipCompression', {
         searches,

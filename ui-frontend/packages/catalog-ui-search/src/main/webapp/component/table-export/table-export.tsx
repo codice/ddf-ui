@@ -21,7 +21,6 @@ import {
 } from '../../react-component/utils/export'
 import user from '../../component/singletons/user-instance'
 import {
-  getExportAttributes,
   exportResultSet,
   ExportCountInfo,
   DownloadInfo,
@@ -54,15 +53,12 @@ function getSrcs(selectionInterface: any) {
   return selectionInterface.getCurrentQuery().getSelectedSources()
 }
 
-function getColumnOrder(selectionInterface: any): string[] {
-  const columnOrder = user
+function getColumnOrder(): string[] {
+  return user
     .get('user')
     .get('preferences')
     .get('inspector-summaryShown')
     .filter((property: string) => !properties.isHidden(property))
-    const result = selectionInterface.getCurrentQuery().get('result')
-    const lazyResults = Object.values(result.get('lazyResults').results) as LazyQueryResult[]
-    return getExportAttributes(lazyResults[0], columnOrder)
 }
 
 function getHiddenFields(): string[] {
@@ -139,7 +135,7 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
   const { exportSize, customExportCount, selectionInterface } = downloadInfo
 
   const hiddenFields = getHiddenFields()
-  const columnOrder = getColumnOrder(selectionInterface)
+  const columnOrder = getColumnOrder()
   const srcs = getSrcs(selectionInterface)
   const sorts = getSorts(selectionInterface)
   const query = selectionInterface.getCurrentQuery()
