@@ -19,10 +19,10 @@ import moment from 'moment'
 import extension from '../../../extension-points'
 import { useTheme } from '@mui/material/styles'
 import {
-  HoverCustomization,
+  CustomHover,
   getCustomHoverLabels,
   getCustomHoverTemplates,
-  getHoverAddOn,
+  getCustomHover,
 } from './add-on-helpers'
 const zeroWidthSpace = '\u200B'
 const plotlyDateFormat = 'YYYY-MM-DD HH:mm:ss.SS'
@@ -263,11 +263,11 @@ export const Histogram = ({ selectionInterface }: Props) => {
     },
   }
 
-  const getCustomHoverAddOnArray = (
+  const getCustomHoverArray = (
     categories: any[],
     results: LazyQueryResult[]
   ) => {
-    const addOnArray: HoverCustomization[] = []
+    const customArray: CustomHover[] = []
     categories.forEach((category) => {
       const matchedResults = findMatchesForAttributeValues(
         results,
@@ -277,12 +277,12 @@ export const Histogram = ({ selectionInterface }: Props) => {
 
       if (
         (matchedResults && matchedResults.length > 0) ||
-        addOnArray.length > 0
+        customArray.length > 0
       ) {
-        addOnArray.push(getHoverAddOn(matchedResults, defaultHoverLabel))
+        customArray.push(getCustomHover(matchedResults, defaultHoverLabel))
       }
     })
-    return addOnArray.length > 0 ? addOnArray : undefined
+    return customArray.length > 0 ? customArray : undefined
   }
 
   const determineInitialData = () => {
@@ -313,13 +313,13 @@ export const Histogram = ({ selectionInterface }: Props) => {
 
     const categories: any[] = retrieveCategoriesFromPlotly()
 
-    let hoverAddOnArray: any = undefined
-    let selectedHoverAddOnArray: any = undefined
+    let customHoverArray: any = undefined
+    let selectedCustomHoverArray: any = undefined
 
-    if (extension.histogramHoverAddOn) {
-      hoverAddOnArray = getCustomHoverAddOnArray(categories, results)
+    if (extension.customHistogramHover) {
+      customHoverArray = getCustomHoverArray(categories, results)
 
-      selectedHoverAddOnArray = getCustomHoverAddOnArray(
+      selectedCustomHoverArray = getCustomHoverArray(
         categories,
         Object.values(selectedResults)
       )
@@ -341,11 +341,11 @@ export const Histogram = ({ selectionInterface }: Props) => {
             width: '2',
           },
         },
-        hoverlabel: hoverAddOnArray
-          ? getCustomHoverLabels(hoverAddOnArray)
+        hoverlabel: customHoverArray
+          ? getCustomHoverLabels(customHoverArray)
           : defaultHoverLabel,
-        hovertemplate: hoverAddOnArray
-          ? getCustomHoverTemplates('Hits', hoverAddOnArray)
+        hovertemplate: customHoverArray
+          ? getCustomHoverTemplates('Hits', customHoverArray)
           : '%{y} Hits<extra></extra>',
         autobinx: false,
         xbins,
@@ -365,11 +365,11 @@ export const Histogram = ({ selectionInterface }: Props) => {
             width: '2',
           },
         },
-        hoverlabel: selectedHoverAddOnArray
-          ? getCustomHoverLabels(selectedHoverAddOnArray)
+        hoverlabel: selectedCustomHoverArray
+          ? getCustomHoverLabels(selectedCustomHoverArray)
           : defaultHoverLabel,
-        hovertemplate: selectedHoverAddOnArray
-          ? getCustomHoverTemplates('Selected', selectedHoverAddOnArray)
+        hovertemplate: selectedCustomHoverArray
+          ? getCustomHoverTemplates('Selected', selectedCustomHoverArray)
           : '%{y} Selected<extra></extra>',
         autobinx: false,
         xbins,

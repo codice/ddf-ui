@@ -23,7 +23,7 @@ import { Suggestion } from '../react-component/location/gazetteer'
 import { MetacardInteractionProps } from '../react-component/metacard-interactions'
 import { PermissiveComponentType } from '../typescript'
 import { InputsType } from '../react-component/location/location'
-import { HoverCustomization } from '../component/visualization/histogram/add-on-helpers'
+import { CustomHover } from '../component/visualization/histogram/add-on-helpers'
 
 type EditorProps = {
   result: LazyQueryResult
@@ -113,10 +113,8 @@ export type ExtensionPointsType = {
     result: LazyQueryResult,
     attribute: string
   ) => React.FC<EditorProps> | null
-  histogramHoverAddOn:
-    | ((props: {
-        results: LazyQueryResult[]
-      }) => HoverCustomization | undefined)
+  customHistogramHover:
+    | ((props: { results: LazyQueryResult[] }) => CustomHover | undefined)
     | undefined
 }
 
@@ -147,7 +145,7 @@ const ExtensionPoints: ExtensionPointsType = {
     itemContentRef: _containerRef,
   }) => null,
   attributeEditor: () => null,
-  histogramHoverAddOn: undefined,
+  customHistogramHover: undefined,
 }
 
 export default ExtensionPoints

@@ -1,13 +1,13 @@
 import extension from '../../../extension-points'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 
-export type HoverCustomization = {
+export type CustomHover = {
   text: string
   bgColor: string
   fontColor: string
 }
 
-export const getHoverAddOn = (
+export const getCustomHover = (
   results: LazyQueryResult[],
   defaultHoverlabel: { bgcolor: string; font: { color: string } }
 ) => {
@@ -17,10 +17,10 @@ export const getHoverAddOn = (
     fontColor: defaultHoverlabel.font.color,
   }
 
-  if (!extension.histogramHoverAddOn) return defaultHover
+  if (!extension.customHistogramHover) return defaultHover
 
   return (
-    extension.histogramHoverAddOn({
+    extension.customHistogramHover({
       results,
     }) || defaultHover
   )
@@ -28,16 +28,19 @@ export const getHoverAddOn = (
 
 export const getCustomHoverTemplates = (
   name: string,
-  addOnArray: HoverCustomization[]
+  customHoverArray: CustomHover[]
 ) => {
-  return addOnArray.map(
-    (addOn: any) => `%{y} ${name}${addOn.text}<extra></extra>`
+  return customHoverArray.map(
+    (customHover: CustomHover) =>
+      `%{y} ${name}${customHover.text}<extra></extra>`
   )
 }
 
-export const getCustomHoverLabels = (addOnArray: HoverCustomization[]) => {
+export const getCustomHoverLabels = (customHoverArray: CustomHover[]) => {
   return {
-    bgcolor: addOnArray.map((addOn) => addOn.bgColor),
-    font: { color: addOnArray.map((addOn) => addOn.fontColor) },
+    bgcolor: customHoverArray.map((customHover) => customHover.bgColor),
+    font: {
+      color: customHoverArray.map((customHover) => customHover.fontColor),
+    },
   }
 }
