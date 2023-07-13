@@ -38,7 +38,10 @@ type ResultItemFullProps = {
   measure: () => void
   index: number
   results: LazyQueryResult[]
+  selectionInterface: any
   headerColWidth: Map<string, string>
+  actionWidth: number
+  setMaxActionWidth: (width: number) => void
   addOnWidth: number
   setMaxAddOnWidth: (width: number) => void
 }
@@ -86,7 +89,10 @@ const RowComponent = ({
   measure,
   index,
   results,
+  selectionInterface,
   headerColWidth,
+  actionWidth,
+  setMaxActionWidth,
   addOnWidth,
   setMaxAddOnWidth,
 }: ResultItemFullProps) => {
@@ -99,10 +105,13 @@ const RowComponent = ({
   const convertToFormat = useCoordinateFormat()
   useRerenderOnBackboneSync({ lazyResult })
 
+  const actionRef = React.useRef<HTMLDivElement>(null)
   const addOnRef = React.useRef<HTMLDivElement>(null)
   React.useEffect(() => {
-    const width = addOnRef.current?.getBoundingClientRect().width || 0
-    setMaxAddOnWidth(width)
+    const actionWidth = actionRef.current?.getBoundingClientRect().width || 0
+    setMaxActionWidth(actionWidth)
+    const addOnWidth = addOnRef.current?.getBoundingClientRect().width || 0
+    setMaxAddOnWidth(addOnWidth)
   })
 
   React.useEffect(() => {
@@ -127,15 +136,43 @@ const RowComponent = ({
     }
     return value
   }
+  const containerRef = React.useRef<HTMLDivElement>(null)
+  const ResultItemActionInstance = Extensions.resultItemAction({
+    lazyResult,
+    selectionInterface,
+    itemContentRef: containerRef,
+  })
   const ResultItemAddOnInstance = Extensions.resultItemRowAddOn({ lazyResult })
   return (
-    <React.Fragment>
+    <div ref={containerRef}>
       <div
         className="bg-inherit flex items-strech flex-nowrap"
         style={{
-          width: shownAttributes.length * 200 + 'px',
+          width: actionWidth + addOnWidth + shownAttributes.length * 200 + 'px',
         }}
       >
+        <div
+          key="resultItemAction"
+          className={`bg-inherit Mui-border-divider border ${
+            isLast ? '' : 'border-b-0'
+          } border-l-0 ${index === 0 ? 'border-t-0' : ''}`}
+        >
+          {ResultItemActionInstance ? (
+            <CellComponent
+              key="resultItemAction"
+              className="h-full"
+              style={{
+                width: 'auto',
+                padding: 0,
+              }}
+              ref={actionRef}
+            >
+              <ResultItemActionInstance />
+            </CellComponent>
+          ) : (
+            <div style={{ width: actionWidth }} />
+          )}
+        </div>
         <div
           className={`sticky left-0 w-auto z-10 bg-inherit Mui-border-divider border ${
             isLast ? '' : 'border-b-0'
@@ -151,7 +188,7 @@ const RowComponent = ({
         >
           <SelectionBackground
             lazyResult={lazyResult}
-            style={{ width: shownAttributes.length * 200 + 'px' }}
+            style={{ width: addOnWidth + shownAttributes.length * 200 + 'px' }}
           />
           <Button
             data-id="result-item-row-container-button"
@@ -298,7 +335,7 @@ const RowComponent = ({
           </Button>
         </div>
       </div>
-    </React.Fragment>
+    </div>
   )
 }
 export default hot(module)(RowComponent)

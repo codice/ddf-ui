@@ -49,6 +49,7 @@ import { Link } from '../../link/link'
 import { useMenuState } from '../../menu-state/menu-state'
 import Popover from '@mui/material/Popover'
 import Common from '../../../js/Common'
+import ExtensionPoints from '../../../extension-points/extension-points'
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (
     <div
@@ -285,64 +286,91 @@ export const SelectionBackground = ({
     />
   )
 }
-const IconButton = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
+const IconButton = ({
+  lazyResult,
+  selectionInterface,
+  itemContentRef,
+}: {
+  lazyResult: LazyQueryResult
+  selectionInterface: any
+  itemContentRef: React.RefObject<HTMLElement>
+}) => {
   const isSelected = useSelectionOfLazyResult({ lazyResult })
+  const ResultItemAction = ExtensionPoints.resultItemAction({
+    lazyResult,
+    selectionInterface,
+    itemContentRef,
+    className:
+      'scale-0 absolute z-10 left-0 -translate-x-full ml-[3px] group-hover:scale-100 transition pt-1',
+  })
+  const extraClasses = ResultItemAction
+    ? 'group-hover:scale-50 group-hover:-translate-x-[85%]'
+    : ''
   return (
-    <Button
-      component="div"
-      data-id="select-checkbox"
-      onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        event.stopPropagation() // this button takes precedence over the enclosing button, and is always additive / subtractive (no deselect of other results)
-        if (event.shiftKey) {
-          lazyResult.shiftSelect()
-        } else {
-          lazyResult.controlSelect()
-        }
-      }}
-      focusVisibleClassName="focus-visible"
-      className="relative p-2 min-w-0 outline-none h-full group/checkbox shrink-0"
-    >
-      {(() => {
-        if (isSelected) {
-          return (
-            <>
-              <div
-                className={`absolute w-full h-full left-0 top-0 opacity-0 transform transition duration-200 ease-in-out -translate-x-full`}
-              >
-                <CheckBoxIcon className="group-hover/checkbox:block group-focus-visible/checkbox:block hidden" />
-                <CheckIcon className="group-hover/checkbox:hidden group-focus-visible/checkbox:hidden block" />
+    <>
+      {ResultItemAction && (
+        <ResultItemAction
+          lazyResult={lazyResult}
+          selectionInterface={selectionInterface}
+          itemContentRef={itemContentRef}
+        />
+      )}
+      <Button
+        component="div"
+        data-id="select-checkbox"
+        onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+          event.stopPropagation() // this button takes precedence over the enclosing button, and is always additive / subtractive (no deselect of other results)
+          if (event.shiftKey) {
+            lazyResult.shiftSelect()
+          } else {
+            lazyResult.controlSelect()
+          }
+        }}
+        focusVisibleClassName="focus-visible"
+        className="relative p-2 min-w-0 outline-none h-full group/checkbox shrink-0"
+      >
+        {(() => {
+          if (isSelected) {
+            return (
+              <>
+                <div
+                  className={`${extraClasses} absolute w-full h-full left-0 top-0 opacity-0 transform transition duration-200 ease-in-out -translate-x-full group-hover/checkbox:scale-100`}
+                >
+                  <CheckBoxIcon className="group-hover/checkbox:block group-focus-visible/checkbox:block hidden" />
+                  <CheckIcon className="group-hover/checkbox:hidden group-focus-visible/checkbox:hidden block" />
+                </div>
+                <div
+                  className={`${extraClasses} transform transition duration-200 ease-in-out -translate-x-full group-focus-visible/checkbox:!translate-x-0 group-hover/checkbox:!translate-x-0 group-hover/checkbox:scale-100`}
+                >
+                  <CheckBoxIcon className="group-hover/checkbox:block group-focus-visible/checkbox:block hidden" />
+                  <CheckIcon className="group-hover/checkbox:hidden group-focus-visible/checkbox:hidden block" />
+                </div>
+              </>
+            )
+          } else if (!isSelected) {
+            return (
+              <div className="transform ">
+                <CheckBoxOutlineBlankIcon
+                  className={`group-hover/checkbox:visible group-focus-visible/checkbox:visible invisible`}
+                />
               </div>
-              <div
-                className={`transform transition duration-200 ease-in-out -translate-x-full group-focus-visible/checkbox:translate-x-0 group-hover/checkbox:translate-x-0`}
-              >
-                <CheckBoxIcon className="group-hover/checkbox:block group-focus-visible/checkbox:block hidden" />
-                <CheckIcon className="group-hover/checkbox:hidden group-focus-visible/checkbox:hidden block" />
-              </div>
-            </>
-          )
-        } else if (!isSelected) {
-          return (
-            <div className="transform ">
-              <CheckBoxOutlineBlankIcon
-                className={`group-hover/checkbox:visible group-focus-visible/checkbox:visible invisible`}
-              />
-            </div>
-          )
-        }
-        return null
-      })()}
-      <span
-        className={`${getIconClassName({
-          lazyResult,
-        })} font-awesome-span group-focus-visible/checkbox:invisible group-hover/checkbox:invisible absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
-        data-help={TypedMetacardDefs.getAlias({
-          attr: 'title',
-        })}
-        title={`${TypedMetacardDefs.getAlias({
-          attr: 'title',
-        })}: ${lazyResult.plain.metacard.properties.title}`}
-      />
-    </Button>
+            )
+          }
+          return null
+        })()}
+        <span
+          className={`${getIconClassName({
+            lazyResult,
+          })} font-awesome-span group-focus-visible/checkbox:invisible group-hover/checkbox:invisible absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
+          data-help={TypedMetacardDefs.getAlias({
+            attr: 'title',
+          })}
+          title={`${TypedMetacardDefs.getAlias({
+            attr: 'title',
+          })}: ${lazyResult.plain.metacard.properties.title}`}
+        />
+      </Button>
+    </>
   )
 }
 // factored out for easy debugging (can add bg-gray-400 to see trail)
@@ -352,7 +380,11 @@ const diagonalHoverClasses =
 const fakeEvent = {
   type: '',
 } as any
-export const ResultItem = ({ lazyResult, measure }: ResultItemFullProps) => {
+export const ResultItem = ({
+  lazyResult,
+  measure,
+  selectionInterface,
+}: ResultItemFullProps) => {
   const rippleRef = React.useRef<{
     pulsate: () => void
     stop: (e: any) => void
@@ -380,6 +412,7 @@ export const ResultItem = ({ lazyResult, measure }: ResultItemFullProps) => {
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const imgsrc = Common.getImageSrc(thumbnail)
   const buttonRef = React.useRef<HTMLButtonElement>(null)
+  const itemContentRef = React.useRef<HTMLDivElement>(null)
   const ResultItemAddOnInstance = Extensions.resultItemRowAddOn({ lazyResult })
   const shouldShowRelevance = showRelevanceScore({ lazyResult })
   const shouldShowSource = showSource()
@@ -506,9 +539,13 @@ export const ResultItem = ({ lazyResult, measure }: ResultItemFullProps) => {
       <div className="w-full">
         <TouchRipple ref={rippleRef} />
         <SelectionBackground lazyResult={lazyResult} />
-        <div className="w-full relative z-0">
+        <div className="w-full relative z-0" ref={itemContentRef}>
           <div className="w-full flex items-start">
-            <IconButton lazyResult={lazyResult} />
+            <IconButton
+              lazyResult={lazyResult}
+              selectionInterface={selectionInterface}
+              itemContentRef={itemContentRef}
+            />
             <div
               data-id={`result-item-${shownAttributes[0]}-label`}
               title={`${TypedMetacardDefs.getAlias({

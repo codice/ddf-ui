@@ -87,6 +87,17 @@ export type ExtensionPointsType = {
     results: LazyQueryResult[]
     isCluster: boolean
   }) => { text: string; color: string } | undefined
+  resultItemAction: ({
+    lazyResult,
+    selectionInterface,
+    itemContentRef,
+    className,
+  }: {
+    lazyResult: LazyQueryResult
+    selectionInterface: any
+    itemContentRef: React.RefObject<HTMLElement>
+    className?: string
+  }) => null | PermissiveComponentType
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -110,6 +121,11 @@ const ExtensionPoints: ExtensionPointsType = {
   extraFooter: () => null,
   extraHeader: () => null,
   customMapBadge: () => undefined,
+  resultItemAction: ({
+    selectionInterface: _selectionInterface,
+    lazyResult: _lazyResult,
+    itemContentRef: _containerRef,
+  }) => null,
 }
 
 export default ExtensionPoints
