@@ -33,7 +33,6 @@ import properties from '../../js/properties'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
 import contentDisposition from 'content-disposition'
 import { getResultSetCql } from '../../react-component/utils/cql'
-import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
 type ExportResponse = {
   displayName: string

@@ -26,7 +26,10 @@ type Props = {
 
 const MetacardActions = (props: Props) => {
   const model = props.result
-  const columnOrder = user.get('user').get('preferences').get('inspector-summaryShown')
+  const columnOrder = user
+    .get('user')
+    .get('preferences')
+    .get('inspector-summaryShown')
   const exportActions = _.sortBy(
     model.getExportActions().map((action) => ({
       url: action.url + `&columnOrder=${columnOrder}`,

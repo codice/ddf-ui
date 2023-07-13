@@ -16,7 +16,6 @@ import fetch from '../fetch'
 import { postAuditLog } from '../audit/audit-endpoint'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 
-
 export enum Transformer {
   Metacard = 'metacard',
   Query = 'query',
