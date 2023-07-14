@@ -143,7 +143,7 @@ const RowComponent = ({
     selectionInterface,
     itemContentRef: containerRef,
   })
-  
+
   const ResultItemAddOnInstance = Extensions.resultItemRowAddOn({
     lazyResult,
     isTableView: true,
