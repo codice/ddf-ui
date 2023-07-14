@@ -232,6 +232,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                     lazyResults.results,
                     isSearching,
                     status,
+                    maxAddOnWidth,
                   ]}
                 >
                   <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>

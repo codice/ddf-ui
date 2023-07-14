@@ -232,20 +232,20 @@ const RowComponent = ({
                     isLast ? '' : 'border-b-0'
                   } h-full`}
                 >
-                  {ResultItemAddOnInstance ? (
-                    <CellComponent
-                      key="resultItemAddOn"
-                      style={{
-                        width: 'auto',
-                      }}
-                      className="pt-3"
-                      ref={addOnRef}
-                    >
-                      {ResultItemAddOnInstance}
-                    </CellComponent>
-                  ) : (
-                    <div style={{ width: addOnWidth }} />
-                  )}
+                  <div style={{ width: addOnWidth }}>
+                    {ResultItemAddOnInstance && (
+                      <CellComponent
+                        key="resultItemAddOn"
+                        style={{
+                          width: 'auto',
+                        }}
+                        className="pt-3"
+                        ref={addOnRef}
+                      >
+                        {ResultItemAddOnInstance}
+                      </CellComponent>
+                    )}
+                  </div>
                 </div>
                 {shownAttributes.map((property) => {
                   let value = lazyResult.plain.metacard.properties[
