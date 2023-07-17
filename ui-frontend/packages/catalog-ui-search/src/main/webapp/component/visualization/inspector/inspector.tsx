@@ -67,7 +67,7 @@ export const TitleView = ({ lazyResult }: TitleViewType) => {
       <span
         className={`${getIconClassName({ lazyResult })} font-awesome-span`}
       ></span>
-      <Extensions.inspectorTitleAddOn lazyResult={lazyResult} />
+      <Extensions.resultTitleIconAddOn lazyResult={lazyResult} />
       <OverflowTooltip className={'truncate'}>
         {lazyResult.plain.metacard.properties.title}
       </OverflowTooltip>

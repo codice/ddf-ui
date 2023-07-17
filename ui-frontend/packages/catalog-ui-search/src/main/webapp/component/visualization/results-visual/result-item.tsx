@@ -413,7 +413,15 @@ export const ResultItem = ({
   const imgsrc = Common.getImageSrc(thumbnail)
   const buttonRef = React.useRef<HTMLButtonElement>(null)
   const itemContentRef = React.useRef<HTMLDivElement>(null)
-  const ResultItemAddOnInstance = Extensions.resultItemRowAddOn({ lazyResult })
+
+  const ResultItemAddOnInstance = Extensions.resultItemRowAddOn({
+    lazyResult,
+    isTableView: false,
+  })
+  const ResultTitleIconAddOnInstance = Extensions.resultTitleIconAddOn({
+    lazyResult,
+  })
+
   const shouldShowRelevance = showRelevanceScore({ lazyResult })
   const shouldShowSource = showSource()
   const extraHighlights = Object.keys(lazyResult.highlights).filter(
@@ -546,6 +554,9 @@ export const ResultItem = ({
               selectionInterface={selectionInterface}
               itemContentRef={itemContentRef}
             />
+            {ResultTitleIconAddOnInstance && (
+              <div className="pt-2 pr-1">{ResultTitleIconAddOnInstance}</div>
+            )}
             <div
               data-id={`result-item-${shownAttributes[0]}-label`}
               title={`${TypedMetacardDefs.getAlias({
