@@ -24,6 +24,7 @@ import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResult
 import user from '../../component/singletons/user-instance'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
 import contentDisposition from 'content-disposition'
+import properties from '../../js/properties'
 
 type ExportFormat = {
   id: string
@@ -168,7 +169,9 @@ class ResultsExport extends React.Component<Props, State> {
           originalSorts: this.props.lazyQueryResults?.persistantSorts,
         }),
         args: {
-          columnOrder: columnOrder.toString(),
+          hiddenFields: [],
+          columnOrder: columnOrder.length > 0 ? columnOrder : [],
+          columnAliasMap: properties.attributeAliases,
         },
       })
     } else {
