@@ -15,6 +15,7 @@
 import fetch from '../fetch'
 import { postAuditLog } from '../audit/audit-endpoint'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
+import properties from '../../../js/properties'
 
 export enum Transformer {
   Metacard = 'metacard',
@@ -47,7 +48,6 @@ export type DownloadInfo = {
   exportSize: string
   customExportCount: number
   selectionInterface: any
-  filteredAttributes: any[]
 }
 
 export const getExportResults = (results: LazyQueryResult[]) => {
@@ -85,8 +85,15 @@ export const exportResult = async (
   transformer: string,
   attributes: string
 ) => {
+  const aliasMap = encodeURIComponent(
+    Object.entries(properties.attributeAliases)
+      .map(([k, v]) => {
+        return `${k}=${v}`
+      })
+      .toString()
+  )
   const response = await fetch(
-    `/services/catalog/sources/${source}/${id}?transform=${transformer}&columnOrder=${attributes}`
+    `/services/catalog/sources/${source}/${id}?transform=${transformer}&columnOrder=${attributes}&aliases=${aliasMap}`
   )
   await postAuditLog({
     action: 'exported',
