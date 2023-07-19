@@ -37,6 +37,7 @@ import debounce from 'lodash.debounce'
 import { Memo } from '../../memo/memo'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import user from '../../singletons/user-instance'
+import ExtensionPoints from '../../../extension-points/extension-points'
 const getAmountChecked = (items: CheckedType) => {
   return Object.values(items).filter((a) => a).length
 }
@@ -144,6 +145,9 @@ const ItemRow = ({
   if (filter && !alias.toLowerCase().includes(filter.toLowerCase())) {
     return null
   }
+  const CustomAttributeEditor = lazyResult
+    ? ExtensionPoints.attributeEditor(lazyResult, value)
+    : null
   return (
     <div
       data-id="attribute-container"
@@ -221,7 +225,15 @@ const ItemRow = ({
                 },
               },
               open: true,
-              children: (
+              children: CustomAttributeEditor ? (
+                <CustomAttributeEditor
+                  attribute={value}
+                  result={lazyResult}
+                  onCancel={startOver}
+                  onSave={startOver}
+                  goBack={startOver}
+                />
+              ) : (
                 <div
                   style={{
                     padding: '10px',

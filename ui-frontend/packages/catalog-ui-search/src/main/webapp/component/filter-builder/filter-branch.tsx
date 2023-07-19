@@ -198,7 +198,7 @@ const FilterBranch = ({
         <div className=" relative">
           <div
             data-id={
-              root ? 'root-filter-group-container' : 'filter-group-contianer'
+              root ? 'root-filter-group-container' : 'filter-group-container'
             }
             className={`${
               filter.negated ? 'border px-3 py-4 mt-2' : ''

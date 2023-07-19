@@ -27,6 +27,7 @@ import {
   parseDmsCoordinate,
   isUPS,
 } from '../../react-component/location/validators'
+import { locationColors } from '../../react-component/location/location-color-selector'
 // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
 const converter = new usngs.Converter()
 const utmUpsLocationType = 'utmUps'
@@ -39,7 +40,7 @@ const Direction = dmsUtils.Direction
 export default Backbone.AssociatedModel.extend({
   defaults: () => {
     return {
-      color: '#c89600',
+      color: Object.values(locationColors)[0],
       drawing: false,
       north: undefined,
       east: undefined,

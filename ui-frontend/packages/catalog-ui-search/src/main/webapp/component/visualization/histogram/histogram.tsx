@@ -16,6 +16,14 @@ import Plotly from 'plotly.js/dist/plotly'
 import metacardDefinitions from '../../singletons/metacard-definitions'
 import properties from '../../../js/properties'
 import moment from 'moment'
+import extension from '../../../extension-points'
+import { useTheme } from '@mui/material/styles'
+import {
+  CustomHover,
+  getCustomHoverLabels,
+  getCustomHoverTemplates,
+  getCustomHover,
+} from './add-on-helpers'
 const zeroWidthSpace = '\u200B'
 const plotlyDateFormat = 'YYYY-MM-DD HH:mm:ss.SS'
 function getPlotlyDate(date: string) {
@@ -163,7 +171,7 @@ function getValueFromClick(data: any, categories: any) {
       })
   }
 }
-function getLayout(plot?: any) {
+function getLayout(fontColor: string, plot?: any) {
   const baseLayout = {
     autosize: true,
     paper_bgcolor: 'rgba(0,0,0,0)',
@@ -185,11 +193,16 @@ function getLayout(plot?: any) {
     barmode: 'overlay',
     xaxis: {
       fixedrange: true,
+      color: fontColor,
     },
     yaxis: {
       fixedrange: true,
+      color: fontColor,
     },
     showlegend: true,
+    legend: {
+      font: { color: fontColor },
+    },
   } as any
   if (plot) {
     baseLayout.xaxis.autorange = false
@@ -216,6 +229,8 @@ const getAutocompleteState = ({
 }
 export const Histogram = ({ selectionInterface }: Props) => {
   const { listenTo } = useBackbone()
+  const theme = useTheme()
+  const isDarkTheme = theme.palette.mode === 'dark'
   const [noMatchingData, setNoMatchingData] = React.useState(false)
   const plotlyRef = React.useRef<HTMLDivElement>()
   const lazyResults = useLazyResultsFromSelectionInterface({
@@ -235,10 +250,41 @@ export const Histogram = ({ selectionInterface }: Props) => {
   }, [lazyResults.results])
   React.useEffect(() => {
     showHistogram()
-  }, [lazyResults.results, attributeToBin])
+  }, [lazyResults.results, attributeToBin, theme])
   React.useEffect(() => {
     updateHistogram()
   }, [selectedResults])
+
+  const defaultFontColor = isDarkTheme ? 'white' : 'black'
+  const defaultHoverLabel = {
+    bgcolor: isDarkTheme ? 'black' : 'white',
+    font: {
+      color: defaultFontColor,
+    },
+  }
+
+  const getCustomHoverArray = (
+    categories: any[],
+    results: LazyQueryResult[]
+  ) => {
+    const customArray: CustomHover[] = []
+    categories.forEach((category) => {
+      const matchedResults = findMatchesForAttributeValues(
+        results,
+        attributeToBin,
+        category.constructor === Array ? category : [category]
+      )
+
+      if (
+        (matchedResults && matchedResults.length > 0) ||
+        customArray.length > 0
+      ) {
+        customArray.push(getCustomHover(matchedResults, defaultHoverLabel))
+      }
+    })
+    return customArray.length > 0 ? customArray : undefined
+  }
+
   const determineInitialData = () => {
     return [
       {
@@ -248,7 +294,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
         }),
         opacity: 1,
         type: 'histogram',
-        name: 'Hits        ',
+        name: 'Hits',
         marker: {
           color: 'rgba(120, 120, 120, .05)',
           line: {
@@ -256,19 +302,29 @@ export const Histogram = ({ selectionInterface }: Props) => {
             width: '2',
           },
         },
+        hovertemplate: '%{y} Hits<extra></extra>',
+        hoverlabel: defaultHoverLabel,
       },
     ]
   }
   const determineData = (plot: any) => {
     const activeResults = results
     const xbins = Common.duplicate(plot._fullData[0].xbins)
-    if (xbins.size.constructor !== String) {
-      xbins.end = xbins.end + xbins.size //https://github.com/plotly/plotly.js/issues/1229
-    } else {
-      // soooo plotly introduced this cool bin size shorthand where M3 means 3 months, M6 6 months etc.
-      xbins.end =
-        xbins.end + parseInt(xbins.size.substring(1)) * 31 * 24 * 3600000 //https://github.com/plotly/plotly.js/issues/1229
+
+    const categories: any[] = retrieveCategoriesFromPlotly()
+
+    let customHoverArray: any = undefined
+    let selectedCustomHoverArray: any = undefined
+
+    if (extension.customHistogramHover) {
+      customHoverArray = getCustomHoverArray(categories, results)
+
+      selectedCustomHoverArray = getCustomHoverArray(
+        categories,
+        Object.values(selectedResults)
+      )
     }
+
     return [
       {
         x: calculateAttributeArray({
@@ -277,8 +333,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
         }),
         opacity: 1,
         type: 'histogram',
-        hoverinfo: 'y+x+name',
-        name: 'Hits        ',
+        name: 'Hits',
         marker: {
           color: 'rgba(120, 120, 120, .05)',
           line: {
@@ -286,6 +341,12 @@ export const Histogram = ({ selectionInterface }: Props) => {
             width: '2',
           },
         },
+        hoverlabel: customHoverArray
+          ? getCustomHoverLabels(customHoverArray)
+          : defaultHoverLabel,
+        hovertemplate: customHoverArray
+          ? getCustomHoverTemplates('Hits', customHoverArray)
+          : '%{y} Hits<extra></extra>',
         autobinx: false,
         xbins,
       },
@@ -296,11 +357,20 @@ export const Histogram = ({ selectionInterface }: Props) => {
         }),
         opacity: 1,
         type: 'histogram',
-        hoverinfo: 'y+x+name',
         name: 'Selected',
         marker: {
           color: 'rgba(120, 120, 120, .2)',
+          line: {
+            color: 'rgba(120,120,120,.5)',
+            width: '2',
+          },
         },
+        hoverlabel: selectedCustomHoverArray
+          ? getCustomHoverLabels(selectedCustomHoverArray)
+          : defaultHoverLabel,
+        hovertemplate: selectedCustomHoverArray
+          ? getCustomHoverTemplates('Selected', selectedCustomHoverArray)
+          : '%{y} Selected<extra></extra>',
         autobinx: false,
         xbins,
       },
@@ -338,13 +408,18 @@ export const Histogram = ({ selectionInterface }: Props) => {
         if (initialData[0].x.length === 0) {
           setNoMatchingData(true)
         } else {
-          Plotly.newPlot(histogramElement, initialData, getLayout(), {
-            displayModeBar: false,
-          }).then((plot: any) => {
+          Plotly.newPlot(
+            histogramElement,
+            initialData,
+            getLayout(defaultFontColor),
+            {
+              displayModeBar: false,
+            }
+          ).then((plot: any) => {
             Plotly.newPlot(
               histogramElement,
               determineData(plot),
-              getLayout(plot),
+              getLayout(defaultFontColor, plot),
               {
                 displayModeBar: false,
               }
@@ -367,7 +442,11 @@ export const Histogram = ({ selectionInterface }: Props) => {
         attributeToBin &&
         results.length > 0
       ) {
-        Plotly.deleteTraces(histogramElement, 1)
+        try {
+          Plotly.deleteTraces(histogramElement, 1)
+        } catch (err) {
+          console.error('Unable to delete trace', err)
+        }
         Plotly.addTraces(histogramElement, determineData(histogramElement)[1])
         handleResize()
       } else {
@@ -409,8 +488,8 @@ export const Histogram = ({ selectionInterface }: Props) => {
       const categories = []
       const xbins = (histogramElement as any)._fullData[0].xbins
       const min = xbins.start
-      const max = xbins.end
-      let start = min
+      const max = parseInt(moment(xbins.end).format('x'))
+      let start = parseInt(moment(min).format('x'))
       const inMonths = xbins.size.constructor === String
       const binSize = inMonths ? parseInt(xbins.size.substring(1)) : xbins.size
       while (start < max) {

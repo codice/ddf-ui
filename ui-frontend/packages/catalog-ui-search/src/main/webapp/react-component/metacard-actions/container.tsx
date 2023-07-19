@@ -18,6 +18,8 @@ import * as React from 'react'
 import _ from 'underscore'
 import MetacardActionsPresentation from './presentation'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import user from '../../component/singletons/user-instance'
+import properties from '../../js/properties'
 
 type Props = {
   result: LazyQueryResult
@@ -25,10 +27,20 @@ type Props = {
 
 const MetacardActions = (props: Props) => {
   const model = props.result
-
+  const columnOrder = user
+    .get('user')
+    .get('preferences')
+    .get('inspector-summaryShown')
+  const aliasMap = encodeURIComponent(
+    Object.entries(properties.attributeAliases)
+      .map(([k, v]) => {
+        return `${k}=${v}`
+      })
+      .toString()
+  )
   const exportActions = _.sortBy(
     model.getExportActions().map((action) => ({
-      url: action.url,
+      url: action.url + `&columnOrder=${columnOrder}&aliases=${aliasMap}`,
       title: action.displayName,
     })),
     (action: any) => action.title.toLowerCase()
