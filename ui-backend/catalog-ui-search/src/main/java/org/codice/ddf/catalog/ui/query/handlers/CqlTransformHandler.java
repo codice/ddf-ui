@@ -328,9 +328,12 @@ public class CqlTransformHandler implements Route {
     List<String> mimeTypeServiceProperty =
         queryResponseTransformer.getProperty("mime-type") instanceof List
             ? (List) queryResponseTransformer.getProperty("mime-type")
-            : Collections.emptyList();
+            : Collections.singletonList((String) queryResponseTransformer.getProperty("mime-type"));
 
-    if (mimeTypeServiceProperty.contains("text/csv")) {
+    if (mimeTypeServiceProperty.contains("text/csv")
+        || mimeTypeServiceProperty.contains(
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        || mimeTypeServiceProperty.contains("application/rtf")) {
       arguments = csvTransformArgumentsAdapter(arguments);
     } else if (schema != null && schema.toString().equals(CswConstants.CSW_NAMESPACE_URI)) {
       arguments = cswTransformArgumentsAdapter();

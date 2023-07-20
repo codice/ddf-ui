@@ -26,12 +26,15 @@ export default {
       fillColor: defaultColor,
       strokeWidth: 2,
       strokeColor: 'white',
+      badgeOptions: undefined,
     })
+    const badgeOffset = options.badgeOptions ? 8 : 0
     const radius = options.diameter / 2
     const canvas = document.createElement('canvas')
-    canvas.width = options.diameter
-    canvas.height = options.diameter
+    canvas.width = options.diameter + badgeOffset
+    canvas.height = options.diameter + badgeOffset
     const ctx = canvas.getContext('2d')
+
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     ctx.beginPath()
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
@@ -43,7 +46,7 @@ export default {
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     ctx.arc(
       radius,
-      radius,
+      radius + badgeOffset,
       radius - options.strokeWidth / 2,
       0,
       2 * Math.PI,
@@ -53,6 +56,15 @@ export default {
     ctx.fill()
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     ctx.stroke()
+
+    if (options.badgeOptions) {
+      return this.addBadge(canvas, {
+        width: options.diameter + badgeOffset,
+        color: options.badgeOptions.color,
+        text: options.badgeOptions.text,
+      })
+    }
+
     return canvas
   },
   getCircleWithText(options: any) {
@@ -63,9 +75,14 @@ export default {
       strokeColor: 'white',
       text: '',
       textColor: 'white',
+      badgeOptions: undefined,
     })
+
+    const badgeOffset = options.badgeOptions ? 8 : 0
+
     const canvas = this.getCircle(options)
     const ctx = canvas.getContext('2d')
+
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     ctx.font = '16pt Helvetica'
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
@@ -75,7 +92,12 @@ export default {
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     ctx.textBaseline = 'middle'
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-    ctx.fillText(options.text, options.diameter / 2, options.diameter / 2)
+    ctx.fillText(
+      options.text,
+      options.diameter / 2,
+      options.diameter / 2 + badgeOffset
+    )
+
     return canvas
   },
   getCircleWithIcon(options: any) {
@@ -115,10 +137,18 @@ export default {
       strokeWidth: 2,
       strokeColor: 'white',
       textColor: 'white',
+      badgeOptions: undefined,
     })
+
+    const badgeOffset = options.badgeOptions ? 8 : 0
+
+    const getValWithOffset = (val: number) => {
+      return val + badgeOffset
+    }
+
     const canvas = document.createElement('canvas')
-    canvas.width = options.width
-    canvas.height = options.height
+    canvas.width = options.width + badgeOffset
+    canvas.height = options.height + badgeOffset
     const ctx = canvas.getContext('2d')
 
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
@@ -131,19 +161,47 @@ export default {
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     ctx.beginPath()
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-    ctx.moveTo(19.36, 2)
+    ctx.moveTo(19.36, getValWithOffset(2))
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-    ctx.bezierCurveTo(11.52, 2, 4.96, 6.64, 4.96, 14.64)
+    ctx.bezierCurveTo(
+      11.52,
+      getValWithOffset(2),
+      4.96,
+      getValWithOffset(6.64),
+      4.96,
+      getValWithOffset(14.64)
+    )
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-    ctx.bezierCurveTo(4.96, 17.92, 6.08, 20.96, 7.84, 23.44)
+    ctx.bezierCurveTo(
+      4.96,
+      getValWithOffset(17.92),
+      6.08,
+      getValWithOffset(20.96),
+      7.84,
+      getValWithOffset(23.44)
+    )
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-    ctx.lineTo(19.52, 38.96)
+    ctx.lineTo(19.52, getValWithOffset(38.96))
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-    ctx.lineTo(31.2, 23.44)
+    ctx.lineTo(31.2, getValWithOffset(23.44))
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-    ctx.bezierCurveTo(33.04, 20.96, 34.08, 17.92, 34.08, 14.64)
+    ctx.bezierCurveTo(
+      33.04,
+      getValWithOffset(20.96),
+      34.08,
+      getValWithOffset(17.92),
+      34.08,
+      getValWithOffset(14.64)
+    )
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-    ctx.bezierCurveTo(34.08, 6.64, 27.6, 2, 19.52, 2)
+    ctx.bezierCurveTo(
+      34.08,
+      getValWithOffset(6.64),
+      27.6,
+      getValWithOffset(2),
+      19.52,
+      getValWithOffset(2)
+    )
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
     ctx.fillStyle = options.fillColor
     // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
@@ -163,8 +221,65 @@ export default {
       ctx.textBaseline = 'middle'
 
       let icon = String.fromCharCode(parseInt(style.code, 16))
+
       // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-      ctx.fillText(icon, options.width / 2, options.height / 2 - 5)
+      ctx.fillText(
+        icon,
+        options.width / 2,
+        options.height / 2 - 5 + badgeOffset
+      )
+    }
+
+    if (options.badgeOptions) {
+      return this.addBadge(canvas, {
+        width: options.width + badgeOffset,
+        color: options.badgeOptions.color,
+        text: options.badgeOptions.text,
+      })
+    }
+
+    return canvas
+  },
+  addBadge(canvas: HTMLCanvasElement, options: any) {
+    _.defaults(options, {
+      width: 48,
+      color: '#fff59d',
+    })
+
+    const ctx = canvas.getContext('2d')
+
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
+    ctx.beginPath()
+
+    const radius = 10
+    const badgeX = options.width - (radius + 2)
+    const badgeY = radius + 2
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
+    ctx.arc(badgeX, badgeY, radius, 0, 2 * Math.PI, false)
+
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
+    ctx.fillStyle = options.color
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
+    ctx.strokeStyle = '#000000'
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
+    ctx.lineWidth = 1
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
+    ctx.fill()
+    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
+    ctx.stroke()
+
+    if (options.text) {
+      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
+      ctx.font = '10pt Helvetica'
+      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
+      ctx.fillStyle = '#000000'
+      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
+      ctx.textAlign = 'center'
+      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
+      ctx.textBaseline = 'middle'
+
+      // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
+      ctx.fillText(options.text, badgeX, badgeY)
     }
 
     return canvas

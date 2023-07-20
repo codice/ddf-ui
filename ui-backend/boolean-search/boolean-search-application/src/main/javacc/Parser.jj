@@ -52,7 +52,7 @@ TOKEN :
 
 
 
-String SearchExpression() :
+String SearchExpression() throws CustomParseException :
 {
   String cql;
 }
@@ -64,7 +64,7 @@ String SearchExpression() :
     }
 }
 
-String TextSearchExpression() :
+String TextSearchExpression() throws CustomParseException :
 {
   String left, right;
   Token logicalOperator;
@@ -85,7 +85,7 @@ String TextSearchExpression() :
   }
 }
 
-String TextSearchComponent() :
+String TextSearchComponent() throws CustomParseException :
 {
     String quotedSearchPhrase;
     List<BooleanTextFilter> searchTextFilters = new ArrayList<>();
@@ -98,6 +98,9 @@ String TextSearchComponent() :
     (
         quotedSearchPhrase = QuotedSearchPhrase()
         {
+          if (quotedSearchPhrase.contains("?") || quotedSearchPhrase.contains("*")) {
+            throw new CustomParseException("Wildcards are not allowed in search phrases.");
+          }
           filters.add(new BooleanTextFilter(this.propertyName, quotedSearchPhrase.replace("\"", "").replace("'", "''")));
         }
         |

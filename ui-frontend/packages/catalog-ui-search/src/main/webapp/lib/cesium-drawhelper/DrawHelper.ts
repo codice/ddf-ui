@@ -29,6 +29,7 @@ import utility from '../../component/visualization/maps/cesium/utility'
 import _ from 'lodash'
 import dragHalfSvg from '!!raw-loader!./drag-half.svg'
 import vertexSvg from '!!raw-loader!./vertex.svg'
+import { contrastingColor } from '../../react-component/location/location-color-selector'
 // Avoid conflict with the name _, which DrawHelper uses a lot
 const lodash = _
 const DrawHelper = (function () {
@@ -280,13 +281,13 @@ const DrawHelper = (function () {
                 geometry: outlineGeometry,
                 attributes: {
                   color: Cesium.ColorGeometryInstanceAttribute.fromColor(
-                    Cesium.Color.BLUE
+                    Cesium.Color.fromCssColorString(contrastingColor)
                   ),
                 },
               }),
               appearance: new Cesium.PolylineMaterialAppearance({
                 material: Cesium.Material.fromType('Color', {
-                  color: Cesium.Color.BLUE,
+                  color: Cesium.Color.fromCssColorString(contrastingColor),
                 }),
               }),
             })

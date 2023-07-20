@@ -23,6 +23,15 @@ import { Suggestion } from '../react-component/location/gazetteer'
 import { MetacardInteractionProps } from '../react-component/metacard-interactions'
 import { PermissiveComponentType } from '../typescript'
 import { InputsType } from '../react-component/location/location'
+import { CustomHover } from '../component/visualization/histogram/add-on-helpers'
+
+type EditorProps = {
+  result: LazyQueryResult
+  attribute: string
+  onCancel?: () => void
+  onSave?: () => void
+  goBack?: () => void
+}
 
 export type ExtensionPointsType = {
   providers: FC<React.PropsWithChildren<ProviderProps>>
@@ -46,6 +55,13 @@ export type ExtensionPointsType = {
     lazyResult: LazyQueryResult
   }) => JSX.Element | null
   resultItemRowAddOn: ({
+    lazyResult,
+    isTableView,
+  }: {
+    lazyResult: LazyQueryResult
+    isTableView?: boolean
+  }) => JSX.Element | null
+  resultTitleIconAddOn: ({
     lazyResult,
   }: {
     lazyResult: LazyQueryResult
@@ -78,6 +94,28 @@ export type ExtensionPointsType = {
   userInformation: PermissiveComponentType
   extraHeader: PermissiveComponentType
   extraFooter: PermissiveComponentType
+  customMapBadge: (props: {
+    results: LazyQueryResult[]
+    isCluster: boolean
+  }) => { text: string; color: string } | undefined
+  resultItemAction: ({
+    lazyResult,
+    selectionInterface,
+    itemContentRef,
+    className,
+  }: {
+    lazyResult: LazyQueryResult
+    selectionInterface: any
+    itemContentRef: React.RefObject<HTMLElement>
+    className?: string
+  }) => null | PermissiveComponentType
+  attributeEditor: (
+    result: LazyQueryResult,
+    attribute: string
+  ) => React.FC<EditorProps> | null
+  customHistogramHover:
+    | ((props: { results: LazyQueryResult[] }) => CustomHover | undefined)
+    | undefined
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -87,6 +125,7 @@ const ExtensionPoints: ExtensionPointsType = {
   customCanWritePermission: () => undefined,
   customEditableAttributes: async () => undefined,
   resultItemTitleAddOn: () => null,
+  resultTitleIconAddOn: () => null,
   resultItemRowAddOn: () => null,
   layoutDropdown: () => null,
   customSourcesPage: null,
@@ -99,6 +138,14 @@ const ExtensionPoints: ExtensionPointsType = {
   userInformation: () => null,
   extraFooter: () => null,
   extraHeader: () => null,
+  customMapBadge: () => undefined,
+  resultItemAction: ({
+    selectionInterface: _selectionInterface,
+    lazyResult: _lazyResult,
+    itemContentRef: _containerRef,
+  }) => null,
+  attributeEditor: () => null,
+  customHistogramHover: undefined,
 }
 
 export default ExtensionPoints
