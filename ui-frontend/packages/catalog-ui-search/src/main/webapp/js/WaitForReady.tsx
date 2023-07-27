@@ -25,12 +25,4 @@ export const waitForReady: () => Promise<void> = async () => {
     return waitForReady()
   }
   properties.init()
-  if (!properties.fetched) {
-    await sleep()
-    return waitForReady()
-  }
-  const { propertyDependentWaitForReady } = await (
-    await import('./PropertiesDependentDependencies')
-  ).default
-  await propertyDependentWaitForReady()
 }

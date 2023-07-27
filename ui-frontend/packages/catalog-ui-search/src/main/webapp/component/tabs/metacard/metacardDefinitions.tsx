@@ -103,9 +103,6 @@ export const TypedMetacardDefs = {
       | string[]
       | undefined
   },
-  typesFetched() {
-    return metacardDefinitions.typesFetched as boolean
-  },
   addMetacardDefinition(
     name: string,
     definition: {

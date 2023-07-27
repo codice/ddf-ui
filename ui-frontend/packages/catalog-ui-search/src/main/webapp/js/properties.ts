@@ -95,7 +95,6 @@ const properties = {
   sourcePollInterval: 60000,
   enums: {},
   extra: {},
-  fetched: false,
   initializing: false,
   async init() {
     if (this.initializing) {
@@ -110,7 +109,6 @@ const properties = {
     this.handleExperimental()
     this.handleUpload()
     this.handleListTemplates()
-    this.fetched = true
   },
   handleListTemplates() {
     try {
@@ -180,7 +178,6 @@ const properties = {
     return !this.isMetacardPreviewDisabled
   },
 } as {
-  fetched: boolean
   initializing: boolean
   init: () => Promise<void> | void
   [key: string]: any

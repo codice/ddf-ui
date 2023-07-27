@@ -132,7 +132,6 @@ export default new (Backbone.Model.extend({
     this.sortedMetacardTypes = StartupDataStore.data?.sortedAttributes
     this.metacardTypes = StartupDataStore.data?.attributeMap
     this.metacardDefinitions = StartupDataStore.data?.metacardTypes
-    this.typesFetched = true
   },
   isHiddenTypeExceptThumbnail(id: any) {
     if (id === 'thumbnail') {
@@ -219,13 +218,11 @@ export default new (Backbone.Model.extend({
       this.updateSortedMetacardTypes()
     }
   },
-  typesFetched: false,
   getMetacardTypes() {
     fetch('./internal/metacardtype')
       .then((response) => response.json())
       .then((metacardDefinitions) => {
         this.addMetacardDefinitions(metacardDefinitions)
-        this.typesFetched = true
       })
   },
   attributeComparator(a: any, b: any) {

@@ -39,7 +39,7 @@ function shouldDisplayMessage() {
 const SystemUsageModal = () => {
   const dialogContext = useDialog()
   React.useEffect(() => {
-    if (user.fetched && shouldDisplayMessage()) {
+    if (shouldDisplayMessage()) {
       openModal()
     } else {
       user.once('sync', () => {
