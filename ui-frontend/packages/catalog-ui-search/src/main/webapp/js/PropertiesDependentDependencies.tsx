@@ -18,11 +18,10 @@
  * we bottleneck the app.
  */
 
-import user from '../component/singletons/user-instance'
 import MetacardDefinitions from '../component/tabs/metacard/metacardDefinitions'
 
 const propertyDependentWaitForReady: () => Promise<void> = async () => {
-  if (user.fetched && MetacardDefinitions.typesFetched()) {
+  if (MetacardDefinitions.typesFetched()) {
     return
   } else {
     await new Promise((resolve) => setTimeout(resolve, 60))

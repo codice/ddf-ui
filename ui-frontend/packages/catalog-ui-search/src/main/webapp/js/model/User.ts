@@ -368,14 +368,11 @@ const Theme = Backbone.Model.extend({
       relatedModel: (User as any).Model,
     },
   ],
-  fetched: false,
   initialize() {
     this.listenTo(this, 'sync', this.handleSync)
-    this.set('user', new (User as any).Model())
-    this.fetch(CommonAjaxSettings)
+    this.handleSync()
   },
   handleSync() {
-    this.fetched = true
     this.get('user').get('preferences').handleAlertPersistence()
     this.get('user').get('preferences').handleResultCount()
   },
