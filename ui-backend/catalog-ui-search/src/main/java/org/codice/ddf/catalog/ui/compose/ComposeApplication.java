@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.codice.ddf.catalog.ui.catalog.CatalogApplication;
 import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
 import org.codice.ddf.catalog.ui.configuration.PlatformUiConfigurationApplication;
@@ -313,7 +314,7 @@ public class ComposeApplication implements SparkApplication {
               "platformUiConfiguration",
               GSON.fromJson(
                   this.platformUiConfigurationApplication.getConfigAsJsonString(), Map.class));
-          payload.put("sources", getSources());
+          payload.put("sources", getSources(config));
           payload.put("localSourceId", catalogFramework.getId());
           return util.getJson(payload);
         });
@@ -325,9 +326,23 @@ public class ComposeApplication implements SparkApplication {
     exception(RuntimeException.class, util::handleRuntimeException);
   }
 
-  private List<Object> getSources() throws IOException {
+  private List<Object> getSources(Map<String, Object> config) throws IOException {
     String localCatalogId = catalogFramework.getId();
     List<Object> sources = GSON.fromJson(this.catalogApplication.getSources(), List.class);
+
+    // Use a stream to filter out sources with the id "cache"
+    sources =
+        sources
+            .stream()
+            .filter(
+                source -> {
+                  Map<String, Object> sourceMap = (Map<String, Object>) source;
+                  String sourceId = (String) sourceMap.get("id");
+                  return !sourceId.equals("cache");
+                })
+            .collect(Collectors.toList());
+
+    // Update "local" property for the remaining sources
     sources.forEach(
         source -> {
           Map<String, Object> sourceMap = (Map<String, Object>) source;
@@ -336,6 +351,21 @@ public class ComposeApplication implements SparkApplication {
             sourceMap.put("local", true);
           }
         });
+
+    Boolean disableLocalCatalog = (Boolean) config.get("disableLocalCatalog");
+
+    if (disableLocalCatalog) {
+      sources =
+          sources
+              .stream()
+              .filter(
+                  source -> {
+                    Map<String, Object> sourceMap = (Map<String, Object>) source;
+                    String sourceId = (String) sourceMap.get("id");
+                    return !sourceId.equals(localCatalogId);
+                  })
+              .collect(Collectors.toList());
+    }
     return sources;
   }
 

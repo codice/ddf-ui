@@ -14,20 +14,14 @@
  **/
 // check browser before loading the rest of the app
 import { isSupportedBrowser } from './check-browser'
+//@ts-ignore
 import { StartupDataStore } from './js/model/Startup/startup'
-
-function start() {
-  import('./app')
-}
-
-function attemptToStart() {
-  if (isSupportedBrowser() && StartupDataStore.data) {
-    start()
+;(async () => {
+  // check if supported browser
+  if (isSupportedBrowser()) {
+    // wait for critical data to be fetched
+    await (await import('./js/WaitForReady')).waitForReady()
+    // render the app
+    await import('./app')
   }
-}
-
-StartupDataStore.subscribeTo({
-  subscribableThing: 'fetched',
-  callback: attemptToStart,
-})
-attemptToStart()
+})()

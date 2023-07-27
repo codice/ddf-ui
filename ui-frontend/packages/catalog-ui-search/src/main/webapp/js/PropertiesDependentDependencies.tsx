@@ -19,15 +19,10 @@
  */
 
 import user from '../component/singletons/user-instance'
-import SourcesInstance from '../component/singletons/sources-instance'
 import MetacardDefinitions from '../component/tabs/metacard/metacardDefinitions'
 
 const propertyDependentWaitForReady: () => Promise<void> = async () => {
-  if (
-    user.fetched &&
-    SourcesInstance.fetched &&
-    MetacardDefinitions.typesFetched()
-  ) {
+  if (user.fetched && MetacardDefinitions.typesFetched()) {
     return
   } else {
     await new Promise((resolve) => setTimeout(resolve, 60))

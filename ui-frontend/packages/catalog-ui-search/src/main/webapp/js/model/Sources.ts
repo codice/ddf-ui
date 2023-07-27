@@ -16,11 +16,9 @@ import _ from 'underscore'
 import Backbone from 'backbone'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'back... Remove this comment to see the full error message
 import poller from 'backbone-poller'
-import properties from '../properties'
-import { CommonAjaxSettings } from '../AjaxSettings'
-import fetch from '../../react-component/utils/fetch'
+import { StartupDataStore } from './Startup/startup'
 function removeLocalCatalogIfNeeded(response: any, localCatalog: any) {
-  if (properties.isDisableLocalCatalog()) {
+  if (StartupDataStore.data?.config.disableLocalCatalog) {
     response = _.filter(response, (source) => source.id !== localCatalog)
   }
   return response
@@ -54,41 +52,30 @@ export default Backbone.Collection.extend({
   },
   initialize() {
     this.listenTo(this, 'change', this.sort)
-    this.determineLocalCatalog()
     this.listenTo(this, 'sync', this.updateLocalCatalog)
+    poller
+      .get(this, {
+        delay: StartupDataStore.data?.config.sourcePollInterval,
+        delayed: StartupDataStore.data?.config.sourcePollInterval,
+        continueOnError: true,
+      })
+      .start()
   },
-  fetched: false,
   parse(response: any) {
     response = removeLocalCatalogIfNeeded(response, this.localCatalog)
     response = removeCache(response)
     response.sort((a: any, b: any) => {
       return a.id.toLowerCase().localeCompare(b.id.toLowerCase()) // case insensitive sort
     })
-    this.fetched = true
     return response
   },
   getHarvested() {
     return [this.localCatalog]
-  },
-  determineLocalCatalog() {
-    fetch('./internal/localcatalogid')
-      .then((data) => data.json())
-      .then((data) => {
-        this.localCatalog = data['local-catalog-id']
-        poller
-          .get(this, {
-            delay: properties.sourcePollInterval,
-            delayed: properties.sourcePollInterval,
-            continueOnError: true,
-          })
-          .start()
-        this.fetch(CommonAjaxSettings)
-      })
   },
   updateLocalCatalog() {
     if (this.get(this.localCatalog)) {
       this.get(this.localCatalog).set('local', true)
     }
   },
-  localCatalog: 'local',
+  localCatalog: StartupDataStore.data?.localSourceId || 'local',
 })

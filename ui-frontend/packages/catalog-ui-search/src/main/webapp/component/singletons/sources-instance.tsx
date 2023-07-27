@@ -14,7 +14,8 @@
  **/
 
 import Sources from '../../js/model/Sources'
-const SourcesInstance = new Sources() as {
+import { StartupDataStore } from '../../js/model/Startup/startup'
+const SourcesInstance = new Sources(StartupDataStore.data?.sources) as {
   getHarvested: () => string[]
   localCatalog: string
   toJSON: () => {
