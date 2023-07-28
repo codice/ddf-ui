@@ -16,12 +16,11 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import fetch from '../utils/fetch'
 import ResultsExportComponent from './presentation'
-import { exportResult, exportResultSet } from '../utils/export'
+import { exportResult, exportResultSet, getColumnOrder } from '../utils/export'
 import { getResultSetCql } from '../utils/cql'
 import saveFile from '../utils/save-file'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
-import user from '../../component/singletons/user-instance'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
 import contentDisposition from 'content-disposition'
 import properties from '../../js/properties'
@@ -148,10 +147,7 @@ class ResultsExport extends React.Component<Props, State> {
         count,
       },
     ]
-    const columnOrder = user
-      .get('user')
-      .get('preferences')
-      .get('inspector-summaryShown')
+    const columnOrder = getColumnOrder()
     if (this.props.isZipped) {
       response = await exportResultSet('zipCompression', {
         searches,
@@ -170,7 +166,7 @@ class ResultsExport extends React.Component<Props, State> {
         }),
         args: {
           hiddenFields: [],
-          columnOrder: columnOrder.length > 0 ? columnOrder : [],
+          columnOrder: columnOrder,
           columnAliasMap: properties.attributeAliases,
         },
       })
