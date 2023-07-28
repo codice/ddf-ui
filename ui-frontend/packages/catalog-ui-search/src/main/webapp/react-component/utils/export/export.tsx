@@ -16,6 +16,7 @@ import fetch from '../fetch'
 import { postAuditLog } from '../audit/audit-endpoint'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import properties from '../../../js/properties'
+import user from '../../../component/singletons/user-instance'
 
 export enum Transformer {
   Metacard = 'metacard',
@@ -79,19 +80,34 @@ export const getExportOptions = async (type: Transformer) => {
   return await response.json()
 }
 
+export const getColumnOrder = () => {
+  const userchoices = user
+    .get('user')
+    .get('preferences')
+    .get('inspector-summaryShown')
+  if (userchoices.length > 0) {
+    return userchoices
+  }
+  if ((properties as any).summaryShow.length > 0) {
+    return (properties as any).summaryShow
+  }
+  return ['title', 'created', 'thumbnail']
+}
+
+export const aliasMap = encodeURIComponent(
+  Object.entries(properties.attributeAliases)
+    .map(([k, v]) => {
+      return `${k}=${v}`
+    })
+    .toString()
+)
+
 export const exportResult = async (
   source: string,
   id: string,
   transformer: string,
   attributes: string
 ) => {
-  const aliasMap = encodeURIComponent(
-    Object.entries(properties.attributeAliases)
-      .map(([k, v]) => {
-        return `${k}=${v}`
-      })
-      .toString()
-  )
   const response = await fetch(
     `/services/catalog/sources/${source}/${id}?transform=${transformer}&columnOrder=${attributes}&aliases=${aliasMap}`
   )
