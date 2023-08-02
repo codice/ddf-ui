@@ -107,6 +107,11 @@
                                     <type>config</type>
                                     <classifier>intrigue-bundle-config</classifier>
                                 </artifact>
+                                <artifact>
+                                    <file>src/main/resources/etc/definitions/ui-preferences-injector.json</file>
+                                    <type>config</type>
+                                    <classifier>ui-preferences-injector</classifier>
+                                </artifact>
                             </artifacts>
                         </configuration>
                     </execution>
