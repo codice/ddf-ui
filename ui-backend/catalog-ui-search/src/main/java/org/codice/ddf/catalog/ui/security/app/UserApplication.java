@@ -65,10 +65,11 @@ public class UserApplication implements SparkApplication {
 
   private static final Integer DEFAULT_MAX_PAGE_SIZE = 1000;
 
-  private static final Gson GSON = new GsonBuilder()
-      .disableHtmlEscaping()
-      .registerTypeAdapterFactory(LongDoubleTypeAdapter.FACTORY)
-      .create();
+  private static final Gson GSON =
+      new GsonBuilder()
+          .disableHtmlEscaping()
+          .registerTypeAdapterFactory(LongDoubleTypeAdapter.FACTORY)
+          .create();
 
   private final EndpointUtil util;
 
@@ -120,7 +121,8 @@ public class UserApplication implements SparkApplication {
             return ImmutableMap.of("message", "Guest cannot save preferences.");
           }
 
-          Map<String, Object> preferences = GSON.fromJson(util.safeGetBody(req), MAP_STRING_TO_OBJECT_TYPE);
+          Map<String, Object> preferences =
+              GSON.fromJson(util.safeGetBody(req), MAP_STRING_TO_OBJECT_TYPE);
 
           if (preferences == null) {
             preferences = new HashMap<>();
@@ -143,10 +145,11 @@ public class UserApplication implements SparkApplication {
             return ImmutableMap.of("message", "Guest cannot save notifications.");
           }
 
-          Map<String, Object> alerts = GSON.fromJson(util.safeGetBody(req), MAP_STRING_TO_OBJECT_TYPE);
+          Map<String, Object> alerts =
+              GSON.fromJson(util.safeGetBody(req), MAP_STRING_TO_OBJECT_TYPE);
 
-          List<Map<String, Object>> notifications = (List<Map<String, Object>>) alerts.getOrDefault("alerts",
-              Collections.emptyList());
+          List<Map<String, Object>> notifications =
+              (List<Map<String, Object>>) alerts.getOrDefault("alerts", Collections.emptyList());
           notifications.forEach(notification -> addUserNotification(subject, notification));
           return "";
         },
@@ -163,7 +166,8 @@ public class UserApplication implements SparkApplication {
             return ImmutableMap.of("message", "Guest cannot save notifications.");
           }
 
-          Map<String, List<String>> notification = GSON.fromJson(util.safeGetBody(req), MAP_STRING_TO_OBJECT_TYPE);
+          Map<String, List<String>> notification =
+              GSON.fromJson(util.safeGetBody(req), MAP_STRING_TO_OBJECT_TYPE);
 
           deleteNotifications(notification.get("alerts"));
 
@@ -223,11 +227,12 @@ public class UserApplication implements SparkApplication {
     String userid = subjectIdentity.getUniqueIdentifier(subject);
     String filter = String.format("user = '%s'", userid);
     try {
-      List<Map<String, Object>> notificationsList = persistentStore.get(
-          PersistenceType.NOTIFICATION_TYPE.toString(),
-          filter,
-          0,
-          determineAndRetrieveMaxPageSize());
+      List<Map<String, Object>> notificationsList =
+          persistentStore.get(
+              PersistenceType.NOTIFICATION_TYPE.toString(),
+              filter,
+              0,
+              determineAndRetrieveMaxPageSize());
       return notificationsList.stream().map(this::mapAttributes).collect(Collectors.toList());
     } catch (PersistenceException e) {
       LOGGER.debug(
@@ -320,9 +325,10 @@ public class UserApplication implements SparkApplication {
       LOGGER.debug("Received empty list of notification ids to delete");
       return;
     }
-    List<Filter> idsToDelete = ids.stream()
-        .map(id -> filterBuilder.attribute("id").is().equalTo().text(id))
-        .collect(Collectors.toList());
+    List<Filter> idsToDelete =
+        ids.stream()
+            .map(id -> filterBuilder.attribute("id").is().equalTo().text(id))
+            .collect(Collectors.toList());
     try {
       persistentStore.delete(
           PersistenceType.NOTIFICATION_TYPE.toString(),
