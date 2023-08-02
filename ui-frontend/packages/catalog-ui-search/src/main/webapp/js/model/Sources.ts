@@ -55,8 +55,8 @@ export default Backbone.Collection.extend({
     this.listenTo(this, 'sync', this.updateLocalCatalog)
     poller
       .get(this, {
-        delay: StartupDataStore.data?.config.sourcePollInterval,
-        delayed: StartupDataStore.data?.config.sourcePollInterval,
+        delay: StartupDataStore.data?.config.sourcePollInterval || 60000,
+        delayed: StartupDataStore.data?.config.sourcePollInterval || 60000,
         continueOnError: true,
       })
       .start()

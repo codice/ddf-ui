@@ -140,7 +140,7 @@ const typeToComparators = {
 }
 
 export const getComparators = (attribute: string): ComparatorType[] => {
-  let comparators = typeToComparators[getAttributeType(attribute)]
+  let comparators = typeToComparators[getAttributeType(attribute)] || []
   // IS NULL checks do not work on these
   if (attribute === 'anyGeo' || attribute === 'anyText') {
     comparators = comparators.filter(

@@ -129,9 +129,9 @@ function metacardStartingTypesWithTemporal() {
 
 export default new (Backbone.Model.extend({
   initialize() {
-    this.sortedMetacardTypes = StartupDataStore.data?.sortedAttributes
-    this.metacardTypes = StartupDataStore.data?.attributeMap
-    this.metacardDefinitions = StartupDataStore.data?.metacardTypes
+    this.sortedMetacardTypes = StartupDataStore.data?.sortedAttributes || []
+    this.metacardTypes = StartupDataStore.data?.attributeMap || {}
+    this.metacardDefinitions = StartupDataStore.data?.metacardTypes || {}
   },
   isHiddenTypeExceptThumbnail(id: any) {
     if (id === 'thumbnail') {

@@ -75,7 +75,7 @@ export const getFilteredAttributeList = (group?: string): Attribute[] => {
     .map((attr: { id: string; alias: string }) => toAttribute(attr, group))
 }
 export const getAttributeType = (attribute: string): string => {
-  const type = metacardDefinitions.metacardTypes[attribute].type
+  const type = metacardDefinitions.metacardTypes[attribute]?.type
   if (type === 'GEOMETRY') return 'LOCATION'
   if (isIntegerType(type)) return 'INTEGER'
   if (isFloatType(type)) return 'FLOAT'

@@ -368,6 +368,11 @@ const Theme = Backbone.Model.extend({
       relatedModel: (User as any).Model,
     },
   ],
+  defaults() {
+    return {
+      user: new (User as any).Model(),
+    }
+  },
   initialize() {
     this.listenTo(this, 'sync', this.handleSync)
     this.handleSync()

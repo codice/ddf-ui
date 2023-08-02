@@ -25,6 +25,18 @@ TypedMetacardDefinitions.addMetacardDefinitions({
     locationType: { type: 'LOCATION', id: 'locationType' },
     xmlType: { type: 'XML', id: 'xmlType' },
     binaryType: { type: 'BINARY', id: 'binaryType' },
+    'location.country-code': {
+      type: 'STRING',
+      id: 'location.country-code',
+    },
+    datatype: {
+      type: 'STRING',
+      id: 'datatype',
+    },
+    anyText: {
+      type: 'STRING',
+      id: 'anyText',
+    },
   },
 })
 // do not rely on our own transforms for testing, rely on static data!

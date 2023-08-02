@@ -94,12 +94,12 @@ export const TypedMetacardDefs = {
     return metacardDefinitions.metacardDefinitions[type] || {}
   },
   getEnum({ attr }: { attr: string }) {
-    return StartupDataStore.data?.attributeMap[attr].enumerations as
+    return StartupDataStore.data?.attributeMap[attr]?.enumerations as
       | string[]
       | undefined
   },
   getDeprecatedEnum({ attr }: { attr: string }) {
-    return StartupDataStore.data?.attributeMap[attr].deprecatedEnumerations as
+    return StartupDataStore.data?.attributeMap[attr]?.deprecatedEnumerations as
       | string[]
       | undefined
   },
