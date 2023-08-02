@@ -21,4 +21,6 @@ export {
   ResultSet,
   ExportCountInfo,
   DownloadInfo,
+  getColumnOrder,
+  aliasMap,
 } from './export'

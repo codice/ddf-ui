@@ -176,8 +176,9 @@ Implementation details
     </bean>
 
     <bean id="userApplication" class="org.codice.ddf.catalog.ui.security.app.UserApplication">
-        <argument ref="persistentStore"/>
         <argument ref="endpointUtil"/>
+        <argument ref="persistentStore"/>
+        <argument ref="preferences"/>
         <argument ref="subjectIdentity"/>
         <argument ref="filterBuilder"/>
         <property name="subjectOperations" ref="subjectOperations1" />
@@ -598,5 +599,9 @@ Implementation details
     <bean id="queryFactory" class="org.codice.ddf.catalog.ui.query.cql.QueryRequestFactoryImpl"/>
 
     <service ref="queryFactory" interface="org.codice.ddf.catalog.ui.query.utility.QueryRequestFactory"/>
+
+    <bean id="defaultPreferenceSettings" class="org.codice.ddf.catalog.ui.preferences.DefaultCatalogUiPreferences"/>
+
+    <service ref="defaultPreferenceSettings" interface="org.codice.ddf.preferences.DefaultPreferencesSupplier"/>
 
 </blueprint>

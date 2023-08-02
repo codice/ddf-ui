@@ -63,6 +63,10 @@
             mvn:org.codice.ddf.search/intrigue-ui-app/${project.version}/config/intrigue-bundle-config
         </configfile>
 
+        <configfile finalname="${ddf.etc}/definitions/ui-preferences-injector.json" override="false">
+            mvn:org.codice.ddf.search/intrigue-ui-app/${project.version}/config/ui-preferences-injector
+        </configfile>
+
         <bundle>mvn:ddf.catalog.transformer/catalog-transformer-propertyjson-metacard/${ddf.version}</bundle>
         <bundle>mvn:org.codice.ddf.search/catalog-ui-search/${project.version}</bundle>
         <bundle>mvn:org.codice.ddf.search/catalog-ui-oauth/${project.version}</bundle>

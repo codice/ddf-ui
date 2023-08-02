@@ -29,8 +29,6 @@ import ddf.security.Subject;
 import ddf.security.SubjectIdentity;
 import ddf.security.SubjectOperations;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +47,8 @@ import org.codice.ddf.persistence.PersistenceException;
 import org.codice.ddf.persistence.PersistentItem;
 import org.codice.ddf.persistence.PersistentStore;
 import org.codice.ddf.persistence.PersistentStore.PersistenceType;
+import org.codice.ddf.preferences.Preferences;
+import org.codice.ddf.preferences.PreferencesException;
 import org.codice.gsonsupport.GsonTypeAdapters.LongDoubleTypeAdapter;
 import org.geotools.filter.text.ecql.ECQL;
 import org.joda.time.DateTime;
@@ -65,13 +65,14 @@ public class UserApplication implements SparkApplication {
 
   private static final Integer DEFAULT_MAX_PAGE_SIZE = 1000;
 
-  private static final Gson GSON =
-      new GsonBuilder()
-          .disableHtmlEscaping()
-          .registerTypeAdapterFactory(LongDoubleTypeAdapter.FACTORY)
-          .create();
+  private static final Gson GSON = new GsonBuilder()
+      .disableHtmlEscaping()
+      .registerTypeAdapterFactory(LongDoubleTypeAdapter.FACTORY)
+      .create();
 
   private final EndpointUtil util;
+
+  private final Preferences preferences;
 
   private final PersistentStore persistentStore;
 
@@ -84,10 +85,12 @@ public class UserApplication implements SparkApplication {
   public UserApplication(
       EndpointUtil util,
       PersistentStore persistentStore,
+      Preferences preferences,
       SubjectIdentity subjectIdentity,
       FilterBuilder filterBuilder) {
     this.util = util;
     this.persistentStore = persistentStore;
+    this.preferences = preferences;
     this.subjectIdentity = subjectIdentity;
     this.filterBuilder = filterBuilder;
   }
@@ -117,8 +120,7 @@ public class UserApplication implements SparkApplication {
             return ImmutableMap.of("message", "Guest cannot save preferences.");
           }
 
-          Map<String, Object> preferences =
-              GSON.fromJson(util.safeGetBody(req), MAP_STRING_TO_OBJECT_TYPE);
+          Map<String, Object> preferences = GSON.fromJson(util.safeGetBody(req), MAP_STRING_TO_OBJECT_TYPE);
 
           if (preferences == null) {
             preferences = new HashMap<>();
@@ -141,11 +143,10 @@ public class UserApplication implements SparkApplication {
             return ImmutableMap.of("message", "Guest cannot save notifications.");
           }
 
-          Map<String, Object> alerts =
-              GSON.fromJson(util.safeGetBody(req), MAP_STRING_TO_OBJECT_TYPE);
+          Map<String, Object> alerts = GSON.fromJson(util.safeGetBody(req), MAP_STRING_TO_OBJECT_TYPE);
 
-          List<Map<String, Object>> notifications =
-              (List<Map<String, Object>>) alerts.getOrDefault("alerts", Collections.emptyList());
+          List<Map<String, Object>> notifications = (List<Map<String, Object>>) alerts.getOrDefault("alerts",
+              Collections.emptyList());
           notifications.forEach(notification -> addUserNotification(subject, notification));
           return "";
         },
@@ -162,8 +163,7 @@ public class UserApplication implements SparkApplication {
             return ImmutableMap.of("message", "Guest cannot save notifications.");
           }
 
-          Map<String, List<String>> notification =
-              GSON.fromJson(util.safeGetBody(req), MAP_STRING_TO_OBJECT_TYPE);
+          Map<String, List<String>> notification = GSON.fromJson(util.safeGetBody(req), MAP_STRING_TO_OBJECT_TYPE);
 
           deleteNotifications(notification.get("alerts"));
 
@@ -184,27 +184,13 @@ public class UserApplication implements SparkApplication {
   }
 
   private void setUserPreferences(Subject subject, Map<String, Object> preferences) {
-    String json = GSON.toJson(preferences);
-
-    LOGGER.trace("preferences JSON text:\n {}", json);
 
     String userid = subjectIdentity.getUniqueIdentifier(subject);
 
-    LOGGER.trace("Update preferences for: {}", userid);
-
-    PersistentItem item = new PersistentItem();
-    item.addIdProperty(userid);
-    item.addProperty("user", userid);
-    item.addProperty(
-        "preferences_json",
-        "_bin",
-        Base64.getEncoder().encodeToString(json.getBytes(Charset.defaultCharset())));
-
     try {
-      persistentStore.add(PersistenceType.PREFERENCES_TYPE.toString(), item);
-    } catch (PersistenceException e) {
-      LOGGER.info(
-          "PersistenceException while trying to persist preferences for user {}", userid, e);
+      this.preferences.add(preferences, userid);
+    } catch (PreferencesException e) {
+      LOGGER.info("Exception while trying to persist preferences for user {}", userid, e);
     }
   }
 
@@ -216,27 +202,18 @@ public class UserApplication implements SparkApplication {
     String userid = subjectIdentity.getUniqueIdentifier(subject);
 
     try {
-      String filter = String.format("user = '%s'", userid);
-      List<Map<String, Object>> preferencesList =
-          persistentStore.get(PersistenceType.PREFERENCES_TYPE.toString(), filter);
-      if (preferencesList.size() == 1) {
-        byte[] json = (byte[]) preferencesList.get(0).get("preferences_json_bin");
-
-        Map<String, Object> attributes =
-            GSON.fromJson(new String(json, Charset.defaultCharset()), MAP_STRING_TO_OBJECT_TYPE);
-        /*
-         * Replace alert attribute of preferences with alerts stored in notifications
-         * core
-         * Alerts may be added to Notification core by User.js (addAlert()) in DDF
-         */
-        attributes.put("alerts", getSubjectNotifications(subject));
-        return attributes;
-      }
-    } catch (PersistenceException e) {
+      Map<String, Object> preferencesMap = preferences.get(userid);
+      Map<String, Object> results = new HashMap<>(preferencesMap);
+      /*
+       * Replace alert attribute of preferences with alerts stored in notifications
+       * core
+       * Alerts may be added to Notification core by User.js (addAlert()) in DDF
+       */
+      results.put("alerts", getSubjectNotifications(subject));
+      return results;
+    } catch (PreferencesException e) {
       LOGGER.info(
-          "PersistenceException while trying to retrieve persisted preferences for user {}",
-          userid,
-          e);
+          "Exception while trying to retrieve persisted preferences for user {}", userid, e);
     }
 
     return Collections.emptyMap();
@@ -246,12 +223,11 @@ public class UserApplication implements SparkApplication {
     String userid = subjectIdentity.getUniqueIdentifier(subject);
     String filter = String.format("user = '%s'", userid);
     try {
-      List<Map<String, Object>> notificationsList =
-          persistentStore.get(
-              PersistenceType.NOTIFICATION_TYPE.toString(),
-              filter,
-              0,
-              determineAndRetrieveMaxPageSize());
+      List<Map<String, Object>> notificationsList = persistentStore.get(
+          PersistenceType.NOTIFICATION_TYPE.toString(),
+          filter,
+          0,
+          determineAndRetrieveMaxPageSize());
       return notificationsList.stream().map(this::mapAttributes).collect(Collectors.toList());
     } catch (PersistenceException e) {
       LOGGER.debug(
@@ -344,10 +320,9 @@ public class UserApplication implements SparkApplication {
       LOGGER.debug("Received empty list of notification ids to delete");
       return;
     }
-    List<Filter> idsToDelete =
-        ids.stream()
-            .map(id -> filterBuilder.attribute("id").is().equalTo().text(id))
-            .collect(Collectors.toList());
+    List<Filter> idsToDelete = ids.stream()
+        .map(id -> filterBuilder.attribute("id").is().equalTo().text(id))
+        .collect(Collectors.toList());
     try {
       persistentStore.delete(
           PersistenceType.NOTIFICATION_TYPE.toString(),

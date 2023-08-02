@@ -18,6 +18,7 @@ import TableExport from '../../react-component/table-export'
 import {
   getExportOptions,
   Transformer,
+  getColumnOrder,
 } from '../../react-component/utils/export'
 import user from '../../component/singletons/user-instance'
 import {
@@ -50,14 +51,6 @@ type Source = {
 
 function getSrcs(selectionInterface: any) {
   return selectionInterface.getCurrentQuery().getSelectedSources()
-}
-
-function getColumnOrder(): string[] {
-  return user
-    .get('user')
-    .get('preferences')
-    .get('inspector-summaryShown')
-    .filter((property: string) => !properties.isHidden(property))
 }
 
 function getHiddenFields(): string[] {
