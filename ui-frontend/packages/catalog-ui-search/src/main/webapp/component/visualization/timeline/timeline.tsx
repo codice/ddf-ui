@@ -17,6 +17,7 @@ import IconHelper from '../../../js/IconHelper'
 import useSnack from '../../hooks/useSnack'
 import wreqr from '../../../js/wreqr'
 import user from '../../singletons/user-instance'
+import Extensions from '../../../extension-points'
 import _ from 'lodash'
 const maxDate = moment().tz(user.getTimeZone())
 type Props = {
@@ -59,19 +60,46 @@ const renderTooltip = (timelineItems: TimelineItem[]) => {
     const data = item.data as LazyQueryResult
     const icon = IconHelper.getFullByMetacardObject(data.plain)
     const metacard = data.plain.metacard.properties
+    const ItemAddOn = Extensions.timelineItemAddOn({
+      results: [data],
+      isSingleItem: true,
+    })
     return (
       <React.Fragment key={metacard.id}>
         <span className={icon.class} />
         &nbsp;
+        {ItemAddOn && (
+          <>
+            {ItemAddOn}
+            &nbsp;
+          </>
+        )}
         <span>{metacard.title || metacard.id}</span>
         <br />
       </React.Fragment>
     )
   })
+
+  let OtherItemsAddOn = null
+  if (timelineItems.length > itemsToExpand) {
+    OtherItemsAddOn = Extensions.timelineItemAddOn({
+      results: timelineItems
+        .slice(itemsToExpand)
+        .map((item) => item.data as LazyQueryResult),
+      isSingleItem: false,
+    })
+  }
+
   const otherResults = (
     <React.Fragment>
       <br />
       {`+${timelineItems.length - itemsToExpand} other results`}
+      {OtherItemsAddOn && (
+        <>
+          &nbsp;
+          {OtherItemsAddOn}
+        </>
+      )}
     </React.Fragment>
   )
   return (
