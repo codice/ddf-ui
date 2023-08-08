@@ -18,6 +18,7 @@ import * as React from 'react'
 import _ from 'underscore'
 import MetacardActionsPresentation from './presentation'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import { getColumnOrder, aliasMap } from '../utils/export'
 
 type Props = {
   result: LazyQueryResult
@@ -28,7 +29,7 @@ const MetacardActions = (props: Props) => {
 
   const exportActions = _.sortBy(
     model.getExportActions().map((action) => ({
-      url: action.url,
+      url: action.url + `&columnOrder=${getColumnOrder()}&aliases=${aliasMap}`,
       title: action.displayName,
     })),
     (action: any) => action.title.toLowerCase()

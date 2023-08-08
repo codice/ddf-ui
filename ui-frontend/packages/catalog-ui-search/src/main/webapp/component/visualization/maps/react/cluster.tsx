@@ -5,6 +5,7 @@ import { useSelectionOfLazyResults } from '../../../../js/model/LazyQueryResult/
 import _ from 'underscore'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'geo-... Remove this comment to see the full error message
 import calculateConvexHull from 'geo-convex-hull'
+import extension from '../../../../extension-points'
 
 type Props = {
   cluster: ClusterType
@@ -49,11 +50,18 @@ const Cluster = ({ cluster, map }: Props) => {
 
   const handleCluster = () => {
     const center = map.getCartographicCenterOfClusterInDegrees(cluster)
+
+    const badgeOptions = extension.customMapBadge({
+      results: cluster.results,
+      isCluster: true,
+    })
+
     geometries.current.push(
       map.addPointWithText(center, {
         id: cluster.results.map((result) => result['metacard.id']),
         color: cluster.results[0].getColor(),
         isSelected,
+        badgeOptions,
       })
     )
   }

@@ -1,17 +1,10 @@
-.plotly-histogram .hovertext rect,
-.plotly-histogram .hovertext path,
 .plotly-histogram .axistext path {
   fill: white !important;
   stroke: black !important;
   fill-opacity: 1 !important;
 }
 
-.plotly-histogram .hovertext text,
 .plotly-histogram .axistext text {
-  fill: black !important;
-}
-
-.plotly-histogram svg text {
   fill: black !important;
 }
 
@@ -27,21 +20,13 @@
   stroke: black !important;
 }
 
-/* dark theme */
-.theme-dark .plotly-histogram .hovertext rect,
-.theme-dark .plotly-histogram .hovertext path,
 .theme-dark .plotly-histogram .axistext path {
   fill: black !important;
   stroke: white !important;
   fill-opacity: 1 !important;
 }
 
-.theme-dark .plotly-histogram .hovertext text,
 .theme-dark .plotly-histogram .axistext text {
-  fill: white !important;
-}
-
-.theme-dark .plotly-histogram svg text {
   fill: white !important;
 }
 

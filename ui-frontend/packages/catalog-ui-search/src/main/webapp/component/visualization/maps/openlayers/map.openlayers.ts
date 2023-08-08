@@ -468,14 +468,19 @@ export default function (
       const feature = new Openlayers.Feature({
         geometry: new Openlayers.geom.Point(pointObject),
       })
+      const badgeOffset = options.badgeOptions ? 8 : 0
+      const imgWidth = 44 + badgeOffset
+      const imgHeight = 44 + badgeOffset
+
       feature.setId(options.id)
       ;(feature as any).unselectedStyle = new Openlayers.style.Style({
         image: new Openlayers.style.Icon({
           img: DrawingUtility.getCircleWithText({
             fillColor: options.color,
             text: options.id.length,
+            badgeOptions: options.badgeOptions,
           }),
-          imgSize: [44, 44],
+          imgSize: [imgWidth, imgHeight],
         }),
       })
       ;(feature as any).partiallySelectedStyle = new Openlayers.style.Style({
@@ -485,8 +490,9 @@ export default function (
             text: options.id.length,
             strokeColor: 'black',
             textColor: 'white',
+            badgeOptions: options.badgeOptions,
           }),
-          imgSize: [44, 44],
+          imgSize: [imgWidth, imgHeight],
         }),
       })
       ;(feature as any).selectedStyle = new Openlayers.style.Style({
@@ -496,8 +502,9 @@ export default function (
             text: options.id.length,
             strokeColor: 'white',
             textColor: 'white',
+            badgeOptions: options.badgeOptions,
           }),
-          imgSize: [44, 44],
+          imgSize: [imgWidth, imgHeight],
         }),
       })
       switch (options.isSelected) {
@@ -532,8 +539,9 @@ export default function (
         name: options.title,
       })
       feature.setId(options.id)
-      let x = 39,
-        y = 40
+      const badgeOffset = options.badgeOptions ? 8 : 0
+      let x = 39 + badgeOffset,
+        y = 40 + badgeOffset
       if (options.size) {
         x = options.size.x
         y = options.size.y
@@ -543,9 +551,10 @@ export default function (
           img: DrawingUtility.getPin({
             fillColor: options.color,
             icon: options.icon,
+            badgeOptions: options.badgeOptions,
           }),
           imgSize: [x, y],
-          anchor: [x / 2, 0],
+          anchor: [x / 2 - badgeOffset / 2, 0],
           anchorOrigin: 'bottom-left',
           anchorXUnits: 'pixels',
           anchorYUnits: 'pixels',
@@ -556,9 +565,10 @@ export default function (
           img: DrawingUtility.getPin({
             fillColor: 'orange',
             icon: options.icon,
+            badgeOptions: options.badgeOptions,
           }),
           imgSize: [x, y],
-          anchor: [x / 2, 0],
+          anchor: [x / 2 - badgeOffset / 2, 0],
           anchorOrigin: 'bottom-left',
           anchorXUnits: 'pixels',
           anchorYUnits: 'pixels',

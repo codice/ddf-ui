@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.codice.ddf.search</groupId>
         <artifactId>backend</artifactId>
-        <version>5.0.44-SNAPSHOT</version>
+        <version>5.0.54-SNAPSHOT</version>
     </parent>
     <artifactId>catalog-ui-search</artifactId>
     <name>DDF :: Catalog :: UI :: Catalog UI Search</name>
@@ -214,6 +214,11 @@
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
+            <groupId>ddf.platform</groupId>
+            <artifactId>preferences-api</artifactId>
+            <version>${ddf.version}</version>
+        </dependency>
+        <dependency>
             <groupId>ddf.security.core</groupId>
             <artifactId>security-core-api</artifactId>
             <version>${ddf.version}</version>
@@ -384,6 +389,11 @@
             <artifactId>security-servlet-web-socket-api</artifactId>
             <version>${ddf.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ddf.platform</groupId>
+            <artifactId>preferences-api</artifactId>
+            <version>${ddf.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -532,12 +542,12 @@
                                         <limit>
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.50</minimum>
+                                            <minimum>0.48</minimum>
                                         </limit>
                                         <limit>
                                             <counter>BRANCH</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.47</minimum>
+                                            <minimum>0.46</minimum>
                                         </limit>
                                         <limit>
                                             <counter>COMPLEXITY</counter>

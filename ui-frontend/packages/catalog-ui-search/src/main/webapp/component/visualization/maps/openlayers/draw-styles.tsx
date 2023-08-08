@@ -15,6 +15,7 @@
 import * as ol from 'openlayers'
 import { transparentize } from 'polished'
 import { geometry } from 'geospatialdraw'
+import { contrastingColor } from '../../../../react-component/location/location-color-selector'
 
 const {
   CIRCLE_BUFFER_PROPERTY_VALUE,
@@ -72,7 +73,7 @@ const CIRCLE_BUFFER_PROPERTY_VALUE_DRAWING_STYLE = (
       width: LINE_WIDTH * SCALE_FACTOR,
     }),
     fill: new ol.style.Fill({
-      color: transparentize(0.95, feature.get('color') || 'blue'),
+      color: transparentize(0.95, feature.get('color') || contrastingColor),
     }),
   })
 
@@ -83,7 +84,7 @@ const GENERIC_DRAWING_STYLE = (feature: ol.Feature): ol.style.Style[] => [
       width: LINE_WIDTH * SCALE_FACTOR,
     }),
     fill: new ol.style.Fill({
-      color: transparentize(0.95, feature.get('color') || 'blue'),
+      color: transparentize(0.95, feature.get('color') || contrastingColor),
     }),
     ...(feature.getGeometry().getType() === 'Point' && feature.get('buffer') > 0
       ? {}

@@ -9,6 +9,8 @@ import metacardDefinitions from '../../../singletons/metacard-definitions'
 import iconHelper from '../../../../js/IconHelper'
 import { useUpdateEffect } from 'react-use'
 import { useSelectionOfLazyResult } from '../../../../js/model/LazyQueryResult/hooks'
+import extension from '../../../../extension-points'
+
 type Props = {
   lazyResult: LazyQueryResult
   map: any
@@ -56,6 +58,10 @@ const Geometry = ({ lazyResult, map, clusters }: Props) => {
   }, [lazyResult.plain])
 
   const handlePoint = React.useMemo(() => {
+    const badgeOptions = extension.customMapBadge({
+      results: [lazyResult],
+      isCluster: false,
+    })
     return (point: any) => {
       geometries.current.push(
         map.addPoint(point, {
@@ -64,6 +70,7 @@ const Geometry = ({ lazyResult, map, clusters }: Props) => {
           color,
           icon,
           isSelected,
+          badgeOptions,
         })
       )
     }

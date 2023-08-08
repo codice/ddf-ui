@@ -16,14 +16,14 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import fetch from '../utils/fetch'
 import ResultsExportComponent from './presentation'
-import { exportResult, exportResultSet } from '../utils/export'
+import { exportResult, exportResultSet, getColumnOrder } from '../utils/export'
 import { getResultSetCql } from '../utils/cql'
 import saveFile from '../utils/save-file'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
-
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
 import contentDisposition from 'content-disposition'
+import properties from '../../js/properties'
 
 type ExportFormat = {
   id: string
@@ -147,7 +147,7 @@ class ResultsExport extends React.Component<Props, State> {
         count,
       },
     ]
-
+    const columnOrder = getColumnOrder()
     if (this.props.isZipped) {
       response = await exportResultSet('zipCompression', {
         searches,
@@ -164,6 +164,11 @@ class ResultsExport extends React.Component<Props, State> {
         sorts: this.props.lazyQueryResults?.transformSorts({
           originalSorts: this.props.lazyQueryResults?.persistantSorts,
         }),
+        args: {
+          hiddenFields: [],
+          columnOrder: columnOrder,
+          columnAliasMap: properties.attributeAliases,
+        },
       })
     } else {
       const result = this.props.results[0]
@@ -172,7 +177,7 @@ class ResultsExport extends React.Component<Props, State> {
         result.source,
         result.id,
         uriEncodedTransformerId,
-        result.attributes.toString()
+        columnOrder.toString()
       )
     }
 

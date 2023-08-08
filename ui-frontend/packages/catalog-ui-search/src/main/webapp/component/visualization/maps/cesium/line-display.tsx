@@ -26,6 +26,7 @@ import { removeOldDrawing } from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import utility from './utility'
+import { contrastingColor } from '../../../../react-component/location/location-color-selector'
 const toDeg = Cesium.Math.toDegrees
 
 const CAMERA_MAGNITUDE_THRESHOLD = 8000000
@@ -191,7 +192,7 @@ const drawGeometry = ({
         coordinates: turfLine.geometry.coordinates,
         model,
         id,
-        color: 'blue',
+        color: contrastingColor,
         buffer: lineWidth,
       })
     )
@@ -348,7 +349,7 @@ const useStartMapDrawing = ({
           onDraw(drawnLine)
         },
         material: Cesium.Material.fromType('Color', {
-          color: Cesium.Color.BLUE,
+          color: Cesium.Color.fromCssColorString(contrastingColor),
         }),
       })
     }

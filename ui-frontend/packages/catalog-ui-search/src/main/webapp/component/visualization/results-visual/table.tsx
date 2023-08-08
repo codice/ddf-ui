@@ -108,7 +108,9 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
    * This is solely to keep the illusion of responsiveness when switching from table mode to list mode (or dropping a new result visual in)
    */
   const [isMounted, setIsMounted] = React.useState(false)
-  const { listRef } = useScrollToItemOnSelection({ selectionInterface })
+  const { listRef, setLastInteraction } = useScrollToItemOnSelection({
+    selectionInterface,
+  })
 
   React.useEffect(() => {
     const mountedTimeout = setTimeout(() => {
@@ -127,6 +129,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
     setHeaderColWidth(width)
   }
 
+  const [maxActionWidth, setMaxActionWidth] = React.useState(0)
   const [maxAddOnWidth, setMaxAddOnWidth] = React.useState(0)
 
   return (
@@ -214,6 +217,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                     lazyResults={lazyResults}
                     setHeaderColWidth={setWidth}
                     headerColWidth={headerColWidth}
+                    actionWidth={maxActionWidth}
                     addOnWidth={maxAddOnWidth}
                   />
                 </div>
@@ -228,6 +232,7 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                     lazyResults.results,
                     isSearching,
                     status,
+                    maxAddOnWidth,
                   ]}
                 >
                   <AutoVariableSizeList<LazyQueryResult, HTMLDivElement>
@@ -238,6 +243,12 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                             e.target as any
                           ).scrollLeft
                         }
+                      },
+                      onMouseEnter: () => {
+                        setLastInteraction(Date.now())
+                      },
+                      onMouseUp: () => {
+                        setLastInteraction(Date.now())
                       },
                     }}
                     defaultSize={76}
@@ -252,7 +263,14 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
                             measure={measure}
                             index={index}
                             results={results}
+                            selectionInterface={selectionInterface}
                             headerColWidth={headerColWidth}
+                            actionWidth={maxActionWidth}
+                            setMaxActionWidth={(width) =>
+                              setMaxActionWidth((maxWidth) =>
+                                Math.max(width, maxWidth)
+                              )
+                            }
                             addOnWidth={maxAddOnWidth}
                             setMaxAddOnWidth={(width) =>
                               setMaxAddOnWidth((maxWidth) =>

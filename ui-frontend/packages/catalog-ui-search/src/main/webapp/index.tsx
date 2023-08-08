@@ -12,7 +12,10 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import './styles/tailwind.css'
-import Entry from './js/Entry'
-
-Entry()
+// check browser before loading the rest of the app
+import { isSupportedBrowser } from './check-browser'
+;(() => {
+  if (isSupportedBrowser()) {
+    import('./app')
+  }
+})()

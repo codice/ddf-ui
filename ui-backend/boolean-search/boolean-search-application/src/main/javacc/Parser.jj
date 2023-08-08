@@ -8,13 +8,10 @@ PARSER_BEGIN(Parser)
 
 package org.codice.ddf.catalog.search.javacc;
 
-import java.io.StringReader;
 import java.io.Reader;
 import org.codice.ddf.catalog.search.models.BooleanTextFilter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Parser {
     public String propertyName= "anyText";
@@ -49,13 +46,13 @@ TOKEN:
 
 TOKEN :
 {
-     < STRING : (["A"-"Z","a"-"z","0"-"9"])+ >
+     < STRING : (["A"-"Z","a"-"z","0"-"9","*","?"])+ >
    | < QUOTED_STRING: "\"" (~["\""])+ "\"" >
 }
 
 
 
-String SearchExpression() :
+String SearchExpression() throws CustomParseException :
 {
   String cql;
 }
@@ -67,7 +64,7 @@ String SearchExpression() :
     }
 }
 
-String TextSearchExpression() :
+String TextSearchExpression() throws CustomParseException :
 {
   String left, right;
   Token logicalOperator;
@@ -88,7 +85,7 @@ String TextSearchExpression() :
   }
 }
 
-String TextSearchComponent() :
+String TextSearchComponent() throws CustomParseException :
 {
     String quotedSearchPhrase;
     List<BooleanTextFilter> searchTextFilters = new ArrayList<>();
@@ -101,6 +98,9 @@ String TextSearchComponent() :
     (
         quotedSearchPhrase = QuotedSearchPhrase()
         {
+          if (quotedSearchPhrase.contains("?") || quotedSearchPhrase.contains("*")) {
+            throw new CustomParseException("Wildcards are not allowed in search phrases.");
+          }
           filters.add(new BooleanTextFilter(this.propertyName, quotedSearchPhrase.replace("\"", "").replace("'", "''")));
         }
         |

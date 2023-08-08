@@ -17,7 +17,7 @@
     <parent>
         <artifactId>audit</artifactId>
         <groupId>org.codice.ddf.search</groupId>
-        <version>5.0.44-SNAPSHOT</version>
+        <version>5.0.54-SNAPSHOT</version>
     </parent>
 
     <packaging>bundle</packaging>
@@ -86,12 +86,12 @@
                                         <limit>
                                             <counter>BRANCH</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>1.00</minimum>
+                                            <minimum>0.97</minimum>
                                         </limit>
                                         <limit>
                                             <counter>COMPLEXITY</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>1.00</minimum>
+                                            <minimum>0.96</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

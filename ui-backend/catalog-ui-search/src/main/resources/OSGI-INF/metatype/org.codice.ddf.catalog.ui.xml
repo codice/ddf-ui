@@ -216,18 +216,18 @@
             default="true"/>
 
         <AD id="customTextNotationEnabled"
-          name="Show Custom Text Notations"
-          description="Toggle the display of custom text notations next to metacard map markers."
-          type="Boolean"
-          default="false"
-          required="false"/>
+            name="Show Custom Text Notations"
+            description="Toggle the display of custom text notations next to metacard map markers."
+            type="Boolean"
+            default="false"
+            required="false"/>
 
         <AD id="customTextNotationAttribute"
-          name="Custom Text Notation Attribute"
-          description="Set the metacard attribute to display next to the map markers. The default is 'title'."
-          type="String"
-          default="title"
-          required="false"/>
+            name="Custom Text Notation Attribute"
+            description="Set the metacard attribute to display next to the map markers. The default is 'title'."
+            type="String"
+            default="title"
+            required="false"/>
 
         <AD id="basicSearchTemporalSelectionDefault"
             name="Basic Search Temporal Selections"
@@ -370,10 +370,10 @@
                 default="DDF"/>
 
         <AD id="product"
-                name="Product Name"
-                description="Specifies a custom product name for the UI, by default Intrigue"
-                type="String"
-                default="Intrigue"/>
+            name="Product Name"
+            description="Specifies a custom product name for the UI, by default Intrigue"
+            type="String"
+            default="Intrigue"/>
 
         <AD
                 description="The Branding."
@@ -381,39 +381,45 @@
                 id="landingPageBackgroundSrc"
                 type="String"
                 default=""
-                />
+        />
 
-         <AD
+        <AD
                 description="The Branding."
                 name="Top Left Logo"
                 id="topLeftLogoSrc"
                 type="String"
                 default=""
-                />
+        />
 
-                 <AD
+        <AD
                 description="The Branding."
                 name="Bottom Left Logo"
                 id="bottomLeftLogoSrc"
                 type="String"
                 default=""
-                />
+        />
 
-                 <AD
+        <AD
                 description="The Branding."
                 name="Bottom Left Background"
                 id="bottomLeftBackgroundSrc"
                 type="String"
                 default=""
-                />
+        />
 
-                <AD
+        <AD
                 description="The Branding."
                 name="Menu Icon"
                 id="menuIconSrc"
                 type="String"
                 default=""
-                />
+        />
+
+        <AD id="extra"
+            name="Extra JSON"
+            description="Arbitrary JSON map for runtime UI configuration."
+            type="String"
+            required="false"/>
     </OCD>
 
     <Designate pid="org.codice.ddf.catalog.ui">

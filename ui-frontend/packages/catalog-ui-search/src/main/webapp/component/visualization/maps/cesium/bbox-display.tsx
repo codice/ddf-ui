@@ -22,6 +22,7 @@ import { removeOldDrawing } from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import DistanceUtils from '../../../../js/DistanceUtils'
+import { contrastingColor } from '../../../../react-component/location/location-color-selector'
 const toDeg = Cesium.Math.toDegrees
 
 const CAMERA_MAGNITUDE_THRESHOLD = 8000000
@@ -144,7 +145,7 @@ const drawGeometry = ({
       height: 0,
       id,
       material: Cesium.Material.fromType('Color', {
-        color: Cesium.Color.fromAlpha(Cesium.Color.BLUE, 0.2),
+        color: Cesium.Color.fromAlpha(contrastingColor, 0.2),
       }),
     })
     primitive.setEditable()
@@ -283,7 +284,7 @@ const useStartMapDrawing = ({
           onDraw(bbox)
         },
         material: Cesium.Material.fromType('Color', {
-          color: Cesium.Color.fromAlpha(Cesium.Color.BLUE, 0.2),
+          color: Cesium.Color.fromAlpha(contrastingColor, 0.2),
         }),
       })
     }

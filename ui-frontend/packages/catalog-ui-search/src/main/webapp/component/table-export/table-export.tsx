@@ -18,6 +18,7 @@ import TableExport from '../../react-component/table-export'
 import {
   getExportOptions,
   Transformer,
+  getColumnOrder,
 } from '../../react-component/utils/export'
 import user from '../../component/singletons/user-instance'
 import {
@@ -41,7 +42,6 @@ type ExportResponse = {
 
 export type Props = {
   selectionInterface: any
-  filteredAttributes: string[]
 }
 
 type Source = {
@@ -51,17 +51,6 @@ type Source = {
 
 function getSrcs(selectionInterface: any) {
   return selectionInterface.getCurrentQuery().getSelectedSources()
-}
-
-function getColumnOrder(filteredAttributes: any[]): string[] {
-  return user
-    .get('user')
-    .get('preferences')
-    .get('columnOrder')
-    .filter(
-      (property: string) =>
-        filteredAttributes.includes(property) && !properties.isHidden(property)
-    )
 }
 
 function getHiddenFields(): string[] {
@@ -135,15 +124,10 @@ export const getWarning = (exportCountInfo: ExportCountInfo): string => {
 }
 
 export const getDownloadBody = (downloadInfo: DownloadInfo) => {
-  const {
-    exportSize,
-    customExportCount,
-    selectionInterface,
-    filteredAttributes,
-  } = downloadInfo
+  const { exportSize, customExportCount, selectionInterface } = downloadInfo
 
   const hiddenFields = getHiddenFields()
-  const columnOrder = getColumnOrder(filteredAttributes)
+  const columnOrder = getColumnOrder()
   const srcs = getSrcs(selectionInterface)
   const sorts = getSorts(selectionInterface)
   const query = selectionInterface.getCurrentQuery()
@@ -215,7 +199,7 @@ const generateOnDownloadClick = (addSnack: AddSnack) => {
   }
 }
 
-const TableExports = ({ selectionInterface, filteredAttributes }: Props) => {
+const TableExports = ({ selectionInterface }: Props) => {
   const [formats, setFormats] = useState([])
   const addSnack = useSnack()
   useEffect(() => {
@@ -242,7 +226,6 @@ const TableExports = ({ selectionInterface, filteredAttributes }: Props) => {
       selectionInterface={selectionInterface}
       getWarning={getWarning}
       onDownloadClick={generateOnDownloadClick(addSnack)}
-      filteredAttributes={filteredAttributes}
     />
   )
 }

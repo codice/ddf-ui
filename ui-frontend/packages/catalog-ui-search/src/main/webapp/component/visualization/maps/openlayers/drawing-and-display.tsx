@@ -46,6 +46,7 @@ import { validateGeo } from '../../../../react-component/utils/validation'
 import ShapeUtils from '../../../../js/ShapeUtils'
 import _ from 'lodash'
 import utility from './utility'
+import { contrastingColor } from '../../../../react-component/location/location-color-selector'
 
 const DrawingMenu = menu.DrawingMenu
 const makeEmptyGeometry = geometry.makeEmptyGeometry
@@ -260,6 +261,9 @@ export const getDrawingGeometryFromModel = (
   }
   if (geo) {
     utility.adjustGeoCoords(geo)
+    if (geo.properties?.color) {
+      geo.properties.color = contrastingColor
+    }
   }
   return geo
 }
