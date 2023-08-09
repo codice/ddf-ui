@@ -116,6 +116,10 @@ export type ExtensionPointsType = {
   customHistogramHover:
     | ((props: { results: LazyQueryResult[] }) => CustomHover | undefined)
     | undefined
+  timelineItemAddOn: (props: {
+    results: LazyQueryResult[]
+    isSingleItem: boolean
+  }) => JSX.Element | null
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -146,6 +150,7 @@ const ExtensionPoints: ExtensionPointsType = {
   }) => null,
   attributeEditor: () => null,
   customHistogramHover: undefined,
+  timelineItemAddOn: () => null,
 }
 
 export default ExtensionPoints
