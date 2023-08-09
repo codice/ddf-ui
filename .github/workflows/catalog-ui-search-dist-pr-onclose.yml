@@ -39,7 +39,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const message = 'You can no longer use: \n \"catalog-ui-search\": \"codice/ddf-ui#catalog-ui-search-dist-${{ github.event.pull_request.number }}\" \n in your package.json to use this version in your project, as it has been deleted now that the pull request is closed. \n \n Instead, if the pr was merged you can now access these changes by using: \n \"catalog-ui-search\": \"codice/ddf-ui#catalog-ui-search-dist-snapshot\" \n \n Remember to use "yarn install --force" if you want to pick up changes to this version.';
+            const message = 'You can no longer use: \n \"catalog-ui-search\": \"https://github.com/codice/ddf-ui#catalog-ui-search-dist-${{ github.event.pull_request.number }}\" \n in your package.json to use this version in your project, as it has been deleted now that the pull request is closed. \n \n Instead, if the pr was merged you can now access these changes by using: \n \"catalog-ui-search\": \"https://github.com/codice/ddf-ui#catalog-ui-search-dist-snapshot\" \n \n Remember to use "yarn install --force" if you want to pick up changes to this version.';
             const prNumber = context.payload.pull_request.number;
             github.rest.issues.createComment({
               owner: context.repo.owner,
