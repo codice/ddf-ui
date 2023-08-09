@@ -17,7 +17,7 @@ import $ from 'jquery'
 import moment from 'moment'
 import './requestAnimationFramePolyfill'
 import { TimePrecision } from '@blueprintjs/datetime'
-import { cacheBustUrl } from './cach-bust-url'
+import { cacheBustUrl } from './cache-bust-url'
 const timeZones = {
   UTC: 'Etc/UTC',
   '-12': 'Etc/GMT+12',
