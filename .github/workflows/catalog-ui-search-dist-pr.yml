@@ -77,7 +77,7 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const message = 'An updated dist branch has been created and pushed to origin. \n You can use: \n \"catalog-ui-search\": \"https://github.com/codice/ddf-ui#catalog-ui-search-dist-${{ github.event.pull_request.number }}\" \n in your package.json to use this version in your project. \n \n Remember to use "yarn install --force" if you want to pick up changes each time you make a change to this branch by committing.';
+            const message = 'An updated dist branch has been created and pushed to origin. \n You can use: \n `\"catalog-ui-search\": \"https://github.com/codice/ddf-ui#catalog-ui-search-dist-${{ github.event.pull_request.number }}\",` \n in your package.json to use this version in your project. \n \n Remember to use "yarn install --force" if you want to pick up changes each time you make a change to this branch by committing.';
             const prNumber = context.payload.pull_request.number;
             github.issues.createComment({
               owner: context.repo.owner,

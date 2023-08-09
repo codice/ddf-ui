@@ -48,7 +48,7 @@ There are multiple workflows setup to assist with develop in downstream projects
 ```
 An updated dist branch has been created and pushed to origin.
 You can use:
-"catalog-ui-search": "https://github.com/codice/ddf-ui#catalog-ui-search-dist-746"
+`"catalog-ui-search": "https://github.com/codice/ddf-ui#catalog-ui-search-dist-746"`,
 in your package.json to use this version in your project.
 
 Remember to use "yarn install --force" if you want to pick up changes each time you make a change to this branch by committing.
