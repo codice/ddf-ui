@@ -18,6 +18,7 @@ import _ from 'underscore'
 import _merge from 'lodash/merge'
 import _debounce from 'lodash/debounce'
 import _cloneDeep from 'lodash.clonedeep'
+import _isEqualWith from 'lodash.isequalwith'
 import $ from 'jquery'
 import wreqr from '../../js/wreqr'
 import GoldenLayout from 'golden-layout'
@@ -1135,24 +1136,21 @@ const useConsumeStateChange = ({
       const onSyncStateCallback = (eventData: {
         lazyResults: LazyQueryResults
       }) => {
-        if (
-          JSON.stringify(
-            Object.values(lazyResults.results).map((lazyResult) => {
-              return {
-                plain: lazyResult.plain,
-                isSelected: lazyResult.isSelected,
-              }
-            })
-          ) !==
-          JSON.stringify(
-            Object.values(eventData.lazyResults.results).map((lazyResult) => {
-              return {
-                plain: lazyResult.plain,
-                isSelected: lazyResult.isSelected,
-              }
-            })
-          )
-        ) {
+        const results = Object.values(lazyResults.results).map((lazyResult) => {
+          return {
+            plain: lazyResult.plain,
+            isSelected: lazyResult.isSelected,
+          }
+        })
+        const callbackResults = Object.values(
+          eventData.lazyResults.results
+        ).map((lazyResult) => {
+          return {
+            plain: lazyResult.plain,
+            isSelected: lazyResult.isSelected,
+          }
+        })
+        if (!_isEqualWith(results, callbackResults)) {
           lazyResults.reset({
             results: Object.values(eventData.lazyResults.results).map(
               (result) => _cloneDeep(result.plain)
