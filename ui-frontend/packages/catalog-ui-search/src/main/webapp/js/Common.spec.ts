@@ -83,9 +83,9 @@ describe('Common', () => {
       const image = Common.getImageSrc(123456789)
       expect(image).to.equal('data:image/png;base64,123456789')
     })
-    it('returns url unchanged', () => {
+    it('returns url with cache bust', () => {
       const image = Common.getImageSrc('http://some.url/cx.png')
-      expect(image).to.equal('http://some.url/cx.png')
+      expect(image.includes('?_=')).to.equal(true)
     })
     it('returns empty string unchanged', () => {
       const image = Common.getImageSrc('')
