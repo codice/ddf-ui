@@ -14,9 +14,9 @@
  **/
 import UploadModel from './Upload'
 import Backbone from 'backbone'
-import Common from '../Common'
 import wreqr from '../wreqr'
 import _ from 'underscore'
+import { v4 } from 'uuid'
 const updatePreferences = _.throttle(() => {
   ;(wreqr as any).vent.trigger('preferences:save')
 }, 1000)
@@ -59,7 +59,7 @@ export default Backbone.AssociatedModel.extend({
     this.bindCallbacks()
     this.options = options
     if (!this.id) {
-      this.set('id', Common.generateUUID())
+      this.set('id', v4())
     }
     this.listenTo(
       this.get('uploads'),

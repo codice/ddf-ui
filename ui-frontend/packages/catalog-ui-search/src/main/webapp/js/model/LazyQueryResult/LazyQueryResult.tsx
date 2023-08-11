@@ -35,25 +35,6 @@ function getThumbnailAction(result: ResultType) {
     (action) => action.id === 'catalog.data.metacard.thumbnail'
   )
 }
-function cacheBustUrl(url: string): string {
-  if (url && url.indexOf('_=') === -1) {
-    let newUrl = url
-    if (url.indexOf('?') >= 0) {
-      newUrl += '&'
-    } else {
-      newUrl += '?'
-    }
-    newUrl += '_=' + Date.now()
-    return newUrl
-  }
-  return url
-}
-function cacheBustThumbnail(plain: ResultType) {
-  let url = plain.metacard.properties.thumbnail
-  if (url) {
-    plain.metacard.properties.thumbnail = cacheBustUrl(url)
-  }
-}
 function humanizeResourceSize(plain: ResultType) {
   if (plain.metacard.properties['resource-size']) {
     plain.metacard.properties['resource-size'] = Common.getFileSize(
@@ -221,20 +202,17 @@ export class LazyQueryResult {
     this.isSelected = false
     this.isFiltered = false
     humanizeResourceSize(plain)
-    cacheBustThumbnail(plain)
   }
   syncWithBackbone() {
     if (this.backbone) {
       this.plain = transformPlain({ plain: this.backbone.toJSON() })
       humanizeResourceSize(this.plain)
-      cacheBustThumbnail(this.plain)
       this['_notifySubscribers.backboneSync']()
     }
   }
   syncWithPlain() {
     this.plain = transformPlain({ plain: { ...this.plain } })
     humanizeResourceSize(this.plain)
-    cacheBustThumbnail(this.plain)
     this['_notifySubscribers.backboneSync']()
   }
   // this is a partial update (like title only or something)
@@ -259,6 +237,8 @@ export class LazyQueryResult {
             : attribute.values[0]
       })
     )
+    // I think we should update the edit endpoint to include the new metacard modified date, as this is just to force a refresh
+    this.plain.metacard.properties['metacard.modified'] = new Date().toJSON()
     this.syncWithPlain()
   }
   // we have the entire metacard sent back

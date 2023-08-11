@@ -18,8 +18,8 @@ import {
 } from '../../react-component/utils/security/security'
 import fetch from '../../react-component/utils/fetch'
 import _ from 'underscore'
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'loda... Remove this comment to see the full error message
 import _get from 'lodash.get'
+import _cloneDeep from 'lodash.clonedeep'
 import wreqr from '../wreqr'
 import Backbone from 'backbone'
 import properties from '../properties'
@@ -30,6 +30,7 @@ import moment from 'moment-timezone'
 import QuerySettings from './QuerySettings'
 import 'backbone-associations'
 import { CommonAjaxSettings } from '../AjaxSettings'
+import { v4 } from 'uuid'
 const User = {}
 const Theme = Backbone.Model.extend({
   defaults() {
@@ -65,7 +66,7 @@ const Theme = Backbone.Model.extend({
     return {
       alpha: 0.5,
       show: true,
-      id: Common.generateUUID(),
+      id: v4(),
     }
   },
   blacklist: ['warning'],
@@ -229,15 +230,21 @@ const Theme = Backbone.Model.extend({
     })
     this.savePreferences()
   },
+  needsUpdate(upToDatePrefs: any) {
+    if (_.isEqual(_cloneDeep(upToDatePrefs), this.lastSaved)) {
+      return false
+    }
+    return true
+  },
   savePreferences() {
     const currentPrefs = this.toJSON()
-    if (_.isEqual(Common.duplicate(currentPrefs), this.lastSaved)) {
+    if (!this.needsUpdate(currentPrefs)) {
       return
     }
     if (this.parents[0].isGuestUser()) {
       window.localStorage.setItem('preferences', JSON.stringify(currentPrefs))
     } else {
-      this.lastSaved = Common.duplicate(currentPrefs)
+      this.lastSaved = _cloneDeep(currentPrefs)
       this.save(currentPrefs, {
         ...CommonAjaxSettings,
         drop: true,
@@ -372,6 +379,9 @@ const Theme = Backbone.Model.extend({
   initialize() {
     this.listenTo(this, 'sync', this.handleSync)
     this.set('user', new (User as any).Model())
+    this.refetch()
+  },
+  refetch() {
     this.fetch(CommonAjaxSettings)
   },
   handleSync() {

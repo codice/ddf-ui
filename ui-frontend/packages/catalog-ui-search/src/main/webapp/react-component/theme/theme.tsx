@@ -22,9 +22,9 @@ import {
 import user from '../../component/singletons/user-instance'
 
 import withListenTo, { WithBackboneProps } from '../backbone-container'
-import Common from '../../js/Common'
 import $ from 'jquery'
 import _ from 'underscore'
+import { v4 } from 'uuid'
 
 type SizingInterface = {
   comfortable: SpecificSizingInterface
@@ -252,7 +252,7 @@ class ThemeContainer extends React.Component<
     super(props)
     this.state = sharedState
   }
-  id = Common.generateUUID()
+  id = v4()
   isDestroyed = false
   componentDidMount() {
     this.listenForUserChanges()

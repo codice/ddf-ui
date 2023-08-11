@@ -7,7 +7,7 @@ import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import { useSelectedResults } from '../../../js/model/LazyQueryResult/hooks'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
-import Common from '../../../js/Common'
+import _cloneDeep from 'lodash.clonedeep'
 import wreqr from '../../../js/wreqr'
 import $ from 'jquery'
 import _ from 'underscore'
@@ -233,6 +233,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
   const isDarkTheme = theme.palette.mode === 'dark'
   const [noMatchingData, setNoMatchingData] = React.useState(false)
   const plotlyRef = React.useRef<HTMLDivElement>()
+  const plotlyReadyForUpdatesRef = React.useRef(false)
   const lazyResults = useLazyResultsFromSelectionInterface({
     selectionInterface,
   })
@@ -252,7 +253,10 @@ export const Histogram = ({ selectionInterface }: Props) => {
     showHistogram()
   }, [lazyResults.results, attributeToBin, theme])
   React.useEffect(() => {
-    updateHistogram()
+    if (plotlyReadyForUpdatesRef.current) {
+      // avoid updating the histogram if it's not ready yet
+      updateHistogram()
+    }
   }, [selectedResults])
 
   const defaultFontColor = isDarkTheme ? 'white' : 'black'
@@ -309,7 +313,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
   }
   const determineData = (plot: any) => {
     const activeResults = results
-    const xbins = Common.duplicate(plot._fullData[0].xbins)
+    const xbins = _cloneDeep(plot._fullData[0].xbins)
 
     const categories: any[] = retrieveCategoriesFromPlotly()
 
@@ -401,6 +405,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
     }
   }, [])
   const showHistogram = () => {
+    plotlyReadyForUpdatesRef.current = false
     if (plotlyRef.current) {
       if (results.length > 0 && attributeToBin) {
         const histogramElement = plotlyRef.current
@@ -426,6 +431,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
             )
             handleResize()
             listenToHistogram()
+            plotlyReadyForUpdatesRef.current = true
           })
         }
       } else {

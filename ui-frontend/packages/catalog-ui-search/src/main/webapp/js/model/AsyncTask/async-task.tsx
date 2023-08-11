@@ -1,10 +1,11 @@
 import { Subscribable } from '../Base/base-classes'
 import * as React from 'react'
+import _cloneDeep from 'lodash/cloneDeep'
 import { LazyQueryResult } from '../LazyQueryResult/LazyQueryResult'
 import fetch from '../../../react-component/utils/fetch'
 import { useParams } from 'react-router-dom'
 import CQL from '../../cql'
-import Common from '../../Common'
+import { v4 } from 'uuid'
 
 type PlainMetacardPropertiesType =
   LazyQueryResult['plain']['metacard']['properties']
@@ -18,7 +19,7 @@ export const convertToBackendCompatibleForm = ({
 }: {
   properties: MinimalPropertySet
 }) => {
-  const duplicatedProperties = JSON.parse(JSON.stringify(properties))
+  const duplicatedProperties = _cloneDeep(properties)
   Object.keys(duplicatedProperties).forEach((key) => {
     if (typeof duplicatedProperties[key] !== 'string') {
       if (duplicatedProperties[key]?.constructor === Array) {
@@ -494,7 +495,7 @@ class CreateTask extends AsyncTask {
     super()
     this.metacardType = metacardType
     this.data = data
-    this.data.id = this.data.id || Common.generateUUID()
+    this.data.id = this.data.id || v4()
     setTimeout(() => {
       this.attemptSave()
     }, 1000)
@@ -606,7 +607,7 @@ class CreateSearchTask extends AsyncTask {
   }) {
     super()
     this.data = data
-    this.data.id = Common.generateUUID()
+    this.data.id = v4()
     setTimeout(() => {
       this.attemptSave()
     }, 1000)
