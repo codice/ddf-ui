@@ -20,6 +20,8 @@ import Sources from '../../component/singletons/sources-instance'
 import { postSimpleAuditLog } from '../../react-component/utils/audit/audit-endpoint'
 import cql from '../cql'
 import _merge from 'lodash/merge'
+import _cloneDeep from 'lodash.clonedeep'
+import { v4 } from 'uuid'
 import 'backbone-associations'
 import { LazyQueryResults } from './LazyQueryResult/LazyQueryResults'
 import {
@@ -37,7 +39,6 @@ import {
   IndexForSourceGroupType,
   QueryStartAndEndType,
 } from './Query.methods'
-import { Common } from '../Common'
 import wreqr from '../wreqr'
 import { CommonAjaxSettings } from '../AjaxSettings'
 export type QueryType = {
@@ -186,7 +187,19 @@ export default Backbone.AssociatedModel.extend({
           },
         ],
         sources: ['all'],
-        result: undefined,
+        // initialize this here so we can avoid creating spurious references to LazyQueryResults objects
+        result: new QueryResponse({
+          lazyResults: new LazyQueryResults({
+            sorts: [],
+            sources: [],
+            transformSorts: ({ originalSorts }) => {
+              return this.options.transformSorts({
+                originalSorts,
+                queryRef: this,
+              })
+            },
+          }),
+        }),
         type: 'text',
         isLocal: false,
         isOutdated: false,
@@ -370,8 +383,8 @@ export default Backbone.AssociatedModel.extend({
       },
       options
     )
-    const data = Common.duplicate(this.buildSearchData())
-    data.batchId = Common.generateUUID()
+    const data = _cloneDeep(this.buildSearchData())
+    data.batchId = v4()
     // Data.sources is set in `buildSearchData` based on which sources you have selected.
     let selectedSources = data.sources
     const harvestedSources = Sources.getHarvested()
@@ -381,31 +394,13 @@ export default Backbone.AssociatedModel.extend({
       selectedSources = data.sources.filter(isHarvested)
     }
     let result = this.get('result')
-    if (result) {
-      result.get('lazyResults').reset({
-        sorts: this.get('sorts'),
-        sources: selectedSources,
-        transformSorts: ({ originalSorts }: any) => {
-          return this.options.transformSorts({ originalSorts, queryRef: this })
-        },
-      })
-    } else {
-      result = new QueryResponse({
-        lazyResults: new LazyQueryResults({
-          sorts: this.get('sorts'),
-          sources: selectedSources,
-          transformSorts: ({ originalSorts }) => {
-            return this.options.transformSorts({
-              originalSorts,
-              queryRef: this,
-            })
-          },
-        }),
-      })
-      this.set({
-        result,
-      })
-    }
+    result.get('lazyResults').reset({
+      sorts: this.get('sorts'),
+      sources: selectedSources,
+      transformSorts: ({ originalSorts }: any) => {
+        return this.options.transformSorts({ originalSorts, queryRef: this })
+      },
+    })
     return {
       data,
       selectedSources,

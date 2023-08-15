@@ -17,7 +17,7 @@ import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import { hot } from 'react-hot-loader'
 import Button from '@mui/material/Button'
 import LinearProgress from '@mui/material/LinearProgress'
-import wreqr from '../../js/wreqr'
+import { useHistory } from 'react-router-dom'
 type UploadItemViewReactType = {
   model: any
 }
@@ -31,6 +31,7 @@ const modelToJSON = (model: any) => {
   return modelJSON
 }
 export const UploadItemViewReact = ({ model }: UploadItemViewReactType) => {
+  const history = useHistory()
   const [modelJson, setModelJson] = React.useState(modelToJSON(model))
   const [cancel, setCancel] = React.useState(false)
   useListenTo(
@@ -55,11 +56,8 @@ export const UploadItemViewReact = ({ model }: UploadItemViewReactType) => {
       className={`flex flex-row items-center flex-nowrap w-full p-4 border-gray-600/25 border`}
       onClick={() => {
         if (model.get('success') && !model.hasChildren()) {
-          ;(wreqr as any).vent.trigger('router:navigate', {
-            fragment: 'metacards/' + model.get('id'),
-            options: {
-              trigger: true,
-            },
+          history.push({
+            pathname: `/metacards/${model.get('id')}`,
           })
         }
       }}
@@ -123,11 +121,8 @@ export const UploadItemViewReact = ({ model }: UploadItemViewReactType) => {
         {hasSuccess ? (
           <Button
             onClick={() => {
-              ;(wreqr as any).vent.trigger('router:navigate', {
-                fragment: 'metacards/' + model.get('id'),
-                options: {
-                  trigger: true,
-                },
+              history.push({
+                pathname: `/metacards/${model.get('id')}`,
               })
             }}
           >

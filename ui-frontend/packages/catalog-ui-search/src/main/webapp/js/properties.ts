@@ -40,6 +40,7 @@ const properties = {
   defaultFlytoHeight: 15000.0,
   CQL_DATE_FORMAT: 'YYYY-MM-DD[T]HH:mm:ss[Z]',
   ui: {},
+  resultCount: 150,
   basicSearchTemporalSelectionDefault: [
     'created',
     'effective',

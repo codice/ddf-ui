@@ -14,6 +14,7 @@
  **/
 import React from 'react'
 import { useState, useEffect } from 'react'
+import { v4 } from 'uuid'
 import {
   getDrawModeFromModel,
   useDrawingAndDisplayModels,
@@ -178,7 +179,7 @@ const modelToPolygon = (model: any): GeometryJSON | null => {
   const buffer = Number(model.get('polygonBufferWidth'))
   const bufferUnit = model.get('polygonBufferUnits')
   return makeGeometry(
-    Common.generateUUID(),
+    v4(),
     Turf.polygon(polygon).geometry,
     DRAWING_COLOR,
     'Polygon',
@@ -198,7 +199,7 @@ const modelToLine = (model: any): GeometryJSON | null => {
   const buffer = Number(model.get('lineWidth'))
   const bufferUnit = model.get('lineUnits')
   return makeLineGeo(
-    Common.generateUUID(),
+    v4(),
     coords,
     Number.isNaN(buffer) ? 0 : buffer,
     bufferUnit || 'meters'
@@ -214,7 +215,7 @@ const modelToPointRadius = (model: any): GeometryJSON | null => {
   const radius = Number(model.get('radius'))
   const radiusUnits = model.get('radiusUnits')
   return makePointRadiusGeo(
-    Common.generateUUID(),
+    v4(),
     lat,
     lon,
     Number.isNaN(radius) ? 1 : radius,
@@ -234,7 +235,7 @@ const modelToBoundingBox = (model: any): GeometryJSON | null => {
   if (isAnyNaN([west, south, east, north])) {
     return null
   }
-  return makeBBoxGeo(Common.generateUUID(), [west, south, east, north])
+  return makeBBoxGeo(v4(), [west, south, east, north])
 }
 
 export const getDrawingGeometryFromModel = (
@@ -280,7 +281,7 @@ export const convertToModel = (geo: GeometryJSON, shape: Shape) => {
 // If this was state, the resulting rerenders would
 // break bounding boxes in the updateGeo method
 let drawingLocation: GeometryJSON | null = makeEmptyGeometry(
-  Common.generateUUID(),
+  v4(),
   DEFAULT_SHAPE
 )
 

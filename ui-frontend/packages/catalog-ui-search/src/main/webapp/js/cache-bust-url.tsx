@@ -12,25 +12,16 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
-import Backbone from 'backbone'
-
-import { v4 } from 'uuid'
-import 'backbone-associations'
-
-export default Backbone.AssociatedModel.extend({
-  defaults: {
-    unseen: true,
-    queryId: undefined,
-    when: undefined,
-    metacardIds: [],
-  },
-  initialize() {
-    if (!this.id) {
-      this.set('id', v4())
+export function cacheBustUrl(url: string): string {
+  if (url && url.indexOf('_=') === -1) {
+    let newUrl = url
+    if (url.indexOf('?') >= 0) {
+      newUrl += '&'
+    } else {
+      newUrl += '?'
     }
-  },
-  getTimeComparator() {
-    return this.get('when')
-  },
-})
+    newUrl += '_=' + Date.now()
+    return newUrl
+  }
+  return url
+}

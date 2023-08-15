@@ -16,13 +16,14 @@ import React from 'react'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import LinearProgress from '@mui/material/LinearProgress'
 import Button from '@mui/material/Button'
-import wreqr from '../../js/wreqr'
+import { useHistory } from 'react-router-dom'
 type UploadSummaryViewReactType = {
   model: any
 }
 export const UploadSummaryViewReact = ({
   model,
 }: UploadSummaryViewReactType) => {
+  const history = useHistory()
   const [modelJson, setModelJson] = React.useState(model.toJSON())
   useListenTo(
     model,
@@ -56,11 +57,8 @@ export const UploadSummaryViewReact = ({
       }`}
       fullWidth
       onClick={() => {
-        ;(wreqr as any).vent.trigger('router:navigate', {
-          fragment: 'uploads/' + model.id,
-          options: {
-            trigger: true,
-          },
+        history.push({
+          pathname: `/uploads/${model.id}`,
         })
       }}
     >

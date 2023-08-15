@@ -28,6 +28,7 @@ import {
   ValueTypes,
 } from '../component/filter-builder/filter.structure'
 import CQLUtils from './CQLUtils'
+import _cloneDeep from 'lodash/cloneDeep'
 
 const arrayFromLinestringWkt = (wkt: string): Array<[number, number]> => {
   return wkt
@@ -887,7 +888,7 @@ function uncollapseNOTs({
     }
   } else {
     if (cqlAst.negated) {
-      const clonedFieldFilter = JSON.parse(JSON.stringify(cqlAst))
+      const clonedFieldFilter = _cloneDeep(cqlAst)
       return new CQLStandardFilterBuilderClass({
         type: 'NOT',
         filters: [
@@ -944,10 +945,10 @@ function removeInvalidFilters(
 }
 
 function iterativelySimplify(cqlAst: FilterBuilderClass) {
-  let prevAst = JSON.parse(JSON.stringify(cqlAst))
+  let prevAst = _cloneDeep(cqlAst)
   simplifyAst(cqlAst)
   while (JSON.stringify(prevAst) !== JSON.stringify(cqlAst)) {
-    prevAst = JSON.parse(JSON.stringify(cqlAst))
+    prevAst = _cloneDeep(cqlAst)
     simplifyAst(cqlAst)
   }
   return cqlAst

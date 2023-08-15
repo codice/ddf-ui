@@ -14,6 +14,7 @@ export const useSelectionOfLazyResult = ({
 }) => {
   const [isSelected, setIsSelected] = React.useState(lazyResult.isSelected)
   React.useEffect(() => {
+    setIsSelected(lazyResult.isSelected)
     const unsubscribe = lazyResult.subscribeTo({
       subscribableThing: 'selected',
       callback: () => {
@@ -209,6 +210,7 @@ export const useRerenderOnBackboneSync = ({
 }) => {
   const [, setRandomNumber] = React.useState(Math.random())
   React.useEffect(() => {
+    setRandomNumber(Math.random())
     const unsubscribeCall = lazyResult
       ? lazyResult.subscribeTo({
           subscribableThing: 'backboneSync',

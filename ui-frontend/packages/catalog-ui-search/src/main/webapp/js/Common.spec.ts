@@ -14,7 +14,6 @@
  **/
 import { expect } from 'chai'
 import Common from './Common'
-import properties from './properties'
 
 describe('Common', () => {
   describe('wrapMapCoordinates', () => {
@@ -62,18 +61,6 @@ describe('Common', () => {
       expect(results.length).to.equal(3)
     })
   })
-  describe('generateUUID', () => {
-    it('has dashes', () => {
-      properties.useHyphensInUuid = true
-      const uuid = Common.generateUUID()
-      expect(uuid).to.satisfy((value: any) => value.indexOf('-') >= 0)
-      properties.useHyphensInUuid = false
-    })
-    it('does not have dashes', () => {
-      const uuid = Common.generateUUID()
-      expect(uuid).to.satisfy((value: any) => value.indexOf('-') === -1)
-    })
-  })
   describe('getImageSrc', () => {
     it('prepends data:image to null', () => {
       // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'null' is not assignable to param... Remove this comment to see the full error message
@@ -96,9 +83,9 @@ describe('Common', () => {
       const image = Common.getImageSrc(123456789)
       expect(image).to.equal('data:image/png;base64,123456789')
     })
-    it('returns url unchanged', () => {
+    it('returns url with cache bust', () => {
       const image = Common.getImageSrc('http://some.url/cx.png')
-      expect(image).to.equal('http://some.url/cx.png')
+      expect(image.includes('?_=')).to.equal(true)
     })
     it('returns empty string unchanged', () => {
       const image = Common.getImageSrc('')

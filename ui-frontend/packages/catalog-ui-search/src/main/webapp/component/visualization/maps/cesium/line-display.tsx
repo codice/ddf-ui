@@ -17,6 +17,7 @@ import DistanceUtils from '../../../../js/DistanceUtils'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
 import Cesium from 'cesium/Build/Cesium/Cesium'
 import _ from 'underscore'
+import _cloneDeep from 'lodash/cloneDeep'
 import * as Turf from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
@@ -159,7 +160,7 @@ const drawGeometry = ({
   }
 
   // Create a deep copy since we may modify some of these positions for display purposes
-  linePoints = JSON.parse(JSON.stringify(json.line))
+  linePoints = _cloneDeep(json.line)
 
   linePoints.forEach((point: any) => {
     point[0] = DistanceUtils.coordinateRound(point[0])

@@ -1,4 +1,5 @@
 import * as React from 'react'
+import _cloneDeep from 'lodash.clonedeep'
 import { hot } from 'react-hot-loader'
 import SortSelections from './sort-selections'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
@@ -14,7 +15,7 @@ type Props = {
  * @param param0
  */
 const getCopyOfSortsFromModel = ({ model }: Props) => {
-  return JSON.parse(JSON.stringify(model.get('sorts')))
+  return _cloneDeep(model.get('sorts'))
 }
 
 const PermanentSearchSort = ({ model }: Props) => {

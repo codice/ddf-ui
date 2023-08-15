@@ -16,8 +16,8 @@
 import $ from 'jquery'
 import moment from 'moment'
 import './requestAnimationFramePolyfill'
-import properties from './properties'
 import { TimePrecision } from '@blueprintjs/datetime'
+import { cacheBustUrl } from './cache-bust-url'
 const timeZones = {
   UTC: 'Etc/UTC',
   '-12': 'Etc/GMT+12',
@@ -117,23 +117,6 @@ export const Common = {
   //randomly generated guid guaranteed to be unique ;)
   undefined: '2686dcb5-7578-4957-974d-aaa9289cd2f0',
   coreTransitionTime: 250,
-  generateUUID() {
-    let d = new Date().getTime()
-    if (window.performance && typeof window.performance.now === 'function') {
-      d += performance.now() //use high-precision timer if available
-    }
-    const uuid = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-      const r = (d + Math.random() * 16) % 16 | 0
-      d = Math.floor(d / 16)
-      return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16)
-    })
-    if (!(properties as any).useHyphensInUuid) return uuid
-    const chunks = uuid.match(/.{1,4}/g)
-    const prefix = chunks?.slice(0, 2).join('')
-    const middle = chunks?.slice(2, 5).join('-')
-    const suffix = chunks?.slice(5, chunks.length).join('')
-    return `${prefix}-${middle}-${suffix}`
-  },
   cqlToHumanReadable(cql?: string) {
     if (cql === undefined) {
       return cql
@@ -240,7 +223,7 @@ export const Common = {
       typeof img === 'string' &&
       (img === '' || img.substring(0, 4) === 'http')
     )
-      return img
+      return cacheBustUrl(img)
     return 'data:image/png;base64,' + img
   },
   getResourceUrlFromThumbUrl(url: string) {
@@ -271,9 +254,6 @@ export const Common = {
   },
   escapeHTML(value: string) {
     return $('<div>').text(value).html()
-  },
-  duplicate(reference: any) {
-    return JSON.parse(JSON.stringify(reference))
   },
   wrapMapCoordinates(x: number, [min, max]: [number, number]) {
     const d = max - min

@@ -36,7 +36,6 @@ import UserView, { RoleDisplay } from '../../react-component/user/user'
 import UserSettings, {
   SettingsComponentType,
 } from '../../react-component/user-settings/user-settings'
-import wreqr from '../../js/wreqr'
 import { GlobalStyles } from './global-styles'
 import { PermissiveComponentType } from '../../typescript'
 import scrollIntoView from 'scroll-into-view-if-needed'
@@ -756,15 +755,7 @@ const useIndicateHasUnseenNotifications = () => {
   }, [])
   return hasUnseenNotifications
 }
-const useBackboneRouteReactRouterCompatibility = () => {
-  const { listenTo } = useBackbone()
-  const history = useHistory()
-  React.useEffect(() => {
-    listenTo((wreqr as any).vent, 'router:navigate', ({ fragment }: any) => {
-      history.push(`/${fragment}`)
-    })
-  }, [])
-}
+
 const useFaviconBranding = () => {
   // todo favicon branding
   // $(window.document).ready(() => {
@@ -823,6 +814,7 @@ const SessionTimeoutComponent = () => {
     </sessionTimeoutDialogState.MuiDialogComponents.Dialog>
   )
 }
+
 const App = ({
   RouteInformation,
   NotificationsComponent,
@@ -830,7 +822,6 @@ const App = ({
 }: AppPropsType) => {
   const { navOpen, setNavOpen } = useNavOpen()
   useFaviconBranding()
-  useBackboneRouteReactRouterCompatibility()
   useScrollCurrentRouteIntoViewOnLocationChange()
   return (
     <TopLevelAppContext.Provider
