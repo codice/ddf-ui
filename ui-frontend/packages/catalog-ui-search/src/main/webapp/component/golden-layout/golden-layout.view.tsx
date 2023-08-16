@@ -1004,10 +1004,15 @@ const useProvideStateChange = ({
         subscribableThing: 'status',
         callback,
       })
+      const filterTreeSubscription = lazyResults.subscribeTo({
+        subscribableThing: 'filterTree',
+        callback,
+      })
       return () => {
         filteredResultsSubscription()
         selectedResultsSubscription()
         statusSubscription()
+        filterTreeSubscription()
       }
     }
     return () => {}
@@ -1084,6 +1089,7 @@ const useConsumeInitialState = ({
       }) => {
         setHasConsumedInitialState(true)
         lazyResults.reset({
+          filterTree: eventData.lazyResults.filterTree,
           results: Object.values(eventData.lazyResults.results).map((result) =>
             _cloneDeep(result.plain)
           ),
@@ -1150,8 +1156,14 @@ const useConsumeStateChange = ({
             isSelected: lazyResult.isSelected,
           }
         })
-        if (!_isEqualWith(results, callbackResults)) {
+        const filterTree = lazyResults.filterTree
+        const callbackFilterTree = eventData.lazyResults.filterTree
+        if (
+          !_isEqualWith(results, callbackResults) ||
+          !_isEqualWith(filterTree, callbackFilterTree)
+        ) {
           lazyResults.reset({
+            filterTree: eventData.lazyResults.filterTree,
             results: Object.values(eventData.lazyResults.results).map(
               (result) => _cloneDeep(result.plain)
             ),
