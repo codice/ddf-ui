@@ -28,6 +28,7 @@ import wreqr from '../../../../js/wreqr'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { ClusterType } from '../react/geometries'
 import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryResult'
+import _debounce from 'lodash.debounce'
 const defaultColor = '#3c6dd5'
 const rulerColor = '#506f85'
 function createMap(insertionElement: any) {
@@ -85,7 +86,7 @@ export default function (
   let overlays = {}
   let shapes: any = []
   const map = createMap(insertionElement)
-  listenToResize()
+
   setupTooltip(map)
   function setupTooltip(map: any) {
     map.on('pointermove', (e: any) => {
@@ -103,12 +104,16 @@ export default function (
   function resizeMap() {
     map.updateSize()
   }
+  const debouncedResizeMap = _debounce(resizeMap, 250)
   function listenToResize() {
-    ;(wreqr as any).vent.on('resize', resizeMap)
+    ;(wreqr as any).vent.on('resize', debouncedResizeMap)
+    window.addEventListener('resize', debouncedResizeMap)
   }
   function unlistenToResize() {
-    ;(wreqr as any).vent.off('resize', resizeMap)
+    ;(wreqr as any).vent.off('resize', debouncedResizeMap)
+    window.removeEventListener('resize', debouncedResizeMap)
   }
+  listenToResize()
   /*
    * Returns a visible label that is in the same location as the provided label (geometryInstance) if one exists.
    * If findSelected is true, the function will also check for hidden labels in the same location but are selected.
