@@ -39,7 +39,6 @@ import {
 import * as ol from 'openlayers'
 import Common from '../../../../js/Common'
 import wreqr from '../../../../js/wreqr'
-import { Drawing } from '../../../../component/singletons/drawing'
 import * as Turf from '@turf/turf'
 import { Point, Polygon, LineString } from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
@@ -336,7 +335,7 @@ export const OpenlayersDrawings = ({
       `search:${getDrawModeFromShape(drawingShape)}-end`,
       drawingModel
     )
-    Drawing.turnOffDrawing()
+    wreqr.vent.trigger(`search:drawend`, drawingModel)
     drawingModel.set('drawing', false)
     drawingModel.set(convertToModel(drawingLocation, drawingShape))
     setIsDrawing(false)

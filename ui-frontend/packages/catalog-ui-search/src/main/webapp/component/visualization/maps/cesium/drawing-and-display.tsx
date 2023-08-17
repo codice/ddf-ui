@@ -28,7 +28,6 @@ import { Editor } from '../draw-menu'
 import { menu } from 'geospatialdraw'
 import { Shape } from 'geospatialdraw/target/webapp/shape-utils'
 import { DRAWING_STYLE } from '../openlayers/draw-styles'
-import { Drawing } from '../../../../component/singletons/drawing'
 import wreqr from '../../../../js/wreqr'
 import _ from 'lodash'
 
@@ -121,7 +120,7 @@ export const CesiumDrawings = ({
       `search:${getDrawModeFromShape(drawingShape)}-end`,
       drawingModel
     )
-    Drawing.turnOffDrawing()
+    wreqr.vent.trigger(`search:drawend`, drawingModel)
     if (drawingShape === 'Polygon') {
       ensurePolygonIsClosed(drawingLocation)
     }

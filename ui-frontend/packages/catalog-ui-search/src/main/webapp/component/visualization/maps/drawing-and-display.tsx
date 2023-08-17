@@ -219,7 +219,7 @@ export const useDrawingAndDisplayModels = ({
   )
   useListenTo(
     (wreqr as any).vent,
-    'search:drawline-end search:drawpoly-end search:drawbbox-end search:drawcircle-end search:drawcancel',
+    'search:line-end search:poly-end search:bbox-end search:circle-end search:drawcancel',
     (model: any) => {
       if (drawingModels.includes(model)) {
         setDrawingModels(
@@ -228,18 +228,6 @@ export const useDrawingAndDisplayModels = ({
       }
     }
   )
-  useListenTo((wreqr as any).vent, 'search:drawend', (drawendModels: any[]) => {
-    setDrawingModels(
-      drawingModels.filter((drawingModel) => {
-        return !drawendModels.includes(drawingModel)
-      })
-    )
-    setModels(
-      models.filter((drawingModel) => {
-        return !drawendModels.includes(drawingModel)
-      })
-    )
-  })
   React.useEffect(() => {
     if (!isDrawing) {
       setDrawingModels([])
