@@ -184,6 +184,7 @@ type SourceType = {
   contentTypes: Array<{ name: string; version: string }>
   version: string
   local?: boolean
+  harvested?: boolean
 }
 
 type SourcesType = Array<SourceType>
@@ -342,4 +343,5 @@ export type StartupPayloadType = {
   sortedAttributes: SortedAttributesType
   sources: SourcesType
   user: UserType
+  harvestedSources: string[]
 }

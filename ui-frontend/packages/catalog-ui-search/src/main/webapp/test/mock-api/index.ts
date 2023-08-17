@@ -22,6 +22,7 @@ import Enumerations from './enumerations'
 import { StartupPayloadType } from '../../js/model/Startup/startup.types'
 
 const mockStartupPayload: StartupPayloadType = {
+  harvestedSources: [],
   attributeMap: {
     id: { id: 'id', isInjected: false, multivalued: false, type: 'string' },
     name: { id: 'name', isInjected: false, multivalued: false, type: 'string' },

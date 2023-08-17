@@ -3,7 +3,6 @@ import { hot } from 'react-hot-loader'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
-import sourcesInstance from '../../component/singletons/sources-instance'
 import Typography from '@mui/material/Typography'
 import Swath from '../swath/swath'
 import Grid from '@mui/material/Grid'
@@ -14,6 +13,7 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import Chip from '@mui/material/Chip'
 import _ from 'lodash'
+import { Sources } from '../../js/model/Startup/startup.hooks'
 type Props = {
   search: any
 }
@@ -49,16 +49,14 @@ const getSourcesFromSearch = ({ search }: Props): SourcesType => {
   return search.get('sources') || []
 }
 
-const isHarvested = (sourceId: string) => {
-  return sourcesInstance.getHarvested().includes(sourceId)
-}
-
 const shouldBeSelected = ({
   srcId,
   sources,
+  isHarvested,
 }: {
   srcId: string
   sources: SourcesType
+  isHarvested: (source: string) => boolean
 }) => {
   if (sources.includes('all')) {
     return true
@@ -87,28 +85,30 @@ const shouldBeSelected = ({
  * If it includes 'remote', that that means everything remote.  All other values are singular selections of a source.
  */
 const SourceSelector = ({ search }: Props) => {
-  const [availableSources, setAvailableSources] = React.useState(
-    sourcesInstance.toJSON()
-  )
+  const availableSources = Sources.useSources()
+  console.log(availableSources)
   const [sources, setSources] = React.useState(getSourcesFromSearch({ search }))
   const { listenTo } = useBackbone()
   React.useEffect(() => {
     listenTo(search, 'change:sources', () => {
       setSources(getSourcesFromSearch({ search }))
     })
-    listenTo(sourcesInstance, 'change', () => {
-      setAvailableSources(sourcesInstance.toJSON())
-    })
   }, [])
   React.useEffect(() => {
     search.set('sources', sources)
   }, [sources])
   const availableLocalSources = availableSources.filter((availableSource) => {
-    return sourcesInstance.getHarvested().includes(availableSource.id)
+    return availableSource.harvested
   })
   const availableRemoteSources = availableSources.filter((availableSource) => {
-    return !sourcesInstance.getHarvested().includes(availableSource.id)
+    return !availableSource.harvested
   })
+
+  const isHarvested = (source: string): boolean => {
+    return availableLocalSources.some((availableSource) => {
+      return availableSource.id === source
+    })
+  }
 
   return (
     <div>
@@ -276,7 +276,7 @@ const SourceSelector = ({ search }: Props) => {
           <Grid container alignItems="stretch" direction="row" wrap="nowrap">
             <Grid container direction="row" alignItems="center">
               <Grid item className="pr-2">
-                {shouldBeSelected({ srcId: 'all', sources }) ? (
+                {shouldBeSelected({ srcId: 'all', sources, isHarvested }) ? (
                   <CheckBoxIcon />
                 ) : (
                   <CheckBoxOutlineBlankIcon />
@@ -300,7 +300,11 @@ const SourceSelector = ({ search }: Props) => {
               </Grid>
               <Grid container direction="row" alignItems="center">
                 <Grid item className="pr-2">
-                  {shouldBeSelected({ srcId: 'local', sources }) ? (
+                  {shouldBeSelected({
+                    srcId: 'local',
+                    sources,
+                    isHarvested,
+                  }) ? (
                     <CheckBoxIcon />
                   ) : (
                     <CheckBoxOutlineBlankIcon />
@@ -334,7 +338,11 @@ const SourceSelector = ({ search }: Props) => {
                     </Grid>
                     <Grid container direction="row" alignItems="center">
                       <Grid item className="pr-2">
-                        {shouldBeSelected({ srcId: source.id, sources }) ? (
+                        {shouldBeSelected({
+                          srcId: source.id,
+                          sources,
+                          isHarvested,
+                        }) ? (
                           <CheckBoxIcon />
                         ) : (
                           <CheckBoxOutlineBlankIcon />
@@ -374,7 +382,11 @@ const SourceSelector = ({ search }: Props) => {
               </Grid>
               <Grid container direction="row" alignItems="center">
                 <Grid item className="pr-2">
-                  {shouldBeSelected({ srcId: 'remote', sources }) ? (
+                  {shouldBeSelected({
+                    srcId: 'remote',
+                    sources,
+                    isHarvested,
+                  }) ? (
                     <CheckBoxIcon />
                   ) : (
                     <CheckBoxOutlineBlankIcon />
@@ -408,7 +420,11 @@ const SourceSelector = ({ search }: Props) => {
                     </Grid>
                     <Grid container direction="row" alignItems="center">
                       <Grid item className="pr-2">
-                        {shouldBeSelected({ srcId: source.id, sources }) ? (
+                        {shouldBeSelected({
+                          srcId: source.id,
+                          sources,
+                          isHarvested,
+                        }) ? (
                           <CheckBoxIcon />
                         ) : (
                           <CheckBoxOutlineBlankIcon />

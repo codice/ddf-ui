@@ -57,12 +57,11 @@ import spark.servlet.SparkApplication;
 
 public class ComposeApplication implements SparkApplication {
 
-  private static final Gson GSON =
-      new GsonBuilder()
-          .disableHtmlEscaping()
-          .serializeNulls()
-          .registerTypeAdapterFactory(LongDoubleTypeAdapter.FACTORY)
-          .create();
+  private static final Gson GSON = new GsonBuilder()
+      .disableHtmlEscaping()
+      .serializeNulls()
+      .registerTypeAdapterFactory(LongDoubleTypeAdapter.FACTORY)
+      .create();
 
   private final CatalogFramework catalogFramework;
   private final FilterBuilder filterBuilder;
@@ -220,8 +219,7 @@ public class ComposeApplication implements SparkApplication {
     Map<String, Object> attributeMap = new HashMap<>(originalAttributeMap);
 
     for (Entry<String, Object> attributeDefinition : attributeMap.entrySet()) {
-      Map<String, Object> attribute =
-          (Map<String, Object>) attributeMap.get(attributeDefinition.getKey());
+      Map<String, Object> attribute = (Map<String, Object>) attributeMap.get(attributeDefinition.getKey());
       attribute.put(
           "enumerations",
           enumExtractor
@@ -316,6 +314,10 @@ public class ComposeApplication implements SparkApplication {
                   this.platformUiConfigurationApplication.getConfigAsJsonString(), Map.class));
           payload.put("sources", getSources(config));
           payload.put("localSourceId", catalogFramework.getId());
+
+          List<String> harvestedSources = new ArrayList<String>();
+          harvestedSources.add(catalogFramework.getId());
+          payload.put("harvestedSources", harvestedSources);
           return util.getJson(payload);
         });
 
@@ -331,16 +333,15 @@ public class ComposeApplication implements SparkApplication {
     List<Object> sources = GSON.fromJson(this.catalogApplication.getSources(), List.class);
 
     // Use a stream to filter out sources with the id "cache"
-    sources =
-        sources
-            .stream()
-            .filter(
-                source -> {
-                  Map<String, Object> sourceMap = (Map<String, Object>) source;
-                  String sourceId = (String) sourceMap.get("id");
-                  return !sourceId.equals("cache");
-                })
-            .collect(Collectors.toList());
+    sources = sources
+        .stream()
+        .filter(
+            source -> {
+              Map<String, Object> sourceMap = (Map<String, Object>) source;
+              String sourceId = (String) sourceMap.get("id");
+              return !sourceId.equals("cache");
+            })
+        .collect(Collectors.toList());
 
     // Update "local" property for the remaining sources
     sources.forEach(
@@ -355,16 +356,15 @@ public class ComposeApplication implements SparkApplication {
     Boolean disableLocalCatalog = (Boolean) config.get("disableLocalCatalog");
 
     if (disableLocalCatalog) {
-      sources =
-          sources
-              .stream()
-              .filter(
-                  source -> {
-                    Map<String, Object> sourceMap = (Map<String, Object>) source;
-                    String sourceId = (String) sourceMap.get("id");
-                    return !sourceId.equals(localCatalogId);
-                  })
-              .collect(Collectors.toList());
+      sources = sources
+          .stream()
+          .filter(
+              source -> {
+                Map<String, Object> sourceMap = (Map<String, Object>) source;
+                String sourceId = (String) sourceMap.get("id");
+                return !sourceId.equals(localCatalogId);
+              })
+          .collect(Collectors.toList());
     }
     return sources;
   }
@@ -378,8 +378,8 @@ public class ComposeApplication implements SparkApplication {
         attributeMap.putAll((Map<String, Object>) definition);
       }
     }
-    Map<String, Object> attributeMapWithAliases =
-        addAliases(attributeMap, (Map<String, String>) config.get("attributeAliases"));
+    Map<String, Object> attributeMapWithAliases = addAliases(attributeMap,
+        (Map<String, String>) config.get("attributeAliases"));
 
     Map<String, Object> attributeMapWithEnums = addEnumerations(attributeMapWithAliases);
     return attributeMapWithEnums;

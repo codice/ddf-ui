@@ -16,12 +16,12 @@ import Backbone from 'backbone'
 
 import _ from 'underscore'
 import $ from 'jquery'
-import Sources from '../../component/singletons/sources-instance'
 import Common from '../Common'
 import cql from '../cql'
 import 'backbone-associations'
 import Metacard from './Metacard'
 import MetacardActionModel from './MetacardAction'
+import { StartupDataStore } from './Startup/startup'
 
 function generateThumbnailUrl(url: any) {
   let newUrl = url
@@ -106,8 +106,12 @@ export default Backbone.AssociatedModel.extend({
     )
   },
   isRemote() {
+    const Sources = StartupDataStore?.data?.sources || []
+    const harvestedSources = Sources.filter((source) => source.harvested).map(
+      (source) => source.id
+    )
     return (
-      Sources.getHarvested().includes(
+      harvestedSources.includes(
         this.get('metacard').get('properties').get('source-id')
       ) === false
     )

@@ -16,7 +16,6 @@ import Backbone from 'backbone'
 import _ from 'underscore'
 import properties from '../properties'
 import QueryResponse from './QueryResponse'
-import Sources from '../../component/singletons/sources-instance'
 import { postSimpleAuditLog } from '../../react-component/utils/audit/audit-endpoint'
 import cql from '../cql'
 import _merge from 'lodash/merge'
@@ -41,6 +40,7 @@ import {
 } from './Query.methods'
 import wreqr from '../wreqr'
 import { CommonAjaxSettings } from '../AjaxSettings'
+import { StartupDataStore } from './Startup/startup'
 export type QueryType = {
   constructor: (_attributes: any, options: any) => void
   set: (p1: any, p2?: any) => void
@@ -289,23 +289,27 @@ export default Backbone.AssociatedModel.extend({
     })
   },
   getSelectedSources() {
+    const Sources = StartupDataStore?.data?.sources || []
+    const sourceIds = Sources.map((src) => src.id)
+    const localSourceIds = Sources.filter((source) => source.harvested).map(
+      (src) => src.id
+    )
+    const remoteSourceIds = Sources.filter((source) => !source.harvested).map(
+      (src) => src.id
+    )
     const selectedSources = this.get('sources')
     let sourceArray = selectedSources
     if (selectedSources.includes('all')) {
-      sourceArray = _.pluck(Sources.toJSON(), 'id')
+      sourceArray = sourceIds
     }
     if (selectedSources.includes('local')) {
       sourceArray = sourceArray
-        .concat(Sources.getHarvested())
+        .concat(localSourceIds)
         .filter((src: any) => src !== 'local')
     }
     if (selectedSources.includes('remote')) {
       sourceArray = sourceArray
-        .concat(
-          _.pluck(Sources.toJSON(), 'id').filter(
-            (src: any) => !Sources.getHarvested().includes(src)
-          )
-        )
+        .concat(remoteSourceIds)
         .filter((src: any) => src !== 'remote')
     }
     return sourceArray
@@ -376,6 +380,7 @@ export default Backbone.AssociatedModel.extend({
     this.startSearch(options, done)
   },
   initializeResult(options: any) {
+    const Sources = StartupDataStore?.data?.sources || []
     options = _.extend(
       {
         limitToDeleted: false,
@@ -387,7 +392,9 @@ export default Backbone.AssociatedModel.extend({
     data.batchId = v4()
     // Data.sources is set in `buildSearchData` based on which sources you have selected.
     let selectedSources = data.sources
-    const harvestedSources = Sources.getHarvested()
+    const harvestedSources = Sources.filter((source) => source.harvested).map(
+      (source) => source.id
+    )
     const isHarvested = (id: any) => harvestedSources.includes(id)
     const isFederated = (id: any) => !harvestedSources.includes(id)
     if (options.limitToDeleted) {
@@ -548,10 +555,14 @@ export default Backbone.AssociatedModel.extend({
     })
   },
   hasNextServerPage() {
+    const Sources = StartupDataStore?.data?.sources || []
+    const harvestedSources = Sources.filter((source) => source.harvested).map(
+      (source) => source.id
+    )
     return hasNextPageForSourceGroup({
       queryStatus: this.get('result')?.get('lazyResults')?.status,
       isLocal: (id) => {
-        return Sources.getHarvested().includes(id)
+        return harvestedSources.includes(id)
       },
       currentIndexForSourceGroup: this.currentIndexForSourceGroup,
       count: this.get('count'),
@@ -573,10 +584,14 @@ export default Backbone.AssociatedModel.extend({
     return this.hasNextServerPage()
   },
   getLastServerPage() {
+    const Sources = StartupDataStore?.data?.sources || []
+    const harvestedSources = Sources.filter((source) => source.harvested).map(
+      (source) => source.id
+    )
     this.nextIndexForSourceGroup = getConstrainedFinalPageForSourceGroup({
       queryStatus: this.get('result')?.get('lazyResults')?.status,
       isLocal: (id) => {
-        return Sources.getHarvested().includes(id)
+        return harvestedSources.includes(id)
       },
       count: this.get('count'),
     })
@@ -607,13 +622,17 @@ export default Backbone.AssociatedModel.extend({
    * Update the next index to be the next page
    */
   setNextIndexForSourceGroupToNextPage(sources: string[]) {
+    const Sources = StartupDataStore?.data?.sources || []
+    const harvestedSources = Sources.filter((source) => source.harvested).map(
+      (source) => source.id
+    )
     this.pastIndexesForSourceGroup.push(this.nextIndexForSourceGroup)
     this.nextIndexForSourceGroup = getNextPageForSourceGroup({
       sources,
       currentIndexForSourceGroup: this.currentIndexForSourceGroup,
       count: this.get('count'),
       isLocal: (id) => {
-        return Sources.getHarvested().includes(id)
+        return harvestedSources.includes(id)
       },
     })
   },

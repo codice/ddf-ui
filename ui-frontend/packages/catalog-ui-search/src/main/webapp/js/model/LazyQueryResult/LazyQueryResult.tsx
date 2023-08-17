@@ -17,7 +17,6 @@ import QueryResult from '../QueryResult'
 import { LazyQueryResults, AttributeHighlights } from './LazyQueryResults'
 import cql from '../../cql'
 import _ from 'underscore'
-import Sources from '../../../component/singletons/sources-instance'
 import metacardDefinitions from '../../../component/singletons/metacard-definitions'
 import { TypedMetacardDefs } from '../../../component/tabs/metacard/metacardDefinitions'
 import properties from '../../properties'
@@ -30,6 +29,7 @@ import {
 import Common from '../../Common'
 const debounceTime = 50
 import $ from 'jquery'
+import { StartupDataStore } from '../Startup/startup'
 function getThumbnailAction(result: ResultType) {
   return result.actions.find(
     (action) => action.id === 'catalog.data.metacard.thumbnail'
@@ -344,10 +344,13 @@ export class LazyQueryResult {
     )
   }
   isRemote(): boolean {
+    const Sources = StartupDataStore?.data?.sources || []
+    const harvestedSources = Sources.filter((source) => source.harvested).map(
+      (source) => source.id
+    )
     return (
-      Sources.getHarvested().includes(
-        this.plain.metacard.properties['source-id']
-      ) === false
+      harvestedSources.includes(this.plain.metacard.properties['source-id']) ===
+      false
     )
   }
   hasGeometry(attribute?: any): boolean {

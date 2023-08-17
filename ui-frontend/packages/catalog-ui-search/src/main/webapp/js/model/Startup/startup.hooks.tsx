@@ -12,31 +12,46 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react'
 import { StartupDataStore } from './startup'
+import { useSyncExternalStore } from 'react'
 
-const StartupContext = React.createContext(StartupDataStore.data)
-
-export function useStartupData() {
-  return React.useContext(StartupContext)
-}
-
-export function StartupProvider(props: any) {
-  const [startupData, setStartupData] = React.useState(StartupDataStore.data)
-  React.useEffect(() => {
-    const handle = StartupDataStore.subscribeTo({
+export const StartupData = {
+  useStartupData: () => {
+    const startupData = useSyncExternalStore(
+      StartupData.subscribe,
+      StartupData.getSnapshot
+    )
+    return startupData
+  },
+  getSnapshot: () => {
+    return StartupDataStore.data
+  },
+  subscribe: (callback: () => void) => {
+    const cancelSubscription = StartupDataStore.subscribeTo({
       subscribableThing: 'fetched',
-      callback: () => {
-        setStartupData(StartupDataStore.data)
-      },
+      callback,
     })
     return () => {
-      handle()
+      cancelSubscription()
     }
-  }, [])
-  return (
-    <StartupContext.Provider value={startupData}>
-      {props.children}
-    </StartupContext.Provider>
-  )
+  },
+}
+
+export const Sources = {
+  useSources: () => {
+    const sources = useSyncExternalStore(Sources.subscribe, Sources.getSnapshot)
+    return sources
+  },
+  getSnapshot: () => {
+    return StartupDataStore?.data?.sources || []
+  },
+  subscribe: (callback: () => void) => {
+    const cancelSubscription = StartupDataStore.subscribeTo({
+      subscribableThing: 'sources-update',
+      callback,
+    })
+    return () => {
+      cancelSubscription()
+    }
+  },
 }
