@@ -12,12 +12,11 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-// check browser before loading the rest of the app
-import { isSupportedBrowser } from './check-browser'
-import { removeRedirectQueryParams } from './handle-query-params'
-;(() => {
-  if (isSupportedBrowser()) {
-    removeRedirectQueryParams()
-    import('./app')
+
+// some systems like keycloak attach query params which interfere with react router / golden layout and their use of query params (when using hash routing)
+export function removeRedirectQueryParams() {
+  if (location.href.includes(`${location.pathname}?`)) {
+    const preHashStuff = location.href.split('?')[0]
+    location.href = preHashStuff + location.hash
   }
-})()
+}

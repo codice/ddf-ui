@@ -5,6 +5,7 @@ import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResult
 import {
   useStatusOfLazyResults,
   useSelectedResults,
+  useFilterTreeOfLazyResults,
 } from '../../js/model/LazyQueryResult/hooks'
 
 type useLazyResultsProps = {
@@ -49,6 +50,17 @@ export const useLazyResultsStatusFromSelectionInterface = ({
   const status = useStatusOfLazyResults({ lazyResults })
 
   return status
+}
+
+export const useLazyResultsFilterTreeFromSelectionInterface = ({
+  selectionInterface,
+}: useLazyResultsProps) => {
+  const lazyResults = useLazyResultsFromSelectionInterface({
+    selectionInterface,
+  })
+  const filterTree = useFilterTreeOfLazyResults({ lazyResults })
+
+  return filterTree
 }
 
 export const useLazyResultsFromSelectionInterface = ({
