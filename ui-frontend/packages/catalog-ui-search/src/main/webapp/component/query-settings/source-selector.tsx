@@ -13,7 +13,7 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import Chip from '@mui/material/Chip'
 import _ from 'lodash'
-import { Sources } from '../../js/model/Startup/startup.hooks'
+import { useSources } from '../../js/model/Startup/sources.hooks'
 type Props = {
   search: any
 }
@@ -85,7 +85,7 @@ const shouldBeSelected = ({
  * If it includes 'remote', that that means everything remote.  All other values are singular selections of a source.
  */
 const SourceSelector = ({ search }: Props) => {
-  const availableSources = Sources.useSources()
+  const { sources: availableSources } = useSources()
   console.log(availableSources)
   const [sources, setSources] = React.useState(getSourcesFromSearch({ search }))
   const { listenTo } = useBackbone()

@@ -64,7 +64,7 @@ const isRemoteResourceCached = (model: LazyQueryResult[]): boolean => {
   return (
     model[0].isResourceLocal &&
     model[0].plain.metacard.properties['source-id'] !==
-      StartupDataStore.data?.localSourceId
+      StartupDataStore.Sources.localSourceId
   )
 }
 

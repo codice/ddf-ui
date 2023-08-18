@@ -40,11 +40,13 @@ export const convertToBackendCompatibleForm = ({
   return duplicatedProperties
 }
 
-type AsyncSubscriptionsType = 'update'
+type AsyncSubscriptionsType = ['update', undefined]
 /**
  *  Provides a singleton for tracking async tasks in the UI
  */
-class AsyncTasksClass extends Subscribable<'add' | 'remove' | 'update'> {
+class AsyncTasksClass extends Subscribable<
+  ['add', undefined] | ['remove', undefined] | ['update', undefined]
+> {
   list: Array<AsyncTask>
   constructor() {
     super()
@@ -152,16 +154,16 @@ class AsyncTasksClass extends Subscribable<'add' | 'remove' | 'update'> {
   private add(asyncTask: AsyncTask) {
     if (this.list.indexOf(asyncTask) === -1) {
       this.list.push(asyncTask)
-      this._notifySubscribers('add')
-      this._notifySubscribers('update')
+      this._notifySubscribers('add', undefined)
+      this._notifySubscribers('update', undefined)
     }
   }
   remove(asyncTask: AsyncTask) {
     const index = this.list.indexOf(asyncTask)
     if (index >= 0) {
       this.list.splice(this.list.indexOf(asyncTask), 1)
-      this._notifySubscribers('remove')
-      this._notifySubscribers('update')
+      this._notifySubscribers('remove', undefined)
+      this._notifySubscribers('update', undefined)
     }
   }
 }
@@ -437,7 +439,7 @@ class RestoreTask extends AsyncTask {
           fetch(
             `./internal/history/revert/${deletedId}/${deletedVersion}/${sourceId}`
           ).then(() => {
-            this._notifySubscribers('update')
+            this._notifySubscribers('update', undefined)
           })
           unsubscibeCallback()
         }
@@ -474,7 +476,7 @@ class DeleteTask extends AsyncTask {
       method: 'POST',
       body: JSON.stringify(payload),
     }).then(() => {
-      this._notifySubscribers('update')
+      this._notifySubscribers('update', undefined)
     })
   }
   static isInstanceOf(task: any): task is DeleteTask {
@@ -521,7 +523,7 @@ class CreateTask extends AsyncTask {
       method: 'POST',
       body: JSON.stringify(payload),
     }).then(() => {
-      this._notifySubscribers('update')
+      this._notifySubscribers('update', undefined)
     })
   }
   static isInstanceOf(task: any): task is CreateTask {
@@ -585,7 +587,7 @@ class SaveTask extends AsyncTask {
         const unsub = this.lazyResult.subscribeTo({
           subscribableThing: 'backboneSync',
           callback: () => {
-            this._notifySubscribers('update')
+            this._notifySubscribers('update', undefined)
             unsub()
           },
         })
@@ -635,7 +637,7 @@ class CreateSearchTask extends AsyncTask {
       method: 'POST',
       body: JSON.stringify(payload),
     }).then(() => {
-      this._notifySubscribers('update')
+      this._notifySubscribers('update', undefined)
     })
   }
   static isInstanceOf(task: any): task is CreateSearchTask {
@@ -697,7 +699,7 @@ class SaveSearchTask extends AsyncTask {
         const unsub = this.lazyResult.subscribeTo({
           subscribableThing: 'backboneSync',
           callback: () => {
-            this._notifySubscribers('update')
+            this._notifySubscribers('update', undefined)
             unsub()
           },
         })

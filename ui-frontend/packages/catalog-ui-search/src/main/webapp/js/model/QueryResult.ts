@@ -106,7 +106,7 @@ export default Backbone.AssociatedModel.extend({
     )
   },
   isRemote() {
-    const Sources = StartupDataStore?.data?.sources || []
+    const Sources = StartupDataStore.Sources.sources
     const harvestedSources = Sources.filter((source) => source.harvested).map(
       (source) => source.id
     )

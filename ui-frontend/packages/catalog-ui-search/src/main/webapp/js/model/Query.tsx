@@ -289,7 +289,7 @@ export default Backbone.AssociatedModel.extend({
     })
   },
   getSelectedSources() {
-    const Sources = StartupDataStore?.data?.sources || []
+    const Sources = StartupDataStore.Sources.sources
     const sourceIds = Sources.map((src) => src.id)
     const localSourceIds = Sources.filter((source) => source.harvested).map(
       (src) => src.id
@@ -380,7 +380,7 @@ export default Backbone.AssociatedModel.extend({
     this.startSearch(options, done)
   },
   initializeResult(options: any) {
-    const Sources = StartupDataStore?.data?.sources || []
+    const Sources = StartupDataStore.Sources.sources
     options = _.extend(
       {
         limitToDeleted: false,
@@ -555,7 +555,7 @@ export default Backbone.AssociatedModel.extend({
     })
   },
   hasNextServerPage() {
-    const Sources = StartupDataStore?.data?.sources || []
+    const Sources = StartupDataStore.Sources.sources
     const harvestedSources = Sources.filter((source) => source.harvested).map(
       (source) => source.id
     )
@@ -584,7 +584,7 @@ export default Backbone.AssociatedModel.extend({
     return this.hasNextServerPage()
   },
   getLastServerPage() {
-    const Sources = StartupDataStore?.data?.sources || []
+    const Sources = StartupDataStore.Sources.sources
     const harvestedSources = Sources.filter((source) => source.harvested).map(
       (source) => source.id
     )
@@ -622,7 +622,7 @@ export default Backbone.AssociatedModel.extend({
    * Update the next index to be the next page
    */
   setNextIndexForSourceGroupToNextPage(sources: string[]) {
-    const Sources = StartupDataStore?.data?.sources || []
+    const Sources = StartupDataStore.Sources.sources
     const harvestedSources = Sources.filter((source) => source.harvested).map(
       (source) => source.id
     )

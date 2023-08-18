@@ -344,7 +344,7 @@ export class LazyQueryResult {
     )
   }
   isRemote(): boolean {
-    const Sources = StartupDataStore?.data?.sources || []
+    const Sources = StartupDataStore.Sources.sources
     const harvestedSources = Sources.filter((source) => source.harvested).map(
       (source) => source.id
     )

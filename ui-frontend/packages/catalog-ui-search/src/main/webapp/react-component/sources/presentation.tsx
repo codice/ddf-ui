@@ -16,7 +16,7 @@ import * as React from 'react'
 import styled from 'styled-components'
 import SourceItem from '../source-item'
 import SourcesSummary from '../sources-summary'
-import { Sources } from '../../js/model/Startup/startup.hooks'
+import { useSources } from '../../js/model/Startup/sources.hooks'
 
 const Root = styled.div`
   display: block;
@@ -40,7 +40,7 @@ const SourcesCenter = styled.div`
 `
 
 export default () => {
-  const sources = Sources.useSources()
+  const { sources } = useSources()
   const amountDown = sources.reduce((blob, source) => {
     if (source.available === false) {
       return blob + 1

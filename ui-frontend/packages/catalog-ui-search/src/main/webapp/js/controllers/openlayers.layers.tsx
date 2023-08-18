@@ -1,4 +1,3 @@
-import { Subscribable } from '../model/Base/base-classes'
 import { Layers } from './layers'
 import _ from 'underscore'
 import ol from 'openlayers'
@@ -119,14 +118,13 @@ type MakeMapType = {
   center: [number, number]
   element: HTMLElement
 }
-export class OpenlayersLayers extends Subscribable<''> {
+export class OpenlayersLayers {
   layers: Layers
   map: any
   isMapCreated: boolean
   layerForCid: any
   backboneModel: any
   constructor() {
-    super()
     this.backboneModel = new Backbone.Model({})
     this.isMapCreated = false
     this.layerForCid = {}

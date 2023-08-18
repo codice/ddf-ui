@@ -36,7 +36,6 @@ export const CesiumImageryProviderTypes = {
 } as {
   [key: string]: any
 }
-import { Subscribable } from '../model/Base/base-classes'
 import { Layers } from './layers'
 import user from '../../component/singletons/user-instance'
 import User from '../../js/model/User'
@@ -45,7 +44,7 @@ type MakeMapType = {
   cesiumOptions: any
   element: HTMLElement
 }
-export class CesiumLayers extends Subscribable<''> {
+export class CesiumLayers {
   layers: Layers
   map: any
   isMapCreated: boolean
@@ -53,7 +52,6 @@ export class CesiumLayers extends Subscribable<''> {
   backboneModel: any
   layerOrder: Array<any>
   constructor() {
-    super()
     this.backboneModel = new Backbone.Model({})
     this.isMapCreated = false
     this.layerOrder = []

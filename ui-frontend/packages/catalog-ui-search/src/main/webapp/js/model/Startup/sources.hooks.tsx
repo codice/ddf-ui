@@ -12,37 +12,24 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import { StartupDataStore } from './startup'
+import { useSyncExternalStore } from 'react'
 
-import { Subscribable } from '../model/Base/base-classes'
-
-type LayerType = {
-  alpha: string
-  id: string
-  label: string
-  name: string
-  order: number
-  parameters: any
-  proxyEnabled: boolean
-  show: boolean
-  type: string
-  url: string
-  withCredentials: boolean
-}
-
-export class Layer extends Subscribable<['change', undefined]> {
-  layer: LayerType
-  constructor(layer: LayerType) {
-    super()
-    this.layer = layer
+const subscribe = (callback: () => void) => {
+  const cancelSubscription = StartupDataStore.Sources.subscribeTo({
+    subscribableThing: 'sources-update',
+    callback,
+  })
+  return () => {
+    cancelSubscription()
   }
 }
 
-export class Layers extends Subscribable<
-  ['sort', undefined] | ['add', undefined] | ['remove', undefined]
-> {
-  layers: Array<any>
-  constructor(layers: Array<any>) {
-    super()
-    this.layers = layers
-  }
+const getSnapshot = () => {
+  return StartupDataStore.Sources
+}
+
+export const useSources = () => {
+  const sources = useSyncExternalStore(subscribe, getSnapshot)
+  return sources
 }
