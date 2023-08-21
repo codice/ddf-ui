@@ -19,7 +19,6 @@ import cql from '../../cql'
 import _ from 'underscore'
 import metacardDefinitions from '../../../component/singletons/metacard-definitions'
 import { TypedMetacardDefs } from '../../../component/tabs/metacard/metacardDefinitions'
-import properties from '../../properties'
 import * as TurfMeta from '@turf/meta'
 import wkx from 'wkx'
 import {
@@ -368,7 +367,7 @@ export class LazyQueryResult {
     return _.filter(
       this.plain.metacard.properties,
       (_value: any, key: string) =>
-        !properties.isHidden(key) &&
+        !StartupDataStore.Configuration.isHidden(key) &&
         (attribute === undefined || attribute === key) &&
         metacardDefinitions.metacardTypes[key] &&
         metacardDefinitions.metacardTypes[key].type === 'GEOMETRY'
@@ -416,7 +415,7 @@ export class LazyQueryResult {
   }
   getRoundedRelevance() {
     return this.plain.relevance.toPrecision(
-      (properties as any).relevancePrecision
+      StartupDataStore.Configuration.getRelevancePrecision()
     )
   }
   hasErrors() {

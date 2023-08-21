@@ -31,7 +31,6 @@ import OverflowTooltip from '../../overflow-tooltip/overflow-tooltip'
 import Tabs from '@mui/material/Tabs'
 import MaterialTab from '@mui/material/Tab'
 import MetacardTabs, { TabNames } from '../../tabs/metacard/tabs-metacard'
-import { TypedProperties } from '../../singletons/TypedProperties'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import { useRerenderOnBackboneSync } from '../../../js/model/LazyQueryResult/hooks'
 import Extensions from '../../../extension-points'
@@ -128,9 +127,6 @@ const usePossibleMetacardTabs = ({ result }: { result: LazyQueryResult }) => {
         delete copyOfMetacardTabs[TabNames.Quality]
       }
       if (!result.hasPreview()) {
-        delete copyOfMetacardTabs[TabNames.Preview]
-      }
-      if (!TypedProperties.isMetacardPreviewEnabled()) {
         delete copyOfMetacardTabs[TabNames.Preview]
       }
       if (!TypedUserInstance.canWrite(result)) {

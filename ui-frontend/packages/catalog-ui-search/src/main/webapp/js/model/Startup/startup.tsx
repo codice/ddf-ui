@@ -16,15 +16,22 @@ import { Subscribable } from '../Base/base-classes' // Import Subscribable from 
 import { StartupPayloadType } from './startup.types'
 import { Sources } from './sources'
 import fetch from '../../../react-component/utils/fetch/fetch'
+import { Configuration } from './configuration'
 
 export class StartupData extends Subscribable<['fetched', StartupPayloadType]> {
   data?: Omit<
     StartupPayloadType,
-    'sources' | 'harvestedSources' | 'localSourceId'
+    | 'sources'
+    | 'harvestedSources'
+    | 'localSourceId'
+    | 'config'
+    | 'platformUIConfiguration'
   >
   Sources: Sources
+  Configuration: Configuration
   constructor() {
     super()
+    this.Configuration = new Configuration(this)
     this.Sources = new Sources(this)
     this.fetch()
   }

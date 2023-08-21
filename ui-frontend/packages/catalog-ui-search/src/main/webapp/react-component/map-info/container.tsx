@@ -19,7 +19,7 @@ import { hot } from 'react-hot-loader'
 import { Coordinates, Format, Attribute } from '.'
 
 import user from '../../component/singletons/user-instance'
-import properties from '../../js/properties'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 
 type State = {
   coordinates: Coordinates
@@ -51,7 +51,7 @@ const getAttributes = (map: Backbone.Model) => {
   if (map.get('targetMetacard') === undefined) {
     return []
   }
-  return properties.summaryShow
+  return StartupDataStore.Configuration.getSummaryShow()
     .map((attribute: string) => {
       const value =
         map.get('targetMetacard').plain.metacard.properties[attribute]

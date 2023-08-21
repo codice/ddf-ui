@@ -68,12 +68,11 @@ public class ConfigurationApplication implements SparkApplication {
 
   public static final Factory NEW_SET_FACTORY = TreeSet::new;
 
-  private static final Gson GSON =
-      new GsonBuilder()
-          .disableHtmlEscaping()
-          .serializeNulls()
-          .registerTypeAdapterFactory(LongDoubleTypeAdapter.FACTORY)
-          .create();
+  private static final Gson GSON = new GsonBuilder()
+      .disableHtmlEscaping()
+      .serializeNulls()
+      .registerTypeAdapterFactory(LongDoubleTypeAdapter.FACTORY)
+      .create();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationApplication.class);
 
@@ -113,8 +112,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   private Boolean onlineGazetteerEnabled = true;
 
-  private Boolean ingestEnabled = true;
-
   private Boolean cacheEnabled = true;
 
   private Boolean unknownErrorBoxEnabled = true;
@@ -125,15 +122,9 @@ public class ConfigurationApplication implements SparkApplication {
 
   private Boolean localCatalogEnabled = true;
 
-  private Boolean queryFeedbackEnabled = false;
-
   private Boolean relevanceScoresEnabled = false;
 
   private Boolean logoEnabled = false;
-
-  private Boolean historicalSearchEnabled = true;
-
-  private Boolean archiveSearchEnabled = true;
 
   private Boolean metacardPreviewEnabled = true;
 
@@ -151,10 +142,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   private Integer timeout = 300000;
 
-  private Integer zoomPercentage = 100;
-
-  private String spacingMode = "comfortable";
-
   private HttpProxyService httpProxy;
 
   private int incrementer = 0;
@@ -171,28 +158,19 @@ public class ConfigurationApplication implements SparkApplication {
 
   private Map<String, Set<String>> typeNameMapping = new HashMap<>();
 
-  private Integer autoMergeTime = 1000;
-
   private String mapHome = "";
-
-  private String queryFeedbackEmailSubjectTemplate;
-
-  private String queryFeedbackEmailBodyTemplate;
-
-  private String queryFeedbackEmailDestination;
 
   private int maximumUploadSize = 1_048_576;
 
-  private List<String> readOnly =
-      ImmutableList.of(
-          "checksum",
-          "checksum-algorithm",
-          "id",
-          "metadata",
-          "source-id",
-          "^metacard\\.",
-          "^version\\.",
-          "^validation\\.");
+  private List<String> readOnly = ImmutableList.of(
+      "checksum",
+      "checksum-algorithm",
+      "id",
+      "metadata",
+      "source-id",
+      "^metacard\\.",
+      "^version\\.",
+      "^validation\\.");
 
   private List<String> summaryShow = Collections.emptyList();
 
@@ -206,8 +184,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   private Map<String, String> attributeDescriptions = Collections.emptyMap();
 
-  private List<String> listTemplates = Collections.emptyList();
-
   private int sourcePollInterval = 60000;
 
   private String product;
@@ -218,28 +194,6 @@ public class ConfigurationApplication implements SparkApplication {
   private HistorianConfiguration historianConfiguration;
 
   private String theme;
-
-  private String customPrimaryColor;
-
-  private String customPositiveColor;
-
-  private String customNegativeColor;
-
-  private String customWarningColor;
-
-  private String customFavoriteColor;
-
-  private String customBackgroundNavigation;
-
-  private String customBackgroundAccentContent;
-
-  private String customBackgroundDropdown;
-
-  private String customBackgroundContent;
-
-  private String customBackgroundModal;
-
-  private String customBackgroundSlideout;
 
   private List<String> basicSearchTemporalSelectionDefault;
 
@@ -415,10 +369,6 @@ public class ConfigurationApplication implements SparkApplication {
     return hiddenAttributes;
   }
 
-  public List<String> getListTemplates() {
-    return listTemplates;
-  }
-
   public List<String> getAttributeDescriptions() {
     return attributeDescriptions
         .entrySet()
@@ -461,10 +411,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setCommonAttributes(List<String> commonAttributes) {
     this.commonAttributes = commonAttributes;
-  }
-
-  public void setListTemplates(List<String> listTemplates) {
-    this.listTemplates = listTemplates;
   }
 
   public void setAttributeDescriptions(List<String> attributeDescriptions) {
@@ -555,8 +501,6 @@ public class ConfigurationApplication implements SparkApplication {
 
     config.put("branding", getProductName());
     config.put("version", getProductVersion());
-    config.put("showWelcome", signInEnabled);
-    config.put("showTask", taskEnabled);
     config.put("format", format);
     config.put("timeout", timeout);
     config.put("resultCount", resultCount);
@@ -566,30 +510,21 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("imageryProviders", getConfigImageryProviders());
     config.put("gazetteer", gazetteerEnabled);
     config.put("onlineGazetteer", onlineGazetteerEnabled);
-    config.put("showIngest", ingestEnabled);
     config.put("projection", projection);
     config.put("bingKey", bingKey);
     config.put("readOnly", readOnly);
     config.put("summaryShow", summaryShow);
     config.put("resultShow", resultShow);
     config.put("hiddenAttributes", hiddenAttributes);
-    config.put("listTemplates", listTemplates);
     config.put("attributeDescriptions", attributeDescriptions);
     config.put("attributeAliases", attributeAliases.getAliasMap());
     config.put("sourcePollInterval", sourcePollInterval);
     config.put("scheduleFrequencyList", scheduleFrequencyList);
     config.put("isCacheDisabled", !cacheEnabled);
     config.put("disableLocalCatalog", !localCatalogEnabled);
-    config.put("queryFeedbackEnabled", queryFeedbackEnabled);
-    config.put("queryFeedbackEmailSubjectTemplate", queryFeedbackEmailSubjectTemplate);
-    config.put("queryFeedbackEmailBodyTemplate", queryFeedbackEmailBodyTemplate);
-    config.put("queryFeedbackEmailDestination", queryFeedbackEmailDestination);
-    config.put("zoomPercentage", zoomPercentage);
-    config.put("spacingMode", spacingMode);
     config.put("defaultLayout", getDefaultLayoutConfig());
     config.put("visualizations", getVisualizationsConfig());
     config.put("isExperimental", experimentalEnabled);
-    config.put("autoMergeTime", autoMergeTime);
     config.put("webSocketsEnabled", webSocketsEnabled);
     config.put("iconConfig", iconConfig);
     config.put("mapHome", mapHome);
@@ -597,9 +532,6 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("showRelevanceScores", relevanceScoresEnabled);
     config.put("relevancePrecision", relevancePrecision);
     config.put("showLogo", logoEnabled);
-    config.put("isHistoricalSearchDisabled", !historicalSearchEnabled);
-    config.put("isArchiveSearchDisabled", !archiveSearchEnabled);
-    config.put("isMetacardPreviewDisabled", !metacardPreviewEnabled);
     config.put("isCustomTextNotationEnabled", customTextNotationEnabled);
     config.put("customTextNotationAttribute", customTextNotationAttribute);
     config.put("isSpellcheckEnabled", spellcheckEnabled);
@@ -609,17 +541,6 @@ public class ConfigurationApplication implements SparkApplication {
         "isVersioningEnabled",
         historianConfiguration != null && historianConfiguration.isHistoryEnabled());
     config.put("theme", theme);
-    config.put("customPrimaryColor", customPrimaryColor);
-    config.put("customPositiveColor", customPositiveColor);
-    config.put("customNegativeColor", customNegativeColor);
-    config.put("customWarningColor", customWarningColor);
-    config.put("customFavoriteColor", customFavoriteColor);
-    config.put("customBackgroundNavigation", customBackgroundNavigation);
-    config.put("customBackgroundAccentContent", customBackgroundAccentContent);
-    config.put("customBackgroundDropdown", customBackgroundDropdown);
-    config.put("customBackgroundContent", customBackgroundContent);
-    config.put("customBackgroundModal", customBackgroundModal);
-    config.put("customBackgroundSlideout", customBackgroundSlideout);
     config.put("disableUnknownErrorBox", !unknownErrorBoxEnabled);
     config.put("editorAttributes", getEditorAttributes());
     config.put("requiredAttributes", getRequiredAttributes());
@@ -786,11 +707,10 @@ public class ConfigurationApplication implements SparkApplication {
     findDifferences(imageryProviderMaps, newImageryProviders, imageryProvidersToStart);
     findDifferences(newImageryProviders, imageryProviderMaps, imageryProvidersToStop);
 
-    List<String> proxiesToStop =
-        imageryProvidersToStop
-            .stream()
-            .map(provider -> urlToProxyMap.get(provider.get(URL).toString()))
-            .collect(Collectors.toList());
+    List<String> proxiesToStop = imageryProvidersToStop
+        .stream()
+        .map(provider -> urlToProxyMap.get(provider.get(URL).toString()))
+        .collect(Collectors.toList());
 
     stopImageryEndpoints(proxiesToStop);
     for (Map<String, Object> providerToStop : imageryProvidersToStop) {
@@ -826,7 +746,7 @@ public class ConfigurationApplication implements SparkApplication {
   }
 
   private void stopImageryEndpoints(List<String> imageryEndpointsToStop) {
-    for (Iterator<String> iterator = imageryEndpointsToStop.iterator(); iterator.hasNext(); ) {
+    for (Iterator<String> iterator = imageryEndpointsToStop.iterator(); iterator.hasNext();) {
       String endpoint = iterator.next();
       try {
         httpProxy.stop(endpoint);
@@ -977,14 +897,6 @@ public class ConfigurationApplication implements SparkApplication {
     this.onlineGazetteerEnabled = onlineGazetteerEnabled;
   }
 
-  public Boolean getIngestEnabled() {
-    return this.ingestEnabled;
-  }
-
-  public void setIngestEnabled(Boolean ingestEnabled) {
-    this.ingestEnabled = ingestEnabled;
-  }
-
   public void setCacheEnabled(Boolean cacheEnabled) {
     this.cacheEnabled = cacheEnabled;
   }
@@ -1031,7 +943,7 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setTypeNameMapping(String string) {
     if (string != null) {
-      this.setTypeNameMapping(new String[] {string});
+      this.setTypeNameMapping(new String[] { string });
     }
   }
 
@@ -1057,34 +969,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setLocalCatalogEnabled(Boolean localCatalogEnabled) {
     this.localCatalogEnabled = localCatalogEnabled;
-  }
-
-  public void setQueryFeedbackEnabled(Boolean queryFeedbackEnabled) {
-    this.queryFeedbackEnabled = queryFeedbackEnabled;
-  }
-
-  public String getQueryFeedbackEmailSubjectTemplate() {
-    return queryFeedbackEmailSubjectTemplate;
-  }
-
-  public void setQueryFeedbackEmailSubjectTemplate(String queryFeedbackEmailSubjectTemplate) {
-    this.queryFeedbackEmailSubjectTemplate = queryFeedbackEmailSubjectTemplate;
-  }
-
-  public String getQueryFeedbackEmailBodyTemplate() {
-    return queryFeedbackEmailBodyTemplate;
-  }
-
-  public void setQueryFeedbackEmailBodyTemplate(String queryFeedbackEmailBodyTemplate) {
-    this.queryFeedbackEmailBodyTemplate = queryFeedbackEmailBodyTemplate;
-  }
-
-  public String getQueryFeedbackEmailDestination() {
-    return queryFeedbackEmailDestination;
-  }
-
-  public void setQueryFeedbackEmailDestination(String queryFeedbackEmailDestination) {
-    this.queryFeedbackEmailDestination = queryFeedbackEmailDestination;
   }
 
   public String getProduct() {
@@ -1121,30 +1005,6 @@ public class ConfigurationApplication implements SparkApplication {
     this.logoEnabled = logoEnabled;
   }
 
-  public String getSpacingMode() {
-    return spacingMode;
-  }
-
-  public void setSpacingMode(String spacingMode) {
-    this.spacingMode = spacingMode;
-  }
-
-  public Integer getZoomPercentage() {
-    return zoomPercentage;
-  }
-
-  public void setZoomPercentage(Integer zoomPercentage) {
-    this.zoomPercentage = zoomPercentage;
-  }
-
-  public Integer getAutoMergeTime() {
-    return autoMergeTime;
-  }
-
-  public void setAutoMergeTime(Integer autoMergeTime) {
-    this.autoMergeTime = autoMergeTime;
-  }
-
   public Boolean getWebSocketsEnabled() {
     return webSocketsEnabled;
   }
@@ -1167,22 +1027,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setMapHome(String mapHome) {
     this.mapHome = mapHome;
-  }
-
-  public Boolean getHistoricalSearchEnabled() {
-    return historicalSearchEnabled;
-  }
-
-  public void setHistoricalSearchEnabled(Boolean historicalSearchEnabled) {
-    this.historicalSearchEnabled = historicalSearchEnabled;
-  }
-
-  public Boolean getArchiveSearchEnabled() {
-    return archiveSearchEnabled;
-  }
-
-  public void setArchiveSearchEnabled(Boolean archiveSearchEnabled) {
-    this.archiveSearchEnabled = archiveSearchEnabled;
   }
 
   public Boolean getMetacardPreviewEnabled() {
@@ -1250,94 +1094,6 @@ public class ConfigurationApplication implements SparkApplication {
     this.theme = theme;
   }
 
-  public String getCustomPrimaryColor() {
-    return customPrimaryColor;
-  }
-
-  public void setCustomPrimaryColor(String customPrimaryColor) {
-    this.customPrimaryColor = customPrimaryColor;
-  }
-
-  public String getCustomPositiveColor() {
-    return customPositiveColor;
-  }
-
-  public void setCustomPositiveColor(String customPositiveColor) {
-    this.customPositiveColor = customPositiveColor;
-  }
-
-  public String getCustomNegativeColor() {
-    return customNegativeColor;
-  }
-
-  public void setCustomNegativeColor(String customNegativeColor) {
-    this.customNegativeColor = customNegativeColor;
-  }
-
-  public String getCustomWarningColor() {
-    return customWarningColor;
-  }
-
-  public void setCustomWarningColor(String customWarningColor) {
-    this.customWarningColor = customWarningColor;
-  }
-
-  public String getCustomFavoriteColor() {
-    return customFavoriteColor;
-  }
-
-  public void setCustomFavoriteColor(String customFavoriteColor) {
-    this.customFavoriteColor = customFavoriteColor;
-  }
-
-  public String getCustomBackgroundNavigation() {
-    return customBackgroundNavigation;
-  }
-
-  public void setCustomBackgroundNavigation(String customBackgroundNavigation) {
-    this.customBackgroundNavigation = customBackgroundNavigation;
-  }
-
-  public String getCustomBackgroundAccentContent() {
-    return customBackgroundAccentContent;
-  }
-
-  public void setCustomBackgroundAccentContent(String customBackgroundAccentContent) {
-    this.customBackgroundAccentContent = customBackgroundAccentContent;
-  }
-
-  public String getCustomBackgroundDropdown() {
-    return customBackgroundDropdown;
-  }
-
-  public void setCustomBackgroundDropdown(String customBackgroundDropdown) {
-    this.customBackgroundDropdown = customBackgroundDropdown;
-  }
-
-  public String getCustomBackgroundContent() {
-    return customBackgroundContent;
-  }
-
-  public void setCustomBackgroundContent(String customBackgroundContent) {
-    this.customBackgroundContent = customBackgroundContent;
-  }
-
-  public String getCustomBackgroundModal() {
-    return customBackgroundModal;
-  }
-
-  public void setCustomBackgroundModal(String customBackgroundModal) {
-    this.customBackgroundModal = customBackgroundModal;
-  }
-
-  public String getCustomBackgroundSlideout() {
-    return customBackgroundSlideout;
-  }
-
-  public void setCustomBackgroundSlideout(String customBackgroundSlideout) {
-    this.customBackgroundSlideout = customBackgroundSlideout;
-  }
-
   public void setBasicSearchTemporalSelectionDefault(
       List<String> basicSearchTemporalSelectionDefault) {
     this.basicSearchTemporalSelectionDefault = basicSearchTemporalSelectionDefault;
@@ -1386,12 +1142,11 @@ public class ConfigurationApplication implements SparkApplication {
     if (defaultSources == null || defaultSources.isEmpty()) {
       this.defaultSources = Collections.emptyList();
     } else {
-      this.defaultSources =
-          defaultSources
-              .stream()
-              .filter(StringUtils::isNotBlank)
-              .map(String::trim)
-              .collect(Collectors.toList());
+      this.defaultSources = defaultSources
+          .stream()
+          .filter(StringUtils::isNotBlank)
+          .map(String::trim)
+          .collect(Collectors.toList());
     }
   }
 
@@ -1403,12 +1158,11 @@ public class ConfigurationApplication implements SparkApplication {
     if (defaultTableColumns == null || defaultTableColumns.isEmpty()) {
       this.defaultTableColumns = Collections.emptyList();
     } else {
-      this.defaultTableColumns =
-          defaultTableColumns
-              .stream()
-              .filter(StringUtils::isNotBlank)
-              .map(String::trim)
-              .collect(Collectors.toList());
+      this.defaultTableColumns = defaultTableColumns
+          .stream()
+          .filter(StringUtils::isNotBlank)
+          .map(String::trim)
+          .collect(Collectors.toList());
     }
   }
 

@@ -1,7 +1,7 @@
-import { TypedProperties } from '../singletons/TypedProperties'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 
 export const fuzzyResultCount = (resultCount: number) => {
-  if (!TypedProperties.isFuzzyResultsEnabled()) {
+  if (!StartupDataStore.Configuration.getIsFuzzyResultsEnabled()) {
     return resultCount
   }
 

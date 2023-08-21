@@ -12,9 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import { StartupDataStore } from '../../../js/model/Startup/startup'
 import wrapNum from '../../../react-component/utils/wrap-num/wrap-num'
 import { TypedUserInstance } from '../../singletons/TypedUser'
-import properties from '../../../js/properties'
 const homeBoundingBox = getBoundingBox(getHomeCoordinates())
 const defaultHomeBoundingBox = {
   west: -128,
@@ -81,10 +81,10 @@ function getBoundingBox(coordinates: any) {
 }
 function getHomeCoordinates() {
   if (
-    (properties as any).mapHome !== '' &&
-    (properties as any).mapHome !== undefined
+    StartupDataStore.Configuration.getMapHome() !== '' &&
+    StartupDataStore.Configuration.getMapHome() !== undefined
   ) {
-    const separateCoordinates = (properties as any).mapHome
+    const separateCoordinates = StartupDataStore.Configuration.getMapHome()
       .replace(/\s/g, '')
       .split(',')
     if (separateCoordinates.length % 2 === 0) {

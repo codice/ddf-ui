@@ -13,16 +13,17 @@
  *
  **/
 import { StartupDataStore } from '../js/model/Startup/startup'
-import properties from '../js/properties'
 
 function sleep(ms: number = 60) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 export const waitForReady: () => Promise<void> = async () => {
-  if (!StartupDataStore.data) {
+  console.log('wait for ready')
+  if (!StartupDataStore.Configuration.config) {
+    console.log('wait more')
     await sleep()
     return waitForReady()
   }
-  properties.init()
+  console.log('ready')
 }

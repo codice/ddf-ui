@@ -15,11 +15,11 @@
 import React from 'react'
 import ol from 'openlayers'
 import _ from 'underscore'
-import properties from '../../../../js/properties'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { removeOldDrawing } from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
+import { StartupDataStore } from '../../../../js/model/Startup/startup'
 const modelToRectangle = (model: any) => {
   //ensure that the values are numeric
   //so that the openlayer projections
@@ -64,22 +64,22 @@ const modelToRectangle = (model: any) => {
   const northWest = ol.proj.transform(
     [west, north],
     'EPSG:4326',
-    (properties as any).projection
+    StartupDataStore.Configuration.getProjection()
   )
   const northEast = ol.proj.transform(
     [east, north],
     'EPSG:4326',
-    (properties as any).projection
+    StartupDataStore.Configuration.getProjection()
   )
   const southWest = ol.proj.transform(
     [west, south],
     'EPSG:4326',
-    (properties as any).projection
+    StartupDataStore.Configuration.getProjection()
   )
   const southEast = ol.proj.transform(
     [east, south],
     'EPSG:4326',
-    (properties as any).projection
+    StartupDataStore.Configuration.getProjection()
   )
   const coords = []
   coords.push(northWest)

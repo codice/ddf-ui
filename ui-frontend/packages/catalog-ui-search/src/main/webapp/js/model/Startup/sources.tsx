@@ -118,7 +118,7 @@ class Sources extends Subscribable<['sources-update', undefined]> {
     })
   }
 
-  fetchSources() {
+  fetchSources = () => {
     fetch('./internal/catalog/sources')
       .then((response) => response.json())
       .then((sources) => {
@@ -126,16 +126,16 @@ class Sources extends Subscribable<['sources-update', undefined]> {
       })
   }
 
-  startPollingSources() {
+  startPollingSources = () => {
     window.setInterval(() => {
       this.fetchSources()
     }, this.sourcePollInterval)
   }
-  updateSources(sources: StartupPayloadType['sources'] = []) {
+  updateSources = (sources: StartupPayloadType['sources'] = []) => {
     updateSources({ data: this, sources })
     this._notifySubscribers('sources-update', undefined)
   }
-  setHarvestedSources(harvestedSources: string[] = []) {
+  setHarvestedSources = (harvestedSources: string[] = []) => {
     if (this.sources) {
       this.harvestedSources =
         harvestedSources.length > 0 ? harvestedSources : [this.localSourceId]

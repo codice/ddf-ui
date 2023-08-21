@@ -14,7 +14,6 @@ import _ from 'underscore'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'plot... Remove this comment to see the full error message
 import Plotly from 'plotly.js/dist/plotly'
 import metacardDefinitions from '../../singletons/metacard-definitions'
-import properties from '../../../js/properties'
 import moment from 'moment'
 import extension from '../../../extension-points'
 import { useTheme } from '@mui/material/styles'
@@ -24,6 +23,7 @@ import {
   getCustomHoverTemplates,
   getCustomHover,
 } from './add-on-helpers'
+import { StartupDataStore } from '../../../js/model/Startup/startup'
 const zeroWidthSpace = '\u200B'
 const plotlyDateFormat = 'YYYY-MM-DD HH:mm:ss.SS'
 function getPlotlyDate(date: string) {
@@ -42,7 +42,7 @@ function calculateAvailableAttributes(results: LazyQueryResult[]) {
       (attribute) => metacardDefinitions.metacardTypes[attribute] !== undefined
     )
     .filter((attribute) => !metacardDefinitions.isHiddenType(attribute))
-    .filter((attribute) => !properties.isHidden(attribute))
+    .filter((attribute) => !StartupDataStore.Configuration.isHidden(attribute))
     .map((attribute) => ({
       label: metacardDefinitions.metacardTypes[attribute].alias || attribute,
       value: attribute,

@@ -15,7 +15,6 @@
 import * as React from 'react'
 import LazyMetacardInteractions from './lazy-metacard-interactions'
 import IconHelper from '../../../js/IconHelper'
-import properties from '../../../js/properties'
 import user from '../../singletons/user-instance'
 import metacardDefinitions from '../../singletons/metacard-definitions'
 import TypedMetacardDefs from '../../tabs/metacard/metacardDefinitions'
@@ -50,6 +49,7 @@ import { useMenuState } from '../../menu-state/menu-state'
 import Popover from '@mui/material/Popover'
 import Common from '../../../js/Common'
 import ExtensionPoints from '../../../extension-points/extension-points'
+import { StartupDataStore } from '../../../js/model/Startup/startup'
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (
     <div
@@ -76,9 +76,11 @@ type ResultItemFullProps = ResultItemBasicProps & {
 }
 const showSource = () => {
   return (
-    (properties as any).resultShow.find((additionalProperty: string) => {
-      return additionalProperty === 'source-id'
-    }) !== undefined
+    StartupDataStore.Configuration.getResultShow().find(
+      (additionalProperty: string) => {
+        return additionalProperty === 'source-id'
+      }
+    ) !== undefined
   )
 }
 const showRelevanceScore = ({
@@ -86,7 +88,10 @@ const showRelevanceScore = ({
 }: {
   lazyResult: ResultItemBasicProps['lazyResult']
 }) => {
-  return (properties as any).showRelevanceScores && lazyResult.hasRelevance()
+  return (
+    StartupDataStore.Configuration.getShowRelevanceScores() &&
+    lazyResult.hasRelevance()
+  )
 }
 export const getIconClassName = ({
   lazyResult,

@@ -19,7 +19,6 @@ import _ from 'underscore'
 import Map from '../map'
 import utility from './utility'
 import DrawingUtility from '../DrawingUtility'
-import properties from '../../../../js/properties'
 import Openlayers from 'openlayers'
 import { OpenlayersLayers } from '../../../../js/controllers/openlayers.layers'
 import user from '../../../singletons/user-instance'
@@ -28,6 +27,7 @@ import wreqr from '../../../../js/wreqr'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { ClusterType } from '../react/geometries'
 import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryResult'
+import { StartupDataStore } from '../../../../js/model/Startup/startup'
 const defaultColor = '#3c6dd5'
 const rulerColor = '#506f85'
 function createMap(insertionElement: any) {
@@ -59,13 +59,13 @@ function convertPointCoordinate(point: any) {
   return Openlayers.proj.transform(
     coords as Openlayers.Coordinate,
     'EPSG:4326',
-    (properties as any).projection
+    StartupDataStore.Configuration.getProjection()
   )
 }
 function unconvertPointCoordinate(point: any) {
   return Openlayers.proj.transform(
     point,
-    (properties as any).projection,
+    StartupDataStore.Configuration.getProjection(),
     'EPSG:4326'
   )
 }
@@ -352,7 +352,9 @@ export default function (
       const array = _.map(coords, (coord) => convertPointCoordinate(coord))
       const polygon = new Openlayers.geom.Polygon([array])
       const extent = polygon.getExtent()
-      const projection = Openlayers.proj.get((properties as any).projection)
+      const projection = Openlayers.proj.get(
+        StartupDataStore.Configuration.getProjection()
+      )
       const overlayLayer = new Openlayers.layer.Image({
         source: new Openlayers.source.ImageStatic({
           // @ts-expect-error ts-migrate(2322) FIXME: Type 'string | undefined' is not assignable to typ... Remove this comment to see the full error message

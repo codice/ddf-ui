@@ -14,8 +14,8 @@
  **/
 import { SortItemType } from './sort-selections'
 import metacardDefinitions from '../../component/singletons/metacard-definitions'
-import properties from '../../js/properties'
 import { Option } from './sort-selections'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 
 const blacklist = ['anyText', 'anyGeo']
 
@@ -42,7 +42,7 @@ export const getSortAttributeOptions = (currentSelections: string[]) => {
     currentSelections && currentSelections.length ? currentSelections : []
   const attributes = metacardDefinitions.sortedMetacardTypes as AttributeType[]
   const options: Option[] = attributes
-    .filter((type) => !properties.isHidden(type.id))
+    .filter((type) => !StartupDataStore.Configuration.isHidden(type.id))
     .filter((type) => !metacardDefinitions.isHiddenTypeExceptThumbnail(type.id))
     .filter((type) => !blacklist.includes(type.id))
     .filter((type) => !currentAttributes.includes(type.id))

@@ -24,11 +24,11 @@ import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 import Chip from '@mui/material/Chip'
 import Grid from '@mui/material/Grid'
 import Swath from '../swath/swath'
-import properties from '../../js/properties'
 import metacardDefinitions from '../singletons/metacard-definitions'
 import FilterInput from '../../react-component/filter/filter-input'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 export interface BasicFilterClass extends Omit<FilterClass, 'property'> {
   property: string[]
 }
@@ -58,14 +58,15 @@ const getDefaultPropertiesToApplyTo = (): {
   label: string
   value: string
 }[] => {
-  return (properties.basicSearchTemporalSelectionDefault || []).map(
-    (property: string) => {
-      return {
-        label: TypedMetacardDefs.getAlias({ attr: property }),
-        value: property,
-      }
+  return (
+    StartupDataStore.Configuration.getBasicSearchTemporalSelectionDefault() ||
+    []
+  ).map((property: string) => {
+    return {
+      label: TypedMetacardDefs.getAlias({ attr: property }),
+      value: property,
     }
-  )
+  })
 }
 
 const determinePropertiesToApplyTo = ({

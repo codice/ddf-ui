@@ -13,7 +13,7 @@
  *
  **/
 import metacardDefinitions from '../../component/singletons/metacard-definitions'
-import properties from '../../js/properties'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 export type Attribute = {
   label: string
   value: string
@@ -27,7 +27,8 @@ const toAttribute = (
   return {
     label: attribute.alias || attribute.id,
     value: attribute.id,
-    description: (properties.attributeDescriptions || {})[attribute.id],
+    description: (StartupDataStore.Configuration.config
+      ?.attributeDescriptions || {})[attribute.id],
     group,
   }
 }
@@ -45,15 +46,17 @@ export const getGroupedFilteredAttributes = (): {
     },
     {}
   )
-  const validCommonAttributes = (
-    properties.commonAttributes as string[]
-  ).reduce((attributes: Attribute[], id: string) => {
-    const attribute = allAttributes[id]
-    if (attribute) {
-      attributes.push(toAttribute(attribute, 'Commonly Used Attributes'))
-    }
-    return attributes
-  }, [])
+  const validCommonAttributes =
+    StartupDataStore.Configuration.getCommonAttributes().reduce(
+      (attributes: Attribute[], id: string) => {
+        const attribute = allAttributes[id]
+        if (attribute) {
+          attributes.push(toAttribute(attribute, 'Commonly Used Attributes'))
+        }
+        return attributes
+      },
+      []
+    )
   const groupedFilteredAttributes = validCommonAttributes.concat(
     getFilteredAttributeList('All Attributes')
   )
@@ -70,7 +73,8 @@ export const getFilteredAttributeList = (group?: string): Attribute[] => {
   return metacardDefinitions.sortedMetacardTypes
     .filter(
       ({ id }: any) =>
-        !properties.isHidden(id) && !metacardDefinitions.isHiddenType(id)
+        !StartupDataStore.Configuration.isHidden(id) &&
+        !metacardDefinitions.isHiddenType(id)
     )
     .map((attr: { id: string; alias: string }) => toAttribute(attr, group))
 }

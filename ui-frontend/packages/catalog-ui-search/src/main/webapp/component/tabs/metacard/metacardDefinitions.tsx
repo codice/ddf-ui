@@ -5,7 +5,6 @@
 import { hot } from 'react-hot-loader'
 import Common from '../../../js/Common'
 import metacardDefinitions from '../../singletons/metacard-definitions'
-import properties from '../../../js/properties'
 import { StartupDataStore } from '../../../js/model/Startup/startup'
 type Attributetypes =
   | 'BINARY'
@@ -66,13 +65,13 @@ export const TypedMetacardDefs = {
   },
   // O(1) lookup of attr alias
   getAlias({ attr }: { attr: string }): string {
-    return properties.attributeAliases[attr] || attr
+    return StartupDataStore.Configuration.getAttributeAliases()[attr] || attr
   },
   isMulti({ attr }: { attr: string }): boolean {
     return metacardDefinitions.metacardTypes[attr].multivalued || false
   },
   isReadonly({ attr }: { attr: string }): boolean {
-    return properties.isReadOnly(attr) || false
+    return StartupDataStore.Configuration.isReadOnly(attr) || false
   },
   getImageSrc({ val }: { val: string }): string {
     if (typeof val === 'string' && val.substring(0, 4) !== 'http') {

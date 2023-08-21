@@ -19,9 +19,11 @@ import { StartupDataStore } from './js/model/Startup/startup'
 ;(async () => {
   // check if supported browser
   if (isSupportedBrowser()) {
+    console.log('supported')
     // wait for critical data to be fetched
     await (await import('./js/WaitForReady')).waitForReady()
     // render the app
+    console.log('config fetched')
     await import('./app')
   }
 })()

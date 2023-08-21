@@ -1,8 +1,8 @@
 //
 import React from 'react'
 import useSnack from '../hooks/useSnack'
-import properties from '../../js/properties'
 import $ from 'jquery'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 let getShortErrorMessage = function (error: any) {
   let extraMessage = error instanceof Error ? error.name : String(error)
   if (extraMessage.length === 0) {
@@ -32,8 +32,12 @@ let getErrorResponse = function (
     settings.type === 'GET'
   ) {
     return {
-      title: properties.i18n['sources.polling.error.title'],
-      message: properties.i18n['sources.polling.error.message'],
+      title:
+        StartupDataStore.Configuration.getI18n()['sources.polling.error.title'],
+      message:
+        StartupDataStore.Configuration.getI18n()[
+          'sources.polling.error.message'
+        ],
     }
   } else if (jqxhr.responseJSON !== undefined) {
     return { title: 'Error', message: jqxhr.responseJSON.message }
@@ -66,7 +70,7 @@ export const AjaxErrorHandling = () => {
         console.error(event, jqxhr, settings, throwError)
         const response = getErrorResponse(event, jqxhr, settings, throwError)
         if (
-          (properties as any).disableUnknownErrorBox &&
+          StartupDataStore.Configuration.getDisableUnknownErrorBox() &&
           response.message.substring(0, 13) === 'Unknown Error'
         ) {
           return

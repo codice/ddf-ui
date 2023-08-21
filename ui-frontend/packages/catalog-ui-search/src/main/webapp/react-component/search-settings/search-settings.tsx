@@ -14,7 +14,6 @@
  **/
 import * as React from 'react'
 import user from '../../component/singletons/user-instance'
-import properties from '../../js/properties'
 import QuerySettings from '../../component/query-settings/query-settings'
 import { UserQuery } from '../../js/model/TypedQuery'
 import styled from 'styled-components'
@@ -31,6 +30,7 @@ import {
 } from '../../component/theme/theme'
 import Tooltip from '@mui/material/Tooltip'
 import Paper from '@mui/material/Paper'
+import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 const Root = styled.div`
   overflow: hidden;
   padding: ${(props) => props.theme.minimumSpacing};
@@ -39,6 +39,8 @@ const getResultCount = () => {
   return user.get('user').get('preferences').get('resultCount') as number
 }
 const SearchSettings = () => {
+  const { config } = useConfiguration()
+  const configuredMaxResultCount = config?.resultCount || 250
   const [queryModel] = React.useState(
     UserQuery() // we pass this to query settings
   )
@@ -95,7 +97,7 @@ const SearchSettings = () => {
                   user.getPreferences().set({
                     resultCount: Math.min(
                       parseInt(e.target.value),
-                      (properties as any).resultCount
+                      configuredMaxResultCount
                     ),
                   })
                 }}
@@ -103,7 +105,7 @@ const SearchSettings = () => {
                   className: 'text-center',
                   step: 10,
                   min: 1,
-                  max: (properties as any).resultCount,
+                  max: configuredMaxResultCount,
                   type: 'number',
                   'aria-labelledby': 'resultcount-slider',
                 }}
@@ -119,7 +121,7 @@ const SearchSettings = () => {
                 }}
                 aria-labelledby="input-slider"
                 min={1}
-                max={(properties as any).resultCount}
+                max={configuredMaxResultCount}
                 step={10}
                 marks={[
                   {
@@ -127,8 +129,8 @@ const SearchSettings = () => {
                     label: '1',
                   },
                   {
-                    value: (properties as any).resultCount,
-                    label: `${(properties as any).resultCount}`,
+                    value: configuredMaxResultCount,
+                    label: `${configuredMaxResultCount}`,
                   },
                 ]}
               />

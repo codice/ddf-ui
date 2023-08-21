@@ -4,10 +4,10 @@ import { SortType } from '../../js/model/Query.shared-types'
 import { FilterBuilderClass } from '../filter-builder/filter.structure'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import { TypedMetacardDefs } from '../tabs/metacard/metacardDefinitions'
-import { TypedProperties } from './TypedProperties'
 import moment from 'moment'
 
 import userInstance from './user-instance'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 
 export const TypedUserInstance = {
   getUserInstance: () => {
@@ -21,8 +21,8 @@ export const TypedUserInstance = {
     if (userchoices.length > 0) {
       return userchoices
     }
-    if (TypedProperties.getResultsAttributesShownList().length > 0) {
-      return TypedProperties.getResultsAttributesShownList()
+    if (StartupDataStore.Configuration.getResultShow().length > 0) {
+      return StartupDataStore.Configuration.getResultShow()
     }
     return ['title', 'thumbnail']
   },
@@ -34,8 +34,8 @@ export const TypedUserInstance = {
     if (userchoices.length > 0) {
       return userchoices
     }
-    if (TypedProperties.getResultsAttributesShownTable().length > 0) {
-      return TypedProperties.getResultsAttributesShownTable()
+    if (StartupDataStore.Configuration.getDefaultTableColumns().length > 0) {
+      return StartupDataStore.Configuration.getDefaultTableColumns()
     }
     return ['title', 'thumbnail']
   },

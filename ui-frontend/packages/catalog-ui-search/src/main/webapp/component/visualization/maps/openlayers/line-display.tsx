@@ -16,12 +16,12 @@ import React from 'react'
 import DistanceUtils from '../../../../js/DistanceUtils'
 import ol from 'openlayers'
 import _ from 'underscore'
-import properties from '../../../../js/properties'
 import * as Turf from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { removeOldDrawing } from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
+import { StartupDataStore } from '../../../../js/model/Startup/startup'
 type CoordinateType = [number, number]
 type CoordinatesType = Array<CoordinateType>
 export function translateFromOpenlayersCoordinates(coords: CoordinatesType) {
@@ -32,7 +32,7 @@ export function translateFromOpenlayersCoordinates(coords: CoordinatesType) {
         DistanceUtils.coordinateRound(point[0]),
         DistanceUtils.coordinateRound(point[1]),
       ],
-      (properties as any).projection,
+      StartupDataStore.Configuration.getProjection(),
       'EPSG:4326'
     )
     if (point[1] > 90) {
@@ -58,7 +58,7 @@ export function translateToOpenlayersCoordinates(coords: CoordinatesType) {
         ol.proj.transform(
           [item[0], item[1]],
           'EPSG:4326',
-          (properties as any).projection
+          StartupDataStore.Configuration.getProjection()
         )
       )
     }

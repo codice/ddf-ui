@@ -22,7 +22,6 @@ import _isEqualWith from 'lodash.isequalwith'
 import $ from 'jquery'
 import wreqr from '../../js/wreqr'
 import GoldenLayout from 'golden-layout'
-import properties from '../../js/properties'
 import user from '../singletons/user-instance'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'sani... Remove this comment to see the full error message
 import sanitize from 'sanitize-html'
@@ -49,6 +48,7 @@ import {
   DialogContent,
   DialogTitle,
 } from '@mui/material'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 
 const treeMap = (obj: any, fn: any, path = []): any => {
   if (Array.isArray(obj)) {
@@ -482,7 +482,8 @@ const FALLBACK_GOLDEN_LAYOUT = [
   },
 ]
 export const DEFAULT_GOLDEN_LAYOUT_CONTENT = {
-  content: (properties as any).defaultLayout || FALLBACK_GOLDEN_LAYOUT,
+  content:
+    StartupDataStore.Configuration.getDefaultLayout() || FALLBACK_GOLDEN_LAYOUT,
 }
 export const getStringifiedDefaultLayout = () => {
   try {

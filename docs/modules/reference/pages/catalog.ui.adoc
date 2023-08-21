@@ -85,13 +85,6 @@ Example:
 |[{"name":"openlayers","title":"2D Map","icon":"map"},{"name":"cesium","title":"3D Map","icon":"globe"},{"name":"inspector","title":"Inspector","icon":"info"},{"name":"histogram","title":"Histogram","icon":"bar-chart"},{"name":"table","title":"Table","icon":"table"}]
 |false
 
-|List Templates
-|listTemplates
-|String
-|Templates for users to quickly create lists that already specify an icon and a filter. Example: `{"id":"Pizza Deliveries", "list.icon": "tasks", "list.cql": "(\"anyText\"ILIKE &apos;pizza&apos;)"}`
-|
-|false
-
 |Map Projection
 |projection
 |String
@@ -148,13 +141,6 @@ Example:
 |true
 |false
 
-|Show Uploader
-|ingestEnabled
-|Boolean
-|Show upload menu for adding new record.
-|true
-|false
-
 |Enable Cache
 |cacheEnabled
 |Boolean
@@ -180,27 +166,6 @@ Example:
 |localCatalogEnabled
 |Boolean
 |Enables queries to the local catalog.
-|true
-|true
-
-|Enable Historical Search
-|historicalSearchEnabled
-|Boolean
-|Enable searching for historical metacards.
-|true
-|true
-
-|Enable Archive Search
-|archiveSearchEnabled
-|Boolean
-|Enable searching for archived metacards.
-|true
-|true
-
-|Enable Query Feedback
-|queryFeedbackEnabled
-|Boolean
-|Enable the query comments option.
 |true
 |true
 
@@ -334,48 +299,6 @@ a|* `1800`
 * `28800`
 * `57600`
 * `86400`
-|true
-
-|Auto Merge Time
-|autoMergeTime
-|Integer
-|Specifies the interval during which new results can be merged automatically. This is the time allowed since last merge (in milliseconds).
-|1000
-|true
-
-|Query Feedback Email Subject Template
-|queryFeedbackEmailSubjectTemplate
-|String
-|See <<{managing-prefix}configuring_query_feedback_for_intrigue,Configuring Query Feedback for ${catalog-ui}>> for more details about Query Feedback templates.
-|Query Feedback from {{username}}
-|true
-
-|Query Feedback Email Body Template
-|queryFeedbackEmailBodyTemplate
-|String
-|See <<{managing-prefix}configuring_query_feedback_for_intrigue,Configuring Query Feedback for ${catalog-ui}>> for more details about Query Feedback templates.
-a|
-----
-<h2>Query Feedback</h2> +
-<p><br> +
-	<b>Authenticated User</b>: {{{auth_username}}}<br><br> +
-	<b>User</b>: {{{username}}}<br><br> +
-	<b>Email</b>: {{{email}}}<br><br> +
-	<b>Workspace</b>: {{{workspace_name}}} ({{{workspace_id}}})<br><br> +
-	<b>Query</b>: {{{query}}}<br><br> +
-	<b>Query time</b>: {{{query_initiated_time}}}<br><br> +
-	<b>Query status</b>: {{{query_status}}}<br><br> +
-	<b>Comments</b>: {{{comments}}}<br><br> +
-	<b>Query_results</b>: <pre>{{{query_results}}}</pre> +
-</p>
-----
-|true
-
-|Query Feedback Email Destination
-|queryFeedbackEmailDestination
-|String
-|Email destination to send Query Feedback results.
-|
 |true
 
 |Maximum Endpoint Upload Size

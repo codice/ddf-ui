@@ -4,7 +4,6 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import user from '../../singletons/user-instance'
-import properties from '../../../js/properties'
 import TypedMetacardDefs from './metacardDefinitions'
 import Autocomplete from '@mui/material/Autocomplete'
 import Checkbox from '@mui/material/Checkbox'
@@ -37,6 +36,7 @@ import { MetacardAttribute } from '../../../js/model/Types'
 import ExtensionPoints from '../../../extension-points'
 import LocationInputReact from '../../location-new/location-new.view'
 import { TypedUserInstance } from '../../singletons/TypedUser'
+import { StartupDataStore } from '../../../js/model/Startup/startup'
 function getSummaryShown(): string[] {
   const userchoices = user
     .get('user')
@@ -45,8 +45,8 @@ function getSummaryShown(): string[] {
   if (userchoices.length > 0) {
     return userchoices
   }
-  if ((properties as any).summaryShow.length > 0) {
-    return (properties as any).summaryShow
+  if (StartupDataStore.Configuration.getSummaryShow().length > 0) {
+    return StartupDataStore.Configuration.getSummaryShow()
   }
   return ['title', 'created', 'thumbnail']
 }

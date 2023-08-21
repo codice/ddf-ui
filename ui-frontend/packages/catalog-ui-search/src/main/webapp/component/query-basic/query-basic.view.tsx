@@ -16,7 +16,6 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import _ from 'underscore'
 import IconHelper from '../../js/IconHelper'
-import properties from '../../js/properties'
 import cql from '../../js/cql'
 import metacardDefinitions from '../singletons/metacard-definitions'
 import CQLUtils from '../../js/CQLUtils'
@@ -43,6 +42,7 @@ import Autocomplete from '@mui/material/Autocomplete'
 import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 import BooleanSearchBar from '../boolean-search-bar/boolean-search-bar'
 import { ValidationResult } from '../../react-component/location/validators'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 function isNested(filter: any) {
   let nested = false
   filter.filters.forEach((subfilter: any) => {
@@ -52,9 +52,9 @@ function isNested(filter: any) {
 }
 function getMatchTypeAttribute() {
   return metacardDefinitions.metacardTypes[
-    (properties as any).basicSearchMatchType
+    StartupDataStore.Configuration.getBasicSearchMatchType()
   ]
-    ? (properties as any).basicSearchMatchType
+    ? StartupDataStore.Configuration.getBasicSearchMatchType()
     : 'datatype'
 }
 function getAllValidValuesForMatchTypeAttribute(): {

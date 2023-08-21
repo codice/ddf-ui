@@ -15,15 +15,15 @@
 import $ from 'jquery'
 import Backbone from 'backbone'
 import metacardDefinitions from '../../component/singletons/metacard-definitions'
-import properties from '../properties'
 import 'backbone-associations'
 import {
   LazyQueryResults,
   transformResponseHighlightsToMap,
 } from './LazyQueryResult/LazyQueryResults'
 import { Client } from 'rpc-websockets'
+import { StartupDataStore } from './Startup/startup'
 let rpc: Client | null = null
-if ((properties as any).webSocketsEnabled && window.WebSocket) {
+if (StartupDataStore.Configuration.getWebSocketsEnabled() && window.WebSocket) {
   const protocol = { 'http:': 'ws:', 'https:': 'wss:' }
   // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const url = `${protocol[location.protocol]}//${location.hostname}:${

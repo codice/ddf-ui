@@ -22,7 +22,6 @@ import _get from 'lodash.get'
 import _cloneDeep from 'lodash.clonedeep'
 import wreqr from '../wreqr'
 import Backbone from 'backbone'
-import properties from '../properties'
 import Alert from './Alert'
 import Common from '../Common'
 import UploadBatch from './UploadBatch'
@@ -31,6 +30,7 @@ import QuerySettings from './QuerySettings'
 import 'backbone-associations'
 import { CommonAjaxSettings } from '../AjaxSettings'
 import { v4 } from 'uuid'
+import { StartupDataStore } from './Startup/startup'
 const User = {}
 const Theme = Backbone.Model.extend({
   defaults() {
@@ -41,7 +41,7 @@ const Theme = Backbone.Model.extend({
   },
 })
 ;(User as any).updateMapLayers = function (layers: any) {
-  const providers = properties.imageryProviders
+  const providers = StartupDataStore.Configuration.getImageryProviders()
   const exclude = ['id', 'label', 'alpha', 'show', 'order']
   const equal = (a: any, b: any) =>
     _.isEqual(_.omit(a, exclude), _.omit(b, exclude))
@@ -92,7 +92,7 @@ const Theme = Backbone.Model.extend({
   model: (User as any).MapLayer,
   defaults() {
     return _.map(
-      _.values(properties.imageryProviders),
+      _.values(StartupDataStore.Configuration.getImageryProviders()),
       (layerConfig) => new (User as any).MapLayer(layerConfig, { parse: true })
     )
   },
@@ -142,7 +142,7 @@ const Theme = Backbone.Model.extend({
       uploads: [],
       oauth: [],
       fontSize: 16,
-      resultCount: (properties as any).resultCount,
+      resultCount: StartupDataStore.Configuration.getResultCount(),
       dateTimeFormat: Common.getDateTimeFormats()['ISO']['millisecond'],
       timeZone: Common.getTimeZones()['UTC'],
       coordinateFormat: 'degrees',
@@ -267,7 +267,10 @@ const Theme = Backbone.Model.extend({
   handleResultCount() {
     this.set(
       'resultCount',
-      Math.min((properties as any).resultCount, this.get('resultCount'))
+      Math.min(
+        StartupDataStore.Configuration.getResultCount(),
+        this.get('resultCount')
+      )
     )
   },
   handleAlertPersistence() {

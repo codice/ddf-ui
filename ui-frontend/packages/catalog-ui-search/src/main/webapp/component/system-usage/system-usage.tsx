@@ -5,11 +5,13 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import Divider from '@mui/material/Divider'
-import properties from '../../js/properties'
 import user from '../singletons/user-instance'
 import { useDialog } from '../dialog'
+import { StartupDataStore } from '../../js/model/Startup/startup'
+import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 function hasMessage() {
-  return (properties.ui as any).systemUsageTitle
+  return StartupDataStore.Configuration.platformUiConfiguration
+    ?.systemUsageTitle
 }
 function hasNotSeenMessage() {
   const systemUsage = window.sessionStorage.getItem('systemUsage')
@@ -23,7 +25,8 @@ function hasNotSeenMessage() {
   }
 }
 function shownOncePerSession() {
-  return (properties.ui as any).systemUsageOncePerSession
+  return StartupDataStore.Configuration.platformUiConfiguration
+    ?.systemUsageOncePerSession
 }
 function shouldDisplayMessage() {
   if (hasMessage()) {
@@ -37,6 +40,7 @@ function shouldDisplayMessage() {
   }
 }
 const SystemUsageModal = () => {
+  const Configuration = useConfiguration()
   const dialogContext = useDialog()
   React.useEffect(() => {
     if (shouldDisplayMessage()) {
@@ -61,13 +65,13 @@ const SystemUsageModal = () => {
       children: (
         <>
           <DialogTitle style={{ textAlign: 'center' }}>
-            {(properties.ui as any).systemUsageTitle}
+            {Configuration.platformUiConfiguration?.systemUsageTitle}
           </DialogTitle>
           <Divider />
           <DialogContent style={{ minHeight: '30em', minWidth: '60vh' }}>
             <div
               dangerouslySetInnerHTML={{
-                __html: (properties.ui as any).systemUsageMessage,
+                __html: Configuration.getSystemUsageMessage(),
               }}
             />
           </DialogContent>
@@ -79,7 +83,8 @@ const SystemUsageModal = () => {
               onClick={() => {
                 if (
                   !user.get('user').isGuestUser() &&
-                  (properties.ui as any).systemUsageOncePerSession
+                  Configuration.platformUiConfiguration
+                    ?.systemUsageOncePerSession
                 ) {
                   const systemUsage = JSON.parse(
                     window.sessionStorage.getItem('systemUsage') as any

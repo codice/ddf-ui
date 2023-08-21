@@ -18,7 +18,6 @@ import Map from '../map'
 import utility from './utility'
 import DrawingUtility from '../DrawingUtility'
 import wreqr from '../../../../js/wreqr'
-import properties from '../../../../js/properties'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
 import Cesium from 'cesium/Build/Cesium/Cesium'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
@@ -31,13 +30,14 @@ import User from '../../../../js/model/User'
 import { Drawing } from '../../../singletons/drawing'
 import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryResult'
 import { ClusterType } from '../react/geometries'
+import { StartupDataStore } from '../../../../js/model/Startup/startup'
 const defaultColor = '#3c6dd5'
 const eyeOffset = new Cesium.Cartesian3(0, 0, 0)
 const pixelOffset = new Cesium.Cartesian2(0.0, 0)
 const rulerColor = new Cesium.Color(0.31, 0.43, 0.52)
 const rulerPointColor = '#506f85'
 const rulerLineHeight = 0
-Cesium.BingMapsApi.defaultKey = (properties as any).bingKey || 0
+Cesium.BingMapsApi.defaultKey = StartupDataStore.Configuration.getBingKey() || 0
 const imageryProviderTypes = CesiumImageryProviderTypes
 function setupTerrainProvider(viewer: any, terrainProvider: any) {
   if (terrainProvider == null || terrainProvider === undefined) {
@@ -115,7 +115,10 @@ function createMap(insertionElement: any) {
       $('body').mousedown()
     }
   }, Cesium.ScreenSpaceEventType.RIGHT_DOWN)
-  setupTerrainProvider(viewer, (properties as any).terrainProvider)
+  setupTerrainProvider(
+    viewer,
+    StartupDataStore.Configuration.getTerrainProvider()
+  )
   return {
     map: viewer,
     requestRenderHandler: requestRender,

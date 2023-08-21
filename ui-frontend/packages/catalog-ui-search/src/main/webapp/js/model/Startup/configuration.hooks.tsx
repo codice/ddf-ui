@@ -12,17 +12,24 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-// @ts-expect-error ts-migrate(2304) FIXME: Cannot find name '__ENV__'.
-console.info(__ENV__) // moving this here as it's useful to see at least once
-export const Environment = {
-  isTest() {
-    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name '__ENV__'.
-    return __ENV__ === 'test'
-  },
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name '__COMMIT_HASH__'.
-  commitHash: __COMMIT_HASH__,
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name '__IS_DIRTY__'.
-  isDirty: __IS_DIRTY__,
-  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name '__COMMIT_DATE__'.
-  commitDate: __COMMIT_DATE__,
+import { StartupDataStore } from './startup'
+import { useSyncExternalStore } from 'react'
+
+const subscribe = (callback: () => void) => {
+  const cancelSubscription = StartupDataStore.Configuration.subscribeTo({
+    subscribableThing: 'configuration-update',
+    callback,
+  })
+  return () => {
+    cancelSubscription()
+  }
+}
+
+const getSnapshot = () => {
+  return StartupDataStore.Configuration
+}
+
+export const useConfiguration = () => {
+  const configuration = useSyncExternalStore(subscribe, getSnapshot)
+  return configuration
 }

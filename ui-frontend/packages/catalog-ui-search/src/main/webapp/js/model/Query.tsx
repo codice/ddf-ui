@@ -14,7 +14,6 @@
  **/
 import Backbone from 'backbone'
 import _ from 'underscore'
-import properties from '../properties'
 import QueryResponse from './QueryResponse'
 import { postSimpleAuditLog } from '../../react-component/utils/audit/audit-endpoint'
 import cql from '../cql'
@@ -178,7 +177,7 @@ export default Backbone.AssociatedModel.extend({
         cql: "anyText ILIKE '*'",
         associatedFormModel: undefined,
         excludeUnnecessaryAttributes: true,
-        count: (properties as any).resultCount,
+        count: StartupDataStore.Configuration.getResultCount(),
         start: 1,
         sorts: [
           {
@@ -486,7 +485,7 @@ export default Backbone.AssociatedModel.extend({
         contentType: 'application/json',
         method: 'POST',
         processData: false,
-        timeout: (properties as any).timeout,
+        timeout: StartupDataStore.Configuration.getSearchTimeout(),
         success(_model: any, response: any, options: any) {
           response.options = options
         },

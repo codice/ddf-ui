@@ -76,43 +76,28 @@ export interface VisualizationType {
 export interface UIConfigType {
   mapHome: string
   resultCount: number
-  showIngest: boolean
   showLogo: boolean
-  listTemplates: any[]
   relevancePrecision: number
   attributeDescriptions: Record<string, any>
-  zoomPercentage: number
   basicSearchTemporalSelectionDefault: string[]
   branding: string
-  showWelcome: boolean
-  autoMergeTime: number
   basicSearchMatchType: string
   onlineGazetteer: boolean
   imageryProviders: ImageryProvider[]
   isCacheDisabled: boolean
   isCustomTextNotationEnabled: boolean
   isVersioningEnabled: boolean
-  isMetacardPreviewDisabled: boolean
   isSpellcheckEnabled: boolean
-  customBackgroundAccentContent: string
-  customNegativeColor: string
   attributeSuggestionList: any[]
-  isHistoricalSearchDisabled: boolean
   summaryShow: string[]
-  queryFeedbackEmailDestination: string
   readOnly: string[]
   version: string
   commonAttributes: string[]
   i18n: Record<string, string>
   customTextNotationAttribute: string
-  queryFeedbackEmailSubjectTemplate: string
-  customBackgroundModal: string
   isExperimental: boolean
-  queryFeedbackEmailBodyTemplate: string
   sourcePollInterval: number
-  customBackgroundContent: string
   requiredAttributes: any[]
-  customWarningColor: string
   scheduleFrequencyList: number[]
   defaultSources: any[]
   terrainProvider: {
@@ -120,28 +105,23 @@ export interface UIConfigType {
     url: string
   }
   topLeftLogoSrc: string
-  customBackgroundDropdown: string
   hiddenAttributes: string[]
   timeout: number
   attributeAliases: Record<string, string>
   iconConfig: IconConfig
   enums: Record<string, any>
-  queryFeedbackEnabled: boolean
+  extra: any
   editorAttributes: string[]
-  resultShow: any[]
-  spacingMode: string
+  resultShow: string[]
   disableUnknownErrorBox: boolean
   isFuzzyResultsEnabled: boolean
   theme: string
-  customPrimaryColor: string
   projection: string
   defaultLayout: VisualizationType[]
   webSocketsEnabled: boolean
   showRelevanceScores: boolean
   menuIconSrc: string
-  customPositiveColor: string
   product: string
-  customFavoriteColor: string
   typeNameMapping: Record<string, string>
   visualizations: VisualizationType[]
   landingPageBackgroundSrc: string
@@ -150,16 +130,12 @@ export interface UIConfigType {
   isPhoneticsEnabled: boolean
   helpUrl: string
   customBranding: string
-  showTask: boolean
-  defaultTableColumns: any[]
+  defaultTableColumns: string[]
   exportResultLimit: number
   bingKey: string
-  isArchiveSearchDisabled: boolean
   bottomLeftLogoSrc: string
   useHyphensInUuid: boolean
   disableLocalCatalog: boolean
-  customBackgroundNavigation: string
-  customBackgroundSlideout: string
 }
 
 export type localSourceIdType = string
@@ -175,6 +151,9 @@ export type platformConfigType = {
   title: string
   version: string
   timeout: number
+  systemUsageMessage?: string
+  systemUsageOncePerSession?: boolean
+  systemUsageTitle?: string
 }
 
 type SourceType = {

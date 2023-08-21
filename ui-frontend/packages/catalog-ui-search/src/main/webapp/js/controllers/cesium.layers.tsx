@@ -15,7 +15,6 @@
 /*jshint newcap: false, bitwise: false */
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
 import Cesium from 'cesium/Build/Cesium/Cesium'
-import properties from '../properties'
 import url from 'url'
 import { addLayer, shiftLayers, getShift } from './cesium.layer-ordering'
 import _ from 'underscore'
@@ -40,6 +39,7 @@ import { Layers } from './layers'
 import user from '../../component/singletons/user-instance'
 import User from '../../js/model/User'
 import Backbone from 'backbone'
+import { StartupDataStore } from '../model/Startup/startup'
 type MakeMapType = {
   cesiumOptions: any
   element: HTMLElement
@@ -108,7 +108,7 @@ export class CesiumLayers {
         initObj.tileMatrixSetID = initObj.matrixSet
       }
       /* Set the tiling scheme for WMTS imagery providers that are EPSG:4326 */
-      if ((properties as any).projection === 'EPSG:4326') {
+      if (StartupDataStore.Configuration.getProjection() === 'EPSG:4326') {
         initObj.tilingScheme = new Cesium.GeographicTilingScheme()
       }
     }

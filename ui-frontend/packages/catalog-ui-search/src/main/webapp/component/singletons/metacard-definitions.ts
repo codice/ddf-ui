@@ -15,7 +15,6 @@
 
 import Backbone from 'backbone'
 import _ from 'underscore'
-import properties from '../../js/properties'
 import moment from 'moment'
 import fetch from '../../react-component/utils/fetch'
 import { StartupDataStore } from '../../js/model/Startup/startup'
@@ -60,46 +59,48 @@ function transformEnumResponse(metacardTypes: any, response: any) {
 
 const metacardStartingTypes = {
   anyText: {
-    alias: properties.attributeAliases['anyText'],
+    alias: StartupDataStore.Configuration.getAttributeAliases()['anyText'],
     id: 'anyText',
     type: 'STRING',
     multivalued: false,
   },
   anyGeo: {
-    alias: properties.attributeAliases['anyGeo'],
+    alias: StartupDataStore.Configuration.getAttributeAliases()['anyGeo'],
     id: 'anyGeo',
     type: 'LOCATION',
     multivalued: false,
   },
   anyDate: {
-    alias: properties.attributeAliases['anyDate'],
+    alias: StartupDataStore.Configuration.getAttributeAliases()['anyDate'],
     id: 'anyDate',
     type: 'DATE',
     multivalued: false,
     hidden: true, // need to investigate if this is common, it looks like we defer to the properties file instead, think we need to overhaul our data structures for this
   },
   'metacard-type': {
-    alias: properties.attributeAliases['metacard-type'],
+    alias:
+      StartupDataStore.Configuration.getAttributeAliases()['metacard-type'],
     id: 'metacard-type',
     type: 'STRING',
     multivalued: false,
     readOnly: true,
   },
   'source-id': {
-    alias: properties.attributeAliases['source-id'],
+    alias: StartupDataStore.Configuration.getAttributeAliases()['source-id'],
     id: 'source-id',
     type: 'STRING',
     multivalued: false,
     readOnly: true,
   },
   cached: {
-    alias: properties.attributeAliases['cached'],
+    alias: StartupDataStore.Configuration.getAttributeAliases()['cached'],
     id: 'cached',
     type: 'STRING',
     multivalued: false,
   },
   'metacard-tags': {
-    alias: properties.attributeAliases['metacard-tags'],
+    alias:
+      StartupDataStore.Configuration.getAttributeAliases()['metacard-tags'],
     id: 'metacard-tags',
     type: 'STRING',
     multivalued: true,
@@ -110,15 +111,16 @@ function metacardStartingTypesWithTemporal() {
   // needed to handle erroneous or currently unknown attributes (they could be picked up after searching a source)
   let metacardStartingTypeWithTemporal = { ...metacardStartingTypes }
 
-  if (properties.basicSearchTemporalSelectionDefault) {
-    properties.basicSearchTemporalSelectionDefault.forEach(
+  if (StartupDataStore.Configuration.getBasicSearchTemporalSelectionDefault()) {
+    StartupDataStore.Configuration.getBasicSearchTemporalSelectionDefault().forEach(
       (proposedType: any) => {
         // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         metacardStartingTypeWithTemporal[proposedType] = {
           id: proposedType,
           type: 'DATE',
-          alias: properties.attributeAliases[proposedType],
-          hidden: properties.isHidden(proposedType),
+          alias:
+            StartupDataStore.Configuration.getAttributeAliases()[proposedType],
+          hidden: StartupDataStore.Configuration.isHidden(proposedType),
         }
       }
     )
@@ -146,7 +148,7 @@ export default new (Backbone.Model.extend({
       this.metacardTypes[id].type === 'XML' ||
       this.metacardTypes[id].type === 'BINARY' ||
       this.metacardTypes[id].type === 'OBJECT' ||
-      properties.isHidden(id)
+      StartupDataStore.Configuration.isHidden(id)
     )
   },
   getDatatypeEnum() {
@@ -190,13 +192,16 @@ export default new (Backbone.Model.extend({
           this.metacardTypes[type].id = this.metacardTypes[type].id || type
           this.metacardTypes[type].type =
             this.metacardTypes[type].type || this.metacardTypes[type].format
-          this.metacardTypes[type].alias = properties.attributeAliases[type]
+          this.metacardTypes[type].alias =
+            StartupDataStore.Configuration.getAttributeAliases()[type]
           this.metacardTypes[type].hidden =
-            properties.isHidden(this.metacardTypes[type].id) ||
-            this.isHiddenTypeExceptThumbnail(this.metacardTypes[type].id)
-          this.metacardTypes[type].readOnly = properties.isReadOnly(
-            this.metacardTypes[type].id
-          )
+            StartupDataStore.Configuration.isHidden(
+              this.metacardTypes[type].id
+            ) || this.isHiddenTypeExceptThumbnail(this.metacardTypes[type].id)
+          this.metacardTypes[type].readOnly =
+            StartupDataStore.Configuration.isReadOnly(
+              this.metacardTypes[type].id
+            )
         }
       }
       return true
@@ -269,6 +274,6 @@ export default new (Backbone.Model.extend({
   sortedMetacardTypes: [],
   metacardTypes: _.extendOwn({}, metacardStartingTypesWithTemporal()),
   validation: {},
-  enums: properties.enums,
+  enums: StartupDataStore.Configuration.getEnums(),
   deprecatedEnums: {},
 }))()
