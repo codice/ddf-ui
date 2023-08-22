@@ -22,6 +22,7 @@ import _ from 'underscore'
 const debounceTime = 250
 
 import Backbone from 'backbone'
+import { FilterBuilderClass } from '../../../component/filter-builder/filter.structure'
 
 export type SearchStatus = {
   [key: string]: Status
@@ -101,6 +102,7 @@ export const transformResponseHighlightsToMap = ({
 }
 
 type ConstructorProps = {
+  filterTree?: FilterBuilderClass
   results?: ResultType[]
   sorts?: QuerySortType[]
   sources?: string[]
@@ -116,6 +118,7 @@ type SubscribableType =
   | 'filteredResults'
   | 'selectedResults'
   | 'results.backboneSync'
+  | 'filterTree'
 type SubscriptionType = { [key: string]: () => void }
 /**
  * Constructed with performance in mind, taking advantage of maps whenever possible.
@@ -130,6 +133,7 @@ export class LazyQueryResults {
   ['subscriptionsToMe.status']: SubscriptionType;
   ['subscriptionsToMe.filteredResults']: SubscriptionType;
   ['subscriptionsToMe.selectedResults']: SubscriptionType;
+  ['subscriptionsToMe.filterTree']: SubscriptionType;
   ['subscriptionsToMe.results.backboneSync']: SubscriptionType
   subscribeTo({
     subscribableThing,
@@ -166,6 +170,9 @@ export class LazyQueryResults {
   ['_notifySubscribers.results.backboneSync']() {
     this._notifySubscribers('results.backboneSync')
   }
+  ['_notifySubscribers.filterTree']() {
+    this._notifySubscribers('filterTree')
+  }
   _turnOnDebouncing() {
     this['_notifySubscribers.status'] = _.debounce(
       this['_notifySubscribers.status'],
@@ -181,6 +188,10 @@ export class LazyQueryResults {
     )
     this['_notifySubscribers.results.backboneSync'] = _.debounce(
       this['_notifySubscribers.results.backboneSync'],
+      debounceTime
+    )
+    this['_notifySubscribers.filterTree'] = _.debounce(
+      this['_notifySubscribers.filterTree'],
       debounceTime
     )
   }
@@ -341,6 +352,7 @@ export class LazyQueryResults {
     this.highlights = {}
   }
   constructor({
+    filterTree = undefined,
     results = [],
     sorts = [],
     sources = [],
@@ -352,6 +364,7 @@ export class LazyQueryResults {
   }: ConstructorProps = {}) {
     this._turnOnDebouncing()
     this.reset({
+      filterTree,
       results,
       sorts,
       sources,
@@ -387,6 +400,8 @@ export class LazyQueryResults {
       this['subscriptionsToMe.selectedResults'] = {}
     if (this['subscriptionsToMe.status'] === undefined)
       this['subscriptionsToMe.status'] = {}
+    if (this['subscriptionsToMe.filterTree'] === undefined)
+      this['subscriptionsToMe.filterTree'] = {}
     this.results = {}
     this.types = {}
     this.sources = []
@@ -400,6 +415,7 @@ export class LazyQueryResults {
     if (shouldNotify) this['_notifySubscribers.selectedResults']()
   }
   reset({
+    filterTree = undefined,
     results = [],
     sorts = [],
     sources = [],
@@ -415,6 +431,7 @@ export class LazyQueryResults {
     this.resetHighlights()
     this.resetDidYouMeanFields()
     this.resetShowingResultsForFields()
+    this._resetFilterTree(filterTree)
     this._resetSources(sources)
     this._updatePersistantSorts(sorts)
     this._updateTransformSorts(transformSorts)
@@ -509,6 +526,11 @@ export class LazyQueryResults {
     }, {} as SearchStatus)
     this._updateIsSearching()
     this['_notifySubscribers.status']()
+  }
+  filterTree?: FilterBuilderClass
+  _resetFilterTree(filterTree?: FilterBuilderClass) {
+    this.filterTree = filterTree
+    this['_notifySubscribers.filterTree']()
   }
   cancel() {
     Object.keys(status).forEach((id) => {

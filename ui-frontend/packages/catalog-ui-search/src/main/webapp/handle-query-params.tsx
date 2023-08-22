@@ -12,19 +12,11 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-// check browser before loading the rest of the app
-import { isSupportedBrowser } from './check-browser'
-//@ts-ignore
-import { StartupDataStore } from './js/model/Startup/startup'
-import { removeRedirectQueryParams } from './handle-query-params'
-;(async () => {
-  // check if supported browser
-  if (isSupportedBrowser()) {
-    removeRedirectQueryParams()
-    // wait for critical data to be fetched
-    await (await import('./js/WaitForReady')).waitForReady()
-    // render the app
-    console.log('config fetched')
-    await import('./app')
+
+// some systems like keycloak attach query params which interfere with react router / golden layout and their use of query params (when using hash routing)
+export function removeRedirectQueryParams() {
+  if (location.href.includes(`${location.pathname}?`)) {
+    const preHashStuff = location.href.split('?')[0]
+    location.href = preHashStuff + location.hash
   }
-})()
+}

@@ -201,6 +201,31 @@ export const useStatusOfLazyResults = ({
 }
 
 /**
+ * If a view cares about the status of a LazyQueryResults object
+ */
+export const useFilterTreeOfLazyResults = ({
+  lazyResults,
+}: {
+  lazyResults: LazyQueryResults
+}) => {
+  const [filterTree, setFilterTree] = React.useState(lazyResults.filterTree)
+  React.useEffect(() => {
+    setFilterTree(lazyResults.filterTree)
+    const unsubscribeCall = lazyResults.subscribeTo({
+      subscribableThing: 'filterTree',
+      callback: () => {
+        setFilterTree(lazyResults.filterTree)
+      },
+    })
+    return () => {
+      unsubscribeCall()
+    }
+  }, [lazyResults])
+
+  return filterTree
+}
+
+/**
  *  Allow a view to rerender when the backbone model resyncs to the plain model
  */
 export const useRerenderOnBackboneSync = ({

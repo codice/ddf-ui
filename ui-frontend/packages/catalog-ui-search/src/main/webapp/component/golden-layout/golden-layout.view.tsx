@@ -113,6 +113,7 @@ const GoldenLayoutWindowCommunicationEvents = {
   consumePreferencesChange: 'consumePreferencesChange',
   consumeSubwindowLayoutChange: 'consumeSubwindowLayoutChange',
   consumeNavigationChange: 'consumeNavigationChange',
+  consumeWreqrEvent: 'consumeWreqrEvent',
 }
 
 const GoldenLayoutComponentHeader = ({
@@ -1005,10 +1006,15 @@ const useProvideStateChange = ({
         subscribableThing: 'status',
         callback,
       })
+      const filterTreeSubscription = lazyResults.subscribeTo({
+        subscribableThing: 'filterTree',
+        callback,
+      })
       return () => {
         filteredResultsSubscription()
         selectedResultsSubscription()
         statusSubscription()
+        filterTreeSubscription()
       }
     }
     return () => {}
@@ -1085,6 +1091,7 @@ const useConsumeInitialState = ({
       }) => {
         setHasConsumedInitialState(true)
         lazyResults.reset({
+          filterTree: eventData.lazyResults.filterTree,
           results: Object.values(eventData.lazyResults.results).map((result) =>
             _cloneDeep(result.plain)
           ),
@@ -1151,8 +1158,14 @@ const useConsumeStateChange = ({
             isSelected: lazyResult.isSelected,
           }
         })
-        if (!_isEqualWith(results, callbackResults)) {
+        const filterTree = lazyResults.filterTree
+        const callbackFilterTree = eventData.lazyResults.filterTree
+        if (
+          !_isEqualWith(results, callbackResults) ||
+          !_isEqualWith(filterTree, callbackFilterTree)
+        ) {
           lazyResults.reset({
+            filterTree: eventData.lazyResults.filterTree,
             results: Object.values(eventData.lazyResults.results).map(
               (result) => _cloneDeep(result.plain)
             ),
@@ -1244,6 +1257,61 @@ function useConsumeSubwindowLayoutChange({
   }, [goldenLayout, isInitialized])
 }
 
+/**
+ *  Notice that we are only forwarding events that start with 'search' for now, as these are drawing events.
+ */
+const useProvideWreqrEvents = ({
+  goldenLayout,
+  isInitialized,
+}: {
+  goldenLayout: any
+  isInitialized: boolean
+}) => {
+  useListenTo(
+    wreqr.vent,
+    'all',
+    (event: string, args: any, { doNotPropagate = false } = {}) => {
+      if (goldenLayout && isInitialized) {
+        if (event.startsWith('search') && !doNotPropagate) {
+          goldenLayout.eventHub._childEventSource = null // golden layout doesn't properly clear this flag
+          goldenLayout.eventHub.emit(
+            GoldenLayoutWindowCommunicationEvents.consumeWreqrEvent,
+            {
+              event,
+              args,
+            }
+          )
+        }
+      }
+    }
+  )
+}
+
+const useConsumeWreqrEvents = ({
+  goldenLayout,
+  isInitialized,
+}: {
+  goldenLayout: any
+  isInitialized: boolean
+}) => {
+  React.useEffect(() => {
+    if (goldenLayout && isInitialized) {
+      goldenLayout.eventHub.on(
+        GoldenLayoutWindowCommunicationEvents.consumeWreqrEvent,
+        ({ event, args }: { event: string; args: any[] }) => {
+          wreqr.vent.trigger(event, args, { doNotPropagate: true })
+        }
+      )
+      return () => {
+        goldenLayout.eventHub.off(
+          GoldenLayoutWindowCommunicationEvents.consumeWreqrEvent
+        )
+      }
+    }
+    return () => {}
+  }, [goldenLayout, isInitialized])
+}
+
 const useCrossWindowGoldenLayoutCommunication = ({
   goldenLayout,
   isInitialized,
@@ -1268,6 +1336,8 @@ const useCrossWindowGoldenLayoutCommunication = ({
   useConsumeSubwindowLayoutChange({ goldenLayout, isInitialized })
   useListenToGoldenLayoutWindowClosed({ goldenLayout, isInitialized })
   useWindowConsumeNavigationChange({ goldenLayout, isInitialized })
+  useProvideWreqrEvents({ goldenLayout, isInitialized })
+  useConsumeWreqrEvents({ goldenLayout, isInitialized })
 }
 
 const HandlePopoutsBlocked = ({

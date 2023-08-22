@@ -20,6 +20,7 @@ import { TypedUserInstance } from '../../singletons/TypedUser'
 import { zoomToHome } from './home'
 import LocationModel from '../../location-old/location-old'
 import { Shape } from 'geospatialdraw/target/webapp/shape-utils'
+import { useLazyResultsFilterTreeFromSelectionInterface } from '../../selection-interface/hooks'
 export const SHAPE_ID_PREFIX = 'shape'
 export const getIdFromModelForDisplay = ({ model }: { model: any }) => {
   return `${SHAPE_ID_PREFIX}-${model.cid}-display`
@@ -161,6 +162,9 @@ export const useDrawingAndDisplayModels = ({
   const [filterModels, setFilterModels] = React.useState<Array<any>>([])
   const [drawingModels, setDrawingModels] = React.useState<Array<any>>([])
   const isDrawing = useIsDrawing()
+  const filterTree = useLazyResultsFilterTreeFromSelectionInterface({
+    selectionInterface,
+  })
   useListenTo(
     (wreqr as any).vent,
     'search:linedisplay search:polydisplay search:bboxdisplay search:circledisplay search:keyworddisplay',
@@ -178,12 +182,11 @@ export const useDrawingAndDisplayModels = ({
   )
   const updateFilterModels = React.useMemo(() => {
     return () => {
-      const currentQuery = selectionInterface.get('currentQuery')
       const resultFilter = TypedUserInstance.getEphemeralFilter()
       const extractedModels = [] as any[]
-      if (currentQuery) {
+      if (filterTree) {
         extractModelsFromFilter({
-          filter: currentQuery.get('filterTree'),
+          filter: filterTree,
           extractedModels,
         })
       }
@@ -195,7 +198,10 @@ export const useDrawingAndDisplayModels = ({
       }
       setFilterModels(extractedModels)
     }
-  }, [selectionInterface])
+  }, [filterTree])
+  React.useEffect(() => {
+    updateFilterModels()
+  }, [updateFilterModels])
   useListenTo(selectionInterface, 'change:currentQuery', updateFilterModels)
   useListenTo(
     TypedUserInstance.getPreferences(),
@@ -213,7 +219,7 @@ export const useDrawingAndDisplayModels = ({
   )
   useListenTo(
     (wreqr as any).vent,
-    'search:drawline-end search:drawpoly-end search:drawbbox-end search:drawcircle-end search:drawcancel',
+    'search:line-end search:poly-end search:bbox-end search:circle-end search:drawcancel',
     (model: any) => {
       if (drawingModels.includes(model)) {
         setDrawingModels(
@@ -222,18 +228,6 @@ export const useDrawingAndDisplayModels = ({
       }
     }
   )
-  useListenTo((wreqr as any).vent, 'search:drawend', (drawendModels: any[]) => {
-    setDrawingModels(
-      drawingModels.filter((drawingModel) => {
-        return !drawendModels.includes(drawingModel)
-      })
-    )
-    setModels(
-      models.filter((drawingModel) => {
-        return !drawendModels.includes(drawingModel)
-      })
-    )
-  })
   React.useEffect(() => {
     if (!isDrawing) {
       setDrawingModels([])

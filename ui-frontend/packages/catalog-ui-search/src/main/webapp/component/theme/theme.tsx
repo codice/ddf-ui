@@ -11,7 +11,6 @@ import {
   alpha,
   ThemeOptions,
 } from '@mui/material/styles'
-import StylesProvider from '@mui/styles/StylesProvider'
 import { ThemeContext } from 'styled-components'
 import { createGlobalStyle } from 'styled-components'
 import { meetsContrastGuidelines } from 'polished'
@@ -633,12 +632,10 @@ export const Provider = ({ children }: { children: any }) => {
   useRemoveFocusStyle()
   return (
     <>
-      <StylesProvider injectFirst>
-        <GlobalStyles {...theme} />
-        <StyledEngineProvider injectFirst>
-          <ThemeProvider theme={theme}>{children}</ThemeProvider>
-        </StyledEngineProvider>
-      </StylesProvider>
+      <GlobalStyles {...theme} />
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      </StyledEngineProvider>
     </>
   )
 }

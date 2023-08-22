@@ -189,6 +189,7 @@ export default Backbone.AssociatedModel.extend({
         // initialize this here so we can avoid creating spurious references to LazyQueryResults objects
         result: new QueryResponse({
           lazyResults: new LazyQueryResults({
+            filterTree: this.get('filterTree'),
             sorts: [],
             sources: [],
             transformSorts: ({ originalSorts }) => {
@@ -274,6 +275,11 @@ export default Backbone.AssociatedModel.extend({
         this.set('isOutdated', true)
       }
     )
+    this.listenTo(this, 'change:filterTree', () => {
+      this.get('result')
+        .get('lazyResults')
+        ._resetFilterTree(this.get('filterTree'))
+    })
     // basically remove invalid filters when going from basic to advanced, and make it basic compatible
     this.listenTo(this, 'change:type', () => {
       if (this.get('type') === 'basic') {
@@ -401,6 +407,7 @@ export default Backbone.AssociatedModel.extend({
     }
     let result = this.get('result')
     result.get('lazyResults').reset({
+      filterTree: this.get('filterTree'),
       sorts: this.get('sorts'),
       sources: selectedSources,
       transformSorts: ({ originalSorts }: any) => {
