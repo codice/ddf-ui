@@ -13,24 +13,13 @@
  *
  **/
 import { SortItemType } from './sort-selections'
-import metacardDefinitions from '../../component/singletons/metacard-definitions'
 import { Option } from './sort-selections'
 import { StartupDataStore } from '../../js/model/Startup/startup'
 
 const blacklist = ['anyText', 'anyGeo']
 
-type AttributeType = {
-  alias: string
-  hidden: boolean
-  id: string
-  isInjected: boolean
-  multivalued: boolean
-  readOnly: boolean
-  type: string
-}
-
 export const getLabel = (value: string) => {
-  let label = metacardDefinitions.getLabel(value)
+  let label = StartupDataStore.MetacardDefinitions.getAlias(value)
   if (label === 'RELEVANCE') {
     return 'Best Text Match'
   }
@@ -40,10 +29,17 @@ export const getLabel = (value: string) => {
 export const getSortAttributeOptions = (currentSelections: string[]) => {
   const currentAttributes =
     currentSelections && currentSelections.length ? currentSelections : []
-  const attributes = metacardDefinitions.sortedMetacardTypes as AttributeType[]
+  const attributes = StartupDataStore.MetacardDefinitions.getSortedAttributes()
   const options: Option[] = attributes
-    .filter((type) => !StartupDataStore.Configuration.isHidden(type.id))
-    .filter((type) => !metacardDefinitions.isHiddenTypeExceptThumbnail(type.id))
+    .filter(
+      (type) => !StartupDataStore.Configuration.isHiddenAttribute(type.id)
+    )
+    .filter(
+      (type) =>
+        !StartupDataStore.MetacardDefinitions.isHiddenTypeExceptThumbnail(
+          type.id
+        )
+    )
     .filter((type) => !blacklist.includes(type.id))
     .filter((type) => !currentAttributes.includes(type.id))
     .map((type) => ({
@@ -62,10 +58,15 @@ export const getSortAttributeOptions = (currentSelections: string[]) => {
 
 export const getSortDirectionOptions = (attributeVal: string) => {
   let ascendingLabel, descendingLabel
-  if (metacardDefinitions.metacardTypes[attributeVal] === undefined) {
+  if (
+    StartupDataStore.MetacardDefinitions.getAttributeMap()[attributeVal] ===
+    undefined
+  ) {
     ascendingLabel = descendingLabel = ''
   } else {
-    switch (metacardDefinitions.metacardTypes[attributeVal].type) {
+    switch (
+      StartupDataStore.MetacardDefinitions.getAttributeMap()[attributeVal].type
+    ) {
       case 'DATE':
         ascendingLabel = 'Oldest to Latest'
         descendingLabel = 'Latest to Oldest'
@@ -124,5 +125,8 @@ export const getNextAttribute = (
 }
 
 export const isDirectionalSort = (attribute: string) => {
-  return metacardDefinitions.metacardTypes[attribute] !== undefined
+  return (
+    StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute] !==
+    undefined
+  )
 }

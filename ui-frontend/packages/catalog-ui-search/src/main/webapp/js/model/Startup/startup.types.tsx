@@ -13,11 +13,26 @@
  *
  **/
 
+export type Attributetypes =
+  | 'BINARY'
+  | 'DATE'
+  | 'LOCATION'
+  | 'GEOMETRY'
+  | 'LONG'
+  | 'DOUBLE'
+  | 'FLOAT'
+  | 'INTEGER'
+  | 'SHORT'
+  | 'STRING'
+  | 'BOOLEAN'
+  | 'XML'
+  | 'OBJECT'
+
 export type AttributeDefinitionType = {
   id: string
   isInjected: boolean
   multivalued: boolean
-  type: string
+  type: Attributetypes
   alias?: string
   enumerations?: string[]
   deprecatedEnumerations?: string[]
@@ -33,7 +48,7 @@ export type MetacardDefinitionsType = {
   [key: string]: MetacardDefinitionType
 }
 
-export type SortedAttributesType = Set<AttributeDefinitionType>
+export type SortedAttributesType = Array<AttributeDefinitionType>
 
 export interface ImageryProvider {
   type: string

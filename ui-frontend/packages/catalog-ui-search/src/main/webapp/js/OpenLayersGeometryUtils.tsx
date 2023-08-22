@@ -15,7 +15,7 @@
 import Common from './Common'
 /*jshint esversion: 6, bitwise: false*/
 import ol from 'openlayers'
-import properties from './properties'
+import { StartupDataStore } from './model/Startup/startup'
 type CoordinateType = Array<any>
 type PointType = Array<any>
 type GeometryType = {
@@ -61,14 +61,14 @@ export const OpenLayersGeometryUtils = {
   mapCoordinateToLonLat: (point: PointType) =>
     ol.proj.transform(
       point as any,
-      (properties as any).projection,
+      StartupDataStore.Configuration.getProjection(),
       'EPSG:4326'
     ),
   lonLatToMapCoordinate: (point: PointType) =>
     ol.proj.transform(
       point as any,
       'EPSG:4326',
-      (properties as any).projection
+      StartupDataStore.Configuration.getProjection()
     ),
   wrapCoordinatesFromGeometry: (geometry: GeometryType) => {
     let coordinates = OpenLayersGeometryUtils.getCoordinatesFromGeometry(

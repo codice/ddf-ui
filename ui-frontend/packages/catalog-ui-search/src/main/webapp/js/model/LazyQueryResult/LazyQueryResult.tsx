@@ -17,8 +17,6 @@ import QueryResult from '../QueryResult'
 import { LazyQueryResults, AttributeHighlights } from './LazyQueryResults'
 import cql from '../../cql'
 import _ from 'underscore'
-import metacardDefinitions from '../../../component/singletons/metacard-definitions'
-import { TypedMetacardDefs } from '../../../component/tabs/metacard/metacardDefinitions'
 import * as TurfMeta from '@turf/meta'
 import wkx from 'wkx'
 import {
@@ -231,7 +229,7 @@ export class LazyQueryResult {
     response.forEach((part) =>
       part.attributes.forEach((attribute) => {
         this.plain.metacard.properties[attribute.attribute] =
-          TypedMetacardDefs.isMulti({ attr: attribute.attribute })
+          StartupDataStore.MetacardDefinitions.isMulti(attribute.attribute)
             ? attribute.values
             : attribute.values[0]
       })
@@ -358,8 +356,9 @@ export class LazyQueryResult {
         this.plain.metacard.properties,
         (_value: any, key: string) =>
           (attribute === undefined || attribute === key) &&
-          metacardDefinitions.metacardTypes[key] &&
-          metacardDefinitions.metacardTypes[key].type === 'GEOMETRY'
+          StartupDataStore.MetacardDefinitions.getAttributeMap()[key] &&
+          StartupDataStore.MetacardDefinitions.getAttributeMap()[key].type ===
+            'GEOMETRY'
       ).length > 0
     )
   }
@@ -367,10 +366,11 @@ export class LazyQueryResult {
     return _.filter(
       this.plain.metacard.properties,
       (_value: any, key: string) =>
-        !StartupDataStore.Configuration.isHidden(key) &&
+        !StartupDataStore.Configuration.isHiddenAttribute(key) &&
         (attribute === undefined || attribute === key) &&
-        metacardDefinitions.metacardTypes[key] &&
-        metacardDefinitions.metacardTypes[key].type === 'GEOMETRY'
+        StartupDataStore.MetacardDefinitions.getAttributeMap()[key] &&
+        StartupDataStore.MetacardDefinitions.getAttributeMap()[key].type ===
+          'GEOMETRY'
     )
   }
   getPoints(attribute?: any): any {

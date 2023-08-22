@@ -241,28 +241,24 @@ const Theme = Backbone.Model.extend({
     if (!this.needsUpdate(currentPrefs)) {
       return
     }
-    if (this.parents[0].isGuestUser()) {
-      window.localStorage.setItem('preferences', JSON.stringify(currentPrefs))
-    } else {
-      this.lastSaved = _cloneDeep(currentPrefs)
-      this.save(currentPrefs, {
-        ...CommonAjaxSettings,
-        drop: true,
-        withoutSet: true,
-        customErrorHandling: true,
-        error: () => {
-          ;(wreqr as any).vent.trigger('snack', {
-            message:
-              'Issue Authorizing Request: You appear to have been logged out.  Please sign in again.',
-            snackProps: {
-              alertProps: {
-                severity: 'error',
-              },
+    this.lastSaved = _cloneDeep(currentPrefs)
+    this.save(currentPrefs, {
+      ...CommonAjaxSettings,
+      drop: true,
+      withoutSet: true,
+      customErrorHandling: true,
+      error: () => {
+        ;(wreqr as any).vent.trigger('snack', {
+          message:
+            'Issue Authorizing Request: You appear to have been logged out.  Please sign in again.',
+          snackProps: {
+            alertProps: {
+              severity: 'error',
             },
-          })
-        },
-      })
-    }
+          },
+        })
+      },
+    })
   },
   handleResultCount() {
     this.set(
@@ -349,9 +345,6 @@ const Theme = Backbone.Model.extend({
   },
   getUserName() {
     return this.get('username')
-  },
-  isGuestUser() {
-    return this.get('isGuest')
   },
   getSummaryShown() {
     return this.get('preferences').getSummaryShown()
@@ -446,9 +439,6 @@ const Theme = Backbone.Model.extend({
   },
   getHoverPreview() {
     return this.get('user').getHoverPreview()
-  },
-  isGuest() {
-    return this.get('user').isGuestUser()
   },
   parse(body: any) {
     if (body.isGuest) {

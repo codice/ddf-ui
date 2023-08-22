@@ -4,7 +4,6 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import user from '../../singletons/user-instance'
-import TypedMetacardDefs from './metacardDefinitions'
 import Autocomplete from '@mui/material/Autocomplete'
 import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
@@ -37,6 +36,9 @@ import ExtensionPoints from '../../../extension-points'
 import LocationInputReact from '../../location-new/location-new.view'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import { StartupDataStore } from '../../../js/model/Startup/startup'
+import { useConfiguration } from '../../../js/model/Startup/configuration.hooks'
+import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
+import Common from '../../../js/Common'
 function getSummaryShown(): string[] {
   const userchoices = user
     .get('user')
@@ -98,7 +100,7 @@ const ThumbnailInput = ({
           }}
         />
         <img
-          src={TypedMetacardDefs.getImageSrc({ val: value })}
+          src={Common.getImageSrc(value)}
           ref={imgRef}
           style={{ maxWidth: '100%', maxHeight: '50vh' }}
         />
@@ -176,10 +178,11 @@ export const Editor = ({
       ? lazyResult.plain.metacard.properties[attr].slice(0)
       : [lazyResult.plain.metacard.properties[attr]]
   )
-  const label = TypedMetacardDefs.getAlias({ attr })
-  const isMultiValued = TypedMetacardDefs.isMulti({ attr })
-  const attrType = TypedMetacardDefs.getType({ attr })
-  const enumForAttr = TypedMetacardDefs.getEnum({ attr: attr })
+  const { getAlias, isMulti, getType, getEnum } = useMetacardDefinitions()
+  const label = getAlias(attr)
+  const isMultiValued = isMulti(attr)
+  const attrType = getType(attr)
+  const enumForAttr = getEnum(attr)
   const addSnack = useSnack()
   return (
     <>
@@ -204,7 +207,7 @@ export const Editor = ({
               {index !== 0 ? <Divider style={{ margin: '5px 0px' }} /> : null}
               <Grid item md={11}>
                 {(() => {
-                  if (enumForAttr) {
+                  if (enumForAttr.length > 0) {
                     return (
                       <Autocomplete
                         disabled={mode === 'saving'}
@@ -454,7 +457,8 @@ const AttributeComponent = ({
   if (value.constructor !== Array) {
     value = [value]
   }
-  let label = TypedMetacardDefs.getAlias({ attr })
+  const { getAlias, getType } = useMetacardDefinitions()
+  let label = getAlias(attr)
   const { isNotWritable } = useCustomReadOnlyCheck()
   const dialogContext = useDialog()
   const convertToFormat = useCoordinateFormat()
@@ -566,7 +570,7 @@ const AttributeComponent = ({
                           const src = `data:${mimetype};base64,${val}`
                           return <audio controls src={src} />
                         }
-                        switch (TypedMetacardDefs.getType({ attr })) {
+                        switch (getType(attr)) {
                           case 'DATE':
                             return (
                               <Typography
@@ -578,7 +582,7 @@ const AttributeComponent = ({
                           case 'BINARY':
                             return (
                               <img
-                                src={TypedMetacardDefs.getImageSrc({ val })}
+                                src={Common.getImageSrc(val)}
                                 style={{
                                   maxWidth: '100%',
                                   maxHeight: '50vh',
@@ -661,9 +665,9 @@ const getHiddenAttributes = (
   activeAttributes: string[]
 ) => {
   return Object.values(
-    TypedMetacardDefs.getDefinition({
-      type: selection.plain.metacardType,
-    })
+    StartupDataStore.MetacardDefinitions.getMetacardDefinition(
+      selection.plain.metacardType
+    )
   )
     .filter((val) => {
       if (activeAttributes.includes(val.id)) {
@@ -672,9 +676,12 @@ const getHiddenAttributes = (
       return true
     })
     .filter((val) => {
-      return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({
-        attr: val.id,
-      })
+      return !StartupDataStore.Configuration.isHiddenAttribute(val.id)
+    })
+    .filter((val) => {
+      return !StartupDataStore.MetacardDefinitions.isHiddenTypeExceptThumbnail(
+        val.id
+      )
     })
 }
 let globalExpanded = false // globally track if users want this since they may be clicking between results
@@ -689,6 +696,9 @@ const Summary = ({ result: selection }: Props) => {
   useRerenderOnBackboneSync({ lazyResult: selection })
   const dialogContext = useDialog()
   const { listenTo } = useBackbone()
+  const { isHiddenAttribute } = useConfiguration()
+  const { isHiddenTypeExceptThumbnail, getMetacardDefinition } =
+    useMetacardDefinitions()
   React.useEffect(() => {
     listenTo(
       user.get('user').get('preferences'),
@@ -711,20 +721,19 @@ const Summary = ({ result: selection }: Props) => {
     return selection && expanded
       ? Object.keys(selection.plain.metacard.properties)
           .filter((attr) => {
-            return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({ attr })
+            return !isHiddenTypeExceptThumbnail(attr)
+          })
+          .filter((attr) => {
+            return !isHiddenAttribute(attr)
           })
           .filter((attr) => {
             return !summaryShown.includes(attr)
           })
       : []
-  }, [expanded, summaryShown])
+  }, [expanded, summaryShown, isHiddenAttribute, isHiddenTypeExceptThumbnail])
   const blankEverythingElse = React.useMemo(() => {
     return selection
-      ? Object.values(
-          TypedMetacardDefs.getDefinition({
-            type: selection.plain.metacardType,
-          })
-        )
+      ? Object.values(getMetacardDefinition(selection.plain.metacardType))
           .filter((val) => {
             if (summaryShown.includes(val.id)) {
               return false
@@ -735,12 +744,13 @@ const Summary = ({ result: selection }: Props) => {
             return true
           })
           .filter((val) => {
-            return !TypedMetacardDefs.isHiddenTypeExceptThumbnail({
-              attr: val.id,
-            })
+            return !isHiddenTypeExceptThumbnail(val.id)
+          })
+          .filter((val) => {
+            return !isHiddenAttribute(val.id)
           })
       : []
-  }, [expanded, summaryShown])
+  }, [expanded, summaryShown, isHiddenAttribute, isHiddenTypeExceptThumbnail])
   React.useEffect(() => {
     globalExpanded = expanded
   }, [expanded])

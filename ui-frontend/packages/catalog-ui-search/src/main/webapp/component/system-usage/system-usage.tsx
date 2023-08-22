@@ -30,7 +30,7 @@ function shownOncePerSession() {
 }
 function shouldDisplayMessage() {
   if (hasMessage()) {
-    if (!shownOncePerSession() || user.get('user').isGuestUser()) {
+    if (!shownOncePerSession()) {
       return true
     } else {
       return hasNotSeenMessage()
@@ -82,7 +82,6 @@ const SystemUsageModal = () => {
               color="primary"
               onClick={() => {
                 if (
-                  !user.get('user').isGuestUser() &&
                   Configuration.platformUiConfiguration
                     ?.systemUsageOncePerSession
                 ) {

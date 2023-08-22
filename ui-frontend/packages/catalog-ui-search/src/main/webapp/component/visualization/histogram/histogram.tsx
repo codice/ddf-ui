@@ -13,7 +13,6 @@ import $ from 'jquery'
 import _ from 'underscore'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'plot... Remove this comment to see the full error message
 import Plotly from 'plotly.js/dist/plotly'
-import metacardDefinitions from '../../singletons/metacard-definitions'
 import moment from 'moment'
 import extension from '../../../extension-points'
 import { useTheme } from '@mui/material/styles'
@@ -39,12 +38,20 @@ function calculateAvailableAttributes(results: LazyQueryResult[]) {
   })
   return availableAttributes
     .filter(
-      (attribute) => metacardDefinitions.metacardTypes[attribute] !== undefined
+      (attribute) =>
+        StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute] !==
+        undefined
     )
-    .filter((attribute) => !metacardDefinitions.isHiddenType(attribute))
-    .filter((attribute) => !StartupDataStore.Configuration.isHidden(attribute))
+    .filter(
+      (attribute) =>
+        !StartupDataStore.MetacardDefinitions.isHiddenType(attribute)
+    )
+    .filter(
+      (attribute) =>
+        !StartupDataStore.Configuration.isHiddenAttribute(attribute)
+    )
     .map((attribute) => ({
-      label: metacardDefinitions.metacardTypes[attribute].alias || attribute,
+      label: StartupDataStore.MetacardDefinitions.getAlias(attribute),
       value: attribute,
     }))
 }
@@ -57,7 +64,10 @@ function calculateAttributeArray({
 }) {
   const values = [] as string[]
   results.forEach((result) => {
-    if (metacardDefinitions.metacardTypes[attribute].multivalued) {
+    if (
+      StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute]
+        .multivalued
+    ) {
       const resultValues = result.plain.metacard.properties[attribute]
       if (resultValues && resultValues.forEach) {
         resultValues.forEach((value: any) => {
@@ -86,7 +96,10 @@ function findMatchesForAttributeValues(
   values: any[]
 ) {
   return results.filter((result) => {
-    if (metacardDefinitions.metacardTypes[attribute].multivalued) {
+    if (
+      StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute]
+        .multivalued
+    ) {
       const resultValues = result.plain.metacard.properties[attribute]
       if (resultValues && resultValues.forEach) {
         for (let i = 0; i < resultValues.length; i++) {
@@ -110,7 +123,9 @@ function findMatchesForAttributeValues(
 // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
 function checkIfValueIsValid(values: any[], attribute: string, value: any) {
   if (value !== undefined) {
-    switch (metacardDefinitions.metacardTypes[attribute].type) {
+    switch (
+      StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute].type
+    ) {
       case 'DATE':
         const plotlyDate = getPlotlyDate(value)
         return plotlyDate >= values[0] && plotlyDate <= values[1]
@@ -133,7 +148,9 @@ function addValueForAttributeToArray({
   value: any
 }) {
   if (value !== undefined) {
-    switch (metacardDefinitions.metacardTypes[attribute].type) {
+    switch (
+      StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute].type
+    ) {
       case 'DATE':
         valueArray.push(getPlotlyDate(value))
         break

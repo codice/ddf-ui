@@ -12,8 +12,11 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import metacardDefinitions from '../../component/singletons/metacard-definitions'
 import { StartupDataStore } from '../../js/model/Startup/startup'
+import {
+  AttributeDefinitionType,
+  AttributeMapType,
+} from '../../js/model/Startup/startup.types'
 export type Attribute = {
   label: string
   value: string
@@ -21,7 +24,7 @@ export type Attribute = {
   group?: string
 }
 const toAttribute = (
-  attribute: { id: string; alias: string },
+  attribute: AttributeDefinitionType,
   group?: string
 ): Attribute => {
   return {
@@ -36,16 +39,14 @@ export const getGroupedFilteredAttributes = (): {
   groups: string[]
   attributes: Attribute[]
 } => {
-  const allAttributes = metacardDefinitions.sortedMetacardTypes.reduce(
-    (
-      attributes: { [key: string]: { id: string; alias: string } },
-      attr: { id: string; alias: string }
-    ) => {
-      attributes[attr.id] = attr
-      return attributes
-    },
-    {}
-  )
+  const allAttributes =
+    StartupDataStore.MetacardDefinitions.getSortedAttributes().reduce(
+      (attributes, attr) => {
+        attributes[attr.id] = attr
+        return attributes
+      },
+      {} as AttributeMapType
+    )
   const validCommonAttributes =
     StartupDataStore.Configuration.getCommonAttributes().reduce(
       (attributes: Attribute[], id: string) => {
@@ -70,16 +71,17 @@ export const getGroupedFilteredAttributes = (): {
   }
 }
 export const getFilteredAttributeList = (group?: string): Attribute[] => {
-  return metacardDefinitions.sortedMetacardTypes
+  return StartupDataStore.MetacardDefinitions.getSortedAttributes()
     .filter(
       ({ id }: any) =>
-        !StartupDataStore.Configuration.isHidden(id) &&
-        !metacardDefinitions.isHiddenType(id)
+        !StartupDataStore.Configuration.isHiddenAttribute(id) &&
+        !StartupDataStore.MetacardDefinitions.isHiddenType(id)
     )
-    .map((attr: { id: string; alias: string }) => toAttribute(attr, group))
+    .map((attr) => toAttribute(attr, group))
 }
 export const getAttributeType = (attribute: string): string => {
-  const type = metacardDefinitions.metacardTypes[attribute]?.type
+  const type =
+    StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute]?.type
   if (type === 'GEOMETRY') return 'LOCATION'
   if (isIntegerType(type)) return 'INTEGER'
   if (isFloatType(type)) return 'FLOAT'

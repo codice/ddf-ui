@@ -38,6 +38,10 @@ const mockMetacardDefinitions = {
   },
 }
 
+const mockMetacardDefinitionsObject = {
+  getAttributeMap: () => mockMetacardDefinitions,
+} as any
+
 function assertPolygon(actual: any, expected: any) {
   expect(actual.length).equals(expected.length)
   actual.forEach((point: any, i: any) => {
@@ -234,7 +238,7 @@ describe('CQL Utils', () => {
           ],
           lineWidth: 5.0,
         },
-        mockMetacardDefinitions
+        mockMetacardDefinitionsObject
       )
       expect(filter.type).equals('DWITHIN')
       expect(filter.property).equals('anyGeo')
@@ -254,7 +258,7 @@ describe('CQL Utils', () => {
             [1, 1],
           ],
         },
-        mockMetacardDefinitions
+        mockMetacardDefinitionsObject
       )
       expect(filter.type).equals('INTERSECTS')
       expect(filter.property).equals('anyGeo')
@@ -282,7 +286,7 @@ describe('CQL Utils', () => {
             ],
           ],
         },
-        mockMetacardDefinitions
+        mockMetacardDefinitionsObject
       )
       expect(filter.type).equals('INTERSECTS')
       expect(filter.property).equals('anyGeo')
@@ -303,7 +307,7 @@ describe('CQL Utils', () => {
           east: -90,
           north: 46,
         },
-        mockMetacardDefinitions
+        mockMetacardDefinitionsObject
       )
       expect(filter.type).equals('INTERSECTS')
       expect(filter.property).equals('anyGeo')
@@ -324,7 +328,7 @@ describe('CQL Utils', () => {
           mapEast: -90,
           mapNorth: 46,
         },
-        mockMetacardDefinitions
+        mockMetacardDefinitionsObject
       )
       expect(filter.type).equals('INTERSECTS')
       expect(filter.property).equals('anyGeo')
@@ -338,7 +342,7 @@ describe('CQL Utils', () => {
         'some type',
         'anyGeo',
         { type: 'POINTRADIUS', lon: 2, lat: 3, radius: 10 },
-        mockMetacardDefinitions
+        mockMetacardDefinitionsObject
       )
       expect(filter.type).equals('DWITHIN')
       expect(filter.property).equals('anyGeo')
@@ -351,7 +355,7 @@ describe('CQL Utils', () => {
         'some type',
         'anyText',
         'some value',
-        mockMetacardDefinitions
+        mockMetacardDefinitionsObject
       )
       expect(filter.type).equals('some type')
       expect(filter.property).equals('anyText')
@@ -379,7 +383,7 @@ describe('CQL Utils', () => {
         'DURING',
         'created',
         '2018-11-01T19:00:00.000Z/2018-11-30T19:00:00.000Z',
-        mockMetacardDefinitions
+        mockMetacardDefinitionsObject
       )
       expect(filter.type).equals('DURING')
       expect(filter.value).equals(

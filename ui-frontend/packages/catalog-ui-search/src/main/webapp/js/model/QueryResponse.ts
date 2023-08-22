@@ -14,7 +14,6 @@
  **/
 import $ from 'jquery'
 import Backbone from 'backbone'
-import metacardDefinitions from '../../component/singletons/metacard-definitions'
 import 'backbone-associations'
 import {
   LazyQueryResults,
@@ -143,7 +142,9 @@ export default Backbone.AssociatedModel.extend({
   },
   handleSync() {},
   parse(resp: any) {
-    metacardDefinitions.addMetacardDefinitions(resp.types)
+    StartupDataStore.MetacardDefinitions.addDynamiclyFoundMetacardDefinitions(
+      resp.types
+    )
     const lazyResults = this.get('lazyResults') as LazyQueryResults
     lazyResults.addTypes(resp.types)
     lazyResults.updateStatus(resp.statusBySource)

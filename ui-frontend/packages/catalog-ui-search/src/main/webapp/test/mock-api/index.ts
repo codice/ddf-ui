@@ -24,9 +24,9 @@ import { StartupPayloadType } from '../../js/model/Startup/startup.types'
 const mockStartupPayload: StartupPayloadType = {
   harvestedSources: [],
   attributeMap: {
-    id: { id: 'id', isInjected: false, multivalued: false, type: 'string' },
-    name: { id: 'name', isInjected: false, multivalued: false, type: 'string' },
-    age: { id: 'age', isInjected: false, multivalued: false, type: 'number' },
+    id: { id: 'id', isInjected: false, multivalued: false, type: 'STRING' },
+    name: { id: 'name', isInjected: false, multivalued: false, type: 'STRING' },
+    age: { id: 'age', isInjected: false, multivalued: false, type: 'FLOAT' },
   },
   config: {
     extra: {},
@@ -130,14 +130,14 @@ const mockStartupPayload: StartupPayloadType = {
   localSourceId: 'local-source-1',
   metacardTypes: {
     'metacard-type-1': {
-      id: { id: 'id', isInjected: false, multivalued: false, type: 'string' },
+      id: { id: 'id', isInjected: false, multivalued: false, type: 'STRING' },
       name: {
         id: 'name',
         isInjected: false,
         multivalued: false,
-        type: 'string',
+        type: 'STRING',
       },
-      age: { id: 'age', isInjected: false, multivalued: false, type: 'number' },
+      age: { id: 'age', isInjected: false, multivalued: false, type: 'FLOAT' },
     },
     // Add more metacard types as needed
   },
@@ -153,11 +153,11 @@ const mockStartupPayload: StartupPayloadType = {
     version: '1.0.0',
     timeout: 60000,
   },
-  sortedAttributes: new Set([
-    { id: 'id', isInjected: false, multivalued: false, type: 'string' },
-    { id: 'name', isInjected: false, multivalued: false, type: 'string' },
-    { id: 'age', isInjected: false, multivalued: false, type: 'number' },
-  ]),
+  sortedAttributes: [
+    { id: 'id', isInjected: false, multivalued: false, type: 'STRING' },
+    { id: 'name', isInjected: false, multivalued: false, type: 'STRING' },
+    { id: 'age', isInjected: false, multivalued: false, type: 'FLOAT' },
+  ],
   sources: [
     {
       sourceActions: [],

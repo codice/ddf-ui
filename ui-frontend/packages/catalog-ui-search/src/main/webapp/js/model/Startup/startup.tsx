@@ -17,6 +17,7 @@ import { StartupPayloadType } from './startup.types'
 import { Sources } from './sources'
 import fetch from '../../../react-component/utils/fetch/fetch'
 import { Configuration } from './configuration'
+import { MetacardDefinitions } from './metacard-definitions'
 
 export class StartupData extends Subscribable<['fetched', StartupPayloadType]> {
   data?: Omit<
@@ -26,13 +27,18 @@ export class StartupData extends Subscribable<['fetched', StartupPayloadType]> {
     | 'localSourceId'
     | 'config'
     | 'platformUIConfiguration'
+    | 'attributeMap'
+    | 'sortedAttributes'
+    | 'metacardTypes'
   >
   Sources: Sources
   Configuration: Configuration
+  MetacardDefinitions: MetacardDefinitions
   constructor() {
     super()
     this.Configuration = new Configuration(this)
     this.Sources = new Sources(this)
+    this.MetacardDefinitions = new MetacardDefinitions(this)
     this.fetch()
   }
   fetch() {

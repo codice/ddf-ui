@@ -24,7 +24,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
-import { TypedMetacardDefs } from '../../tabs/metacard/metacardDefinitions'
+import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
 export type Header = {
   hidden: boolean
   id: string
@@ -178,6 +178,7 @@ export const Header = ({
   actionWidth,
   addOnWidth,
 }: HeaderProps) => {
+  const MetacardDefinitions = useMetacardDefinitions()
   const handleSortClick = _.debounce(updateSort, 500, true)
   const [shownAttributes, setShownAttributes] = React.useState(
     TypedUserInstance.getResultsAttributesShownTable()
@@ -306,7 +307,7 @@ export const Header = ({
           />
         </div>
         {shownAttributes.map((attr, index) => {
-          const label = TypedMetacardDefs.getAlias({ attr })
+          const label = MetacardDefinitions.getAlias(attr)
           const sortable = true
           return (
             <div

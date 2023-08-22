@@ -11,7 +11,6 @@ import LinearProgress from '@mui/material/LinearProgress'
 import CircularProgress from '@mui/material/CircularProgress'
 import Paper from '@mui/material/Paper'
 import { useDialog } from '../../dialog'
-import TypedMetacardDefs from './metacardDefinitions'
 import EditIcon from '@mui/icons-material/Edit'
 import { Editor } from './summary'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
@@ -38,6 +37,9 @@ import { Memo } from '../../memo/memo'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import user from '../../singletons/user-instance'
 import ExtensionPoints from '../../../extension-points/extension-points'
+import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
+import { StartupDataStore } from '../../../js/model/Startup/startup'
+import { useConfiguration } from '../../../js/model/Startup/configuration.hooks'
 const getAmountChecked = (items: CheckedType) => {
   return Object.values(items).filter((a) => a).length
 }
@@ -128,6 +130,7 @@ const ItemRow = ({
   measure?: () => void
   filter?: string
 }) => {
+  const MetacardDefinitions = useMetacardDefinitions()
   const dialogContext = useDialog()
   const { setItems, items, filteredItemArray } =
     React.useContext(CustomListContext)
@@ -135,7 +138,7 @@ const ItemRow = ({
   React.useEffect(() => {
     if (measure) measure()
   }, [])
-  const alias = TypedMetacardDefs.getAlias({ attr: value })
+  const alias = MetacardDefinitions.getAlias(value)
   const isReadonly = lazyResult
     ? isNotWritable({
         attribute: value,
@@ -280,7 +283,7 @@ const filterUpdate = ({
 }) => {
   setItemArray(
     Object.keys(items).filter((attr) => {
-      const alias = TypedMetacardDefs.getAlias({ attr })
+      const alias = StartupDataStore.MetacardDefinitions.getAlias(attr)
       const isFiltered =
         filter !== ''
           ? !alias.toLowerCase().includes(filter.toLowerCase())
@@ -573,6 +576,7 @@ const CustomList = ({
   )
 }
 export const useCustomReadOnlyCheck = () => {
+  const Configuration = useConfiguration()
   const [customEditableAttributes, setCustomEditableAttributes] =
     React.useState([] as string[])
   const isMounted = React.useRef<boolean>(true)
@@ -610,11 +614,11 @@ export const useCustomReadOnlyCheck = () => {
       if (perm !== undefined) {
         return !perm
       }
-      return (
+      const determination =
         lazyResult.isRemote() ||
         !TypedUserInstance.canWrite(lazyResult) ||
-        TypedMetacardDefs.isReadonly({ attr: attribute })
-      )
+        Configuration.isReadOnly(attribute)
+      return determination
     },
   }
 }

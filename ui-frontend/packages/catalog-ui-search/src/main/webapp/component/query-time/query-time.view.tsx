@@ -20,11 +20,9 @@ import { hot } from 'react-hot-loader'
 import { FilterClass } from '../filter-builder/filter.structure'
 import { Omit } from '../../typescript'
 import Autocomplete from '@mui/material/Autocomplete'
-import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 import Chip from '@mui/material/Chip'
 import Grid from '@mui/material/Grid'
 import Swath from '../swath/swath'
-import metacardDefinitions from '../singletons/metacard-definitions'
 import FilterInput from '../../react-component/filter/filter-input'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -39,7 +37,7 @@ type QueryTimeProps = {
 }
 
 const getPossibleProperties = () => {
-  return metacardDefinitions.sortedMetacardTypes
+  return StartupDataStore.MetacardDefinitions.getSortedAttributes()
     .filter(
       (definition: any) => !definition.hidden && definition.type === 'DATE'
     )
@@ -63,7 +61,7 @@ const getDefaultPropertiesToApplyTo = (): {
     []
   ).map((property: string) => {
     return {
-      label: TypedMetacardDefs.getAlias({ attr: property }),
+      label: StartupDataStore.MetacardDefinitions.getAlias(property),
       value: property,
     }
   })
@@ -79,7 +77,7 @@ const determinePropertiesToApplyTo = ({
       .filter((prop) => prop !== 'anyDate')
       .map((property) => {
         return {
-          label: TypedMetacardDefs.getAlias({ attr: property }),
+          label: StartupDataStore.MetacardDefinitions.getAlias(property),
           value: property,
         }
       })

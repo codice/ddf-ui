@@ -22,9 +22,7 @@ import {
   useRerenderOnBackboneSync,
   useSelectionOfLazyResult,
 } from '../../../js/model/LazyQueryResult/hooks'
-import metacardDefinitions from '../../singletons/metacard-definitions'
 import user from '../../singletons/user-instance'
-import TypedMetacardDefs from '../../tabs/metacard/metacardDefinitions'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import { SelectionBackground } from './result-item'
@@ -33,6 +31,7 @@ import { TypedUserInstance } from '../../singletons/TypedUser'
 import useCoordinateFormat from '../../tabs/metacard/useCoordinateFormat'
 import Common from '../../../js/Common'
 import Extensions from '../../../extension-points'
+import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
 type ResultItemFullProps = {
   lazyResult: LazyQueryResult
   measure: () => void
@@ -96,6 +95,7 @@ const RowComponent = ({
   addOnWidth,
   setMaxAddOnWidth,
 }: ResultItemFullProps) => {
+  const MetacardDefinitions = useMetacardDefinitions()
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const [shownAttributes, setShownAttributes] = React.useState(
     TypedUserInstance.getResultsAttributesShownTable()
@@ -128,8 +128,8 @@ const RowComponent = ({
     measure()
   }, [shownAttributes, convertToFormat])
   const getDisplayValue = (value: any, property: string) => {
-    if (value && metacardDefinitions.metacardTypes[property]) {
-      switch (metacardDefinitions.metacardTypes[property].type) {
+    if (value && MetacardDefinitions.getAttributeMap()[property]) {
+      switch (MetacardDefinitions.getAttributeMap()[property].type) {
         case 'GEOMETRY':
           return convertToFormat(value)
       }
@@ -257,8 +257,13 @@ const RowComponent = ({
                   if (value.constructor !== Array) {
                     value = [value]
                   }
-                  if (value && metacardDefinitions.metacardTypes[property]) {
-                    switch (metacardDefinitions.metacardTypes[property].type) {
+                  if (
+                    value &&
+                    MetacardDefinitions.getAttributeMap()[property]
+                  ) {
+                    switch (
+                      MetacardDefinitions.getAttributeMap()[property].type
+                    ) {
                       case 'DATE':
                         value = value.map((val: any) =>
                           val !== undefined && val !== ''
@@ -314,9 +319,7 @@ const RowComponent = ({
                                         target="_blank"
                                         rel="noopener noreferrer"
                                       >
-                                        {TypedMetacardDefs.getAlias({
-                                          attr: property,
-                                        })}
+                                        {MetacardDefinitions.getAlias(property)}
                                       </a>
                                     ) : (
                                       `${

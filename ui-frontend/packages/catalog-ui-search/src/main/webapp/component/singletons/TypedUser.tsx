@@ -3,7 +3,6 @@ import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { SortType } from '../../js/model/Query.shared-types'
 import { FilterBuilderClass } from '../filter-builder/filter.structure'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
-import { TypedMetacardDefs } from '../tabs/metacard/metacardDefinitions'
 import moment from 'moment'
 
 import userInstance from './user-instance'
@@ -43,13 +42,18 @@ export const TypedUserInstance = {
   getResultsAttributesPossibleTable: (): string[] => {
     const currentAttributesShown =
       TypedUserInstance.getResultsAttributesShownTable()
-    const allKnownAttributes = TypedMetacardDefs.getSortedMetacardTypes()
-    const searchOnlyAttributes = TypedMetacardDefs.getSearchOnlyAttributes()
+    const allKnownAttributes =
+      StartupDataStore.MetacardDefinitions.getSortedAttributes()
+    const searchOnlyAttributes =
+      StartupDataStore.MetacardDefinitions.getSearchOnlyAttributes()
     const attributesPossible = allKnownAttributes.filter((attr) => {
       return (
         !currentAttributesShown.includes(attr.id) &&
         !searchOnlyAttributes.includes(attr.id) &&
-        !TypedMetacardDefs.isHiddenTypeExceptThumbnail({ attr: attr.id })
+        !StartupDataStore.MetacardDefinitions.isHiddenTypeExceptThumbnail(
+          attr.id
+        ) &&
+        !StartupDataStore.Configuration.isHiddenAttribute(attr.id)
       )
     })
     return attributesPossible.map((attr) => attr.id)
@@ -58,13 +62,18 @@ export const TypedUserInstance = {
   getResultsAttributesPossibleList: (): string[] => {
     const currentAttributesShown =
       TypedUserInstance.getResultsAttributesShownList()
-    const allKnownAttributes = TypedMetacardDefs.getSortedMetacardTypes()
-    const searchOnlyAttributes = TypedMetacardDefs.getSearchOnlyAttributes()
+    const allKnownAttributes =
+      StartupDataStore.MetacardDefinitions.getSortedAttributes()
+    const searchOnlyAttributes =
+      StartupDataStore.MetacardDefinitions.getSearchOnlyAttributes()
     const attributesPossible = allKnownAttributes.filter((attr) => {
       return (
         !currentAttributesShown.includes(attr.id) &&
         !searchOnlyAttributes.includes(attr.id) &&
-        !TypedMetacardDefs.isHiddenTypeExceptThumbnail({ attr: attr.id })
+        !StartupDataStore.MetacardDefinitions.isHiddenTypeExceptThumbnail(
+          attr.id
+        ) &&
+        !StartupDataStore.Configuration.isHiddenAttribute(attr.id)
       )
     })
     return attributesPossible.map((attr) => attr.id)
