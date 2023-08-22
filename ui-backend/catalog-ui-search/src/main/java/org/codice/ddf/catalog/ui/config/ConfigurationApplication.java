@@ -68,11 +68,12 @@ public class ConfigurationApplication implements SparkApplication {
 
   public static final Factory NEW_SET_FACTORY = TreeSet::new;
 
-  private static final Gson GSON = new GsonBuilder()
-      .disableHtmlEscaping()
-      .serializeNulls()
-      .registerTypeAdapterFactory(LongDoubleTypeAdapter.FACTORY)
-      .create();
+  private static final Gson GSON =
+      new GsonBuilder()
+          .disableHtmlEscaping()
+          .serializeNulls()
+          .registerTypeAdapterFactory(LongDoubleTypeAdapter.FACTORY)
+          .create();
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationApplication.class);
 
@@ -162,15 +163,16 @@ public class ConfigurationApplication implements SparkApplication {
 
   private int maximumUploadSize = 1_048_576;
 
-  private List<String> readOnly = ImmutableList.of(
-      "checksum",
-      "checksum-algorithm",
-      "id",
-      "metadata",
-      "source-id",
-      "^metacard\\.",
-      "^version\\.",
-      "^validation\\.");
+  private List<String> readOnly =
+      ImmutableList.of(
+          "checksum",
+          "checksum-algorithm",
+          "id",
+          "metadata",
+          "source-id",
+          "^metacard\\.",
+          "^version\\.",
+          "^validation\\.");
 
   private List<String> summaryShow = Collections.emptyList();
 
@@ -707,10 +709,11 @@ public class ConfigurationApplication implements SparkApplication {
     findDifferences(imageryProviderMaps, newImageryProviders, imageryProvidersToStart);
     findDifferences(newImageryProviders, imageryProviderMaps, imageryProvidersToStop);
 
-    List<String> proxiesToStop = imageryProvidersToStop
-        .stream()
-        .map(provider -> urlToProxyMap.get(provider.get(URL).toString()))
-        .collect(Collectors.toList());
+    List<String> proxiesToStop =
+        imageryProvidersToStop
+            .stream()
+            .map(provider -> urlToProxyMap.get(provider.get(URL).toString()))
+            .collect(Collectors.toList());
 
     stopImageryEndpoints(proxiesToStop);
     for (Map<String, Object> providerToStop : imageryProvidersToStop) {
@@ -746,7 +749,7 @@ public class ConfigurationApplication implements SparkApplication {
   }
 
   private void stopImageryEndpoints(List<String> imageryEndpointsToStop) {
-    for (Iterator<String> iterator = imageryEndpointsToStop.iterator(); iterator.hasNext();) {
+    for (Iterator<String> iterator = imageryEndpointsToStop.iterator(); iterator.hasNext(); ) {
       String endpoint = iterator.next();
       try {
         httpProxy.stop(endpoint);
@@ -943,7 +946,7 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setTypeNameMapping(String string) {
     if (string != null) {
-      this.setTypeNameMapping(new String[] { string });
+      this.setTypeNameMapping(new String[] {string});
     }
   }
 
@@ -1142,11 +1145,12 @@ public class ConfigurationApplication implements SparkApplication {
     if (defaultSources == null || defaultSources.isEmpty()) {
       this.defaultSources = Collections.emptyList();
     } else {
-      this.defaultSources = defaultSources
-          .stream()
-          .filter(StringUtils::isNotBlank)
-          .map(String::trim)
-          .collect(Collectors.toList());
+      this.defaultSources =
+          defaultSources
+              .stream()
+              .filter(StringUtils::isNotBlank)
+              .map(String::trim)
+              .collect(Collectors.toList());
     }
   }
 
@@ -1158,11 +1162,12 @@ public class ConfigurationApplication implements SparkApplication {
     if (defaultTableColumns == null || defaultTableColumns.isEmpty()) {
       this.defaultTableColumns = Collections.emptyList();
     } else {
-      this.defaultTableColumns = defaultTableColumns
-          .stream()
-          .filter(StringUtils::isNotBlank)
-          .map(String::trim)
-          .collect(Collectors.toList());
+      this.defaultTableColumns =
+          defaultTableColumns
+              .stream()
+              .filter(StringUtils::isNotBlank)
+              .map(String::trim)
+              .collect(Collectors.toList());
     }
   }
 
