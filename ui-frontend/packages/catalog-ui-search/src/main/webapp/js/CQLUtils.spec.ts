@@ -19,22 +19,20 @@ import wkx from 'wkx'
 import CQLUtils from './CQLUtils'
 
 const mockMetacardDefinitions = {
-  metacardTypes: {
-    anyText: {
-      id: 'anyText',
-      type: 'STRING',
-      multivalued: false,
-    },
-    anyGeo: {
-      id: 'anyGeo',
-      type: 'LOCATION',
-      multivalued: false,
-    },
-    created: {
-      id: 'created',
-      type: 'DATE',
-      multivalued: false,
-    },
+  anyText: {
+    id: 'anyText',
+    type: 'STRING',
+    multivalued: false,
+  },
+  anyGeo: {
+    id: 'anyGeo',
+    type: 'LOCATION',
+    multivalued: false,
+  },
+  created: {
+    id: 'created',
+    type: 'DATE',
+    multivalued: false,
   },
 }
 
