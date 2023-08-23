@@ -52,7 +52,7 @@ class Configuration extends Subscribable<['configuration-update', undefined]> {
   getAttributeAliases = () => {
     return this.config?.attributeAliases || {}
   }
-  isReadOnly = (attribute: any) => {
+  isReadOnly = (attribute: string) => {
     return match(this.getReadOnly(), attribute)
   }
   getReadOnly = () => {

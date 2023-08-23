@@ -85,8 +85,7 @@ const RolesToggle = () => {
 }
 
 const UserComponent = () => {
-  const username = user.isGuest() ? 'Guest' : user.getUserName()
-  const isGuest = user.isGuest()
+  const username = user.getUserName()
   const email = user.getEmail()
   const signOut = () => {
     window.location.href =
@@ -116,18 +115,14 @@ const UserComponent = () => {
       </div>
       <DarkDivider className="my-2 shrink-0" />
       <div className="text-right p-2 shrink-0">
-        {isGuest ? (
-          <div />
-        ) : (
-          <Button
-            data-id="profile-signout-button"
-            color="primary"
-            variant="contained"
-            onClick={signOut}
-          >
-            Sign Out
-          </Button>
-        )}
+        <Button
+          data-id="profile-signout-button"
+          color="primary"
+          variant="contained"
+          onClick={signOut}
+        >
+          Sign Out
+        </Button>
       </div>
     </div>
   )
