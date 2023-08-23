@@ -13,7 +13,7 @@ function match(regexList: any, attribute: any) {
   )
 }
 
-class Configuration extends Subscribable<['configuration-update', undefined]> {
+class Configuration extends Subscribable<{ thing: 'configuration-update' }> {
   config?: StartupPayloadType['config']
   platformUiConfiguration?: StartupPayloadType['platformUiConfiguration']
   constructor(startupData?: StartupData) {
@@ -23,7 +23,7 @@ class Configuration extends Subscribable<['configuration-update', undefined]> {
       callback: (startupPayload) => {
         this.config = startupPayload.config
         this.platformUiConfiguration = startupPayload.platformUiConfiguration
-        this._notifySubscribers('configuration-update', undefined)
+        this._notifySubscribers({ thing: 'configuration-update' })
       },
     })
   }

@@ -19,10 +19,9 @@ const mock = () => {
   StartupDataStore.Configuration.platformUiConfiguration = api(
     './internal/platform/config/ui'
   )
-  StartupDataStore.Configuration._notifySubscribers(
-    'configuration-update',
-    undefined
-  )
+  StartupDataStore.Configuration._notifySubscribers({
+    thing: 'configuration-update',
+  })
 }
 
 const unmock = () => {}

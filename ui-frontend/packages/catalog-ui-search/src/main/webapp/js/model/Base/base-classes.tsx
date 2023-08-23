@@ -2,14 +2,14 @@
  *  Attempt to pull out what is a fairly common pattern around subscribing
  *  to instances.
  */
-export class Subscribable<T extends [string, any]> {
-  subscriptionsToMe: Record<string, Record<string, (val: T[1]) => void>>
+export class Subscribable<T extends { thing: string; args?: any }> {
+  subscriptionsToMe: Record<string, Record<string, (val: T['args']) => void>>
   subscribeTo({
     subscribableThing,
     callback,
   }: {
-    subscribableThing: T[0]
-    callback: (val: T[1]) => void
+    subscribableThing: T['thing']
+    callback: (val: T['args']) => void
   }) {
     const id = Math.random().toString()
     if (!this.subscriptionsToMe[subscribableThing]) {
@@ -20,10 +20,12 @@ export class Subscribable<T extends [string, any]> {
       delete this.subscriptionsToMe[subscribableThing][id]
     }
   }
-  _notifySubscribers(subscribableThing: T[0], val: T[1]) {
-    const subscribers = this.subscriptionsToMe[subscribableThing]
+  _notifySubscribers(parameters: T) {
+    const subscribers = this.subscriptionsToMe[parameters['thing']]
     if (subscribers)
-      Object.values(subscribers).forEach((callback) => callback(val))
+      Object.values(subscribers).forEach((callback) =>
+        callback(parameters['args'])
+      )
   }
   constructor() {
     this.subscriptionsToMe = {}

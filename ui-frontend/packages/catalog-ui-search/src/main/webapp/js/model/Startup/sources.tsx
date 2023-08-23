@@ -95,9 +95,9 @@ function sortSources({ sources }: { sources: StartupPayloadType['sources'] }) {
   })
 }
 
-class Sources extends Subscribable<
-  ['sources-update', undefined] | ['sources-initialized', undefined]
-> {
+class Sources extends Subscribable<{
+  thing: 'sources-initialized' | 'sources-update'
+}> {
   sources: StartupPayloadType['sources'] = []
   localSourceId: StartupPayloadType['localSourceId'] = 'local'
   harvestedSources: StartupPayloadType['harvestedSources'] = ['local']
@@ -129,14 +129,14 @@ class Sources extends Subscribable<
   }
 
   startPollingSources = () => {
-    this._notifySubscribers('sources-initialized', undefined)
+    this._notifySubscribers({ thing: 'sources-initialized' })
     window.setInterval(() => {
       this.fetchSources()
     }, this.sourcePollInterval)
   }
   updateSources = (sources: StartupPayloadType['sources'] = []) => {
     updateSources({ data: this, sources })
-    this._notifySubscribers('sources-update', undefined)
+    this._notifySubscribers({ thing: 'sources-update' })
   }
   setHarvestedSources = (harvestedSources: string[] = []) => {
     if (this.sources) {

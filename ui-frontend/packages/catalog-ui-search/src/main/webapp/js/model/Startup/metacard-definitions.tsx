@@ -22,9 +22,9 @@ function sortMetacardTypes(metacardTypes: AttributeMapType = {}) {
   })
 }
 
-class MetacardDefinitions extends Subscribable<
-  ['metacard-definitions-update', undefined]
-> {
+class MetacardDefinitions extends Subscribable<{
+  thing: 'metacard-definitions-update'
+}> {
   attributeMap?: StartupPayloadType['attributeMap']
   sortedAttributes?: StartupPayloadType['sortedAttributes']
   metacardTypes?: StartupPayloadType['metacardTypes']
@@ -36,7 +36,7 @@ class MetacardDefinitions extends Subscribable<
         this.attributeMap = startupPayload.attributeMap
         this.sortedAttributes = startupPayload.sortedAttributes
         this.metacardTypes = startupPayload.metacardTypes
-        this._notifySubscribers('metacard-definitions-update', undefined)
+        this._notifySubscribers({ thing: 'metacard-definitions-update' })
       },
     })
   }
@@ -122,7 +122,7 @@ class MetacardDefinitions extends Subscribable<
   }
   resortKnownMetacardAttributes = () => {
     this.sortedAttributes = sortMetacardTypes(this.attributeMap)
-    this._notifySubscribers('metacard-definitions-update', undefined)
+    this._notifySubscribers({ thing: 'metacard-definitions-update' })
   }
   isHiddenType = (id: string): boolean => {
     if (!this.attributeMap) {

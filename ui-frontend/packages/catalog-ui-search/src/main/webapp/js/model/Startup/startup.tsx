@@ -19,7 +19,10 @@ import fetch from '../../../react-component/utils/fetch/fetch'
 import { Configuration } from './configuration'
 import { MetacardDefinitions } from './metacard-definitions'
 
-export class StartupData extends Subscribable<['fetched', StartupPayloadType]> {
+export class StartupData extends Subscribable<{
+  thing: 'fetched'
+  args: StartupPayloadType
+}> {
   data?: Omit<
     StartupPayloadType,
     | 'sources'
@@ -46,7 +49,7 @@ export class StartupData extends Subscribable<['fetched', StartupPayloadType]> {
       .then((response) => response.json())
       .then((startupPayload: StartupPayloadType) => {
         this.data = startupPayload
-        this._notifySubscribers('fetched', startupPayload)
+        this._notifySubscribers({ thing: 'fetched', args: startupPayload })
       })
   }
 }
