@@ -290,25 +290,6 @@ public class ComposeApplication implements SparkApplication {
 
           payload.put("sortedAttributes", sortAttributeMapToList(attributeMap));
 
-          // // Retrieve enumerations for each Metacard type
-          // Map<String, Map<String, Set<String>>> enumerations = new HashMap<>();
-          // for (String typeName : metacardTypes) {
-          // Map<String, Set<String>> typeEnumerations =
-          // enumExtractor.getEnumerations(typeName);
-          // enumerations.put(typeName, typeEnumerations);
-          // }
-          // payload.put("enumerations", enumerations);
-
-          // // Retrieve deprecated enumerations for each Metacard type
-          // Map<String, Map<String, Set<String>>> deprecatedEnumerations = new
-          // HashMap<>();
-          // for (String typeName : metacardTypes) {
-          // Map<String, Set<String>> deprecatedTypeEnumerations =
-          // enumExtractor.getDeprecatedEnumerations(typeName);
-          // deprecatedEnumerations.put(typeName, deprecatedTypeEnumerations);
-          // }
-          // payload.put("deprecatedEnums", deprecatedEnumerations);
-
           payload.put("user", this.userApplication.getUser());
           payload.put(
               "platformUiConfiguration",
