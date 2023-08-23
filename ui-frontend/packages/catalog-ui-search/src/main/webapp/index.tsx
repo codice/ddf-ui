@@ -23,8 +23,6 @@ import { removeRedirectQueryParams } from './handle-query-params'
     removeRedirectQueryParams()
     // wait for critical data to be fetched
     await (await import('./js/WaitForReady')).waitForReady()
-    // render the app
-    console.log('config fetched')
     await import('./app')
   }
 })()

@@ -19,11 +19,8 @@ function sleep(ms: number = 60) {
 }
 
 export const waitForReady: () => Promise<void> = async () => {
-  console.log('wait for ready')
   if (!StartupDataStore.Configuration.config) {
-    console.log('wait more')
     await sleep()
     return waitForReady()
   }
-  console.log('ready')
 }

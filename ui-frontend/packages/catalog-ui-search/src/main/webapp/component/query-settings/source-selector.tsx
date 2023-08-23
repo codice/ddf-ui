@@ -86,7 +86,6 @@ const shouldBeSelected = ({
  */
 const SourceSelector = ({ search }: Props) => {
   const { sources: availableSources } = useSources()
-  console.log(availableSources)
   const [sources, setSources] = React.useState(getSourcesFromSearch({ search }))
   const { listenTo } = useBackbone()
   React.useEffect(() => {
