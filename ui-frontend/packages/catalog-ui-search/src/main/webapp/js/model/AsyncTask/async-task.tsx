@@ -592,7 +592,7 @@ class SaveTask extends AsyncTask {
           },
         })
       })
-    }, 3000)
+    }, 500)
   }
   static isInstanceOf(task: any): task is SaveTask {
     return task.constructor === SaveTask
@@ -704,7 +704,7 @@ class SaveSearchTask extends AsyncTask {
           },
         })
       })
-    }, 3000)
+    }, 500)
   }
   static isInstanceOf(task: any): task is SaveSearchTask {
     return task.constructor === SaveSearchTask
