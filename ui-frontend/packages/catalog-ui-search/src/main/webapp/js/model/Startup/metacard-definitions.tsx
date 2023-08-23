@@ -8,62 +8,6 @@ import {
   StartupPayloadType,
 } from './startup.types'
 
-function getKnownAttributeDefinitions(
-  startupData?: StartupData
-): MetacardDefinitionType {
-  return {
-    anyText: {
-      alias: startupData?.Configuration.getAttributeAliases()['anyText'],
-      id: 'anyText',
-      type: 'STRING',
-      multivalued: false,
-      isInjected: false,
-    },
-    anyGeo: {
-      alias: startupData?.Configuration.getAttributeAliases()['anyGeo'],
-      id: 'anyGeo',
-      type: 'LOCATION',
-      multivalued: false,
-      isInjected: false,
-    },
-    anyDate: {
-      alias: startupData?.Configuration.getAttributeAliases()['anyDate'],
-      id: 'anyDate',
-      type: 'DATE',
-      multivalued: false,
-      isInjected: false,
-    },
-    'metacard-type': {
-      alias: startupData?.Configuration.getAttributeAliases()['metacard-type'],
-      id: 'metacard-type',
-      type: 'STRING',
-      multivalued: false,
-      isInjected: false,
-    },
-    'source-id': {
-      alias: startupData?.Configuration.getAttributeAliases()['source-id'],
-      id: 'source-id',
-      type: 'STRING',
-      multivalued: false,
-      isInjected: false,
-    },
-    cached: {
-      alias: startupData?.Configuration.getAttributeAliases()['cached'],
-      id: 'cached',
-      type: 'STRING',
-      multivalued: false,
-      isInjected: false,
-    },
-    'metacard-tags': {
-      alias: startupData?.Configuration.getAttributeAliases()['metacard-tags'],
-      id: 'metacard-tags',
-      type: 'STRING',
-      multivalued: true,
-      isInjected: false,
-    },
-  }
-}
-
 function sortMetacardTypes(metacardTypes: AttributeMapType = {}) {
   return Object.values(metacardTypes).sort((a, b) => {
     const attrToCompareA = (a.alias || a.id).toLowerCase()
@@ -92,9 +36,6 @@ class MetacardDefinitions extends Subscribable<
         this.attributeMap = startupPayload.attributeMap
         this.sortedAttributes = startupPayload.sortedAttributes
         this.metacardTypes = startupPayload.metacardTypes
-        this.addDynamiclyFoundMetacardDefinitions({
-          _fakeBaseType: getKnownAttributeDefinitions(startupData),
-        })
         this._notifySubscribers('metacard-definitions-update', undefined)
       },
     })
