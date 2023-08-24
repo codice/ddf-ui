@@ -346,13 +346,17 @@ public class ComposeApplication implements SparkApplication {
                 })
             .collect(Collectors.toList());
 
-    // Update "local" property for the remaining sources
+    // Update "local" property && "harvested" for the remaining sources
     sources.forEach(
         source -> {
           Map<String, Object> sourceMap = (Map<String, Object>) source;
           String sourceId = (String) sourceMap.get("id");
           if (sourceId.equals(localCatalogId)) {
+            sourceMap.put("harvested", true);
             sourceMap.put("local", true);
+          } else {
+            sourceMap.put("harvested", false);
+            sourceMap.put("local", false);
           }
         });
 

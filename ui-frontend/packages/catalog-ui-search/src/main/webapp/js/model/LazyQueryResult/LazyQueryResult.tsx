@@ -341,10 +341,7 @@ export class LazyQueryResult {
     )
   }
   isRemote(): boolean {
-    const Sources = StartupDataStore.Sources.sources
-    const harvestedSources = Sources.filter((source) => source.harvested).map(
-      (source) => source.id
-    )
+    const harvestedSources = StartupDataStore.Sources.harvestedSources
     return (
       harvestedSources.includes(this.plain.metacard.properties['source-id']) ===
       false
