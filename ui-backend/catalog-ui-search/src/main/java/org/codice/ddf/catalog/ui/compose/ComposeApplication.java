@@ -226,8 +226,7 @@ public class ComposeApplication implements SparkApplication {
     Map<String, Object> attributeMap = new HashMap<>(originalAttributeMap);
 
     for (Entry<String, Object> attributeDefinition : attributeMap.entrySet()) {
-      Map<String, Object> attribute =
-          (Map<String, Object>) attributeMap.get(attributeDefinition.getKey());
+      Map<String, Object> attribute = (Map<String, Object>) attributeDefinition.getValue();
       attribute.put(
           "enumerations",
           enumExtractor
