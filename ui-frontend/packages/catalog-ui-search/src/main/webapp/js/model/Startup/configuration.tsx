@@ -156,8 +156,8 @@ class Configuration extends Subscribable<{ thing: 'configuration-update' }> {
     return this.config?.timeout || 300000
   }
   getDefaultSources = () => {
-    return this.config?.defaultSources && this.config.defaultSources.length > 0
-      ? this.config?.defaultSources
+    return this.config?.defaultSources && this.config?.defaultSources.length > 0
+      ? this.config.defaultSources
       : ['all']
   }
   getDefaultTableColumns = () => {
