@@ -96,7 +96,6 @@ function addTestDefs() {
       },
     },
   })
-  console.log(StartupDataStore.MetacardDefinitions.getAttributeMap())
 }
 
 // do not rely on our own transforms for testing, rely on static data!
@@ -154,6 +153,9 @@ const data = {
 
 describe('filter leaf testing', () => {
   before(() => {
+    /**
+     * Needs to be done here, otherwise these get blown away when the mock fetch happens.
+     */
     addTestDefs()
   })
   it('renders with a blank FilterClass', () => {
