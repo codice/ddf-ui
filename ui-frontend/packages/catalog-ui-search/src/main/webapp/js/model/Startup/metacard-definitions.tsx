@@ -41,7 +41,7 @@ class MetacardDefinitions extends Subscribable<{
     })
   }
   // each time a search is conducted, this is possible, as searches return types
-  addDynamiclyFoundMetacardDefinitions = (
+  addDynamicallyFoundMetacardDefinitions = (
     definitions: MetacardDefinitionsType
   ) => {
     const unknownMetacardTypes = Object.keys(definitions).filter(

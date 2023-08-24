@@ -142,7 +142,7 @@ export default Backbone.AssociatedModel.extend({
   },
   handleSync() {},
   parse(resp: any) {
-    StartupDataStore.MetacardDefinitions.addDynamiclyFoundMetacardDefinitions(
+    StartupDataStore.MetacardDefinitions.addDynamicallyFoundMetacardDefinitions(
       resp.types
     )
     const lazyResults = this.get('lazyResults') as LazyQueryResults

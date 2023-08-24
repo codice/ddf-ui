@@ -14,7 +14,7 @@ import moment from 'moment'
 import user from '../singletons/user-instance'
 import { StartupDataStore } from '../../js/model/Startup/startup'
 function addTestDefs() {
-  StartupDataStore.MetacardDefinitions.addDynamiclyFoundMetacardDefinitions({
+  StartupDataStore.MetacardDefinitions.addDynamicallyFoundMetacardDefinitions({
     testing: {
       integerType: {
         type: 'INTEGER',
