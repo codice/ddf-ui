@@ -87,12 +87,12 @@ class MetacardDefinitions extends Subscribable<{
   }
   addUnknownAttributes = (definition: MetacardDefinitionType) => {
     if (this.attributeMap) {
-      Object.keys(definition)
-        .filter(this.isUnknownAttribute)
-        .forEach((attributeName) => {
+      Object.entries(definition)
+        .filter((entry) => this.isUnknownAttribute(entry[0]))
+        .forEach((entry) => {
           this.addUnknownAttribute({
-            attributeName,
-            attributeDefinition: definition[attributeName],
+            attributeName: entry[0],
+            attributeDefinition: entry[1],
           })
         })
     }
