@@ -13,7 +13,7 @@
  *
  **/
 
-export type Attributetypes =
+export type AttributeTypes =
   | 'BINARY'
   | 'DATE'
   | 'LOCATION'
@@ -32,7 +32,7 @@ export type AttributeDefinitionType = {
   id: string
   isInjected: boolean
   multivalued: boolean
-  type: Attributetypes
+  type: AttributeTypes
   alias?: string
   enumerations?: string[]
   deprecatedEnumerations?: string[]
