@@ -4,7 +4,6 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { rgbToHex, useTheme } from '@mui/material/styles'
-import withStyles from '@mui/styles/withStyles'
 import colors from './typed-colors'
 import Grid from '@mui/material/Grid'
 import Input from '@mui/material/Input'
@@ -53,52 +52,6 @@ const getDefaults = () => {
     ...user.get('user').get('preferences').get('theme').toJSON(),
   }
 }
-
-const styles = (theme: any) => ({
-  radio: {
-    padding: 0,
-  },
-  radioIcon: {
-    width: 48,
-    height: 48,
-  },
-  radioIconSelected: {
-    width: 48,
-    height: 48,
-    border: '1px solid white',
-    color: theme.palette.common.white,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  swatch: {
-    width: 192,
-  },
-  sliderContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-  slider: {
-    width: 'calc(100% - 80px)',
-    marginLeft: theme.spacing(3),
-    marginRight: theme.spacing(3),
-  },
-  colorBar: {
-    marginTop: theme.spacing(2),
-  },
-  colorSquare: {
-    width: 64,
-    height: 64,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  button: {
-    marginLeft: theme.spacing(1),
-  },
-})
 
 function ColorTool(props: any) {
   const { classes } = props
@@ -157,12 +110,14 @@ function ColorTool(props: any) {
     // @ts-expect-error ts-migrate(7015) FIXME: Element implicitly has an 'any' type because index... Remove this comment to see the full error message
     const color = colors[hue][shades[shade]]
 
-    setState({
-      ...state,
-      [`${name}Hue`]: hue,
-      [name]: color,
-      [`${name}Input`]: color,
-    })
+    if (color) {
+      setState({
+        ...state,
+        [`${name}Hue`]: hue,
+        [name]: color,
+        [`${name}Input`]: color,
+      })
+    }
   }
 
   const handleChangeShade =
@@ -189,7 +144,7 @@ function ColorTool(props: any) {
     })
 
     return (
-      <Grid container className={classes.colorBar}>
+      <Grid container sx={{ marginTop: theme.spacing(2) }}>
         {['dark', 'main', 'light'].map((key) => {
           const backgroundColor = background[key as 'light'] as string
           return (
@@ -208,8 +163,14 @@ function ColorTool(props: any) {
               key={key}
             >
               <Button
-                className={classes.colorSquare}
-                style={{ backgroundColor: backgroundColor }}
+                sx={{
+                  width: 64,
+                  height: 64,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor,
+                }}
                 onClick={() => {
                   setState({
                     ...state,
@@ -255,10 +216,21 @@ function ColorTool(props: any) {
           onChange={handleChangeColor(intent)}
           fullWidth
         />
-        <div className={classes.sliderContainer}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            marginTop: theme.spacing(2),
+            marginBottom: theme.spacing(2),
+          }}
+        >
           <Typography id={`${intent}ShadeSliderLabel`}>Shade:</Typography>
           <Slider
-            className={classes.slider}
+            sx={{
+              width: 'calc(100% - 80px)',
+              marginLeft: theme.spacing(3),
+              marginRight: theme.spacing(3),
+            }}
             value={intentShade}
             min={0}
             max={13}
@@ -268,7 +240,7 @@ function ColorTool(props: any) {
           />
           <Typography>{shades[intentShade]}</Typography>
         </div>
-        <div className={classes.swatch}>
+        <div style={{ width: 192 }}>
           {hues.map((hue) => {
             const shade =
               intent === 'primary'
@@ -281,7 +253,7 @@ function ColorTool(props: any) {
             return (
               <Tooltip placement="right" title={hue} key={hue}>
                 <Radio
-                  className={classes.radio}
+                  sx={{ padding: 0 }}
                   color="default"
                   checked={state[intent] === backgroundColor}
                   onChange={handleChangeHue(intent)}
@@ -290,14 +262,25 @@ function ColorTool(props: any) {
                   aria-labelledby={`tooltip-${intent}-${hue}`}
                   icon={
                     <div
-                      className={classes.radioIcon}
-                      style={{ backgroundColor }}
+                      style={{
+                        backgroundColor,
+                        width: 48,
+                        height: 48,
+                      }}
                     />
                   }
                   checkedIcon={
                     <div
-                      className={classes.radioIconSelected}
-                      style={{ backgroundColor }}
+                      style={{
+                        backgroundColor,
+                        width: 48,
+                        height: 48,
+                        border: '1px solid white',
+                        color: theme.palette.common.white,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
                     >
                       <CheckIcon style={{ fontSize: 30 }} />
                     </div>
@@ -313,11 +296,11 @@ function ColorTool(props: any) {
   }
 
   return (
-    <Grid container spacing={5} className={classes.root}>
+    <Grid container spacing={5} className={classes?.root}>
       {colorPicker('primary')}
       {colorPicker('secondary')}
     </Grid>
   )
 }
 
-export default hot(module)(withStyles(styles)(ColorTool))
+export default hot(module)(ColorTool)
