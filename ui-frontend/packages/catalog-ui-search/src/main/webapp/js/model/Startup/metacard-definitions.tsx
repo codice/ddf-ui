@@ -55,7 +55,7 @@ class MetacardDefinitions extends Subscribable<{
     })
     const unknownAttributes = unknownMetacardTypes.reduce(
       (blob, definitionName) => {
-        const mapOfUnknownAttributeDefinitionsFromUknownType = Object.keys(
+        const mapOfUnknownAttributeDefinitionsFromUnknownType = Object.keys(
           definitions[definitionName]
         )
           .filter(this.isUnknownAttribute)
@@ -64,7 +64,7 @@ class MetacardDefinitions extends Subscribable<{
               definitions[definitionName][attributeName]
             return innerBlob
           }, {} as AttributeMapType)
-        Object.assign(blob, mapOfUnknownAttributeDefinitionsFromUknownType)
+        Object.assign(blob, mapOfUnknownAttributeDefinitionsFromUnknownType)
         return blob
       },
       {} as AttributeMapType
