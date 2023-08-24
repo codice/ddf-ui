@@ -150,6 +150,11 @@ public class ComposeApplication implements SparkApplication {
     this.operationPropertySupplier = null;
   }
 
+  /*
+   * These are client specific attributes, but they're useful to preload /
+   * transform here so the client doesn't
+   * have to do any immediate work.
+   */
   private Map<String, Object> getMandatoryAttributes() {
     Map<String, Object> attributeMap = new HashMap<>();
 
@@ -216,6 +221,7 @@ public class ComposeApplication implements SparkApplication {
     return attributeMap;
   }
 
+  /** This will find deprecated enumerations as well because of how the enumExtractor works. */
   private Map<String, Object> addEnumerations(Map<String, Object> originalAttributeMap) {
     Map<String, Object> attributeMap = new HashMap<>(originalAttributeMap);
 
@@ -232,6 +238,10 @@ public class ComposeApplication implements SparkApplication {
     return attributeMap;
   }
 
+  /**
+   * The client needs a sorted list of attributes to display to users, so it's worth doing this work
+   * upfront for them, taking into account known aliases.
+   */
   public static List<Map<String, Object>> sortAttributeMapToList(Map<String, Object> attributeMap) {
     List<Map.Entry<String, Object>> entryList = new ArrayList<>(attributeMap.entrySet());
 
@@ -298,6 +308,10 @@ public class ComposeApplication implements SparkApplication {
           payload.put("sources", getSources(config));
           payload.put("localSourceId", catalogFramework.getId());
 
+          /**
+           * By default, the known harvested sources are simply the local source, so go ahead and
+           * set this for the clients.
+           */
           List<String> harvestedSources = new ArrayList<String>();
           harvestedSources.add(catalogFramework.getId());
           payload.put("harvestedSources", harvestedSources);
@@ -311,6 +325,12 @@ public class ComposeApplication implements SparkApplication {
     exception(RuntimeException.class, util::handleRuntimeException);
   }
 
+  /**
+   * The client does not need to know about the cache. The client does need to know what source is
+   * local. In addition, we can take advantage of our knowledge of the disableLocalCatalog config.
+   *
+   * <p>This puts sources into a form the client expects, so it doesn't need to do immediate work.
+   */
   private List<Object> getSources(Map<String, Object> config) throws IOException {
     String localCatalogId = catalogFramework.getId();
     List<Object> sources = GSON.fromJson(this.catalogApplication.getSources(), List.class);
@@ -354,6 +374,10 @@ public class ComposeApplication implements SparkApplication {
     return sources;
   }
 
+  /**
+   * Transform the known attributes into a form the client expects, and can use to quickly look up
+   * information about attributes.
+   */
   private Map<String, Object> getAttributeMap(
       Map<String, Object> config, Map<String, Object> metacardTypeMap) {
     // Add each Metacard type's attributes to a common attribute map
