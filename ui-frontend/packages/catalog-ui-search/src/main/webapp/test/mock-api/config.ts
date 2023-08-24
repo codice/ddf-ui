@@ -110,7 +110,6 @@ export default {
   gazetteer: true,
   exportResultLimit: 1000,
   bingKey: '',
-  isArchiveSearchDisabled: false,
   useHyphensInUuid: false,
   disableLocalCatalog: false,
 }
