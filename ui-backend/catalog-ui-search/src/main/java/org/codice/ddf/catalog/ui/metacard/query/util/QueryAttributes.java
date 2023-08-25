@@ -23,6 +23,8 @@ public class QueryAttributes {
 
   public static final String QUERY_FILTER_TREE = "filterTree";
 
+  public static final String SEARCH_AREA_IDS = "searchAreaIds";
+
   public static final String QUERY_SOURCES = "sources";
 
   public static final String QUERY_ENTERPRISE = "enterprise";

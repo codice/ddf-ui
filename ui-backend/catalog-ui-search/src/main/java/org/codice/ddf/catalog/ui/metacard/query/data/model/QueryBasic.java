@@ -25,6 +25,7 @@ import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUER
 import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUERY_SOURCES;
 import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUERY_TYPE;
 import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.SCHEDULES;
+import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.SEARCH_AREA_IDS;
 import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.SPELLCHECK;
 
 import com.google.gson.Gson;
@@ -79,6 +80,9 @@ public class QueryBasic {
   @SerializedName("sources")
   private List<String> sources;
 
+  @SerializedName("searchAreaIds")
+  private List<String> searchAreaIds;
+
   @SerializedName("sorts")
   private List<Map<String, String>> sorts;
 
@@ -132,6 +136,7 @@ public class QueryBasic {
     this.filterTree = getAttributeValue(metacard, QUERY_FILTER_TREE, String.class);
     this.enterprise = getAttributeValue(metacard, QUERY_ENTERPRISE, Boolean.class);
     this.sources = getAttributeValues(metacard, QUERY_SOURCES, String.class);
+    this.searchAreaIds = getAttributeValues(metacard, SEARCH_AREA_IDS, String.class);
 
     Class<Map<String, String>> clazz = (Class<Map<String, String>>) (Class) Map.class;
     this.sorts =
@@ -172,6 +177,7 @@ public class QueryBasic {
     metacard.setAttribute(new AttributeImpl(QUERY_FILTER_TREE, this.filterTree));
     metacard.setAttribute(new AttributeImpl(QUERY_ENTERPRISE, this.enterprise));
     metacard.setAttribute(new AttributeImpl(QUERY_SOURCES, (Serializable) this.sources));
+    metacard.setAttribute(new AttributeImpl(SEARCH_AREA_IDS, (Serializable) this.searchAreaIds));
 
     List<String> sortFields = getSortsField();
     metacard.setAttribute(new AttributeImpl(QUERY_SORTS, (Serializable) sortFields));
