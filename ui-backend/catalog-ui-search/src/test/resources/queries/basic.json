@@ -9,5 +9,6 @@
     }
   ],
   "type":"advanced",
-  "title":"(\"anyText\" ILIKE 'foo bar')"
+  "title":"(\"anyText\" ILIKE 'foo bar')",
+  "searchAreaIds":["a5113f24-3c8d-49ec-8a5d-9716009dbe53", "b5113f24-3c8d-49ec-8a5d-9716009dbe53"]
 }

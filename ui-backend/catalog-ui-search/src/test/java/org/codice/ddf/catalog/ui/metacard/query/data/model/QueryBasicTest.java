@@ -19,6 +19,7 @@ import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUER
 import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUERY_FILTER_TREE;
 import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUERY_SORTS;
 import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.QUERY_TYPE;
+import static org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes.SEARCH_AREA_IDS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -28,7 +29,10 @@ import ddf.catalog.data.Attribute;
 import ddf.catalog.data.Metacard;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.codice.ddf.catalog.ui.metacard.QueryMetacardApplicationTest;
 import org.junit.Test;
@@ -57,11 +61,21 @@ public class QueryBasicTest {
 
     assertAttribute(metacard, QUERY_TYPE, "advanced");
     assertAttribute(metacard, TITLE, "(\"anyText\" ILIKE 'foo bar')");
+
+    List<String> searchAreaIds =
+        Arrays.asList(
+            "a5113f24-3c8d-49ec-8a5d-9716009dbe53", "b5113f24-3c8d-49ec-8a5d-9716009dbe53");
+    assertAttribute(metacard, SEARCH_AREA_IDS, searchAreaIds);
   }
 
   private void assertAttribute(Metacard metacard, String attrName, Object value) {
     Attribute attr = metacard.getAttribute(attrName);
-    assertThat(attr.getValue(), is(value));
+    List<Serializable> values = attr.getValues();
+    if (values.size() > 1) {
+      assertThat(values, is(value));
+    } else {
+      assertThat(values.get(0), is(value));
+    }
   }
 
   private static String getFileContents(String resource) {
