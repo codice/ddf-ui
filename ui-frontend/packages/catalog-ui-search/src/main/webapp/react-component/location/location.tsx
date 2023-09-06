@@ -32,6 +32,7 @@ import { useTheme } from '@mui/material/styles'
 import { Popover } from '@mui/material'
 import { ColorSquare, LocationColorSelector } from './location-color-selector'
 import { useMenuState } from '../../component/menu-state/menu-state'
+import TypedMetacardDefs from '../../component/tabs/metacard/metacardDefinitions'
 
 type InputType = {
   label: string
@@ -198,7 +199,7 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
             <TextField
               {...params}
               variant="outlined"
-              placeholder="Select Location Option"
+              placeholder={"Select " + TypedMetacardDefs.getAlias({ attr: 'location' })+ " Option"}
             />
           )}
         />
