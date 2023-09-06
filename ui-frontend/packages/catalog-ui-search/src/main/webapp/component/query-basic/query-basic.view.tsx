@@ -474,7 +474,7 @@ const QueryBasic = ({ model, errorListener }: QueryBasicProps) => {
                 }}
               />
             }
-            label="Location"
+            label={TypedMetacardDefs.getAlias({ attr: 'location' })}
           />
           {basicFilter.anyGeo[0] ? (
             <Grid
