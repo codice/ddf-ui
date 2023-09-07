@@ -14,6 +14,7 @@
  **/
 import { StartupDataStore } from './startup'
 import { useSyncExternalStore } from 'react'
+import { SnapshotManager } from './snapshot'
 
 const subscribe = (callback: () => void) => {
   const cancelSubscription = StartupDataStore.Sources.subscribeTo({
@@ -25,11 +26,15 @@ const subscribe = (callback: () => void) => {
   }
 }
 
-const getSnapshot = () => {
+const snapshotManager = new SnapshotManager(() => {
   return StartupDataStore.Sources
-}
+}, subscribe)
 
+// I want to be able to pass a subscribe callback, and only update it when the subscribe happens
 export const useSources = () => {
-  const sources = useSyncExternalStore(subscribe, getSnapshot)
+  const sources = useSyncExternalStore(
+    snapshotManager.subscribe,
+    snapshotManager.getSnapshot
+  )
   return sources
 }

@@ -12,6 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import { SnapshotManager } from './snapshot'
 import { StartupDataStore } from './startup'
 import { useSyncExternalStore } from 'react'
 
@@ -25,11 +26,14 @@ const subscribe = (callback: () => void) => {
   }
 }
 
-const getSnapshot = () => {
+const snapshotManager = new SnapshotManager(() => {
   return StartupDataStore.Configuration
-}
+}, subscribe)
 
 export const useConfiguration = () => {
-  const configuration = useSyncExternalStore(subscribe, getSnapshot)
+  const configuration = useSyncExternalStore(
+    snapshotManager.subscribe,
+    snapshotManager.getSnapshot
+  )
   return configuration
 }

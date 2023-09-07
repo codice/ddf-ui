@@ -14,6 +14,7 @@
  **/
 import { StartupDataStore } from './startup'
 import { useSyncExternalStore } from 'react'
+import { SnapshotManager } from './snapshot'
 
 const subscribe = (callback: () => void) => {
   const cancelSubscription = StartupDataStore.subscribeTo({
@@ -25,11 +26,14 @@ const subscribe = (callback: () => void) => {
   }
 }
 
-const getSnapshot = () => {
+const snapshotManager = new SnapshotManager(() => {
   return StartupDataStore
-}
+}, subscribe)
 
 export const useStartupData = () => {
-  const startupData = useSyncExternalStore(subscribe, getSnapshot)
+  const startupData = useSyncExternalStore(
+    snapshotManager.subscribe,
+    snapshotManager.getSnapshot
+  )
   return startupData
 }
