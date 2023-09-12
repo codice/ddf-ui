@@ -28,15 +28,16 @@ import user from '../singletons/user-instance'
 import sanitize from 'sanitize-html'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
-import AllOutIcon from '@mui/icons-material/AllOut'
 import MinimizeIcon from '@mui/icons-material/Minimize'
-import MaximizeIcon from '@mui/icons-material/Add'
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit'
+import FullscreenIcon from '@mui/icons-material/Fullscreen'
 import CloseIcon from '@mui/icons-material/Close'
 import ExtensionPoints from '../../extension-points/extension-points'
 import { Visualizations } from '../visualization/visualizations'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import Paper from '@mui/material/Paper'
+import Tooltip from '@mui/material/Tooltip'
 import { Elevations } from '../theme/theme'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
@@ -80,6 +81,10 @@ const sanitizeTree = (tree: any) =>
     }
     return obj
   })
+
+const HeaderHeight = 44
+const MinimizedHeight = HeaderHeight + 5
+
 function getGoldenLayoutSettings() {
   return {
     settings: {
@@ -89,9 +94,9 @@ function getGoldenLayoutSettings() {
     },
     dimensions: {
       borderWidth: 8,
-      minItemHeight: 50,
+      minItemHeight: HeaderHeight,
       minItemWidth: 50,
-      headerHeight: 44,
+      headerHeight: HeaderHeight,
       dragProxyWidth: 300,
       dragProxyHeight: 200,
     },
@@ -131,7 +136,7 @@ const GoldenLayoutComponentHeader = ({
   container: any
   name: any
 }) => {
-  const [width, setWidth] = React.useState(tab.header.element.width())
+  const [, setWidth] = React.useState(tab.header.element.width())
   React.useEffect(() => {
     if (tab) {
       tab.header.parent.on('resize', () => {
@@ -139,7 +144,7 @@ const GoldenLayoutComponentHeader = ({
       })
     }
   }, [tab])
-  const isMinimized = width <= 100
+  const isMinimized = false
   return (
     <ExtensionPoints.providers>
       <div
@@ -350,17 +355,10 @@ const GoldenLayoutComponent = ({
   goldenLayout: any
   options: any
   ComponentView: any
-  container: any
+  container: GoldenLayout.Container
 }) => {
-  const [width, setWidth] = React.useState<number>(container.width)
-  React.useEffect(() => {
-    if (container) {
-      container.on('resize', () => {
-        setWidth(container.width)
-      })
-    }
-  }, [container])
-  const isMinimized = width <= 100
+  const { height } = useContainerSize(container)
+  const isMinimized = height && height <= MinimizedHeight
   return (
     <ExtensionPoints.providers>
       <UseSubwindowConsumeNavigationChange goldenLayout={goldenLayout} />
@@ -618,76 +616,401 @@ function handleGoldenLayoutStackCreated(stack: any) {
     } catch (err) {}
   }, 100)
 }
-const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
-  const [width, setWidth] = React.useState<number>(stack.header.element.width())
+
+/**
+ *  Will return a safe, unchanging reference, feel free to keep in a variable
+ * @param stack
+ * @returns
+ */
+function getRoot(
+  stack: GoldenLayout.ContentItem | GoldenLayout.Tab
+): GoldenLayout.ContentItem {
+  const stackAsContentItem = stack as GoldenLayout.ContentItem
+  if (stackAsContentItem.isRoot) {
+    return stackAsContentItem
+  }
+  let parent = stackAsContentItem.parent
+  if (parent.type === 'root') {
+    return parent
+  } else {
+    return getRoot(parent)
+  }
+}
+
+/**
+ *  This can change, so do not store it in a variable, instead keep around the Root from getRoot and refind the base item as necessary.
+ * @param stack
+ * @returns
+ */
+function getRootColumnContent(
+  stack: GoldenLayout.ContentItem | GoldenLayout.Tab
+): GoldenLayout.ContentItem {
+  return getRoot(stack).contentItems[0]
+}
+
+function useContainerSize(container: GoldenLayout.Container) {
+  const [width, setWidth] = React.useState<number | undefined>(container.width)
+  const [height, setHeight] = React.useState<number | undefined>(
+    container.height
+  )
+
+  React.useEffect(() => {
+    if (container) {
+      container.on('resize', () => {
+        setWidth(container.width)
+        setHeight(container.height)
+      })
+    }
+  }, [container])
+  return { height, width }
+}
+
+function useStackSize(stack: GoldenLayout.Tab & GoldenLayout.ContentItem) {
+  const [width, setWidth] = React.useState<number | undefined>(
+    stack.header.element.width()
+  )
+  const [height, setHeight] = React.useState<number | undefined>(
+    stack.element.height()
+  )
+
   React.useEffect(() => {
     if (stack) {
       stack.on('resize', () => {
         setWidth(stack.header.element.width())
+        setHeight(stack.element.height())
       })
     }
   }, [stack])
-  const isMinimized = width <= 100
+  return { height, width }
+}
+
+// by ready, we mean the stack to be minimized is already on the bottom of a column layout => aka we can just resize it
+function layoutIsAlreadyReady({
+  stack,
+}: {
+  stack: GoldenLayout.Tab & GoldenLayout.ContentItem
+}) {
+  const bottomItem = getBottomItem(stack)
+  const isBottomItem = stack === bottomItem
+  return (
+    (isBottomItem && getRootColumnContent(stack).isColumn) ||
+    (!getRootColumnContent(stack).isColumn &&
+      !getRootColumnContent(stack).isRow)
+  )
+}
+
+// check if a minimized stack already exists
+function layoutAlreadyHasMinimizedStack({
+  stack,
+}: {
+  stack: GoldenLayout.Tab & GoldenLayout.ContentItem
+}) {
+  const bottomItem = getBottomItem(stack)
+
+  return (
+    getRootColumnContent(stack).isColumn &&
+    (bottomItem as any).pixelHeight <= MinimizedHeight
+  )
+}
+
+// add the stack to the existing minimized stack
+function addStackToExistingMinimizedStack({
+  stack,
+}: {
+  stack: GoldenLayout.Tab & GoldenLayout.ContentItem
+}) {
+  const bottomItem = getBottomItem(stack)
+  stack.contentItems.slice().forEach((thing) => {
+    stack.removeChild(thing as any, true) // for some reason removeChild is overly restrictive on type of "thing" so we have to cast
+    bottomItem.addChild(thing, undefined)
+  })
+}
+
+function rootIsNotAColumn(goldenLayoutRoot: GoldenLayout.ContentItem) {
+  return (
+    getRootColumnContent(goldenLayoutRoot) &&
+    !getRootColumnContent(goldenLayoutRoot).isColumn
+  )
+}
+
+function rootIsEmpty(goldenLayoutRoot: GoldenLayout.ContentItem) {
+  return !getRootColumnContent(goldenLayoutRoot)
+}
+
+// we have to move each item individually because golden layout doesn't support moving an entire stack, and addChild does not work as documentation says (it doesn't remove the existing automatically)
+function createNewStackFromExistingStack({
+  stack,
+}: {
+  stack: GoldenLayout.Tab & GoldenLayout.ContentItem
+}) {
+  const existingItems = stack.contentItems.slice()
+  const newStackItem = stack.layoutManager._$normalizeContentItem({
+    type: 'stack',
+  })
+  existingItems.forEach((thing) => {
+    stack.removeChild(thing as any, true) // for some reason removeChild is overly restrictive on type of "thing" so we have to cast
+    newStackItem.addChild(thing, undefined)
+  })
+  return newStackItem
+}
+
+// create a new minimized stack and add the stack to it
+function createAndAddNewMinimizedStack({
+  stack,
+  goldenLayoutRoot,
+}: {
+  stack: GoldenLayout.Tab & GoldenLayout.ContentItem
+  goldenLayoutRoot: GoldenLayout.ContentItem
+}) {
+  const newStackItem = createNewStackFromExistingStack({ stack })
+  if (rootIsNotAColumn(goldenLayoutRoot)) {
+    const existingRootContent = getRootColumnContent(goldenLayoutRoot)
+    goldenLayoutRoot.removeChild(existingRootContent as any, true) // for some reason removeChild is overly restrictive on type of "thing" so we have to cast
+
+    // we need a column for minimize to work, so make a new column and add the existing root to it
+    const newColumnItem = stack.layoutManager._$normalizeContentItem({
+      type: 'column',
+    })
+    newColumnItem.addChild(existingRootContent)
+    newColumnItem.addChild(newStackItem)
+
+    goldenLayoutRoot.addChild(newColumnItem)
+  } else if (rootIsEmpty(goldenLayoutRoot)) {
+    const newColumnItem = stack.layoutManager._$normalizeContentItem({
+      type: 'column',
+    })
+    newColumnItem.addChild(newStackItem)
+
+    goldenLayoutRoot.addChild(newColumnItem)
+  } else {
+    getRootColumnContent(goldenLayoutRoot).addChild(newStackItem)
+  }
+}
+
+function getStackInMinimizedLocation({
+  goldenLayoutRoot,
+}: {
+  goldenLayoutRoot: GoldenLayout.ContentItem
+}) {
+  return (
+    getRootColumnContent(goldenLayoutRoot).contentItems[
+      getRootColumnContent(goldenLayoutRoot).contentItems.length - 1
+    ].getActiveContentItem() as any
+  ).container as GoldenLayout.Container
+}
+
+// the true height of the stack - the golden layout implementation at the moment only tracks the height of the visual within the stack, not the stack itself
+function getTrueHeight({
+  goldenLayoutRoot,
+}: {
+  goldenLayoutRoot: GoldenLayout.ContentItem
+}) {
+  return (
+    getStackInMinimizedLocation({ goldenLayoutRoot }).parent.parent
+      .element as unknown as GoldenLayout.Header['element']
+  ).height()
+}
+
+function adjustStackInMinimizedPlaceIfNecessary({
+  goldenLayoutRoot,
+}: {
+  goldenLayoutRoot: GoldenLayout.ContentItem
+}) {
+  if (getRootColumnContent(goldenLayoutRoot).isColumn) {
+    const trueHeight = getTrueHeight({ goldenLayoutRoot })
+    getStackInMinimizedLocation({ goldenLayoutRoot }).height =
+      trueHeight || getStackInMinimizedLocation({ goldenLayoutRoot }).height // otherwise setSize will not work correctly! - this allows us to consistently and always set the height to what we want!
+    getStackInMinimizedLocation({ goldenLayoutRoot }).setSize(10, HeaderHeight)
+  }
+}
+
+// keep track of pixel height on each stack, which allows us to detect when a stack is "minimized" later on
+function usePixelHeightTracking(
+  stack: GoldenLayout.Tab & GoldenLayout.ContentItem,
+  height: number | undefined
+) {
+  React.useEffect(() => {
+    if (stack) {
+      ;(stack as any).pixelHeight = height
+    }
+  }, [height, stack])
+  const goldenLayoutRoot = useRoot(stack)
+
+  const minimizeCallback = React.useCallback(() => {
+    if (layoutIsAlreadyReady({ stack })) {
+      // do nothing? just resize to be minimized
+    } else if (layoutAlreadyHasMinimizedStack({ stack })) {
+      // minimized area exists, add this to it
+      addStackToExistingMinimizedStack({ stack })
+    } else {
+      // rearrange layout if necessary and move the stack
+      createAndAddNewMinimizedStack({ stack, goldenLayoutRoot })
+    }
+    adjustStackInMinimizedPlaceIfNecessary({ goldenLayoutRoot })
+  }, [stack, goldenLayoutRoot])
+
+  return { minimizeCallback }
+}
+
+function useRoot(stack: GoldenLayout.Tab & GoldenLayout.ContentItem) {
+  const [root, setRoot] = React.useState(getRoot(stack))
+  React.useEffect(() => {
+    setRoot(getRoot(stack))
+  }, [stack])
+  return root
+}
+
+function getBottomItem(stack: GoldenLayout.Tab & GoldenLayout.ContentItem) {
+  return getRootColumnContent(stack).contentItems[
+    getRootColumnContent(stack).contentItems.length - 1
+  ]
+}
+
+function useCanBeMinimized({
+  stack,
+  height,
+  width,
+}: {
+  stack: GoldenLayout.Tab & GoldenLayout.ContentItem
+  height?: number
+  width?: number
+}) {
+  const [canBeMinimized, setCanBeMinimized] = React.useState(true)
+  React.useEffect(() => {
+    const rootContent = getRootColumnContent(stack)
+    if (rootContent.isStack) {
+      setCanBeMinimized(false)
+    } else {
+      setCanBeMinimized(true)
+    }
+  }, [stack, height, width])
+  return canBeMinimized
+}
+
+function useIsMaximized({
+  stack,
+}: {
+  stack: GoldenLayout.Tab & GoldenLayout.ContentItem
+}) {
+  const [isMaximized, setIsMaximized] = React.useState(false)
+  React.useEffect(() => {
+    stack.on('maximised', () => {
+      setIsMaximized(true)
+    })
+    stack.on('minimised', () => {
+      setIsMaximized(false)
+    })
+  }, [stack])
+  React.useEffect(() => {
+    setIsMaximized(stack.isMaximised)
+  }, [stack])
+  return isMaximized
+}
+
+const GoldenLayoutToolbar = ({
+  stack,
+}: {
+  stack: GoldenLayout.Tab & GoldenLayout.ContentItem
+}) => {
+  const isMaximized = useIsMaximized({ stack })
+  const { height, width } = useStackSize(stack)
+  const { minimizeCallback } = usePixelHeightTracking(stack, height)
+  const canBeMinimized = useCanBeMinimized({ stack, width, height })
+  const isMinimized = height && height <= MinimizedHeight
   return (
     <ExtensionPoints.providers>
-      <Grid container direction="row" wrap="nowrap">
-        {isMinimized ? (
-          <>
-            {' '}
-            <Grid item>
-              <Button
-                data-id="maximise-tab-button"
-                onClick={() => {
-                  const prevWidth = stack.config.prevWidth || 500
-                  const prevHeight = stack.config.prevHeight || 500
-                  stack.contentItems[0].container.setSize(prevWidth, prevHeight)
-                }}
+      <div className="flex flex-row flex-nowrap items-center">
+        <>
+          {isMaximized || isMinimized || !canBeMinimized ? (
+            <></>
+          ) : (
+            <div>
+              <Tooltip
+                title={
+                  <Paper elevation={Elevations.overlays} className="p-2">
+                    Minimize stack of visuals to bottom of layout
+                  </Paper>
+                }
               >
-                <MaximizeIcon />
-              </Button>
-            </Grid>
-          </>
-        ) : (
-          <>
-            <Grid item>
-              <Button
-                data-id="minimise-layout-button"
-                onClick={() => {
-                  stack.config.prevWidth =
-                    stack.getActiveContentItem().container.width
-                  stack.config.prevHeight =
-                    stack.getActiveContentItem().container.height
-                  stack.contentItems[0].container.setSize(10, 45)
-                }}
+                <Button
+                  data-id="minimise-layout-button"
+                  onClick={minimizeCallback}
+                >
+                  <MinimizeIcon />
+                </Button>
+              </Tooltip>
+            </div>
+          )}
+          {isMaximized ? (
+            <div>
+              <Tooltip
+                title={
+                  <Paper elevation={Elevations.overlays} className="p-2">
+                    Restore stack of visuals to original size
+                  </Paper>
+                }
               >
-                <MinimizeIcon />
-              </Button>
-            </Grid>
-            <Grid item>
-              <Button
-                data-id="maximise-layout-button"
-                onClick={() => {
-                  stack.toggleMaximise()
-                }}
+                <Button
+                  data-id="unmaximise-layout-button"
+                  onClick={() => {
+                    stack.toggleMaximise()
+                  }}
+                >
+                  <FullscreenExitIcon />
+                </Button>
+              </Tooltip>
+            </div>
+          ) : (
+            <div>
+              <Tooltip
+                title={
+                  <Paper elevation={Elevations.overlays} className="p-2">
+                    Maximize stack of visuals
+                  </Paper>
+                }
               >
-                <AllOutIcon />
-              </Button>
-            </Grid>
-            {stack.layoutManager.isSubWindow ? null : (
-              <Grid item>
+                <Button
+                  data-id="maximise-layout-button"
+                  onClick={() => {
+                    stack.toggleMaximise()
+                  }}
+                >
+                  <FullscreenIcon />
+                </Button>
+              </Tooltip>
+            </div>
+          )}
+
+          {stack.layoutManager.isSubWindow ? null : (
+            <div>
+              <Tooltip
+                title={
+                  <Paper elevation={Elevations.overlays} className="p-2">
+                    Open stack of visuals in new window
+                  </Paper>
+                }
+              >
                 <Button
                   data-id="popout-layout-button"
                   onClick={() => {
                     stack.popout()
                   }}
                 >
-                  <PopoutIcon />
+                  <PopoutIcon fontSize="small" />
                 </Button>
-              </Grid>
-            )}
+              </Tooltip>
+            </div>
+          )}
 
-            <Grid item>
-              {stack.header._isClosable() ? (
+          <div>
+            {(stack.header as any)._isClosable() ? (
+              <Tooltip
+                title={
+                  <Paper elevation={Elevations.overlays} className="p-2">
+                    Close stack of visuals
+                  </Paper>
+                }
+              >
                 <Button
                   data-id="close-layout-button"
                   onClick={() => {
@@ -699,11 +1022,11 @@ const GoldenLayoutToolbar = ({ stack }: { stack: any }) => {
                 >
                   <CloseIcon />
                 </Button>
-              ) : null}
-            </Grid>
-          </>
-        )}
-      </Grid>
+              </Tooltip>
+            ) : null}
+          </div>
+        </>
+      </div>
     </ExtensionPoints.providers>
   )
 }
