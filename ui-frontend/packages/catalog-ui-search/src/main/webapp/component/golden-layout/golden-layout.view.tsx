@@ -491,6 +491,9 @@ function registerComponent(
                 name={name}
               />
             )
+            tab.header.on('destroy', () => {
+              renderRoot.unmount()
+            })
             clearInterval(intervalId)
           } catch (err) {}
         }, 100)
@@ -676,6 +679,9 @@ function handleGoldenLayoutStackCreated(stack: any) {
     try {
       const renderRoot = createRoot(stack.header.controlsContainer[0])
       renderRoot.render(<GoldenLayoutToolbar stack={stack} />)
+      stack.on('destroy', () => {
+        renderRoot.unmount()
+      })
       clearInterval(intervalId)
     } catch (err) {}
   }, 100)
