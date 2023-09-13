@@ -720,11 +720,16 @@ function useContainerSize(container: GoldenLayout.Container) {
 
   React.useEffect(() => {
     if (container) {
-      container.on('resize', () => {
+      const resizeCallback = () => {
         setWidth(container.width)
         setHeight(container.height)
-      })
+      }
+      container.on('resize', resizeCallback)
+      return () => {
+        container.off('resize', resizeCallback)
+      }
     }
+    return () => {}
   }, [container])
   return { height, width }
 }
@@ -742,11 +747,16 @@ function useStackSize(stack: GoldenLayout.Tab & GoldenLayout.ContentItem) {
 
   React.useEffect(() => {
     if (stack) {
-      stack.on('resize', () => {
+      const resizeCallback = () => {
         setWidth(stack.header.element.width())
         setHeight(getStackHeight({ stack }))
-      })
+      }
+      stack.on('resize', resizeCallback)
+      return () => {
+        stack.off('resize', resizeCallback)
+      }
     }
+    return () => {}
   }, [stack])
   return { height, width }
 }
@@ -1066,13 +1076,17 @@ function useCanBeMinimizedTab({
   }, [stack, height, width, itemCount])
   React.useEffect(() => {
     if (stack) {
-      stack.on('itemCreated', () => {
+      const callback = () => {
         setItemCount(stack.contentItems.length)
-      })
-      stack.on('itemDestroyed', () => {
-        setItemCount(stack.contentItems.length)
-      })
+      }
+      stack.on('itemCreated', callback)
+      stack.on('itemDestroyed', callback)
+      return () => {
+        stack.off('itemCreated', callback)
+        stack.off('itemDestroyed', callback)
+      }
     }
+    return () => {}
   }, [stack])
   return canBeMinimized
 }
@@ -1084,12 +1098,18 @@ function useIsMaximized({
 }) {
   const [isMaximized, setIsMaximized] = React.useState(false)
   React.useEffect(() => {
-    stack.on('maximised', () => {
+    const maximizedCallback = () => {
       setIsMaximized(true)
-    })
-    stack.on('minimised', () => {
+    }
+    stack.on('maximised', maximizedCallback)
+    const minimizedCallback = () => {
       setIsMaximized(false)
-    })
+    }
+    stack.on('minimised', minimizedCallback)
+    return () => {
+      stack.off('maximised', maximizedCallback)
+      stack.off('minimised', minimizedCallback)
+    }
   }, [stack])
   React.useEffect(() => {
     setIsMaximized(stack.isMaximised)
