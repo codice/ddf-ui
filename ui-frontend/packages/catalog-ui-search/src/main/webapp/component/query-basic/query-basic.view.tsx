@@ -41,6 +41,7 @@ import Autocomplete from '@mui/material/Autocomplete'
 import BooleanSearchBar from '../boolean-search-bar/boolean-search-bar'
 import { ValidationResult } from '../../react-component/location/validators'
 import { StartupDataStore } from '../../js/model/Startup/startup'
+import { useMetacardDefinitions } from '../../js/model/Startup/metacard-definitions.hooks'
 function isNested(filter: any) {
   let nested = false
   filter.filters.forEach((subfilter: any) => {
@@ -375,6 +376,7 @@ const useBasicFilterFromModel = ({ model }: QueryBasicProps) => {
   return basicFilter
 }
 const QueryBasic = ({ model, errorListener }: QueryBasicProps) => {
+  const MetacardDefinitions = useMetacardDefinitions()
   const inputRef = React.useRef<HTMLDivElement>()
   const basicFilter = useBasicFilterFromModel({ model })
   const [typeAttributes] = React.useState(
@@ -476,7 +478,7 @@ const QueryBasic = ({ model, errorListener }: QueryBasicProps) => {
                 }}
               />
             }
-            label={TypedMetacardDefs.getAlias({ attr: 'location' })}
+            label={MetacardDefinitions.getAlias('location')}
           />
           {basicFilter.anyGeo[0] ? (
             <Grid
