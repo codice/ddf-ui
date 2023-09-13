@@ -163,22 +163,18 @@ const GoldenLayoutComponentHeader = ({
   container: any
   name: any
 }) => {
-  const [, setWidth] = React.useState(tab.header.element.width())
-  React.useEffect(() => {
-    if (tab) {
-      tab.header.parent.on('resize', () => {
-        setWidth(tab.header.element.width())
-      })
-    }
-  }, [tab])
-
   const relatedStack = useStackRelatedToTab(tab)
-  const { height } = useStackSize(relatedStack)
+  const { height, width } = useStackSize(relatedStack)
   const { minimizeCallback } = usePixelHeightTrackingForTab(
     tab as any,
     relatedStack,
     height
   )
+  const canBeMinimized = useCanBeMinimizedTab({
+    stack: relatedStack,
+    width,
+    height,
+  })
   const isMaximized = useIsMaximized({ stack: relatedStack })
   const isMinimized = height && height <= MinimizedHeight
   return (
@@ -199,7 +195,7 @@ const GoldenLayoutComponentHeader = ({
             />
           ) : null}
         </Grid>
-        {isMinimized || isMaximized ? (
+        {isMinimized || isMaximized || !canBeMinimized ? (
           <></>
         ) : (
           <Grid item>
@@ -741,14 +737,14 @@ function useStackSize(stack: GoldenLayout.Tab & GoldenLayout.ContentItem) {
     stack.header.element.width()
   )
   const [height, setHeight] = React.useState<number | undefined>(
-    stack.element.height()
+    getStackHeight({ stack })
   )
 
   React.useEffect(() => {
     if (stack) {
       stack.on('resize', () => {
         setWidth(stack.header.element.width())
-        setHeight(stack.element.height())
+        setHeight(getStackHeight({ stack }))
       })
     }
   }, [stack])
@@ -1049,6 +1045,38 @@ function useCanBeMinimized({
   return canBeMinimized
 }
 
+function useCanBeMinimizedTab({
+  stack,
+  height,
+  width,
+}: {
+  stack: GoldenLayout.Tab & GoldenLayout.ContentItem
+  height?: number
+  width?: number
+}) {
+  const [itemCount, setItemCount] = React.useState(stack.contentItems.length)
+  const [canBeMinimized, setCanBeMinimized] = React.useState(true)
+  React.useEffect(() => {
+    const rootContent = getRootColumnContent(stack)
+    if (rootContent.isStack && rootContent.contentItems.length === 1) {
+      setCanBeMinimized(false)
+    } else {
+      setCanBeMinimized(true)
+    }
+  }, [stack, height, width, itemCount])
+  React.useEffect(() => {
+    if (stack) {
+      stack.on('itemCreated', () => {
+        setItemCount(stack.contentItems.length)
+      })
+      stack.on('itemDestroyed', () => {
+        setItemCount(stack.contentItems.length)
+      })
+    }
+  }, [stack])
+  return canBeMinimized
+}
+
 function useIsMaximized({
   stack,
 }: {
@@ -1067,6 +1095,15 @@ function useIsMaximized({
     setIsMaximized(stack.isMaximised)
   }, [stack])
   return isMaximized
+}
+
+// to avoid fixing types everywhere, let's make a function
+function getStackHeight({
+  stack,
+}: {
+  stack: GoldenLayout.Tab & GoldenLayout.ContentItem
+}) {
+  return (stack.element as unknown as GoldenLayout.Header['element']).height()
 }
 
 const GoldenLayoutToolbar = ({
