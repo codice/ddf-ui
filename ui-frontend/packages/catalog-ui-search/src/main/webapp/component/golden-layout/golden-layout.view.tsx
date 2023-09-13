@@ -688,13 +688,16 @@ function handleGoldenLayoutStackCreated(stack: any) {
  */
 function getRoot(
   stack: GoldenLayout.ContentItem | GoldenLayout.Tab
-): GoldenLayout.ContentItem {
+): GoldenLayout.ContentItem | undefined {
+  if (!stack) {
+    return undefined
+  }
   const stackAsContentItem = stack as GoldenLayout.ContentItem
-  if (stackAsContentItem.isRoot) {
+  if (stackAsContentItem?.isRoot) {
     return stackAsContentItem
   }
   let parent = stackAsContentItem.parent
-  if (parent.type === 'root') {
+  if (parent?.type === 'root') {
     return parent
   } else {
     return getRoot(parent)
@@ -708,8 +711,12 @@ function getRoot(
  */
 function getRootColumnContent(
   stack: GoldenLayout.ContentItem | GoldenLayout.Tab
-): GoldenLayout.ContentItem {
-  return getRoot(stack).contentItems[0]
+): GoldenLayout.ContentItem | undefined {
+  const root = getRoot(stack)
+  if (root) {
+    return root.contentItems[0]
+  }
+  return undefined
 }
 
 function useContainerSize(container: GoldenLayout.Container) {
@@ -770,9 +777,9 @@ function layoutIsAlreadyReady({
   const bottomItem = getBottomItem(stack)
   const isBottomItem = stack === bottomItem
   return (
-    (isBottomItem && getRootColumnContent(stack).isColumn) ||
-    (!getRootColumnContent(stack).isColumn &&
-      !getRootColumnContent(stack).isRow)
+    (isBottomItem && getRootColumnContent(stack)?.isColumn) ||
+    (!getRootColumnContent(stack)?.isColumn &&
+      !getRootColumnContent(stack)?.isRow)
   )
 }
 
@@ -785,7 +792,7 @@ function layoutAlreadyHasMinimizedStack({
   const bottomItem = getBottomItem(stack)
 
   return (
-    getRootColumnContent(stack).isColumn &&
+    getRootColumnContent(stack)?.isColumn &&
     (bottomItem as any).pixelHeight <= MinimizedHeight
   )
 }
@@ -797,10 +804,12 @@ function addStackToExistingMinimizedStack({
   stack: GoldenLayout.Tab & GoldenLayout.ContentItem
 }) {
   const bottomItem = getBottomItem(stack)
-  stack.contentItems.slice().forEach((thing) => {
-    stack.removeChild(thing as any, true) // for some reason removeChild is overly restrictive on type of "thing" so we have to cast
-    bottomItem.addChild(thing, undefined)
-  })
+  if (bottomItem) {
+    stack.contentItems.slice().forEach((thing) => {
+      stack.removeChild(thing as any, true) // for some reason removeChild is overly restrictive on type of "thing" so we have to cast
+      bottomItem.addChild(thing, undefined)
+    })
+  }
 }
 
 // add the tab to the existing minimized stack
@@ -812,14 +821,16 @@ function addTabToExistingMinimizedStack({
   stack: GoldenLayout.Tab & GoldenLayout.ContentItem
 }) {
   const bottomItem = getBottomItem(stack)
-  stack.removeChild(tab.contentItem as any, true) // for some reason removeChild is overly restrictive on type of "thing" so we have to cast
-  bottomItem.addChild(tab.contentItem, undefined)
+  if (bottomItem) {
+    stack.removeChild(tab.contentItem as any, true) // for some reason removeChild is overly restrictive on type of "thing" so we have to cast
+    bottomItem.addChild(tab.contentItem, undefined)
+  }
 }
 
 function rootIsNotAColumn(goldenLayoutRoot: GoldenLayout.ContentItem) {
   return (
     getRootColumnContent(goldenLayoutRoot) &&
-    !getRootColumnContent(goldenLayoutRoot).isColumn
+    !getRootColumnContent(goldenLayoutRoot)?.isColumn
   )
 }
 
@@ -890,7 +901,7 @@ function createAndAddNewMinimizedStack({
 
     goldenLayoutRoot.addChild(newColumnItem)
   } else {
-    getRootColumnContent(goldenLayoutRoot).addChild(newStackItem)
+    getRootColumnContent(goldenLayoutRoot)?.addChild(newStackItem)
   }
 }
 
@@ -924,7 +935,7 @@ function createAndAddNewMinimizedStackForTab({
 
     goldenLayoutRoot.addChild(newColumnItem)
   } else {
-    getRootColumnContent(goldenLayoutRoot).addChild(newStackItem)
+    getRootColumnContent(goldenLayoutRoot)?.addChild(newStackItem)
   }
 }
 
@@ -932,12 +943,16 @@ function getStackInMinimizedLocation({
   goldenLayoutRoot,
 }: {
   goldenLayoutRoot: GoldenLayout.ContentItem
-}) {
-  return (
-    getRootColumnContent(goldenLayoutRoot).contentItems[
-      getRootColumnContent(goldenLayoutRoot).contentItems.length - 1
-    ].getActiveContentItem() as any
-  ).container as GoldenLayout.Container
+}): GoldenLayout.Container | undefined {
+  const rootColumnContent = getRootColumnContent(goldenLayoutRoot)
+  if (rootColumnContent) {
+    return (
+      rootColumnContent.contentItems[
+        rootColumnContent.contentItems.length - 1
+      ].getActiveContentItem() as any
+    ).container as GoldenLayout.Container
+  }
+  return undefined
 }
 
 // the true height of the stack - the golden layout implementation at the moment only tracks the height of the visual within the stack, not the stack itself
@@ -947,7 +962,7 @@ function getTrueHeight({
   goldenLayoutRoot: GoldenLayout.ContentItem
 }) {
   return (
-    getStackInMinimizedLocation({ goldenLayoutRoot }).parent.parent
+    getStackInMinimizedLocation({ goldenLayoutRoot })?.parent.parent
       .element as unknown as GoldenLayout.Header['element']
   ).height()
 }
@@ -957,11 +972,13 @@ function adjustStackInMinimizedPlaceIfNecessary({
 }: {
   goldenLayoutRoot: GoldenLayout.ContentItem
 }) {
-  if (getRootColumnContent(goldenLayoutRoot).isColumn) {
+  if (getRootColumnContent(goldenLayoutRoot)?.isColumn) {
     const trueHeight = getTrueHeight({ goldenLayoutRoot })
-    getStackInMinimizedLocation({ goldenLayoutRoot }).height =
-      trueHeight || getStackInMinimizedLocation({ goldenLayoutRoot }).height // otherwise setSize will not work correctly! - this allows us to consistently and always set the height to what we want!
-    getStackInMinimizedLocation({ goldenLayoutRoot }).setSize(10, HeaderHeight)
+    const minimizedStack = getStackInMinimizedLocation({ goldenLayoutRoot })
+    if (minimizedStack) {
+      minimizedStack.height = trueHeight || minimizedStack.height // otherwise setSize will not work correctly! - this allows us to consistently and always set the height to what we want!
+      minimizedStack.setSize(10, HeaderHeight)
+    }
   }
 }
 
@@ -978,6 +995,9 @@ function usePixelHeightTracking(
   const goldenLayoutRoot = useRoot(stack)
 
   const minimizeCallback = React.useCallback(() => {
+    if (!goldenLayoutRoot) {
+      return
+    }
     if (layoutIsAlreadyReady({ stack })) {
       // do nothing? just resize to be minimized
     } else if (layoutAlreadyHasMinimizedStack({ stack })) {
@@ -1007,6 +1027,9 @@ function usePixelHeightTrackingForTab(
   const goldenLayoutRoot = useRoot(stack)
 
   const minimizeCallback = React.useCallback(() => {
+    if (!goldenLayoutRoot) {
+      return
+    }
     if (layoutAlreadyHasMinimizedStack({ stack })) {
       // minimized area exists, add this to it
       addTabToExistingMinimizedStack({ tab, stack })
@@ -1028,10 +1051,16 @@ function useRoot(stack: GoldenLayout.Tab & GoldenLayout.ContentItem) {
   return root
 }
 
-function getBottomItem(stack: GoldenLayout.Tab & GoldenLayout.ContentItem) {
-  return getRootColumnContent(stack).contentItems[
-    getRootColumnContent(stack).contentItems.length - 1
-  ]
+function getBottomItem(
+  stack: GoldenLayout.Tab & GoldenLayout.ContentItem
+): GoldenLayout.ContentItem | undefined {
+  const rootColumnContent = getRootColumnContent(stack)
+  if (rootColumnContent) {
+    return rootColumnContent.contentItems[
+      rootColumnContent.contentItems.length - 1
+    ]
+  }
+  return undefined
 }
 
 function useCanBeMinimized({
@@ -1046,7 +1075,7 @@ function useCanBeMinimized({
   const [canBeMinimized, setCanBeMinimized] = React.useState(true)
   React.useEffect(() => {
     const rootContent = getRootColumnContent(stack)
-    if (rootContent.isStack) {
+    if (rootContent?.isStack) {
       setCanBeMinimized(false)
     } else {
       setCanBeMinimized(true)
@@ -1068,7 +1097,7 @@ function useCanBeMinimizedTab({
   const [canBeMinimized, setCanBeMinimized] = React.useState(true)
   React.useEffect(() => {
     const rootContent = getRootColumnContent(stack)
-    if (rootContent.isStack && rootContent.contentItems.length === 1) {
+    if (rootContent?.isStack && rootContent?.contentItems.length === 1) {
       setCanBeMinimized(false)
     } else {
       setCanBeMinimized(true)
