@@ -56,7 +56,7 @@ const configs = Visualizations.reduce((cfg, viz) => {
   }
   return cfg
 }, {} as { [key: string]: any })
-const unMaximize = (contentItem: any) => {
+export const unMaximize = (contentItem: any) => {
   if (contentItem.isMaximised) {
     contentItem.toggleMaximise()
     return true

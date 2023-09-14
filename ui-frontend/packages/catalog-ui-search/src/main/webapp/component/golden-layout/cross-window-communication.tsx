@@ -8,6 +8,39 @@ import _isEqualWith from 'lodash.isequalwith'
 import { TypedUserInstance } from '../singletons/TypedUser'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import wreqr from '../../js/wreqr'
+import GoldenLayout from 'golden-layout'
+import { getRootColumnContent, rootIsNotAColumn } from './stack-toolbar'
+import { unMaximize } from '../../react-component/visualization-selector/visualization-selector'
+
+/**
+ *  The popin function in golden layout has issues, particularly when there is a single stack in the main window at root.
+ *  It also, like many other things in golden layout, doesn't play well with maximize.
+ *
+ *  This patch detects maximize and removes it (since it doesn't make sense when popping in)
+ *  It also detects if the root is not a column, and if so, makes it a column so that popin works in all cases.
+ */
+function patchPopinFunction() {
+  const oldPopin = (GoldenLayout as any).__lm.controls.BrowserPopout.prototype
+    .popIn
+  ;(GoldenLayout as any).__lm.controls.BrowserPopout.prototype.popIn =
+    function () {
+      const goldenLayoutRoot = this._layoutManager.root
+      unMaximize(goldenLayoutRoot)
+      if (rootIsNotAColumn(goldenLayoutRoot)) {
+        const existingRootContent = getRootColumnContent(goldenLayoutRoot)
+        goldenLayoutRoot.removeChild(existingRootContent as any, true) // for some reason removeChild is overly restrictive on type of "thing" so we have to cast
+
+        // we need a column for minimize to work, so make a new column and add the existing root to it
+        const newColumnItem = this._layoutManager._$normalizeContentItem({
+          type: 'column',
+        })
+        newColumnItem.addChild(existingRootContent)
+        goldenLayoutRoot.addChild(newColumnItem)
+      }
+      oldPopin.apply(this, arguments)
+    }
+}
+patchPopinFunction()
 
 export const GoldenLayoutWindowCommunicationEvents = {
   requestInitialState: 'requestInitialState',
