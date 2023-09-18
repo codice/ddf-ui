@@ -20,6 +20,7 @@ import fetch from '../../react-component/utils/fetch'
 import _ from 'underscore'
 import _get from 'lodash.get'
 import _cloneDeep from 'lodash.clonedeep'
+import _debounce from 'lodash.debounce'
 import wreqr from '../wreqr'
 import Backbone from 'backbone'
 import Alert from './Alert'
@@ -191,6 +192,7 @@ const Theme = Backbone.Model.extend({
     },
   ],
   initialize() {
+    this.savePreferences = _debounce(this.savePreferences, 1000)
     this.handleAlertPersistence()
     this.handleResultCount()
     this.listenTo((wreqr as any).vent, 'alerts:add', this.addAlert)
