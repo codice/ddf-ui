@@ -48,6 +48,19 @@ export type MetacardDefinitionsType = {
   [key: string]: MetacardDefinitionType
 }
 
+// slightly different format, which we have to transform - probably worth updating the search endpoint to return it in the format we expect
+export type SearchResultAttributeDefinitionType = {
+  format: AttributeTypes
+  indexed: boolean
+  multivalued: boolean
+}
+
+export type SearchResultAttributeMap = {
+  [key: string]: SearchResultAttributeDefinitionType
+}
+
+export type SearchResultMetacardDefinitionType = SearchResultAttributeMap
+
 export type SortedAttributesType = Array<AttributeDefinitionType>
 
 export interface ImageryProvider {

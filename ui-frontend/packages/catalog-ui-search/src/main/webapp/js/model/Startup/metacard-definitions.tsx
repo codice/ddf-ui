@@ -5,6 +5,8 @@ import {
   AttributeMapType,
   MetacardDefinitionType,
   MetacardDefinitionsType,
+  SearchResultAttributeDefinitionType,
+  SearchResultMetacardDefinitionType,
   StartupPayloadType,
 } from './startup.types'
 
@@ -41,6 +43,38 @@ class MetacardDefinitions extends Subscribable<{
     })
   }
   // each time a search is conducted, this is possible, as searches return types
+  addDynamicallyFoundMetacardDefinitionsFromSearchResults = (
+    definitions: SearchResultMetacardDefinitionType
+  ) => {
+    const unknownMetacardTypes = Object.keys(definitions).filter(
+      this.isUnknownMetacardType
+    )
+    if (unknownMetacardTypes.length === 0) {
+      // don't do unnecessary work
+      return
+    }
+    const transformedDefinitions = Object.entries(definitions).reduce(
+      (blob, entry) => {
+        const [key, value] = entry
+        blob[key] = Object.entries(value).reduce((innerBlob, innerEntry) => {
+          const [innerKey, innerValue] = innerEntry as unknown as [
+            string,
+            SearchResultAttributeDefinitionType
+          ]
+          innerBlob[innerKey] = {
+            id: innerKey,
+            type: innerValue.format,
+            multivalued: innerValue.multivalued,
+            isInjected: false, // not sure we need this
+          }
+          return innerBlob
+        }, {} as AttributeMapType)
+        return blob
+      },
+      {} as MetacardDefinitionsType
+    )
+    this.addDynamicallyFoundMetacardDefinitions(transformedDefinitions)
+  }
   addDynamicallyFoundMetacardDefinitions = (
     definitions: MetacardDefinitionsType
   ) => {
