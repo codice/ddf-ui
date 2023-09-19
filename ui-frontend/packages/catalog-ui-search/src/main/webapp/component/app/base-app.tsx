@@ -6,7 +6,7 @@ import { hot } from 'react-hot-loader/root'
 import { IngestDetailsViewReact } from '../ingest-details/ingest-details.view'
 import { HomePage } from '../pages/search'
 
-import SourcesPage from '../../react-component/sources'
+import SourcesPage from '../../react-component/sources/presentation'
 import SourcesPageIcon from '@mui/icons-material/Cloud'
 import AboutPage from '../../react-component/about'
 import AboutPageIcon from '@mui/icons-material/Info'

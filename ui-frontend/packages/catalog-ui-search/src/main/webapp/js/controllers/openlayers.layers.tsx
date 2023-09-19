@@ -1,11 +1,10 @@
-import { Subscribable } from '../model/Base/base-classes'
 import { Layers } from './layers'
 import _ from 'underscore'
 import ol from 'openlayers'
-import properties from '../properties'
 import user from '../../component/singletons/user-instance'
 import User from '../../js/model/User'
 import Backbone from 'backbone'
+import { StartupDataStore } from '../model/Startup/startup'
 const createTile = (
   { show, alpha, ...options }: any,
   Source: any,
@@ -96,7 +95,8 @@ const AGM = (opts: any) => {
 }
 const SI = (opts: any) => {
   const imageExtent =
-    opts.imageExtent || ol.proj.get((properties as any).projection).getExtent()
+    opts.imageExtent ||
+    ol.proj.get(StartupDataStore.Configuration.getProjection()).getExtent()
   return createTile(
     { ...opts, imageExtent, ...opts.parameters },
     ol.source.ImageStatic,
@@ -119,14 +119,13 @@ type MakeMapType = {
   center: [number, number]
   element: HTMLElement
 }
-export class OpenlayersLayers extends Subscribable<''> {
+export class OpenlayersLayers {
   layers: Layers
   map: any
   isMapCreated: boolean
   layerForCid: any
   backboneModel: any
   constructor() {
-    super()
     this.backboneModel = new Backbone.Model({})
     this.isMapCreated = false
     this.layerForCid = {}
@@ -160,11 +159,11 @@ export class OpenlayersLayers extends Subscribable<''> {
       this.addLayer(layer)
     })
     const view = new ol.View({
-      projection: ol.proj.get((properties as any).projection),
+      projection: ol.proj.get(StartupDataStore.Configuration.getProjection()),
       center: ol.proj.transform(
         [0, 0],
         'EPSG:4326',
-        (properties as any).projection
+        StartupDataStore.Configuration.getProjection()
       ),
       zoom: mapOptions.zoom,
       minZoom: mapOptions.minZoom,

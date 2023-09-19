@@ -17,10 +17,6 @@ import QueryResult from '../QueryResult'
 import { LazyQueryResults, AttributeHighlights } from './LazyQueryResults'
 import cql from '../../cql'
 import _ from 'underscore'
-import Sources from '../../../component/singletons/sources-instance'
-import metacardDefinitions from '../../../component/singletons/metacard-definitions'
-import { TypedMetacardDefs } from '../../../component/tabs/metacard/metacardDefinitions'
-import properties from '../../properties'
 import * as TurfMeta from '@turf/meta'
 import wkx from 'wkx'
 import {
@@ -30,6 +26,7 @@ import {
 import Common from '../../Common'
 const debounceTime = 50
 import $ from 'jquery'
+import { StartupDataStore } from '../Startup/startup'
 function getThumbnailAction(result: ResultType) {
   return result.actions.find(
     (action) => action.id === 'catalog.data.metacard.thumbnail'
@@ -232,7 +229,7 @@ export class LazyQueryResult {
     response.forEach((part) =>
       part.attributes.forEach((attribute) => {
         this.plain.metacard.properties[attribute.attribute] =
-          TypedMetacardDefs.isMulti({ attr: attribute.attribute })
+          StartupDataStore.MetacardDefinitions.isMulti(attribute.attribute)
             ? attribute.values
             : attribute.values[0]
       })
@@ -344,10 +341,10 @@ export class LazyQueryResult {
     )
   }
   isRemote(): boolean {
+    const harvestedSources = StartupDataStore.Sources.harvestedSources
     return (
-      Sources.getHarvested().includes(
-        this.plain.metacard.properties['source-id']
-      ) === false
+      harvestedSources.includes(this.plain.metacard.properties['source-id']) ===
+      false
     )
   }
   hasGeometry(attribute?: any): boolean {
@@ -356,8 +353,9 @@ export class LazyQueryResult {
         this.plain.metacard.properties,
         (_value: any, key: string) =>
           (attribute === undefined || attribute === key) &&
-          metacardDefinitions.metacardTypes[key] &&
-          metacardDefinitions.metacardTypes[key].type === 'GEOMETRY'
+          StartupDataStore.MetacardDefinitions.getAttributeMap()[key] &&
+          StartupDataStore.MetacardDefinitions.getAttributeMap()[key].type ===
+            'GEOMETRY'
       ).length > 0
     )
   }
@@ -365,10 +363,11 @@ export class LazyQueryResult {
     return _.filter(
       this.plain.metacard.properties,
       (_value: any, key: string) =>
-        !properties.isHidden(key) &&
+        !StartupDataStore.Configuration.isHiddenAttribute(key) &&
         (attribute === undefined || attribute === key) &&
-        metacardDefinitions.metacardTypes[key] &&
-        metacardDefinitions.metacardTypes[key].type === 'GEOMETRY'
+        StartupDataStore.MetacardDefinitions.getAttributeMap()[key] &&
+        StartupDataStore.MetacardDefinitions.getAttributeMap()[key].type ===
+          'GEOMETRY'
     )
   }
   getPoints(attribute?: any): any {
@@ -413,7 +412,7 @@ export class LazyQueryResult {
   }
   getRoundedRelevance() {
     return this.plain.relevance.toPrecision(
-      (properties as any).relevancePrecision
+      StartupDataStore.Configuration.getRelevancePrecision()
     )
   }
   hasErrors() {

@@ -16,7 +16,7 @@ import * as React from 'react'
 import styled from 'styled-components'
 import SourceItem from '../source-item'
 import SourcesSummary from '../sources-summary'
-import { hot } from 'react-hot-loader'
+import { useSources } from '../../js/model/Startup/sources.hooks'
 
 const Root = styled.div`
   display: block;
@@ -39,19 +39,14 @@ const SourcesCenter = styled.div`
   height: 100%;
 `
 
-type Source = {
-  id: string
-  sourceActions: any[]
-  available: boolean
-}
-
-type Props = {
-  sources: Source[]
-  amountDown: number
-  refreshSources: () => void
-}
-
-export default hot(module)(({ sources, amountDown, refreshSources }: Props) => {
+export default () => {
+  const { sources } = useSources()
+  const amountDown = sources.reduce((blob, source) => {
+    if (source.available === false) {
+      return blob + 1
+    }
+    return blob
+  }, 0)
   return (
     <Root>
       <SourcesCenter>
@@ -61,7 +56,6 @@ export default hot(module)(({ sources, amountDown, refreshSources }: Props) => {
             <SourceItem
               key={source.id}
               sourceActions={source.sourceActions}
-              refreshSources={refreshSources}
               id={source.id}
               available={source.available}
             />
@@ -70,4 +64,4 @@ export default hot(module)(({ sources, amountDown, refreshSources }: Props) => {
       </SourcesCenter>
     </Root>
   )
-})
+}

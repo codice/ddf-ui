@@ -15,7 +15,7 @@
 /*jshint bitwise: false*/
 import $ from 'jquery'
 import DistanceUtils from './DistanceUtils'
-import defaultMetacardDefinitions from '../component/singletons/metacard-definitions'
+import { StartupData, StartupDataStore } from './model/Startup/startup'
 function sanitizeForCql(text: any) {
   return text
     .split('[')
@@ -222,17 +222,17 @@ function generateIsEmptyFilter(property: any) {
 }
 function generateFilter(
   type: any,
-  property: any,
+  property: string,
   value: any,
-  metacardDefinitions?: any
+  metacardDefinitions?: StartupData['MetacardDefinitions']
 ) {
   if (!metacardDefinitions) {
-    metacardDefinitions = defaultMetacardDefinitions
+    metacardDefinitions = StartupDataStore.MetacardDefinitions
   }
-  if (metacardDefinitions.metacardTypes[property] === undefined) {
+  if (metacardDefinitions.getAttributeMap()[property] === undefined) {
     return null
   }
-  switch (metacardDefinitions.metacardTypes[property].type) {
+  switch (metacardDefinitions.getAttributeMap()[property].type) {
     case 'LOCATION':
     case 'GEOMETRY':
       return generateAnyGeoFilter(property, value)

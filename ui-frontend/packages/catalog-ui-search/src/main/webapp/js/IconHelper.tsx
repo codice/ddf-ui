@@ -12,14 +12,15 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import { TypedProperties } from '../component/singletons/TypedProperties'
 import { LazyQueryResult } from './model/LazyQueryResult/LazyQueryResult'
 
 import _get from 'lodash/get'
+import { StartupDataStore } from './model/Startup/startup'
 
-const _map = Object.keys(TypedProperties.getIconConfig()).reduce(
+const _map = Object.keys(StartupDataStore.Configuration.getIconConfig()).reduce(
   (totalIconMap, iconConfigKey) => {
-    const iconProp = TypedProperties.getIconConfig()[iconConfigKey]
+    const iconProp =
+      StartupDataStore.Configuration.getIconConfig()[iconConfigKey]
     totalIconMap[iconConfigKey] = {
       class: iconProp.className,
       style: {

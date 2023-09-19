@@ -14,23 +14,23 @@
  **/
 import _ from 'lodash'
 import Openlayers from 'openlayers'
-import properties from '../../../../js/properties'
 import * as Turf from '@turf/turf'
 import { Position, LineString, Polygon } from '@turf/turf'
 import { GeometryJSON } from 'geospatialdraw/target/webapp/geometry'
+import { StartupDataStore } from '../../../../js/model/Startup/startup'
 
 function convertPointCoordinate(point: any) {
   const coords = [point[0], point[1]]
   return Openlayers.proj.transform(
     coords as any,
     'EPSG:4326',
-    (properties as any).projection
+    StartupDataStore.Configuration.getProjection()
   )
 }
 function unconvertPointCoordinate(point: any) {
   return Openlayers.proj.transform(
     point,
-    (properties as any).projection,
+    StartupDataStore.Configuration.getProjection(),
     'EPSG:4326'
   )
 }

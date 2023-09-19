@@ -6,7 +6,7 @@ import StorageIcon from '@mui/icons-material/Storage'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import ExtensionPoints from '../../extension-points'
-import SourcesPage from '../../react-component/sources'
+import SourcesPage from '../../react-component/sources/presentation'
 import { Elevations } from '../theme/theme'
 import { useMenuState } from '../menu-state/menu-state'
 

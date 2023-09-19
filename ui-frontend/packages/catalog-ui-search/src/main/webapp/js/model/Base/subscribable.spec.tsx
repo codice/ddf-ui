@@ -1,11 +1,11 @@
 import { Subscribable } from './base-classes'
 
-class ExampleClass extends Subscribable<'one' | 'two'> {
+class ExampleClass extends Subscribable<{ thing: 'one' } | { thing: 'two' }> {
   constructor() {
     super()
     setTimeout(() => {
-      this._notifySubscribers('one')
-      this._notifySubscribers('two')
+      this._notifySubscribers({ thing: 'one' })
+      this._notifySubscribers({ thing: 'two' })
     }, 500) // 2000ms is max before jest complains
   }
 }

@@ -12,19 +12,28 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import { SnapshotManager } from './snapshot'
+import { StartupDataStore } from './startup'
+import { useSyncExternalStore } from 'react'
 
-import Sources from '../../js/model/Sources'
-const SourcesInstance = new Sources() as {
-  getHarvested: () => string[]
-  localCatalog: string
-  toJSON: () => {
-    available: boolean
-    contentTypes: { name: string; version: string; value: string }[]
-    id: string
-    local?: boolean
-    version: string
-  }[]
-  fetched: boolean
-  once: any
+const subscribe = (callback: () => void) => {
+  const cancelSubscription = StartupDataStore.MetacardDefinitions.subscribeTo({
+    subscribableThing: 'metacard-definitions-update',
+    callback,
+  })
+  return () => {
+    cancelSubscription()
+  }
 }
-export default SourcesInstance
+
+const snapshotManager = new SnapshotManager(() => {
+  return StartupDataStore.MetacardDefinitions
+}, subscribe)
+
+export const useMetacardDefinitions = () => {
+  const metacardDefinitions = useSyncExternalStore(
+    snapshotManager.subscribe,
+    snapshotManager.getSnapshot
+  )
+  return metacardDefinitions
+}

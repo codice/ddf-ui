@@ -24,8 +24,8 @@ import { InputProps } from '@mui/material/Input'
 import ClearIcon from '@mui/icons-material/Clear'
 import SearchIcon from '@mui/icons-material/Search'
 import { useUpdateEffect } from 'react-use'
-import properties from '../../js/properties'
 import { dispatchEnterKeySubmitEvent } from '../custom-events/enter-key-submit'
+import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 const defaultFilterOptions = createFilterOptions()
 type Props = {
   value: BooleanTextType
@@ -70,12 +70,14 @@ const BooleanSearchBar = ({
   value,
   onChange,
   property = 'anyText',
-  placeholder = `Search ${(properties as any).customBranding} ${
-    (properties as any).product
-  }`,
+  placeholder,
   disableClearable,
   ...props
 }: Props) => {
+  const { config } = useConfiguration()
+  if (placeholder === undefined) {
+    placeholder = `Search ${config?.customBranding} ${config?.product}`
+  }
   const [isOpen, setIsOpen] = React.useState(false)
   const { errorMessage } = useBooleanSearchError(value)
   const [loading, setLoading] = React.useState(false)

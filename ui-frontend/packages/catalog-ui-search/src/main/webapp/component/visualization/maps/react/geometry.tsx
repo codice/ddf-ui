@@ -5,11 +5,11 @@ import { ClusterType } from './geometries'
 import _ from 'underscore'
 import _debounce from 'lodash/debounce'
 import wkx from 'wkx'
-import metacardDefinitions from '../../../singletons/metacard-definitions'
 import iconHelper from '../../../../js/IconHelper'
 import { useUpdateEffect } from 'react-use'
 import { useSelectionOfLazyResult } from '../../../../js/model/LazyQueryResult/hooks'
 import extension from '../../../../extension-points'
+import { useMetacardDefinitions } from '../../../../js/model/Startup/metacard-definitions.hooks'
 
 type Props = {
   lazyResult: LazyQueryResult
@@ -37,6 +37,7 @@ const determineIfClustered = ({
 }
 
 const Geometry = ({ lazyResult, map, clusters }: Props) => {
+  const MetacardDefinitions = useMetacardDefinitions()
   const isClustered = React.useRef(false)
   const geometries = React.useRef([] as any[])
   const isSelected = useSelectionOfLazyResult({ lazyResult })
@@ -183,8 +184,8 @@ const Geometry = ({ lazyResult, map, clusters }: Props) => {
         _.find(
           Object.keys(propertiesModel.changedAttributes()),
           (attribute: any) =>
-            (metacardDefinitions.metacardTypes[attribute] &&
-              metacardDefinitions.metacardTypes[attribute].type ===
+            (MetacardDefinitions.getAttributeMap()[attribute] &&
+              MetacardDefinitions.getAttributeMap()[attribute].type ===
                 'GEOMETRY') ||
             attribute === 'id'
         ) === undefined
@@ -206,7 +207,7 @@ const Geometry = ({ lazyResult, map, clusters }: Props) => {
         checkIfClustered()
       }
     }
-  }, [lazyResult.plain])
+  }, [lazyResult.plain, MetacardDefinitions])
 
   const destroyGeometries = React.useMemo(() => {
     return () => {

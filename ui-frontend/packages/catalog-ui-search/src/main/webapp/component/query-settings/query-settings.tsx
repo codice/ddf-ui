@@ -15,7 +15,6 @@
 
 import PermanentSearchSort from '../../react-component/query-sort-selection/permanent-search-sort'
 
-import properties from '../../js/properties'
 import * as React from 'react'
 import SourceSelector from './source-selector'
 import SourcesInfo from './sources-info'
@@ -24,6 +23,7 @@ import Spellcheck from './spellcheck'
 import { hot } from 'react-hot-loader'
 import { Memo } from '../memo/memo'
 import { QueryType } from '../../js/model/Query'
+import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 
 type Props = {
   model: QueryType
@@ -34,15 +34,16 @@ type Props = {
  * this will not work.
  */
 const QuerySettings = ({ model }: Props) => {
+  const { config } = useConfiguration()
   return (
     <Memo dependencies={[model]}>
       <div>
-        {properties.isSpellcheckEnabled ? (
+        {config?.isSpellcheckEnabled ? (
           <div className="pb-2">
             <Spellcheck model={model} />
           </div>
         ) : null}
-        {properties.isPhoneticsEnabled ? (
+        {config?.isPhoneticsEnabled ? (
           <div className="pb-2">
             <Phonetics model={model} />
           </div>

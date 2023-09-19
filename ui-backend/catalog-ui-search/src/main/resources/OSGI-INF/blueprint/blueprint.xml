@@ -151,17 +151,6 @@ Implementation details
         <argument ref="platformConfigurationService"/>
     </bean>
 
-    <bean id="feedbackApplication" class="org.codice.ddf.catalog.ui.query.FeedbackApplication">
-        <cm:managed-properties
-                persistent-id="org.codice.ddf.catalog.ui"
-                update-strategy="component-managed"
-                update-method="refresh"/>
-        <property name="configurationApplication" ref="configurationApplication"/>
-        <property name="smtpClient" ref="smtpClient"/>
-        <property name="endpointUtil" ref="endpointUtil"/>
-        <property name="subjectOperations" ref="subjectOperations1" />
-    </bean>
-
     <bean id="geoCoderApplication" class="org.codice.ddf.catalog.ui.spatial.GeoCoderApplication">
         <argument ref="geoCoderService"/>
     </bean>
@@ -291,6 +280,29 @@ Implementation details
         <argument ref="ddfSecurity" />
         <property name="subjectOperations" ref="subjectOperations1" />
         <property name="securityLogger" ref="securityLogger" />
+    </bean>
+
+    <bean id="composeApplication" class="org.codice.ddf.catalog.ui.compose.ComposeApplication">
+        <argument ref="catalogFramework"/>
+        <argument ref="filterBuilder"/>
+        <argument ref="endpointUtil"/>
+        <argument ref="validator"/>
+        <argument ref="workspaceTransformer"/>
+        <argument ref="enumerationExtractor"/>
+        <argument ref="workspacePersistentStore"/>
+        <argument ref="metacardTypes"/>
+        <argument ref="associated"/>
+        <argument ref="csvQueryResponseTransformer"/>
+        <argument ref="attributeRegistry"/>
+        <argument ref="configurationApplication"/>
+        <argument ref="noteUtil"/>
+        <argument ref="subjectIdentity"/>
+        <argument ref="queryWorkspaceService"/>
+        <argument ref="queryMetacardsHandler"/>
+        <argument ref="ddfSecurity" />
+        <argument ref="userApplication"/>
+        <argument ref="platformApplication"/>
+        <argument ref="catalogApplication"/>
     </bean>
 
     <!--
@@ -449,13 +461,13 @@ Implementation details
             <list>
                 <ref component-id="queryApplication"/>
                 <ref component-id="metacardApplication"/>
+                <ref component-id="composeApplication"/>
                 <ref component-id="platformApplication"/>
                 <ref component-id="userApplication"/>
                 <ref component-id="catalogApplication"/>
                 <ref component-id="logoutApplication"/>
                 <ref component-id="configurationApplication"/>
                 <ref component-id="sessionManagementApplication"/>
-                <ref component-id="feedbackApplication"/>
                 <ref component-id="searchFormsApplication"/>
                 <ref component-id="listApplication"/>
                 <ref component-id="buildApplication"/>

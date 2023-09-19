@@ -13,4 +13,5 @@
  *
  **/
 import User from '../../js/model/User'
-export default new (User as any).Response()
+import { StartupDataStore } from '../../js/model/Startup/startup'
+export default new (User as any).Response({ user: StartupDataStore.data?.user })

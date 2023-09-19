@@ -12,17 +12,15 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import properties from '../js/properties'
+import { StartupDataStore } from '../js/model/Startup/startup'
+
+function sleep(ms: number = 60) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
 
 export const waitForReady: () => Promise<void> = async () => {
-  properties.init()
-  if (properties.fetched) {
-    const { propertyDependentWaitForReady } = await (
-      await import('./PropertiesDependentDependencies')
-    ).default
-    await propertyDependentWaitForReady()
-  } else {
-    await new Promise((resolve) => setTimeout(resolve, 60))
+  if (!StartupDataStore.Configuration.config) {
+    await sleep()
     return waitForReady()
   }
 }

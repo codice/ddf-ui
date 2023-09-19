@@ -23,12 +23,6 @@ import Grid from '@mui/material/Grid'
 import ColorTool from './color-tool'
 ;(window as any).user = user
 type ThemeType = {
-  customFavoriteColor: string
-  customNegativeColor: string
-  customPositiveColor: string
-  customPrimaryColor: string
-  customWarningColor: string
-  spacingMode: 'comfortable' | 'cozy' | 'compact'
   theme: 'dark' | 'light'
   palette: 'default' | 'custom'
 }

@@ -16,8 +16,7 @@ import { TextFieldProps } from '@mui/material/TextField'
 import * as React from 'react'
 import defaultFetch from '../utils/fetch'
 import Keyword from './keyword'
-import properties from '../../js/properties'
-const onlineGazetteer = (properties as any).onlineGazetteer
+import { StartupDataStore } from '../../js/model/Startup/startup'
 export const getLargestBbox = (
   polygonCoordinates: any[],
   isMultiPolygon: boolean
@@ -300,7 +299,7 @@ const Gazetteer = (props: Props) => {
   }
   return (
     <>
-      {onlineGazetteer ? (
+      {StartupDataStore.Configuration.getOnlineGazetteer() ? (
         <Keyword
           value={props.value}
           setState={props.setState}

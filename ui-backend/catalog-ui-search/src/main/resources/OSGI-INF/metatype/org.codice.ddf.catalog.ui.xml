@@ -52,13 +52,6 @@
             type="String"
             default='[{"name":"openlayers","title":"2D Map","icon":"map"},{"name":"cesium","title":"3D Map","icon":"globe"},{"name":"inspector","title":"Inspector","icon":"info"},{"name":"histogram","title":"Histogram","icon":"bar-chart"},{"name":"table","title":"Table","icon":"table"}]'/>
 
-        <AD id="listTemplates"
-            name="List Templates"
-            description='Templates for users to quickly create lists that already specify an icon and a filter. Example: {"id":"Pizza Deliveries", "list.icon": "tasks", "list.cql": "(\"anyText\" ILIKE &apos;pizza&apos;)"} '
-            type="String"
-            cardinality="10000"
-            required="false"/>
-
         <AD id="projection"
             name="Map Projection"
             description='Projection of imagery providers (e.g. "EPSG:3857", "EPSG:4326").'
@@ -113,13 +106,6 @@
             default="true"
             required="false"/>
 
-        <AD id="ingestEnabled"
-            name="Show Uploader"
-            description="Show upload menu for adding new record."
-            type="Boolean"
-            default="true"
-            required="false"/>
-
         <AD id="cacheEnabled"
             name="Enable Cache"
             description="Locally cached results will be returned in search results."
@@ -138,24 +124,6 @@
             description="Enables queries to the local catalog."
             type="Boolean"
             default="true"/>
-
-        <AD id="historicalSearchEnabled"
-            name="Enable Historical Search"
-            description="Enable searching for historical metacards."
-            type="Boolean"
-            default="true"/>
-
-        <AD id="archiveSearchEnabled"
-            name="Enable Archive Search"
-            description="Enable searching for archived metacards."
-            type="Boolean"
-            default="true"/>
-
-        <AD id="queryFeedbackEnabled"
-            name="Enable Query Feedback"
-            description="Enable the query comments option."
-            type="Boolean"
-            default="false"/>
 
         <AD id="experimentalEnabled"
             name="Enable Experimental Features"
@@ -287,30 +255,6 @@
             type="Long"
             cardinality="10000"
             default="1800,3600,7200,14400,28800,57600,86400"/>
-
-        <AD id="autoMergeTime"
-            name="Auto Merge Time"
-            description="Specifies the interval during which new results can be merged automatically. This is the time allowed since last merge (in milliseconds)."
-            type="Integer"
-            default="1000"/>
-
-        <AD id="queryFeedbackEmailSubjectTemplate"
-            name="Query Feedback Email Subject Template"
-            description="See the documentation for more details about Query Feedback templates."
-            type="String"
-            default="Query Feedback from {{username}}"/>
-
-        <AD id="queryFeedbackEmailBodyTemplate"
-            name="Query Feedback Email Body Template"
-            description="See the documentation for more details about Query Feedback templates."
-            type="String"
-            default="<h2>Query Feedback</h2><p><br><b>Authenticated User</b>: {{{auth_username}}}<br><br><b>User</b>: {{{username}}}<br><br><b>Email</b>: {{{email}}}<br><br><b>Workspace</b>: {{{workspace_name}}} ({{{workspace_id}}})<br><br><b>Query</b>: {{{query}}}<br><br><b>Query time</b>: {{{query_initiated_time}}}<br><br><b>Query status</b>: {{{query_status}}}<br><br><b>Comments</b>: {{{comments}}}<br><br><b>Query_results</b>: <pre>{{{query_results}}}</pre></p>"/>
-
-        <AD id="queryFeedbackEmailDestination"
-            name="Query Feedback Email Destination"
-            description="Email destination to send Query Feedback results."
-            type="String"
-            default=""/>
 
         <AD id="maximumUploadSize"
             name="Maximum Endpoint Upload Size"

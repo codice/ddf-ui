@@ -90,7 +90,6 @@ type SourceAction = {
 type Props = {
   sourceActions?: SourceAction[]
   id: string
-  refreshSources: () => void
 } & RootProps
 
 export default hot(module)(({ id, available }: Props) => {

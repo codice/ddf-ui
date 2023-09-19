@@ -12,7 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import metacardDefinitions from '../../component/singletons/metacard-definitions'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'mt-g... Remove this comment to see the full error message
 import mtgeo from 'mt-geo'
 import * as usngs from 'usng.js'
@@ -23,9 +22,11 @@ const usngPrecision = 6
 
 import { Attribute, Coordinates, Format, validCoordinates } from '.'
 import Common from '../../js/Common'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 
 export const formatAttribute = ({ name, value }: Attribute): string | null => {
-  const definition = metacardDefinitions.metacardTypes[name]
+  const definition =
+    StartupDataStore.MetacardDefinitions.getAttributeMap()[name]
   if (definition === undefined) {
     return null
   }

@@ -3,11 +3,10 @@ import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { SortType } from '../../js/model/Query.shared-types'
 import { FilterBuilderClass } from '../filter-builder/filter.structure'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
-import { TypedMetacardDefs } from '../tabs/metacard/metacardDefinitions'
-import { TypedProperties } from './TypedProperties'
 import moment from 'moment'
 
 import userInstance from './user-instance'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 
 export const TypedUserInstance = {
   getUserInstance: () => {
@@ -21,8 +20,8 @@ export const TypedUserInstance = {
     if (userchoices.length > 0) {
       return userchoices
     }
-    if (TypedProperties.getResultsAttributesShownList().length > 0) {
-      return TypedProperties.getResultsAttributesShownList()
+    if (StartupDataStore.Configuration.getResultShow().length > 0) {
+      return StartupDataStore.Configuration.getResultShow()
     }
     return ['title', 'thumbnail']
   },
@@ -34,8 +33,8 @@ export const TypedUserInstance = {
     if (userchoices.length > 0) {
       return userchoices
     }
-    if (TypedProperties.getResultsAttributesShownTable().length > 0) {
-      return TypedProperties.getResultsAttributesShownTable()
+    if (StartupDataStore.Configuration.getDefaultTableColumns().length > 0) {
+      return StartupDataStore.Configuration.getDefaultTableColumns()
     }
     return ['title', 'thumbnail']
   },
@@ -43,13 +42,18 @@ export const TypedUserInstance = {
   getResultsAttributesPossibleTable: (): string[] => {
     const currentAttributesShown =
       TypedUserInstance.getResultsAttributesShownTable()
-    const allKnownAttributes = TypedMetacardDefs.getSortedMetacardTypes()
-    const searchOnlyAttributes = TypedMetacardDefs.getSearchOnlyAttributes()
+    const allKnownAttributes =
+      StartupDataStore.MetacardDefinitions.getSortedAttributes()
+    const searchOnlyAttributes =
+      StartupDataStore.MetacardDefinitions.getSearchOnlyAttributes()
     const attributesPossible = allKnownAttributes.filter((attr) => {
       return (
         !currentAttributesShown.includes(attr.id) &&
         !searchOnlyAttributes.includes(attr.id) &&
-        !TypedMetacardDefs.isHiddenTypeExceptThumbnail({ attr: attr.id })
+        !StartupDataStore.MetacardDefinitions.isHiddenTypeExceptThumbnail(
+          attr.id
+        ) &&
+        !StartupDataStore.Configuration.isHiddenAttribute(attr.id)
       )
     })
     return attributesPossible.map((attr) => attr.id)
@@ -58,13 +62,18 @@ export const TypedUserInstance = {
   getResultsAttributesPossibleList: (): string[] => {
     const currentAttributesShown =
       TypedUserInstance.getResultsAttributesShownList()
-    const allKnownAttributes = TypedMetacardDefs.getSortedMetacardTypes()
-    const searchOnlyAttributes = TypedMetacardDefs.getSearchOnlyAttributes()
+    const allKnownAttributes =
+      StartupDataStore.MetacardDefinitions.getSortedAttributes()
+    const searchOnlyAttributes =
+      StartupDataStore.MetacardDefinitions.getSearchOnlyAttributes()
     const attributesPossible = allKnownAttributes.filter((attr) => {
       return (
         !currentAttributesShown.includes(attr.id) &&
         !searchOnlyAttributes.includes(attr.id) &&
-        !TypedMetacardDefs.isHiddenTypeExceptThumbnail({ attr: attr.id })
+        !StartupDataStore.MetacardDefinitions.isHiddenTypeExceptThumbnail(
+          attr.id
+        ) &&
+        !StartupDataStore.Configuration.isHiddenAttribute(attr.id)
       )
     })
     return attributesPossible.map((attr) => attr.id)

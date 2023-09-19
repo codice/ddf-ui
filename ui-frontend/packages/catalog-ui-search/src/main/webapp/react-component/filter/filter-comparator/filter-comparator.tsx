@@ -32,7 +32,7 @@ const FilterComparator = ({ filter, setFilter }: Props) => {
       setFilter(
         new FilterClass({
           ...filter,
-          type: comparators[0].value as FilterClass['type'],
+          type: comparators[0]?.value as FilterClass['type'],
         })
       )
     }

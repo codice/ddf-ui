@@ -23,7 +23,7 @@ import withListenTo, { WithBackboneProps } from '../backbone-container'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
 import contentDisposition from 'content-disposition'
-import properties from '../../js/properties'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 
 type ExportFormat = {
   id: string
@@ -167,7 +167,8 @@ class ResultsExport extends React.Component<Props, State> {
         args: {
           hiddenFields: [],
           columnOrder: columnOrder,
-          columnAliasMap: properties.attributeAliases,
+          columnAliasMap:
+            StartupDataStore.Configuration.config?.attributeAliases || {},
         },
       })
     } else {
