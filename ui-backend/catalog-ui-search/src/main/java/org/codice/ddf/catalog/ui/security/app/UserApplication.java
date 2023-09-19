@@ -105,9 +105,8 @@ public class UserApplication implements SparkApplication {
     get(
         "/user",
         (req, res) -> {
-          Subject subject = (Subject) SecurityUtils.getSubject();
           res.type(APPLICATION_JSON);
-          return getSubjectAttributes(subject);
+          return getUser();
         },
         util::getJson);
 
@@ -183,6 +182,11 @@ public class UserApplication implements SparkApplication {
     exception(RuntimeException.class, util::handleRuntimeException);
   }
 
+  public Map<String, Object> getUser() {
+    Subject subject = (Subject) SecurityUtils.getSubject();
+    return getSubjectAttributes(subject);
+  }
+
   private void setUserPreferences(Subject subject, Map<String, Object> preferences) {
 
     String userid = subjectIdentity.getUniqueIdentifier(subject);
@@ -204,7 +208,9 @@ public class UserApplication implements SparkApplication {
     try {
       Map<String, Object> preferencesMap = preferences.get(userid);
       Map<String, Object> results = new HashMap<>(preferencesMap);
-      /* Replace alert attribute of preferences with alerts stored in notifications core
+      /*
+       * Replace alert attribute of preferences with alerts stored in notifications
+       * core
        * Alerts may be added to Notification core by User.js (addAlert()) in DDF
        */
       results.put("alerts", getSubjectNotifications(subject));
@@ -240,9 +246,9 @@ public class UserApplication implements SparkApplication {
   private Map<String, Object> mapAttributes(Map<String, Object> persistentItem) {
     persistentItem = PersistentItem.stripSuffixes(persistentItem);
     /*
-     *  The persistent store implementation only returns a collection if there is
-     *  more than one item in the field, else it returns a string
-     *  We need to check if it is a string, and if so add it to a collection
+     * The persistent store implementation only returns a collection if there is
+     * more than one item in the field, else it returns a string
+     * We need to check if it is a string, and if so add it to a collection
      */
     Object srcs = persistentItem.getOrDefault("src", Collections.emptySet());
     if (srcs instanceof String) {

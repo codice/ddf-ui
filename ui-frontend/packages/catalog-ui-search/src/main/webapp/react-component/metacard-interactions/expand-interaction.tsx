@@ -13,7 +13,6 @@
  *
  **/
 import * as React from 'react'
-import router from '../../component/router/router'
 import { MetacardInteractionProps } from '.'
 import { hot } from 'react-hot-loader'
 import Button from '@mui/material/Button'
@@ -21,9 +20,7 @@ import { Link } from '../../component/link/link'
 import { Divider } from './metacard-interactions'
 
 const ExpandMetacard = (props: MetacardInteractionProps) => {
-  const isRouted = router && router.toJSON().name === 'openMetacard'
-
-  if (isRouted || !props.model || props.model.length !== 1) {
+  if (!props.model || props.model.length !== 1) {
     return null
   }
   let id = props.model[0].plain.id

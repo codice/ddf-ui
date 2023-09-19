@@ -12,25 +12,28 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import { SnapshotManager } from './snapshot'
+import { StartupDataStore } from './startup'
+import { useSyncExternalStore } from 'react'
 
-import $ from 'jquery'
+const subscribe = (callback: () => void) => {
+  const cancelSubscription = StartupDataStore.Configuration.subscribeTo({
+    subscribableThing: 'configuration-update',
+    callback,
+  })
+  return () => {
+    cancelSubscription()
+  }
+}
 
-import Backbone from 'backbone'
+const snapshotManager = new SnapshotManager(() => {
+  return StartupDataStore.Configuration
+}, subscribe)
 
-export default new (Backbone.Model.extend({
-  defaults: {
-    name: undefined,
-    path: undefined,
-    args: undefined,
-    lowBandwidth: window.location.search.indexOf('lowBandwidth') !== -1,
-  },
-  initialize() {
-    this.listenTo(this, 'change:name', this.handleChangeName)
-  },
-  notFound() {
-    this.set('name', 'notFound')
-  },
-  handleChangeName() {
-    $('html').attr('data-route', this.get('name'))
-  },
-}))()
+export const useConfiguration = () => {
+  const configuration = useSyncExternalStore(
+    snapshotManager.subscribe,
+    snapshotManager.getSnapshot
+  )
+  return configuration
+}

@@ -13,15 +13,10 @@
  *
  **/
 import Backbone from 'backbone'
-import properties from '../properties'
+import { StartupDataStore } from './Startup/startup'
 export default Backbone.Model.extend({
   defaults() {
-    const hasDefaultSources =
-      (properties as any).defaultSources &&
-      (properties as any).defaultSources.length > 0
-    const sources = hasDefaultSources
-      ? (properties as any).defaultSources
-      : ['all']
+    const sources = StartupDataStore.Configuration.getDefaultSources()
     return {
       type: 'text',
       sources,

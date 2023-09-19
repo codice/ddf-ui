@@ -9,13 +9,9 @@
       "type": "SI",
       "url": "/images/natural_earth_50m.png",
       "parameters": {
-        "imageSize": [
-          10800,
-          5400
-        ]
+        "imageSize": [10800, 5400]
       },
       "alpha": 1
     }
-  ],
-  "showWelcome": true,
+  ]
 }

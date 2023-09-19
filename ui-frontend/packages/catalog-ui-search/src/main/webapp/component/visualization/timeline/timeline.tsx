@@ -11,14 +11,14 @@ import Timeline from '../../timeline'
 import { TimelineItem } from '../../timeline/timeline'
 import moment, { Moment } from 'moment-timezone'
 import useTimePrefs from '../../fields/useTimePrefs'
-import metacardDefinitions from '../../singletons/metacard-definitions'
-import properties from '../../../js/properties'
 import IconHelper from '../../../js/IconHelper'
 import useSnack from '../../hooks/useSnack'
 import wreqr from '../../../js/wreqr'
 import user from '../../singletons/user-instance'
 import Extensions from '../../../extension-points'
 import _ from 'lodash'
+import { useConfiguration } from '../../../js/model/Startup/configuration.hooks'
+import { StartupDataStore } from '../../../js/model/Startup/startup'
 const maxDate = moment().tz(user.getTimeZone())
 type Props = {
   selectionInterface: any
@@ -45,7 +45,10 @@ const getDateAttributes = (results: any) => {
     .sort()
   let dateAttributes = availableAttributes.reduce(
     (list: any, attribute: any) => {
-      if (metacardDefinitions.metacardTypes[attribute].type == 'DATE') {
+      if (
+        StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute]
+          .type == 'DATE'
+      ) {
         list.push(attribute)
       }
       return list
@@ -111,6 +114,7 @@ const renderTooltip = (timelineItems: TimelineItem[]) => {
 }
 const TimelineVisualization = (props: Props) => {
   const { selectionInterface } = props
+  const { config } = useConfiguration()
   useTimePrefs()
   const lazyResults = useLazyResultsFromSelectionInterface({
     selectionInterface,
@@ -172,13 +176,13 @@ const TimelineVisualization = (props: Props) => {
       } = {}
       possibleDateAttributes.forEach((dateAttribute: any) => {
         aliasMap[dateAttribute] =
-          properties.attributeAliases[dateAttribute] || dateAttribute
+          config?.attributeAliases[dateAttribute] || dateAttribute
       })
       if (!_.isEqual(aliasMap, dateAttributeAliases)) {
         setDateAttributeAliases(aliasMap)
       }
     }
-  }, [results, selectedResults])
+  }, [results, selectedResults, config])
   const onSelect = (selectedData: TimelineItem[]) => {
     const selectedIds = selectedData.map((d) => d.id)
     setPause(true)

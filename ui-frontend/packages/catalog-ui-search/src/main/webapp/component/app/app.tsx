@@ -9,7 +9,6 @@ import {
   LinkProps,
 } from 'react-router-dom'
 import CssBaseline from '@mui/material/CssBaseline'
-import properties from '../../js/properties'
 import Grid from '@mui/material/Grid'
 import $ from 'jquery'
 import Paper from '@mui/material/Paper'
@@ -57,6 +56,7 @@ import { AjaxErrorHandling } from './ajax-error-handling'
 import { WreqrSnacks } from './wreqr-snacks'
 import sessionTimeoutModel from '../singletons/session-timeout'
 import Extensions from '../../extension-points'
+import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 
 export const handleBase64EncodedImages = (url: string) => {
   if (url && url.startsWith('data:')) {
@@ -290,16 +290,17 @@ const AsyncTasksComponent = () => {
 }
 /** The song and dance around 'a' vs Link has to do with react router not supporting these outside links */
 const HelpButton = () => {
+  const { getHelpUrl } = useConfiguration()
   const location = useLocation()
   const queryParams = queryString.parse(location.search)
   const { navOpen } = useNavContextProvider()
   return (
     <ExpandingButton
-      component={(properties as any).helpUrl ? 'a' : (Link as unknown as any)}
-      href={(properties as any).helpUrl}
+      component={getHelpUrl() ? 'a' : (Link as unknown as any)}
+      href={getHelpUrl()}
       to={
-        (properties as any).helpUrl
-          ? (properties as any).helpurl
+        getHelpUrl()
+          ? getHelpUrl()
           : {
               pathname: `${location.pathname}`,
               search: `${queryString.stringify({
@@ -308,7 +309,7 @@ const HelpButton = () => {
               })}`,
             }
       }
-      target={(properties as any).helpUrl ? '_blank' : undefined}
+      target={getHelpUrl() ? '_blank' : undefined}
       className={`group-hover:opacity-100 opacity-25  hover:opacity-100 focus-visible:opacity-100 transition-opacity`}
       Icon={HelpIcon}
       expandedLabel="Help"
@@ -527,6 +528,8 @@ const SideBarRoutes = () => {
 }
 const SideBarToggleButton = () => {
   const { navOpen, setNavOpen } = useNavContextProvider()
+  const { getTopLeftLogoSrc, getCustomBranding, getProduct, getMenuIconSrc } =
+    useConfiguration()
   return (
     <>
       <Grid item className="w-full h-16 shrink-0">
@@ -539,12 +542,10 @@ const SideBarToggleButton = () => {
               className="w-full h-full overflow-hidden"
             >
               <Grid item className="pl-3 py-1 pr-1 w-full relative h-full">
-                {(properties as any).topLeftLogoSrc ? (
+                {getTopLeftLogoSrc() ? (
                   <img
                     className="max-h-full max-w-full absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 top-1/2 p-4"
-                    src={handleBase64EncodedImages(
-                      (properties as any).topLeftLogoSrc
-                    )}
+                    src={handleBase64EncodedImages(getTopLeftLogoSrc())}
                   />
                 ) : (
                   <Grid
@@ -554,12 +555,10 @@ const SideBarToggleButton = () => {
                     justifyContent="center"
                   >
                     <Grid item>
-                      <Typography>
-                        {(properties as any).customBranding}
-                      </Typography>
+                      <Typography>{getCustomBranding()}</Typography>
                     </Grid>
                     <Grid item>
-                      <Typography>{(properties as any).product}</Typography>
+                      <Typography>{getProduct()}</Typography>
                     </Grid>
                   </Grid>
                 )}
@@ -586,12 +585,10 @@ const SideBarToggleButton = () => {
             }}
             className="w-full h-full p-2"
           >
-            {(properties as any).menuIconSrc ? (
+            {getMenuIconSrc() ? (
               <>
                 <img
-                  src={handleBase64EncodedImages(
-                    (properties as any).menuIconSrc
-                  )}
+                  src={handleBase64EncodedImages(getMenuIconSrc())}
                   className="max-h-16 max-w-full"
                 />
               </>
@@ -642,48 +639,51 @@ const SideBar = () => {
   )
 }
 const Header = () => {
+  const { getPlatformBackground, getPlatformColor, getPlatformHeader } =
+    useConfiguration()
   return (
     <Grid item className="w-full">
-      {(properties.ui as any).header ? (
+      {getPlatformHeader() ? (
         <Typography
           align="center"
           style={{
-            background: (properties.ui as any).background,
-            color: (properties.ui as any).color,
+            background: getPlatformBackground(),
+            color: getPlatformColor(),
           }}
         >
-          {(properties.ui as any).header}
+          {getPlatformHeader()}
         </Typography>
       ) : null}
     </Grid>
   )
 }
 const Footer = () => {
+  const { getPlatformBackground, getPlatformColor, getPlatformFooter } =
+    useConfiguration()
   return (
     <Grid item className="w-full">
-      {(properties.ui as any).footer ? (
+      {getPlatformFooter() ? (
         <Typography
           align="center"
           style={{
-            background: (properties.ui as any).background,
-            color: (properties.ui as any).color,
+            background: getPlatformBackground(),
+            color: getPlatformColor(),
           }}
         >
-          {(properties.ui as any).footer}
+          {getPlatformFooter()}
         </Typography>
       ) : null}
     </Grid>
   )
 }
 const SideBarBackground = () => {
+  const { getBottomLeftBackgroundSrc } = useConfiguration()
   return (
     <Grid item className="relative overflow-hidden shrink-1 h-full min-w-full">
-      {(properties as any).bottomLeftBackgroundSrc ? (
+      {getBottomLeftBackgroundSrc() ? (
         <img
           className={`group-hover:opacity-100 opacity-50 duration-200 ease-in-out transition-all w-auto h-full absolute max-w-none m-auto min-h-80`}
-          src={handleBase64EncodedImages(
-            (properties as any).bottomLeftBackgroundSrc
-          )}
+          src={handleBase64EncodedImages(getBottomLeftBackgroundSrc())}
         />
       ) : null}
     </Grid>

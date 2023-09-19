@@ -15,10 +15,7 @@
 import * as React from 'react'
 import { createRoot } from 'react-dom/client'
 
-import { waitForReady } from './WaitForReady'
-
 export const attemptToStart = async () => {
-  await waitForReady()
   import('../component/app/base-app').then((BaseApp) => {
     const root = createRoot(document.querySelector('#router') as any)
     root.render(<BaseApp.default />)

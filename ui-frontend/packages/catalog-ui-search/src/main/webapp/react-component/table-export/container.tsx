@@ -16,11 +16,11 @@ import * as React from 'react'
 import TableExportComponent from './presentation'
 import LinearProgress from '@mui/material/LinearProgress'
 import { hot } from 'react-hot-loader'
-import properties from '../../js/properties'
 import {
   ExportCountInfo,
   DownloadInfo,
 } from '../../react-component/utils/export'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 type Props = {
   selectionInterface: () => void
   exportFormats: Option[]
@@ -58,7 +58,7 @@ export default hot(module)(
         ],
         exportSize: 'all',
         exportFormat: 'csv',
-        customExportCount: (properties as any).exportResultLimit,
+        customExportCount: StartupDataStore.Configuration.getExportLimit(),
       }
     }
     transformUrl = './internal/cql/transform/'

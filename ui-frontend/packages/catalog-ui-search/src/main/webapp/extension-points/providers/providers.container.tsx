@@ -21,18 +21,18 @@ import { Provider as ThemeProvider } from '../../component/theme/theme'
 import { SnackProvider } from '../../component/snack/snack.provider'
 import { DialogProvider } from '../../component/dialog'
 import { HashRouter as Router } from 'react-router-dom'
-
-import properties from '../../js/properties'
+import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 
 export type Props = {
   children: React.ReactNode
 }
 
 const ProviderContainer = (props: Props) => {
+  const { getI18n } = useConfiguration()
   return (
     <React.Fragment>
       <ThemeContainer>
-        <IntlProvider locale={navigator.language} messages={properties.i18n}>
+        <IntlProvider locale={navigator.language} messages={getI18n()}>
           <ThemeProvider>
             <Router>
               <SnackProvider>

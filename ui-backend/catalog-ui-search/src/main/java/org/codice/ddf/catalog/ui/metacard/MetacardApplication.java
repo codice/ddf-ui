@@ -1014,8 +1014,10 @@ public class MetacardApplication implements SparkApplication {
           new CreateStorageRequestImpl(
               Collections.singletonList(contentItem), id, new HashMap<>()));
     } else {
-      // Currently we can't guarantee the metacard will exist yet because of the 1 second
-      // soft commit in solr. this busy wait loop should be fixed when alternate solution
+      // Currently we can't guarantee the metacard will exist yet because of the 1
+      // second
+      // soft commit in solr. this busy wait loop should be fixed when alternate
+      // solution
       // is found.
       tryUpdate(
           4,

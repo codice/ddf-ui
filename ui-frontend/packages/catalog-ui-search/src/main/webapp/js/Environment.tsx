@@ -19,4 +19,10 @@ export const Environment = {
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name '__ENV__'.
     return __ENV__ === 'test'
   },
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name '__COMMIT_HASH__'.
+  commitHash: __COMMIT_HASH__,
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name '__IS_DIRTY__'.
+  isDirty: __IS_DIRTY__,
+  // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name '__COMMIT_DATE__'.
+  commitDate: __COMMIT_DATE__,
 }

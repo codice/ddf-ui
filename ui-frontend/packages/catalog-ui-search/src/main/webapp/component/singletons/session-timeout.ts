@@ -16,16 +16,16 @@
 import Backbone from 'backbone'
 import $ from 'jquery'
 import _ from 'underscore'
-import properties from '../../js/properties'
 import fetch from '../../react-component/utils/fetch'
 import featureDetection from './feature-detection'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 const invalidateUrl = './internal/session/invalidate?service='
 const idleNoticeDuration = 60000
 // Length of inactivity that will trigger user timeout (15 minutes in ms by default)
 // See STIG V-69243
 const idleTimeoutThreshold =
-  parseInt((properties.ui as any).timeout) > 0
-    ? parseInt((properties.ui as any).timeout) * 60000
+  StartupDataStore.Configuration.getPlatformUITimeout() > 0
+    ? StartupDataStore.Configuration.getPlatformUITimeout() * 60000
     : 900000
 function getIdleTimeoutDate() {
   return idleTimeoutThreshold + Date.now()

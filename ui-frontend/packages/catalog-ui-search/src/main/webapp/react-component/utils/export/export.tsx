@@ -15,8 +15,8 @@
 import fetch from '../fetch'
 import { postAuditLog } from '../audit/audit-endpoint'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
-import properties from '../../../js/properties'
 import user from '../../../component/singletons/user-instance'
+import { StartupDataStore } from '../../../js/model/Startup/startup'
 
 export enum Transformer {
   Metacard = 'metacard',
@@ -88,19 +88,23 @@ export const getColumnOrder = () => {
   if (userchoices.length > 0) {
     return userchoices
   }
-  if ((properties as any).summaryShow.length > 0) {
-    return (properties as any).summaryShow
+  if ((StartupDataStore.Configuration.config?.summaryShow || []).length > 0) {
+    return StartupDataStore.Configuration.config?.summaryShow
   }
   return ['title', 'created', 'thumbnail']
 }
 
-export const aliasMap = encodeURIComponent(
-  Object.entries(properties.attributeAliases)
-    .map(([k, v]) => {
-      return `${k}=${v}`
-    })
-    .toString()
-)
+export const aliasMap = () => {
+  encodeURIComponent(
+    Object.entries(
+      StartupDataStore.Configuration.config?.attributeAliases || {}
+    )
+      .map(([k, v]) => {
+        return `${k}=${v}`
+      })
+      .toString()
+  )
+}
 
 export const exportResult = async (
   source: string,

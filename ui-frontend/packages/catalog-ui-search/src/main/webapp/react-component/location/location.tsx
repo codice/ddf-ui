@@ -32,7 +32,7 @@ import { useTheme } from '@mui/material/styles'
 import { Popover } from '@mui/material'
 import { ColorSquare, LocationColorSelector } from './location-color-selector'
 import { useMenuState } from '../../component/menu-state/menu-state'
-import TypedMetacardDefs from '../../component/tabs/metacard/metacardDefinitions'
+import { useMetacardDefinitions } from '../../js/model/Startup/metacard-definitions.hooks'
 
 type InputType = {
   label: string
@@ -125,6 +125,7 @@ export const LocationContext = React.createContext({
   },
 })
 const LocationInput = ({ onChange, value, errorListener }: any) => {
+  const MetacardDefinitions = useMetacardDefinitions()
   const inputs = React.useMemo(() => {
     return ExtensionPoints.locationTypes(BaseInputs)
   }, [ExtensionPoints.locationTypes])
@@ -199,7 +200,9 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
             <TextField
               {...params}
               variant="outlined"
-              placeholder={"Select " + TypedMetacardDefs.getAlias({ attr: 'location' })+ " Option"}
+              placeholder={
+                'Select ' + MetacardDefinitions.getAlias('location') + ' Option'
+              }
             />
           )}
         />

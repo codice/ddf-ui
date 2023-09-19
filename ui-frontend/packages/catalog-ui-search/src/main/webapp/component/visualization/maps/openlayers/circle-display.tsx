@@ -15,17 +15,17 @@
 import React from 'react'
 import ol from 'openlayers'
 import _ from 'underscore'
-import properties from '../../../../js/properties'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { removeOldDrawing } from './drawing-and-display'
 import DistanceUtils from '../../../../js/DistanceUtils'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import * as Turf from '@turf/turf'
 import TurfCircle from '@turf/circle'
+import { StartupDataStore } from '../../../../js/model/Startup/startup'
 export function translateFromOpenlayersCoordinate(coord: any) {
   return ol.proj.transform(
     [Number(coord[0]), Number(coord[1])],
-    (properties as any).projection,
+    StartupDataStore.Configuration.getProjection(),
     'EPSG:4326'
   )
 }
@@ -33,7 +33,7 @@ function translateToOpenlayersCoordinate(coord: any) {
   return ol.proj.transform(
     [Number(coord[0]), Number(coord[1])],
     'EPSG:4326',
-    (properties as any).projection
+    StartupDataStore.Configuration.getProjection()
   )
 }
 function translateToOpenlayersCoordinates(coords: any) {

@@ -20,9 +20,9 @@ import fetch from '../../react-component/utils/fetch'
 import _ from 'underscore'
 import _get from 'lodash.get'
 import _cloneDeep from 'lodash.clonedeep'
+import _debounce from 'lodash.debounce'
 import wreqr from '../wreqr'
 import Backbone from 'backbone'
-import properties from '../properties'
 import Alert from './Alert'
 import Common from '../Common'
 import UploadBatch from './UploadBatch'
@@ -31,6 +31,7 @@ import QuerySettings from './QuerySettings'
 import 'backbone-associations'
 import { CommonAjaxSettings } from '../AjaxSettings'
 import { v4 } from 'uuid'
+import { StartupDataStore } from './Startup/startup'
 const User = {}
 const Theme = Backbone.Model.extend({
   defaults() {
@@ -41,7 +42,7 @@ const Theme = Backbone.Model.extend({
   },
 })
 ;(User as any).updateMapLayers = function (layers: any) {
-  const providers = properties.imageryProviders
+  const providers = StartupDataStore.Configuration.getImageryProviders()
   const exclude = ['id', 'label', 'alpha', 'show', 'order']
   const equal = (a: any, b: any) =>
     _.isEqual(_.omit(a, exclude), _.omit(b, exclude))
@@ -92,7 +93,7 @@ const Theme = Backbone.Model.extend({
   model: (User as any).MapLayer,
   defaults() {
     return _.map(
-      _.values(properties.imageryProviders),
+      _.values(StartupDataStore.Configuration.getImageryProviders()),
       (layerConfig) => new (User as any).MapLayer(layerConfig, { parse: true })
     )
   },
@@ -142,7 +143,7 @@ const Theme = Backbone.Model.extend({
       uploads: [],
       oauth: [],
       fontSize: 16,
-      resultCount: (properties as any).resultCount,
+      resultCount: StartupDataStore.Configuration.getResultCount(),
       dateTimeFormat: Common.getDateTimeFormats()['ISO']['millisecond'],
       timeZone: Common.getTimeZones()['UTC'],
       coordinateFormat: 'degrees',
@@ -191,6 +192,7 @@ const Theme = Backbone.Model.extend({
     },
   ],
   initialize() {
+    this.savePreferences = _debounce(this.savePreferences, 1000)
     this.handleAlertPersistence()
     this.handleResultCount()
     this.listenTo((wreqr as any).vent, 'alerts:add', this.addAlert)
@@ -241,33 +243,32 @@ const Theme = Backbone.Model.extend({
     if (!this.needsUpdate(currentPrefs)) {
       return
     }
-    if (this.parents[0].isGuestUser()) {
-      window.localStorage.setItem('preferences', JSON.stringify(currentPrefs))
-    } else {
-      this.lastSaved = _cloneDeep(currentPrefs)
-      this.save(currentPrefs, {
-        ...CommonAjaxSettings,
-        drop: true,
-        withoutSet: true,
-        customErrorHandling: true,
-        error: () => {
-          ;(wreqr as any).vent.trigger('snack', {
-            message:
-              'Issue Authorizing Request: You appear to have been logged out.  Please sign in again.',
-            snackProps: {
-              alertProps: {
-                severity: 'error',
-              },
+    this.lastSaved = _cloneDeep(currentPrefs)
+    this.save(currentPrefs, {
+      ...CommonAjaxSettings,
+      drop: true,
+      withoutSet: true,
+      customErrorHandling: true,
+      error: () => {
+        ;(wreqr as any).vent.trigger('snack', {
+          message:
+            'Issue Authorizing Request: You appear to have been logged out.  Please sign in again.',
+          snackProps: {
+            alertProps: {
+              severity: 'error',
             },
-          })
-        },
-      })
-    }
+          },
+        })
+      },
+    })
   },
   handleResultCount() {
     this.set(
       'resultCount',
-      Math.min((properties as any).resultCount, this.get('resultCount'))
+      Math.min(
+        StartupDataStore.Configuration.getResultCount(),
+        this.get('resultCount')
+      )
     )
   },
   handleAlertPersistence() {
@@ -347,9 +348,6 @@ const Theme = Backbone.Model.extend({
   getUserName() {
     return this.get('username')
   },
-  isGuestUser() {
-    return this.get('isGuest')
-  },
   getSummaryShown() {
     return this.get('preferences').getSummaryShown()
   },
@@ -375,17 +373,16 @@ const Theme = Backbone.Model.extend({
       relatedModel: (User as any).Model,
     },
   ],
-  fetched: false,
+  defaults() {
+    return {
+      user: new (User as any).Model(),
+    }
+  },
   initialize() {
     this.listenTo(this, 'sync', this.handleSync)
-    this.set('user', new (User as any).Model())
-    this.refetch()
-  },
-  refetch() {
-    this.fetch(CommonAjaxSettings)
+    this.handleSync()
   },
   handleSync() {
-    this.fetched = true
     this.get('user').get('preferences').handleAlertPersistence()
     this.get('user').get('preferences').handleResultCount()
   },
@@ -444,9 +441,6 @@ const Theme = Backbone.Model.extend({
   },
   getHoverPreview() {
     return this.get('user').getHoverPreview()
-  },
-  isGuest() {
-    return this.get('user').isGuestUser()
   },
   parse(body: any) {
     if (body.isGuest) {

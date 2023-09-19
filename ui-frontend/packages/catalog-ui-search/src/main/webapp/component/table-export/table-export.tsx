@@ -30,10 +30,10 @@ import saveFile from '../../react-component/utils/save-file'
 import { DEFAULT_USER_QUERY_OPTIONS } from '../../js/model/TypedQuery'
 import useSnack from '../hooks/useSnack'
 import { AddSnack } from '../snack/snack.provider'
-import properties from '../../js/properties'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
 import contentDisposition from 'content-disposition'
 import { getResultSetCql } from '../../react-component/utils/cql'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 
 type ExportResponse = {
   displayName: string
@@ -85,23 +85,22 @@ function getExportCount({
 }
 
 export const getWarning = (exportCountInfo: ExportCountInfo): string => {
+  const exportResultLimit = StartupDataStore.Configuration.getExportLimit()
   const exportCount = getExportCount(exportCountInfo)
   const result = exportCountInfo.selectionInterface
     .getCurrentQuery()
     .get('result')
   const totalHits = getHits(Object.values(result.get('lazyResults').status))
-  const limitWarning = `You cannot export more than the administrator configured limit of ${
-    (properties as any).exportResultLimit
-  }.`
+  const limitWarning = `You cannot export more than the administrator configured limit of ${exportResultLimit}.`
   let warningMessage = ''
-  if (exportCount > (properties as any).exportResultLimit) {
+  if (exportCount > exportResultLimit) {
     if (exportCountInfo.exportSize === 'custom') {
       return limitWarning
     }
     warningMessage =
       limitWarning +
-      `  Only ${(properties as any).exportResultLimit} ${
-        (properties as any).exportResultLimit === 1 ? `result` : `results`
+      `  Only ${exportResultLimit} ${
+        exportResultLimit === 1 ? `result` : `results`
       } will be exported.`
   }
   if (exportCountInfo.exportSize === 'custom') {
@@ -113,11 +112,7 @@ export const getWarning = (exportCountInfo: ExportCountInfo): string => {
       } will be exported.`
     }
   }
-  if (
-    totalHits > 100 &&
-    exportCount > 100 &&
-    (properties as any).exportResultLimit > 100
-  ) {
+  if (totalHits > 100 && exportCount > 100 && exportResultLimit > 100) {
     warningMessage += `  This may take a long time.`
   }
   return warningMessage
@@ -125,7 +120,7 @@ export const getWarning = (exportCountInfo: ExportCountInfo): string => {
 
 export const getDownloadBody = (downloadInfo: DownloadInfo) => {
   const { exportSize, customExportCount, selectionInterface } = downloadInfo
-
+  const exportResultLimit = StartupDataStore.Configuration.getExportLimit()
   const hiddenFields = getHiddenFields()
   const columnOrder = getColumnOrder()
   const srcs = getSrcs(selectionInterface)
@@ -138,12 +133,12 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
   const pageSize = results.length
   const exportCount = Math.min(
     getExportCount({ exportSize, selectionInterface, customExportCount }),
-    (properties as any).exportResultLimit
+    exportResultLimit
   )
   const args = {
     hiddenFields: hiddenFields.length > 0 ? hiddenFields : [],
     columnOrder: columnOrder.length > 0 ? columnOrder : [],
-    columnAliasMap: properties.attributeAliases,
+    columnAliasMap: StartupDataStore.Configuration.config?.attributeAliases,
   }
 
   let queryCount = exportCount

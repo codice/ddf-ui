@@ -13,10 +13,9 @@
  *
  **/
 
+import { StartupDataStore } from '../Startup/startup'
 import { LazyQueryResult } from './LazyQueryResult'
 import { QuerySortType } from './types'
-
-import metacardDefinitions from '../../../component/singletons/metacard-definitions'
 
 function parseMultiValue(value: any) {
   if (value && value.constructor === Array) {
@@ -30,7 +29,8 @@ function isEmpty(value: any) {
 }
 
 function parseValue(value: any, attribute: string) {
-  const attributeDefinition = metacardDefinitions.metacardTypes[attribute]
+  const attributeDefinition =
+    StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute]
   if (!attributeDefinition) {
     return value.toString().toLowerCase()
   }

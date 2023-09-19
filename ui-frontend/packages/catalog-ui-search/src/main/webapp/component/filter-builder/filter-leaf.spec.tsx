@@ -12,21 +12,92 @@ import {
 } from './filter.structure'
 import moment from 'moment'
 import user from '../singletons/user-instance'
-import TypedMetacardDefinitions from '../tabs/metacard/metacardDefinitions'
-TypedMetacardDefinitions.addMetacardDefinitions({
-  testing: {
-    integerType: { type: 'INTEGER', id: 'integerType' },
-    floatType: { type: 'FLOAT', id: 'floatType' },
-    longType: { type: 'LONG', id: 'longType' },
-    shortType: { type: 'SHORT', id: 'shortType' },
-    doubleType: { type: 'DOUBLE', id: 'doubleType' },
-    booleanType: { type: 'BOOLEAN', id: 'booleanType' },
-    dateType: { type: 'DATE', id: 'dateType' },
-    locationType: { type: 'LOCATION', id: 'locationType' },
-    xmlType: { type: 'XML', id: 'xmlType' },
-    binaryType: { type: 'BINARY', id: 'binaryType' },
-  },
-})
+import { StartupDataStore } from '../../js/model/Startup/startup'
+function addTestDefs() {
+  StartupDataStore.MetacardDefinitions.addDynamicallyFoundMetacardDefinitions({
+    testing: {
+      integerType: {
+        type: 'INTEGER',
+        id: 'integerType',
+        multivalued: false,
+        isInjected: false,
+      },
+      floatType: {
+        type: 'FLOAT',
+        id: 'floatType',
+        multivalued: false,
+        isInjected: false,
+      },
+      longType: {
+        type: 'LONG',
+        id: 'longType',
+        multivalued: false,
+        isInjected: false,
+      },
+      shortType: {
+        type: 'SHORT',
+        id: 'shortType',
+        multivalued: false,
+        isInjected: false,
+      },
+      doubleType: {
+        type: 'DOUBLE',
+        id: 'doubleType',
+        multivalued: false,
+        isInjected: false,
+      },
+      booleanType: {
+        type: 'BOOLEAN',
+        id: 'booleanType',
+        multivalued: false,
+        isInjected: false,
+      },
+      dateType: {
+        type: 'DATE',
+        id: 'dateType',
+        multivalued: false,
+        isInjected: false,
+      },
+      locationType: {
+        type: 'LOCATION',
+        id: 'locationType',
+        multivalued: false,
+        isInjected: false,
+      },
+      xmlType: {
+        type: 'XML',
+        id: 'xmlType',
+        multivalued: false,
+        isInjected: false,
+      },
+      binaryType: {
+        type: 'BINARY',
+        id: 'binaryType',
+        multivalued: false,
+        isInjected: false,
+      },
+      'location.country-code': {
+        type: 'STRING',
+        id: 'location.country-code',
+        multivalued: false,
+        isInjected: false,
+      },
+      datatype: {
+        type: 'STRING',
+        id: 'datatype',
+        multivalued: false,
+        isInjected: false,
+      },
+      anyText: {
+        type: 'STRING',
+        id: 'anyText',
+        multivalued: false,
+        isInjected: false,
+      },
+    },
+  })
+}
+
 // do not rely on our own transforms for testing, rely on static data!
 const data = {
   date1: {
@@ -81,6 +152,12 @@ const data = {
 }
 
 describe('filter leaf testing', () => {
+  before(() => {
+    /**
+     * Needs to be done here, otherwise these get blown away when the mock fetch happens.
+     */
+    addTestDefs()
+  })
   it('renders with a blank FilterClass', () => {
     mount(<FilterLeaf filter={new FilterClass({})} setFilter={() => {}} />)
   })
