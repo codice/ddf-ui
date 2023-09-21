@@ -29,7 +29,7 @@ type LayerType = {
   withCredentials: boolean
 }
 
-export class Layer extends Subscribable<'change'> {
+export class Layer extends Subscribable<{ thing: 'change' }> {
   layer: LayerType
   constructor(layer: LayerType) {
     super()
@@ -37,7 +37,7 @@ export class Layer extends Subscribable<'change'> {
   }
 }
 
-export class Layers extends Subscribable<'sort' | 'add' | 'remove'> {
+export class Layers extends Subscribable<{ thing: 'sort' | 'add' | 'remove' }> {
   layers: Array<any>
   constructor(layers: Array<any>) {
     super()

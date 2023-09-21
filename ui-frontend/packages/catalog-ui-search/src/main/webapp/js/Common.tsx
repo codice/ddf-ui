@@ -224,6 +224,8 @@ export const Common = {
       (img === '' || img.substring(0, 4) === 'http')
     )
       return cacheBustUrl(img)
+    if (typeof img === 'string' && img.startsWith('data:image/png;base64,'))
+      return img
     return 'data:image/png;base64,' + img
   },
   getResourceUrlFromThumbUrl(url: string) {

@@ -105,7 +105,8 @@ public class CatalogApplication implements SparkApplication {
             res.type(content.getMimeTypeValue());
           }
 
-          // Add the Accept-ranges header to let the client know that we accept ranges in bytes
+          // Add the Accept-ranges header to let the client know that we accept ranges in
+          // bytes
           res.header(HEADER_ACCEPT_RANGES, BYTES);
           return res;
         });
@@ -218,6 +219,14 @@ public class CatalogApplication implements SparkApplication {
         });
   }
 
+  public String getSources() throws IOException {
+    final BinaryContent content = catalogService.getSourcesInfo();
+
+    try (InputStream inputStream = content.getInputStream()) {
+      return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+    }
+  }
+
   private String getHeaders(Request req, Response res, String sourceid, String id) {
     try {
       String filename = null;
@@ -236,7 +245,8 @@ public class CatalogApplication implements SparkApplication {
 
       res.status(HttpStatus.SC_NO_CONTENT);
 
-      // Add the Accept-ranges header to let the client know that we accept ranges in bytes
+      // Add the Accept-ranges header to let the client know that we accept ranges in
+      // bytes
       res.header(HEADER_ACCEPT_RANGES, BYTES);
 
       if (content instanceof Resource) {
@@ -301,7 +311,8 @@ public class CatalogApplication implements SparkApplication {
         res.raw()
             .flushBuffer(); // Flashing buffer so Spark won't set the body based on the return value
       }
-      // Add the Accept-ranges header to let the client know that we accept ranges in bytes
+      // Add the Accept-ranges header to let the client know that we accept ranges in
+      // bytes
       res.header(HEADER_ACCEPT_RANGES, BYTES);
 
       String filename = null;

@@ -12,4 +12,28 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-export { default } from './container'
+import { StartupDataStore } from './startup'
+import { useSyncExternalStore } from 'react'
+import { SnapshotManager } from './snapshot'
+
+const subscribe = (callback: () => void) => {
+  const cancelSubscription = StartupDataStore.subscribeTo({
+    subscribableThing: 'fetched',
+    callback,
+  })
+  return () => {
+    cancelSubscription()
+  }
+}
+
+const snapshotManager = new SnapshotManager(() => {
+  return StartupDataStore
+}, subscribe)
+
+export const useStartupData = () => {
+  const startupData = useSyncExternalStore(
+    snapshotManager.subscribe,
+    snapshotManager.getSnapshot
+  )
+  return startupData
+}

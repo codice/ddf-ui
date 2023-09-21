@@ -16,13 +16,13 @@ import React from 'react'
 import DistanceUtils from '../../../../js/DistanceUtils'
 import ol from 'openlayers'
 import _ from 'underscore'
-import properties from '../../../../js/properties'
 import * as Turf from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { removeOldDrawing } from './drawing-and-display'
 import ShapeUtils from '../../../../js/ShapeUtils'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
+import { StartupDataStore } from '../../../../js/model/Startup/startup'
 export const translateFromOpenlayersCoordinates = (coords: any) => {
   return coords
     .map((value: any) =>
@@ -32,7 +32,7 @@ export const translateFromOpenlayersCoordinates = (coords: any) => {
             DistanceUtils.coordinateRound(point[0]),
             DistanceUtils.coordinateRound(point[1]),
           ],
-          (properties as any).projection,
+          StartupDataStore.Configuration.getProjection(),
           'EPSG:4326'
         )
         if (mappedPoint[1] > 90) {
@@ -54,7 +54,7 @@ const coordsToLineString = (rawCoords: any) => {
     ol.proj.transform(
       [item[0], item[1]],
       'EPSG:4326',
-      (properties as any).projection
+      StartupDataStore.Configuration.getProjection()
     )
   )
   // Ensure that the first and last coordinate are the same

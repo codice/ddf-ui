@@ -13,11 +13,11 @@
  *
  **/
 import * as React from 'react'
-import sources from '../../component/singletons/sources-instance'
 import { MetacardInteractionProps } from '.'
 import { MetacardInteraction } from './metacard-interactions'
 import { hot } from 'react-hot-loader'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 
 const openValidUrl = (result: LazyQueryResult) => {
   const downloadUrl = result.getDownloadUrl()
@@ -63,7 +63,8 @@ const isRemoteResourceCached = (model: LazyQueryResult[]): boolean => {
 
   return (
     model[0].isResourceLocal &&
-    model[0].plain.metacard.properties['source-id'] !== sources.localCatalog
+    model[0].plain.metacard.properties['source-id'] !==
+      StartupDataStore.Sources.localSourceId
   )
 }
 

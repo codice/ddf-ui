@@ -16,9 +16,7 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import _ from 'underscore'
 import IconHelper from '../../js/IconHelper'
-import properties from '../../js/properties'
 import cql from '../../js/cql'
-import metacardDefinitions from '../singletons/metacard-definitions'
 import CQLUtils from '../../js/CQLUtils'
 import QuerySettings from '../query-settings/query-settings'
 import QueryTimeReactView, {
@@ -40,9 +38,10 @@ import Swath from '../swath/swath'
 import Grid from '@mui/material/Grid'
 import Chip from '@mui/material/Chip'
 import Autocomplete from '@mui/material/Autocomplete'
-import TypedMetacardDefs from '../tabs/metacard/metacardDefinitions'
 import BooleanSearchBar from '../boolean-search-bar/boolean-search-bar'
 import { ValidationResult } from '../../react-component/location/validators'
+import { StartupDataStore } from '../../js/model/Startup/startup'
+import { useMetacardDefinitions } from '../../js/model/Startup/metacard-definitions.hooks'
 function isNested(filter: any) {
   let nested = false
   filter.filters.forEach((subfilter: any) => {
@@ -51,10 +50,10 @@ function isNested(filter: any) {
   return nested
 }
 function getMatchTypeAttribute() {
-  return metacardDefinitions.metacardTypes[
-    (properties as any).basicSearchMatchType
+  return StartupDataStore.MetacardDefinitions.getAttributeMap()[
+    StartupDataStore.Configuration.getBasicSearchMatchType()
   ]
-    ? (properties as any).basicSearchMatchType
+    ? StartupDataStore.Configuration.getBasicSearchMatchType()
     : 'datatype'
 }
 function getAllValidValuesForMatchTypeAttribute(): {
@@ -65,8 +64,8 @@ function getAllValidValuesForMatchTypeAttribute(): {
   }
 } {
   const matchTypeAttr = getMatchTypeAttribute()
-  return metacardDefinitions.enums[matchTypeAttr]
-    ? (metacardDefinitions.enums[matchTypeAttr] as Array<string>).reduce(
+  return StartupDataStore.MetacardDefinitions.getEnum(matchTypeAttr).length > 0
+    ? StartupDataStore.MetacardDefinitions.getEnum(matchTypeAttr).reduce(
         (blob, value: any) => {
           blob[value] = {
             label: value,
@@ -95,7 +94,7 @@ const determinePropertiesToApplyTo = ({
 }> => {
   return value.map((property) => {
     return {
-      label: TypedMetacardDefs.getAlias({ attr: property }),
+      label: StartupDataStore.MetacardDefinitions.getAlias(property),
       value: property,
     }
   })
@@ -103,7 +102,9 @@ const determinePropertiesToApplyTo = ({
 function isTypeLimiter(filter: any) {
   const typesFound = _.uniq(filter.filters.map(CQLUtils.getProperty))
   const metadataContentTypeSupported = Boolean(
-    metacardDefinitions.metacardTypes[METADATA_CONTENT_TYPE]
+    StartupDataStore.MetacardDefinitions.getAttributeMap()[
+      METADATA_CONTENT_TYPE
+    ]
   )
   if (metadataContentTypeSupported) {
     return (
@@ -122,8 +123,9 @@ const stripQuotes = (property = 'anyText') => {
 function isAnyDate(filter: any) {
   if (!filter.filters) {
     return (
-      metacardDefinitions.metacardTypes[stripQuotes(filter.property)].type ===
-      'DATE'
+      StartupDataStore.MetacardDefinitions.getAttributeMap()[
+        stripQuotes(filter.property)
+      ].type === 'DATE'
     )
   }
   let typesFound = {} as any
@@ -141,8 +143,9 @@ function isAnyDate(filter: any) {
       (subfilter: any) => subfilter.property
     )
     return (
-      metacardDefinitions.metacardTypes[stripQuotes(attributes[0])].type ===
-      'DATE'
+      StartupDataStore.MetacardDefinitions.getAttributeMap()[
+        stripQuotes(attributes[0])
+      ].type === 'DATE'
     )
   }
 }
@@ -373,6 +376,7 @@ const useBasicFilterFromModel = ({ model }: QueryBasicProps) => {
   return basicFilter
 }
 const QueryBasic = ({ model, errorListener }: QueryBasicProps) => {
+  const MetacardDefinitions = useMetacardDefinitions()
   const inputRef = React.useRef<HTMLDivElement>()
   const basicFilter = useBasicFilterFromModel({ model })
   const [typeAttributes] = React.useState(
@@ -474,7 +478,7 @@ const QueryBasic = ({ model, errorListener }: QueryBasicProps) => {
                 }}
               />
             }
-            label="Location"
+            label={MetacardDefinitions.getAlias('location')}
           />
           {basicFilter.anyGeo[0] ? (
             <Grid

@@ -15,10 +15,10 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import Button from '@mui/material/Button'
-import properties from '../../js/properties'
 import GetAppIcon from '@mui/icons-material/GetApp'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
+import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 type Option = {
   label: string
   value: string
@@ -36,6 +36,7 @@ type Props = {
   customExportCount: number
 }
 export default hot(module)((props: Props) => {
+  const Configuration = useConfiguration()
   const {
     exportSize,
     exportFormat,
@@ -122,7 +123,7 @@ export default hot(module)((props: Props) => {
           color="primary"
           disabled={
             exportSize === 'custom' &&
-            customExportCount > (properties as any).exportResultLimit
+            customExportCount > Configuration.getExportLimit()
           }
           onClick={onDownloadClick}
         >

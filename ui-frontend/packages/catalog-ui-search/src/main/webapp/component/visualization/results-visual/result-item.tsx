@@ -15,10 +15,7 @@
 import * as React from 'react'
 import LazyMetacardInteractions from './lazy-metacard-interactions'
 import IconHelper from '../../../js/IconHelper'
-import properties from '../../../js/properties'
 import user from '../../singletons/user-instance'
-import metacardDefinitions from '../../singletons/metacard-definitions'
-import TypedMetacardDefs from '../../tabs/metacard/metacardDefinitions'
 import Button from '@mui/material/Button'
 import LinkIcon from '@mui/icons-material/Link'
 import GetAppIcon from '@mui/icons-material/GetApp'
@@ -50,6 +47,8 @@ import { useMenuState } from '../../menu-state/menu-state'
 import Popover from '@mui/material/Popover'
 import Common from '../../../js/Common'
 import ExtensionPoints from '../../../extension-points/extension-points'
+import { StartupDataStore } from '../../../js/model/Startup/startup'
+import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (
     <div
@@ -76,9 +75,11 @@ type ResultItemFullProps = ResultItemBasicProps & {
 }
 const showSource = () => {
   return (
-    (properties as any).resultShow.find((additionalProperty: string) => {
-      return additionalProperty === 'source-id'
-    }) !== undefined
+    StartupDataStore.Configuration.getResultShow().find(
+      (additionalProperty: string) => {
+        return additionalProperty === 'source-id'
+      }
+    ) !== undefined
   )
 }
 const showRelevanceScore = ({
@@ -86,7 +87,10 @@ const showRelevanceScore = ({
 }: {
   lazyResult: ResultItemBasicProps['lazyResult']
 }) => {
-  return (properties as any).showRelevanceScores && lazyResult.hasRelevance()
+  return (
+    StartupDataStore.Configuration.getShowRelevanceScores() &&
+    lazyResult.hasRelevance()
+  )
 }
 export const getIconClassName = ({
   lazyResult,
@@ -295,6 +299,7 @@ const IconButton = ({
   selectionInterface: any
   itemContentRef: React.RefObject<HTMLElement>
 }) => {
+  const MetacardDefinitions = useMetacardDefinitions()
   const isSelected = useSelectionOfLazyResult({ lazyResult })
   const ResultItemAction = ExtensionPoints.resultItemAction({
     lazyResult,
@@ -362,12 +367,10 @@ const IconButton = ({
           className={`${getIconClassName({
             lazyResult,
           })} font-awesome-span group-focus-visible/checkbox:invisible group-hover/checkbox:invisible absolute z-0 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
-          data-help={TypedMetacardDefs.getAlias({
-            attr: 'title',
-          })}
-          title={`${TypedMetacardDefs.getAlias({
-            attr: 'title',
-          })}: ${lazyResult.plain.metacard.properties.title}`}
+          data-help={MetacardDefinitions.getAlias('title')}
+          title={`${MetacardDefinitions.getAlias('title')}: ${
+            lazyResult.plain.metacard.properties.title
+          }`}
         />
       </Button>
     </>
@@ -385,6 +388,7 @@ export const ResultItem = ({
   measure,
   selectionInterface,
 }: ResultItemFullProps) => {
+  const MetacardDefinitions = useMetacardDefinitions()
   const rippleRef = React.useRef<{
     pulsate: () => void
     stop: (e: any) => void
@@ -435,8 +439,8 @@ export const ResultItem = ({
     lazyResult: LazyQueryResult
   }) => {
     let value = lazyResult.plain.metacard.properties[detail]
-    if (value && metacardDefinitions.metacardTypes[detail]) {
-      switch (metacardDefinitions.metacardTypes[detail].type) {
+    if (value && MetacardDefinitions.getAttributeMap()[detail]) {
+      switch (MetacardDefinitions.getAttributeMap()[detail].type) {
         case 'DATE':
           if (value.constructor === Array) {
             value = value.map((val: any) =>
@@ -559,9 +563,7 @@ export const ResultItem = ({
             )}
             <div
               data-id={`result-item-${shownAttributes[0]}-label`}
-              title={`${TypedMetacardDefs.getAlias({
-                attr: shownAttributes[0],
-              })}`}
+              title={`${MetacardDefinitions.getAlias(shownAttributes[0])}`}
               className="shrink-1 w-full overflow-auto self-center"
               style={{ maxHeight: '200px', minHeight: '21px' }} // firefox will show scrollbars always without this minHeight :S
             >
@@ -626,12 +628,10 @@ export const ResultItem = ({
                 return (
                   <PropertyComponent
                     key={detail.attribute}
-                    data-help={TypedMetacardDefs.getAlias({
-                      attr: detail.attribute,
-                    })}
-                    title={`${TypedMetacardDefs.getAlias({
-                      attr: detail.attribute,
-                    })}: ${detail.value}`}
+                    data-help={MetacardDefinitions.getAlias(detail.attribute)}
+                    title={`${MetacardDefinitions.getAlias(
+                      detail.attribute
+                    )}: ${detail.value}`}
                   >
                     <span>
                       {/* It's okay to use the first one here since we only ever want to display one, normally you'd want to map over this list */}
@@ -659,11 +659,15 @@ export const ResultItem = ({
                 return (
                   <PropertyComponent
                     key={relevantHighlight.attribute}
-                    data-help={TypedMetacardDefs.getAlias({
-                      attr: relevantHighlight.attribute,
-                    })}
+                    data-help={MetacardDefinitions.getAlias(
+                      relevantHighlight.attribute
+                    )}
                   >
-                    <Tooltip title={relevantHighlight.attribute}>
+                    <Tooltip
+                      title={MetacardDefinitions.getAlias(
+                        relevantHighlight.attribute
+                      )}
+                    >
                       <span
                         dangerouslySetInnerHTML={{
                           __html: relevantHighlight.highlight,
@@ -685,12 +689,10 @@ export const ResultItem = ({
               )}
               {shouldShowSource ? (
                 <PropertyComponent
-                  title={`${TypedMetacardDefs.getAlias({
-                    attr: 'source-id',
-                  })}: ${lazyResult.plain.metacard.properties['source-id']}`}
-                  data-help={TypedMetacardDefs.getAlias({
-                    attr: 'source-id',
-                  })}
+                  title={`${MetacardDefinitions.getAlias('source-id')}: ${
+                    lazyResult.plain.metacard.properties['source-id']
+                  }`}
+                  data-help={MetacardDefinitions.getAlias('source-id')}
                 >
                   {!lazyResult.isRemote() ? (
                     <React.Fragment>

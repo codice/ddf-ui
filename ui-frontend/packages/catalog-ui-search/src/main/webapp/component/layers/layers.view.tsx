@@ -16,13 +16,13 @@
 import React from 'react'
 import _ from 'underscore'
 import Backbone from 'backbone'
-import properties from '../../js/properties'
 import { LayerItemCollectionViewReact } from '../layer-item/layer-item.collection.view'
 import user from '../singletons/user-instance'
 import { hot } from 'react-hot-loader'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import debounce from 'lodash.debounce'
 import Button from '@mui/material/Button'
+import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 
 // this is to track focus, since on reordering rerenders and loses focus
 const FocusModel = Backbone.Model.extend({
@@ -64,6 +64,7 @@ const FocusModel = Backbone.Model.extend({
 })
 
 const LayersViewReact = () => {
+  const { getImageryProviders } = useConfiguration()
   const [focusModel] = React.useState(new FocusModel())
   const containerElementRef = React.useRef<HTMLDivElement>(null)
   const saveCallback = React.useMemo(() => {
@@ -112,7 +113,7 @@ const LayersViewReact = () => {
               .forEach((viewLayer: any) => {
                 const name = viewLayer.get('name')
                 const defaultConfig = _.find(
-                  properties.imageryProviders,
+                  getImageryProviders(),
                   (layerObj: any) => name === layerObj.name
                 )
                 viewLayer.set(defaultConfig)

@@ -28,13 +28,13 @@ import {
 import { IntegerField } from '../../../component/fields/integer'
 import { FloatField } from '../../../component/fields/float'
 import { BooleanField } from '../../../component/fields/boolean'
-import MetacardDefinitions from '../../../component/tabs/metacard/metacardDefinitions'
 import { DateAroundField } from '../../../component/fields/date-around'
 import { CustomInputOrDefault } from './customInputOrDefault'
 import BooleanSearchBar from '../../../component/boolean-search-bar/boolean-search-bar'
 import { EnterKeySubmitProps } from '../../../component/custom-events/enter-key-submit'
 import { EnumInput } from './enum-input'
 import { ValidationResult } from '../../location/validators'
+import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
 export type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
@@ -45,6 +45,7 @@ export type Props = {
 
 const FilterInput = ({ filter, setFilter, errorListener }: Props) => {
   const type = getAttributeType(filter.property)
+  const MetacardDefinitions = useMetacardDefinitions()
   const { value } = filter
   const onChange = (val: any) => {
     setFilter(
@@ -134,18 +135,12 @@ const FilterInput = ({ filter, setFilter, errorListener }: Props) => {
       )
   }
   const textValue = value as string
-  const enumForAttr = MetacardDefinitions.getEnum({ attr: filter.property })
-  const deprecatedEnumForAttr = MetacardDefinitions.getDeprecatedEnum({
-    attr: filter.property,
-  })
+  const enumForAttr = MetacardDefinitions.getEnum(filter.property)
 
-  if (enumForAttr || deprecatedEnumForAttr) {
+  if (enumForAttr.length > 0) {
     let allEnumForAttr = [] as string[]
     if (enumForAttr) {
       allEnumForAttr = allEnumForAttr.concat(enumForAttr)
-    }
-    if (deprecatedEnumForAttr) {
-      allEnumForAttr = allEnumForAttr.concat(deprecatedEnumForAttr)
     }
     return (
       <EnumInput

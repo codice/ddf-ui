@@ -14,10 +14,15 @@
  **/
 // check browser before loading the rest of the app
 import { isSupportedBrowser } from './check-browser'
+//@ts-ignore
+import { StartupDataStore } from './js/model/Startup/startup'
 import { removeRedirectQueryParams } from './handle-query-params'
-;(() => {
+;(async () => {
+  // check if supported browser
   if (isSupportedBrowser()) {
     removeRedirectQueryParams()
-    import('./app')
+    // wait for critical data to be fetched
+    await (await import('./js/WaitForReady')).waitForReady()
+    await import('./app')
   }
 })()

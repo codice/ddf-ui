@@ -15,11 +15,10 @@
 import Backbone from 'backbone'
 
 import _ from 'underscore'
-import metacardDefinitions from '../../component/singletons/metacard-definitions'
 import * as TurfMeta from '@turf/meta'
 import wkx from 'wkx'
-import properties from '../properties'
 import 'backbone-associations'
+import { StartupDataStore } from './Startup/startup'
 
 export default Backbone.AssociatedModel.extend({
   type: 'metacard-properties',
@@ -34,8 +33,9 @@ export default Backbone.AssociatedModel.extend({
         this.toJSON(),
         (_value, key) =>
           (attribute === undefined || attribute === key) &&
-          metacardDefinitions.metacardTypes[key] &&
-          metacardDefinitions.metacardTypes[key].type === 'GEOMETRY'
+          StartupDataStore.MetacardDefinitions.getAttributeMap()[key] &&
+          StartupDataStore.MetacardDefinitions.getAttributeMap()[key].type ===
+            'GEOMETRY'
       ).length > 0
     )
   },
@@ -61,10 +61,11 @@ export default Backbone.AssociatedModel.extend({
     return _.filter(
       this.toJSON(),
       (_value, key) =>
-        !properties.isHidden(key) &&
+        !StartupDataStore.Configuration.isHiddenAttribute(key) &&
         (attribute === undefined || attribute === key) &&
-        metacardDefinitions.metacardTypes[key] &&
-        metacardDefinitions.metacardTypes[key].type === 'GEOMETRY'
+        StartupDataStore.MetacardDefinitions.getAttributeMap()[key] &&
+        StartupDataStore.MetacardDefinitions.getAttributeMap()[key].type ===
+          'GEOMETRY'
     )
   },
 })

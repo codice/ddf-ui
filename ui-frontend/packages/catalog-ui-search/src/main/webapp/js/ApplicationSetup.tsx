@@ -25,10 +25,10 @@ import '../styles/input-range.css'
 import '../styles/additional-styles.css'
 import '../styles/plotly.css'
 import Backbone from 'backbone'
-import properties from './properties'
 import './extensions/application.patches'
 import '../component/singletons/session-auto-renew'
 import $ from 'jquery'
+import { StartupDataStore } from './model/Startup/startup'
 if (process.env.NODE_ENV !== 'production') {
   $('html').addClass('is-development')
   if ((module as any)?.hot) {
@@ -57,15 +57,15 @@ Backbone.AssociatedModel.prototype.set = function (
 }
 $(window.document).ready(() => {
   window.document.title =
-    (properties as any).customBranding + ' ' + (properties as any).product
+    StartupDataStore.Configuration.config?.customBranding +
+    ' ' +
+    StartupDataStore.Configuration.config?.product
   // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-  window.document.querySelector('.welcome-branding').textContent = (
-    properties as any
-  ).customBranding
+  window.document.querySelector('.welcome-branding').textContent =
+    StartupDataStore.Configuration.config?.customBranding
   // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-  window.document.querySelector('.welcome-branding-name').textContent = (
-    properties as any
-  ).product
+  window.document.querySelector('.welcome-branding-name').textContent =
+    StartupDataStore.Configuration.config?.product
   // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
   window.document.querySelector('#loading').classList.add('show-welcome')
 })

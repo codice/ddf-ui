@@ -14,24 +14,23 @@
  **/
 import * as React from 'react'
 import About from './presentation'
-import properties from '../../js/properties'
 import moment from 'moment'
-class AboutContainer extends React.Component {
-  constructor(props: any) {
-    super(props)
-  }
-  render() {
-    return (
-      <About
-        date={moment(properties.commitDate).format('MMMM Do YYYY')}
-        branding={(properties as any).customBranding}
-        isDirty={properties.isDirty}
-        commitHash={properties.commitHash}
-        commitDate={properties.commitDate}
-        product={(properties as any).product}
-        version={(properties as any).version}
-      />
-    )
-  }
+import { Environment } from '../../js/Environment'
+import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
+
+const AboutContainer = () => {
+  const { config } = useConfiguration()
+  return (
+    <About
+      date={moment(Environment.commitDate).format('MMMM Do YYYY')}
+      branding={config?.customBranding || ''}
+      isDirty={Environment.isDirty}
+      commitHash={Environment.commitHash}
+      commitDate={Environment.commitDate}
+      product={config?.product || ''}
+      version={config?.version || ''}
+    />
+  )
 }
+
 export default AboutContainer

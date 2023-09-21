@@ -12,31 +12,18 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import properties from '../../js/properties'
-
+import { StartupDataStore } from '../../js/model/Startup/startup'
 import api from './index'
-const oldInit = properties.init
-
 const mock = () => {
-  properties.init = function () {
-    const data = api('./internal/config')
-    const uiConfig = api('./internal/platform/config/ui')
-    // use this function to initialize variables that rely on others
-    let props = this
-    // @ts-expect-error ts-migrate(2686) FIXME: '_' refers to a UMD global, but the current file i... Remove this comment to see the full error message
-    // eslint-disable-next-line no-undef
-    props = _.extend(props, data)
-    props.ui = uiConfig
-    this.handleFeedback()
-    this.handleExperimental()
-    this.handleUpload()
-    this.handleListTemplates()
-  }
-  properties.init()
+  StartupDataStore.Configuration.config = api('./internal/config')
+  StartupDataStore.Configuration.platformUiConfiguration = api(
+    './internal/platform/config/ui'
+  )
+  StartupDataStore.Configuration._notifySubscribers({
+    thing: 'configuration-update',
+  })
 }
 
-const unmock = () => {
-  properties.init = oldInit
-}
+const unmock = () => {}
 
 export { mock, unmock }
