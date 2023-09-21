@@ -56,7 +56,7 @@ const configs = Visualizations.reduce((cfg, viz) => {
   }
   return cfg
 }, {} as { [key: string]: any })
-const unMaximize = (contentItem: any) => {
+export const unMaximize = (contentItem: any) => {
   if (contentItem.isMaximised) {
     contentItem.toggleMaximise()
     return true
@@ -168,7 +168,17 @@ class VisualizationSelector extends React.Component<{
           content: [configs[choice]],
         })
       } else {
-        this.props.goldenLayout.root.contentItems[0].addChild(configs[choice])
+        if (this.props.goldenLayout.root.contentItems[0].isColumn) {
+          this.props.goldenLayout.root.contentItems[0].contentItems[0].addChild(
+            configs[choice],
+            0
+          )
+        } else {
+          this.props.goldenLayout.root.contentItems[0].addChild(
+            configs[choice],
+            0
+          )
+        }
       }
     }
     this.interimState = false
