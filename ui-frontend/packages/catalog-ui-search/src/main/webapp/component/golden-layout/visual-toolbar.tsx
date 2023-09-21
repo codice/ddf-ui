@@ -199,7 +199,7 @@ export const GoldenLayoutComponentHeader = ({
         data-id={`${name}-tab`}
         className={`flex flex-row items-center flex-nowrap`}
       >
-        <Grid item className="px-2 text-lg">
+        <Grid item className="px-1 text-base">
           <div>{tab.titleElement.text()}</div>
         </Grid>
         <Grid item>
@@ -217,13 +217,13 @@ export const GoldenLayoutComponentHeader = ({
           <Grid item>
             <CloseOnClickTooltip
               title={
-                <Paper elevation={Elevations.overlays} className="p-2">
+                <Paper elevation={Elevations.overlays} className="p-1">
                   Minimize visual to bottom of layout
                 </Paper>
               }
             >
               <Button onClick={minimizeCallback}>
-                <MinimizeIcon />
+                <MinimizeIcon fontSize="small"/>
               </Button>
             </CloseOnClickTooltip>
           </Grid>
@@ -234,7 +234,7 @@ export const GoldenLayoutComponentHeader = ({
           tab.closeElement[0].style.display !== 'none' ? (
             <CloseOnClickTooltip
               title={
-                <Paper elevation={Elevations.overlays} className="p-2">
+                <Paper elevation={Elevations.overlays} className="p-1">
                   Open visual in new window
                 </Paper>
               }
@@ -245,7 +245,7 @@ export const GoldenLayoutComponentHeader = ({
                   tab.contentItem.popout()
                 }}
               >
-                <PopoutIcon />
+                <PopoutIcon fontSize="small"/>
               </Button>
             </CloseOnClickTooltip>
           ) : null}
@@ -254,7 +254,7 @@ export const GoldenLayoutComponentHeader = ({
           {tab.closeElement[0].style.display !== 'none' ? (
             <CloseOnClickTooltip
               title={
-                <Paper elevation={Elevations.overlays} className="p-2">
+                <Paper elevation={Elevations.overlays} className="p-1">
                   Close visual
                 </Paper>
               }
@@ -265,7 +265,7 @@ export const GoldenLayoutComponentHeader = ({
                   ;(tab as any)._onCloseClickFn(e)
                 }}
               >
-                <CloseIcon />
+                <CloseIcon fontSize="small"/>
               </Button>
             </CloseOnClickTooltip>
           ) : null}

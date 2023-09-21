@@ -12,7 +12,7 @@ import Paper from '@mui/material/Paper'
 import { Elevations } from '../theme/theme'
 import ExtensionPoints from '../../extension-points/extension-points'
 
-export const HeaderHeight = 44
+export const HeaderHeight = 32
 export const MinimizedHeight = HeaderHeight + 5
 
 /**
@@ -376,7 +376,7 @@ export const StackToolbar = ({
             <div>
               <CloseOnClickTooltip
                 title={
-                  <Paper elevation={Elevations.overlays} className="p-2">
+                  <Paper elevation={Elevations.overlays} className="p-1">
                     Minimize stack of visuals to bottom of layout
                   </Paper>
                 }
@@ -385,7 +385,7 @@ export const StackToolbar = ({
                   data-id="minimise-layout-button"
                   onClick={minimizeCallback}
                 >
-                  <MinimizeIcon />
+                  <MinimizeIcon fontSize="small"/>
                 </Button>
               </CloseOnClickTooltip>
             </div>
@@ -394,7 +394,7 @@ export const StackToolbar = ({
             <div>
               <CloseOnClickTooltip
                 title={
-                  <Paper elevation={Elevations.overlays} className="p-2">
+                  <Paper elevation={Elevations.overlays} className="p-1">
                     Restore stack of visuals to original size
                   </Paper>
                 }
@@ -405,7 +405,7 @@ export const StackToolbar = ({
                     stack.toggleMaximise()
                   }}
                 >
-                  <FullscreenExitIcon />
+                  <FullscreenExitIcon fontSize="small"/>
                 </Button>
               </CloseOnClickTooltip>
             </div>
@@ -413,7 +413,7 @@ export const StackToolbar = ({
             <div>
               <CloseOnClickTooltip
                 title={
-                  <Paper elevation={Elevations.overlays} className="p-2">
+                  <Paper elevation={Elevations.overlays} className="p-1">
                     Maximize stack of visuals
                   </Paper>
                 }
@@ -424,7 +424,7 @@ export const StackToolbar = ({
                     stack.toggleMaximise()
                   }}
                 >
-                  <FullscreenIcon />
+                  <FullscreenIcon fontSize="small"/>
                 </Button>
               </CloseOnClickTooltip>
             </div>
@@ -434,7 +434,7 @@ export const StackToolbar = ({
             <div>
               <CloseOnClickTooltip
                 title={
-                  <Paper elevation={Elevations.overlays} className="p-2">
+                  <Paper elevation={Elevations.overlays} className="p-1">
                     Open stack of visuals in new window
                   </Paper>
                 }
@@ -455,7 +455,7 @@ export const StackToolbar = ({
             {(stack.header as any)._isClosable() ? (
               <CloseOnClickTooltip
                 title={
-                  <Paper elevation={Elevations.overlays} className="p-2">
+                  <Paper elevation={Elevations.overlays} className="p-1">
                     Close stack of visuals
                   </Paper>
                 }
@@ -469,7 +469,7 @@ export const StackToolbar = ({
                     stack.remove()
                   }}
                 >
-                  <CloseIcon />
+                  <CloseIcon fontSize="small"/>
                 </Button>
               </CloseOnClickTooltip>
             ) : null}
