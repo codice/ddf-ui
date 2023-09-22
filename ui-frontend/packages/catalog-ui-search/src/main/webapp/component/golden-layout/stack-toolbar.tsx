@@ -385,7 +385,7 @@ export const StackToolbar = ({
                   data-id="minimise-layout-button"
                   onClick={minimizeCallback}
                 >
-                  <MinimizeIcon fontSize="small"/>
+                  <MinimizeIcon fontSize="small" />
                 </Button>
               </CloseOnClickTooltip>
             </div>
@@ -405,7 +405,7 @@ export const StackToolbar = ({
                     stack.toggleMaximise()
                   }}
                 >
-                  <FullscreenExitIcon fontSize="small"/>
+                  <FullscreenExitIcon fontSize="small" />
                 </Button>
               </CloseOnClickTooltip>
             </div>
@@ -424,7 +424,7 @@ export const StackToolbar = ({
                     stack.toggleMaximise()
                   }}
                 >
-                  <FullscreenIcon fontSize="small"/>
+                  <FullscreenIcon fontSize="small" />
                 </Button>
               </CloseOnClickTooltip>
             </div>
@@ -469,7 +469,7 @@ export const StackToolbar = ({
                     stack.remove()
                   }}
                 >
-                  <CloseIcon fontSize="small"/>
+                  <CloseIcon fontSize="small" />
                 </Button>
               </CloseOnClickTooltip>
             ) : null}

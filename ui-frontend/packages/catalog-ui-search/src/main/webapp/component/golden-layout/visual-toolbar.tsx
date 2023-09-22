@@ -223,7 +223,7 @@ export const GoldenLayoutComponentHeader = ({
               }
             >
               <Button onClick={minimizeCallback}>
-                <MinimizeIcon fontSize="small"/>
+                <MinimizeIcon fontSize="small" />
               </Button>
             </CloseOnClickTooltip>
           </Grid>
@@ -245,7 +245,7 @@ export const GoldenLayoutComponentHeader = ({
                   tab.contentItem.popout()
                 }}
               >
-                <PopoutIcon fontSize="small"/>
+                <PopoutIcon fontSize="small" />
               </Button>
             </CloseOnClickTooltip>
           ) : null}
@@ -265,7 +265,7 @@ export const GoldenLayoutComponentHeader = ({
                   ;(tab as any)._onCloseClickFn(e)
                 }}
               >
-                <CloseIcon fontSize="small"/>
+                <CloseIcon fontSize="small" />
               </Button>
             </CloseOnClickTooltip>
           ) : null}
