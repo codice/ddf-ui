@@ -97,12 +97,20 @@ const RowComponent = ({
 }: ResultItemFullProps) => {
   const MetacardDefinitions = useMetacardDefinitions()
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
+  const [decimalPrecision, setDecimalPrecision] = React.useState(
+    TypedUserInstance.getDecimalPrecision()
+  )
   const [shownAttributes, setShownAttributes] = React.useState(
     TypedUserInstance.getResultsAttributesShownTable()
   )
   const isLast = index === results.length - 1
   const { listenTo } = useBackbone()
   const convertToFormat = useCoordinateFormat()
+  const convertToPrecision = (value: any) => {
+    return value && decimalPrecision
+      ? Number(value).toFixed(decimalPrecision)
+      : value
+  }
   useRerenderOnBackboneSync({ lazyResult })
 
   const actionRef = React.useRef<HTMLDivElement>(null)
@@ -122,6 +130,13 @@ const RowComponent = ({
         setShownAttributes(TypedUserInstance.getResultsAttributesShownTable())
       }
     )
+    listenTo(
+      user.get('user').get('preferences'),
+      'change:decimalPrecision',
+      () => {
+        setDecimalPrecision(TypedUserInstance.getDecimalPrecision())
+      }
+    )
   }, [])
   const imgsrc = Common.getImageSrc(thumbnail)
   React.useEffect(() => {
@@ -132,6 +147,10 @@ const RowComponent = ({
       switch (MetacardDefinitions.getAttributeMap()[property].type) {
         case 'GEOMETRY':
           return convertToFormat(value)
+        case 'LONG':
+        case 'DOUBLE':
+        case 'FLOAT':
+          return convertToPrecision(value)
       }
     }
     return value
@@ -325,7 +344,10 @@ const RowComponent = ({
                                       `${
                                         value.length > 1 &&
                                         index < value.length - 1
-                                          ? curValue + ', '
+                                          ? getDisplayValue(
+                                              curValue,
+                                              property
+                                            ) + ', '
                                           : getDisplayValue(curValue, property)
                                       }`
                                     )}

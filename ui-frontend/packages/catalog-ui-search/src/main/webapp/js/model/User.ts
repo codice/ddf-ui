@@ -132,6 +132,7 @@ const Theme = Backbone.Model.extend({
       homeFilter: 'Owned by anyone',
       homeSort: 'Last modified',
       homeDisplay: 'Grid',
+      decimalPrecision: 2,
       alerts: [],
       alertPersistence: true,
       alertExpiration: 2592000000,
@@ -200,6 +201,7 @@ const Theme = Backbone.Model.extend({
     this.listenTo((wreqr as any).vent, 'preferences:save', this.savePreferences)
     this.listenTo(this.get('alerts'), 'remove', this.savePreferences)
     this.listenTo(this.get('uploads'), 'remove', this.savePreferences)
+    this.listenTo(this, 'change:decimalPrecision', this.savePreferences)
     this.listenTo(this, 'change:visualization', this.savePreferences)
     this.listenTo(this, 'change:fontSize', this.savePreferences)
     this.listenTo(this, 'change:goldenLayout', this.savePreferences)
@@ -313,6 +315,9 @@ const Theme = Backbone.Model.extend({
   },
   getQuerySettings() {
     return this.get('querySettings')
+  },
+  getDecimalPrecision() {
+    return this.get('decimalPrecision')
   },
   parse(data: any, options: any) {
     if (options && options.drop) {

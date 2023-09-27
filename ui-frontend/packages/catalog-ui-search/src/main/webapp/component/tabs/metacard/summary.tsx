@@ -431,6 +431,7 @@ const AttributeComponent = ({
   attr,
   hideEmpty,
   summaryShown = [],
+  decimalPrecision = undefined,
   filter = '',
   forceRender,
 }: {
@@ -438,6 +439,7 @@ const AttributeComponent = ({
   lazyResult: LazyQueryResult
   hideEmpty: boolean
   summaryShown?: string[]
+  decimalPrecision: number | undefined
   filter?: string
   forceRender: boolean
 }) => {
@@ -462,6 +464,11 @@ const AttributeComponent = ({
   const { isNotWritable } = useCustomReadOnlyCheck()
   const dialogContext = useDialog()
   const convertToFormat = useCoordinateFormat()
+  const convertToPrecision = (value: any) => {
+    return value && decimalPrecision
+      ? Number(value).toFixed(decimalPrecision)
+      : value
+  }
   const isUrl = (value: any) => {
     if (value && typeof value === 'string') {
       const protocol = value.toLowerCase().split('/')[0]
@@ -597,6 +604,12 @@ const AttributeComponent = ({
                             return (
                               <Typography>{convertToFormat(val)}</Typography>
                             )
+                          case 'LONG':
+                          case 'DOUBLE':
+                          case 'FLOAT':
+                            return (
+                              <Typography>{convertToPrecision(val)}</Typography>
+                            )
                           default:
                             if (lazyResult.highlights[attr]) {
                               if (attr === 'title') {
@@ -692,6 +705,9 @@ const Summary = ({ result: selection }: Props) => {
   /* Special case for when all the attributes are displayed */
   const [fullyExpanded, setFullyExpanded] = React.useState(false)
   const [filter, setFilter] = React.useState(persistantFilter)
+  const [decimalPrecision, setDecimalPrecision] = React.useState(
+    TypedUserInstance.getDecimalPrecision()
+  )
   const [summaryShown, setSummaryShown] = React.useState(getSummaryShown())
   useRerenderOnBackboneSync({ lazyResult: selection })
   const dialogContext = useDialog()
@@ -705,6 +721,13 @@ const Summary = ({ result: selection }: Props) => {
       'change:inspector-summaryShown change:dateTimeFormat change:timeZone',
       () => {
         setSummaryShown([...getSummaryShown()])
+      }
+    )
+    listenTo(
+      user.get('user').get('preferences'),
+      'change:decimalPrecision',
+      () => {
+        setDecimalPrecision(TypedUserInstance.getDecimalPrecision())
       }
     )
   }, [])
@@ -866,6 +889,7 @@ const Summary = ({ result: selection }: Props) => {
                   attr={attr}
                   hideEmpty={hideEmpty}
                   summaryShown={summaryShown}
+                  decimalPrecision={decimalPrecision}
                   filter={filter}
                   forceRender={forceRender}
                 />
@@ -889,6 +913,7 @@ const Summary = ({ result: selection }: Props) => {
                       attr={attr}
                       hideEmpty={hideEmpty}
                       summaryShown={summaryShown}
+                      decimalPrecision={decimalPrecision}
                       filter={filter}
                       forceRender={forceRender}
                     />
@@ -907,6 +932,7 @@ const Summary = ({ result: selection }: Props) => {
                       attr={attr.id}
                       hideEmpty={hideEmpty}
                       summaryShown={summaryShown}
+                      decimalPrecision={decimalPrecision}
                       filter={filter}
                       forceRender={forceRender}
                     />

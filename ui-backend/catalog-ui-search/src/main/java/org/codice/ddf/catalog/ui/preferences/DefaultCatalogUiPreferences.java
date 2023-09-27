@@ -39,6 +39,7 @@ public class DefaultCatalogUiPreferences implements DefaultPreferencesSupplier {
     defaults.put("homeFilter", "Owned by anyone");
     defaults.put("homeSort", "Last modified");
     defaults.put("homeDisplay", "Grid");
+    defaults.put("decimalPrecision", 2);
     defaults.put("alertPersistence", true);
     defaults.put("alertExpiration", 2592000000L);
     defaults.put("visualization", "3dmap");

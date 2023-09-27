@@ -151,6 +151,9 @@ export const TypedUserInstance = {
   getMapHome: () => {
     return TypedUserInstance.getPreferences().get('mapHome')
   },
+  getDecimalPrecision: () => {
+    return TypedUserInstance.getPreferences().get('decimalPrecision')
+  },
   getMomentDate(date: string) {
     return `${moment(date).fromNow()} : ${userInstance.getUserReadableDateTime(
       date

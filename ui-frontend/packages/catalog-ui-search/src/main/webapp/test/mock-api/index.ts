@@ -194,6 +194,7 @@ const mockStartupPayload: StartupPayloadType = {
       homeFilter: '',
       homeSort: 'name',
       homeDisplay: 'table',
+      decimalPrecision: 2,
       alertPersistence: true,
       alertExpiration: 86400000,
       visualization: 'map',
