@@ -144,6 +144,7 @@ public class CqlTransformHandler implements Route {
   }
 
   public class CqlTransformRequest {
+    private String exportTitle = String.format("export-%s", Instant.now().toString());
     private List<CqlRequestImpl> searches = Collections.emptyList();
     private int count = 0;
     private List<CqlRequest.Sort> sorts = Collections.emptyList();
@@ -298,6 +299,11 @@ public class CqlTransformHandler implements Route {
                             .contains(result.getMetacard().getId()))
                 .collect(toList());
 
+    String exportTitle =
+        (results.size() == 1)
+            ? results.get(0).getMetacard().getId()
+            : String.format("export-%s", Instant.now().toString());
+
     Map<String, List<String>> exportsBySource =
         results
             .stream()
@@ -339,7 +345,8 @@ public class CqlTransformHandler implements Route {
       arguments = cswTransformArgumentsAdapter();
     }
 
-    attachFileToResponse(request, response, queryResponseTransformer, combinedResponse, arguments);
+    attachFileToResponse(
+        response, queryResponseTransformer, combinedResponse, arguments, exportTitle);
 
     return "";
   }
@@ -348,7 +355,7 @@ public class CqlTransformHandler implements Route {
     return queryResponseTransformers;
   }
 
-  private void setHttpHeaders(Request request, Response response, BinaryContent content)
+  private void setHttpHeaders(Response response, BinaryContent content, String exportTitle)
       throws MimeTypeException {
     String mimeType = content.getMimeTypeValue();
 
@@ -360,8 +367,7 @@ public class CqlTransformHandler implements Route {
     String fileExt = getFileExtFromMimeType(mimeType);
 
     response.type(mimeType);
-    String attachment =
-        String.format("attachment;filename=\"export-%s%s\"", Instant.now().toString(), fileExt);
+    String attachment = String.format("attachment;filename=\"%s%s\"", exportTitle, fileExt);
     response.header(HttpHeaders.CONTENT_DISPOSITION, attachment);
   }
 
@@ -375,16 +381,16 @@ public class CqlTransformHandler implements Route {
   }
 
   private void attachFileToResponse(
-      Request request,
       Response response,
       ServiceReference<QueryResponseTransformer> queryResponseTransformer,
       QueryResponse cqlQueryResponse,
-      Map<String, Serializable> arguments)
+      Map<String, Serializable> arguments,
+      String exportTitle)
       throws CatalogTransformerException, IOException, MimeTypeException {
     BinaryContent content =
         bundleContext.getService(queryResponseTransformer).transform(cqlQueryResponse, arguments);
 
-    setHttpHeaders(request, response, content);
+    setHttpHeaders(response, content, exportTitle);
 
     try (OutputStream servletOutputStream = response.raw().getOutputStream();
         InputStream resultStream = content.getInputStream()) {

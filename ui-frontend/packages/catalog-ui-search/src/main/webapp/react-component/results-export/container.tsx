@@ -16,7 +16,7 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import fetch from '../utils/fetch'
 import ResultsExportComponent from './presentation'
-import { exportResult, exportResultSet, getColumnOrder } from '../utils/export'
+import { exportResultSet, getColumnOrder } from '../utils/export'
 import { getResultSetCql } from '../utils/cql'
 import saveFile from '../utils/save-file'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
@@ -157,7 +157,7 @@ class ResultsExport extends React.Component<Props, State> {
           transformerId: uriEncodedTransformerId,
         },
       })
-    } else if (this.props.results.length > 1) {
+    } else {
       response = await exportResultSet(uriEncodedTransformerId, {
         searches,
         count,
@@ -171,15 +171,6 @@ class ResultsExport extends React.Component<Props, State> {
             StartupDataStore.Configuration.config?.attributeAliases || {},
         },
       })
-    } else {
-      const result = this.props.results[0]
-
-      response = await exportResult(
-        result.source,
-        result.id,
-        uriEncodedTransformerId,
-        columnOrder.toString()
-      )
     }
 
     if (response.status === 200) {
