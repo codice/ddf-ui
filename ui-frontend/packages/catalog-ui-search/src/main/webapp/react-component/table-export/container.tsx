@@ -61,7 +61,6 @@ export default hot(module)(
         customExportCount: (properties as any).exportResultLimit,
       }
     }
-    transformUrl = './internal/cql/transform/'
     handleExportFormatChange = (value: string) => {
       this.setState({
         exportFormat: value,
