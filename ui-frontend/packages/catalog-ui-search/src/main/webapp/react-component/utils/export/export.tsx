@@ -95,7 +95,7 @@ export const getColumnOrder = () => {
 }
 
 export const aliasMap = () => {
-  encodeURIComponent(
+  return encodeURIComponent(
     Object.entries(
       StartupDataStore.Configuration.config?.attributeAliases || {}
     )
@@ -113,7 +113,7 @@ export const exportResult = async (
   attributes: string
 ) => {
   const response = await fetch(
-    `/services/catalog/sources/${source}/${id}?transform=${transformer}&columnOrder=${attributes}&aliases=${aliasMap}`
+    `/services/catalog/sources/${source}/${id}?transform=${transformer}&columnOrder=${attributes}&aliases=${aliasMap()}`
   )
   await postAuditLog({
     action: 'exported',
