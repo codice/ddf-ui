@@ -13,7 +13,6 @@
  *
  **/
 import fetch from '../fetch'
-import { postAuditLog } from '../audit/audit-endpoint'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import properties from '../../../js/properties'
 import user from '../../../component/singletons/user-instance'
@@ -101,23 +100,6 @@ export const aliasMap = encodeURIComponent(
     })
     .toString()
 )
-
-export const exportResult = async (
-  source: string,
-  id: string,
-  transformer: string,
-  attributes: string
-) => {
-  const response = await fetch(
-    `/services/catalog/sources/${source}/${id}?transform=${transformer}&columnOrder=${attributes}&aliases=${aliasMap}`
-  )
-  await postAuditLog({
-    action: 'exported',
-    component: 'metacard',
-    items: [{ id, 'source-id': source }],
-  })
-  return response
-}
 
 export const exportResultSet = async (
   transformer: string,
