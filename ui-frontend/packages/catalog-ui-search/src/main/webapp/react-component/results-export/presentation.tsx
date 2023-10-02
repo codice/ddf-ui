@@ -18,6 +18,11 @@ import Button from '@mui/material/Button'
 import GetAppIcon from '@mui/icons-material/GetApp'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
+import user from '../../component/singletons/user-instance'
+import TransferList from '../../component/tabs/metacard/transfer-list'
+import { Elevations } from '../../component/theme/theme'
+import { useDialog } from '../../component/dialog'
+import { TypedUserInstance } from '../../component/singletons/TypedUser'
 
 type ExportFormat = {
   id: string
@@ -32,7 +37,9 @@ type Props = {
   handleExportOptionChange: (val: string) => void
 }
 
-const ResultsExport = (props: Props) => {
+const ResultsExportComponent = (props: Props) => {
+  const dialogContext = useDialog()
+
   const {
     selectedFormat,
     exportFormats,
@@ -70,6 +77,54 @@ const ResultsExport = (props: Props) => {
           renderInput={(params) => <TextField {...params} variant="outlined" />}
         />
       </div>
+      {['CSV', 'RTF', 'XLSX'].includes(selectedFormat) ? (
+        <Button
+          data-id="manage-attributes-button"
+          onClick={() => {
+            dialogContext.setProps({
+              PaperProps: {
+                style: {
+                  minWidth: 'none',
+                },
+                elevation: Elevations.panels,
+              },
+              open: true,
+              disableEnforceFocus: true,
+              children: (
+                <div
+                  style={{
+                    minHeight: '60vh',
+                  }}
+                >
+                  <TransferList
+                    startingLeft={user
+                      .get('user')
+                      .get('preferences')
+                      .get('inspector-summaryShown')}
+                    startingRight={TypedUserInstance.getResultsAttributesPossibleTable()}
+                    startingHideEmpty={user
+                      .get('user')
+                      .get('preferences')
+                      .get('inspector-hideEmpty')}
+                    onSave={async (active: any, newHideEmpty: any) => {
+                      user.get('user').get('preferences').set({
+                        'inspector-summaryShown': active,
+                        'inspector-hideEmpty': newHideEmpty,
+                      })
+                      user.savePreferences()
+                    }}
+                  />
+                </div>
+              ),
+            })
+          }}
+          color="primary"
+          size="small"
+          style={{ height: 'auto' }}
+        >
+          Manage Attributes
+        </Button>
+      ) : null}
       <Button
         variant="contained"
         color="primary"
@@ -85,4 +140,4 @@ const ResultsExport = (props: Props) => {
   )
 }
 
-export default hot(module)(ResultsExport)
+export default hot(module)(ResultsExportComponent)
