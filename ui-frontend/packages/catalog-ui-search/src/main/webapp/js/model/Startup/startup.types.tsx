@@ -210,6 +210,7 @@ interface PreferencesType {
   homeFilter: string
   homeSort: string
   homeDisplay: string
+  decimalPrecision: number
   alertPersistence: boolean
   alertExpiration: number
   visualization: string

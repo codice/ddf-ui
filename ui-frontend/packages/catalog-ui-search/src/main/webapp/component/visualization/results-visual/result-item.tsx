@@ -395,8 +395,16 @@ export const ResultItem = ({
     start: (e: any) => void
   }>(null)
   const { listenTo } = useBackbone()
+  const convertToPrecision = (value: any) => {
+    return value && decimalPrecision
+      ? Number(value).toFixed(decimalPrecision)
+      : value
+  }
   const convertToFormat = useCoordinateFormat()
   const [renderExtras, setRenderExtras] = React.useState(false) // dynamic actions are a significant part of rendering time, so delay until necessary
+  const [decimalPrecision, setDecimalPrecision] = React.useState(
+    TypedUserInstance.getDecimalPrecision()
+  )
   const [shownAttributes, setShownAttributes] = React.useState(
     TypedUserInstance.getResultsAttributesShownList()
   )
@@ -407,6 +415,13 @@ export const ResultItem = ({
       'change:results-attributesShownList',
       () => {
         setShownAttributes(TypedUserInstance.getResultsAttributesShownList())
+      }
+    )
+    listenTo(
+      user.get('user').get('preferences'),
+      'change:decimalPrecision',
+      () => {
+        setDecimalPrecision(TypedUserInstance.getDecimalPrecision())
       }
     )
   }, [])
@@ -452,6 +467,10 @@ export const ResultItem = ({
           break
         case 'GEOMETRY':
           value = convertToFormat(value)
+        case 'LONG':
+        case 'DOUBLE':
+        case 'FLOAT':
+          value = convertToPrecision(value)
       }
     }
     if (Array.isArray(value)) {

@@ -16,6 +16,7 @@ import * as React from 'react'
 import { createGlobalStyle } from 'styled-components'
 import ThemeSettings from '../theme-settings'
 import AlertSettings from '../alert-settings'
+import AttributeSettings from '../attribute-settings'
 import SearchSettings from '../search-settings'
 import TimeSettings from '../time-settings'
 import { hot } from 'react-hot-loader'
@@ -79,6 +80,11 @@ export const BaseSettings = {
   'Search Options': {
     component: () => {
       return <SearchSettings />
+    },
+  },
+  'Attribute Options': {
+    component: () => {
+      return <AttributeSettings />
     },
   },
   Time: {

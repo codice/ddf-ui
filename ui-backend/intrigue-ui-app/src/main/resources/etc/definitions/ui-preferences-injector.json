@@ -133,6 +133,13 @@
       "tokenized": false,
       "multivalued": false
     },
+    "decimalPrecision": {
+      "type": "INTEGER",
+      "stored": true,
+      "indexed": true,
+      "tokenized": false,
+      "multivalued": false
+    },
     "alertPersistence": {
       "type": "STRING",
       "stored": true,
@@ -469,6 +476,10 @@
     },
     {
       "attribute": "mapHome",
+      "metacardTypes": ["ddf.preferences"]
+    },
+    {
+      "attribute": "decimalPrecision",
       "metacardTypes": ["ddf.preferences"]
     },
     {
