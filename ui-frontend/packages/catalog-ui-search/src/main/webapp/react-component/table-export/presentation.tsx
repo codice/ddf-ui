@@ -19,11 +19,7 @@ import GetAppIcon from '@mui/icons-material/GetApp'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
 import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
-import user from '../../component/singletons/user-instance'
-import TransferList from '../../component/tabs/metacard/transfer-list'
-import { Elevations } from '../../component/theme/theme'
-import { useDialog } from '../../component/dialog'
-import { TypedUserInstance } from '../../component/singletons/TypedUser'
+import SummaryManageAttributes from '../summary-manage-attributes/summary-manage-attributes'
 
 type Option = {
   label: string
@@ -44,7 +40,6 @@ type Props = {
 }
 
 export default hot(module)((props: Props) => {
-  const dialogContext = useDialog()
   const Configuration = useConfiguration()
 
   const {
@@ -122,52 +117,7 @@ export default hot(module)((props: Props) => {
         />
       </div>
       {['csv', 'rtf', 'xlsx'].includes(exportFormat) ? (
-        <Button
-          data-id="manage-attributes-button"
-          onClick={() => {
-            dialogContext.setProps({
-              PaperProps: {
-                style: {
-                  minWidth: 'none',
-                },
-                elevation: Elevations.panels,
-              },
-              open: true,
-              disableEnforceFocus: true,
-              children: (
-                <div
-                  style={{
-                    minHeight: '60vh',
-                  }}
-                >
-                  <TransferList
-                    startingLeft={user
-                      .get('user')
-                      .get('preferences')
-                      .get('inspector-summaryShown')}
-                    startingRight={TypedUserInstance.getResultsAttributesPossibleTable()}
-                    startingHideEmpty={user
-                      .get('user')
-                      .get('preferences')
-                      .get('inspector-hideEmpty')}
-                    onSave={async (active: any, newHideEmpty: any) => {
-                      user.get('user').get('preferences').set({
-                        'inspector-summaryShown': active,
-                        'inspector-hideEmpty': newHideEmpty,
-                      })
-                      user.savePreferences()
-                    }}
-                  />
-                </div>
-              ),
-            })
-          }}
-          color="primary"
-          size="small"
-          style={{ height: 'auto' }}
-        >
-          Manage Attributes
-        </Button>
+        <SummaryManageAttributes />
       ) : null}
       {warning && (
         <div className="warning text-center pt-1">
