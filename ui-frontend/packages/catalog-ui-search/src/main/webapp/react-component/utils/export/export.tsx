@@ -37,6 +37,11 @@ export type ExportBody = {
   args?: Object
 }
 
+export type ExportFormat = {
+  id: string
+  displayName: string
+}
+
 export interface ExportCountInfo {
   exportSize: string
   selectionInterface: any
@@ -76,7 +81,44 @@ export const getExportResult = (result: LazyQueryResult) => {
 
 export const getExportOptions = async (type: Transformer) => {
   const response = await fetch(`./internal/transformers/${type}`)
-  return await response.json()
+    .then((response) => response.json())
+    .then((exportFormats) => {
+      const configuredFormats =
+        type == Transformer.Metacard
+          ? StartupDataStore.Configuration.getExportMetacardFormatOptions()
+          : StartupDataStore.Configuration.getExportMetacardsFormatOptions()
+
+      if (configuredFormats.length > 0) {
+        const newFormats = configuredFormats
+          .map((configuredFormat: string) => {
+            const validFormat = exportFormats.find(
+              (exportFormat: ExportFormat) =>
+                exportFormat.id === configuredFormat
+            )
+            if (validFormat == undefined)
+              console.log(
+                configuredFormat +
+                  ' does not match any valid transformers; Cannot not include format in export list.'
+              )
+            return validFormat
+          })
+          .filter((format) => format !== undefined)
+
+        if (newFormats.length > 0) return newFormats
+        else
+          console.log(
+            "Could not match admin's configured export options to any valid transformers. \
+          Returning list of all valid transformers instead."
+          )
+      } else {
+        console.log(
+          'Export formats not configured. Using list of all valid transformers instead.'
+        )
+      }
+      return exportFormats
+    })
+
+  return response
 }
 
 export const getColumnOrder = () => {

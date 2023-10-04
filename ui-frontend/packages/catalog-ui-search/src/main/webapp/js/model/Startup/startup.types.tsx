@@ -112,6 +112,8 @@ export interface UIConfigType {
   basicSearchMatchType: string
   onlineGazetteer: boolean
   imageryProviders: ImageryProvider[]
+  exportMetacardFormatOptions: string[]
+  exportMetacardsFormatOptions: string[]
   isCacheDisabled: boolean
   isCustomTextNotationEnabled: boolean
   isVersioningEnabled: boolean

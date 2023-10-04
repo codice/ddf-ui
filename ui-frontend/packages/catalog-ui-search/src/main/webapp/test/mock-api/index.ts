@@ -59,6 +59,8 @@ const mockStartupPayload: StartupPayloadType = {
     isVersioningEnabled: true,
     isSpellcheckEnabled: true,
     attributeSuggestionList: [],
+    exportMetacardFormatOptions: [],
+    exportMetacardsFormatOptions: [],
     summaryShow: ['name', 'age'],
     readOnly: [],
     version: '1.2.3',

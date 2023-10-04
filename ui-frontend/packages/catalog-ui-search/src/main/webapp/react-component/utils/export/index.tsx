@@ -22,4 +22,5 @@ export {
   DownloadInfo,
   getColumnOrder,
   aliasMap,
+  ExportFormat,
 } from './export'
