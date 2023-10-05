@@ -117,6 +117,7 @@ const extractModelsFromFilter = ({
       if (filter.value?.areaDetails?.locations) {
         filter.value.areaDetails.locations.map((location: any) => {
           const newLocationModel = new LocationModel(location)
+          newLocationModel.set('locationId', undefined)
           extractedModels.push(newLocationModel)
         })
       } else {

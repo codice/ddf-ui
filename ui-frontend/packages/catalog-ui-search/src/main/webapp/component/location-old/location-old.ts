@@ -40,6 +40,7 @@ const Direction = dmsUtils.Direction
 export default Backbone.AssociatedModel.extend({
   defaults: () => {
     return {
+      locationId: Date.now(),
       color: Object.values(locationColors)[0],
       drawing: false,
       north: undefined,

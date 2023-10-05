@@ -244,6 +244,7 @@ const drawGeometry = ({
 
     primitive = new Cesium.PolylineCollection()
     primitive.id = id
+    primitive.locationId = json.locationId
     primitive.add(
       constructOutlinedLinePrimitive({
         coordinates: bufferedLine.geometry.coordinates,

@@ -305,13 +305,29 @@ export const OpenlayersDrawings = ({
     null
   )
 
+  const handleKeydown = React.useCallback(
+    (e: any) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        finishDrawing()
+      }
+      if (e.key === 'Escape') {
+        cancelDrawing()
+      }
+    },
+    [drawingModel, drawingShape, map]
+  )
+
   useEffect(() => {
     setIsDrawing(!!drawingModel)
     if (drawingModel) {
+      window.addEventListener('keydown', handleKeydown)
       setDrawingShape(
         getShapeFromDrawMode(getDrawModeFromModel({ model: drawingModel }))
       )
       setDrawingGeometry(getDrawingGeometryFromModel(drawingModel))
+    } else {
+      window.removeEventListener('keydown', handleKeydown)
     }
   }, [drawingModel])
 

@@ -135,6 +135,14 @@ function determineIdFromPosition(position: any, map: any) {
   }
   return id
 }
+function determineLocationIdFromPosition(position: any, map: any) {
+  let locationId
+  const pickedObject = map.scene.pick(position)
+  if (pickedObject) {
+    locationId = pickedObject.collection.locationId
+  }
+  return locationId
+}
 function expandRectangle(rectangle: any) {
   const scalingFactor = 0.05
   let widthGap = Math.abs(rectangle.east) - Math.abs(rectangle.west)
@@ -241,12 +249,12 @@ export default function CesiumMap(
   }
   /*
         Only shows one label if there are multiple labels in the same location.
-  
+
         Show the label in the following importance:
           - it is selected and the existing label is not
           - there is no other label displayed at the same location
           - it is the label that was found by findOverlappingLabel
-  
+
         Arguments are:
           - the label to show/hide
           - if the label is selected
@@ -309,6 +317,21 @@ export default function CesiumMap(
         callback(e)
       })
     },
+    onDoubleClick() {
+      $(map.scene.canvas).on('dblclick', (e) => {
+        const boundingRect = map.scene.canvas.getBoundingClientRect()
+        const id = determineLocationIdFromPosition(
+          {
+            x: e.clientX - boundingRect.left,
+            y: e.clientY - boundingRect.top,
+          },
+          map
+        )
+        if (id) {
+          ;(wreqr as any).vent.trigger('location:doubleClick', id)
+        }
+      })
+    },
     onMouseTrackingForPopup(
       downCallback: any,
       moveCallback: any,
@@ -327,14 +350,13 @@ export default function CesiumMap(
     onMouseMove(callback: any) {
       $(map.scene.canvas).on('mousemove', (e) => {
         const boundingRect = map.scene.canvas.getBoundingClientRect()
+        const position = {
+          x: e.clientX - boundingRect.left,
+          y: e.clientY - boundingRect.top,
+        }
         callback(e, {
-          mapTarget: determineIdFromPosition(
-            {
-              x: e.clientX - boundingRect.left,
-              y: e.clientY - boundingRect.top,
-            },
-            map
-          ),
+          mapTarget: determineIdFromPosition(position, map),
+          mapLocationId: determineLocationIdFromPosition(position, map),
         })
       })
     },

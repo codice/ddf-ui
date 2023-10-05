@@ -181,6 +181,7 @@ const drawGeometry = ({
   }
 
   primitive.id = id
+  primitive.locationId = modelProp.locationId
   map.getMap().scene.primitives.add(primitive)
   map.getMap().scene.requestRender()
 }

@@ -37,6 +37,8 @@ import Button from '@mui/material/Button'
 import PlusIcon from '@mui/icons-material/Add'
 import MinusIcon from '@mui/icons-material/Remove'
 
+type EditableGeo = boolean | undefined
+
 const useMapCode = (props: MapViewReactType) => {
   const [mapCode, setMapCode] = React.useState<any>(null)
   React.useEffect(() => {
@@ -264,13 +266,15 @@ const handleMapHover = ({
   mapModel,
   selectionInterface,
   mapEvent,
-  setIsHovering,
+  setIsHoveringResult,
+  setEditableGeo,
 }: {
   map: any
   mapModel: any
   selectionInterface: any
   mapEvent: any
-  setIsHovering: (val: boolean) => void
+  setIsHoveringResult: (val: boolean) => void
+  setEditableGeo: (val: EditableGeo) => void
 }) => {
   const currentQuery = selectionInterface.get('currentQuery')
   if (!currentQuery) {
@@ -282,7 +286,8 @@ const handleMapHover = ({
   }
   const metacard = result.get('lazyResults').results[mapEvent.mapTarget]
   updateTarget({ metacard, mapModel })
-  setIsHovering(
+
+  setIsHoveringResult(
     Boolean(
       mapEvent.mapTarget &&
         mapEvent.mapTarget !== 'userDrawing' &&
@@ -291,7 +296,17 @@ const handleMapHover = ({
             !(mapEvent.mapTarget as string).startsWith(SHAPE_ID_PREFIX)))
     )
   )
+
+  const isHoveringOverGeo = Boolean(
+    mapEvent.mapTarget &&
+      mapEvent.mapTarget.constructor === String &&
+      (mapEvent.mapTarget as string).startsWith(SHAPE_ID_PREFIX)
+  )
+
+  if (isHoveringOverGeo) setEditableGeo(Boolean(mapEvent.mapLocationId))
+  else setEditableGeo(undefined)
 }
+
 const useMapListeners = ({
   map,
   mapModel,
@@ -301,7 +316,9 @@ const useMapListeners = ({
   mapModel: any
   selectionInterface: any
 }) => {
-  const [isHovering, setIsHovering] = React.useState(false)
+  const [isHoveringResult, setIsHoveringResult] = React.useState(false)
+  const [editableGeo, setEditableGeo] = React.useState<EditableGeo>(undefined)
+
   React.useEffect(() => {
     if (map && mapModel && selectionInterface) {
       map.onMouseMove((_event: any, mapEvent: any) => {
@@ -310,13 +327,15 @@ const useMapListeners = ({
           mapEvent,
           mapModel,
           selectionInterface,
-          setIsHovering,
+          setIsHoveringResult,
+          setEditableGeo,
         })
       })
-      map.onRightClick((event: any, _mapEvent: any) => {
-        // Right click is used in drawing on the 3D map, so let's ignore it here
-        // while drawing.
-        if (!Drawing.isDrawing()) {
+      //  Clicks used in drawing on the 3D map, so let's ignore them here
+      // while drawing.
+      if (!Drawing.isDrawing()) {
+        map.onDoubleClick()
+        map.onRightClick((event: any, _mapEvent: any) => {
           event.preventDefault()
           mapModel.set({
             mouseX: event.offsetX,
@@ -325,12 +344,13 @@ const useMapListeners = ({
           })
           mapModel.updateClickCoordinates()
           updateDistance({ map, mapModel, updateOnMenu: true })
-        }
-      })
+        })
+      }
     }
-  }, [map, mapModel, selectionInterface])
+  }, [map, mapModel, selectionInterface, editableGeo])
   return {
-    isHovering,
+    isHoveringResult,
+    editableGeo,
   }
 }
 const useOnMouseLeave = ({
@@ -369,23 +389,29 @@ type MapViewReactType = {
 }
 const useChangeCursorOnHover = ({
   mapElement,
-  isHovering,
+  isHoveringResult,
+  editableGeo,
+  isDrawing,
 }: {
   mapElement: HTMLDivElement | null
-  isHovering: boolean
+  isHoveringResult: boolean
+  editableGeo: EditableGeo
+  isDrawing: boolean
 }) => {
   React.useEffect(() => {
     if (mapElement) {
       const canvas = mapElement.querySelector('canvas')
-      if (canvas) {
-        if (isHovering) {
-          canvas.classList.add('cursor-pointer')
-        } else {
-          canvas.classList.remove('cursor-pointer')
-        }
+
+      if (canvas && !isDrawing) {
+        if (editableGeo === true) canvas.style.cursor = 'grab'
+        if (editableGeo === false) canvas.style.cursor = 'not-allowed'
+        if (editableGeo === undefined) canvas.style.cursor = ''
+
+        if (isHoveringResult) canvas.classList.add('cursor-pointer')
+        else canvas.classList.remove('cursor-pointer')
       }
     }
-  }, [mapElement, isHovering])
+  }, [mapElement, isHoveringResult, editableGeo])
 }
 const useChangeCursorOnDrawing = ({
   mapElement,
@@ -433,15 +459,20 @@ export const MapViewReact = (props: MapViewReactType) => {
     selectionInterface: props.selectionInterface,
   })
   useListenToMapModel({ map, mapModel })
-  const { isHovering } = useMapListeners({
+  const { isHoveringResult, editableGeo } = useMapListeners({
     map,
     mapModel,
     selectionInterface: props.selectionInterface,
   })
   useOnMouseLeave({ mapElement, mapModel })
-  useChangeCursorOnHover({ isHovering, mapElement })
   const isDrawing = useListenToDrawing()
   useChangeCursorOnDrawing({ mapElement, isDrawing })
+  useChangeCursorOnHover({
+    isHoveringResult,
+    editableGeo,
+    isDrawing,
+    mapElement,
+  })
   const addSnack = useSnack()
   return (
     <div

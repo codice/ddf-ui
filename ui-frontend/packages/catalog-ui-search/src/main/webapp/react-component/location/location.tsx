@@ -139,6 +139,11 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
     locationModel.set('color', color)
     ;(wreqr as any).vent.trigger('search:drawend', [locationModel])
   }
+  listenTo((wreqr as any).vent, 'location:doubleClick', (locationId: any) => {
+    if (locationModel.attributes.locationId === locationId) {
+      ;(wreqr as any).vent.trigger('search:draw' + state.mode, locationModel)
+    }
+  })
   React.useEffect(() => {
     return () => {
       setTimeout(() => {
@@ -159,6 +164,7 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
       stopListening(locationModel, 'change', onChangeCallback)
     }
   }, [onChange])
+
   const ComponentToRender = inputs[state.mode]
     ? inputs[state.mode].Component
     : () => null
