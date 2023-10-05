@@ -98,7 +98,7 @@ export const getExportOptions = async (type: Transformer) => {
             if (validFormat == undefined)
               console.log(
                 configuredFormat +
-                  ' does not match any valid transformers; Cannot not include format in export list.'
+                  ' does not match any valid transformers; cannot include format in export list.'
               )
             return validFormat
           })
