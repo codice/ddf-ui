@@ -66,8 +66,8 @@ export function translateToOpenlayersCoordinates(coords: CoordinatesType) {
   return coordinates
 }
 const modelToLineString = (model: any) => {
-  const polygon = model.get('line')
-  const setArr = _.uniq(polygon)
+  const line = model.get('line')
+  const setArr = _.uniq(line)
   if (setArr.length < 2) {
     return
   }
@@ -137,7 +137,7 @@ export const drawLine = ({
     geometry: geometryRepresentation,
   })
   billboard.setId(id)
-  const drawnPolygonFeature = new ol.Feature({
+  const drawnLineFeature = new ol.Feature({
     geometry: drawnGeometryRepresentation,
   })
   const color = model.get('color')
@@ -147,7 +147,7 @@ export const drawLine = ({
       width: 3,
     }),
   })
-  const drawnPolygonIconStyle = new ol.style.Style({
+  const drawnLineIconStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
       color: color ? color : '#914500',
       width: 2,
@@ -156,9 +156,9 @@ export const drawLine = ({
     zIndex: 0,
   })
   billboard.setStyle(iconStyle)
-  drawnPolygonFeature.setStyle(drawnPolygonIconStyle)
+  drawnLineFeature.setStyle(drawnLineIconStyle)
   const vectorSource = new ol.source.Vector({
-    features: [billboard, drawnPolygonFeature],
+    features: [billboard, drawnLineFeature],
   })
   let vectorLayer = new ol.layer.Vector({
     source: vectorSource,
