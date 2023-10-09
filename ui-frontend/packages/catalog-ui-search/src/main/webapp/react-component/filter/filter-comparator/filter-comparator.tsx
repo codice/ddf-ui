@@ -15,15 +15,16 @@
 import React, { useEffect } from 'react'
 import { getComparators } from './comparatorUtils'
 import MenuItem from '@mui/material/MenuItem'
-import TextField from '@mui/material/TextField'
+import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { FilterClass } from '../../../component/filter-builder/filter.structure'
 
 type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
+  textFieldProps?: TextFieldProps
 }
 
-const FilterComparator = ({ filter, setFilter }: Props) => {
+const FilterComparator = ({ filter, setFilter, textFieldProps }: Props) => {
   useEffect(() => {
     const comparators = getComparators(filter.property)
     if (
@@ -56,6 +57,7 @@ const FilterComparator = ({ filter, setFilter }: Props) => {
         )
       }}
       size="small"
+      {...textFieldProps}
     >
       {comparators.map((comparator) => (
         <MenuItem value={comparator.value} key={comparator.label}>

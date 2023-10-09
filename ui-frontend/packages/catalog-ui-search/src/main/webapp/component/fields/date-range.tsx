@@ -103,6 +103,10 @@ export const DateRangeField = ({
           onChange(value)
         }
       )}
+      popoverProps={{
+        boundary: 'viewport',
+        position: 'bottom',
+      }}
       parseDate={DateHelpers.Blueprint.commonProps.parseDate}
       shortcuts
       timePrecision={DateHelpers.General.getTimePrecision()}
