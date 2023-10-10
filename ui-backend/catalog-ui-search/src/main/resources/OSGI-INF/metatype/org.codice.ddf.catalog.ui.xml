@@ -27,6 +27,19 @@
             type="Integer"
             default="1000"/>
 
+
+        <AD id="exportMetacardFormatOptions"
+            name="Export Metacard Format Options"
+            description="Specifies the export format options available for export of a single metacard. This should be a comma separated list. Valid options are: audio, csv, csw:Record, deployed-harvested-resource, geojson, gmd:MD_Metadata, html, kml, kmz, resource, rtf, thumbnail, txt, xlsx, xml."
+            type="String"
+            default="audio,csv,csw:Record,deployed-harvested-resource,geojson,gmd:MD_Metadata,html,kml,kmz,resource,rtf,thumbnail,txt,xlsx,xml"/>
+
+        <AD id="exportMetacardsFormatOptions"
+            name="Export Multiple Metacard Format Options"
+            description="Specifies the export format options available for export of multiple metacards. This should be a comma separated list. Valid options are: atom, csv, csw:Record, geojson, kml, kmz, xml, html, rtf, xlsx."
+            type="String"
+            default="atom,csv,csw:Record,geojson,kml,kmz,xml,html,rtf,xlsx"/>
+
         <AD id="imageryProviders"
             name="Imagery Providers"
             description='List of imagery providers to use. Valid types are: OSM (OpenStreetMap), AGM (ArcGisMap), BM (BingMap), WMS (WebMapService), WMT (WebMapTile), TMS (TileMapService), and GE (GoogleEarth). Example: {"name": "Example OSM", "show": true, "type": "OSM", "url": "http://a.tile.openstreetmap.org", "fileExtension": "png", "order": 0, "alpha": 1, "proxyEnabled": false}.'

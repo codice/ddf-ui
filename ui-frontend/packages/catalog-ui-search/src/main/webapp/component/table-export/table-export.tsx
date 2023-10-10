@@ -25,6 +25,7 @@ import {
   exportResultSet,
   ExportCountInfo,
   DownloadInfo,
+  ExportFormat,
 } from '../../react-component/utils/export'
 import saveFile from '../../react-component/utils/save-file'
 import { DEFAULT_USER_QUERY_OPTIONS } from '../../js/model/TypedQuery'
@@ -34,11 +35,6 @@ import { AddSnack } from '../snack/snack.provider'
 import contentDisposition from 'content-disposition'
 import { getResultSetCql } from '../../react-component/utils/cql'
 import { StartupDataStore } from '../../js/model/Startup/startup'
-
-type ExportResponse = {
-  displayName: string
-  id: string
-}
 
 export type Props = {
   selectionInterface: any
@@ -200,13 +196,9 @@ const TableExports = ({ selectionInterface }: Props) => {
   useEffect(() => {
     const fetchFormats = async () => {
       const exportFormats = await getExportOptions(Transformer.Query)
-      const sortedExportFormats = exportFormats.sort(
-        (format1: ExportResponse, format2: ExportResponse) => {
-          return format1.displayName.localeCompare(format2.displayName)
-        }
-      )
+
       setFormats(
-        sortedExportFormats.map((exportFormat: ExportResponse) => ({
+        exportFormats.map((exportFormat: ExportFormat) => ({
           label: exportFormat.displayName,
           value: exportFormat.id,
         }))

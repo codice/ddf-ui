@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -150,6 +151,10 @@ public class ConfigurationApplication implements SparkApplication {
   private Integer resultCount = 250;
 
   private Integer exportResultLimit = 1000;
+
+  private Set<String> exportMetacardFormatOptions = new HashSet<>();
+
+  private Set<String> exportMetacardsFormatOptions = new HashSet<>();
 
   private String projection = "EPSG:4326";
 
@@ -507,6 +512,8 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("timeout", timeout);
     config.put("resultCount", resultCount);
     config.put("exportResultLimit", exportResultLimit);
+    config.put("exportMetacardFormatOptions", exportMetacardFormatOptions);
+    config.put("exportMetacardsFormatOptions", exportMetacardsFormatOptions);
     config.put("typeNameMapping", typeNameMapping);
     config.put("terrainProvider", proxiedTerrainProvider);
     config.put("imageryProviders", getConfigImageryProviders());
@@ -866,6 +873,26 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setExportResultLimit(Integer exportResultLimit) {
     this.exportResultLimit = exportResultLimit;
+  }
+
+  public Set<String> getExportMetacardFormatOptions() {
+    return exportMetacardFormatOptions;
+  }
+
+  public void setExportMetacardFormatOptions(String exportMetacardFormatOptions) {
+    this.exportMetacardFormatOptions =
+        Arrays.stream(exportMetacardFormatOptions.replaceAll("\\s+", "").split(","))
+            .collect(Collectors.toSet());
+  }
+
+  public Set<String> getExportMetacardsFormatOptions() {
+    return exportMetacardsFormatOptions;
+  }
+
+  public void setExportMetacardsFormatOptions(String exportMetacardsFormatOptions) {
+    this.exportMetacardsFormatOptions =
+        Arrays.stream(exportMetacardsFormatOptions.replaceAll("\\s+", "").split(","))
+            .collect(Collectors.toSet());
   }
 
   public Boolean getSignInEnabled() {

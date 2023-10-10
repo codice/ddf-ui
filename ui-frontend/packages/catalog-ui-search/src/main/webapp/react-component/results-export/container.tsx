@@ -14,9 +14,14 @@
  **/
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import fetch from '../utils/fetch'
 import ResultsExportComponent from './presentation'
-import { exportResultSet, getColumnOrder } from '../utils/export'
+import {
+  exportResultSet,
+  getColumnOrder,
+  getExportOptions,
+  Transformer,
+  ExportFormat,
+} from '../utils/export'
 import { getResultSetCql } from '../utils/cql'
 import saveFile from '../utils/save-file'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
@@ -24,11 +29,6 @@ import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResult
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
 import contentDisposition from 'content-disposition'
 import { StartupDataStore } from '../../js/model/Startup/startup'
-
-type ExportFormat = {
-  id: string
-  displayName: string
-}
 
 type Result = {
   id: string
@@ -73,37 +73,19 @@ class ResultsExport extends React.Component<Props, State> {
 
   getTransformerType = () => {
     return !this.props.isZipped && this.props.results.length > 1
-      ? 'query'
-      : 'metacard'
+      ? Transformer.Query
+      : Transformer.Metacard
   }
 
   componentDidMount() {
     this.fetchExportOptions()
   }
 
-  fetchExportOptions = () => {
-    fetch(`./internal/transformers/${this.getTransformerType()}`)
-      .then((response) => response.json())
-      .then((exportFormats: ExportFormat[]) => {
-        return exportFormats.sort(
-          (format1: ExportFormat, format2: ExportFormat) => {
-            if (format1.displayName > format2.displayName) {
-              return 1
-            }
-
-            if (format1.displayName < format2.displayName) {
-              return -1
-            }
-
-            return 0
-          }
-        )
-      })
-      .then((exportFormats) =>
-        this.setState({
-          exportFormats: exportFormats,
-        })
-      )
+  fetchExportOptions = async () => {
+    const formats = await getExportOptions(this.getTransformerType())
+    this.setState({
+      exportFormats: formats,
+    })
   }
 
   getResultSources() {
