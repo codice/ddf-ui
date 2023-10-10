@@ -18,6 +18,7 @@ import Button from '@mui/material/Button'
 import GetAppIcon from '@mui/icons-material/GetApp'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
+import SummaryManageAttributes from '../summary-manage-attributes/summary-manage-attributes'
 
 type ExportFormat = {
   id: string
@@ -32,7 +33,7 @@ type Props = {
   handleExportOptionChange: (val: string) => void
 }
 
-const ResultsExport = (props: Props) => {
+const ResultsExportComponent = (props: Props) => {
   const {
     selectedFormat,
     exportFormats,
@@ -70,6 +71,9 @@ const ResultsExport = (props: Props) => {
           renderInput={(params) => <TextField {...params} variant="outlined" />}
         />
       </div>
+      {['CSV', 'RTF', 'XLSX'].includes(selectedFormat) ? (
+        <SummaryManageAttributes />
+      ) : null}
       <Button
         variant="contained"
         color="primary"
@@ -85,4 +89,4 @@ const ResultsExport = (props: Props) => {
   )
 }
 
-export default hot(module)(ResultsExport)
+export default hot(module)(ResultsExportComponent)

@@ -19,10 +19,13 @@ import GetAppIcon from '@mui/icons-material/GetApp'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
 import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
+import SummaryManageAttributes from '../summary-manage-attributes/summary-manage-attributes'
+
 type Option = {
   label: string
   value: string
 }
+
 type Props = {
   exportSize: string
   exportFormat: string
@@ -35,8 +38,10 @@ type Props = {
   warning: string
   customExportCount: number
 }
+
 export default hot(module)((props: Props) => {
   const Configuration = useConfiguration()
+
   const {
     exportSize,
     exportFormat,
@@ -49,8 +54,9 @@ export default hot(module)((props: Props) => {
     warning,
     customExportCount,
   } = props
+
   return (
-    <div className="w-full h-full overflow-auto p-2">
+    <div className="p-4" style={{ minWidth: '400px' }}>
       <div className="pt-2">
         <Autocomplete
           size="small"
@@ -110,6 +116,9 @@ export default hot(module)((props: Props) => {
           )}
         />
       </div>
+      {['csv', 'rtf', 'xlsx'].includes(exportFormat) ? (
+        <SummaryManageAttributes />
+      ) : null}
       {warning && (
         <div className="warning text-center pt-1">
           <i className="fa fa-warning" />

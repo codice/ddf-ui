@@ -20,7 +20,7 @@ import Paper from '@mui/material/Paper'
 import { useTheme } from '@mui/material/styles'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
-import TransferList, { useCustomReadOnlyCheck } from './transfer-list'
+import { useCustomReadOnlyCheck } from './transfer-list'
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace'
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
@@ -39,6 +39,8 @@ import { StartupDataStore } from '../../../js/model/Startup/startup'
 import { useConfiguration } from '../../../js/model/Startup/configuration.hooks'
 import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
 import Common from '../../../js/Common'
+import SummaryManageAttributes from '../../../react-component/summary-manage-attributes/summary-manage-attributes'
+
 function getSummaryShown(): string[] {
   const userchoices = user
     .get('user')
@@ -710,7 +712,6 @@ const Summary = ({ result: selection }: Props) => {
   )
   const [summaryShown, setSummaryShown] = React.useState(getSummaryShown())
   useRerenderOnBackboneSync({ lazyResult: selection })
-  const dialogContext = useDialog()
   const { listenTo } = useBackbone()
   const { isHiddenAttribute } = useConfiguration()
   const { isHiddenTypeExceptThumbnail, getMetacardDefinition } =
@@ -718,9 +719,10 @@ const Summary = ({ result: selection }: Props) => {
   React.useEffect(() => {
     listenTo(
       user.get('user').get('preferences'),
-      'change:inspector-summaryShown change:dateTimeFormat change:timeZone',
+      'change:inspector-summaryShown change:dateTimeFormat change:timeZone change:inspector-hideEmpty',
       () => {
         setSummaryShown([...getSummaryShown()])
+        setForceRender(true)
       }
     )
     listenTo(
@@ -801,58 +803,7 @@ const Summary = ({ result: selection }: Props) => {
           className="p-2"
         >
           <Grid item>
-            <Button
-              data-id="manage-attributes-button"
-              onClick={() => {
-                dialogContext.setProps({
-                  PaperProps: {
-                    style: {
-                      minWidth: 'none',
-                    },
-                    elevation: Elevations.panels,
-                  },
-                  open: true,
-                  disableEnforceFocus: true,
-                  children: (
-                    <div
-                      style={{
-                        minHeight: '60vh',
-                      }}
-                    >
-                      <TransferList
-                        startingLeft={summaryShown}
-                        startingRight={getHiddenAttributes(
-                          selection,
-                          summaryShown
-                        )
-                          .map((attr) => {
-                            return attr.id
-                          })
-                          .sort()}
-                        startingHideEmpty={hideEmpty}
-                        lazyResult={selection}
-                        onSave={(active, newHideEmpty) => {
-                          user.get('user').get('preferences').set({
-                            'inspector-summaryShown': active,
-                            'inspector-hideEmpty': newHideEmpty,
-                          })
-                          user.savePreferences()
-                          // Force re-render after save to update values on page
-                          // This is more reliable than "refreshing" the result which
-                          // is frequently not synched up properly
-                          setForceRender(!forceRender)
-                        }}
-                      />
-                    </div>
-                  ),
-                })
-              }}
-              color="primary"
-              size="small"
-              style={{ height: 'auto' }}
-            >
-              Manage Attributes
-            </Button>
+            <SummaryManageAttributes />
           </Grid>
 
           <Grid item>
