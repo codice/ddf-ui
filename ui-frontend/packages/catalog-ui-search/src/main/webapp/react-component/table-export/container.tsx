@@ -57,7 +57,7 @@ export default hot(module)(
           },
         ],
         exportSize: 'all',
-        exportFormat: 'csv',
+        exportFormat: "",
         customExportCount: StartupDataStore.Configuration.getExportLimit(),
       }
     }
