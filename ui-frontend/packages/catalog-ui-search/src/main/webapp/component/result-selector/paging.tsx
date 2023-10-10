@@ -3,11 +3,10 @@ import { hot } from 'react-hot-loader'
 import Button from '@mui/material/Button'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { useLazyResultsStatusFromSelectionInterface } from '../selection-interface/hooks'
-import { Elevations } from '../theme/theme'
 import CloseIcon from '@mui/icons-material/Close'
 import TableExport from '../table-export/table-export'
-import { useDialog } from '../dialog'
-import { DarkDivider } from '../dark-divider/dark-divider'
+import { useDialogState } from '../../component/hooks/useDialogState'
+import Divider from '@mui/material/Divider'
 
 type Props = {
   selectionInterface: any
@@ -25,7 +24,7 @@ const Paging = ({ selectionInterface }: Props) => {
   const { isSearching } = useLazyResultsStatusFromSelectionInterface({
     selectionInterface,
   })
-  const dialogContext = useDialog()
+  const exportDialogState = useDialogState()
 
   const [isOutdated, setIsOutdated] = React.useState(
     determineIsOutdated({ selectionInterface })
@@ -79,49 +78,31 @@ const Paging = ({ selectionInterface }: Props) => {
       >
         Next Page
       </Button>
+      <exportDialogState.MuiDialogComponents.Dialog
+        {...exportDialogState.MuiDialogProps}
+      >
+        <exportDialogState.MuiDialogComponents.DialogTitle>
+          <div className="flex flex-row items-center justify-between flex-nowrap w-full">
+            Export Results
+            <Button
+              className="ml-auto"
+              onClick={() => {
+                exportDialogState.handleClose()
+              }}
+            >
+              <CloseIcon />
+            </Button>
+          </div>
+        </exportDialogState.MuiDialogComponents.DialogTitle>
+        <Divider />
+        <TableExport selectionInterface={selectionInterface} />
+      </exportDialogState.MuiDialogComponents.Dialog>
       <Button
         data-id="export-table-button"
         className={`${isOutdated ? 'invisible' : ''}`}
         disabled={isSearching}
         onClick={() => {
-          dialogContext.setProps({
-            PaperProps: {
-              style: {
-                minWidth: 'none',
-              },
-              elevation: Elevations.panels,
-            },
-            open: true,
-            disableEnforceFocus: true, // otherwise we can't click inside 3rd party libraries using portals (like date picker from blueprint)
-            children: (
-              <div
-                className="min-w-screen-1/2"
-                style={{
-                  minHeight: '60vh',
-                }}
-              >
-                <div className="text-2xl text-center px-2 pb-2 pt-4 font-normal relative">
-                  Export
-                  <Button
-                    data-id="close-button"
-                    className="absolute right-0 top-0 mr-1 mt-1"
-                    variant="text"
-                    size="small"
-                    onClick={() => {
-                      dialogContext.setProps({
-                        open: false,
-                        children: null,
-                      })
-                    }}
-                  >
-                    <CloseIcon />
-                  </Button>
-                </div>
-                <DarkDivider className="w-full h-min" />
-                <TableExport selectionInterface={selectionInterface} />
-              </div>
-            ),
-          })
+          exportDialogState.handleClick()
         }}
         color="primary"
       >
