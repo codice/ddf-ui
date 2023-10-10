@@ -881,8 +881,8 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setExportMetacardFormatOptions(String exportMetacardFormatOptions) {
     this.exportMetacardFormatOptions =
-        Arrays.stream(exportMetacardFormatOptions.split(",")).collect(Collectors.toSet());
-    ;
+        Arrays.stream(exportMetacardFormatOptions.replaceAll("\\s+", "").split(","))
+            .collect(Collectors.toSet());
   }
 
   public Set<String> getExportMetacardsFormatOptions() {
@@ -891,7 +891,8 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setExportMetacardsFormatOptions(String exportMetacardsFormatOptions) {
     this.exportMetacardsFormatOptions =
-        Arrays.stream(exportMetacardsFormatOptions.split(",")).collect(Collectors.toSet());
+        Arrays.stream(exportMetacardsFormatOptions.replaceAll("\\s+", "").split(","))
+            .collect(Collectors.toSet());
   }
 
   public Boolean getSignInEnabled() {
