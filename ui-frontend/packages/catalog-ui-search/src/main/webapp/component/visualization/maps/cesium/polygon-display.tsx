@@ -24,6 +24,7 @@ import ShapeUtils from '../../../../js/ShapeUtils'
 import {
   constructSolidLinePrimitive,
   constructOutlinedLinePrimitive,
+  constructDottedLinePrimitive,
 } from './line-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import * as Turf from '@turf/turf'
@@ -64,29 +65,6 @@ const needsRedraw = ({
   }
 
   return false
-}
-
-const constructDottedLinePrimitive = ({
-  coordinates,
-  model,
-}: {
-  coordinates: any
-  model: any
-}) => {
-  const color = model.get('color')
-
-  return {
-    width: 4,
-    material: Cesium.Material.fromType('PolylineDash', {
-      color: color
-        ? Cesium.Color.fromCssColorString(color)
-        : Cesium.Color.KHAKI,
-      dashLength: 16.0,
-      dashPattern: 7.0,
-    }),
-    id: 'userDrawing',
-    positions: Cesium.Cartesian3.fromDegreesArray(_.flatten(coordinates)),
-  }
 }
 
 type Polygon = {

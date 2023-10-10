@@ -66,8 +66,8 @@ export function translateToOpenlayersCoordinates(coords: CoordinatesType) {
   return coordinates
 }
 const modelToLineString = (model: any) => {
-  const polygon = model.get('line')
-  const setArr = _.uniq(polygon)
+  const line = model.get('line')
+  const setArr = _.uniq(line)
   if (setArr.length < 2) {
     return
   }
@@ -126,12 +126,20 @@ export const drawLine = ({
       bufferedLine.geometry.coordinates as any
     ) as unknown as any
   )
+  const drawnGeometryRepresentation = new ol.geom.LineString(
+    translateToOpenlayersCoordinates(
+      turfLine.geometry.coordinates as any
+    ) as unknown as any
+  )
   // need to adjust the points again AFTER buffering, since buffering undoes the antimeridian adjustments
   adjustMultiLinePoints(geometryRepresentation)
   const billboard = new ol.Feature({
     geometry: geometryRepresentation,
   })
   billboard.setId(id)
+  const drawnLineFeature = new ol.Feature({
+    geometry: drawnGeometryRepresentation,
+  })
   const color = model.get('color')
   const iconStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
@@ -139,9 +147,18 @@ export const drawLine = ({
       width: 3,
     }),
   })
+  const drawnLineIconStyle = new ol.style.Style({
+    stroke: new ol.style.Stroke({
+      color: color ? color : '#914500',
+      width: 2,
+      lineDash: [10, 5],
+    }),
+    zIndex: 0,
+  })
   billboard.setStyle(iconStyle)
+  drawnLineFeature.setStyle(drawnLineIconStyle)
   const vectorSource = new ol.source.Vector({
-    features: [billboard],
+    features: [billboard, drawnLineFeature],
   })
   let vectorLayer = new ol.layer.Vector({
     source: vectorSource,

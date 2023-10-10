@@ -119,6 +119,29 @@ export const constructOutlinedLinePrimitive = ({
   }
 }
 
+export const constructDottedLinePrimitive = ({
+  coordinates,
+  model,
+}: {
+  coordinates: any
+  model: any
+}) => {
+  const color = model.get('color')
+
+  return {
+    width: 4,
+    material: Cesium.Material.fromType('PolylineDash', {
+      color: color
+        ? Cesium.Color.fromCssColorString(color)
+        : Cesium.Color.KHAKI,
+      dashLength: 16.0,
+      dashPattern: 7.0,
+    }),
+    id: 'userDrawing',
+    positions: Cesium.Cartesian3.fromDegreesArray(_.flatten(coordinates)),
+  }
+}
+
 const positionsToLine = (
   positions: Cesium.Cartesian3[],
   ellipsoid: Cesium.Ellipsoid
@@ -226,6 +249,12 @@ const drawGeometry = ({
         coordinates: bufferedLine.geometry.coordinates,
         model,
         id,
+      })
+    )
+    primitive.add(
+      constructDottedLinePrimitive({
+        coordinates: turfLine.geometry.coordinates,
+        model,
       })
     )
   }
