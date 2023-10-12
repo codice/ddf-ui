@@ -42,11 +42,8 @@ export default () => {
               }}
             >
               <TransferList
-                startingLeft={user
-                  .get('user')
-                  .get('preferences')
-                  .get('inspector-summaryShown')}
-                startingRight={TypedUserInstance.getResultsAttributesPossibleTable()}
+                startingLeft={TypedUserInstance.getResultsAttributesSummaryShown()}
+                startingRight={TypedUserInstance.getResultsAttributesPossibleSummaryShown()}
                 startingHideEmpty={user
                   .get('user')
                   .get('preferences')

@@ -12,6 +12,19 @@ export const TypedUserInstance = {
   getUserInstance: () => {
     return userInstance
   },
+  getResultsAttributesSummaryShown: (): string[] => {
+    const userchoices = userInstance
+      .get('user')
+      .get('preferences')
+      .get('inspector-summaryShown')
+    if (userchoices.length > 0) {
+      return userchoices
+    }
+    if (StartupDataStore.Configuration.getSummaryShow().length > 0) {
+      return StartupDataStore.Configuration.getSummaryShow()
+    }
+    return ['title', 'created', 'thumbnail']
+  },
   getResultsAttributesShownList: (): string[] => {
     const userchoices = userInstance
       .get('user')
@@ -39,6 +52,25 @@ export const TypedUserInstance = {
     return ['title', 'thumbnail']
   },
   // basically, what could be shown that currently isn't
+  getResultsAttributesPossibleSummaryShown: (): string[] => {
+    const currentAttributesShown =
+      TypedUserInstance.getResultsAttributesSummaryShown()
+    const allKnownAttributes =
+      StartupDataStore.MetacardDefinitions.getSortedAttributes()
+    const searchOnlyAttributes =
+      StartupDataStore.MetacardDefinitions.getSearchOnlyAttributes()
+    const attributesPossible = allKnownAttributes.filter((attr) => {
+      return (
+        !currentAttributesShown.includes(attr.id) &&
+        !searchOnlyAttributes.includes(attr.id) &&
+        !StartupDataStore.MetacardDefinitions.isHiddenTypeExceptThumbnail(
+          attr.id
+        ) &&
+        !StartupDataStore.Configuration.isHiddenAttribute(attr.id)
+      )
+    })
+    return attributesPossible.map((attr) => attr.id)
+  },
   getResultsAttributesPossibleTable: (): string[] => {
     const currentAttributesShown =
       TypedUserInstance.getResultsAttributesShownTable()

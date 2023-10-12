@@ -14,8 +14,8 @@
  **/
 import fetch from '../fetch'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
-import user from '../../../component/singletons/user-instance'
 import { StartupDataStore } from '../../../js/model/Startup/startup'
+import { TypedUserInstance } from '../../../component/singletons/TypedUser'
 
 export enum Transformer {
   Metacard = 'metacard',
@@ -122,17 +122,7 @@ export const getExportOptions = async (type: Transformer) => {
 }
 
 export const getColumnOrder = () => {
-  const userchoices = user
-    .get('user')
-    .get('preferences')
-    .get('inspector-summaryShown')
-  if (userchoices.length > 0) {
-    return userchoices
-  }
-  if ((StartupDataStore.Configuration.config?.summaryShow || []).length > 0) {
-    return StartupDataStore.Configuration.config?.summaryShow
-  }
-  return ['title', 'created', 'thumbnail']
+  return TypedUserInstance.getResultsAttributesSummaryShown()
 }
 
 export const aliasMap = () => {

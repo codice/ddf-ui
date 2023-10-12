@@ -41,19 +41,6 @@ import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-defin
 import Common from '../../../js/Common'
 import SummaryManageAttributes from '../../../react-component/summary-manage-attributes/summary-manage-attributes'
 
-function getSummaryShown(): string[] {
-  const userchoices = user
-    .get('user')
-    .get('preferences')
-    .get('inspector-summaryShown')
-  if (userchoices.length > 0) {
-    return userchoices
-  }
-  if (StartupDataStore.Configuration.getSummaryShow().length > 0) {
-    return StartupDataStore.Configuration.getSummaryShow()
-  }
-  return ['title', 'created', 'thumbnail']
-}
 type Props = {
   result: LazyQueryResult
 }
@@ -710,7 +697,9 @@ const Summary = ({ result: selection }: Props) => {
   const [decimalPrecision, setDecimalPrecision] = React.useState(
     TypedUserInstance.getDecimalPrecision()
   )
-  const [summaryShown, setSummaryShown] = React.useState(getSummaryShown())
+  const [summaryShown, setSummaryShown] = React.useState(
+    TypedUserInstance.getResultsAttributesSummaryShown()
+  )
   useRerenderOnBackboneSync({ lazyResult: selection })
   const { listenTo } = useBackbone()
   const { isHiddenAttribute } = useConfiguration()
@@ -721,7 +710,9 @@ const Summary = ({ result: selection }: Props) => {
       user.get('user').get('preferences'),
       'change:inspector-summaryShown change:dateTimeFormat change:timeZone change:inspector-hideEmpty',
       () => {
-        setSummaryShown([...getSummaryShown()])
+        setSummaryShown([
+          ...TypedUserInstance.getResultsAttributesSummaryShown(),
+        ])
         setForceRender(true)
       }
     )
