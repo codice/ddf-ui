@@ -315,7 +315,7 @@ export const OpenlayersDrawings = ({
         cancelDrawing()
       }
     },
-    [drawingModel, drawingShape, map]
+    [drawingModel, drawingShape, drawingLocation]
   )
 
   useEffect(() => {
@@ -329,6 +329,7 @@ export const OpenlayersDrawings = ({
     } else {
       window.removeEventListener('keydown', handleKeydown)
     }
+    return () => window.removeEventListener('keydown', handleKeydown)
   }, [drawingModel])
 
   const cancelDrawing = () => {

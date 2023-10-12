@@ -103,7 +103,7 @@ export const CesiumDrawings = ({
         cancelDrawing()
       }
     },
-    [drawingModel]
+    [drawingModel, drawingShape, drawingLocation]
   )
 
   useEffect(() => {
@@ -116,6 +116,7 @@ export const CesiumDrawings = ({
     } else {
       window.removeEventListener('keydown', handleKeydown)
     }
+    return () => window.removeEventListener('keydown', handleKeydown)
   }, [drawingModel])
 
   const cancelDrawing = () => {
