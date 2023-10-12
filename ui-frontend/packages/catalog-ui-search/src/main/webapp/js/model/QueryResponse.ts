@@ -21,6 +21,7 @@ import {
 } from './LazyQueryResult/LazyQueryResults'
 import { Client } from 'rpc-websockets'
 import { StartupDataStore } from './Startup/startup'
+import { throwFetchErrorEvent } from '../../react-component/utils/fetch/fetch'
 let rpc: Client | null = null
 if (StartupDataStore.Configuration.getWebSocketsEnabled() && window.WebSocket) {
   const protocol = { 'http:': 'ws:', 'https:': 'wss:' }
@@ -35,6 +36,40 @@ if (StartupDataStore.Configuration.getWebSocketsEnabled() && window.WebSocket) {
   })
   localRpc.connect()
 }
+
+type ResponseType = {
+  results: any
+  statusBySource: {
+    [key: string]: {
+      hits: number
+      count: number
+      elapsed: number
+      id: string
+      successful: boolean
+      warnings: any[]
+      errors: string[]
+    }
+  }
+  types: any
+  highlights: any
+  didYouMeanFields: any
+  showingResultsForFields: any
+}
+
+function checkForErrors(response: ResponseType) {
+  const { statusBySource } = response
+
+  if (statusBySource) {
+    const errors = Object.values(statusBySource).flatMap(
+      (source) => source.errors
+    )
+
+    if (errors.length > 0) {
+      throwFetchErrorEvent(errors)
+    }
+  }
+}
+
 export default Backbone.AssociatedModel.extend({
   defaults() {
     return {
@@ -50,14 +85,17 @@ export default Backbone.AssociatedModel.extend({
       let handled = false
       const promise = rpc
         .call('query', [options.data], options.timeout)
-        // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
-        .then((res: any) => {
-          if (!handled) {
-            handled = true
-            options.success(res)
-            return [res, 'success']
+        .then(
+          // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
+          (res: ResponseType) => {
+            if (!handled) {
+              handled = true
+              checkForErrors(res)
+              options.success(res)
+              return [res, 'success']
+            }
           }
-        })
+        )
         // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
         .catch((res: any) => {
           if (!handled) {

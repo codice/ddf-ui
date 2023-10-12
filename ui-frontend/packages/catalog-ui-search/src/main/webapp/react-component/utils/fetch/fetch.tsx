@@ -15,6 +15,7 @@
 import url from 'url'
 import qs from 'querystring'
 import { Environment } from '../../../js/Environment'
+import { v4 } from 'uuid'
 type Options = {
   headers?: object
   [key: string]: unknown
@@ -45,11 +46,44 @@ const cacheBust = (urlString: string) => {
     search: '?' + qs.stringify({ ...qs.parse(query), _: Date.now() }),
   })
 }
+
+export type FetchErrorEventType = CustomEvent<{
+  errors: string[]
+}>
+
+const fetchErrorEventName = v4() // ensure we don't clash with other events
+
+export function throwFetchErrorEvent(errors: string[] = []) {
+  if (typeof window !== 'undefined') {
+    const customEvent: FetchErrorEventType = new CustomEvent(
+      fetchErrorEventName,
+      {
+        detail: {
+          errors,
+        },
+      }
+    )
+    window.dispatchEvent(customEvent)
+  }
+}
+
+export function listenForFetchErrorEvent(
+  callback: (event: FetchErrorEventType) => void
+) {
+  if (typeof window !== 'undefined') {
+    window.addEventListener(fetchErrorEventName, callback)
+    return () => {
+      window.removeEventListener(fetchErrorEventName, callback)
+    }
+  }
+  return () => {}
+}
+
 export type FetchProps = (url: string, options?: Options) => Promise<Response>
 export default async function (
   url: string,
   { headers, ...opts }: Options = {}
-) {
+): Promise<Response> {
   if (Environment.isTest()) {
     const { default: MockApi } = await import('../../../test/mock-api')
     return Promise.resolve({
@@ -66,5 +100,10 @@ export default async function (
       'X-Requested-With': 'XMLHttpRequest',
       ...headers,
     },
+  }).then((response) => {
+    if (response.status === 500) {
+      throwFetchErrorEvent([response.statusText || 'Internal Server Error'])
+    }
+    return response
   })
 }
