@@ -14,27 +14,31 @@
  **/
 import * as React from 'react'
 import { useEffect, useState } from 'react'
-import TableExport from '../../react-component/table-export'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
+import contentDisposition from 'content-disposition'
+import LinearProgress from '@mui/material/LinearProgress'
+import Button from '@mui/material/Button'
+import GetAppIcon from '@mui/icons-material/GetApp'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
+import useSnack from '../hooks/useSnack'
+import { AddSnack } from '../snack/snack.provider'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 import {
   getExportOptions,
   Transformer,
   getColumnOrder,
-} from '../../react-component/utils/export'
-import user from '../../component/singletons/user-instance'
-import {
   exportResultSet,
   ExportCountInfo,
   DownloadInfo,
   ExportFormat,
 } from '../../react-component/utils/export'
+import user from '../../component/singletons/user-instance'
 import saveFile from '../../react-component/utils/save-file'
 import { DEFAULT_USER_QUERY_OPTIONS } from '../../js/model/TypedQuery'
-import useSnack from '../hooks/useSnack'
-import { AddSnack } from '../snack/snack.provider'
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
-import contentDisposition from 'content-disposition'
+
 import { getResultSetCql } from '../../react-component/utils/cql'
-import { StartupDataStore } from '../../js/model/Startup/startup'
+import SummaryManageAttributes from '../../react-component/summary-manage-attributes/summary-manage-attributes'
 
 export type Props = {
   selectionInterface: any
@@ -43,6 +47,11 @@ export type Props = {
 type Source = {
   id: string
   hits: number
+}
+
+type Option = {
+  label: string
+  value: string
 }
 
 function getSrcs(selectionInterface: any) {
@@ -166,54 +175,169 @@ export const getDownloadBody = (downloadInfo: DownloadInfo) => {
   }
 }
 
-const generateOnDownloadClick = (addSnack: AddSnack) => {
-  return async (downloadInfo: DownloadInfo) => {
-    const exportFormat = encodeURIComponent(downloadInfo.exportFormat)
-    try {
-      const body = getDownloadBody(downloadInfo)
-      const response = await exportResultSet(exportFormat, body)
-      if (response.status === 200) {
-        const data = await response.blob()
-        const contentType = response.headers.get('content-type')
-        const filename = contentDisposition.parse(
-          response.headers.get('content-disposition')
-        ).parameters.filename
-        saveFile(filename, 'data:' + contentType, data)
-      } else {
-        addSnack('Error: Could not export results.', {
-          alertProps: { severity: 'error' },
-        })
-      }
-    } catch (error) {
-      console.error(error)
+const onDownloadClick = async (
+  addSnack: AddSnack,
+  downloadInfo: DownloadInfo
+) => {
+  const exportFormat = encodeURIComponent(downloadInfo.exportFormat)
+  try {
+    const body = getDownloadBody(downloadInfo)
+    const response = await exportResultSet(exportFormat, body)
+    if (response.status === 200) {
+      const data = await response.blob()
+      const contentType = response.headers.get('content-type')
+      const filename = contentDisposition.parse(
+        response.headers.get('content-disposition')
+      ).parameters.filename
+      saveFile(filename, 'data:' + contentType, data)
+    } else {
+      addSnack('Error: Could not export results.', {
+        alertProps: { severity: 'error' },
+      })
     }
+  } catch (error) {
+    console.error(error)
   }
 }
 
 const TableExports = ({ selectionInterface }: Props) => {
-  const [formats, setFormats] = useState([])
+  const exportLimit = StartupDataStore.Configuration.getExportLimit()
+  const [formats, setFormats] = useState<Option[]>([])
+  const [exportFormat, setExportFormat] = useState('')
+  const [exportSize, setExportSize] = useState('all')
+  const [warning, setWarning] = useState('')
+  const [customExportCount, setCustomExportCount] = useState(exportLimit)
+
+  const exportSizes: Option[] = [
+    {
+      label: 'Current Page',
+      value: 'currentPage',
+    },
+    {
+      label: 'All Results',
+      value: 'all',
+    },
+    {
+      label: 'Specific Number of Results',
+      value: 'custom',
+    },
+  ]
+
   const addSnack = useSnack()
   useEffect(() => {
     const fetchFormats = async () => {
-      const exportFormats = await getExportOptions(Transformer.Query)
+      const formats = await getExportOptions(Transformer.Query)
 
       setFormats(
-        exportFormats.map((exportFormat: ExportFormat) => ({
+        formats.map((exportFormat: ExportFormat) => ({
           label: exportFormat.displayName,
           value: exportFormat.id,
         }))
       )
+
+      formats.length && setExportFormat(formats[0].id)
     }
     fetchFormats()
   }, [])
 
-  return (
-    <TableExport
-      exportFormats={formats}
-      selectionInterface={selectionInterface}
-      getWarning={getWarning}
-      onDownloadClick={generateOnDownloadClick(addSnack)}
-    />
+  useEffect(() => {
+    setWarning(
+      getWarning({
+        exportSize,
+        selectionInterface,
+        customExportCount,
+      })
+    )
+  }, [exportSize, customExportCount])
+
+  return formats.length === 0 ? (
+    <LinearProgress className="w-full h-2" />
+  ) : (
+    <div className="p-4" style={{ minWidth: '400px' }}>
+      <div className="pt-2">
+        <Autocomplete
+          size="small"
+          options={exportSizes}
+          onChange={(_e: any, newValue) => {
+            setExportSize(newValue.value)
+          }}
+          isOptionEqualToValue={(option) => option.value === exportSize}
+          getOptionLabel={(option) => {
+            return option.label
+          }}
+          disableClearable
+          value={exportSizes.find((choice) => choice.value === exportSize)}
+          renderInput={(params) => (
+            <TextField {...params} label="Export" variant="outlined" />
+          )}
+        />
+      </div>
+      {exportSize === 'custom' ? (
+        <div className="pt-2">
+          <TextField
+            fullWidth
+            size="small"
+            type="number"
+            label=""
+            placeholder="Enter number of results you would like to export"
+            name="customExport"
+            value={customExportCount}
+            onChange={(e) => {
+              setCustomExportCount(Number(e.target.value))
+            }}
+            variant="outlined"
+          />
+        </div>
+      ) : (
+        <div />
+      )}
+      <div className="pt-2 export-format">
+        <Autocomplete
+          size="small"
+          options={formats}
+          onChange={(_e: any, newValue) => {
+            setExportFormat(newValue.value)
+          }}
+          isOptionEqualToValue={(option) => option.value === exportFormat}
+          getOptionLabel={(option) => {
+            return option.label
+          }}
+          disableClearable
+          value={formats.find((choice) => choice.value === exportFormat)}
+          renderInput={(params) => (
+            <TextField {...params} label="as" variant="outlined" />
+          )}
+        />
+      </div>
+      {['csv', 'rtf', 'xlsx'].includes(exportFormat) ? (
+        <SummaryManageAttributes />
+      ) : null}
+      {warning && (
+        <div className="warning text-center pt-1">
+          <i className="fa fa-warning" />
+          <span>{warning}</span>
+        </div>
+      )}
+      <div className="pt-2">
+        <Button
+          fullWidth
+          variant="contained"
+          color="primary"
+          disabled={exportSize === 'custom' && customExportCount > exportLimit}
+          onClick={() =>
+            onDownloadClick(addSnack, {
+              exportFormat,
+              exportSize,
+              customExportCount,
+              selectionInterface,
+            })
+          }
+        >
+          <GetAppIcon /> Download
+        </Button>
+      </div>
+    </div>
   )
 }
+
 export default TableExports
