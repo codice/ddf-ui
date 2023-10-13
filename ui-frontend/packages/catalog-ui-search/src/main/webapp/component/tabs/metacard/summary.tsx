@@ -78,7 +78,7 @@ const ThumbnailInput = ({
                 // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
                 onChange(event.target.result)
               } catch (err) {
-                console.error('something wrong with file type')
+                console.error('there is something wrong with file type')
               }
             }
             reader.onerror = () => {
