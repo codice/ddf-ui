@@ -168,6 +168,7 @@ export const drawPolygon = ({
     geometry: bufferGeometryRepresentation,
   })
   billboard.setId(id)
+  billboard.set('locationId', model.get('locationId'))
   const drawnPolygonFeature = new ol.Feature({
     geometry: drawnGeometryRepresentation,
   })

@@ -87,6 +87,7 @@ export const drawCircle = ({
     geometry: geometryRepresentation,
   })
   billboard.setId(id)
+  billboard.set('locationId', model.get('locationId'))
   const color = model.get('color')
   const iconStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({

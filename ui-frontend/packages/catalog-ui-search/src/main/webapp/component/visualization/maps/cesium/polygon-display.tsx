@@ -170,6 +170,7 @@ const drawGeometry = ({
   } else {
     const pc = new Cesium.PolylineCollection()
     pc.id = id
+    pc.locationId = json.locationId
     polygons.forEach((polygonPoints) => {
       if (!validateAndFixPolygon(polygonPoints)) {
         return

@@ -93,13 +93,30 @@ export const CesiumDrawings = ({
   const [isDrawing, setIsDrawing] = useState(false)
   const [drawingShape, setDrawingShape] = useState<Shape>(DEFAULT_SHAPE)
 
+  const handleKeydown = React.useCallback(
+    (e: any) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        finishDrawing()
+      }
+      if (e.key === 'Escape') {
+        cancelDrawing()
+      }
+    },
+    [drawingModel, drawingShape, drawingLocation]
+  )
+
   useEffect(() => {
     setIsDrawing(!!drawingModel)
     if (drawingModel) {
+      window.addEventListener('keydown', handleKeydown)
       setDrawingShape(
         getShapeFromDrawMode(getDrawModeFromModel({ model: drawingModel }))
       )
+    } else {
+      window.removeEventListener('keydown', handleKeydown)
     }
+    return () => window.removeEventListener('keydown', handleKeydown)
   }, [drawingModel])
 
   const cancelDrawing = () => {

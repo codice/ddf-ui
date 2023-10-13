@@ -135,16 +135,25 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
   const isDrawing = useIsDrawing()
   const { listenTo, stopListening } = useBackbone()
   const { MuiButtonProps, MuiPopoverProps } = useMenuState()
+  const onDraw = () => {
+    ;(wreqr as any).vent.trigger('search:draw' + state.mode, locationModel)
+  }
+  const onDrawCancel = () => {
+    ;(wreqr as any).vent.trigger('search:drawcancel', locationModel)
+  }
+  const onDrawEnd = () => {
+    ;(wreqr as any).vent.trigger('search:drawend', locationModel)
+  }
   const setColor = (color: string) => {
     locationModel.set('color', color)
-    ;(wreqr as any).vent.trigger('search:drawend', [locationModel])
+    onDrawEnd()
   }
   React.useEffect(() => {
     return () => {
       setTimeout(() => {
         // This is to facilitate clearing out the map, it isn't about the value, but we don't want the changeCallback to fire!
         locationModel.set(locationModel.defaults())
-        ;(wreqr as any).vent.trigger('search:drawend', [locationModel])
+        onDrawEnd()
       }, 0)
     }
   }, [])
@@ -159,6 +168,19 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
       stopListening(locationModel, 'change', onChangeCallback)
     }
   }, [onChange])
+  React.useEffect(() => {
+    const onDoubleClickCallback = (locationId: any) => {
+      if (locationModel.attributes.locationId === locationId) onDraw()
+    }
+    listenTo((wreqr as any).vent, 'location:doubleClick', onDoubleClickCallback)
+    return () => {
+      stopListening(
+        (wreqr as any).vent,
+        'location:doubleClick',
+        onDoubleClickCallback
+      )
+    }
+  }, [locationModel, state])
   const ComponentToRender = inputs[state.mode]
     ? inputs[state.mode].Component
     : () => null
@@ -234,12 +256,7 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
               {isDrawing && locationModel === Drawing.getDrawModel() ? (
                 <Button
                   className="location-draw mt-2"
-                  onClick={() => {
-                    ;(wreqr as any).vent.trigger(
-                      'search:drawcancel',
-                      locationModel
-                    )
-                  }}
+                  onClick={onDrawCancel}
                   color="secondary"
                   fullWidth
                 >
@@ -248,12 +265,7 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
               ) : (
                 <Button
                   className="location-draw mt-2"
-                  onClick={() => {
-                    ;(wreqr as any).vent.trigger(
-                      'search:draw' + state.mode,
-                      locationModel
-                    )
-                  }}
+                  onClick={onDraw}
                   color="primary"
                   fullWidth
                 >

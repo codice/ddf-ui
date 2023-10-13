@@ -137,6 +137,7 @@ export const drawLine = ({
     geometry: geometryRepresentation,
   })
   billboard.setId(id)
+  billboard.set('locationId', model.get('locationId'))
   const drawnLineFeature = new ol.Feature({
     geometry: drawnGeometryRepresentation,
   })
@@ -153,7 +154,6 @@ export const drawLine = ({
       width: 2,
       lineDash: [10, 5],
     }),
-    zIndex: 0,
   })
   billboard.setStyle(iconStyle)
   drawnLineFeature.setStyle(drawnLineIconStyle)
