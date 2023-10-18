@@ -31,7 +31,7 @@ type PrecisionOption = {
 
 const Options = [
   {
-    label: 'None',
+    label: 'Default',
     value: undefined,
   },
   {

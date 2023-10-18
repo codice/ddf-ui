@@ -310,7 +310,7 @@ const TableExports = ({ selectionInterface }: Props) => {
         />
       </div>
       {['csv', 'rtf', 'xlsx'].includes(exportFormat) ? (
-        <SummaryManageAttributes />
+        <SummaryManageAttributes isExport={true} />
       ) : null}
       {warning && (
         <div className="warning text-center pt-1">

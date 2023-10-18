@@ -20,7 +20,7 @@ import { Elevations } from '../../component//theme/theme'
 import { useDialog } from '../../component//dialog'
 import { TypedUserInstance } from '../../component/singletons/TypedUser'
 
-export default () => {
+export default ({ isExport = false }: { isExport?: boolean }) => {
   const dialogContext = useDialog()
   return (
     <Button
@@ -64,7 +64,7 @@ export default () => {
       size="small"
       style={{ height: 'auto' }}
     >
-      Manage Attributes
+      {isExport ? 'Select Attributes to Export' : 'Manage Attributes'}
     </Button>
   )
 }
