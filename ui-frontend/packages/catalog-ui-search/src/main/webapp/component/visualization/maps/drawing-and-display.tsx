@@ -122,6 +122,9 @@ const extractModelsFromFilter = ({
         })
       } else {
         const newLocationModel = new LocationModel(filter.value)
+        if (newLocationModel.get('hasKeyword')) {
+          newLocationModel.set('locationId', undefined)
+        }
         extractedModels.push(newLocationModel)
       }
     }
