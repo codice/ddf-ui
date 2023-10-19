@@ -261,9 +261,9 @@ const Gazetteer = (props: Props) => {
   const geofeature = async (suggestion: Suggestion) => {
     const [type, id] = suggestion.id.split(':')
     const res = await (window as any).__global__fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&osm_type=${type}&osm_id=${id}&polygon_geojson=1`
+      `https://nominatim.openstreetmap.org/lookup?format=json&osm_ids=${type}${id}&polygon_geojson=1`
     )
-    const data = await res.json()
+    const data = (await res.json())[0]
     const boundingBoxLimit = 75
     const boundingBoxWidth = data.boundingbox[3] - data.boundingbox[2]
     const boundingBoxHeight = data.boundingbox[1] - data.boundingbox[0]
