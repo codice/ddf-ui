@@ -65,6 +65,19 @@ const coordsToLineString = (rawCoords: any) => {
 }
 const modelToPolygon = (model: any) => {
   const coords = model.get('polygon')
+
+  if (coords && coords.length === 0) {
+    return new ol.geom.MultiPolygon([])
+  }
+
+  if (
+    coords &&
+    coords.length > 0 &&
+    coords[0].toString() !== coords[coords.length - 1].toString()
+  ) {
+    coords.push(coords[0])
+  }
+
   if (
     coords === undefined ||
     validateGeo('polygon', JSON.stringify(coords))?.error
@@ -211,7 +224,6 @@ const updatePrimitive = ({
   id: string
 }) => {
   const polygon = modelToPolygon(model)
-  // Make sure the current model has width and height before drawing
   if (polygon !== undefined) {
     drawPolygon({ map, model, polygon, id })
   }
