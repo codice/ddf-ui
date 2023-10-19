@@ -17,7 +17,6 @@ import { useState, useEffect } from 'react'
 import { v4 } from 'uuid'
 import {
   getDrawModeFromModel,
-  useDrawingAndDisplayModels,
   getShapeFromDrawMode,
   getDrawModeFromShape,
 } from '../drawing-and-display'
@@ -45,7 +44,10 @@ import { validateGeo } from '../../../../react-component/utils/validation'
 import ShapeUtils from '../../../../js/ShapeUtils'
 import _ from 'lodash'
 import utility from './utility'
-import { contrastingColor } from '../../../../react-component/location/location-color-selector'
+import {
+  locationColors,
+  contrastingColor,
+} from '../../../../react-component/location/location-color-selector'
 
 const DrawingMenu = menu.DrawingMenu
 const makeEmptyGeometry = geometry.makeEmptyGeometry
@@ -272,6 +274,7 @@ export const convertToModel = (geo: GeometryJSON, shape: Shape) => {
     ...createGeoModel(geo),
     type: getGeoType(geo),
     mode: getDrawModeFromShape(shape),
+    color: geo.properties?.color || Object.values(locationColors)[0],
   }
 }
 
@@ -286,15 +289,12 @@ let drawingLocation: GeometryJSON | null = makeEmptyGeometry(
 
 export const OpenlayersDrawings = ({
   map,
-  selectionInterface,
+  drawingAndDisplayModels,
 }: {
   map: any
-  selectionInterface: any
+  drawingAndDisplayModels: any
 }) => {
-  const { models, filterModels, drawingModels } = useDrawingAndDisplayModels({
-    selectionInterface,
-    map,
-  })
+  const { models, filterModels, drawingModels } = drawingAndDisplayModels
 
   const [drawingModel] =
     drawingModels.length > 0 ? drawingModels.slice(-1) : [undefined]
@@ -367,7 +367,7 @@ export const OpenlayersDrawings = ({
 
   return (
     <>
-      {filterModels.map((model) => {
+      {filterModels.map((model: any) => {
         const drawMode = getDrawModeFromModel({ model })
         switch (drawMode) {
           case 'bbox':
@@ -404,7 +404,7 @@ export const OpenlayersDrawings = ({
             )
         }
       })}
-      {models.map((model) => {
+      {models.map((model: any) => {
         const drawMode = getDrawModeFromModel({ model })
         switch (drawMode) {
           case 'bbox':

@@ -16,6 +16,7 @@ import React from 'react'
 import { Memo } from '../../../memo/memo'
 import { MapViewReact } from '../map.view'
 import { OpenlayersDrawings } from './drawing-and-display'
+import { useDrawingAndDisplayModels } from '../drawing-and-display'
 import $ from 'jquery'
 
 const loadOpenLayersCode = () => {
@@ -30,11 +31,11 @@ const loadOpenLayersCode = () => {
 export const OpenlayersMapViewReact = ({
   selectionInterface,
   setMap: outerSetMap,
-  includeDrawings = true,
+  drawingAndDisplayModels,
 }: {
   selectionInterface: any
   setMap?: (map: any) => void
-  includeDrawings?: boolean
+  drawingAndDisplayModels?: any
 }) => {
   const [map, setMap] = React.useState<any>(null)
   React.useEffect(() => {
@@ -42,6 +43,14 @@ export const OpenlayersMapViewReact = ({
       outerSetMap(map)
     }
   }, [map])
+
+  if (!drawingAndDisplayModels) {
+    drawingAndDisplayModels = useDrawingAndDisplayModels({
+      selectionInterface,
+      map,
+    })
+  }
+
   return (
     <>
       <Memo>
@@ -51,9 +60,10 @@ export const OpenlayersMapViewReact = ({
           setMap={setMap}
         />
       </Memo>
-      {includeDrawings && (
-        <OpenlayersDrawings selectionInterface={selectionInterface} map={map} />
-      )}
+      <OpenlayersDrawings
+        drawingAndDisplayModels={drawingAndDisplayModels}
+        map={map}
+      />
     </>
   )
 }

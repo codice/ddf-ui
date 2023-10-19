@@ -214,7 +214,7 @@ export default function (
       })
     },
     onDoubleClick() {
-      $(map.getTargetElement()).on('dblclick', (e) => {
+      $(map.getTargetElement()).one('dblclick', (e) => {
         const boundingRect = map.getTargetElement().getBoundingClientRect()
         const id = determineLocationIdFromPosition(
           [e.clientX - boundingRect.left, e.clientY - boundingRect.top],

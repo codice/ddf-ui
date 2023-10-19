@@ -276,6 +276,18 @@ const handleMapHover = ({
   setIsHoveringResult: (val: boolean) => void
   setEditableGeo: (val: EditableGeo) => void
 }) => {
+  const isHoveringOverGeo = Boolean(
+    mapEvent.mapTarget &&
+      mapEvent.mapTarget.constructor === String &&
+      (mapEvent.mapTarget as string).startsWith(SHAPE_ID_PREFIX)
+  )
+
+  if (isHoveringOverGeo) setEditableGeo(Boolean(mapEvent.mapLocationId))
+  else setEditableGeo(undefined)
+
+  if (!selectionInterface) {
+    return
+  }
   const currentQuery = selectionInterface.get('currentQuery')
   if (!currentQuery) {
     return
@@ -296,15 +308,6 @@ const handleMapHover = ({
             !(mapEvent.mapTarget as string).startsWith(SHAPE_ID_PREFIX)))
     )
   )
-
-  const isHoveringOverGeo = Boolean(
-    mapEvent.mapTarget &&
-      mapEvent.mapTarget.constructor === String &&
-      (mapEvent.mapTarget as string).startsWith(SHAPE_ID_PREFIX)
-  )
-
-  if (isHoveringOverGeo) setEditableGeo(Boolean(mapEvent.mapLocationId))
-  else setEditableGeo(undefined)
 }
 
 const useMapListeners = ({
@@ -320,7 +323,7 @@ const useMapListeners = ({
   const [editableGeo, setEditableGeo] = React.useState<EditableGeo>(undefined)
 
   React.useEffect(() => {
-    if (map && mapModel && selectionInterface) {
+    if (map && mapModel) {
       map.onMouseMove((_event: any, mapEvent: any) => {
         handleMapHover({
           map,
