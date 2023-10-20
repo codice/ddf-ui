@@ -113,6 +113,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.ExecutionException;
+import org.apache.shiro.util.ThreadContext;
 import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
 import org.codice.ddf.catalog.ui.enumeration.ExperimentalEnumerationExtractor;
 import org.codice.ddf.catalog.ui.metacard.associations.Associated;
@@ -147,6 +148,8 @@ public class MetacardApplication implements SparkApplication {
   private static final Logger LOGGER = LoggerFactory.getLogger(MetacardApplication.class);
 
   private static final String UPDATE_ERROR_MESSAGE = "Item is either restricted or not found.";
+
+  private static final String EXERCISE_MODE_KEY = "exercise-mode";
 
   private static final Set<Action> CONTENT_ACTIONS =
       ImmutableSet.of(Action.VERSIONED_CONTENT, Action.DELETED_CONTENT);
@@ -1085,6 +1088,12 @@ public class MetacardApplication implements SparkApplication {
     final DeleteRequestImpl deleteRequest =
         new DeleteRequestImpl(response.getResults().get(0).getMetacard().getId());
     deleteRequest.getProperties().put("operation.query-tags", ImmutableSet.of("*"));
+
+    String exerciseId = (String) ThreadContext.get(EXERCISE_MODE_KEY);
+    if (exerciseId != null) {
+      deleteRequest.getProperties().put(EXERCISE_MODE_KEY, exerciseId);
+    }
+
     try {
       executeAsSystem(() -> catalogFramework.delete(deleteRequest));
     } catch (ExecutionException e) {
