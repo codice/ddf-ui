@@ -35,7 +35,7 @@ export const DateRelativeField = ({ value, onChange }: Props) => {
   }
   return (
     <Grid container direction="row" className="w-full">
-      <Grid item xs={4} className="pb-2">
+      <Grid item xs={4}>
         <NumberField
           type="float"
           onChange={(val) => {

@@ -110,10 +110,8 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
             ...EnterKeySubmitProps,
           }}
           popoverProps={{
-            modifiers: {
-              preventOverflow: { enabled: false },
-              hide: { enabled: false },
-            },
+            boundary: 'viewport',
+            position: 'bottom',
             onClose: () => {
               setTimeout(() => {
                 blueprintDateRef.current?.setState({ isOpen: false })
