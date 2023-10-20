@@ -15,10 +15,41 @@
 import url from 'url'
 import qs from 'querystring'
 import { Environment } from '../../../js/Environment'
-type Options = {
-  headers?: object
-  [key: string]: unknown
+import { v4 } from 'uuid'
+
+export type QueryResponseType = {
+  results: any
+  statusBySource: {
+    [key: string]: {
+      hits: number
+      count: number
+      elapsed: number
+      id: string
+      successful: boolean
+      warnings: any[]
+      errors: string[]
+    }
+  }
+  types: any
+  highlights: any
+  didYouMeanFields: any
+  showingResultsForFields: any
 }
+
+export function checkForErrors(response: QueryResponseType) {
+  const { statusBySource } = response
+
+  if (statusBySource) {
+    const errors = Object.values(statusBySource).flatMap(
+      (source) => source.errors
+    )
+
+    if (errors.length > 0) {
+      throwFetchErrorEvent(errors)
+    }
+  }
+}
+
 const fetch = window.fetch
 ;(window as any).__global__fetch = fetch
 // patch global fetch to warn about usage during development
@@ -45,11 +76,43 @@ const cacheBust = (urlString: string) => {
     search: '?' + qs.stringify({ ...qs.parse(query), _: Date.now() }),
   })
 }
-export type FetchProps = (url: string, options?: Options) => Promise<Response>
+
+export type FetchErrorEventType = CustomEvent<{
+  errors: string[]
+}>
+
+const fetchErrorEventName = v4() // ensure we don't clash with other events
+
+export function throwFetchErrorEvent(errors: string[] = []) {
+  if (typeof window !== 'undefined') {
+    const customEvent: FetchErrorEventType = new CustomEvent(
+      fetchErrorEventName,
+      {
+        detail: {
+          errors,
+        },
+      }
+    )
+    window.dispatchEvent(customEvent)
+  }
+}
+
+export function listenForFetchErrorEvent(
+  callback: (event: FetchErrorEventType) => void
+) {
+  if (typeof window !== 'undefined') {
+    window.addEventListener(fetchErrorEventName, callback)
+    return () => {
+      window.removeEventListener(fetchErrorEventName, callback)
+    }
+  }
+  return () => {}
+}
+
 export default async function (
   url: string,
-  { headers, ...opts }: Options = {}
-) {
+  { headers, ...opts }: RequestInit = {}
+): Promise<Response> {
   if (Environment.isTest()) {
     const { default: MockApi } = await import('../../../test/mock-api')
     return Promise.resolve({
@@ -66,5 +129,10 @@ export default async function (
       'X-Requested-With': 'XMLHttpRequest',
       ...headers,
     },
+  }).then((response) => {
+    if (response.status === 500) {
+      throwFetchErrorEvent([response.statusText || 'Internal Server Error'])
+    }
+    return response
   })
 }

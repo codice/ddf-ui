@@ -21,6 +21,10 @@ import {
 } from './LazyQueryResult/LazyQueryResults'
 import { Client } from 'rpc-websockets'
 import { StartupDataStore } from './Startup/startup'
+import {
+  QueryResponseType,
+  checkForErrors,
+} from '../../react-component/utils/fetch/fetch'
 let rpc: Client | null = null
 if (StartupDataStore.Configuration.getWebSocketsEnabled() && window.WebSocket) {
   const protocol = { 'http:': 'ws:', 'https:': 'wss:' }
@@ -35,6 +39,7 @@ if (StartupDataStore.Configuration.getWebSocketsEnabled() && window.WebSocket) {
   })
   localRpc.connect()
 }
+
 export default Backbone.AssociatedModel.extend({
   defaults() {
     return {
@@ -50,14 +55,17 @@ export default Backbone.AssociatedModel.extend({
       let handled = false
       const promise = rpc
         .call('query', [options.data], options.timeout)
-        // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
-        .then((res: any) => {
-          if (!handled) {
-            handled = true
-            options.success(res)
-            return [res, 'success']
+        .then(
+          // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
+          (res: QueryResponseType) => {
+            if (!handled) {
+              handled = true
+              checkForErrors(res)
+              options.success(res)
+              return [res, 'success']
+            }
           }
-        })
+        )
         // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
         .catch((res: any) => {
           if (!handled) {

@@ -149,7 +149,7 @@ class Configuration extends Subscribable<{ thing: 'configuration-update' }> {
     return this.platformUiConfiguration?.color
   }
   getWebSocketsEnabled = () => {
-    return this.config?.webSocketsEnabled || true
+    return this.config?.webSocketsEnabled
   }
   getBasicSearchMatchType = () => {
     return this.config?.basicSearchMatchType || 'datatype'
