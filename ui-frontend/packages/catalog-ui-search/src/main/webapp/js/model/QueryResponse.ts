@@ -21,7 +21,10 @@ import {
 } from './LazyQueryResult/LazyQueryResults'
 import { Client } from 'rpc-websockets'
 import { StartupDataStore } from './Startup/startup'
-import { throwFetchErrorEvent } from '../../react-component/utils/fetch/fetch'
+import {
+  QueryResponseType,
+  checkForErrors,
+} from '../../react-component/utils/fetch/fetch'
 let rpc: Client | null = null
 if (StartupDataStore.Configuration.getWebSocketsEnabled() && window.WebSocket) {
   const protocol = { 'http:': 'ws:', 'https:': 'wss:' }
@@ -35,39 +38,6 @@ if (StartupDataStore.Configuration.getWebSocketsEnabled() && window.WebSocket) {
     rpc = localRpc
   })
   localRpc.connect()
-}
-
-type ResponseType = {
-  results: any
-  statusBySource: {
-    [key: string]: {
-      hits: number
-      count: number
-      elapsed: number
-      id: string
-      successful: boolean
-      warnings: any[]
-      errors: string[]
-    }
-  }
-  types: any
-  highlights: any
-  didYouMeanFields: any
-  showingResultsForFields: any
-}
-
-function checkForErrors(response: ResponseType) {
-  const { statusBySource } = response
-
-  if (statusBySource) {
-    const errors = Object.values(statusBySource).flatMap(
-      (source) => source.errors
-    )
-
-    if (errors.length > 0) {
-      throwFetchErrorEvent(errors)
-    }
-  }
 }
 
 export default Backbone.AssociatedModel.extend({
@@ -87,7 +57,7 @@ export default Backbone.AssociatedModel.extend({
         .call('query', [options.data], options.timeout)
         .then(
           // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
-          (res: ResponseType) => {
+          (res: QueryResponseType) => {
             if (!handled) {
               handled = true
               checkForErrors(res)

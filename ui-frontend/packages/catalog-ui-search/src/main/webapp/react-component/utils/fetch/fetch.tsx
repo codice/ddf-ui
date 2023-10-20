@@ -16,10 +16,40 @@ import url from 'url'
 import qs from 'querystring'
 import { Environment } from '../../../js/Environment'
 import { v4 } from 'uuid'
-type Options = {
-  headers?: object
-  [key: string]: unknown
+
+export type QueryResponseType = {
+  results: any
+  statusBySource: {
+    [key: string]: {
+      hits: number
+      count: number
+      elapsed: number
+      id: string
+      successful: boolean
+      warnings: any[]
+      errors: string[]
+    }
+  }
+  types: any
+  highlights: any
+  didYouMeanFields: any
+  showingResultsForFields: any
 }
+
+export function checkForErrors(response: QueryResponseType) {
+  const { statusBySource } = response
+
+  if (statusBySource) {
+    const errors = Object.values(statusBySource).flatMap(
+      (source) => source.errors
+    )
+
+    if (errors.length > 0) {
+      throwFetchErrorEvent(errors)
+    }
+  }
+}
+
 const fetch = window.fetch
 ;(window as any).__global__fetch = fetch
 // patch global fetch to warn about usage during development
@@ -79,10 +109,9 @@ export function listenForFetchErrorEvent(
   return () => {}
 }
 
-export type FetchProps = (url: string, options?: Options) => Promise<Response>
 export default async function (
   url: string,
-  { headers, ...opts }: Options = {}
+  { headers, ...opts }: RequestInit = {}
 ): Promise<Response> {
   if (Environment.isTest()) {
     const { default: MockApi } = await import('../../../test/mock-api')
