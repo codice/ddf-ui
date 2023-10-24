@@ -109,7 +109,7 @@ function isTypeLimiter(filter: any) {
   )
   if (metadataContentTypeSupported) {
     return (
-      typesFound.length === 2 &&
+      typesFound.length >= 2 &&
       typesFound.includes(METADATA_CONTENT_TYPE) &&
       typesFound.includes(getMatchTypeAttribute())
     )
