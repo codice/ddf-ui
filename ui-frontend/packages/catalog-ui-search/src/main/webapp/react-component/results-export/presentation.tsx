@@ -72,7 +72,7 @@ const ResultsExportComponent = (props: Props) => {
         />
       </div>
       {['CSV', 'RTF', 'XLSX'].includes(selectedFormat) ? (
-        <SummaryManageAttributes />
+        <SummaryManageAttributes isExport={true} />
       ) : null}
       <Button
         variant="contained"

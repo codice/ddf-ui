@@ -882,7 +882,7 @@ public class ConfigurationApplication implements SparkApplication {
   public void setExportMetacardFormatOptions(String exportMetacardFormatOptions) {
     this.exportMetacardFormatOptions =
         Arrays.stream(exportMetacardFormatOptions.replaceAll("\\s+", "").split(","))
-            .collect(Collectors.toSet());
+            .collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
   public Set<String> getExportMetacardsFormatOptions() {
@@ -892,7 +892,7 @@ public class ConfigurationApplication implements SparkApplication {
   public void setExportMetacardsFormatOptions(String exportMetacardsFormatOptions) {
     this.exportMetacardsFormatOptions =
         Arrays.stream(exportMetacardsFormatOptions.replaceAll("\\s+", "").split(","))
-            .collect(Collectors.toSet());
+            .collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
   public Boolean getSignInEnabled() {

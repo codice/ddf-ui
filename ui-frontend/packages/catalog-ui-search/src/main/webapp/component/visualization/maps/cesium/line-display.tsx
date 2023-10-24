@@ -129,13 +129,13 @@ export const constructDottedLinePrimitive = ({
   const color = model.get('color')
 
   return {
-    width: 4,
+    width: 2,
     material: Cesium.Material.fromType('PolylineDash', {
       color: color
         ? Cesium.Color.fromCssColorString(color)
         : Cesium.Color.KHAKI,
-      dashLength: 16.0,
-      dashPattern: 7.0,
+      dashLength: 20,
+      dashPattern: 255,
     }),
     id: 'userDrawing',
     positions: Cesium.Cartesian3.fromDegreesArray(_.flatten(coordinates)),
