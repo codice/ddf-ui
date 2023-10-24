@@ -20,26 +20,26 @@ type Props = {
 
 type SourcesType = ('all' | 'fast' | 'slow' | string)[]
 
-const getHumanReadableSourceName = (sourceId: string) => {
+export const getHumanReadableSourceName = (sourceId: string) => {
   if (sourceId === 'all') {
     return 'All'
   } else if (sourceId === 'remote') {
     return (
-      <Grid container alignItems="center" direction="row">
-        <Grid item>Slow (offsite)</Grid>{' '}
-        <Grid item>
+      <div className="flex flex-row items-center">
+        <div>Slow (offsite)</div>{' '}
+        <div>
           <CloudIcon />
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     )
   } else if (sourceId === 'local') {
     return (
-      <Grid container alignItems="center" direction="row">
-        <Grid item>Fast (onsite)</Grid>{' '}
-        <Grid item>
+      <div className="flex flex-row items-center">
+        <div>Fast (onsite)</div>{' '}
+        <div>
           <HomeIcon />
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     )
   }
   return sourceId
