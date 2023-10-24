@@ -42,6 +42,7 @@ import BooleanSearchBar from '../boolean-search-bar/boolean-search-bar'
 import { ValidationResult } from '../../react-component/location/validators'
 import { StartupDataStore } from '../../js/model/Startup/startup'
 import { useMetacardDefinitions } from '../../js/model/Startup/metacard-definitions.hooks'
+import { DatatypeQueryMap } from '../../js/model/Startup/startup.types'
 function isNested(filter: any) {
   let nested = false
   filter.filters.forEach((subfilter: any) => {
@@ -255,10 +256,14 @@ function translateFilterToBasicMap(filter: FilterBuilderClass) {
   }
   // if datatype exists, this maps to "anyType" (we expand to multiple attributes going out, but can look at just datatype when coming in)
   if (propertyValueMap.datatype) {
+    const validTypes = StartupDataStore.MetacardDefinitions.getEnum(
+      getMatchTypeAttribute()
+    )
     propertyValueMap.anyType.on = true
     propertyValueMap.anyType.properties = propertyValueMap.datatype
       .map((filter: FilterClass) => filter.value)
       .filter((val: string) => val !== '*') // allows us to depend on directly on filterTree with minimal weirdness, see constructFilterFromBasicFilter method for why this is necessary
+      .filter((val: string) => validTypes.includes(val)) // filter out any datatypes that aren't in the options list. These can be added here from datatypeQueryMapping custom configuration
   }
   return {
     propertyValueMap,
@@ -314,26 +319,48 @@ const constructFilterFromBasicFilter = ({
     filters.push(basicFilter.anyGeo[0])
   }
   if (basicFilter.anyType.on && basicFilter.anyType.properties.length > 0) {
-    filters.push(
-      new FilterBuilderClass({
-        type: 'OR',
-        filters: basicFilter.anyType.properties
-          .map((property) => {
-            return new FilterClass({
-              property: 'datatype',
-              value: property,
-              type: 'ILIKE',
-            })
+    let typeFilters = basicFilter.anyType.properties
+      .map((property) => {
+        return new FilterClass({
+          property: 'datatype',
+          value: property,
+          type: 'ILIKE',
+        })
+      })
+      .concat(
+        basicFilter.anyType.properties.map((property) => {
+          return new FilterClass({
+            property: 'metadata-content-type',
+            value: property,
+            type: 'ILIKE',
           })
-          .concat(
-            basicFilter.anyType.properties.map((property) => {
+        })
+      )
+    const datatypeQueryMapping = StartupDataStore.Configuration.getExtra()
+      ?.datatypeQueryMapping as DatatypeQueryMap[]
+    const datatypes = datatypeQueryMapping?.filter((m) =>
+      basicFilter.anyType.properties.includes(m.datatype)
+    )
+    // In addition to the default datatype filter logic, add the custom datatype Query mapping from the configuration
+    if (datatypes?.length > 0) {
+      typeFilters = typeFilters.concat(
+        datatypes.flatMap((datatype) => {
+          return datatype.attributes.flatMap((attribute) => {
+            return attribute.values.flatMap((value) => {
               return new FilterClass({
-                property: 'metadata-content-type',
-                value: property,
+                property: attribute.name,
+                value: value,
                 type: 'ILIKE',
               })
             })
-          ),
+          })
+        })
+      )
+    }
+    filters.push(
+      new FilterBuilderClass({
+        type: 'OR',
+        filters: typeFilters,
       })
     )
   } else if (basicFilter.anyType.on) {
