@@ -355,3 +355,11 @@ export type StartupPayloadType = {
   user: UserType
   harvestedSources: string[]
 }
+
+export type DatatypeQueryMap = {
+  datatype: string
+  attributes: {
+    name: string
+    values: string[]
+  }[]
+}

@@ -175,6 +175,9 @@ class Configuration extends Subscribable<{ thing: 'configuration-update' }> {
   getDisableUnknownErrorBox = () => {
     return this.config?.disableUnknownErrorBox || false
   }
+  getExtra = () => {
+    return this.config?.extra || []
+  }
 }
 
 export { Configuration }
