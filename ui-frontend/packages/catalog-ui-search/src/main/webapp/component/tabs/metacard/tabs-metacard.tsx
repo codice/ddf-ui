@@ -13,7 +13,6 @@
  *
  **/
 import React from 'react'
-import { MetacardOverwrite } from '../../metacard-overwrite/metacard-overwrite.view'
 import MetacardActions from '../../../react-component/metacard-actions'
 import MetacardQuality from '../../../react-component/metacard-quality'
 import MetacardHistory from '../../../react-component/metacard-history'
@@ -39,7 +38,6 @@ export const TabNames = {
   History: 'History',
   Quality: 'Quality',
   Actions: 'Actions',
-  Overwrite: 'Overwrite',
 }
 
 const Tabs = {
@@ -52,11 +50,6 @@ const Tabs = {
   History: { content: MetacardHistory },
   Quality: { content: MetacardQuality },
   Actions: { content: MetacardActions },
-  Overwrite: {
-    content: ({ result }) => {
-      return <MetacardOverwrite lazyResult={result} />
-    },
-  },
 } as {
   [key: string]: TabDefinition
 }

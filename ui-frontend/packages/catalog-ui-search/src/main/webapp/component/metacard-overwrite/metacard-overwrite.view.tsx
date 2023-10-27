@@ -20,38 +20,18 @@ import React from 'react'
 import styled from 'styled-components'
 import { readableColor } from 'polished'
 import Button from '@mui/material/Button'
-import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
 
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-import { useDialogState } from '../hooks/useDialogState'
+import { useDialog } from '../dialog'
 
 const Root = styled.div`
   overflow: auto;
   white-space: nowrap;
   height: 100%;
-`
-
-const OverwriteConfirm = styled(Button)`
-  display: inline-block;
-  white-space: normal;
-  vertical-align: top !important;
-  width: 100%;
-  transform: translateX(0%);
-  transition: transform ${(props) => props.theme.coreTransitionTime} linear;
-  height: auto;
-`
-
-const MainText = styled.span`
-  display: block;
-  font-size: ${(props) => props.theme.largeFontSize};
-`
-
-const SubText = styled.span`
-  display: block;
-  font-size: ${(props) => props.theme.mediumFontSize};
 `
 
 const OverwriteStatus = styled.div`
@@ -106,41 +86,23 @@ const ProgressBar = styled.div`
 const OverwriteSuccess = styled(OverwriteStatus)`
   color: ${(props) => readableColor(props.theme.positiveColor)};
   background: ${(props) => props.theme.positiveColor};
+  font-size: ${(props) => props.theme.mediumFontSize};
+  overflow-wrap: break-word;
+  width: 50em;
 `
 
 const OverwriteError = styled(OverwriteStatus)`
   color: ${(props) => readableColor(props.theme.negativeColor)};
   background: ${(props) => props.theme.negativeColor};
+  font-size: ${(props) => props.theme.mediumFontSize};
+  overflow-wrap: break-word;
+  width: 50em;
 `
 
 const ResultMessage = styled.div`
   font-size: ${(props) => props.theme.largeFontSize};
   margin-left: ${(props) => props.theme.minimumButtonSize};
 `
-
-const OverwriteBack = styled.button`
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  width: ${(props) => props.theme.minimumButtonSize};
-  height: 100%;
-  text-align: center;
-`
-
-const Confirm = (props: any) => (
-  <OverwriteConfirm
-    data-id="overwrite-confirm-button"
-    variant="contained"
-    color="secondary"
-    onClick={props.archive}
-    data-help="This will overwrite the item content. To restore a previous content, you can click on 'File' in the toolbar, and then click 'Restore Archived Items'."
-  >
-    <MainText>Overwrite content</MainText>
-    <SubText>
-      WARNING: This will completely overwrite the current content and metadata.
-    </SubText>
-  </OverwriteConfirm>
-)
 
 const Sending = (props: any) => (
   <OverwriteProgress>
@@ -164,24 +126,17 @@ const Sending = (props: any) => (
 
 const Success = (props: any) => (
   <OverwriteSuccess>
-    <OverwriteBack onClick={props.startOver}>
-      <span className="fa fa-chevron-left" />
-    </OverwriteBack>
     <ResultMessage>{props.message}</ResultMessage>
   </OverwriteSuccess>
 )
 
 const Error = (props: any) => (
   <OverwriteError>
-    <OverwriteBack onClick={props.startOver}>
-      <span className="fa fa-chevron-left" />
-    </OverwriteBack>
     <ResultMessage>{props.message}</ResultMessage>
   </OverwriteError>
 )
 
 const Stages = {
-  Confirm,
   Sending,
   Success,
   Error,
@@ -190,7 +145,7 @@ const Stages = {
 }
 
 const defaultState = {
-  stage: 'Confirm',
+  stage: '',
   percentage: 0,
   message: '',
 }
@@ -204,7 +159,7 @@ const mapOverwriteModelToState = (overwriteModel: any) => {
   } else if (overwriteModel.get('sending')) {
     currentState.stage = 'Sending'
   } else {
-    currentState.stage = 'Confirm'
+    currentState.stage = ''
   }
   currentState.percentage = overwriteModel.get('percentage')
   currentState.message = overwriteModel.escape('message')
@@ -220,11 +175,13 @@ const getOverwriteModel = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
 }
 
 export const MetacardOverwrite = ({
+  title,
   lazyResult,
 }: {
+  title: string
   lazyResult: LazyQueryResult
 }) => {
-  const dialogState = useDialogState()
+  const dialogContext = useDialog()
   const [overwriteModel, setOverwriteModel] = React.useState<any>(null)
   const [dropzone, setDropzone] = React.useState<any>(null)
   const [dropzoneElement, setDropdownElement] =
@@ -309,48 +266,48 @@ export const MetacardOverwrite = ({
     return () => {}
   }, [overwriteModel])
 
+  const startOver = () => {
+    OverwritesInstance.remove(lazyResult?.plain.id)
+    OverwritesInstance.add({
+      id: lazyResult?.plain.id,
+      dropzone: dropzone,
+      result: lazyResult,
+    })
+    setOverwriteModel(getOverwriteModel({ lazyResult }))
+    setState(defaultState)
+  }
   const Component = Stages[state.stage]
   return (
     <Root>
       <div style={{ display: 'none' }} ref={setDropdownElement} />
-      <Dialog {...dialogState.MuiDialogProps}>
-        <DialogTitle>
-          Are you sure you want to overwrite the content?
-        </DialogTitle>
-        <DialogActions>
-          <Button
-            onClick={() => {
-              dialogState.handleClose()
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              dialogState.handleClose()
-              dropzoneElement?.click()
-            }}
-          >
-            Overwrite
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Component
-        {...state}
-        archive={() => {
-          dialogState.handleClick()
-        }}
-        startOver={() => {
-          OverwritesInstance.remove(lazyResult?.plain.id)
-          OverwritesInstance.add({
-            id: lazyResult?.plain.id,
-            dropzone: dropzone,
-            result: lazyResult,
-          })
-          setOverwriteModel(getOverwriteModel({ lazyResult }))
-          setState(defaultState)
-        }}
-      />
+      <DialogTitle>{title}</DialogTitle>
+      <DialogContent style={{ width: '50em' }}>
+        Are you sure you want to overwrite the content?
+        <br />
+        WARNING: This will completely overwrite the current content and
+        metadata.
+      </DialogContent>
+
+      {Component && <Component {...state} />}
+
+      <DialogActions>
+        <Button
+          onClick={() => {
+            dialogContext.setProps({ open: false })
+            startOver()
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={() => {
+            dropzoneElement?.click()
+            startOver()
+          }}
+        >
+          Overwrite
+        </Button>
+      </DialogActions>
     </Root>
   )
 }
