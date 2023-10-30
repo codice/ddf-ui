@@ -38,24 +38,22 @@ export const OverwriteAction = (props: MetacardInteractionProps) => {
 
   const dialogContext = useDialog()
   return (
-    <>
-      <MetacardInteraction
-        onClick={() => {
-          props.onClose()
-          if (props.model) {
-            dialogContext.setProps({
-              children: (
-                <MetacardOverwrite title={'Overwrite'} lazyResult={result} />
-              ),
-              open: true,
-            })
-          }
-        }}
-        icon="fa fa-files-o"
-        text={'Overwrite'}
-        help="This will overwrite the item content. To restore a previous content, you can click on 'File' in the toolbar, and then click 'Restore Archived Items'."
-      />
-    </>
+    <MetacardInteraction
+      onClick={() => {
+        props.onClose()
+        if (props.model) {
+          dialogContext.setProps({
+            children: (
+              <MetacardOverwrite title={'Overwrite'} lazyResult={result} />
+            ),
+            open: true,
+          })
+        }
+      }}
+      icon="fa fa-files-o"
+      text={'Overwrite'}
+      help="This will overwrite the item content. To restore a previous content, you can click on 'File' in the toolbar, and then click 'Restore Archived Items'."
+    />
   )
 }
 
