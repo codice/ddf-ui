@@ -15,12 +15,14 @@
 import ExpandMetacard from '../../react-component/metacard-interactions/expand-interaction'
 import DownloadProduct from '../../react-component/metacard-interactions/download-interaction'
 import ExportActions from '../../react-component/metacard-interactions/export-interaction'
+import OverwriteAction from '../../react-component/metacard-interactions/overwrite-interaction'
 import ArchiveAction from '../../react-component/metacard-interactions/archive-interaction'
 
 const DefaultItems = [
   ExpandMetacard,
   DownloadProduct,
   ExportActions,
+  OverwriteAction,
   ArchiveAction,
 ]
 
