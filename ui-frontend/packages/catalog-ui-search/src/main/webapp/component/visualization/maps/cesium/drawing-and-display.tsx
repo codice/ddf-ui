@@ -75,6 +75,22 @@ const ensurePolygonIsClosed = (polygon: any) => {
   }
 }
 
+const pickLocation = (model?: any) => {
+  const mode = getDrawModeFromModel({ model })
+  switch (mode) {
+    case 'bbox':
+      return _.pick(model.attributes, 'north', 'south', 'east', 'west')
+    case 'circle':
+      return _.pick(model.attributes, 'lat', 'lon')
+    case 'line':
+      return _.pick(model.attributes, 'line')
+    case 'poly':
+      return _.pick(model.attributes, 'polygon')
+    default:
+      return {}
+  }
+}
+
 export const CesiumDrawings = ({
   map,
   selectionInterface,
@@ -97,7 +113,7 @@ export const CesiumDrawings = ({
     (e: any) => {
       if (e.key === 'Enter') {
         e.preventDefault()
-        finishDrawing()
+        if (drawingLocation) finishDrawing()
       }
       if (e.key === 'Escape') {
         cancelDrawing()
@@ -144,22 +160,6 @@ export const CesiumDrawings = ({
     drawingModel.set({ ...drawingLocation, drawing: false })
     setIsDrawing(false)
     drawingLocation = null
-  }
-
-  const pickLocation = (model?: any) => {
-    const mode = getDrawModeFromModel({ model })
-    switch (mode) {
-      case 'bbox':
-        return _.pick(model.attributes, 'north', 'south', 'east', 'west')
-      case 'circle':
-        return _.pick(model.attributes, 'lat', 'lon')
-      case 'line':
-        return _.pick(model.attributes, 'line')
-      case 'poly':
-        return _.pick(model.attributes, 'polygon')
-      default:
-        return {}
-    }
   }
 
   const isNotBeingEdited = (model: any) =>

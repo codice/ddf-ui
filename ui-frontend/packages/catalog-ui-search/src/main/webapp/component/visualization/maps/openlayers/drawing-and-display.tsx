@@ -270,11 +270,22 @@ export const getDrawingGeometryFromModel = (
 }
 
 export const convertToModel = (geo: GeometryJSON, shape: Shape) => {
+  // geo.properties?.color will have a value when in drawing mode,
+  // but we dont want to render the drawing's contrastingColor after saving.
+  // So, we only want to set the default if no color is already set
+  if (geo.properties?.color === contrastingColor) {
+    return {
+      ...createGeoModel(geo),
+      type: getGeoType(geo),
+      mode: getDrawModeFromShape(shape),
+    }
+  }
+
   return {
     ...createGeoModel(geo),
     type: getGeoType(geo),
     mode: getDrawModeFromShape(shape),
-    color: geo.properties?.color || Object.values(locationColors)[0],
+    color: Object.values(locationColors)[0],
   }
 }
 
@@ -309,7 +320,7 @@ export const OpenlayersDrawings = ({
     (e: any) => {
       if (e.key === 'Enter') {
         e.preventDefault()
-        finishDrawing()
+        if (drawingLocation) finishDrawing()
       }
       if (e.key === 'Escape') {
         cancelDrawing()
