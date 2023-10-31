@@ -162,8 +162,12 @@ export const useDrawingAndDisplayModels = ({
   selectionInterface: any
   map: any
 }) => {
+  // All of these arrays hold different sets of the same models, but where they come from differs
+  // models are from geometry inputs that are in the dom aka textfields etc. (aka, someone is editing a geo input)
   const [models, setModels] = React.useState<Array<any>>([])
+  // filter models are grabbed from the filter tree on a search
   const [filterModels, setFilterModels] = React.useState<Array<any>>([])
+  // drawing models are when the user is actively drawing / editing a shape on the maps themselves (aka the draw tools)
   const [drawingModels, setDrawingModels] = React.useState<Array<any>>([])
   const isDrawing = useIsDrawing()
   const filterTree = useLazyResultsFilterTreeFromSelectionInterface({
@@ -223,13 +227,21 @@ export const useDrawingAndDisplayModels = ({
   )
   useListenTo(
     (wreqr as any).vent,
-    'search:line-end search:poly-end search:bbox-end search:circle-end search:drawcancel',
+    'search:line-end search:poly-end search:bbox-end search:circle-end search:drawcancel search:drawend',
     (model: any) => {
-      if (drawingModels.includes(model)) {
-        setDrawingModels(
-          drawingModels.filter((drawingModel) => drawingModel !== model)
-        )
+      if (!Array.isArray(model)) {
+        model = [model]
       }
+      model.forEach((submodel: any) => {
+        if (drawingModels.includes(submodel)) {
+          setDrawingModels(
+            drawingModels.filter((drawingModel) => drawingModel !== submodel)
+          )
+        }
+        if (models.includes(submodel)) {
+          setModels(models.filter((displayModel) => displayModel !== submodel))
+        }
+      })
     }
   )
   React.useEffect(() => {
