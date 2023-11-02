@@ -148,9 +148,11 @@ function fromUrl({
   url: string
   Downloads: Downloads
 }) {
+  // convert the url so that if it has a port we swap the port to 8080
+  // const proxyUrl = url.replace(/:\d{2,5}/, ':8080')
   const xhr = new XMLHttpRequest()
   xhr.withCredentials = true
-  xhr.open('GET', url, true)
+  xhr.open('GET', proxyUrl, true)
   xhr.responseType = 'blob'
   xhr.onerror = () => {
     // announcement.announce({
