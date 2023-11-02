@@ -18,10 +18,14 @@ import { MetacardInteraction } from './metacard-interactions'
 import { hot } from 'react-hot-loader'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { StartupDataStore } from '../../js/model/Startup/startup'
+import { DownloadsManager } from '../../component/downloads/downloads'
 
 const openValidUrl = (result: LazyQueryResult) => {
   const downloadUrl = result.getDownloadUrl()
-  downloadUrl && window.open(downloadUrl)
+  DownloadsManager.downloadFromUrl({
+    url: downloadUrl,
+    filename: result.plain.id,
+  })
 }
 
 const isDownloadable = (model: LazyQueryResult[]): boolean => {
