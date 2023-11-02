@@ -24,6 +24,7 @@ import { CesiumDrawings } from './drawing-and-display'
 
 import $ from 'jquery'
 import featureDetection from '../../../singletons/feature-detection'
+import { InteractionsProvider } from '../interactions.provider'
 
 const useSupportsCesium = () => {
   const [, setForceRender] = React.useState(Math.random())
@@ -72,7 +73,7 @@ export const CesiumMapViewReact = ({
   const [map, setMap] = React.useState<any>(null)
   if (supportsCesium) {
     return (
-      <>
+      <InteractionsProvider>
         <Memo>
           <MapViewReact
             loadMap={() => {
@@ -88,7 +89,7 @@ export const CesiumMapViewReact = ({
           />
         </Memo>
         <CesiumDrawings map={map} selectionInterface={selectionInterface} />
-      </>
+      </InteractionsProvider>
     )
   }
 
