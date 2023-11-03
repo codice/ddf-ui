@@ -20,7 +20,7 @@ import _ from 'underscore'
 import * as Turf from '@turf/turf'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
-import { removeOldDrawing } from './drawing-and-display'
+import { Translation, removeOldDrawing } from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import TurfCircle from '@turf/circle'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
@@ -103,12 +103,14 @@ const drawGeometry = ({
   map,
   id,
   onDraw,
+  translation,
 }: {
   model: any
   map: any
   id: any
   setDrawnMagnitude: (number: any) => void
   onDraw?: (drawingLocation: Circle) => void
+  translation?: Translation
 }) => {
   // if model has been reset
 
@@ -122,6 +124,11 @@ const drawGeometry = ({
   if (Number.isNaN(modelProp.lat) || Number.isNaN(modelProp.lon)) {
     map.getMap().scene.requestRender()
     return
+  }
+
+  if (translation) {
+    modelProp.lon += translation.longitude
+    modelProp.lat += translation.latitude
   }
 
   removeOldDrawing({ map, id })
@@ -223,11 +230,13 @@ const useListenToModel = ({
   map,
   newCircle,
   onDraw,
+  translation,
 }: {
   model: any
   map: any
   newCircle: Circle | null
   onDraw?: (drawingLocation: Circle) => void
+  translation?: Translation
 }) => {
   const [cameraMagnitude] = useCameraMagnitude({ map })
   const [drawnMagnitude, setDrawnMagnitude] = React.useState(0)
@@ -253,11 +262,12 @@ const useListenToModel = ({
             id: getIdFromModelForDisplay({ model }),
             setDrawnMagnitude,
             onDraw,
+            translation,
           })
         }
       }
     }
-  }, [model, map, newCircle])
+  }, [model, map, newCircle, translation])
   useListenTo(model, 'change:lat change:lon change:radius', callback)
   React.useEffect(() => {
     if (map && needsRedraw({ map, drawnMagnitude })) {
@@ -304,10 +314,12 @@ export const CesiumCircleDisplay = ({
   map,
   model,
   onDraw,
+  translation,
 }: {
   map: any
   model: any
   onDraw?: (newCircle: Circle) => void
+  translation?: Translation
 }) => {
   // Use state to store the circle drawn by the user before they click Apply or Cancel.
   // When the user clicks Draw, they are allowed to edit the existing circle (if it
@@ -318,7 +330,7 @@ export const CesiumCircleDisplay = ({
   if (onDraw) {
     useStartMapDrawing({ map, model, setNewCircle, onDraw })
   }
-  useListenToModel({ map, model, newCircle, onDraw })
+  useListenToModel({ map, model, newCircle, onDraw, translation })
   React.useEffect(() => {
     return () => {
       if (model && map) {

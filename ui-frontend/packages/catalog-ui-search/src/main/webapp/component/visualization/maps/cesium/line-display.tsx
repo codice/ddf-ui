@@ -22,7 +22,7 @@ import * as Turf from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
-import { removeOldDrawing } from './drawing-and-display'
+import { Translation, removeOldDrawing } from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import utility from './utility'
@@ -165,12 +165,14 @@ const drawGeometry = ({
   id,
   setDrawnMagnitude,
   onDraw,
+  translation,
 }: {
   model: any
   map: any
   id: any
   setDrawnMagnitude: (number: any) => void
   onDraw?: (drawingLocation: Line) => void
+  translation?: Translation
 }) => {
   const json = model.toJSON()
   let linePoints = json.line
@@ -186,6 +188,10 @@ const drawGeometry = ({
   linePoints = _cloneDeep(json.line)
 
   linePoints.forEach((point: any) => {
+    if (translation) {
+      point[0] += translation.longitude
+      point[1] += translation.latitude
+    }
     point[0] = DistanceUtils.coordinateRound(point[0])
     point[1] = DistanceUtils.coordinateRound(point[1])
   })
@@ -301,11 +307,13 @@ const useListenToLineModel = ({
   map,
   onDraw,
   newLine,
+  translation,
 }: {
   model: any
   map: any
   onDraw?: (drawingLocation: Line) => void
   newLine: Line | null
+  translation?: Translation
 }) => {
   const [cameraMagnitude] = useCameraMagnitude({ map })
   const [drawnMagnitude, setDrawnMagnitude] = React.useState(0)
@@ -331,11 +339,12 @@ const useListenToLineModel = ({
             id: getIdFromModelForDisplay({ model }),
             setDrawnMagnitude,
             onDraw,
+            translation,
           })
         }
       }
     }
-  }, [model, map, newLine])
+  }, [model, map, newLine, translation])
   useListenTo(model, 'change:line change:lineWidth change:lineUnits', callback)
   React.useEffect(() => {
     if (map && needsRedraw({ map, drawnMagnitude })) {
@@ -390,10 +399,12 @@ export const CesiumLineDisplay = ({
   map,
   model,
   onDraw,
+  translation,
 }: {
   map: any
   model: any
   onDraw?: (newLine: Line) => void
+  translation?: Translation
 }) => {
   // Use state to store the line drawn by the user before they click Apply or Cancel.
   // When the user clicks Draw, they are allowed to edit the existing line (if it
@@ -404,7 +415,7 @@ export const CesiumLineDisplay = ({
   if (onDraw) {
     useStartMapDrawing({ map, model, onDraw, setNewLine })
   }
-  useListenToLineModel({ map, model, onDraw, newLine })
+  useListenToLineModel({ map, model, onDraw, newLine, translation })
   React.useEffect(() => {
     return () => {
       if (model && map) {

@@ -19,7 +19,7 @@ import Cesium from 'cesium/Build/Cesium/Cesium'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
-import { removeOldDrawing } from './drawing-and-display'
+import { Translation, removeOldDrawing } from './drawing-and-display'
 import ShapeUtils from '../../../../js/ShapeUtils'
 import {
   constructSolidLinePrimitive,
@@ -114,12 +114,14 @@ const drawGeometry = ({
   id,
   setDrawnMagnitude,
   onDraw,
+  translation,
 }: {
   model: any
   map: any
   id: any
   setDrawnMagnitude: (number: any) => void
   onDraw?: (drawingLocation: Polygon) => void
+  translation?: Translation
 }) => {
   const json = model.toJSON()
   if (!Array.isArray(json.polygon)) {
@@ -174,6 +176,13 @@ const drawGeometry = ({
     polygons.forEach((polygonPoints) => {
       if (!validateAndFixPolygon(polygonPoints)) {
         return
+      }
+
+      if (translation) {
+        for (const point of polygonPoints) {
+          point[0] += translation.longitude
+          point[1] += translation.latitude
+        }
       }
 
       if (buffer > 0) {
@@ -266,11 +275,13 @@ const useListenToLineModel = ({
   map,
   onDraw,
   newPoly,
+  translation,
 }: {
   model: any
   map: any
   onDraw?: (drawingLocation: Polygon) => void
   newPoly: Polygon | null
+  translation?: Translation
 }) => {
   const [cameraMagnitude] = useCameraMagnitude({ map })
   const [drawnMagnitude, setDrawnMagnitude] = React.useState(0)
@@ -296,11 +307,12 @@ const useListenToLineModel = ({
             id: getIdFromModelForDisplay({ model }),
             setDrawnMagnitude,
             onDraw,
+            translation,
           })
         }
       }
     }
-  }, [model, map, newPoly])
+  }, [model, map, newPoly, translation])
   useListenTo(
     model,
     'change:polygon change:polygonBufferWidth change:polygonBufferUnits',
@@ -363,10 +375,12 @@ export const CesiumPolygonDisplay = ({
   map,
   model,
   onDraw,
+  translation,
 }: {
   map: any
   model: any
   onDraw?: (newPoly: Polygon) => void
+  translation?: Translation
 }) => {
   // Use state to store the polygon drawn by the user before they click Apply or Cancel.
   // When the user clicks Draw, they are allowed to edit the existing polygon (if it
@@ -377,7 +391,7 @@ export const CesiumPolygonDisplay = ({
   if (onDraw) {
     useStartMapDrawing({ map, model, setNewPoly, onDraw })
   }
-  useListenToLineModel({ map, model, newPoly, onDraw })
+  useListenToLineModel({ map, model, newPoly, onDraw, translation })
   React.useEffect(() => {
     return () => {
       if (model && map) {

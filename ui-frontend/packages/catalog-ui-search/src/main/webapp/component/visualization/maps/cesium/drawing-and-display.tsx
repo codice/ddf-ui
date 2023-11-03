@@ -31,6 +31,8 @@ import { DRAWING_STYLE } from '../openlayers/draw-styles'
 import wreqr from '../../../../js/wreqr'
 import _ from 'lodash'
 import { InteractionsContext } from '../interactions.provider'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
+import Cesium from 'cesium/Build/Cesium/Cesium'
 
 const DrawingMenu = menu.DrawingMenu
 
@@ -42,6 +44,11 @@ const SHAPES: Shape[] = [
   'Polygon',
 ]
 const DEFAULT_SHAPE = 'Polygon'
+
+export type Translation = {
+  longitude: number
+  latitude: number
+}
 
 export const removeOldDrawing = ({ map, id }: { map: any; id: string }) => {
   const relevantPrimitives = map
@@ -94,15 +101,53 @@ export const CesiumDrawings = ({
   const [isDrawing, setIsDrawing] = useState(false)
   const [drawingShape, setDrawingShape] = useState<Shape>(DEFAULT_SHAPE)
 
-  const { interactiveGeo } = React.useContext(InteractionsContext)
+  const { interactiveGeo, moveFrom, moveTo } =
+    React.useContext(InteractionsContext)
 
   const nonDrawingModels = models.concat(filterModels)
 
-  const interactiveModel = nonDrawingModels.find(
+  /*const interactiveModelIndex = nonDrawingModels.findIndex(
     (model) => model.get('locationId') === interactiveGeo
-  )
+  )*/
 
-  console.log('model', interactiveModel)
+  let translation: Translation
+
+  if (moveFrom && moveTo) {
+    const translateLon = Cesium.Math.toDegrees(
+      moveTo.longitude - moveFrom.longitude
+    )
+    const translateLat = Cesium.Math.toDegrees(
+      moveTo.latitude - moveFrom.latitude
+    )
+
+    translation = {
+      longitude: translateLon,
+      latitude: translateLat,
+    }
+
+    /*if (interactiveModelIndex >= 0) {
+      const interactiveModel = nonDrawingModels[interactiveModelIndex]
+
+      const modelCopy = new LocationModel(interactiveModel.toJSON())
+      const polygon: any = _.cloneDeep(modelCopy.get('polygon'))
+      const isMultiPolygon = ShapeUtils.isArray3D(polygon)
+      if (isMultiPolygon) {
+        for (const ring of polygon) {
+          for (const point of ring) {
+            point[0] += translateLon
+            point[1] += translateLat
+          }
+        }
+      } else {
+        for (const point of polygon) {
+          point[0] += translateLon
+          point[1] += translateLat
+        }
+      }
+      modelCopy.set('polygon', polygon)
+      nonDrawingModels.splice(interactiveModelIndex, 1, modelCopy)
+    }*/
+  }
 
   const handleKeydown = React.useCallback(
     (e: any) => {
@@ -194,18 +239,44 @@ export const CesiumDrawings = ({
     <>
       {nonDrawingModels.filter(isNotBeingEdited).map((model) => {
         const drawMode = getDrawModeFromModel({ model })
+        const shapeTranslation =
+          model.get('locationId') === interactiveGeo ? translation : undefined
         switch (drawMode) {
           case 'bbox':
-            return <CesiumBboxDisplay key={model.cid} model={model} map={map} />
+            return (
+              <CesiumBboxDisplay
+                key={model.cid}
+                model={model}
+                map={map}
+                translation={shapeTranslation}
+              />
+            )
           case 'circle':
             return (
-              <CesiumCircleDisplay key={model.cid} model={model} map={map} />
+              <CesiumCircleDisplay
+                key={model.cid}
+                model={model}
+                map={map}
+                translation={shapeTranslation}
+              />
             )
           case 'line':
-            return <CesiumLineDisplay key={model.cid} model={model} map={map} />
+            return (
+              <CesiumLineDisplay
+                key={model.cid}
+                model={model}
+                map={map}
+                translation={shapeTranslation}
+              />
+            )
           case 'poly':
             return (
-              <CesiumPolygonDisplay key={model.cid} model={model} map={map} />
+              <CesiumPolygonDisplay
+                key={model.cid}
+                model={model}
+                map={map}
+                translation={shapeTranslation}
+              />
             )
           default:
             return <></>

@@ -373,13 +373,13 @@ const useMapListeners = ({
           } else {
             setHoverGeo({})
           }
-          console.log('MOVING', position)
           setMoveTo(position)
         },
         up: () => {
           console.log('UP')
           finalizeMove()
           setMoveFrom(null)
+          setMoveTo(null)
         },
       })
     }
