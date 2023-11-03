@@ -18,7 +18,7 @@ import Cesium from 'cesium/Build/Cesium/Cesium'
 import _ from 'underscore'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
-import { removeOldDrawing } from './drawing-and-display'
+import { Translation, removeOldDrawing } from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import DistanceUtils from '../../../../js/DistanceUtils'
@@ -108,12 +108,14 @@ const drawGeometry = ({
   map,
   id,
   onDraw,
+  translation,
 }: {
   model: any
   map: any
   id: any
   setDrawnMagnitude: (number: any) => void
   onDraw?: (drawingLocation: BBox) => void
+  translation?: Translation
 }) => {
   const rectangle = modelToRectangle({ model })
   if (
@@ -134,6 +136,16 @@ const drawGeometry = ({
     [rectangle.east, rectangle.south],
     [rectangle.east, rectangle.north],
   ]
+
+  if (translation) {
+    const longitudeRadians = Cesium.Math.toRadians(translation.longitude)
+    const latitudeRadians = Cesium.Math.toRadians(translation.latitude)
+
+    for (const coord of coordinates) {
+      coord[0] += longitudeRadians
+      coord[1] += latitudeRadians
+    }
+  }
 
   removeOldDrawing({ map, id })
 
@@ -215,11 +227,13 @@ const useListenToModel = ({
   map,
   onDraw,
   newBbox,
+  translation,
 }: {
   model: any
   map: any
   onDraw?: (drawingLocation: BBox) => void
   newBbox: BBox | null
+  translation?: Translation
 }) => {
   const [cameraMagnitude] = useCameraMagnitude({ map })
   const [drawnMagnitude, setDrawnMagnitude] = React.useState(0)
@@ -245,11 +259,12 @@ const useListenToModel = ({
             id: getIdFromModelForDisplay({ model }),
             setDrawnMagnitude,
             onDraw,
+            translation,
           })
         }
       }
     }
-  }, [model, map, newBbox])
+  }, [model, map, newBbox, translation])
   useListenTo(
     model,
     'change:mapNorth change:mapSouth change:mapEast change:mapWest',
@@ -296,10 +311,12 @@ export const CesiumBboxDisplay = ({
   map,
   model,
   onDraw,
+  translation,
 }: {
   map: any
   model: any
   onDraw?: (newBbox: BBox) => void
+  translation?: Translation
 }) => {
   // Use state to store the bbox drawn by the user before they click Apply or Cancel.
   // When the user clicks Draw, they are allowed to edit the existing bbox (if it
@@ -310,7 +327,7 @@ export const CesiumBboxDisplay = ({
   if (onDraw) {
     useStartMapDrawing({ map, model, onDraw, setNewBbox })
   }
-  useListenToModel({ map, model, onDraw, newBbox })
+  useListenToModel({ map, model, onDraw, newBbox, translation })
   React.useEffect(() => {
     return () => {
       if (model && map) {

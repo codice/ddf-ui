@@ -358,12 +358,27 @@ export default function CesiumMap(
       map.dragAndDropEventHandler.setInputAction((e: any) => {
         console.log('LEFT_DOWN', e.position)
         const { locationId } = determineIdsFromPosition(e.position, map)
-        down({ position: e.position, mapLocationId: locationId })
+        const cartesian = map.scene.camera.pickEllipsoid(
+          e.position,
+          map.scene.globe.ellipsoid
+        )
+        const cartographic = Cesium.Cartographic.fromCartesian(
+          cartesian,
+          map.scene.globe.ellipsoid
+        )
+        down({ position: cartographic, mapLocationId: locationId })
       }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
       map.dragAndDropEventHandler.setInputAction((e: any) => {
-        console.log('MOVE', e.endPosition)
         const { locationId } = determineIdsFromPosition(e.endPosition, map)
-        move({ position: e.endPosition, mapLocationId: locationId })
+        const cartesian = map.scene.camera.pickEllipsoid(
+          e.endPosition,
+          map.scene.globe.ellipsoid
+        )
+        const cartographic = Cesium.Cartographic.fromCartesian(
+          cartesian,
+          map.scene.globe.ellipsoid
+        )
+        move({ position: cartographic, mapLocationId: locationId })
       }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
       map.dragAndDropEventHandler.setInputAction(
         up,
