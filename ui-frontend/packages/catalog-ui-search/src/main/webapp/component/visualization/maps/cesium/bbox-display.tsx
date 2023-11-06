@@ -18,11 +18,12 @@ import Cesium from 'cesium/Build/Cesium/Cesium'
 import _ from 'underscore'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
-import { Translation, removeOldDrawing } from './drawing-and-display'
+import { removeOldDrawing } from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import DistanceUtils from '../../../../js/DistanceUtils'
 import { contrastingColor } from '../../../../react-component/location/location-color-selector'
+import { Translation } from '../interactions.provider'
 const toDeg = Cesium.Math.toDegrees
 
 const CAMERA_MAGNITUDE_THRESHOLD = 8000000

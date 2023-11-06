@@ -19,7 +19,7 @@ import Cesium from 'cesium/Build/Cesium/Cesium'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
-import { Translation, removeOldDrawing } from './drawing-and-display'
+import { removeOldDrawing } from './drawing-and-display'
 import ShapeUtils from '../../../../js/ShapeUtils'
 import {
   constructSolidLinePrimitive,
@@ -32,6 +32,7 @@ import { Position } from '@turf/turf'
 import _ from 'underscore'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import utility from './utility'
+import { Translation } from '../interactions.provider'
 const toDeg = Cesium.Math.toDegrees
 
 const polygonFillColor = 'rgba(153,102,0,0.2)'

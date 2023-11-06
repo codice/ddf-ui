@@ -27,7 +27,10 @@ import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResu
 import Geometries from './react/geometries'
 import LinearProgress from '@mui/material/LinearProgress'
 import PopupPreview from '../../../react-component/popup-preview'
-import { SHAPE_ID_PREFIX } from './drawing-and-display'
+import {
+  SHAPE_ID_PREFIX,
+  getLocationTypeFromModel,
+} from './drawing-and-display'
 import useSnack from '../../hooks/useSnack'
 import { zoomToHome } from './home'
 import featureDetection from '../../singletons/feature-detection'
@@ -38,7 +41,10 @@ import PlusIcon from '@mui/icons-material/Add'
 import MinusIcon from '@mui/icons-material/Remove'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
 import Cesium from 'cesium/Build/Cesium/Cesium'
-import { InteractionsContext } from './interactions.provider'
+import { InteractionsContext, Translation } from './interactions.provider'
+import Backbone from 'backbone'
+import _ from 'lodash'
+import ShapeUtils from '../../../js/ShapeUtils'
 
 type HoverGeo = {
   interactive?: boolean
@@ -322,6 +328,59 @@ const handleMapHover = ({
   )
 }
 
+const getLocation = (model: Backbone.Model, translation?: Translation) => {
+  const locationType = getLocationTypeFromModel({ model })
+  switch (locationType) {
+    case 'BBOX':
+      const bbox = _.pick(
+        model.attributes,
+        'mapNorth',
+        'mapSouth',
+        'mapEast',
+        'mapWest'
+      )
+      if (translation) {
+        bbox.mapNorth += translation.latitude
+        bbox.mapSouth += translation.latitude
+        bbox.mapEast += translation.longitude
+        bbox.mapWest += translation.longitude
+      }
+      return bbox
+    case 'POINT':
+    case 'POINTRADIUS':
+      const point = _.pick(model.attributes, 'lat', 'lon')
+      if (translation) {
+        point.lat += translation.latitude
+        point.lon += translation.longitude
+      }
+      return point
+    case 'LINE':
+      const line = _.cloneDeep(model.get('line'))
+      if (translation) {
+        for (const coord of line) {
+          coord[0] += translation.longitude
+          coord[1] += translation.latitude
+        }
+      }
+      return { line }
+    case 'POLYGON':
+    case 'MULTIPOLYGON':
+      const polygon = _.cloneDeep(model.get('polygon'))
+      if (translation) {
+        const multiPolygon = ShapeUtils.isArray3D(polygon) ? polygon : [polygon]
+        for (const ring of multiPolygon) {
+          for (const coord of ring) {
+            coord[0] += translation.longitude
+            coord[1] += translation.latitude
+          }
+        }
+      }
+      return { polygon }
+    default:
+      return {}
+  }
+}
+
 const useMapListeners = ({
   map,
   mapModel,
@@ -334,18 +393,42 @@ const useMapListeners = ({
   const [isHoveringResult, setIsHoveringResult] = React.useState(false)
   const [hoverGeo, setHoverGeo] = React.useState<HoverGeo>({})
   const {
+    moveFrom,
     setMoveFrom,
-    setMoveTo,
     interactiveGeo,
     setInteractiveGeo,
-    moveFrom,
-    finalizeMove,
+    interactiveModel,
+    translation,
+    setTranslation,
   } = React.useContext(InteractionsContext)
 
-  // TODO escape handler for cancel
+  const addSnack = useSnack()
+
+  const upCallbackRef = React.useRef<() => void>()
+
+  React.useEffect(() => {
+    upCallbackRef.current = () => {
+      console.log('UP', interactiveModel, translation)
+      if (interactiveModel && translation) {
+        const originalLocation = getLocation(interactiveModel)
+        const newLocation = getLocation(interactiveModel, translation)
+        console.log('original, new', originalLocation, newLocation)
+        interactiveModel.set(newLocation)
+        addSnack('Location updated.', {
+          undo: () => interactiveModel.set(originalLocation),
+        })
+      }
+      setMoveFrom(null)
+      setTranslation(null)
+    }
+  }, [interactiveModel, translation])
+
   React.useEffect(() => {
     if (interactiveGeo) {
+      // This handler might disable dragging to move the map, so only set it up
+      // when the user has started interacting with a geo.
       map.onMouseTrackingForGeoDrag({
+        moveFrom,
         down: ({
           position,
           mapLocationId,
@@ -353,17 +436,15 @@ const useMapListeners = ({
           position: any
           mapLocationId: number
         }) => {
-          console.log('DOWN')
           if (mapLocationId === interactiveGeo && !Drawing.isDrawing()) {
-            console.log('setting moveFrom')
             setMoveFrom(position)
           }
         },
         move: ({
-          position,
+          translation,
           mapLocationId,
         }: {
-          position: any
+          translation?: Translation
           mapLocationId: number
         }) => {
           if (mapLocationId === interactiveGeo) {
@@ -373,16 +454,17 @@ const useMapListeners = ({
           } else {
             setHoverGeo({})
           }
-          setMoveTo(position)
+          console.log(translation)
+          setTranslation(translation ?? null)
         },
-        up: () => {
-          console.log('UP')
-          finalizeMove()
-          setMoveFrom(null)
-          setMoveTo(null)
-        },
+        up: () => upCallbackRef.current?.(),
       })
     }
+    return () => map?.clearMouseTrackingForGeoDrag()
+  }, [map, interactiveGeo, moveFrom])
+
+  // TODO escape handler for cancel
+  React.useEffect(() => {
     if (map && !moveFrom) {
       const handleLeftClick = (mapLocationId?: number) => {
         console.log('handleLeftClick', mapLocationId, moveFrom)
@@ -429,7 +511,6 @@ const useMapListeners = ({
       map?.clearDoubleClick()
       map?.clearRightClick()
       map?.clearLeftClickMapAPI()
-      map?.clearMouseTrackingForGeoDrag()
     }
   }, [map, mapModel, selectionInterface, interactiveGeo, moveFrom])
   return {
@@ -511,7 +592,7 @@ const useChangeCursorOnHover = ({
         }
       }
     }
-  }, [mapElement, isHoveringResult, hoverGeo, interactiveGeo])
+  }, [mapElement, isHoveringResult, hoverGeo, interactiveGeo, moveFrom])
 }
 const useChangeCursorOnDrawing = ({
   mapElement,

@@ -20,11 +20,12 @@ import _ from 'underscore'
 import * as Turf from '@turf/turf'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
-import { Translation, removeOldDrawing } from './drawing-and-display'
+import { removeOldDrawing } from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import TurfCircle from '@turf/circle'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import { contrastingColor } from '../../../../react-component/location/location-color-selector'
+import { Translation } from '../interactions.provider'
 const toDeg = Cesium.Math.toDegrees
 
 const CAMERA_MAGNITUDE_THRESHOLD = 8000000

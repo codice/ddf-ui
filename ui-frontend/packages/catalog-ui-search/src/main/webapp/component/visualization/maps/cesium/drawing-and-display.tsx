@@ -45,11 +45,6 @@ const SHAPES: Shape[] = [
 ]
 const DEFAULT_SHAPE = 'Polygon'
 
-export type Translation = {
-  longitude: number
-  latitude: number
-}
-
 export const removeOldDrawing = ({ map, id }: { map: any; id: string }) => {
   const relevantPrimitives = map
     .getMap()
@@ -117,53 +112,17 @@ export const CesiumDrawings = ({
   const [isDrawing, setIsDrawing] = useState(false)
   const [drawingShape, setDrawingShape] = useState<Shape>(DEFAULT_SHAPE)
 
-  const { interactiveGeo, moveFrom, moveTo } =
+  const { interactiveGeo, translation, setInteractiveModel } =
     React.useContext(InteractionsContext)
 
   const nonDrawingModels = models.concat(filterModels)
 
-  /*const interactiveModelIndex = nonDrawingModels.findIndex(
-    (model) => model.get('locationId') === interactiveGeo
-  )*/
-
-  let translation: Translation
-
-  if (moveFrom && moveTo) {
-    const translateLon = Cesium.Math.toDegrees(
-      moveTo.longitude - moveFrom.longitude
+  useEffect(() => {
+    const model = nonDrawingModels.find(
+      (m) => m.get('locationId') === interactiveGeo
     )
-    const translateLat = Cesium.Math.toDegrees(
-      moveTo.latitude - moveFrom.latitude
-    )
-
-    translation = {
-      longitude: translateLon,
-      latitude: translateLat,
-    }
-
-    /*if (interactiveModelIndex >= 0) {
-      const interactiveModel = nonDrawingModels[interactiveModelIndex]
-
-      const modelCopy = new LocationModel(interactiveModel.toJSON())
-      const polygon: any = _.cloneDeep(modelCopy.get('polygon'))
-      const isMultiPolygon = ShapeUtils.isArray3D(polygon)
-      if (isMultiPolygon) {
-        for (const ring of polygon) {
-          for (const point of ring) {
-            point[0] += translateLon
-            point[1] += translateLat
-          }
-        }
-      } else {
-        for (const point of polygon) {
-          point[0] += translateLon
-          point[1] += translateLat
-        }
-      }
-      modelCopy.set('polygon', polygon)
-      nonDrawingModels.splice(interactiveModelIndex, 1, modelCopy)
-    }*/
-  }
+    setInteractiveModel(model)
+  }, [interactiveGeo])
 
   const handleKeydown = React.useCallback(
     (e: any) => {
@@ -240,7 +199,9 @@ export const CesiumDrawings = ({
       {nonDrawingModels.filter(isNotBeingEdited).map((model) => {
         const drawMode = getDrawModeFromModel({ model })
         const shapeTranslation =
-          model.get('locationId') === interactiveGeo ? translation : undefined
+          translation && model.get('locationId') === interactiveGeo
+            ? translation
+            : undefined
         switch (drawMode) {
           case 'bbox':
             return (
