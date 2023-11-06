@@ -2,46 +2,55 @@
 import React, { useState } from 'react'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
 import Cesium from 'cesium/Build/Cesium/Cesium'
+import Backbone from 'backbone'
+
+export type Translation = {
+  longitude: number
+  latitude: number
+}
 
 export type InteractionsContextType = {
   interactiveGeo: number | null
   setInteractiveGeo: (interactiveGeo: number | null) => void
-  moveFrom: Cesium.Cartesian3
-  setMoveFrom: (moveFrom: Cesium.Cartesian3 | null) => void
-  moveTo: Cesium.Cartesian3
-  setMoveTo: (moveTo: Cesium.Cartesian3 | null) => void
-  finalizeMove: () => void
+  interactiveModel: Backbone.Model | null
+  setInteractiveModel: (model: Backbone.Model | null) => void
+  moveFrom: Cesium.Cartographic | null
+  setMoveFrom: (moveFrom: Cesium.Cartographic | null) => void
+  translation: Translation | null
+  setTranslation: (translation: Translation | null) => void
 }
 
 export const InteractionsContext = React.createContext<InteractionsContextType>(
   {
     interactiveGeo: null,
     setInteractiveGeo: () => {},
+    interactiveModel: null,
+    setInteractiveModel: () => {},
     moveFrom: null,
     setMoveFrom: () => {},
-    moveTo: null,
-    setMoveTo: () => {},
-    finalizeMove: () => {},
+    translation: null,
+    setTranslation: () => {},
   }
 )
 
 export function InteractionsProvider({ children }: any) {
   const [interactiveGeo, setInteractiveGeo] = useState<number | null>(null)
-  const [moveFrom, setMoveFrom] = useState<Cesium.Cartesian3 | null>(null)
-  const [moveTo, setMoveTo] = useState<Cesium.Cartesian3 | null>(null)
-
-  const finalizeMove = () => {}
+  const [interactiveModel, setInteractiveModel] =
+    useState<Backbone.Model | null>(null)
+  const [moveFrom, setMoveFrom] = useState<Cesium.Cartographic | null>(null)
+  const [translation, setTranslation] = useState<Translation | null>(null)
 
   return (
     <InteractionsContext.Provider
       value={{
         interactiveGeo,
         setInteractiveGeo,
+        interactiveModel,
+        setInteractiveModel,
         moveFrom,
         setMoveFrom,
-        moveTo,
-        setMoveTo,
-        finalizeMove,
+        translation,
+        setTranslation,
       }}
     >
       {children}

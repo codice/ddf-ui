@@ -342,10 +342,12 @@ export default function CesiumMap(
       $(map.scene.canvas).off('dblclick')
     },
     onMouseTrackingForGeoDrag({
+      moveFrom,
       down,
       move,
       up,
     }: {
+      moveFrom?: Cesium.Cartographic
       down: any
       move: any
       up: any
@@ -378,7 +380,17 @@ export default function CesiumMap(
           cartesian,
           map.scene.globe.ellipsoid
         )
-        move({ position: cartographic, mapLocationId: locationId })
+        const translation = moveFrom
+          ? {
+              longitude: Cesium.Math.toDegrees(
+                cartographic.longitude - moveFrom.longitude
+              ),
+              latitude: Cesium.Math.toDegrees(
+                cartographic.latitude - moveFrom.latitude
+              ),
+            }
+          : null
+        move({ translation, mapLocationId: locationId })
       }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
       map.dragAndDropEventHandler.setInputAction(
         up,
