@@ -288,7 +288,8 @@ const handleMapHover = ({
   const isHoveringOverGeo = Boolean(
     mapEvent.mapTarget &&
       mapEvent.mapTarget.constructor === String &&
-      (mapEvent.mapTarget as string).startsWith(SHAPE_ID_PREFIX)
+      ((mapEvent.mapTarget as string).startsWith(SHAPE_ID_PREFIX) ||
+        mapEvent.mapTarget === 'userDrawing')
   )
 
   if (isHoveringOverGeo) {
@@ -412,6 +413,7 @@ const useMapListeners = ({
           console.log(
             'model, translation, original, new',
             model,
+            translation,
             originalLocation,
             newLocation
           )
