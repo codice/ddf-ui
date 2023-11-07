@@ -27,10 +27,7 @@ import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResu
 import Geometries from './react/geometries'
 import LinearProgress from '@mui/material/LinearProgress'
 import PopupPreview from '../../../react-component/popup-preview'
-import {
-  SHAPE_ID_PREFIX,
-  getLocationTypeFromModel,
-} from './drawing-and-display'
+import { SHAPE_ID_PREFIX, getDrawModeFromModel } from './drawing-and-display'
 import useSnack from '../../hooks/useSnack'
 import { zoomToHome } from './home'
 import featureDetection from '../../singletons/feature-detection'
@@ -329,9 +326,9 @@ const handleMapHover = ({
 }
 
 const getLocation = (model: Backbone.Model, translation?: Translation) => {
-  const locationType = getLocationTypeFromModel({ model })
+  const locationType = getDrawModeFromModel({ model })
   switch (locationType) {
-    case 'BBOX':
+    case 'bbox':
       const bbox = _.pick(
         model.attributes,
         'mapNorth',
@@ -346,15 +343,14 @@ const getLocation = (model: Backbone.Model, translation?: Translation) => {
         bbox.mapWest += translation.longitude
       }
       return bbox
-    case 'POINT':
-    case 'POINTRADIUS':
+    case 'circle':
       const point = _.pick(model.attributes, 'lat', 'lon')
       if (translation) {
         point.lat += translation.latitude
         point.lon += translation.longitude
       }
       return point
-    case 'LINE':
+    case 'line':
       const line = _.cloneDeep(model.get('line'))
       if (translation) {
         for (const coord of line) {
@@ -363,8 +359,7 @@ const getLocation = (model: Backbone.Model, translation?: Translation) => {
         }
       }
       return { line }
-    case 'POLYGON':
-    case 'MULTIPOLYGON':
+    case 'poly':
       const polygon = _.cloneDeep(model.get('polygon'))
       if (translation) {
         const multiPolygon = ShapeUtils.isArray3D(polygon) ? polygon : [polygon]
@@ -412,7 +407,12 @@ const useMapListeners = ({
       if (interactiveModel && translation) {
         const originalLocation = getLocation(interactiveModel)
         const newLocation = getLocation(interactiveModel, translation)
-        console.log('original, new', originalLocation, newLocation)
+        console.log(
+          'model, original, new',
+          interactiveModel,
+          originalLocation,
+          newLocation
+        )
         interactiveModel.set(newLocation)
         addSnack('Location updated.', {
           undo: () => interactiveModel.set(originalLocation),
@@ -454,7 +454,7 @@ const useMapListeners = ({
           } else {
             setHoverGeo({})
           }
-          console.log(translation)
+          //console.log(translation)
           setTranslation(translation ?? null)
         },
         up: () => upCallbackRef.current?.(),

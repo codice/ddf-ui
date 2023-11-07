@@ -14,13 +14,17 @@
  **/
 import React from 'react'
 import wreqr from '../../../js/wreqr'
-import { useListenTo } from '../../selection-checkbox/useBackbone.hook'
+import {
+  useBackbone,
+  useListenTo,
+} from '../../selection-checkbox/useBackbone.hook'
 import { useIsDrawing } from '../../singletons/drawing'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import { zoomToHome } from './home'
 import LocationModel from '../../location-old/location-old'
 import { Shape } from 'geospatialdraw/target/webapp/shape-utils'
 import { useLazyResultsFilterTreeFromSelectionInterface } from '../../selection-interface/hooks'
+import { EventHandler } from 'backbone'
 export const SHAPE_ID_PREFIX = 'shape'
 export const getIdFromModelForDisplay = ({ model }: { model: any }) => {
   return `${SHAPE_ID_PREFIX}-${model.cid}-display`
@@ -104,13 +108,22 @@ export const getDrawModeFromShape = (shape: Shape): DrawModeType => {
 const extractModelsFromFilter = ({
   filter,
   extractedModels,
+  onChange,
+  listenTo,
 }: {
   filter: any
   extractedModels: any[]
+  onChange: () => void
+  listenTo: (object: any, events: string, callback: EventHandler) => void
 }) => {
   if (filter.filters) {
     filter.filters.forEach((subfilter: any) => {
-      extractModelsFromFilter({ filter: subfilter, extractedModels })
+      extractModelsFromFilter({
+        filter: subfilter,
+        extractedModels,
+        onChange,
+        listenTo,
+      })
     })
   } else {
     if (filter.type === 'GEOMETRY') {
@@ -124,6 +137,16 @@ const extractModelsFromFilter = ({
         const newLocationModel = new LocationModel(filter.value)
         if (newLocationModel.get('hasKeyword')) {
           newLocationModel.set('locationId', undefined)
+        } else {
+          listenTo(
+            newLocationModel,
+            'change:mapNorth change:mapSouth change:mapEast change:mapWest change:lat change:lon change:line change:polygon',
+            () => {
+              console.log("LOCATION CHANGED")
+              filter.value = newLocationModel.toJSON()
+              onChange()
+            }
+          )
         }
         extractedModels.push(newLocationModel)
       }
@@ -166,13 +189,16 @@ export const useDrawingAndDisplayModels = ({
   const [filterModels, setFilterModels] = React.useState<Array<any>>([])
   const [drawingModels, setDrawingModels] = React.useState<Array<any>>([])
   const isDrawing = useIsDrawing()
+  //const [query] = useQuery()
   const filterTree = useLazyResultsFilterTreeFromSelectionInterface({
     selectionInterface,
   })
+  const { listenTo, stopListening: _stopListening } = useBackbone()
   useListenTo(
     (wreqr as any).vent,
     'search:linedisplay search:polydisplay search:bboxdisplay search:circledisplay search:keyworddisplay',
     (model: any) => {
+      console.log('display event!')
       if (Array.isArray(model)) {
         setModels(
           [...models].concat(
@@ -186,23 +212,38 @@ export const useDrawingAndDisplayModels = ({
   )
   const updateFilterModels = React.useMemo(() => {
     return () => {
+      // TODO I'm not sure that we want this. Is there a way to remove only the handler I added?
+      /*for (const model of filterModels) {
+        stopListening(model)
+      }*/
+      console.log('updating filter models')
       const resultFilter = TypedUserInstance.getEphemeralFilter()
       const extractedModels = [] as any[]
       if (filterTree) {
+        console.log('current filterTree', filterTree)
         extractModelsFromFilter({
           filter: filterTree,
           extractedModels,
+          onChange: () => {
+            console.log('updated filterTree', filterTree)
+            selectionInterface.getCurrentQuery().set('filterTree', filterTree)
+          },
+          listenTo,
         })
       }
       if (resultFilter) {
         extractModelsFromFilter({
           filter: resultFilter,
           extractedModels,
+          onChange: () => {
+            TypedUserInstance.getPreferences().set('resultFilter', resultFilter)
+          },
+          listenTo,
         })
       }
       setFilterModels(extractedModels)
     }
-  }, [filterTree])
+  }, [filterTree, selectionInterface, selectionInterface.getCurrentQuery()])
   React.useEffect(() => {
     updateFilterModels()
   }, [updateFilterModels])
