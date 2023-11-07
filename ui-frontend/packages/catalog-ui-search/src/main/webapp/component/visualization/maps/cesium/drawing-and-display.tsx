@@ -117,12 +117,16 @@ export const CesiumDrawings = ({
 
   const nonDrawingModels = models.concat(filterModels)
 
+  console.log('models', models)
+
+  console.log('filterModels', filterModels)
+
   useEffect(() => {
     const model = nonDrawingModels.find(
       (m) => m.get('locationId') === interactiveGeo
     )
     setInteractiveModel(model)
-  }, [interactiveGeo])
+  }, [interactiveGeo, models, filterModels])
 
   const handleKeydown = React.useCallback(
     (e: any) => {
