@@ -351,7 +351,7 @@ const getLocation = (model: Backbone.Model, translation?: Translation) => {
       }
       return point
     case 'line':
-      const line = _.cloneDeep(model.get('line'))
+      const line = JSON.parse(JSON.stringify(model.get('line')))
       if (translation) {
         for (const coord of line) {
           coord[0] += translation.longitude
@@ -360,7 +360,7 @@ const getLocation = (model: Backbone.Model, translation?: Translation) => {
       }
       return { line }
     case 'poly':
-      const polygon = _.cloneDeep(model.get('polygon'))
+      const polygon = JSON.parse(JSON.stringify(model.get('polygon')))
       if (translation) {
         const multiPolygon = ShapeUtils.isArray3D(polygon) ? polygon : [polygon]
         for (const ring of multiPolygon) {
@@ -392,7 +392,7 @@ const useMapListeners = ({
     setMoveFrom,
     interactiveGeo,
     setInteractiveGeo,
-    interactiveModel,
+    interactiveModels,
     translation,
     setTranslation,
   } = React.useContext(InteractionsContext)
@@ -403,25 +403,33 @@ const useMapListeners = ({
 
   React.useEffect(() => {
     upCallbackRef.current = () => {
-      console.log('UP', interactiveModel, translation)
-      if (interactiveModel && translation) {
-        const originalLocation = getLocation(interactiveModel)
-        const newLocation = getLocation(interactiveModel, translation)
-        console.log(
-          'model, original, new',
-          interactiveModel,
-          originalLocation,
-          newLocation
-        )
-        interactiveModel.set(newLocation)
+      console.log('UP', interactiveModels, translation)
+      if (interactiveModels.length > 0 && translation) {
+        const undoFns: (() => {})[] = []
+        for (const model of interactiveModels) {
+          const originalLocation = getLocation(model)
+          const newLocation = getLocation(model, translation)
+          console.log(
+            'model, translation, original, new',
+            model,
+            originalLocation,
+            newLocation
+          )
+          model.set(newLocation)
+          undoFns.push(() => model.set(originalLocation))
+        }
         addSnack('Location updated.', {
-          undo: () => interactiveModel.set(originalLocation),
+          undo: () => {
+            for (const undoFn of undoFns) {
+              undoFn()
+            }
+          },
         })
       }
       setMoveFrom(null)
       setTranslation(null)
     }
-  }, [interactiveModel, translation])
+  }, [interactiveModels, translation])
 
   React.useEffect(() => {
     if (interactiveGeo) {

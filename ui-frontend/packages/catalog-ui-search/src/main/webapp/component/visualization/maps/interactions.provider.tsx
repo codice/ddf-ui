@@ -12,8 +12,8 @@ export type Translation = {
 export type InteractionsContextType = {
   interactiveGeo: number | null
   setInteractiveGeo: (interactiveGeo: number | null) => void
-  interactiveModel: Backbone.Model | null
-  setInteractiveModel: (model: Backbone.Model | null) => void
+  interactiveModels: Backbone.Model[]
+  setInteractiveModels: (models: Backbone.Model[]) => void
   moveFrom: Cesium.Cartographic | null
   setMoveFrom: (moveFrom: Cesium.Cartographic | null) => void
   translation: Translation | null
@@ -24,8 +24,8 @@ export const InteractionsContext = React.createContext<InteractionsContextType>(
   {
     interactiveGeo: null,
     setInteractiveGeo: () => {},
-    interactiveModel: null,
-    setInteractiveModel: () => {},
+    interactiveModels: [],
+    setInteractiveModels: () => {},
     moveFrom: null,
     setMoveFrom: () => {},
     translation: null,
@@ -35,8 +35,9 @@ export const InteractionsContext = React.createContext<InteractionsContextType>(
 
 export function InteractionsProvider({ children }: any) {
   const [interactiveGeo, setInteractiveGeo] = useState<number | null>(null)
-  const [interactiveModel, setInteractiveModel] =
-    useState<Backbone.Model | null>(null)
+  const [interactiveModels, setInteractiveModels] = useState<Backbone.Model[]>(
+    []
+  )
   const [moveFrom, setMoveFrom] = useState<Cesium.Cartographic | null>(null)
   const [translation, setTranslation] = useState<Translation | null>(null)
 
@@ -45,8 +46,8 @@ export function InteractionsProvider({ children }: any) {
       value={{
         interactiveGeo,
         setInteractiveGeo,
-        interactiveModel,
-        setInteractiveModel,
+        interactiveModels,
+        setInteractiveModels,
         moveFrom,
         setMoveFrom,
         translation,
