@@ -96,7 +96,7 @@ export const CesiumDrawings = ({
   const [isDrawing, setIsDrawing] = useState(false)
   const [drawingShape, setDrawingShape] = useState<Shape>(DEFAULT_SHAPE)
 
-  const { interactiveGeo, translation, setInteractiveModel } =
+  const { interactiveGeo, translation, setInteractiveModels } =
     React.useContext(InteractionsContext)
 
   const nonDrawingModels = models.concat(filterModels)
@@ -106,10 +106,10 @@ export const CesiumDrawings = ({
   console.log('filterModels', filterModels)
 
   useEffect(() => {
-    const model = nonDrawingModels.find(
+    const models = nonDrawingModels.filter(
       (m) => m.get('locationId') === interactiveGeo
     )
-    setInteractiveModel(model)
+    setInteractiveModels(models)
   }, [interactiveGeo, models, filterModels])
 
   const handleKeydown = React.useCallback(
