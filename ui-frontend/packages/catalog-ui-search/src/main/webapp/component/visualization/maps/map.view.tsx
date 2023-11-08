@@ -465,7 +465,6 @@ const useMapListeners = ({
           } else {
             setHoverGeo({})
           }
-          //console.log(translation)
           setTranslation(translation ?? null)
         },
         up: () => upCallbackRef.current?.(),

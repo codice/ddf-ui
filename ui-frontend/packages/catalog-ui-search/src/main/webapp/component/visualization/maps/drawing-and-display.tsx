@@ -268,7 +268,7 @@ export const useDrawingAndDisplayModels = ({
   }
   React.useEffect(() => {
     updateFilterModels()
-  }, [filterTree])
+  }, [filterTree, models])
   useListenTo(selectionInterface, 'change:currentQuery', updateFilterModels)
   useListenTo(
     TypedUserInstance.getPreferences(),
