@@ -114,7 +114,7 @@ const extractModelsFromFilter = ({
   filter: any
   extractedModels: any[]
   listenTo?: (object: any, events: string, callback: EventHandler) => void
-  onChange?: (filter: any) => void
+  onChange?: () => void
 }) => {
   if (filter.filters) {
     filter.filters.forEach((subfilter: any) => {
@@ -143,7 +143,7 @@ const extractModelsFromFilter = ({
             'change:mapNorth change:mapSouth change:mapEast change:mapWest change:lat change:lon change:line change:polygon',
             (model) => {
               filter.value = model.toJSON()
-              onChange?.(filter)
+              onChange?.()
             }
           )
         }
@@ -249,10 +249,10 @@ export const useDrawingAndDisplayModels = ({
         filter: resultFilter,
         extractedModels,
         listenTo,
-        onChange: (filter) => {
+        onChange: () => {
           TypedUserInstance.getPreferences().set(
             'resultFilter',
-            JSON.parse(JSON.stringify(filter))
+            JSON.parse(JSON.stringify(resultFilter))
           )
           TypedUserInstance.savePreferences()
         },
