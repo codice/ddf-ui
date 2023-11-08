@@ -149,9 +149,22 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
     onDrawEnd()
   }
   React.useEffect(() => {
+    const callback = () => updateMap({ locationModel })
+    listenTo((wreqr as any).vent, 'search:requestlocationmodels', callback)
+    return () =>
+      stopListening(
+        (wreqr as any).vent,
+        'search:requestlocationmodels',
+        callback
+      )
+  }, [])
+  React.useEffect(() => {
     return () => {
       setTimeout(() => {
         // This is to facilitate clearing out the map, it isn't about the value, but we don't want the changeCallback to fire!
+        // TODO add an event for removing from the models array
+        // TODO how to fix this for the result filter? We can't reset or remove the model
+        // every time this is dismounted because that happens whenever the menu is closed
         locationModel.set(locationModel.defaults())
         onDrawEnd()
       }, 0)
