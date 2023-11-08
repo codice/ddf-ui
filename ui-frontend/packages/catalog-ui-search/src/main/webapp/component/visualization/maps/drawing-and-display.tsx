@@ -14,13 +14,17 @@
  **/
 import React from 'react'
 import wreqr from '../../../js/wreqr'
-import { useListenTo } from '../../selection-checkbox/useBackbone.hook'
+import {
+  useBackbone,
+  useListenTo,
+} from '../../selection-checkbox/useBackbone.hook'
 import { useIsDrawing } from '../../singletons/drawing'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import { zoomToHome } from './home'
 import LocationModel from '../../location-old/location-old'
 import { Shape } from 'geospatialdraw/target/webapp/shape-utils'
 import { useLazyResultsFilterTreeFromSelectionInterface } from '../../selection-interface/hooks'
+import { EventHandler } from 'backbone'
 export const SHAPE_ID_PREFIX = 'shape'
 export const getIdFromModelForDisplay = ({ model }: { model: any }) => {
   return `${SHAPE_ID_PREFIX}-${model.cid}-display`
@@ -104,15 +108,21 @@ export const getDrawModeFromShape = (shape: Shape): DrawModeType => {
 const extractModelsFromFilter = ({
   filter,
   extractedModels,
+  listenTo,
+  onChange,
 }: {
   filter: any
   extractedModels: any[]
+  listenTo?: (object: any, events: string, callback: EventHandler) => void
+  onChange?: () => void
 }) => {
   if (filter.filters) {
     filter.filters.forEach((subfilter: any) => {
       extractModelsFromFilter({
         filter: subfilter,
         extractedModels,
+        listenTo,
+        onChange,
       })
     })
   } else {
@@ -127,7 +137,17 @@ const extractModelsFromFilter = ({
         const newLocationModel = new LocationModel(filter.value)
         if (newLocationModel.get('hasKeyword')) {
           newLocationModel.set('locationId', undefined)
+        } else {
+          listenTo?.(
+            newLocationModel,
+            'change:mapNorth change:mapSouth change:mapEast change:mapWest change:lat change:lon change:line change:polygon',
+            () => {
+              filter.value = newLocationModel.toJSON()
+              onChange?.()
+            }
+          )
         }
+
         extractedModels.push(newLocationModel)
       }
     }
@@ -172,6 +192,7 @@ export const useDrawingAndDisplayModels = ({
   const filterTree = useLazyResultsFilterTreeFromSelectionInterface({
     selectionInterface,
   })
+  const { listenTo, stopListening } = useBackbone()
   useListenTo(
     (wreqr as any).vent,
     'search:linedisplay search:polydisplay search:bboxdisplay search:circledisplay search:keyworddisplay',
@@ -203,6 +224,9 @@ export const useDrawingAndDisplayModels = ({
   }, [])
   const updateFilterModels = () => {
     console.log('updating filter models')
+    for (const model of filterModels) {
+      stopListening(model)
+    }
     const resultFilter = TypedUserInstance.getEphemeralFilter()
     const extractedModels = [] as any[]
     if (filterTree) {
@@ -212,11 +236,28 @@ export const useDrawingAndDisplayModels = ({
       })
     }
     if (resultFilter) {
+      // We have to use this alternate method of updating the filter when dealing with
+      // the resultFilter. When the location input is unmounted, it resets its location
+      // model and removes it from here via the search:removedisplay event, so we can't
+      // use it to update the filter. The location input is unmounted when the result
+      // filter menu is closed, which it usually is. So, we update the filter in the
+      // prefs model ourselves, which causes this function to be run again with the new
+      // filter, and we can display it correctly.
       extractModelsFromFilter({
         filter: resultFilter,
         extractedModels,
+        listenTo,
+        onChange: () =>
+          TypedUserInstance.getPreferences().set(
+            'resultFilter',
+            JSON.parse(JSON.stringify(resultFilter))
+          ),
       })
     }
+    // If we have a model for a particular locationId in both models and filterModels,
+    // then keep only the one in models, since that is the source of truth. Removing
+    // the one in filterModels prevents some flickering when releasing the mouse on a
+    // move operation.
     const locationIds = new Set(models.map((m) => m.get('locationId')))
     const dedupedModels = extractedModels.filter(
       (m) => !locationIds.has(m.get('locationId'))

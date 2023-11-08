@@ -162,8 +162,6 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
     return () => {
       setTimeout(() => {
         // This is to facilitate clearing out the map, it isn't about the value, but we don't want the changeCallback to fire!
-        // TODO how to fix this for the result filter? We can't reset or remove the model
-        // every time this is dismounted because that happens whenever the menu is closed
         locationModel.set(locationModel.defaults())
         ;(wreqr as any).vent.trigger('search:removedisplay', locationModel)
         onDrawEnd()
