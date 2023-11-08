@@ -114,7 +114,7 @@ const extractModelsFromFilter = ({
   filter: any
   extractedModels: any[]
   listenTo?: (object: any, events: string, callback: EventHandler) => void
-  onChange?: () => void
+  onChange?: (filter: any) => void
 }) => {
   if (filter.filters) {
     filter.filters.forEach((subfilter: any) => {
@@ -141,9 +141,9 @@ const extractModelsFromFilter = ({
           listenTo?.(
             newLocationModel,
             'change:mapNorth change:mapSouth change:mapEast change:mapWest change:lat change:lon change:line change:polygon',
-            () => {
-              filter.value = newLocationModel.toJSON()
-              onChange?.()
+            (model) => {
+              filter.value = model.toJSON()
+              onChange?.(filter)
             }
           )
         }
@@ -247,11 +247,13 @@ export const useDrawingAndDisplayModels = ({
         filter: resultFilter,
         extractedModels,
         listenTo,
-        onChange: () =>
+        onChange: (filter) => {
           TypedUserInstance.getPreferences().set(
             'resultFilter',
-            JSON.parse(JSON.stringify(resultFilter))
-          ),
+            JSON.parse(JSON.stringify(filter))
+          )
+          TypedUserInstance.savePreferences()
+        },
       })
     }
     // If we have a model for a particular locationId in both models and filterModels,
