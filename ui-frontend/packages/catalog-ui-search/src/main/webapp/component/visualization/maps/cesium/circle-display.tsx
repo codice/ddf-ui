@@ -105,6 +105,7 @@ const drawGeometry = ({
   id,
   onDraw,
   translation,
+  isInteractive,
 }: {
   model: any
   map: any
@@ -112,6 +113,7 @@ const drawGeometry = ({
   setDrawnMagnitude: (number: any) => void
   onDraw?: (drawingLocation: Circle) => void
   translation?: Translation
+  isInteractive?: boolean // note: 'interactive' is different from drawing
 }) => {
   // if model has been reset
 
@@ -173,13 +175,15 @@ const drawGeometry = ({
 
     primitive = new Cesium.PolylineCollection()
     primitive.add({
-      width: 8,
+      width: isInteractive ? 12 : 8,
       material: Cesium.Material.fromType('PolylineOutline', {
-        color: color
+        color: isInteractive
+          ? Cesium.Color.fromCssColorString(contrastingColor)
+          : color
           ? Cesium.Color.fromCssColorString(color)
           : Cesium.Color.KHAKI,
         outlineColor: Cesium.Color.WHITE,
-        outlineWidth: 4,
+        outlineWidth: isInteractive ? 6 : 4,
       }),
       id: 'userDrawing',
       positions: Cesium.Cartesian3.fromDegreesArray(
@@ -232,12 +236,14 @@ const useListenToModel = ({
   newCircle,
   onDraw,
   translation,
+  isInteractive,
 }: {
   model: any
   map: any
   newCircle: Circle | null
   onDraw?: (drawingLocation: Circle) => void
   translation?: Translation
+  isInteractive?: boolean // note: 'interactive' is different from drawing
 }) => {
   const [cameraMagnitude] = useCameraMagnitude({ map })
   const [drawnMagnitude, setDrawnMagnitude] = React.useState(0)
@@ -264,11 +270,12 @@ const useListenToModel = ({
             setDrawnMagnitude,
             onDraw,
             translation,
+            isInteractive,
           })
         }
       }
     }
-  }, [model, map, newCircle, translation])
+  }, [model, map, newCircle, translation, isInteractive])
   useListenTo(model, 'change:lat change:lon change:radius', callback)
   React.useEffect(() => {
     if (map && needsRedraw({ map, drawnMagnitude })) {
@@ -316,11 +323,13 @@ export const CesiumCircleDisplay = ({
   model,
   onDraw,
   translation,
+  isInteractive,
 }: {
   map: any
   model: any
   onDraw?: (newCircle: Circle) => void
   translation?: Translation
+  isInteractive?: boolean // note: 'interactive' is different from drawing
 }) => {
   // Use state to store the circle drawn by the user before they click Apply or Cancel.
   // When the user clicks Draw, they are allowed to edit the existing circle (if it
@@ -331,7 +340,14 @@ export const CesiumCircleDisplay = ({
   if (onDraw) {
     useStartMapDrawing({ map, model, setNewCircle, onDraw })
   }
-  useListenToModel({ map, model, newCircle, onDraw, translation })
+  useListenToModel({
+    map,
+    model,
+    newCircle,
+    onDraw,
+    translation,
+    isInteractive,
+  })
   React.useEffect(() => {
     return () => {
       if (model && map) {

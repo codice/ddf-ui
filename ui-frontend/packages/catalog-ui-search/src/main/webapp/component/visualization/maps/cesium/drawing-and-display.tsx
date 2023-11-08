@@ -202,10 +202,9 @@ export const CesiumDrawings = ({
     <>
       {nonDrawingModels.filter(isNotBeingEdited).map((model) => {
         const drawMode = getDrawModeFromModel({ model })
+        const isInteractive = model.get('locationId') === interactiveGeo
         const shapeTranslation =
-          translation && model.get('locationId') === interactiveGeo
-            ? translation
-            : undefined
+          translation && isInteractive ? translation : undefined
         switch (drawMode) {
           case 'bbox':
             return (
@@ -213,6 +212,7 @@ export const CesiumDrawings = ({
                 key={model.cid}
                 model={model}
                 map={map}
+                isInteractive={isInteractive}
                 translation={shapeTranslation}
               />
             )
@@ -222,6 +222,7 @@ export const CesiumDrawings = ({
                 key={model.cid}
                 model={model}
                 map={map}
+                isInteractive={isInteractive}
                 translation={shapeTranslation}
               />
             )
@@ -231,6 +232,7 @@ export const CesiumDrawings = ({
                 key={model.cid}
                 model={model}
                 map={map}
+                isInteractive={isInteractive}
                 translation={shapeTranslation}
               />
             )
@@ -240,6 +242,7 @@ export const CesiumDrawings = ({
                 key={model.cid}
                 model={model}
                 map={map}
+                isInteractive={isInteractive}
                 translation={shapeTranslation}
               />
             )
