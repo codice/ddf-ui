@@ -142,7 +142,7 @@ const extractModelsFromFilter = ({
             newLocationModel,
             'change:mapNorth change:mapSouth change:mapEast change:mapWest change:lat change:lon change:line change:polygon',
             () => {
-              console.log("LOCATION CHANGED")
+              console.log('LOCATION CHANGED')
               filter.value = newLocationModel.toJSON()
               onChange()
             }
@@ -214,6 +214,9 @@ export const useDrawingAndDisplayModels = ({
       }
     }
   )
+  React.useEffect(() => {
+    ;(wreqr as any).vent.trigger('search:requestlocationmodels')
+  }, [])
   const updateFilterModels = React.useMemo(() => {
     return () => {
       // TODO I'm not sure that we want this. Is there a way to remove only the handler I added?
