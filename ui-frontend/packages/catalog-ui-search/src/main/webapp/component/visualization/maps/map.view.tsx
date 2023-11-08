@@ -421,6 +421,7 @@ const useMapListeners = ({
           undoFns.push(() => model.set(originalLocation))
         }
         addSnack('Location updated.', {
+          id: `${interactiveGeo}.move`,
           undo: () => {
             for (const undoFn of undoFns) {
               undoFn()
