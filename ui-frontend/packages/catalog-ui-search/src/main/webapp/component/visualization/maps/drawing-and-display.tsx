@@ -201,27 +201,29 @@ export const useDrawingAndDisplayModels = ({
     (wreqr as any).vent,
     'search:linedisplay search:polydisplay search:bboxdisplay search:circledisplay search:keyworddisplay',
     (model: any) => {
-      console.log('display event!')
-      if (Array.isArray(model)) {
-        setModels(
-          [...models].concat(
-            model.filter((newModel) => !models.includes(newModel))
+      setModels((currentModels) => {
+        let newModels = currentModels
+        if (Array.isArray(model)) {
+          newModels = [...currentModels].concat(
+            model.filter((newModel) => !currentModels.includes(newModel))
           )
-        )
-      } else if (!models.includes(model)) {
-        setModels([...models, model])
-      }
+        } else if (!currentModels.includes(model)) {
+          newModels = [...currentModels, model]
+        }
+        return newModels
+      })
     }
   )
   useListenTo((wreqr as any).vent, 'search:removedisplay', (model: any) => {
-    console.log('display event!')
-    let newModels
-    if (Array.isArray(model)) {
-      newModels = models.filter((m) => !model.includes(m))
-    } else {
-      newModels = models.filter((m) => m !== model)
-    }
-    setModels(newModels)
+    setModels((currentModels) => {
+      let newModels
+      if (Array.isArray(model)) {
+        newModels = currentModels.filter((m) => !model.includes(m))
+      } else {
+        newModels = currentModels.filter((m) => m !== model)
+      }
+      return newModels
+    })
   })
   React.useEffect(() => {
     ;(wreqr as any).vent.trigger('search:requestlocationmodels')
