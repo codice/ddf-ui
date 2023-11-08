@@ -192,6 +192,16 @@ export const useDrawingAndDisplayModels = ({
       }
     }
   )
+  useListenTo((wreqr as any).vent, 'search:removedisplay', (model: any) => {
+    console.log('display event!')
+    let newModels
+    if (Array.isArray(model)) {
+      newModels = models.filter((m) => !model.includes(m))
+    } else {
+      newModels = models.filter((m) => m !== model)
+    }
+    setModels(newModels)
+  })
   React.useEffect(() => {
     ;(wreqr as any).vent.trigger('search:requestlocationmodels')
   }, [])
