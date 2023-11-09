@@ -32,6 +32,7 @@ import { Position } from '@turf/turf'
 import _ from 'underscore'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import utility from './utility'
+import { Translation } from '../interactions.provider'
 const toDeg = Cesium.Math.toDegrees
 
 const polygonFillColor = 'rgba(153,102,0,0.2)'
@@ -114,12 +115,16 @@ const drawGeometry = ({
   id,
   setDrawnMagnitude,
   onDraw,
+  translation,
+  isInteractive,
 }: {
   model: any
   map: any
   id: any
   setDrawnMagnitude: (number: any) => void
   onDraw?: (drawingLocation: Polygon) => void
+  translation?: Translation
+  isInteractive?: boolean // note: 'interactive' is different from drawing
 }) => {
   const json = model.toJSON()
   if (!Array.isArray(json.polygon)) {
@@ -176,6 +181,13 @@ const drawGeometry = ({
         return
       }
 
+      if (translation) {
+        for (const point of polygonPoints) {
+          point[0] += translation.longitude
+          point[1] += translation.latitude
+        }
+      }
+
       if (buffer > 0) {
         const adjustedPolygon = Turf.polygon([polygonPoints])
         utility.adjustGeoCoords(adjustedPolygon)
@@ -206,11 +218,20 @@ const drawGeometry = ({
 
         bufferedPolygon?.geometry.coordinates.forEach((coords: any) =>
           pc.add(
-            constructOutlinedLinePrimitive({ coordinates: coords, model, id })
+            constructOutlinedLinePrimitive({
+              coordinates: coords,
+              model,
+              id,
+              isInteractive,
+            })
           )
         )
         pc.add(
-          constructDottedLinePrimitive({ coordinates: polygonPoints, model })
+          constructDottedLinePrimitive({
+            coordinates: polygonPoints,
+            model,
+            isInteractive,
+          })
         )
       } else {
         pc.add(
@@ -218,6 +239,7 @@ const drawGeometry = ({
             coordinates: polygonPoints,
             model,
             id,
+            isInteractive,
           })
         )
       }
@@ -266,11 +288,15 @@ const useListenToLineModel = ({
   map,
   onDraw,
   newPoly,
+  translation,
+  isInteractive,
 }: {
   model: any
   map: any
   onDraw?: (drawingLocation: Polygon) => void
   newPoly: Polygon | null
+  translation?: Translation
+  isInteractive?: boolean // note: 'interactive' is different from drawing
 }) => {
   const [cameraMagnitude] = useCameraMagnitude({ map })
   const [drawnMagnitude, setDrawnMagnitude] = React.useState(0)
@@ -296,11 +322,13 @@ const useListenToLineModel = ({
             id: getIdFromModelForDisplay({ model }),
             setDrawnMagnitude,
             onDraw,
+            translation,
+            isInteractive,
           })
         }
       }
     }
-  }, [model, map, newPoly])
+  }, [model, map, newPoly, translation, isInteractive])
   useListenTo(
     model,
     'change:polygon change:polygonBufferWidth change:polygonBufferUnits',
@@ -363,10 +391,14 @@ export const CesiumPolygonDisplay = ({
   map,
   model,
   onDraw,
+  translation,
+  isInteractive,
 }: {
   map: any
   model: any
   onDraw?: (newPoly: Polygon) => void
+  translation?: Translation
+  isInteractive?: boolean // note: 'interactive' is different from drawing
 }) => {
   // Use state to store the polygon drawn by the user before they click Apply or Cancel.
   // When the user clicks Draw, they are allowed to edit the existing polygon (if it
@@ -377,7 +409,14 @@ export const CesiumPolygonDisplay = ({
   if (onDraw) {
     useStartMapDrawing({ map, model, setNewPoly, onDraw })
   }
-  useListenToLineModel({ map, model, newPoly, onDraw })
+  useListenToLineModel({
+    map,
+    model,
+    newPoly,
+    onDraw,
+    translation,
+    isInteractive,
+  })
   React.useEffect(() => {
     return () => {
       if (model && map) {

@@ -21,10 +21,15 @@ function throwUnimplementedException() {
 
 const exposedMethods = [
   'onLeftClick',
+  'onLeftClickMapAPI',
+  'clearLeftClickMapAPI',
   'onRightClick',
+  'clearRightClick',
   'onDoubleClick',
+  'clearDoubleClick',
   'onMouseDown',
   'onMouseMove',
+  'clearMouseMove',
   'onCameraMoveStart',
   'onCameraMoveEnd',
   'zoomToSelected',
@@ -49,6 +54,8 @@ const exposedMethods = [
   'showGeometry',
   'removeGeometry',
   'destroy',
+  'onMouseTrackingForGeoDrag',
+  'clearMouseTrackingForGeoDrag',
 ]
 
 const interfaceImplementation = exposedMethods.reduce(

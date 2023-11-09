@@ -23,6 +23,7 @@ import { getIdFromModelForDisplay } from '../drawing-and-display'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import DistanceUtils from '../../../../js/DistanceUtils'
 import { contrastingColor } from '../../../../react-component/location/location-color-selector'
+import { Translation } from '../interactions.provider'
 const toDeg = Cesium.Math.toDegrees
 
 const CAMERA_MAGNITUDE_THRESHOLD = 8000000
@@ -108,12 +109,16 @@ const drawGeometry = ({
   map,
   id,
   onDraw,
+  translation,
+  isInteractive,
 }: {
   model: any
   map: any
   id: any
   setDrawnMagnitude: (number: any) => void
   onDraw?: (drawingLocation: BBox) => void
+  translation?: Translation
+  isInteractive?: boolean // note: 'interactive' is different from drawing
 }) => {
   const rectangle = modelToRectangle({ model })
   if (
@@ -134,6 +139,16 @@ const drawGeometry = ({
     [rectangle.east, rectangle.south],
     [rectangle.east, rectangle.north],
   ]
+
+  if (translation) {
+    const longitudeRadians = Cesium.Math.toRadians(translation.longitude)
+    const latitudeRadians = Cesium.Math.toRadians(translation.latitude)
+
+    for (const coord of coordinates) {
+      coord[0] += longitudeRadians
+      coord[1] += latitudeRadians
+    }
+  }
 
   removeOldDrawing({ map, id })
 
@@ -156,16 +171,17 @@ const drawGeometry = ({
     })
   } else {
     const color = model.get('color')
-
     primitive = new Cesium.PolylineCollection()
     primitive.add({
-      width: 8,
+      width: isInteractive ? 12 : 8,
       material: Cesium.Material.fromType('PolylineOutline', {
-        color: color
+        color: isInteractive
+          ? Cesium.Color.fromCssColorString(contrastingColor)
+          : color
           ? Cesium.Color.fromCssColorString(color)
           : Cesium.Color.KHAKI,
         outlineColor: Cesium.Color.WHITE,
-        outlineWidth: 4,
+        outlineWidth: isInteractive ? 6 : 4,
       }),
       id: 'userDrawing',
       positions: Cesium.Cartesian3.fromRadiansArray(_.flatten(coordinates)),
@@ -215,11 +231,15 @@ const useListenToModel = ({
   map,
   onDraw,
   newBbox,
+  translation,
+  isInteractive,
 }: {
   model: any
   map: any
   onDraw?: (drawingLocation: BBox) => void
   newBbox: BBox | null
+  translation?: Translation
+  isInteractive?: boolean // note: 'interactive' is different from drawing
 }) => {
   const [cameraMagnitude] = useCameraMagnitude({ map })
   const [drawnMagnitude, setDrawnMagnitude] = React.useState(0)
@@ -245,11 +265,13 @@ const useListenToModel = ({
             id: getIdFromModelForDisplay({ model }),
             setDrawnMagnitude,
             onDraw,
+            translation,
+            isInteractive,
           })
         }
       }
     }
-  }, [model, map, newBbox])
+  }, [model, map, newBbox, translation, isInteractive])
   useListenTo(
     model,
     'change:mapNorth change:mapSouth change:mapEast change:mapWest',
@@ -296,10 +318,14 @@ export const CesiumBboxDisplay = ({
   map,
   model,
   onDraw,
+  translation,
+  isInteractive,
 }: {
   map: any
   model: any
   onDraw?: (newBbox: BBox) => void
+  translation?: Translation
+  isInteractive?: boolean // note: 'interactive' is different from drawing
 }) => {
   // Use state to store the bbox drawn by the user before they click Apply or Cancel.
   // When the user clicks Draw, they are allowed to edit the existing bbox (if it
@@ -310,7 +336,7 @@ export const CesiumBboxDisplay = ({
   if (onDraw) {
     useStartMapDrawing({ map, model, onDraw, setNewBbox })
   }
-  useListenToModel({ map, model, onDraw, newBbox })
+  useListenToModel({ map, model, onDraw, newBbox, translation, isInteractive })
   React.useEffect(() => {
     return () => {
       if (model && map) {

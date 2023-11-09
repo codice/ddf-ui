@@ -27,7 +27,7 @@ import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResu
 import Geometries from './react/geometries'
 import LinearProgress from '@mui/material/LinearProgress'
 import PopupPreview from '../../../react-component/popup-preview'
-import { SHAPE_ID_PREFIX } from './drawing-and-display'
+import { SHAPE_ID_PREFIX, getDrawModeFromModel } from './drawing-and-display'
 import useSnack from '../../hooks/useSnack'
 import { zoomToHome } from './home'
 import featureDetection from '../../singletons/feature-detection'
@@ -36,8 +36,17 @@ import { Elevations } from '../../theme/theme'
 import Button from '@mui/material/Button'
 import PlusIcon from '@mui/icons-material/Add'
 import MinusIcon from '@mui/icons-material/Remove'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
+import Cesium from 'cesium/Build/Cesium/Cesium'
+import { InteractionsContext, Translation } from './interactions.provider'
+import Backbone from 'backbone'
+import _ from 'lodash'
+import ShapeUtils from '../../../js/ShapeUtils'
 
-type EditableGeo = boolean | undefined
+type HoverGeo = {
+  interactive?: boolean
+  id?: number
+}
 
 const useMapCode = (props: MapViewReactType) => {
   const [mapCode, setMapCode] = React.useState<any>(null)
@@ -267,23 +276,30 @@ const handleMapHover = ({
   selectionInterface,
   mapEvent,
   setIsHoveringResult,
-  setEditableGeo,
+  setHoverGeo,
 }: {
   map: any
   mapModel: any
   selectionInterface: any
   mapEvent: any
   setIsHoveringResult: (val: boolean) => void
-  setEditableGeo: (val: EditableGeo) => void
+  setHoverGeo: (val: HoverGeo) => void
 }) => {
   const isHoveringOverGeo = Boolean(
     mapEvent.mapTarget &&
       mapEvent.mapTarget.constructor === String &&
-      (mapEvent.mapTarget as string).startsWith(SHAPE_ID_PREFIX)
+      ((mapEvent.mapTarget as string).startsWith(SHAPE_ID_PREFIX) ||
+        mapEvent.mapTarget === 'userDrawing')
   )
 
-  if (isHoveringOverGeo) setEditableGeo(Boolean(mapEvent.mapLocationId))
-  else setEditableGeo(undefined)
+  if (isHoveringOverGeo) {
+    setHoverGeo({
+      id: mapEvent.mapLocationId,
+      interactive: Boolean(mapEvent.mapLocationId),
+    })
+  } else {
+    setHoverGeo({})
+  }
 
   if (!selectionInterface) {
     return
@@ -310,6 +326,57 @@ const handleMapHover = ({
   )
 }
 
+const getLocation = (model: Backbone.Model, translation?: Translation) => {
+  const locationType = getDrawModeFromModel({ model })
+  switch (locationType) {
+    case 'bbox':
+      const bbox = _.pick(
+        model.attributes,
+        'mapNorth',
+        'mapSouth',
+        'mapEast',
+        'mapWest'
+      )
+      if (translation) {
+        bbox.mapNorth += translation.latitude
+        bbox.mapSouth += translation.latitude
+        bbox.mapEast += translation.longitude
+        bbox.mapWest += translation.longitude
+      }
+      return bbox
+    case 'circle':
+      const point = _.pick(model.attributes, 'lat', 'lon')
+      if (translation) {
+        point.lat += translation.latitude
+        point.lon += translation.longitude
+      }
+      return point
+    case 'line':
+      const line = JSON.parse(JSON.stringify(model.get('line')))
+      if (translation) {
+        for (const coord of line) {
+          coord[0] += translation.longitude
+          coord[1] += translation.latitude
+        }
+      }
+      return { line }
+    case 'poly':
+      const polygon = JSON.parse(JSON.stringify(model.get('polygon')))
+      if (translation) {
+        const multiPolygon = ShapeUtils.isArray3D(polygon) ? polygon : [polygon]
+        for (const ring of multiPolygon) {
+          for (const coord of ring) {
+            coord[0] += translation.longitude
+            coord[1] += translation.latitude
+          }
+        }
+      }
+      return { polygon }
+    default:
+      return {}
+  }
+}
+
 const useMapListeners = ({
   map,
   mapModel,
@@ -320,23 +387,124 @@ const useMapListeners = ({
   selectionInterface: any
 }) => {
   const [isHoveringResult, setIsHoveringResult] = React.useState(false)
-  const [editableGeo, setEditableGeo] = React.useState<EditableGeo>(undefined)
+  const [hoverGeo, setHoverGeo] = React.useState<HoverGeo>({})
+  const {
+    moveFrom,
+    setMoveFrom,
+    interactiveGeo,
+    setInteractiveGeo,
+    interactiveModels,
+    setInteractiveModels,
+    translation,
+    setTranslation,
+  } = React.useContext(InteractionsContext)
+
+  const addSnack = useSnack()
+
+  const upCallbackRef = React.useRef<() => void>()
 
   React.useEffect(() => {
-    if (map && mapModel) {
-      map.onMouseMove((_event: any, mapEvent: any) => {
-        handleMapHover({
-          map,
-          mapEvent,
-          mapModel,
-          selectionInterface,
-          setIsHoveringResult,
-          setEditableGeo,
-        })
+    upCallbackRef.current = () => {
+      if (interactiveModels.length > 0 && translation) {
+        const undoFns: (() => {})[] = []
+        for (const model of interactiveModels) {
+          const originalLocation = getLocation(model)
+          const newLocation = getLocation(model, translation)
+          model.set(newLocation)
+          undoFns.push(() => model.set(originalLocation))
+        }
+        addSnack(
+          'Location updated. You may still need to save the item that uses it.',
+          {
+            id: `${interactiveGeo}.move`,
+            undo: () => {
+              for (const undoFn of undoFns) {
+                undoFn()
+              }
+            },
+          }
+        )
+      }
+      setMoveFrom(null)
+      setTranslation(null)
+    }
+  }, [interactiveModels, translation])
+
+  React.useEffect(() => {
+    if (interactiveGeo) {
+      // This handler might disable dragging to move the map, so only set it up
+      // when the user has started interacting with a geo.
+      map.onMouseTrackingForGeoDrag({
+        moveFrom,
+        down: ({
+          position,
+          mapLocationId,
+        }: {
+          position: any
+          mapLocationId: number
+        }) => {
+          if (mapLocationId === interactiveGeo && !Drawing.isDrawing()) {
+            setMoveFrom(position)
+          }
+        },
+        move: ({
+          translation,
+          mapLocationId,
+        }: {
+          translation?: Translation
+          mapLocationId: number
+        }) => {
+          if (mapLocationId === interactiveGeo) {
+            setHoverGeo({
+              id: mapLocationId,
+            })
+          } else {
+            setHoverGeo({})
+          }
+          setTranslation(translation ?? null)
+        },
+        up: () => upCallbackRef.current?.(),
       })
-      //  Clicks used in drawing on the 3D map, so let's ignore them here
-      // while drawing.
+    }
+    return () => map?.clearMouseTrackingForGeoDrag()
+  }, [map, interactiveGeo, moveFrom])
+
+  const handleKeydown = React.useCallback((e: any) => {
+    if (e.key === 'Escape') {
+      setInteractiveGeo(null)
+      setInteractiveModels([])
+      setMoveFrom(null)
+      setTranslation(null)
+    }
+  }, [])
+
+  React.useEffect(() => {
+    if (interactiveGeo) {
+      window.addEventListener('keydown', handleKeydown)
+    } else {
+      window.removeEventListener('keydown', handleKeydown)
+    }
+    return () => window.removeEventListener('keydown', handleKeydown)
+  }, [interactiveGeo])
+
+  React.useEffect(() => {
+    if (map && !moveFrom) {
+      const handleLeftClick = (mapLocationId?: number) => {
+        if (mapLocationId && !interactiveGeo && !Drawing.isDrawing()) {
+          setInteractiveGeo(mapLocationId)
+        } else {
+          setInteractiveGeo(null)
+          setInteractiveModels([])
+          setMoveFrom(null)
+          setTranslation(null)
+        }
+      }
+      map.onLeftClickMapAPI(handleLeftClick)
+    }
+    if (map && !interactiveGeo) {
       if (!Drawing.isDrawing()) {
+        // Clicks used in drawing on the 3D map, so let's ignore them here
+        // while drawing.
         map.onDoubleClick()
         map.onRightClick((event: any, _mapEvent: any) => {
           event.preventDefault()
@@ -349,11 +517,33 @@ const useMapListeners = ({
           updateDistance({ map, mapModel, updateOnMenu: true })
         })
       }
+
+      if (mapModel) {
+        map.onMouseMove((_event: any, mapEvent: any) => {
+          handleMapHover({
+            map,
+            mapEvent,
+            mapModel,
+            selectionInterface,
+            setIsHoveringResult,
+            setHoverGeo,
+          })
+        })
+      }
     }
-  }, [map, mapModel, selectionInterface, editableGeo])
+    return () => {
+      map?.clearMouseMove()
+      map?.clearDoubleClick()
+      map?.clearRightClick()
+      map?.clearLeftClickMapAPI()
+    }
+  }, [map, mapModel, selectionInterface, interactiveGeo, moveFrom])
   return {
     isHoveringResult,
-    editableGeo,
+    hoverGeo,
+    interactiveGeo,
+    setInteractiveGeo,
+    moveFrom,
   }
 }
 const useOnMouseLeave = ({
@@ -393,12 +583,16 @@ type MapViewReactType = {
 const useChangeCursorOnHover = ({
   mapElement,
   isHoveringResult,
-  editableGeo,
+  hoverGeo,
+  interactiveGeo,
+  moveFrom,
   isDrawing,
 }: {
   mapElement: HTMLDivElement | null
   isHoveringResult: boolean
-  editableGeo: EditableGeo
+  hoverGeo: HoverGeo
+  interactiveGeo: number | null
+  moveFrom: Cesium.Cartesian3 | null
   isDrawing: boolean
 }) => {
   React.useEffect(() => {
@@ -406,15 +600,24 @@ const useChangeCursorOnHover = ({
       const canvas = mapElement.querySelector('canvas')
 
       if (canvas && !isDrawing) {
-        if (editableGeo === true) canvas.style.cursor = 'grab'
-        if (editableGeo === false) canvas.style.cursor = 'not-allowed'
-        if (editableGeo === undefined) canvas.style.cursor = ''
-
-        if (isHoveringResult) canvas.classList.add('cursor-pointer')
-        else canvas.classList.remove('cursor-pointer')
+        if (interactiveGeo) {
+          // If the user is in 'interactive mode' with a geo, only show a special cursor
+          // when hovering over that geo.
+          if (hoverGeo.id === interactiveGeo) {
+            canvas.style.cursor = moveFrom ? 'grabbing' : 'grab'
+          } else {
+            canvas.style.cursor = ''
+          }
+        } else if (hoverGeo.interactive || isHoveringResult) {
+          canvas.style.cursor = 'pointer'
+        } else if (hoverGeo.interactive === false) {
+          canvas.style.cursor = 'not-allowed'
+        } else {
+          canvas.style.cursor = ''
+        }
       }
     }
-  }, [mapElement, isHoveringResult, editableGeo])
+  }, [mapElement, isHoveringResult, hoverGeo, interactiveGeo, moveFrom])
 }
 const useChangeCursorOnDrawing = ({
   mapElement,
@@ -462,17 +665,20 @@ export const MapViewReact = (props: MapViewReactType) => {
     selectionInterface: props.selectionInterface,
   })
   useListenToMapModel({ map, mapModel })
-  const { isHoveringResult, editableGeo } = useMapListeners({
-    map,
-    mapModel,
-    selectionInterface: props.selectionInterface,
-  })
+  const { isHoveringResult, hoverGeo, interactiveGeo, moveFrom } =
+    useMapListeners({
+      map,
+      mapModel,
+      selectionInterface: props.selectionInterface,
+    })
   useOnMouseLeave({ mapElement, mapModel })
   const isDrawing = useListenToDrawing()
   useChangeCursorOnDrawing({ mapElement, isDrawing })
   useChangeCursorOnHover({
     isHoveringResult,
-    editableGeo,
+    hoverGeo,
+    interactiveGeo,
+    moveFrom,
     isDrawing,
     mapElement,
   })

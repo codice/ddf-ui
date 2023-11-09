@@ -13,6 +13,7 @@ type Snack = {
 } & SnackProps
 
 export type SnackProps = {
+  id?: string
   status?: AlertProps['severity']
   closeable?: boolean
   clickawayCloseable?: boolean
@@ -32,7 +33,15 @@ export function SnackProvider({ children }: any) {
   const [currentSnack, setCurrentSnack] = useState({} as Snack)
 
   const addSnack = (message: string, props: SnackProps = {}) => {
-    setSnacks((snacks) => [{ message, ...props }, ...snacks])
+    setSnacks((snacks) => {
+      if (props.id) {
+        const snackIndex = snacks.findIndex((s) => s.id === props.id)
+        if (snackIndex >= 0) {
+          snacks.splice(snackIndex, 1)
+        }
+      }
+      return [{ message, ...props }, ...snacks]
+    })
   }
 
   // Set current snack to be displayed
