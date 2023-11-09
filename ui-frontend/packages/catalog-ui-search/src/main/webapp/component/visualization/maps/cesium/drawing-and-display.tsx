@@ -101,10 +101,6 @@ export const CesiumDrawings = ({
 
   const nonDrawingModels = models.concat(filterModels)
 
-  console.log('models', models)
-
-  console.log('filterModels', filterModels)
-
   useEffect(() => {
     const models = nonDrawingModels.filter(
       (m) => m.get('locationId') === interactiveGeo
