@@ -420,14 +420,17 @@ const useMapListeners = ({
           model.set(newLocation)
           undoFns.push(() => model.set(originalLocation))
         }
-        addSnack('Location updated.', {
-          id: `${interactiveGeo}.move`,
-          undo: () => {
-            for (const undoFn of undoFns) {
-              undoFn()
-            }
-          },
-        })
+        addSnack(
+          'Location updated. You may still need to save the item that uses it.',
+          {
+            id: `${interactiveGeo}.move`,
+            undo: () => {
+              for (const undoFn of undoFns) {
+                undoFn()
+              }
+            },
+          }
+        )
       }
       setMoveFrom(null)
       setTranslation(null)
