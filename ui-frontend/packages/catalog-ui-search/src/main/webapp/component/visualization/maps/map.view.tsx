@@ -394,6 +394,7 @@ const useMapListeners = ({
     interactiveGeo,
     setInteractiveGeo,
     interactiveModels,
+    setInteractiveModels,
     translation,
     setTranslation,
   } = React.useContext(InteractionsContext)
@@ -476,15 +477,35 @@ const useMapListeners = ({
     return () => map?.clearMouseTrackingForGeoDrag()
   }, [map, interactiveGeo, moveFrom])
 
-  // TODO escape handler for cancel
+  const handleKeydown = React.useCallback((e: any) => {
+    if (e.key === 'Escape') {
+      setInteractiveGeo(null)
+      setInteractiveModels([])
+      setMoveFrom(null)
+      setTranslation(null)
+    }
+  }, [])
+
+  React.useEffect(() => {
+    if (interactiveGeo) {
+      window.addEventListener('keydown', handleKeydown)
+    } else {
+      window.removeEventListener('keydown', handleKeydown)
+    }
+    return () => window.removeEventListener('keydown', handleKeydown)
+  }, [interactiveGeo])
+
   React.useEffect(() => {
     if (map && !moveFrom) {
       const handleLeftClick = (mapLocationId?: number) => {
         console.log('handleLeftClick', mapLocationId, moveFrom)
-        if (mapLocationId && !Drawing.isDrawing()) {
+        if (mapLocationId && !interactiveGeo && !Drawing.isDrawing()) {
           setInteractiveGeo(mapLocationId)
         } else {
           setInteractiveGeo(null)
+          setInteractiveModels([])
+          setMoveFrom(null)
+          setTranslation(null)
         }
       }
       map.onLeftClickMapAPI(handleLeftClick)
