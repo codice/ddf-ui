@@ -307,7 +307,6 @@ export default function CesiumMap(
     onLeftClickMapAPI(callback: any) {
       map.clickEventHandler = new Cesium.ScreenSpaceEventHandler(map.canvas)
       map.clickEventHandler.setInputAction((e: any) => {
-        console.log('LEFT_CLICK', e.position)
         const { locationId } = determineIdsFromPosition(e.position, map)
         callback(locationId)
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
@@ -352,13 +351,11 @@ export default function CesiumMap(
       move: any
       up: any
     }) {
-      console.log('onMouseTrackingForGeoDrag')
       map.scene.screenSpaceCameraController.enableRotate = false
       map.dragAndDropEventHandler = new Cesium.ScreenSpaceEventHandler(
         map.canvas
       )
       map.dragAndDropEventHandler.setInputAction((e: any) => {
-        console.log('LEFT_DOWN', e.position)
         const { locationId } = determineIdsFromPosition(e.position, map)
         const cartesian = map.scene.camera.pickEllipsoid(
           e.position,
@@ -398,7 +395,6 @@ export default function CesiumMap(
       )
     },
     clearMouseTrackingForGeoDrag() {
-      console.log('clearMouseTrackingForGeoDrag')
       map.scene.screenSpaceCameraController.enableRotate = true
       map.dragAndDropEventHandler?.destroy()
     },

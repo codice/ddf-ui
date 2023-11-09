@@ -405,19 +405,11 @@ const useMapListeners = ({
 
   React.useEffect(() => {
     upCallbackRef.current = () => {
-      console.log('UP', interactiveModels, translation)
       if (interactiveModels.length > 0 && translation) {
         const undoFns: (() => {})[] = []
         for (const model of interactiveModels) {
           const originalLocation = getLocation(model)
           const newLocation = getLocation(model, translation)
-          console.log(
-            'model, translation, original, new',
-            model,
-            translation,
-            originalLocation,
-            newLocation
-          )
           model.set(newLocation)
           undoFns.push(() => model.set(originalLocation))
         }
@@ -498,7 +490,6 @@ const useMapListeners = ({
   React.useEffect(() => {
     if (map && !moveFrom) {
       const handleLeftClick = (mapLocationId?: number) => {
-        console.log('handleLeftClick', mapLocationId, moveFrom)
         if (mapLocationId && !interactiveGeo && !Drawing.isDrawing()) {
           setInteractiveGeo(mapLocationId)
         } else {

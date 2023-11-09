@@ -229,7 +229,6 @@ export const useDrawingAndDisplayModels = ({
     ;(wreqr as any).vent.trigger('search:requestlocationmodels')
   }, [])
   const updateFilterModels = () => {
-    console.log('updating filter models')
     for (const model of filterModels) {
       stopListening(model)
     }
