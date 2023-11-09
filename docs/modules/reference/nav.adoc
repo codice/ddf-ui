@@ -1,4 +1,0 @@
-
-.Reference
-* xref:map-standards.adoc[Map Formats Supported]
-* xref:catalog.ui.adoc[Configuration Reference]
