@@ -11,6 +11,7 @@ import wreqr from '../../js/wreqr'
 import GoldenLayout from 'golden-layout'
 import { getRootColumnContent, rootIsNotAColumn } from './stack-toolbar'
 import { unMaximize } from '../../react-component/visualization-selector/visualization-selector'
+import { Visualizations } from '../../component/visualization/visualizations'
 
 /**
  *  The popin function in golden layout has issues, particularly when there is a single stack in the main window at root.
@@ -335,7 +336,9 @@ function useConsumeSubwindowLayoutChange({
     return () => {}
   }, [goldenLayout, isInitialized])
 }
-
+function findOpenlayers(item: any) {
+  return item.componentName === 'openlayers'
+}
 /**
  *  Notice that we are only forwarding events that start with 'search' for now, as these are drawing events.
  */
@@ -352,6 +355,44 @@ const useProvideWreqrEvents = ({
     (event: string, args: any, { doNotPropagate = false } = {}) => {
       if (goldenLayout && isInitialized) {
         if (event.startsWith('search') && !doNotPropagate) {
+          // Launch the 2D Map (openlayers) if it's not already open
+          if (!event.endsWith('cancel')) {
+            const contentItems =
+              goldenLayout.root.getItemsByFilter(findOpenlayers)
+            if (contentItems.length === 0) {
+              const configs = Visualizations.reduce((cfg, viz) => {
+                // @ts-expect-error ts-migrate(2339) FIXME: Property 'isClosable' does not exist on type 'Visu... Remove this comment to see the full error message
+                const { id, title, icon, isClosable = true } = viz
+                cfg[id] = {
+                  title,
+                  type: 'component',
+                  componentName: id,
+                  icon,
+                  componentState: {},
+                  isClosable,
+                }
+                return cfg
+              }, {} as { [key: string]: any })
+              if (goldenLayout.root.contentItems.length === 0) {
+                goldenLayout.root.addChild({
+                  type: 'column',
+                  content: [configs['openlayers']],
+                })
+              } else {
+                if (goldenLayout.root.contentItems[0].isColumn) {
+                  goldenLayout.root.contentItems[0].contentItems[0].addChild(
+                    configs['openlayers'],
+                    0
+                  )
+                } else {
+                  goldenLayout.root.contentItems[0].addChild(
+                    configs['openlayers'],
+                    0
+                  )
+                }
+              }
+            }
+          }
           goldenLayout.eventHub._childEventSource = null // golden layout doesn't properly clear this flag
           goldenLayout.eventHub.emit(
             GoldenLayoutWindowCommunicationEvents.consumeWreqrEvent,
