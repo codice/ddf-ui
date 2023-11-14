@@ -27,6 +27,12 @@
             type="Integer"
             default="1000"/>
 
+        <AD id="requiredExportAttributes"
+            name="Required Export Attributes"
+            description="Specifies the attributes that must be included in exports. These attributes will always by displayed in the inspector (summary shown) as well."
+            type="String"
+            cardinality="10000"
+            default="title,security.classification,security.releasability"/>
 
         <AD id="exportMetacardFormatOptions"
             name="Export Metacard Format Options"
@@ -240,8 +246,8 @@
             required="false"/>
 
         <AD id="summaryShow"
-            name="Summary Metacard Attributes"
-            description="List of metacard attributes to display in the summary view."
+            name="Summary Metacard Attributes (Inspector)"
+            description="List of metacard attributes to display in the summary (inspector) view by default."
             type="String"
             cardinality="10000"
             default="created,modified,thumbnail"

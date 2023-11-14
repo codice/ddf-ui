@@ -19,8 +19,11 @@ import TransferList from '../../component//tabs/metacard/transfer-list'
 import { Elevations } from '../../component//theme/theme'
 import { useDialog } from '../../component//dialog'
 import { TypedUserInstance } from '../../component/singletons/TypedUser'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 
 export default ({ isExport = false }: { isExport?: boolean }) => {
+  const requiredAttributes =
+    StartupDataStore.Configuration.getRequiredExportAttributes()
   const dialogContext = useDialog()
   return (
     <Button
@@ -43,6 +46,7 @@ export default ({ isExport = false }: { isExport?: boolean }) => {
             >
               <TransferList
                 startingLeft={TypedUserInstance.getResultsAttributesSummaryShown()}
+                requiredAttributes={requiredAttributes}
                 startingRight={TypedUserInstance.getResultsAttributesPossibleSummaryShown()}
                 startingHideEmpty={user
                   .get('user')

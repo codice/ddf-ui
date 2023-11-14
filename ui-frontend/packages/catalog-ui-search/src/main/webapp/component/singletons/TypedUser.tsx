@@ -20,8 +20,11 @@ export const TypedUserInstance = {
     if (userchoices.length > 0) {
       return userchoices
     }
-    if (StartupDataStore.Configuration.getSummaryShow().length > 0) {
-      return StartupDataStore.Configuration.getSummaryShow()
+    const config = StartupDataStore.Configuration
+    const summary = config.getSummaryShow()
+    const required = config.getRequiredExportAttributes()
+    if (summary.length > 0 || required.length > 0) {
+      return [...new Set([...required, ...summary])]
     }
     return ['title', 'created', 'thumbnail']
   },
