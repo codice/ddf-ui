@@ -119,9 +119,6 @@ function updateMap({ locationModel }: any) {
     ;(wreqr as any).vent.trigger('search:' + mode + 'display', locationModel)
   }
 }
-function startSearchDraw(state: any, locationModel: any) {
-  ;(wreqr as any).vent.trigger('search:draw' + state.mode, locationModel)
-}
 export const LocationContext = React.createContext({
   filterInputPredicate: (_name: string): boolean => {
     return true
@@ -161,7 +158,7 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
     }
   }, [])
   React.useEffect(() => {
-    const callback = () => startSearchDraw(state, locationModel)
+    const callback = () => onDraw()
     listenTo((wreqr as any).vent, 'search:requestdrawingmodels', callback)
     return () =>
       stopListening(
@@ -208,16 +205,6 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
     .filter((value) => {
       return locationContext.filterInputPredicate(value.value)
     })
-  React.useEffect(() => {
-    const callback = () => startSearchDraw(state, locationModel)
-    listenTo((wreqr as any).vent, 'search:requestdrawingmodels', callback)
-    return () =>
-      stopListening(
-        (wreqr as any).vent,
-        'search:requestdrawingmodels',
-        callback
-      )
-  }, [])
   return (
     <div>
       <div>
