@@ -32,7 +32,7 @@
             description="Specifies the attributes that must be included in exports. These attributes will always by displayed in the inspector (summary shown) as well."
             type="String"
             cardinality="10000"
-            default="title,security.classification,security.releasability"/>
+            default=""/>
 
         <AD id="exportMetacardFormatOptions"
             name="Export Metacard Format Options"

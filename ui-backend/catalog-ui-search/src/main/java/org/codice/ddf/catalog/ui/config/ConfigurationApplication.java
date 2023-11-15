@@ -152,8 +152,7 @@ public class ConfigurationApplication implements SparkApplication {
 
   private Integer exportResultLimit = 1000;
 
-  private List<String> requiredExportAttributes =
-      ImmutableList.of("title", "security.classification", "security.releasability");
+  private List<String> requiredExportAttributes = Collections.emptyList();
 
   private Set<String> exportMetacardFormatOptions = new HashSet<>();
 
