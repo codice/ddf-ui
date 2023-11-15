@@ -15,9 +15,18 @@
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import wreqr from '../../js/wreqr'
 import { Visualizations } from '../visualization/visualizations'
+import { BrowserWindow, ContentItem } from 'golden-layout'
 
-function findOpenlayers(item: any) {
-  return item.componentName === 'openlayers'
+function findMap(item: any) {
+  return item.componentName === 'openlayers' || item.componentName === 'cesium'
+}
+
+function searchPopouts(popouts: BrowserWindow[]) {
+  let popoutItems: ContentItem[] = []
+  popouts.forEach((popout) => {
+    popoutItems.push(...popout.getGlInstance().root.getItemsByFilter(findMap))
+  })
+  return popoutItems
 }
 
 /**
@@ -36,8 +45,9 @@ export const useVerifyMapExistsWhenDrawing = ({
     () => {
       if (goldenLayout && isInitialized) {
         //     // Launch the 2D Map (openlayers) if it's not already open
-        const contentItems = goldenLayout.root.getItemsByFilter(findOpenlayers)
-        if (contentItems.length === 0) {
+        const contentItems = goldenLayout.root.getItemsByFilter(findMap)
+        const popoutItems = searchPopouts(goldenLayout.openPopouts)
+        if (contentItems.length === 0 && popoutItems.length === 0) {
           const configs = Visualizations.reduce((cfg, viz) => {
             // @ts-expect-error ts-migrate(2339) FIXME: Property 'isClosable' does not exist on type 'Visu... Remove this comment to see the full error message
             const { id, title, icon, isClosable = true } = viz
