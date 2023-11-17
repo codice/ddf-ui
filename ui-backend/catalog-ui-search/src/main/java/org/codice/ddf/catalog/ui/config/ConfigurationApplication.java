@@ -152,6 +152,8 @@ public class ConfigurationApplication implements SparkApplication {
 
   private Integer exportResultLimit = 1000;
 
+  private List<String> requiredExportAttributes = Collections.emptyList();
+
   private Set<String> exportMetacardFormatOptions = new HashSet<>();
 
   private Set<String> exportMetacardsFormatOptions = new HashSet<>();
@@ -512,6 +514,7 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("timeout", timeout);
     config.put("resultCount", resultCount);
     config.put("exportResultLimit", exportResultLimit);
+    config.put("requiredExportAttributes", requiredExportAttributes);
     config.put("exportMetacardFormatOptions", exportMetacardFormatOptions);
     config.put("exportMetacardsFormatOptions", exportMetacardsFormatOptions);
     config.put("typeNameMapping", typeNameMapping);
@@ -873,6 +876,14 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setExportResultLimit(Integer exportResultLimit) {
     this.exportResultLimit = exportResultLimit;
+  }
+
+  public List<String> getRequiredExportAttributes() {
+    return requiredExportAttributes;
+  }
+
+  public void setRequiredExportAttributes(List<String> requiredExportAttributes) {
+    this.requiredExportAttributes = requiredExportAttributes;
   }
 
   public Set<String> getExportMetacardFormatOptions() {
