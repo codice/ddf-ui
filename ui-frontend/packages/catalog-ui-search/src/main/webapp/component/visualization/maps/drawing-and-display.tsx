@@ -245,6 +245,11 @@ export const useDrawingAndDisplayModels = ({
     }
   )
   React.useEffect(() => {
+    if (map && isDrawing) {
+      ;(wreqr as any).vent.trigger('search:requestdrawingmodels')
+    }
+  }, [map])
+  React.useEffect(() => {
     if (!isDrawing) {
       setDrawingModels([])
     }

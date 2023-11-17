@@ -46,6 +46,7 @@ import {
   useCrossWindowGoldenLayoutCommunication,
   GoldenLayoutWindowCommunicationEvents,
 } from './cross-window-communication'
+import { useVerifyMapExistsWhenDrawing } from './verify-map'
 
 const treeMap = (obj: any, fn: any, path = []): any => {
   if (Array.isArray(obj)) {
@@ -770,6 +771,11 @@ export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
     goldenLayout,
     isInitialized: !error && finished,
     options,
+  })
+
+  useVerifyMapExistsWhenDrawing({
+    goldenLayout,
+    isInitialized: !error && finished,
   })
 
   return (
