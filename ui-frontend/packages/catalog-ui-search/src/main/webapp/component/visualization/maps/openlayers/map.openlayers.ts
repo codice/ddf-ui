@@ -55,6 +55,18 @@ function determineIdFromPosition(position: any, map: any) {
     return features[0].getId()
   }
 }
+function determineIdsFromPosition(position: any, map: any) {
+  const features: any = []
+  let id, locationId
+  map.forEachFeatureAtPixel(position, (feature: any) => {
+    features.push(feature)
+  })
+  if (features.length > 0) {
+    id = features[0].getId()
+    locationId = features[0].get('locationId')
+  }
+  return { id, locationId }
+}
 function determineLocationIdFromPosition(position: any, map: any) {
   const features: any = []
   map.forEachFeatureAtPixel(position, (feature: any) => {
@@ -197,6 +209,86 @@ export default function (
     }
   }
   const exposedMethods = _.extend({}, Map, {
+    onMouseTrackingForGeoDrag({
+      moveFrom,
+      down,
+      move,
+      up,
+    }: {
+      moveFrom?: any
+      down: any
+      move: any
+      up: any
+    }) {
+      console.log("onMouseTrackingForGeoDrag", moveFrom, down, move, up)
+      console.log('map: ', map)
+      // disable panning of the map
+      map.getInteractions().forEach((interaction: any) => {
+        if (interaction instanceof Openlayers.interaction.DragPan) {
+          interaction.setActive(false)
+          console.log("DragPan disabled")
+        }
+      });
+
+      map.on('pointerdown', function(event: any) {
+        const location = map.getFeaturesAtPixel(event.pixel)
+        const select = new Openlayers.interaction.Select({
+          condition: Openlayers.events.condition.click,
+          filter: function(feature){ return feature === location; },
+        });
+        const modify = new Openlayers.interaction.Modify({
+          features: select.getFeatures()
+        });
+        map.addInteraction(select)
+        const features = new Openlayers.Collection([location]) 
+        const translate = new Openlayers.interaction.Translate({
+          features: features,
+        });
+        map.addInteraction(select)
+        map.addInteraction(translate)
+        map.addInteraction(modify)
+  
+        const { locationId } = determineIdsFromPosition(event.pixel, map)
+        const coordinates = map.getCoordinateFromPixel(event.pixel)
+        const position = {latitude: coordinates[1], longitude: coordinates[0]}
+        down({position: position, mapLocationId: locationId})
+      })
+
+      map.on('pointerdrag', function(event: any) {  
+        const { locationId } = determineIdsFromPosition(event.pixel, map)
+        const coordinates = map.getCoordinateFromPixel(event.pixel)
+        const translation = moveFrom? {
+          latitude: coordinates[1] - moveFrom.latitude,
+          longitude: coordinates[0] - moveFrom.longitude
+        } : null
+        move({ translation: translation, mapLocationId: locationId })
+      })
+     
+      map.on('pointerup', up)  
+    },
+    clearMouseTrackingForGeoDrag() {
+      // renable panning
+      map.getInteractions().forEach((interaction: any) => {
+        if (interaction instanceof Openlayers.interaction.DragPan) {
+          interaction.setActive(true)
+          console.log("DragPan enabled")
+        }
+      });
+      map.removeEventListener('pointerdown')
+      map.removeEventListener('pointerdrag')
+      map.removeEventListener('pointerup')
+    },
+    onLeftClickMapAPI(callback: any) {
+      console.log('onLeftClickMapAPI...', )
+      map.on('singleclick', function(event: any) {
+        const { locationId } = determineIdsFromPosition(event.pixel, map)
+        console.log('locationId: ', locationId)
+        callback(locationId)
+      })
+    },
+    clearLeftClickMapAPI() {
+      map.removeEventListener('singleclick')
+    },
     onLeftClick(callback: any) {
       $(map.getTargetElement()).on('click', (e) => {
         const boundingRect = map.getTargetElement().getBoundingClientRect()
@@ -213,6 +305,9 @@ export default function (
         callback(e)
       })
     },
+    clearRightClick() {
+      map.removeEventListener('contextmenu')
+    },
     onDoubleClick() {
       $(map.getTargetElement()).on('dblclick', (e) => {
         const boundingRect = map.getTargetElement().getBoundingClientRect()
@@ -224,6 +319,9 @@ export default function (
           ;(wreqr as any).vent.trigger('location:doubleClick', id)
         }
       })
+    },
+    clearDoubleClick() {
+      map.removeEventListener('dblclick')
     },
     onMouseTrackingForPopup(
       downCallback: any,
@@ -250,6 +348,9 @@ export default function (
           mapLocationId: determineLocationIdFromPosition(position, map),
         })
       })
+    },
+    clearMouseMove() {
+      map.removeEventListener('mousemove')
     },
     timeoutIds: [],
     onCameraMoveStart(callback: any) {

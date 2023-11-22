@@ -22,6 +22,8 @@ import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { removeOldDrawing } from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import { StartupDataStore } from '../../../../js/model/Startup/startup'
+import { contrastingColor } from '../../../../react-component/location/location-color-selector'
+import { Translation } from '../interactions.provider'
 type CoordinateType = [number, number]
 type CoordinatesType = Array<CoordinateType>
 export function translateFromOpenlayersCoordinates(coords: CoordinatesType) {
@@ -101,11 +103,15 @@ export const drawLine = ({
   model,
   line,
   id,
+  isInteractive,
+  translation,
 }: {
   map: any
   model: any
   line: ol.geom.LineString
   id: string
+  isInteractive?: boolean
+  translation?: Translation
 }) => {
   if (!line) {
     // Handles case where model changes to empty vars and we don't want to draw anymore
@@ -117,6 +123,9 @@ export const drawLine = ({
       model.get('lineUnits')
     ) || 1
   adjustLinePoints(line)
+  if (translation) {
+    line.translate(translation.longitude, translation.latitude)
+  }
   const turfLine = Turf.lineString(
     translateFromOpenlayersCoordinates(line.getCoordinates())
   )
@@ -144,13 +153,13 @@ export const drawLine = ({
   const color = model.get('color')
   const iconStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: color ? color : '#914500',
-      width: 3,
+      color: isInteractive ? contrastingColor: color ? color : contrastingColor,
+      width: isInteractive ? 6 : 4,
     }),
   })
   const drawnLineIconStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: color ? color : '#914500',
+      color: isInteractive ? contrastingColor: color ? color : contrastingColor,
       width: 2,
       lineDash: [10, 5],
     }),
@@ -172,10 +181,14 @@ const updatePrimitive = ({
   map,
   model,
   id,
+  isInteractive,
+  translation,
 }: {
   map: any
   model: any
   id: string
+  isInteractive?: boolean
+  translation?: Translation
 }) => {
   const line = modelToLineString(model)
   // Make sure the current model has width and height before drawing
@@ -183,28 +196,32 @@ const updatePrimitive = ({
     line !== undefined &&
     !validateGeo('line', JSON.stringify(line.getCoordinates()))?.error
   ) {
-    drawLine({ map, model, line, id })
+    drawLine({ map, model, line, id, isInteractive, translation })
   }
 }
-const useListenToLineModel = ({ model, map }: { model: any; map: any }) => {
+const useListenToLineModel = ({ model, map, isInteractive, translation }: { model: any; map: any, isInteractive?: boolean, translation?: Translation }) => {
   const callback = React.useMemo(() => {
     return () => {
       if (model && map) {
-        updatePrimitive({ map, model, id: getIdFromModelForDisplay({ model }) })
+        updatePrimitive({ map, model, id: getIdFromModelForDisplay({ model }), isInteractive, translation })
       }
     }
-  }, [model, map])
+  }, [model, map, isInteractive, translation])
   useListenTo(model, 'change:line change:lineWidth change:lineUnits', callback)
   callback()
 }
 export const OpenlayersLineDisplay = ({
   map,
   model,
+  isInteractive,
+  translation,
 }: {
   map: any
   model: any
+  isInteractive?: boolean
+  translation?: Translation
 }) => {
-  useListenToLineModel({ map, model })
+  useListenToLineModel({ map, model, isInteractive, translation })
   React.useEffect(() => {
     return () => {
       if (map && model) {

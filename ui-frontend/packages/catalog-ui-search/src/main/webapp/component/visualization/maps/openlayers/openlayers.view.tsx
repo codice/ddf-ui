@@ -18,6 +18,7 @@ import { MapViewReact } from '../map.view'
 import { OpenlayersDrawings } from './drawing-and-display'
 import { useDrawingAndDisplayModels } from '../drawing-and-display'
 import $ from 'jquery'
+import { InteractionsProvider } from '../interactions.provider'
 
 const loadOpenLayersCode = () => {
   // @ts-expect-error ts-migrate(7009) FIXME: 'new' expression, whose target lacks a construct s... Remove this comment to see the full error message
@@ -52,7 +53,7 @@ export const OpenlayersMapViewReact = ({
   }
 
   return (
-    <>
+    <InteractionsProvider>
       <Memo>
         <MapViewReact
           selectionInterface={selectionInterface}
@@ -64,6 +65,6 @@ export const OpenlayersMapViewReact = ({
         drawingAndDisplayModels={drawingAndDisplayModels}
         map={map}
       />
-    </>
+    </InteractionsProvider>
   )
 }
