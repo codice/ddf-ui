@@ -153,13 +153,21 @@ export const drawLine = ({
   const color = model.get('color')
   const iconStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: isInteractive ? contrastingColor: color ? color : contrastingColor,
+      color: isInteractive
+        ? contrastingColor
+        : color
+        ? color
+        : contrastingColor,
       width: isInteractive ? 6 : 4,
     }),
   })
   const drawnLineIconStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: isInteractive ? contrastingColor: color ? color : contrastingColor,
+      color: isInteractive
+        ? contrastingColor
+        : color
+        ? color
+        : contrastingColor,
       width: 2,
       lineDash: [10, 5],
     }),
@@ -199,11 +207,27 @@ const updatePrimitive = ({
     drawLine({ map, model, line, id, isInteractive, translation })
   }
 }
-const useListenToLineModel = ({ model, map, isInteractive, translation }: { model: any; map: any, isInteractive?: boolean, translation?: Translation }) => {
+const useListenToLineModel = ({
+  model,
+  map,
+  isInteractive,
+  translation,
+}: {
+  model: any
+  map: any
+  isInteractive?: boolean
+  translation?: Translation
+}) => {
   const callback = React.useMemo(() => {
     return () => {
       if (model && map) {
-        updatePrimitive({ map, model, id: getIdFromModelForDisplay({ model }), isInteractive, translation })
+        updatePrimitive({
+          map,
+          model,
+          id: getIdFromModelForDisplay({ model }),
+          isInteractive,
+          translation,
+        })
       }
     }
   }, [model, map, isInteractive, translation])

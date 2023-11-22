@@ -197,7 +197,11 @@ export const drawPolygon = ({
   const color = model.get('color')
   const bufferPolygonIconStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: isInteractive ? contrastingColor: color ? color : contrastingColor,
+      color: isInteractive
+        ? contrastingColor
+        : color
+        ? color
+        : contrastingColor,
       width: isInteractive ? 6 : 4,
     }),
     zIndex: 1,
@@ -241,11 +245,27 @@ const updatePrimitive = ({
     drawPolygon({ map, model, polygon, id, isInteractive, translation })
   }
 }
-const useListenToPolygonModel = ({ model, map, isInteractive, translation }: { model: any; map: any, isInteractive?: boolean, translation?: Translation }) => {
+const useListenToPolygonModel = ({
+  model,
+  map,
+  isInteractive,
+  translation,
+}: {
+  model: any
+  map: any
+  isInteractive?: boolean
+  translation?: Translation
+}) => {
   const callback = React.useMemo(() => {
     return () => {
       if (model && map) {
-        updatePrimitive({ map, model, id: getIdFromModelForDisplay({ model }), isInteractive, translation })
+        updatePrimitive({
+          map,
+          model,
+          id: getIdFromModelForDisplay({ model }),
+          isInteractive,
+          translation,
+        })
       }
     }
   }, [model, map, isInteractive, translation])
@@ -260,7 +280,7 @@ export const OpenlayersPolygonDisplay = ({
   map,
   model,
   isInteractive,
-  translation
+  translation,
 }: {
   map: any
   model: any

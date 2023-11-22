@@ -98,7 +98,7 @@ export const drawBbox = ({
   rectangle,
   id,
   isInteractive,
-  translation
+  translation,
 }: {
   map: any
   model: any
@@ -122,7 +122,11 @@ export const drawBbox = ({
   const color = model.get('color')
   const iconStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: isInteractive ? contrastingColor: color ? color : contrastingColor,
+      color: isInteractive
+        ? contrastingColor
+        : color
+        ? color
+        : contrastingColor,
       width: isInteractive ? 6 : 4,
     }),
   })
@@ -167,11 +171,27 @@ const updatePrimitive = ({
     // }
   }
 }
-const useListenToBboxModel = ({ model, map, isInteractive, translation }: { model: any; map: any, isInteractive?: boolean, translation?: Translation }) => {
+const useListenToBboxModel = ({
+  model,
+  map,
+  isInteractive,
+  translation,
+}: {
+  model: any
+  map: any
+  isInteractive?: boolean
+  translation?: Translation
+}) => {
   const callback = React.useMemo(() => {
     return () => {
       if (model && map) {
-        updatePrimitive({ map, model, id: getIdFromModelForDisplay({ model }), isInteractive, translation })
+        updatePrimitive({
+          map,
+          model,
+          id: getIdFromModelForDisplay({ model }),
+          isInteractive,
+          translation,
+        })
       }
     }
   }, [model, map, isInteractive, translation])

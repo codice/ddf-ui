@@ -317,7 +317,7 @@ export const OpenlayersDrawings = ({
   const [drawingGeometry, setDrawingGeometry] = useState<GeometryJSON | null>(
     null
   )
-  
+
   const { interactiveGeo, translation, setInteractiveModels } =
     React.useContext(InteractionsContext)
 
@@ -395,7 +395,8 @@ export const OpenlayersDrawings = ({
       {filterModels.map((model: any) => {
         const drawMode = getDrawModeFromModel({ model })
         const isInteractive = model.get('locationId') === interactiveGeo
-        const shapeTranslation = translation && isInteractive ? translation : undefined
+        const shapeTranslation =
+          translation && isInteractive ? translation : undefined
         switch (drawMode) {
           case 'bbox':
             return (
@@ -413,7 +414,13 @@ export const OpenlayersDrawings = ({
             )
           case 'line':
             return (
-              <OpenlayersLineDisplay key={model.cid} model={model} map={map} isInteractive={isInteractive} translation={shapeTranslation}/>
+              <OpenlayersLineDisplay
+                key={model.cid}
+                model={model}
+                map={map}
+                isInteractive={isInteractive}
+                translation={shapeTranslation}
+              />
             )
           case 'poly':
             return (
@@ -421,6 +428,8 @@ export const OpenlayersDrawings = ({
                 key={model.cid}
                 model={model}
                 map={map}
+                isInteractive={isInteractive}
+                translation={shapeTranslation}
               />
             )
           default:
@@ -429,6 +438,8 @@ export const OpenlayersDrawings = ({
                 key={model.cid}
                 model={model}
                 map={map}
+                isInteractive={isInteractive}
+                translation={shapeTranslation}
               />
             )
         }
@@ -436,13 +447,18 @@ export const OpenlayersDrawings = ({
       {models.map((model: any) => {
         const drawMode = getDrawModeFromModel({ model })
         const isInteractive = model.get('locationId') === interactiveGeo
-        const shapeTranslation = translation && isInteractive ? translation : undefined
+        const shapeTranslation =
+          translation && isInteractive ? translation : undefined
         switch (drawMode) {
           case 'bbox':
             return (
-              <OpenlayersBboxDisplay key={model.cid} model={model} map={map} 
-              isInteractive={isInteractive}
-              translation={shapeTranslation}/>
+              <OpenlayersBboxDisplay
+                key={model.cid}
+                model={model}
+                map={map}
+                isInteractive={isInteractive}
+                translation={shapeTranslation}
+              />
             )
           case 'circle':
             return (
@@ -456,7 +472,13 @@ export const OpenlayersDrawings = ({
             )
           case 'line':
             return (
-              <OpenlayersLineDisplay key={model.cid} model={model} map={map} isInteractive={isInteractive} translation={shapeTranslation}/>
+              <OpenlayersLineDisplay
+                key={model.cid}
+                model={model}
+                map={map}
+                isInteractive={isInteractive}
+                translation={shapeTranslation}
+              />
             )
           case 'poly':
             return (
