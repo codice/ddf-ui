@@ -220,16 +220,14 @@ export default function (
       move: any
       up: any
     }) {
-      console.log('onMouseTrackingForGeoDrag', moveFrom, down, move, up)
-      console.log('map: ', map)
       // disable panning of the map
       map.getInteractions().forEach((interaction: any) => {
         if (interaction instanceof Openlayers.interaction.DragPan) {
           interaction.setActive(false)
-          console.log('DragPan disabled')
         }
       })
 
+      // enable dragging indidividual features
       map.on('pointerdown', function (event: any) {
         const location = map.getFeaturesAtPixel(event.pixel)
         const select = new Openlayers.interaction.Select({
@@ -249,7 +247,6 @@ export default function (
         map.addInteraction(select)
         map.addInteraction(translate)
         map.addInteraction(modify)
-
         const { locationId } = determineIdsFromPosition(event.pixel, map)
         const coordinates = map.getCoordinateFromPixel(event.pixel)
         const position = { latitude: coordinates[1], longitude: coordinates[0] }
@@ -271,11 +268,10 @@ export default function (
       map.on('pointerup', up)
     },
     clearMouseTrackingForGeoDrag() {
-      // renable panning
+      // re-enable panning
       map.getInteractions().forEach((interaction: any) => {
         if (interaction instanceof Openlayers.interaction.DragPan) {
           interaction.setActive(true)
-          console.log('DragPan enabled')
         }
       })
       map.removeEventListener('pointerdown')
@@ -283,10 +279,8 @@ export default function (
       map.removeEventListener('pointerup')
     },
     onLeftClickMapAPI(callback: any) {
-      console.log('onLeftClickMapAPI...')
       map.on('singleclick', function (event: any) {
         const { locationId } = determineIdsFromPosition(event.pixel, map)
-        console.log('locationId: ', locationId)
         callback(locationId)
       })
     },
