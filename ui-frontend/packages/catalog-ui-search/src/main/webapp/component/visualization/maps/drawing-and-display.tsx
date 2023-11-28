@@ -204,7 +204,7 @@ export const useDrawingAndDisplayModels = ({
       setModels((currentModels) => {
         let newModels = currentModels
         if (Array.isArray(model)) {
-          newModels = [...currentModels].concat(
+          newModels = currentModels.concat(
             model.filter((newModel) => !currentModels.includes(newModel))
           )
         } else if (!currentModels.includes(model)) {
@@ -301,9 +301,6 @@ export const useDrawingAndDisplayModels = ({
           setDrawingModels(
             drawingModels.filter((drawingModel) => drawingModel !== submodel)
           )
-        }
-        if (models.includes(submodel)) {
-          setModels(models.filter((displayModel) => displayModel !== submodel))
         }
       })
     }
