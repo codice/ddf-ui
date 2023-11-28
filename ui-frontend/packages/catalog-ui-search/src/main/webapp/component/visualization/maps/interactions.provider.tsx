@@ -1,7 +1,5 @@
 /* Copyright (c) Connexta, LLC */
 import React, { useState } from 'react'
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
-import Cesium from 'cesium/Build/Cesium/Cesium'
 import Backbone from 'backbone'
 
 export type Translation = {
@@ -14,8 +12,8 @@ export type InteractionsContextType = {
   setInteractiveGeo: (interactiveGeo: number | null) => void
   interactiveModels: Backbone.Model[]
   setInteractiveModels: (models: Backbone.Model[]) => void
-  moveFrom: Cesium.Cartographic | null
-  setMoveFrom: (moveFrom: Cesium.Cartographic | null) => void
+  moveFrom: any
+  setMoveFrom: (moveFrom: any) => void
   translation: Translation | null
   setTranslation: (translation: Translation | null) => void
 }
@@ -38,7 +36,7 @@ export function InteractionsProvider({ children }: any) {
   const [interactiveModels, setInteractiveModels] = useState<Backbone.Model[]>(
     []
   )
-  const [moveFrom, setMoveFrom] = useState<Cesium.Cartographic | null>(null)
+  const [moveFrom, setMoveFrom] = useState<any>(null)
   const [translation, setTranslation] = useState<Translation | null>(null)
 
   return (
