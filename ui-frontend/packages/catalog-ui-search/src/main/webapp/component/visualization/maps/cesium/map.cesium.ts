@@ -305,10 +305,24 @@ export default function CesiumMap(
       })
     },
     onLeftClickMapAPI(callback: any) {
+      let lastClickTime = 0
+      let clickTimeout = 0
       map.clickEventHandler = new Cesium.ScreenSpaceEventHandler(map.canvas)
       map.clickEventHandler.setInputAction((e: any) => {
-        const { locationId } = determineIdsFromPosition(e.position, map)
-        callback(locationId)
+        // On a double-click, Cesium will fire 2 left-click events, too. We will only handle a
+        // click if 1) another click did not happen in the last 250 ms, and 2) another click
+        // does not happen in the next 250 ms.
+        if (clickTimeout > 0) {
+          clearTimeout(clickTimeout)
+        }
+        const currentClickTime = Date.now()
+        if (currentClickTime - lastClickTime > 250) {
+          clickTimeout = window.setTimeout(() => {
+            const { locationId } = determineIdsFromPosition(e.position, map)
+            callback(locationId)
+          }, 250)
+        }
+        lastClickTime = currentClickTime
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
     },
     clearLeftClickMapAPI() {
@@ -323,22 +337,18 @@ export default function CesiumMap(
       $(map.scene.canvas).off('contextmenu')
     },
     onDoubleClick() {
-      $(map.scene.canvas).on('dblclick', (e) => {
-        const boundingRect = map.scene.canvas.getBoundingClientRect()
-        const { id } = determineIdsFromPosition(
-          {
-            x: e.clientX - boundingRect.left,
-            y: e.clientY - boundingRect.top,
-          },
-          map
-        )
-        if (id) {
-          ;(wreqr as any).vent.trigger('location:doubleClick', id)
+      map.doubleClickEventHandler = new Cesium.ScreenSpaceEventHandler(
+        map.canvas
+      )
+      map.doubleClickEventHandler.setInputAction((e: any) => {
+        const { locationId } = determineIdsFromPosition(e.position, map)
+        if (locationId) {
+          ;(wreqr as any).vent.trigger('location:doubleClick', locationId)
         }
-      })
+      }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK)
     },
     clearDoubleClick() {
-      $(map.scene.canvas).off('dblclick')
+      map.doubleClickEventHandler?.destroy()
     },
     onMouseTrackingForGeoDrag({
       moveFrom,
