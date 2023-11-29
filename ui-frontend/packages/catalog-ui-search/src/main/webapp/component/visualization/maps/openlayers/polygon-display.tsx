@@ -141,10 +141,10 @@ export const drawPolygon = ({
     // Handles case where model changes to empty vars and we don't want to draw anymore
     return
   }
-  adjustMultiPolygonPoints(polygon)
   if (translation) {
     polygon.translate(translation.longitude, translation.latitude)
   }
+  adjustMultiPolygonPoints(polygon)
   const coordinates = polygon.getCoordinates()
   const bufferWidth =
     DistanceUtils.getDistanceInMeters(

@@ -122,10 +122,10 @@ export const drawLine = ({
       model.get('lineWidth'),
       model.get('lineUnits')
     ) || 1
-  adjustLinePoints(line)
   if (translation) {
     line.translate(translation.longitude, translation.latitude)
   }
+  adjustLinePoints(line)
   const turfLine = Turf.lineString(
     translateFromOpenlayersCoordinates(line.getCoordinates())
   )
