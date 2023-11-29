@@ -197,19 +197,15 @@ export const drawPolygon = ({
   const color = model.get('color')
   const bufferPolygonIconStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: isInteractive
-        ? contrastingColor
-        : color
-        ? color
-        : contrastingColor,
+      color: isInteractive ? contrastingColor : color ? color : '#914500',
       width: isInteractive ? 6 : 4,
     }),
     zIndex: 1,
   })
   const drawnPolygonIconStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: color ? color : '#914500',
-      width: 2,
+      color: isInteractive ? contrastingColor : color ? color : '#914500',
+      width: isInteractive ? 5 : 3,
       lineDash: [10, 5],
     }),
     zIndex: 0,

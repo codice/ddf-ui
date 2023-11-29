@@ -241,7 +241,7 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
         />
 
         <div className="form-group flow-root">
-          {/* this part is really weird, we splat state as seperate props, that's why we use destructuring */}
+          {/* this part is really weird, we splat state as separate props, that's why we use destructuring */}
           <ComponentToRender
             {...state}
             setState={(args: any) => {
@@ -252,7 +252,7 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
           {drawTypes.includes(state.mode) ? (
             <div>
               <div className="flex my-1.5 ml-2 align-middle">
-                <div className="align-middle my-auto pr-16 mr-1">Color</div>
+                <div className="align-middle my-auto pr-16 mr-1">Colour</div>
                 <ColorSquare
                   disabled={isDrawing}
                   color={state.color}

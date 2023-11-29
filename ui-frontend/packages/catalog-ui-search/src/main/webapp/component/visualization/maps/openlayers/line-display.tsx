@@ -153,21 +153,13 @@ export const drawLine = ({
   const color = model.get('color')
   const iconStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: isInteractive
-        ? contrastingColor
-        : color
-        ? color
-        : contrastingColor,
+      color: isInteractive ? contrastingColor : color ? color : '#914500',
       width: isInteractive ? 6 : 4,
     }),
   })
   const drawnLineIconStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: isInteractive
-        ? contrastingColor
-        : color
-        ? color
-        : contrastingColor,
+      color: isInteractive ? contrastingColor : color ? color : '#914500',
       width: 2,
       lineDash: [10, 5],
     }),
