@@ -227,26 +227,8 @@ export default function (
         }
       })
 
-      // enable dragging indidividual features
+      // enable dragging individual features
       map.on('pointerdown', function (event: any) {
-        const location = map.getFeaturesAtPixel(event.pixel)
-        const select = new Openlayers.interaction.Select({
-          condition: Openlayers.events.condition.click,
-          filter: function (feature) {
-            return feature === location
-          },
-        })
-        const modify = new Openlayers.interaction.Modify({
-          features: select.getFeatures(),
-        })
-        map.addInteraction(select)
-        const features = new Openlayers.Collection([location])
-        const translate = new Openlayers.interaction.Translate({
-          features: features,
-        })
-        map.addInteraction(select)
-        map.addInteraction(translate)
-        map.addInteraction(modify)
         const { locationId } = determineIdsFromPosition(event.pixel, map)
         const coordinates = map.getCoordinateFromPixel(event.pixel)
         const position = { latitude: coordinates[1], longitude: coordinates[0] }
