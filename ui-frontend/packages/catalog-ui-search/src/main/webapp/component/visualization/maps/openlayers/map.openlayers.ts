@@ -67,15 +67,6 @@ function determineIdsFromPosition(position: any, map: any) {
   }
   return { id, locationId }
 }
-function determineLocationIdFromPosition(position: any, map: any) {
-  const features: any = []
-  map.forEachFeatureAtPixel(position, (feature: any) => {
-    features.push(feature)
-  })
-  if (features.length > 0) {
-    return features[0].get('locationId')
-  }
-}
 function convertPointCoordinate(point: any) {
   const coords = [point[0], point[1]]
   return Openlayers.proj.transform(
@@ -291,7 +282,7 @@ export default function (
     onDoubleClick() {
       $(map.getTargetElement()).on('dblclick', (e) => {
         const boundingRect = map.getTargetElement().getBoundingClientRect()
-        const id = determineLocationIdFromPosition(
+        const { id } = determineIdsFromPosition(
           [e.clientX - boundingRect.left, e.clientY - boundingRect.top],
           map
         )
@@ -323,9 +314,10 @@ export default function (
           e.clientX - boundingRect.left,
           e.clientY - boundingRect.top,
         ]
+        const { locationId } = determineIdsFromPosition(position, map)
         callback(e, {
           mapTarget: determineIdFromPosition(position, map),
-          mapLocationId: determineLocationIdFromPosition(position, map),
+          mapLocationId: locationId,
         })
       })
     },
