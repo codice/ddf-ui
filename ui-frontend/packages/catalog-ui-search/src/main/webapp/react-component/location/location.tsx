@@ -252,7 +252,7 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
           {drawTypes.includes(state.mode) ? (
             <div>
               <div className="flex my-1.5 ml-2 align-middle">
-                <div className="align-middle my-auto pr-16 mr-1">Colour</div>
+                <div className="align-middle my-auto pr-16 mr-1">Color</div>
                 <ColorSquare
                   disabled={isDrawing}
                   color={state.color}

@@ -392,59 +392,7 @@ export const OpenlayersDrawings = ({
 
   return (
     <>
-      {filterModels.map((model: any) => {
-        const drawMode = getDrawModeFromModel({ model })
-        const isInteractive = model.get('locationId') === interactiveGeo
-        const shapeTranslation =
-          translation && isInteractive ? translation : undefined
-        switch (drawMode) {
-          case 'bbox':
-            return (
-              <OpenlayersBboxDisplay key={model.cid} model={model} map={map} />
-            )
-          case 'circle':
-            return (
-              <OpenlayersCircleDisplay
-                key={model.cid}
-                model={model}
-                map={map}
-                isInteractive={isInteractive}
-                translation={shapeTranslation}
-              />
-            )
-          case 'line':
-            return (
-              <OpenlayersLineDisplay
-                key={model.cid}
-                model={model}
-                map={map}
-                isInteractive={isInteractive}
-                translation={shapeTranslation}
-              />
-            )
-          case 'poly':
-            return (
-              <OpenlayersPolygonDisplay
-                key={model.cid}
-                model={model}
-                map={map}
-                isInteractive={isInteractive}
-                translation={shapeTranslation}
-              />
-            )
-          default:
-            return (
-              <OpenlayersPolygonDisplay
-                key={model.cid}
-                model={model}
-                map={map}
-                isInteractive={isInteractive}
-                translation={shapeTranslation}
-              />
-            )
-        }
-      })}
-      {models.map((model: any) => {
+      {nonDrawingModels.map((model: any) => {
         const drawMode = getDrawModeFromModel({ model })
         const isInteractive = model.get('locationId') === interactiveGeo
         const shapeTranslation =
@@ -496,6 +444,8 @@ export const OpenlayersDrawings = ({
                 key={model.cid}
                 model={model}
                 map={map}
+                isInteractive={isInteractive}
+                translation={shapeTranslation}
               />
             )
         }
