@@ -290,12 +290,12 @@ export default function (
     onDoubleClick() {
       $(map.getTargetElement()).on('dblclick', (e) => {
         const boundingRect = map.getTargetElement().getBoundingClientRect()
-        const { id } = determineIdsFromPosition(
+        const { locationId } = determineIdsFromPosition(
           [e.clientX - boundingRect.left, e.clientY - boundingRect.top],
           map
         )
-        if (id) {
-          ;(wreqr as any).vent.trigger('location:doubleClick', id)
+        if (locationId) {
+          ;(wreqr as any).vent.trigger('location:doubleClick', locationId)
         }
       })
     },
