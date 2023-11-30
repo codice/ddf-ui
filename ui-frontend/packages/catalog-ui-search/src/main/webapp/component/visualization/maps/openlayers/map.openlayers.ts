@@ -199,6 +199,10 @@ export default function (
       hiddenLabel.setVisible(true)
     }
   }
+  let geoDragDownListener: any
+  let geoDragMoveListener: any
+  let geoDragUpListener: any
+  let leftClickMapAPIListener: any
   const exposedMethods = _.extend({}, Map, {
     onMouseTrackingForGeoDrag({
       moveFrom,
@@ -219,14 +223,15 @@ export default function (
       })
 
       // enable dragging individual features
-      map.on('pointerdown', function (event: any) {
+      geoDragDownListener = function (event: any) {
         const { locationId } = determineIdsFromPosition(event.pixel, map)
         const coordinates = map.getCoordinateFromPixel(event.pixel)
         const position = { latitude: coordinates[1], longitude: coordinates[0] }
         down({ position: position, mapLocationId: locationId })
-      })
+      }
+      map.on('pointerdown', geoDragDownListener)
 
-      map.on('pointerdrag', function (event: any) {
+      geoDragMoveListener = function (event: any) {
         const { locationId } = determineIdsFromPosition(event.pixel, map)
         const coordinates = map.getCoordinateFromPixel(event.pixel)
         const translation = moveFrom
@@ -236,9 +241,11 @@ export default function (
             }
           : null
         move({ translation: translation, mapLocationId: locationId })
-      })
+      }
+      map.on('pointerdrag', geoDragMoveListener)
 
-      map.on('pointerup', up)
+      geoDragUpListener = up
+      map.on('pointerup', geoDragUpListener)
     },
     clearMouseTrackingForGeoDrag() {
       // re-enable panning
@@ -247,18 +254,19 @@ export default function (
           interaction.setActive(true)
         }
       })
-      map.removeEventListener('pointerdown')
-      map.removeEventListener('pointerdrag')
-      map.removeEventListener('pointerup')
+      map.un('pointerdown', geoDragDownListener)
+      map.un('pointerdrag', geoDragMoveListener)
+      map.un('pointerup', geoDragUpListener)
     },
     onLeftClickMapAPI(callback: any) {
-      map.on('singleclick', function (event: any) {
+      leftClickMapAPIListener = function (event: any) {
         const { locationId } = determineIdsFromPosition(event.pixel, map)
         callback(locationId)
-      })
+      }
+      map.on('singleclick', leftClickMapAPIListener)
     },
     clearLeftClickMapAPI() {
-      map.removeEventListener('singleclick')
+      map.un('singleclick', leftClickMapAPIListener)
     },
     onLeftClick(callback: any) {
       $(map.getTargetElement()).on('click', (e) => {
@@ -277,7 +285,7 @@ export default function (
       })
     },
     clearRightClick() {
-      map.removeEventListener('contextmenu')
+      $(map.getTargetElement()).off('contextmenu')
     },
     onDoubleClick() {
       $(map.getTargetElement()).on('dblclick', (e) => {
@@ -292,7 +300,7 @@ export default function (
       })
     },
     clearDoubleClick() {
-      map.removeEventListener('dblclick')
+      $(map.getTargetElement()).off('dblclick')
     },
     onMouseTrackingForPopup(
       downCallback: any,
@@ -322,7 +330,7 @@ export default function (
       })
     },
     clearMouseMove() {
-      map.removeEventListener('mousemove')
+      $(map.getTargetElement()).off('mousemove')
     },
     timeoutIds: [],
     onCameraMoveStart(callback: any) {
