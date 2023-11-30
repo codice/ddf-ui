@@ -152,10 +152,21 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
     onDrawEnd()
   }
   React.useEffect(() => {
+    const callback = () => updateMap({ locationModel })
+    listenTo((wreqr as any).vent, 'search:requestlocationmodels', callback)
+    return () =>
+      stopListening(
+        (wreqr as any).vent,
+        'search:requestlocationmodels',
+        callback
+      )
+  }, [])
+  React.useEffect(() => {
     return () => {
       setTimeout(() => {
         // This is to facilitate clearing out the map, it isn't about the value, but we don't want the changeCallback to fire!
         locationModel.set(locationModel.defaults())
+        ;(wreqr as any).vent.trigger('search:removedisplay', locationModel)
         onDrawEnd()
       }, 0)
     }

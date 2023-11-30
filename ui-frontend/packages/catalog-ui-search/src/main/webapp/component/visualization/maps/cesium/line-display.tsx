@@ -27,6 +27,7 @@ import { getIdFromModelForDisplay } from '../drawing-and-display'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import utility from './utility'
 import { contrastingColor } from '../../../../react-component/location/location-color-selector'
+import { Translation } from '../interactions.provider'
 const toDeg = Cesium.Math.toDegrees
 
 const CAMERA_MAGNITUDE_THRESHOLD = 8000000
@@ -70,19 +71,23 @@ export const constructSolidLinePrimitive = ({
   id,
   color,
   buffer,
+  isInteractive,
 }: {
   coordinates: any
   model: any
   id: string
   color?: string
   buffer?: number
+  isInteractive?: boolean // note: 'interactive' is different from drawing
 }) => {
   const _color = color || model.get('color')
 
   return {
-    width: 4,
+    width: isInteractive ? 6 : 4,
     material: Cesium.Material.fromType('Color', {
-      color: _color
+      color: isInteractive
+        ? Cesium.Color.fromCssColorString(contrastingColor)
+        : _color
         ? Cesium.Color.fromCssColorString(_color)
         : Cesium.Color.KHAKI,
     }),
@@ -98,23 +103,34 @@ export const constructOutlinedLinePrimitive = ({
   id,
   color,
   buffer,
+  isInteractive,
 }: {
   coordinates: any
   model: any
   id: string
   color?: string
   buffer?: number
+  isInteractive?: boolean // note: 'interactive' is different from drawing
 }) => {
   const _color = color || model.get('color')
   return {
-    ...constructSolidLinePrimitive({ coordinates, model, id, color, buffer }),
-    width: 8,
+    ...constructSolidLinePrimitive({
+      coordinates,
+      model,
+      id,
+      color,
+      buffer,
+      isInteractive,
+    }),
+    width: isInteractive ? 12 : 8,
     material: Cesium.Material.fromType('PolylineOutline', {
-      color: _color
+      color: isInteractive
+        ? Cesium.Color.fromCssColorString(contrastingColor)
+        : _color
         ? Cesium.Color.fromCssColorString(_color)
         : Cesium.Color.KHAKI,
       outlineColor: Cesium.Color.WHITE,
-      outlineWidth: 4,
+      outlineWidth: isInteractive ? 6 : 4,
     }),
   }
 }
@@ -122,16 +138,20 @@ export const constructOutlinedLinePrimitive = ({
 export const constructDottedLinePrimitive = ({
   coordinates,
   model,
+  isInteractive,
 }: {
   coordinates: any
   model: any
+  isInteractive?: boolean // note: 'interactive' is different from drawing
 }) => {
   const color = model.get('color')
 
   return {
-    width: 2,
+    width: isInteractive ? 3 : 2,
     material: Cesium.Material.fromType('PolylineDash', {
-      color: color
+      color: isInteractive
+        ? Cesium.Color.fromCssColorString(contrastingColor)
+        : color
         ? Cesium.Color.fromCssColorString(color)
         : Cesium.Color.KHAKI,
       dashLength: 20,
@@ -165,12 +185,16 @@ const drawGeometry = ({
   id,
   setDrawnMagnitude,
   onDraw,
+  translation,
+  isInteractive,
 }: {
   model: any
   map: any
   id: any
   setDrawnMagnitude: (number: any) => void
   onDraw?: (drawingLocation: Line) => void
+  translation?: Translation
+  isInteractive?: boolean // note: 'interactive' is different from drawing
 }) => {
   const json = model.toJSON()
   let linePoints = json.line
@@ -186,6 +210,10 @@ const drawGeometry = ({
   linePoints = _cloneDeep(json.line)
 
   linePoints.forEach((point: any) => {
+    if (translation) {
+      point[0] += translation.longitude
+      point[1] += translation.latitude
+    }
     point[0] = DistanceUtils.coordinateRound(point[0])
     point[1] = DistanceUtils.coordinateRound(point[1])
   })
@@ -250,12 +278,14 @@ const drawGeometry = ({
         coordinates: bufferedLine.geometry.coordinates,
         model,
         id,
+        isInteractive,
       })
     )
     primitive.add(
       constructDottedLinePrimitive({
         coordinates: turfLine.geometry.coordinates,
         model,
+        isInteractive,
       })
     )
   }
@@ -301,11 +331,15 @@ const useListenToLineModel = ({
   map,
   onDraw,
   newLine,
+  translation,
+  isInteractive,
 }: {
   model: any
   map: any
   onDraw?: (drawingLocation: Line) => void
   newLine: Line | null
+  translation?: Translation
+  isInteractive?: boolean // note: 'interactive' is different from drawing
 }) => {
   const [cameraMagnitude] = useCameraMagnitude({ map })
   const [drawnMagnitude, setDrawnMagnitude] = React.useState(0)
@@ -331,11 +365,13 @@ const useListenToLineModel = ({
             id: getIdFromModelForDisplay({ model }),
             setDrawnMagnitude,
             onDraw,
+            translation,
+            isInteractive,
           })
         }
       }
     }
-  }, [model, map, newLine])
+  }, [model, map, newLine, translation, isInteractive])
   useListenTo(model, 'change:line change:lineWidth change:lineUnits', callback)
   React.useEffect(() => {
     if (map && needsRedraw({ map, drawnMagnitude })) {
@@ -390,10 +426,14 @@ export const CesiumLineDisplay = ({
   map,
   model,
   onDraw,
+  translation,
+  isInteractive,
 }: {
   map: any
   model: any
   onDraw?: (newLine: Line) => void
+  translation?: Translation
+  isInteractive?: boolean // note: 'interactive' is different from drawing
 }) => {
   // Use state to store the line drawn by the user before they click Apply or Cancel.
   // When the user clicks Draw, they are allowed to edit the existing line (if it
@@ -404,7 +444,14 @@ export const CesiumLineDisplay = ({
   if (onDraw) {
     useStartMapDrawing({ map, model, onDraw, setNewLine })
   }
-  useListenToLineModel({ map, model, onDraw, newLine })
+  useListenToLineModel({
+    map,
+    model,
+    onDraw,
+    newLine,
+    translation,
+    isInteractive,
+  })
   React.useEffect(() => {
     return () => {
       if (model && map) {

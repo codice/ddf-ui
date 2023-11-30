@@ -30,6 +30,9 @@ import { Shape } from 'geospatialdraw/target/webapp/shape-utils'
 import { DRAWING_STYLE } from '../openlayers/draw-styles'
 import wreqr from '../../../../js/wreqr'
 import _ from 'lodash'
+import { InteractionsContext } from '../interactions.provider'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
+import Cesium from 'cesium/Build/Cesium/Cesium'
 
 const DrawingMenu = menu.DrawingMenu
 
@@ -109,6 +112,18 @@ export const CesiumDrawings = ({
   const [isDrawing, setIsDrawing] = useState(false)
   const [drawingShape, setDrawingShape] = useState<Shape>(DEFAULT_SHAPE)
 
+  const { interactiveGeo, translation, setInteractiveModels } =
+    React.useContext(InteractionsContext)
+
+  const nonDrawingModels = models.concat(filterModels)
+
+  useEffect(() => {
+    const models = nonDrawingModels.filter(
+      (m) => m.get('locationId') === interactiveGeo
+    )
+    setInteractiveModels(models)
+  }, [interactiveGeo, models, filterModels])
+
   const handleKeydown = React.useCallback(
     (e: any) => {
       if (e.key === 'Enter') {
@@ -173,47 +188,59 @@ export const CesiumDrawings = ({
     or able to be interacted with.
     Note that we cannot compare the filterModel IDs to that of the drawingModel, because while a
     filterModel and a drawingModel may represent the same shape, they are different model object
-    instances and have different IDs*. Instead, we check for equivalent location attributes on the
+    instances and have different IDs. Instead, we check for equivalent location attributes on the
     models.
-    * The models array is a different story, since it can contain the same model object instances
+    The models array is a different story, since it can contain the same model object instances
     as drawingModels, but we use the non-ID-based comparison method described above for it, too,
     to ensure consistent behavior.
   */
   return (
     <>
-      {filterModels.filter(isNotBeingEdited).map((model) => {
+      {nonDrawingModels.filter(isNotBeingEdited).map((model) => {
         const drawMode = getDrawModeFromModel({ model })
+        const isInteractive = model.get('locationId') === interactiveGeo
+        const shapeTranslation =
+          translation && isInteractive ? translation : undefined
         switch (drawMode) {
           case 'bbox':
-            return <CesiumBboxDisplay key={model.cid} model={model} map={map} />
+            return (
+              <CesiumBboxDisplay
+                key={model.cid}
+                model={model}
+                map={map}
+                isInteractive={isInteractive}
+                translation={shapeTranslation}
+              />
+            )
           case 'circle':
             return (
-              <CesiumCircleDisplay key={model.cid} model={model} map={map} />
+              <CesiumCircleDisplay
+                key={model.cid}
+                model={model}
+                map={map}
+                isInteractive={isInteractive}
+                translation={shapeTranslation}
+              />
             )
           case 'line':
-            return <CesiumLineDisplay key={model.cid} model={model} map={map} />
+            return (
+              <CesiumLineDisplay
+                key={model.cid}
+                model={model}
+                map={map}
+                isInteractive={isInteractive}
+                translation={shapeTranslation}
+              />
+            )
           case 'poly':
             return (
-              <CesiumPolygonDisplay key={model.cid} model={model} map={map} />
-            )
-          default:
-            return <></>
-        }
-      })}
-      {models.filter(isNotBeingEdited).map((model) => {
-        const drawMode = getDrawModeFromModel({ model })
-        switch (drawMode) {
-          case 'bbox':
-            return <CesiumBboxDisplay key={model.cid} model={model} map={map} />
-          case 'circle':
-            return (
-              <CesiumCircleDisplay key={model.cid} model={model} map={map} />
-            )
-          case 'line':
-            return <CesiumLineDisplay key={model.cid} model={model} map={map} />
-          case 'poly':
-            return (
-              <CesiumPolygonDisplay key={model.cid} model={model} map={map} />
+              <CesiumPolygonDisplay
+                key={model.cid}
+                model={model}
+                map={map}
+                isInteractive={isInteractive}
+                translation={shapeTranslation}
+              />
             )
           default:
             return <></>

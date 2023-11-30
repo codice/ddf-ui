@@ -124,24 +124,17 @@ function createMap(insertionElement: any) {
     requestRenderHandler: requestRender,
   }
 }
-function determineIdFromPosition(position: any, map: any) {
-  let id
+function determineIdsFromPosition(position: any, map: any) {
+  let id, locationId
   const pickedObject = map.scene.pick(position)
   if (pickedObject) {
     id = pickedObject.id
     if (id && id.constructor === Cesium.Entity) {
       id = id.resultId
     }
+    locationId = pickedObject.collection?.locationId
   }
-  return id
-}
-function determineLocationIdFromPosition(position: any, map: any) {
-  let locationId
-  const pickedObject = map.scene.pick(position)
-  if (pickedObject) {
-    locationId = pickedObject.collection.locationId
-  }
-  return locationId
+  return { id, locationId }
 }
 function expandRectangle(rectangle: any) {
   const scalingFactor = 0.05
@@ -301,36 +294,119 @@ export default function CesiumMap(
     onLeftClick(callback: any) {
       $(map.scene.canvas).on('click', (e) => {
         const boundingRect = map.scene.canvas.getBoundingClientRect()
-        callback(e, {
-          mapTarget: determineIdFromPosition(
-            {
-              x: e.clientX - boundingRect.left,
-              y: e.clientY - boundingRect.top,
-            },
-            map
-          ),
-        })
-      })
-    },
-    onRightClick(callback: any) {
-      $(map.scene.canvas).on('contextmenu', (e) => {
-        callback(e)
-      })
-    },
-    onDoubleClick() {
-      $(map.scene.canvas).on('dblclick', (e) => {
-        const boundingRect = map.scene.canvas.getBoundingClientRect()
-        const id = determineLocationIdFromPosition(
+        const { id } = determineIdsFromPosition(
           {
             x: e.clientX - boundingRect.left,
             y: e.clientY - boundingRect.top,
           },
           map
         )
-        if (id) {
-          ;(wreqr as any).vent.trigger('location:doubleClick', id)
-        }
+        callback(e, { mapTarget: id })
       })
+    },
+    onLeftClickMapAPI(callback: any) {
+      let lastClickTime = 0
+      let clickTimeout = 0
+      map.clickEventHandler = new Cesium.ScreenSpaceEventHandler(map.canvas)
+      map.clickEventHandler.setInputAction((e: any) => {
+        // On a double-click, Cesium will fire 2 left-click events, too. We will only handle a
+        // click if 1) another click did not happen in the last 250 ms, and 2) another click
+        // does not happen in the next 250 ms.
+        if (clickTimeout > 0) {
+          clearTimeout(clickTimeout)
+        }
+        const currentClickTime = Date.now()
+        if (currentClickTime - lastClickTime > 250) {
+          clickTimeout = window.setTimeout(() => {
+            const { locationId } = determineIdsFromPosition(e.position, map)
+            callback(locationId)
+          }, 250)
+        }
+        lastClickTime = currentClickTime
+      }, Cesium.ScreenSpaceEventType.LEFT_CLICK)
+    },
+    clearLeftClickMapAPI() {
+      map.clickEventHandler?.destroy()
+    },
+    onRightClick(callback: any) {
+      $(map.scene.canvas).on('contextmenu', (e) => {
+        callback(e)
+      })
+    },
+    clearRightClick() {
+      $(map.scene.canvas).off('contextmenu')
+    },
+    onDoubleClick() {
+      map.doubleClickEventHandler = new Cesium.ScreenSpaceEventHandler(
+        map.canvas
+      )
+      map.doubleClickEventHandler.setInputAction((e: any) => {
+        const { locationId } = determineIdsFromPosition(e.position, map)
+        if (locationId) {
+          ;(wreqr as any).vent.trigger('location:doubleClick', locationId)
+        }
+      }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK)
+    },
+    clearDoubleClick() {
+      map.doubleClickEventHandler?.destroy()
+    },
+    onMouseTrackingForGeoDrag({
+      moveFrom,
+      down,
+      move,
+      up,
+    }: {
+      moveFrom?: Cesium.Cartographic
+      down: any
+      move: any
+      up: any
+    }) {
+      map.scene.screenSpaceCameraController.enableRotate = false
+      map.dragAndDropEventHandler = new Cesium.ScreenSpaceEventHandler(
+        map.canvas
+      )
+      map.dragAndDropEventHandler.setInputAction((e: any) => {
+        const { locationId } = determineIdsFromPosition(e.position, map)
+        const cartesian = map.scene.camera.pickEllipsoid(
+          e.position,
+          map.scene.globe.ellipsoid
+        )
+        const cartographic = Cesium.Cartographic.fromCartesian(
+          cartesian,
+          map.scene.globe.ellipsoid
+        )
+        down({ position: cartographic, mapLocationId: locationId })
+      }, Cesium.ScreenSpaceEventType.LEFT_DOWN)
+      map.dragAndDropEventHandler.setInputAction((e: any) => {
+        const { locationId } = determineIdsFromPosition(e.endPosition, map)
+        const cartesian = map.scene.camera.pickEllipsoid(
+          e.endPosition,
+          map.scene.globe.ellipsoid
+        )
+        const cartographic = Cesium.Cartographic.fromCartesian(
+          cartesian,
+          map.scene.globe.ellipsoid
+        )
+        const translation = moveFrom
+          ? {
+              longitude: Cesium.Math.toDegrees(
+                cartographic.longitude - moveFrom.longitude
+              ),
+              latitude: Cesium.Math.toDegrees(
+                cartographic.latitude - moveFrom.latitude
+              ),
+            }
+          : null
+        move({ translation, mapLocationId: locationId })
+      }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
+      map.dragAndDropEventHandler.setInputAction(
+        up,
+        Cesium.ScreenSpaceEventType.LEFT_UP
+      )
+    },
+    clearMouseTrackingForGeoDrag() {
+      map.scene.screenSpaceCameraController.enableRotate = true
+      map.dragAndDropEventHandler?.destroy()
     },
     onMouseTrackingForPopup(
       downCallback: any,
@@ -354,11 +430,15 @@ export default function CesiumMap(
           x: e.clientX - boundingRect.left,
           y: e.clientY - boundingRect.top,
         }
+        const { id, locationId } = determineIdsFromPosition(position, map)
         callback(e, {
-          mapTarget: determineIdFromPosition(position, map),
-          mapLocationId: determineLocationIdFromPosition(position, map),
+          mapTarget: id,
+          mapLocationId: locationId,
         })
       })
+    },
+    clearMouseMove() {
+      $(map.scene.canvas).off('mousemove')
     },
     timeoutIds: [],
     onCameraMoveStart(callback: any) {

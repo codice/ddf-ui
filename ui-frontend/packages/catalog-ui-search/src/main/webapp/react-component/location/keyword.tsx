@@ -118,6 +118,7 @@ const Keyword = (props: Props) => {
           const polygon = geometry.coordinates[0]
           props.setState({
             hasKeyword: true,
+            locationId: undefined,
             locationType: 'latlon',
             polygon,
             polyType: 'polygon',
@@ -131,6 +132,7 @@ const Keyword = (props: Props) => {
 
           props.setState({
             hasKeyword: true,
+            locationId: undefined,
             locationType: 'latlon',
             polygon,
             polyType: 'multipolygon',
