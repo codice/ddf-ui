@@ -23,6 +23,8 @@ import { removeOldDrawing } from './drawing-and-display'
 import ShapeUtils from '../../../../js/ShapeUtils'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import { StartupDataStore } from '../../../../js/model/Startup/startup'
+import { Translation } from '../interactions.provider'
+import { contrastingColor } from '../../../../react-component/location/location-color-selector'
 export const translateFromOpenlayersCoordinates = (coords: any) => {
   return coords
     .map((value: any) =>
@@ -125,15 +127,22 @@ export const drawPolygon = ({
   model,
   polygon,
   id,
+  isInteractive,
+  translation,
 }: {
   map: any
   model: any
   polygon: ol.geom.MultiPolygon
   id: string
+  isInteractive?: boolean
+  translation?: Translation
 }) => {
   if (!polygon) {
     // Handles case where model changes to empty vars and we don't want to draw anymore
     return
+  }
+  if (translation) {
+    polygon.translate(translation.longitude, translation.latitude)
   }
   adjustMultiPolygonPoints(polygon)
   const coordinates = polygon.getCoordinates()
@@ -188,15 +197,15 @@ export const drawPolygon = ({
   const color = model.get('color')
   const bufferPolygonIconStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: color ? color : '#914500',
-      width: 3,
+      color: isInteractive ? contrastingColor : color ? color : '#914500',
+      width: isInteractive ? 6 : 4,
     }),
     zIndex: 1,
   })
   const drawnPolygonIconStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: color ? color : '#914500',
-      width: 2,
+      color: isInteractive ? contrastingColor : color ? color : '#914500',
+      width: isInteractive ? 5 : 3,
       lineDash: [10, 5],
     }),
     zIndex: 0,
@@ -218,24 +227,44 @@ const updatePrimitive = ({
   map,
   model,
   id,
+  isInteractive,
+  translation,
 }: {
   map: any
   model: any
   id: string
+  isInteractive?: boolean
+  translation?: Translation
 }) => {
   const polygon = modelToPolygon(model)
   if (polygon !== undefined) {
-    drawPolygon({ map, model, polygon, id })
+    drawPolygon({ map, model, polygon, id, isInteractive, translation })
   }
 }
-const useListenToPolygonModel = ({ model, map }: { model: any; map: any }) => {
+const useListenToPolygonModel = ({
+  model,
+  map,
+  isInteractive,
+  translation,
+}: {
+  model: any
+  map: any
+  isInteractive?: boolean
+  translation?: Translation
+}) => {
   const callback = React.useMemo(() => {
     return () => {
       if (model && map) {
-        updatePrimitive({ map, model, id: getIdFromModelForDisplay({ model }) })
+        updatePrimitive({
+          map,
+          model,
+          id: getIdFromModelForDisplay({ model }),
+          isInteractive,
+          translation,
+        })
       }
     }
-  }, [model, map])
+  }, [model, map, isInteractive, translation])
   useListenTo(
     model,
     'change:polygon change:polygonBufferWidth change:polygonBufferUnits',
@@ -246,11 +275,15 @@ const useListenToPolygonModel = ({ model, map }: { model: any; map: any }) => {
 export const OpenlayersPolygonDisplay = ({
   map,
   model,
+  isInteractive,
+  translation,
 }: {
   map: any
   model: any
+  isInteractive?: boolean
+  translation?: Translation
 }) => {
-  useListenToPolygonModel({ map, model })
+  useListenToPolygonModel({ map, model, isInteractive, translation })
   React.useEffect(() => {
     return () => {
       if (map && model) {

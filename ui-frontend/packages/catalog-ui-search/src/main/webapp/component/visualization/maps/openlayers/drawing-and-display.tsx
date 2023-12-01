@@ -48,6 +48,8 @@ import {
   locationColors,
   contrastingColor,
 } from '../../../../react-component/location/location-color-selector'
+import { InteractionsContext } from '../interactions.provider'
+import { Model } from 'backbone'
 
 const DrawingMenu = menu.DrawingMenu
 const makeEmptyGeometry = geometry.makeEmptyGeometry
@@ -316,6 +318,18 @@ export const OpenlayersDrawings = ({
     null
   )
 
+  const { interactiveGeo, translation, setInteractiveModels } =
+    React.useContext(InteractionsContext)
+
+  const nonDrawingModels = models.concat(filterModels)
+
+  useEffect(() => {
+    const models = nonDrawingModels.filter(
+      (model: Model) => model.get('locationId') === interactiveGeo
+    )
+    setInteractiveModels(models)
+  }, [interactiveGeo, models, filterModels])
+
   const handleKeydown = React.useCallback(
     (e: any) => {
       if (e.key === 'Enter') {
@@ -378,12 +392,21 @@ export const OpenlayersDrawings = ({
 
   return (
     <>
-      {filterModels.map((model: any) => {
+      {nonDrawingModels.map((model: any) => {
         const drawMode = getDrawModeFromModel({ model })
+        const isInteractive = model.get('locationId') === interactiveGeo
+        const shapeTranslation =
+          translation && isInteractive ? translation : undefined
         switch (drawMode) {
           case 'bbox':
             return (
-              <OpenlayersBboxDisplay key={model.cid} model={model} map={map} />
+              <OpenlayersBboxDisplay
+                key={model.cid}
+                model={model}
+                map={map}
+                isInteractive={isInteractive}
+                translation={shapeTranslation}
+              />
             )
           case 'circle':
             return (
@@ -391,11 +414,19 @@ export const OpenlayersDrawings = ({
                 key={model.cid}
                 model={model}
                 map={map}
+                isInteractive={isInteractive}
+                translation={shapeTranslation}
               />
             )
           case 'line':
             return (
-              <OpenlayersLineDisplay key={model.cid} model={model} map={map} />
+              <OpenlayersLineDisplay
+                key={model.cid}
+                model={model}
+                map={map}
+                isInteractive={isInteractive}
+                translation={shapeTranslation}
+              />
             )
           case 'poly':
             return (
@@ -403,6 +434,8 @@ export const OpenlayersDrawings = ({
                 key={model.cid}
                 model={model}
                 map={map}
+                isInteractive={isInteractive}
+                translation={shapeTranslation}
               />
             )
           default:
@@ -411,43 +444,8 @@ export const OpenlayersDrawings = ({
                 key={model.cid}
                 model={model}
                 map={map}
-              />
-            )
-        }
-      })}
-      {models.map((model: any) => {
-        const drawMode = getDrawModeFromModel({ model })
-        switch (drawMode) {
-          case 'bbox':
-            return (
-              <OpenlayersBboxDisplay key={model.cid} model={model} map={map} />
-            )
-          case 'circle':
-            return (
-              <OpenlayersCircleDisplay
-                key={model.cid}
-                model={model}
-                map={map}
-              />
-            )
-          case 'line':
-            return (
-              <OpenlayersLineDisplay key={model.cid} model={model} map={map} />
-            )
-          case 'poly':
-            return (
-              <OpenlayersPolygonDisplay
-                key={model.cid}
-                model={model}
-                map={map}
-              />
-            )
-          default:
-            return (
-              <OpenlayersPolygonDisplay
-                key={model.cid}
-                model={model}
-                map={map}
+                isInteractive={isInteractive}
+                translation={shapeTranslation}
               />
             )
         }

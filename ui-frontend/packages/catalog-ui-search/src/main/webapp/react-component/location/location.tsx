@@ -254,7 +254,7 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
         />
 
         <div className="form-group flow-root">
-          {/* this part is really weird, we splat state as seperate props, that's why we use destructuring */}
+          {/* this part is really weird, we splat state as separate props, that's why we use destructuring */}
           <ComponentToRender
             {...state}
             setState={(args: any) => {

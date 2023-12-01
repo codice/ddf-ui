@@ -20,6 +20,8 @@ import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { removeOldDrawing } from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import { StartupDataStore } from '../../../../js/model/Startup/startup'
+import { Translation } from '../interactions.provider'
+import { contrastingColor } from '../../../../react-component/location/location-color-selector'
 const modelToRectangle = (model: any) => {
   //ensure that the values are numeric
   //so that the openlayer projections
@@ -95,15 +97,22 @@ export const drawBbox = ({
   model,
   rectangle,
   id,
+  isInteractive,
+  translation,
 }: {
   map: any
   model: any
   rectangle: any
   id: string
+  isInteractive?: boolean
+  translation?: Translation
 }) => {
   if (!rectangle) {
     // handles case where model changes to empty vars and we don't want to draw anymore
     return
+  }
+  if (translation) {
+    rectangle.translate(translation.longitude, translation.latitude)
   }
   const billboard = new ol.Feature({
     geometry: rectangle,
@@ -113,8 +122,8 @@ export const drawBbox = ({
   const color = model.get('color')
   const iconStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: color ? color : '#914500',
-      width: 3,
+      color: isInteractive ? contrastingColor : color ? color : '#914500',
+      width: isInteractive ? 6 : 4,
     }),
   })
   billboard.setStyle(iconStyle)
@@ -133,10 +142,14 @@ const updatePrimitive = ({
   map,
   model,
   id,
+  isInteractive,
+  translation,
 }: {
   map: any
   model: any
   id: string
+  isInteractive?: boolean
+  translation?: Translation
 }) => {
   const rectangle = modelToRectangle(model)
   // make sure the current model has width and height before drawing
@@ -146,7 +159,7 @@ const updatePrimitive = ({
     model.get('north') !== model.get('south') &&
     model.get('east') !== model.get('west')
   ) {
-    drawBbox({ rectangle, map, model, id })
+    drawBbox({ rectangle, map, model, id, isInteractive, translation })
     //only call this if the mouse button isn't pressed, if we try to draw the border while someone is dragging
     //the filled in shape won't show up
     // if (!this.buttonPressed) {
@@ -154,14 +167,30 @@ const updatePrimitive = ({
     // }
   }
 }
-const useListenToBboxModel = ({ model, map }: { model: any; map: any }) => {
+const useListenToBboxModel = ({
+  model,
+  map,
+  isInteractive,
+  translation,
+}: {
+  model: any
+  map: any
+  isInteractive?: boolean
+  translation?: Translation
+}) => {
   const callback = React.useMemo(() => {
     return () => {
       if (model && map) {
-        updatePrimitive({ map, model, id: getIdFromModelForDisplay({ model }) })
+        updatePrimitive({
+          map,
+          model,
+          id: getIdFromModelForDisplay({ model }),
+          isInteractive,
+          translation,
+        })
       }
     }
-  }, [model, map])
+  }, [model, map, isInteractive, translation])
   useListenTo(
     model,
     'change:mapNorth change:mapSouth change:mapEast change:mapWest',
@@ -172,11 +201,15 @@ const useListenToBboxModel = ({ model, map }: { model: any; map: any }) => {
 export const OpenlayersBboxDisplay = ({
   map,
   model,
+  isInteractive,
+  translation,
 }: {
   map: any
   model: any
+  isInteractive?: boolean
+  translation?: Translation
 }) => {
-  useListenToBboxModel({ map, model })
+  useListenToBboxModel({ map, model, isInteractive, translation })
   React.useEffect(() => {
     return () => {
       if (map && model) {

@@ -55,14 +55,17 @@ function determineIdFromPosition(position: any, map: any) {
     return features[0].getId()
   }
 }
-function determineLocationIdFromPosition(position: any, map: any) {
+function determineIdsFromPosition(position: any, map: any) {
   const features: any = []
+  let id, locationId
   map.forEachFeatureAtPixel(position, (feature: any) => {
     features.push(feature)
   })
   if (features.length > 0) {
-    return features[0].get('locationId')
+    id = features[0].getId()
+    locationId = features[0].get('locationId')
   }
+  return { id, locationId }
 }
 function convertPointCoordinate(point: any) {
   const coords = [point[0], point[1]]
@@ -196,7 +199,75 @@ export default function (
       hiddenLabel.setVisible(true)
     }
   }
+  let geoDragDownListener: any
+  let geoDragMoveListener: any
+  let geoDragUpListener: any
+  let leftClickMapAPIListener: any
   const exposedMethods = _.extend({}, Map, {
+    onMouseTrackingForGeoDrag({
+      moveFrom,
+      down,
+      move,
+      up,
+    }: {
+      moveFrom?: any
+      down: any
+      move: any
+      up: any
+    }) {
+      // disable panning of the map
+      map.getInteractions().forEach((interaction: any) => {
+        if (interaction instanceof Openlayers.interaction.DragPan) {
+          interaction.setActive(false)
+        }
+      })
+
+      // enable dragging individual features
+      geoDragDownListener = function (event: any) {
+        const { locationId } = determineIdsFromPosition(event.pixel, map)
+        const coordinates = map.getCoordinateFromPixel(event.pixel)
+        const position = { latitude: coordinates[1], longitude: coordinates[0] }
+        down({ position: position, mapLocationId: locationId })
+      }
+      map.on('pointerdown', geoDragDownListener)
+
+      geoDragMoveListener = function (event: any) {
+        const { locationId } = determineIdsFromPosition(event.pixel, map)
+        const coordinates = map.getCoordinateFromPixel(event.pixel)
+        const translation = moveFrom
+          ? {
+              latitude: coordinates[1] - moveFrom.latitude,
+              longitude: coordinates[0] - moveFrom.longitude,
+            }
+          : null
+        move({ translation: translation, mapLocationId: locationId })
+      }
+      map.on('pointerdrag', geoDragMoveListener)
+
+      geoDragUpListener = up
+      map.on('pointerup', geoDragUpListener)
+    },
+    clearMouseTrackingForGeoDrag() {
+      // re-enable panning
+      map.getInteractions().forEach((interaction: any) => {
+        if (interaction instanceof Openlayers.interaction.DragPan) {
+          interaction.setActive(true)
+        }
+      })
+      map.un('pointerdown', geoDragDownListener)
+      map.un('pointerdrag', geoDragMoveListener)
+      map.un('pointerup', geoDragUpListener)
+    },
+    onLeftClickMapAPI(callback: any) {
+      leftClickMapAPIListener = function (event: any) {
+        const { locationId } = determineIdsFromPosition(event.pixel, map)
+        callback(locationId)
+      }
+      map.on('singleclick', leftClickMapAPIListener)
+    },
+    clearLeftClickMapAPI() {
+      map.un('singleclick', leftClickMapAPIListener)
+    },
     onLeftClick(callback: any) {
       $(map.getTargetElement()).on('click', (e) => {
         const boundingRect = map.getTargetElement().getBoundingClientRect()
@@ -213,17 +284,23 @@ export default function (
         callback(e)
       })
     },
+    clearRightClick() {
+      $(map.getTargetElement()).off('contextmenu')
+    },
     onDoubleClick() {
       $(map.getTargetElement()).on('dblclick', (e) => {
         const boundingRect = map.getTargetElement().getBoundingClientRect()
-        const id = determineLocationIdFromPosition(
+        const { locationId } = determineIdsFromPosition(
           [e.clientX - boundingRect.left, e.clientY - boundingRect.top],
           map
         )
-        if (id) {
-          ;(wreqr as any).vent.trigger('location:doubleClick', id)
+        if (locationId) {
+          ;(wreqr as any).vent.trigger('location:doubleClick', locationId)
         }
       })
+    },
+    clearDoubleClick() {
+      $(map.getTargetElement()).off('dblclick')
     },
     onMouseTrackingForPopup(
       downCallback: any,
@@ -245,11 +322,15 @@ export default function (
           e.clientX - boundingRect.left,
           e.clientY - boundingRect.top,
         ]
+        const { locationId } = determineIdsFromPosition(position, map)
         callback(e, {
           mapTarget: determineIdFromPosition(position, map),
-          mapLocationId: determineLocationIdFromPosition(position, map),
+          mapLocationId: locationId,
         })
       })
+    },
+    clearMouseMove() {
+      $(map.getTargetElement()).off('mousemove')
     },
     timeoutIds: [],
     onCameraMoveStart(callback: any) {

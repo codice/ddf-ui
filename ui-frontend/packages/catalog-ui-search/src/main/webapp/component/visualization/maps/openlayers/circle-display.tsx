@@ -22,6 +22,8 @@ import { getIdFromModelForDisplay } from '../drawing-and-display'
 import * as Turf from '@turf/turf'
 import TurfCircle from '@turf/circle'
 import { StartupDataStore } from '../../../../js/model/Startup/startup'
+import { Translation } from '../interactions.provider'
+import { contrastingColor } from '../../../../react-component/location/location-color-selector'
 export function translateFromOpenlayersCoordinate(coord: any) {
   return ol.proj.transform(
     [Number(coord[0]), Number(coord[1])],
@@ -61,15 +63,22 @@ export const drawCircle = ({
   model,
   rectangle,
   id,
+  isInteractive,
+  translation,
 }: {
   map: any
   model: any
   rectangle: any
   id: string
+  isInteractive?: boolean
+  translation?: Translation
 }) => {
   if (!rectangle) {
     // handles case where model changes to empty vars and we don't want to draw anymore
     return
+  }
+  if (translation) {
+    rectangle.translate(translation.longitude, translation.latitude)
   }
   const point = Turf.point(
     translateFromOpenlayersCoordinate(rectangle.getCenter())
@@ -91,8 +100,8 @@ export const drawCircle = ({
   const color = model.get('color')
   const iconStyle = new ol.style.Style({
     stroke: new ol.style.Stroke({
-      color: color ? color : '#914500',
-      width: 3,
+      color: isInteractive ? contrastingColor : color ? color : '#914500',
+      width: isInteractive ? 6 : 4,
     }),
   })
   billboard.setStyle(iconStyle)
@@ -111,36 +120,67 @@ const updatePrimitive = ({
   map,
   model,
   id,
+  isInteractive,
+  translation,
 }: {
   map: any
   model: any
   id: string
+  isInteractive?: boolean
+  translation?: Translation
 }) => {
   const circle = modelToCircle({ model, map })
   // make sure the current model has width and height before drawing
   if (circle && !_.isUndefined(circle)) {
-    drawCircle({ model, rectangle: circle, map, id })
+    drawCircle({
+      model,
+      rectangle: circle,
+      map,
+      id,
+      isInteractive,
+      translation,
+    })
   }
 }
-const useListenToBboxModel = ({ model, map }: { model: any; map: any }) => {
+const useListenToBboxModel = ({
+  model,
+  map,
+  isInteractive,
+  translation,
+}: {
+  model: any
+  map: any
+  isInteractive?: boolean
+  translation?: Translation
+}) => {
   const callback = React.useMemo(() => {
     return () => {
       if (model && map) {
-        updatePrimitive({ map, model, id: getIdFromModelForDisplay({ model }) })
+        updatePrimitive({
+          map,
+          model,
+          id: getIdFromModelForDisplay({ model }),
+          isInteractive,
+          translation,
+        })
       }
     }
-  }, [model, map])
+  }, [model, map, isInteractive, translation])
   useListenTo(model, 'change:lat change:lon change:radius', callback)
   callback()
 }
 export const OpenlayersCircleDisplay = ({
   map,
   model,
+  isInteractive,
+  translation,
 }: {
   map: any
   model: any
+  isInteractive?: boolean
+  translation?: Translation
 }) => {
-  useListenToBboxModel({ map, model })
+  useListenToBboxModel({ map, model, isInteractive, translation })
   React.useEffect(() => {
     return () => {
       if (map && model) {
