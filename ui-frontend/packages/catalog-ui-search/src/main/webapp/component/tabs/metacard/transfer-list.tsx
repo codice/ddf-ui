@@ -7,6 +7,7 @@ import Button from '@mui/material/Button'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import TextField from '@mui/material/TextField'
+import Tooltip from '@mui/material/Tooltip'
 import LinearProgress from '@mui/material/LinearProgress'
 import CircularProgress from '@mui/material/CircularProgress'
 import Paper from '@mui/material/Paper'
@@ -119,17 +120,20 @@ const handleShiftClick = ({
 }
 const ItemRow = ({
   value,
+  required,
   lazyResult,
   startOver,
   measure,
   filter,
 }: {
   value: string
+  required?: boolean
   lazyResult?: LazyQueryResult
   startOver: () => void
   measure?: () => void
   filter?: string
 }) => {
+  const [show, setShow] = React.useState(false)
   const MetacardDefinitions = useMetacardDefinitions()
   const dialogContext = useDialog()
   const { setItems, items, filteredItemArray } =
@@ -157,32 +161,44 @@ const ItemRow = ({
       role="listitem"
       className="p-0 flex w-full"
     >
-      <Button
-        onClick={(event) => {
-          if (event.shiftKey) {
-            handleShiftClick({
-              items,
-              item: value,
-              setItems,
-              filteredItemArray,
-            })
-          } else if (event.ctrlKey || event.metaKey) {
-            setItems({
-              ...items,
-              [value]: !items[value],
-            })
-          } else {
-            setItems({
-              ...items,
-              [value]: !items[value],
-            })
-          }
-        }}
-        size="medium"
+      <Tooltip
+        title="Attributes required by admin must remain 'Active'."
+        open={show}
       >
-        {items[value] ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
-      </Button>
+        <div
+          onMouseEnter={() => required && setShow(true)}
+          onMouseLeave={() => setShow(false)}
+        >
+          <Button
+            disabled={required}
+            onClick={(event) => {
+              if (event.shiftKey) {
+                handleShiftClick({
+                  items,
+                  item: value,
+                  setItems,
+                  filteredItemArray,
+                })
+              } else if (event.ctrlKey || event.metaKey) {
+                setItems({
+                  ...items,
+                  [value]: !items[value],
+                })
+              } else {
+                setItems({
+                  ...items,
+                  [value]: !items[value],
+                })
+              }
+            }}
+            size="medium"
+          >
+            {items[value] ? <CheckBoxIcon /> : <CheckBoxOutlineBlankIcon />}
+          </Button>
+        </div>
+      </Tooltip>
       <Button
+        disabled={required}
         fullWidth
         size="medium"
         className="justify-start"
@@ -301,6 +317,7 @@ const generateDebouncedFilterUpdate = () => {
 const CustomList = ({
   title,
   items,
+  requiredAttributes,
   lazyResult,
   updateItems,
   isDnD,
@@ -311,6 +328,7 @@ const CustomList = ({
 }: {
   title: React.ReactNode
   items: CheckedType
+  requiredAttributes?: string[]
   lazyResult?: LazyQueryResult
   updateItems: SetCheckedType
   isDnD: boolean // drag and drop allowed?
@@ -332,8 +350,13 @@ const CustomList = ({
   const debouncedFilterUpdate = React.useRef(generateDebouncedFilterUpdate())
   const numberChecked = getAmountChecked(items)
   const total = Object.keys(items).length
-  const isIndeterminate = numberChecked !== total && numberChecked !== 0
-  const isCompletelySelected = numberChecked === total && total !== 0
+  const totalCheckable = requiredAttributes
+    ? total - requiredAttributes.length
+    : total
+  const isIndeterminate =
+    numberChecked !== totalCheckable && numberChecked !== 0
+  const isCompletelySelected =
+    numberChecked === totalCheckable && totalCheckable !== 0
   React.useEffect(() => {
     setUnfilteredItemArray(Object.keys(items))
   }, [Object.keys(items).toString()])
@@ -485,6 +508,9 @@ const CustomList = ({
                               >
                                 <ItemRow
                                   value={filteredItemArray[rubric.source.index]}
+                                  required={requiredAttributes?.includes(
+                                    filteredItemArray[rubric.source.index]
+                                  )}
                                   startOver={startOver}
                                   lazyResult={lazyResult}
                                   filter={filter}
@@ -520,6 +546,9 @@ const CustomList = ({
                                             >
                                               <ItemRow
                                                 value={item}
+                                                required={requiredAttributes?.includes(
+                                                  item
+                                                )}
                                                 startOver={startOver}
                                                 lazyResult={lazyResult}
                                                 // filter={filter}
@@ -556,6 +585,7 @@ const CustomList = ({
                       <div ref={itemRef} className="relative">
                         <ItemRow
                           value={item}
+                          required={requiredAttributes?.includes(item)}
                           startOver={startOver}
                           lazyResult={lazyResult}
                           measure={measure}
@@ -639,12 +669,14 @@ type CheckedType = {
 type SetCheckedType = React.Dispatch<React.SetStateAction<CheckedType>>
 const TransferList = ({
   startingLeft,
+  requiredAttributes,
   startingRight,
   startingHideEmpty,
   lazyResult,
   onSave,
 }: {
   startingLeft: string[]
+  requiredAttributes?: string[]
   startingRight: string[]
   startingHideEmpty?: boolean
   lazyResult?: LazyQueryResult
@@ -666,15 +698,24 @@ const TransferList = ({
   const generateHandleToggleAll = ({
     setState,
     state,
+    disabledAttributes = [],
   }: {
     setState: SetCheckedType
     state: CheckedType
+    disabledAttributes?: string[]
   }) => {
     return () => () => {
-      if (Object.values(state).includes(false)) {
+      const allValues = Object.values(state)
+      const totalCheckable = allValues.length - disabledAttributes.length
+      const numberChecked = allValues.filter((checked) => checked).length
+      const allSelected =
+        numberChecked === totalCheckable && totalCheckable !== 0
+
+      if (!allSelected) {
         setState(
           Object.keys(state).reduce((blob, attr) => {
-            blob[attr] = true
+            if (disabledAttributes.includes(attr)) blob[attr] = false
+            else blob[attr] = true
             return blob
           }, {} as CheckedType)
         )
@@ -775,6 +816,7 @@ const TransferList = ({
             <CustomList
               title="Active"
               items={left}
+              requiredAttributes={requiredAttributes}
               lazyResult={lazyResult}
               updateItems={setLeft}
               isDnD={true}
@@ -782,6 +824,7 @@ const TransferList = ({
               handleToggleAll={generateHandleToggleAll({
                 setState: setLeft,
                 state: left,
+                disabledAttributes: requiredAttributes,
               })}
               totalPossible={totalPossible}
               mode={mode}

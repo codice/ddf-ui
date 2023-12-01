@@ -13,16 +13,22 @@ export const TypedUserInstance = {
     return userInstance
   },
   getResultsAttributesSummaryShown: (): string[] => {
+    const config = StartupDataStore.Configuration
+    const required = config.getRequiredExportAttributes()
+
     const userchoices = userInstance
       .get('user')
       .get('preferences')
       .get('inspector-summaryShown')
     if (userchoices.length > 0) {
-      return userchoices
+      return [...new Set([...required, ...userchoices])]
     }
-    if (StartupDataStore.Configuration.getSummaryShow().length > 0) {
-      return StartupDataStore.Configuration.getSummaryShow()
+
+    const summary = config.getSummaryShow()
+    if (summary.length > 0 || required.length > 0) {
+      return [...new Set([...required, ...summary])]
     }
+
     return ['title', 'created', 'thumbnail']
   },
   getResultsAttributesShownList: (): string[] => {

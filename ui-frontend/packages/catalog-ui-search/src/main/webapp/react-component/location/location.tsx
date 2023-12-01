@@ -136,7 +136,10 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
   const { listenTo, stopListening } = useBackbone()
   const { MuiButtonProps, MuiPopoverProps } = useMenuState()
   const onDraw = () => {
-    ;(wreqr as any).vent.trigger('search:draw' + state.mode, locationModel)
+    ;(wreqr as any).vent.trigger(
+      'search:draw' + locationModel.attributes.mode,
+      locationModel
+    )
   }
   const onDrawCancel = () => {
     ;(wreqr as any).vent.trigger('search:drawcancel', locationModel)
@@ -167,6 +170,16 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
         onDrawEnd()
       }, 0)
     }
+  }, [])
+  React.useEffect(() => {
+    const callback = () => onDraw()
+    listenTo((wreqr as any).vent, 'search:requestdrawingmodels', callback)
+    return () =>
+      stopListening(
+        (wreqr as any).vent,
+        'search:requestdrawingmodels',
+        callback
+      )
   }, [])
   React.useEffect(() => {
     const onChangeCallback = () => {

@@ -61,6 +61,9 @@ class Configuration extends Subscribable<{ thing: 'configuration-update' }> {
   getSummaryShow = () => {
     return this.config?.summaryShow || []
   }
+  getRequiredExportAttributes = () => {
+    return this.config?.requiredExportAttributes || []
+  }
   getExportMetacardFormatOptions = () => {
     return this.config?.exportMetacardFormatOptions || []
   }
