@@ -21,12 +21,12 @@ export const TypedUserInstance = {
       .get('preferences')
       .get('inspector-summaryShown')
     if (userchoices.length > 0) {
-      return [...new Set([...required, ...userchoices])]
+      return [...new Set([...userchoices, ...required])]
     }
 
     const summary = config.getSummaryShow()
     if (summary.length > 0 || required.length > 0) {
-      return [...new Set([...required, ...summary])]
+      return [...new Set([...summary, ...required])]
     }
 
     return ['title', 'created', 'thumbnail']
