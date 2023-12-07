@@ -14,10 +14,10 @@
  **/
 import * as React from 'react'
 import Button from '@mui/material/Button'
-import user from '../../component//singletons/user-instance'
-import TransferList from '../../component//tabs/metacard/transfer-list'
-import { Elevations } from '../../component//theme/theme'
-import { useDialog } from '../../component//dialog'
+import user from '../../component/singletons/user-instance'
+import TransferList from '../../component/tabs/metacard/transfer-list'
+import { Elevations } from '../../component/theme/theme'
+import { useDialog } from '../../component/dialog'
 import { TypedUserInstance } from '../../component/singletons/TypedUser'
 import { StartupDataStore } from '../../js/model/Startup/startup'
 
