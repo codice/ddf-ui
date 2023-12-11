@@ -367,6 +367,32 @@ export const OpenlayersDrawings = ({
     drawingLocation = null
   }
 
+  const preserveAttributes = (drawingModel: any, drawingLocation: any) => {
+    // preserve buffer
+    const updatedDrawingLocation = drawingLocation
+    if (drawingShape === 'Line') {
+      const lineWidth = drawingModel.get('lineWidth')
+      const lineUnits = drawingModel.get('lineUnits')
+      if (lineWidth) {
+        updatedDrawingLocation.properties.buffer = lineWidth
+      }
+      if (lineUnits) {
+        updatedDrawingLocation.properties.bufferUnit = lineUnits
+      }
+    }
+    if (drawingShape === 'Polygon') {
+      const polygonWidth = drawingModel.get('polygonBufferWidth')
+      const polygonUnits = drawingModel.get('polygonBufferUnits')
+      if (polygonWidth) {
+        updatedDrawingLocation.properties.buffer = polygonWidth
+      }
+      if (polygonUnits) {
+        updatedDrawingLocation.properties.bufferUnit = polygonUnits
+      }
+    }
+    return updatedDrawingLocation
+  }
+
   // called when the user clicks apply during geo drawing
   const finishDrawing = () => {
     if (drawingLocation === null) {
@@ -379,7 +405,14 @@ export const OpenlayersDrawings = ({
     )
     wreqr.vent.trigger(`search:drawend`, drawingModel)
     drawingModel.set('drawing', false)
-    drawingModel.set(convertToModel(drawingLocation, drawingShape))
+
+    // preserve buffer set by user
+    const updatedDrawingLocation = preserveAttributes(
+      drawingModel,
+      drawingLocation
+    )
+
+    drawingModel.set(convertToModel(updatedDrawingLocation, drawingShape))
     setIsDrawing(false)
     setDrawingGeometry(drawingLocation)
     drawingLocation = null
