@@ -17,12 +17,12 @@
     <parent>
         <groupId>org.codice.ddf.search</groupId>
         <artifactId>backend</artifactId>
-        <version>5.1.11-SNAPSHOT</version>
+        <version>5.1.11</version>
     </parent>
 
     <packaging>pom</packaging>
     <artifactId>audit</artifactId>
-    <version>5.1.11-SNAPSHOT</version>
+    <version>5.1.11</version>
     <name>DDF :: Catalog :: UI :: Audit</name>
 
     <modules>
