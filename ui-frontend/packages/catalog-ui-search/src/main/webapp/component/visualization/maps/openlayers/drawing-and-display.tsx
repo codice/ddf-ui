@@ -50,6 +50,7 @@ import {
 } from '../../../../react-component/location/location-color-selector'
 import { InteractionsContext } from '../interactions.provider'
 import { Model } from 'backbone'
+import { Position } from '@blueprintjs/core'
 
 const DrawingMenu = menu.DrawingMenu
 const makeEmptyGeometry = geometry.makeEmptyGeometry
@@ -170,12 +171,17 @@ const createGeoModel = (geo: GeometryJSON) => {
 }
 
 const modelToPolygon = (model: any): GeometryJSON | null => {
-  const coords = model.get('polygon')
+  let coords = model.get('polygon')
   if (
     coords === undefined ||
     validateGeo('polygon', JSON.stringify(coords))?.error
   ) {
-    return null
+    coords = [
+      [0, 0],
+      [0, 0],
+      [0, 0],
+      [0, 0],
+    ]
   }
   const isMultiPolygon = ShapeUtils.isArray3D(coords)
   const polygon = isMultiPolygon ? coords : [coords]
@@ -192,21 +198,17 @@ const modelToPolygon = (model: any): GeometryJSON | null => {
 }
 
 const modelToLine = (model: any): GeometryJSON | null => {
-  const coords = model.get('line')
+  const lineWidth = Number(model.get('lineWidth'))
+  const buffer = Number.isNaN(lineWidth) ? 0 : lineWidth
+  const bufferUnit = model.get('lineUnits') || 'meters'
+  let coords = model.get('line')
   if (
     coords === undefined ||
     validateGeo('line', JSON.stringify(coords))?.error
   ) {
-    return null
+    coords = []
   }
-  const buffer = Number(model.get('lineWidth'))
-  const bufferUnit = model.get('lineUnits')
-  return makeLineGeo(
-    v4(),
-    coords,
-    Number.isNaN(buffer) ? 0 : buffer,
-    bufferUnit || 'meters'
-  )
+  return makeLineGeo(v4(), coords, buffer, bufferUnit)
 }
 
 const modelToPointRadius = (model: any): GeometryJSON | null => {
@@ -300,6 +302,36 @@ let drawingLocation: GeometryJSON | null = makeEmptyGeometry(
   DEFAULT_SHAPE
 )
 
+const preserveAttributes = (
+  drawingModel: any,
+  drawingLocation: any,
+  drawingShape: string
+) => {
+  // preserve buffer
+  const updatedDrawingLocation = drawingLocation
+  if (drawingShape === 'Line') {
+    const lineWidth = drawingModel.get('lineWidth')
+    const lineUnits = drawingModel.get('lineUnits')
+    if (lineWidth) {
+      updatedDrawingLocation.properties.buffer = lineWidth
+    }
+    if (lineUnits) {
+      updatedDrawingLocation.properties.bufferUnit = lineUnits
+    }
+  }
+  if (drawingShape === 'Polygon') {
+    const polygonWidth = drawingModel.get('polygonBufferWidth')
+    const polygonUnits = drawingModel.get('polygonBufferUnits')
+    if (polygonWidth) {
+      updatedDrawingLocation.properties.buffer = polygonWidth
+    }
+    if (polygonUnits) {
+      updatedDrawingLocation.properties.bufferUnit = polygonUnits
+    }
+  }
+  return updatedDrawingLocation
+}
+
 export const OpenlayersDrawings = ({
   map,
   drawingAndDisplayModels,
@@ -367,32 +399,6 @@ export const OpenlayersDrawings = ({
     drawingLocation = null
   }
 
-  const preserveAttributes = (drawingModel: any, drawingLocation: any) => {
-    // preserve buffer
-    const updatedDrawingLocation = drawingLocation
-    if (drawingShape === 'Line') {
-      const lineWidth = drawingModel.get('lineWidth')
-      const lineUnits = drawingModel.get('lineUnits')
-      if (lineWidth) {
-        updatedDrawingLocation.properties.buffer = lineWidth
-      }
-      if (lineUnits) {
-        updatedDrawingLocation.properties.bufferUnit = lineUnits
-      }
-    }
-    if (drawingShape === 'Polygon') {
-      const polygonWidth = drawingModel.get('polygonBufferWidth')
-      const polygonUnits = drawingModel.get('polygonBufferUnits')
-      if (polygonWidth) {
-        updatedDrawingLocation.properties.buffer = polygonWidth
-      }
-      if (polygonUnits) {
-        updatedDrawingLocation.properties.bufferUnit = polygonUnits
-      }
-    }
-    return updatedDrawingLocation
-  }
-
   // called when the user clicks apply during geo drawing
   const finishDrawing = () => {
     if (drawingLocation === null) {
@@ -409,7 +415,8 @@ export const OpenlayersDrawings = ({
     // preserve buffer set by user
     const updatedDrawingLocation = preserveAttributes(
       drawingModel,
-      drawingLocation
+      drawingLocation,
+      drawingShape
     )
 
     drawingModel.set(convertToModel(updatedDrawingLocation, drawingShape))
