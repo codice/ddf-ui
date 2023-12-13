@@ -50,7 +50,6 @@ import {
 } from '../../../../react-component/location/location-color-selector'
 import { InteractionsContext } from '../interactions.provider'
 import { Model } from 'backbone'
-import { Position } from '@blueprintjs/core'
 
 const DrawingMenu = menu.DrawingMenu
 const makeEmptyGeometry = geometry.makeEmptyGeometry
@@ -169,31 +168,50 @@ const createGeoModel = (geo: GeometryJSON) => {
       return {}
   }
 }
+const createDefaultPolygon = (
+  buffer: number,
+  bufferUnit: string,
+  color: string
+): any => {
+  return {
+    type: 'Feature',
+    properties: {
+      id: '',
+      color: color,
+      shape: 'Polygon',
+      buffer: buffer,
+      bufferUnit: bufferUnit,
+    },
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[]],
+    },
+    bbox: [0, 0, 0, 0],
+  }
+}
 
 const modelToPolygon = (model: any): GeometryJSON | null => {
-  let coords = model.get('polygon')
+  const coords = model.get('polygon')
+  const polygonBufferWidth = Number(model.get('polygonBufferWidth'))
+  const buffer = Number.isNaN(polygonBufferWidth) ? 0 : polygonBufferWidth
+  const bufferUnit = model.get('polygonBufferUnits') || undefined
+
   if (
     coords === undefined ||
     validateGeo('polygon', JSON.stringify(coords))?.error
   ) {
-    coords = [
-      [0, 0],
-      [0, 0],
-      [0, 0],
-      [0, 0],
-    ]
+    return createDefaultPolygon(buffer, bufferUnit, DRAWING_COLOR)
   }
+
   const isMultiPolygon = ShapeUtils.isArray3D(coords)
   const polygon = isMultiPolygon ? coords : [coords]
-  const buffer = Number(model.get('polygonBufferWidth'))
-  const bufferUnit = model.get('polygonBufferUnits')
   return makeGeometry(
     v4(),
     Turf.polygon(polygon).geometry,
     DRAWING_COLOR,
     'Polygon',
     Number.isNaN(buffer) ? 0 : buffer,
-    bufferUnit || undefined
+    bufferUnit
   )
 }
 
@@ -302,12 +320,11 @@ let drawingLocation: GeometryJSON | null = makeEmptyGeometry(
   DEFAULT_SHAPE
 )
 
-const preserveAttributes = (
+const preserveBuffer = (
   drawingModel: any,
   drawingLocation: any,
   drawingShape: string
 ) => {
-  // preserve buffer
   const updatedDrawingLocation = drawingLocation
   if (drawingShape === 'Line') {
     const lineWidth = drawingModel.get('lineWidth')
@@ -413,7 +430,7 @@ export const OpenlayersDrawings = ({
     drawingModel.set('drawing', false)
 
     // preserve buffer set by user
-    const updatedDrawingLocation = preserveAttributes(
+    const updatedDrawingLocation = preserveBuffer(
       drawingModel,
       drawingLocation,
       drawingShape
@@ -421,7 +438,7 @@ export const OpenlayersDrawings = ({
 
     drawingModel.set(convertToModel(updatedDrawingLocation, drawingShape))
     setIsDrawing(false)
-    setDrawingGeometry(drawingLocation)
+    setDrawingGeometry(updatedDrawingLocation)
     drawingLocation = null
   }
 
