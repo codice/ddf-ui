@@ -168,45 +168,65 @@ const createGeoModel = (geo: GeometryJSON) => {
       return {}
   }
 }
+const createDefaultPolygon = (
+  buffer: number,
+  bufferUnit: string,
+  color: string
+): any => {
+  return {
+    type: 'Feature',
+    properties: {
+      id: '',
+      color: color,
+      shape: 'Polygon',
+      buffer: buffer,
+      bufferUnit: bufferUnit,
+    },
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[]],
+    },
+    bbox: [0, 0, 0, 0],
+  }
+}
 
 const modelToPolygon = (model: any): GeometryJSON | null => {
   const coords = model.get('polygon')
+  const polygonBufferWidth = Number(model.get('polygonBufferWidth'))
+  const buffer = Number.isNaN(polygonBufferWidth) ? 0 : polygonBufferWidth
+  const bufferUnit = model.get('polygonBufferUnits') || undefined
+
   if (
     coords === undefined ||
     validateGeo('polygon', JSON.stringify(coords))?.error
   ) {
-    return null
+    return createDefaultPolygon(buffer, bufferUnit, DRAWING_COLOR)
   }
+
   const isMultiPolygon = ShapeUtils.isArray3D(coords)
   const polygon = isMultiPolygon ? coords : [coords]
-  const buffer = Number(model.get('polygonBufferWidth'))
-  const bufferUnit = model.get('polygonBufferUnits')
   return makeGeometry(
     v4(),
     Turf.polygon(polygon).geometry,
     DRAWING_COLOR,
     'Polygon',
     Number.isNaN(buffer) ? 0 : buffer,
-    bufferUnit || undefined
+    bufferUnit
   )
 }
 
 const modelToLine = (model: any): GeometryJSON | null => {
-  const coords = model.get('line')
+  const lineWidth = Number(model.get('lineWidth'))
+  const buffer = Number.isNaN(lineWidth) ? 0 : lineWidth
+  const bufferUnit = model.get('lineUnits') || 'meters'
+  let coords = model.get('line')
   if (
     coords === undefined ||
     validateGeo('line', JSON.stringify(coords))?.error
   ) {
-    return null
+    coords = []
   }
-  const buffer = Number(model.get('lineWidth'))
-  const bufferUnit = model.get('lineUnits')
-  return makeLineGeo(
-    v4(),
-    coords,
-    Number.isNaN(buffer) ? 0 : buffer,
-    bufferUnit || 'meters'
-  )
+  return makeLineGeo(v4(), coords, buffer, bufferUnit)
 }
 
 const modelToPointRadius = (model: any): GeometryJSON | null => {
@@ -300,6 +320,35 @@ let drawingLocation: GeometryJSON | null = makeEmptyGeometry(
   DEFAULT_SHAPE
 )
 
+const preserveBuffer = (
+  drawingModel: any,
+  drawingLocation: any,
+  drawingShape: string
+) => {
+  const updatedDrawingLocation = drawingLocation
+  if (drawingShape === 'Line') {
+    const lineWidth = drawingModel.get('lineWidth')
+    const lineUnits = drawingModel.get('lineUnits')
+    if (lineWidth) {
+      updatedDrawingLocation.properties.buffer = lineWidth
+    }
+    if (lineUnits) {
+      updatedDrawingLocation.properties.bufferUnit = lineUnits
+    }
+  }
+  if (drawingShape === 'Polygon') {
+    const polygonWidth = drawingModel.get('polygonBufferWidth')
+    const polygonUnits = drawingModel.get('polygonBufferUnits')
+    if (polygonWidth) {
+      updatedDrawingLocation.properties.buffer = polygonWidth
+    }
+    if (polygonUnits) {
+      updatedDrawingLocation.properties.bufferUnit = polygonUnits
+    }
+  }
+  return updatedDrawingLocation
+}
+
 export const OpenlayersDrawings = ({
   map,
   drawingAndDisplayModels,
@@ -379,9 +428,17 @@ export const OpenlayersDrawings = ({
     )
     wreqr.vent.trigger(`search:drawend`, drawingModel)
     drawingModel.set('drawing', false)
-    drawingModel.set(convertToModel(drawingLocation, drawingShape))
+
+    // preserve buffer set by user
+    const updatedDrawingLocation = preserveBuffer(
+      drawingModel,
+      drawingLocation,
+      drawingShape
+    )
+
+    drawingModel.set(convertToModel(updatedDrawingLocation, drawingShape))
     setIsDrawing(false)
-    setDrawingGeometry(drawingLocation)
+    setDrawingGeometry(updatedDrawingLocation)
     drawingLocation = null
   }
 
