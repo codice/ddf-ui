@@ -25,19 +25,23 @@ import {
   QueryResponseType,
   checkForErrors,
 } from '../../react-component/utils/fetch/fetch'
+
 let rpc: Client | null = null
+let rpcInitial: Client | null = null
+let rpcConnectionInitiated = false
+
 if (StartupDataStore.Configuration.getWebSocketsEnabled() && window.WebSocket) {
   const protocol = { 'http:': 'ws:', 'https:': 'wss:' }
   // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const url = `${protocol[location.protocol]}//${location.hostname}:${
     location.port
   }${location.pathname}ws`
+  rpcInitial = new Client(url, { autoconnect: false })
+
   // Only set rpc if the connection succeeds
-  const localRpc = new Client(url, { autoconnect: false })
-  localRpc.once('open', () => {
-    rpc = localRpc
+  rpcInitial.once('open', () => {
+    rpc = rpcInitial
   })
-  localRpc.connect()
 }
 
 export default Backbone.AssociatedModel.extend({
@@ -49,6 +53,11 @@ export default Backbone.AssociatedModel.extend({
   url: './internal/cql',
   initialize() {
     this.listenTo(this, 'error', this.handleError)
+
+    if (rpcInitial && !rpcConnectionInitiated) {
+      rpcInitial.connect()
+      rpcConnectionInitiated = true
+    }
   },
   sync(method: any, model: any, options: any) {
     if (rpc !== null) {
