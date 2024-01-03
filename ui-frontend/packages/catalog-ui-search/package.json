@@ -115,7 +115,7 @@
     "moment-timezone": "0.5.31",
     "mt-geo": "1.0.1",
     "openlayers": "4.6.5",
-    "plotly.js": "1.45.0",
+    "plotly.js": "2.25.2",
     "polished": "3.6.5",
     "postcss-focus-visible": "8.0.2",
     "prop-types": "15.7.2",
