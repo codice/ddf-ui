@@ -193,7 +193,7 @@ const Theme = Backbone.Model.extend({
     },
   ],
   initialize() {
-    this.savePreferences = _debounce(this.savePreferences, 1000)
+    this.savePreferences = _debounce(this.savePreferences, 1200)
     this.handleAlertPersistence()
     this.handleResultCount()
     this.listenTo((wreqr as any).vent, 'alerts:add', this.addAlert)
