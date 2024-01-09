@@ -199,7 +199,7 @@ export const useDrawingAndDisplayModels = ({
   const { listenTo, stopListening } = useBackbone()
   useListenTo(
     (wreqr as any).vent,
-    'search:linedisplay search:polydisplay search:bboxdisplay search:circledisplay search:keyworddisplay',
+    'search:linedisplay search:polydisplay search:bboxdisplay search:circledisplay search:keyworddisplay search:areadisplay',
     (model: any) => {
       setModels((currentModels) => {
         let newModels = currentModels
@@ -228,7 +228,7 @@ export const useDrawingAndDisplayModels = ({
   React.useEffect(() => {
     ;(wreqr as any).vent.trigger('search:requestlocationmodels')
   }, [])
-  const updateFilterModels = () => {
+  const updateFilterModels = React.useCallback(() => {
     for (const model of filterModels) {
       stopListening(model)
     }
@@ -270,10 +270,10 @@ export const useDrawingAndDisplayModels = ({
       (m) => !locationIds.has(m.get('locationId'))
     )
     setFilterModels(dedupedModels)
-  }
+  }, [filterTree, models])
   React.useEffect(() => {
     updateFilterModels()
-  }, [filterTree, models])
+  }, [updateFilterModels])
   useListenTo(selectionInterface, 'change:currentQuery', updateFilterModels)
   useListenTo(
     TypedUserInstance.getPreferences(),
@@ -315,14 +315,6 @@ export const useDrawingAndDisplayModels = ({
       setDrawingModels([])
     }
   }, [isDrawing])
-  React.useEffect(() => {
-    const timeoutId = window.setTimeout(() => {
-      updateFilterModels()
-    }, 1000)
-    return () => {
-      window.clearTimeout(timeoutId)
-    }
-  }, [])
   const callback = React.useMemo(() => {
     return () => {
       if (map) {
