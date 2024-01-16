@@ -11,6 +11,9 @@ import wreqr from '../../js/wreqr'
 import GoldenLayout from 'golden-layout'
 import { getRootColumnContent, rootIsNotAColumn } from './stack-toolbar'
 import { unMaximize } from '../../react-component/visualization-selector/visualization-selector'
+import { v4 as uuid } from 'uuid'
+
+const windowId = uuid()
 
 /**
  *  The popin function in golden layout has issues, particularly when there is a single stack in the main window at root.
@@ -293,6 +296,7 @@ const useConsumePreferencesChange = ({
         GoldenLayoutWindowCommunicationEvents.consumePreferencesChange,
         {
           preferences: TypedUserInstance.getPreferences().toJSON(),
+          fromWindowId: windowId,
         }
       )
     }
@@ -301,8 +305,16 @@ const useConsumePreferencesChange = ({
     if (goldenLayout && isInitialized) {
       goldenLayout.eventHub.on(
         GoldenLayoutWindowCommunicationEvents.consumePreferencesChange,
-        ({ preferences }: { preferences: any }) => {
-          TypedUserInstance.sync(preferences)
+        ({
+          preferences,
+          fromWindowId,
+        }: {
+          preferences: any
+          fromWindowId: string
+        }) => {
+          if (windowId !== fromWindowId) {
+            TypedUserInstance.sync(preferences)
+          }
         }
       )
       return () => {}
