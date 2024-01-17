@@ -40,6 +40,7 @@ import { useConfiguration } from '../../../js/model/Startup/configuration.hooks'
 import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
 import Common from '../../../js/Common'
 import SummaryManageAttributes from '../../../react-component/summary-manage-attributes/summary-manage-attributes'
+import moment from 'moment-timezone'
 
 type Props = {
   result: LazyQueryResult
