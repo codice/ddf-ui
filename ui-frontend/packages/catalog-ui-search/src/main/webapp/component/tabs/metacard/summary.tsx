@@ -40,6 +40,7 @@ import { useConfiguration } from '../../../js/model/Startup/configuration.hooks'
 import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
 import Common from '../../../js/Common'
 import SummaryManageAttributes from '../../../react-component/summary-manage-attributes/summary-manage-attributes'
+import moment from 'moment-timezone'
 
 type Props = {
   result: LazyQueryResult
@@ -364,10 +365,16 @@ export const Editor = ({
             setMode(Mode.Saving)
             let transformedValues = values
             try {
-              transformedValues =
-                attrType === 'BINARY'
-                  ? values.map((subval: any) => subval.split(',')[1])
-                  : values
+                switch (attrType) {
+                    case 'BINARY':
+                        transformedValues = values.map((subval: any) => subval.split(',')[1])
+                        break;
+                    case 'DATE':
+                        transformedValues = values.map((subval: any) => moment(subval).toISOString())
+                        break;
+                    default:
+                        transformedValues = values
+                }
             } catch (err) {
               console.error(err)
             }
