@@ -14,7 +14,9 @@ import Button from '@mui/material/Button'
 import _ from 'lodash'
 import CheckIcon from '@mui/icons-material/Check'
 import Slider from '@mui/material/Slider'
-const hues = Object.keys(colors).slice(1, 17)
+import user from '../../component/singletons/user-instance'
+import { capitalize } from '@mui/material/utils'
+
 const shades = [
   900,
   800,
@@ -31,9 +33,20 @@ const shades = [
   'A200',
   'A100',
 ]
-import user from '../../component/singletons/user-instance'
+const containsShades = (
+  color: any,
+  shades: Array<string | number>
+): boolean => {
+  return shades.every((shade) => Object.keys(color).includes(shade.toString()))
+}
+const getHues = () => {
+  const hues = Object.keys(colors).filter((hue) =>
+    containsShades(colors[hue], shades)
+  )
+  return hues.slice(1, 17)
+}
 
-import { capitalize } from '@mui/material/utils'
+const hues = getHues()
 
 /**
  * Costly to update, so let them settle on a color first
