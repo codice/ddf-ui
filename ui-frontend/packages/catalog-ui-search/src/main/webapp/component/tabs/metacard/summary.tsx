@@ -365,16 +365,20 @@ export const Editor = ({
             setMode(Mode.Saving)
             let transformedValues = values
             try {
-                switch (attrType) {
-                    case 'BINARY':
-                        transformedValues = values.map((subval: any) => subval.split(',')[1])
-                        break;
-                    case 'DATE':
-                        transformedValues = values.map((subval: any) => moment(subval).toISOString())
-                        break;
-                    default:
-                        transformedValues = values
-                }
+              switch (attrType) {
+                case 'BINARY':
+                  transformedValues = values.map(
+                    (subval: any) => subval.split(',')[1]
+                  )
+                  break
+                case 'DATE':
+                  transformedValues = values.map((subval: any) =>
+                    moment(subval).toISOString()
+                  )
+                  break
+                default:
+                  transformedValues = values
+              }
             } catch (err) {
               console.error(err)
             }
