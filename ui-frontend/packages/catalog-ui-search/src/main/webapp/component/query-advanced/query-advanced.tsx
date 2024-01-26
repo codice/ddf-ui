@@ -23,9 +23,10 @@ type Props = {
   errorListener?: (validationResults: {
     [key: string]: ValidationResult | undefined
   }) => void
+  Extensions?: any
 }
 
-export const QueryAdvanced = ({ model, errorListener }: Props) => {
+export const QueryAdvanced = ({ model, errorListener, Extensions }: Props) => {
   return (
     <div className="w-full h-full">
       <div

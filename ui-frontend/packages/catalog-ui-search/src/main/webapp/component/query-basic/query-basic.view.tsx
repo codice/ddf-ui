@@ -284,6 +284,7 @@ type QueryBasicProps = {
   errorListener?: (validationResults: {
     [key: string]: ValidationResult | undefined
   }) => void
+  Extensions?: any
 }
 const constructFilterFromBasicFilter = ({
   basicFilter,
@@ -382,7 +383,7 @@ const constructFilterFromBasicFilter = ({
 /**
  * We want to reset the basic filter whenever the filter tree changes on the model.
  *
- * We also want to update the filter tree once whenver the component is first
+ * We also want to update the filter tree once whenever the component is first
  */
 const useBasicFilterFromModel = ({ model }: QueryBasicProps) => {
   const [basicFilter, setBasicFilter] = React.useState(
@@ -402,7 +403,7 @@ const useBasicFilterFromModel = ({ model }: QueryBasicProps) => {
   }, [model])
   return basicFilter
 }
-const QueryBasic = ({ model, errorListener }: QueryBasicProps) => {
+const QueryBasic = ({ model, errorListener, Extensions }: QueryBasicProps) => {
   const MetacardDefinitions = useMetacardDefinitions()
   const inputRef = React.useRef<HTMLDivElement>()
   const basicFilter = useBasicFilterFromModel({ model })
@@ -410,7 +411,8 @@ const QueryBasic = ({ model, errorListener }: QueryBasicProps) => {
     getAllValidValuesForMatchTypeAttribute()
   )
   /**
-   * Because of how things render, auto focusing to the input is more complicated than I wish.  This ensures it works everytime, whereas autoFocus prop is unreliable
+   * Because of how things render, auto focusing to the input is more complicated than I wish.  
+   * This ensures it works every time, whereas autoFocus prop is unreliable
    */
   React.useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -505,7 +507,7 @@ const QueryBasic = ({ model, errorListener }: QueryBasicProps) => {
                 }}
               />
             }
-            label={MetacardDefinitions.getAlias('location')}
+            label={MetacardDefinitions.getAlias('Location')}
           />
           {basicFilter.anyGeo[0] ? (
             <Grid
@@ -627,6 +629,9 @@ const QueryBasic = ({ model, errorListener }: QueryBasicProps) => {
               </Grid>
             </Grid>
           ) : null}
+        {Extensions ? (
+          <Extensions {...{"filter": basicFilter, "model": model}} />
+        ) : null}
         </div>
         <div className="py-2 w-full">
           <Swath className="w-full h-1" />
