@@ -32,6 +32,8 @@ import useCoordinateFormat from '../../tabs/metacard/useCoordinateFormat'
 import Common from '../../../js/Common'
 import Extensions from '../../../extension-points'
 import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
+import wreqr from '../../../js/wreqr'
+
 type ResultItemFullProps = {
   lazyResult: LazyQueryResult
   measure: () => void
@@ -85,7 +87,7 @@ const CheckboxCell = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
 }
 const RowComponent = ({
   lazyResult,
-  measure,
+  measure: originalMeasure,
   index,
   results,
   selectionInterface,
@@ -139,9 +141,21 @@ const RowComponent = ({
     )
   }, [])
   const imgsrc = Common.getImageSrc(thumbnail)
+  const measure = () => {
+    // ignore clientHeight 0 measures since those are typically when the element is hidden and not useful
+    if (
+      containerRef.current?.clientHeight &&
+      containerRef.current?.clientHeight > 0
+    ) {
+      originalMeasure()
+    }
+  }
   React.useEffect(() => {
     measure()
   }, [shownAttributes, convertToFormat])
+  listenTo(wreqr.vent, 'activeContentItemChanged', () => {
+    measure()
+  })
   const getDisplayValue = (value: any, property: string) => {
     if (value && MetacardDefinitions.getAttributeMap()[property]) {
       switch (MetacardDefinitions.getAttributeMap()[property].type) {
