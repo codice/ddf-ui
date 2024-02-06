@@ -46,7 +46,6 @@ public interface QueryRequestFactory {
       boolean isPhonetics,
       @Nullable String cacheId,
       @Nullable Set<String> facets,
-      boolean fromUI
-      // ,@Nullable String notesQueryType
-      ) throws CqlParseException;
+      boolean fromUI)
+      throws CqlParseException;
 }

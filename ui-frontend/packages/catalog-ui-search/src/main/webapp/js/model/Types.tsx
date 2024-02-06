@@ -32,7 +32,6 @@ export type MetacardPropertiesType = {
   'security.access-groups'?: string[]
   'security.access-groups-read'?: string[]
   sorts?: string[] | { attribute: string; direction: string }[]
-  notesQueryType?: string;
   [key: string]: any
 }
 
