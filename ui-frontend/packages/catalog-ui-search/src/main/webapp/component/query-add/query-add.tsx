@@ -36,7 +36,11 @@ type QueryAddReactType = {
   Extensions?: any
 }
 
-export const QueryAddReact = ({ model, errorListener, Extensions }: QueryAddReactType) => {
+export const QueryAddReact = ({
+  model,
+  errorListener,
+  Extensions,
+}: QueryAddReactType) => {
   const [, setForceRender] = React.useState(Math.random())
   useListenTo(model, 'resetToDefaults change:type', () => {
     setForceRender(Math.random())

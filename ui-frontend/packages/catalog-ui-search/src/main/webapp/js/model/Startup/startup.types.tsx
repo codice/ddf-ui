@@ -119,6 +119,7 @@ export interface UIConfigType {
   isCustomTextNotationEnabled: boolean
   isVersioningEnabled: boolean
   isSpellcheckEnabled: boolean
+  isNotesQueryTypesEnabled: boolean
   attributeSuggestionList: any[]
   summaryShow: string[]
   readOnly: string[]
@@ -333,6 +334,7 @@ interface PreferencesType {
     }[]
     spellcheck: boolean
     phonetics: boolean
+    notesQueryType?: string
   }
 }
 

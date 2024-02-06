@@ -190,6 +190,12 @@
             type="Boolean"
             default="false"/>
 
+        <AD id="notesQueryTypesEnabled"
+            name="Enable Notes Query Types"
+            description="Enable Notes Query Types for searches."
+            type="Boolean"
+            default="false"/>
+
         <AD id="phoneticsEnabled"
             name="Enable Similar Word Matching"
             description="Enable phonetic and synonym matching for text searches."

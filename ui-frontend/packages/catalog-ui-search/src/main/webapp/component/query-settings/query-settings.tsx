@@ -27,17 +27,19 @@ import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 
 type Props = {
   model: QueryType
+  Extensions?: any
 }
 
 /**
  * This is expensive to rerender, so we memo.  However, if the inner components aren't listening to the query,
  * this will not work.
  */
-const QuerySettings = ({ model }: Props) => {
+const QuerySettings = ({ model, Extensions }: Props) => {
   const { config } = useConfiguration()
   return (
     <Memo dependencies={[model]}>
       <div>
+        {Extensions ? <Extensions {...{ model: model }} /> : null}
         {config?.isSpellcheckEnabled ? (
           <div className="pb-2">
             <Spellcheck model={model} />

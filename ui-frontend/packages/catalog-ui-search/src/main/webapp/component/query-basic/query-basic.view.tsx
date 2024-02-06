@@ -411,7 +411,7 @@ const QueryBasic = ({ model, errorListener, Extensions }: QueryBasicProps) => {
     getAllValidValuesForMatchTypeAttribute()
   )
   /**
-   * Because of how things render, auto focusing to the input is more complicated than I wish.  
+   * Because of how things render, auto focusing to the input is more complicated than I wish.
    * This ensures it works every time, whereas autoFocus prop is unreliable
    */
   React.useEffect(() => {
@@ -629,15 +629,12 @@ const QueryBasic = ({ model, errorListener, Extensions }: QueryBasicProps) => {
               </Grid>
             </Grid>
           ) : null}
-        {Extensions ? (
-          <Extensions {...{"filter": basicFilter, "model": model}} />
-        ) : null}
         </div>
         <div className="py-2 w-full">
           <Swath className="w-full h-1" />
         </div>
         <div className="basic-settings">
-          <QuerySettings model={model} />
+          <QuerySettings model={model} Extensions={Extensions} />
         </div>
       </div>
     </>

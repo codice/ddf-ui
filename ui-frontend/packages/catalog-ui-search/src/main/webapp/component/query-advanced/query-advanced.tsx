@@ -40,7 +40,7 @@ export const QueryAdvanced = ({ model, errorListener, Extensions }: Props) => {
           <Swath className="w-full h-1" />
         </div>
         <div className="query-settings w-full">
-          <QuerySettings model={model} />
+          <QuerySettings model={model} Extensions={Extensions} />
         </div>
       </div>
     </div>

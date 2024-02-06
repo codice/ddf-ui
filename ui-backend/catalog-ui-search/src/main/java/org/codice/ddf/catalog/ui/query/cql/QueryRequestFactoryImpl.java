@@ -42,8 +42,9 @@ public class QueryRequestFactoryImpl implements QueryRequestFactory {
       boolean isPhonetics,
       @Nullable String cacheId,
       @Nullable Set<String> facets,
-      boolean fromUI)
-      throws CqlParseException {
+      boolean fromUI
+      // ,@Nullable String notesQueryType
+      ) throws CqlParseException {
 
     QueryRequestBuilder builder =
         new QueryRequestBuilder(localSource, filterBuilder, sorts, start, count, timeout, id, cql);
@@ -70,6 +71,7 @@ public class QueryRequestFactoryImpl implements QueryRequestFactory {
 
     builder.setSpellcheck(isSpellcheck);
     builder.setPhonetics(isPhonetics);
+    // builder.setNotesQueryType(notesQueryType);
 
     if (cacheId != null) {
       builder.setCacheId(cacheId);

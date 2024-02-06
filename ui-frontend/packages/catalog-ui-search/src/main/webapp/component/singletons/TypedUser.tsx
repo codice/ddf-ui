@@ -235,6 +235,7 @@ type QuerySettingsType = {
   template: string
   spellcheck: boolean
   phonetics: boolean
+  notesQueryType?: string
 }
 
 type QuerySettingsModelType = {

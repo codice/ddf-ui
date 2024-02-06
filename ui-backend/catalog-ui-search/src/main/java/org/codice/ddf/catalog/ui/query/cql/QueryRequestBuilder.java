@@ -89,6 +89,8 @@ public class QueryRequestBuilder {
 
   private Boolean phonetics;
 
+  private String notesQueryType;
+
   private String cacheId;
 
   private Set<String> facets = Collections.emptySet();
@@ -152,6 +154,11 @@ public class QueryRequestBuilder {
 
   public QueryRequestBuilder setPhonetics(Boolean isPhonetics) {
     this.phonetics = isPhonetics;
+    return this;
+  }
+
+  public QueryRequestBuilder setNotesQueryType(String notesQueryType) {
+    this.notesQueryType = notesQueryType;
     return this;
   }
 
@@ -230,6 +237,10 @@ public class QueryRequestBuilder {
 
     if (phonetics != null) {
       queryRequest.getProperties().put("phonetics", phonetics);
+    }
+
+    if (notesQueryType != null) {
+      queryRequest.getProperties().put("notesQueryType", notesQueryType);
     }
 
     if (cacheId != null) {
