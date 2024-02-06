@@ -130,8 +130,8 @@ export default Backbone.AssociatedModel.extend({
       isTransient: true,
     },
   ],
-  // override constructor slightly to ensure options are available on the self ref immediately
-  constructor(_attributes: any, options: any) {
+  // override constructor slightly to ensure options / attributes are available on the self ref immediately
+  constructor(attributes: any, options: any) {
     if (
       !options ||
       !options.transformDefaults ||
@@ -143,6 +143,7 @@ export default Backbone.AssociatedModel.extend({
         'Options for transformDefaults, transformFilterTree, transformSorts, and transformCount must be provided'
       )
     }
+    this._constructorAttributes = attributes || {}
     this.options = options
     return Backbone.AssociatedModel.apply(this, arguments)
   },
@@ -168,13 +169,27 @@ export default Backbone.AssociatedModel.extend({
     }
     return json
   },
-  /**
-   * Do not put filterTree in this, otherwise things that only set cql and are meant to rebuild the filter tree won't work (see initialize)
-   */
   defaults() {
+    const filterTree = this._constructorAttributes?.filterTree
+    let constructedFilterTree: FilterBuilderClass
+    let constructedCql = this._constructorAttributes?.cql || "anyText ILIKE '*'"
+    if (filterTree && typeof filterTree === 'string') {
+      constructedFilterTree = new FilterBuilderClass(JSON.parse(filterTree))
+    } else if (!filterTree || filterTree.id === undefined) {
+      // when we make drastic changes to filter tree it will be necessary to fall back to cql and reconstruct a filter tree that's compatible
+      constructedFilterTree = cql.read(constructedCql)
+      console.warn('migrating a filter tree to the latest structure')
+      // allow downstream projects to handle how they want to inform users of migrations
+      ;(wreqr as any).vent.trigger('filterTree:migration', {
+        search: this,
+      })
+    } else {
+      constructedFilterTree = new FilterBuilderClass(filterTree)
+    }
     return this.options.transformDefaults({
       originalDefaults: {
-        cql: "anyText ILIKE '*'",
+        cql: constructedCql,
+        filterTree: constructedFilterTree,
         associatedFormModel: undefined,
         excludeUnnecessaryAttributes: true,
         count: StartupDataStore.Configuration.getResultCount(),
@@ -189,7 +204,7 @@ export default Backbone.AssociatedModel.extend({
         // initialize this here so we can avoid creating spurious references to LazyQueryResults objects
         result: new QueryResponse({
           lazyResults: new LazyQueryResults({
-            filterTree: this.get('filterTree'),
+            filterTree: constructedFilterTree,
             sorts: [],
             sources: [],
             transformSorts: ({ originalSorts }) => {
@@ -252,21 +267,6 @@ export default Backbone.AssociatedModel.extend({
   initialize(attributes: any) {
     // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     _.bindAll.apply(_, [this].concat(_.functions(this))) // underscore bindAll does not take array arg
-    const filterTree = this.get('filterTree')
-    if (filterTree && typeof filterTree === 'string') {
-      this.set('filterTree', new FilterBuilderClass(JSON.parse(filterTree)))
-    }
-    // when we make drastic changes to filter tree it will be necessary to fall back to cql and reconstruct a filter tree that's compatible
-    if (!filterTree || filterTree.id === undefined) {
-      this.set('filterTree', cql.read(this.get('cql'))) // reconstruct
-      console.warn('migrating a filter tree to the latest structure')
-      // allow downstream projects to handle how they want to inform users of migrations
-      ;(wreqr as any).vent.trigger('filterTree:migration', {
-        search: this,
-      })
-    } else {
-      this.set('filterTree', new FilterBuilderClass(filterTree)) // instantiate the class if everything is a-okay
-    }
     this._handleDeprecatedFederation(attributes)
     this.listenTo(
       this,

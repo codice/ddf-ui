@@ -175,7 +175,7 @@ export const useDrawingAndDisplayModels = ({
   })
   useListenTo(
     (wreqr as any).vent,
-    'search:linedisplay search:polydisplay search:bboxdisplay search:circledisplay search:keyworddisplay',
+    'search:linedisplay search:polydisplay search:bboxdisplay search:circledisplay search:keyworddisplay search:areadisplay',
     (model: any) => {
       if (Array.isArray(model)) {
         setModels(
@@ -188,25 +188,23 @@ export const useDrawingAndDisplayModels = ({
       }
     }
   )
-  const updateFilterModels = React.useMemo(() => {
-    return () => {
-      const resultFilter = TypedUserInstance.getEphemeralFilter()
-      const extractedModels = [] as any[]
-      if (filterTree) {
-        extractModelsFromFilter({
-          filter: filterTree,
-          extractedModels,
-        })
-      }
-      if (resultFilter) {
-        extractModelsFromFilter({
-          filter: resultFilter,
-          extractedModels,
-        })
-      }
-      setFilterModels(extractedModels)
+  const updateFilterModels = React.useCallback(() => {
+    const resultFilter = TypedUserInstance.getEphemeralFilter()
+    const extractedModels = [] as any[]
+    if (filterTree) {
+      extractModelsFromFilter({
+        filter: filterTree,
+        extractedModels,
+      })
     }
-  }, [filterTree])
+    if (resultFilter) {
+      extractModelsFromFilter({
+        filter: resultFilter,
+        extractedModels,
+      })
+    }
+    setFilterModels(extractedModels)
+  }, [filterTree, models])
   React.useEffect(() => {
     updateFilterModels()
   }, [updateFilterModels])
@@ -249,14 +247,6 @@ export const useDrawingAndDisplayModels = ({
       setDrawingModels([])
     }
   }, [isDrawing])
-  React.useEffect(() => {
-    const timeoutId = window.setTimeout(() => {
-      updateFilterModels()
-    }, 1000)
-    return () => {
-      window.clearTimeout(timeoutId)
-    }
-  }, [])
   const callback = React.useMemo(() => {
     return () => {
       if (map) {
