@@ -29,16 +29,65 @@ import {
 } from '../component/filter-builder/filter.structure'
 import CQLUtils from './CQLUtils'
 import _cloneDeep from 'lodash/cloneDeep'
+import wkx from 'wkx'
 
-const arrayFromLinestringWkt = (wkt: string): Array<[number, number]> => {
-  return wkt
-    .substring(11, wkt.length - 1)
-    .split(',')
-    .map(function (coordinate) {
-      return coordinate.split(' ').map(function (value) {
-        return Number(value)
-      }) as [number, number]
-    })
+const getPointRadiusFilter = (
+  point: [number, number],
+  property: string,
+  radius?: string
+) => {
+  const value = {
+    mode: 'circle',
+    type: 'POINTRADIUS',
+    lat: point[1],
+    lon: point[0],
+  }
+
+  return new FilterClass({
+    type: 'GEOMETRY',
+    value: (radius ? { ...value, radius } : value) as ValueTypes['location'],
+    property,
+  })
+}
+
+const getLinestringFilter = (
+  line: number[][],
+  property: string,
+  buffer?: string
+) => {
+  const value = {
+    mode: 'line',
+    type: 'LINE',
+    line: line,
+  }
+
+  return new FilterClass({
+    type: 'GEOMETRY',
+    value: (buffer
+      ? { ...value, lineWidth: buffer }
+      : value) as ValueTypes['location'],
+    property,
+  })
+}
+
+const getPolygonFilter = (
+  poly: number[][],
+  property: string,
+  buffer?: string
+) => {
+  const value = {
+    mode: 'poly',
+    type: 'POLYGON',
+    polygon: poly,
+  }
+
+  return new FilterClass({
+    type: 'GEOMETRY',
+    value: (buffer
+      ? { ...value, polygonBufferWidth: buffer }
+      : value) as ValueTypes['location'],
+    property,
+  })
 }
 const ANYTEXT_WILDCARD = '"anyText" ILIKE \'%\''
 type PrecendenceType = 'RPAREN' | 'LOGICAL' | 'COMPARISON'
@@ -303,6 +352,55 @@ const getNextToken = (postfix: Array<TokenType>): TokenType => {
   return postfix.pop() as TokenType
 }
 
+const getGeoFilters = (
+  wkt: string,
+  property: string,
+  buffer?: string
+): FilterClass | FilterBuilderClass => {
+  if (wkt.startsWith('GEOMETRYCOLLECTION')) {
+    const parsedWkt = wkx.Geometry.parse(wkt)
+    const geoJson = parsedWkt.toGeoJSON() as any
+    const innerWkts: string[] = geoJson.geometries.map((geometry: any) =>
+      wkx.Geometry.parseGeoJSON(geometry).toWkt()
+    )
+    return new FilterBuilderClass({
+      type: 'OR',
+      filters: innerWkts.map((wkt) => getGeoFilters(wkt, property, buffer)),
+    })
+  } else if (wkt.startsWith('LINESTRING')) {
+    const line = CQLUtils.arrayFromLinestringWkt(wkt)
+    return getLinestringFilter(line, property, buffer)
+  } else if (wkt.startsWith('MULTILINESTRING')) {
+    return new FilterBuilderClass({
+      type: 'OR',
+      filters: CQLUtils.arrayFromMultilinestringWkt(wkt).map(
+        (line: number[][]) => getLinestringFilter(line, property, buffer)
+      ),
+    })
+  } else if (wkt.startsWith('POLYGON')) {
+    const poly = CQLUtils.arrayFromPolygonWkt(wkt)
+    return getPolygonFilter(poly, property, buffer)
+  } else if (wkt.startsWith('MULTIPOLYGON')) {
+    return new FilterBuilderClass({
+      type: 'OR',
+      filters: CQLUtils.arrayFromPolygonWkt(wkt).map((poly: number[][]) =>
+        getPolygonFilter(poly, property, buffer)
+      ),
+    })
+  } else if (wkt.startsWith('POINT')) {
+    const point = CQLUtils.arrayFromPointWkt(wkt)[0]
+    return getPointRadiusFilter(point, property, buffer)
+  } else if (wkt.startsWith('MULTIPOINT')) {
+    return new FilterBuilderClass({
+      type: 'OR',
+      filters: CQLUtils.arrayFromPointWkt(wkt).map((point: [number, number]) =>
+        getPointRadiusFilter(point, property, buffer)
+      ),
+    })
+  }
+  throw new Error('Unknown spatial type encountered')
+}
+
 function buildTree(postfix: Array<TokenType>): any {
   let value,
     property,
@@ -409,107 +507,18 @@ function buildTree(postfix: Array<TokenType>): any {
           // things without buffers, could be poly or line
           const valueToken = postfix.pop() as TokenType
           const propertyToken = postfix.pop() as TokenType
-          if (valueToken.text.startsWith('LINESTRING')) {
-            return new FilterClass({
-              type: 'GEOMETRY',
-              value: {
-                mode: 'line',
-                type: 'LINE',
-                line: arrayFromLinestringWkt(valueToken.text),
-              } as ValueTypes['location'],
-              property: propertyToken.text,
-            })
-          } else if (valueToken.text.startsWith('MULTIPOLYGON')) {
-            // assume our multipolygon is just a single polygon
-            return new FilterBuilderClass({
-              type: 'OR',
-              filters: CQLUtils.arrayFromPolygonWkt(valueToken.text).map(
-                (poly: any) => {
-                  return new FilterClass({
-                    type: 'GEOMETRY',
-                    value: {
-                      mode: 'poly',
-                      type: 'POLYGON',
-                      polygon: poly,
-                    } as ValueTypes['location'],
-                    property: propertyToken.text,
-                  })
-                }
-              ),
-            })
-          }
-          return new FilterClass({
-            type: 'GEOMETRY',
-            value: {
-              mode: 'poly',
-              type: 'POLYGON',
-              polygon: CQLUtils.arrayFromPolygonWkt(valueToken.text),
-            } as ValueTypes['location'],
-            property: propertyToken.text,
-          })
+          return getGeoFilters(valueToken.text, propertyToken.text, undefined)
         }
         case 'DWITHIN': {
           // things with buffers, could be poly, line or point
           const bufferToken = postfix.pop() as TokenType
           const valueToken = postfix.pop() as TokenType
           const propertyToken = postfix.pop() as TokenType
-          if (valueToken.text.startsWith('LINESTRING')) {
-            return new FilterClass({
-              type: 'GEOMETRY',
-              value: {
-                mode: 'line',
-                type: 'LINE',
-                lineWidth: bufferToken.text,
-                line: arrayFromLinestringWkt(valueToken.text),
-              } as ValueTypes['location'],
-              property: propertyToken.text,
-            })
-          } else if (valueToken.text.startsWith('POLYGON')) {
-            return new FilterClass({
-              type: 'GEOMETRY',
-              value: {
-                mode: 'poly',
-                type: 'POLYGON',
-                polygonBufferWidth: bufferToken.text,
-                polygon: CQLUtils.arrayFromPolygonWkt(valueToken.text),
-              } as ValueTypes['location'],
-              property: propertyToken.text,
-            })
-          } else if (valueToken.text.startsWith('MULTIPOLYGON')) {
-            // assume our multipolygon is just a single polygon
-            return new FilterBuilderClass({
-              type: 'OR',
-              filters: CQLUtils.arrayFromPolygonWkt(valueToken.text).map(
-                (poly: any) => {
-                  return new FilterClass({
-                    type: 'GEOMETRY',
-                    value: {
-                      mode: 'poly',
-                      type: 'POLYGON',
-                      polygon: poly,
-                    } as ValueTypes['location'],
-                    property: propertyToken.text,
-                  })
-                }
-              ),
-            })
-          }
-          return new FilterClass({
-            type: 'GEOMETRY',
-            value: {
-              mode: 'circle',
-              type: 'POINTRADIUS',
-              radius: bufferToken.text,
-              lat: Number(
-                valueToken.text
-                  .substring(6, valueToken.text.length - 1)
-                  .split(' ')[1]
-              ),
-              lon: Number(valueToken.text.substring(6).split(' ')[0]),
-            } as ValueTypes['location'],
-            property: propertyToken.text,
-          })
-          break
+          return getGeoFilters(
+            valueToken.text,
+            propertyToken.text,
+            bufferToken.text
+          )
         }
         default:
           throw new Error('Unknown spatial type encountered')
@@ -1015,4 +1024,5 @@ export default {
   translateCqlToUserql,
   translateUserqlToCql,
   ANYTEXT_WILDCARD,
+  getGeoFilters,
 }

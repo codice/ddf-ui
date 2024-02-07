@@ -159,8 +159,11 @@ function buildIntersectOrCQL(this: any, shapes: any) {
   return locationFilter
 }
 function arrayFromPartialWkt(partialWkt: any) {
-  // remove the leading and trailing parentheses
-  let result = partialWkt.replace(/^\(/, '').replace(/\)$/, '')
+  let result = partialWkt
+  if (partialWkt.startsWith('((')) {
+    // remove the leading and trailing parentheses
+    result = partialWkt.replace(/^\(/, '').replace(/\)$/, '')
+  }
   // change parentheses to array brackets
   result = result.replace(/\(/g, '[').replace(/\)/g, ']')
   // change each space-separated coordinate pair to a two-element array
@@ -348,6 +351,29 @@ function arrayFromPolygonWkt(wkt: any) {
   }
   return []
 }
+const arrayFromLinestringWkt = (wkt: string): Array<[number, number]> => {
+  const lines = wkt.match(/\([^()]+\)/g)
+  if (lines && lines.length > 0) {
+    return arrayFromPartialWkt(lines[0])
+  }
+  return []
+}
+const arrayFromMultilinestringWkt = (
+  wkt: string
+): Array<Array<[number, number]>> => {
+  const lines = wkt.match(/\([^()]+\)/g)
+  if (lines && lines.length > 0) {
+    return lines.map((line) => arrayFromPartialWkt(line))
+  }
+  return []
+}
+const arrayFromPointWkt = (wkt: string): Array<[number, number]> => {
+  const points = wkt.match(/\([^()]+\)/g)
+  if (points && points.length > 0) {
+    return arrayFromPartialWkt(points[0])
+  }
+  return []
+}
 export default {
   sanitizeGeometryCql,
   getProperty,
@@ -361,4 +387,7 @@ export default {
   isPointRadiusFilter,
   buildIntersectCQL,
   arrayFromPolygonWkt,
+  arrayFromLinestringWkt,
+  arrayFromMultilinestringWkt,
+  arrayFromPointWkt,
 }
