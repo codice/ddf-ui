@@ -32,6 +32,7 @@ import useCoordinateFormat from '../../tabs/metacard/useCoordinateFormat'
 import Common from '../../../js/Common'
 import Extensions from '../../../extension-points'
 import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
+import wreqr from '../../../js/wreqr'
 type ResultItemFullProps = {
   lazyResult: LazyQueryResult
   measure: () => void
@@ -85,7 +86,7 @@ const CheckboxCell = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
 }
 const RowComponent = ({
   lazyResult,
-  measure,
+  measure: originalMeasure,
   index,
   results,
   selectionInterface,
@@ -139,6 +140,14 @@ const RowComponent = ({
     )
   }, [])
   const imgsrc = Common.getImageSrc(thumbnail)
+  const measure = () => {
+    if (
+      containerRef.current?.clientHeight &&
+      containerRef.current?.clientHeight > 0
+    ) {
+      originalMeasure()
+    }
+  }
   React.useEffect(() => {
     measure()
   }, [shownAttributes, convertToFormat])
@@ -155,7 +164,9 @@ const RowComponent = ({
     }
     return value
   }
-
+  listenTo(wreqr.vent, 'activeContentItemChanged', () => {
+    measure()
+  })
   const containerRef = React.useRef<HTMLDivElement>(null)
   const ResultItemActionInstance = Extensions.resultItemAction({
     lazyResult,
