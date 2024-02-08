@@ -424,6 +424,9 @@ function handleGoldenLayoutStackCreated(stack: any) {
     try {
       const renderRoot = createRoot(stack.header.controlsContainer[0])
       renderRoot.render(<StackToolbar stack={stack} />)
+      stack.on('activeContentItemChanged', function (contentItem: any) {
+        wreqr.vent.trigger('activeContentItemChanged', contentItem)
+      })
       stack.on('destroy', () => {
         renderRoot.unmount()
       })
