@@ -49,6 +49,7 @@ import Common from '../../../js/Common'
 import ExtensionPoints from '../../../extension-points/extension-points'
 import { StartupDataStore } from '../../../js/model/Startup/startup'
 import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
+import wreqr from '../../../js/wreqr'
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (
     <div
@@ -385,7 +386,7 @@ const fakeEvent = {
 } as any
 export const ResultItem = ({
   lazyResult,
-  measure,
+  measure: originalMeasure,
   selectionInterface,
 }: ResultItemFullProps) => {
   const MetacardDefinitions = useMetacardDefinitions()
@@ -425,9 +426,24 @@ export const ResultItem = ({
       }
     )
   }, [])
+  /**
+   * Unfocused (hidden) tab sets the container height to 0
+   * Run the measure function when the height is 0 could cause items inside the tab to be unreadable
+   */
+  const measure = () => {
+    if (
+      buttonRef.current?.clientHeight &&
+      buttonRef.current?.clientHeight > 0
+    ) {
+      originalMeasure()
+    }
+  }
   React.useEffect(() => {
     measure()
   }, [shownAttributes, convertToFormat])
+  listenTo(wreqr.vent, 'activeContentItemChanged', () => {
+    measure()
+  })
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const imgsrc = Common.getImageSrc(thumbnail)
   const buttonRef = React.useRef<HTMLButtonElement>(null)
