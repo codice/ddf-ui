@@ -17,18 +17,18 @@ import { hot } from 'react-hot-loader'
 import ResultsExportComponent from './presentation'
 import {
   exportResultSet,
-  getColumnOrder,
+  OverridableGetColumnOrder,
   getExportOptions,
   Transformer,
   ExportFormat,
 } from '../utils/export'
 import { getResultSetCql } from '../utils/cql'
-import saveFile from '../utils/save-file'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
 import contentDisposition from 'content-disposition'
 import { StartupDataStore } from '../../js/model/Startup/startup'
+import { OverridableSaveFile } from '../utils/save-file/save-file'
 
 type Result = {
   id: string
@@ -129,7 +129,7 @@ class ResultsExport extends React.Component<Props, State> {
         count,
       },
     ]
-    const columnOrder = getColumnOrder()
+    const columnOrder = OverridableGetColumnOrder.get()()
     if (this.props.isZipped) {
       response = await exportResultSet('zipCompression', {
         searches,
@@ -161,8 +161,7 @@ class ResultsExport extends React.Component<Props, State> {
       ).parameters.filename
       const contentType = response.headers.get('content-type')
       const data = await response.blob()
-
-      saveFile(filename, 'data:' + contentType, data)
+      OverridableSaveFile.get()(filename, 'data:' + contentType, data)
     }
   }
   handleExportOptionChange(name: string) {

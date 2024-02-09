@@ -13,8 +13,9 @@
  *
  **/
 import $ from 'jquery'
+import { Overridable } from '../../../js/model/Base/base-classes'
 
-export default function saveFile(name: string, type: string, data: any) {
+export default async function saveFile(name: string, type: string, data: any) {
   if (data != null && (navigator as any).msSaveBlob)
     return (navigator as any).msSaveBlob(new Blob([data], { type: type }), name)
   let a = $("<a style='display: none;'/>")
@@ -39,3 +40,5 @@ export function getFilenameFromContentDisposition(contentDisposition: string) {
   }
   return parts[1]
 }
+
+export const OverridableSaveFile = new Overridable(saveFile)
