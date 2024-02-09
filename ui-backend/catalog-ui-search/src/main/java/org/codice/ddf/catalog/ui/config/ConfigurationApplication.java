@@ -136,8 +136,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   private Boolean spellcheckEnabled = false;
 
-  private Boolean notesQueryTypesEnabled = false;
-
   private Boolean phoneticsEnabled = false;
 
   private Boolean fuzzyResultsEnabled = true;
@@ -549,7 +547,6 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("isCustomTextNotationEnabled", customTextNotationEnabled);
     config.put("customTextNotationAttribute", customTextNotationAttribute);
     config.put("isSpellcheckEnabled", spellcheckEnabled);
-    config.put("isNotesQueryTypesEnabled", notesQueryTypesEnabled);
     config.put("isPhoneticsEnabled", phoneticsEnabled);
     config.put("isFuzzyResultsEnabled", fuzzyResultsEnabled);
     config.put(
@@ -1103,14 +1100,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setSpellcheckEnabled(Boolean spellcheckEnabled) {
     this.spellcheckEnabled = spellcheckEnabled;
-  }
-
-  public Boolean getNotesQueryTypesEnabled() {
-    return notesQueryTypesEnabled;
-  }
-
-  public void setNotesQueryTypesEnabled(Boolean notesQueryTypesEnabled) {
-    this.notesQueryTypesEnabled = notesQueryTypesEnabled;
   }
 
   public Boolean getPhoneticsEnabled() {

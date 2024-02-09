@@ -119,7 +119,6 @@ export interface UIConfigType {
   isCustomTextNotationEnabled: boolean
   isVersioningEnabled: boolean
   isSpellcheckEnabled: boolean
-  isNotesQueryTypesEnabled: boolean
   attributeSuggestionList: any[]
   summaryShow: string[]
   readOnly: string[]

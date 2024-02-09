@@ -121,7 +121,6 @@ const mockStartupPayload: StartupPayloadType = {
     bottomLeftBackgroundSrc: 'bottom-left-bg.png',
     gazetteer: true,
     isPhoneticsEnabled: true,
-    isNotesQueryTypesEnabled: true,
     helpUrl: 'https://help.example.com',
     customBranding: '#ff00ff',
     defaultTableColumns: ['id', 'name'],
