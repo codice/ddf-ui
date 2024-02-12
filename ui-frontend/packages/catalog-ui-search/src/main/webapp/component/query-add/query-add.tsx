@@ -33,7 +33,7 @@ type QueryAddReactType = {
   errorListener?: (validationResults: {
     [key: string]: ValidationResult | undefined
   }) => void
-  Extensions?: any
+  Extensions?: React.FunctionComponent
 }
 
 export const QueryAddReact = ({
