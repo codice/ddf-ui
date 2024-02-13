@@ -26,6 +26,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import ExtensionPoints from '../../extension-points/extension-points'
+import { postSimpleAuditLog } from '../../react-component/utils/audit/audit-endpoint'
 
 export const EnhancedRolesContext = React.createContext<{
   enhancedRoles: string[]
@@ -66,11 +67,17 @@ const RolesToggle = () => {
           <Switch
             color="primary"
             checked={actingRole === 'enhanced'}
-            onChange={(e) =>
+            onChange={(e) => {
               TypedUserInstance.setActingRole(
                 e.target.checked ? 'enhanced' : 'user'
               )
-            }
+              postSimpleAuditLog({
+                action: 'ROLE_CHANGE',
+                component: e.target.checked
+                  ? 'user enabled advanced_mode, roles: [' + enhancedRoles + ']'
+                  : 'user disabled advanced_mode',
+              })
+            }}
           />
         }
       />
