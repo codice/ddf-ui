@@ -177,6 +177,7 @@ const cqlMultipolygonStrings = {
                 [-5.041638, -1.100891],
                 [-0.580634, 10.295094],
               ],
+              polygonBufferWidth: '500',
               type: 'POLYGON',
             },
           },
@@ -218,6 +219,422 @@ const cqlMultipolygonStrings = {
                 [37.62219839763307, 22.095010254397405],
               ],
               type: 'POLYGON',
+            },
+          },
+        ],
+        negated: false,
+        type: 'OR',
+      },
+    },
+  ],
+}
+
+const cqlPointStrings = {
+  geometries: [
+    {
+      input: `(INTERSECTS("anyGeo", POINT(10 20)))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'circle',
+              lat: 20,
+              lon: 10,
+              type: 'POINTRADIUS',
+            },
+          },
+        ],
+        negated: false,
+        type: 'AND',
+      },
+    },
+    {
+      input: `(INTERSECTS("anyGeo", MULTIPOINT(10 20, 5 5)))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'circle',
+              lat: 20,
+              lon: 10,
+              type: 'POINTRADIUS',
+            },
+          },
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'circle',
+              lat: 5,
+              lon: 5,
+              type: 'POINTRADIUS',
+            },
+          },
+        ],
+        negated: false,
+        type: 'OR',
+      },
+    },
+    {
+      input: `(DWITHIN("anyGeo", POINT(10 20), 100, meters))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'circle',
+              lat: 20,
+              lon: 10,
+              radius: '100',
+              type: 'POINTRADIUS',
+            },
+          },
+        ],
+        negated: false,
+        type: 'AND',
+      },
+    },
+    {
+      input: `(DWITHIN("anyGeo", MULTIPOINT(10 20), 100, meters))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'circle',
+              lat: 20,
+              lon: 10,
+              radius: '100',
+              type: 'POINTRADIUS',
+            },
+          },
+        ],
+        negated: false,
+        type: 'OR',
+      },
+    },
+    {
+      input: `(DWITHIN("anyGeo", MULTIPOINT(10 20, 5 5), 100, meters))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'circle',
+              lat: 20,
+              lon: 10,
+              radius: '100',
+              type: 'POINTRADIUS',
+            },
+          },
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'circle',
+              lat: 5,
+              lon: 5,
+              radius: '100',
+              type: 'POINTRADIUS',
+            },
+          },
+        ],
+        negated: false,
+        type: 'OR',
+      },
+    },
+  ],
+}
+
+const cqlLinestrings = {
+  geometries: [
+    {
+      input: `(INTERSECTS("anyGeo", LINESTRING(10 20, 30 30, 40 20)))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'line',
+              type: 'LINE',
+              line: [
+                [10, 20],
+                [30, 30],
+                [40, 20],
+              ],
+            },
+          },
+        ],
+        negated: false,
+        type: 'AND',
+      },
+    },
+    {
+      input: `(INTERSECTS("anyGeo", MULTILINESTRING((10 10, 20 20, 10 40), (40 40, 30 30, 40 20, 30 10))))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'line',
+              type: 'LINE',
+              line: [
+                [10, 10],
+                [20, 20],
+                [10, 40],
+              ],
+            },
+          },
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'line',
+              type: 'LINE',
+              line: [
+                [40, 40],
+                [30, 30],
+                [40, 20],
+                [30, 10],
+              ],
+            },
+          },
+        ],
+        negated: false,
+        type: 'OR',
+      },
+    },
+    {
+      input: `(DWITHIN("anyGeo", LINESTRING(10 20, 30 30, 40 20), 1000, meters))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'line',
+              type: 'LINE',
+              lineWidth: '1000',
+              line: [
+                [10, 20],
+                [30, 30],
+                [40, 20],
+              ],
+            },
+          },
+        ],
+        negated: false,
+        type: 'AND',
+      },
+    },
+    {
+      input: `(DWITHIN("anyGeo", MULTILINESTRING((10 10, 20 20, 10 40)), 1000, meters))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'line',
+              type: 'LINE',
+              lineWidth: '1000',
+              line: [
+                [10, 10],
+                [20, 20],
+                [10, 40],
+              ],
+            },
+          },
+        ],
+        negated: false,
+        type: 'OR',
+      },
+    },
+    {
+      input: `(DWITHIN("anyGeo", MULTILINESTRING((10 10, 20 20, 10 40), (40 40, 30 30, 40 20, 30 10)), 1000, meters))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'line',
+              type: 'LINE',
+              lineWidth: '1000',
+              line: [
+                [10, 10],
+                [20, 20],
+                [10, 40],
+              ],
+            },
+          },
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'line',
+              type: 'LINE',
+              lineWidth: '1000',
+              line: [
+                [40, 40],
+                [30, 30],
+                [40, 20],
+                [30, 10],
+              ],
+            },
+          },
+        ],
+        negated: false,
+        type: 'OR',
+      },
+    },
+  ],
+}
+
+const cqlGeometryCollections = {
+  geometries: [
+    {
+      input: `(INTERSECTS("anyGeo", GEOMETRYCOLLECTION(POINT(10 20), LINESTRING(30 30, 40 20))))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'circle',
+              type: 'POINTRADIUS',
+              lat: 20,
+              lon: 10,
+            },
+          },
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'line',
+              type: 'LINE',
+              line: [
+                [30, 30],
+                [40, 20],
+              ],
+            },
+          },
+        ],
+        negated: false,
+        type: 'OR',
+      },
+    },
+    {
+      input: `(INTERSECTS("anyGeo", GEOMETRYCOLLECTION(GEOMETRYCOLLECTION(POINT(10 20)), LINESTRING(30 30, 40 20))))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'circle',
+              type: 'POINTRADIUS',
+              lat: 20,
+              lon: 10,
+            },
+          },
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'line',
+              type: 'LINE',
+              line: [
+                [30, 30],
+                [40, 20],
+              ],
+            },
+          },
+        ],
+        negated: false,
+        type: 'OR',
+      },
+    },
+    {
+      input: `(DWITHIN("anyGeo", GEOMETRYCOLLECTION(POINT(10 20)), 1000, meters))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'circle',
+              type: 'POINTRADIUS',
+              lat: 20,
+              lon: 10,
+              radius: '1000',
+            },
+          },
+        ],
+        negated: false,
+        type: 'OR',
+      },
+    },
+    {
+      input: `(DWITHIN("anyGeo", GEOMETRYCOLLECTION(GEOMETRYCOLLECTION(POLYGON((10 20, 15 18, 5 9, 10 20))), LINESTRING(30 30, 40 20)), 1000, meters))`,
+      output: {
+        filters: [
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'poly',
+              type: 'POLYGON',
+              polygonBufferWidth: '1000',
+              polygon: [
+                [10, 20],
+                [15, 18],
+                [5, 9],
+                [10, 20],
+              ],
+            },
+          },
+          {
+            negated: false,
+            property: 'anyGeo',
+            type: 'GEOMETRY',
+            value: {
+              mode: 'line',
+              type: 'LINE',
+              lineWidth: '1000',
+              line: [
+                [30, 30],
+                [40, 20],
+              ],
             },
           },
         ],
@@ -282,6 +699,18 @@ const cqlBooleanLogicStrings = {
 }
 
 describe('read & write parity for capabilities, as well as boolean logic', () => {
+  it('TEST GET GEO FILTERS', () => {
+    const wkt = 'GEOMETRYCOLLECTION(POINT(50 40), LINESTRING(10 20, 40 50))'
+    cql.getGeoFilters(wkt, 'anyGeo', '100')
+    expect('test-value', 'Adding bogus expectation.').to.equal('test-value')
+  })
+
+  it('TEST LINESTRING FILTERS', () => {
+    const wkt = 'LINESTRING(10 20, 40 50)'
+    cql.getGeoFilters(wkt, 'anyGeo', '100')
+    expect('test-value', 'Adding bogus expectation.').to.equal('test-value')
+  })
+
   describe('test all capabilities', () => {
     for (const type in cqlCapabilityStrings) {
       cqlCapabilityStrings[type as CapabilityCategoriesType].forEach(
@@ -695,6 +1124,7 @@ describe('read & write parity for capabilities, as well as boolean logic', () =>
       )
     })
   })
+
   describe('multipolygon cql string read test', () => {
     cqlMultipolygonStrings.geometries.forEach((capability) => {
       it(`${capability}`, () => {
@@ -706,6 +1136,63 @@ describe('read & write parity for capabilities, as well as boolean logic', () =>
             const { id, ...newFilter } = filter
             filtersArray.push(newFilter)
           }
+        })
+        const { id, ...expectedOutput } = filterBuilderClassOutput
+        expectedOutput.filters = filtersArray
+        expect(expectedOutput, 'Unexpected filter value.').to.deep.equal(
+          capability.output
+        )
+      })
+    })
+  })
+
+  describe('point and multipoint cql string read test', () => {
+    cqlPointStrings.geometries.forEach((capability) => {
+      it(`${capability}`, () => {
+        const filterBuilderClassOutput = cql.read(capability.input)
+        const filtersArray: any[] = []
+
+        filterBuilderClassOutput.filters.forEach((filter) => {
+          const { id, ...newFilter } = filter
+          filtersArray.push(newFilter)
+        })
+        const { id, ...expectedOutput } = filterBuilderClassOutput
+        expectedOutput.filters = filtersArray
+        expect(expectedOutput, 'Unexpected filter value.').to.deep.equal(
+          capability.output
+        )
+      })
+    })
+  })
+
+  describe('linestring and multilinestring cql string read test', () => {
+    cqlLinestrings.geometries.forEach((capability) => {
+      it(`${capability}`, () => {
+        const filterBuilderClassOutput = cql.read(capability.input)
+        const filtersArray: any[] = []
+
+        filterBuilderClassOutput.filters.forEach((filter) => {
+          const { id, ...newFilter } = filter
+          filtersArray.push(newFilter)
+        })
+        const { id, ...expectedOutput } = filterBuilderClassOutput
+        expectedOutput.filters = filtersArray
+        expect(expectedOutput, 'Unexpected filter value.').to.deep.equal(
+          capability.output
+        )
+      })
+    })
+  })
+
+  describe('geometry collection cql string read test', () => {
+    cqlGeometryCollections.geometries.forEach((capability) => {
+      it(`${capability}`, () => {
+        const filterBuilderClassOutput = cql.read(capability.input)
+        const filtersArray: any[] = []
+
+        filterBuilderClassOutput.filters.forEach((filter) => {
+          const { id, ...newFilter } = filter
+          filtersArray.push(newFilter)
         })
         const { id, ...expectedOutput } = filterBuilderClassOutput
         expectedOutput.filters = filtersArray

@@ -40,7 +40,7 @@ const mockMetacardDefinitionsObject = {
   getAttributeMap: () => mockMetacardDefinitions,
 } as any
 
-function assertPolygon(actual: any, expected: any) {
+function assertCoordinateArray(actual: any, expected: any) {
   expect(actual.length).equals(expected.length)
   actual.forEach((point: any, i: any) => {
     let expectedPoint = expected[i]
@@ -49,10 +49,10 @@ function assertPolygon(actual: any, expected: any) {
   })
 }
 
-function assertMultiPolygon(actual: any, expected: any) {
+function assertMultiCoordinateArray(actual: any, expected: any) {
   expect(actual.length).equals(expected.length)
-  actual.forEach((polygon: any, i: any) => {
-    assertPolygon(polygon, expected[i])
+  actual.forEach((shape: any, i: any) => {
+    assertCoordinateArray(shape, expected[i])
   })
 }
 
@@ -442,7 +442,7 @@ describe('CQL Utils', () => {
       const polygon = CQLUtils.arrayFromPolygonWkt(
         'POLYGON((3 50, 4 49, 4 50, 3 50))'
       )
-      assertPolygon(polygon, [
+      assertCoordinateArray(polygon, [
         [3.0, 50.0],
         [4.0, 49.0],
         [4.0, 50.0],
@@ -454,7 +454,7 @@ describe('CQL Utils', () => {
       const multipolygon = CQLUtils.arrayFromPolygonWkt(
         'MULTIPOLYGON(((3 50, 4 49, 4 50, 3 50)))'
       )
-      assertMultiPolygon(multipolygon, [
+      assertMultiCoordinateArray(multipolygon, [
         [
           [3.0, 50.0],
           [4.0, 49.0],
@@ -468,7 +468,7 @@ describe('CQL Utils', () => {
       const multipolygon = CQLUtils.arrayFromPolygonWkt(
         'MULTIPOLYGON(((3 50, 4 49, 4 50, 3 50)), ((8 55, 9 54, 9 55, 8 55)))'
       )
-      assertMultiPolygon(multipolygon, [
+      assertMultiCoordinateArray(multipolygon, [
         [
           [3.0, 50.0],
           [4.0, 49.0],
@@ -481,6 +481,74 @@ describe('CQL Utils', () => {
           [9.0, 55.0],
           [8.0, 55.0],
         ],
+      ])
+    })
+
+    it('correctly parses a LINESTRING into an array', () => {
+      const linestring = CQLUtils.arrayFromLinestringWkt(
+        'LINESTRING(3 50, 4 49, 4 50, 3 50)'
+      )
+      assertCoordinateArray(linestring, [
+        [3.0, 50.0],
+        [4.0, 49.0],
+        [4.0, 50.0],
+        [3.0, 50.0],
+      ])
+    })
+
+    it('correctly parses a MULTILINESTRING with one LINESTRING into an array', () => {
+      const multilinestring = CQLUtils.arrayFromMultilinestringWkt(
+        'MULTILINESTRING((3 50, 4 49, 4 50, 3 50))'
+      )
+      assertMultiCoordinateArray(multilinestring, [
+        [
+          [3.0, 50.0],
+          [4.0, 49.0],
+          [4.0, 50.0],
+          [3.0, 50.0],
+        ],
+      ])
+    })
+
+    it('correctly parses a MULTILINESTRING with multiple LINESTRINGs into an array', () => {
+      const multilinestring = CQLUtils.arrayFromMultilinestringWkt(
+        'MULTILINESTRING((3 50, 4 49, 4 50, 3 50), (8 55, 9 54, 9 55, 8 55))'
+      )
+      assertMultiCoordinateArray(multilinestring, [
+        [
+          [3.0, 50.0],
+          [4.0, 49.0],
+          [4.0, 50.0],
+          [3.0, 50.0],
+        ],
+        [
+          [8.0, 55.0],
+          [9.0, 54.0],
+          [9.0, 55.0],
+          [8.0, 55.0],
+        ],
+      ])
+    })
+
+    it('correctly parses a POINT into an array', () => {
+      const point = CQLUtils.arrayFromPointWkt('POINT(3 50)')
+      assertCoordinateArray(point, [[3.0, 50.0]])
+    })
+
+    it('correctly parses a MULTIPOINT with one POINT into an array', () => {
+      const multipoint = CQLUtils.arrayFromPointWkt('MULTIPOINT(3 50)')
+      assertCoordinateArray(multipoint, [[3.0, 50.0]])
+    })
+
+    it('correctly parses a MULTIPOINT with multiple POINTs into an array', () => {
+      const multipoint = CQLUtils.arrayFromPointWkt(
+        'MULTIPOINT(3 50, 4 49, 4 50, 3 50)'
+      )
+      assertCoordinateArray(multipoint, [
+        [3.0, 50.0],
+        [4.0, 49.0],
+        [4.0, 50.0],
+        [3.0, 50.0],
       ])
     })
   })
