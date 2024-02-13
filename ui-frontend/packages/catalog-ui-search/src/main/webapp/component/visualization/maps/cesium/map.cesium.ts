@@ -290,6 +290,8 @@ export default function CesiumMap(
       hiddenLabel.show = true
     }
   }
+
+  const minimumHeightAboveTerrain = 2
   const exposedMethods = _.extend({}, Map, {
     onLeftClick(callback: any) {
       $(map.scene.canvas).on('click', (e) => {
@@ -1155,10 +1157,38 @@ export default function CesiumMap(
       return map
     },
     zoomIn() {
-      map.scene.camera.zoomIn(map.scene.camera.defaultZoomAmount * 10)
+      const cameraPositionCartographic =
+        map.scene.globe.ellipsoid.cartesianToCartographic(
+          map.scene.camera.position
+        )
+
+      const terrainHeight = map.scene.globe.getHeight(
+        cameraPositionCartographic
+      )
+
+      const heightAboveGround =
+        cameraPositionCartographic.height - terrainHeight
+
+      const zoomAmount = heightAboveGround / 2 // basically double the current zoom
+
+      const maxZoomAmount = heightAboveGround - minimumHeightAboveTerrain
+
+      // if the zoom amount is greater than the max zoom amount, zoom to the max zoom amount
+      map.scene.camera.zoomIn(Math.min(maxZoomAmount, zoomAmount))
     },
     zoomOut() {
-      map.scene.camera.zoomOut(map.scene.camera.defaultZoomAmount * 10)
+      const cameraPositionCartographic =
+        map.scene.globe.ellipsoid.cartesianToCartographic(
+          map.scene.camera.position
+        )
+
+      const terrainHeight = map.scene.globe.getHeight(
+        cameraPositionCartographic
+      )
+
+      const heightAboveGround =
+        cameraPositionCartographic.height - terrainHeight
+      map.scene.camera.zoomOut(heightAboveGround)
     },
     destroy() {
       ;(wreqr as any).vent.off('map:requestRender', requestRenderHandler)
