@@ -31,3 +31,21 @@ export class Subscribable<T extends { thing: string; args?: any }> {
     this.subscriptionsToMe = {}
   }
 }
+
+export class Overridable<T> extends Subscribable<{
+  thing: 'override'
+  args: T
+}> {
+  private value: T
+  constructor(value: T) {
+    super()
+    this.value = value
+  }
+  override(newValue: T) {
+    this.value = newValue
+    this._notifySubscribers({ thing: 'override', args: newValue })
+  }
+  get() {
+    return this.value
+  }
+}

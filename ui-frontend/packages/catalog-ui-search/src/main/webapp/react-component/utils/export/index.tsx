@@ -20,6 +20,7 @@ export {
   ResultSet,
   ExportCountInfo,
   DownloadInfo,
+  OverridableGetColumnOrder,
   getColumnOrder,
   aliasMap,
   ExportFormat,

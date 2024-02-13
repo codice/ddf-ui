@@ -27,18 +27,18 @@ import { StartupDataStore } from '../../js/model/Startup/startup'
 import {
   getExportOptions,
   Transformer,
-  getColumnOrder,
+  OverridableGetColumnOrder,
   exportResultSet,
   ExportCountInfo,
   DownloadInfo,
   ExportFormat,
 } from '../../react-component/utils/export'
 import user from '../../component/singletons/user-instance'
-import saveFile from '../../react-component/utils/save-file'
 import { DEFAULT_USER_QUERY_OPTIONS } from '../../js/model/TypedQuery'
 
 import { getResultSetCql } from '../../react-component/utils/cql'
 import SummaryManageAttributes from '../../react-component/summary-manage-attributes/summary-manage-attributes'
+import { OverridableSaveFile } from '../../react-component/utils/save-file/save-file'
 
 export type Props = {
   selectionInterface: any
@@ -123,11 +123,11 @@ export const getWarning = (exportCountInfo: ExportCountInfo): string => {
   return warningMessage
 }
 
-export const getDownloadBody = (downloadInfo: DownloadInfo) => {
+export const getDownloadBody = async (downloadInfo: DownloadInfo) => {
   const { exportSize, customExportCount, selectionInterface } = downloadInfo
   const exportResultLimit = StartupDataStore.Configuration.getExportLimit()
   const hiddenFields = getHiddenFields()
-  const columnOrder = getColumnOrder()
+  const columnOrder = OverridableGetColumnOrder.get()()
   const srcs = getSrcs(selectionInterface)
   const sorts = getSorts(selectionInterface)
   const query = selectionInterface.getCurrentQuery()
@@ -181,7 +181,7 @@ const onDownloadClick = async (
 ) => {
   const exportFormat = encodeURIComponent(downloadInfo.exportFormat)
   try {
-    const body = getDownloadBody(downloadInfo)
+    const body = await getDownloadBody(downloadInfo)
     const response = await exportResultSet(exportFormat, body)
     if (response.status === 200) {
       const data = await response.blob()
@@ -189,7 +189,7 @@ const onDownloadClick = async (
       const filename = contentDisposition.parse(
         response.headers.get('content-disposition')
       ).parameters.filename
-      saveFile(filename, 'data:' + contentType, data)
+      OverridableSaveFile.get()(filename, 'data:' + contentType, data)
     } else {
       addSnack('Error: Could not export results.', {
         alertProps: { severity: 'error' },

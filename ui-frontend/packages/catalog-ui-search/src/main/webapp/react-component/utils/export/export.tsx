@@ -16,6 +16,7 @@ import fetch from '../fetch'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import { StartupDataStore } from '../../../js/model/Startup/startup'
 import { TypedUserInstance } from '../../../component/singletons/TypedUser'
+import { Overridable } from '../../../js/model/Base/base-classes'
 
 export enum Transformer {
   Metacard = 'metacard',
@@ -124,6 +125,8 @@ export const getExportOptions = async (type: Transformer) => {
 export const getColumnOrder = () => {
   return TypedUserInstance.getResultsAttributesSummaryShown()
 }
+
+export const OverridableGetColumnOrder = new Overridable(getColumnOrder)
 
 export const aliasMap = () => {
   return encodeURIComponent(
