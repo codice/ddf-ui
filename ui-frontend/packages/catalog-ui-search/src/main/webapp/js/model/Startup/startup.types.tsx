@@ -333,6 +333,7 @@ interface PreferencesType {
     }[]
     spellcheck: boolean
     phonetics: boolean
+    notesQueryType?: string
   }
 }
 

@@ -23,9 +23,10 @@ type Props = {
   errorListener?: (validationResults: {
     [key: string]: ValidationResult | undefined
   }) => void
+  Extensions?: any
 }
 
-export const QueryAdvanced = ({ model, errorListener }: Props) => {
+export const QueryAdvanced = ({ model, errorListener, Extensions }: Props) => {
   return (
     <div className="w-full h-full">
       <div
@@ -39,7 +40,7 @@ export const QueryAdvanced = ({ model, errorListener }: Props) => {
           <Swath className="w-full h-1" />
         </div>
         <div className="query-settings w-full">
-          <QuerySettings model={model} />
+          <QuerySettings model={model} Extensions={Extensions} />
         </div>
       </div>
     </div>

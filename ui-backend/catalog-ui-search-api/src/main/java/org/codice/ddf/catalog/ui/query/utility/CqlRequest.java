@@ -53,6 +53,10 @@ public interface CqlRequest {
 
   boolean getPhonetics();
 
+  void setNotesQueryType(String notesQueryType);
+
+  String getNotesQueryType();
+
   void setSrc(String src);
 
   void setSrcs(List<String> srcs);

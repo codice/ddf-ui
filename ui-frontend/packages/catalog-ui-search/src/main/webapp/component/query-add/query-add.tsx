@@ -33,9 +33,14 @@ type QueryAddReactType = {
   errorListener?: (validationResults: {
     [key: string]: ValidationResult | undefined
   }) => void
+  Extensions?: React.FunctionComponent
 }
 
-export const QueryAddReact = ({ model, errorListener }: QueryAddReactType) => {
+export const QueryAddReact = ({
+  model,
+  errorListener,
+  Extensions,
+}: QueryAddReactType) => {
   const [, setForceRender] = React.useState(Math.random())
   useListenTo(model, 'resetToDefaults change:type', () => {
     setForceRender(Math.random())
@@ -61,6 +66,7 @@ export const QueryAddReact = ({ model, errorListener }: QueryAddReactType) => {
                 model={model}
                 key={model.id}
                 errorListener={errorListener}
+                Extensions={Extensions}
               />
             )
           } else {
@@ -69,6 +75,7 @@ export const QueryAddReact = ({ model, errorListener }: QueryAddReactType) => {
                 model={model}
                 key={model.id}
                 errorListener={errorListener}
+                Extensions={Extensions}
               />
             )
           }

@@ -58,6 +58,8 @@ public class CqlRequestImpl implements CqlRequest {
 
   private boolean fromUI = false;
 
+  private String notesQueryType;
+
   @Override
   public String getCacheId() {
     return cacheId;
@@ -199,6 +201,16 @@ public class CqlRequestImpl implements CqlRequest {
   }
 
   @Override
+  public void setNotesQueryType(String notesQueryType) {
+    this.notesQueryType = notesQueryType;
+  }
+
+  @Override
+  public String getNotesQueryType() {
+    return notesQueryType;
+  }
+
+  @Override
   public QueryRequest createQueryRequest(String localSource, FilterBuilder filterBuilder)
       throws CqlParseException {
 
@@ -227,6 +239,7 @@ public class CqlRequestImpl implements CqlRequest {
 
     builder.setSpellcheck(spellcheck);
     builder.setPhonetics(phonetics);
+    builder.setNotesQueryType(notesQueryType);
 
     if (cacheId != null) {
       builder.setCacheId(cacheId);
