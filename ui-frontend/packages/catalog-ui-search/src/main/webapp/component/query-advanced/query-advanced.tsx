@@ -23,7 +23,7 @@ type Props = {
   errorListener?: (validationResults: {
     [key: string]: ValidationResult | undefined
   }) => void
-  Extensions?: any
+  Extensions?: React.FunctionComponent
 }
 
 export const QueryAdvanced = ({ model, errorListener, Extensions }: Props) => {

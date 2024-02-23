@@ -221,7 +221,7 @@ export default Backbone.AssociatedModel.extend({
         'detail-level': undefined,
         spellcheck: false,
         phonetics: false,
-        notesQueryType: 'includeNotesSearch',
+        additionalOptions: '{}',
       },
       queryRef: this,
     })
@@ -271,7 +271,7 @@ export default Backbone.AssociatedModel.extend({
     this._handleDeprecatedFederation(attributes)
     this.listenTo(
       this,
-      'change:cql change:filterTree change:sources change:sorts change:spellcheck change:phonetics change:count change:notesQueryType',
+      'change:cql change:filterTree change:sources change:sorts change:spellcheck change:phonetics change:count change:additionalOptions',
       () => {
         this.set('isOutdated', true)
       }
@@ -331,7 +331,6 @@ export default Backbone.AssociatedModel.extend({
       originalSorts: this.get('sorts'),
       queryRef: this,
     })
-    data.notesQueryType = this.get('notesQueryType')
     return _.pick(
       data,
       'sources',
@@ -343,7 +342,7 @@ export default Backbone.AssociatedModel.extend({
       'id',
       'spellcheck',
       'phonetics',
-      'notesQueryType'
+      'additionalOptions'
     )
   },
   isOutdated() {

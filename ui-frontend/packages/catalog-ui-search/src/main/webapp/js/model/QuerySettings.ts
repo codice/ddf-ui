@@ -29,7 +29,7 @@ export default Backbone.Model.extend({
       template: undefined,
       spellcheck: false,
       phonetics: false,
-      notesQueryType: 'includeNotesSearch',
+      additionalOptions: '{}',
     }
   },
   isTemplate(template: any) {
