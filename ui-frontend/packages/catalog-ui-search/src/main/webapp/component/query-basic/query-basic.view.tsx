@@ -507,7 +507,7 @@ const QueryBasic = ({ model, errorListener, Extensions }: QueryBasicProps) => {
                 }}
               />
             }
-            label={MetacardDefinitions.getAlias('Location')}
+            label={MetacardDefinitions.getAlias('location')}
           />
           {basicFilter.anyGeo[0] ? (
             <Grid
