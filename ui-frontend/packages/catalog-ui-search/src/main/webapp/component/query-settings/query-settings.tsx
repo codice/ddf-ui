@@ -27,7 +27,7 @@ import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 
 type Props = {
   model: QueryType
-  Extensions?: any
+  Extensions?: React.FunctionComponent<any>
 }
 
 /**

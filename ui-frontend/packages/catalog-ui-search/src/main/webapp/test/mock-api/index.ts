@@ -302,7 +302,7 @@ const mockStartupPayload: StartupPayloadType = {
         ],
         spellcheck: true,
         phonetics: false,
-        notesQueryType: 'includeNotesSearch',
+        additionalOptions: '{}',
       },
     },
     roles: ['user', 'admin'],

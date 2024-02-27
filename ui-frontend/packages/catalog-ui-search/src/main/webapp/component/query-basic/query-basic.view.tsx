@@ -284,7 +284,7 @@ type QueryBasicProps = {
   errorListener?: (validationResults: {
     [key: string]: ValidationResult | undefined
   }) => void
-  Extensions?: any
+  Extensions?: React.FunctionComponent
 }
 const constructFilterFromBasicFilter = ({
   basicFilter,
