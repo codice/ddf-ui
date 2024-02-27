@@ -33,6 +33,12 @@ export const LocationInputReact = ({
   )
 
   React.useEffect(() => {
+    if (value && value !== state.wkt && value !== 'INVALID') {
+      setState(new LocationNewModel({ wkt: value, mode: 'wkt' }).toJSON())
+    }
+  }, [value])
+
+  React.useEffect(() => {
     if (state.valid) {
       switch (state.mode) {
         case 'wkt':

@@ -324,7 +324,7 @@ export const Editor = ({
             </Grid>
           )
         })}
-        {isMultiValued && values.length > 0 && (
+        {isMultiValued && (
           <Button
             disabled={mode === Mode.Saving}
             variant="text"
@@ -363,21 +363,27 @@ export const Editor = ({
           color="primary"
           onClick={() => {
             setMode(Mode.Saving)
-            let transformedValues = values
+            let transformedValues
+            if (isMultiValued && values && values.length > 1) {
+              transformedValues = values.filter(
+                (val: any) => val != null && val !== ''
+              )
+            } else {
+              transformedValues = values
+            }
+
             try {
               switch (attrType) {
                 case 'BINARY':
-                  transformedValues = values.map(
+                  transformedValues = transformedValues.map(
                     (subval: any) => subval.split(',')[1]
                   )
                   break
                 case 'DATE':
-                  transformedValues = values.map((subval: any) =>
+                  transformedValues = transformedValues.map((subval: any) =>
                     moment(subval).toISOString()
                   )
                   break
-                default:
-                  transformedValues = values
               }
             } catch (err) {
               console.error(err)
