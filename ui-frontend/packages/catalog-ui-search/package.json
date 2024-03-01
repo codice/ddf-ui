@@ -132,7 +132,7 @@
     "react-window-components": "0.0.7",
     "re-resizable": "6.1.0",
     "rpc-websockets": "7.5.1",
-    "sanitize-html": "1.15.0",
+    "sanitize-html": "2.12.1",
     "scroll-into-view-if-needed": "^2.2.25",
     "sortablejs": "1.4.2",
     "styled-components": "5.3.10",
