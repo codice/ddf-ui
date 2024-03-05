@@ -207,7 +207,7 @@ export type TimelineItem = {
   selected: boolean
   data?: any
   attributes: {
-    [key: string]: Moment
+    [key: string]: Moment[]
   }
 }
 type Bucket = {
@@ -486,17 +486,19 @@ export const Timeline = (props: TimelineProps) => {
         if (date == null) {
           return
         }
-        const scaledDate = xScale(date)
-        for (let i = 0; i < buckets.length; i++) {
-          const b = buckets[i]
-          if (b.x1 < scaledDate && scaledDate < b.x2) {
-            b.items.push(d)
-            if (d.selected) {
-              b.selected = true
+        const scaledDates = date.map((d) => xScale(d))
+        scaledDates.forEach((scaledDate) => {
+          for (let i = 0; i < buckets.length; i++) {
+            const b = buckets[i]
+            if (b.x1 < scaledDate && scaledDate < b.x2) {
+              b.items.push(d)
+              if (d.selected) {
+                b.selected = true
+              }
+              break
             }
-            break
           }
-        }
+        })
       })
       const mostItemsInABucket = Math.max(...buckets.map((b) => b.items.length))
       const heightPerItem = (height - (heightOffset + 75)) / mostItemsInABucket
@@ -561,7 +563,9 @@ export const Timeline = (props: TimelineProps) => {
           bucketsContainingRelevantData,
           (b) => b.items
         ).filter((d) =>
-          dateWithinRange(d.attributes[selectedDateAttribute!], selectionRange)
+          d.attributes[selectedDateAttribute!].some((moment) =>
+            dateWithinRange(moment, selectionRange)
+          )
         )
         props.onSelect && props.onSelect(dataToSelect)
       }

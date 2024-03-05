@@ -59,7 +59,10 @@ const getDateAttributes = (results: any) => {
 }
 const renderTooltip = (timelineItems: TimelineItem[]) => {
   const itemsToExpand = 5
-  const results = timelineItems.slice(0, itemsToExpand).map((item) => {
+  const uniqueMetacards = timelineItems.filter(
+    (item, index) => timelineItems.indexOf(item) === index
+  )
+  const results = uniqueMetacards.slice(0, itemsToExpand).map((item) => {
     const data = item.data as LazyQueryResult
     const icon = IconHelper.getFullByMetacardObject(data.plain)
     const metacard = data.plain.metacard.properties
@@ -67,6 +70,7 @@ const renderTooltip = (timelineItems: TimelineItem[]) => {
       results: [data],
       isSingleItem: true,
     })
+    const valCount = timelineItems.filter((i) => i.id === item.id).length
     return (
       <React.Fragment key={metacard.id}>
         <span className={icon.class} />
@@ -77,7 +81,9 @@ const renderTooltip = (timelineItems: TimelineItem[]) => {
             &nbsp;
           </>
         )}
-        <span>{metacard.title || metacard.id}</span>
+        <span>{`${metacard.title || metacard.id}${
+          valCount > 1 ? ` (${valCount})` : ''
+        }`}</span>
         <br />
       </React.Fragment>
     )
@@ -153,12 +159,13 @@ const TimelineVisualization = (props: Props) => {
     const resultData: TimelineItem[] = Object.values(results).map((result) => {
       const metacard = result.plain.metacard.properties
       const resultDateAttributes: {
-        [key: string]: Moment
+        [key: string]: Moment[]
       } = {}
       possibleDateAttributes.forEach((dateAttribute: string) => {
-        resultDateAttributes[dateAttribute] = moment(
-          metacard[dateAttribute]
-        ) as Moment
+        const val = metacard[dateAttribute]
+        resultDateAttributes[dateAttribute] = Array.isArray(val)
+          ? val.map((v) => moment(v) as Moment)
+          : [moment(val) as Moment]
       })
       const id = metacard.id
       const resultDataPoint: TimelineItem = {
