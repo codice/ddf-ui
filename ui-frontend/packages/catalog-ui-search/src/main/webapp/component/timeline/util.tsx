@@ -20,16 +20,17 @@ const getDataPoint = (
     id: `Result ${(num + 1).toString()}`,
     selected: false,
     attributes: {
-      created: moment(new Date(createdYear + year, 0, 1))
-        .add(month, 'months')
-        .add(day, 'days'),
+      created: [
+        moment(new Date(createdYear + year, 0, 1))
+          .add(month, 'months')
+          .add(day, 'days'),
+      ],
 
-      modified: moment(new Date(modifiedYear + year, 0, 1)),
+      modified: [moment(new Date(modifiedYear + year, 0, 1))],
 
-      published_date: moment(new Date(publishedYear + year, 0, 1)).add(
-        day,
-        'days'
-      ),
+      published_date: [
+        moment(new Date(publishedYear + year, 0, 1)).add(day, 'days'),
+      ],
     },
   }
 }
