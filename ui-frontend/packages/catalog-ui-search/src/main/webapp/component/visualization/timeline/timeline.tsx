@@ -163,9 +163,11 @@ const TimelineVisualization = (props: Props) => {
       } = {}
       possibleDateAttributes.forEach((dateAttribute: string) => {
         const val = metacard[dateAttribute]
-        resultDateAttributes[dateAttribute] = Array.isArray(val)
-          ? val.map((v) => moment(v) as Moment)
-          : [moment(val) as Moment]
+        if (val) {
+          resultDateAttributes[dateAttribute] = Array.isArray(val)
+            ? val.map((v) => moment(v) as Moment)
+            : [moment(val) as Moment]
+        }
       })
       const id = metacard.id
       const resultDataPoint: TimelineItem = {
