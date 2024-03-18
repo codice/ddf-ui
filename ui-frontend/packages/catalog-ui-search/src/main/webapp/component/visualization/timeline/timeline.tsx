@@ -90,9 +90,9 @@ const renderTooltip = (timelineItems: TimelineItem[]) => {
   })
 
   let OtherItemsAddOn = null
-  if (timelineItems.length > itemsToExpand) {
+  if (uniqueMetacards.length > itemsToExpand) {
     OtherItemsAddOn = Extensions.timelineItemAddOn({
-      results: timelineItems
+      results: uniqueMetacards
         .slice(itemsToExpand)
         .map((item) => item.data as LazyQueryResult),
       isSingleItem: false,
@@ -102,7 +102,7 @@ const renderTooltip = (timelineItems: TimelineItem[]) => {
   const otherResults = (
     <React.Fragment>
       <br />
-      {`+${timelineItems.length - itemsToExpand} other results`}
+      {`+${uniqueMetacards.length - itemsToExpand} other results`}
       {OtherItemsAddOn && (
         <>
           &nbsp;
@@ -114,7 +114,7 @@ const renderTooltip = (timelineItems: TimelineItem[]) => {
   return (
     <React.Fragment>
       {results}
-      {timelineItems.length > itemsToExpand && otherResults}
+      {uniqueMetacards.length > itemsToExpand && otherResults}
     </React.Fragment>
   )
 }
