@@ -338,25 +338,38 @@ const getLocation = (model: Backbone.Model, translation?: Translation) => {
         'mapWest'
       )
       if (translation) {
-        bbox.mapNorth += translation.latitude
-        bbox.mapSouth += translation.latitude
-        bbox.mapEast += translation.longitude
-        bbox.mapWest += translation.longitude
+        const [east, north] = translateCoordinates(
+          [bbox.mapEast, bbox.mapNorth],
+          translation
+        )
+        const [west, south] = translateCoordinates(
+          [bbox.mapWest, bbox.mapSouth],
+          translation
+        )
+        bbox.mapNorth = north
+        bbox.mapEast = east
+        bbox.mapSouth = south
+        bbox.mapWest = west
       }
       return bbox
     case 'circle':
       const point = _.pick(model.attributes, 'lat', 'lon')
       if (translation) {
-        point.lat += translation.latitude
-        point.lon += translation.longitude
+        const [lon, lat] = translateCoordinates(
+          [point.lon, point.lat],
+          translation
+        )
+        point.lon = lon
+        point.lat = lat
       }
       return point
     case 'line':
       const line = JSON.parse(JSON.stringify(model.get('line')))
       if (translation) {
         for (const coord of line) {
-          coord[0] += translation.longitude
-          coord[1] += translation.latitude
+          const [lon, lat] = translateCoordinates(coord, translation)
+          coord[0] = lon
+          coord[1] = lat
         }
       }
       return { line }
@@ -366,8 +379,9 @@ const getLocation = (model: Backbone.Model, translation?: Translation) => {
         const multiPolygon = ShapeUtils.isArray3D(polygon) ? polygon : [polygon]
         for (const ring of multiPolygon) {
           for (const coord of ring) {
-            coord[0] += translation.longitude
-            coord[1] += translation.latitude
+            const [lon, lat] = translateCoordinates(coord, translation)
+            coord[0] = lon
+            coord[1] = lat
           }
         }
       }
@@ -375,6 +389,24 @@ const getLocation = (model: Backbone.Model, translation?: Translation) => {
     default:
       return {}
   }
+}
+
+const translateCoordinates = (
+  coord: Array<number>, // [lon, lat]
+  translation: Translation
+) => {
+  const newCoords = [...coord]
+  newCoords[0] += translation.longitude
+  newCoords[1] += translation.latitude
+
+  // normalize longitude
+  if (newCoords[0] > 180) {
+    newCoords[0] -= 360
+  }
+  if (newCoords[0] < -180) {
+    newCoords[0] += 360
+  }
+  return newCoords
 }
 
 const useMapListeners = ({
