@@ -112,7 +112,6 @@ import javax.ws.rs.NotFoundException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.ExecutionException;
 import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
 import org.codice.ddf.catalog.ui.enumeration.ExperimentalEnumerationExtractor;
 import org.codice.ddf.catalog.ui.metacard.associations.Associated;
@@ -200,8 +199,6 @@ public class MetacardApplication implements SparkApplication {
 
   private final AssociatedQueryMetacardsHandler queryMetacardsHandler;
 
-  private final Security security;
-
   private OperationPropertySupplier operationPropertySupplier;
 
   private SubjectOperations subjectOperations;
@@ -242,7 +239,6 @@ public class MetacardApplication implements SparkApplication {
     this.subjectIdentity = subjectIdentity;
     this.workspaceService = workspaceService;
     this.queryMetacardsHandler = queryMetacardsHandler;
-    this.security = security;
   }
 
   public void addOperationPropertySupplier(OperationPropertySupplier operationPropertySupplier) {
@@ -1086,21 +1082,11 @@ public class MetacardApplication implements SparkApplication {
         new DeleteRequestImpl(response.getResults().get(0).getMetacard().getId());
     deleteRequest.getProperties().put("operation.query-tags", ImmutableSet.of("*"));
     try {
-      executeAsSystem(() -> catalogFramework.delete(deleteRequest));
-    } catch (ExecutionException e) {
+      catalogFramework.delete(deleteRequest);
+    } catch (IngestException | SourceUnavailableException e) {
       LOGGER.debug("Could not delete the deleted metacard marker", e);
     }
     LOGGER.trace("Deleted delete marker metacard successfully");
-  }
-
-  /**
-   * Caution should be used with this, as it elevates the permissions to the System user.
-   *
-   * @param func What to execute as the System
-   * @param <T> Generic return type of func
-   */
-  private <T> void executeAsSystem(Callable<T> func) {
-    security.runAsAdmin(() -> security.getSystemSubject().execute(func));
   }
 
   private Instant getVersionedOnDate(Metacard mc) {
