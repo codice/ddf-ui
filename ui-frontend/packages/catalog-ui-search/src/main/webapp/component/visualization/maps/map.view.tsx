@@ -335,55 +335,39 @@ const getLocation = (model: Backbone.Model, translation?: Translation) => {
         'mapNorth',
         'mapSouth',
         'mapEast',
-        'mapWest'
+        'mapWest',
+        'north',
+        'south',
+        'east',
+        'west'
       )
       if (translation) {
-        const [east, north] = translateCoordinates(
-          [bbox.mapEast, bbox.mapNorth],
-          translation
-        )
-        const [west, south] = translateCoordinates(
-          [bbox.mapWest, bbox.mapSouth],
-          translation
-        )
-        bbox.mapNorth = north
-        bbox.mapEast = east
-        bbox.mapSouth = south
-        bbox.mapWest = west
+        const translatedBbox = translateBbox(bbox, translation)
+        return translatedBbox
       }
       return bbox
     case 'circle':
       const point = _.pick(model.attributes, 'lat', 'lon')
       if (translation) {
-        const [lon, lat] = translateCoordinates(
-          [point.lon, point.lat],
+        const translatedPoint = translatePoint(
+          point.lon,
+          point.lat,
           translation
         )
-        point.lon = lon
-        point.lat = lat
+        return translatedPoint
       }
       return point
     case 'line':
       const line = JSON.parse(JSON.stringify(model.get('line')))
       if (translation) {
-        for (const coord of line) {
-          const [lon, lat] = translateCoordinates(coord, translation)
-          coord[0] = lon
-          coord[1] = lat
-        }
+        translateLine(line, translation)
       }
       return { line }
     case 'poly':
       const polygon = JSON.parse(JSON.stringify(model.get('polygon')))
       if (translation) {
         const multiPolygon = ShapeUtils.isArray3D(polygon) ? polygon : [polygon]
-        for (const ring of multiPolygon) {
-          for (const coord of ring) {
-            const [lon, lat] = translateCoordinates(coord, translation)
-            coord[0] = lon
-            coord[1] = lat
-          }
-        }
+        translatePolygon(multiPolygon, translation)
       }
       return { polygon }
     default:
@@ -391,22 +375,161 @@ const getLocation = (model: Backbone.Model, translation?: Translation) => {
   }
 }
 
-const translateCoordinates = (
-  coord: Array<number>, // [lon, lat]
+type LonLat = [longitude: number, latitude: number]
+
+const translatePolygon = (polygon: LonLat[][], translation: Translation) => {
+  // odd things happen when latitude is exactly or very close to either 90 or -90
+  const northPole = 89.99
+  const southPole = -89.99
+  let maxLat = 0
+  let minLat = 0
+  let diff = 0
+
+  for (const ring of polygon) {
+    for (const coord of ring) {
+      const [lon, lat] = translateCoordinates(coord[0], coord[1], translation)
+      coord[0] = lon
+      coord[1] = lat
+      maxLat = Math.max(lat, maxLat)
+      minLat = Math.min(lat, minLat)
+    }
+  }
+
+  if (maxLat > northPole) {
+    diff = Math.abs(maxLat - northPole)
+  } else if (minLat < southPole) {
+    diff = -Math.abs(minLat - southPole)
+  }
+
+  if (diff !== 0) {
+    for (const ring of polygon) {
+      for (const coord of ring) {
+        coord[1] -= diff
+      }
+    }
+  }
+}
+
+const translateLine = (line: LonLat[], translation: Translation) => {
+  // odd things happen when latitude is exactly or very close to either 90 or -90
+  const northPole = 89.99
+  const southPole = -89.99
+  let maxLat = 0
+  let minLat = 0
+  let diff = 0
+  for (const coord of line) {
+    const [lon, lat] = translateCoordinates(coord[0], coord[1], translation)
+    maxLat = Math.max(lat, maxLat)
+    minLat = Math.min(lat, minLat)
+    coord[0] = lon
+    coord[1] = lat
+  }
+
+  // prevent polar crossing
+  if (maxLat > northPole) {
+    diff = Math.abs(maxLat - northPole)
+  } else if (minLat < southPole) {
+    diff = -Math.abs(minLat - southPole)
+  }
+
+  if (diff !== 0) {
+    for (const coord of line) {
+      coord[1] -= diff
+    }
+  }
+}
+
+type bboxCoords = {
+  mapNorth: number
+  mapSouth: number
+  mapEast: number
+  mapWest: number
+  north?: number
+  south?: number
+  east?: number
+  west?: number
+}
+
+const translateBbox = (
+  bbox: bboxCoords,
   translation: Translation
-) => {
-  const newCoords = [...coord]
-  newCoords[0] += translation.longitude
-  newCoords[1] += translation.latitude
+): bboxCoords => {
+  const translated = { ...bbox }
+  let [east, north] = translateCoordinates(
+    bbox.mapEast,
+    bbox.mapNorth,
+    translation
+  )
+  let [west, south] = translateCoordinates(
+    bbox.mapWest,
+    bbox.mapSouth,
+    translation
+  )
+
+  const northPole = 90
+  const southPole = -90
+
+  // prevent polar crossing
+  let diff
+  if (north > northPole) {
+    diff = Math.abs(north - northPole)
+    north = northPole
+    south = south - diff
+  }
+
+  if (south < southPole) {
+    diff = Math.abs(southPole - south)
+    south = southPole
+    north = north + diff
+  }
+
+  translated.mapNorth = north
+  translated.mapEast = east
+  translated.mapSouth = south
+  translated.mapWest = west
+
+  translated.north = north
+  translated.east = east
+  translated.south = south
+  translated.west = west
+
+  return translated
+}
+
+const translatePoint = (
+  lon: number,
+  lat: number,
+  translation: Translation
+): { lon: number; lat: number } => {
+  let [updatedLon, updatedLat] = translateCoordinates(lon, lat, translation)
+  const northPole = 89.99
+  const southPole = -89.99
+
+  if (updatedLat > northPole) {
+    updatedLat = northPole
+  } else if (updatedLat < southPole) {
+    updatedLat = southPole
+  }
+  return { lon: updatedLon, lat: updatedLat }
+}
+
+const translateCoordinates = (
+  longitude: number,
+  latitude: number,
+  translation: Translation
+): LonLat => {
+  let translatedLon = longitude + translation.longitude
+  let translatedLat = latitude + translation.latitude
 
   // normalize longitude
-  if (newCoords[0] > 180) {
-    newCoords[0] -= 360
+  if (translatedLon > 180) {
+    translatedLon -= 360
   }
-  if (newCoords[0] < -180) {
-    newCoords[0] += 360
+  if (translatedLon < -180) {
+    translatedLon += 360
   }
-  return newCoords
+
+  return [translatedLon, translatedLat]
 }
 
 const useMapListeners = ({
