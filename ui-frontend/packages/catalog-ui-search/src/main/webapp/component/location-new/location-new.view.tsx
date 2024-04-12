@@ -22,21 +22,26 @@ import LocationNewModel from './location-new'
 type LocationInputReactPropsType = {
   value: string
   onChange: (val: string) => void
+  isStateDirty?: boolean
+  resetIsStateDirty?: () => void
 }
 
 export const LocationInputReact = ({
   value,
   onChange,
+  isStateDirty = false,
+  resetIsStateDirty = () => {},
 }: LocationInputReactPropsType) => {
   const [state, setState] = React.useState<LocationInputPropsType>(
     new LocationNewModel({ wkt: value, mode: 'wkt' }).toJSON()
   )
 
   React.useEffect(() => {
-    if (value && value !== state.wkt && value !== 'INVALID') {
-      setState(new LocationNewModel({ wkt: value, mode: 'wkt' }).toJSON())
+    if (isStateDirty) {
+      setState(new LocationNewModel({ wkt: value, mode: state.mode }).toJSON())
+      resetIsStateDirty()
     }
-  }, [value])
+  }, [isStateDirty])
 
   React.useEffect(() => {
     if (state.valid) {

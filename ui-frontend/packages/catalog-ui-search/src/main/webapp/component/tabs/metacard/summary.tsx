@@ -168,6 +168,7 @@ export const Editor = ({
       ? lazyResult.plain.metacard.properties[attr].slice(0)
       : [lazyResult.plain.metacard.properties[attr]]
   )
+  const [dirtyIndex, setDirtyIndex] = React.useState(-1)
   const { getAlias, isMulti, getType, getEnum } = useMetacardDefinitions()
   const label = getAlias(attr)
   const isMultiValued = isMulti(attr)
@@ -287,6 +288,8 @@ export const Editor = ({
                             values[index] = location
                             setValues([...values])
                           }}
+                          isStateDirty={dirtyIndex === index}
+                          resetIsStateDirty={() => setDirtyIndex(-1)}
                           value={val}
                         />
                       )
@@ -314,6 +317,7 @@ export const Editor = ({
                     disabled={mode === Mode.Saving}
                     onClick={() => {
                       values.splice(index, 1)
+                      setDirtyIndex(index)
                       setValues([...values])
                     }}
                   >
@@ -382,6 +386,11 @@ export const Editor = ({
                 case 'DATE':
                   transformedValues = transformedValues.map((subval: any) =>
                     moment(subval).toISOString()
+                  )
+                  break
+                case 'GEOMETRY':
+                  transformedValues = values.filter(
+                    (val: any) => val != null && val !== ''
                   )
                   break
               }
