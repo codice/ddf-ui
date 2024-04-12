@@ -120,6 +120,7 @@ export type ExtensionPointsType = {
     results: LazyQueryResult[]
     isSingleItem: boolean
   }) => JSX.Element | null
+  extraSidebarButtons?: PermissiveComponentType
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -151,6 +152,7 @@ const ExtensionPoints: ExtensionPointsType = {
   attributeEditor: () => null,
   customHistogramHover: undefined,
   timelineItemAddOn: () => null,
+  extraSidebarButtons: () => null,
 }
 
 export default ExtensionPoints
