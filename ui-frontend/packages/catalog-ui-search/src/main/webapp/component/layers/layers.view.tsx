@@ -69,7 +69,7 @@ const LayersViewReact = () => {
   const containerElementRef = React.useRef<HTMLDivElement>(null)
   const saveCallback = React.useMemo(() => {
     return debounce(() => {
-      user.get('user>preferences').save()
+      user.get('user>preferences').savePreferences()
     }, 100)
   }, [])
   useListenTo(
@@ -97,7 +97,7 @@ const LayersViewReact = () => {
               }
             )
             user.get('user>preferences').get('mapLayers').sort()
-            // user.get('user>preferences').save()
+            user.get('user>preferences').savePreferences()
           }}
           focusModel={focusModel}
         />
@@ -119,7 +119,7 @@ const LayersViewReact = () => {
                 viewLayer.set(defaultConfig)
               })
             user.get('user>preferences').get('mapLayers').sort()
-            user.get('user>preferences').save()
+            user.get('user>preferences').savePreferences()
           }}
         >
           <span>Reset to Defaults</span>
