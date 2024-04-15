@@ -56,7 +56,7 @@ const getBaseFilter = () => {
 }
 
 const removeFilter = () => {
-  user.get('user').get('preferences').set('resultFilter', undefined)
+  user.get('user').get('preferences').set('resultFilter', '')
   user.get('user').get('preferences').savePreferences()
 }
 
