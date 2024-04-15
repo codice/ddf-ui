@@ -627,9 +627,11 @@ const SideBar = () => {
           <SideBarBackground />
           <Divider />
           <Grid item className="mt-auto overflow-hidden w-full shrink-0 grow-0">
+            {Extensions.extraSidebarButtons && (
+              <Extensions.extraSidebarButtons />
+            )}
             <HelpButton />
             <SettingsButton />
-
             <NotificationsButton />
             <UserButton />
           </Grid>
