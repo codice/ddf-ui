@@ -30,7 +30,6 @@ const PermanentSearchSort = ({ closeDropdown }: Props) => {
     user.get('user').get('preferences').set('resultSort', '')
     user.get('user').get('preferences').savePreferences()
     closeDropdown()
-  
   }
   const saveSort = () => {
     user
