@@ -27,9 +27,10 @@ const PermanentSearchSort = ({ closeDropdown }: Props) => {
     })
   }, [])
   const removeSort = () => {
-    user.get('user').get('preferences').set('resultSort', undefined)
+    user.get('user').get('preferences').set('resultSort', '')
     user.get('user').get('preferences').savePreferences()
     closeDropdown()
+  
   }
   const saveSort = () => {
     user
