@@ -22,6 +22,7 @@ import { NumberRangeField } from '../../../component/fields/number-range'
 import { DateRangeField } from '../../../component/fields/date-range'
 import { DateRelativeField } from '../../../component/fields/date-relative'
 import {
+  BasicDatatypeFilter,
   FilterClass,
   ValueTypes,
 } from '../../../component/filter-builder/filter.structure'
@@ -35,6 +36,8 @@ import { EnterKeySubmitProps } from '../../../component/custom-events/enter-key-
 import { EnumInput } from './enum-input'
 import { ValidationResult } from '../../location/validators'
 import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
+import { ReservedBasicDatatype } from '../../../component/reserved-basic-datatype/reserved.basic-datatype'
+import { BasicDataTypePropertyName } from '../../../component/filter-builder/reserved.properties'
 export type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
@@ -55,6 +58,16 @@ const FilterInput = ({ filter, setFilter, errorListener }: Props) => {
       })
     )
   }
+
+  if (filter.property === BasicDataTypePropertyName) {
+    return (
+      <ReservedBasicDatatype
+        onChange={onChange}
+        value={value as BasicDatatypeFilter['value']}
+      />
+    )
+  }
+
   switch (filter.type) {
     case 'IS NULL':
       return null

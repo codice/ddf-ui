@@ -794,7 +794,6 @@ describe('calculation of next index', () => {
   ]
   it('passes snapshot test cases', (done) => {
     Examples.forEach((example) => {
-      console.log(example)
       expect(
         JSON.stringify(
           calculateNextIndexForSourceGroupNextPage({
@@ -1417,7 +1416,6 @@ describe('calculation of max index', () => {
 
   it('passes snapshot test cases', (done) => {
     Examples.forEach((example) => {
-      console.log(example)
       expect(
         JSON.stringify(
           getMaxIndexForSourceGroup({

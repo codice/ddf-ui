@@ -149,15 +149,6 @@ export default {
     const i = _deriveIconByMetacardObject(metacard)
     return _get(i, 'class', _default.class)
   },
-  getUnicode() {
-    return _get(_map, 'style.code', _default.style.code)
-  },
-  getFont() {
-    return _get(_map, 'style.font', _default.style.font)
-  },
-  getSize() {
-    return _get(_map, 'style.size', _default.style.size)
-  },
   getFullByMetacardObject(metacard: LazyQueryResult['plain']) {
     const i = _deriveIconByMetacardObject(metacard)
     return i !== undefined ? i : _default

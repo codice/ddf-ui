@@ -15,8 +15,11 @@
 import moment from 'moment-timezone'
 import { ValuesType } from 'utility-types'
 import CQLUtils from '../../js/CQLUtils'
+import { Omit } from '../../typescript'
+
 import { SpreadOperatorProtectedClass } from '../../typescript/classes'
 import ExtensionPoints from '../../extension-points'
+import { BasicDataTypePropertyName } from './reserved.properties'
 
 export const deserialize = {
   /**
@@ -164,6 +167,11 @@ export class FilterBuilderClass extends BaseFilterBuilderClass {
   }
 }
 
+/**
+ *  We want to support more complex negation than allowed by the normal filter tree, so we store negated in a property.
+ *  However, since the write function in cql.tsx doesn't know about this, at some point we need to convert it back to this class where negation exists as a type instead of property.
+ *  See the uncollapseNots function in cql.tsx for where this is done.
+ */
 export class CQLStandardFilterBuilderClass extends BaseFilterBuilderClass {
   declare readonly type: 'AND' | 'OR' | 'NOT'
   declare readonly filters: Array<
@@ -224,6 +232,7 @@ export type ValueTypes = {
     start: number
     end: number
   }
+  multivalue: string[]
   booleanText: BooleanTextType
   location: // this is all we technically need to reconstruct (lo fidelity)
   LineLocation | PolygonLocation | PointRadiusLocation
@@ -324,4 +333,64 @@ export const isFilterBuilderClass = (
     | Partial<CQLStandardFilterBuilderClass>
 ): filter is FilterBuilderClass => {
   return filter.constructor === FilterBuilderClass
+}
+
+/**
+ *determine it is actually an instantiation of the cql standard filter builder class
+ */
+export const isCQLStandardFilterBuilderClass = (
+  filter:
+    | FilterBuilderClass
+    | FilterClass
+    | CQLStandardFilterBuilderClass
+    | Partial<FilterBuilderClass>
+    | Partial<FilterClass>
+    | Partial<CQLStandardFilterBuilderClass>
+): filter is CQLStandardFilterBuilderClass => {
+  return filter.constructor === CQLStandardFilterBuilderClass
+}
+
+export interface BasicFilterClass extends Omit<FilterClass, 'property'> {
+  property: string[]
+}
+
+interface BasicDatatypeClass extends Omit<FilterClass, 'property' | 'value'> {
+  property: typeof BasicDataTypePropertyName
+  value: string[]
+}
+
+export class BasicDatatypeFilter
+  extends FilterClass
+  implements BasicDatatypeClass
+{
+  property: typeof BasicDataTypePropertyName
+  value: string[]
+
+  constructor({
+    value = [],
+  }: {
+    value?: string[]
+  } = {}) {
+    super({
+      property: BasicDataTypePropertyName,
+      value,
+    })
+    this.value = value
+  }
+}
+
+export const isBasicDatatypeClass = (
+  filter:
+    | FilterBuilderClass
+    | FilterClass
+    | CQLStandardFilterBuilderClass
+    | Partial<FilterBuilderClass>
+    | Partial<FilterClass>
+    | Partial<CQLStandardFilterBuilderClass>
+): filter is BasicDatatypeClass => {
+  try {
+    return (filter as any)?.property === BasicDataTypePropertyName
+  } catch (err) {
+    return false
+  }
 }

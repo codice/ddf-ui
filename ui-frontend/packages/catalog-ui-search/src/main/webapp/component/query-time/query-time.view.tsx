@@ -17,8 +17,6 @@ import * as React from 'react'
 import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
 import { hot } from 'react-hot-loader'
-import { FilterClass } from '../filter-builder/filter.structure'
-import { Omit } from '../../typescript'
 import Autocomplete from '@mui/material/Autocomplete'
 import Chip from '@mui/material/Chip'
 import Grid from '@mui/material/Grid'
@@ -27,9 +25,7 @@ import FilterInput from '../../react-component/filter/filter-input'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import { StartupDataStore } from '../../js/model/Startup/startup'
-export interface BasicFilterClass extends Omit<FilterClass, 'property'> {
-  property: string[]
-}
+import { BasicFilterClass } from '../filter-builder/filter.structure'
 
 type QueryTimeProps = {
   value: undefined | BasicFilterClass

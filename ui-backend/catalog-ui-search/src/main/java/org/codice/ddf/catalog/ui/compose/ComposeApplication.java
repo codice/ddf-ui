@@ -174,6 +174,13 @@ public class ComposeApplication implements SparkApplication {
     anyDate.put("multivalued", false);
     anyDate.put("hidden", true);
 
+    Map<String, Object> reservedBasicDatatype = new HashMap<>();
+    reservedBasicDatatype.put("id", "reserved.basic-datatype");
+    reservedBasicDatatype.put("type", "STRING");
+    reservedBasicDatatype.put("multivalued", false);
+    reservedBasicDatatype.put("hidden", true);
+    reservedBasicDatatype.put("alias", "Types");
+
     Map<String, Object> metacardType = new HashMap<>();
     metacardType.put("id", "metacard-type");
     metacardType.put("type", "STRING");
@@ -199,6 +206,7 @@ public class ComposeApplication implements SparkApplication {
     attributeMap.put("anyText", anyText);
     attributeMap.put("anyGeo", anyGeo);
     attributeMap.put("anyDate", anyDate);
+    attributeMap.put("reserved.basic-datatype", reservedBasicDatatype);
     attributeMap.put("metacard-type", metacardType);
     attributeMap.put("source-id", sourceId);
     attributeMap.put("cached", cached);

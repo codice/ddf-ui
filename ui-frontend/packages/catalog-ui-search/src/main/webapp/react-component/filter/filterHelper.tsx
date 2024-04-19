@@ -12,6 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import { BasicDataTypePropertyName } from '../../component/filter-builder/reserved.properties'
 import { StartupDataStore } from '../../js/model/Startup/startup'
 import {
   AttributeDefinitionType,
@@ -61,10 +62,16 @@ export const getGroupedFilteredAttributes = (): {
   const groupedFilteredAttributes = validCommonAttributes.concat(
     getFilteredAttributeList('All Attributes')
   )
+  const reservedDatatypeAttr = groupedFilteredAttributes.find((thing) => {
+    return thing.value === BasicDataTypePropertyName
+  })
+  if (reservedDatatypeAttr) {
+    reservedDatatypeAttr.group = 'Special Attributes'
+  }
   const groups =
     validCommonAttributes.length > 0
-      ? ['Commonly Used Attributes', 'All Attributes']
-      : []
+      ? ['Commonly Used Attributes', 'Special Attributes', 'All Attributes']
+      : ['Special Attributes', 'All Attributes']
   return {
     groups,
     attributes: groupedFilteredAttributes,

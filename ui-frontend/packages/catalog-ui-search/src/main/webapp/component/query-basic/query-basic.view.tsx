@@ -15,15 +15,16 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import _ from 'underscore'
-import IconHelper from '../../js/IconHelper'
 import cql from '../../js/cql'
 import CQLUtils from '../../js/CQLUtils'
 import QuerySettings from '../query-settings/query-settings'
-import QueryTimeReactView, {
+import QueryTimeReactView from '../query-time/query-time.view'
+import {
+  BasicDatatypeFilter,
   BasicFilterClass,
-} from '../query-time/query-time.view'
-const METADATA_CONTENT_TYPE = 'metadata-content-type'
-import TextField from '@mui/material/TextField'
+  isBasicDatatypeClass,
+  isFilterBuilderClass,
+} from '../filter-builder/filter.structure'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Checkbox from '@mui/material/Checkbox'
 import {
@@ -36,13 +37,12 @@ import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import FilterInput from '../../react-component/filter/filter-input'
 import Swath from '../swath/swath'
 import Grid from '@mui/material/Grid'
-import Chip from '@mui/material/Chip'
-import Autocomplete from '@mui/material/Autocomplete'
 import BooleanSearchBar from '../boolean-search-bar/boolean-search-bar'
 import { ValidationResult } from '../../react-component/location/validators'
 import { StartupDataStore } from '../../js/model/Startup/startup'
 import { useMetacardDefinitions } from '../../js/model/Startup/metacard-definitions.hooks'
-import { DatatypeQueryMap } from '../../js/model/Startup/startup.types'
+import { ReservedBasicDatatype } from '../reserved-basic-datatype/reserved.basic-datatype'
+import { BasicDataTypePropertyName } from '../filter-builder/reserved.properties'
 function isNested(filter: any) {
   let nested = false
   filter.filters.forEach((subfilter: any) => {
@@ -50,73 +50,7 @@ function isNested(filter: any) {
   })
   return nested
 }
-function getMatchTypeAttribute() {
-  return StartupDataStore.MetacardDefinitions.getAttributeMap()[
-    StartupDataStore.Configuration.getBasicSearchMatchType()
-  ]
-    ? StartupDataStore.Configuration.getBasicSearchMatchType()
-    : 'datatype'
-}
-function getAllValidValuesForMatchTypeAttribute(): {
-  [key: string]: {
-    label: string
-    value: string
-    class: string
-  }
-} {
-  const matchTypeAttr = getMatchTypeAttribute()
-  return StartupDataStore.MetacardDefinitions.getEnum(matchTypeAttr).length > 0
-    ? StartupDataStore.MetacardDefinitions.getEnum(matchTypeAttr).reduce(
-        (blob, value: any) => {
-          blob[value] = {
-            label: value,
-            value,
-            class: 'icon ' + IconHelper.getClassByName(value),
-          }
-          return blob
-        },
-        {} as {
-          [key: string]: {
-            label: string
-            value: string
-            class: string
-          }
-        }
-      )
-    : {}
-}
-const determinePropertiesToApplyTo = ({
-  value,
-}: {
-  value: PropertyValueMapType['anyType']['properties']
-}): Array<{
-  label: string
-  value: string
-}> => {
-  return value.map((property) => {
-    return {
-      label: StartupDataStore.MetacardDefinitions.getAlias(property),
-      value: property,
-    }
-  })
-}
-function isTypeLimiter(filter: any) {
-  const typesFound = _.uniq(filter.filters.map(CQLUtils.getProperty))
-  const metadataContentTypeSupported = Boolean(
-    StartupDataStore.MetacardDefinitions.getAttributeMap()[
-      METADATA_CONTENT_TYPE
-    ]
-  )
-  if (metadataContentTypeSupported) {
-    return (
-      typesFound.length >= 2 &&
-      typesFound.includes(METADATA_CONTENT_TYPE) &&
-      typesFound.includes(getMatchTypeAttribute())
-    )
-  } else {
-    return typesFound.length === 1 && typesFound[0] === getMatchTypeAttribute()
-  }
-}
+
 // strip extra quotes
 const stripQuotes = (property = 'anyText') => {
   return property?.replace(/^"(.+(?="$))"$/, '$1')
@@ -179,10 +113,11 @@ type PropertyValueMapType = {
   anyText: Array<FilterClass>
   anyDate: Array<BasicFilterClass>
   anyGeo: Array<FilterClass>
-  anyType: {
+  [BasicDataTypePropertyName]: {
     on: boolean
-    properties: string[]
+    value: BasicDatatypeFilter
   }
+
   [key: string]: any
 }
 export function downgradeFilterTreeToBasic(
@@ -192,50 +127,46 @@ export function downgradeFilterTreeToBasic(
     basicFilter: translateFilterToBasicMap(filter).propertyValueMap,
   })
 }
-function translateFilterToBasicMap(filter: FilterBuilderClass) {
+export function translateFilterToBasicMap(filter: FilterBuilderClass) {
   const propertyValueMap = {
     anyDate: [],
     anyText: [],
     anyGeo: [],
-    anyType: {
+    [BasicDataTypePropertyName]: {
       on: false,
-      properties: [],
+      value: new BasicDatatypeFilter({
+        value: [],
+      }),
     },
   } as PropertyValueMapType
   let downConversion = false
   if (!filter.filters && isAnyDate(filter)) {
     handleAnyDateFilter(propertyValueMap, filter)
   }
-  if (filter.filters) {
-    filter.filters.forEach((filter: any) => {
-      if (!filter.filters && isAnyDate(filter)) {
-        handleAnyDateFilter(propertyValueMap, filter)
-      } else if (!filter.filters) {
-        propertyValueMap[CQLUtils.getProperty(filter)] =
-          propertyValueMap[CQLUtils.getProperty(filter)] || []
-        if (
-          propertyValueMap[CQLUtils.getProperty(filter)].filter(
-            (existingFilter: any) => existingFilter.type === filter.type
-          ).length === 0
-        ) {
-          propertyValueMap[CQLUtils.getProperty(filter)].push(filter)
+  if (isFilterBuilderClass(filter)) {
+    filter.filters.forEach((subfilter) => {
+      if (!isFilterBuilderClass(subfilter) && isAnyDate(subfilter)) {
+        handleAnyDateFilter(propertyValueMap, subfilter)
+      } else if (
+        !isFilterBuilderClass(subfilter) &&
+        isBasicDatatypeClass(subfilter)
+      ) {
+        propertyValueMap[BasicDataTypePropertyName].on = true
+        propertyValueMap[BasicDataTypePropertyName].value = subfilter
+      } else if (!isFilterBuilderClass(subfilter)) {
+        if (['anyDate', 'anyText', 'anyGeo'].includes(subfilter.property)) {
+          propertyValueMap[CQLUtils.getProperty(subfilter)] =
+            propertyValueMap[CQLUtils.getProperty(subfilter)] || []
+          if (
+            propertyValueMap[CQLUtils.getProperty(subfilter)].filter(
+              (existingFilter: any) => existingFilter.type === subfilter.type
+            ).length === 0
+          ) {
+            propertyValueMap[CQLUtils.getProperty(subfilter)].push(subfilter)
+          }
         }
-      } else if (!isNested(filter) && isAnyDate(filter)) {
-        handleAnyDateFilter(propertyValueMap, filter)
-      } else if (!isNested(filter) && isTypeLimiter(filter)) {
-        propertyValueMap[CQLUtils.getProperty(filter.filters[0])] =
-          propertyValueMap[CQLUtils.getProperty(filter.filters[0])] || []
-        filter.filters
-          .filter(
-            (subfilter: FilterClass) =>
-              CQLUtils.getProperty(subfilter) ===
-              CQLUtils.getProperty(filter.filters[0])
-          )
-          .forEach((subfilter: FilterClass) => {
-            propertyValueMap[CQLUtils.getProperty(filter.filters[0])].push(
-              subfilter
-            )
-          })
+      } else if (!isNested(subfilter) && isAnyDate(subfilter)) {
+        handleAnyDateFilter(propertyValueMap, subfilter)
       } else {
         downConversion = true
       }
@@ -254,17 +185,7 @@ function translateFilterToBasicMap(filter: FilterBuilderClass) {
       })
     )
   }
-  // if datatype exists, this maps to "anyType" (we expand to multiple attributes going out, but can look at just datatype when coming in)
-  if (propertyValueMap.datatype) {
-    const validTypes = StartupDataStore.MetacardDefinitions.getEnum(
-      getMatchTypeAttribute()
-    )
-    propertyValueMap.anyType.on = true
-    propertyValueMap.anyType.properties = propertyValueMap.datatype
-      .map((filter: FilterClass) => filter.value)
-      .filter((val: string) => val !== '*') // allows us to depend on directly on filterTree with minimal weirdness, see constructFilterFromBasicFilter method for why this is necessary
-      .filter((val: string) => validTypes.includes(val)) // filter out any datatypes that aren't in the options list. These can be added here from datatypeQueryMapping custom configuration
-  }
+
   return {
     propertyValueMap,
     downConversion,
@@ -286,7 +207,7 @@ type QueryBasicProps = {
   }) => void
   Extensions?: React.FunctionComponent
 }
-const constructFilterFromBasicFilter = ({
+export const constructFilterFromBasicFilter = ({
   basicFilter,
 }: {
   basicFilter: PropertyValueMapType
@@ -319,59 +240,17 @@ const constructFilterFromBasicFilter = ({
   if (basicFilter.anyGeo[0] !== undefined) {
     filters.push(basicFilter.anyGeo[0])
   }
-  if (basicFilter.anyType.on && basicFilter.anyType.properties.length > 0) {
-    let typeFilters = basicFilter.anyType.properties
-      .map((property) => {
-        return new FilterClass({
-          property: 'datatype',
-          value: property,
-          type: 'ILIKE',
-        })
-      })
-      .concat(
-        basicFilter.anyType.properties.map((property) => {
-          return new FilterClass({
-            property: 'metadata-content-type',
-            value: property,
-            type: 'ILIKE',
-          })
-        })
-      )
-    const datatypeQueryMapping = StartupDataStore.Configuration.getExtra()
-      ?.datatypeQueryMapping as DatatypeQueryMap[]
-    const datatypes = datatypeQueryMapping?.filter((m) =>
-      basicFilter.anyType.properties.includes(m.datatype)
-    )
-    // In addition to the default datatype filter logic, add the custom datatype Query mapping from the configuration
-    if (datatypes?.length > 0) {
-      typeFilters = typeFilters.concat(
-        datatypes.flatMap((datatype) => {
-          return datatype.attributes.flatMap((attribute) => {
-            return attribute.values.flatMap((value) => {
-              return new FilterClass({
-                property: attribute.name,
-                value: value,
-                type: 'ILIKE',
-              })
-            })
-          })
-        })
-      )
-    }
-    filters.push(
-      new FilterBuilderClass({
-        type: 'OR',
-        filters: typeFilters,
-      })
-    )
-  } else if (basicFilter.anyType.on) {
+  if (
+    basicFilter[BasicDataTypePropertyName].on &&
+    basicFilter[BasicDataTypePropertyName].value.value.length > 0
+  ) {
+    filters.push(basicFilter[BasicDataTypePropertyName].value)
+  } else if (basicFilter[BasicDataTypePropertyName].on) {
     // a bit of an unfortunate hack so we can depend directly on filterTree (this will only happen if properties is blank!)
     // see the anyDate part of translateFilterToBasicMap for more details
     filters.push(
-      new FilterClass({
-        property: 'datatype',
-        value: '*',
-        type: 'ILIKE',
+      new BasicDatatypeFilter({
+        value: [],
       })
     )
   }
@@ -403,13 +282,12 @@ const useBasicFilterFromModel = ({ model }: QueryBasicProps) => {
   }, [model])
   return basicFilter
 }
+
 const QueryBasic = ({ model, errorListener, Extensions }: QueryBasicProps) => {
   const MetacardDefinitions = useMetacardDefinitions()
   const inputRef = React.useRef<HTMLDivElement>()
   const basicFilter = useBasicFilterFromModel({ model })
-  const [typeAttributes] = React.useState(
-    getAllValidValuesForMatchTypeAttribute()
-  )
+
   /**
    * Because of how things render, auto focusing to the input is more complicated than I wish.
    * This ensures it works every time, whereas autoFocus prop is unreliable
@@ -547,9 +425,9 @@ const QueryBasic = ({ model, errorListener, Extensions }: QueryBasicProps) => {
             control={
               <Checkbox
                 color="default"
-                checked={basicFilter.anyType.on}
+                checked={basicFilter[BasicDataTypePropertyName].on}
                 onChange={(e) => {
-                  basicFilter.anyType.on = e.target.checked
+                  basicFilter[BasicDataTypePropertyName].on = e.target.checked
                   model.set(
                     'filterTree',
                     constructFilterFromBasicFilter({ basicFilter })
@@ -557,9 +435,9 @@ const QueryBasic = ({ model, errorListener, Extensions }: QueryBasicProps) => {
                 }}
               />
             }
-            label="Types"
+            label={MetacardDefinitions.getAlias(BasicDataTypePropertyName)}
           />
-          {basicFilter.anyType.on ? (
+          {basicFilter[BasicDataTypePropertyName].on ? (
             <Grid
               container
               alignItems="stretch"
@@ -571,60 +449,16 @@ const QueryBasic = ({ model, errorListener, Extensions }: QueryBasicProps) => {
                 <Swath className="w-1 h-full" />
               </Grid>
               <Grid item className="w-full pl-2">
-                <Autocomplete
-                  fullWidth
-                  multiple
-                  options={Object.values(typeAttributes)}
-                  disableCloseOnSelect
-                  getOptionLabel={(option) => option.label}
-                  isOptionEqualToValue={(option, value) =>
-                    option.value === value.value
-                  }
-                  onChange={(_e, newValue) => {
-                    basicFilter.anyType.properties = newValue.map(
-                      (val) => val.value
-                    )
+                <ReservedBasicDatatype
+                  value={basicFilter[BasicDataTypePropertyName].value.value}
+                  onChange={(newValue) => {
+                    basicFilter[BasicDataTypePropertyName].value.value =
+                      newValue
                     model.set(
                       'filterTree',
                       constructFilterFromBasicFilter({ basicFilter })
                     )
                   }}
-                  size="small"
-                  renderOption={(props, { label, value }) => {
-                    return (
-                      <li {...props}>
-                        <div
-                          className={`pr-2 icon ${typeAttributes[value].class}`}
-                        />
-                        {label}
-                      </li>
-                    )
-                  }}
-                  renderTags={(tagValue, getTagProps) =>
-                    tagValue.map((option, index) => (
-                      <Chip
-                        variant="outlined"
-                        color="default"
-                        label={
-                          <>
-                            <div
-                              className={`pr-2 icon ${
-                                typeAttributes[option.value].class
-                              }`}
-                            />
-                            {option.label}
-                          </>
-                        }
-                        {...getTagProps({ index })}
-                      />
-                    ))
-                  }
-                  value={determinePropertiesToApplyTo({
-                    value: basicFilter.anyType.properties,
-                  })}
-                  renderInput={(params) => (
-                    <TextField {...params} variant="outlined" />
-                  )}
                 />
               </Grid>
             </Grid>

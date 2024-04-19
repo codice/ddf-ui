@@ -1,3 +1,4 @@
+import { BasicDataTypePropertyName } from '../../../component/filter-builder/reserved.properties'
 import { Subscribable } from '../Base/base-classes'
 import { StartupData } from './startup'
 import {
@@ -195,7 +196,7 @@ class MetacardDefinitions extends Subscribable<{
     return this.attributeMap?.[attributeName]?.enumerations || []
   }
   getSearchOnlyAttributes = () => {
-    return ['anyText', 'anyGeo', 'anyDate']
+    return ['anyText', 'anyGeo', 'anyDate', BasicDataTypePropertyName]
   }
   getSortedAttributes = () => {
     return this.sortedAttributes || []
