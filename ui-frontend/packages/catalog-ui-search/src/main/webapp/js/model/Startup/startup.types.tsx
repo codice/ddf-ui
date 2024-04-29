@@ -13,6 +13,8 @@
  *
  **/
 
+import { DataTypesConfiguration } from '../../../component/datatypes/datatypes'
+
 export type AttributeTypes =
   | 'BINARY'
   | 'DATE'
@@ -141,7 +143,10 @@ export interface UIConfigType {
   attributeAliases: Record<string, string>
   iconConfig: IconConfig
   enums: Record<string, any>
-  extra: any
+  extra: {
+    [key: string]: any
+    datatypes?: DataTypesConfiguration
+  }
   editorAttributes: string[]
   resultShow: string[]
   disableUnknownErrorBox: boolean

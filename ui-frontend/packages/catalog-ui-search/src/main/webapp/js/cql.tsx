@@ -22,14 +22,18 @@ import {
   deserialize,
   FilterBuilderClass,
   FilterClass,
+  isBasicDatatypeClass,
   isFilterBuilderClass,
+  isCQLStandardFilterBuilderClass,
   serialize,
   shouldBeFilterBuilderClass,
   ValueTypes,
 } from '../component/filter-builder/filter.structure'
+import { getDataTypesConfiguration } from '../component/reserved-basic-datatype/reserved.basic-datatype'
 import CQLUtils from './CQLUtils'
 import _cloneDeep from 'lodash/cloneDeep'
 import wkx from 'wkx'
+import { StartupDataStore } from './model/Startup/startup'
 
 const getPointRadiusFilter = (
   point: [number, number],
@@ -917,6 +921,57 @@ function uncollapseNOTs({
   }
 }
 
+function getDataTypesConfigurationUsingStartupStore() {
+  return getDataTypesConfiguration({
+    Configuration: StartupDataStore.Configuration,
+    MetacardDefinitions: StartupDataStore.MetacardDefinitions,
+  })
+}
+
+function handleBasicDatatypeFilters(
+  cqlAst: FilterBuilderClass | FilterClass | CQLStandardFilterBuilderClass
+): CQLStandardFilterBuilderClass | FilterClass {
+  if (isCQLStandardFilterBuilderClass(cqlAst) || isFilterBuilderClass(cqlAst)) {
+    return new CQLStandardFilterBuilderClass({
+      type: cqlAst.type,
+      filters: cqlAst.filters.map((filter) =>
+        handleBasicDatatypeFilters(filter)
+      ),
+    })
+  } else if (isBasicDatatypeClass(cqlAst)) {
+    const dataTypeConfiguration = getDataTypesConfigurationUsingStartupStore()
+    const datatypeFilters: FilterClass[] = []
+    cqlAst.value.map((value) => {
+      const relevantAttributes = dataTypeConfiguration.valueMap[value]
+      if (relevantAttributes) {
+        Object.keys(relevantAttributes.attributes).map((attribute) => {
+          const relevantValues = relevantAttributes.attributes[attribute]
+          relevantValues.forEach((relevantValue) => {
+            datatypeFilters.push(
+              new FilterClass({
+                property: attribute,
+                value: relevantValue,
+                type: 'ILIKE',
+              })
+            )
+          })
+        })
+      }
+    })
+    return new CQLStandardFilterBuilderClass({
+      type: 'AND',
+      filters: [
+        new CQLStandardFilterBuilderClass({
+          type: 'OR',
+          filters: datatypeFilters,
+        }),
+      ],
+    })
+  } else {
+    return cqlAst
+  }
+}
+
 /**
  * For now, all this does is remove anyDate from cql since that's purely for the UI to track the query basic view state correctly.
  * We might want to reconsider how we do the basic query in order to avoid this necessity (it's really the checkbox).
@@ -924,10 +979,14 @@ function uncollapseNOTs({
  * This will only ever happen with a specific structure, so we don't need to recurse or anything.
  */
 function removeInvalidFilters(
-  cqlAst: FilterBuilderClass | FilterClass
-): FilterBuilderClass | FilterClass | boolean {
+  cqlAst: FilterBuilderClass | FilterClass | CQLStandardFilterBuilderClass
+): FilterBuilderClass | FilterClass | boolean | CQLStandardFilterBuilderClass {
   // loop over filters, splicing out invalid ones, at end of loop if all filters gone, remove self?
-  if (isFilterBuilderClass(cqlAst) || shouldBeFilterBuilderClass(cqlAst)) {
+  if (
+    isFilterBuilderClass(cqlAst) ||
+    shouldBeFilterBuilderClass(cqlAst) ||
+    isCQLStandardFilterBuilderClass(cqlAst)
+  ) {
     let i = cqlAst.filters.length
     while (i--) {
       const currentFilter = cqlAst.filters[i]
@@ -1002,9 +1061,11 @@ export default {
   write(filter: FilterBuilderClass): string {
     try {
       // const duplicatedFilter = JSON.parse(JSON.stringify(filter))
-      const standardCqlAst = uncollapseNOTs({
-        cqlAst: filter,
-      }) as FilterBuilderClass
+      const standardCqlAst = handleBasicDatatypeFilters(
+        uncollapseNOTs({
+          cqlAst: filter,
+        })
+      )
       removeInvalidFilters(standardCqlAst)
       return write(standardCqlAst)
     } catch (err) {

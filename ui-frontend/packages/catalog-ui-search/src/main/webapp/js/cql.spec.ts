@@ -18,6 +18,135 @@ import {
   FilterClass,
 } from '../component/filter-builder/filter.structure'
 import cql from './cql'
+import { StartupDataStore } from './model/Startup/startup'
+import { DataTypesConfiguration } from '../component/datatypes/datatypes'
+
+const DatatypesJSONConfig = {
+  groups: {
+    Object: {
+      iconConfig: {
+        class: 'fa fa-file-text-o',
+      },
+      values: {
+        Person: {
+          attributes: {
+            description: ['person'],
+          },
+          iconConfig: {
+            class: 'fa fa-user',
+          },
+        },
+        Group: {
+          attributes: {
+            description: ['group'],
+          },
+          iconConfig: {
+            class: 'fa fa-users',
+          },
+        },
+        Equipment: {
+          attributes: {
+            description: ['equipment'],
+          },
+          iconConfig: {
+            class: 'fa fa-wrench',
+          },
+        },
+        Platform: {
+          attributes: {
+            description: ['platform'],
+          },
+          iconConfig: {
+            class: 'fa fa-industry',
+          },
+        },
+        Facility: {
+          attributes: {
+            description: ['facility'],
+          },
+          iconConfig: {
+            class: 'fa fa-building',
+          },
+        },
+      },
+    },
+    Happenings: {
+      iconConfig: {
+        class: 'fa fa-bolt',
+      },
+      values: {
+        Civil: {
+          attributes: {
+            description: ['civil'],
+          },
+          iconConfig: {
+            class: 'fa fa-university',
+          },
+        },
+        Military: {
+          attributes: {
+            description: ['military'],
+          },
+          iconConfig: {
+            class: 'fa fa-shield',
+          },
+        },
+        Political: {
+          attributes: {
+            description: ['political'],
+          },
+          iconConfig: {
+            class: 'fa fa-balance-scale',
+          },
+        },
+        Natural: {
+          attributes: {
+            description: ['natural'],
+          },
+          iconConfig: {
+            class: 'fa fa-leaf',
+          },
+        },
+        Other: {
+          attributes: {
+            description: ['other'],
+          },
+        },
+      },
+    },
+    'Visual Media': {
+      iconConfig: {
+        class: 'fa fa-camera-retro',
+      },
+      values: {
+        Image: {
+          attributes: {
+            datatype: ['Image'],
+          },
+          iconConfig: {
+            class: 'fa fa-picture-o',
+          },
+        },
+        'Moving Image': {
+          attributes: {
+            datatype: ['Moving Image'],
+          },
+          iconConfig: {
+            class: 'fa fa-film',
+          },
+        },
+        'Still Image': {
+          attributes: {
+            datatype: ['Still Image'],
+          },
+          iconConfig: {
+            class: 'fa fa-camera-retro',
+          },
+        },
+      },
+    },
+  },
+} as DataTypesConfiguration
 
 type CapabilityCategoriesType =
   | 'strings'
@@ -858,6 +987,84 @@ describe('read & write parity for capabilities, as well as boolean logic', () =>
       expect(cql.write(testFilter)).to.equal(`(\"anyText\" ILIKE '%')`)
     })
 
+    it('handles empty reserved.basic-datatype', () => {
+      const testFilter = new FilterBuilderClass({
+        filters: [
+          new FilterBuilderClass({
+            type: 'AND',
+            filters: [
+              new FilterClass({
+                property: 'reserved.basic-datatype',
+                value: [],
+                type: 'ILIKE',
+              }),
+            ],
+          }),
+          new FilterClass({
+            property: 'anyText',
+            value: '*',
+            type: 'ILIKE',
+          }),
+        ],
+        type: 'OR',
+      })
+      expect(cql.write(testFilter)).to.equal(`(\"anyText\" ILIKE '%')`)
+    })
+
+    it('handles invalid values in reserved.basic-datatype', () => {
+      const testFilter = new FilterBuilderClass({
+        filters: [
+          new FilterBuilderClass({
+            type: 'AND',
+            filters: [
+              new FilterClass({
+                property: 'reserved.basic-datatype',
+                value: ['bogus'],
+                type: 'ILIKE',
+              }),
+            ],
+          }),
+          new FilterClass({
+            property: 'anyText',
+            value: '*',
+            type: 'ILIKE',
+          }),
+        ],
+        type: 'OR',
+      })
+      expect(cql.write(testFilter)).to.equal(`(\"anyText\" ILIKE '%')`)
+    })
+
+    it('handles invalid values mixed with valid values in reserved.basic-datatype', () => {
+      if (StartupDataStore.Configuration.config)
+        StartupDataStore.Configuration.config.extra = {
+          datatypes: DatatypesJSONConfig,
+        }
+      const testFilter = new FilterBuilderClass({
+        filters: [
+          new FilterBuilderClass({
+            type: 'AND',
+            filters: [
+              new FilterClass({
+                property: 'reserved.basic-datatype',
+                value: ['bogus', 'Person'],
+                type: 'ILIKE',
+              }),
+            ],
+          }),
+          new FilterClass({
+            property: 'anyText',
+            value: '*',
+            type: 'ILIKE',
+          }),
+        ],
+        type: 'OR',
+      })
+      expect(cql.write(testFilter)).to.equal(
+        `(((("description" ILIKE \'person\')))) OR ("anyText" ILIKE \'%\')`
+      )
+    })
+
     it('handles anyDate removal', () => {
       const testFilter = new FilterBuilderClass({
         filters: [
@@ -875,6 +1082,59 @@ describe('read & write parity for capabilities, as well as boolean logic', () =>
         type: 'OR',
       })
       expect(cql.write(testFilter)).to.equal(`(\"anyText\" ILIKE '%')`)
+    })
+  })
+
+  describe('test reserved.basic-datatype', () => {
+    it('does handle a simple reserved.basic-datatype', () => {
+      if (StartupDataStore.Configuration.config)
+        StartupDataStore.Configuration.config.extra = {
+          datatypes: DatatypesJSONConfig,
+        }
+      const testFilter = new FilterBuilderClass({
+        filters: [
+          new FilterBuilderClass({
+            type: 'AND',
+            filters: [
+              new FilterClass({
+                property: 'reserved.basic-datatype',
+                value: ['Person', 'Military'],
+                type: 'ILIKE',
+              }),
+            ],
+          }),
+        ],
+        type: 'OR',
+      })
+      expect(cql.write(testFilter)).to.equal(
+        `(((("description" ILIKE \'person\') OR ("description" ILIKE \'military\'))))`
+      )
+    })
+
+    it('does handle a negated reserved.basic-datatype', () => {
+      if (StartupDataStore.Configuration.config)
+        StartupDataStore.Configuration.config.extra = {
+          datatypes: DatatypesJSONConfig,
+        }
+      const testFilter = new FilterBuilderClass({
+        filters: [
+          new FilterBuilderClass({
+            negated: true,
+            type: 'AND',
+            filters: [
+              new FilterClass({
+                property: 'reserved.basic-datatype',
+                value: ['Person', 'Military'],
+                type: 'ILIKE',
+              }),
+            ],
+          }),
+        ],
+        type: 'OR',
+      })
+      expect(cql.write(testFilter)).to.equal(
+        `(NOT (((("description" ILIKE \'person\') OR ("description" ILIKE \'military\')))))`
+      )
     })
   })
 

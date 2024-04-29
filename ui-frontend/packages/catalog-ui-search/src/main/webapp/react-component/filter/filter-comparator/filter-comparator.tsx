@@ -16,7 +16,10 @@ import React, { useEffect } from 'react'
 import { getComparators } from './comparatorUtils'
 import MenuItem from '@mui/material/MenuItem'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
-import { FilterClass } from '../../../component/filter-builder/filter.structure'
+import {
+  FilterClass,
+  isBasicDatatypeClass,
+} from '../../../component/filter-builder/filter.structure'
 
 type Props = {
   filter: FilterClass
@@ -38,6 +41,10 @@ const FilterComparator = ({ filter, setFilter, textFieldProps }: Props) => {
       )
     }
   }, [filter, setFilter])
+
+  if (isBasicDatatypeClass(filter)) {
+    return null
+  }
 
   const comparators = getComparators(filter.property)
   return (

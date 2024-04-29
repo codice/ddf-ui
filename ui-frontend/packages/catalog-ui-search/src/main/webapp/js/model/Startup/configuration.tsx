@@ -2,6 +2,7 @@ import { Subscribable } from '../Base/base-classes'
 import { StartupPayloadType } from './startup.types'
 import { StartupData } from './startup'
 import _ from 'underscore'
+import { DataTypesConfiguration } from '../../../component/datatypes/datatypes'
 
 function match(regexList: any, attribute: any) {
   return (
@@ -179,7 +180,12 @@ class Configuration extends Subscribable<{ thing: 'configuration-update' }> {
     return this.config?.disableUnknownErrorBox || false
   }
   getExtra = () => {
-    return this.config?.extra || []
+    return this.config?.extra
+  }
+  getDataTypes = (): DataTypesConfiguration => {
+    return {
+      groups: this.getExtra()?.datatypes?.groups || {},
+    }
   }
 }
 
