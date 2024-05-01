@@ -308,6 +308,7 @@ export const convertToModel = (geo: GeometryJSON, shape: Shape) => {
     type: getGeoType(geo),
     mode: getDrawModeFromShape(shape),
     color: geo.properties?.color || Object.values(locationColors)[0],
+    id: geo.properties?.id,
   }
 }
 
