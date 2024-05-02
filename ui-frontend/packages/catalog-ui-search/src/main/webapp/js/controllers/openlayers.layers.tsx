@@ -2,7 +2,6 @@ import { Layers } from './layers'
 import _ from 'underscore'
 import ol from 'openlayers'
 import user from '../../component/singletons/user-instance'
-import User from '../../js/model/User'
 import Backbone from 'backbone'
 import { StartupDataStore } from '../model/Startup/startup'
 const createTile = (
@@ -130,7 +129,6 @@ export class OpenlayersLayers {
     this.isMapCreated = false
     this.layerForCid = {}
     const layerPrefs = user.get('user>preferences>mapLayers')
-    ;(User as any).updateMapLayers(layerPrefs)
     this.layers = new Layers(layerPrefs)
     this.backboneModel.listenTo(
       layerPrefs,

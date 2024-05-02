@@ -22,7 +22,6 @@ import DrawingUtility from '../DrawingUtility'
 import Openlayers from 'openlayers'
 import { OpenlayersLayers } from '../../../../js/controllers/openlayers.layers'
 import user from '../../../singletons/user-instance'
-import User from '../../../../js/model/User'
 import wreqr from '../../../../js/wreqr'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { ClusterType } from '../react/geometries'
@@ -33,7 +32,6 @@ const defaultColor = '#3c6dd5'
 const rulerColor = '#506f85'
 function createMap(insertionElement: any) {
   const layerPrefs = user.get('user>preferences>mapLayers')
-  ;(User as any).updateMapLayers(layerPrefs)
   // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
   const layerCollectionController = new OpenlayersLayers({
     collection: layerPrefs,
