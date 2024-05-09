@@ -41,27 +41,47 @@ const Theme = Backbone.Model.extend({
     }
   },
 })
-;(User as any).updateMapLayers = function (layers: any) {
+
+export const userModifiableLayerProperties = [
+  'id',
+  'label',
+  'alpha',
+  'show',
+  'order',
+]
+function areTheSameLayer(layer1: any, layer2: any) {
+  return _.isEqual(
+    _.omit(layer1, userModifiableLayerProperties),
+    _.omit(layer2, userModifiableLayerProperties)
+  )
+}
+function isValidLayer(layer: any) {
   const providers = StartupDataStore.Configuration.getImageryProviders()
-  const exclude = ['id', 'label', 'alpha', 'show', 'order']
-  const equal = (a: any, b: any) =>
-    _.isEqual(_.omit(a, exclude), _.omit(b, exclude))
+  return providers.some((provider: any) => areTheSameLayer(provider, layer))
+}
+
+// compare to imagery providers and remove any layers that are not in the providers, and add any providers that are not in the layers
+function validateMapLayersAgainstProviders(layers: any) {
+  const providers = StartupDataStore.Configuration.getImageryProviders()
+  // find layers that have been removed from the providers and remove them
   const layersToRemove = layers.filter((model: any) => {
-    const found = providers.some((provider: any) =>
-      equal(provider, model.toJSON())
-    )
-    return !found && !model.get('userRemovable')
+    return !isValidLayer(model.toJSON())
   })
   layers.remove(layersToRemove)
-  providers.forEach((provider: any) => {
-    const found = layers
-      .toArray()
-      .some((model: any) => equal(provider, model.toJSON()))
-    if (!found) {
-      layers.add(new (User as any).MapLayer(provider, { parse: true }))
-    }
+
+  // find providers that have not been added to the layers and add them
+  const layersToAdd = providers.filter((provider: any) => {
+    return !layers.some((model: any) =>
+      areTheSameLayer(provider, model.toJSON())
+    )
   })
+  layers.add(
+    layersToAdd.map(
+      (provider: any) => new (User as any).MapLayer(provider, { parse: true })
+    )
+  )
 }
+
 ;(User as any).MapLayer = Backbone.AssociatedModel.extend({
   defaults() {
     return {
@@ -101,6 +121,10 @@ const Theme = Backbone.Model.extend({
     if (!models || models.length === 0) {
       this.set(this.defaults())
     }
+    this.listenTo(this, 'add reset', () => {
+      validateMapLayersAgainstProviders(this)
+    })
+    validateMapLayersAgainstProviders(this)
   },
   comparator(model: any) {
     return model.get('order')

@@ -69,7 +69,9 @@ export interface ImageryProvider {
   type: string
   url: string
   parameters: {
-    imageSize: number[]
+    format?: string
+    transparent?: boolean
+    imageSize?: number[]
   }
   alpha: number
   name: string
@@ -279,7 +281,9 @@ interface PreferencesType {
     type: string
     url: string
     parameters: {
-      imageSize: number[]
+      format?: string
+      transparent?: boolean
+      imageSize?: number[]
     }
     alpha: number
     name: string

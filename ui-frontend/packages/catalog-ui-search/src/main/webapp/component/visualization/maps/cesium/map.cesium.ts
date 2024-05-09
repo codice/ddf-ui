@@ -26,7 +26,6 @@ import {
   CesiumLayers,
 } from '../../../../js/controllers/cesium.layers'
 import user from '../../../singletons/user-instance'
-import User from '../../../../js/model/User'
 import { Drawing } from '../../../singletons/drawing'
 import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryResult'
 import { ClusterType } from '../react/geometries'
@@ -70,7 +69,6 @@ function setupTerrainProvider(viewer: any, terrainProvider: any) {
 }
 function createMap(insertionElement: any) {
   const layerPrefs = user.get('user>preferences>mapLayers')
-  ;(User as any).updateMapLayers(layerPrefs)
   // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
   const layerCollectionController = new CesiumLayers({
     collection: layerPrefs,
