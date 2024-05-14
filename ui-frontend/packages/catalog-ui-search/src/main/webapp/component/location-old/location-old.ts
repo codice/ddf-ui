@@ -28,6 +28,8 @@ import {
   isUPS,
 } from '../../react-component/location/validators'
 import { locationColors } from '../../react-component/location/location-color-selector'
+import { v4 } from 'uuid'
+
 // @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
 const converter = new usngs.Converter()
 const utmUpsLocationType = 'utmUps'
@@ -40,7 +42,8 @@ const Direction = dmsUtils.Direction
 export default Backbone.AssociatedModel.extend({
   defaults: () => {
     return {
-      locationId: Date.now(),
+      // later on we should probably update areas using locationId to just use id
+      locationId: v4(),
       color: Object.values(locationColors)[0],
       drawing: false,
       north: undefined,
@@ -1159,5 +1162,12 @@ export default Backbone.AssociatedModel.extend({
       this.get('utmUpsZone'),
       this.get('utmUpsHemisphere')
     )
+  },
+  // override toJSON so that when we save the location information elsewhere we don't include ephemeral state, like isInteractive
+  toJSON(options: any) {
+    const originalJSON = Backbone.Model.prototype.toJSON.apply(this, [options])
+    delete originalJSON['isInteractive']
+    delete originalJSON['isReadonly']
+    return originalJSON
   },
 })

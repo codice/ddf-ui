@@ -61,7 +61,9 @@ const useCountdown = ({
 
 export const CesiumMapViewReact = ({
   selectionInterface,
+  setMap: outerSetMap,
 }: {
+  setMap?: (map: any) => void // sometimes outer components want to know when the map is loaded
   selectionInterface: any
 }) => {
   const supportsCesium = useSupportsCesium()
@@ -71,6 +73,11 @@ export const CesiumMapViewReact = ({
   })
   const [swap, setSwap] = React.useState(false)
   const [map, setMap] = React.useState<any>(null)
+  React.useEffect(() => {
+    if (outerSetMap) {
+      outerSetMap(map)
+    }
+  }, [map])
   if (supportsCesium) {
     return (
       <InteractionsProvider>
@@ -94,7 +101,12 @@ export const CesiumMapViewReact = ({
   }
 
   if (countdownFinished || swap) {
-    return <OpenlayersMapViewReact selectionInterface={selectionInterface} />
+    return (
+      <OpenlayersMapViewReact
+        setMap={setMap}
+        selectionInterface={selectionInterface}
+      />
+    )
   }
 
   return (

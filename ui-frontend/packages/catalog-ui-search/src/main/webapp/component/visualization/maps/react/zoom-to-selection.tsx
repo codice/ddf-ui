@@ -6,10 +6,9 @@ import { LazyQueryResults } from '../../../../js/model/LazyQueryResult/LazyQuery
 type Props = {
   lazyResults: LazyQueryResults
   map: any
-  zoomToHome: (props: { map: any }) => void
 }
 
-const ZoomToSelection = ({ lazyResults, map, zoomToHome }: Props) => {
+const ZoomToSelection = ({ lazyResults, map }: Props) => {
   const selectedResults = useSelectedResults({ lazyResults })
 
   React.useEffect(() => {
@@ -20,15 +19,6 @@ const ZoomToSelection = ({ lazyResults, map, zoomToHome }: Props) => {
       }, 0)
     }
   }, [selectedResults])
-  React.useEffect(() => {
-    const arrayForm = Object.values(selectedResults)
-
-    if (arrayForm.length === 0) {
-      setTimeout(() => {
-        zoomToHome({ map })
-      }, 0)
-    }
-  }, [])
   return null
 }
 

@@ -16,7 +16,6 @@
 import wrapNum from '../../../../react-component/utils/wrap-num/wrap-num'
 import $ from 'jquery'
 import _ from 'underscore'
-import Map from '../map'
 import utility from './utility'
 import DrawingUtility from '../DrawingUtility'
 import Openlayers from 'openlayers'
@@ -67,7 +66,7 @@ function determineIdsFromPosition(position: any, map: any) {
   }
   return { id, locationId }
 }
-function convertPointCoordinate(point: any) {
+function convertPointCoordinate(point: [number, number]) {
   const coords = [point[0], point[1]]
   return Openlayers.proj.transform(
     coords as Openlayers.Coordinate,
@@ -75,7 +74,7 @@ function convertPointCoordinate(point: any) {
     StartupDataStore.Configuration.getProjection()
   )
 }
-function unconvertPointCoordinate(point: any) {
+function unconvertPointCoordinate(point: [number, number]) {
   return Openlayers.proj.transform(
     point,
     StartupDataStore.Configuration.getProjection(),
@@ -203,7 +202,7 @@ export default function (
   let geoDragMoveListener: any
   let geoDragUpListener: any
   let leftClickMapAPIListener: any
-  const exposedMethods = _.extend({}, Map, {
+  const exposedMethods = {
     onMouseTrackingForGeoDrag({
       moveFrom,
       down,
@@ -332,11 +331,10 @@ export default function (
     clearMouseMove() {
       $(map.getTargetElement()).off('mousemove')
     },
-    timeoutIds: [],
+    timeoutIds: [] as number[],
     onCameraMoveStart(callback: any) {
-      clearTimeout(this.timeoutId)
       this.timeoutIds.forEach((timeoutId: any) => {
-        clearTimeout(timeoutId)
+        window.clearTimeout(timeoutId)
       })
       this.timeoutIds = []
       map.addEventListener('movestart', callback)
@@ -347,7 +345,7 @@ export default function (
     onCameraMoveEnd(callback: any) {
       const timeoutCallback = () => {
         this.timeoutIds.push(
-          setTimeout(() => {
+          window.setTimeout(() => {
             callback()
           }, 300)
         )
@@ -357,7 +355,7 @@ export default function (
     offCameraMoveEnd(callback: any) {
       map.removeEventListener('moveend', callback)
     },
-    doPanZoom(coords: any) {
+    doPanZoom(coords: [number, number][]) {
       const that = this
       that.panZoomOut({ duration: 1000 }, () => {
         setTimeout(() => {
@@ -375,7 +373,7 @@ export default function (
       )
       this.panToExtent(coordinates)
     },
-    panToExtent(coords: any) {
+    panToExtent(coords: [number, number][]) {
       if (coords.constructor === Array && coords.length > 0) {
         const lineObject = coords.map((coordinate) =>
           convertPointCoordinate(coordinate)
@@ -388,7 +386,28 @@ export default function (
         })
       }
     },
-    panToShapesExtent() {
+    getExtentOfIds(ids: string[]) {
+      var extent = Openlayers.extent.createEmpty()
+      map.getLayers().forEach((layer: any) => {
+        // might need to handle groups later, but no reason to yet
+        if (
+          layer instanceof Openlayers.layer.Vector &&
+          ids.includes(layer.get('id'))
+        ) {
+          Openlayers.extent.extend(extent, layer.getSource().getExtent())
+        }
+      })
+      if (extent[0] === Infinity) {
+        throw new Error('No extent found for ids')
+      }
+      return extent
+    },
+    zoomToIds({ ids, duration = 500 }: { ids: string[]; duration?: number }) {
+      map.getView().fit(this.getExtentOfIds(ids), {
+        duration,
+      })
+    },
+    panToShapesExtent({ duration = 500 }: { duration?: number } = {}) {
       var extent = Openlayers.extent.createEmpty()
       map.getLayers().forEach((layer: any) => {
         if (layer instanceof Openlayers.layer.Group) {
@@ -409,16 +428,14 @@ export default function (
       })
       if (extent[0] !== Infinity) {
         map.getView().fit(extent, {
-          size: map.getSize(),
-          maxZoom: map.getView().getZoom(),
-          duration: 500,
+          duration,
         })
       }
     },
     getShapes() {
       return shapes
     },
-    zoomToExtent(coords: any, opts = {}) {
+    zoomToExtent(coords: [number, number][], opts = {}) {
       const lineObject = coords.map((coordinate: any) =>
         convertPointCoordinate(coordinate)
       )
@@ -540,6 +557,7 @@ export default function (
     removeRulerPoint(pointLayer: any) {
       map.removeLayer(pointLayer)
     },
+    rulerLine: null as null | Openlayers.layer.Vector,
     /*
      * Draws a line on the map between the points in the given array of point Vectors.
      */
@@ -561,7 +579,7 @@ export default function (
      * Update the position of the ruler line
      */
     setRulerLine(point: any) {
-      this.removeRulerLine(this.rulerLine)
+      this.removeRulerLine()
       this.addRulerLine(point)
     },
     /*
@@ -1050,6 +1068,6 @@ export default function (
     destroy() {
       unlistenToResize()
     },
-  })
+  }
   return exposedMethods
 }

@@ -31,14 +31,14 @@ type useResizableGridType = {
   setDragging: React.Dispatch<React.SetStateAction<boolean>>
 }
 export const useResizableGrid = ({
-  startingLength,
-  collapsedLength,
-  autoCollapseLength,
+  startingLength = DEFAULT_STARTING_LENGTH,
+  collapsedLength = DEFAULT_COLLAPSED_LENGTH,
+  autoCollapseLength = DEFAULT_AUTO_COLLAPSE_LENGTH,
 }: {
-  startingLength: number
-  collapsedLength: number
-  autoCollapseLength: number
-}): useResizableGridType => {
+  startingLength?: number
+  collapsedLength?: number
+  autoCollapseLength?: number
+} = {}): useResizableGridType => {
   const [closed, setClosed] = React.useState(false)
   const [length, setLength] = React.useState(startingLength)
   const [lastLength, setLastLength] = React.useState(startingLength)
@@ -103,7 +103,9 @@ type SplitPaneProps = {
   collapsedLength?: number
   autoCollapseLength?: number
   startingLength?: number
+  controlled?: useResizableGridType // useful to have immediate access to closed without needing to split out components
 }
+
 export const SplitPane = ({
   secondStyle,
   variant,
@@ -111,6 +113,7 @@ export const SplitPane = ({
   collapsedLength = DEFAULT_COLLAPSED_LENGTH,
   autoCollapseLength = DEFAULT_AUTO_COLLAPSE_LENGTH,
   startingLength = DEFAULT_STARTING_LENGTH,
+  controlled,
 }: SplitPaneProps) => {
   const {
     length,
@@ -121,7 +124,13 @@ export const SplitPane = ({
     setLastLength,
     dragging,
     setDragging,
-  } = useResizableGrid({ collapsedLength, startingLength, autoCollapseLength })
+  } =
+    controlled ||
+    useResizableGrid({
+      startingLength,
+      collapsedLength,
+      autoCollapseLength,
+    })
   const [First, Second] = children
   return (
     <UseResizableGridContextProvider
