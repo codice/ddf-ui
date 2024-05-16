@@ -315,7 +315,7 @@ export const convertToModel = ({
   // geo.properties?.color will have a value when in drawing mode,
   // but we dont want to render the drawing's contrastingColor after saving.
   // So, we only want to set the default if no color is already set
-  if (geo.properties?.color === contrastingColor) {
+  if (geo.properties?.color !== contrastingColor) {
     properties.color = geo.properties?.color || Object.values(locationColors)[0]
   }
 
