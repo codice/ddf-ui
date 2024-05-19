@@ -862,7 +862,6 @@ export const MapViewReact = (props: MapViewReactType) => {
           <Geometries
             selectionInterface={props.selectionInterface}
             map={map}
-            zoomToHome={zoomToHome}
             isClustering={isClustering}
           />
         ) : null}

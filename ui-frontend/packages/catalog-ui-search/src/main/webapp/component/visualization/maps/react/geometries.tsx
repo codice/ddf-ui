@@ -12,7 +12,6 @@ type Props = {
   selectionInterface: any
   map: any
   isClustering: boolean
-  zoomToHome: (props: { map: any }) => void
 }
 
 export type ClusterType = {
@@ -21,7 +20,7 @@ export type ClusterType = {
 }
 
 const Geometries = (props: Props) => {
-  const { map, selectionInterface, isClustering, zoomToHome } = props
+  const { map, selectionInterface, isClustering } = props
   const lazyResults = useLazyResultsFromSelectionInterface({
     selectionInterface,
   })
@@ -118,13 +117,7 @@ const Geometries = (props: Props) => {
   }, [lazyResults.results, isClustering])
 
   const ZoomToSelectionMemo = React.useMemo(() => {
-    return (
-      <ZoomToSelection
-        map={map}
-        lazyResults={lazyResults}
-        zoomToHome={zoomToHome}
-      />
-    )
+    return <ZoomToSelection map={map} lazyResults={lazyResults} />
   }, [lazyResults])
 
   return (

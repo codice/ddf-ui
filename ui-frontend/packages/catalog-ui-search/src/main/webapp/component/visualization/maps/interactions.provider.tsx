@@ -31,6 +31,27 @@ export const InteractionsContext = React.createContext<InteractionsContextType>(
   }
 )
 
+/**
+ *  Doing this to save time for now.  In the future we should remove the interactions provider and the logic around it, solely using the models themselves and
+ *  this isInteractive being set to do drag / drop.
+ */
+function useUpdateModelsSoTheyAreInteractive({
+  interactiveModels,
+}: {
+  interactiveModels: Backbone.Model[]
+}) {
+  React.useEffect(() => {
+    interactiveModels.forEach((model) => {
+      model.set('isInteractive', true)
+    })
+    return () => {
+      interactiveModels.forEach((model) => {
+        model.set('isInteractive', false)
+      })
+    }
+  }, [interactiveModels])
+}
+
 export function InteractionsProvider({ children }: any) {
   const [interactiveGeo, setInteractiveGeo] = useState<number | null>(null)
   const [interactiveModels, setInteractiveModels] = useState<Backbone.Model[]>(
@@ -38,6 +59,8 @@ export function InteractionsProvider({ children }: any) {
   )
   const [moveFrom, setMoveFrom] = useState<any>(null)
   const [translation, setTranslation] = useState<Translation | null>(null)
+
+  useUpdateModelsSoTheyAreInteractive({ interactiveModels })
 
   return (
     <InteractionsContext.Provider

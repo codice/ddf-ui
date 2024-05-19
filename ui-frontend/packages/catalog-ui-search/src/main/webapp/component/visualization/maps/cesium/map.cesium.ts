@@ -14,7 +14,6 @@
  **/
 import $ from 'jquery'
 import _ from 'underscore'
-import Map from '../map'
 import utility from './utility'
 import DrawingUtility from '../DrawingUtility'
 import wreqr from '../../../../js/wreqr'
@@ -174,6 +173,14 @@ function convertPointCoordinate(coordinate: any) {
 function isNotVisible(cartesian3CenterOfGeometry: any, occluder: any) {
   return !occluder.isPointVisible(cartesian3CenterOfGeometry)
 }
+
+// https://cesium.com/learn/cesiumjs/ref-doc/Camera.html
+export const LookingStraightDownOrientation = {
+  heading: 0, // North is up - like compass direction
+  pitch: -Cesium.Math.PI_OVER_TWO, // Looking straight down - like a level from up to down
+  roll: 0, // No roll - like a level from left to right
+}
+
 export default function CesiumMap(
   insertionElement: any,
   selectionInterface: any,
@@ -290,7 +297,7 @@ export default function CesiumMap(
   }
 
   const minimumHeightAboveTerrain = 2
-  const exposedMethods = _.extend({}, Map, {
+  const exposedMethods = {
     onLeftClick(callback: any) {
       $(map.scene.canvas).on('click', (e) => {
         const boundingRect = map.scene.canvas.getBoundingClientRect()
@@ -440,11 +447,10 @@ export default function CesiumMap(
     clearMouseMove() {
       $(map.scene.canvas).off('mousemove')
     },
-    timeoutIds: [],
+    timeoutIds: [] as number[],
     onCameraMoveStart(callback: any) {
-      clearTimeout(this.timeoutId)
       this.timeoutIds.forEach((timeoutId: any) => {
-        clearTimeout(timeoutId)
+        window.clearTimeout(timeoutId)
       })
       this.timeoutIds = []
       map.scene.camera.moveStart.addEventListener(callback)
@@ -455,7 +461,7 @@ export default function CesiumMap(
     onCameraMoveEnd(callback: any) {
       const timeoutCallback = () => {
         this.timeoutIds.push(
-          setTimeout(() => {
+          window.setTimeout(() => {
             callback()
           }, 300)
         )
@@ -523,7 +529,11 @@ export default function CesiumMap(
       })
     },
     panToExtent() {},
-    panToShapesExtent() {
+    panToShapesExtent({
+      duration = 500,
+    }: {
+      duration?: number // take in milliseconds for normalization with openlayers duration being milliseconds
+    } = {}) {
       const currentPrimitives = map.scene.primitives._primitives.filter(
         (prim: any) => prim.id
       )
@@ -539,17 +549,69 @@ export default function CesiumMap(
       )
       if (actualPositions.length > 0) {
         map.scene.camera.flyTo({
-          duration: 0.5,
+          duration: duration / 1000, // change to seconds
           destination: Cesium.Rectangle.fromCartesianArray(actualPositions),
-          orientation: {
-            heading: map.scene.camera.heading,
-            pitch: map.scene.camera.pitch,
-            roll: map.scene.camera.roll,
-          },
+          orientation: LookingStraightDownOrientation,
         })
         return true
       }
       return false
+    },
+    getCenterPositionOfPrimitiveIds(primitiveIds: string[]) {
+      const primitives = map.scene.primitives
+      let positions = [] as any[]
+
+      // Iterate over primitives and compute bounding spheres
+      for (let i = 0; i < primitives.length; i++) {
+        let primitive = primitives.get(i)
+        if (primitiveIds.includes(primitive.id)) {
+          for (let j = 0; j < primitive.length; j++) {
+            let point = primitive.get(j)
+            positions = positions.concat(point.positions)
+          }
+        }
+      }
+
+      let boundingSphere = Cesium.BoundingSphere.fromPoints(positions)
+
+      if (
+        Cesium.BoundingSphere.equals(
+          boundingSphere,
+          Cesium.BoundingSphere.fromPoints([]) // empty
+        )
+      ) {
+        throw new Error('No positions to zoom to')
+      }
+
+      // here, notice we use flyTo instead of flyToBoundingSphere, as with the latter the orientation can't be controlled in this version and ends up tilted
+      // Calculate the position above the center of the bounding sphere
+      let radius = boundingSphere.radius
+      let center = boundingSphere.center
+      let up = Cesium.Cartesian3.clone(center) // Get the up direction from the center of the Earth to the position
+      Cesium.Cartesian3.normalize(up, up)
+
+      let position = Cesium.Cartesian3.multiplyByScalar(
+        up,
+        radius * 2,
+        new Cesium.Cartesian3()
+      ) // Adjust multiplier for desired altitude
+      Cesium.Cartesian3.add(center, position, position) // Move position above the center
+
+      return position
+    },
+    zoomToIds({
+      ids,
+      duration = 500,
+    }: {
+      ids: string[]
+      duration?: number // take in milliseconds for normalization with openlayers duration being milliseconds
+    }) {
+      // use flyTo instead of flyToBoundingSphere, as with the latter the orientation can't be controlled in this version and it ends up tilted
+      map.camera.flyTo({
+        destination: this.getCenterPositionOfPrimitiveIds(ids),
+        orientation: LookingStraightDownOrientation,
+        duration: duration / 1000, // change to seconds
+      })
     },
     panToRectangle(
       rectangle: any,
@@ -1192,6 +1254,6 @@ export default function CesiumMap(
       ;(wreqr as any).vent.off('map:requestRender', requestRenderHandler)
       map.destroy()
     },
-  })
+  }
   return exposedMethods
 }

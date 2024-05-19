@@ -19,6 +19,7 @@ import {
   getDrawModeFromModel,
   getShapeFromDrawMode,
   getDrawModeFromShape,
+  useDrawingAndDisplayModels,
 } from '../drawing-and-display'
 import { OpenlayersBboxDisplay } from './bbox-display'
 import { OpenlayersCircleDisplay } from './circle-display'
@@ -291,24 +292,34 @@ export const getDrawingGeometryFromModel = (
   return geo
 }
 
-export const convertToModel = (geo: GeometryJSON, shape: Shape) => {
-  // geo.properties?.color will have a value when in drawing mode,
-  // but we dont want to render the drawing's contrastingColor after saving.
-  // So, we only want to set the default if no color is already set
-  if (geo.properties?.color === contrastingColor) {
-    return {
-      ...createGeoModel(geo),
-      type: getGeoType(geo),
-      mode: getDrawModeFromShape(shape),
-    }
-  }
-
-  return {
+export const convertToModel = ({
+  geo,
+  shape,
+  existingModel,
+}: {
+  geo: GeometryJSON
+  shape: Shape
+  existingModel?: Backbone.Model
+}) => {
+  const properties: { [key: string]: any } = {
     ...createGeoModel(geo),
     type: getGeoType(geo),
     mode: getDrawModeFromShape(shape),
-    color: geo.properties?.color || Object.values(locationColors)[0],
   }
+
+  // if the model is being updated, we want to keep the id, otherwise use the geo properties id to recreate the model
+  if (!existingModel) {
+    properties.id = geo.properties.id
+  }
+
+  // geo.properties?.color will have a value when in drawing mode,
+  // but we dont want to render the drawing's contrastingColor after saving.
+  // So, we only want to set the default if no color is already set
+  if (geo.properties?.color !== contrastingColor) {
+    properties.color = geo.properties?.color || Object.values(locationColors)[0]
+  }
+
+  return properties
 }
 
 // This is not a piece of state because the geospatialdraw
@@ -322,9 +333,9 @@ let drawingLocation: GeometryJSON | null = makeEmptyGeometry(
 
 const preserveBuffer = (
   drawingModel: any,
-  drawingLocation: any,
+  drawingLocation: geometry.GeometryJSON,
   drawingShape: string
-) => {
+): geometry.GeometryJSON => {
   const updatedDrawingLocation = drawingLocation
   if (drawingShape === 'Line') {
     const lineWidth = drawingModel.get('lineWidth')
@@ -351,12 +362,15 @@ const preserveBuffer = (
 
 export const OpenlayersDrawings = ({
   map,
-  drawingAndDisplayModels,
+  selectionInterface,
 }: {
   map: any
-  drawingAndDisplayModels: any
+  selectionInterface: any
 }) => {
-  const { models, filterModels, drawingModels } = drawingAndDisplayModels
+  const { models, filterModels, drawingModels } = useDrawingAndDisplayModels({
+    selectionInterface,
+    map,
+  })
 
   const [drawingModel] =
     drawingModels.length > 0 ? drawingModels.slice(-1) : [undefined]
@@ -436,7 +450,13 @@ export const OpenlayersDrawings = ({
       drawingShape
     )
 
-    drawingModel.set(convertToModel(updatedDrawingLocation, drawingShape))
+    drawingModel.set(
+      convertToModel({
+        geo: updatedDrawingLocation,
+        shape: drawingShape,
+        existingModel: drawingModel,
+      })
+    )
     setIsDrawing(false)
     setDrawingGeometry(updatedDrawingLocation)
     drawingLocation = null
