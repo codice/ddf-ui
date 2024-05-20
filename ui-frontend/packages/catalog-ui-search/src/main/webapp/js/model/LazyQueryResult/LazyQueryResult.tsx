@@ -363,7 +363,7 @@ export class LazyQueryResult {
     return _.filter(
       this.plain.metacard.properties,
       (_value: any, key: string) =>
-        !StartupDataStore.Configuration.isHiddenAttribute(key) &&
+        !StartupDataStore.MetacardDefinitions.isHiddenAttribute(key) &&
         (attribute === undefined || attribute === key) &&
         StartupDataStore.MetacardDefinitions.getAttributeMap()[key] &&
         StartupDataStore.MetacardDefinitions.getAttributeMap()[key].type ===

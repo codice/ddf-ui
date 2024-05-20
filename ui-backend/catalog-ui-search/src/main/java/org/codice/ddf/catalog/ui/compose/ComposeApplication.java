@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.codice.ddf.catalog.ui.catalog.CatalogApplication;
 import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
@@ -162,11 +163,13 @@ public class ComposeApplication implements SparkApplication {
     anyText.put("id", "anyText");
     anyText.put("type", "STRING");
     anyText.put("multivalued", false);
+    anyText.put("hidden", true);
 
     Map<String, Object> anyGeo = new HashMap<>();
     anyGeo.put("id", "anyGeo");
     anyGeo.put("type", "LOCATION");
     anyGeo.put("multivalued", false);
+    anyGeo.put("hidden", true);
 
     Map<String, Object> anyDate = new HashMap<>();
     anyDate.put("id", "anyDate");
@@ -229,6 +232,35 @@ public class ComposeApplication implements SparkApplication {
     return attributeMap;
   }
 
+  private boolean isHiddenType(Map<String, Object> attributeDetails) {
+    String id = (String) attributeDetails.get("id");
+    if ("thumbnail".equals(id)) {
+      return false;
+    }
+    String type = (String) attributeDetails.get("type");
+    return "XML".equals(type) || "BINARY".equals(type) || "OBJECT".equals(type);
+  }
+
+  private Map<String, Object> addHidden(
+      Map<String, Object> originalAttributeMap, List<String> hiddenAttributes) {
+    Map<String, Object> attributeMap = new HashMap<>(originalAttributeMap);
+
+    for (String hiddenAttributeRegex : hiddenAttributes) {
+      Pattern pattern = Pattern.compile(hiddenAttributeRegex);
+      for (Map.Entry<String, Object> attributeEntry : attributeMap.entrySet()) {
+        String attributeId = attributeEntry.getKey();
+        Map<String, Object> attributeDetails = (Map<String, Object>) attributeEntry.getValue();
+        boolean hiddenByAttributeRegex = pattern.matcher(attributeId).find();
+
+        if (hiddenByAttributeRegex || isHiddenType(attributeDetails)) {
+          attributeDetails.put("hidden", true);
+        }
+      }
+    }
+
+    return attributeMap;
+  }
+
   /** This will find deprecated enumerations as well because of how the enumExtractor works. */
   private Map<String, Object> addEnumerations(Map<String, Object> originalAttributeMap) {
     Map<String, Object> attributeMap = new HashMap<>(originalAttributeMap);
@@ -263,13 +295,13 @@ public class ComposeApplication implements SparkApplication {
             if (value1 instanceof Map && value2 instanceof Map) {
               Map<String, Object> map1 = (Map<String, Object>) value1;
               Map<String, Object> map2 = (Map<String, Object>) value2;
-              String alias1 = (String) map1.getOrDefault("alias", map1.get("id"));
-              String alias2 = (String) map2.getOrDefault("alias", map2.get("id"));
+              String alias1 = ((String) map1.getOrDefault("alias", map1.get("id"))).toLowerCase();
+              String alias2 = ((String) map2.getOrDefault("alias", map2.get("id"))).toLowerCase();
               return alias1.compareTo(alias2);
             }
 
             // If "alias" is not present, fallback to comparing by key (id)
-            return entry1.getKey().compareTo(entry2.getKey());
+            return entry1.getKey().toLowerCase().compareTo(entry2.getKey().toLowerCase());
           }
         });
 
@@ -402,7 +434,11 @@ public class ComposeApplication implements SparkApplication {
         addAliases(attributeMap, (Map<String, String>) config.get("attributeAliases"));
 
     Map<String, Object> attributeMapWithEnums = addEnumerations(attributeMapWithAliases);
-    return attributeMapWithEnums;
+
+    Map<String, Object> attributeMapWithHidden =
+        addHidden(attributeMapWithEnums, (List<String>) config.get("hiddenAttributes"));
+
+    return attributeMapWithHidden;
   }
 
   public void setSubjectOperations(SubjectOperations subjectOperations) {

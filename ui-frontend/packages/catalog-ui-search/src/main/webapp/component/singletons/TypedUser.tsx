@@ -69,10 +69,7 @@ export const TypedUserInstance = {
       return (
         !currentAttributesShown.includes(attr.id) &&
         !searchOnlyAttributes.includes(attr.id) &&
-        !StartupDataStore.MetacardDefinitions.isHiddenTypeExceptThumbnail(
-          attr.id
-        ) &&
-        !StartupDataStore.Configuration.isHiddenAttribute(attr.id)
+        !StartupDataStore.MetacardDefinitions.isHiddenAttribute(attr.id)
       )
     })
     return attributesPossible.map((attr) => attr.id)
@@ -88,10 +85,7 @@ export const TypedUserInstance = {
       return (
         !currentAttributesShown.includes(attr.id) &&
         !searchOnlyAttributes.includes(attr.id) &&
-        !StartupDataStore.MetacardDefinitions.isHiddenTypeExceptThumbnail(
-          attr.id
-        ) &&
-        !StartupDataStore.Configuration.isHiddenAttribute(attr.id)
+        !StartupDataStore.MetacardDefinitions.isHiddenAttribute(attr.id)
       )
     })
     return attributesPossible.map((attr) => attr.id)
@@ -108,10 +102,7 @@ export const TypedUserInstance = {
       return (
         !currentAttributesShown.includes(attr.id) &&
         !searchOnlyAttributes.includes(attr.id) &&
-        !StartupDataStore.MetacardDefinitions.isHiddenTypeExceptThumbnail(
-          attr.id
-        ) &&
-        !StartupDataStore.Configuration.isHiddenAttribute(attr.id)
+        !StartupDataStore.MetacardDefinitions.isHiddenAttribute(attr.id)
       )
     })
     return attributesPossible.map((attr) => attr.id)

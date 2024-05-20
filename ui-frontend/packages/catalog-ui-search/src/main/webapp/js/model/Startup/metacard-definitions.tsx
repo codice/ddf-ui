@@ -159,26 +159,14 @@ class MetacardDefinitions extends Subscribable<{
     this.sortedAttributes = sortMetacardTypes(this.attributeMap)
     this._notifySubscribers({ thing: 'metacard-definitions-update' })
   }
-  isHiddenType = (id: string): boolean => {
+  isHiddenAttribute = (id: string): boolean => {
     if (!this.attributeMap) {
       return false
     }
     return (
       this.attributeMap[id] === undefined ||
-      this.attributeMap[id].type === 'XML' ||
-      this.attributeMap[id].type === 'BINARY' ||
-      this.attributeMap[id].type === 'OBJECT'
+      this.attributeMap[id].hidden === true
     )
-  }
-  /**
-   * We exclude thumbnail because although it is a type of attribute (BINARY) we don't usually support viewing in the UI, we handle it
-   */
-  isHiddenTypeExceptThumbnail = (attributeName: string) => {
-    if (attributeName === 'thumbnail') {
-      return false
-    } else {
-      return this.isHiddenType(attributeName)
-    }
   }
   getMetacardDefinition = (metacardTypeName: string) => {
     return this.metacardTypes?.[metacardTypeName] || {}
@@ -203,6 +191,9 @@ class MetacardDefinitions extends Subscribable<{
   }
   getAttributeMap = () => {
     return this.attributeMap || {}
+  }
+  getAttributeDefinition = (id: string) => {
+    return this.attributeMap?.[id]
   }
 }
 

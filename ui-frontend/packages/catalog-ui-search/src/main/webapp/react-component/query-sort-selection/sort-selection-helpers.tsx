@@ -32,13 +32,7 @@ export const getSortAttributeOptions = (currentSelections: string[]) => {
   const attributes = StartupDataStore.MetacardDefinitions.getSortedAttributes()
   const options: Option[] = attributes
     .filter(
-      (type) => !StartupDataStore.Configuration.isHiddenAttribute(type.id)
-    )
-    .filter(
-      (type) =>
-        !StartupDataStore.MetacardDefinitions.isHiddenTypeExceptThumbnail(
-          type.id
-        )
+      (type) => !StartupDataStore.MetacardDefinitions.isHiddenAttribute(type.id)
     )
     .filter((type) => !blacklist.includes(type.id))
     .filter((type) => !currentAttributes.includes(type.id))

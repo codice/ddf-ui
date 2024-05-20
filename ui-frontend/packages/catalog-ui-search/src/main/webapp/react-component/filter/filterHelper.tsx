@@ -59,15 +59,17 @@ export const getGroupedFilteredAttributes = (): {
       },
       []
     )
-  const groupedFilteredAttributes = validCommonAttributes.concat(
-    getFilteredAttributeList('All Attributes')
-  )
-  const reservedDatatypeAttr = groupedFilteredAttributes.find((thing) => {
-    return thing.value === BasicDataTypePropertyName
-  })
-  if (reservedDatatypeAttr) {
-    reservedDatatypeAttr.group = 'Special Attributes'
-  }
+
+  const basicDataTypeAttributeDefinition =
+    StartupDataStore.MetacardDefinitions.getAttributeDefinition(
+      BasicDataTypePropertyName
+    ) as AttributeDefinitionType
+
+  const groupedFilteredAttributes = validCommonAttributes
+    .concat([
+      toAttribute(basicDataTypeAttributeDefinition, 'Special Attributes'),
+    ])
+    .concat(getFilteredAttributeList('All Attributes'))
   const groups =
     validCommonAttributes.length > 0
       ? ['Commonly Used Attributes', 'Special Attributes', 'All Attributes']
@@ -81,8 +83,11 @@ export const getFilteredAttributeList = (group?: string): Attribute[] => {
   return StartupDataStore.MetacardDefinitions.getSortedAttributes()
     .filter(
       ({ id }: any) =>
-        !StartupDataStore.Configuration.isHiddenAttribute(id) &&
-        !StartupDataStore.MetacardDefinitions.isHiddenType(id)
+        id === 'anyText' ||
+        id === 'anyGeo' ||
+        id === BasicDataTypePropertyName ||
+        (!StartupDataStore.MetacardDefinitions.isHiddenAttribute(id) &&
+          id !== 'thumbnail')
     )
     .map((attr) => toAttribute(attr, group))
 }
