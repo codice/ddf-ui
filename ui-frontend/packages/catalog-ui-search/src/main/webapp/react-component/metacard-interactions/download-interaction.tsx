@@ -18,21 +18,16 @@ import { MetacardInteraction } from './metacard-interactions'
 import { hot } from 'react-hot-loader'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { StartupDataStore } from '../../js/model/Startup/startup'
-
-const openValidUrl = (result: LazyQueryResult) => {
-  const downloadUrl = result.getDownloadUrl()
-  downloadUrl && window.open(downloadUrl)
-}
+import { useDialog } from '../../component/dialog'
+import { useDownloadComponent } from '../../component/download/download'
 
 const isDownloadable = (model: LazyQueryResult[]): boolean => {
   return model.some((result) => result.getDownloadUrl())
 }
 
-const handleDownload = (model: LazyQueryResult[]) => {
-  model.forEach(openValidUrl)
-}
-
 const DownloadProduct = ({ model }: MetacardInteractionProps) => {
+  const { setProps } = useDialog()
+  const DownloadComponent = useDownloadComponent()
   if (!model || model.length === 0) {
     return null
   }
@@ -44,7 +39,12 @@ const DownloadProduct = ({ model }: MetacardInteractionProps) => {
       text="Download"
       help="Downloads the result's associated product directly to your machine."
       icon="fa fa-download"
-      onClick={() => handleDownload(model)}
+      onClick={() => {
+        setProps({
+          open: true,
+          children: <DownloadComponent lazyResults={model} />,
+        })
+      }}
     >
       {isRemoteResourceCached(model) && (
         <span
