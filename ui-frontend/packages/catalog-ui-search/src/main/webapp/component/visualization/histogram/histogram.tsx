@@ -39,16 +39,7 @@ function calculateAvailableAttributes(results: LazyQueryResult[]) {
   return availableAttributes
     .filter(
       (attribute) =>
-        StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute] !==
-        undefined
-    )
-    .filter(
-      (attribute) =>
-        !StartupDataStore.MetacardDefinitions.isHiddenType(attribute)
-    )
-    .filter(
-      (attribute) =>
-        !StartupDataStore.Configuration.isHiddenAttribute(attribute)
+        !StartupDataStore.MetacardDefinitions.isHiddenAttribute(attribute)
     )
     .map((attribute) => ({
       label: StartupDataStore.MetacardDefinitions.getAlias(attribute),

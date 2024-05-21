@@ -28,16 +28,6 @@ class Configuration extends Subscribable<{ thing: 'configuration-update' }> {
       },
     })
   }
-  isHiddenAttribute = (attribute: any) => {
-    if (attribute === 'anyDate') {
-      // feels like we should consolidate all the attribute logic into the metacard definitions file, but for now don't want to risk circular dependency
-      return true
-    }
-    return match(this.getHiddenAttributes(), attribute)
-  }
-  getHiddenAttributes = () => {
-    return this.config?.hiddenAttributes || []
-  }
   getExportLimit = () => {
     return this.config?.exportResultLimit || 1000
   }

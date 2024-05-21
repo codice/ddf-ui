@@ -36,7 +36,6 @@ import ExtensionPoints from '../../../extension-points'
 import LocationInputReact from '../../location-new/location-new.view'
 import { TypedUserInstance } from '../../singletons/TypedUser'
 import { StartupDataStore } from '../../../js/model/Startup/startup'
-import { useConfiguration } from '../../../js/model/Startup/configuration.hooks'
 import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
 import Common from '../../../js/Common'
 import SummaryManageAttributes from '../../../react-component/summary-manage-attributes/summary-manage-attributes'
@@ -704,12 +703,7 @@ const getHiddenAttributes = (
       return true
     })
     .filter((val) => {
-      return !StartupDataStore.Configuration.isHiddenAttribute(val.id)
-    })
-    .filter((val) => {
-      return !StartupDataStore.MetacardDefinitions.isHiddenTypeExceptThumbnail(
-        val.id
-      )
+      return !StartupDataStore.MetacardDefinitions.isHiddenAttribute(val.id)
     })
 }
 let globalExpanded = false // globally track if users want this since they may be clicking between results
@@ -728,9 +722,7 @@ const Summary = ({ result: selection }: Props) => {
   )
   useRerenderOnBackboneSync({ lazyResult: selection })
   const { listenTo } = useBackbone()
-  const { isHiddenAttribute } = useConfiguration()
-  const { isHiddenTypeExceptThumbnail, getMetacardDefinition } =
-    useMetacardDefinitions()
+  const { isHiddenAttribute, getMetacardDefinition } = useMetacardDefinitions()
   React.useEffect(() => {
     listenTo(
       user.get('user').get('preferences'),
@@ -763,16 +755,13 @@ const Summary = ({ result: selection }: Props) => {
     return selection && expanded
       ? Object.keys(selection.plain.metacard.properties)
           .filter((attr) => {
-            return !isHiddenTypeExceptThumbnail(attr)
-          })
-          .filter((attr) => {
             return !isHiddenAttribute(attr)
           })
           .filter((attr) => {
             return !summaryShown.includes(attr)
           })
       : []
-  }, [expanded, summaryShown, isHiddenAttribute, isHiddenTypeExceptThumbnail])
+  }, [expanded, summaryShown, isHiddenAttribute])
   const blankEverythingElse = React.useMemo(() => {
     return selection
       ? Object.values(getMetacardDefinition(selection.plain.metacardType))
@@ -786,13 +775,10 @@ const Summary = ({ result: selection }: Props) => {
             return true
           })
           .filter((val) => {
-            return !isHiddenTypeExceptThumbnail(val.id)
-          })
-          .filter((val) => {
             return !isHiddenAttribute(val.id)
           })
       : []
-  }, [expanded, summaryShown, isHiddenAttribute, isHiddenTypeExceptThumbnail])
+  }, [expanded, summaryShown, isHiddenAttribute])
   React.useEffect(() => {
     globalExpanded = expanded
   }, [expanded])

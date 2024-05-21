@@ -61,7 +61,7 @@ export default Backbone.AssociatedModel.extend({
     return _.filter(
       this.toJSON(),
       (_value, key) =>
-        !StartupDataStore.Configuration.isHiddenAttribute(key) &&
+        !StartupDataStore.MetacardDefinitions.isHiddenAttribute(key) &&
         (attribute === undefined || attribute === key) &&
         StartupDataStore.MetacardDefinitions.getAttributeMap()[key] &&
         StartupDataStore.MetacardDefinitions.getAttributeMap()[key].type ===

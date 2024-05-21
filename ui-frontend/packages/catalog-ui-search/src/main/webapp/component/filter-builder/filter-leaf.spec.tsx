@@ -13,6 +13,7 @@ import {
 import moment from 'moment'
 import user from '../singletons/user-instance'
 import { StartupDataStore } from '../../js/model/Startup/startup'
+import { BasicDataTypePropertyName } from './reserved.properties'
 function addTestDefs() {
   StartupDataStore.MetacardDefinitions.addDynamicallyFoundMetacardDefinitions({
     testing: {
@@ -69,12 +70,14 @@ function addTestDefs() {
         id: 'xmlType',
         multivalued: false,
         isInjected: false,
+        hidden: true,
       },
       binaryType: {
         type: 'BINARY',
         id: 'binaryType',
         multivalued: false,
         isInjected: false,
+        hidden: true,
       },
       'location.country-code': {
         type: 'STRING',
@@ -93,6 +96,14 @@ function addTestDefs() {
         id: 'anyText',
         multivalued: false,
         isInjected: false,
+        hidden: true,
+      },
+      [BasicDataTypePropertyName]: {
+        type: 'STRING',
+        id: BasicDataTypePropertyName,
+        multivalued: false,
+        isInjected: false,
+        hidden: true,
       },
     },
   })
