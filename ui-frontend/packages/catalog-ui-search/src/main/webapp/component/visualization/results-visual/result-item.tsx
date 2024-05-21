@@ -50,6 +50,8 @@ import ExtensionPoints from '../../../extension-points/extension-points'
 import { StartupDataStore } from '../../../js/model/Startup/startup'
 import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
 import wreqr from '../../../js/wreqr'
+import { useDialog } from '../../dialog'
+import { useDownloadComponent } from '../../download/download'
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (
     <div
@@ -149,11 +151,9 @@ const MultiSelectActions = ({
 }
 const dynamicActionClasses = 'h-full'
 const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
-  const triggerDownload = (e: any) => {
-    e.stopPropagation()
-    window.open(lazyResult.getDownloadUrl())
-  }
+  const { setProps } = useDialog()
   const metacardInteractionMenuState = useMenuState()
+  const DownloadComponent = useDownloadComponent()
   return (
     <Grid container direction="column" wrap="nowrap" alignItems="center">
       <Grid item className="h-full">
@@ -235,7 +235,10 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
             data-id="download-button"
             onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
               e.stopPropagation()
-              triggerDownload(e)
+              setProps({
+                open: true,
+                children: <DownloadComponent lazyResults={[lazyResult]} />,
+              })
             }}
             style={{ height: '100%' }}
             size="small"

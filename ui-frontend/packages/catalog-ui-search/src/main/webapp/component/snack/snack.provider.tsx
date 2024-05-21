@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import Portal from '@mui/material/Portal'
 
-export type AddSnack = (message: string, props?: SnackProps) => void
+export type AddSnack = (message: string, props?: SnackProps) => () => void
 
 type Snack = {
   message?: string
@@ -32,7 +32,8 @@ export function SnackProvider({ children }: any) {
   const [snacks, setSnacks] = useState([] as Snack[])
   const [currentSnack, setCurrentSnack] = useState({} as Snack)
 
-  const addSnack = (message: string, props: SnackProps = {}) => {
+  const addSnack: AddSnack = (message, props = {}) => {
+    const newSnack = { message, ...props }
     setSnacks((snacks) => {
       if (props.id) {
         const snackIndex = snacks.findIndex((s) => s.id === props.id)
@@ -40,8 +41,14 @@ export function SnackProvider({ children }: any) {
           snacks.splice(snackIndex, 1)
         }
       }
-      return [{ message, ...props }, ...snacks]
+      return [newSnack, ...snacks]
     })
+
+    const closeSnack = () => {
+      setSnacks((snacks) => snacks.filter((snack) => snack !== newSnack))
+    }
+
+    return closeSnack
   }
 
   // Set current snack to be displayed
