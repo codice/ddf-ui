@@ -121,6 +121,7 @@ export type ExtensionPointsType = {
     isSingleItem: boolean
   }) => JSX.Element | null
   extraSidebarButtons?: PermissiveComponentType
+  includeNavigationButtons?: boolean
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -153,6 +154,7 @@ const ExtensionPoints: ExtensionPointsType = {
   customHistogramHover: undefined,
   timelineItemAddOn: () => null,
   extraSidebarButtons: () => null,
+  includeNavigationButtons: false,
 }
 
 export default ExtensionPoints

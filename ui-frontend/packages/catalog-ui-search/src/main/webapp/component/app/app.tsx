@@ -540,7 +540,7 @@ const SideBarNavigationButtons = () => {
           className="w-full h-full overflow-hidden"
         >
           <Grid item className="mr-auto">
-            <Button onClick={() => history.back()} >
+            <Button onClick={() => history.back()}>
               <ArrowBackIcon fontSize="small" />
               {navOpen && 'Previous'}
             </Button>
@@ -651,7 +651,7 @@ const SideBar = () => {
           className="h-full w-full"
           wrap="nowrap"
         >
-          <SideBarNavigationButtons />
+          {Extensions.includeNavigationButtons && <SideBarNavigationButtons />}
           <Divider />
           <SideBarToggleButton />
           <Divider />
