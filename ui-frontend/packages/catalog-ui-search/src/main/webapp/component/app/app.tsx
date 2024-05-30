@@ -651,8 +651,12 @@ const SideBar = () => {
           className="h-full w-full"
           wrap="nowrap"
         >
-          {Extensions.includeNavigationButtons && <SideBarNavigationButtons />}
-          <Divider />
+          {Extensions.includeNavigationButtons && (
+            <>
+              <SideBarNavigationButtons />
+              <Divider />
+            </>
+          )}
           <SideBarToggleButton />
           <Divider />
           <SideBarRoutes />
