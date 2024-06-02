@@ -17,6 +17,8 @@ import Button from '@mui/material/Button'
 import ExpandingButton from '../button/expanding-button'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import MenuIcon from '@mui/icons-material/Menu'
 import PersonIcon from '@mui/icons-material/Person'
@@ -526,6 +528,35 @@ const SideBarRoutes = () => {
     </Grid>
   )
 }
+const SideBarNavigationButtons = () => {
+  const { navOpen } = useNavContextProvider()
+  return (
+    <>
+      <Grid item className="w-full p-2 shrink-0">
+        <Grid
+          container
+          wrap="nowrap"
+          alignItems="center"
+          className="w-full h-full overflow-hidden"
+        >
+          <Grid item className="mr-auto">
+            <Button onClick={() => history.back()}>
+              <ArrowBackIcon fontSize="small" />
+              {navOpen && 'Previous'}
+            </Button>
+          </Grid>
+          <Grid item className="ml-auto">
+            <Button onClick={() => history.forward()}>
+              {navOpen && 'Forward'}
+              <ArrowForwardIcon fontSize="small" />
+            </Button>
+          </Grid>
+        </Grid>
+      </Grid>
+    </>
+  )
+}
+
 const SideBarToggleButton = () => {
   const { navOpen, setNavOpen } = useNavContextProvider()
   const { getTopLeftLogoSrc, getCustomBranding, getProduct, getMenuIconSrc } =
@@ -620,6 +651,12 @@ const SideBar = () => {
           className="h-full w-full"
           wrap="nowrap"
         >
+          {Extensions.includeNavigationButtons && (
+            <>
+              <SideBarNavigationButtons />
+              <Divider />
+            </>
+          )}
           <SideBarToggleButton />
           <Divider />
           <SideBarRoutes />
