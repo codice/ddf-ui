@@ -34,9 +34,10 @@ import { HeaderCheckbox } from './table-header'
 import { DarkDivider } from '../../dark-divider/dark-divider'
 import { ResultsCommonControls } from './table'
 import { TypedUserInstance } from '../../singletons/TypedUser'
-import user from '../../singletons/user-instance'
 import { VariableSizeList } from 'react-window'
 import { Memo } from '../../memo/memo'
+import { LayoutContext } from '../../golden-layout/visual-settings.provider'
+import { getDefaultResultsShownList } from './settings-helper'
 
 type Props = {
   mode: any
@@ -145,6 +146,7 @@ export const useScrollToItemOnSelection = ({
 }
 
 const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
+  const { setValue, getValue } = React.useContext(LayoutContext)
   const lazyResults = useLazyResultsFromSelectionInterface({
     selectionInterface,
   })
@@ -192,19 +194,18 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
             />
           </Grid>
           <ResultsCommonControls
-            getStartingLeft={() => {
-              return TypedUserInstance.getResultsAttributesShownList()
-            }}
+            getStartingLeft={() =>
+              getValue(
+                'results-attributesShownList',
+                getDefaultResultsShownList()
+              )
+            }
             getStartingRight={() => {
-              return TypedUserInstance.getResultsAttributesPossibleList()
+              return TypedUserInstance.getResultsAttributesPossibleList(
+                getValue('results-attributesShownList')
+              )
             }}
-            onSave={(active) => {
-              user
-                .get('user')
-                .get('preferences')
-                .set('results-attributesShownList', active)
-              user.savePreferences()
-            }}
+            onSave={(active) => setValue('results-attributesShownList', active)}
           />
           <Grid item className="pr-2">
             <Button

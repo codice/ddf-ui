@@ -37,6 +37,8 @@ import { TypedUserInstance } from '../../singletons/TypedUser'
 import useTimePrefs from '../../fields/useTimePrefs'
 import { useScrollToItemOnSelection } from './result-item.collection'
 import { Memo } from '../../memo/memo'
+import { LayoutContext } from '../../golden-layout/visual-settings.provider'
+import { getDefaultResultsShownTable } from './settings-helper'
 type Props = {
   selectionInterface: any
   mode: any
@@ -94,6 +96,7 @@ export const ResultsCommonControls = ({
   )
 }
 const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
+  const { getValue, setValue } = React.useContext(LayoutContext)
   const lazyResults = useLazyResultsFromSelectionInterface({
     selectionInterface,
   })
@@ -148,18 +151,19 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
         >
           <ResultsCommonControls
             getStartingLeft={() => {
-              return TypedUserInstance.getResultsAttributesShownTable()
+              return getValue(
+                'results-attributesShownTable',
+                getDefaultResultsShownTable()
+              )
             }}
             getStartingRight={() => {
-              return TypedUserInstance.getResultsAttributesPossibleTable()
+              return TypedUserInstance.getResultsAttributesPossibleTable(
+                getValue('results-attributesShownTable')
+              )
             }}
-            onSave={(active) => {
-              user
-                .get('user')
-                .get('preferences')
-                .set('results-attributesShownTable', active)
-              user.savePreferences()
-            }}
+            onSave={(active) =>
+              setValue('results-attributesShownTable', active)
+            }
           />
           <Grid item className="pr-2">
             <Button

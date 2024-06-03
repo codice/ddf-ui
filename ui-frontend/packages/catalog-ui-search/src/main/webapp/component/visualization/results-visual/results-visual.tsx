@@ -12,6 +12,7 @@ import { useStatusOfLazyResults } from '../../../js/model/LazyQueryResult/hooks'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import Button from '@mui/material/Button'
 import BackgroundInheritingDiv from '../../theme/background-inheriting-div'
+import { LayoutContext } from '../../golden-layout/visual-settings.provider'
 type Props = {
   selectionInterface: any
 }
@@ -24,8 +25,18 @@ export const ResultsViewContext = React.createContext({
 })
 
 const ResultsView = ({ selectionInterface }: Props) => {
-  const [mode, setMode] = React.useState('card' as ModeType)
+  const { getValue, setValue } = React.useContext(LayoutContext)
+  const [mode, setMode] = React.useState(null)
   const [edit, setEdit] = React.useState(null as null | LazyQueryResult)
+
+  React.useEffect(() => {
+    setMode(getValue('results-mode') || ('card' as ModeType))
+  }, [])
+
+  React.useEffect(() => {
+    mode && setValue('results-mode', mode)
+  }, [mode])
+
   return (
     <ResultsViewContext.Provider value={{ edit, setEdit }}>
       <Grid

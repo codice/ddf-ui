@@ -52,6 +52,9 @@ import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-defin
 import wreqr from '../../../js/wreqr'
 import { useDialog } from '../../dialog'
 import { useDownloadComponent } from '../../download/download'
+import { LayoutContext } from '../../golden-layout/visual-settings.provider'
+import { getDefaultResultsShownList } from './settings-helper'
+
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (
     <div
@@ -392,6 +395,7 @@ export const ResultItem = ({
   measure: originalMeasure,
   selectionInterface,
 }: ResultItemFullProps) => {
+  const { getValue, onStateChanged } = React.useContext(LayoutContext)
   const MetacardDefinitions = useMetacardDefinitions()
   const rippleRef = React.useRef<{
     pulsate: () => void
@@ -410,17 +414,14 @@ export const ResultItem = ({
     TypedUserInstance.getDecimalPrecision()
   )
   const [shownAttributes, setShownAttributes] = React.useState(
-    TypedUserInstance.getResultsAttributesShownList()
+    getValue(
+      'results-attributesShownList',
+      getDefaultResultsShownList()
+    ) as string[]
   )
   useRerenderOnBackboneSync({ lazyResult })
+
   React.useEffect(() => {
-    listenTo(
-      user.get('user').get('preferences'),
-      'change:results-attributesShownList',
-      () => {
-        setShownAttributes(TypedUserInstance.getResultsAttributesShownList())
-      }
-    )
     listenTo(
       user.get('user').get('preferences'),
       'change:decimalPrecision',
@@ -428,7 +429,15 @@ export const ResultItem = ({
         setDecimalPrecision(TypedUserInstance.getDecimalPrecision())
       }
     )
+    onStateChanged(() => {
+      const shownList = getValue(
+        'results-attributesShownList',
+        getDefaultResultsShownList()
+      )
+      setShownAttributes(shownList)
+    })
   }, [])
+
   /**
    * Unfocused (hidden) tab sets the container height to 0
    * Run the measure function when the height is 0 could cause items inside the tab to be unreadable

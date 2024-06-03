@@ -33,6 +33,8 @@ import Common from '../../../js/Common'
 import Extensions from '../../../extension-points'
 import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
 import wreqr from '../../../js/wreqr'
+import { LayoutContext } from '../../golden-layout/visual-settings.provider'
+import { getDefaultResultsShownTable } from './settings-helper'
 type ResultItemFullProps = {
   lazyResult: LazyQueryResult
   measure: () => void
@@ -96,13 +98,17 @@ const RowComponent = ({
   addOnWidth,
   setMaxAddOnWidth,
 }: ResultItemFullProps) => {
+  const { getValue, onStateChanged } = React.useContext(LayoutContext)
   const MetacardDefinitions = useMetacardDefinitions()
   const thumbnail = lazyResult.plain.metacard.properties.thumbnail
   const [decimalPrecision, setDecimalPrecision] = React.useState(
     TypedUserInstance.getDecimalPrecision()
   )
   const [shownAttributes, setShownAttributes] = React.useState(
-    TypedUserInstance.getResultsAttributesShownTable()
+    getValue(
+      'results-attributesShownTable',
+      getDefaultResultsShownTable()
+    ) as string[]
   )
   const isLast = index === results.length - 1
   const { listenTo } = useBackbone()
@@ -126,18 +132,18 @@ const RowComponent = ({
   React.useEffect(() => {
     listenTo(
       user.get('user').get('preferences'),
-      'change:results-attributesShownTable',
-      () => {
-        setShownAttributes(TypedUserInstance.getResultsAttributesShownTable())
-      }
-    )
-    listenTo(
-      user.get('user').get('preferences'),
       'change:decimalPrecision',
       () => {
         setDecimalPrecision(TypedUserInstance.getDecimalPrecision())
       }
     )
+    onStateChanged(() => {
+      const shownList = getValue(
+        'results-attributesShownTable',
+        getDefaultResultsShownTable()
+      )
+      setShownAttributes(shownList)
+    })
   }, [])
   const imgsrc = Common.getImageSrc(thumbnail)
   const measure = () => {
