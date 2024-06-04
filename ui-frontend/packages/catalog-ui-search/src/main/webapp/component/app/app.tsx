@@ -542,7 +542,7 @@ const SideBarNavigationButtons = () => {
           <Grid item className="mr-auto">
             <Button onClick={() => history.back()}>
               <ArrowBackIcon fontSize="small" />
-              {navOpen && 'Previous'}
+              {navOpen && 'Back'}
             </Button>
           </Grid>
           <Grid item className="ml-auto">
