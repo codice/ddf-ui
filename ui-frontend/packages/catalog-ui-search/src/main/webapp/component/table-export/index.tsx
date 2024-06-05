@@ -16,5 +16,5 @@ export {
   default as tableExport,
   Props,
   getWarning,
-  getDownloadBody,
+  getExportBody,
 } from './table-export'

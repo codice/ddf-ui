@@ -49,7 +49,7 @@ export interface ExportCountInfo {
   customExportCount: number
 }
 
-export type DownloadInfo = {
+export type ExportInfo = {
   exportFormat: string
   exportSize: string
   customExportCount: number
