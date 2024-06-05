@@ -29,6 +29,7 @@ import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResult
 import contentDisposition from 'content-disposition'
 import { StartupDataStore } from '../../js/model/Startup/startup'
 import { OverridableSaveFile } from '../utils/save-file/save-file'
+import { AddSnack } from '../../component/snack/snack.provider'
 
 type Result = {
   id: string
@@ -40,22 +41,36 @@ type Props = {
   results: Result[]
   lazyQueryResults: LazyQueryResults
   isZipped?: boolean
+  onClose?: any
+  exportSuccessful?: boolean
+  setExportSuccessful?: any
+  setLoading?: any
 } & WithBackboneProps
 
 type State = {
-  downloadDisabled: boolean
+  exportDisabled: boolean
   selectedFormat: string
   exportFormats: ExportFormat[]
+  loading?: boolean
+  exportSuccessful?: boolean
 }
 
 class ResultsExport extends React.Component<Props, State> {
+  setExportSuccessful: any
+  onClose: any
+  setLoading: any
   constructor(props: Props) {
     super(props)
     this.state = {
       selectedFormat: 'Binary Resource',
       exportFormats: [],
-      downloadDisabled: true,
+      exportDisabled: true,
+      loading: false,
+      exportSuccessful: false,
     }
+    this.onClose = props.onClose
+    this.setExportSuccessful = props.setExportSuccessful
+    this.setLoading = props.setLoading
   }
 
   componentDidUpdate(_prevProps: Props) {
@@ -66,7 +81,7 @@ class ResultsExport extends React.Component<Props, State> {
       this.fetchExportOptions()
       this.setState({
         selectedFormat: 'Binary Resource',
-        downloadDisabled: true,
+        exportDisabled: true,
       })
     }
   }
@@ -109,7 +124,7 @@ class ResultsExport extends React.Component<Props, State> {
     return undefined
   }
 
-  async onDownloadClick() {
+  onExportClick = async (addSnack: AddSnack) => {
     const uriEncodedTransformerId = this.getSelectedExportFormatId()
 
     if (uriEncodedTransformerId === undefined) {
@@ -155,19 +170,34 @@ class ResultsExport extends React.Component<Props, State> {
       })
     }
 
-    if (response.status === 200) {
-      const filename = contentDisposition.parse(
-        response.headers.get('content-disposition')
-      ).parameters.filename
-      const contentType = response.headers.get('content-type')
-      const data = await response.blob()
-      OverridableSaveFile.get()(filename, 'data:' + contentType, data)
+    try {
+      if (response.status === 200) {
+        const filename = contentDisposition.parse(
+          response.headers.get('content-disposition')
+        ).parameters.filename
+        const contentType = response.headers.get('content-type')
+        const data = await response.blob()
+        OverridableSaveFile.get()(filename, 'data:' + contentType, data)
+        if (this.state.loading === false) {
+          this.onClose()
+          this.setExportSuccessful(true)
+        }
+      } else {
+        this.setExportSuccessful(false)
+        addSnack('Error: Could not export results.', {
+          alertProps: { severity: 'error' },
+        })
+      }
+    } catch (error) {
+      console.error(error)
+      this.setExportSuccessful(false)
     }
   }
+
   handleExportOptionChange(name: string) {
     this.setState({
       selectedFormat: name,
-      downloadDisabled: false,
+      exportDisabled: false,
     })
   }
   render() {
@@ -175,9 +205,13 @@ class ResultsExport extends React.Component<Props, State> {
       <ResultsExportComponent
         selectedFormat={this.state.selectedFormat}
         exportFormats={this.state.exportFormats}
-        downloadDisabled={this.state.downloadDisabled}
-        onDownloadClick={this.onDownloadClick.bind(this)}
+        exportDisabled={this.state.exportDisabled}
+        onExportClick={this.onExportClick.bind(this)}
         handleExportOptionChange={this.handleExportOptionChange.bind(this)}
+        onClose={this.onClose.bind(this)}
+        loading={this.state.loading}
+        exportSuccessful={this.state.exportSuccessful}
+        setExportSuccessful={this.setExportSuccessful.bind(this)}
       />
     )
   }
