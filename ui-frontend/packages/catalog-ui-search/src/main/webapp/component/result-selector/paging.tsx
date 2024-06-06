@@ -102,6 +102,7 @@ const Paging = ({ selectionInterface }: Props) => {
         <TableExport
           selectionInterface={selectionInterface}
           setExportSuccessful={setExportSuccessful}
+          exportSuccessful={exportSuccessful}
           onClose={() => {
             exportDialogState.handleClose()
           }}

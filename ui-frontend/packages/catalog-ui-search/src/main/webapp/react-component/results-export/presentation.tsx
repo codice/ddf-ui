@@ -19,7 +19,7 @@ import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
 import SummaryManageAttributes from '../summary-manage-attributes/summary-manage-attributes'
 import ProgressButton from '../progress-button'
-import { DialogActions, DialogContent } from '@mui/material'
+import { DialogActions, DialogContent, LinearProgress } from '@mui/material'
 import useSnack from '../../component/hooks/useSnack'
 import { AddSnack } from '../../component/snack/snack.provider'
 
@@ -47,6 +47,7 @@ const ResultsExportComponent = ({
   exportDisabled,
   onExportClick,
   handleExportOptionChange,
+  exportSuccessful,
   onClose,
   loading,
 }: Props) => {
@@ -55,7 +56,13 @@ const ResultsExportComponent = ({
     handleExportOptionChange(exportFormats[0]?.displayName)
   }, [exportFormats])
 
-  return (
+  if (exportSuccessful) {
+    onClose()
+  }
+
+  return exportFormats.length === 0 ? (
+    <LinearProgress className="w-full h-2" />
+  ) : (
     <>
       <DialogContent>
         <div className="p-4" style={{ minWidth: '400px' }}>
@@ -110,7 +117,9 @@ const ResultsExportComponent = ({
             color="primary"
             data-id="export-button"
             disabled={exportDisabled}
-            onClick={() => onExportClick(addSnack)}
+            onClick={() => {
+              onExportClick(addSnack)
+            }}
             loading={loading}
           >
             Export

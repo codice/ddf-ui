@@ -25,6 +25,7 @@ import { Dialog, DialogActions, DialogTitle } from '@mui/material'
 
 export const ExportActions = (props: MetacardInteractionProps) => {
   const [exportSuccessful, setExportSuccessful] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
   const exportDialogState = useDialogState()
 
   if (!props.model || props.model.length <= 0) {
@@ -55,6 +56,9 @@ export const ExportActions = (props: MetacardInteractionProps) => {
           results={getExportResults(props.model)}
           lazyQueryResults={props.model[0].parent}
           setExportSuccessful={setExportSuccessful}
+          exportSuccessful={exportSuccessful}
+          setLoading={setLoading}
+          loading={loading}
           onClose={() => {
             exportDialogState.handleClose()
           }}

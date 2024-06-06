@@ -185,6 +185,7 @@ const TableExports = ({
   selectionInterface,
   onClose,
   setExportSuccessful,
+  exportSuccessful,
 }: Props) => {
   const exportLimit = StartupDataStore.Configuration.getExportLimit()
   const [formats, setFormats] = useState<Option[]>([])
@@ -207,10 +208,7 @@ const TableExports = ({
           response.headers.get('content-disposition')
         ).parameters.filename
         OverridableSaveFile.get()(filename, 'data:' + contentType, data)
-        if (!loading) {
-          onClose()
-          setExportSuccessful(true)
-        }
+        setExportSuccessful(true)
       } else {
         setExportSuccessful(false)
         addSnack('Error: Could not export results.', {
@@ -223,6 +221,10 @@ const TableExports = ({
     } finally {
       setLoading(false)
     }
+  }
+
+  if (exportSuccessful) {
+    onClose()
   }
 
   const exportSizes: Option[] = [
@@ -368,16 +370,12 @@ const TableExports = ({
               customExportCount > exportLimit
             }
             onClick={() => {
-              try {
-                onExportClick(addSnack, {
-                  exportFormat,
-                  exportSize,
-                  customExportCount,
-                  selectionInterface,
-                })
-              } catch (error) {
-                console.error(error)
-              }
+              onExportClick(addSnack, {
+                exportFormat,
+                exportSize,
+                customExportCount,
+                selectionInterface,
+              })
             }}
           >
             Export

@@ -44,6 +44,7 @@ type Props = {
   onClose?: any
   exportSuccessful?: boolean
   setExportSuccessful?: any
+  loading?: boolean
   setLoading?: any
 } & WithBackboneProps
 
@@ -127,50 +128,54 @@ class ResultsExport extends React.Component<Props, State> {
   onExportClick = async (addSnack: AddSnack) => {
     const uriEncodedTransformerId = this.getSelectedExportFormatId()
 
-    if (uriEncodedTransformerId === undefined) {
-      return
-    }
-
-    let response = null
-    const count = this.props.results.length
-    const cql = getResultSetCql(
-      this.props.results.map((result: Result) => result.id)
-    )
-    const srcs = Array.from(this.getResultSources())
-    const searches = [
-      {
-        srcs,
-        cql,
-        count,
-      },
-    ]
-    const columnOrder = OverridableGetColumnOrder.get()()
-    if (this.props.isZipped) {
-      response = await exportResultSet('zipCompression', {
-        searches,
-        count,
-        sorts: [],
-        args: {
-          transformerId: uriEncodedTransformerId,
-        },
-      })
-    } else {
-      response = await exportResultSet(uriEncodedTransformerId, {
-        searches,
-        count,
-        sorts: this.props.lazyQueryResults?.transformSorts({
-          originalSorts: this.props.lazyQueryResults?.persistantSorts,
-        }),
-        args: {
-          hiddenFields: [],
-          columnOrder: columnOrder,
-          columnAliasMap:
-            StartupDataStore.Configuration.config?.attributeAliases || {},
-        },
-      })
-    }
-
     try {
+      console.log(this.state.loading)
+      this.setState({ loading: true })
+      console.log(this.state.loading)
+
+      if (uriEncodedTransformerId === undefined) {
+        return
+      }
+
+      let response = null
+      const count = this.props.results.length
+      const cql = getResultSetCql(
+        this.props.results.map((result: Result) => result.id)
+      )
+      const srcs = Array.from(this.getResultSources())
+      const searches = [
+        {
+          srcs,
+          cql,
+          count,
+        },
+      ]
+      const columnOrder = OverridableGetColumnOrder.get()()
+      if (this.props.isZipped) {
+        response = await exportResultSet('zipCompression', {
+          searches,
+          count,
+          sorts: [],
+          args: {
+            transformerId: uriEncodedTransformerId,
+          },
+        })
+      } else {
+        response = await exportResultSet(uriEncodedTransformerId, {
+          searches,
+          count,
+          sorts: this.props.lazyQueryResults?.transformSorts({
+            originalSorts: this.props.lazyQueryResults?.persistantSorts,
+          }),
+          args: {
+            hiddenFields: [],
+            columnOrder: columnOrder,
+            columnAliasMap:
+              StartupDataStore.Configuration.config?.attributeAliases || {},
+          },
+        })
+      }
+
       if (response.status === 200) {
         const filename = contentDisposition.parse(
           response.headers.get('content-disposition')
@@ -178,19 +183,21 @@ class ResultsExport extends React.Component<Props, State> {
         const contentType = response.headers.get('content-type')
         const data = await response.blob()
         OverridableSaveFile.get()(filename, 'data:' + contentType, data)
-        if (this.state.loading === false) {
-          this.onClose()
-          this.setExportSuccessful(true)
-        }
+        this.setExportSuccessful(true)
+        this.onClose()
       } else {
-        this.setExportSuccessful(false)
+        this.setState({ exportSuccessful: false })
+        this.setState({ loading: false })
         addSnack('Error: Could not export results.', {
           alertProps: { severity: 'error' },
         })
       }
     } catch (error) {
       console.error(error)
-      this.setExportSuccessful(false)
+      this.setState({ exportSuccessful: false })
+      this.setState({ loading: false })
+    } finally {
+      this.setState({ loading: false })
     }
   }
 
@@ -210,8 +217,9 @@ class ResultsExport extends React.Component<Props, State> {
         handleExportOptionChange={this.handleExportOptionChange.bind(this)}
         onClose={this.onClose.bind(this)}
         loading={this.state.loading}
+        setLoading={this.setLoading.bind(this)}
         exportSuccessful={this.state.exportSuccessful}
-        setExportSuccessful={this.setExportSuccessful.bind(this)}
+        setExportSuccessful={this.setLoading.bind(this)}
       />
     )
   }
