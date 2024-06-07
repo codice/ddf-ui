@@ -22,9 +22,9 @@ import { useSelectionOfLazyResults } from '../../../js/model/LazyQueryResult/hoo
 import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox'
-import { TypedUserInstance } from '../../singletons/TypedUser'
-import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
+import { LayoutContext } from '../../golden-layout/visual-settings.provider'
+import { getDefaultResultsShownTable } from './settings-helper'
 export type Header = {
   hidden: boolean
   id: string
@@ -178,12 +178,15 @@ export const Header = ({
   actionWidth,
   addOnWidth,
 }: HeaderProps) => {
+  const { getValue, onStateChanged } = React.useContext(LayoutContext)
   const MetacardDefinitions = useMetacardDefinitions()
   const handleSortClick = _.debounce(updateSort, 500, true)
   const [shownAttributes, setShownAttributes] = React.useState(
-    TypedUserInstance.getResultsAttributesShownTable()
+    getValue(
+      'results-attributesShownTable',
+      getDefaultResultsShownTable()
+    ) as string[]
   )
-  const { listenTo } = useBackbone()
 
   const [activeIndex, setActiveIndex] = React.useState(null)
 
@@ -255,18 +258,18 @@ export const Header = ({
   }, [activeIndex, mouseMove, mouseUp, removeListeners])
 
   React.useEffect(() => {
-    listenTo(
-      user.get('user').get('preferences'),
-      'change:results-attributesShownTable',
-      () => {
-        setShownAttributes(TypedUserInstance.getResultsAttributesShownTable())
-        columnRefs.current =
-          TypedUserInstance.getResultsAttributesShownTable().map(() =>
-            React.createRef<HTMLDivElement>()
-          )
-      }
-    )
+    onStateChanged(() => {
+      const shownList = getValue(
+        'results-attributesShownTable',
+        getDefaultResultsShownTable()
+      )
+      setShownAttributes(shownList)
+      columnRefs.current = shownList.map(() =>
+        React.createRef<HTMLDivElement>()
+      )
+    })
   }, [])
+
   return (
     <React.Fragment>
       <div

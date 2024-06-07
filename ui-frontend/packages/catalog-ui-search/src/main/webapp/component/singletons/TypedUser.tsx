@@ -74,9 +74,11 @@ export const TypedUserInstance = {
     })
     return attributesPossible.map((attr) => attr.id)
   },
-  getResultsAttributesPossibleTable: (): string[] => {
+  getResultsAttributesPossibleTable: (
+    currentAttributes?: string[]
+  ): string[] => {
     const currentAttributesShown =
-      TypedUserInstance.getResultsAttributesShownTable()
+      currentAttributes ?? TypedUserInstance.getResultsAttributesShownTable()
     const allKnownAttributes =
       StartupDataStore.MetacardDefinitions.getSortedAttributes()
     const searchOnlyAttributes =
@@ -91,9 +93,11 @@ export const TypedUserInstance = {
     return attributesPossible.map((attr) => attr.id)
   },
   // basically, what could be shown that currently isn't
-  getResultsAttributesPossibleList: (): string[] => {
+  getResultsAttributesPossibleList: (
+    currentAttributes?: string[]
+  ): string[] => {
     const currentAttributesShown =
-      TypedUserInstance.getResultsAttributesShownList()
+      currentAttributes ?? TypedUserInstance.getResultsAttributesShownList()
     const allKnownAttributes =
       StartupDataStore.MetacardDefinitions.getSortedAttributes()
     const searchOnlyAttributes =

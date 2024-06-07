@@ -47,6 +47,7 @@ import {
   GoldenLayoutWindowCommunicationEvents,
 } from './cross-window-communication'
 import { useVerifyMapExistsWhenDrawing } from './verify-map'
+import { VisualSettingsProvider } from './visual-settings.provider'
 
 const treeMap = (obj: any, fn: any, path = []): any => {
   if (Array.isArray(obj)) {
@@ -168,17 +169,20 @@ const GoldenLayoutComponent = ({
 }) => {
   const { height } = useContainerSize(container)
   const isMinimized = height && height <= MinimizedHeight
+
   return (
     <ExtensionPoints.providers>
-      <UseSubwindowConsumeNavigationChange goldenLayout={goldenLayout} />
-      <UseMissingParentWindow goldenLayout={goldenLayout} />
-      <Paper
-        elevation={Elevations.panels}
-        className={`w-full h-full ${isMinimized ? 'hidden' : ''}`}
-        square
-      >
-        <ComponentView selectionInterface={options.selectionInterface} />
-      </Paper>
+      <VisualSettingsProvider container={container} goldenLayout={goldenLayout}>
+        <UseSubwindowConsumeNavigationChange goldenLayout={goldenLayout} />
+        <UseMissingParentWindow goldenLayout={goldenLayout} />
+        <Paper
+          elevation={Elevations.panels}
+          className={`w-full h-full ${isMinimized ? 'hidden' : ''}`}
+          square
+        >
+          <ComponentView selectionInterface={options.selectionInterface} />
+        </Paper>
+      </VisualSettingsProvider>
     </ExtensionPoints.providers>
   )
 }
