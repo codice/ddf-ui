@@ -3,13 +3,16 @@ import { hot } from 'react-hot-loader'
 import Button from '@mui/material/Button'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { useLazyResultsStatusFromSelectionInterface } from '../selection-interface/hooks'
-import CloseIcon from '@mui/icons-material/Close'
 import TableExport from '../table-export/table-export'
 import { useDialogState } from '../../component/hooks/useDialogState'
 import Divider from '@mui/material/Divider'
+import { Dialog, DialogActions, DialogTitle } from '@mui/material'
 
 type Props = {
   selectionInterface: any
+  onClose?: any
+  exportSuccessful?: boolean
+  setExportSuccessful?: () => void
 }
 
 const determineIsOutdated = ({ selectionInterface }: Props) => {
@@ -25,6 +28,8 @@ const Paging = ({ selectionInterface }: Props) => {
     selectionInterface,
   })
   const exportDialogState = useDialogState()
+
+  const [exportSuccessful, setExportSuccessful] = React.useState(false)
 
   const [isOutdated, setIsOutdated] = React.useState(
     determineIsOutdated({ selectionInterface })
@@ -80,22 +85,28 @@ const Paging = ({ selectionInterface }: Props) => {
       </Button>
       <exportDialogState.MuiDialogComponents.Dialog
         {...exportDialogState.MuiDialogProps}
+        disableEscapeKeyDown
+        onClose={(event, reason) => {
+          if (reason === 'backdropClick') {
+            return
+          }
+          exportDialogState.MuiDialogProps.onClose(event, reason)
+        }}
       >
         <exportDialogState.MuiDialogComponents.DialogTitle>
           <div className="flex flex-row items-center justify-between flex-nowrap w-full">
             Export Results
-            <Button
-              className="ml-auto"
-              onClick={() => {
-                exportDialogState.handleClose()
-              }}
-            >
-              <CloseIcon />
-            </Button>
           </div>
         </exportDialogState.MuiDialogComponents.DialogTitle>
         <Divider />
-        <TableExport selectionInterface={selectionInterface} />
+        <TableExport
+          selectionInterface={selectionInterface}
+          setExportSuccessful={setExportSuccessful}
+          exportSuccessful={exportSuccessful}
+          onClose={() => {
+            exportDialogState.handleClose()
+          }}
+        />
       </exportDialogState.MuiDialogComponents.Dialog>
       <Button
         data-id="export-table-button"
@@ -108,6 +119,29 @@ const Paging = ({ selectionInterface }: Props) => {
       >
         Export
       </Button>
+      {exportSuccessful && (
+        <Dialog open={exportSuccessful}>
+          <DialogTitle>
+            <div className="flex flex-row items-center justify-between flex-nowrap w-full">
+              Export Successful!
+            </div>
+          </DialogTitle>
+          <Divider />
+          <DialogActions>
+            <div
+              className="pt-2"
+              style={{ display: 'flex', justifyContent: 'flex-end' }}
+            >
+              <Button
+                color="primary"
+                onClick={() => setExportSuccessful(false)}
+              >
+                Close
+              </Button>
+            </div>
+          </DialogActions>
+        </Dialog>
+      )}
     </>
   )
 }

@@ -20,11 +20,14 @@ import { hot } from 'react-hot-loader'
 import { getExportResults } from '../utils/export/export'
 import { useDialogState } from '../../component/hooks/useDialogState'
 import Button from '@mui/material/Button'
-import CloseIcon from '@mui/icons-material/Close'
 import Divider from '@mui/material/Divider'
+import { Dialog, DialogActions, DialogTitle } from '@mui/material'
 
 export const ExportActions = (props: MetacardInteractionProps) => {
+  const [exportSuccessful, setExportSuccessful] = React.useState(false)
+  const [loading, setLoading] = React.useState(false)
   const exportDialogState = useDialogState()
+
   if (!props.model || props.model.length <= 0) {
     return null
   }
@@ -35,26 +38,57 @@ export const ExportActions = (props: MetacardInteractionProps) => {
     <>
       <exportDialogState.MuiDialogComponents.Dialog
         {...exportDialogState.MuiDialogProps}
+        disableEscapeKeyDown
+        onClose={(event, reason) => {
+          if (reason === 'backdropClick') {
+            return
+          }
+          exportDialogState.MuiDialogProps.onClose(event, reason)
+        }}
       >
         <exportDialogState.MuiDialogComponents.DialogTitle>
           <div className="flex flex-row items-center justify-between flex-nowrap w-full">
-            Export Results
-            <Button
-              className="ml-auto"
-              onClick={() => {
-                exportDialogState.handleClose()
-              }}
-            >
-              <CloseIcon />
-            </Button>
+            Export
           </div>
         </exportDialogState.MuiDialogComponents.DialogTitle>
         <Divider></Divider>
         <ResultsExport
           results={getExportResults(props.model)}
           lazyQueryResults={props.model[0].parent}
+          setExportSuccessful={setExportSuccessful}
+          exportSuccessful={exportSuccessful}
+          setLoading={setLoading}
+          loading={loading}
+          onClose={() => {
+            exportDialogState.handleClose()
+          }}
         />
       </exportDialogState.MuiDialogComponents.Dialog>
+
+      {exportSuccessful && (
+        <Dialog open={exportSuccessful}>
+          <DialogTitle>
+            <div className="flex flex-row items-center justify-between flex-nowrap w-full">
+              Export Successful!
+            </div>
+          </DialogTitle>
+          <Divider />
+          <DialogActions>
+            <div
+              className="pt-2"
+              style={{ display: 'flex', justifyContent: 'flex-end' }}
+            >
+              <Button
+                color="primary"
+                onClick={() => setExportSuccessful(false)}
+              >
+                Close
+              </Button>
+            </div>
+          </DialogActions>
+        </Dialog>
+      )}
+
       <MetacardInteraction
         onClick={() => {
           props.onClose()

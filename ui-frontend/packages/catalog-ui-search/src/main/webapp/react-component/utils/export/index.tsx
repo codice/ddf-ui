@@ -19,7 +19,7 @@ export {
   Transformer,
   ResultSet,
   ExportCountInfo,
-  DownloadInfo,
+  ExportInfo,
   OverridableGetColumnOrder,
   getColumnOrder,
   aliasMap,

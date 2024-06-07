@@ -15,77 +15,118 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import Button from '@mui/material/Button'
-import GetAppIcon from '@mui/icons-material/GetApp'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
 import SummaryManageAttributes from '../summary-manage-attributes/summary-manage-attributes'
+import ProgressButton from '../progress-button'
+import { DialogActions, DialogContent, LinearProgress } from '@mui/material'
+import useSnack from '../../component/hooks/useSnack'
+import { AddSnack } from '../../component/snack/snack.provider'
 
 type ExportFormat = {
   id: string
   displayName: string
 }
 
-type Props = {
+export type Props = {
   selectedFormat: string
   exportFormats: ExportFormat[]
-  downloadDisabled: boolean
-  onDownloadClick: () => void
+  exportDisabled: boolean
+  onExportClick: (addSnack: AddSnack) => void
   handleExportOptionChange: (val: string) => void
+  loading?: boolean
+  setLoading?: any
+  onClose?: any
+  exportSuccessful?: boolean
+  setExportSuccessful?: any
 }
 
-const ResultsExportComponent = (props: Props) => {
-  const {
-    selectedFormat,
-    exportFormats,
-    downloadDisabled,
-    onDownloadClick,
-    handleExportOptionChange,
-  } = props
-
+const ResultsExportComponent = ({
+  selectedFormat,
+  exportFormats,
+  exportDisabled,
+  onExportClick,
+  handleExportOptionChange,
+  exportSuccessful,
+  onClose,
+  loading,
+}: Props) => {
+  const addSnack = useSnack()
   React.useEffect(() => {
     handleExportOptionChange(exportFormats[0]?.displayName)
   }, [exportFormats])
 
-  return (
-    <div className="p-4" style={{ minWidth: '400px' }}>
-      <div data-id="export-format-select" className="export-option">
-        <Autocomplete
-          key={JSON.stringify(exportFormats)}
-          data-id="filter-type-autocomplete"
-          fullWidth
-          size="small"
-          options={exportFormats}
-          getOptionLabel={(option) => option.displayName}
-          isOptionEqualToValue={(option, value) =>
-            option.displayName === value.displayName
-          }
-          onChange={(_e, newValue) => {
-            handleExportOptionChange(newValue.displayName)
-          }}
-          disableClearable
-          value={
-            exportFormats.find(
-              (format) => format.displayName === selectedFormat
-            ) || exportFormats[0]
-          }
-          renderInput={(params) => <TextField {...params} variant="outlined" />}
-        />
-      </div>
-      {['CSV', 'RTF', 'XLSX'].includes(selectedFormat) ? (
-        <SummaryManageAttributes isExport={true} />
-      ) : null}
-      <Button
-        variant="contained"
-        color="primary"
-        data-id="download-export-button"
-        disabled={downloadDisabled}
-        onClick={onDownloadClick}
-        className="mt-3"
-        fullWidth
-      >
-        <GetAppIcon /> Download
-      </Button>
-    </div>
+  if (exportSuccessful) {
+    onClose()
+  }
+
+  return exportFormats.length === 0 ? (
+    <LinearProgress className="w-full h-2" />
+  ) : (
+    <>
+      <DialogContent>
+        <div className="p-4" style={{ minWidth: '400px' }}>
+          <div data-id="export-format-select" className="export-option">
+            <Autocomplete
+              key={JSON.stringify(exportFormats)}
+              data-id="filter-type-autocomplete"
+              fullWidth
+              size="small"
+              options={exportFormats}
+              getOptionLabel={(option) => option.displayName}
+              isOptionEqualToValue={(option, value) =>
+                option.displayName === value.displayName
+              }
+              onChange={(_e, newValue) => {
+                handleExportOptionChange(newValue.displayName)
+              }}
+              disableClearable
+              value={
+                exportFormats.find(
+                  (format) => format.displayName === selectedFormat
+                ) || exportFormats[0]
+              }
+              renderInput={(params) => (
+                <TextField {...params} variant="outlined" />
+              )}
+            />
+          </div>
+
+          {['CSV', 'RTF', 'XLSX'].includes(selectedFormat) ? (
+            <SummaryManageAttributes isExport={true} />
+          ) : null}
+        </div>
+      </DialogContent>
+      <DialogActions>
+        <div
+          className="pt-2"
+          style={{ display: 'flex', justifyContent: 'flex-end' }}
+        >
+          <Button
+            className="mr-2"
+            disabled={loading}
+            variant="text"
+            onClick={() => {
+              onClose()
+            }}
+          >
+            Cancel
+          </Button>
+          <ProgressButton
+            variant="contained"
+            color="primary"
+            data-id="export-button"
+            disabled={exportDisabled}
+            onClick={() => {
+              onExportClick(addSnack)
+            }}
+            loading={loading}
+          >
+            Export
+          </ProgressButton>
+        </div>
+      </DialogActions>
+    </>
   )
 }
 
