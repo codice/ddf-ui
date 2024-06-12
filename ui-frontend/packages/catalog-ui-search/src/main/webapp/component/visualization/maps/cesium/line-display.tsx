@@ -22,7 +22,7 @@ import * as Turf from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
-import { removeOldDrawing } from './drawing-and-display'
+import { removeOldDrawing, removeOrLockOldDrawing } from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import utility from './utility'
@@ -233,7 +233,7 @@ const drawGeometry = ({
   const cameraMagnitude = map.getMap().camera.getMagnitude()
   setDrawnMagnitude(cameraMagnitude)
 
-  removeOldDrawing({ map, id })
+  removeOrLockOldDrawing(Boolean(isInteractive), id, map, model)
 
   let primitive
 

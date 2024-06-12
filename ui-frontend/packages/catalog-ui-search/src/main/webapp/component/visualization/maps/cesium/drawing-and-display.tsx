@@ -61,6 +61,39 @@ export const removeOldDrawing = ({ map, id }: { map: any; id: string }) => {
   relevantPrimitives.length > 0 && map.getMap().scene.requestRender()
 }
 
+const makeOldShapeNonEditable = ({ map, id }: { map: any; id: string }) => {
+  const relevantPrimitives = map
+    .getMap()
+    .scene.primitives._primitives.filter((prim: any) => {
+      return prim.id === id
+    })
+  relevantPrimitives.forEach((relevantPrimitive: any) => {
+    if (typeof relevantPrimitive.setEditMode === 'function') {
+      relevantPrimitive.setEditMode(false)
+    }
+    if (typeof relevantPrimitive.setEditable === 'function') {
+      relevantPrimitive.setEditable(false)
+    }
+  })
+  relevantPrimitives.length > 0 && map.getMap().scene.requestRender()
+}
+
+export const removeOrLockOldDrawing = (
+  isInteractive: boolean,
+  id: any,
+  map: any,
+  model: any
+) => {
+  if (
+    isInteractive ||
+    (!isInteractive && Object.keys(model.changed).includes('isInteractive'))
+  ) {
+    removeOldDrawing({ map, id })
+  } else {
+    makeOldShapeNonEditable({ map, id })
+  }
+}
+
 let drawingLocation: any
 
 const updateDrawingLocation = (newDrawingLocation: any) => {

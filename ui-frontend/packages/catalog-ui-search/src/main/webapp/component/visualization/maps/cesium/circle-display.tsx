@@ -20,7 +20,7 @@ import _ from 'underscore'
 import * as Turf from '@turf/turf'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
-import { removeOldDrawing } from './drawing-and-display'
+import { removeOldDrawing, removeOrLockOldDrawing } from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import TurfCircle from '@turf/circle'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
@@ -134,7 +134,7 @@ const drawGeometry = ({
     modelProp.lat += translation.latitude
   }
 
-  removeOldDrawing({ map, id })
+  removeOrLockOldDrawing(Boolean(isInteractive), id, map, model)
 
   let primitive
 
