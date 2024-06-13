@@ -14,7 +14,7 @@
  **/
 
 import { StartupDataStore } from '../../js/model/Startup/startup'
-import user from '../singletons/user-instance'
+import { TypedUserInstance } from '../singletons/TypedUser'
 
 export const RESULTS_ATTRIBUTES_TABLE = 'results-attributesShownTable'
 export const RESULTS_ATTRIBUTES_LIST = 'results-attributesShownList'
@@ -38,9 +38,5 @@ export const getDefaultResultsShownTable = () => {
 }
 
 export const getDefaultCoordinateFormat = () => {
-  const defaultCoordFormat = user
-    .get('user')
-    ?.defaults()
-    ?.preferences?.get('coordinateFormat')
-  return defaultCoordFormat ?? 'degrees'
+  return TypedUserInstance.getCoordinateFormat()
 }
