@@ -20,7 +20,6 @@ import utility from './utility'
 import DrawingUtility from '../DrawingUtility'
 import Openlayers from 'openlayers'
 import { OpenlayersLayers } from '../../../../js/controllers/openlayers.layers'
-import user from '../../../singletons/user-instance'
 import wreqr from '../../../../js/wreqr'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { ClusterType } from '../react/geometries'
@@ -29,11 +28,9 @@ import { StartupDataStore } from '../../../../js/model/Startup/startup'
 import _debounce from 'lodash.debounce'
 const defaultColor = '#3c6dd5'
 const rulerColor = '#506f85'
-function createMap(insertionElement: any) {
-  const layerPrefs = user.get('user>preferences>mapLayers')
-  // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
+function createMap(insertionElement: any, mapLayers: any) {
   const layerCollectionController = new OpenlayersLayers({
-    collection: layerPrefs,
+    collection: mapLayers,
   })
   const map = layerCollectionController.makeMap({
     zoom: 2.7,
@@ -90,11 +87,12 @@ export default function (
   _selectionInterface: any,
   _notificationEl: any,
   _componentElement: any,
-  mapModel: any
+  mapModel: any,
+  mapLayers: any
 ) {
   let overlays = {}
   let shapes: any = []
-  const map = createMap(insertionElement)
+  const map = createMap(insertionElement, mapLayers)
 
   setupTooltip(map)
   function setupTooltip(map: any) {

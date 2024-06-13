@@ -25,6 +25,11 @@ import { CesiumDrawings } from './drawing-and-display'
 import $ from 'jquery'
 import featureDetection from '../../../singletons/feature-detection'
 import { InteractionsProvider } from '../interactions.provider'
+import { LayoutContext } from '../../../golden-layout/visual-settings.provider'
+import user from '../../../singletons/user-instance'
+import User from '../../../../js/model/User'
+import { useBackbone } from '../../../selection-checkbox/useBackbone.hook'
+import { CESIUM_MAP_LAYERS } from '../../settings-helpers'
 
 const useSupportsCesium = () => {
   const [, setForceRender] = React.useState(Math.random())
@@ -73,11 +78,45 @@ export const CesiumMapViewReact = ({
   })
   const [swap, setSwap] = React.useState(false)
   const [map, setMap] = React.useState<any>(null)
+  const [mapLayers, setMapLayers] = React.useState<any>(null)
+  const { listenTo } = useBackbone()
+
+  const { getValue, setValue } = React.useContext(LayoutContext)
+
+  React.useEffect(() => {
+    const defaultLayers = user.get('user>preferences>mapLayers').toJSON()
+    const layerSettings = getValue(CESIUM_MAP_LAYERS, defaultLayers)
+
+    const layerModels = layerSettings.map((layer: any) => {
+      return new (User as any).MapLayer(layer, { parse: true })
+    })
+    const layerCollection = new (User as any).MapLayers(layerModels)
+    listenTo(layerCollection, 'add remove', () =>
+      setValue(CESIUM_MAP_LAYERS, layerCollection.toJSON())
+    )
+    layerCollection.validate()
+    setMapLayers(layerCollection)
+  }, [])
+
+  React.useEffect(() => {
+    const callback = () => {
+      setValue(CESIUM_MAP_LAYERS, mapLayers.toJSON())
+    }
+    if (mapLayers) {
+      listenTo(mapLayers, 'change', callback)
+    }
+  }, [mapLayers])
+
   React.useEffect(() => {
     if (outerSetMap) {
       outerSetMap(map)
     }
   }, [map])
+
+  if (!mapLayers) {
+    return null
+  }
+
   if (supportsCesium) {
     return (
       <InteractionsProvider>
@@ -93,6 +132,7 @@ export const CesiumMapViewReact = ({
             }}
             setMap={setMap}
             selectionInterface={selectionInterface}
+            mapLayers={mapLayers}
           />
         </Memo>
         <CesiumDrawings map={map} selectionInterface={selectionInterface} />

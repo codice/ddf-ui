@@ -63,6 +63,7 @@ const useMap = (
     mapModel: any
     containerElement: HTMLDivElement | null
     mapDrawingPopupElement: HTMLDivElement | null
+    mapLayers: any
   }
 ) => {
   const [map, setMap] = React.useState<any>(null)
@@ -76,7 +77,8 @@ const useMap = (
             props.selectionInterface,
             props.mapDrawingPopupElement,
             props.containerElement,
-            props.mapModel
+            props.mapModel,
+            props.mapLayers
           )
         )
       } catch (err) {
@@ -734,6 +736,7 @@ type MapViewReactType = {
     */
   loadMap: () => any
   selectionInterface: any
+  mapLayers: any
 }
 const useChangeCursorOnHover = ({
   mapElement,
@@ -868,6 +871,7 @@ export const MapViewReact = (props: MapViewReactType) => {
         {map ? (
           <MapToolbar
             map={map}
+            mapLayers={props.mapLayers}
             zoomToHome={() => {
               zoomToHome({ map })
             }}

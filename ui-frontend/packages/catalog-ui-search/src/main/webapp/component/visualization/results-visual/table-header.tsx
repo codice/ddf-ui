@@ -24,7 +24,10 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox'
 import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
 import { LayoutContext } from '../../golden-layout/visual-settings.provider'
-import { getDefaultResultsShownTable } from './settings-helper'
+import {
+  RESULTS_ATTRIBUTES_TABLE,
+  getDefaultResultsShownTable,
+} from '../settings-helpers'
 export type Header = {
   hidden: boolean
   id: string
@@ -183,7 +186,7 @@ export const Header = ({
   const handleSortClick = _.debounce(updateSort, 500, true)
   const [shownAttributes, setShownAttributes] = React.useState(
     getValue(
-      'results-attributesShownTable',
+      RESULTS_ATTRIBUTES_TABLE,
       getDefaultResultsShownTable()
     ) as string[]
   )
@@ -260,7 +263,7 @@ export const Header = ({
   React.useEffect(() => {
     onStateChanged(() => {
       const shownList = getValue(
-        'results-attributesShownTable',
+        RESULTS_ATTRIBUTES_TABLE,
         getDefaultResultsShownTable()
       )
       setShownAttributes(shownList)

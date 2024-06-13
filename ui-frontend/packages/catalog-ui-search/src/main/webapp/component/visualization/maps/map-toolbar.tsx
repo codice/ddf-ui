@@ -20,6 +20,7 @@ type Props = {
   map: {
     doPanZoom: (polygon: any) => void
   }
+  mapLayers: Array<any>
 }
 
 const ClusteringButton = ({ toggleClustering, isClustering }: Props) => {
@@ -107,7 +108,7 @@ export const MapToolbar = (props: Props) => {
             </div>
             <div className="Mui-bg-default w-min self-stretch shrink-0"></div>
             <div className="py-2 px-2 shrink-0">
-              <LayersDropdown />
+              <LayersDropdown layers={props.mapLayers} />
             </div>
             <div className="Mui-bg-default w-min self-stretch shrink-0"></div>
             <div className="py-2 px-2 shrink-0">

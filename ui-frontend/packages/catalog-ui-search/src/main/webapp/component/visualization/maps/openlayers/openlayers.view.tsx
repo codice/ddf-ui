@@ -18,6 +18,11 @@ import { MapViewReact } from '../map.view'
 import { OpenlayersDrawings } from './drawing-and-display'
 import $ from 'jquery'
 import { InteractionsProvider } from '../interactions.provider'
+import { LayoutContext } from '../../../golden-layout/visual-settings.provider'
+import user from '../../../singletons/user-instance'
+import User from '../../../../js/model/User'
+import { useBackbone } from '../../../selection-checkbox/useBackbone.hook'
+import { OPENLAYERS_MAP_LAYERS } from '../../settings-helpers'
 
 const loadOpenLayersCode = () => {
   // @ts-expect-error ts-migrate(7009) FIXME: 'new' expression, whose target lacks a construct s... Remove this comment to see the full error message
@@ -36,17 +41,51 @@ export const OpenlayersMapViewReact = ({
   setMap?: (map: any) => void
 }) => {
   const [map, setMap] = React.useState<any>(null)
+  const [mapLayers, setMapLayers] = React.useState<any>(null)
+  const { listenTo } = useBackbone()
+
+  const { getValue, setValue } = React.useContext(LayoutContext)
+
+  React.useEffect(() => {
+    const defaultLayers = user.get('user>preferences>mapLayers').toJSON()
+    const layerSettings = getValue(OPENLAYERS_MAP_LAYERS, defaultLayers)
+
+    const layerModels = layerSettings.map((layer: any) => {
+      return new (User as any).MapLayer(layer, { parse: true })
+    })
+    const layerCollection = new (User as any).MapLayers(layerModels)
+    listenTo(layerCollection, 'add remove', () =>
+      setValue(OPENLAYERS_MAP_LAYERS, layerCollection.toJSON())
+    )
+    layerCollection.validate()
+    setMapLayers(layerCollection)
+  }, [])
+
+  React.useEffect(() => {
+    const callback = () => {
+      setValue(OPENLAYERS_MAP_LAYERS, mapLayers.toJSON())
+    }
+    if (mapLayers) {
+      listenTo(mapLayers, 'change', callback)
+    }
+  }, [mapLayers])
+
   React.useEffect(() => {
     if (outerSetMap) {
       outerSetMap(map)
     }
   }, [map])
 
+  if (!mapLayers) {
+    return null
+  }
+
   return (
     <InteractionsProvider>
       <Memo>
         <MapViewReact
           selectionInterface={selectionInterface}
+          mapLayers={mapLayers}
           loadMap={loadOpenLayersCode}
           setMap={setMap}
         />

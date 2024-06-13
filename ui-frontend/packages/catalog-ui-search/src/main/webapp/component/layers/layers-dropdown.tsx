@@ -21,7 +21,11 @@ import LayersIcon from '@mui/icons-material/Layers'
 import Paper from '@mui/material/Paper'
 import { Elevations } from '../theme/theme'
 
-export const LayersDropdown = () => {
+type LayersDropdownProps = {
+  layers: Array<any>
+}
+
+export const LayersDropdown = (props: LayersDropdownProps) => {
   const menuState = useMenuState()
 
   return (
@@ -37,7 +41,7 @@ export const LayersDropdown = () => {
       </Button>
       <Popover {...menuState.MuiPopoverProps}>
         <Paper elevation={Elevations.overlays} className="px-2">
-          <LayersView />
+          <LayersView layers={props.layers} />
         </Paper>
       </Popover>
     </>
