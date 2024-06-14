@@ -79,7 +79,9 @@ const makeOldDrawingNonEditable = ({ map, id }: { map: any; id: string }) => {
 }
 
 const nestedArraysOverlap = (arrayA: any[], arrayB: any[]) => {
-  return arrayA.some((elemA) => arrayB.some((elemB) => JSON.stringify(elemA) === JSON.stringify(elemB)))
+  return arrayA.some((elemA) =>
+    arrayB.some((elemB) => JSON.stringify(elemA) === JSON.stringify(elemB))
+  )
 }
 
 const isNewShape = (model: any) => {
