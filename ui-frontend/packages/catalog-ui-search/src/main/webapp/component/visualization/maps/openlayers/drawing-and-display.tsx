@@ -29,6 +29,7 @@ import { Editor } from '../draw-menu'
 import { DRAWING_STYLE } from './draw-styles'
 import { menu, geometry } from 'geospatialdraw'
 import { Shape } from 'geospatialdraw/target/webapp/shape-utils'
+import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import {
   GeometryJSON,
   makeGeometry,
@@ -381,6 +382,9 @@ export const OpenlayersDrawings = ({
     null
   )
 
+  const [buffer, setBuffer] = useState<number>(0)
+  const [bufferUnit, setBufferUnit] = useState<string>('')
+
   const { interactiveGeo, translation, setInteractiveModels } =
     React.useContext(InteractionsContext)
 
@@ -419,6 +423,25 @@ export const OpenlayersDrawings = ({
     }
     return () => window.removeEventListener('keydown', handleKeydown)
   }, [drawingModel])
+
+  const bufferChangedCallback = React.useMemo(() => {
+    return () => {
+      setBuffer(
+        drawingModel.attributes.polygonBufferWidth ||
+          drawingModel.attributes.lineWidth
+      )
+      setBufferUnit(
+        drawingModel.attributes.polygonBufferUnits ||
+          drawingModel.attributes.lineUnits
+      )
+    }
+  }, [drawingModel])
+
+  useListenTo(
+    drawingModel,
+    'change:polygonBufferWidth change:polygonBufferUnits change:lineWidth change:lineUnits',
+    bufferChangedCallback
+  )
 
   const cancelDrawing = () => {
     drawingModel.set('drawing', false)
@@ -534,6 +557,8 @@ export const OpenlayersDrawings = ({
             map={map.getMap()}
             isActive={isDrawing}
             geometry={isDrawing ? drawingGeometry : null}
+            buffer={buffer ? buffer : 0}
+            bufferUnit={bufferUnit ? bufferUnit : 'meters'}
             onCancel={cancelDrawing}
             onOk={finishDrawing}
             onSetShape={() => {}}

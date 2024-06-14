@@ -308,6 +308,8 @@ export const CesiumDrawings = ({
             }}
             isActive={isDrawing}
             geometry={null}
+            buffer={0}
+            bufferUnit={''}
             onCancel={cancelDrawing}
             onOk={finishDrawing}
             onSetShape={() => {}}
