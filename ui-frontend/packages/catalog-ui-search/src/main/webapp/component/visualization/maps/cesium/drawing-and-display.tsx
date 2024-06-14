@@ -80,7 +80,7 @@ const makeOldDrawingNonEditable = ({ map, id }: { map: any; id: string }) => {
 
 const nestedArraysOverlap = (arrayA: any[], arrayB: any[]) => {
   let result = false
-  arrayA.map((elemA) => {
+  return arrayA.some((elemA) => arrayB.some((elemB) => JSON.stringify(elemA) === JSON.stringify(elemB)))
     result =
       result ||
       arrayB.some((elemB) => JSON.stringify(elemA) === JSON.stringify(elemB))
