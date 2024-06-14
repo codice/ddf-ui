@@ -19,7 +19,7 @@ import Cesium from 'cesium/Build/Cesium/Cesium'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
-import { removeOldDrawing } from './drawing-and-display'
+import { removeOldDrawing, removeOrLockOldDrawing } from './drawing-and-display'
 import ShapeUtils from '../../../../js/ShapeUtils'
 import {
   constructSolidLinePrimitive,
@@ -140,7 +140,7 @@ const drawGeometry = ({
   const cameraMagnitude = map.getMap().camera.getMagnitude()
   setDrawnMagnitude(cameraMagnitude)
 
-  removeOldDrawing({ map, id })
+  removeOrLockOldDrawing(Boolean(isInteractive), id, map, model)
 
   const buffer = DistanceUtils.getDistanceInMeters(
     json.polygonBufferWidth,

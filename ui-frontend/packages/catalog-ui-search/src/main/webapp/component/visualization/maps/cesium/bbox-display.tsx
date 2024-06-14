@@ -18,7 +18,7 @@ import Cesium from 'cesium/Build/Cesium/Cesium'
 import _ from 'underscore'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
-import { removeOldDrawing } from './drawing-and-display'
+import { removeOldDrawing, removeOrLockOldDrawing } from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import DistanceUtils from '../../../../js/DistanceUtils'
@@ -150,7 +150,7 @@ const drawGeometry = ({
     }
   }
 
-  removeOldDrawing({ map, id })
+  removeOrLockOldDrawing(Boolean(isInteractive), id, map, model)
 
   let primitive
 
