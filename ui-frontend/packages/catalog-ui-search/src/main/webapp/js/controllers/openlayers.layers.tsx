@@ -124,11 +124,11 @@ export class OpenlayersLayers {
   isMapCreated: boolean
   layerForCid: any
   backboneModel: any
-  constructor() {
+  constructor({ collection }: { collection: any }) {
     this.backboneModel = new Backbone.Model({})
     this.isMapCreated = false
     this.layerForCid = {}
-    const layerPrefs = user.get('user>preferences>mapLayers')
+    const layerPrefs = collection
     this.layers = new Layers(layerPrefs)
     this.backboneModel.listenTo(
       layerPrefs,

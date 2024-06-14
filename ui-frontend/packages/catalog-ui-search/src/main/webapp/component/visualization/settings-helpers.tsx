@@ -13,7 +13,15 @@
  *
  **/
 
-import { StartupDataStore } from '../../../js/model/Startup/startup'
+import { StartupDataStore } from '../../js/model/Startup/startup'
+import { TypedUserInstance } from '../singletons/TypedUser'
+
+export const RESULTS_ATTRIBUTES_TABLE = 'results-attributesShownTable'
+export const RESULTS_ATTRIBUTES_LIST = 'results-attributesShownList'
+export const RESULTS_MODE = 'results-mode'
+
+export const CESIUM_MAP_LAYERS = 'cesium-mapLayers'
+export const OPENLAYERS_MAP_LAYERS = 'openlayers-mapLayers'
 
 export const getDefaultResultsShownList = () => {
   if (StartupDataStore.Configuration.getResultShow().length > 0) {
@@ -27,4 +35,8 @@ export const getDefaultResultsShownTable = () => {
     return StartupDataStore.Configuration.getDefaultTableColumns()
   }
   return ['title', 'thumbnail']
+}
+
+export const getDefaultCoordinateFormat = () => {
+  return TypedUserInstance.getCoordinateFormat()
 }

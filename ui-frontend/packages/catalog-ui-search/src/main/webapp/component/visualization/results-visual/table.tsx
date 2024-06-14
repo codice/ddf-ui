@@ -38,7 +38,10 @@ import useTimePrefs from '../../fields/useTimePrefs'
 import { useScrollToItemOnSelection } from './result-item.collection'
 import { Memo } from '../../memo/memo'
 import { LayoutContext } from '../../golden-layout/visual-settings.provider'
-import { getDefaultResultsShownTable } from './settings-helper'
+import {
+  RESULTS_ATTRIBUTES_TABLE,
+  getDefaultResultsShownTable,
+} from '../settings-helpers'
 type Props = {
   selectionInterface: any
   mode: any
@@ -152,18 +155,16 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
           <ResultsCommonControls
             getStartingLeft={() => {
               return getValue(
-                'results-attributesShownTable',
+                RESULTS_ATTRIBUTES_TABLE,
                 getDefaultResultsShownTable()
               )
             }}
             getStartingRight={() => {
               return TypedUserInstance.getResultsAttributesPossibleTable(
-                getValue('results-attributesShownTable')
+                getValue(RESULTS_ATTRIBUTES_TABLE)
               )
             }}
-            onSave={(active) =>
-              setValue('results-attributesShownTable', active)
-            }
+            onSave={(active) => setValue(RESULTS_ATTRIBUTES_TABLE, active)}
           />
           <Grid item className="pr-2">
             <Button

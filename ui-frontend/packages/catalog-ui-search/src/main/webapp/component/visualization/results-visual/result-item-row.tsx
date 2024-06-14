@@ -34,7 +34,10 @@ import Extensions from '../../../extension-points'
 import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
 import wreqr from '../../../js/wreqr'
 import { LayoutContext } from '../../golden-layout/visual-settings.provider'
-import { getDefaultResultsShownTable } from './settings-helper'
+import {
+  RESULTS_ATTRIBUTES_TABLE,
+  getDefaultResultsShownTable,
+} from '../settings-helpers'
 type ResultItemFullProps = {
   lazyResult: LazyQueryResult
   measure: () => void
@@ -106,7 +109,7 @@ const RowComponent = ({
   )
   const [shownAttributes, setShownAttributes] = React.useState(
     getValue(
-      'results-attributesShownTable',
+      RESULTS_ATTRIBUTES_TABLE,
       getDefaultResultsShownTable()
     ) as string[]
   )
@@ -139,7 +142,7 @@ const RowComponent = ({
     )
     onStateChanged(() => {
       const shownList = getValue(
-        'results-attributesShownTable',
+        RESULTS_ATTRIBUTES_TABLE,
         getDefaultResultsShownTable()
       )
       setShownAttributes(shownList)

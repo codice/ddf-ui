@@ -36,7 +36,6 @@ export const CesiumImageryProviderTypes = {
   [key: string]: any
 }
 import { Layers } from './layers'
-import user from '../../component/singletons/user-instance'
 import Backbone from 'backbone'
 import { StartupDataStore } from '../model/Startup/startup'
 type MakeMapType = {
@@ -50,12 +49,12 @@ export class CesiumLayers {
   layerForCid: any
   backboneModel: any
   layerOrder: Array<any>
-  constructor() {
+  constructor({ collection }: { collection: any }) {
     this.backboneModel = new Backbone.Model({})
     this.isMapCreated = false
     this.layerOrder = []
     this.layerForCid = {}
-    const layerPrefs = user.get('user>preferences>mapLayers')
+    const layerPrefs = collection
     this.layers = new Layers(layerPrefs)
     this.backboneModel.listenTo(
       layerPrefs,

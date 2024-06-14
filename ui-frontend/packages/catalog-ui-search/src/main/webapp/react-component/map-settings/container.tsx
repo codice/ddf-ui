@@ -26,22 +26,27 @@ import Popover from '@mui/material/Popover'
 import user from '../../component/singletons/user-instance'
 import SettingsIcon from '@mui/icons-material/Settings'
 import { Elevations } from '../../component/theme/theme'
+import { getDefaultCoordinateFormat } from '../../component/visualization/settings-helpers'
+import { LayoutContext } from '../../component/golden-layout/visual-settings.provider'
 
 const MapSettings = (props: WithBackboneProps) => {
-  const [coordFormat, setCoordFormat] = useState(
-    user.get('user').get('preferences').get('coordinateFormat')
-  )
+  const { getValue, setValue, onStateChanged, visualTitle } =
+    React.useContext(LayoutContext)
+
+  const [coordFormat, setCoordFormat] = useState('degrees')
+
   const [autoPan, setAutoPan] = useState(
     user.get('user').get('preferences').get('autoPan')
   )
   const menuState = useMenuState()
+  const coordFormatKey = `${visualTitle}-coordFormat`
 
   useEffect(() => {
-    props.listenTo(
-      user.get('user').get('preferences'),
-      'change:coordinateFormat',
-      (_prefs: any, value: string) => setCoordFormat(value)
-    )
+    setCoordFormat(getValue(coordFormatKey, getDefaultCoordinateFormat()))
+    onStateChanged(() => {
+      const coordFormat = getValue(coordFormatKey, getDefaultCoordinateFormat())
+      setCoordFormat(coordFormat)
+    })
     props.listenTo(
       user.get('user').get('preferences'),
       'change:autoPan',
@@ -50,11 +55,7 @@ const MapSettings = (props: WithBackboneProps) => {
   }, [])
 
   const updateCoordFormat = (coordinateFormat: string) => {
-    const preferences = user
-      .get('user')
-      .get('preferences')
-      .set({ coordinateFormat })
-    preferences.savePreferences()
+    setValue(coordFormatKey, coordinateFormat)
   }
 
   const updateAutoPan = (

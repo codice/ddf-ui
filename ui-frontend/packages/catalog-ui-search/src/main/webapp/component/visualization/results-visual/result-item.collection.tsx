@@ -37,7 +37,10 @@ import { TypedUserInstance } from '../../singletons/TypedUser'
 import { VariableSizeList } from 'react-window'
 import { Memo } from '../../memo/memo'
 import { LayoutContext } from '../../golden-layout/visual-settings.provider'
-import { getDefaultResultsShownList } from './settings-helper'
+import {
+  RESULTS_ATTRIBUTES_LIST,
+  getDefaultResultsShownList,
+} from '../settings-helpers'
 
 type Props = {
   mode: any
@@ -195,17 +198,14 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
           </Grid>
           <ResultsCommonControls
             getStartingLeft={() =>
-              getValue(
-                'results-attributesShownList',
-                getDefaultResultsShownList()
-              )
+              getValue(RESULTS_ATTRIBUTES_LIST, getDefaultResultsShownList())
             }
             getStartingRight={() => {
               return TypedUserInstance.getResultsAttributesPossibleList(
-                getValue('results-attributesShownList')
+                getValue(RESULTS_ATTRIBUTES_LIST)
               )
             }}
-            onSave={(active) => setValue('results-attributesShownList', active)}
+            onSave={(active) => setValue(RESULTS_ATTRIBUTES_LIST, active)}
           />
           <Grid item className="pr-2">
             <Button

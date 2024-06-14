@@ -162,22 +162,23 @@ class VisualizationSelector extends React.Component<{
   }
   handleMouseUp(choice: any) {
     if (this.interimState) {
+      const content = {
+        ...configs[choice],
+        componentState: {},
+      }
       if (this.props.goldenLayout.root.contentItems.length === 0) {
         this.props.goldenLayout.root.addChild({
           type: 'column',
-          content: [configs[choice]],
+          content: [content],
         })
       } else {
         if (this.props.goldenLayout.root.contentItems[0].isColumn) {
           this.props.goldenLayout.root.contentItems[0].contentItems[0].addChild(
-            configs[choice],
+            content,
             0
           )
         } else {
-          this.props.goldenLayout.root.contentItems[0].addChild(
-            configs[choice],
-            0
-          )
+          this.props.goldenLayout.root.contentItems[0].addChild(content, 0)
         }
       }
     }

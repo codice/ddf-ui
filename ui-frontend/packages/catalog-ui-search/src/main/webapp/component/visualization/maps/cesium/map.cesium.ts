@@ -24,7 +24,6 @@ import {
   CesiumImageryProviderTypes,
   CesiumLayers,
 } from '../../../../js/controllers/cesium.layers'
-import user from '../../../singletons/user-instance'
 import { Drawing } from '../../../singletons/drawing'
 import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryResult'
 import { ClusterType } from '../react/geometries'
@@ -66,11 +65,9 @@ function setupTerrainProvider(viewer: any, terrainProvider: any) {
   })
   viewer.scene.terrainProvider = customTerrainProvider
 }
-function createMap(insertionElement: any) {
-  const layerPrefs = user.get('user>preferences>mapLayers')
-  // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
+function createMap(insertionElement: any, mapLayers: any) {
   const layerCollectionController = new CesiumLayers({
-    collection: layerPrefs,
+    collection: mapLayers,
   })
   const viewer = layerCollectionController.makeMap({
     element: insertionElement,
@@ -186,11 +183,12 @@ export default function CesiumMap(
   selectionInterface: any,
   _notificationEl: any,
   componentElement: any,
-  mapModel: any
+  mapModel: any,
+  mapLayers: any
 ) {
   let overlays = {}
   let shapes: any = []
-  const { map, requestRenderHandler } = createMap(insertionElement)
+  const { map, requestRenderHandler } = createMap(insertionElement, mapLayers)
   const drawHelper = new (DrawHelper as any)(map)
   map.drawHelper = drawHelper
   const billboardCollection = setupBillboardCollection()

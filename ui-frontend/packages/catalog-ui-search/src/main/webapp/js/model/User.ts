@@ -135,6 +135,9 @@ function validateMapLayersAgainstProviders(layers: any) {
   savePreferences() {
     this.parents[0].savePreferences()
   },
+  validate() {
+    validateMapLayersAgainstProviders(this)
+  },
 })
 ;(User as any).Preferences = Backbone.AssociatedModel.extend({
   url: './internal/user/preferences',

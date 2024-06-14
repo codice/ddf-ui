@@ -19,8 +19,6 @@ import Backbone from 'backbone'
 import { LayerItemCollectionViewReact } from '../layer-item/layer-item.collection.view'
 import user from '../singletons/user-instance'
 import { hot } from 'react-hot-loader'
-import { useListenTo } from '../selection-checkbox/useBackbone.hook'
-import debounce from 'lodash.debounce'
 import Button from '@mui/material/Button'
 import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 
@@ -63,41 +61,32 @@ const FocusModel = Backbone.Model.extend({
   },
 })
 
-const LayersViewReact = () => {
+type LayersViewReactProps = {
+  layers?: Array<any>
+}
+
+const LayersViewReact = (props: LayersViewReactProps) => {
   const { getImageryProviders } = useConfiguration()
   const [focusModel] = React.useState(new FocusModel())
   const containerElementRef = React.useRef<HTMLDivElement>(null)
-  const saveCallback = React.useMemo(() => {
-    return debounce(() => {
-      user.get('user>preferences').savePreferences()
-    }, 100)
-  }, [])
-  useListenTo(
-    user.get('user>preferences').get('mapLayers'),
-    'change:alpha change:show',
-    saveCallback
-  )
+
+  const layers = props.layers ?? user.get('user>preferences>mapLayers')
 
   return (
     <div data-id="layers-container" ref={containerElementRef}>
       <div className="text-xl text-center">Layers</div>
       <div className="layers">
         <LayerItemCollectionViewReact
-          collection={user.get('user>preferences').get('mapLayers')}
+          collection={layers}
           updateOrdering={() => {
             _.forEach(
               // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'NodeListOf<Element> | undefined'... Remove this comment to see the full error message
               containerElementRef.current?.querySelectorAll(`.layer-item`),
               (element: any, index: any) => {
-                user
-                  .get('user>preferences')
-                  .get('mapLayers')
-                  .get(element.getAttribute('layer-id'))
-                  .set('order', index)
+                layers.get(element.getAttribute('layer-id')).set('order', index)
               }
             )
-            user.get('user>preferences').get('mapLayers').sort()
-            user.get('user>preferences').savePreferences()
+            layers.sort()
           }}
           focusModel={focusModel}
         />
@@ -107,19 +96,15 @@ const LayersViewReact = () => {
           data-id="reset-to-defaults-button"
           onClick={() => {
             focusModel.clear()
-            user
-              .get('user>preferences')
-              .get('mapLayers')
-              .forEach((viewLayer: any) => {
-                const name = viewLayer.get('name')
-                const defaultConfig = _.find(
-                  getImageryProviders(),
-                  (layerObj: any) => name === layerObj.name
-                )
-                viewLayer.set(defaultConfig)
-              })
-            user.get('user>preferences').get('mapLayers').sort()
-            user.get('user>preferences').savePreferences()
+            layers.forEach((viewLayer: any) => {
+              const name = viewLayer.get('name')
+              const defaultConfig = _.find(
+                getImageryProviders(),
+                (layerObj: any) => name === layerObj.name
+              )
+              viewLayer.set(defaultConfig)
+            })
+            layers.sort()
           }}
         >
           <span>Reset to Defaults</span>

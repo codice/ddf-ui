@@ -13,6 +13,7 @@ import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResu
 import Button from '@mui/material/Button'
 import BackgroundInheritingDiv from '../../theme/background-inheriting-div'
 import { LayoutContext } from '../../golden-layout/visual-settings.provider'
+import { RESULTS_MODE } from '../settings-helpers'
 type Props = {
   selectionInterface: any
 }
@@ -30,11 +31,11 @@ const ResultsView = ({ selectionInterface }: Props) => {
   const [edit, setEdit] = React.useState(null as null | LazyQueryResult)
 
   React.useEffect(() => {
-    setMode(getValue('results-mode') || ('card' as ModeType))
+    setMode(getValue(RESULTS_MODE) || ('card' as ModeType))
   }, [])
 
   React.useEffect(() => {
-    mode && setValue('results-mode', mode)
+    mode && setValue(RESULTS_MODE, mode)
   }, [mode])
 
   return (

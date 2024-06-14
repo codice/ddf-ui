@@ -53,7 +53,10 @@ import wreqr from '../../../js/wreqr'
 import { useDialog } from '../../dialog'
 import { useDownloadComponent } from '../../download/download'
 import { LayoutContext } from '../../golden-layout/visual-settings.provider'
-import { getDefaultResultsShownList } from './settings-helper'
+import {
+  RESULTS_ATTRIBUTES_LIST,
+  getDefaultResultsShownList,
+} from '../settings-helpers'
 
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (
@@ -414,10 +417,7 @@ export const ResultItem = ({
     TypedUserInstance.getDecimalPrecision()
   )
   const [shownAttributes, setShownAttributes] = React.useState(
-    getValue(
-      'results-attributesShownList',
-      getDefaultResultsShownList()
-    ) as string[]
+    getValue(RESULTS_ATTRIBUTES_LIST, getDefaultResultsShownList()) as string[]
   )
   useRerenderOnBackboneSync({ lazyResult })
 
@@ -431,7 +431,7 @@ export const ResultItem = ({
     )
     onStateChanged(() => {
       const shownList = getValue(
-        'results-attributesShownList',
+        RESULTS_ATTRIBUTES_LIST,
         getDefaultResultsShownList()
       )
       setShownAttributes(shownList)
