@@ -425,9 +425,8 @@ export const OpenlayersDrawings = ({
   }, [drawingModel])
 
   const lineBufferChangedCallback = React.useCallback(() => {
-      setUpdatedBuffer(drawingModel.attributes.lineWidth)
-      setUpdatedBufferUnit(drawingModel.attributes.lineUnits)
-
+    setUpdatedBuffer(drawingModel.attributes.lineWidth)
+    setUpdatedBufferUnit(drawingModel.attributes.lineUnits)
   }, [drawingModel])
 
   useListenTo(
@@ -437,9 +436,8 @@ export const OpenlayersDrawings = ({
   )
 
   const polygonBufferChangedCallback = React.useCallback(() => {
-      setUpdatedBuffer(drawingModel.attributes.polygonBufferWidth)
-      setUpdatedBufferUnit(drawingModel.attributes.polygonBufferUnits)
-    
+    setUpdatedBuffer(drawingModel.attributes.polygonBufferWidth)
+    setUpdatedBufferUnit(drawingModel.attributes.polygonBufferUnits)
   }, [drawingModel])
 
   useListenTo(
@@ -455,6 +453,7 @@ export const OpenlayersDrawings = ({
     setIsDrawing(false)
     setDrawingShape(DEFAULT_SHAPE)
     setDrawingGeometry(null)
+    setUpdatedBuffer(undefined)
     drawingLocation = null
   }
 
