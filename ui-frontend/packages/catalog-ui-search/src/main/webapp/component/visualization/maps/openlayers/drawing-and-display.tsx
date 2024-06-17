@@ -382,8 +382,8 @@ export const OpenlayersDrawings = ({
     null
   )
 
-  const [buffer, setBuffer] = useState<number>(0)
-  const [bufferUnit, setBufferUnit] = useState<string>('')
+  const [updatedBuffer, setUpdatedBuffer] = useState<number>()
+  const [updatedBufferUnit, setUpdatedBufferUnit] = useState<string>()
 
   const { interactiveGeo, translation, setInteractiveModels } =
     React.useContext(InteractionsContext)
@@ -424,23 +424,39 @@ export const OpenlayersDrawings = ({
     return () => window.removeEventListener('keydown', handleKeydown)
   }, [drawingModel])
 
-  const bufferChangedCallback = React.useMemo(() => {
+  const lineBufferChangedCallback = React.useMemo(() => {
     return () => {
-      setBuffer(
-        drawingModel.attributes.polygonBufferWidth ||
-          drawingModel.attributes.lineWidth
+      setUpdatedBuffer(drawingModel.attributes.lineWidth
       )
-      setBufferUnit(
-        drawingModel.attributes.polygonBufferUnits ||
-          drawingModel.attributes.lineUnits
+      setUpdatedBufferUnit(drawingModel.attributes.lineUnits
       )
     }
   }, [drawingModel])
 
   useListenTo(
     drawingModel,
-    'change:polygonBufferWidth change:polygonBufferUnits change:lineWidth change:lineUnits',
-    bufferChangedCallback
+    'change:lineWidth change:lineUnits',
+    lineBufferChangedCallback
+  )
+
+  const polygonBufferChangedCallback = React.useMemo(() => {
+      console.log("updated in ddf")
+      console.log(updatedBuffer)
+      console.log(updatedBufferUnit)
+    return () => {
+      setUpdatedBuffer(
+        drawingModel.attributes.polygonBufferWidth
+      )
+      setUpdatedBufferUnit(
+        drawingModel.attributes.polygonBufferUnits
+      )
+    }
+  }, [drawingModel])
+
+  useListenTo(
+    drawingModel,
+    'change:polygonBufferWidth change:polygonBufferUnits',
+    polygonBufferChangedCallback
   )
 
   const cancelDrawing = () => {
@@ -557,8 +573,8 @@ export const OpenlayersDrawings = ({
             map={map.getMap()}
             isActive={isDrawing}
             geometry={isDrawing ? drawingGeometry : null}
-            buffer={buffer ? buffer : 0}
-            bufferUnit={bufferUnit ? bufferUnit : 'meters'}
+            updatedBuffer={updatedBuffer}
+            updatedBufferUnit={updatedBufferUnit}
             onCancel={cancelDrawing}
             onOk={finishDrawing}
             onSetShape={() => {}}

@@ -10242,7 +10242,7 @@ geolib@^3.2.1:
 
 "geospatialdraw@file:../../../../geospatialdraw/geospatialdraw-0.4.6.tgz":
   version "0.4.6"
-  resolved "file:../../../../geospatialdraw/geospatialdraw-0.4.6.tgz#415be9904c0f462bffa68bfdc561b2c2af09a283"
+  resolved "file:../../../../geospatialdraw/geospatialdraw-0.4.6.tgz#9d6d9115365edb77f1a321710b93e2ea8d133016"
   dependencies:
     "@fortawesome/fontawesome-svg-core" "1.2.21"
     "@fortawesome/free-solid-svg-icons" "5.10.1"
