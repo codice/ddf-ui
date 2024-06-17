@@ -205,7 +205,6 @@ export default Backbone.AssociatedModel.extend({
         id: '0',
         sort: 'modified:desc',
         src: metacard.get('properties').get('source-id'),
-        start: 1,
       }
       $.ajax({
         type: 'POST',

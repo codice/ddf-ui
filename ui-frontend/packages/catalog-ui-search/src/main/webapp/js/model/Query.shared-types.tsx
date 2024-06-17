@@ -25,5 +25,29 @@ export type QueryAttributesType = {
   sources?: string[]
   sorts?: SortType[]
   count?: number
+  type?: string
+  isLocal?: boolean
+  isOutdated?: boolean
+  spellcheck?: boolean
+  phonetics?: boolean
+  additionalOptions?: string
+  currentIndexForSourceGroup?: {
+    [key: string]: number
+  }
+  nextIndexForSourceGroup?: {
+    [key: string]: number
+  }
+  mostRecentStatus?: {
+    [key: string]: {
+      id: string
+      count: number
+      hasReturned: boolean
+      hits: number
+      elapsed: number
+      successful: boolean
+      warnings: string[]
+      errors: string[]
+    }
+  }
   [key: string]: any // slowly build out the proper type, then remove this (leave for now so we don't accidentally leave something off)
 }

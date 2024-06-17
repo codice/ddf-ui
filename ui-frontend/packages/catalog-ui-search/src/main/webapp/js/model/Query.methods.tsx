@@ -34,7 +34,6 @@ export type QueryStatus = {
   [key: string]: SourceStatus
 }
 
-// given a current status, list of sources, and function to determine local, calculate next page
 /**
  *  We use the current status + current index to calculate next index.
  *  Local sources get grouped into a single index.
@@ -66,6 +65,7 @@ export const calculateNextIndexForSourceGroupNextPage = ({
   const federatedSources = sources.filter((id) => {
     return !isLocal(id)
   })
+  const hasLocal = sources.some((id) => isLocal(id))
   const maxLocalStart = Math.max(
     1,
     Object.values(queryStatus)
@@ -91,7 +91,7 @@ export const calculateNextIndexForSourceGroupNextPage = ({
       return blob
     },
     {
-      local: 1,
+      ...(hasLocal ? { local: 1 } : {}),
       ...federatedSources.reduce((blob, id) => {
         blob[id] = 1
         return blob
@@ -101,7 +101,27 @@ export const calculateNextIndexForSourceGroupNextPage = ({
   )
 }
 
-export const getMaxIndexForSourceGroup = ({
+export const getIndexOfNoMoreResultsForSourceGroup = ({
+  queryStatus,
+  isLocal,
+}: {
+  queryStatus: QueryStatus
+  isLocal: (id: string) => boolean
+}): IndexForSourceGroupType => {
+  const indexOfLastResultForSourceGroup = getIndexOfLastResultForSourceGroup({
+    queryStatus,
+    isLocal,
+  })
+  return Object.keys(indexOfLastResultForSourceGroup).reduce((blob, key) => {
+    blob[key] = indexOfLastResultForSourceGroup[key] + 1
+    return blob
+  }, {} as IndexForSourceGroupType)
+}
+
+/**
+ *  This is the index of the final result for a source group.
+ */
+export const getIndexOfLastResultForSourceGroup = ({
   queryStatus,
   isLocal,
 }: {
@@ -114,8 +134,11 @@ export const getMaxIndexForSourceGroup = ({
     )
     return {}
   }
+  const hasLocal = Object.values(queryStatus).some((status) =>
+    isLocal(status.id)
+  )
   const maxLocalStart = Math.max(
-    1,
+    0,
     Object.values(queryStatus)
       .filter((indiviualStatus) => isLocal(indiviualStatus.id))
       .filter((indiviualStatus) => indiviualStatus.hits !== undefined)
@@ -131,8 +154,8 @@ export const getMaxIndexForSourceGroup = ({
       return blob
     },
     {
-      local: maxLocalStart,
-    } as { [key: string]: number }
+      ...(hasLocal ? { local: maxLocalStart } : {}),
+    } as IndexForSourceGroupType
   )
 }
 
@@ -147,35 +170,46 @@ export const hasPreviousPageForSourceGroup = ({
   )
 }
 
-export const getNextPageForSourceGroup = ({
+// should not be used outside of calculating the constrained next page
+const getNextPageForSourceGroup = ({
   currentIndexForSourceGroup,
   sources,
   isLocal,
   count,
+  queryStatus,
 }: {
   sources: Array<string>
   isLocal: (id: string) => boolean
   currentIndexForSourceGroup: IndexForSourceGroupType
   count: number
+  queryStatus: QueryStatus
 }): IndexForSourceGroupType => {
+  const finalIndexForSourceGroup = getFinalPageForSourceGroup({
+    queryStatus,
+    isLocal,
+    count,
+  })
+
   if (Object.keys(currentIndexForSourceGroup).length > 0) {
     return Object.keys(currentIndexForSourceGroup).reduce(
       (blob, key) => {
-        blob[key] = blob[key] + count
+        blob[key] = Math.min(blob[key] + count, finalIndexForSourceGroup[key])
         return blob
       },
       { ...currentIndexForSourceGroup } as IndexForSourceGroupType
     )
   } else {
+    const hasLocal = sources.some((id) => isLocal(id))
     return sources.reduce(
       (blob, sourceName) => {
         if (!isLocal(sourceName)) {
-          blob[sourceName] = 1
+          blob[sourceName] =
+            Math.min(1, finalIndexForSourceGroup[sourceName]) || 1
         }
         return blob
       },
       {
-        local: 1,
+        ...(hasLocal ? { local: 1 } : {}),
       } as IndexForSourceGroupType
     )
   }
@@ -196,32 +230,65 @@ export const hasNextPageForSourceGroup = ({
     return false
   }
 
-  const maxIndexforSourceGroup = getMaxIndexForSourceGroup({
+  const indexOfLastResultForSourceGroup = getIndexOfLastResultForSourceGroup({
     queryStatus,
     isLocal,
   })
 
-  return Object.keys(maxIndexforSourceGroup).some((key) => {
+  return Object.keys(indexOfLastResultForSourceGroup).some((key) => {
     return (
-      currentIndexForSourceGroup[key] + count - 1 < maxIndexforSourceGroup[key]
+      currentIndexForSourceGroup[key] + count - 1 <
+      indexOfLastResultForSourceGroup[key]
     )
   })
 }
 
-export const getPreviousPageForSourceGroup = ({
+// should not be used outside of calculating the constrained previous page
+const getPreviousPageForSourceGroup = ({
   currentIndexForSourceGroup,
+  sources,
+  isLocal,
   count,
+  queryStatus,
 }: {
+  sources: Array<string>
+  isLocal: (id: string) => boolean
   currentIndexForSourceGroup: IndexForSourceGroupType
   count: number
+  queryStatus: QueryStatus
 }): IndexForSourceGroupType => {
-  return Object.keys(currentIndexForSourceGroup).reduce(
-    (blob, key) => {
-      blob[key] = Math.max(1, blob[key] - count)
-      return blob
-    },
-    { ...currentIndexForSourceGroup } as IndexForSourceGroupType
-  )
+  const finalIndexForSourceGroup = getFinalPageForSourceGroup({
+    queryStatus,
+    isLocal,
+    count,
+  })
+
+  if (Object.keys(currentIndexForSourceGroup).length > 0) {
+    return Object.keys(currentIndexForSourceGroup).reduce(
+      (blob, key) => {
+        blob[key] = Math.max(
+          Math.min(blob[key] - count, finalIndexForSourceGroup[key]),
+          1
+        )
+        return blob
+      },
+      { ...currentIndexForSourceGroup } as IndexForSourceGroupType
+    )
+  } else {
+    const hasLocal = sources.some((id) => isLocal(id))
+    return sources.reduce(
+      (blob, sourceName) => {
+        if (!isLocal(sourceName)) {
+          blob[sourceName] =
+            Math.min(1, finalIndexForSourceGroup[sourceName]) || 1
+        }
+        return blob
+      },
+      {
+        ...(hasLocal ? { local: 1 } : {}),
+      } as IndexForSourceGroupType
+    )
+  }
 }
 
 export const getFirstPageForSourceGroup = ({
@@ -239,7 +306,7 @@ export const getFirstPageForSourceGroup = ({
   })
 }
 
-export const getFinalPageForSourceGroup = ({
+const getFinalPageForSourceGroup = ({
   queryStatus,
   isLocal,
   count,
@@ -251,21 +318,24 @@ export const getFinalPageForSourceGroup = ({
   if (!queryStatus) {
     return {}
   }
-  const maxIndexforSourceGroup = getMaxIndexForSourceGroup({
+  const indexOfLastResultForSourceGroup = getIndexOfLastResultForSourceGroup({
     queryStatus,
     isLocal,
   })
-  return Object.keys(maxIndexforSourceGroup).reduce(
+  return Object.keys(indexOfLastResultForSourceGroup).reduce(
     (blob, sourceName) => {
-      let remainderOnFinalPage = maxIndexforSourceGroup[sourceName] % count
+      let remainderOnFinalPage =
+        indexOfLastResultForSourceGroup[sourceName] % count
       remainderOnFinalPage =
         remainderOnFinalPage === 0 ? count : remainderOnFinalPage
-      blob[sourceName] =
-        maxIndexforSourceGroup[sourceName] - remainderOnFinalPage + 1
+      blob[sourceName] = Math.max(
+        indexOfLastResultForSourceGroup[sourceName] - remainderOnFinalPage + 1,
+        1
+      )
       return blob
     },
     {
-      ...maxIndexforSourceGroup,
+      ...indexOfLastResultForSourceGroup,
     } as { [key: string]: number }
   )
 }
@@ -279,37 +349,37 @@ export type QueryStartAndEndType = {
 export const getCurrentStartAndEndForSourceGroup = ({
   queryStatus,
   currentIndexForSourceGroup,
+  isLocal,
 }: {
   queryStatus: QueryStatus
   currentIndexForSourceGroup: IndexForSourceGroupType
+  isLocal: (id: string) => boolean
 }): QueryStartAndEndType => {
-  if (!queryStatus) {
+  if (!queryStatus || Object.keys(queryStatus).length === 0) {
     return {
       start: 0,
       end: 0,
       hits: 0,
     }
   }
-  const relativeStart = Object.keys(currentIndexForSourceGroup).reduce(
-    (_blob, key) => {
-      return currentIndexForSourceGroup[key]
-    },
-    0
+  const lastIndexForSourceGroup = getIndexOfLastResultForSourceGroup({
+    queryStatus,
+    isLocal,
+  })
+
+  let start = 1
+  const isBeginning = Object.values(currentIndexForSourceGroup).every(
+    (start) => start === 1
   )
 
-  const start =
-    relativeStart === 1
-      ? relativeStart
-      : Object.keys(queryStatus).reduce((blob, key) => {
-          return (
-            blob +
-            Math.min(
-              queryStatus[key].hits,
-              currentIndexForSourceGroup[key] |
-                currentIndexForSourceGroup['local']
-            )
-          )
-        }, 0)
+  if (!isBeginning) {
+    start = Object.keys(currentIndexForSourceGroup).reduce((blob, key) => {
+      return (
+        blob +
+        Math.min(currentIndexForSourceGroup[key], lastIndexForSourceGroup[key])
+      ) // if we go beyond the hits, we should only add the total hits for that source
+    }, 0)
+  }
 
   const end = Object.keys(queryStatus).reduce((blob, key) => {
     return blob + queryStatus[key].count
@@ -320,12 +390,68 @@ export const getCurrentStartAndEndForSourceGroup = ({
   }, 0)
 
   return {
-    start,
-    end: Math.max(start, end),
+    start: Math.min(start, hits),
+    end: Math.min(Math.max(start, end), hits),
     hits,
   }
 }
 
+function getFarthestIndexForSourceGroup(
+  sourceGroup: IndexForSourceGroupType
+): number {
+  // find the max index for the source group
+  return Math.max(...Object.values(sourceGroup))
+}
+
+/**
+ * Ensures that the next page indices for a group of sources make sense.  We do this by examining the farthest index, since paging is done individually for each source.
+ * If the farthest index is beyond the hits for a source, we essentially "lock" the source to the end to ensure we don't recieve further results.
+ **/
+export const getConstrainedNextPageForSourceGroup = ({
+  currentIndexForSourceGroup,
+  sources,
+  isLocal,
+  count,
+  queryStatus,
+}: {
+  sources: Array<string>
+  isLocal: (id: string) => boolean
+  currentIndexForSourceGroup: IndexForSourceGroupType
+  count: number
+  queryStatus: QueryStatus
+}): IndexForSourceGroupType => {
+  const nextPageForSourceGroup = getNextPageForSourceGroup({
+    queryStatus,
+    isLocal,
+    count,
+    currentIndexForSourceGroup,
+    sources,
+  })
+  const farthestIndexForSourceGroup = getFarthestIndexForSourceGroup(
+    nextPageForSourceGroup
+  )
+  const indexOfNoMoreResultsForSourceGroup =
+    getIndexOfNoMoreResultsForSourceGroup({
+      queryStatus,
+      isLocal,
+    })
+  return Object.keys(nextPageForSourceGroup).reduce(
+    (blob, sourceName) => {
+      if (blob[sourceName] < farthestIndexForSourceGroup) {
+        blob[sourceName] = indexOfNoMoreResultsForSourceGroup[sourceName] // lock the source to the end, since we've gone beyond the hits (will ensure no results come back)
+      }
+      return blob
+    },
+    {
+      ...nextPageForSourceGroup,
+    } as { [key: string]: number }
+  )
+}
+
+/**
+ *  The final index for a source group is not the same as the final index when thinking about the very last page, since we have multiple sources.
+ *  Some sources may have already "exhausted" their results, so we need to make sure that if we don't return results that we've already "passed".
+ */
 export const getConstrainedFinalPageForSourceGroup = ({
   queryStatus,
   isLocal,
@@ -343,15 +469,75 @@ export const getConstrainedFinalPageForSourceGroup = ({
   const maxFinalPageIndexForSourceGroup = Math.max(
     ...Object.values(finalPageForSourceGroup)
   )
+  const indexOfNoMoreResultsForSourceGroup =
+    getIndexOfNoMoreResultsForSourceGroup({
+      queryStatus,
+      isLocal,
+    })
   return Object.keys(finalPageForSourceGroup).reduce(
     (blob, sourceName) => {
       if (blob[sourceName] < maxFinalPageIndexForSourceGroup) {
-        blob[sourceName] = maxFinalPageIndexForSourceGroup
+        blob[sourceName] = indexOfNoMoreResultsForSourceGroup[sourceName]
       }
       return blob
     },
     {
       ...finalPageForSourceGroup,
+    } as { [key: string]: number }
+  )
+}
+
+/**
+ * Ensures that the next page indices for a group of sources make sense.  We do this by examining the farthest index, since paging is done individually for each source.
+ * If the farthest index is beyond the hits for a source, we essentially "lock" the source to the end to ensure we don't recieve further results.
+ **/
+export const getConstrainedPreviousPageForSourceGroup = ({
+  currentIndexForSourceGroup,
+  sources,
+  isLocal,
+  count,
+  queryStatus,
+}: {
+  sources: Array<string>
+  isLocal: (id: string) => boolean
+  currentIndexForSourceGroup: IndexForSourceGroupType
+  count: number
+  queryStatus: QueryStatus
+}): IndexForSourceGroupType => {
+  if (!queryStatus || Object.keys(queryStatus).length === 0) {
+    return getFirstPageForSourceGroup({
+      sources,
+      isLocal,
+    })
+  }
+  const previousPageForSourceGroup = getPreviousPageForSourceGroup({
+    queryStatus,
+    isLocal,
+    count,
+    currentIndexForSourceGroup,
+    sources,
+  })
+  const farthestIndexForSourceGroup = getFarthestIndexForSourceGroup(
+    previousPageForSourceGroup
+  )
+  const indexOfNoMoreResultsForSourceGroup =
+    getIndexOfNoMoreResultsForSourceGroup({
+      queryStatus,
+      isLocal,
+    })
+  return Object.keys(previousPageForSourceGroup).reduce(
+    (blob, sourceName) => {
+      if (blob[sourceName] < farthestIndexForSourceGroup) {
+        // never go beyond the no more results index, but make sure we keep indexes in sync when going backwards
+        blob[sourceName] = Math.min(
+          indexOfNoMoreResultsForSourceGroup[sourceName],
+          farthestIndexForSourceGroup
+        )
+      }
+      return blob
+    },
+    {
+      ...previousPageForSourceGroup,
     } as { [key: string]: number }
   )
 }

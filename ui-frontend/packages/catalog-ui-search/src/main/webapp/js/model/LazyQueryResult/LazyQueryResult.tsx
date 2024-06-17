@@ -287,7 +287,6 @@ export class LazyQueryResult {
         id: '0',
         sort: 'modified:desc',
         src: this.plain.metacard.properties['source-id'],
-        start: 1,
       }
       $.ajax({
         type: 'POST',

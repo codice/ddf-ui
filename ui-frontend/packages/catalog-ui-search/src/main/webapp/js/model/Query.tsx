@@ -21,7 +21,10 @@ import _merge from 'lodash/merge'
 import _cloneDeep from 'lodash.clonedeep'
 import { v4 } from 'uuid'
 import 'backbone-associations'
-import { LazyQueryResults } from './LazyQueryResult/LazyQueryResults'
+import {
+  LazyQueryResults,
+  SearchStatus,
+} from './LazyQueryResult/LazyQueryResults'
 import {
   FilterBuilderClass,
   FilterClass,
@@ -29,9 +32,9 @@ import {
 import { downgradeFilterTreeToBasic } from '../../component/query-basic/query-basic.view'
 import {
   getConstrainedFinalPageForSourceGroup,
+  getConstrainedNextPageForSourceGroup,
   getCurrentStartAndEndForSourceGroup,
-  getNextPageForSourceGroup,
-  getPreviousPageForSourceGroup,
+  getConstrainedPreviousPageForSourceGroup,
   hasNextPageForSourceGroup,
   hasPreviousPageForSourceGroup,
   IndexForSourceGroupType,
@@ -73,9 +76,6 @@ export type QueryType = {
   setColor: (color: any) => void
   getColor: () => any
   color: () => any
-  currentIndexForSourceGroup: IndexForSourceGroupType
-  nextIndexForSourceGroup: IndexForSourceGroupType
-  pastIndexesForSourceGroup: Array<IndexForSourceGroupType>
   getPreviousServerPage: () => void
   hasPreviousServerPage: () => boolean
   hasNextServerPage: () => boolean
@@ -84,10 +84,18 @@ export type QueryType = {
   getFirstServerPage: () => void
   getHasLastServerPage: () => boolean
   getLastServerPage: () => void
+  getCurrentIndexForSourceGroup: () => IndexForSourceGroupType
+  getNextIndexForSourceGroup: () => IndexForSourceGroupType
   resetCurrentIndexForSourceGroup: () => void
   setNextIndexForSourceGroupToPrevPage: () => void
-  setNextIndexForSourceGroupToNextPage: (sources: string[]) => void
+  setNextIndexForSourceGroupToNextPage: () => void
   getCurrentStartAndEndForSourceGroup: () => QueryStartAndEndType
+  hasCurrentIndexForSourceGroup: () => boolean
+  getMostRecentStatus: () => any
+  getLazyResults: () => LazyQueryResults
+  updateMostRecentStatus: () => void
+  refetch: () => void
+  canRefetch: () => boolean
   [key: string]: any
 }
 function limitToDeleted(cqlFilterTree: any) {
@@ -193,7 +201,6 @@ export default Backbone.AssociatedModel.extend({
         associatedFormModel: undefined,
         excludeUnnecessaryAttributes: true,
         count: StartupDataStore.Configuration.getResultCount(),
-        start: 1,
         sorts: [
           {
             attribute: 'modified',
@@ -222,6 +229,9 @@ export default Backbone.AssociatedModel.extend({
         spellcheck: false,
         phonetics: false,
         additionalOptions: '{}',
+        currentIndexForSourceGroup: {} as IndexForSourceGroupType,
+        nextIndexForSourceGroup: {} as IndexForSourceGroupType,
+        mostRecentStatus: {} as SearchStatus,
       },
       queryRef: this,
     })
@@ -274,12 +284,11 @@ export default Backbone.AssociatedModel.extend({
       'change:cql change:filterTree change:sources change:sorts change:spellcheck change:phonetics change:count change:additionalOptions',
       () => {
         this.set('isOutdated', true)
+        this.set('mostRecentStatus', {})
       }
     )
     this.listenTo(this, 'change:filterTree', () => {
-      this.get('result')
-        .get('lazyResults')
-        ._resetFilterTree(this.get('filterTree'))
+      this.getLazyResults()._resetFilterTree(this.get('filterTree'))
     })
     // basically remove invalid filters when going from basic to advanced, and make it basic compatible
     this.listenTo(this, 'change:type', () => {
@@ -292,6 +301,12 @@ export default Backbone.AssociatedModel.extend({
           downgradeFilterTreeToBasic(cleanedUpFilterTree as any)
         )
       }
+    })
+    this.getLazyResults().subscribeTo({
+      subscribableThing: 'status',
+      callback: () => {
+        this.updateMostRecentStatus()
+      },
     })
   },
   getSelectedSources() {
@@ -334,7 +349,6 @@ export default Backbone.AssociatedModel.extend({
     return _.pick(
       data,
       'sources',
-      'start',
       'count',
       'timeout',
       'cql',
@@ -408,7 +422,7 @@ export default Backbone.AssociatedModel.extend({
       selectedSources = data.sources.filter(isHarvested)
     }
     let result = this.get('result')
-    result.get('lazyResults').reset({
+    this.getLazyResults().reset({
       filterTree: this.get('filterTree'),
       sorts: this.get('sorts'),
       sources: selectedSources,
@@ -424,6 +438,22 @@ export default Backbone.AssociatedModel.extend({
       result,
       resultOptions: options,
     }
+  },
+  // we need at least one status for the search to be able to correctly page things, technically we could just use the first one
+  updateMostRecentStatus() {
+    const currentStatus = this.getLazyResults().status
+    const previousStatus = this.getMostRecentStatus()
+    const newStatus = JSON.parse(JSON.stringify(previousStatus))
+    // compare each key and overwrite only when the new status is successful - we need a successful status to page
+    Object.keys(currentStatus).forEach((key) => {
+      if (currentStatus[key].successful) {
+        newStatus[key] = currentStatus[key]
+      }
+    })
+    this.set('mostRecentStatus', newStatus)
+  },
+  getLazyResults(): LazyQueryResults {
+    return this.get('result').get('lazyResults')
   },
   startSearch(options: any, done: any) {
     this.trigger('panToShapesExtent')
@@ -451,7 +481,7 @@ export default Backbone.AssociatedModel.extend({
       originalFilterTree: cqlFilterTree,
       queryRef: this,
     })
-    this.currentIndexForSourceGroup = this.nextIndexForSourceGroup
+    this.set('currentIndexForSourceGroup', this.getNextIndexForSourceGroup())
 
     postSimpleAuditLog({
       action: 'SEARCH_SUBMITTED',
@@ -459,23 +489,26 @@ export default Backbone.AssociatedModel.extend({
         'query: [' + cqlString + '] sources: [' + selectedSources + ']',
     })
 
-    const localSearchToRun = {
-      ...data,
-      cql: cqlString,
-      srcs: selectedSources.filter(isHarvested),
-      start: this.currentIndexForSourceGroup.local,
-    }
     const federatedSearchesToRun = selectedSources
       .filter(isFederated)
       .map((source: any) => ({
         ...data,
         cql: cqlString,
         srcs: [source],
-        start: this.currentIndexForSourceGroup[source],
+        start: this.get('currentIndexForSourceGroup')[source],
       }))
-    const searchesToRun = [localSearchToRun, ...federatedSearchesToRun].filter(
+    const searchesToRun = [...federatedSearchesToRun].filter(
       (search) => search.srcs.length > 0
     )
+    if (this.getCurrentIndexForSourceGroup().local) {
+      const localSearchToRun = {
+        ...data,
+        cql: cqlString,
+        srcs: selectedSources.filter(isHarvested),
+        start: this.getCurrentIndexForSourceGroup().local,
+      }
+      searchesToRun.push(localSearchToRun)
+    }
     if (searchesToRun.length === 0) {
       // reset to all and run
       this.set('sources', ['all'])
@@ -514,7 +547,7 @@ export default Backbone.AssociatedModel.extend({
     })
     const result = this.get('result')
     if (result) {
-      result.get('lazyResults').cancel()
+      this.getLazyResults().cancel()
     }
     this.currentSearches = []
   },
@@ -547,11 +580,7 @@ export default Backbone.AssociatedModel.extend({
     return this.get('color')
   },
   getPreviousServerPage() {
-    this.nextIndexForSourceGroup = getPreviousPageForSourceGroup({
-      currentIndexForSourceGroup: this.currentIndexForSourceGroup,
-      count: this.get('count'),
-    })
-    // this.setNextIndexForSourceGroupToPrevPage()
+    this.setNextIndexForSourceGroupToPrevPage()
     this.startSearch()
   },
   /**
@@ -559,25 +588,19 @@ export default Backbone.AssociatedModel.extend({
    */
   hasPreviousServerPage() {
     return hasPreviousPageForSourceGroup({
-      currentIndexForSourceGroup: this.currentIndexForSourceGroup,
+      currentIndexForSourceGroup: this.getCurrentIndexForSourceGroup(),
     })
   },
   hasNextServerPage() {
-    const Sources = StartupDataStore.Sources.sources
-    const harvestedSources = Sources.filter((source) => source.harvested).map(
-      (source) => source.id
-    )
     return hasNextPageForSourceGroup({
-      queryStatus: this.get('result')?.get('lazyResults')?.status,
-      isLocal: (id) => {
-        return harvestedSources.includes(id)
-      },
-      currentIndexForSourceGroup: this.currentIndexForSourceGroup,
+      queryStatus: this.getMostRecentStatus(),
+      isLocal: this.isLocalSource,
+      currentIndexForSourceGroup: this.getCurrentIndexForSourceGroup(),
       count: this.get('count'),
     })
   },
   getNextServerPage() {
-    this.setNextIndexForSourceGroupToNextPage(this.getSelectedSources())
+    this.setNextIndexForSourceGroupToNextPage()
     this.startSearch()
   },
   getHasFirstServerPage() {
@@ -592,62 +615,104 @@ export default Backbone.AssociatedModel.extend({
     return this.hasNextServerPage()
   },
   getLastServerPage() {
-    const Sources = StartupDataStore.Sources.sources
-    const harvestedSources = Sources.filter((source) => source.harvested).map(
-      (source) => source.id
+    this.set(
+      'nextIndexForSourceGroup',
+      getConstrainedFinalPageForSourceGroup({
+        queryStatus: this.getMostRecentStatus(),
+        isLocal: this.isLocalSource,
+        count: this.get('count'),
+      })
     )
-    this.nextIndexForSourceGroup = getConstrainedFinalPageForSourceGroup({
-      queryStatus: this.get('result')?.get('lazyResults')?.status,
-      isLocal: (id) => {
-        return harvestedSources.includes(id)
-      },
-      count: this.get('count'),
-    })
     this.startSearch()
   },
   resetCurrentIndexForSourceGroup() {
-    this.currentIndexForSourceGroup = {}
+    this.set('currentIndexForSourceGroup', {})
     if (this.get('result')) {
-      this.get('result').get('lazyResults')._resetSources([])
+      this.getLazyResults()._resetSources([])
     }
-    this.setNextIndexForSourceGroupToNextPage(this.getSelectedSources())
-    this.pastIndexesForSourceGroup = []
+    this.setNextIndexForSourceGroupToNextPage()
   },
-  currentIndexForSourceGroup: {},
-  pastIndexesForSourceGroup: [],
-  nextIndexForSourceGroup: {},
   /**
    * Update the next index to be the prev page
    */
   setNextIndexForSourceGroupToPrevPage() {
-    if (this.pastIndexesForSourceGroup.length > 0) {
-      this.nextIndexForSourceGroup = this.pastIndexesForSourceGroup.pop() || {}
-    } else {
-      console.error('this should not happen')
-    }
+    this.set(
+      'nextIndexForSourceGroup',
+      getConstrainedPreviousPageForSourceGroup({
+        sources: this.getSelectedSources(),
+        currentIndexForSourceGroup: this.getCurrentIndexForSourceGroup(),
+        count: this.get('count'),
+        isLocal: this.isLocalSource,
+        queryStatus: this.getMostRecentStatus(),
+      })
+    )
   },
-  /**
-   * Update the next index to be the next page
-   */
-  setNextIndexForSourceGroupToNextPage(sources: string[]) {
+  isLocalSource(id: string) {
     const Sources = StartupDataStore.Sources.sources
     const harvestedSources = Sources.filter((source) => source.harvested).map(
       (source) => source.id
     )
-    this.pastIndexesForSourceGroup.push(this.nextIndexForSourceGroup)
-    this.nextIndexForSourceGroup = getNextPageForSourceGroup({
-      sources,
-      currentIndexForSourceGroup: this.currentIndexForSourceGroup,
-      count: this.get('count'),
-      isLocal: (id) => {
-        return harvestedSources.includes(id)
-      },
-    })
+    return harvestedSources.includes(id)
+  },
+  /**
+   * Update the next index to be the next page
+   */
+  setNextIndexForSourceGroupToNextPage() {
+    this.set(
+      'nextIndexForSourceGroup',
+      getConstrainedNextPageForSourceGroup({
+        sources: this.getSelectedSources(),
+        currentIndexForSourceGroup: this.getCurrentIndexForSourceGroup(),
+        count: this.get('count'),
+        isLocal: this.isLocalSource,
+        queryStatus: this.getMostRecentStatus(),
+      })
+    )
   },
   getCurrentStartAndEndForSourceGroup() {
     return getCurrentStartAndEndForSourceGroup({
-      currentIndexForSourceGroup: this.currentIndexForSourceGroup,
-      queryStatus: this.get('result')?.get('lazyResults')?.status,
+      currentIndexForSourceGroup: this.getCurrentIndexForSourceGroup(),
+      queryStatus: this.getMostRecentStatus(),
+      isLocal: this.isLocalSource,
     })
+  },
+  // try to return the most recent successful status
+  getMostRecentStatus(): SearchStatus {
+    const mostRecentStatus = this.get('mostRecentStatus') as SearchStatus
+    if (Object.keys(mostRecentStatus).length === 0) {
+      return this.getLazyResults().status || {}
+    }
+    return mostRecentStatus
+  },
+  getCurrentIndexForSourceGroup() {
+    return this.get('currentIndexForSourceGroup')
+  },
+  getNextIndexForSourceGroup() {
+    return this.get('nextIndexForSourceGroup')
+  },
+  hasCurrentIndexForSourceGroup() {
+    return Object.keys(this.getCurrentIndexForSourceGroup()).length > 0
+  },
+  refetch() {
+    if (this.canRefetch()) {
+      this.set('nextIndexForSourceGroup', this.getCurrentIndexForSourceGroup())
+      this.startSearch()
+    } else {
+      throw new Error(
+        'Missing necessary data to refetch (currentIndexForSourceGroup), or search criteria is outdated.'
+      )
+    }
+  },
+  // as long as we have a current index, and the search criteria isn't out of date, we can refetch - useful for resuming searches
+  canRefetch() {
+    return this.hasCurrentIndexForSourceGroup() && !this.isOutdated()
+  },
+  // common enough that we should extract this for ease of use
+  refetchOrStartSearchFromFirstPage() {
+    if (this.canRefetch()) {
+      this.refetch()
+    } else {
+      this.startSearchFromFirstPage()
+    }
   },
 } as QueryType)
