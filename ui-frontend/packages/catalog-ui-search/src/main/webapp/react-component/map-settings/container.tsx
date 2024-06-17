@@ -26,11 +26,11 @@ import Popover from '@mui/material/Popover'
 import user from '../../component/singletons/user-instance'
 import SettingsIcon from '@mui/icons-material/Settings'
 import { Elevations } from '../../component/theme/theme'
-import { getDefaultCoordinateFormat } from '../../component/visualization/settings-helpers'
+import { getUserCoordinateFormat } from '../../component/visualization/settings-helpers'
 import { LayoutContext } from '../../component/golden-layout/visual-settings.provider'
 
 const MapSettings = (props: WithBackboneProps) => {
-  const { getValue, setValue, onStateChanged, visualTitle } =
+  const { getValue, setValue, onStateChanged, visualTitle, hasLayoutContext } =
     React.useContext(LayoutContext)
 
   const [coordFormat, setCoordFormat] = useState('degrees')
@@ -42,11 +42,22 @@ const MapSettings = (props: WithBackboneProps) => {
   const coordFormatKey = `${visualTitle}-coordFormat`
 
   useEffect(() => {
-    setCoordFormat(getValue(coordFormatKey, getDefaultCoordinateFormat()))
-    onStateChanged(() => {
-      const coordFormat = getValue(coordFormatKey, getDefaultCoordinateFormat())
-      setCoordFormat(coordFormat)
-    })
+    const userDefaultFormat = getUserCoordinateFormat()
+    if (hasLayoutContext) {
+      setCoordFormat(getValue(coordFormatKey, userDefaultFormat))
+      onStateChanged(() => {
+        const coordFormat = getValue(coordFormatKey, getUserCoordinateFormat())
+        setCoordFormat(coordFormat)
+      })
+    } else {
+      setCoordFormat(userDefaultFormat)
+      props.listenTo(
+        user.get('user').get('preferences'),
+        'change:coordinateFormat',
+        () => setCoordFormat(getUserCoordinateFormat())
+      )
+    }
+
     props.listenTo(
       user.get('user').get('preferences'),
       'change:autoPan',
@@ -55,7 +66,15 @@ const MapSettings = (props: WithBackboneProps) => {
   }, [])
 
   const updateCoordFormat = (coordinateFormat: string) => {
-    setValue(coordFormatKey, coordinateFormat)
+    if (hasLayoutContext) {
+      setValue(coordFormatKey, coordinateFormat)
+    } else {
+      const preferences = user
+        .get('user')
+        .get('preferences')
+        .set({ coordinateFormat })
+      preferences.savePreferences()
+    }
   }
 
   const updateAutoPan = (

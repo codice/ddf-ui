@@ -19,6 +19,7 @@ type LayoutContextType = {
   setValue: (key: string, value: any) => void
   onStateChanged: (callback: () => void) => void
   visualTitle: string
+  hasLayoutContext: boolean
 }
 
 export const LayoutContext = React.createContext<LayoutContextType>({
@@ -26,6 +27,7 @@ export const LayoutContext = React.createContext<LayoutContextType>({
   setValue: () => {},
   onStateChanged: (callback: () => void) => callback(),
   visualTitle: '',
+  hasLayoutContext: false,
 })
 
 type VisualSettingsProviderProps = {
@@ -61,6 +63,7 @@ export const VisualSettingsProvider = (props: VisualSettingsProviderProps) => {
         setValue: setVisualSettingValue,
         onStateChanged: onVisualSettingChangedListener,
         visualTitle: container.title,
+        hasLayoutContext: true,
       }}
     >
       {children}
