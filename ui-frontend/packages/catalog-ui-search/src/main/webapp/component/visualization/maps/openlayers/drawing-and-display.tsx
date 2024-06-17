@@ -424,13 +424,10 @@ export const OpenlayersDrawings = ({
     return () => window.removeEventListener('keydown', handleKeydown)
   }, [drawingModel])
 
-  const lineBufferChangedCallback = React.useMemo(() => {
-    return () => {
-      setUpdatedBuffer(drawingModel.attributes.lineWidth
-      )
-      setUpdatedBufferUnit(drawingModel.attributes.lineUnits
-      )
-    }
+  const lineBufferChangedCallback = React.useCallback(() => {
+      setUpdatedBuffer(drawingModel.attributes.lineWidth)
+      setUpdatedBufferUnit(drawingModel.attributes.lineUnits)
+
   }, [drawingModel])
 
   useListenTo(
@@ -439,18 +436,10 @@ export const OpenlayersDrawings = ({
     lineBufferChangedCallback
   )
 
-  const polygonBufferChangedCallback = React.useMemo(() => {
-      console.log("updated in ddf")
-      console.log(updatedBuffer)
-      console.log(updatedBufferUnit)
-    return () => {
-      setUpdatedBuffer(
-        drawingModel.attributes.polygonBufferWidth
-      )
-      setUpdatedBufferUnit(
-        drawingModel.attributes.polygonBufferUnits
-      )
-    }
+  const polygonBufferChangedCallback = React.useCallback(() => {
+      setUpdatedBuffer(drawingModel.attributes.polygonBufferWidth)
+      setUpdatedBufferUnit(drawingModel.attributes.polygonBufferUnits)
+    
   }, [drawingModel])
 
   useListenTo(
