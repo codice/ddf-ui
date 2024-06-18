@@ -10240,10 +10240,10 @@ geolib@^3.2.1:
   version "3.3.1"
   resolved "https://registry.yarnpkg.com/geolib/-/geolib-3.3.1.tgz#f144a53b6a6858e81111ff71d137318389927611"
 
-geospatialdraw@0.4.5:
-  version "0.4.5"
-  resolved "https://registry.yarnpkg.com/geospatialdraw/-/geospatialdraw-0.4.5.tgz#3ba79d4b5c34c336a12a274bbd705edd9f3b2794"
-  integrity sha512-H/LIg1uT5w7WJcaHIS+alrz8TBYrdLwaLmqXSsxohI2Jb25GtoqyH423WOiGIMm6IonV+wm0ZFbLzse2ZnBwVA==
+geospatialdraw@0.4.7:
+  version "0.4.7"
+  resolved "https://registry.yarnpkg.com/geospatialdraw/-/geospatialdraw-0.4.7.tgz#c3270a7791932234bc2e83f123cca212f1c59d03"
+  integrity sha512-kbyGzHtDtXcJgEHEg75gEYTsY3THfO+n5NGuuvnXLwKys8oO4SKH+sQbXXU/8FcLOE38kTMK8X4JouJqIRs19w==
   dependencies:
     "@fortawesome/fontawesome-svg-core" "1.2.21"
     "@fortawesome/free-solid-svg-icons" "5.10.1"
