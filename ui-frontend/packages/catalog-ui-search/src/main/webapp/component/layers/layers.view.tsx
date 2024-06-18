@@ -75,14 +75,15 @@ const LayersViewReact = (props: LayersViewReactProps) => {
   const layers = props.layers ?? user.get('user>preferences>mapLayers')
 
   const savePreferencesCallback = React.useMemo(() => {
+    if (props.layers) {
+      return () => {}
+    }
     return debounce(() => {
       user.get('user>preferences').savePreferences()
     }, 100)
   }, [])
   useListenTo(layers, 'change:alpha change:show', () => {
-    if (!props.layers) {
-      savePreferencesCallback()
-    }
+    savePreferencesCallback()
   })
 
   return (
@@ -100,9 +101,7 @@ const LayersViewReact = (props: LayersViewReactProps) => {
               }
             )
             layers.sort()
-            if (!props.layers) {
-              savePreferencesCallback()
-            }
+            savePreferencesCallback()
           }}
           focusModel={focusModel}
         />
@@ -121,9 +120,7 @@ const LayersViewReact = (props: LayersViewReactProps) => {
               viewLayer.set(defaultConfig)
             })
             layers.sort()
-            if (!props.layers) {
-              savePreferencesCallback()
-            }
+            savePreferencesCallback()
           }}
         >
           <span>Reset to Defaults</span>
