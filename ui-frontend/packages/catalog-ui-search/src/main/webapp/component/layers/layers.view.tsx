@@ -21,6 +21,8 @@ import user from '../singletons/user-instance'
 import { hot } from 'react-hot-loader'
 import Button from '@mui/material/Button'
 import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
+import { useListenTo } from '../../component/selection-checkbox/useBackbone.hook'
+import debounce from 'lodash.debounce'
 
 // this is to track focus, since on reordering rerenders and loses focus
 const FocusModel = Backbone.Model.extend({
@@ -72,6 +74,17 @@ const LayersViewReact = (props: LayersViewReactProps) => {
 
   const layers = props.layers ?? user.get('user>preferences>mapLayers')
 
+  const savePreferencesCallback = React.useMemo(() => {
+    return debounce(() => {
+      user.get('user>preferences').savePreferences()
+    }, 100)
+  }, [])
+  useListenTo(layers, 'change:alpha change:show', () => {
+    if (!props.layers) {
+      savePreferencesCallback()
+    }
+  })
+
   return (
     <div data-id="layers-container" ref={containerElementRef}>
       <div className="text-xl text-center">Layers</div>
@@ -87,6 +100,9 @@ const LayersViewReact = (props: LayersViewReactProps) => {
               }
             )
             layers.sort()
+            if (!props.layers) {
+              savePreferencesCallback()
+            }
           }}
           focusModel={focusModel}
         />
@@ -105,6 +121,9 @@ const LayersViewReact = (props: LayersViewReactProps) => {
               viewLayer.set(defaultConfig)
             })
             layers.sort()
+            if (!props.layers) {
+              savePreferencesCallback()
+            }
           }}
         >
           <span>Reset to Defaults</span>
