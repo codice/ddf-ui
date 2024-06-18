@@ -37,6 +37,6 @@ export const getDefaultResultsShownTable = () => {
   return ['title', 'thumbnail']
 }
 
-export const getDefaultCoordinateFormat = () => {
+export const getUserCoordinateFormat = () => {
   return TypedUserInstance.getCoordinateFormat()
 }

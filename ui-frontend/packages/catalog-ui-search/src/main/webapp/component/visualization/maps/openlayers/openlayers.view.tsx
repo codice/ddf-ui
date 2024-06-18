@@ -44,29 +44,40 @@ export const OpenlayersMapViewReact = ({
   const [mapLayers, setMapLayers] = React.useState<any>(null)
   const { listenTo } = useBackbone()
 
-  const { getValue, setValue } = React.useContext(LayoutContext)
+  const { getValue, setValue, hasLayoutContext } =
+    React.useContext(LayoutContext)
+
+  const saveLayers = (layers: any) => {
+    if (hasLayoutContext) {
+      setValue(OPENLAYERS_MAP_LAYERS, layers.toJSON())
+    } else {
+      user.get('user>preferences').savePreferences()
+    }
+  }
 
   React.useEffect(() => {
-    const defaultLayers = user.get('user>preferences>mapLayers').toJSON()
-    const layerSettings = getValue(OPENLAYERS_MAP_LAYERS, defaultLayers)
+    const userDefaultLayers = user.get('user>preferences>mapLayers')
 
-    const layerModels = layerSettings.map((layer: any) => {
-      return new (User as any).MapLayer(layer, { parse: true })
-    })
-    const layerCollection = new (User as any).MapLayers(layerModels)
-    listenTo(layerCollection, 'add remove', () =>
-      setValue(OPENLAYERS_MAP_LAYERS, layerCollection.toJSON())
-    )
+    let layerCollection = userDefaultLayers
+    if (hasLayoutContext) {
+      const layerSettings = getValue(
+        OPENLAYERS_MAP_LAYERS,
+        userDefaultLayers.toJSON()
+      )
+      const layerModels = layerSettings.map((layer: any) => {
+        return new (User as any).MapLayer(layer, { parse: true })
+      })
+      layerCollection = new (User as any).MapLayers(layerModels)
+    }
+
+    listenTo(layerCollection, 'add remove', () => saveLayers(layerCollection))
     layerCollection.validate()
     setMapLayers(layerCollection)
   }, [])
 
   React.useEffect(() => {
-    const callback = () => {
-      setValue(OPENLAYERS_MAP_LAYERS, mapLayers.toJSON())
-    }
     if (mapLayers) {
-      listenTo(mapLayers, 'change', callback)
+      listenTo(mapLayers, 'change', () => saveLayers(mapLayers))
     }
   }, [mapLayers])
 

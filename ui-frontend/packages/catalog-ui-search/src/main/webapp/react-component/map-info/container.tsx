@@ -19,7 +19,8 @@ import { hot } from 'react-hot-loader'
 import { Format, Attribute } from '.'
 import { StartupDataStore } from '../../js/model/Startup/startup'
 import { LayoutContext } from '../../component/golden-layout/visual-settings.provider'
-import { getDefaultCoordinateFormat } from '../../component/visualization/settings-helpers'
+import { getUserCoordinateFormat } from '../../component/visualization/settings-helpers'
+import user from '../../component/singletons/user-instance'
 
 type Props = {
   map: Backbone.Model
@@ -52,10 +53,10 @@ const getAttributes = (map: Backbone.Model) => {
 }
 
 const MapInfo = (props: Props) => {
-  const { getValue, onStateChanged, visualTitle } =
+  const { getValue, onStateChanged, visualTitle, hasLayoutContext } =
     React.useContext(LayoutContext)
   const [stateProps, setStateProps] = React.useState(mapPropsToState(props))
-  const [coordFormat, setCoordFormat] = React.useState<Format>('degrees')
+  const [coordFormat, setCoordFormat] = React.useState('degrees')
 
   const { listenTo, map } = props
   const coordFormatKey = `${visualTitle}-coordFormat`
@@ -63,11 +64,21 @@ const MapInfo = (props: Props) => {
   const onChange = () => setStateProps(mapPropsToState(props))
 
   React.useEffect(() => {
-    setCoordFormat(getValue(coordFormatKey, getDefaultCoordinateFormat()))
-    onStateChanged(() => {
-      const coordFormat = getValue(coordFormatKey, getDefaultCoordinateFormat())
-      setCoordFormat(coordFormat)
-    })
+    const userDefaultFormat = getUserCoordinateFormat()
+    if (hasLayoutContext) {
+      setCoordFormat(getValue(coordFormat, userDefaultFormat))
+      onStateChanged(() => {
+        const coordFormat = getValue(coordFormatKey, getUserCoordinateFormat())
+        setCoordFormat(coordFormat)
+      })
+    } else {
+      setCoordFormat(userDefaultFormat)
+      props.listenTo(
+        user.get('user').get('preferences'),
+        'change:coordinateFormat',
+        () => setCoordFormat(getUserCoordinateFormat())
+      )
+    }
 
     listenTo(
       map,
@@ -76,7 +87,7 @@ const MapInfo = (props: Props) => {
     )
   }, [])
 
-  return <MapInfoPresentation {...stateProps} format={coordFormat} />
+  return <MapInfoPresentation {...stateProps} format={coordFormat as Format} />
 }
 
 export default hot(module)(withListenTo(MapInfo))
