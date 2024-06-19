@@ -157,7 +157,7 @@ export const getExportBody = async (ExportInfo: ExportInfo) => {
     originalFilterTree: query.get('filterTree'),
     queryRef: query,
   })
-  if (ExportInfo.exportSize !== 'all') {
+  if (ExportInfo.exportSize === 'currentPage') {
     queryCount = pageSize
     cql = getResultSetCql(results)
   }
