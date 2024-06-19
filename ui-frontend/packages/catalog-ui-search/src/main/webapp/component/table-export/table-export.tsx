@@ -151,7 +151,8 @@ export const getDownloadBody = async (downloadInfo: DownloadInfo) => {
     originalFilterTree: query.get('filterTree'),
     queryRef: query,
   })
-  if (downloadInfo.exportSize !== 'all') {
+
+  if (downloadInfo.exportSize === 'currentPage') {
     queryCount = pageSize
     cql = getResultSetCql(results)
   }
