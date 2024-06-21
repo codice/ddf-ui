@@ -27,7 +27,9 @@ import Cesium from 'cesium/Build/Cesium/Cesium'
 import * as Turf from '@turf/turf'
 import utility from '../../component/visualization/maps/cesium/utility'
 import _ from 'lodash'
+// @ts-ignore
 import dragHalfSvg from '!!raw-loader!./drag-half.svg'
+// @ts-ignore
 import vertexSvg from '!!raw-loader!./vertex.svg'
 import { contrastingColor } from '../../react-component/location/location-color-selector'
 // Avoid conflict with the name _, which DrawHelper uses a lot
