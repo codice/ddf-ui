@@ -3,6 +3,7 @@
     "jsx": "react",
     "allowJs": false,
     "esModuleInterop": true,
+    "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitAny": true,
@@ -16,8 +17,6 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "outDir": "./dist",
-    "rootDir": "./dist/_src-map-dir",
-    "sourceMap": true,
     "skipLibCheck": true,
     "lib": ["es2019", "dom"],
     "allowSyntheticDefaultImports": true,
@@ -25,6 +24,6 @@
     "emitDecoratorMetadata": true,
     "downlevelIteration": true
   },
-  "include": ["dist/_src-map-dir/**/*.ts", "dist/_src-map-dir/**/*.tsx"],
-  "exclude": ["node_modules", "dev", "target"]
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist", "dev", "target"]
 }
