@@ -21,6 +21,7 @@ import com.google.gson.GsonBuilder;
 import ddf.catalog.data.Attribute;
 import ddf.catalog.data.AttributeType;
 import ddf.catalog.data.BinaryContent;
+import ddf.catalog.data.Metacard;
 import ddf.catalog.data.Result;
 import ddf.catalog.federation.FederationException;
 import ddf.catalog.operation.QueryResponse;
@@ -345,8 +346,25 @@ public class CqlTransformHandler implements Route {
       arguments = cswTransformArgumentsAdapter();
     }
 
+    List<String> metacardIds =
+        results.stream().map(Result::getMetacard).map(Metacard::getId).collect(toList());
+
+    Set<String> sources =
+        results
+            .stream()
+            .map(Result::getMetacard)
+            .map(Metacard::getSourceId)
+            .collect(Collectors.toSet());
+
     attachFileToResponse(
-        response, queryResponseTransformer, combinedResponse, arguments, exportTitle);
+        response,
+        queryResponseTransformer,
+        combinedResponse,
+        arguments,
+        exportTitle,
+        metacardIds,
+        sources,
+        transformerId);
 
     return "";
   }
@@ -385,7 +403,10 @@ public class CqlTransformHandler implements Route {
       ServiceReference<QueryResponseTransformer> queryResponseTransformer,
       QueryResponse cqlQueryResponse,
       Map<String, Serializable> arguments,
-      String exportTitle)
+      String exportTitle,
+      List<String> metacardIds,
+      Set<String> sources,
+      String transformerId)
       throws CatalogTransformerException, IOException, MimeTypeException {
     BinaryContent content =
         bundleContext.getService(queryResponseTransformer).transform(cqlQueryResponse, arguments);
@@ -394,7 +415,11 @@ public class CqlTransformHandler implements Route {
 
     try (OutputStream servletOutputStream = response.raw().getOutputStream();
         InputStream resultStream = content.getInputStream()) {
-      IOUtils.copy(resultStream, servletOutputStream);
+      int byteCount = IOUtils.copy(resultStream, servletOutputStream);
+      securityLogger.audit(
+          String.format(
+              "exported metacards: %s from source(s): %s to format: %s with output size: %d",
+              metacardIds, sources, transformerId, byteCount));
     }
 
     response.status(HttpStatus.OK_200);
