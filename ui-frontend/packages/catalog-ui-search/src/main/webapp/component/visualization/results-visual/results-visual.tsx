@@ -14,24 +14,26 @@ import Button from '@mui/material/Button'
 import BackgroundInheritingDiv from '../../theme/background-inheriting-div'
 import { LayoutContext } from '../../golden-layout/visual-settings.provider'
 import { RESULTS_MODE } from '../settings-helpers'
+import { ResultsState } from '../../golden-layout/golden-layout.types'
 type Props = {
   selectionInterface: any
+  componentState: ResultsState
 }
 
-type ModeType = 'card' | 'table'
+export type ModeType = 'card' | 'table'
 
 export const ResultsViewContext = React.createContext({
   edit: null as null | LazyQueryResult,
   setEdit: (() => {}) as React.Dispatch<null | LazyQueryResult>,
 })
 
-const ResultsView = ({ selectionInterface }: Props) => {
+const ResultsView = ({ selectionInterface, componentState }: Props) => {
   const { getValue, setValue } = React.useContext(LayoutContext)
   const [mode, setMode] = React.useState(null)
   const [edit, setEdit] = React.useState(null as null | LazyQueryResult)
 
   React.useEffect(() => {
-    setMode(getValue(RESULTS_MODE) || ('card' as ModeType))
+    setMode(getValue(RESULTS_MODE, componentState['results-mode']))
   }, [])
 
   React.useEffect(() => {

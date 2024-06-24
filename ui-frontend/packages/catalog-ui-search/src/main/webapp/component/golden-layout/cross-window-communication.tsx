@@ -16,6 +16,66 @@ import { v4 as uuid } from 'uuid'
 const windowId = uuid()
 
 /**
+ *  This function is used to extract the 'gl-window' parameter from the URL that was made by the golden layout library
+ */
+function getGLWindowParam(urlString: string): string | null {
+  // Parse the URL
+  const url = new URL(urlString)
+
+  // Check 'gl-window' in the query string
+  const searchParams = new URLSearchParams(url.search)
+  if (searchParams.has('gl-window')) {
+    return searchParams.get('gl-window')
+  }
+
+  // Check 'gl-window' in the fragment (hash)
+  if (url.hash) {
+    const hash = url.hash.substring(1) // Remove the leading '#'
+
+    // If the hash contains a path followed by query parameters
+    const hashIndex = hash.indexOf('?')
+    if (hashIndex !== -1) {
+      const hashQueryString = hash.substring(hashIndex + 1)
+      const hashParams = new URLSearchParams(hashQueryString)
+      if (hashParams.has('gl-window')) {
+        return hashParams.get('gl-window')
+      }
+    } else {
+      // Handle the case where the hash itself is a query string
+      const hashParams = new URLSearchParams(hash)
+      if (hashParams.has('gl-window')) {
+        return hashParams.get('gl-window')
+      }
+    }
+  }
+
+  // Return null if 'gl-window' is not found
+  return null
+}
+
+/**
+ *  This patches the popout url that golden layout creates so that it goes to the popout specific route, rather than the current route, which can have side effects.
+ *  Notice we have to grab the window param and reattach it.
+ */
+function patchCreateUrl() {
+  const oldCreateUrl = (GoldenLayout as any).__lm.controls.BrowserPopout
+    .prototype._createUrl
+  ;(GoldenLayout as any).__lm.controls.BrowserPopout.prototype._createUrl =
+    function () {
+      const oldCreatedUrl = oldCreateUrl.apply(this, arguments)
+      const glWindowParam = getGLWindowParam(oldCreatedUrl)
+      // determine if ?gl-window=' or &gl-window=, then redo the first part and tack that part on
+      const newCreatedUrl =
+        document.location.origin +
+        document.location.pathname +
+        '#/_gl_popout?gl-window=' +
+        glWindowParam
+      return newCreatedUrl
+    }
+}
+patchCreateUrl()
+
+/**
  *  The popin function in golden layout has issues, particularly when there is a single stack in the main window at root.
  *  It also, like many other things in golden layout, doesn't play well with maximize.
  *

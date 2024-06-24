@@ -15,16 +15,12 @@
 import * as React from 'react'
 import { createRoot } from 'react-dom/client'
 import _ from 'underscore'
-import _merge from 'lodash/merge'
 import _debounce from 'lodash/debounce'
 import _cloneDeep from 'lodash.clonedeep'
 import _isEqualWith from 'lodash.isequalwith'
 import $ from 'jquery'
 import wreqr from '../../js/wreqr'
 import GoldenLayout from 'golden-layout'
-import user from '../singletons/user-instance'
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'sani... Remove this comment to see the full error message
-import sanitize from 'sanitize-html'
 import Button from '@mui/material/Button'
 import ExtensionPoints from '../../extension-points/extension-points'
 import { Visualizations } from '../visualization/visualizations'
@@ -38,8 +34,7 @@ import {
   DialogContent,
   DialogTitle,
 } from '@mui/material'
-import { StartupDataStore } from '../../js/model/Startup/startup'
-import { StackToolbar, HeaderHeight, MinimizedHeight } from './stack-toolbar'
+import { StackToolbar, MinimizedHeight } from './stack-toolbar'
 import { GoldenLayoutComponentHeader } from './visual-toolbar'
 import {
   UseSubwindowConsumeNavigationChange,
@@ -48,68 +43,17 @@ import {
 } from './cross-window-communication'
 import { useVerifyMapExistsWhenDrawing } from './verify-map'
 import { VisualSettingsProvider } from './visual-settings.provider'
-
-const treeMap = (obj: any, fn: any, path = []): any => {
-  if (Array.isArray(obj)) {
-    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
-    return obj.map((v, i) => treeMap(v, fn, path.concat(i)))
-  }
-  if (obj !== null && typeof obj === 'object') {
-    return (
-      Object.keys(obj)
-        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
-        .map((k) => [k, treeMap(obj[k], fn, path.concat(k))])
-        .reduce((o, [k, v]) => {
-          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-          o[k] = v
-          return o
-        }, {})
-    )
-  }
-  return fn(obj, path)
-}
-// @ts-expect-error ts-migrate(6133) FIXME: 'sanitizeTree' is declared but its value is never ... Remove this comment to see the full error message
-const sanitizeTree = (tree: any) =>
-  treeMap(tree, (obj: any) => {
-    if (typeof obj === 'string') {
-      return sanitize(obj, {
-        allowedTags: [],
-        allowedAttributes: [],
-      })
-    }
-    return obj
-  })
-
-function getGoldenLayoutSettings() {
-  return {
-    settings: {
-      showPopoutIcon: false,
-      popoutWholeStack: true,
-      responsiveMode: 'none',
-    },
-    dimensions: {
-      borderWidth: 8,
-      minItemHeight: HeaderHeight,
-      minItemWidth: 50,
-      headerHeight: HeaderHeight,
-      dragProxyWidth: 300,
-      dragProxyHeight: 200,
-    },
-    labels: {
-      close: 'close',
-      maximise: 'maximize',
-      minimise: 'minimize',
-      popout: 'open in new window',
-      popin: 'pop in',
-      tabDropdown: 'additional tabs',
-    },
-  }
-}
+import { getInstanceConfig } from './golden-layout.layout-config-handling'
+import { getGoldenLayoutConfig } from './golden-layout.layout-config-handling'
+import { handleGoldenLayoutStateChange } from './golden-layout.layout-config-handling'
+import { getGoldenLayoutSettings } from './golden-layout.layout-config-handling'
 
 /**
  *  For some reason golden layout removes configs from local storage upon first load of popout window, which means refreshing doesn't work.
  *  This prevents this line from doing so: https://github.com/golden-layout/golden-layout/blob/v1.5.9/src/js/LayoutManager.js#L797
  */
+import { getDefaultComponentState } from '../visualization/settings-helpers'
+import { ComponentNameType } from './golden-layout.types'
 ;(function preventRemovalFromStorage() {
   const normalRemoveItem = window.localStorage.removeItem
   window.localStorage.removeItem = (key: string) => {
@@ -161,14 +105,24 @@ const GoldenLayoutComponent = ({
   options,
   container,
   goldenLayout,
+  componentState,
 }: {
   goldenLayout: any
   options: any
   ComponentView: any
   container: GoldenLayout.Container
+  componentState: {
+    componentName: ComponentNameType
+  }
 }) => {
   const { height } = useContainerSize(container)
   const isMinimized = height && height <= MinimizedHeight
+  const normalizedComponentState = React.useMemo(() => {
+    return {
+      ...getDefaultComponentState(componentState.componentName),
+      componentState,
+    }
+  }, [componentState])
 
   return (
     <ExtensionPoints.providers>
@@ -180,7 +134,10 @@ const GoldenLayoutComponent = ({
           className={`w-full h-full ${isMinimized ? 'hidden' : ''}`}
           square
         >
-          <ComponentView selectionInterface={options.selectionInterface} />
+          <ComponentView
+            selectionInterface={options.selectionInterface}
+            componentState={normalizedComponentState}
+          />
         </Paper>
       </VisualSettingsProvider>
     </ExtensionPoints.providers>
@@ -208,6 +165,7 @@ function registerComponent(
               options={options}
               ComponentView={ComponentView}
               container={container}
+              componentState={componentState}
             />
           )
           container.on('destroy', () => {
@@ -250,64 +208,6 @@ function registerComponent(
     }
   )
 }
-function removeActiveTabInformation(config: any): any {
-  if (config.activeItemIndex !== undefined) {
-    config.activeItemIndex = 0
-  }
-  if (config.content === undefined || config.content.length === 0) {
-    return
-  } else {
-    return _.forEach(config.content, removeActiveTabInformation)
-  }
-}
-function removeMaximisedInformation(config: any) {
-  delete config.maximisedItemId
-}
-
-function removeOpenPopoutDimensionInformation(config: any): any {
-  delete config.dimensions
-  if (config.openPopouts === undefined || config.openPopouts.length === 0) {
-    return
-  } else {
-    return _.forEach(config.openPopouts, removeOpenPopoutDimensionInformation)
-  }
-}
-
-function removeEphemeralState(config: any) {
-  removeMaximisedInformation(config)
-  removeActiveTabInformation(config)
-  removeOpenPopoutDimensionInformation(config)
-  return config
-}
-const FALLBACK_GOLDEN_LAYOUT = [
-  {
-    type: 'stack',
-    content: [
-      {
-        type: 'component',
-        componentName: 'cesium',
-        title: '3D Map',
-      },
-      {
-        type: 'component',
-        componentName: 'inspector',
-        title: 'Inspector',
-      },
-    ],
-  },
-]
-export const DEFAULT_GOLDEN_LAYOUT_CONTENT = {
-  content:
-    StartupDataStore.Configuration.getDefaultLayout() || FALLBACK_GOLDEN_LAYOUT,
-}
-export const getStringifiedDefaultLayout = () => {
-  try {
-    return JSON.stringify(DEFAULT_GOLDEN_LAYOUT_CONTENT)
-  } catch (err) {
-    console.warn(err)
-    return JSON.stringify(FALLBACK_GOLDEN_LAYOUT)
-  }
-}
 export type GoldenLayoutViewProps = {
   layoutResult?: LazyQueryResult['plain']
   editLayoutRef?: React.MutableRefObject<any>
@@ -316,29 +216,6 @@ export type GoldenLayoutViewProps = {
   setGoldenLayout: (instance: any) => void
 }
 
-function getGoldenLayoutConfig({
-  layoutResult,
-  editLayoutRef,
-  configName,
-}: GoldenLayoutViewProps) {
-  let currentConfig = undefined
-  if (layoutResult) {
-    try {
-      currentConfig = JSON.parse(layoutResult.metacard.properties.layout)
-    } catch (err) {
-      console.warn('issue parsing a saved layout, falling back to default')
-    }
-  } else if (editLayoutRef) {
-    currentConfig = editLayoutRef.current
-  } else {
-    currentConfig = user.get('user').get('preferences').get(configName)
-  }
-  if (currentConfig === undefined) {
-    currentConfig = DEFAULT_GOLDEN_LAYOUT_CONTENT
-  }
-  _merge(currentConfig, getGoldenLayoutSettings())
-  return currentConfig
-}
 function registerGoldenLayoutComponents({
   goldenLayout,
   options,
@@ -360,10 +237,6 @@ function registerGoldenLayoutComponents({
     }
   })
 }
-export function getInstanceConfig({ goldenLayout }: { goldenLayout: any }) {
-  const currentConfig = goldenLayout.toConfig()
-  return removeEphemeralState(currentConfig)
-}
 
 function handleGoldenLayoutStateChangeInSubwindow({
   goldenLayout,
@@ -377,50 +250,6 @@ function handleGoldenLayoutStateChangeInSubwindow({
   )
 }
 
-function handleGoldenLayoutStateChange({
-  options,
-  goldenLayout,
-  currentConfig,
-  lastConfig,
-}: {
-  goldenLayout: any
-  currentConfig: any
-  options: GoldenLayoutViewProps
-  lastConfig: React.MutableRefObject<any>
-}) {
-  if (
-    _.isEqual(
-      removeEphemeralState(lastConfig.current),
-      removeEphemeralState(currentConfig)
-    )
-  ) {
-    return
-  }
-  lastConfig.current = currentConfig
-  /**
-   * If we have this option, then we're editing a layout in the layout editor.
-   * Otherwise, we're using a layout (or possibly custom) and need to take a change as indication of moving to custom.
-   */
-  if (options.editLayoutRef) {
-    options.editLayoutRef.current = currentConfig
-  } else {
-    // can technically do detections of max or empty here
-    //https://github.com/deepstreamIO/golden-layout/issues/253
-    if (goldenLayout.isInitialised) {
-      user.get('user').get('preferences').set(options.configName, currentConfig)
-      ;(wreqr as any).vent.trigger('resize')
-      //do not add a window resize event, that will cause an endless loop.  If you need something like that, listen to the wreqr resize event.
-    }
-    user.get('user').get('preferences').set(
-      {
-        layoutId: 'custom',
-      },
-      {
-        internal: true,
-      }
-    )
-  }
-}
 /**
  *  Replace the toolbar with our own
  */

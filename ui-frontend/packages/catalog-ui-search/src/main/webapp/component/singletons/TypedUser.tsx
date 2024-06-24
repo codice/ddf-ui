@@ -192,6 +192,10 @@ export const TypedUserInstance = {
       date
     )}`
   },
+  getMapLayers: (): Backbone.Collection => {
+    const mapLayers = TypedUserInstance.getPreferences().get('mapLayers')
+    return mapLayers
+  },
   needsUpdate(upToDatePrefs: any) {
     return this.getPreferences().needsUpdate(upToDatePrefs)
   },

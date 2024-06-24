@@ -22,7 +22,8 @@ import { LayoutContext } from '../../../golden-layout/visual-settings.provider'
 import user from '../../../singletons/user-instance'
 import User from '../../../../js/model/User'
 import { useBackbone } from '../../../selection-checkbox/useBackbone.hook'
-import { OPENLAYERS_MAP_LAYERS } from '../../settings-helpers'
+import { MAP_LAYERS } from '../../settings-helpers'
+import { OpenlayersStateType } from '../../../golden-layout/golden-layout.types'
 
 const loadOpenLayersCode = () => {
   // @ts-expect-error ts-migrate(7009) FIXME: 'new' expression, whose target lacks a construct s... Remove this comment to see the full error message
@@ -36,9 +37,11 @@ const loadOpenLayersCode = () => {
 export const OpenlayersMapViewReact = ({
   selectionInterface,
   setMap: outerSetMap,
+  componentState,
 }: {
   selectionInterface: any
   setMap?: (map: any) => void
+  componentState: OpenlayersStateType
 }) => {
   const [map, setMap] = React.useState<any>(null)
   const [mapLayers, setMapLayers] = React.useState<any>(null)
@@ -49,7 +52,7 @@ export const OpenlayersMapViewReact = ({
 
   const saveLayers = (layers: any) => {
     if (hasLayoutContext) {
-      setValue(OPENLAYERS_MAP_LAYERS, layers.toJSON())
+      setValue(MAP_LAYERS, layers.toJSON())
     } else {
       user.get('user>preferences').savePreferences()
     }
@@ -60,10 +63,7 @@ export const OpenlayersMapViewReact = ({
 
     let layerCollection = userDefaultLayers
     if (hasLayoutContext) {
-      const layerSettings = getValue(
-        OPENLAYERS_MAP_LAYERS,
-        userDefaultLayers.toJSON()
-      )
+      const layerSettings = getValue(MAP_LAYERS, componentState.mapLayers)
       const layerModels = layerSettings.map((layer: any) => {
         return new (User as any).MapLayer(layer, { parse: true })
       })

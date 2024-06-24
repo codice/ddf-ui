@@ -32,7 +32,7 @@ import 'backbone-associations'
 import { CommonAjaxSettings } from '../AjaxSettings'
 import { v4 } from 'uuid'
 import { StartupDataStore } from './Startup/startup'
-const User = {}
+const User = {} as any
 const Theme = Backbone.Model.extend({
   defaults() {
     return {

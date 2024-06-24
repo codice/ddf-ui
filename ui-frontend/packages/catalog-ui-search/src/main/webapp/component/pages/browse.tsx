@@ -24,6 +24,7 @@ import { GoldenLayout } from '../golden-layout/golden-layout'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 import { Memo } from '../memo/memo'
 import { useUpdateEffect } from 'react-use'
+import { getDefaultComponentState } from '../visualization/settings-helpers'
 
 type ModifySearchParams = {
   search: any
@@ -266,7 +267,10 @@ const SavedSearches = () => {
           <SplitPane variant="horizontal">
             <div className="py-2 w-full h-full">
               <Paper elevation={Elevations.panels} className="w-full h-full">
-                <ResultsVisual selectionInterface={selectionInterface} />
+                <ResultsVisual
+                  selectionInterface={selectionInterface}
+                  componentState={getDefaultComponentState('results') as any}
+                />
               </Paper>
             </div>
             <SelectionInfoPane searchSelectionInterface={selectionInterface} />
