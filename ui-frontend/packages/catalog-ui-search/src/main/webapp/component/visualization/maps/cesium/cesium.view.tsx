@@ -26,10 +26,10 @@ import $ from 'jquery'
 import featureDetection from '../../../singletons/feature-detection'
 import { InteractionsProvider } from '../interactions.provider'
 import { LayoutContext } from '../../../golden-layout/visual-settings.provider'
-import user from '../../../singletons/user-instance'
 import User from '../../../../js/model/User'
 import { useBackbone } from '../../../selection-checkbox/useBackbone.hook'
-import { CESIUM_MAP_LAYERS } from '../../settings-helpers'
+import { MAP_LAYERS } from '../../settings-helpers'
+import { CesiumStateType } from '../../../golden-layout/golden-layout.types'
 
 const useSupportsCesium = () => {
   const [, setForceRender] = React.useState(Math.random())
@@ -67,9 +67,11 @@ const useCountdown = ({
 export const CesiumMapViewReact = ({
   selectionInterface,
   setMap: outerSetMap,
+  componentState,
 }: {
   setMap?: (map: any) => void // sometimes outer components want to know when the map is loaded
   selectionInterface: any
+  componentState: CesiumStateType
 }) => {
   const supportsCesium = useSupportsCesium()
   const countdownFinished = useCountdown({
@@ -84,15 +86,14 @@ export const CesiumMapViewReact = ({
   const { getValue, setValue } = React.useContext(LayoutContext)
 
   React.useEffect(() => {
-    const defaultLayers = user.get('user>preferences>mapLayers').toJSON()
-    const layerSettings = getValue(CESIUM_MAP_LAYERS, defaultLayers)
+    const layerSettings = getValue(MAP_LAYERS, componentState.mapLayers)
 
     const layerModels = layerSettings.map((layer: any) => {
       return new (User as any).MapLayer(layer, { parse: true })
     })
     const layerCollection = new (User as any).MapLayers(layerModels)
     listenTo(layerCollection, 'add remove', () =>
-      setValue(CESIUM_MAP_LAYERS, layerCollection.toJSON())
+      setValue(MAP_LAYERS, layerCollection.toJSON())
     )
     layerCollection.validate()
     setMapLayers(layerCollection)
@@ -100,7 +101,7 @@ export const CesiumMapViewReact = ({
 
   React.useEffect(() => {
     const callback = () => {
-      setValue(CESIUM_MAP_LAYERS, mapLayers.toJSON())
+      setValue(MAP_LAYERS, mapLayers.toJSON())
     }
     if (mapLayers) {
       listenTo(mapLayers, 'change', callback)
@@ -145,6 +146,7 @@ export const CesiumMapViewReact = ({
       <OpenlayersMapViewReact
         setMap={setMap}
         selectionInterface={selectionInterface}
+        componentState={componentState}
       />
     )
   }

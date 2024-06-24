@@ -13,26 +13,61 @@
  *
  **/
 
-import { StartupDataStore } from '../../js/model/Startup/startup'
+/**
+ *  We might want to not export anything beyond the default state functions, but for now we can leave this and refactor when we have time.
+ *  The idea is this state should be flowing in at the top when we make the component, and not be getting fetched in the leaves.  Maybe we can add it to the context.
+ */
+import { ComponentNameType } from '../golden-layout/golden-layout.types'
 import { TypedUserInstance } from '../singletons/TypedUser'
+import { ModeType } from './results-visual/results-visual'
 
 export const RESULTS_ATTRIBUTES_TABLE = 'results-attributesShownTable'
 export const RESULTS_ATTRIBUTES_LIST = 'results-attributesShownList'
 export const RESULTS_MODE = 'results-mode'
 
-export const CESIUM_MAP_LAYERS = 'cesium-mapLayers'
-export const OPENLAYERS_MAP_LAYERS = 'openlayers-mapLayers'
+export const MAP_LAYERS = 'mapLayers'
+
+export function getDefaultComponentState(component: ComponentNameType) {
+  switch (component) {
+    case 'cesium':
+      return {
+        [MAP_LAYERS]: getUserPreferencesMapLayersJSON(),
+      }
+    case 'openlayers':
+      return {
+        [MAP_LAYERS]: getUserPreferencesMapLayersJSON(),
+      }
+    case 'results':
+      return {
+        [RESULTS_ATTRIBUTES_TABLE]: getDefaultResultsShownTable(),
+        [RESULTS_ATTRIBUTES_LIST]: getDefaultResultsShownList(),
+        [RESULTS_MODE]: getDefaultResultsMode(),
+      }
+    default:
+      return {}
+  }
+}
+
+export const getUserPreferencesMapLayersJSON = () => {
+  return TypedUserInstance.getMapLayers().toJSON()
+}
+
+export const getDefaultResultsMode = (): ModeType => {
+  return 'card'
+}
 
 export const getDefaultResultsShownList = () => {
-  if (StartupDataStore.Configuration.getResultShow().length > 0) {
-    return StartupDataStore.Configuration.getResultShow()
+  const defaultAttributes = TypedUserInstance.getResultsAttributesShownList()
+  if (defaultAttributes && defaultAttributes.length > 0) {
+    return defaultAttributes
   }
   return ['title', 'thumbnail']
 }
 
 export const getDefaultResultsShownTable = () => {
-  if (StartupDataStore.Configuration.getDefaultTableColumns().length > 0) {
-    return StartupDataStore.Configuration.getDefaultTableColumns()
+  const defaultAttributes = TypedUserInstance.getResultsAttributesShownTable()
+  if (defaultAttributes && defaultAttributes.length > 0) {
+    return defaultAttributes
   }
   return ['title', 'thumbnail']
 }

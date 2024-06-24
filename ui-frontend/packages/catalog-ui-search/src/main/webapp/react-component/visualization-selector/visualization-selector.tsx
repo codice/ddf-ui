@@ -164,7 +164,6 @@ class VisualizationSelector extends React.Component<{
     if (this.interimState) {
       const content = {
         ...configs[choice],
-        componentState: {},
       }
       if (this.props.goldenLayout.root.contentItems.length === 0) {
         this.props.goldenLayout.root.addChild({

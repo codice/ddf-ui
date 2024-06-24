@@ -15,7 +15,7 @@
 
 import { Subscribable } from '../model/Base/base-classes'
 
-type LayerType = {
+export type LayerType = {
   alpha: string
   id: string
   label: string
