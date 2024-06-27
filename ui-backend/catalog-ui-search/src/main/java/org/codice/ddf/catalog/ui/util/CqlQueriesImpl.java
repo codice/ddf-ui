@@ -152,7 +152,7 @@ public class CqlQueriesImpl implements CqlQueries {
           (key, value) -> {
             if (key.startsWith(METRICS_SOURCE_ELAPSED_PREFIX)) {
               String source = key.substring(METRICS_SOURCE_ELAPSED_PREFIX.length());
-              if (value != null) {
+              if (value instanceof Integer) {
                 elapsedPerSource.put(source, new Long((Integer) value));
               }
             }
