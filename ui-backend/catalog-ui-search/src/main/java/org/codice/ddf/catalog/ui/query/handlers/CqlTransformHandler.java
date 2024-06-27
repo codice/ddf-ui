@@ -415,10 +415,10 @@ public class CqlTransformHandler implements Route {
 
     try (OutputStream servletOutputStream = response.raw().getOutputStream();
         InputStream resultStream = content.getInputStream()) {
-      int byteCount = IOUtils.copy(resultStream, servletOutputStream);
+      long byteCount = IOUtils.copyLarge(resultStream, servletOutputStream);
       securityLogger.audit(
           String.format(
-              "exported metacards: %s from source(s): %s to format: %s with output size: %d",
+              "exported metacards: %s from source(s): %s to format: %s with output size: %d bytes",
               metacardIds, sources, transformerId, byteCount));
     }
 
