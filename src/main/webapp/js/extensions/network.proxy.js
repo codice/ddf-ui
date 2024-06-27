@@ -1,0 +1,14 @@
+/**
+ * When we're in test environment, patch everything to avoid hitting the network.
+ *
+ * For now this is a simple voiding of fetch, but we could detect which model is doing the fetch and return mocked responses.
+ */
+import { Environment } from '../Environment';
+import * as Backbone from 'backbone';
+if (Environment.isTest()) {
+    // @ts-expect-error ts-migrate(2322) FIXME: Type '() => void' is not assignable to type '(opti... Remove this comment to see the full error message
+    Backbone.Model.prototype.fetch = function () {
+        // mock response?
+    };
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibmV0d29yay5wcm94eS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uL3NyYy9tYWluL3dlYmFwcC9qcy9leHRlbnNpb25zL25ldHdvcmsucHJveHkudHN4Il0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOzs7O0dBSUc7QUFDSCxPQUFPLEVBQUUsV0FBVyxFQUFFLE1BQU0sZ0JBQWdCLENBQUE7QUFDNUMsT0FBTyxLQUFLLFFBQVEsTUFBTSxVQUFVLENBQUE7QUFFcEMsSUFBSSxXQUFXLENBQUMsTUFBTSxFQUFFLEVBQUU7SUFDeEIsbUpBQW1KO0lBQ25KLFFBQVEsQ0FBQyxLQUFLLENBQUMsU0FBUyxDQUFDLEtBQUssR0FBRztRQUMvQixpQkFBaUI7SUFDbkIsQ0FBQyxDQUFBO0NBQ0YiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIFdoZW4gd2UncmUgaW4gdGVzdCBlbnZpcm9ubWVudCwgcGF0Y2ggZXZlcnl0aGluZyB0byBhdm9pZCBoaXR0aW5nIHRoZSBuZXR3b3JrLlxuICpcbiAqIEZvciBub3cgdGhpcyBpcyBhIHNpbXBsZSB2b2lkaW5nIG9mIGZldGNoLCBidXQgd2UgY291bGQgZGV0ZWN0IHdoaWNoIG1vZGVsIGlzIGRvaW5nIHRoZSBmZXRjaCBhbmQgcmV0dXJuIG1vY2tlZCByZXNwb25zZXMuXG4gKi9cbmltcG9ydCB7IEVudmlyb25tZW50IH0gZnJvbSAnLi4vRW52aXJvbm1lbnQnXG5pbXBvcnQgKiBhcyBCYWNrYm9uZSBmcm9tICdiYWNrYm9uZSdcblxuaWYgKEVudmlyb25tZW50LmlzVGVzdCgpKSB7XG4gIC8vIEB0cy1leHBlY3QtZXJyb3IgdHMtbWlncmF0ZSgyMzIyKSBGSVhNRTogVHlwZSAnKCkgPT4gdm9pZCcgaXMgbm90IGFzc2lnbmFibGUgdG8gdHlwZSAnKG9wdGkuLi4gUmVtb3ZlIHRoaXMgY29tbWVudCB0byBzZWUgdGhlIGZ1bGwgZXJyb3IgbWVzc2FnZVxuICBCYWNrYm9uZS5Nb2RlbC5wcm90b3R5cGUuZmV0Y2ggPSBmdW5jdGlvbiAoKSB7XG4gICAgLy8gbW9jayByZXNwb25zZT9cbiAgfVxufVxuIl19
