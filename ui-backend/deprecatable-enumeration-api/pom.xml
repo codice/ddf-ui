@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.codice.ddf.search</groupId>
         <artifactId>backend</artifactId>
-        <version>5.1.35</version>
+        <version>5.1.36-SNAPSHOT</version>
     </parent>
     <artifactId>deprecatable-enumeration-api</artifactId>
     <name>DDF :: Catalog :: UI :: Deprecatable Enumeration API</name>
