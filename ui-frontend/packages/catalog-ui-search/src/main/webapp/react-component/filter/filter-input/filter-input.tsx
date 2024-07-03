@@ -38,14 +38,6 @@ import { ValidationResult } from '../../location/validators'
 import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
 import { ReservedBasicDatatype } from '../../../component/reserved-basic-datatype/reserved.basic-datatype'
 import { BasicDataTypePropertyName } from '../../../component/filter-builder/reserved.properties'
-
-const formatPropertyName = (property: string) => {
-  // escape non-alphanumeric characters
-  let modifiedProperty = property.replace(/(\W)/g, '\\$1')
-  modifiedProperty = `\"${modifiedProperty}\"`
-  return modifiedProperty
-}
-
 export type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
@@ -84,7 +76,7 @@ const FilterInput = ({ filter, setFilter, errorListener }: Props) => {
         <BooleanSearchBar
           value={value as ValueTypes['booleanText']}
           onChange={onChange}
-          property={formatPropertyName(filter.property)}
+          property={filter.property}
         />
       )
     case 'FILTER FUNCTION proximity':
