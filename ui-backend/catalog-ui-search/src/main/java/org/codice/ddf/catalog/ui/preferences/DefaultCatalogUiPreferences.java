@@ -95,7 +95,7 @@ public class DefaultCatalogUiPreferences implements DefaultPreferencesSupplier {
         "querySettings",
         new ImmutableMap.Builder<>()
             .put("type", "text")
-            .put("sources", Collections.singletonList("all"))
+            .put("sources", Collections.singletonList("local"))
             .put(
                 "sorts",
                 Collections.singletonList(
