@@ -28,6 +28,11 @@ public class QueryHandler implements Handler {
     // implementation not needed
   }
 
+  public static String formatSearchProperty(String str) {
+    String escapedSymbols = str.replaceAll("[^\\p{L}\\p{Nd}]+", "\\\\$0");
+    return "\"" + escapedSymbols + "\"";
+  }
+
   @Override
   public void handle(@NotNull final Context ctx) {
     final String searchExpression = ctx.queryParam("q");
@@ -37,7 +42,7 @@ public class QueryHandler implements Handler {
     if (searchProperty == null) {
       parser = new Parser(new StringReader(searchExpression));
     } else {
-      parser = new Parser(new StringReader(searchExpression), searchProperty);
+      parser = new Parser(new StringReader(searchExpression), formatSearchProperty(searchProperty));
     }
 
     try {
