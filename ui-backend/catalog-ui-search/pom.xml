@@ -489,6 +489,7 @@
                             org.codice.ddf.catalog.ui.metacard.internal,
                             org.codice.ddf.catalog.ui.alias,
                             org.codice.ddf.catalog.ui.metacard.history,
+                            org.codice.ddf.catalog.ui.ws,
                         </Export-Package>
                         <Karaf-Commands>org.codice.ddf.catalog.ui.forms.commands.*</Karaf-Commands>
                     </instructions>
