@@ -255,12 +255,12 @@ Implementation details
                availability="optional"
                filter="(type=revert)">
         <reference-listener
-                ref="metacardRevertService"
+                ref="metacardHistoryService"
                 bind-method="addOperationPropertySupplier"
                 unbind-method="removeOperationPropertySupplier"/>
     </reference>
 
-    <bean id="metacardRevertService" class="org.codice.ddf.catalog.ui.metacard.history.MetacardRevertService">
+    <bean id="metacardHistoryService" class="org.codice.ddf.catalog.ui.metacard.history.MetacardHistoryService">
         <argument ref="catalogFramework"/>
         <argument ref="filterBuilder"/>
         <property name="securityLogger" ref="securityLogger" />
@@ -283,7 +283,7 @@ Implementation details
         <argument ref="queryWorkspaceService"/>
         <argument ref="queryMetacardsHandler"/>
         <argument ref="ddfSecurity" />
-        <argument ref="metacardRevertService" />
+        <argument ref="metacardHistoryService" />
         <property name="subjectOperations" ref="subjectOperations1" />
         <property name="securityLogger" ref="securityLogger" />
     </bean>

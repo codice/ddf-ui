@@ -72,9 +72,9 @@ import org.opengis.filter.sort.SortBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MetacardRevertService {
+public class MetacardHistoryService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MetacardRevertService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(MetacardHistoryService.class);
 
   private static final String ISO_8601_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
@@ -94,7 +94,7 @@ public class MetacardRevertService {
 
   private SecurityLogger securityLogger;
 
-  public MetacardRevertService(CatalogFramework catalogFramework, FilterBuilder filterBuilder) {
+  public MetacardHistoryService(CatalogFramework catalogFramework, FilterBuilder filterBuilder) {
     this.catalogFramework = catalogFramework;
     this.filterBuilder = filterBuilder;
   }

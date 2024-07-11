@@ -94,7 +94,7 @@ import org.codice.ddf.catalog.ui.metacard.associations.Associated;
 import org.codice.ddf.catalog.ui.metacard.edit.AttributeChange;
 import org.codice.ddf.catalog.ui.metacard.edit.MetacardChanges;
 import org.codice.ddf.catalog.ui.metacard.history.HistoryResponse;
-import org.codice.ddf.catalog.ui.metacard.history.MetacardRevertService;
+import org.codice.ddf.catalog.ui.metacard.history.MetacardHistoryService;
 import org.codice.ddf.catalog.ui.metacard.notes.NoteConstants;
 import org.codice.ddf.catalog.ui.metacard.notes.NoteMetacard;
 import org.codice.ddf.catalog.ui.metacard.notes.NoteUtil;
@@ -168,7 +168,7 @@ public class MetacardApplication implements SparkApplication {
 
   private SecurityLogger securityLogger;
 
-  private MetacardRevertService metacardRevertService;
+  private MetacardHistoryService metacardHistoryService;
 
   public MetacardApplication(
       CatalogFramework catalogFramework,
@@ -187,7 +187,7 @@ public class MetacardApplication implements SparkApplication {
       WorkspaceService workspaceService,
       AssociatedQueryMetacardsHandler queryMetacardsHandler,
       Security security,
-      MetacardRevertService metacardRevertService) {
+      MetacardHistoryService metacardHistoryService) {
     this.catalogFramework = catalogFramework;
     this.util = endpointUtil;
     this.validator = validator;
@@ -203,7 +203,7 @@ public class MetacardApplication implements SparkApplication {
     this.subjectIdentity = subjectIdentity;
     this.workspaceService = workspaceService;
     this.queryMetacardsHandler = queryMetacardsHandler;
-    this.metacardRevertService = metacardRevertService;
+    this.metacardHistoryService = metacardHistoryService;
   }
 
   private String getSubjectEmail() {
@@ -340,7 +340,7 @@ public class MetacardApplication implements SparkApplication {
         (req, res) -> {
           String id = req.params(":id");
           String storeId = req.params(":storeId");
-          List<Result> queryResponse = metacardRevertService.getMetacardHistory(id, storeId);
+          List<Result> queryResponse = metacardHistoryService.getMetacardHistory(id, storeId);
           if (queryResponse.isEmpty()) {
             res.status(204);
             return "[]";
@@ -366,7 +366,7 @@ public class MetacardApplication implements SparkApplication {
           String id = req.params(":id");
           String revertId = req.params(":revertid");
           String storeId = req.params(":storeId");
-          Metacard versionMetacard = metacardRevertService.revert(id, revertId, storeId);
+          Metacard versionMetacard = metacardHistoryService.revert(id, revertId, storeId);
           return util.metacardToJson(MetacardVersionImpl.toMetacard(versionMetacard));
         });
 
