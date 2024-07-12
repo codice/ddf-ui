@@ -5,7 +5,12 @@ import { Overridable } from '../../js/model/Base/base-classes'
 import { useOverridable } from '../../js/model/Base/base-classes.hooks'
 
 export const normalDownload = ({ result }: { result: LazyQueryResult }) => {
-  const downloadUrl = result.getDownloadUrl()
+  let downloadUrl = result.getDownloadUrl()
+  // append new query param to prevent downloading cached resource
+  downloadUrl =
+    downloadUrl +
+    (downloadUrl.includes('?') ? '&t=' : '?t=') +
+    new Date().getTime().toString()
   downloadUrl && window.open(downloadUrl)
 }
 
