@@ -47,7 +47,7 @@ const getDateAttributes = (results: any) => {
     (list: any, attribute: any) => {
       if (
         StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute]
-          .type == 'DATE'
+          ?.type == 'DATE'
       ) {
         list.push(attribute)
       }
