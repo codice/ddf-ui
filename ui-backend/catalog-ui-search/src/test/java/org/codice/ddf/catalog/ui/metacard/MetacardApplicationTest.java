@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 import javax.ws.rs.NotFoundException;
 import org.codice.ddf.catalog.ui.metacard.edit.AttributeChange;
@@ -171,7 +170,6 @@ public class MetacardApplicationTest {
         CatalogFramework catalogFramework, EndpointUtil endpointUtil) {
       super(
           catalogFramework,
-          null,
           endpointUtil,
           null,
           null,
@@ -186,7 +184,8 @@ public class MetacardApplicationTest {
           null,
           null,
           null,
-          mock(Security.class));
+          mock(Security.class),
+          null);
     }
 
     private void doPatchMetacards(List<MetacardChanges> metacardChanges) throws Exception {
