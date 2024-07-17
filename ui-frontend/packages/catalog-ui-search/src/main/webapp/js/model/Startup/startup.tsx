@@ -44,11 +44,20 @@ export class StartupData extends Subscribable<{
     this.MetacardDefinitions = new MetacardDefinitions(this)
     this.fetch()
   }
+  handleEnhancedRoles() {
+    /**
+     *  The "path=/" part is so the cookie is included / available to all domain paths
+     */
+    document.cookie = `useElevatedRights=${
+      this.data?.user.preferences.actingRole === 'enhanced'
+    }; path=/`
+  }
   fetch() {
     fetch('./internal/compose/startup')
       .then((response) => response.json())
       .then((startupPayload: StartupPayloadType) => {
         this.data = startupPayload
+        this.handleEnhancedRoles()
         this._notifySubscribers({ thing: 'fetched', args: startupPayload })
       })
   }
