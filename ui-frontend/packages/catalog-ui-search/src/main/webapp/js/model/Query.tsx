@@ -25,6 +25,7 @@ import { LazyQueryResults } from './LazyQueryResult/LazyQueryResults'
 import {
   FilterBuilderClass,
   FilterClass,
+  isFilterBuilderClass,
 } from '../../component/filter-builder/filter.structure'
 import { downgradeFilterTreeToBasic } from '../../component/query-basic/query-basic.view'
 import {
@@ -42,7 +43,7 @@ import { CommonAjaxSettings } from '../AjaxSettings'
 import { StartupDataStore } from './Startup/startup'
 export type QueryType = {
   constructor: (_attributes: any, options: any) => void
-  set: (p1: any, p2?: any) => void
+  set: (p1: any, p2?: any, p3?: any) => void
   toJSON: () => any
   defaults: () => any
   resetToDefaults: (overridenDefaults: any) => void
@@ -147,20 +148,39 @@ export default Backbone.AssociatedModel.extend({
     this.options = options
     return Backbone.AssociatedModel.apply(this, arguments)
   },
-  set(data: any) {
-    if (
-      typeof data === 'object' &&
-      data.filterTree !== undefined &&
-      typeof data.filterTree === 'string'
-    ) {
-      // for backwards compatability
-      try {
-        data.filterTree = new FilterBuilderClass(JSON.parse(data.filterTree))
-      } catch (e) {
-        console.error(e)
+  set(data: any, value: any, options: any) {
+    try {
+      switch (typeof data) {
+        case 'object':
+          if (
+            data.filterTree !== undefined &&
+            typeof data.filterTree === 'string'
+          ) {
+            data.filterTree = JSON.parse(data.filterTree)
+          }
+          if (!isFilterBuilderClass(data.filterTree)) {
+            data.filterTree = new FilterBuilderClass(data.filter)
+          }
+          break
+        case 'string':
+          if (data === 'filterTree') {
+            if (typeof value === 'string') {
+              value = JSON.parse(value)
+            }
+            if (!isFilterBuilderClass(value)) {
+              value = new FilterBuilderClass(value)
+            }
+          }
+          break
       }
+    } catch (e) {
+      console.error(e)
     }
-    return Backbone.AssociatedModel.prototype.set.apply(this, arguments)
+    return Backbone.AssociatedModel.prototype.set.apply(this, [
+      data,
+      value,
+      options,
+    ])
   },
   toJSON(...args: any) {
     const json = Backbone.AssociatedModel.prototype.toJSON.call(this, ...args)
