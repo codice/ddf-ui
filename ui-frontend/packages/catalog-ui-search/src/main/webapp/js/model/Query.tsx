@@ -167,7 +167,7 @@ export default Backbone.AssociatedModel.extend({
             data.filterTree = JSON.parse(data.filterTree)
           }
           if (!isFilterBuilderClass(data.filterTree)) {
-            data.filterTree = new FilterBuilderClass(data.filter)
+            data.filterTree = new FilterBuilderClass(data.filterTree)
           }
           break
         case 'string':
