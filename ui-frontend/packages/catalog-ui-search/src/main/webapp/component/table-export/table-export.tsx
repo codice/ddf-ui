@@ -168,7 +168,6 @@ export const getExportBody = async (ExportInfo: ExportInfo) => {
       sourceId: result.plain.metacard.properties['source-id'],
     }))
 
-    console.log(resultIdSourcePairs)
     const srcMap: Record<string, string[]> = resultIdSourcePairs.reduce(
       (srcMap: Record<string, string[]>, curPair: SourceIdPair) => {
         if (!srcMap[curPair.sourceId]) {
