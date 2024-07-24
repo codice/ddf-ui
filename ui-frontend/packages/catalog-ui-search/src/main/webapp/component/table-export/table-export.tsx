@@ -140,8 +140,6 @@ export const getDownloadBody = async (downloadInfo: DownloadInfo) => {
   const cacheId = query.get('cacheId')
   const phonetics = query.get('phonetics')
   const spellcheck = query.get('spellcheck')
-  const results = Object.keys(query.get('result').get('lazyResults').results)
-  const pageSize = results.length
   const exportCount = Math.min(
     getExportCount({ exportSize, selectionInterface, customExportCount }),
     exportResultLimit
