@@ -39,6 +39,7 @@ import { DEFAULT_USER_QUERY_OPTIONS } from '../../js/model/TypedQuery'
 import { getResultSetCql } from '../../react-component/utils/cql'
 import SummaryManageAttributes from '../../react-component/summary-manage-attributes/summary-manage-attributes'
 import { OverridableSaveFile } from '../../react-component/utils/save-file/save-file'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
 export type Props = {
   selectionInterface: any
@@ -123,6 +124,11 @@ export const getWarning = (exportCountInfo: ExportCountInfo): string => {
   return warningMessage
 }
 
+type SourceIdPair = {
+  id: string
+  sourceId: string
+}
+
 export const getDownloadBody = async (downloadInfo: DownloadInfo) => {
   const { exportSize, customExportCount, selectionInterface } = downloadInfo
   const exportResultLimit = StartupDataStore.Configuration.getExportLimit()
@@ -146,6 +152,7 @@ export const getDownloadBody = async (downloadInfo: DownloadInfo) => {
     columnAliasMap: StartupDataStore.Configuration.config?.attributeAliases,
   }
 
+  const searches = []
   let queryCount = exportCount
   let cql = DEFAULT_USER_QUERY_OPTIONS.transformFilterTree({
     originalFilterTree: query.get('filterTree'),
@@ -153,18 +160,39 @@ export const getDownloadBody = async (downloadInfo: DownloadInfo) => {
   })
 
   if (downloadInfo.exportSize === 'currentPage') {
-    queryCount = pageSize
-    cql = getResultSetCql(results)
-  }
+    const resultIdSourcePairs: SourceIdPair[] = Object.values(
+      query.get('result').get('lazyResults').results
+    ).map((result: LazyQueryResult) => ({
+      id: result.plain.metacard.properties['id'],
+      sourceId: result.plain.metacard.properties['source-id'],
+    }))
 
-  const searches = [
-    {
+    const srcMap: Record<string, string[]> = resultIdSourcePairs.reduce(
+      (srcMap: Record<string, string[]>, curPair: SourceIdPair) => {
+        if (!srcMap[curPair.sourceId]) {
+          srcMap[curPair.sourceId] = []
+        }
+        srcMap[curPair.sourceId].push(curPair.id)
+        return srcMap
+      },
+      {} as Record<string, string[]>
+    )
+    Object.keys(srcMap).forEach((src) => {
+      searches.push({
+        srcs: [src],
+        cql: getResultSetCql(srcMap[src]),
+        count: srcMap[src].length,
+        cacheId,
+      })
+    })
+  } else {
+    searches.push({
       srcs,
       cql,
       count: queryCount,
       cacheId,
-    },
-  ]
+    })
+  }
 
   return {
     phonetics,
