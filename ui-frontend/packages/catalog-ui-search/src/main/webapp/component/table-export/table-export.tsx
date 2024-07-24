@@ -42,6 +42,7 @@ import ProgressButton from '../../react-component/progress-button/progress-butto
 import DialogContent from '@mui/material/DialogContent/DialogContent'
 import DialogActions from '@mui/material/DialogActions/DialogActions'
 import DialogContentText from '@mui/material/DialogContentText'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
 export type Props = {
   selectionInterface: any
@@ -80,7 +81,6 @@ function getHits(sources: Source[]): number {
     .filter((source) => source.id !== 'cache')
     .reduce((hits, source) => (source.hits ? hits + source.hits : hits), 0)
 }
-
 function getExportCount({
   exportSize,
   selectionInterface,
@@ -129,6 +129,11 @@ export const getWarning = (exportCountInfo: ExportCountInfo): string => {
   return warningMessage
 }
 
+type SourceIdPair = {
+  id: string
+  sourceId: string
+}
+
 export const getExportBody = async (ExportInfo: ExportInfo) => {
   const { exportSize, customExportCount, selectionInterface } = ExportInfo
   const exportResultLimit = StartupDataStore.Configuration.getExportLimit()
@@ -140,8 +145,6 @@ export const getExportBody = async (ExportInfo: ExportInfo) => {
   const cacheId = query.get('cacheId')
   const phonetics = query.get('phonetics')
   const spellcheck = query.get('spellcheck')
-  const results = Object.keys(query.get('result').get('lazyResults').results)
-  const pageSize = results.length
   const exportCount = Math.min(
     getExportCount({ exportSize, selectionInterface, customExportCount }),
     exportResultLimit
@@ -151,25 +154,46 @@ export const getExportBody = async (ExportInfo: ExportInfo) => {
     columnOrder: columnOrder.length > 0 ? columnOrder : [],
     columnAliasMap: StartupDataStore.Configuration.config?.attributeAliases,
   }
-
+  const searches = []
   let queryCount = exportCount
   let cql = DEFAULT_USER_QUERY_OPTIONS.transformFilterTree({
     originalFilterTree: query.get('filterTree'),
     queryRef: query,
   })
   if (ExportInfo.exportSize === 'currentPage') {
-    queryCount = pageSize
-    cql = getResultSetCql(results)
-  }
+    const resultIdSourcePairs: SourceIdPair[] = Object.values(
+      query.get('result').get('lazyResults').results
+    ).map((result: LazyQueryResult) => ({
+      id: result.plain.metacard.properties['id'],
+      sourceId: result.plain.metacard.properties['source-id'],
+    }))
 
-  const searches = [
-    {
+    const srcMap: Record<string, string[]> = resultIdSourcePairs.reduce(
+      (srcMap: Record<string, string[]>, curPair: SourceIdPair) => {
+        if (!srcMap[curPair.sourceId]) {
+          srcMap[curPair.sourceId] = []
+        }
+        srcMap[curPair.sourceId].push(curPair.id)
+        return srcMap
+      },
+      {} as Record<string, string[]>
+    )
+    Object.keys(srcMap).forEach((src) => {
+      searches.push({
+        srcs: [src],
+        cql: getResultSetCql(srcMap[src]),
+        count: srcMap[src].length,
+        cacheId,
+      })
+    })
+  } else {
+    searches.push({
       srcs,
       cql,
       count: queryCount,
       cacheId,
-    },
-  ]
+    })
+  }
 
   return {
     phonetics,
