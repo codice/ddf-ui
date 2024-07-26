@@ -238,9 +238,7 @@ const QueryFeed = ({ selectionInterface }: Props) => {
     )
 
     if (sourcesThatHaveReturned.length > 0) {
-      const results = statusBySource
-        .filter((status) => status.hasReturned)
-        .filter((status) => status.successful)
+      const results = statusBySource.filter((status) => status.hasReturned)
 
       let available = 0
       let possible = 0
