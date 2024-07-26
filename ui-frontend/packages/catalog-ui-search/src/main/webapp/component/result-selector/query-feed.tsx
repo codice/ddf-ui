@@ -82,9 +82,7 @@ const CellValue = (props: CellValueProps) => {
           <WarningIcon style={{ paddingRight: '5px' }} color="warning" />
         </Tooltip>
       )}
-      {alwaysShowValue || (!message && hasReturned && successful)
-        ? value
-        : null}
+      {alwaysShowValue || (!message && hasReturned) ? value : null}
       {!hasReturned && !alwaysShowValue && (
         <span
           className="fa fa-circle-o-notch fa-spin"
