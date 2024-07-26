@@ -244,8 +244,8 @@ const QueryFeed = ({ selectionInterface }: Props) => {
       let possible = 0
 
       results.forEach((result) => {
-        available += result.count
-        possible += result.hits
+        available += result?.count ?? 0
+        possible += result?.hits ?? 0
       })
 
       resultMessage = `${available} hit${
