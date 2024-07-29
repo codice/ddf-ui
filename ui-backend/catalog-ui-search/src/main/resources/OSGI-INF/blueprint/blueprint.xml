@@ -32,6 +32,8 @@ Implementation details
 
     <reference id="subjectOperations1" interface="ddf.security.SubjectOperations" />
 
+    <reference id="requiredAttributesRegistry" interface="ddf.catalog.data.RequiredAttributesRegistry"/>
+
     <bean id="metacardActionRegistry" class="ddf.action.impl.ActionRegistryImpl">
         <argument ref="metacardActionProviders"/>
         <argument ref="metacardMultiActionProviders"/>
@@ -56,6 +58,7 @@ Implementation details
         <argument ref="injectableAttributes"/>
         <argument ref="attributeRegistry"/>
         <argument ref="configurationApplication"/>
+        <argument ref="requiredAttributesRegistry"/>
         <property name="whiteListedMetacardTypes">
             <array/>
         </property>
