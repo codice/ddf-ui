@@ -82,9 +82,7 @@ const CellValue = (props: CellValueProps) => {
           <WarningIcon style={{ paddingRight: '5px' }} color="warning" />
         </Tooltip>
       )}
-      {alwaysShowValue || (!message && hasReturned && successful)
-        ? value
-        : null}
+      {alwaysShowValue || (!message && hasReturned) ? value : null}
       {!hasReturned && !alwaysShowValue && (
         <span
           className="fa fa-circle-o-notch fa-spin"
@@ -238,16 +236,14 @@ const QueryFeed = ({ selectionInterface }: Props) => {
     )
 
     if (sourcesThatHaveReturned.length > 0) {
-      const results = statusBySource
-        .filter((status) => status.hasReturned)
-        .filter((status) => status.successful)
+      const results = statusBySource.filter((status) => status.hasReturned)
 
       let available = 0
       let possible = 0
 
       results.forEach((result) => {
-        available += result.count
-        possible += result.hits
+        available += result?.count ?? 0
+        possible += result?.hits ?? 0
       })
 
       resultMessage = `${available} hit${
