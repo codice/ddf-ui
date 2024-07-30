@@ -57,8 +57,8 @@ Implementation details
         <argument ref="filterBuilder"/>
         <argument ref="injectableAttributes"/>
         <argument ref="attributeRegistry"/>
-        <argument ref="configurationApplication"/>
         <argument ref="requiredAttributesRegistry"/>
+        <argument ref="configurationApplication"/>
         <property name="whiteListedMetacardTypes">
             <array/>
         </property>

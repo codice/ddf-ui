@@ -167,13 +167,30 @@ export const Editor = ({
       ? lazyResult.plain.metacard.properties[attr].slice(0)
       : [lazyResult.plain.metacard.properties[attr]]
   )
+  const [error, setError] = React.useState(false)
   const [dirtyIndex, setDirtyIndex] = React.useState(-1)
-  const { getAlias, isMulti, getType, getEnum } = useMetacardDefinitions()
+  const { getAlias, isMulti, getType, getEnum, getMetacardDefinition } =
+    useMetacardDefinitions()
   const label = getAlias(attr)
   const isMultiValued = isMulti(attr)
   const attrType = getType(attr)
   const enumForAttr = getEnum(attr)
   const addSnack = useSnack()
+  const isRequired =
+    getMetacardDefinition(lazyResult.plain.metacard.properties.title)
+      ?.required || false
+
+  function getErrorMessage() {
+    if (isRequired) {
+      const invalidField = !values
+      setError(invalidField)
+      return invalidField ? label + ' is required.' : ''
+    }
+    return ''
+  }
+
+  const errmsg = getErrorMessage()
+
   return (
     <>
       {goBack && (
@@ -305,6 +322,8 @@ export const Editor = ({
                           fullWidth
                           multiline={true}
                           maxRows={1000}
+                          error={errmsg.length != 0}
+                          helperText={errmsg}
                         />
                       )
                   }
@@ -366,6 +385,17 @@ export const Editor = ({
           color="primary"
           onClick={() => {
             setMode(Mode.Saving)
+            const onFailure = () =>
+              setTimeout(() => {
+                addSnack('Failed to update.', { status: 'error' })
+                onSave()
+              }, 1000)
+
+            if (error === true) {
+              onFailure()
+              return
+            }
+
             let transformedValues
             if (isMultiValued && values && values.length > 1) {
               transformedValues = values.filter(
@@ -400,11 +430,6 @@ export const Editor = ({
             const onSuccess = () =>
               setTimeout(() => {
                 addSnack('Successfully updated.')
-                onSave()
-              }, 1000)
-            const onFailure = () =>
-              setTimeout(() => {
-                addSnack('Failed to update.', { status: 'error' })
                 onSave()
               }, 1000)
             if (ExtensionPoints.handleMetacardUpdate) {
