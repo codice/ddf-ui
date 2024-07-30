@@ -322,6 +322,25 @@ const HelpButton = () => {
     />
   )
 }
+
+function DrawerWrapperComponent({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <div className="w-full h-full flex flex-col flex-nowrap overflow-hidden">
+        {Extensions.includeNavigationButtons ? (
+          <div className="w-full shrink-0 grow-0 overflow-hidden">
+            <SideBarNavigationButtons showText />
+            <Divider />
+          </div>
+        ) : null}
+        <div className="w-full h-full grow shrink overflow-auto">
+          {children}
+        </div>
+      </div>
+    </>
+  )
+}
+
 const SettingsButton = () => {
   const { SettingsComponents } = useTopLevelAppContext()
   const location = useLocation()
@@ -361,7 +380,9 @@ const SettingsButton = () => {
           className: 'min-w-120 max-w-4/5 ',
         }}
       >
-        <UserSettings SettingsComponents={SettingsComponents} />
+        <DrawerWrapperComponent>
+          <UserSettings SettingsComponents={SettingsComponents} />
+        </DrawerWrapperComponent>
       </Drawer>
     </>
   )
@@ -417,7 +438,9 @@ const NotificationsButton = () => {
           className: 'min-w-120 max-w-4/5 ',
         }}
       >
-        <NotificationsComponent />
+        <DrawerWrapperComponent>
+          <NotificationsComponent />
+        </DrawerWrapperComponent>
       </Drawer>
     </>
   )
@@ -472,7 +495,9 @@ const UserButton = () => {
           className: 'min-w-120 max-w-4/5 ',
         }}
       >
-        <UserView />
+        <DrawerWrapperComponent>
+          <UserView />
+        </DrawerWrapperComponent>
       </Drawer>
     </>
   )
@@ -528,8 +553,11 @@ const SideBarRoutes = () => {
     </Grid>
   )
 }
-const SideBarNavigationButtons = () => {
+const SideBarNavigationButtons = ({
+  showText = false,
+}: { showText?: boolean } = {}) => {
   const { navOpen } = useNavContextProvider()
+  const showExpandedText = navOpen || showText
   return (
     <>
       <Grid item className="w-full p-2 shrink-0">
@@ -542,12 +570,12 @@ const SideBarNavigationButtons = () => {
           <Grid item className="mr-auto">
             <Button onClick={() => history.back()}>
               <ArrowBackIcon fontSize="small" />
-              {navOpen && 'Back'}
+              {showExpandedText && 'Back'}
             </Button>
           </Grid>
           <Grid item className="ml-auto">
             <Button onClick={() => history.forward()}>
-              {navOpen && 'Forward'}
+              {showExpandedText && 'Forward'}
               <ArrowForwardIcon fontSize="small" />
             </Button>
           </Grid>

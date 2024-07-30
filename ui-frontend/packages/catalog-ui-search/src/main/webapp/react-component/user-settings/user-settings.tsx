@@ -35,7 +35,7 @@ const ThemeGlobalStyle = createGlobalStyle`
   opacity: 0 !important;
 }
 .MuiDrawer-root > .MuiPaper-root {
-  transform: scale(.8) translateY(40%) translateX(-10%) !important;
+  transform: scale(.8) translateY(10%) translateX(-10%) !important;
 }
 `
 
