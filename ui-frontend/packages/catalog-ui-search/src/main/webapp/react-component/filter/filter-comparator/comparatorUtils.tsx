@@ -180,7 +180,7 @@ export function useGetComparators() {
 export function useComparatorsForAttribute(attribute: string) {
   const comparators = useGetComparators()
   const [comparatorList, setComparatorList] = React.useState<ComparatorType[]>(
-    []
+    comparators(attribute)
   )
   React.useEffect(() => {
     setComparatorList(comparators(attribute))
