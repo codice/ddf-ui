@@ -167,23 +167,19 @@ export const Editor = ({
       ? lazyResult.plain.metacard.properties[attr].slice(0)
       : [lazyResult.plain.metacard.properties[attr]]
   )
-  const [error, setError] = React.useState(false)
   const [dirtyIndex, setDirtyIndex] = React.useState(-1)
-  const { getAlias, isMulti, getType, getEnum, getMetacardDefinition } =
+  const { getAlias, isMulti, getType, getEnum, getRequired } =
     useMetacardDefinitions()
   const label = getAlias(attr)
   const isMultiValued = isMulti(attr)
   const attrType = getType(attr)
   const enumForAttr = getEnum(attr)
   const addSnack = useSnack()
-  const isRequired =
-    getMetacardDefinition(lazyResult.plain.metacard.properties.title)
-      ?.required || false
+  const isRequired = getRequired(lazyResult.plain.metacardType, attr)
 
   function getErrorMessage() {
-    if (isRequired) {
-      const invalidField = !values
-      setError(invalidField)
+    if (isRequired || attr === 'title') {
+      const invalidField = !values || values.length < 1 || !values[0]
       return invalidField ? label + ' is required.' : ''
     }
     return ''
@@ -385,14 +381,13 @@ export const Editor = ({
           color="primary"
           onClick={() => {
             setMode(Mode.Saving)
-            const onFailure = () =>
-              setTimeout(() => {
-                addSnack('Failed to update.', { status: 'error' })
-                onSave()
-              }, 1000)
 
-            if (error === true) {
-              onFailure()
+            if (isRequired && (!values || values.length < 1 || !values[0])) {
+              setTimeout(() => {
+                addSnack('This attribute is required.', {
+                  status: 'error',
+                })
+              }, 1000)
               return
             }
 
@@ -427,6 +422,11 @@ export const Editor = ({
               console.error(err)
             }
             const attributes = [{ attribute: attr, values: transformedValues }]
+            const onFailure = () =>
+              setTimeout(() => {
+                addSnack('Failed to update.', { status: 'error' })
+                onSave()
+              }, 1000)
             const onSuccess = () =>
               setTimeout(() => {
                 addSnack('Successfully updated.')

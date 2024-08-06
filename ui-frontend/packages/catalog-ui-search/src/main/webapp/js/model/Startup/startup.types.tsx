@@ -39,6 +39,7 @@ export type AttributeDefinitionType = {
   enumerations?: string[]
   deprecatedEnumerations?: string[]
   hidden?: boolean
+  required?: boolean
 }
 
 export type AttributeMapType = {
