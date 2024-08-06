@@ -171,6 +171,11 @@ class MetacardDefinitions extends Subscribable<{
   getMetacardDefinition = (metacardTypeName: string) => {
     return this.metacardTypes?.[metacardTypeName] || {}
   }
+  getRequired = (metacardTypeName: string, attributeName: string) => {
+    return (
+      this.metacardTypes?.[metacardTypeName]?.[attributeName]?.required || false
+    )
+  }
   getAlias = (attributeName: string) => {
     return this.attributeMap?.[attributeName]?.alias || attributeName
   }
