@@ -422,14 +422,14 @@ export const Editor = ({
               console.error(err)
             }
             const attributes = [{ attribute: attr, values: transformedValues }]
-            const onFailure = () =>
-              setTimeout(() => {
-                addSnack('Failed to update.', { status: 'error' })
-                onSave()
-              }, 1000)
             const onSuccess = () =>
               setTimeout(() => {
                 addSnack('Successfully updated.')
+                onSave()
+              }, 1000)
+            const onFailure = () =>
+              setTimeout(() => {
+                addSnack('Failed to update.', { status: 'error' })
                 onSave()
               }, 1000)
             if (ExtensionPoints.handleMetacardUpdate) {
