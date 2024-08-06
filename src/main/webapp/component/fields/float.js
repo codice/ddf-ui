@@ -1,0 +1,35 @@
+import { __assign } from "tslib";
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+import * as React from 'react';
+import TextField from '@mui/material/TextField';
+import { EnterKeySubmitProps } from '../custom-events/enter-key-submit';
+var defaultValue = 0;
+var validateShape = function (_a) {
+    var value = _a.value, onChange = _a.onChange;
+    if (typeof value !== 'number') {
+        onChange(defaultValue);
+    }
+};
+export var FloatField = function (_a) {
+    var value = _a.value, onChange = _a.onChange;
+    React.useEffect(function () {
+        validateShape({ value: value, onChange: onChange });
+    }, []);
+    return (React.createElement(TextField, __assign({ fullWidth: true, variant: "outlined", value: value, type: "number", onChange: function (e) {
+            onChange(parseFloat(e.target.value));
+        }, size: "small" }, EnterKeySubmitProps)));
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZmxvYXQuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi9zcmMvbWFpbi93ZWJhcHAvY29tcG9uZW50L2ZpZWxkcy9mbG9hdC50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBOzs7Ozs7Ozs7Ozs7O0lBYUk7QUFDSixPQUFPLEtBQUssS0FBSyxNQUFNLE9BQU8sQ0FBQTtBQUU5QixPQUFPLFNBQVMsTUFBTSx5QkFBeUIsQ0FBQTtBQUUvQyxPQUFPLEVBQUUsbUJBQW1CLEVBQUUsTUFBTSxtQ0FBbUMsQ0FBQTtBQU92RSxJQUFNLFlBQVksR0FBRyxDQUFDLENBQUE7QUFFdEIsSUFBTSxhQUFhLEdBQUcsVUFBQyxFQUFvQztRQUFsQyxLQUFLLFdBQUEsRUFBRSxRQUFRLGNBQUE7SUFDdEMsSUFBSSxPQUFPLEtBQUssS0FBSyxRQUFRLEVBQUU7UUFDN0IsUUFBUSxDQUFDLFlBQVksQ0FBQyxDQUFBO0tBQ3ZCO0FBQ0gsQ0FBQyxDQUFBO0FBRUQsTUFBTSxDQUFDLElBQU0sVUFBVSxHQUFHLFVBQUMsRUFBb0M7UUFBbEMsS0FBSyxXQUFBLEVBQUUsUUFBUSxjQUFBO0lBQzFDLEtBQUssQ0FBQyxTQUFTLENBQUM7UUFDZCxhQUFhLENBQUMsRUFBRSxLQUFLLE9BQUEsRUFBRSxRQUFRLFVBQUEsRUFBRSxDQUFDLENBQUE7SUFDcEMsQ0FBQyxFQUFFLEVBQUUsQ0FBQyxDQUFBO0lBQ04sT0FBTyxDQUNMLG9CQUFDLFNBQVMsYUFDUixTQUFTLFFBQ1QsT0FBTyxFQUFDLFVBQVUsRUFDbEIsS0FBSyxFQUFFLEtBQUssRUFDWixJQUFJLEVBQUMsUUFBUSxFQUNiLFFBQVEsRUFBRSxVQUFDLENBQUM7WUFDVixRQUFRLENBQUMsVUFBVSxDQUFDLENBQUMsQ0FBQyxNQUFNLENBQUMsS0FBSyxDQUFDLENBQUMsQ0FBQTtRQUN0QyxDQUFDLEVBQ0QsSUFBSSxFQUFDLE9BQU8sSUFDUixtQkFBbUIsRUFDdkIsQ0FDSCxDQUFBO0FBQ0gsQ0FBQyxDQUFBIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBDb3B5cmlnaHQgKGMpIENvZGljZSBGb3VuZGF0aW9uXG4gKlxuICogVGhpcyBpcyBmcmVlIHNvZnR3YXJlOiB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IgbW9kaWZ5IGl0IHVuZGVyIHRoZSB0ZXJtcyBvZiB0aGUgR05VIExlc3NlclxuICogR2VuZXJhbCBQdWJsaWMgTGljZW5zZSBhcyBwdWJsaXNoZWQgYnkgdGhlIEZyZWUgU29mdHdhcmUgRm91bmRhdGlvbiwgZWl0aGVyIHZlcnNpb24gMyBvZiB0aGVcbiAqIExpY2Vuc2UsIG9yIGFueSBsYXRlciB2ZXJzaW9uLlxuICpcbiAqIFRoaXMgcHJvZ3JhbSBpcyBkaXN0cmlidXRlZCBpbiB0aGUgaG9wZSB0aGF0IGl0IHdpbGwgYmUgdXNlZnVsLCBidXQgV0lUSE9VVCBBTlkgV0FSUkFOVFk7IHdpdGhvdXRcbiAqIGV2ZW4gdGhlIGltcGxpZWQgd2FycmFudHkgb2YgTUVSQ0hBTlRBQklMSVRZIG9yIEZJVE5FU1MgRk9SIEEgUEFSVElDVUxBUiBQVVJQT1NFLiBTZWUgdGhlIEdOVVxuICogTGVzc2VyIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgZm9yIG1vcmUgZGV0YWlscy4gQSBjb3B5IG9mIHRoZSBHTlUgTGVzc2VyIEdlbmVyYWwgUHVibGljIExpY2Vuc2VcbiAqIGlzIGRpc3RyaWJ1dGVkIGFsb25nIHdpdGggdGhpcyBwcm9ncmFtIGFuZCBjYW4gYmUgZm91bmQgYXRcbiAqIDxodHRwOi8vd3d3LmdudS5vcmcvbGljZW5zZXMvbGdwbC5odG1sPi5cbiAqXG4gKiovXG5pbXBvcnQgKiBhcyBSZWFjdCBmcm9tICdyZWFjdCdcblxuaW1wb3J0IFRleHRGaWVsZCBmcm9tICdAbXVpL21hdGVyaWFsL1RleHRGaWVsZCdcbmltcG9ydCB7IFZhbHVlVHlwZXMgfSBmcm9tICcuLi9maWx0ZXItYnVpbGRlci9maWx0ZXIuc3RydWN0dXJlJ1xuaW1wb3J0IHsgRW50ZXJLZXlTdWJtaXRQcm9wcyB9IGZyb20gJy4uL2N1c3RvbS1ldmVudHMvZW50ZXIta2V5LXN1Ym1pdCdcblxudHlwZSBGbG9hdEZpZWxkUHJvcHMgPSB7XG4gIHZhbHVlOiBWYWx1ZVR5cGVzWydmbG9hdCddXG4gIG9uQ2hhbmdlOiAodmFsOiBWYWx1ZVR5cGVzWydmbG9hdCddKSA9PiB2b2lkXG59XG5cbmNvbnN0IGRlZmF1bHRWYWx1ZSA9IDBcblxuY29uc3QgdmFsaWRhdGVTaGFwZSA9ICh7IHZhbHVlLCBvbkNoYW5nZSB9OiBGbG9hdEZpZWxkUHJvcHMpID0+IHtcbiAgaWYgKHR5cGVvZiB2YWx1ZSAhPT0gJ251bWJlcicpIHtcbiAgICBvbkNoYW5nZShkZWZhdWx0VmFsdWUpXG4gIH1cbn1cblxuZXhwb3J0IGNvbnN0IEZsb2F0RmllbGQgPSAoeyB2YWx1ZSwgb25DaGFuZ2UgfTogRmxvYXRGaWVsZFByb3BzKSA9PiB7XG4gIFJlYWN0LnVzZUVmZmVjdCgoKSA9PiB7XG4gICAgdmFsaWRhdGVTaGFwZSh7IHZhbHVlLCBvbkNoYW5nZSB9KVxuICB9LCBbXSlcbiAgcmV0dXJuIChcbiAgICA8VGV4dEZpZWxkXG4gICAgICBmdWxsV2lkdGhcbiAgICAgIHZhcmlhbnQ9XCJvdXRsaW5lZFwiXG4gICAgICB2YWx1ZT17dmFsdWV9XG4gICAgICB0eXBlPVwibnVtYmVyXCJcbiAgICAgIG9uQ2hhbmdlPXsoZSkgPT4ge1xuICAgICAgICBvbkNoYW5nZShwYXJzZUZsb2F0KGUudGFyZ2V0LnZhbHVlKSlcbiAgICAgIH19XG4gICAgICBzaXplPVwic21hbGxcIlxuICAgICAgey4uLkVudGVyS2V5U3VibWl0UHJvcHN9XG4gICAgLz5cbiAgKVxufVxuIl19
