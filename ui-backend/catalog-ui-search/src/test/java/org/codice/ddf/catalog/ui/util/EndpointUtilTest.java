@@ -35,7 +35,14 @@ import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableList;
 import ddf.catalog.CatalogFramework;
-import ddf.catalog.data.*;
+import ddf.catalog.data.AttributeDescriptor;
+import ddf.catalog.data.AttributeRegistry;
+import ddf.catalog.data.AttributeType;
+import ddf.catalog.data.InjectableAttribute;
+import ddf.catalog.data.Metacard;
+import ddf.catalog.data.MetacardType;
+import ddf.catalog.data.RequiredAttributesRegistry;
+import ddf.catalog.data.Result;
 import ddf.catalog.data.impl.AttributeImpl;
 import ddf.catalog.data.impl.MetacardImpl;
 import ddf.catalog.data.impl.UiAttributeImpl;
