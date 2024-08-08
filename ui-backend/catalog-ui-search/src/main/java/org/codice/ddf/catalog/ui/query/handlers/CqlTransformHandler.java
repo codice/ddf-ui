@@ -152,6 +152,7 @@ public class CqlTransformHandler implements Route {
     private boolean phonetics = false;
     private boolean spellcheck = false;
     private List<String> hiddenResults = Collections.emptyList();
+    private String additionalOptions = null;
 
     public void setSearches(List<CqlRequestImpl> searches) {
       this.searches = searches;
@@ -200,6 +201,14 @@ public class CqlTransformHandler implements Route {
     public List<String> getHiddenResults() {
       return this.hiddenResults;
     }
+
+    public void setAdditionalOptions(String additionalOptions) {
+      this.additionalOptions = additionalOptions;
+    }
+
+    public String getAdditionalOptions() {
+      return this.additionalOptions;
+    }
   }
 
   @Override
@@ -232,6 +241,7 @@ public class CqlTransformHandler implements Route {
           cqlRequest.setSorts(cqlTransformRequest.getSorts());
           cqlRequest.setPhonetics((cqlTransformRequest.getPhonetics()));
           cqlRequest.setSpellcheck((cqlTransformRequest.getSpellcheck()));
+          cqlRequest.setAdditionalOptions(cqlTransformRequest.getAdditionalOptions());
         });
 
     if (CollectionUtils.isEmpty(cqlRequests)) {

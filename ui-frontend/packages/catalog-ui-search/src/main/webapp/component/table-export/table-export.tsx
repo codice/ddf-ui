@@ -13,6 +13,7 @@
  *
  **/
 import * as React from 'react'
+import _ from 'underscore'
 import { useEffect, useState } from 'react'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
 import contentDisposition from 'content-disposition'
@@ -43,6 +44,7 @@ import DialogContent from '@mui/material/DialogContent/DialogContent'
 import DialogActions from '@mui/material/DialogActions/DialogActions'
 import DialogContentText from '@mui/material/DialogContentText'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import { limitToDeleted, limitToHistoric } from '../../js/model/Query'
 
 export type Props = {
   selectionInterface: any
@@ -145,6 +147,22 @@ export const getExportBody = async (ExportInfo: ExportInfo) => {
   const cacheId = query.get('cacheId')
   const phonetics = query.get('phonetics')
   const spellcheck = query.get('spellcheck')
+  let additionalOptions = JSON.parse(query.get('additionalOptions') || '{}')
+
+  let cqlFilterTree = query.get('filterTree')
+  if (query.options.limitToDeleted) {
+    cqlFilterTree = limitToDeleted(cqlFilterTree)
+  } else if (query.options.limitToHistoric) {
+    cqlFilterTree = limitToHistoric(cqlFilterTree)
+  }
+
+  if (query.options.additionalOptions) {
+    additionalOptions = _.extend(
+      additionalOptions,
+      query.options.additionalOptions
+    )
+  }
+
   const exportCount = Math.min(
     getExportCount({ exportSize, selectionInterface, customExportCount }),
     exportResultLimit
@@ -157,7 +175,7 @@ export const getExportBody = async (ExportInfo: ExportInfo) => {
   const searches = []
   let queryCount = exportCount
   let cql = DEFAULT_USER_QUERY_OPTIONS.transformFilterTree({
-    originalFilterTree: query.get('filterTree'),
+    originalFilterTree: cqlFilterTree,
     queryRef: query,
   })
   if (ExportInfo.exportSize === 'currentPage') {
@@ -198,6 +216,7 @@ export const getExportBody = async (ExportInfo: ExportInfo) => {
   return {
     phonetics,
     spellcheck,
+    additionalOptions: JSON.stringify(additionalOptions),
     searches,
     count: exportCount,
     sorts,

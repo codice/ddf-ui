@@ -99,7 +99,7 @@ export type QueryType = {
   canRefetch: () => boolean
   [key: string]: any
 }
-function limitToDeleted(cqlFilterTree: any) {
+export function limitToDeleted(cqlFilterTree: any) {
   return new FilterBuilderClass({
     type: 'AND',
     filters: [
@@ -117,7 +117,7 @@ function limitToDeleted(cqlFilterTree: any) {
     ],
   })
 }
-function limitToHistoric(cqlFilterTree: any) {
+export function limitToHistoric(cqlFilterTree: any) {
   return new FilterBuilderClass({
     type: 'AND',
     filters: [
@@ -426,10 +426,19 @@ export default Backbone.AssociatedModel.extend({
       {
         limitToDeleted: false,
         limitToHistoric: false,
+        additionalOptions: undefined,
       },
       options
     )
+    _.extend(this.options, options)
+
     const data = _cloneDeep(this.buildSearchData())
+
+    if (options.additionalOptions) {
+      let optionsObj = JSON.parse(data.additionalOptions || '{}')
+      optionsObj = _.extend(optionsObj, options.additionalOptions)
+      data.additionalOptions = JSON.stringify(optionsObj)
+    }
     data.batchId = v4()
     // Data.sources is set in `buildSearchData` based on which sources you have selected.
     let selectedSources = data.sources
