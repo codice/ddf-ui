@@ -1,0 +1,38 @@
+import { __assign } from "tslib";
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+import React from 'react';
+import { expect } from 'chai';
+import { mount } from 'enzyme';
+import { testComponent as ExampleCoordinates } from './example-coordinates';
+describe('<ExampleCoordinates />', function () {
+    var props = {
+        selected: 'mgrs',
+        examples: { mgrs: '4Q FL 23009 12331' },
+    };
+    it('renders', function () {
+        var wrapper = mount(React.createElement(ExampleCoordinates, { selected: "foo" }));
+        expect(wrapper.find({ selected: 'foo' }).length).to.equal(1);
+    });
+    it('displays empty example for unknown coordinate type', function () {
+        var wrapper = mount(React.createElement(ExampleCoordinates, { selected: "foo" }));
+        expect(wrapper.containsMatchingElement(React.createElement("span", null))).to.equal(true);
+    });
+    it('displays the correct example', function () {
+        var wrapper = mount(React.createElement(ExampleCoordinates, __assign({}, props)));
+        expect(wrapper.containsMatchingElement(React.createElement("span", null, "4Q FL 23009 12331"))).to.equal(true);
+    });
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhhbXBsZS1jb29yZGluYXRlcy5zcGVjLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL21haW4vd2ViYXBwL3JlYWN0LWNvbXBvbmVudC9tYXAtc2V0dGluZ3MvZXhhbXBsZS1jb29yZGluYXRlcy5zcGVjLnRzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUE7Ozs7Ozs7Ozs7Ozs7SUFhSTtBQUNKLE9BQU8sS0FBSyxNQUFNLE9BQU8sQ0FBQTtBQUN6QixPQUFPLEVBQUUsTUFBTSxFQUFFLE1BQU0sTUFBTSxDQUFBO0FBQzdCLE9BQU8sRUFBRSxLQUFLLEVBQUUsTUFBTSxRQUFRLENBQUE7QUFDOUIsT0FBTyxFQUFFLGFBQWEsSUFBSSxrQkFBa0IsRUFBRSxNQUFNLHVCQUF1QixDQUFBO0FBRTNFLFFBQVEsQ0FBQyx3QkFBd0IsRUFBRTtJQUNqQyxJQUFNLEtBQUssR0FBRztRQUNaLFFBQVEsRUFBRSxNQUFNO1FBQ2hCLFFBQVEsRUFBRSxFQUFFLElBQUksRUFBRSxtQkFBbUIsRUFBRTtLQUN4QyxDQUFBO0lBRUQsRUFBRSxDQUFDLFNBQVMsRUFBRTtRQUNaLElBQU0sT0FBTyxHQUFHLEtBQUssQ0FBQyxvQkFBQyxrQkFBa0IsSUFBQyxRQUFRLEVBQUMsS0FBSyxHQUFHLENBQUMsQ0FBQTtRQUM1RCxNQUFNLENBQUMsT0FBTyxDQUFDLElBQUksQ0FBQyxFQUFFLFFBQVEsRUFBRSxLQUFLLEVBQUUsQ0FBQyxDQUFDLE1BQU0sQ0FBQyxDQUFDLEVBQUUsQ0FBQyxLQUFLLENBQUMsQ0FBQyxDQUFDLENBQUE7SUFDOUQsQ0FBQyxDQUFDLENBQUE7SUFFRixFQUFFLENBQUMsb0RBQW9ELEVBQUU7UUFDdkQsSUFBTSxPQUFPLEdBQUcsS0FBSyxDQUFDLG9CQUFDLGtCQUFrQixJQUFDLFFBQVEsRUFBQyxLQUFLLEdBQUcsQ0FBQyxDQUFBO1FBQzVELE1BQU0sQ0FBQyxPQUFPLENBQUMsdUJBQXVCLENBQUMsaUNBQVEsQ0FBQyxDQUFDLENBQUMsRUFBRSxDQUFDLEtBQUssQ0FBQyxJQUFJLENBQUMsQ0FBQTtJQUNsRSxDQUFDLENBQUMsQ0FBQTtJQUVGLEVBQUUsQ0FBQyw4QkFBOEIsRUFBRTtRQUNqQyxJQUFNLE9BQU8sR0FBRyxLQUFLLENBQUMsb0JBQUMsa0JBQWtCLGVBQUssS0FBSyxFQUFJLENBQUMsQ0FBQTtRQUN4RCxNQUFNLENBQ0osT0FBTyxDQUFDLHVCQUF1QixDQUFDLHNEQUE4QixDQUFDLENBQ2hFLENBQUMsRUFBRSxDQUFDLEtBQUssQ0FBQyxJQUFJLENBQUMsQ0FBQTtJQUNsQixDQUFDLENBQUMsQ0FBQTtBQUNKLENBQUMsQ0FBQyxDQUFBIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBDb3B5cmlnaHQgKGMpIENvZGljZSBGb3VuZGF0aW9uXG4gKlxuICogVGhpcyBpcyBmcmVlIHNvZnR3YXJlOiB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IgbW9kaWZ5IGl0IHVuZGVyIHRoZSB0ZXJtcyBvZiB0aGUgR05VIExlc3NlclxuICogR2VuZXJhbCBQdWJsaWMgTGljZW5zZSBhcyBwdWJsaXNoZWQgYnkgdGhlIEZyZWUgU29mdHdhcmUgRm91bmRhdGlvbiwgZWl0aGVyIHZlcnNpb24gMyBvZiB0aGVcbiAqIExpY2Vuc2UsIG9yIGFueSBsYXRlciB2ZXJzaW9uLlxuICpcbiAqIFRoaXMgcHJvZ3JhbSBpcyBkaXN0cmlidXRlZCBpbiB0aGUgaG9wZSB0aGF0IGl0IHdpbGwgYmUgdXNlZnVsLCBidXQgV0lUSE9VVCBBTlkgV0FSUkFOVFk7IHdpdGhvdXRcbiAqIGV2ZW4gdGhlIGltcGxpZWQgd2FycmFudHkgb2YgTUVSQ0hBTlRBQklMSVRZIG9yIEZJVE5FU1MgRk9SIEEgUEFSVElDVUxBUiBQVVJQT1NFLiBTZWUgdGhlIEdOVVxuICogTGVzc2VyIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgZm9yIG1vcmUgZGV0YWlscy4gQSBjb3B5IG9mIHRoZSBHTlUgTGVzc2VyIEdlbmVyYWwgUHVibGljIExpY2Vuc2VcbiAqIGlzIGRpc3RyaWJ1dGVkIGFsb25nIHdpdGggdGhpcyBwcm9ncmFtIGFuZCBjYW4gYmUgZm91bmQgYXRcbiAqIDxodHRwOi8vd3d3LmdudS5vcmcvbGljZW5zZXMvbGdwbC5odG1sPi5cbiAqXG4gKiovXG5pbXBvcnQgUmVhY3QgZnJvbSAncmVhY3QnXG5pbXBvcnQgeyBleHBlY3QgfSBmcm9tICdjaGFpJ1xuaW1wb3J0IHsgbW91bnQgfSBmcm9tICdlbnp5bWUnXG5pbXBvcnQgeyB0ZXN0Q29tcG9uZW50IGFzIEV4YW1wbGVDb29yZGluYXRlcyB9IGZyb20gJy4vZXhhbXBsZS1jb29yZGluYXRlcydcblxuZGVzY3JpYmUoJzxFeGFtcGxlQ29vcmRpbmF0ZXMgLz4nLCAoKSA9PiB7XG4gIGNvbnN0IHByb3BzID0ge1xuICAgIHNlbGVjdGVkOiAnbWdycycsXG4gICAgZXhhbXBsZXM6IHsgbWdyczogJzRRIEZMIDIzMDA5IDEyMzMxJyB9LFxuICB9XG5cbiAgaXQoJ3JlbmRlcnMnLCAoKSA9PiB7XG4gICAgY29uc3Qgd3JhcHBlciA9IG1vdW50KDxFeGFtcGxlQ29vcmRpbmF0ZXMgc2VsZWN0ZWQ9XCJmb29cIiAvPilcbiAgICBleHBlY3Qod3JhcHBlci5maW5kKHsgc2VsZWN0ZWQ6ICdmb28nIH0pLmxlbmd0aCkudG8uZXF1YWwoMSlcbiAgfSlcblxuICBpdCgnZGlzcGxheXMgZW1wdHkgZXhhbXBsZSBmb3IgdW5rbm93biBjb29yZGluYXRlIHR5cGUnLCAoKSA9PiB7XG4gICAgY29uc3Qgd3JhcHBlciA9IG1vdW50KDxFeGFtcGxlQ29vcmRpbmF0ZXMgc2VsZWN0ZWQ9XCJmb29cIiAvPilcbiAgICBleHBlY3Qod3JhcHBlci5jb250YWluc01hdGNoaW5nRWxlbWVudCg8c3BhbiAvPikpLnRvLmVxdWFsKHRydWUpXG4gIH0pXG5cbiAgaXQoJ2Rpc3BsYXlzIHRoZSBjb3JyZWN0IGV4YW1wbGUnLCAoKSA9PiB7XG4gICAgY29uc3Qgd3JhcHBlciA9IG1vdW50KDxFeGFtcGxlQ29vcmRpbmF0ZXMgey4uLnByb3BzfSAvPilcbiAgICBleHBlY3QoXG4gICAgICB3cmFwcGVyLmNvbnRhaW5zTWF0Y2hpbmdFbGVtZW50KDxzcGFuPjRRIEZMIDIzMDA5IDEyMzMxPC9zcGFuPilcbiAgICApLnRvLmVxdWFsKHRydWUpXG4gIH0pXG59KVxuIl19
