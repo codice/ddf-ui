@@ -45,6 +45,7 @@ import DialogActions from '@mui/material/DialogActions/DialogActions'
 import DialogContentText from '@mui/material/DialogContentText'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { limitToDeleted, limitToHistoric } from '../../js/model/Query'
+import { limitCqlToDeleted } from '../../react-component/utils/cql/cql'
 
 export type Props = {
   selectionInterface: any
@@ -197,9 +198,13 @@ export const getExportBody = async (ExportInfo: ExportInfo) => {
       {} as Record<string, string[]>
     )
     Object.keys(srcMap).forEach((src) => {
+      let cql = getResultSetCql(srcMap[src])
+      if (query.options.limitToDeleted) {
+        cql = limitCqlToDeleted(cql)
+      }
       searches.push({
         srcs: [src],
-        cql: getResultSetCql(srcMap[src]),
+        cql,
         count: srcMap[src].length,
         cacheId,
       })
