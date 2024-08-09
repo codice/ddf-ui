@@ -1,0 +1,41 @@
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'dens... Remove this comment to see the full error message
+import clustering from 'density-clustering';
+var dbscan = new clustering.DBSCAN();
+function removeInvalidCenters(results, centers) {
+    for (var i = centers.length - 1; i >= 0; i--) {
+        if (!centers[i]) {
+            results.splice(i, 1);
+            centers.splice(i, 1);
+        }
+    }
+}
+function convertIndicesToResults(results, cluster) {
+    return cluster.map(function (index) { return results[index]; });
+}
+export default {
+    /*
+        Takes in a list of geometries and a view height and returns a list of clusters
+      */
+    calculateClusters: function (results, map) {
+        var centers = map.getWindowLocationsOfResults(results);
+        removeInvalidCenters(results, centers);
+        return dbscan
+            .run(centers, 44, 2)
+            .map(function (cluster) { return convertIndicesToResults(results, cluster); });
+    },
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiQ2x1c3RlcmluZy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uL3NyYy9tYWluL3dlYmFwcC9jb21wb25lbnQvdmlzdWFsaXphdGlvbi9tYXBzL0NsdXN0ZXJpbmcudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7Ozs7Ozs7Ozs7Ozs7SUFhSTtBQUVKLG1KQUFtSjtBQUNuSixPQUFPLFVBQVUsTUFBTSxvQkFBb0IsQ0FBQTtBQUUzQyxJQUFNLE1BQU0sR0FBRyxJQUFJLFVBQVUsQ0FBQyxNQUFNLEVBQUUsQ0FBQTtBQUV0QyxTQUFTLG9CQUFvQixDQUFDLE9BQVksRUFBRSxPQUFZO0lBQ3RELEtBQUssSUFBSSxDQUFDLEdBQUcsT0FBTyxDQUFDLE1BQU0sR0FBRyxDQUFDLEVBQUUsQ0FBQyxJQUFJLENBQUMsRUFBRSxDQUFDLEVBQUUsRUFBRTtRQUM1QyxJQUFJLENBQUMsT0FBTyxDQUFDLENBQUMsQ0FBQyxFQUFFO1lBQ2YsT0FBTyxDQUFDLE1BQU0sQ0FBQyxDQUFDLEVBQUUsQ0FBQyxDQUFDLENBQUE7WUFDcEIsT0FBTyxDQUFDLE1BQU0sQ0FBQyxDQUFDLEVBQUUsQ0FBQyxDQUFDLENBQUE7U0FDckI7S0FDRjtBQUNILENBQUM7QUFFRCxTQUFTLHVCQUF1QixDQUFDLE9BQVksRUFBRSxPQUFZO0lBQ3pELE9BQU8sT0FBTyxDQUFDLEdBQUcsQ0FBQyxVQUFDLEtBQVUsSUFBSyxPQUFBLE9BQU8sQ0FBQyxLQUFLLENBQUMsRUFBZCxDQUFjLENBQUMsQ0FBQTtBQUNwRCxDQUFDO0FBRUQsZUFBZTtJQUNiOztRQUVJO0lBQ0osaUJBQWlCLFlBQUMsT0FBWSxFQUFFLEdBQVE7UUFDdEMsSUFBTSxPQUFPLEdBQUcsR0FBRyxDQUFDLDJCQUEyQixDQUFDLE9BQU8sQ0FBQyxDQUFBO1FBQ3hELG9CQUFvQixDQUFDLE9BQU8sRUFBRSxPQUFPLENBQUMsQ0FBQTtRQUN0QyxPQUFPLE1BQU07YUFDVixHQUFHLENBQUMsT0FBTyxFQUFFLEVBQUUsRUFBRSxDQUFDLENBQUM7YUFDbkIsR0FBRyxDQUFDLFVBQUMsT0FBWSxJQUFLLE9BQUEsdUJBQXVCLENBQUMsT0FBTyxFQUFFLE9BQU8sQ0FBQyxFQUF6QyxDQUF5QyxDQUFDLENBQUE7SUFDckUsQ0FBQztDQUNGLENBQUEiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIENvcHlyaWdodCAoYykgQ29kaWNlIEZvdW5kYXRpb25cbiAqXG4gKiBUaGlzIGlzIGZyZWUgc29mdHdhcmU6IHlvdSBjYW4gcmVkaXN0cmlidXRlIGl0IGFuZC9vciBtb2RpZnkgaXQgdW5kZXIgdGhlIHRlcm1zIG9mIHRoZSBHTlUgTGVzc2VyXG4gKiBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGFzIHB1Ymxpc2hlZCBieSB0aGUgRnJlZSBTb2Z0d2FyZSBGb3VuZGF0aW9uLCBlaXRoZXIgdmVyc2lvbiAzIG9mIHRoZVxuICogTGljZW5zZSwgb3IgYW55IGxhdGVyIHZlcnNpb24uXG4gKlxuICogVGhpcyBwcm9ncmFtIGlzIGRpc3RyaWJ1dGVkIGluIHRoZSBob3BlIHRoYXQgaXQgd2lsbCBiZSB1c2VmdWwsIGJ1dCBXSVRIT1VUIEFOWSBXQVJSQU5UWTsgd2l0aG91dFxuICogZXZlbiB0aGUgaW1wbGllZCB3YXJyYW50eSBvZiBNRVJDSEFOVEFCSUxJVFkgb3IgRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UuIFNlZSB0aGUgR05VXG4gKiBMZXNzZXIgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSBmb3IgbW9yZSBkZXRhaWxzLiBBIGNvcHkgb2YgdGhlIEdOVSBMZXNzZXIgR2VuZXJhbCBQdWJsaWMgTGljZW5zZVxuICogaXMgZGlzdHJpYnV0ZWQgYWxvbmcgd2l0aCB0aGlzIHByb2dyYW0gYW5kIGNhbiBiZSBmb3VuZCBhdFxuICogPGh0dHA6Ly93d3cuZ251Lm9yZy9saWNlbnNlcy9sZ3BsLmh0bWw+LlxuICpcbiAqKi9cblxuLy8gQHRzLWV4cGVjdC1lcnJvciB0cy1taWdyYXRlKDcwMTYpIEZJWE1FOiBDb3VsZCBub3QgZmluZCBhIGRlY2xhcmF0aW9uIGZpbGUgZm9yIG1vZHVsZSAnZGVucy4uLiBSZW1vdmUgdGhpcyBjb21tZW50IHRvIHNlZSB0aGUgZnVsbCBlcnJvciBtZXNzYWdlXG5pbXBvcnQgY2x1c3RlcmluZyBmcm9tICdkZW5zaXR5LWNsdXN0ZXJpbmcnXG5cbmNvbnN0IGRic2NhbiA9IG5ldyBjbHVzdGVyaW5nLkRCU0NBTigpXG5cbmZ1bmN0aW9uIHJlbW92ZUludmFsaWRDZW50ZXJzKHJlc3VsdHM6IGFueSwgY2VudGVyczogYW55KSB7XG4gIGZvciAobGV0IGkgPSBjZW50ZXJzLmxlbmd0aCAtIDE7IGkgPj0gMDsgaS0tKSB7XG4gICAgaWYgKCFjZW50ZXJzW2ldKSB7XG4gICAgICByZXN1bHRzLnNwbGljZShpLCAxKVxuICAgICAgY2VudGVycy5zcGxpY2UoaSwgMSlcbiAgICB9XG4gIH1cbn1cblxuZnVuY3Rpb24gY29udmVydEluZGljZXNUb1Jlc3VsdHMocmVzdWx0czogYW55LCBjbHVzdGVyOiBhbnkpIHtcbiAgcmV0dXJuIGNsdXN0ZXIubWFwKChpbmRleDogYW55KSA9PiByZXN1bHRzW2luZGV4XSlcbn1cblxuZXhwb3J0IGRlZmF1bHQge1xuICAvKlxuICAgICAgVGFrZXMgaW4gYSBsaXN0IG9mIGdlb21ldHJpZXMgYW5kIGEgdmlldyBoZWlnaHQgYW5kIHJldHVybnMgYSBsaXN0IG9mIGNsdXN0ZXJzXG4gICAgKi9cbiAgY2FsY3VsYXRlQ2x1c3RlcnMocmVzdWx0czogYW55LCBtYXA6IGFueSkge1xuICAgIGNvbnN0IGNlbnRlcnMgPSBtYXAuZ2V0V2luZG93TG9jYXRpb25zT2ZSZXN1bHRzKHJlc3VsdHMpXG4gICAgcmVtb3ZlSW52YWxpZENlbnRlcnMocmVzdWx0cywgY2VudGVycylcbiAgICByZXR1cm4gZGJzY2FuXG4gICAgICAucnVuKGNlbnRlcnMsIDQ0LCAyKVxuICAgICAgLm1hcCgoY2x1c3RlcjogYW55KSA9PiBjb252ZXJ0SW5kaWNlc1RvUmVzdWx0cyhyZXN1bHRzLCBjbHVzdGVyKSlcbiAgfSxcbn1cbiJdfQ==
