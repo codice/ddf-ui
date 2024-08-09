@@ -99,7 +99,7 @@ export type QueryType = {
   canRefetch: () => boolean
   [key: string]: any
 }
-function limitToDeleted(cqlFilterTree: any) {
+export function limitToDeleted(cqlFilterTree: any) {
   return new FilterBuilderClass({
     type: 'AND',
     filters: [
@@ -117,7 +117,7 @@ function limitToDeleted(cqlFilterTree: any) {
     ],
   })
 }
-function limitToHistoric(cqlFilterTree: any) {
+export function limitToHistoric(cqlFilterTree: any) {
   return new FilterBuilderClass({
     type: 'AND',
     filters: [
@@ -426,10 +426,19 @@ export default Backbone.AssociatedModel.extend({
       {
         limitToDeleted: false,
         limitToHistoric: false,
+        additionalOptions: undefined,
       },
       options
     )
+    this.options = _.extend(this.options, options)
+
     const data = _cloneDeep(this.buildSearchData())
+
+    if (options.additionalOptions) {
+      let optionsObj = JSON.parse(data.additionalOptions || '{}')
+      optionsObj = _.extend(optionsObj, options.additionalOptions)
+      data.additionalOptions = JSON.stringify(optionsObj)
+    }
     data.batchId = v4()
     // Data.sources is set in `buildSearchData` based on which sources you have selected.
     let selectedSources = data.sources
@@ -601,7 +610,7 @@ export default Backbone.AssociatedModel.extend({
   },
   getPreviousServerPage() {
     this.setNextIndexForSourceGroupToPrevPage()
-    this.startSearch()
+    this.startSearch(this.options)
   },
   /**
    * Much simpler than seeing if a next page exists
@@ -621,14 +630,14 @@ export default Backbone.AssociatedModel.extend({
   },
   getNextServerPage() {
     this.setNextIndexForSourceGroupToNextPage()
-    this.startSearch()
+    this.startSearch(this.options)
   },
   getHasFirstServerPage() {
     // so technically always "true" but what we really mean is, are we not on page 1 already
     return this.hasPreviousServerPage()
   },
   getFirstServerPage() {
-    this.startSearchFromFirstPage()
+    this.startSearchFromFirstPage(this.options)
   },
   getHasLastServerPage() {
     // so technically always "true" but what we really mean is, are we not on last page already
@@ -643,7 +652,7 @@ export default Backbone.AssociatedModel.extend({
         count: this.get('count'),
       })
     )
-    this.startSearch()
+    this.startSearch(this.options)
   },
   resetCurrentIndexForSourceGroup() {
     this.set('currentIndexForSourceGroup', {})
