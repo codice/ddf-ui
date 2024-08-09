@@ -430,7 +430,7 @@ export default Backbone.AssociatedModel.extend({
       },
       options
     )
-    _.extend(this.options, options)
+    this.options = _.extend(this.options, options)
 
     const data = _cloneDeep(this.buildSearchData())
 
@@ -610,7 +610,7 @@ export default Backbone.AssociatedModel.extend({
   },
   getPreviousServerPage() {
     this.setNextIndexForSourceGroupToPrevPage()
-    this.startSearch()
+    this.startSearch(this.options)
   },
   /**
    * Much simpler than seeing if a next page exists
@@ -630,14 +630,14 @@ export default Backbone.AssociatedModel.extend({
   },
   getNextServerPage() {
     this.setNextIndexForSourceGroupToNextPage()
-    this.startSearch()
+    this.startSearch(this.options)
   },
   getHasFirstServerPage() {
     // so technically always "true" but what we really mean is, are we not on page 1 already
     return this.hasPreviousServerPage()
   },
   getFirstServerPage() {
-    this.startSearchFromFirstPage()
+    this.startSearchFromFirstPage(this.options)
   },
   getHasLastServerPage() {
     // so technically always "true" but what we really mean is, are we not on last page already
@@ -652,7 +652,7 @@ export default Backbone.AssociatedModel.extend({
         count: this.get('count'),
       })
     )
-    this.startSearch()
+    this.startSearch(this.options)
   },
   resetCurrentIndexForSourceGroup() {
     this.set('currentIndexForSourceGroup', {})
