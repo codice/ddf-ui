@@ -41,6 +41,7 @@ import ddf.catalog.data.AttributeType;
 import ddf.catalog.data.InjectableAttribute;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.MetacardType;
+import ddf.catalog.data.RequiredAttributesRegistry;
 import ddf.catalog.data.Result;
 import ddf.catalog.data.impl.AttributeImpl;
 import ddf.catalog.data.impl.MetacardImpl;
@@ -92,6 +93,8 @@ public class EndpointUtilTest {
 
   private AttributeRegistry attributeRegistryMock;
 
+  private RequiredAttributesRegistry requiredAttributesRegistryMock;
+
   CatalogFramework catalogFrameworkMock;
 
   // represents 2018-09-05T14:03:17.000Z
@@ -112,6 +115,8 @@ public class EndpointUtilTest {
     InjectableAttribute injectableAttributeMock = mock(InjectableAttribute.class);
 
     attributeRegistryMock = mock(AttributeRegistry.class);
+
+    requiredAttributesRegistryMock = mock(RequiredAttributesRegistry.class);
 
     Filter filterMock = mock(Filter.class);
 
@@ -150,6 +155,7 @@ public class EndpointUtilTest {
             filterBuilderMock,
             injectableAttributeList,
             attributeRegistryMock,
+            requiredAttributesRegistryMock,
             configurationApplicationMock);
   }
 

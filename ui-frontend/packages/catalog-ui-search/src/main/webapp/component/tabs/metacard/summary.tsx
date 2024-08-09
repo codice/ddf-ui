@@ -168,12 +168,25 @@ export const Editor = ({
       : [lazyResult.plain.metacard.properties[attr]]
   )
   const [dirtyIndex, setDirtyIndex] = React.useState(-1)
-  const { getAlias, isMulti, getType, getEnum } = useMetacardDefinitions()
+  const { getAlias, isMulti, getType, getEnum, getRequired } =
+    useMetacardDefinitions()
   const label = getAlias(attr)
   const isMultiValued = isMulti(attr)
   const attrType = getType(attr)
   const enumForAttr = getEnum(attr)
   const addSnack = useSnack()
+  const isRequired = getRequired(lazyResult.plain.metacardType, attr)
+
+  function getErrorMessage() {
+    if (isRequired || attr === 'title') {
+      const invalidField = !values || values.length < 1 || !values[0]
+      return invalidField ? label + ' is required.' : ''
+    }
+    return ''
+  }
+
+  const errmsg = getErrorMessage()
+
   return (
     <>
       {goBack && (
@@ -305,6 +318,8 @@ export const Editor = ({
                           fullWidth
                           multiline={true}
                           maxRows={1000}
+                          error={errmsg.length != 0}
+                          helperText={errmsg}
                         />
                       )
                   }
@@ -366,6 +381,16 @@ export const Editor = ({
           color="primary"
           onClick={() => {
             setMode(Mode.Saving)
+
+            if (isRequired && (!values || values.length < 1 || !values[0])) {
+              setTimeout(() => {
+                addSnack('This attribute is required.', {
+                  status: 'error',
+                })
+              }, 1000)
+              return
+            }
+
             let transformedValues
             if (isMultiValued && values && values.length > 1) {
               transformedValues = values.filter(
