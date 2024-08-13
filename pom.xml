@@ -20,7 +20,7 @@
   <name>DDF :: UI</name>
   <artifactId>catalog-ui</artifactId>
   <groupId>org.codice.ddf.search</groupId>
-  <version>5.1.39</version>
+  <version>5.1.40-SNAPSHOT</version>
 
   <organization>
     <name>Codice Foundation</name>
@@ -126,7 +126,7 @@
     <url>https://github.com/codice/ddf-ui</url>
     <connection>scm:git:https://github.com/codice/ddf-ui.git</connection>
     <developerConnection>scm:git:https://github.com/codice/ddf-ui.git</developerConnection>
-    <tag>ddf-ui-5.1.39</tag>
+    <tag>catalog-ui-3.4.0</tag>
   </scm>
 
   <dependencyManagement>
