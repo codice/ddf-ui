@@ -28,6 +28,7 @@ import ddf.catalog.data.AttributeType;
 import ddf.catalog.data.InjectableAttribute;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.MetacardType;
+import ddf.catalog.data.RequiredAttributesRegistry;
 import ddf.catalog.data.Result;
 import ddf.catalog.data.impl.AttributeImpl;
 import ddf.catalog.data.types.Core;
@@ -110,6 +111,8 @@ public class EndpointUtil implements EndpointUtility {
 
   private final ConfigurationApplication config;
 
+  private final RequiredAttributesRegistry requiredAttributesRegistry;
+
   private static final String ISO_8601_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
   private static final String APPLICATION_JSON = "application/json";
@@ -121,6 +124,8 @@ public class EndpointUtil implements EndpointUtility {
   private static final String ID_KEY = "id";
 
   private static final String ISINJECTED_KEY = "isInjected";
+
+  private static final String REQUIRED_KEY = "required";
 
   private static int pageSize = 250;
 
@@ -142,12 +147,14 @@ public class EndpointUtil implements EndpointUtility {
       FilterBuilder filterBuilder,
       List<InjectableAttribute> injectableAttributes,
       AttributeRegistry attributeRegistry,
+      RequiredAttributesRegistry requiredAttributesRegistry,
       ConfigurationApplication config) {
     this.metacardTypes = metacardTypes;
     this.catalogFramework = catalogFramework;
     this.filterBuilder = filterBuilder;
     this.injectableAttributes = injectableAttributes;
     this.attributeRegistry = attributeRegistry;
+    this.requiredAttributesRegistry = requiredAttributesRegistry;
     this.config = config;
     registerGeoToolsFunctionFactory();
   }
@@ -432,6 +439,9 @@ public class EndpointUtil implements EndpointUtility {
         attributeProperties.put(MULTIVALUED_KEY, descriptor.isMultiValued());
         attributeProperties.put(ID_KEY, descriptor.getName());
         attributeProperties.put(ISINJECTED_KEY, false);
+        attributeProperties.put(
+            REQUIRED_KEY,
+            requiredAttributesRegistry.isRequired(metacardType.getName(), descriptor.getName()));
         attributes.put(descriptor.getName(), attributeProperties);
       }
       resultTypes.put(metacardType.getName(), attributes);
@@ -470,6 +480,8 @@ public class EndpointUtil implements EndpointUtility {
       String type) {
     Map<String, Object> attributes =
         (Map) resultTypes.getOrDefault(type, new HashMap<String, Object>());
+    attributeProperties.put(
+        REQUIRED_KEY, requiredAttributesRegistry.isRequired(type, attribute.attribute()));
     attributes.put(attribute.attribute(), attributeProperties);
     resultTypes.put(type, attributes);
   }

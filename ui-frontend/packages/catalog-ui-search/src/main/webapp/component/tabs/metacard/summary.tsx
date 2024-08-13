@@ -168,12 +168,25 @@ export const Editor = ({
       : [lazyResult.plain.metacard.properties[attr]]
   )
   const [dirtyIndex, setDirtyIndex] = React.useState(-1)
-  const { getAlias, isMulti, getType, getEnum } = useMetacardDefinitions()
+  const { getAlias, isMulti, getType, getEnum, getRequired } =
+    useMetacardDefinitions()
   const label = getAlias(attr)
   const isMultiValued = isMulti(attr)
   const attrType = getType(attr)
   const enumForAttr = getEnum(attr)
   const addSnack = useSnack()
+  const isRequired = getRequired(lazyResult.plain.metacardType, attr)
+
+  function getErrorMessage() {
+    if (isRequired || attr === 'title') {
+      const invalidField = !values || values.length < 1 || !values[0]
+      return invalidField ? label + ' is required.' : ''
+    }
+    return ''
+  }
+
+  const errmsg = getErrorMessage()
+
   return (
     <>
       {goBack && (
@@ -191,163 +204,167 @@ export const Editor = ({
       </div>
       <Divider />
       <DialogContent style={{ minHeight: '30em', minWidth: '60vh' }}>
-        {values.map((val: any, index: number) => {
-          return (
-            <Grid container direction="row" className="my-2">
-              {index !== 0 ? <Divider style={{ margin: '5px 0px' }} /> : null}
-              <Grid item md={11}>
-                {(() => {
-                  if (enumForAttr.length > 0) {
-                    return (
-                      <Autocomplete
-                        disabled={mode === 'saving'}
-                        value={val}
-                        onChange={(_e: any, newValue: string) => {
-                          values[index] = newValue
-                          setValues([...values])
-                        }}
-                        fullWidth
-                        disableClearable
-                        size="small"
-                        options={enumForAttr}
-                        renderInput={(params) => (
-                          <TextField {...params} variant="outlined" />
-                        )}
-                      />
-                    )
-                  }
-                  switch (attrType) {
-                    case 'DATE':
+        <div key={attr} className="relative">
+          {values.map((val: any, index: number) => {
+            return (
+              <Grid container direction="row" className="my-2">
+                {index !== 0 ? <Divider style={{ margin: '5px 0px' }} /> : null}
+                <Grid item md={11}>
+                  {(() => {
+                    if (enumForAttr.length > 0) {
                       return (
-                        <DateTimePicker
+                        <Autocomplete
+                          disabled={mode === 'saving'}
                           value={val}
-                          onChange={(value) => {
-                            values[index] = value
+                          onChange={(_e: any, newValue: string) => {
+                            values[index] = newValue
                             setValues([...values])
                           }}
-                          TextFieldProps={{
-                            disabled: mode !== Mode.Normal,
-                            label: label,
-                            variant: 'outlined',
-                          }}
-                          BPDateProps={{
-                            disabled: mode !== Mode.Normal,
-                          }}
-                        />
-                      )
-                    case 'BINARY':
-                      return (
-                        <ThumbnailInput
-                          disabled={mode !== Mode.Normal}
-                          value={val}
-                          onChange={(update) => {
-                            values[index] = update
-                            setValues([...values])
-                          }}
-                        />
-                      )
-                    case 'BOOLEAN':
-                      return (
-                        <Checkbox
-                          disabled={mode !== Mode.Normal}
-                          checked={val}
-                          onChange={(e) => {
-                            values[index] = e.target.checked
-                            setValues([...values])
-                          }}
-                          color="primary"
-                        />
-                      )
-                    case 'LONG':
-                    case 'DOUBLE':
-                    case 'FLOAT':
-                    case 'INTEGER':
-                    case 'SHORT':
-                      return (
-                        <TextField
-                          disabled={mode !== Mode.Normal}
-                          value={val}
-                          onChange={(e) => {
-                            values[index] = e.target.value
-                            setValues([...values])
-                          }}
-                          type="number"
                           fullWidth
+                          disableClearable
+                          size="small"
+                          options={enumForAttr}
+                          renderInput={(params) => (
+                            <TextField {...params} variant="outlined" />
+                          )}
                         />
                       )
-                    case 'GEOMETRY':
-                      return (
-                        <LocationInputReact
-                          onChange={(location: any) => {
-                            if (location === null || location === 'INVALID') {
-                              setMode(Mode.BadInput)
-                            } else {
-                              setMode(Mode.Normal)
-                            }
-                            values[index] = location
-                            setValues([...values])
-                          }}
-                          isStateDirty={dirtyIndex === index}
-                          resetIsStateDirty={() => setDirtyIndex(-1)}
-                          value={val}
-                        />
-                      )
-                    default:
-                      return (
-                        <TextField
-                          disabled={mode !== Mode.Normal}
-                          value={val}
-                          onChange={(e: any) => {
-                            values[index] = e.target.value
-                            setValues([...values])
-                          }}
-                          style={{ whiteSpace: 'pre-line', flexGrow: 50 }}
-                          fullWidth
-                          multiline={true}
-                          maxRows={1000}
-                        />
-                      )
-                  }
-                })()}
-              </Grid>
-              {isMultiValued ? (
-                <Grid item md={1}>
-                  <Button
-                    disabled={mode === Mode.Saving}
-                    onClick={() => {
-                      values.splice(index, 1)
-                      setDirtyIndex(index)
-                      setValues([...values])
-                    }}
-                  >
-                    <DeleteIcon />
-                  </Button>
+                    }
+                    switch (attrType) {
+                      case 'DATE':
+                        return (
+                          <DateTimePicker
+                            value={val}
+                            onChange={(value) => {
+                              values[index] = value
+                              setValues([...values])
+                            }}
+                            TextFieldProps={{
+                              disabled: mode !== Mode.Normal,
+                              label: label,
+                              variant: 'outlined',
+                            }}
+                            BPDateProps={{
+                              disabled: mode !== Mode.Normal,
+                            }}
+                          />
+                        )
+                      case 'BINARY':
+                        return (
+                          <ThumbnailInput
+                            disabled={mode !== Mode.Normal}
+                            value={val}
+                            onChange={(update) => {
+                              values[index] = update
+                              setValues([...values])
+                            }}
+                          />
+                        )
+                      case 'BOOLEAN':
+                        return (
+                          <Checkbox
+                            disabled={mode !== Mode.Normal}
+                            checked={val}
+                            onChange={(e) => {
+                              values[index] = e.target.checked
+                              setValues([...values])
+                            }}
+                            color="primary"
+                          />
+                        )
+                      case 'LONG':
+                      case 'DOUBLE':
+                      case 'FLOAT':
+                      case 'INTEGER':
+                      case 'SHORT':
+                        return (
+                          <TextField
+                            disabled={mode !== Mode.Normal}
+                            value={val}
+                            onChange={(e) => {
+                              values[index] = e.target.value
+                              setValues([...values])
+                            }}
+                            type="number"
+                            fullWidth
+                          />
+                        )
+                      case 'GEOMETRY':
+                        return (
+                          <LocationInputReact
+                            onChange={(location: any) => {
+                              if (location === null || location === 'INVALID') {
+                                setMode(Mode.BadInput)
+                              } else {
+                                setMode(Mode.Normal)
+                              }
+                              values[index] = location
+                              setValues([...values])
+                            }}
+                            isStateDirty={dirtyIndex === index}
+                            resetIsStateDirty={() => setDirtyIndex(-1)}
+                            value={val}
+                          />
+                        )
+                      default:
+                        return (
+                          <TextField
+                            disabled={mode !== Mode.Normal}
+                            value={val}
+                            onChange={(e: any) => {
+                              values[index] = e.target.value
+                              setValues([...values])
+                            }}
+                            style={{ whiteSpace: 'pre-line', flexGrow: 50 }}
+                            fullWidth
+                            multiline={true}
+                            maxRows={1000}
+                            error={errmsg.length != 0}
+                            helperText={errmsg}
+                          />
+                        )
+                    }
+                  })()}
                 </Grid>
-              ) : null}
-            </Grid>
-          )
-        })}
-        {isMultiValued && (
-          <Button
-            disabled={mode === Mode.Saving}
-            variant="text"
-            color="primary"
-            onClick={() => {
-              let defaultValue = ''
-              switch (attrType) {
-                case 'DATE':
-                  defaultValue = new Date().toISOString()
-                  break
-              }
-              setValues([...values, defaultValue])
-            }}
-          >
-            <Box color="text.primary">
-              <AddIcon />
-            </Box>
-            Add New Value
-          </Button>
-        )}
+                {isMultiValued ? (
+                  <Grid item md={1}>
+                    <Button
+                      disabled={mode === Mode.Saving}
+                      onClick={() => {
+                        values.splice(index, 1)
+                        setDirtyIndex(index)
+                        setValues([...values])
+                      }}
+                    >
+                      <DeleteIcon />
+                    </Button>
+                  </Grid>
+                ) : null}
+              </Grid>
+            )
+          })}
+          {isMultiValued && (
+            <Button
+              disabled={mode === Mode.Saving}
+              variant="text"
+              color="primary"
+              onClick={() => {
+                let defaultValue = ''
+                switch (attrType) {
+                  case 'DATE':
+                    defaultValue = new Date().toISOString()
+                    break
+                }
+                setValues([...values, defaultValue])
+              }}
+            >
+              <Box color="text.primary">
+                <AddIcon />
+              </Box>
+              Add New Value
+            </Button>
+          )}
+        </div>
       </DialogContent>
       <Divider />
       <DialogActions>
@@ -365,6 +382,13 @@ export const Editor = ({
           variant="contained"
           color="primary"
           onClick={() => {
+            if (errmsg.length != 0) {
+              addSnack('This attribute is required.', {
+                status: 'error',
+              })
+              return
+            }
+
             setMode(Mode.Saving)
             let transformedValues
             if (isMultiValued && values && values.length > 1) {
