@@ -71,6 +71,7 @@ export type QueryOptions = {
   }) => number
   limitToDeleted?: boolean
   limitToHistoric?: boolean
+  additionalOptions?: any
 }
 
 export const DEFAULT_QUERY_OPTIONS: Readonly<Required<QueryOptions>> = {
@@ -88,6 +89,7 @@ export const DEFAULT_QUERY_OPTIONS: Readonly<Required<QueryOptions>> = {
   },
   limitToHistoric: false,
   limitToDeleted: false,
+  additionalOptions: undefined,
 }
 
 export const Query = (
@@ -139,6 +141,7 @@ export const DEFAULT_USER_QUERY_OPTIONS: Readonly<Required<QueryOptions>> = {
   },
   limitToDeleted: false,
   limitToHistoric: false,
+  additionalOptions: undefined,
 }
 
 /**
