@@ -14,9 +14,9 @@
  **/
 import * as React from 'react'
 
-import TextField from '@mui/material/TextField'
 import { ValueTypes } from '../filter-builder/filter.structure'
 import { EnterKeySubmitProps } from '../custom-events/enter-key-submit'
+import { NumberField } from './number'
 
 type FloatFieldProps = {
   value: ValueTypes['float']
@@ -36,15 +36,12 @@ export const FloatField = ({ value, onChange }: FloatFieldProps) => {
     validateShape({ value, onChange })
   }, [])
   return (
-    <TextField
-      fullWidth
-      variant="outlined"
-      value={value}
-      type="number"
+    <NumberField
+      value={value.toString()}
+      type="float"
       onChange={(e) => {
-        onChange(parseFloat(e.target.value))
+        onChange(e)
       }}
-      size="small"
       {...EnterKeySubmitProps}
     />
   )

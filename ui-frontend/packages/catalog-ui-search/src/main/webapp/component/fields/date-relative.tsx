@@ -26,6 +26,10 @@ const isInvalid = ({ value }: Props) => {
 }
 
 export const DateRelativeField = ({ value, onChange }: Props) => {
+  const validValue = {
+    ...defaultValue,
+    ...value,
+  }
   React.useEffect(() => {
     validateShape({ value, onChange })
   }, [])
@@ -41,16 +45,13 @@ export const DateRelativeField = ({ value, onChange }: Props) => {
           onChange={(val) => {
             if (onChange)
               onChange({
-                ...defaultValue,
-                ...value,
-                last: val,
+                ...validValue,
+                last: val.toString(),
               })
           }}
-          {...(value
-            ? {
-                value: value.last,
-              }
-            : {})}
+          validation={(val) => val > 0}
+          validationText="Must be greater than 0, using previous value of "
+          value={validValue.last}
         />
       </Grid>
       <Grid item xs={8} className="pl-2">
@@ -61,13 +62,12 @@ export const DateRelativeField = ({ value, onChange }: Props) => {
           onChange={(e) => {
             if (onChange)
               onChange({
-                ...defaultValue,
-                ...value,
+                ...validValue,
                 unit: e.target.value as ValueTypes['relative']['unit'],
               })
           }}
           size="small"
-          value={value.unit}
+          value={validValue.unit}
         >
           <MenuItem value="s">Seconds</MenuItem>
           <MenuItem value="m">Minutes</MenuItem>

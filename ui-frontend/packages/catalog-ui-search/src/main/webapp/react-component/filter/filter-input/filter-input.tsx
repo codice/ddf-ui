@@ -13,7 +13,7 @@
  *
  **/
 import React from 'react'
-import { getAttributeType } from '../filterHelper'
+import { getAttributeType as defaultGetAttributeType } from '../filterHelper'
 import LocationInput from './filter-location-input'
 
 import { DateField } from '../../../component/fields/date'
@@ -44,9 +44,15 @@ export type Props = {
   errorListener?: (validationResults: {
     [key: string]: ValidationResult | undefined
   }) => void
+  getAttributeType?: typeof defaultGetAttributeType
 }
 
-const FilterInput = ({ filter, setFilter, errorListener }: Props) => {
+const FilterInput = ({
+  filter,
+  setFilter,
+  errorListener,
+  getAttributeType = defaultGetAttributeType,
+}: Props) => {
   const type = getAttributeType(filter.property)
   const MetacardDefinitions = useMetacardDefinitions()
   const { value } = filter

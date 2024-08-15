@@ -59,6 +59,10 @@ const validateDate = (
 }
 
 export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
+  const validValue = {
+    ...defaultValue(),
+    ...value,
+  }
   const dateRef = React.useRef(value.date)
   const blueprintDateRef = React.useRef<DateInput>(null)
 
@@ -70,8 +74,7 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
       DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(shiftedDate)
     dateRef.current = unshiftedDate.toISOString()
     onChange({
-      ...defaultValue(),
-      ...value,
+      ...validValue,
       date: unshiftedDate.toISOString(),
     })
   })
@@ -97,8 +100,7 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
           onChange={DateHelpers.Blueprint.DateProps.generateOnChange((date) => {
             dateRef.current = date
             onChange({
-              ...defaultValue(),
-              ...value,
+              ...validValue,
               date,
             })
           })}
@@ -118,13 +120,7 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
               }, 0)
             },
           }}
-          {...(value.date
-            ? {
-                value: DateHelpers.Blueprint.DateProps.generateValue(
-                  value.date
-                ),
-              }
-            : {})}
+          value={DateHelpers.Blueprint.DateProps.generateValue(validValue.date)}
         />
       </Grid>
       <Grid item className="w-full pb-2">
@@ -137,20 +133,16 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
             onChange={(val) => {
               if (onChange)
                 onChange({
-                  ...defaultValue(),
-                  ...value,
+                  ...validValue,
                   buffer: {
-                    ...defaultValue().buffer,
-                    ...value.buffer,
-                    amount: val,
+                    ...validValue.buffer,
+                    amount: val.toString(),
                   },
                 })
             }}
-            {...(value.buffer
-              ? {
-                  value: value.buffer.amount,
-                }
-              : {})}
+            validation={(val) => val > 0}
+            validationText="Must be greater than 0, using previous value of "
+            value={validValue.buffer.amount}
           />
         </Grid>
         <Grid item xs={8} className="pl-2">
@@ -161,22 +153,16 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
             onChange={(e) => {
               if (onChange)
                 onChange({
-                  ...defaultValue(),
-                  ...value,
+                  ...validValue,
                   buffer: {
-                    ...defaultValue().buffer,
-                    ...value.buffer,
+                    ...validValue.buffer,
                     unit: e.target
                       .value as ValueTypes['around']['buffer']['unit'],
                   },
                 })
             }}
             size="small"
-            {...(value.buffer
-              ? {
-                  value: value.buffer.unit,
-                }
-              : { value: 'd' })}
+            value={validValue.buffer.unit}
           >
             <MenuItem value="s">Seconds</MenuItem>
             <MenuItem value="m">Minutes</MenuItem>
@@ -191,12 +177,11 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
       <TextField
         variant="outlined"
         select
-        value={value.direction || 'both'}
+        value={validValue.direction}
         onChange={(e) => {
           if (onChange)
             onChange({
-              ...defaultValue(),
-              ...value,
+              ...validValue,
               direction: e.target.value as ValueTypes['around']['direction'],
             })
         }}
