@@ -14,9 +14,9 @@
  **/
 import * as React from 'react'
 
-import TextField from '@mui/material/TextField'
 import { ValueTypes } from '../filter-builder/filter.structure'
 import { EnterKeySubmitProps } from '../custom-events/enter-key-submit'
+import { NumberField } from './number'
 
 type IntegerFieldProps = {
   value: ValueTypes['integer']
@@ -36,14 +36,11 @@ export const IntegerField = ({ value, onChange }: IntegerFieldProps) => {
     validateShape({ value, onChange })
   }, [])
   return (
-    <TextField
-      fullWidth
-      variant="outlined"
-      size="small"
-      placeholder="Use * for wildcard."
-      value={value}
+    <NumberField
+      type="integer"
+      value={value.toString()}
       onChange={(e) => {
-        onChange(parseInt(e.target.value))
+        onChange(e)
       }}
       {...EnterKeySubmitProps}
     />

@@ -13,13 +13,13 @@
  *
  **/
 import React, { useEffect } from 'react'
-import { getComparators } from './comparatorUtils'
 import MenuItem from '@mui/material/MenuItem'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import {
   FilterClass,
   isBasicDatatypeClass,
 } from '../../../component/filter-builder/filter.structure'
+import { useComparatorsForAttribute } from './comparatorUtils'
 
 type Props = {
   filter: FilterClass
@@ -28,8 +28,8 @@ type Props = {
 }
 
 const FilterComparator = ({ filter, setFilter, textFieldProps }: Props) => {
+  const comparators = useComparatorsForAttribute(filter.property)
   useEffect(() => {
-    const comparators = getComparators(filter.property)
     if (
       !comparators.map((comparator) => comparator.value).includes(filter.type)
     ) {
@@ -40,13 +40,12 @@ const FilterComparator = ({ filter, setFilter, textFieldProps }: Props) => {
         })
       )
     }
-  }, [filter, setFilter])
+  }, [filter, setFilter, comparators])
 
   if (isBasicDatatypeClass(filter)) {
     return null
   }
 
-  const comparators = getComparators(filter.property)
   return (
     <TextField
       data-id="filter-comparator-select"

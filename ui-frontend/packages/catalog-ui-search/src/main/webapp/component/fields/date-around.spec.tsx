@@ -113,10 +113,11 @@ describe('verify date around field works', () => {
     verifyDateRender('12', 'minute', data.date1.userFormat12.minute)
   )
   it('calls onChange with updated value when precision changes', () => {
+    let updatedDate = data.date1.userFormatISO.millisecond
     wrapper = mount(
       <DateAroundField
         value={{
-          date: data.date1.userFormatISO.millisecond,
+          date: updatedDate,
           buffer: {
             amount: '1',
             unit: 'd',
@@ -124,7 +125,7 @@ describe('verify date around field works', () => {
           direction: 'both',
         }}
         onChange={(updatedValue) => {
-          expect(updatedValue.date).to.equal(data.date1.utcISOMinutes)
+          updatedDate = updatedValue.date
         }}
       />
     )
@@ -132,5 +133,8 @@ describe('verify date around field works', () => {
       .get('user')
       .get('preferences')
       .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['minute'])
+    setTimeout(() => {
+      expect(updatedDate).to.equal(data.date1.utcISOMinutes)
+    }, 100)
   })
 })

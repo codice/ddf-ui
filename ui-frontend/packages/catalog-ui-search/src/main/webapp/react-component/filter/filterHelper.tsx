@@ -17,6 +17,7 @@ import { StartupDataStore } from '../../js/model/Startup/startup'
 import {
   AttributeDefinitionType,
   AttributeMapType,
+  AttributeTypes,
 } from '../../js/model/Startup/startup.types'
 export type Attribute = {
   label: string
@@ -91,7 +92,8 @@ export const getFilteredAttributeList = (group?: string): Attribute[] => {
     )
     .map((attr) => toAttribute(attr, group))
 }
-export const getAttributeType = (attribute: string): string => {
+
+export const getAttributeType = (attribute: string): AttributeTypes => {
   const type =
     StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute]?.type
   if (type === 'GEOMETRY') return 'LOCATION'

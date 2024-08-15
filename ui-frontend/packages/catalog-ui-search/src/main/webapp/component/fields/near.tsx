@@ -14,14 +14,13 @@
  **/
 import * as React from 'react'
 
-import TextField from '@mui/material/TextField'
 import Grid from '@mui/material/Grid'
 import { ValueTypes } from '../filter-builder/filter.structure'
 import { CustomInputOrDefault } from '../../react-component/filter/filter-input/customInputOrDefault'
-import { EnterKeySubmitProps } from '../custom-events/enter-key-submit'
+import { NumberField } from './number'
 
 type NearFieldProps = {
-  value: ValueTypes['proximity']
+  value: Partial<ValueTypes['proximity']>
   onChange: (val: ValueTypes['proximity']) => void
 }
 
@@ -42,6 +41,10 @@ const validateShape = ({ value, onChange }: NearFieldProps) => {
 }
 
 export const NearField = ({ value, onChange }: NearFieldProps) => {
+  const validValue = {
+    ...defaultValue,
+    ...value,
+  }
   React.useEffect(() => {
     validateShape({ value, onChange })
   }, [])
@@ -55,10 +58,10 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
     >
       <Grid item className="w-full pb-2">
         <CustomInputOrDefault
-          value={value.second}
+          value={validValue.second}
           onChange={(val: any) => {
             onChange({
-              ...value,
+              ...validValue,
               second: val,
             })
           }}
@@ -74,19 +77,17 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
         within
       </Grid>
       <Grid item className="w-full pb-2">
-        <TextField
-          fullWidth
-          type="number"
-          variant="outlined"
-          value={value.distance}
-          onChange={(e) => {
+        <NumberField
+          type="integer"
+          value={validValue.distance.toString()}
+          onChange={(val) => {
             onChange({
-              ...value,
-              distance: Math.max(1, parseInt(e.target.value) || 0),
+              ...validValue,
+              distance: val,
             })
           }}
-          size="small"
-          {...EnterKeySubmitProps}
+          validation={(val) => val > 0}
+          validationText="Must be greater than 0, using previous value of "
         />
       </Grid>
       <Grid item className="w-full pb-2 pl-2">
@@ -94,10 +95,10 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
       </Grid>
       <Grid item className="w-full">
         <CustomInputOrDefault
-          value={value.first}
+          value={validValue.first}
           onChange={(val: any) => {
             onChange({
-              ...value,
+              ...validValue,
               first: val,
             })
           }}

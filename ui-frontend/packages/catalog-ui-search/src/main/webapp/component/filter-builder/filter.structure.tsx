@@ -67,7 +67,7 @@ export const serialize = {
     //Weeks is not a valid unit, so convert this to days
     if (unit === 'w') {
       let convertedUnit = 'd'
-      let convertedLast = (parseInt(last) * 7).toString()
+      let convertedLast = (parseFloat(last) * 7).toString()
       return `RELATIVE(${'P' + convertedLast + convertedUnit.toUpperCase()})`
     }
     const prefix = unit === 's' || unit === 'm' || unit === 'h' ? 'PT' : 'P'
@@ -263,6 +263,8 @@ export type PointRadiusLocation = {
   locationType?: 'dd'
 }
 
+export type ValueType = string | boolean | null | ValuesType<ValueTypes>
+
 export class FilterClass extends SpreadOperatorProtectedClass {
   type:
     | 'BEFORE'
@@ -286,7 +288,7 @@ export class FilterClass extends SpreadOperatorProtectedClass {
     | 'AROUND' // This isn't valid cql, but something we support
     | 'BOOLEAN_TEXT_SEARCH' // This isn't valid cql, but something we support
   readonly property: string
-  readonly value: string | boolean | null | ValuesType<ValueTypes>
+  readonly value: ValueType
   readonly negated: boolean | undefined
   readonly id: string
   constructor({
