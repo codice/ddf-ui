@@ -128,27 +128,22 @@ class ResultsExport extends React.Component<Props, State> {
 
   getExportCql = () => {
     const results = this.props.results
-    const resultIds = results.map((result: Result) => result.id)
-
     let cql
     if (results.some((result: Result) => result.isDeleted)) {
-      if (results.every((result: Result) => result.isDeleted)) {
-        const idsCql = getResultSetCql(resultIds)
-        cql = limitCqlToDeleted(idsCql)
-      } else {
-        const deletedIds = results
-          .filter((result: Result) => result.isDeleted)
-          .map((result: Result) => result.id)
+      const validIds: string[] = []
+      const deletedIds: string[] = []
 
-        const validIds = resultIds.filter(
-          (id: string) => !deletedIds.includes(id)
-        )
+      results.forEach((result: Result) =>
+        result.isDeleted ? deletedIds.push(result.id) : validIds.push(result.id)
+      )
+      cql = limitCqlToDeleted(getResultSetCql(deletedIds))
+
+      if (validIds.length > 0) {
         const validIdsCql = getResultSetCql(validIds)
-        const deletedIdsCql = getResultSetCql(deletedIds)
-        return joinWithOr([validIdsCql, limitCqlToDeleted(deletedIdsCql)])
+        cql = joinWithOr([validIdsCql, cql])
       }
     } else {
-      cql = getResultSetCql(resultIds)
+      cql = getResultSetCql(results.map((result: Result) => result.id))
     }
     return cql
   }
