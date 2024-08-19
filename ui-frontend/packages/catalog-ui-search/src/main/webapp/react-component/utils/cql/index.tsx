@@ -12,4 +12,4 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-export { getResultSetCql } from './cql'
+export { getResultSetCql, limitCqlToDeleted, joinWithOr } from './cql'

@@ -22,7 +22,7 @@ import {
   Transformer,
   ExportFormat,
 } from '../utils/export'
-import { getResultSetCql } from '../utils/cql'
+import { getResultSetCql, joinWithOr, limitCqlToDeleted } from '../utils/cql'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
@@ -30,6 +30,7 @@ import contentDisposition from 'content-disposition'
 import { StartupDataStore } from '../../js/model/Startup/startup'
 import { OverridableSaveFile } from '../utils/save-file/save-file'
 import { AddSnack } from '../../component/snack/snack.provider'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
 type Result = {
   id: string
@@ -125,6 +126,31 @@ class ResultsExport extends React.Component<Props, State> {
     return undefined
   }
 
+  getExportCql = () => {
+    const resultIds = this.props.results.map((result: Result) => result.id)
+    const queryResults = Object.values(this.props.lazyQueryResults.results)
+
+    let cql
+    if (queryResults.some((result: LazyQueryResult) => result.isDeleted())) {
+      const deletedIds = queryResults
+        .filter((result: LazyQueryResult) => result.isDeleted())
+        .map((result: LazyQueryResult) => result.plain.id)
+
+      cql = limitCqlToDeleted(getResultSetCql(deletedIds))
+
+      if (deletedIds.length < resultIds.length) {
+        const validIds = resultIds.filter(
+          (id: string) => !deletedIds.includes(id)
+        )
+        const validItemsCql = getResultSetCql(validIds)
+        cql = joinWithOr([validItemsCql, cql])
+      }
+    } else {
+      cql = getResultSetCql(resultIds)
+    }
+    return cql
+  }
+
   onExportClick = async (addSnack: AddSnack) => {
     const uriEncodedTransformerId = this.getSelectedExportFormatId()
 
@@ -139,9 +165,8 @@ class ResultsExport extends React.Component<Props, State> {
 
       let response = null
       const count = this.props.results.length
-      const cql = getResultSetCql(
-        this.props.results.map((result: Result) => result.id)
-      )
+      const cql = this.getExportCql()
+
       const srcs = Array.from(this.getResultSources())
       const searches = [
         {
