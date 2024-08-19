@@ -143,7 +143,6 @@ class ResultsExport extends React.Component<Props, State> {
         const validIds = resultIds.filter(
           (id: string) => !deletedIds.includes(id)
         )
-
         const validIdsCql = getResultSetCql(validIds)
         const deletedIdsCql = getResultSetCql(deletedIds)
         return joinWithOr([validIdsCql, limitCqlToDeleted(deletedIdsCql)])
