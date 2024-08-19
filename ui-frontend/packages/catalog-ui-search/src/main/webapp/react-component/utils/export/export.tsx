@@ -77,6 +77,7 @@ export const getExportResult = (result: LazyQueryResult) => {
     id: getResultId(result),
     source: getResultSourceId(result),
     attributes: Object.keys(result.plain.metacard.properties),
+    isDeleted: result.isDeleted(),
   }
 }
 

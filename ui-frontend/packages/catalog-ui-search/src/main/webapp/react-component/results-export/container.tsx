@@ -30,12 +30,12 @@ import contentDisposition from 'content-disposition'
 import { StartupDataStore } from '../../js/model/Startup/startup'
 import { OverridableSaveFile } from '../utils/save-file/save-file'
 import { AddSnack } from '../../component/snack/snack.provider'
-import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
 type Result = {
   id: string
   source: string
   attributes: string[]
+  isDeleted: boolean
 }
 
 type Props = {
@@ -127,23 +127,26 @@ class ResultsExport extends React.Component<Props, State> {
   }
 
   getExportCql = () => {
-    const resultIds = this.props.results.map((result: Result) => result.id)
-    const queryResults = Object.values(this.props.lazyQueryResults.results)
+    const results = this.props.results
+    const resultIds = results.map((result: Result) => result.id)
 
     let cql
-    if (queryResults.some((result: LazyQueryResult) => result.isDeleted())) {
-      const deletedIds = queryResults
-        .filter((result: LazyQueryResult) => result.isDeleted())
-        .map((result: LazyQueryResult) => result.plain.id)
+    if (results.some((result: Result) => result.isDeleted)) {
+      if (results.every((result: Result) => result.isDeleted)) {
+        const idsCql = getResultSetCql(resultIds)
+        cql = limitCqlToDeleted(idsCql)
+      } else {
+        const deletedIds = results
+          .filter((result: Result) => result.isDeleted)
+          .map((result: Result) => result.id)
 
-      cql = limitCqlToDeleted(getResultSetCql(deletedIds))
-
-      if (deletedIds.length < resultIds.length) {
         const validIds = resultIds.filter(
           (id: string) => !deletedIds.includes(id)
         )
-        const validItemsCql = getResultSetCql(validIds)
-        cql = joinWithOr([validItemsCql, cql])
+
+        const validIdsCql = getResultSetCql(validIds)
+        const deletedIdsCql = getResultSetCql(deletedIds)
+        return joinWithOr([validIdsCql, limitCqlToDeleted(deletedIdsCql)])
       }
     } else {
       cql = getResultSetCql(resultIds)
