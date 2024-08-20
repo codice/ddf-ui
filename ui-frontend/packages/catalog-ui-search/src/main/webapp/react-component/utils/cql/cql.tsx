@@ -14,10 +14,5 @@
  **/
 export const getResultSetCql = (ids: string[]) => {
   const queries = ids.map((id) => `(("id" = '${id}'))`)
-  return `(${queries.join(' OR ')})`
-}
-
-export const limitCqlToDeleted = (cql: string) => {
-  const deletedCql = `(("metacard-tags" ILIKE 'deleted') AND ("metacard.deleted.tags" ILIKE 'resource'))`
-  return `(${cql} AND ${deletedCql})`
+  return `((${queries.join(' OR ')}) AND ("metacard-tags" ILIKE '%'))`
 }
