@@ -22,7 +22,7 @@ import {
   Transformer,
   ExportFormat,
 } from '../utils/export'
-import { getResultSetCql, joinWithOr, limitCqlToDeleted } from '../utils/cql'
+import { getResultSetCql } from '../utils/cql'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
@@ -126,28 +126,6 @@ class ResultsExport extends React.Component<Props, State> {
     return undefined
   }
 
-  getExportCql = () => {
-    const results = this.props.results
-    let cql
-    if (results.some((result: Result) => result.isDeleted)) {
-      const validIds: string[] = []
-      const deletedIds: string[] = []
-
-      results.forEach((result: Result) =>
-        result.isDeleted ? deletedIds.push(result.id) : validIds.push(result.id)
-      )
-      cql = limitCqlToDeleted(getResultSetCql(deletedIds))
-
-      if (validIds.length > 0) {
-        const validIdsCql = getResultSetCql(validIds)
-        cql = joinWithOr([validIdsCql, cql])
-      }
-    } else {
-      cql = getResultSetCql(results.map((result: Result) => result.id))
-    }
-    return cql
-  }
-
   onExportClick = async (addSnack: AddSnack) => {
     const uriEncodedTransformerId = this.getSelectedExportFormatId()
 
@@ -162,8 +140,9 @@ class ResultsExport extends React.Component<Props, State> {
 
       let response = null
       const count = this.props.results.length
-      const cql = this.getExportCql()
-
+      const cql = getResultSetCql(
+        this.props.results.map((result: Result) => result.id)
+      )
       const srcs = Array.from(this.getResultSources())
       const searches = [
         {
