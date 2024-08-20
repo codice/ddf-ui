@@ -180,7 +180,7 @@ export const MetacardOverwrite = ({
   overwriteUrl,
 }: {
   title: string
-  lazyResult: LazyQueryResult,
+  lazyResult: LazyQueryResult
   overwriteUrl?: string
 }) => {
   const dialogContext = useDialog()
@@ -222,7 +222,9 @@ export const MetacardOverwrite = ({
       setDropzone(
         new Dropzone(dropzoneElement, {
           paramName: 'parse.resource', //required to parse multipart body
-          url: (overwriteUrl ? overwriteUrl : './internal/catalog/') + lazyResult.plain.id,
+          url:
+            (overwriteUrl ? overwriteUrl : './internal/catalog/') +
+            lazyResult.plain.id,
           maxFilesize: 5000000, //MB
           method: 'put',
           sending(_file: any, _xhr: any, formData: any) {
