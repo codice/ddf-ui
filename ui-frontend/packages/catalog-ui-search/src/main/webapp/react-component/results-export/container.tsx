@@ -35,7 +35,6 @@ type Result = {
   id: string
   source: string
   attributes: string[]
-  isDeleted: boolean
 }
 
 type Props = {
