@@ -13,9 +13,11 @@
  */
 package org.codice.ddf.catalog.audit.application;
 
-import io.javalin.Handler;
 import io.javalin.Javalin;
-import io.javalin.core.JavalinServlet;
+import io.javalin.http.Handler;
+import io.javalin.http.JavalinServlet;
+import java.io.IOException;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -29,19 +31,22 @@ import org.jetbrains.annotations.NotNull;
 )
 public class AuditApplication extends HttpServlet {
 
-  static final String LOOKUP_PATH = "search/catalog/internal/audit";
+  static final String LOOKUP_PATH = "/search/catalog/internal/audit";
 
-  private final JavalinServlet javalinServlet = JavalinUtils.createServlet(LOOKUP_PATH);
+  private final Javalin javalin = JavalinUtils.create(LOOKUP_PATH);
+
+  private final JavalinServlet servlet;
 
   public AuditApplication(Handler auditHandler, Handler simpleAuditHandler) {
-    final Javalin app = javalinServlet.getJavalin();
-    JavalinUtils.initializeStandardExceptionHandlers(app);
-    app.post("/", auditHandler);
-    app.post("/simple", simpleAuditHandler);
+    JavalinUtils.initializeStandardExceptionHandlers(javalin);
+    javalin.post(LOOKUP_PATH + "/", auditHandler);
+    javalin.post(LOOKUP_PATH + "/simple", simpleAuditHandler);
+    servlet = javalin.servlet();
   }
 
   @Override
-  public void service(@NotNull HttpServletRequest req, @NotNull HttpServletResponse resp) {
-    javalinServlet.service(req, resp);
+  public void service(@NotNull HttpServletRequest req, @NotNull HttpServletResponse resp)
+      throws ServletException, IOException {
+    servlet.service(req, resp);
   }
 }
