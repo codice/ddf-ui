@@ -31,10 +31,7 @@ type Props = {
   BPDateRangeProps?: Partial<IDateRangeInputProps>
 }
 
-const validateDates = (
-  { value, onChange }: Props,
-  valueRef: React.MutableRefObject<{ start: string; end: string }>
-) => {
+const validateDates = ({ value, onChange }: Props) => {
   if (
     value === undefined ||
     value.start === undefined ||
@@ -48,7 +45,6 @@ const validateDates = (
       start: start.toISOString(),
       end: end.toISOString(),
     }
-    valueRef.current = newValue
     onChange(newValue)
   }
 }
@@ -58,12 +54,9 @@ export const DateRangeField = ({
   onChange,
   BPDateRangeProps,
 }: Props) => {
-  const valueRef = React.useRef(value)
-
   useTimePrefs(() => {
-    const shiftedDates = DateHelpers.Blueprint.DateRangeProps.generateValue(
-      valueRef.current
-    )
+    const shiftedDates =
+      DateHelpers.Blueprint.DateRangeProps.generateValue(value)
     onChange({
       start: DateHelpers.Blueprint.converters
         .UntimeshiftFromDatePicker(shiftedDates![0]!)
@@ -74,7 +67,7 @@ export const DateRangeField = ({
     })
   })
   React.useEffect(() => {
-    validateDates({ value, onChange, BPDateRangeProps }, valueRef)
+    validateDates({ value, onChange, BPDateRangeProps })
   }, [])
   return (
     <DateRangeInput
@@ -99,7 +92,6 @@ export const DateRangeField = ({
       formatDate={DateHelpers.Blueprint.commonProps.formatDate}
       onChange={DateHelpers.Blueprint.DateRangeProps.generateOnChange(
         (value) => {
-          valueRef.current = value
           onChange(value)
         }
       )}

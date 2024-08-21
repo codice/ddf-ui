@@ -22,7 +22,7 @@ const useTimePrefs = (action?: () => void) => {
         'change:dateTimeFormat change:timeZone',
         callback
       )
-  }, [])
+  }, [action])
 }
 
 export default useTimePrefs

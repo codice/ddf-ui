@@ -40,16 +40,12 @@ type DateFieldProps = {
   isNullable?: boolean
 }
 
-const validateDate = (
-  { value, onChange, isNullable }: DateFieldProps,
-  valueRef: React.MutableRefObject<string>
-) => {
+const validateDate = ({ value, onChange, isNullable }: DateFieldProps) => {
   if (value === null && isNullable) return
 
   const date = moment(value, ISO_8601_FORMAT_ZONED)
   if (!date.isValid()) {
     const newDate = DateHelpers.General.withPrecision(new Date())
-    valueRef.current = newDate.toISOString()
     onChange(newDate.toISOString())
   }
 }
@@ -60,19 +56,16 @@ export const DateField = ({
   BPDateProps,
   isNullable,
 }: DateFieldProps) => {
-  const valueRef = useRef(value)
   const blueprintDateRef = useRef<DateInput>(null)
 
   useTimePrefs(() => {
-    const shiftedDate = DateHelpers.Blueprint.DateProps.generateValue(
-      valueRef.current
-    )
+    const shiftedDate = DateHelpers.Blueprint.DateProps.generateValue(value)
     const unshiftedDate =
       DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(shiftedDate)
     onChange(unshiftedDate.toISOString())
   })
   React.useEffect(() => {
-    validateDate({ onChange, value, isNullable }, valueRef)
+    validateDate({ onChange, value, isNullable })
   }, [])
 
   return (
@@ -86,7 +79,6 @@ export const DateField = ({
         fill
         formatDate={DateHelpers.Blueprint.commonProps.formatDate}
         onChange={DateHelpers.Blueprint.DateProps.generateOnChange((value) => {
-          valueRef.current = value
           onChange(value)
         })}
         parseDate={DateHelpers.Blueprint.commonProps.parseDate}
