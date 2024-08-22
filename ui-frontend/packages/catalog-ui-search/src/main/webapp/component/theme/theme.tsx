@@ -320,6 +320,9 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .Mui-text-warning {
         color: ${(props) => props.palette.warning.main};
       }
+      .Mui-text-error {
+        color: ${(props) => props.palette.error.main};
+      }
       .Mui-bg-default {
         background-color: ${(props) => props.palette.background.default};
       }

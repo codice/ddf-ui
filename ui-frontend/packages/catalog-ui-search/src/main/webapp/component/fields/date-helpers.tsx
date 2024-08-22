@@ -126,24 +126,29 @@ export const DateHelpers = {
           }
         }) as IDateRangeInputProps['onChange']
       },
+      // null is how the blueprint datepicker represents an empty or invalid date
       generateValue: (
         value: ValueTypes['during'],
         minDate?: Date,
         maxDate?: Date
       ) =>
         [
-          DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
-            value.start,
-            ISO_8601_FORMAT_ZONED,
-            minDate,
-            maxDate
-          ),
-          DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
-            value.end,
-            ISO_8601_FORMAT_ZONED,
-            minDate,
-            maxDate
-          ),
+          value.start
+            ? DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
+                value.start,
+                ISO_8601_FORMAT_ZONED,
+                minDate,
+                maxDate
+              )
+            : null,
+          value.end
+            ? DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
+                value.end,
+                ISO_8601_FORMAT_ZONED,
+                minDate,
+                maxDate
+              )
+            : null,
         ] as IDateRangeInputProps['value'],
     },
     converters: {

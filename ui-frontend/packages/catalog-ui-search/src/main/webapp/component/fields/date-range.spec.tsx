@@ -4,7 +4,7 @@ import Adapter from '@wojtekmaj/enzyme-adapter-react-17'
 Enzyme.configure({ adapter: new Adapter() })
 import { expect } from 'chai'
 
-import { DateRangeField } from './date-range'
+import { DateRangeField, defaultValue } from './date-range'
 import moment from 'moment'
 
 import user from '../singletons/user-instance'
@@ -124,14 +124,13 @@ describe('verify date range field works', () => {
           start: data.date1.originalISO,
           end: data.date4.originalISO,
         }}
-        onChange={() => {}}
+        onChange={(validValue) => {
+          // verify these are one day apart, as should happen when fed overlapping dates or invalid values
+          const start = new Date(validValue.start)
+          const end = new Date(validValue.end)
+          expect(start.getDate()).to.equal(end.getDate() - 1)
+        }}
       />
-    )
-    expect(wrapper.render().find('input').first().val()).to.equal(
-      data.date1.userFormatISO.millisecond
-    )
-    expect(wrapper.render().find('input').last().val()).to.equal(
-      'Overlapping dates'
     )
   })
   const verifyDateRender = (
@@ -269,17 +268,14 @@ describe('verify date range field works', () => {
   it(`should generate appropriately shifted ISO strings on change (DST)`, () => {
     wrapper = mount(
       <DateRangeField
-        value={{
-          start: new Date().toISOString(),
-          end: new Date().toISOString(),
-        }}
+        value={defaultValue()}
         onChange={(updatedValue) => {
           expect(updatedValue.start).to.equal(data.date5.originalISO)
           expect(updatedValue.end).to.equal(data.date5.originalISO)
         }}
       />
     )
-    const dateFieldInstance = wrapper.children().get(0)
+    const dateFieldInstance = wrapper.children().children().get(0)
     dateFieldInstance.props.onChange(
       [
         DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
@@ -297,25 +293,22 @@ describe('verify date range field works', () => {
   it(`should generate appropriately shifted ISO strings on change`, () => {
     wrapper = mount(
       <DateRangeField
-        value={{
-          start: new Date().toISOString(),
-          end: new Date().toISOString(),
-        }}
+        value={defaultValue()}
         onChange={(updatedValue) => {
-          expect(updatedValue.start).to.equal(data.date1.originalISO)
-          expect(updatedValue.end).to.equal(data.date1.originalISO)
+          expect(updatedValue.start).to.equal(data.date4.originalISO)
+          expect(updatedValue.end).to.equal(data.date5.originalISO)
         }}
       />
     )
-    const dateFieldInstance = wrapper.children().get(0)
+    const dateFieldInstance = wrapper.children().children().get(0)
     dateFieldInstance.props.onChange(
       [
         DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
-          data.date1.originalISO,
+          data.date4.originalISO,
           ISO_8601_FORMAT_ZONED
         ),
         DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
-          data.date1.originalISO,
+          data.date5.originalISO,
           ISO_8601_FORMAT_ZONED
         ),
       ],
@@ -325,10 +318,7 @@ describe('verify date range field works', () => {
   it(`should not allow dates beyond max future`, () => {
     wrapper = mount(
       <DateRangeField
-        value={{
-          start: new Date().toISOString(),
-          end: new Date().toISOString(),
-        }}
+        value={defaultValue()}
         onChange={(updatedValue) => {
           expect(updatedValue.start).to.not.equal(data.date3.maxFuture)
         }}
@@ -340,13 +330,9 @@ describe('verify date range field works', () => {
     })
   })
   it(`should allow dates up to max future`, () => {
-    const initValue = {
-      start: new Date().toISOString(),
-      end: new Date().toISOString(),
-    }
     wrapper = mount(
       <DateRangeField
-        value={initValue}
+        value={defaultValue()}
         onChange={(updatedValue) => {
           expect(updatedValue.start).to.equal(data.date3.maxFuture)
         }}
