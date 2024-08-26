@@ -42,10 +42,7 @@ const defaultValue = () => {
   } as ValueTypes['around']
 }
 
-const validateDate = (
-  { value, onChange }: DateAroundProps,
-  dateRef: React.MutableRefObject<string>
-) => {
+const validateDate = ({ value, onChange }: DateAroundProps) => {
   if (
     !value.date ||
     !value.buffer ||
@@ -53,7 +50,6 @@ const validateDate = (
     DateHelpers.Blueprint.commonProps.parseDate(value.date) === null
   ) {
     const newDate = DateHelpers.General.withPrecision(new Date())
-    dateRef.current = newDate.toISOString()
     onChange({ ...defaultValue(), date: newDate.toISOString() })
   }
 }
@@ -63,16 +59,14 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
     ...defaultValue(),
     ...value,
   }
-  const dateRef = React.useRef(value.date)
   const blueprintDateRef = React.useRef<DateInput>(null)
 
   useTimePrefs(() => {
     const shiftedDate = DateHelpers.Blueprint.DateProps.generateValue(
-      dateRef.current
+      value.date
     )
     const unshiftedDate =
       DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(shiftedDate)
-    dateRef.current = unshiftedDate.toISOString()
     onChange({
       ...validValue,
       date: unshiftedDate.toISOString(),
@@ -80,7 +74,7 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
   })
 
   React.useEffect(() => {
-    validateDate({ onChange, value }, dateRef)
+    validateDate({ onChange, value })
   }, [])
 
   return (
@@ -98,7 +92,6 @@ export const DateAroundField = ({ value, onChange }: DateAroundProps) => {
           fill
           formatDate={DateHelpers.Blueprint.commonProps.formatDate}
           onChange={DateHelpers.Blueprint.DateProps.generateOnChange((date) => {
-            dateRef.current = date
             onChange({
               ...validValue,
               date,
