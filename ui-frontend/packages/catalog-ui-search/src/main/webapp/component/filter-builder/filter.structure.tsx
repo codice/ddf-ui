@@ -265,6 +265,10 @@ export type PointRadiusLocation = {
 
 export type ValueType = string | boolean | null | ValuesType<ValueTypes>
 
+export type FilterContext = {
+  [key: string]: any
+}
+
 export class FilterClass extends SpreadOperatorProtectedClass {
   type:
     | 'BEFORE'
@@ -291,18 +295,21 @@ export class FilterClass extends SpreadOperatorProtectedClass {
   readonly value: ValueType
   readonly negated: boolean | undefined
   readonly id: string
+  readonly context?: FilterContext
   constructor({
     type = 'ILIKE',
     property = 'anyText',
     value = '',
     negated = false,
     id = Math.random().toString(),
+    context,
   }: {
     type?: FilterClass['type']
     property?: FilterClass['property']
     value?: FilterClass['value']
     negated?: FilterClass['negated']
     id?: string
+    context?: FilterContext
   } = {}) {
     super()
     this.type = type
@@ -310,6 +317,7 @@ export class FilterClass extends SpreadOperatorProtectedClass {
     this.value = value
     this.negated = negated
     this.id = id
+    this.context = context
   }
 }
 
@@ -370,12 +378,15 @@ export class BasicDatatypeFilter
 
   constructor({
     value = [],
+    context,
   }: {
     value?: string[]
+    context?: FilterContext
   } = {}) {
     super({
       property: BasicDataTypePropertyName,
       value,
+      context,
     })
     this.value = value
   }
@@ -395,4 +406,144 @@ export const isBasicDatatypeClass = (
   } catch (err) {
     return false
   }
+}
+
+export class ResourceSizeFilterClass extends FilterClass {
+  declare value: number
+  declare context: FilterContext & { units: string }
+  constructor({
+    value = 0,
+    context = { units: 'B' },
+    ...otherProps
+  }: Omit<FilterClass, '_DO_NOT_USE_SPREAD_OPERATOR' | 'value' | 'context'> & {
+    value: number
+    context: FilterContext & { units: string }
+  }) {
+    super({
+      ...otherProps,
+      value,
+      context: {
+        ...context,
+        units: context.units,
+      },
+    })
+  }
+}
+
+export class ResourceSizeRangeFilterClass extends FilterClass {
+  declare value: { start: number; end: number }
+  declare context: FilterContext & { startUnits: string; endUnits: string }
+  constructor({
+    value = { start: 0, end: 1 },
+    context = { startUnits: 'B', endUnits: 'B' },
+    ...otherProps
+  }: Omit<FilterClass, '_DO_NOT_USE_SPREAD_OPERATOR' | 'value' | 'context'> & {
+    value: { start: number; end: number }
+    context: FilterContext & { startUnits: string; endUnits: string }
+  }) {
+    super({
+      ...otherProps,
+      value,
+      context: {
+        ...context,
+        startUnits: context.startUnits,
+        endUnits: context.endUnits,
+      },
+    })
+  }
+}
+
+export const isResourceSizeFilterClass = (
+  filter:
+    | FilterBuilderClass
+    | FilterClass
+    | CQLStandardFilterBuilderClass
+    | Partial<FilterBuilderClass>
+    | Partial<FilterClass>
+    | Partial<CQLStandardFilterBuilderClass>
+): filter is ResourceSizeFilterClass => {
+  try {
+    return (
+      (filter as any)?.value !== undefined &&
+      typeof (filter as any)?.value === 'number' &&
+      !isNaN((filter as any)?.value) &&
+      (filter as any)?.context?.units !== undefined &&
+      sizeUnits.includes((filter as any)?.context?.units)
+    )
+  } catch (err) {
+    return false
+  }
+}
+
+export const isResourceSizeRangeFilterClass = (
+  filter:
+    | FilterBuilderClass
+    | FilterClass
+    | CQLStandardFilterBuilderClass
+    | Partial<FilterBuilderClass>
+    | Partial<FilterClass>
+    | Partial<CQLStandardFilterBuilderClass>
+): filter is ResourceSizeRangeFilterClass => {
+  try {
+    return (
+      (filter as any)?.value !== undefined &&
+      typeof (filter as any)?.value === 'object' &&
+      typeof (filter as any)?.value.start === 'number' &&
+      typeof (filter as any)?.value.end === 'number' &&
+      (filter as any)?.context?.startUnits !== undefined &&
+      (filter as any)?.context?.endUnits !== undefined &&
+      sizeUnits.includes((filter as any)?.context?.startUnits) &&
+      sizeUnits.includes((filter as any)?.context?.endUnits)
+    )
+  } catch (err) {
+    return false
+  }
+}
+
+export const sizeUnits = [
+  'B', // Bytes
+  'KB', // Kilobytes
+  'MB', // Megabytes
+  'GB', // Gigabytes
+  'TB', // Terabytes
+  'PB', // Petabytes
+]
+
+const convertToBytesFromUnit = (value: number, unit: string): number => {
+  const unitIndex = sizeUnits.indexOf(unit)
+  if (unitIndex === -1) {
+    return value // If unit is not recognized, return the original value
+  }
+  return value * Math.pow(1000, unitIndex)
+}
+
+// This function rounds down to the nearest whole number in bytes
+export const convertResourceSizeFilterClassValueToBytes = (
+  filter: ResourceSizeFilterClass
+): number => {
+  const { value, context } = filter
+  const unit = context?.units || 'B'
+  return Math.floor(convertToBytesFromUnit(value, unit))
+}
+
+export const convertResourceSizeRangeFilterClassValueToBytes = (
+  filter: ResourceSizeRangeFilterClass
+): { start: number; end: number } => {
+  const { value, context } = filter
+  const startUnit = context?.startUnits || 'B'
+  const endUnit = context?.endUnits || 'B'
+  return {
+    start: Math.floor(convertToBytesFromUnit(value.start, startUnit)),
+    end: Math.floor(convertToBytesFromUnit(value.end, endUnit)),
+  }
+}
+
+export function convertBytesToHumanReadable(bytes: number): string {
+  const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB']
+  let unitIndex = 0
+  while (bytes >= 1000 && unitIndex < units.length - 1) {
+    bytes /= 1000
+    unitIndex++
+  }
+  return `${bytes.toFixed(2)} ${units[unitIndex]}`
 }

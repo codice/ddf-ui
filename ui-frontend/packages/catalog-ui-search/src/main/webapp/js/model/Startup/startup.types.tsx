@@ -150,6 +150,7 @@ export interface UIConfigType {
   extra: {
     [key: string]: any
     datatypes?: DataTypesConfiguration
+    resourceSizeIdentifiers?: string[]
   }
   editorAttributes: string[]
   resultShow: string[]

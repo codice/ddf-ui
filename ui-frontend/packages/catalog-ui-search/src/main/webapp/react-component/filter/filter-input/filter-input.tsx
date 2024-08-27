@@ -38,6 +38,9 @@ import { ValidationResult } from '../../location/validators'
 import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
 import { ReservedBasicDatatype } from '../../../component/reserved-basic-datatype/reserved.basic-datatype'
 import { BasicDataTypePropertyName } from '../../../component/filter-builder/reserved.properties'
+import { ResourceSizeField } from '../../../component/fields/resource-size'
+import { ResourceSizeRangeField } from '../../../component/fields/resource-size-range'
+import { useConfiguration } from '../../../js/model/Startup/configuration.hooks'
 export type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
@@ -47,19 +50,55 @@ export type Props = {
   getAttributeType?: typeof defaultGetAttributeType
 }
 
+export const FilterInputContext = React.createContext({
+  resourceSizeIdentifiers: [] as string[],
+})
+
+/**
+ *  This is how we determine when we should show the resource size input.
+ *  The default provider uses the configuration to get the resource size identifiers.
+ *
+ *  If you want to show the resource size input for a custom filter,
+ *  you can create a custom provider and wrap your filter input with it.
+ */
+export const DefaultFilterInputProvider = ({
+  children,
+}: {
+  children: React.ReactNode
+}) => {
+  const resourceSizeIdentifiers =
+    useConfiguration().getResourceSizeIdentifiers()
+  return (
+    <FilterInputContext.Provider
+      value={{
+        resourceSizeIdentifiers,
+      }}
+    >
+      {children}
+    </FilterInputContext.Provider>
+  )
+}
+
+function useResourceSizeIdentifiers() {
+  return React.useContext(FilterInputContext)
+}
+
 const FilterInput = ({
   filter,
   setFilter,
   errorListener,
   getAttributeType = defaultGetAttributeType,
 }: Props) => {
+  const resourceSizeIdentifiers =
+    useResourceSizeIdentifiers().resourceSizeIdentifiers
   const type = getAttributeType(filter.property)
   const MetacardDefinitions = useMetacardDefinitions()
   const { value } = filter
   const onChange = (val: any) => {
+    const { context, ...rest } = filter // most filters don't need context, and if they do they are using setFilter directly, not onChange
     setFilter(
       new FilterClass({
-        ...filter,
+        ...rest,
         value: val,
       })
     )
@@ -72,6 +111,17 @@ const FilterInput = ({
         value={value as BasicDatatypeFilter['value']}
       />
     )
+  }
+
+  if (resourceSizeIdentifiers.includes(filter.property)) {
+    switch (filter.type) {
+      case 'BETWEEN':
+        return <ResourceSizeRangeField filter={filter} setFilter={setFilter} />
+      case 'IS NULL':
+        return null
+      default:
+        return <ResourceSizeField filter={filter} setFilter={setFilter} />
+    }
   }
 
   switch (filter.type) {

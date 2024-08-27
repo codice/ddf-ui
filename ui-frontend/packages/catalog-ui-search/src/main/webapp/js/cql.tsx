@@ -28,6 +28,10 @@ import {
   serialize,
   shouldBeFilterBuilderClass,
   ValueTypes,
+  convertResourceSizeFilterClassValueToBytes,
+  isResourceSizeFilterClass,
+  isResourceSizeRangeFilterClass,
+  convertResourceSizeRangeFilterClassValueToBytes,
 } from '../component/filter-builder/filter.structure'
 import { getDataTypesConfiguration } from '../component/reserved-basic-datatype/reserved.basic-datatype'
 import CQLUtils from './CQLUtils'
@@ -928,15 +932,13 @@ function getDataTypesConfigurationUsingStartupStore() {
   })
 }
 
-function handleBasicDatatypeFilters(
+function handleAllFilterTypes(
   cqlAst: FilterBuilderClass | FilterClass | CQLStandardFilterBuilderClass
 ): CQLStandardFilterBuilderClass | FilterClass {
   if (isCQLStandardFilterBuilderClass(cqlAst) || isFilterBuilderClass(cqlAst)) {
     return new CQLStandardFilterBuilderClass({
       type: cqlAst.type,
-      filters: cqlAst.filters.map((filter) =>
-        handleBasicDatatypeFilters(filter)
-      ),
+      filters: cqlAst.filters.map((filter) => handleAllFilterTypes(filter)),
     })
   } else if (isBasicDatatypeClass(cqlAst)) {
     const dataTypeConfiguration = getDataTypesConfigurationUsingStartupStore()
@@ -966,6 +968,18 @@ function handleBasicDatatypeFilters(
           filters: datatypeFilters,
         }),
       ],
+    })
+  } else if (isResourceSizeFilterClass(cqlAst)) {
+    const bytesValue = convertResourceSizeFilterClassValueToBytes(cqlAst)
+    return new FilterClass({
+      ...cqlAst,
+      value: bytesValue,
+    })
+  } else if (isResourceSizeRangeFilterClass(cqlAst)) {
+    const bytesValue = convertResourceSizeRangeFilterClassValueToBytes(cqlAst)
+    return new FilterClass({
+      ...cqlAst,
+      value: bytesValue,
     })
   } else {
     return cqlAst
@@ -1060,8 +1074,7 @@ export default {
   },
   write(filter: FilterBuilderClass): string {
     try {
-      // const duplicatedFilter = JSON.parse(JSON.stringify(filter))
-      const standardCqlAst = handleBasicDatatypeFilters(
+      const standardCqlAst = handleAllFilterTypes(
         uncollapseNOTs({
           cqlAst: filter,
         })

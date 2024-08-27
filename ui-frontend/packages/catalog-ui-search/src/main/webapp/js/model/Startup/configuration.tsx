@@ -177,6 +177,9 @@ class Configuration extends Subscribable<{ thing: 'configuration-update' }> {
       groups: this.getExtra()?.datatypes?.groups || {},
     }
   }
+  getResourceSizeIdentifiers = (): string[] => {
+    return this.getExtra()?.resourceSizeIdentifiers || []
+  }
 }
 
 export { Configuration }
