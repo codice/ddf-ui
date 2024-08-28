@@ -90,7 +90,7 @@ export function castAndParseValue(
       return castedValue
     }
   } catch (e) {
-    // If casting fails, return null to indicate such (default depends on start or end)
+    // If casting fails, fall through to default
   }
   return defaultValue
 }
