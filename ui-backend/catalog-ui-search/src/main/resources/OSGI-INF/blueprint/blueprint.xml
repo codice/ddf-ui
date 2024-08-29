@@ -597,7 +597,9 @@ Implementation details
 
     <service ref="queryFactory" interface="org.codice.ddf.catalog.ui.query.utility.QueryRequestFactory"/>
 
-    <bean id="defaultPreferenceSettings" class="org.codice.ddf.catalog.ui.preferences.DefaultCatalogUiPreferences"/>
+    <bean id="defaultPreferenceSettings" class="org.codice.ddf.catalog.ui.preferences.DefaultCatalogUiPreferences">
+        <argument ref="configurationApplication"/>
+    </bean>
 
     <service ref="defaultPreferenceSettings" interface="org.codice.ddf.preferences.DefaultPreferencesSupplier"/>
 

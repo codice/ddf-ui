@@ -18,9 +18,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
 import org.codice.ddf.preferences.DefaultPreferencesSupplier;
 
 public class DefaultCatalogUiPreferences implements DefaultPreferencesSupplier {
+
+  private final ConfigurationApplication configurationApplication;
+
+  public DefaultCatalogUiPreferences(ConfigurationApplication configurationApplication) {
+    this.configurationApplication = configurationApplication;
+  }
+
   @Override
   public Map<String, Object> create() {
 
@@ -95,7 +103,7 @@ public class DefaultCatalogUiPreferences implements DefaultPreferencesSupplier {
         "querySettings",
         new ImmutableMap.Builder<>()
             .put("type", "text")
-            .put("sources", Collections.singletonList("local"))
+            .put("sources", configurationApplication.getDefaultSources())
             .put(
                 "sorts",
                 Collections.singletonList(
