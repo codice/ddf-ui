@@ -217,6 +217,7 @@ const cqlMultipolygonStrings = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -232,6 +233,7 @@ const cqlMultipolygonStrings = {
             },
           },
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -247,6 +249,7 @@ const cqlMultipolygonStrings = {
             },
           },
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -271,6 +274,7 @@ const cqlMultipolygonStrings = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -295,6 +299,7 @@ const cqlMultipolygonStrings = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -320,6 +325,7 @@ const cqlMultipolygonStrings = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -335,6 +341,7 @@ const cqlMultipolygonStrings = {
             },
           },
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -365,6 +372,7 @@ const cqlPointStrings = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -385,6 +393,7 @@ const cqlPointStrings = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -396,6 +405,7 @@ const cqlPointStrings = {
             },
           },
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -416,6 +426,7 @@ const cqlPointStrings = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -437,6 +448,7 @@ const cqlPointStrings = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -458,6 +470,7 @@ const cqlPointStrings = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -470,6 +483,7 @@ const cqlPointStrings = {
             },
           },
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -496,6 +510,7 @@ const cqlLinestrings = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -519,6 +534,7 @@ const cqlLinestrings = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -533,6 +549,7 @@ const cqlLinestrings = {
             },
           },
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -557,6 +574,7 @@ const cqlLinestrings = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -581,6 +599,7 @@ const cqlLinestrings = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -605,6 +624,7 @@ const cqlLinestrings = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -620,6 +640,7 @@ const cqlLinestrings = {
             },
           },
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -650,6 +671,7 @@ const cqlGeometryCollections = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -661,6 +683,7 @@ const cqlGeometryCollections = {
             },
           },
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -683,6 +706,7 @@ const cqlGeometryCollections = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -694,6 +718,7 @@ const cqlGeometryCollections = {
             },
           },
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -716,6 +741,7 @@ const cqlGeometryCollections = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -737,6 +763,7 @@ const cqlGeometryCollections = {
       output: {
         filters: [
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',
@@ -753,6 +780,7 @@ const cqlGeometryCollections = {
             },
           },
           {
+            context: undefined,
             negated: false,
             property: 'anyGeo',
             type: 'GEOMETRY',

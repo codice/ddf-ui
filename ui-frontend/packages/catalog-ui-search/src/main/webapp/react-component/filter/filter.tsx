@@ -25,6 +25,7 @@ import { FilterClass } from '../../component/filter-builder/filter.structure'
 import { ValidationResult } from '../location/validators'
 import { FilterProperty } from './filter-property'
 import { DefaultComparatorProvider } from './filter-comparator/comparatorUtils'
+import { DefaultFilterInputProvider } from './filter-input/filter-input'
 
 export type Props = {
   filter: FilterClass
@@ -53,11 +54,13 @@ const Filter = ({ filter, setFilter, errorListener }: Props) => {
         </DefaultComparatorProvider>
       </Grid>
       <Grid data-id="filter-input" item className="w-full">
-        <FilterInput
-          filter={filter}
-          setFilter={setFilter}
-          errorListener={errorListener}
-        />
+        <DefaultFilterInputProvider>
+          <FilterInput
+            filter={filter}
+            setFilter={setFilter}
+            errorListener={errorListener}
+          />
+        </DefaultFilterInputProvider>
       </Grid>
     </Grid>
   )
