@@ -86,7 +86,7 @@ export function castAndParseValue(
 ): number {
   try {
     const castedValue = value as number
-    if (!isNaN(castedValue)) {
+    if (typeof castedValue === 'number' && !isNaN(castedValue)) {
       return castedValue
     }
   } catch (e) {
