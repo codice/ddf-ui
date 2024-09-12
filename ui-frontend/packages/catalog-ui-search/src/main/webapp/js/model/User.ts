@@ -188,7 +188,6 @@ function validateMapLayersAgainstProviders(layers: any) {
       hoverPreview: true,
       querySettings: new QuerySettings(),
       mapHome: undefined,
-      actingRole: 'user',
     }
   },
   relations: [
@@ -237,7 +236,6 @@ function validateMapLayersAgainstProviders(layers: any) {
     this.listenTo(this, 'change:goldenLayoutAlert', this.savePreferences)
     this.listenTo(this, 'change:mapHome', this.savePreferences)
     this.listenTo(this, 'change:theme', this.savePreferences)
-    this.listenTo(this, 'change:actingRole', this.savePreferences)
   },
   handleRemove() {
     this.savePreferences()

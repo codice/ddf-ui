@@ -252,7 +252,6 @@ const mockStartupPayload: StartupPayloadType = {
       },
       animation: true,
       hoverPreview: true,
-      actingRole: 'user',
       layoutId: 'layout-1',
       mapLayers: [
         {

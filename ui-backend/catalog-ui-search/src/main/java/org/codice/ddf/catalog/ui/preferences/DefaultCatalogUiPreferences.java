@@ -69,7 +69,6 @@ public class DefaultCatalogUiPreferences implements DefaultPreferencesSupplier {
     defaults.put("autoPan", true);
     defaults.put("animation", true);
     defaults.put("hoverPreview", true);
-    defaults.put("actingRole", "user");
     defaults.put("layoutId", "custom");
 
     Map<String, Object> params =

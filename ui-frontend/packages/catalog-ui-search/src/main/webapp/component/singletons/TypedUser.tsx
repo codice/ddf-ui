@@ -160,15 +160,6 @@ export const TypedUserInstance = {
   savePreferences() {
     userInstance.get('user').get('preferences').savePreferences()
   },
-  getActingRole: (): string => {
-    return userInstance.get('user').get('preferences').get('actingRole')
-  },
-  setActingRole: (actingRole: string) => {
-    return userInstance
-      .get('user')
-      .get('preferences')
-      .set('actingRole', actingRole)
-  },
   canWrite: (result: LazyQueryResult): boolean => {
     return userInstance.canWrite(result.plain.metacard.properties)
   },
@@ -204,16 +195,6 @@ export const TypedUserInstance = {
       this.getPreferences().set(upToDatePrefs)
     }
   },
-}
-
-export function useActingRole<T extends string>(): T {
-  const [activeRole, setActiveRole] = React.useState(
-    TypedUserInstance.getActingRole() as T
-  )
-  useListenTo(TypedUserInstance.getPreferences(), 'change:actingRole', () => {
-    setActiveRole(TypedUserInstance.getActingRole() as T)
-  })
-  return activeRole
 }
 
 export const useEphemeralFilter = () => {

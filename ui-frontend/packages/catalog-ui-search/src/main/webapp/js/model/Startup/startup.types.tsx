@@ -278,7 +278,6 @@ interface PreferencesType {
   }
   animation: boolean
   hoverPreview: boolean
-  actingRole: 'user' | 'enhanced'
   layoutId: string
   mapLayers: {
     type: string

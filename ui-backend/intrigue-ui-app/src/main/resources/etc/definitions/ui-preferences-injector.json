@@ -300,13 +300,6 @@
       "indexed": true,
       "tokenized": false,
       "multivalued": false
-    },
-    "actingRole": {
-      "type": "STRING",
-      "stored": true,
-      "indexed": true,
-      "tokenized": false,
-      "multivalued": false
     }
   },
   "inject": [
@@ -480,10 +473,6 @@
     },
     {
       "attribute": "decimalPrecision",
-      "metacardTypes": ["ddf.preferences"]
-    },
-    {
-      "attribute": "actingRole",
       "metacardTypes": ["ddf.preferences"]
     }
   ]
