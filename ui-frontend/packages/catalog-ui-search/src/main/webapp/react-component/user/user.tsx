@@ -16,10 +16,6 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import Button from '@mui/material/Button'
 import { DarkDivider } from '../../component/dark-divider/dark-divider'
-import {
-  TypedUserInstance,
-  useActingRole,
-} from '../../component/singletons/TypedUser'
 import PersonIcon from '@mui/icons-material/Person'
 import user from '../../component/singletons/user-instance'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -27,6 +23,15 @@ import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import ExtensionPoints from '../../extension-points/extension-points'
 import { postSimpleAuditLog } from '../../react-component/utils/audit/audit-endpoint'
+import { useDialog } from '../../component/dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContentText from '@mui/material/DialogContentText'
+import CircularProgress from '@mui/material/CircularProgress'
+import DialogContent from '@mui/material/DialogContent'
+import {
+  getIsUsingElevatedRights,
+  setIsUsingElevatedRights,
+} from '../../component/elevated-rights/elevated-rights'
 
 export const EnhancedRolesContext = React.createContext<{
   enhancedRoles: string[]
@@ -40,18 +45,19 @@ const useEnhancedRoles = () => {
 }
 
 export const RoleDisplay = () => {
-  const actingRole = useActingRole()
+  const isUsingElevatedRights = getIsUsingElevatedRights()
   const enhancedRoles = useEnhancedRoles()
 
-  if (actingRole === 'enhanced' && enhancedRoles.length > 0) {
+  if (isUsingElevatedRights && enhancedRoles.length > 0) {
     return <>Advanced</>
   }
   return null
 }
 
 const RolesToggle = () => {
-  const actingRole = useActingRole()
+  const isUsingElevatedRights = getIsUsingElevatedRights()
   const enhancedRoles = useEnhancedRoles()
+  const dialogContext = useDialog()
 
   if (!enhancedRoles || enhancedRoles.length === 0) {
     return null
@@ -66,22 +72,42 @@ const RolesToggle = () => {
         control={
           <Switch
             color="primary"
-            checked={actingRole === 'enhanced'}
+            checked={isUsingElevatedRights}
             onChange={(e) => {
-              TypedUserInstance.setActingRole(
-                e.target.checked ? 'enhanced' : 'user'
-              )
+              setIsUsingElevatedRights(e.target.checked)
               postSimpleAuditLog({
                 action: 'ROLE_CHANGE',
                 component: e.target.checked
                   ? 'user enabled advanced_mode, roles: [' + enhancedRoles + ']'
                   : 'user disabled advanced_mode',
               })
+              dialogContext.setProps({
+                open: true,
+                onClose: () => {},
+                children: (
+                  <>
+                    <DialogTitle>
+                      <Typography variant="h5">Switching Role</Typography>
+                    </DialogTitle>
+                    <DialogContent className="overflow-hidden">
+                      <DialogContentText variant="subtitle1">
+                        The page will refresh to complete the role change.
+                      </DialogContentText>
+                      <div className="flex justify-center py-5">
+                        <CircularProgress size={80} />
+                      </div>
+                    </DialogContent>
+                  </>
+                ),
+              })
+              setTimeout(() => {
+                window.location.reload()
+              }, 1000)
             }}
           />
         }
       />
-      <div className={`${actingRole === 'user' ? 'opacity-50' : ''}`}>
+      <div className={`${isUsingElevatedRights ? '' : 'opacity-50'}`}>
         <div className="pb-1 font-normal italic">My Advanced Roles</div>
         {enhancedRoles.map((role) => {
           return <div className="text-sm">{role}</div>
