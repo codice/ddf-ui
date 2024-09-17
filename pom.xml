@@ -46,25 +46,25 @@
   <properties>
     <!--Project properties-->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
     <compiler.fork>false</compiler.fork>
-    <maven.bundle.plugin.version>4.2.1</maven.bundle.plugin.version>
+    <maven.bundle.plugin.version>5.1.4</maven.bundle.plugin.version>
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
     <maven.deploy.plugin.version>3.0.0-M1</maven.deploy.plugin.version>
-    <maven.enforcer.plugin.version>3.0.0-M3</maven.enforcer.plugin.version>
-    <maven.release.plugin.version>3.0.0-M1</maven.release.plugin.version>
+    <maven.enforcer.plugin.version>3.5.0</maven.enforcer.plugin.version>
+    <maven.release.plugin.version>3.5.0</maven.release.plugin.version>
     <maven.resources.plugin.version>3.2.0</maven.resources.plugin.version>
-    <maven.surefire.plugin.version>3.0.0-M5</maven.surefire.plugin.version>
+    <maven.surefire.plugin.version>3.5.0</maven.surefire.plugin.version>
     <javalin.thirdparty.bundle.version>2.5.0_1</javalin.thirdparty.bundle.version>
     <kotlin-osgi.version>1.2.61</kotlin-osgi.version>
     <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
     <errorprone.version>2.4.0</errorprone.version>
-    <jacoco.maven.plugin.version>0.8.6</jacoco.maven.plugin.version>
+    <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
     <fmt.maven.plugin.version>2.3.0</fmt.maven.plugin.version>
 
     <!--Backend properties-->
-    <ddf.version>2.29.1-SNAPSHOT</ddf.version>
+    <ddf.version>2.29.2-SNAPSHOT</ddf.version>
     <ddf-jsonrpc.version>0.7</ddf-jsonrpc.version>
     <ddf.support.version>2.3.16</ddf.support.version>
     <antlr.version>4.3</antlr.version>
@@ -185,26 +185,26 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>${maven.compiler.plugin.version}</version>
+          <version>3.8.1</version>
           <configuration>
             <source>${maven.compiler.source}</source>
             <target>${maven.compiler.target}</target>
-            <maxmem>512k</maxmem>
+            <maxmem>512M</maxmem>
             <fork>${compiler.fork}</fork>
             <encoding>${project.build.sourceEncoding}</encoding>
             <compilerArgs>
               <arg>-XDcompilePolicy=simple</arg>
-              <arg>-Xplugin:ErrorProne</arg>
+              <!--                            <arg>-Xplugin:ErrorProne</arg>-->
               <arg>--add-exports</arg>
               <arg>java.base/sun.security.x509=ALL-UNNAMED</arg>
             </compilerArgs>
-            <annotationProcessorPaths>
-              <path>
-                <groupId>com.google.errorprone</groupId>
-                <artifactId>error_prone_core</artifactId>
-                <version>${errorprone.version}</version>
-              </path>
-            </annotationProcessorPaths>
+            <!--                        <annotationProcessorPaths>-->
+            <!--                            <path>-->
+            <!--                                <groupId>com.google.errorprone</groupId>-->
+            <!--                                <artifactId>error_prone_core</artifactId>-->
+            <!--                                <version>2.4.0</version>-->
+            <!--                            </path>-->
+            <!--                        </annotationProcessorPaths>-->
           </configuration>
         </plugin>
         <plugin>
@@ -343,12 +343,12 @@
       <plugin>
         <groupId>org.codehaus.gmavenplus</groupId>
         <artifactId>gmavenplus-plugin</artifactId>
-        <version>1.5</version>
+        <version>1.13.1</version>
         <executions>
           <execution>
             <goals>
               <goal>compile</goal>
-              <goal>testCompile</goal>
+              <goal>compileTests</goal>
             </goals>
           </execution>
         </executions>
