@@ -12,7 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-/* eslint-disable no-var */
 import * as React from 'react'
 import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'

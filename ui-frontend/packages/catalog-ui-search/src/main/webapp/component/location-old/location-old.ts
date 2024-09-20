@@ -12,7 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-/* eslint-disable no-var */
 import _ from 'underscore'
 import Backbone from 'backbone'
 import * as usngs from 'usng.js'
@@ -308,7 +307,6 @@ export default Backbone.AssociatedModel.extend({
       isDefined(this)
     ) {
       // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name '_this'.
-      // eslint-disable-next-line no-undef
       const utmUpsParts = parse(_this)
       if (utmUpsParts !== undefined) {
         const utmUpsResult = this.utmUpstoLL(utmUpsParts)
@@ -561,7 +559,6 @@ export default Backbone.AssociatedModel.extend({
     }
     utmUps = this.LLtoUtmUps(south, east)
     if (utmUps !== undefined) {
-      // eslint-disable-next-line no-redeclare
       var utmUpsParts = this.formatUtmUps(utmUps)
       this.setUtmUpsLowerRight(utmUpsParts, !this.isLocationTypeUtmUps())
     }
