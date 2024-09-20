@@ -37,7 +37,6 @@ import UserView, { RoleDisplay } from '../../react-component/user/user'
 import UserSettings, {
   SettingsComponentType,
 } from '../../react-component/user-settings/user-settings'
-import { GlobalStyles } from './global-styles'
 import { PermissiveComponentType } from '../../typescript'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { Elevations } from '../theme/theme'
@@ -898,7 +897,6 @@ const App = ({
         <div className="h-full w-full overflow-hidden Mui-bg-default">
           {/* Don't move CSSBaseline or GlobalStyles to providers, since we have multiple react roots.   */}
           <CssBaseline />
-          <GlobalStyles />
           <SystemUsageModal />
           <SessionTimeoutComponent />
           <AjaxErrorHandling />
