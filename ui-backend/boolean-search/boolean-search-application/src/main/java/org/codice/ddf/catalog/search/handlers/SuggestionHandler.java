@@ -1,8 +1,8 @@
 /* Copyright (c) Connexta, LLC */
 package org.codice.ddf.catalog.search.handlers;
 
-import io.javalin.Context;
-import io.javalin.Handler;
+import io.javalin.http.Context;
+import io.javalin.http.Handler;
 import java.util.Map;
 import org.codice.ddf.catalog.search.suggest.Suggester;
 import org.jetbrains.annotations.NotNull;

@@ -13,8 +13,8 @@
  */
 package org.codice.ddf.catalog.audit.application;
 
-import io.javalin.Context;
-import io.javalin.Handler;
+import io.javalin.http.Context;
+import io.javalin.http.Handler;
 import java.util.List;
 import org.apache.http.HttpStatus;
 import org.codice.ddf.catalog.audit.api.AuditException;

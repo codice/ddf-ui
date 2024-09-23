@@ -5,8 +5,8 @@ import static java.util.Collections.singletonMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.javalin.Context;
-import io.javalin.Handler;
+import io.javalin.http.Context;
+import io.javalin.http.Handler;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
