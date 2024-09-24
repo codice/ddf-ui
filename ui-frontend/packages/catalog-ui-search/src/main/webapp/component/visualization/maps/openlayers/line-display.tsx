@@ -14,7 +14,11 @@
  **/
 import React from 'react'
 import DistanceUtils from '../../../../js/DistanceUtils'
-import ol from 'openlayers'
+import { Openlayers as ol } from './ol-openlayers-adapter'
+import MultiLineString from 'ol/geom/MultiLineString'
+import LineString from 'ol/geom/LineString'
+import Map from 'ol/Map'
+import { Coordinate } from 'ol/coordinate'
 import _ from 'underscore'
 import * as Turf from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
@@ -24,10 +28,9 @@ import { getIdFromModelForDisplay } from '../drawing-and-display'
 import { StartupDataStore } from '../../../../js/model/Startup/startup'
 import { contrastingColor } from '../../../../react-component/location/location-color-selector'
 import { Translation } from '../interactions.provider'
-type CoordinateType = [number, number]
-type CoordinatesType = Array<CoordinateType>
-export function translateFromOpenlayersCoordinates(coords: CoordinatesType) {
-  const coordinates = [] as CoordinatesType
+
+export function translateFromOpenlayersCoordinates(coords: Coordinate[]) {
+  const coordinates = [] as Coordinate[]
   coords.forEach((point) => {
     point = ol.proj.transform(
       [
@@ -46,14 +49,14 @@ export function translateFromOpenlayersCoordinates(coords: CoordinatesType) {
   })
   return coordinates
 }
-export function translateToOpenlayersCoordinates(coords: CoordinatesType) {
-  const coordinates = [] as CoordinatesType
+export function translateToOpenlayersCoordinates(coords: Coordinate[]) {
+  const coordinates = [] as Coordinate[]
   coords.forEach((item) => {
     if (Array.isArray(item[0])) {
       coordinates.push(
         translateToOpenlayersCoordinates(
-          item as unknown as CoordinatesType
-        ) as unknown as CoordinateType
+          item as unknown as Coordinate[]
+        ) as unknown as Coordinate
       )
     } else {
       coordinates.push(
@@ -75,7 +78,7 @@ const modelToLineString = (model: any) => {
   }
   return new ol.geom.LineString(translateToOpenlayersCoordinates(setArr))
 }
-const adjustLinePoints = (line: ol.geom.LineString) => {
+const adjustLinePoints = (line: LineString) => {
   const extent = line.getExtent()
   const lon1 = extent[0]
   const lon2 = extent[2]
@@ -90,8 +93,8 @@ const adjustLinePoints = (line: ol.geom.LineString) => {
     line.setCoordinates(adjusted)
   }
 }
-const adjustMultiLinePoints = (lines: ol.geom.MultiLineString) => {
-  const adjusted: ol.Coordinate[][] = []
+const adjustMultiLinePoints = (lines: MultiLineString) => {
+  const adjusted: Coordinate[][] = []
   lines.getLineStrings().forEach((line) => {
     adjustLinePoints(line)
     adjusted.push(line.getCoordinates())
@@ -108,7 +111,7 @@ export const drawLine = ({
 }: {
   map: any
   model: any
-  line: ol.geom.LineString
+  line: LineString
   id: string
   isInteractive?: boolean
   translation?: Translation
@@ -173,7 +176,7 @@ export const drawLine = ({
     source: vectorSource,
   })
   vectorLayer.set('id', id)
-  const mapRef = map.getMap() as ol.Map
+  const mapRef = map.getMap() as Map
   removeOldDrawing({ map: mapRef, id })
   map.getMap().addLayer(vectorLayer)
 }

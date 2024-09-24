@@ -13,7 +13,9 @@
  *
  **/
 import React from 'react'
-import ol from 'openlayers'
+import { Openlayers as ol } from './ol-openlayers-adapter'
+import Map from 'ol/Map'
+
 import _ from 'underscore'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
@@ -134,7 +136,7 @@ export const drawBbox = ({
     source: vectorSource,
   })
   vectorLayer.set('id', id)
-  const mapRef = map.getMap() as ol.Map
+  const mapRef = map.getMap() as Map
   removeOldDrawing({ map: mapRef, id })
   mapRef.addLayer(vectorLayer)
 }

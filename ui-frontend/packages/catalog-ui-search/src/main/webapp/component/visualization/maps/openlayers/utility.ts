@@ -13,7 +13,7 @@
  *
  **/
 import _ from 'lodash'
-import Openlayers from 'openlayers'
+import { Openlayers } from './ol-openlayers-adapter'
 import * as Turf from '@turf/turf'
 import { Position, LineString, Polygon } from '@turf/turf'
 import { GeometryJSON } from 'geospatialdraw/target/webapp/geometry'

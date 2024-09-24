@@ -1,9 +1,12 @@
 import { Layers } from './layers'
 import _ from 'underscore'
-import ol from 'openlayers'
+import { Openlayers as ol } from '../../component/visualization/maps/openlayers/ol-openlayers-adapter'
 import user from '../../component/singletons/user-instance'
 import Backbone from 'backbone'
 import { StartupDataStore } from '../model/Startup/startup'
+import { optionsFromCapabilities } from 'ol/source/WMTS'
+import WMTSCapabilities from 'ol/format/WMTSCapabilities'
+import { ProjectionLike } from 'ol/proj'
 const createTile = (
   { show, alpha, ...options }: any,
   Source: any,
@@ -47,7 +50,7 @@ const WMT = async (opts: any) => {
     credentials: withCredentials ? 'include' : 'same-origin',
   })
   const text = await res.text()
-  const parser = new ol.format.WMTSCapabilities()
+  const parser = new WMTSCapabilities()
   const result = parser.read(text)
   if ((result as any).Contents.Layer.length === 0) {
     throw new Error('WMTS map layer source has no layers.')
@@ -60,7 +63,7 @@ const WMT = async (opts: any) => {
   if (!layer) {
     layer = (result as any).Contents.Layer[0].Identifier
   }
-  const options = ol.source.WMTS.optionsFromCapabilities(result, {
+  const options = optionsFromCapabilities(result, {
     ...opts,
     layer,
     matrixSet,
@@ -95,7 +98,7 @@ const AGM = (opts: any) => {
 const SI = (opts: any) => {
   const imageExtent =
     opts.imageExtent ||
-    ol.proj.get(StartupDataStore.Configuration.getProjection()).getExtent()
+    ol.proj.get(StartupDataStore.Configuration.getProjection())?.getExtent()
   return createTile(
     { ...opts, imageExtent, ...opts.parameters },
     ol.source.ImageStatic,
@@ -157,7 +160,9 @@ export class OpenlayersLayers {
       this.addLayer(layer)
     })
     const view = new ol.View({
-      projection: ol.proj.get(StartupDataStore.Configuration.getProjection()),
+      projection: ol.proj.get(
+        StartupDataStore.Configuration.getProjection()
+      ) as ProjectionLike,
       center: ol.proj.transform(
         [0, 0],
         'EPSG:4326',

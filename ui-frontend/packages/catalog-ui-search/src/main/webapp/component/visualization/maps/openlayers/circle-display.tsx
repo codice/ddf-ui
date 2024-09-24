@@ -13,7 +13,8 @@
  *
  **/
 import React from 'react'
-import ol from 'openlayers'
+import { Openlayers as ol } from './ol-openlayers-adapter'
+import Map from 'ol/Map'
 import _ from 'underscore'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { removeOldDrawing } from './drawing-and-display'
@@ -112,7 +113,7 @@ export const drawCircle = ({
     source: vectorSource,
   })
   vectorLayer.set('id', id)
-  const mapRef = map.getMap() as ol.Map
+  const mapRef = map.getMap() as Map
   removeOldDrawing({ map: mapRef, id })
   mapRef.addLayer(vectorLayer)
 }

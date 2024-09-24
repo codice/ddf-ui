@@ -113,6 +113,7 @@
     "moment": "^2.27.0",
     "moment-timezone": "0.5.31",
     "mt-geo": "1.0.1",
+    "ol": "10.1.0",
     "openlayers": "4.6.5",
     "plotly.js": "1.45.0",
     "polished": "3.6.5",

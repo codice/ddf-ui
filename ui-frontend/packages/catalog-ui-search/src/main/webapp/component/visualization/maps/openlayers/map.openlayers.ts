@@ -18,7 +18,7 @@ import $ from 'jquery'
 import _ from 'underscore'
 import utility from './utility'
 import DrawingUtility from '../DrawingUtility'
-import Openlayers from 'openlayers'
+import { Openlayers } from './ol-openlayers-adapter'
 import { OpenlayersLayers } from '../../../../js/controllers/openlayers.layers'
 import wreqr from '../../../../js/wreqr'
 import { validateGeo } from '../../../../react-component/utils/validation'
@@ -26,6 +26,14 @@ import { ClusterType } from '../react/geometries'
 import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryResult'
 import { StartupDataStore } from '../../../../js/model/Startup/startup'
 import _debounce from 'lodash.debounce'
+import VectorLayer from 'ol/layer/Vector'
+import VectorSource from 'ol/source/Vector'
+import Feature from 'ol/Feature'
+import LineString from 'ol/geom/LineString'
+import { ProjectionLike } from 'ol/proj'
+import Group from 'ol/layer/Group'
+import { Coordinate } from 'ol/coordinate'
+
 const defaultColor = '#3c6dd5'
 const rulerColor = '#506f85'
 function createMap(insertionElement: any, mapLayers: any) {
@@ -64,7 +72,7 @@ function determineIdsFromPosition(position: any, map: any) {
 function convertPointCoordinate(point: [number, number]) {
   const coords = [point[0], point[1]]
   return Openlayers.proj.transform(
-    coords as Openlayers.Coordinate,
+    coords as Coordinate,
     'EPSG:4326',
     StartupDataStore.Configuration.getProjection()
   )
@@ -98,7 +106,7 @@ export default function (
   function setupTooltip(map: any) {
     map.on('pointermove', (e: any) => {
       const point = unconvertPointCoordinate(e.coordinate)
-      if (!offMap(point)) {
+      if (!offMap(point as any)) {
         mapModel.updateMouseCoordinates({
           lat: point[1],
           lon: point[0],
@@ -406,8 +414,8 @@ export default function (
     panToShapesExtent({ duration = 500 }: { duration?: number } = {}) {
       var extent = Openlayers.extent.createEmpty()
       map.getLayers().forEach((layer: any) => {
-        if (layer instanceof Openlayers.layer.Group) {
-          layer.getLayers().forEach(function (groupLayer) {
+        if (layer instanceof Group) {
+          layer.getLayers().forEach(function (groupLayer: any) {
             //If this is a vector layer, add it to our extent
             if (layer instanceof Openlayers.layer.Vector)
               Openlayers.extent.extend(
@@ -479,9 +487,8 @@ export default function (
       )
       const overlayLayer = new Openlayers.layer.Image({
         source: new Openlayers.source.ImageStatic({
-          // @ts-expect-error ts-migrate(2322) FIXME: Type 'string | undefined' is not assignable to typ... Remove this comment to see the full error message
-          url: model.currentOverlayUrl,
-          projection,
+          url: model.currentOverlayUrl || '',
+          projection: projection as ProjectionLike,
           imageExtent: extent,
         }),
       })
@@ -553,7 +560,10 @@ export default function (
     removeRulerPoint(pointLayer: any) {
       map.removeLayer(pointLayer)
     },
-    rulerLine: null as null | Openlayers.layer.Vector,
+    rulerLine: null as null | VectorLayer<
+      VectorSource<Feature<LineString>>,
+      Feature<LineString>
+    >,
     /*
      * Draws a line on the map between the points in the given array of point Vectors.
      */
@@ -598,14 +608,15 @@ export default function (
       const imgHeight = 44 + badgeOffset
 
       feature.setId(options.id)
-      ;(feature as any).unselectedStyle = new Openlayers.style.Style({
+      ;;(feature as any).unselectedStyle = new Openlayers.style.Style({
         image: new Openlayers.style.Icon({
           img: DrawingUtility.getCircleWithText({
             fillColor: options.color,
             text: options.id.length,
             badgeOptions: options.badgeOptions,
           }),
-          imgSize: [imgWidth, imgHeight],
+          width: imgWidth,
+          height: imgHeight,
         }),
       })
       ;(feature as any).partiallySelectedStyle = new Openlayers.style.Style({
@@ -617,7 +628,8 @@ export default function (
             textColor: 'white',
             badgeOptions: options.badgeOptions,
           }),
-          imgSize: [imgWidth, imgHeight],
+          width: imgWidth,
+          height: imgHeight,
         }),
       })
       ;(feature as any).selectedStyle = new Openlayers.style.Style({
@@ -629,7 +641,8 @@ export default function (
             textColor: 'white',
             badgeOptions: options.badgeOptions,
           }),
-          imgSize: [imgWidth, imgHeight],
+          width: imgWidth,
+          height: imgHeight,
         }),
       })
       switch (options.isSelected) {
@@ -678,7 +691,8 @@ export default function (
             icon: options.icon,
             badgeOptions: options.badgeOptions,
           }),
-          imgSize: [x, y],
+          width: x,
+          height: y,
           anchor: [x / 2 - badgeOffset / 2, 0],
           anchorOrigin: 'bottom-left',
           anchorXUnits: 'pixels',
@@ -692,7 +706,8 @@ export default function (
             icon: options.icon,
             badgeOptions: options.badgeOptions,
           }),
-          imgSize: [x, y],
+          width: x,
+          height: y,
           anchor: [x / 2 - badgeOffset / 2, 0],
           anchorOrigin: 'bottom-left',
           anchorXUnits: 'pixels',
@@ -730,7 +745,6 @@ export default function (
         new Openlayers.style.Style({
           text: new Openlayers.style.Text({
             text: options.text,
-            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ text: any; overflow: boolean; ... Remove this comment to see the full error message
             overflow: true,
           }),
         })
@@ -896,7 +910,8 @@ export default function (
                   strokeColor: 'white',
                   icon: options.icon,
                 }),
-                imgSize: [pointWidth, pointHeight],
+                width: pointWidth,
+                height: pointHeight,
                 anchor: [pointWidth / 2, 0],
                 anchorOrigin: 'bottom-left',
                 anchorXUnits: 'pixels',
@@ -950,7 +965,6 @@ export default function (
         }),
         offsetX: 20,
         offsetY: -15,
-        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ text: any; fill: Openlayers.st... Remove this comment to see the full error message
         placement: 'point',
         maxAngle: 45,
         overflow: true,

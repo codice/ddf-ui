@@ -14,7 +14,11 @@
  **/
 import React from 'react'
 import DistanceUtils from '../../../../js/DistanceUtils'
-import ol from 'openlayers'
+import { Openlayers as ol } from './ol-openlayers-adapter'
+import { Coordinate } from 'ol/coordinate'
+import Map from 'ol/Map'
+import MultiPolygon from 'ol/geom/MultiPolygon'
+import Polygon from 'ol/geom/Polygon'
 import _ from 'underscore'
 import * as Turf from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
@@ -88,7 +92,7 @@ const modelToPolygon = (model: any) => {
   }
   const isMultiPolygon = ShapeUtils.isArray3D(coords)
   const multiPolygon = isMultiPolygon ? coords : [coords]
-  const polygons: ol.Coordinate[][][] = []
+  const polygons: Coordinate[][][] = []
   multiPolygon.forEach((polygon: any) => {
     const lineString = coordsToLineString(polygon)
     if (lineString) {
@@ -97,7 +101,7 @@ const modelToPolygon = (model: any) => {
   })
   return new ol.geom.MultiPolygon(polygons)
 }
-const adjustPolygonPoints = (polygon: ol.geom.Polygon) => {
+const adjustPolygonPoints = (polygon: Polygon) => {
   const extent = polygon.getExtent()
   const lon1 = extent[0]
   const lon2 = extent[2]
@@ -114,8 +118,8 @@ const adjustPolygonPoints = (polygon: ol.geom.Polygon) => {
     polygon.setCoordinates(adjusted)
   }
 }
-const adjustMultiPolygonPoints = (polygons: ol.geom.MultiPolygon) => {
-  const adjusted: ol.Coordinate[][][] = []
+const adjustMultiPolygonPoints = (polygons: MultiPolygon) => {
+  const adjusted: Coordinate[][][] = []
   polygons.getPolygons().forEach((polygon) => {
     adjustPolygonPoints(polygon)
     adjusted.push(polygon.getCoordinates())
@@ -132,7 +136,7 @@ export const drawPolygon = ({
 }: {
   map: any
   model: any
-  polygon: ol.geom.MultiPolygon
+  polygon: MultiPolygon
   id: string
   isInteractive?: boolean
   translation?: Translation
@@ -218,7 +222,7 @@ export const drawPolygon = ({
   const vectorLayer = new ol.layer.Vector({
     source: vectorSource,
   })
-  const mapRef = map.getMap() as ol.Map
+  const mapRef = map.getMap() as Map
   removeOldDrawing({ map: mapRef, id })
   vectorLayer.set('id', id)
   mapRef.addLayer(vectorLayer)

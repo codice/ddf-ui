@@ -13,8 +13,7 @@
  *
  **/
 import Common from './Common'
-/*jshint esversion: 6, bitwise: false*/
-import ol from 'openlayers'
+import { Openlayers as ol } from '../component/visualization/maps/openlayers/ol-openlayers-adapter'
 import { StartupDataStore } from './model/Startup/startup'
 type CoordinateType = Array<any>
 type PointType = Array<any>

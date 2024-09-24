@@ -37,7 +37,7 @@ import {
   makeLineGeo,
   makeBBoxGeo,
 } from 'geospatialdraw/target/webapp/geometry'
-import * as ol from 'openlayers'
+import Map from 'ol/Map'
 import Common from '../../../../js/Common'
 import wreqr from '../../../../js/wreqr'
 import * as Turf from '@turf/turf'
@@ -67,7 +67,7 @@ const SHAPES: Shape[] = [
 const DEFAULT_SHAPE = 'Polygon'
 const DRAWING_COLOR = 'blue'
 
-export const removeOldDrawing = ({ map, id }: { map: ol.Map; id: string }) => {
+export const removeOldDrawing = ({ map, id }: { map: Map; id: string }) => {
   const oldLayers = map
     .getLayers()
     .getArray()
