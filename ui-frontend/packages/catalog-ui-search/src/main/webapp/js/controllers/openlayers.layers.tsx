@@ -7,6 +7,7 @@ import { StartupDataStore } from '../model/Startup/startup'
 import { optionsFromCapabilities } from 'ol/source/WMTS'
 import WMTSCapabilities from 'ol/format/WMTSCapabilities'
 import { ProjectionLike } from 'ol/proj'
+import Layer from 'ol/layer/Layer'
 const createTile = (
   { show, alpha, ...options }: any,
   Source: any,
@@ -212,9 +213,9 @@ export class OpenlayersLayers {
     user.savePreferences()
   }
   setAlpha(model: any) {
-    const layer = this.layerForCid[model.id]
+    const layer = this.layerForCid[model.id] as Layer
     if (layer !== undefined) {
-      layer.setOpacity(model.get('alpha'))
+      layer.setOpacity(parseFloat(model.get('alpha')))
     }
   }
   setShow(model: any) {
