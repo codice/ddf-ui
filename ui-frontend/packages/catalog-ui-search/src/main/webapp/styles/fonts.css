@@ -5,6 +5,7 @@
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 300;
+  font-display: swap;
   src: url('fonts/open-sans/open-sans-v15-latin-300.eot'); /* IE9 Compat Modes */
   src: local('Open Sans Light'), local('OpenSans-Light'),
     url('fonts/open-sans/open-sans-v15-latin-300.eot?#iefix')
@@ -23,6 +24,7 @@
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 400;
+  font-display: swap;
   src: url('fonts/open-sans/open-sans-v15-latin-regular.eot'); /* IE9 Compat Modes */
   src: local('Open Sans Regular'), local('OpenSans-Regular'),
     url('fonts/open-sans/open-sans-v15-latin-regular.eot?#iefix')
@@ -42,6 +44,7 @@
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 600;
+  font-display: swap;
   src: url('fonts/open-sans/open-sans-v15-latin-600.eot'); /* IE9 Compat Modes */
   src: local('Open Sans SemiBold'), local('OpenSans-SemiBold'),
     url('fonts/open-sans/open-sans-v15-latin-600.eot?#iefix')
@@ -61,6 +64,7 @@
   font-family: 'Inconsolata';
   font-style: normal;
   font-weight: 400;
+  font-display: swap;
   src: url('fonts/inconsolata/inconsolata-v16-latin-regular.eot'); /* IE9 Compat Modes */
   src: local('Inconsolata Regular'), local('Inconsolata-Regular'),
     url('fonts/inconsolata/inconsolata-v16-latin-regular.eot?#iefix')
@@ -81,6 +85,7 @@
   font-family: 'Inconsolata';
   font-style: normal;
   font-weight: 700;
+  font-display: swap;
   src: url('fonts/inconsolata/inconsolata-v16-latin-700.eot'); /* IE9 Compat Modes */
   src: local('Inconsolata Bold'), local('Inconsolata-Bold'),
     url('fonts/inconsolata/inconsolata-v16-latin-700.eot?#iefix')

@@ -257,7 +257,7 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .font-awesome-span {
         && {
           font-size: 1.4rem;
-          font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+          font-family: 'Open Sans', arial, sans-serif;
         }
         /* stylelint-disable */
         &::before {
@@ -447,6 +447,12 @@ export const Provider = ({ children }: { children: any }) => {
     ? lightenUntilContrasting(secondaryMain, paperColor)
     : darkenUntilContrasting(secondaryMain, paperColor)
 
+  /**
+   *  Specify theme settings that don't need variables from theme
+   *
+   *  We do things like the typography here because otherwise the defaults get applied to each individual typography component,
+   *  meaning we'd have to specify overrides for each one.
+   */
   const initialTheme = createTheme({
     palette: {
       mode: darkMode ? 'dark' : 'light',
@@ -466,22 +472,29 @@ export const Provider = ({ children }: { children: any }) => {
         main: '#fff',
       },
     },
+    // Typography must be set here to ensure all components use the same font
+    typography: {
+      fontFamily: `'Open Sans', arial, sans-serif`,
+      button: {
+        textTransform: 'none',
+      },
+    },
+    zIndex: {
+      mobileStepper: 101,
+      appBar: 101,
+      drawer: 101,
+      modal: 101,
+      snackbar: 101,
+      tooltip: 101,
+      fab: 101,
+      speedDial: 101,
+    },
   })
 
   /**
    *  We split these out to so that we can access theme variables within our custom theme
    */
   const themeBasedTheme: ThemeOptions = {
-    typography: {
-      fontFamily: `'Open Sans', arial, sans-serif`,
-      h6: {
-        fontSize: '1.2rem',
-      },
-      fontSize: 16,
-      button: {
-        textTransform: 'none',
-      },
-    },
     components: {
       MuiChip: {
         styleOverrides: {
@@ -607,14 +620,6 @@ export const Provider = ({ children }: { children: any }) => {
           },
         },
       },
-    },
-    zIndex: {
-      mobileStepper: 101,
-      appBar: 101,
-      drawer: 101,
-      modal: 101,
-      snackbar: 101,
-      tooltip: 101,
     },
   }
 
