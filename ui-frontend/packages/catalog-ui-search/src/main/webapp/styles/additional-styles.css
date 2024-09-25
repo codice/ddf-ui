@@ -17,6 +17,8 @@ body {
   font-size: inherit;
   transition: font-size 0.25s ease-out;
   overflow: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 html.theme-dark {
