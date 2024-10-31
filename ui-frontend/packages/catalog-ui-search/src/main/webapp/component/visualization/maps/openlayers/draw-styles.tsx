@@ -17,6 +17,7 @@ import Style from 'ol/style/Style'
 import Geometry from 'ol/geom/Geometry'
 import Polygon from 'ol/geom/Polygon'
 import LineString from 'ol/geom/LineString'
+import Feature from 'ol/Feature'
 import Coordinate from 'ol/coordinate'
 import { transparentize } from 'polished'
 import { geometry } from 'geospatialdraw'
@@ -32,7 +33,7 @@ const LINE_WIDTH = 2.5
 const POINT_SIZE = 4.5
 const SCALE_FACTOR = 1.5
 
-const RENDERER_STYLE = (feature: ol.Feature): Style =>
+const RENDERER_STYLE = (feature: Feature): Style =>
   new ol.style.Style({
     stroke: new ol.style.Stroke({
       color: feature.get('color'),
@@ -53,7 +54,7 @@ const RENDERER_STYLE = (feature: ol.Feature): Style =>
         }),
   })
 
-const CIRCLE_DRAWING_STYLE = (feature: ol.Feature): Style =>
+const CIRCLE_DRAWING_STYLE = (feature: Feature): Style =>
   new ol.style.Style({
     stroke: new ol.style.Stroke({
       color: 'rgba(0, 0, 0, 0)',
@@ -69,9 +70,7 @@ const CIRCLE_DRAWING_STYLE = (feature: ol.Feature): Style =>
     }),
   })
 
-const CIRCLE_BUFFER_PROPERTY_VALUE_DRAWING_STYLE = (
-  feature: ol.Feature
-): Style =>
+const CIRCLE_BUFFER_PROPERTY_VALUE_DRAWING_STYLE = (feature: Feature): Style =>
   new ol.style.Style({
     stroke: new ol.style.Stroke({
       color: feature.get('color'),
@@ -82,7 +81,7 @@ const CIRCLE_BUFFER_PROPERTY_VALUE_DRAWING_STYLE = (
     }),
   })
 
-const GENERIC_DRAWING_STYLE = (feature: ol.Feature): Style[] => [
+const GENERIC_DRAWING_STYLE = (feature: Feature): Style[] => [
   new ol.style.Style({
     stroke: new ol.style.Stroke({
       color: feature.get('color'),
@@ -91,7 +90,8 @@ const GENERIC_DRAWING_STYLE = (feature: ol.Feature): Style[] => [
     fill: new ol.style.Fill({
       color: transparentize(0.95, feature.get('color') || contrastingColor),
     }),
-    ...(feature.getGeometry().getType() === 'Point' && feature.get('buffer') > 0
+    ...(feature.getGeometry()?.getType() === 'Point' &&
+    feature.get('buffer') > 0
       ? {}
       : {
           image: new ol.style.Circle({
@@ -123,8 +123,8 @@ const GENERIC_DRAWING_STYLE = (feature: ol.Feature): Style[] => [
   }),
 ]
 
-const DRAWING_STYLE = (feature: ol.Feature): Style[] | Style => {
-  if (feature.getGeometry().getType() === 'Circle') {
+const DRAWING_STYLE = (feature: Feature): Style[] | Style => {
+  if (feature.getGeometry()?.getType() === 'Circle') {
     return CIRCLE_DRAWING_STYLE(feature)
   } else {
     const bufferShape = feature.get(BUFFER_SHAPE_PROPERTY)

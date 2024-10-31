@@ -569,7 +569,7 @@ export const OpenlayersDrawings = ({
             disabledShapes={SHAPES.filter((shape) => shape !== drawingShape)}
             onUpdate={updateGeo}
             saveAndContinue={false}
-            mapStyle={DRAWING_STYLE}
+            mapStyle={DRAWING_STYLE as any}
           />
         </Editor>
       )}

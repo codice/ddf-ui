@@ -33,6 +33,7 @@ import LineString from 'ol/geom/LineString'
 import { ProjectionLike } from 'ol/proj'
 import Group from 'ol/layer/Group'
 import { Coordinate } from 'ol/coordinate'
+import Map from 'ol/Map'
 
 const defaultColor = '#3c6dd5'
 const rulerColor = '#506f85'
@@ -46,7 +47,7 @@ function createMap(insertionElement: any, mapLayers: any) {
     center: [0, 0],
     element: insertionElement,
   })
-  return map
+  return map as Map
 }
 function determineIdFromPosition(position: any, map: any) {
   const features: any = []
@@ -232,7 +233,7 @@ export default function (
         const position = { latitude: coordinates[1], longitude: coordinates[0] }
         down({ position: position, mapLocationId: locationId })
       }
-      map.on('pointerdown', geoDragDownListener)
+      map.on('pointerdown' as any, geoDragDownListener)
 
       geoDragMoveListener = function (event: any) {
         const { locationId } = determineIdsFromPosition(event.pixel, map)
@@ -248,7 +249,7 @@ export default function (
       map.on('pointerdrag', geoDragMoveListener)
 
       geoDragUpListener = up
-      map.on('pointerup', geoDragUpListener)
+      map.on('pointerup' as any, geoDragUpListener)
     },
     clearMouseTrackingForGeoDrag() {
       // re-enable panning
@@ -257,9 +258,9 @@ export default function (
           interaction.setActive(true)
         }
       })
-      map.un('pointerdown', geoDragDownListener)
+      map.un('pointerdown' as any, geoDragDownListener)
       map.un('pointerdrag', geoDragMoveListener)
-      map.un('pointerup', geoDragUpListener)
+      map.un('pointerup' as any, geoDragUpListener)
     },
     onLeftClickMapAPI(callback: any) {
       leftClickMapAPIListener = function (event: any) {
@@ -592,7 +593,9 @@ export default function (
      * Removes the given line Layer from the map.
      */
     removeRulerLine() {
-      map.removeLayer(this.rulerLine)
+      if (this.rulerLine) {
+        map.removeLayer(this.rulerLine)
+      }
     },
     /*
             Adds a billboard point utilizing the passed in point and options.
@@ -1068,12 +1071,16 @@ export default function (
     zoomIn() {
       const view = map.getView()
       const zoom = view.getZoom()
-      view.setZoom(zoom + 1)
+      if (zoom) {
+        view.setZoom(zoom + 1)
+      }
     },
     zoomOut() {
       const view = map.getView()
       const zoom = view.getZoom()
-      view.setZoom(zoom - 1)
+      if (zoom) {
+        view.setZoom(zoom - 1)
+      }
     },
     destroy() {
       unlistenToResize()
