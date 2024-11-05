@@ -12,23 +12,22 @@
  *
  **/
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>catalog-ui</artifactId>
         <groupId>org.codice.ddf.search</groupId>
         <version>5.1.50-SNAPSHOT</version>
     </parent>
-
     <groupId>org.codice.ddf.search</groupId>
     <artifactId>ui-frontend</artifactId>
     <name>DDF :: UI</name>
     <packaging>pom</packaging>
-
     <properties>
         <buildEnv>production</buildEnv>
     </properties>
-
     <build>
         <plugins>
             <plugin>
@@ -140,6 +139,11 @@
                                     <classifier>kanri</classifier>
                                 </artifact>
                                 <artifact>
+                                    <file>packages/admin/target/kanri.tgz</file>
+                                    <type>tgz</type>
+                                    <classifier>kanri</classifier>
+                                </artifact>
+                                <artifact>
                                     <file>packages/catalog-ui-search/target/catalog-ui-search.jar</file>
                                     <type>jar</type>
                                     <classifier>catalog-ui-search</classifier>
@@ -152,6 +156,11 @@
                                 <artifact>
                                     <file>packages/cesium-assets/target/cesium-assets.jar</file>
                                     <type>jar</type>
+                                    <classifier>cesium-assets</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>packages/cesium-assets/target/cesium-assets.tgz</file>
+                                    <type>tgz</type>
                                     <classifier>cesium-assets</classifier>
                                 </artifact>
                             </artifacts>
