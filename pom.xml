@@ -64,6 +64,7 @@
     <fmt.maven.plugin.version>2.3.0</fmt.maven.plugin.version>
 
     <!--Backend properties-->
+    <!-- update DDF version; this build works after building the DDF PR (https://github.com/codice/ddf/pull/6805) with a cherry-pick for https://github.com/codice/ddf/pull/6794) -->
     <ddf.version>2.29.2-SNAPSHOT</ddf.version>
     <ddf-jsonrpc.version>0.7</ddf-jsonrpc.version>
     <ddf.support.version>2.3.16</ddf.support.version>
