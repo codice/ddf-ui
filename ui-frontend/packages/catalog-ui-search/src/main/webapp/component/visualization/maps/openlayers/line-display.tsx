@@ -133,6 +133,9 @@ export const drawLine = ({
     translateFromOpenlayersCoordinates(line.getCoordinates())
   )
   const bufferedLine = Turf.buffer(turfLine, lineWidth, { units: 'meters' })
+  if (!bufferedLine) {
+    return
+  }
   const geometryRepresentation = new ol.geom.MultiLineString(
     translateToOpenlayersCoordinates(
       bufferedLine.geometry.coordinates as any

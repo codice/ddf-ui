@@ -20,7 +20,15 @@ import Map from 'ol/Map'
 import MultiPolygon from 'ol/geom/MultiPolygon'
 import Polygon from 'ol/geom/Polygon'
 import _ from 'underscore'
-import * as Turf from '@turf/turf'
+import {
+  multiLineString,
+  buffer,
+  bbox,
+  polygon as turfPolygon,
+  union,
+  coordEach,
+  featureCollection,
+} from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { removeOldDrawing } from './drawing-and-display'
@@ -156,21 +164,24 @@ export const drawPolygon = ({
       model.get('polygonBufferUnits')
     ) || 1
   const drawnPolygonSegments = coordinates.map((set) => {
-    return Turf.multiLineString([translateFromOpenlayersCoordinates(set)])
-      .geometry.coordinates
+    return multiLineString([translateFromOpenlayersCoordinates(set)]).geometry
+      .coordinates
   })
   const bufferPolygonSegments = coordinates.map((set) => {
-    const polySegment = Turf.multiLineString([
+    const polySegment = multiLineString([
       translateFromOpenlayersCoordinates(set),
     ])
-    const bufferedSegment = Turf.buffer(polySegment, bufferWidth, {
+    const bufferedSegment = buffer(polySegment, bufferWidth, {
       units: 'meters',
     })
-    const extent = Turf.bbox(bufferedSegment)
+    if (!bufferedSegment) {
+      return
+    }
+    const extent = bbox(bufferedSegment)
     const width = Math.abs(extent[0] - extent[2])
     // need to adjust the points again AFTER buffering, since buffering undoes the antimeridian adjustments
     if (width > 180) {
-      Turf.coordEach(bufferedSegment, (coord) => {
+      coordEach(bufferedSegment, (coord) => {
         if (coord[0] < 0) {
           coord[0] += 360
         }
@@ -178,11 +189,13 @@ export const drawPolygon = ({
     }
     const bufferPolygons = bufferedSegment.geometry.coordinates.map(
       (set: any) => {
-        return Turf.polygon([set])
+        return turfPolygon([set])
       }
     )
-    return bufferPolygons.reduce((a, b) => Turf.union(a, b), bufferPolygons[0])
-      ?.geometry.coordinates
+    return bufferPolygons.reduce(
+      (a, b) => union(featureCollection([a, b])),
+      bufferPolygons[0]
+    )?.geometry.coordinates
   })
   const bufferGeometryRepresentation = new ol.geom.MultiPolygon(
     bufferPolygonSegments as any

@@ -30,11 +30,11 @@
     "url": "https://github.com/codice/ddf.git"
   },
   "engines": {
-    "node": "16.x.x"
+    "node": "18.x.x"
   },
   "peerDependencies": {},
   "devDependencies": {
-    "@connexta/ace": "git+https://github.com/connexta/ace.git#4cc376863e82757699cdaa1301f30266e66a1efe",
+    "@connexta/ace": "file:///opt/repos/ace/",
     "@types/chai": "4.2.14",
     "@types/d3": "5.0.0",
     "@types/enzyme": "3.10.8",
@@ -65,8 +65,8 @@
     "react-addons-test-utils": "15.4.2",
     "sinon": "5.0.7",
     "ts-node": "10.9.1",
-    "tslib": "2.5.0",
-    "typescript": "5.0.4",
+    "tslib": "2.8.1",
+    "typescript": "5.6.3",
     "utility-types": "3.10.0"
   },
   "dependencies": {
@@ -79,9 +79,9 @@
     "@mui/material": "5.13.7",
     "@mui/system": "5.13.7",
     "@mui/x-data-grid": "6.9.1",
-    "@turf/circle": "6.5.0",
-    "@turf/meta": "6.5.0",
-    "@turf/turf": "6.5.0",
+    "@turf/circle": "7.1.0",
+    "@turf/meta": "7.1.0",
+    "@turf/turf": "7.1.0",
     "@types/backbone-associations": "0.6.31",
     "@types/backbone.marionette": "3.3.2",
     "@types/lodash": "4.14.120",
@@ -99,7 +99,7 @@
     "font-awesome": "4.7",
     "geo-convex-hull": "1.2.0",
     "geolib": "^3.2.1",
-    "geospatialdraw": "0.4.8",
+    "geospatialdraw": "0.4.11",
     "golden-layout": "1.5.9",
     "immer.1.5.0": "https://registry.npmjs.org/immer/-/immer-1.5.0.tgz",
     "jquery": "3.4.1",
@@ -148,7 +148,8 @@
     "polished": "4.2.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "styled-components": "5.3.10"
+    "styled-components": "5.3.10",
+    "underscore": "1.12.1"
   },
   "main": "src/main/webapp/index.tsx",
   "ace": {
