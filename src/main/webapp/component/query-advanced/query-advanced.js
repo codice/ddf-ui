@@ -1,0 +1,32 @@
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+import * as React from 'react';
+import QuerySettings from '../query-settings/query-settings';
+import { FilterBuilderRoot } from '../filter-builder/filter-builder';
+import { hot } from 'react-hot-loader';
+import Swath from '../swath/swath';
+export var QueryAdvanced = function (_a) {
+    var model = _a.model, errorListener = _a.errorListener, Extensions = _a.Extensions;
+    return (React.createElement("div", { className: "w-full h-full" },
+        React.createElement("div", { "data-id": "advanced-search-container", className: "w-full h-full px-2 pt-2 overflow-auto" },
+            React.createElement("div", { className: "query-advanced w-full" },
+                React.createElement(FilterBuilderRoot, { model: model, errorListener: errorListener })),
+            React.createElement("div", { className: "py-5 w-full" },
+                React.createElement(Swath, { className: "w-full h-1" })),
+            React.createElement("div", { className: "query-settings w-full" },
+                React.createElement(QuerySettings, { model: model, Extensions: Extensions })))));
+};
+export default hot(module)(QueryAdvanced);
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicXVlcnktYWR2YW5jZWQuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi9zcmMvbWFpbi93ZWJhcHAvY29tcG9uZW50L3F1ZXJ5LWFkdmFuY2VkL3F1ZXJ5LWFkdmFuY2VkLnRzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7Ozs7Ozs7OztJQWFJO0FBQ0osT0FBTyxLQUFLLEtBQUssTUFBTSxPQUFPLENBQUE7QUFDOUIsT0FBTyxhQUFhLE1BQU0sa0NBQWtDLENBQUE7QUFDNUQsT0FBTyxFQUFFLGlCQUFpQixFQUFFLE1BQU0sa0NBQWtDLENBQUE7QUFDcEUsT0FBTyxFQUFFLEdBQUcsRUFBRSxNQUFNLGtCQUFrQixDQUFBO0FBQ3RDLE9BQU8sS0FBSyxNQUFNLGdCQUFnQixDQUFBO0FBVWxDLE1BQU0sQ0FBQyxJQUFNLGFBQWEsR0FBRyxVQUFDLEVBQTJDO1FBQXpDLEtBQUssV0FBQSxFQUFFLGFBQWEsbUJBQUEsRUFBRSxVQUFVLGdCQUFBO0lBQzlELE9BQU8sQ0FDTCw2QkFBSyxTQUFTLEVBQUMsZUFBZTtRQUM1Qix3Q0FDVSwyQkFBMkIsRUFDbkMsU0FBUyxFQUFDLHVDQUF1QztZQUVqRCw2QkFBSyxTQUFTLEVBQUMsdUJBQXVCO2dCQUNwQyxvQkFBQyxpQkFBaUIsSUFBQyxLQUFLLEVBQUUsS0FBSyxFQUFFLGFBQWEsRUFBRSxhQUFhLEdBQUksQ0FDN0Q7WUFDTiw2QkFBSyxTQUFTLEVBQUMsYUFBYTtnQkFDMUIsb0JBQUMsS0FBSyxJQUFDLFNBQVMsRUFBQyxZQUFZLEdBQUcsQ0FDNUI7WUFDTiw2QkFBSyxTQUFTLEVBQUMsdUJBQXVCO2dCQUNwQyxvQkFBQyxhQUFhLElBQUMsS0FBSyxFQUFFLEtBQUssRUFBRSxVQUFVLEVBQUUsVUFBVSxHQUFJLENBQ25ELENBQ0YsQ0FDRixDQUNQLENBQUE7QUFDSCxDQUFDLENBQUE7QUFFRCxlQUFlLEdBQUcsQ0FBQyxNQUFNLENBQUMsQ0FBQyxhQUFhLENBQUMsQ0FBQSIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQ29weXJpZ2h0IChjKSBDb2RpY2UgRm91bmRhdGlvblxuICpcbiAqIFRoaXMgaXMgZnJlZSBzb2Z0d2FyZTogeW91IGNhbiByZWRpc3RyaWJ1dGUgaXQgYW5kL29yIG1vZGlmeSBpdCB1bmRlciB0aGUgdGVybXMgb2YgdGhlIEdOVSBMZXNzZXJcbiAqIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgYXMgcHVibGlzaGVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24sIGVpdGhlciB2ZXJzaW9uIDMgb2YgdGhlXG4gKiBMaWNlbnNlLCBvciBhbnkgbGF0ZXIgdmVyc2lvbi5cbiAqXG4gKiBUaGlzIHByb2dyYW0gaXMgZGlzdHJpYnV0ZWQgaW4gdGhlIGhvcGUgdGhhdCBpdCB3aWxsIGJlIHVzZWZ1bCwgYnV0IFdJVEhPVVQgQU5ZIFdBUlJBTlRZOyB3aXRob3V0XG4gKiBldmVuIHRoZSBpbXBsaWVkIHdhcnJhbnR5IG9mIE1FUkNIQU5UQUJJTElUWSBvciBGSVRORVNTIEZPUiBBIFBBUlRJQ1VMQVIgUFVSUE9TRS4gU2VlIHRoZSBHTlVcbiAqIExlc3NlciBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGZvciBtb3JlIGRldGFpbHMuIEEgY29weSBvZiB0aGUgR05VIExlc3NlciBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlXG4gKiBpcyBkaXN0cmlidXRlZCBhbG9uZyB3aXRoIHRoaXMgcHJvZ3JhbSBhbmQgY2FuIGJlIGZvdW5kIGF0XG4gKiA8aHR0cDovL3d3dy5nbnUub3JnL2xpY2Vuc2VzL2xncGwuaHRtbD4uXG4gKlxuICoqL1xuaW1wb3J0ICogYXMgUmVhY3QgZnJvbSAncmVhY3QnXG5pbXBvcnQgUXVlcnlTZXR0aW5ncyBmcm9tICcuLi9xdWVyeS1zZXR0aW5ncy9xdWVyeS1zZXR0aW5ncydcbmltcG9ydCB7IEZpbHRlckJ1aWxkZXJSb290IH0gZnJvbSAnLi4vZmlsdGVyLWJ1aWxkZXIvZmlsdGVyLWJ1aWxkZXInXG5pbXBvcnQgeyBob3QgfSBmcm9tICdyZWFjdC1ob3QtbG9hZGVyJ1xuaW1wb3J0IFN3YXRoIGZyb20gJy4uL3N3YXRoL3N3YXRoJ1xuaW1wb3J0IHsgVmFsaWRhdGlvblJlc3VsdCB9IGZyb20gJy4uLy4uL3JlYWN0LWNvbXBvbmVudC9sb2NhdGlvbi92YWxpZGF0b3JzJ1xudHlwZSBQcm9wcyA9IHtcbiAgbW9kZWw6IGFueVxuICBlcnJvckxpc3RlbmVyPzogKHZhbGlkYXRpb25SZXN1bHRzOiB7XG4gICAgW2tleTogc3RyaW5nXTogVmFsaWRhdGlvblJlc3VsdCB8IHVuZGVmaW5lZFxuICB9KSA9PiB2b2lkXG4gIEV4dGVuc2lvbnM/OiBSZWFjdC5GdW5jdGlvbkNvbXBvbmVudFxufVxuXG5leHBvcnQgY29uc3QgUXVlcnlBZHZhbmNlZCA9ICh7IG1vZGVsLCBlcnJvckxpc3RlbmVyLCBFeHRlbnNpb25zIH06IFByb3BzKSA9PiB7XG4gIHJldHVybiAoXG4gICAgPGRpdiBjbGFzc05hbWU9XCJ3LWZ1bGwgaC1mdWxsXCI+XG4gICAgICA8ZGl2XG4gICAgICAgIGRhdGEtaWQ9XCJhZHZhbmNlZC1zZWFyY2gtY29udGFpbmVyXCJcbiAgICAgICAgY2xhc3NOYW1lPVwidy1mdWxsIGgtZnVsbCBweC0yIHB0LTIgb3ZlcmZsb3ctYXV0b1wiXG4gICAgICA+XG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicXVlcnktYWR2YW5jZWQgdy1mdWxsXCI+XG4gICAgICAgICAgPEZpbHRlckJ1aWxkZXJSb290IG1vZGVsPXttb2RlbH0gZXJyb3JMaXN0ZW5lcj17ZXJyb3JMaXN0ZW5lcn0gLz5cbiAgICAgICAgPC9kaXY+XG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwicHktNSB3LWZ1bGxcIj5cbiAgICAgICAgICA8U3dhdGggY2xhc3NOYW1lPVwidy1mdWxsIGgtMVwiIC8+XG4gICAgICAgIDwvZGl2PlxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInF1ZXJ5LXNldHRpbmdzIHctZnVsbFwiPlxuICAgICAgICAgIDxRdWVyeVNldHRpbmdzIG1vZGVsPXttb2RlbH0gRXh0ZW5zaW9ucz17RXh0ZW5zaW9uc30gLz5cbiAgICAgICAgPC9kaXY+XG4gICAgICA8L2Rpdj5cbiAgICA8L2Rpdj5cbiAgKVxufVxuXG5leHBvcnQgZGVmYXVsdCBob3QobW9kdWxlKShRdWVyeUFkdmFuY2VkKVxuIl19
