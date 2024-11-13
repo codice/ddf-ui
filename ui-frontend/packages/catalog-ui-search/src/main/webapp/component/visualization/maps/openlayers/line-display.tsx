@@ -49,7 +49,7 @@ export function translateFromOpenlayersCoordinates(coords: CoordinatesType) {
 export function translateToOpenlayersCoordinates(coords: CoordinatesType) {
   const coordinates = [] as CoordinatesType
   coords.forEach((item) => {
-    if (item[0].constructor === Array) {
+    if (Array.isArray(item[0])) {
       coordinates.push(
         translateToOpenlayersCoordinates(
           item as unknown as CoordinatesType

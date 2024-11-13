@@ -485,7 +485,7 @@ export const ResultItem = ({
     if (value && MetacardDefinitions.getAttributeMap()[detail]) {
       switch (MetacardDefinitions.getAttributeMap()[detail].type) {
         case 'DATE':
-          if (value.constructor === Array) {
+          if (Array.isArray(value)) {
             value = value.map((val: any) =>
               TypedUserInstance.getMomentDate(val)
             )

@@ -494,7 +494,7 @@ const AttributeComponent = ({
   if (value === undefined || value === null) {
     value = []
   }
-  if (value.constructor !== Array) {
+  if (!Array.isArray(value)) {
     value = [value]
   }
   const { getAlias, getType } = useMetacardDefinitions()

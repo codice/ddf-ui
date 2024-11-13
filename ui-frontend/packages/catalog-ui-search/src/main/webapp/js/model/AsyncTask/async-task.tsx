@@ -22,7 +22,7 @@ export const convertToBackendCompatibleForm = ({
   const duplicatedProperties = _cloneDeep(properties)
   Object.keys(duplicatedProperties).forEach((key) => {
     if (typeof duplicatedProperties[key] !== 'string') {
-      if (duplicatedProperties[key]?.constructor === Array) {
+      if (Array.isArray(duplicatedProperties[key])) {
         duplicatedProperties[key] = (duplicatedProperties[key] as any[]).map(
           (value) => {
             if (typeof value === 'object') {

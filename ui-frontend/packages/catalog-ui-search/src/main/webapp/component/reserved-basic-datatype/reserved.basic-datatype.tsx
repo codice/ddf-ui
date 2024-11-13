@@ -254,7 +254,7 @@ function hasValidShape({
 }: {
   value: BasicDatatypeFilter['value']
 }): boolean {
-  if (value === undefined || value === null || value.constructor !== Array) {
+  if (value === undefined || value === null || !Array.isArray(value)) {
     return false
   } else {
     return (

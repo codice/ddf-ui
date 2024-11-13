@@ -1083,7 +1083,7 @@ export default function CesiumMap(
              Options passed in are color and isSelected.
             */
     updateCluster(geometry: any, options: any) {
-      if (geometry.constructor === Array) {
+      if (Array.isArray(geometry)) {
         geometry.forEach((innerGeometry) => {
           this.updateCluster(innerGeometry, options)
         })
@@ -1122,7 +1122,7 @@ export default function CesiumMap(
               Options passed in are color and isSelected.
               */
     updateGeometry(geometry: any, options: any) {
-      if (geometry.constructor === Array) {
+      if (Array.isArray(geometry)) {
         geometry.forEach((innerGeometry) => {
           this.updateGeometry(innerGeometry, options)
         })
