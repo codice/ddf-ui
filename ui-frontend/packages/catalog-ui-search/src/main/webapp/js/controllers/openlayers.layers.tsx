@@ -1,17 +1,24 @@
 import { Layers } from './layers'
 import _ from 'underscore'
-import { Openlayers as ol } from '../../component/visualization/maps/openlayers/ol-openlayers-adapter'
 import user from '../../component/singletons/user-instance'
+import { Tile as TileLayer } from 'ol/layer'
+import { OSM as olSourceOSM, BingMaps, TileWMS, WMTS, XYZ } from 'ol/source'
+import { transform as projTransform, get as projGet } from 'ol/proj'
+import { Image as ImageLayer } from 'ol/layer'
+import { ImageStatic as ImageStaticSource } from 'ol/source'
+import { defaults as interactionsDefaults } from 'ol/interaction'
+import { Map } from 'ol'
 import Backbone from 'backbone'
 import { StartupDataStore } from '../model/Startup/startup'
 import { optionsFromCapabilities } from 'ol/source/WMTS'
 import WMTSCapabilities from 'ol/format/WMTSCapabilities'
 import { ProjectionLike } from 'ol/proj'
 import Layer from 'ol/layer/Layer'
+import { View } from 'ol'
 const createTile = (
   { show, alpha, ...options }: any,
   Source: any,
-  Layer = ol.layer.Tile
+  Layer = TileLayer
 ) =>
   new Layer({
     visible: show,
@@ -26,19 +33,19 @@ const OSM = (opts: any) => {
       ...opts,
       url: url + (url.indexOf('/{z}/{x}/{y}') === -1 ? '/{z}/{x}/{y}.png' : ''),
     },
-    ol.source.OSM
+    olSourceOSM
   )
 }
 const BM = (opts: any) => {
   const imagerySet = opts.imagerySet || opts.url
-  return createTile({ ...opts, imagerySet }, ol.source.BingMaps)
+  return createTile({ ...opts, imagerySet }, BingMaps)
 }
 const WMS = (opts: any) => {
   const params = opts.params || {
     LAYERS: opts.layers,
     ...opts.parameters,
   }
-  return createTile({ ...opts, params }, ol.source.TileWMS)
+  return createTile({ ...opts, params }, TileWMS)
 }
 const WMT = async (opts: any) => {
   const { url, withCredentials, proxyEnabled } = opts
@@ -78,7 +85,7 @@ const WMT = async (opts: any) => {
     options.url = originalUrl.toString()
     options.urls = [originalUrl.toString()]
   }
-  return createTile(opts, () => new ol.source.WMTS(options))
+  return createTile(opts, () => new WMTS(options))
 }
 const AGM = (opts: any) => {
   // We strip the template part of the url because we will manually format
@@ -94,16 +101,16 @@ const AGM = (opts: any) => {
     const [z, x, y] = tileCoord
     return `${url}/tile/${z - 1}/${-y - 1}/${x}`
   }
-  return createTile({ ...opts, tileUrlFunction }, ol.source.XYZ)
+  return createTile({ ...opts, tileUrlFunction }, XYZ)
 }
 const SI = (opts: any) => {
   const imageExtent =
     opts.imageExtent ||
-    ol.proj.get(StartupDataStore.Configuration.getProjection())?.getExtent()
+    projGet(StartupDataStore.Configuration.getProjection())?.getExtent()
   return createTile(
     { ...opts, imageExtent, ...opts.parameters },
-    ol.source.ImageStatic,
-    ol.layer.Image as any
+    ImageStaticSource,
+    ImageLayer as any
   )
 }
 const sources = { OSM, BM, WMS, WMT, AGM, SI } as {
@@ -160,11 +167,11 @@ export class OpenlayersLayers {
     this.layers.layers.forEach((layer) => {
       this.addLayer(layer)
     })
-    const view = new ol.View({
-      projection: ol.proj.get(
+    const view = new View({
+      projection: projGet(
         StartupDataStore.Configuration.getProjection()
       ) as ProjectionLike,
-      center: ol.proj.transform(
+      center: projTransform(
         [0, 0],
         'EPSG:4326',
         StartupDataStore.Configuration.getProjection()
@@ -175,9 +182,9 @@ export class OpenlayersLayers {
     const config = {
       target: mapOptions.element,
       view,
-      interactions: ol.interaction.defaults({ doubleClickZoom: false }),
+      interactions: interactionsDefaults({ doubleClickZoom: false }),
     }
-    this.map = new ol.Map(config)
+    this.map = new Map(config)
     this.isMapCreated = true
     return this.map
   }

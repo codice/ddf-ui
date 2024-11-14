@@ -18,6 +18,6 @@
   ],
   "context-path": "/search/catalog/cesium/assets",
   "devDependencies": {
-    "@connexta/ace": "git+https://github.com/connexta/ace.git#4cc376863e82757699cdaa1301f30266e66a1efe"
+    "@connexta/ace": "git+https://github.com/connexta/ace.git#db11c38f68a73afe8229ac6f87b82e7ae7fc5758"
   }
 }

@@ -13,7 +13,12 @@
  *
  **/
 import React from 'react'
-import { Openlayers as ol } from './ol-openlayers-adapter'
+import { LineString } from 'ol/geom'
+import { transform as projTransform } from 'ol/proj'
+import { Vector as VectorSource } from 'ol/source'
+import { Vector as VectorLayer } from 'ol/layer'
+import Feature from 'ol/Feature'
+import { Stroke, Style } from 'ol/style'
 import Map from 'ol/Map'
 
 import _ from 'underscore'
@@ -65,22 +70,22 @@ const modelToRectangle = (model: any) => {
   } else if (east - west > 180) {
     west += 360
   }
-  const northWest = ol.proj.transform(
+  const northWest = projTransform(
     [west, north],
     'EPSG:4326',
     StartupDataStore.Configuration.getProjection()
   )
-  const northEast = ol.proj.transform(
+  const northEast = projTransform(
     [east, north],
     'EPSG:4326',
     StartupDataStore.Configuration.getProjection()
   )
-  const southWest = ol.proj.transform(
+  const southWest = projTransform(
     [west, south],
     'EPSG:4326',
     StartupDataStore.Configuration.getProjection()
   )
-  const southEast = ol.proj.transform(
+  const southEast = projTransform(
     [east, south],
     'EPSG:4326',
     StartupDataStore.Configuration.getProjection()
@@ -91,7 +96,7 @@ const modelToRectangle = (model: any) => {
   coords.push(southEast)
   coords.push(southWest)
   coords.push(northWest)
-  const rectangle = new ol.geom.LineString(coords)
+  const rectangle = new LineString(coords)
   return rectangle
 }
 export const drawBbox = ({
@@ -116,23 +121,23 @@ export const drawBbox = ({
   if (translation) {
     rectangle.translate(translation.longitude, translation.latitude)
   }
-  const billboard = new ol.Feature({
+  const billboard = new Feature({
     geometry: rectangle,
   })
   billboard.setId(id)
   billboard.set('locationId', model.get('locationId'))
   const color = model.get('color')
-  const iconStyle = new ol.style.Style({
-    stroke: new ol.style.Stroke({
+  const iconStyle = new Style({
+    stroke: new Stroke({
       color: isInteractive ? contrastingColor : color ? color : '#914500',
       width: isInteractive ? 6 : 4,
     }),
   })
   billboard.setStyle(iconStyle)
-  const vectorSource = new ol.source.Vector({
+  const vectorSource = new VectorSource({
     features: [billboard],
   })
-  let vectorLayer = new ol.layer.Vector({
+  let vectorLayer = new VectorLayer({
     source: vectorSource,
   })
   vectorLayer.set('id', id)

@@ -10,13 +10,11 @@
     "build:transpile": "yarn format && lerna run build -- --tsTranspileOnly true",
     "postbuild": "mkdirp target && ace gen-feature",
     "postinstall": "lerna bootstrap",
-    "m2": "yarn install:m2",
-    "install:m2": "yarn mvn:create-archive && yarn mvn:install-file",
     "mvn:create-archive": "mvn org.apache.maven.plugins:maven-assembly-plugin:single@create-archive",
     "mvn:install-file": "mvn org.apache.maven.plugins:maven-install-plugin:install-file -Dfile=target/packages-packages.zip -DpomFile=pom.xml -Dclassifier=packages -Dpackaging=zip"
   },
   "devDependencies": {
-    "@connexta/ace": "git+https://github.com/connexta/ace.git#4cc376863e82757699cdaa1301f30266e66a1efe",
+    "@connexta/ace": "git+https://github.com/connexta/ace.git#db11c38f68a73afe8229ac6f87b82e7ae7fc5758",
     "cpr": "3.0.1",
     "lerna": "3.20.2",
     "mkdirp": "0.5.1",

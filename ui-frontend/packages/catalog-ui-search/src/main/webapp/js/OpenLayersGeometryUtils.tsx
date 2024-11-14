@@ -13,8 +13,9 @@
  *
  **/
 import Common from './Common'
-import { Openlayers as ol } from '../component/visualization/maps/openlayers/ol-openlayers-adapter'
 import { StartupDataStore } from './model/Startup/startup'
+import { transform as projTransform } from 'ol/proj'
+
 type CoordinateType = Array<any>
 type PointType = Array<any>
 type GeometryType = {
@@ -58,13 +59,13 @@ export const OpenLayersGeometryUtils = {
     }
   },
   mapCoordinateToLonLat: (point: PointType) =>
-    ol.proj.transform(
+    projTransform(
       point as any,
       StartupDataStore.Configuration.getProjection(),
       'EPSG:4326'
     ),
   lonLatToMapCoordinate: (point: PointType) =>
-    ol.proj.transform(
+    projTransform(
       point as any,
       'EPSG:4326',
       StartupDataStore.Configuration.getProjection()

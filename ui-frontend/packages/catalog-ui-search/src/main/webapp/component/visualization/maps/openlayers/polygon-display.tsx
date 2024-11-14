@@ -14,8 +14,13 @@
  **/
 import React from 'react'
 import DistanceUtils from '../../../../js/DistanceUtils'
-import { Openlayers as ol } from './ol-openlayers-adapter'
 import { Coordinate } from 'ol/coordinate'
+import { transform as projTransform } from 'ol/proj'
+import { Vector as VectorSource } from 'ol/source'
+import { Vector as VectorLayer } from 'ol/layer'
+import Feature from 'ol/Feature'
+import Style from 'ol/style/Style'
+import { Stroke } from 'ol/style'
 import Map from 'ol/Map'
 import MultiPolygon from 'ol/geom/MultiPolygon'
 import Polygon from 'ol/geom/Polygon'
@@ -41,7 +46,7 @@ export const translateFromOpenlayersCoordinates = (coords: any) => {
   return coords
     .map((value: any) =>
       value.map((point: any) => {
-        const mappedPoint = ol.proj.transform(
+        const mappedPoint = projTransform(
           [
             DistanceUtils.coordinateRound(point[0]),
             DistanceUtils.coordinateRound(point[1]),
@@ -65,7 +70,7 @@ const coordsToLineString = (rawCoords: any) => {
     return
   }
   const coords = setArr.map((item: any) =>
-    ol.proj.transform(
+    projTransform(
       [item[0], item[1]],
       'EPSG:4326',
       StartupDataStore.Configuration.getProjection()
@@ -81,7 +86,7 @@ const modelToPolygon = (model: any) => {
   const coords = model.get('polygon')
 
   if (coords && coords.length === 0) {
-    return new ol.geom.MultiPolygon([])
+    return new MultiPolygon([])
   }
 
   if (
@@ -107,7 +112,7 @@ const modelToPolygon = (model: any) => {
       polygons.push(lineString)
     }
   })
-  return new ol.geom.MultiPolygon(polygons)
+  return new MultiPolygon(polygons)
 }
 const adjustPolygonPoints = (polygon: Polygon) => {
   const extent = polygon.getExtent()
@@ -197,30 +202,30 @@ export const drawPolygon = ({
       bufferPolygons[0]
     )?.geometry.coordinates
   })
-  const bufferGeometryRepresentation = new ol.geom.MultiPolygon(
+  const bufferGeometryRepresentation = new MultiPolygon(
     bufferPolygonSegments as any
   )
-  const drawnGeometryRepresentation = new ol.geom.MultiPolygon(
+  const drawnGeometryRepresentation = new MultiPolygon(
     drawnPolygonSegments as any
   )
-  const billboard = new ol.Feature({
+  const billboard = new Feature({
     geometry: bufferGeometryRepresentation,
   })
   billboard.setId(id)
   billboard.set('locationId', model.get('locationId'))
-  const drawnPolygonFeature = new ol.Feature({
+  const drawnPolygonFeature = new Feature({
     geometry: drawnGeometryRepresentation,
   })
   const color = model.get('color')
-  const bufferPolygonIconStyle = new ol.style.Style({
-    stroke: new ol.style.Stroke({
+  const bufferPolygonIconStyle = new Style({
+    stroke: new Stroke({
       color: isInteractive ? contrastingColor : color ? color : '#914500',
       width: isInteractive ? 6 : 4,
     }),
     zIndex: 1,
   })
-  const drawnPolygonIconStyle = new ol.style.Style({
-    stroke: new ol.style.Stroke({
+  const drawnPolygonIconStyle = new Style({
+    stroke: new Stroke({
       color: isInteractive ? contrastingColor : color ? color : '#914500',
       width: isInteractive ? 5 : 3,
       lineDash: [10, 5],
@@ -229,10 +234,10 @@ export const drawPolygon = ({
   })
   billboard.setStyle(bufferPolygonIconStyle)
   drawnPolygonFeature.setStyle(drawnPolygonIconStyle)
-  const vectorSource = new ol.source.Vector({
+  const vectorSource = new VectorSource({
     features: [billboard, drawnPolygonFeature],
   })
-  const vectorLayer = new ol.layer.Vector({
+  const vectorLayer = new VectorLayer({
     source: vectorSource,
   })
   const mapRef = map.getMap() as Map

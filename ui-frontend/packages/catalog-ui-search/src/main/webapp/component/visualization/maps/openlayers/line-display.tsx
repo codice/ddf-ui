@@ -14,9 +14,13 @@
  **/
 import React from 'react'
 import DistanceUtils from '../../../../js/DistanceUtils'
-import { Openlayers as ol } from './ol-openlayers-adapter'
-import MultiLineString from 'ol/geom/MultiLineString'
-import LineString from 'ol/geom/LineString'
+import { MultiLineString, LineString } from 'ol/geom'
+import { transform as projTransform } from 'ol/proj'
+import { Vector as VectorSource } from 'ol/source'
+import { Vector as VectorLayer } from 'ol/layer'
+import Feature from 'ol/Feature'
+import Style from 'ol/style/Style'
+import { Stroke } from 'ol/style'
 import Map from 'ol/Map'
 import { Coordinate } from 'ol/coordinate'
 import _ from 'underscore'
@@ -32,7 +36,7 @@ import { Translation } from '../interactions.provider'
 export function translateFromOpenlayersCoordinates(coords: Coordinate[]) {
   const coordinates = [] as Coordinate[]
   coords.forEach((point) => {
-    point = ol.proj.transform(
+    point = projTransform(
       [
         DistanceUtils.coordinateRound(point[0]),
         DistanceUtils.coordinateRound(point[1]),
@@ -60,7 +64,7 @@ export function translateToOpenlayersCoordinates(coords: Coordinate[]) {
       )
     } else {
       coordinates.push(
-        ol.proj.transform(
+        projTransform(
           [item[0], item[1]],
           'EPSG:4326',
           StartupDataStore.Configuration.getProjection()
@@ -76,7 +80,7 @@ const modelToLineString = (model: any) => {
   if (setArr.length < 2) {
     return
   }
-  return new ol.geom.LineString(translateToOpenlayersCoordinates(setArr))
+  return new LineString(translateToOpenlayersCoordinates(setArr))
 }
 const adjustLinePoints = (line: LineString) => {
   const extent = line.getExtent()
@@ -136,35 +140,35 @@ export const drawLine = ({
   if (!bufferedLine) {
     return
   }
-  const geometryRepresentation = new ol.geom.MultiLineString(
+  const geometryRepresentation = new MultiLineString(
     translateToOpenlayersCoordinates(
       bufferedLine.geometry.coordinates as any
     ) as unknown as any
   )
-  const drawnGeometryRepresentation = new ol.geom.LineString(
+  const drawnGeometryRepresentation = new LineString(
     translateToOpenlayersCoordinates(
       turfLine.geometry.coordinates as any
     ) as unknown as any
   )
   // need to adjust the points again AFTER buffering, since buffering undoes the antimeridian adjustments
   adjustMultiLinePoints(geometryRepresentation)
-  const billboard = new ol.Feature({
+  const billboard = new Feature({
     geometry: geometryRepresentation,
   })
   billboard.setId(id)
   billboard.set('locationId', model.get('locationId'))
-  const drawnLineFeature = new ol.Feature({
+  const drawnLineFeature = new Feature({
     geometry: drawnGeometryRepresentation,
   })
   const color = model.get('color')
-  const iconStyle = new ol.style.Style({
-    stroke: new ol.style.Stroke({
+  const iconStyle = new Style({
+    stroke: new Stroke({
       color: isInteractive ? contrastingColor : color ? color : '#914500',
       width: isInteractive ? 6 : 4,
     }),
   })
-  const drawnLineIconStyle = new ol.style.Style({
-    stroke: new ol.style.Stroke({
+  const drawnLineIconStyle = new Style({
+    stroke: new Stroke({
       color: isInteractive ? contrastingColor : color ? color : '#914500',
       width: 2,
       lineDash: [10, 5],
@@ -172,10 +176,10 @@ export const drawLine = ({
   })
   billboard.setStyle(iconStyle)
   drawnLineFeature.setStyle(drawnLineIconStyle)
-  const vectorSource = new ol.source.Vector({
+  const vectorSource = new VectorSource({
     features: [billboard, drawnLineFeature],
   })
-  let vectorLayer = new ol.layer.Vector({
+  let vectorLayer = new VectorLayer({
     source: vectorSource,
   })
   vectorLayer.set('id', id)

@@ -13,21 +13,21 @@
  *
  **/
 import _ from 'lodash'
-import { Openlayers } from './ol-openlayers-adapter'
 import * as Turf from '@turf/turf'
 import { GeometryJSON } from 'geospatialdraw/target/webapp/geometry'
 import { StartupDataStore } from '../../../../js/model/Startup/startup'
-
+import { transform as projTransform } from 'ol/proj'
+import { boundingExtent, getCenter } from 'ol/extent'
 function convertPointCoordinate(point: any) {
   const coords = [point[0], point[1]]
-  return Openlayers.proj.transform(
+  return projTransform(
     coords as any,
     'EPSG:4326',
     StartupDataStore.Configuration.getProjection()
   )
 }
 function unconvertPointCoordinate(point: any) {
-  return Openlayers.proj.transform(
+  return projTransform(
     point,
     StartupDataStore.Configuration.getProjection(),
     'EPSG:4326'
@@ -44,8 +44,8 @@ export default {
     const lineObject = propertyModel
       .getPoints()
       .map((coordinate: any) => convertPointCoordinate(coordinate))
-    const extent = Openlayers.extent.boundingExtent(lineObject)
-    return Openlayers.extent.getCenter(extent)
+    const extent = boundingExtent(lineObject)
+    return getCenter(extent)
   },
   /*
         Calculates the center of given a geometry (WKT)
@@ -62,8 +62,8 @@ export default {
     const allPoints = _.flatten(
       propertyModels.map((propertyModel: any) => propertyModel.getPoints())
     ).map((coordinate) => convertPointCoordinate(coordinate))
-    const extent = Openlayers.extent.boundingExtent(allPoints)
-    return Openlayers.extent.getCenter(extent)
+    const extent = boundingExtent(allPoints)
+    return getCenter(extent)
   },
   /*
         Calculates the center of given geometries (WKT)

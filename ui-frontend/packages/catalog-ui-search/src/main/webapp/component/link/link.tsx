@@ -4,6 +4,6 @@ import {
   LinkProps as RouterLinkProps,
 } from 'react-router-dom'
 
-export const Link = React.forwardRef<any, RouterLinkProps>((props, ref) => (
-  <RouterLink ref={ref} {...props} />
-))
+export const Link = React.forwardRef<HTMLAnchorElement, RouterLinkProps>(
+  (props, ref) => <RouterLink ref={ref} {...props} />
+)
