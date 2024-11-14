@@ -13,7 +13,17 @@
  */
 package org.codice.ddf.catalog.ui.plugin.highlight;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.annotations.VisibleForTesting;
+
 import ddf.catalog.Constants;
 import ddf.catalog.data.Attribute;
 import ddf.catalog.data.Metacard;
@@ -23,12 +33,6 @@ import ddf.catalog.operation.QueryResponse;
 import ddf.catalog.operation.ResultAttributeHighlight;
 import ddf.catalog.operation.ResultHighlight;
 import ddf.catalog.plugin.PostQueryPlugin;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 /** Transforms solr highlights into an easily displayable format on the frontend */
 public class HighlightTransformPlugin implements PostQueryPlugin {
@@ -157,7 +161,7 @@ public class HighlightTransformPlugin implements PostQueryPlugin {
       value = (String) attribute.getValues().get(index);
     }
 
-    if (value != null && (redactedPattern == null || !redactedPattern.matcher(value).matches())) {
+    if (StringUtils.isNotBlank(value) && (redactedPattern == null || !redactedPattern.matcher(value).matches())) {
       String highlightedString = createHighlightString(highlight, value, attributeName);
       processedHighlight.addHighlight(
           attributeName,

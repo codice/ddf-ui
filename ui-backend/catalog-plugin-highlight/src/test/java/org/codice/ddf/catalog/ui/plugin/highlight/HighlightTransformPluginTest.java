@@ -1,13 +1,23 @@
 /* Copyright (c) Connexta, LLC */
 package org.codice.ddf.catalog.ui.plugin.highlight;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import static org.mockito.Mockito.mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.ImmutableMap;
+
 import ddf.catalog.Constants;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.Result;
@@ -23,14 +33,6 @@ import ddf.catalog.operation.impl.HighlightImpl;
 import ddf.catalog.operation.impl.QueryResponseImpl;
 import ddf.catalog.operation.impl.ResultAttributeHighlightImpl;
 import ddf.catalog.operation.impl.ResultHighlightImpl;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HighlightTransformPluginTest {
@@ -172,6 +174,7 @@ public class HighlightTransformPluginTest {
     metacard.setAttribute(new AttributeImpl("title", "REDACTED DATA"));
     metacard.setAttribute(new AttributeImpl("description", value));
     metacard.setAttribute(new AttributeImpl("id", "123456789"));
+    metacard.setAttribute(new AttributeImpl("source", ""));
     Result result = new ResultImpl(metacard);
 
     QueryResponse response = new QueryResponseImpl(request, Arrays.asList(result), 1);
@@ -179,6 +182,8 @@ public class HighlightTransformPluginTest {
         new ResultAttributeHighlightImpl("description", Arrays.asList(highlight));
     ResultAttributeHighlight missingAttributeHighlight =
         new ResultAttributeHighlightImpl("extra", Arrays.asList(new HighlightImpl(6, 20)));
+    ResultAttributeHighlight emptyStringRedactedAttributeHighlight =
+        new ResultAttributeHighlightImpl("source", Arrays.asList(new HighlightImpl(6, 20)));
     ResultAttributeHighlight redactedAttributeHighlight =
         new ResultAttributeHighlightImpl("title", Arrays.asList(new HighlightImpl(10, 20)));
 
@@ -186,7 +191,7 @@ public class HighlightTransformPluginTest {
         new ResultHighlightImpl(
             id,
             Arrays.asList(
-                resultAttributeHighlight, missingAttributeHighlight, redactedAttributeHighlight));
+                resultAttributeHighlight, missingAttributeHighlight, emptyStringRedactedAttributeHighlight, redactedAttributeHighlight));
 
     response
         .getProperties()
