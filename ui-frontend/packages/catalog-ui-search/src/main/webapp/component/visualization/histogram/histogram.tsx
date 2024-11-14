@@ -11,8 +11,7 @@ import _cloneDeep from 'lodash.clonedeep'
 import wreqr from '../../../js/wreqr'
 import $ from 'jquery'
 import _ from 'underscore'
-// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'plot... Remove this comment to see the full error message
-import Plotly from 'plotly.js/dist/plotly'
+import Plotly from 'plotly.js'
 import moment from 'moment'
 import extension from '../../../extension-points'
 import { useTheme } from '@mui/material/styles'
@@ -297,7 +296,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
     return customArray.length > 0 ? customArray : undefined
   }
 
-  const determineInitialData = () => {
+  const determineInitialData = (): Plotly.Data[] => {
     return [
       {
         x: calculateAttributeArray({
@@ -311,7 +310,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
           color: 'rgba(120, 120, 120, .05)',
           line: {
             color: 'rgba(120,120,120,.2)',
-            width: '2',
+            width: 2,
           },
         },
         hovertemplate: '%{y} Hits<extra></extra>',
@@ -319,7 +318,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
       },
     ]
   }
-  const determineData = (plot: any) => {
+  const determineData = (plot: any): Plotly.Data[] => {
     const activeResults = results
     const xbins = _cloneDeep(plot._fullData[0].xbins)
 
@@ -350,7 +349,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
           color: 'rgba(120, 120, 120, .05)',
           line: {
             color: 'rgba(120,120,120,.2)',
-            width: '2',
+            width: 2,
           },
         },
         hoverlabel: customHoverArray
@@ -374,7 +373,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
           color: 'rgba(120, 120, 120, .2)',
           line: {
             color: 'rgba(120,120,120,.5)',
-            width: '2',
+            width: 2,
           },
         },
         hoverlabel: selectedCustomHoverArray
@@ -418,7 +417,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
       if (results.length > 0 && attributeToBin) {
         const histogramElement = plotlyRef.current
         const initialData = determineInitialData()
-        if (initialData[0].x.length === 0) {
+        if ((initialData[0] as any).x.length === 0) {
           setNoMatchingData(true)
         } else {
           Plotly.newPlot(
