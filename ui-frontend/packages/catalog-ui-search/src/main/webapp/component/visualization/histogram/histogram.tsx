@@ -321,7 +321,6 @@ export const Histogram = ({ selectionInterface }: Props) => {
   const determineData = (plot: any): Plotly.Data[] => {
     const activeResults = results
     const xbins = _cloneDeep(plot._fullData[0].xbins)
-
     const categories: any[] = retrieveCategoriesFromPlotly()
 
     let customHoverArray: any = undefined
@@ -329,12 +328,13 @@ export const Histogram = ({ selectionInterface }: Props) => {
 
     if (extension.customHistogramHover) {
       customHoverArray = getCustomHoverArray(categories, results)
-
       selectedCustomHoverArray = getCustomHoverArray(
         categories,
         Object.values(selectedResults)
       )
     }
+
+    const baseHoverTemplate = '%{y} Hits<br>%{x}<extra></extra>'
 
     return [
       {
@@ -357,7 +357,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
           : defaultHoverLabel,
         hovertemplate: customHoverArray
           ? getCustomHoverTemplates('Hits', customHoverArray)
-          : '%{y} Hits<extra></extra>',
+          : baseHoverTemplate,
         autobinx: false,
         xbins,
       },
@@ -381,7 +381,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
           : defaultHoverLabel,
         hovertemplate: selectedCustomHoverArray
           ? getCustomHoverTemplates('Selected', selectedCustomHoverArray)
-          : '%{y} Selected<extra></extra>',
+          : baseHoverTemplate,
         autobinx: false,
         xbins,
       },
