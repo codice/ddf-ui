@@ -1,7 +1,4 @@
 import * as React from 'react'
-import Enzyme, { mount } from 'enzyme'
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17'
-Enzyme.configure({ adapter: new Adapter() })
 import { expect } from 'chai'
 import FilterLeaf from './filter-leaf'
 import {
@@ -14,6 +11,13 @@ import moment from 'moment'
 import user from '../singletons/user-instance'
 import { StartupDataStore } from '../../js/model/Startup/startup'
 import { BasicDataTypePropertyName } from './reserved.properties'
+import { render } from '@testing-library/react'
+
+// trim whitespace, lowercase
+function customNormalizer(text: string) {
+  return text.trim().toLowerCase()
+}
+
 function addTestDefs() {
   StartupDataStore.MetacardDefinitions.addDynamicallyFoundMetacardDefinitions({
     testing: {
@@ -170,10 +174,10 @@ describe('filter leaf testing', () => {
     addTestDefs()
   })
   it('renders with a blank FilterClass', () => {
-    mount(<FilterLeaf filter={new FilterClass({})} setFilter={() => {}} />)
+    render(<FilterLeaf filter={new FilterClass({})} setFilter={() => {}} />)
   })
   it('renders with a non-blank text FilterClass', () => {
-    const wrapper = mount(
+    const filterLeafInstance = render(
       <FilterLeaf
         filter={
           new FilterClass({
@@ -185,11 +189,13 @@ describe('filter leaf testing', () => {
         setFilter={() => {}}
       />
     )
-    expect(wrapper.find('input').first().render().val()).to.equal('anyText')
-    expect(wrapper.find('input').last().render().val()).to.equal('text')
+    const anyTextInput = filterLeafInstance.getByDisplayValue('anyText')
+    const textInput = filterLeafInstance.getByDisplayValue('text')
+    expect(anyTextInput).to.exist
+    expect(textInput).to.exist
   })
   it('renders with a non-blank number FilterClass', () => {
-    const wrapper = mount(
+    const filterLeafInstance = render(
       <FilterLeaf
         filter={
           new FilterClass({
@@ -201,11 +207,13 @@ describe('filter leaf testing', () => {
         setFilter={() => {}}
       />
     )
-    expect(wrapper.find('input').first().render().val()).to.equal('integerType')
-    expect(wrapper.find('input').last().render().val()).to.equal('4')
+    const anyTextInput = filterLeafInstance.getByDisplayValue('integerType')
+    const textInput = filterLeafInstance.getByDisplayValue('4')
+    expect(anyTextInput).to.exist
+    expect(textInput).to.exist
   })
   it('renders with a non-blank integer FilterClass', () => {
-    const wrapper = mount(
+    const filterLeafInstance = render(
       <FilterLeaf
         filter={
           new FilterClass({
@@ -217,11 +225,13 @@ describe('filter leaf testing', () => {
         setFilter={() => {}}
       />
     )
-    expect(wrapper.find('input').first().render().val()).to.equal('integerType')
-    expect(wrapper.find('input').last().render().val()).to.equal('4')
+    const anyTextInput = filterLeafInstance.getByDisplayValue('integerType')
+    const textInput = filterLeafInstance.getByDisplayValue('4')
+    expect(anyTextInput).to.exist
+    expect(textInput).to.exist
   })
   it('renders with a non-blank float FilterClass', () => {
-    const wrapper = mount(
+    const filterLeafInstance = render(
       <FilterLeaf
         filter={
           new FilterClass({
@@ -233,11 +243,13 @@ describe('filter leaf testing', () => {
         setFilter={() => {}}
       />
     )
-    expect(wrapper.find('input').first().render().val()).to.equal('floatType')
-    expect(wrapper.find('input').last().render().val()).to.equal('4')
+    const anyTextInput = filterLeafInstance.getByDisplayValue('floatType')
+    const textInput = filterLeafInstance.getByDisplayValue('4')
+    expect(anyTextInput).to.exist
+    expect(textInput).to.exist
   })
   it('renders with a non-blank long FilterClass', () => {
-    const wrapper = mount(
+    const filterLeafInstance = render(
       <FilterLeaf
         filter={
           new FilterClass({
@@ -249,11 +261,13 @@ describe('filter leaf testing', () => {
         setFilter={() => {}}
       />
     )
-    expect(wrapper.find('input').first().render().val()).to.equal('longType')
-    expect(wrapper.find('input').last().render().val()).to.equal('4')
+    const anyTextInput = filterLeafInstance.getByDisplayValue('longType')
+    const textInput = filterLeafInstance.getByDisplayValue('4')
+    expect(anyTextInput).to.exist
+    expect(textInput).to.exist
   })
   it('renders with a non-blank short FilterClass', () => {
-    const wrapper = mount(
+    const filterLeafInstance = render(
       <FilterLeaf
         filter={
           new FilterClass({
@@ -265,11 +279,13 @@ describe('filter leaf testing', () => {
         setFilter={() => {}}
       />
     )
-    expect(wrapper.find('input').first().render().val()).to.equal('shortType')
-    expect(wrapper.find('input').last().render().val()).to.equal('4')
+    const anyTextInput = filterLeafInstance.getByDisplayValue('shortType')
+    const textInput = filterLeafInstance.getByDisplayValue('4')
+    expect(anyTextInput).to.exist
+    expect(textInput).to.exist
   })
   it('renders with a non-blank double FilterClass', () => {
-    const wrapper = mount(
+    const filterLeafInstance = render(
       <FilterLeaf
         filter={
           new FilterClass({
@@ -281,11 +297,13 @@ describe('filter leaf testing', () => {
         setFilter={() => {}}
       />
     )
-    expect(wrapper.find('input').first().render().val()).to.equal('doubleType')
-    expect(wrapper.find('input').last().render().val()).to.equal('4')
+    const anyTextInput = filterLeafInstance.getByDisplayValue('doubleType')
+    const textInput = filterLeafInstance.getByDisplayValue('4')
+    expect(anyTextInput).to.exist
+    expect(textInput).to.exist
   })
   it('renders with a non-blank boolean FilterClass', () => {
-    const wrapper = mount(
+    const filterLeafInstance = render(
       <FilterLeaf
         filter={
           new FilterClass({
@@ -297,13 +315,15 @@ describe('filter leaf testing', () => {
         setFilter={() => {}}
       />
     )
-    expect(wrapper.find('input').first().render().val()).to.equal('booleanType')
-    expect(wrapper.find('input').last().render().val()).to.equal('true')
+    const anyTextInput = filterLeafInstance.getByDisplayValue('booleanType')
+    const textInput = filterLeafInstance.getByDisplayValue('true')
+    expect(anyTextInput).to.exist
+    expect(textInput).to.exist
   })
   it('renders with a non-blank date FilterClass', () => {
     user.get('user').get('preferences').set('timeZone', data.date1.timezone)
 
-    const wrapper = mount(
+    const filterLeafInstance = render(
       <FilterLeaf
         filter={
           new FilterClass({
@@ -315,13 +335,15 @@ describe('filter leaf testing', () => {
         setFilter={() => {}}
       />
     )
-    expect(wrapper.find('input').first().render().val()).to.equal('dateType')
-    expect(wrapper.find('input').last().render().val()).to.equal(
+    const anyTextInput = filterLeafInstance.getByDisplayValue('dateType')
+    const textInput = filterLeafInstance.getByDisplayValue(
       data.date1.userFormatISO
     )
+    expect(anyTextInput).to.exist
+    expect(textInput).to.exist
   })
   it('renders with a non-blank location FilterClass', () => {
-    const wrapper = mount(
+    const filterLeafInstance = render(
       <FilterLeaf
         filter={
           new FilterClass({
@@ -338,21 +360,18 @@ describe('filter leaf testing', () => {
         if (typeof val !== 'string') {
           return JSON.stringify(val)
         }
-        return val.toLowerCase()
+        return val
       })
-      .filter((val) => val !== 'line')
-    wrapper.find('input').forEach((node) => {
-      const rendering = node.render()
-      const val = rendering.val().toLowerCase()
-      const index = thingsToFind.indexOf(val)
-      if (index >= 0) {
-        thingsToFind.splice(index, 1)
-      }
+      .map(customNormalizer)
+    thingsToFind.forEach((thing) => {
+      const input = filterLeafInstance.getByDisplayValue(thing, {
+        normalizer: customNormalizer,
+      })
+      expect(input).to.exist
     })
-    expect(thingsToFind.length).to.equal(0)
   })
   it('renders with a non-blank polygon location FilterClass', () => {
-    const wrapper = mount(
+    const filterLeafInstance = render(
       <FilterLeaf
         filter={
           new FilterClass({
@@ -369,21 +388,24 @@ describe('filter leaf testing', () => {
         if (typeof val !== 'string') {
           return JSON.stringify(val)
         }
-        return val.toLowerCase()
+        return val
       })
-      .filter((val) => val !== 'poly')
-    wrapper.find('input').forEach((node) => {
-      const rendering = node.render()
-      const val = rendering.val().toLowerCase()
-      const index = thingsToFind.indexOf(val)
-      if (index >= 0) {
-        thingsToFind.splice(index, 1)
-      }
+      .map(customNormalizer)
+      .map((val) => {
+        if (val === 'poly') {
+          return 'polygon'
+        }
+        return val
+      })
+    thingsToFind.forEach((thing) => {
+      const input = filterLeafInstance.getByDisplayValue(thing, {
+        normalizer: customNormalizer,
+      })
+      expect(input).to.exist
     })
-    expect(thingsToFind.length).to.equal(0)
   })
   it('renders with a non-blank point radius location FilterClass', () => {
-    const wrapper = mount(
+    const filterLeafInstance = render(
       <FilterLeaf
         filter={
           new FilterClass({
@@ -400,20 +422,20 @@ describe('filter leaf testing', () => {
         if (typeof val !== 'string') {
           return JSON.stringify(val)
         }
-        if (val === 'POINTRADIUS') {
+        return val
+      })
+      .map(customNormalizer)
+      .map((val) => {
+        if (val === 'circle' || val === 'pointradius') {
           return 'point-radius'
         }
-        return val.toLowerCase()
+        return val
       })
-      .filter((val) => val !== 'circle')
-    wrapper.find('input').forEach((node) => {
-      const rendering = node.render()
-      const val = rendering.val().toLowerCase()
-      const index = thingsToFind.indexOf(val)
-      if (index >= 0) {
-        thingsToFind.splice(index, 1)
-      }
+    thingsToFind.forEach((thing) => {
+      const input = filterLeafInstance.getByDisplayValue(thing, {
+        normalizer: customNormalizer,
+      })
+      expect(input).to.exist
     })
-    expect(thingsToFind.length).to.equal(0)
   })
 })
