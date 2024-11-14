@@ -1,9 +1,6 @@
 import React from 'react'
-import Enzyme, { mount } from 'enzyme'
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17'
-Enzyme.configure({ adapter: new Adapter() })
 import { expect } from 'chai'
-import { render } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 
 import { DateRangeField, defaultValue } from './date-range'
 import moment from 'moment'
@@ -90,7 +87,6 @@ const data = {
     originalISO: '2021-04-15T05:53:54.316Z', // use the converter to find the appropriate shifted date
   },
 }
-let wrapper: Enzyme.ReactWrapper | null
 describe('verify date range field works', () => {
   before(() => {
     user.get('user').get('preferences').set('timeZone', data.date1.timezone)
@@ -105,13 +101,6 @@ describe('verify date range field works', () => {
       .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
   })
   afterEach(() => {
-    // Must unmount to stop listening to the user prefs model (the useTimePrefs() hook)
-    // Has to be unmounted before we set any preferences so we don't trigger any onChange
-    // callbacks again.
-    if (wrapper) {
-      wrapper.unmount()
-      wrapper = null
-    }
     user
       .get('user')
       .get('preferences')
@@ -254,7 +243,7 @@ describe('verify date range field works', () => {
       .get('preferences')
       .set('dateTimeFormat', Common.getDateTimeFormats()['24']['millisecond'])
 
-    wrapper = mount(
+    const { getAllByRole } = render(
       <UncontrolledDateRangeField
         startingValue={{
           start: data.date2.userSuppliedInput,
@@ -262,40 +251,47 @@ describe('verify date range field works', () => {
         }}
       />
     )
-    const input = wrapper.find('input')
-    input.first().simulate('change', {
+    const inputs = getAllByRole('textbox') as HTMLInputElement[]
+    fireEvent.change(inputs[0], {
       target: { value: data.date2.userSuppliedInput },
     })
-    input.last().simulate('change', {
+    fireEvent.change(inputs[1], {
       target: { value: data.date2.userSuppliedInput },
     })
-    expect(input.first().render().val()).to.equal(data.date2.parsedOutput)
-    expect(input.last().render().val()).to.equal(data.date2.parsedOutput)
+    expect(inputs[0].value).to.equal(data.date2.parsedOutput)
+    expect(inputs[1].value).to.equal(data.date2.parsedOutput)
   })
   it(`should generate appropriately shifted ISO strings on change (DST)`, () => {
-    wrapper = mount(
+    const ref = React.createRef<DateRangeInput>()
+    render(
       <DateRangeField
         value={defaultValue()}
         onChange={(updatedValue) => {
           expect(updatedValue.start).to.equal(data.date5.originalISO)
           expect(updatedValue.end).to.equal(data.date5.originalISO)
         }}
+        ref={ref}
       />
     )
-    const dateFieldInstance = wrapper.children().children().get(0)
-    dateFieldInstance.props.onChange(
-      [
-        DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
-          data.date5.originalISO,
-          ISO_8601_FORMAT_ZONED
-        ),
-        DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
-          data.date5.originalISO,
-          ISO_8601_FORMAT_ZONED
-        ),
-      ],
-      true
-    )
+    if (ref.current) {
+      const handleDateRangePickerChange = Reflect.get(
+        ref.current,
+        'handleDateRangePickerChange'
+      )
+      handleDateRangePickerChange(
+        [
+          DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
+            data.date5.originalISO,
+            ISO_8601_FORMAT_ZONED
+          ),
+          DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
+            data.date5.originalISO,
+            ISO_8601_FORMAT_ZONED
+          ),
+        ],
+        true
+      )
+    }
   })
   it(`should generate appropriately shifted ISO strings on change`, () => {
     const ref = React.createRef<DateRangeInput>()
@@ -331,7 +327,7 @@ describe('verify date range field works', () => {
     }
   })
   it(`should not allow dates beyond max future`, () => {
-    wrapper = mount(
+    const { getAllByRole } = render(
       <DateRangeField
         value={defaultValue()}
         onChange={(updatedValue) => {
@@ -339,13 +335,17 @@ describe('verify date range field works', () => {
         }}
       />
     )
-    const input = wrapper.find('input').first()
-    input.simulate('change', {
+
+    const inputs = getAllByRole('textbox') as HTMLInputElement[]
+    const startInput = inputs[0]
+
+    // Simulate typing in a disallowed future date
+    fireEvent.change(startInput, {
       target: { value: data.date3.disallowedFuture },
     })
   })
   it(`should allow dates up to max future`, () => {
-    wrapper = mount(
+    const { getAllByRole } = render(
       <DateRangeField
         value={defaultValue()}
         onChange={(updatedValue) => {
@@ -353,13 +353,14 @@ describe('verify date range field works', () => {
         }}
       />
     )
-    const input = wrapper.find('input').first()
-    input.simulate('change', {
+    const inputs = getAllByRole('textbox') as HTMLInputElement[]
+    const startInput = inputs[0]
+    fireEvent.change(startInput, {
       target: { value: data.date3.maxFuture },
     })
   })
-  it('calls onChange with updated value when precision changes', () => {
-    wrapper = mount(
+  it('calls onChange with updated value when precision changes', (done) => {
+    render(
       <DateRangeField
         value={{
           start: data.date4.originalISO,
@@ -368,6 +369,7 @@ describe('verify date range field works', () => {
         onChange={(updatedValue) => {
           expect(updatedValue.start).to.equal(data.date4.utcISOMinutes)
           expect(updatedValue.end).to.equal(data.date1.utcISOMinutes)
+          done()
         }}
       />
     )
