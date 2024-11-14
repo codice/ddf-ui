@@ -3,6 +3,7 @@ import Enzyme, { mount } from 'enzyme'
 import Adapter from '@wojtekmaj/enzyme-adapter-react-17'
 Enzyme.configure({ adapter: new Adapter() })
 import { expect } from 'chai'
+import { render } from '@testing-library/react'
 
 import { DateRangeField, defaultValue } from './date-range'
 import moment from 'moment'
@@ -11,7 +12,7 @@ import user from '../singletons/user-instance'
 import { ValueTypes } from '../filter-builder/filter.structure'
 import { DateHelpers, ISO_8601_FORMAT_ZONED } from './date-helpers'
 import Common from '../../js/Common'
-import { TimePrecision } from '@blueprintjs/datetime'
+import { DateRangeInput, TimePrecision } from '@blueprintjs/datetime'
 
 const UncontrolledDateRangeField = ({
   startingValue,
@@ -89,7 +90,7 @@ const data = {
     originalISO: '2021-04-15T05:53:54.316Z', // use the converter to find the appropriate shifted date
   },
 }
-let wrapper: Enzyme.ReactWrapper
+let wrapper: Enzyme.ReactWrapper | null
 describe('verify date range field works', () => {
   before(() => {
     user.get('user').get('preferences').set('timeZone', data.date1.timezone)
@@ -107,29 +108,35 @@ describe('verify date range field works', () => {
     // Must unmount to stop listening to the user prefs model (the useTimePrefs() hook)
     // Has to be unmounted before we set any preferences so we don't trigger any onChange
     // callbacks again.
-    wrapper.unmount()
+    if (wrapper) {
+      wrapper.unmount()
+      wrapper = null
+    }
     user
       .get('user')
       .get('preferences')
       .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
   })
-  it(`should not allow overlapping dates`, () => {
+  it('should not allow overlapping dates', () => {
     user
       .get('user')
       .get('preferences')
       .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
-    wrapper = mount(
+
+    const handleChange = (validValue: ValueTypes['during']) => {
+      // verify these are one day apart, as should happen when fed overlapping dates or invalid values
+      const start = new Date(validValue.start)
+      const end = new Date(validValue.end)
+      expect(start.getDate()).to.equal(end.getDate() - 1)
+    }
+
+    render(
       <DateRangeField
         value={{
           start: data.date1.originalISO,
           end: data.date4.originalISO,
         }}
-        onChange={(validValue) => {
-          // verify these are one day apart, as should happen when fed overlapping dates or invalid values
-          const start = new Date(validValue.start)
-          const end = new Date(validValue.end)
-          expect(start.getDate()).to.equal(end.getDate() - 1)
-        }}
+        onChange={handleChange}
       />
     )
   })
@@ -144,7 +151,8 @@ describe('verify date range field works', () => {
         .get('user')
         .get('preferences')
         .set('dateTimeFormat', Common.getDateTimeFormats()[format][precision])
-      wrapper = mount(
+
+      const { getAllByRole } = render(
         <DateRangeField
           value={{
             start: data.date4.originalISO,
@@ -153,10 +161,9 @@ describe('verify date range field works', () => {
           onChange={() => {}}
         />
       )
-      expect(wrapper.render().find('input').first().val()).to.equal(
-        expectedStart
-      )
-      expect(wrapper.render().find('input').last().val()).to.equal(expectedEnd)
+      const inputs = getAllByRole('textbox') as HTMLInputElement[]
+      expect(inputs[0].value).to.equal(expectedStart)
+      expect(inputs[1].value).to.equal(expectedEnd)
     }
   }
   it(
@@ -291,29 +298,37 @@ describe('verify date range field works', () => {
     )
   })
   it(`should generate appropriately shifted ISO strings on change`, () => {
-    wrapper = mount(
+    const ref = React.createRef<DateRangeInput>()
+    render(
       <DateRangeField
         value={defaultValue()}
         onChange={(updatedValue) => {
           expect(updatedValue.start).to.equal(data.date4.originalISO)
           expect(updatedValue.end).to.equal(data.date5.originalISO)
         }}
+        ref={ref}
       />
     )
-    const dateFieldInstance = wrapper.children().children().get(0)
-    dateFieldInstance.props.onChange(
-      [
-        DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
-          data.date4.originalISO,
-          ISO_8601_FORMAT_ZONED
-        ),
-        DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
-          data.date5.originalISO,
-          ISO_8601_FORMAT_ZONED
-        ),
-      ],
-      true
-    )
+    if (ref.current) {
+      // use reflection to access private method
+      const handleDateRangePickerChange = Reflect.get(
+        ref.current,
+        'handleDateRangePickerChange'
+      )
+      handleDateRangePickerChange(
+        [
+          DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
+            data.date4.originalISO,
+            ISO_8601_FORMAT_ZONED
+          ),
+          DateHelpers.Blueprint.converters.TimeshiftForDatePicker(
+            data.date5.originalISO,
+            ISO_8601_FORMAT_ZONED
+          ),
+        ],
+        true
+      )
+    }
   })
   it(`should not allow dates beyond max future`, () => {
     wrapper = mount(

@@ -31,6 +31,10 @@ type Props = {
    * Override if you absolutely must
    */
   BPDateRangeProps?: Partial<IDateRangeInputProps>
+  /**
+   * Optional ref to access the underlying Blueprint DateRangeInput component
+   */
+  ref?: React.RefObject<DateRangeInput>
 }
 
 export function defaultValue() {
@@ -121,96 +125,100 @@ function useInitialValueValidation({ value, onChange }: Props) {
 /**
  *  This component will always have a valid value (start and end date set and start < end), and onChange will never get an invalid value
  */
-const DateRangeFieldWithoutInitialValidation = ({
-  value,
-  onChange,
-  BPDateRangeProps,
-}: Props) => {
-  const {
-    localValue,
-    setLocalValue,
-    hasValidationIssues,
-    constructedValidationText,
-  } = useLocalValue({ value, onChange })
-  useTimePrefs(() => {
-    const shiftedDates =
-      DateHelpers.Blueprint.DateRangeProps.generateValue(value) // as said above, this will always be valid, so no need to fret on converting
-    setLocalValue({
-      start: DateHelpers.Blueprint.converters
-        .UntimeshiftFromDatePicker(shiftedDates![0]!)
-        .toISOString(),
-      end: DateHelpers.Blueprint.converters
-        .UntimeshiftFromDatePicker(shiftedDates![1]!)
-        .toISOString(),
+const DateRangeFieldWithoutInitialValidation = React.forwardRef(
+  (
+    { value, onChange, BPDateRangeProps }: Props,
+    ref: React.Ref<DateRangeInput>
+  ) => {
+    const {
+      localValue,
+      setLocalValue,
+      hasValidationIssues,
+      constructedValidationText,
+    } = useLocalValue({ value, onChange })
+    useTimePrefs(() => {
+      const shiftedDates =
+        DateHelpers.Blueprint.DateRangeProps.generateValue(value) // as said above, this will always be valid, so no need to fret on converting
+      setLocalValue({
+        start: DateHelpers.Blueprint.converters
+          .UntimeshiftFromDatePicker(shiftedDates![0]!)
+          .toISOString(),
+        end: DateHelpers.Blueprint.converters
+          .UntimeshiftFromDatePicker(shiftedDates![1]!)
+          .toISOString(),
+      })
     })
-  })
-  return (
-    <>
-      <DateRangeInput
-        timePickerProps={{
-          useAmPm: user.getAmPmDisplay(),
-        }}
-        allowSingleDayRange
-        minDate={DefaultMinDate}
-        maxDate={DefaultMaxDate}
-        endInputProps={{
-          fill: true,
-          className: MuiOutlinedInputBorderClasses,
-          ...EnterKeySubmitProps,
-        }}
-        startInputProps={{
-          fill: true,
-          className: MuiOutlinedInputBorderClasses,
-          ...EnterKeySubmitProps,
-        }}
-        className="where"
-        closeOnSelection={false}
-        formatDate={DateHelpers.Blueprint.commonProps.formatDate}
-        onChange={DateHelpers.Blueprint.DateRangeProps.generateOnChange(
-          (value) => {
-            setLocalValue(value)
-          }
-        )}
-        popoverProps={{
-          boundary: 'viewport',
-          position: 'bottom',
-        }}
-        parseDate={DateHelpers.Blueprint.commonProps.parseDate}
-        shortcuts
-        timePrecision={DateHelpers.General.getTimePrecision()}
-        placeholder={DateHelpers.General.getDateFormat()}
-        value={DateHelpers.Blueprint.DateRangeProps.generateValue(localValue)}
-        {...BPDateRangeProps}
-      />
-      {hasValidationIssues ? (
-        <>
-          <FormHelperText className="px-2 Mui-text-error">
-            {constructedValidationText}
-          </FormHelperText>
-        </>
-      ) : null}
-    </>
-  )
-}
+    return (
+      <>
+        <DateRangeInput
+          ref={ref}
+          timePickerProps={{
+            useAmPm: user.getAmPmDisplay(),
+          }}
+          allowSingleDayRange
+          minDate={DefaultMinDate}
+          maxDate={DefaultMaxDate}
+          endInputProps={{
+            fill: true,
+            className: MuiOutlinedInputBorderClasses,
+            ...EnterKeySubmitProps,
+          }}
+          startInputProps={{
+            fill: true,
+            className: MuiOutlinedInputBorderClasses,
+            ...EnterKeySubmitProps,
+          }}
+          className="where"
+          closeOnSelection={false}
+          formatDate={DateHelpers.Blueprint.commonProps.formatDate}
+          onChange={DateHelpers.Blueprint.DateRangeProps.generateOnChange(
+            (value) => {
+              setLocalValue(value)
+            }
+          )}
+          popoverProps={{
+            boundary: 'viewport',
+            position: 'bottom',
+          }}
+          parseDate={DateHelpers.Blueprint.commonProps.parseDate}
+          shortcuts
+          timePrecision={DateHelpers.General.getTimePrecision()}
+          placeholder={DateHelpers.General.getDateFormat()}
+          value={DateHelpers.Blueprint.DateRangeProps.generateValue(localValue)}
+          {...BPDateRangeProps}
+        />
+        {hasValidationIssues ? (
+          <>
+            <FormHelperText className="px-2 Mui-text-error">
+              {constructedValidationText}
+            </FormHelperText>
+          </>
+        ) : null}
+      </>
+    )
+  }
+)
 
 /**
  *  By updating invalid starting values before we go into the above component, we can make sure we always have a valid value to fall back to.
  */
-export const DateRangeField = ({
-  value,
-  onChange,
-  BPDateRangeProps,
-}: Props) => {
-  useInitialValueValidation({ value, onChange, BPDateRangeProps })
-  const valueValidity = isValidValue(value)
-  if (!valueValidity.valid) {
-    return <LinearProgress className="w-full h-2" />
+export const DateRangeField = React.forwardRef(
+  (
+    { value, onChange, BPDateRangeProps }: Props,
+    ref: React.Ref<DateRangeInput>
+  ) => {
+    useInitialValueValidation({ value, onChange, BPDateRangeProps })
+    const valueValidity = isValidValue(value)
+    if (!valueValidity.valid) {
+      return <LinearProgress className="w-full h-2" />
+    }
+    return (
+      <DateRangeFieldWithoutInitialValidation
+        ref={ref}
+        value={value}
+        onChange={onChange}
+        BPDateRangeProps={BPDateRangeProps}
+      />
+    )
   }
-  return (
-    <DateRangeFieldWithoutInitialValidation
-      value={value}
-      onChange={onChange}
-      BPDateRangeProps={BPDateRangeProps}
-    />
-  )
-}
+)

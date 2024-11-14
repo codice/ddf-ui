@@ -1,11 +1,7 @@
 import React from 'react'
-import Enzyme, { mount } from 'enzyme'
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17'
-Enzyme.configure({ adapter: new Adapter() })
-
+import { render, waitFor } from '@testing-library/react'
 import { DateAroundField } from './date-around'
 import { expect } from 'chai'
-
 import user from '../singletons/user-instance'
 import Common from '../../js/Common'
 import { TimePrecision } from '@blueprintjs/datetime'
@@ -32,7 +28,7 @@ const data = {
     },
   },
 }
-let wrapper: Enzyme.ReactWrapper
+
 describe('verify date around field works', () => {
   beforeEach(() => {
     user
@@ -40,16 +36,14 @@ describe('verify date around field works', () => {
       .get('preferences')
       .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
   })
+
   afterEach(() => {
-    // Must unmount to stop listening to the user prefs model (the useTimePrefs() hook)
-    // Has to be unmounted before we set any preferences so we don't trigger any onChange
-    // callbacks again.
-    wrapper.unmount()
     user
       .get('user')
       .get('preferences')
       .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['millisecond'])
   })
+
   const verifyDateRender = (
     format: string,
     precision: TimePrecision,
@@ -60,7 +54,8 @@ describe('verify date around field works', () => {
         .get('user')
         .get('preferences')
         .set('dateTimeFormat', Common.getDateTimeFormats()[format][precision])
-      wrapper = mount(
+
+      const { container } = render(
         <DateAroundField
           value={{
             date: data.date1.originalISO,
@@ -73,9 +68,12 @@ describe('verify date around field works', () => {
           onChange={() => {}}
         />
       )
-      expect(wrapper.render().find('input').val()).to.equal(expected)
+
+      const input = container.querySelector('input')
+      expect(input?.value).to.equal(expected)
     }
   }
+
   it(
     'should render with ISO format and millisecond precision',
     verifyDateRender('ISO', 'millisecond', data.date1.userFormatISO.millisecond)
@@ -112,9 +110,11 @@ describe('verify date around field works', () => {
     'should render with 12hr format and minute precision',
     verifyDateRender('12', 'minute', data.date1.userFormat12.minute)
   )
-  it('calls onChange with updated value when precision changes', () => {
+
+  it('calls onChange with updated value when precision changes', async () => {
     let updatedDate = data.date1.userFormatISO.millisecond
-    wrapper = mount(
+
+    render(
       <DateAroundField
         value={{
           date: updatedDate,
@@ -129,12 +129,17 @@ describe('verify date around field works', () => {
         }}
       />
     )
+
     user
       .get('user')
       .get('preferences')
       .set('dateTimeFormat', Common.getDateTimeFormats()['ISO']['minute'])
-    setTimeout(() => {
-      expect(updatedDate).to.equal(data.date1.utcISOMinutes)
-    }, 100)
+
+    await waitFor(
+      () => {
+        expect(updatedDate).to.equal(data.date1.utcISOMinutes)
+      },
+      { timeout: 1000 }
+    )
   })
 })
