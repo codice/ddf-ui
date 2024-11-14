@@ -1,34 +1,36 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import MRC from '../../../react-component/marionette-region-container'
 import { useLazyResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import { LazyQueryResults } from '../../../js/model/LazyQueryResult/LazyQueryResults'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import { useBackbone } from '../../selection-checkbox/useBackbone.hook'
 import { useSelectedResults } from '../../../js/model/LazyQueryResult/hooks'
-
-const wreqr = require('../../../js/wreqr.js')
-const $ = require('jquery')
-const _ = require('underscore')
-const Plotly = require('plotly.js/dist/plotly.js')
-const Property = require('../../property/property.js')
-const PropertyView = require('../../property/property.view.js')
-const metacardDefinitions = require('../../singletons/metacard-definitions.js')
-const Common = require('../../../js/Common.js')
-const properties = require('../../../js/properties.js')
-const moment = require('moment')
-const user = require('../../singletons/user-instance.js')
-
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
+import _cloneDeep from 'lodash.clonedeep'
+import wreqr from '../../../js/wreqr'
+import $ from 'jquery'
+import _ from 'underscore'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'plot... Remove this comment to see the full error message
+import Plotly from 'plotly.js/dist/plotly'
+import moment from 'moment'
+import extension from '../../../extension-points'
+import { useTheme } from '@mui/material/styles'
+import {
+  CustomHover,
+  getCustomHoverLabels,
+  getCustomHoverTemplates,
+  getCustomHover,
+} from './add-on-helpers'
+import { StartupDataStore } from '../../../js/model/Startup/startup'
 const zeroWidthSpace = '\u200B'
 const plotlyDateFormat = 'YYYY-MM-DD HH:mm:ss.SS'
-
 function getPlotlyDate(date: string) {
   return moment(date).format(plotlyDateFormat)
 }
-
 function calculateAvailableAttributes(results: LazyQueryResult[]) {
   let availableAttributes = [] as string[]
-  results.forEach(result => {
+  results.forEach((result) => {
     availableAttributes = _.union(
       availableAttributes,
       Object.keys(result.plain.metacard.properties)
@@ -36,16 +38,14 @@ function calculateAvailableAttributes(results: LazyQueryResult[]) {
   })
   return availableAttributes
     .filter(
-      attribute => metacardDefinitions.metacardTypes[attribute] !== undefined
+      (attribute) =>
+        !StartupDataStore.MetacardDefinitions.isHiddenAttribute(attribute)
     )
-    .filter(attribute => !metacardDefinitions.isHiddenType(attribute))
-    .filter(attribute => !properties.isHidden(attribute))
-    .map(attribute => ({
-      label: metacardDefinitions.metacardTypes[attribute].alias || attribute,
+    .map((attribute) => ({
+      label: StartupDataStore.MetacardDefinitions.getAlias(attribute),
       value: attribute,
     }))
 }
-
 function calculateAttributeArray({
   results,
   attribute,
@@ -54,8 +54,11 @@ function calculateAttributeArray({
   attribute: string
 }) {
   const values = [] as string[]
-  results.forEach(result => {
-    if (metacardDefinitions.metacardTypes[attribute].multivalued) {
+  results.forEach((result) => {
+    if (
+      StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute]
+        .multivalued
+    ) {
       const resultValues = result.plain.metacard.properties[attribute]
       if (resultValues && resultValues.forEach) {
         resultValues.forEach((value: any) => {
@@ -78,14 +81,16 @@ function calculateAttributeArray({
   })
   return values
 }
-
 function findMatchesForAttributeValues(
   results: LazyQueryResult[],
   attribute: string,
   values: any[]
 ) {
-  return results.filter(result => {
-    if (metacardDefinitions.metacardTypes[attribute].multivalued) {
+  return results.filter((result) => {
+    if (
+      StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute]
+        .multivalued
+    ) {
       const resultValues = result.plain.metacard.properties[attribute]
       if (resultValues && resultValues.forEach) {
         for (let i = 0; i < resultValues.length; i++) {
@@ -106,10 +111,12 @@ function findMatchesForAttributeValues(
     }
   })
 }
-
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
 function checkIfValueIsValid(values: any[], attribute: string, value: any) {
   if (value !== undefined) {
-    switch (metacardDefinitions.metacardTypes[attribute].type) {
+    switch (
+      StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute].type
+    ) {
       case 'DATE':
         const plotlyDate = getPlotlyDate(value)
         return plotlyDate >= values[0] && plotlyDate <= values[1]
@@ -122,7 +129,6 @@ function checkIfValueIsValid(values: any[], attribute: string, value: any) {
     }
   }
 }
-
 function addValueForAttributeToArray({
   valueArray,
   attribute,
@@ -133,7 +139,9 @@ function addValueForAttributeToArray({
   value: any
 }) {
   if (value !== undefined) {
-    switch (metacardDefinitions.metacardTypes[attribute].type) {
+    switch (
+      StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute].type
+    ) {
       case 'DATE':
         valueArray.push(getPlotlyDate(value))
         break
@@ -148,14 +156,12 @@ function addValueForAttributeToArray({
     }
   }
 }
-
 function getIndexClicked(data: any) {
   return Math.max.apply(
     undefined,
     data.points.map((point: any) => point.pointNumber)
   ) as number
 }
-
 function getValueFromClick(data: any, categories: any) {
   switch (data.points[0].xaxis.type) {
     case 'category':
@@ -173,55 +179,38 @@ function getValueFromClick(data: any, categories: any) {
       })
   }
 }
-
-function getTheme(theme: any) {
-  const config = {
-    margin: {
-      t: 10,
-      l: 50,
-      r: 115,
-      b: 90,
-      pad: 0,
-      autoexpand: true,
-    },
-  }
-  switch (theme) {
-    case 'comfortable':
-      config.margin.b = 140
-      return config
-    case 'cozy':
-      config.margin.b = 115
-      return config
-    case 'compact':
-      config.margin.b = 90
-      return config
-    default:
-      return config
-  }
-}
-
-function getLayout(plot?: any) {
-  const prefs = user.get('user').get('preferences')
-  const theme = getTheme(prefs.get('theme').get('spacingMode'))
-
+function getLayout(fontColor: string, plot?: any) {
   const baseLayout = {
     autosize: true,
     paper_bgcolor: 'rgba(0,0,0,0)',
     plot_bgcolor: 'rgba(0,0,0,0)',
     font: {
       family: '"Open Sans Light","Helvetica Neue",Helvetica,Arial,sans-serif',
-      size: prefs.get('fontSize'),
-      color: 'white',
+      size: 16,
+      color: 'inherit',
+      fill: 'inherit',
     },
-    margin: theme.margin,
+    margin: {
+      t: 10,
+      l: 50,
+      r: 115,
+      b: 140,
+      pad: 0,
+      autoexpand: true,
+    },
     barmode: 'overlay',
     xaxis: {
       fixedrange: true,
+      color: fontColor,
     },
     yaxis: {
       fixedrange: true,
+      color: fontColor,
     },
     showlegend: true,
+    legend: {
+      font: { color: fontColor },
+    },
   } as any
   if (plot) {
     baseLayout.xaxis.autorange = false
@@ -231,87 +220,82 @@ function getLayout(plot?: any) {
   }
   return baseLayout
 }
-
 type Props = {
   selectionInterface: any
 }
-
-const getPropertyView = ({
+const getAutocompleteState = ({
   lazyResults,
   attributeToBin,
 }: {
   lazyResults: LazyQueryResults
   attributeToBin: any
 }) => {
-  const propertyView = new PropertyView({
-    model: new Property({
-      showValidationIssues: false,
-      enumFiltering: true,
-      enum: calculateAvailableAttributes(Object.values(lazyResults.results)),
-      value: [attributeToBin],
-      id: 'Group by',
-    }),
-  })
-  propertyView.turnOnEditing()
-
-  return propertyView
+  return {
+    choices: calculateAvailableAttributes(Object.values(lazyResults.results)),
+    value: attributeToBin,
+  }
 }
-
 export const Histogram = ({ selectionInterface }: Props) => {
-  const { listenTo, stopListening } = useBackbone()
+  const { listenTo } = useBackbone()
+  const theme = useTheme()
+  const isDarkTheme = theme.palette.mode === 'dark'
   const [noMatchingData, setNoMatchingData] = React.useState(false)
   const plotlyRef = React.useRef<HTMLDivElement>()
+  const plotlyReadyForUpdatesRef = React.useRef(false)
   const lazyResults = useLazyResultsFromSelectionInterface({
     selectionInterface,
   })
   const selectedResults = useSelectedResults({ lazyResults })
   const [attributeToBin, setAttributeToBin] = React.useState('' as string)
-  const [propertyView, setPropertyView] = React.useState(
-    getPropertyView({ lazyResults, attributeToBin })
+  const [autocompleteState, setAutocompleteState] = React.useState(
+    getAutocompleteState({ lazyResults, attributeToBin })
   )
   const results = Object.values(lazyResults.results)
-  React.useEffect(
-    () => {
-      listenTo(propertyView.model, 'change:value', () => {
-        const newValue = propertyView.model.getValue()[0]
-        if (newValue) {
-          setAttributeToBin(newValue)
-        }
-      })
-      return () => {
-        stopListening(propertyView.model)
-      }
-    },
-    [propertyView]
-  )
-
-  React.useEffect(
-    () => {
-      setNoMatchingData(false)
-    },
-    [lazyResults.results, attributeToBin]
-  )
-
-  React.useEffect(
-    () => {
-      setPropertyView(getPropertyView({ lazyResults, attributeToBin }))
-    },
-    [lazyResults.results]
-  )
-
-  React.useEffect(
-    () => {
-      showHistogram()
-    },
-    [lazyResults.results, attributeToBin]
-  )
-
-  React.useEffect(
-    () => {
+  React.useEffect(() => {
+    setNoMatchingData(false)
+  }, [lazyResults.results, attributeToBin])
+  React.useEffect(() => {
+    setAutocompleteState(getAutocompleteState({ lazyResults, attributeToBin }))
+  }, [lazyResults.results])
+  React.useEffect(() => {
+    showHistogram()
+  }, [lazyResults.results, attributeToBin, theme])
+  React.useEffect(() => {
+    if (plotlyReadyForUpdatesRef.current) {
+      // avoid updating the histogram if it's not ready yet
       updateHistogram()
+    }
+  }, [selectedResults])
+
+  const defaultFontColor = isDarkTheme ? 'white' : 'black'
+  const defaultHoverLabel = {
+    bgcolor: isDarkTheme ? 'black' : 'white',
+    font: {
+      color: defaultFontColor,
     },
-    [selectedResults]
-  )
+  }
+
+  const getCustomHoverArray = (
+    categories: any[],
+    results: LazyQueryResult[]
+  ) => {
+    const customArray: CustomHover[] = []
+    categories.forEach((category) => {
+      const matchedResults = findMatchesForAttributeValues(
+        results,
+        attributeToBin,
+        category.constructor === Array ? category : [category]
+      )
+
+      if (
+        (matchedResults && matchedResults.length > 0) ||
+        customArray.length > 0
+      ) {
+        customArray.push(getCustomHover(matchedResults, defaultHoverLabel))
+      }
+    })
+    return customArray.length > 0 ? customArray : undefined
+  }
 
   const determineInitialData = () => {
     return [
@@ -322,28 +306,37 @@ export const Histogram = ({ selectionInterface }: Props) => {
         }),
         opacity: 1,
         type: 'histogram',
-        name: 'Hits        ',
+        name: 'Hits',
         marker: {
-          color: 'rgba(255, 255, 255, .05)',
+          color: 'rgba(120, 120, 120, .05)',
           line: {
-            color: 'rgba(255,255,255,.2)',
+            color: 'rgba(120,120,120,.2)',
             width: '2',
           },
         },
+        hovertemplate: '%{y} Hits<extra></extra>',
+        hoverlabel: defaultHoverLabel,
       },
     ]
   }
-
   const determineData = (plot: any) => {
     const activeResults = results
-    const xbins = Common.duplicate(plot._fullData[0].xbins)
-    if (xbins.size.constructor !== String) {
-      xbins.end = xbins.end + xbins.size //https://github.com/plotly/plotly.js/issues/1229
-    } else {
-      // soooo plotly introduced this cool bin size shorthand where M3 means 3 months, M6 6 months etc.
-      xbins.end =
-        xbins.end + parseInt(xbins.size.substring(1)) * 31 * 24 * 3600000 //https://github.com/plotly/plotly.js/issues/1229
+    const xbins = _cloneDeep(plot._fullData[0].xbins)
+
+    const categories: any[] = retrieveCategoriesFromPlotly()
+
+    let customHoverArray: any = undefined
+    let selectedCustomHoverArray: any = undefined
+
+    if (extension.customHistogramHover) {
+      customHoverArray = getCustomHoverArray(categories, results)
+
+      selectedCustomHoverArray = getCustomHoverArray(
+        categories,
+        Object.values(selectedResults)
+      )
     }
+
     return [
       {
         x: calculateAttributeArray({
@@ -352,15 +345,20 @@ export const Histogram = ({ selectionInterface }: Props) => {
         }),
         opacity: 1,
         type: 'histogram',
-        hoverinfo: 'y+x+name',
-        name: 'Hits        ',
+        name: 'Hits',
         marker: {
-          color: 'rgba(255, 255, 255, .05)',
+          color: 'rgba(120, 120, 120, .05)',
           line: {
-            color: 'rgba(255,255,255,.2)',
+            color: 'rgba(120,120,120,.2)',
             width: '2',
           },
         },
+        hoverlabel: customHoverArray
+          ? getCustomHoverLabels(customHoverArray)
+          : defaultHoverLabel,
+        hovertemplate: customHoverArray
+          ? getCustomHoverTemplates('Hits', customHoverArray)
+          : '%{y} Hits<extra></extra>',
         autobinx: false,
         xbins,
       },
@@ -371,25 +369,30 @@ export const Histogram = ({ selectionInterface }: Props) => {
         }),
         opacity: 1,
         type: 'histogram',
-        hoverinfo: 'y+x+name',
         name: 'Selected',
         marker: {
-          color: 'rgba(255, 255, 255, .2)',
+          color: 'rgba(120, 120, 120, .2)',
+          line: {
+            color: 'rgba(120,120,120,.5)',
+            width: '2',
+          },
         },
+        hoverlabel: selectedCustomHoverArray
+          ? getCustomHoverLabels(selectedCustomHoverArray)
+          : defaultHoverLabel,
+        hovertemplate: selectedCustomHoverArray
+          ? getCustomHoverTemplates('Selected', selectedCustomHoverArray)
+          : '%{y} Selected<extra></extra>',
         autobinx: false,
         xbins,
       },
     ]
   }
-
   const handleResize = () => {
     if (plotlyRef.current) {
       const histogramElement = plotlyRef.current
-      $(histogramElement)
-        .find('rect.drag')
-        .off('mousedown')
-      //@ts-ignore
-      if (histogramElement._context) {
+      $(histogramElement).find('rect.drag').off('mousedown')
+      if ((histogramElement as any)._context) {
         Plotly.Plots.resize(histogramElement)
       }
       $(histogramElement)
@@ -401,76 +404,42 @@ export const Histogram = ({ selectionInterface }: Props) => {
         })
     }
   }
-
-  const updateTheme = (e: any) => {
-    if (plotlyRef.current) {
-      const histogramElement = plotlyRef.current
-      if (
-        histogramElement.children.length !== 0 &&
-        attributeToBin &&
-        results.length !== 0
-      ) {
-        const theme = getTheme(e.get('spacingMode'))
-        //@ts-ignore
-        histogramElement.layout.margin = theme.margin
-      }
-    }
-  }
-
-  const updateFontSize = (e: any) => {
-    if (plotlyRef.current) {
-      const histogramElement = plotlyRef.current
-
-      if (
-        histogramElement.children.length !== 0 &&
-        attributeToBin &&
-        results.length !== 0
-      ) {
-        //@ts-ignore
-        histogramElement.layout.font.size = e.get('fontSize')
-      }
-    }
-  }
-
-  React.useEffect(() => {
-    listenTo(
-      user.get('user').get('preferences'),
-      'change:fontSize',
-      updateFontSize
-    )
-    listenTo(user.get('user').get('preferences'), 'change:theme', updateTheme)
-  }, [])
-
   React.useEffect(() => {
     const id = (Math.random() * 100).toFixed(0).toString()
-    listenTo(wreqr.vent, 'resize', handleResize)
+    listenTo((wreqr as any).vent, 'resize', handleResize)
     $(window).on(`resize.${id}`, handleResize)
     return () => {
       $(window).off(`resize.${id}`)
     }
   }, [])
-
   const showHistogram = () => {
+    plotlyReadyForUpdatesRef.current = false
     if (plotlyRef.current) {
-      if (results.length > 0 && attributeToBin.length > 0) {
+      if (results.length > 0 && attributeToBin) {
         const histogramElement = plotlyRef.current
         const initialData = determineInitialData()
         if (initialData[0].x.length === 0) {
           setNoMatchingData(true)
         } else {
-          Plotly.newPlot(histogramElement, initialData, getLayout(), {
-            displayModeBar: false,
-          }).then((plot: any) => {
+          Plotly.newPlot(
+            histogramElement,
+            initialData,
+            getLayout(defaultFontColor),
+            {
+              displayModeBar: false,
+            }
+          ).then((plot: any) => {
             Plotly.newPlot(
               histogramElement,
               determineData(plot),
-              getLayout(plot),
+              getLayout(defaultFontColor, plot),
               {
                 displayModeBar: false,
               }
             )
             handleResize()
             listenToHistogram()
+            plotlyReadyForUpdatesRef.current = true
           })
         }
       } else {
@@ -478,7 +447,6 @@ export const Histogram = ({ selectionInterface }: Props) => {
       }
     }
   }
-
   const updateHistogram = () => {
     if (plotlyRef.current) {
       const histogramElement = plotlyRef.current
@@ -488,7 +456,11 @@ export const Histogram = ({ selectionInterface }: Props) => {
         attributeToBin &&
         results.length > 0
       ) {
-        Plotly.deleteTraces(histogramElement, 1)
+        try {
+          Plotly.deleteTraces(histogramElement, 1)
+        } catch (err) {
+          console.error('Unable to delete trace', err)
+        }
         Plotly.addTraces(histogramElement, determineData(histogramElement)[1])
         handleResize()
       } else {
@@ -496,7 +468,6 @@ export const Histogram = ({ selectionInterface }: Props) => {
       }
     }
   }
-
   const selectBetween = (firstIndex: number, lastIndex: number) => {
     for (let i = firstIndex; i <= lastIndex; i++) {
       if (pointsSelected.current.indexOf(i) === -1) {
@@ -507,7 +478,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
     const categories = retrieveCategoriesFromPlotly()
     const validCategories = categories.slice(firstIndex, lastIndex)
     const activeSearchResults = results
-    const results = validCategories.reduce(
+    const validResults = validCategories.reduce(
       (results: any, category: any) => {
         results = results.concat(
           findMatchesForAttributeValues(
@@ -520,61 +491,49 @@ export const Histogram = ({ selectionInterface }: Props) => {
       },
       [] as LazyQueryResult[]
     ) as LazyQueryResult[]
-    results.forEach(result => {
+    validResults.forEach((result) => {
       result.setSelected(true)
     })
   }
-
+  // @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
   const retrieveCategoriesFromPlotlyForDates = () => {
     if (plotlyRef.current) {
       const histogramElement = plotlyRef.current
       const categories = []
-      //@ts-ignore
-      const xbins = histogramElement._fullData[0].xbins
+      const xbins = (histogramElement as any)._fullData[0].xbins
       const min = xbins.start
-      const max = xbins.end
-      let start = min
+      const max = parseInt(moment(xbins.end).format('x'))
+      let start = parseInt(moment(min).format('x'))
       const inMonths = xbins.size.constructor === String
       const binSize = inMonths ? parseInt(xbins.size.substring(1)) : xbins.size
       while (start < max) {
         const startDate = moment(start).format(plotlyDateFormat)
         const endDate = inMonths
-          ? moment(start)
-              .add(binSize, 'months')
-              .format(plotlyDateFormat)
-          : moment(start)
-              .add(binSize, 'ms')
-              .format(plotlyDateFormat)
+          ? moment(start).add(binSize, 'months').format(plotlyDateFormat)
+          : moment(start).add(binSize, 'ms').format(plotlyDateFormat)
         categories.push([startDate, endDate])
         start = parseInt(
           inMonths
-            ? moment(start)
-                .add(binSize, 'months')
-                .format('x')
-            : moment(start)
-                .add(binSize, 'ms')
-                .format('x')
+            ? moment(start).add(binSize, 'months').format('x')
+            : moment(start).add(binSize, 'ms').format('x')
         )
       }
       return categories
     }
   }
-
   // This is an internal variable for Plotly, so it might break if we update Plotly in the future.
   // Regardless, there was no other way to reliably get the categories.
   const retrieveCategoriesFromPlotly = () => {
     if (plotlyRef.current) {
       const histogramElement = plotlyRef.current
-      //@ts-ignore
-      const xaxis = histogramElement._fullLayout.xaxis
+      const xaxis = (histogramElement as any)._fullLayout.xaxis
       switch (xaxis.type) {
         case 'category':
           return xaxis._categories
         case 'date':
           return retrieveCategoriesFromPlotlyForDates()
         default:
-          //@ts-ignore
-          const xbins = histogramElement._fullData[0].xbins
+          const xbins = (histogramElement as any)._fullData[0].xbins
           const min = xbins.start
           const max = xbins.end
           const binSize = xbins.size
@@ -588,17 +547,16 @@ export const Histogram = ({ selectionInterface }: Props) => {
       }
     }
   }
-
   const handleControlClick = (data: any, alreadySelected: boolean) => {
     const attributeToCheck = attributeToBin
     const categories = retrieveCategoriesFromPlotly()
-    const results = findMatchesForAttributeValues(
+    const matchedResults = findMatchesForAttributeValues(
       results,
       attributeToCheck,
       getValueFromClick(data, categories)
     )
     if (alreadySelected) {
-      results.forEach(result => {
+      matchedResults.forEach((result) => {
         result.setSelected(false)
       })
       pointsSelected.current.splice(
@@ -606,13 +564,12 @@ export const Histogram = ({ selectionInterface }: Props) => {
         1
       )
     } else {
-      results.forEach(result => {
+      matchedResults.forEach((result) => {
         result.setSelected(true)
       })
       pointsSelected.current.push(getIndexClicked(data))
     }
   }
-
   const handleShiftClick = (data: any) => {
     const indexClicked = getIndexClicked(data)
     const firstIndex =
@@ -640,9 +597,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
       selectBetween(firstIndex, indexClicked + 1)
     }
   }
-
   const plotlyClickHandler = (data: any) => {
-    console.log('heeee')
     const indexClicked = getIndexClicked(data)
     const alreadySelected = pointsSelected.current.indexOf(indexClicked) >= 0
     if (shiftKey.current) {
@@ -656,40 +611,51 @@ export const Histogram = ({ selectionInterface }: Props) => {
     }
     resetKeyTracking()
   }
-
   const listenToHistogram = () => {
     if (plotlyRef.current) {
       const histogramElement = plotlyRef.current
-      //@ts-ignore
-      histogramElement._ev.addListener('plotly_click', plotlyClickHandler)
+      ;(histogramElement as any)._ev.addListener(
+        'plotly_click',
+        plotlyClickHandler
+      )
     }
   }
-
   const shiftKey = React.useRef(false)
   const metaKey = React.useRef(false)
   const ctrlKey = React.useRef(false)
   const pointsSelected = React.useRef([] as number[])
-
   const resetKeyTracking = () => {
     shiftKey.current = false
     metaKey.current = false
     ctrlKey.current = false
   }
-
   const resetPointSelection = () => {
     pointsSelected.current = []
   }
-
-  React.useEffect(() => {}, [])
-
   if (Object.keys(lazyResults.results).length === 0) {
     return <div style={{ padding: '20px' }}>No results found</div>
   }
   return (
     <>
-      <div>
-        {' '}
-        <MRC view={propertyView} />
+      <div className="p-2">
+        <Autocomplete
+          size="small"
+          options={autocompleteState.choices}
+          onChange={(_e: any, newValue) => {
+            setAttributeToBin(newValue.value)
+          }}
+          isOptionEqualToValue={(option) => option.value === attributeToBin}
+          getOptionLabel={(option) => {
+            return option.label
+          }}
+          disableClearable
+          value={autocompleteState.choices.find(
+            (choice) => choice.value === attributeToBin
+          )}
+          renderInput={(params) => (
+            <TextField {...params} label="Group by" variant="outlined" />
+          )}
+        />
       </div>
       <div
         className="plotly-histogram"
@@ -708,5 +674,4 @@ export const Histogram = ({ selectionInterface }: Props) => {
     </>
   )
 }
-
 export default hot(module)(Histogram)

@@ -17,8 +17,7 @@ import styled from 'styled-components'
 import { hot } from 'react-hot-loader'
 import { Attribute, Coordinates, Format, validCoordinates } from '.'
 import { formatAttribute, formatCoordinates } from './formatting'
-
-const DistanceUtils = require('../../../webapp/js/DistanceUtils.js')
+import DistanceUtils from '../../js/DistanceUtils'
 
 type Props = {
   format: Format
@@ -30,16 +29,16 @@ type Props = {
 
 const Root = styled.div<Props>`
   font-family: 'Inconsolata', 'Lucida Console', monospace;
-  background: ${props => props.theme.backgroundModal};
+  background: ${(props) => props.theme.backgroundModal};
   display: block;
   width: auto;
   height: auto;
-  font-size: ${props => props.theme.minimumFontSize};
+  font-size: ${(props) => props.theme.minimumFontSize};
   position: absolute;
   left: 0px;
   bottom: 0px;
   text-align: left;
-  padding: ${props => props.theme.minimumSpacing};
+  padding: ${(props) => props.theme.minimumSpacing};
   max-width: 50%;
 `
 const CoordinateInfo = styled.div`
@@ -56,18 +55,22 @@ const metacardInfo = ({ attributes }: Props) =>
   attributes.map(({ name, value }: Attribute) => {
     if (name === 'thumbnail') {
       return (
-        <div>
+        <div key={name}>
           <img src={value} style={{ maxWidth: '100px', maxHeight: '100px' }} />
         </div>
       )
     } else {
-      return <MetacardInfo>{formatAttribute({ name, value })}</MetacardInfo>
+      return (
+        <MetacardInfo key={name}>
+          {formatAttribute({ name, value })}
+        </MetacardInfo>
+      )
     }
   })
 
 /*
-   * Formats the current distance value to a string with the appropriate unit of measurement.
-   */
+ * Formats the current distance value to a string with the appropriate unit of measurement.
+ */
 const getDistanceText = (distance: number) => {
   // use meters when distance is under 1000m and convert to kilometers when ≥1000m
   const distanceText =
@@ -80,6 +83,7 @@ const getDistanceText = (distance: number) => {
   return distanceText
 }
 
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
 const distanceInfo = (props: Props) => {
   if (props.measurementState !== 'NONE') {
     return (
@@ -101,7 +105,7 @@ const render = (props: Props) => {
       {metacardInfo(props)}
       {distanceInfo(props)}
       <CoordinateInfo>
-        <span>{coordinates}</span>
+        <span data-id="coordinates-label">{coordinates}</span>
       </CoordinateInfo>
     </Root>
   )

@@ -1,16 +1,19 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import { Dropdown } from '@connexta/atlas/atoms/dropdown'
-import Paper from '@material-ui/core/Paper'
-import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
-const moment = require('moment')
-const user = require('../singletons/user-instance')
-
+import Paper from '@mui/material/Paper'
+import moment from 'moment'
 import styled from 'styled-components'
-import Grid from '@material-ui/core/Grid'
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
 import { Status } from '../../js/model/LazyQueryResult/status'
 import { useLazyResultsStatusFromSelectionInterface } from '../selection-interface/hooks'
+import Tooltip from '@mui/material/Tooltip'
+import { Elevations } from '../theme/theme'
+import FilterListIcon from '@mui/icons-material/FilterList'
+import { fuzzyHits, fuzzyResultCount } from './fuzzy-results'
+import WarningIcon from '@mui/icons-material/Warning'
+import ErrorIcon from '@mui/icons-material/Error'
+import { useMenuState } from '../menu-state/menu-state'
+import Popover from '@mui/material/Popover'
 
 type Props = {
   selectionInterface: any
@@ -18,6 +21,7 @@ type Props = {
 
 const Cell = styled.td`
   padding: 20px;
+  border: solid 1px rgba(120, 120, 120, 0.2);
 `
 
 const HeaderCell = styled.th`
@@ -30,12 +34,15 @@ type CellValueProps = {
   successful: boolean
   message: string
   warnings: string[]
+  errors: string[]
   alwaysShowValue?: boolean
 }
+
 const CellValue = (props: CellValueProps) => {
   const {
     value,
-    warnings,
+    warnings = [],
+    errors = [],
     message,
     alwaysShowValue,
     hasReturned,
@@ -43,102 +50,127 @@ const CellValue = (props: CellValueProps) => {
   } = props
   return (
     <React.Fragment>
-      {(message || (warnings && warnings.length > 0)) && (
+      {(errors.length > 0 || !successful) && (
+        <Tooltip
+          title={
+            <Paper elevation={Elevations.overlays} className="p-2">
+              {(() => {
+                if (errors.length > 0) {
+                  return errors.map((error) => <div key={error}>{error}</div>)
+                } else if (message) {
+                  return message
+                } else {
+                  return 'Something went wrong searching this source.'
+                }
+              })()}
+            </Paper>
+          }
+        >
+          <ErrorIcon style={{ paddingRight: '5px' }} color="error" />
+        </Tooltip>
+      )}
+      {warnings.length > 0 && (
+        <Tooltip
+          title={
+            <Paper elevation={Elevations.overlays} className="p-2">
+              {warnings.map((warning) => (
+                <div key={warning}>{warning}</div>
+              ))}
+            </Paper>
+          }
+        >
+          <WarningIcon style={{ paddingRight: '5px' }} color="warning" />
+        </Tooltip>
+      )}
+      {alwaysShowValue || (!message && hasReturned) ? value : null}
+      {!hasReturned && !alwaysShowValue && (
         <span
-          className="fa fa-warning"
-          title={message || warnings}
-          style={{ paddingRight: '5px' }}
+          className="fa fa-circle-o-notch fa-spin"
+          title="Waiting for source to return"
         />
       )}
-      {alwaysShowValue || (!message && hasReturned && successful)
-        ? value
-        : null}
-      {!hasReturned &&
-        !alwaysShowValue && (
-          <span
-            className="fa fa-circle-o-notch fa-spin"
-            title="Waiting for source to return"
-          />
-        )}
     </React.Fragment>
   )
 }
 
-const QueryStatusRow = ({ status }: { status: Status }) => {
+const QueryStatusRow = ({ status, query }: { status: Status; query: any }) => {
   let hasReturned = status.hasReturned
   let successful = status.successful
   let message = status.message
 
-  //@ts-ignore
   let warnings = status.warnings
+  let errors = status.errors
   let id = status.id
 
   return (
-    <tr>
-      <Cell>
+    <tr data-id={`source-${id}-row`}>
+      <Cell data-id="source-id-label">
         <CellValue
           value={id}
           hasReturned={hasReturned}
           successful={successful}
           warnings={warnings}
+          errors={errors}
           message={message}
           alwaysShowValue
         />
       </Cell>
-      <Cell>
+      <Cell data-id="available-label">
         <CellValue
-          value={status.count}
+          value={`${status.count} hit${status.count === 1 ? '' : 's'}`}
           hasReturned={hasReturned}
           successful={successful}
           warnings={warnings}
+          errors={errors}
           message={message}
         />
       </Cell>
-      <Cell>
+      <Cell data-id="possible-label">
         <CellValue
-          value={status.hits}
+          value={fuzzyHits(status.hits)}
           hasReturned={hasReturned}
           successful={successful}
           warnings={warnings}
+          errors={errors}
           message={message}
         />
       </Cell>
-      <Cell>
+      <Cell data-id="time-label">
         <CellValue
           value={status.elapsed / 1000}
           hasReturned={hasReturned}
           successful={successful}
           warnings={warnings}
+          errors={errors}
           message={message}
         />
       </Cell>
       <Cell className="status-filter">
-        <button
-          className="old-button is-button is-primary in-text"
-          title="Locally filter results to this source only."
-          onClick={() => {
-            user
-              .get('user')
-              .get('preferences')
-              .set('resultFilter', {
-                type: '=',
-                property: 'source-id',
-                value: status.id,
-              })
-            user
-              .get('user')
-              .get('preferences')
-              .savePreferences()
-          }}
-        >
-          <span className="fa fa-filter" />
-        </button>
+        <Tooltip title="Click to search only this source.">
+          <Button
+            data-id="filter-button"
+            onClick={() => {
+              query.set('sources', [status.id])
+              query.startSearchFromFirstPage()
+            }}
+            color="primary"
+          >
+            <FilterListIcon className="Mui-text-text-primary" />
+            Filter
+          </Button>
+        </Tooltip>
       </Cell>
     </tr>
   )
 }
 
-const QueryStatus = ({ statusBySource }: { statusBySource: Status[] }) => {
+const QueryStatus = ({
+  statusBySource,
+  query,
+}: {
+  statusBySource: Status[]
+  query: any
+}) => {
   return (
     <table>
       <tr>
@@ -156,9 +188,11 @@ const QueryStatus = ({ statusBySource }: { statusBySource: Status[] }) => {
           Filter
         </HeaderCell>
       </tr>
-      <tbody className="is-list">
-        {statusBySource.map(status => {
-          return <QueryStatusRow key={status.id} status={status} />
+      <tbody>
+        {statusBySource.map((status) => {
+          return (
+            <QueryStatusRow key={status.id} status={status} query={query} />
+          )
         })}
       </tbody>
     </table>
@@ -169,95 +203,116 @@ const LastRan = ({ currentAsOf }: { currentAsOf: number }) => {
   const [howLongAgo, setHowLongAgo] = React.useState(
     moment(currentAsOf).fromNow()
   )
-  React.useEffect(
-    () => {
+  React.useEffect(() => {
+    setHowLongAgo(moment(currentAsOf).fromNow())
+    const intervalId = setInterval(() => {
       setHowLongAgo(moment(currentAsOf).fromNow())
-      const intervalId = setInterval(() => {
-        setHowLongAgo(moment(currentAsOf).fromNow())
-      }, 60000)
-      return () => {
-        clearInterval(intervalId)
-      }
-    },
-    [currentAsOf]
-  )
+    }, 60000)
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [currentAsOf])
   return <div style={{ whiteSpace: 'nowrap' }}>Current as of {howLongAgo}</div>
 }
 
 const QueryFeed = ({ selectionInterface }: Props) => {
-  const {
-    status,
-    currentAsOf,
-    isSearching,
-  } = useLazyResultsStatusFromSelectionInterface({
-    selectionInterface,
-  })
+  const { MuiButtonProps, MuiPopoverProps } = useMenuState()
+  const { status, currentAsOf, isSearching } =
+    useLazyResultsStatusFromSelectionInterface({
+      selectionInterface,
+    })
+
   const statusBySource = Object.values(status)
-  let resultCount = '',
+  let resultMessage = '',
     pending = false,
-    failed = false
+    failed = false,
+    warnings = false,
+    errors = false
   if (statusBySource.length === 0) {
-    resultCount = 'Has not been run'
+    resultMessage = 'Has not been run'
   } else {
     const sourcesThatHaveReturned = statusBySource.filter(
-      status => status.hasReturned
+      (status) => status.hasReturned
     )
-    resultCount =
-      sourcesThatHaveReturned.length > 0
-        ? `${statusBySource
-            .filter(status => status.hasReturned)
-            .filter(status => status.successful)
-            .reduce((amt, status) => {
-              amt = amt + status.hits
-              return amt
-            }, 0)} hits`
-        : 'Searching...'
-    failed = sourcesThatHaveReturned.some(status => !status.successful)
+
+    if (sourcesThatHaveReturned.length > 0) {
+      const results = statusBySource.filter((status) => status.hasReturned)
+
+      let available = 0
+      let possible = 0
+
+      results.forEach((result) => {
+        available += result?.count ?? 0
+        possible += result?.hits ?? 0
+      })
+
+      resultMessage = `${available} hit${
+        available === 1 ? '' : 's'
+      } out of ${fuzzyResultCount(possible)} possible`
+    } else {
+      resultMessage = 'Searching...'
+    }
+
+    failed = sourcesThatHaveReturned.some((status) => !status.successful)
+    warnings = sourcesThatHaveReturned.some(
+      (status) => status.warnings && status.warnings.length > 0
+    )
+    errors = sourcesThatHaveReturned.some((status) => {
+      return status.errors && status.errors.length > 0
+    })
     pending = isSearching
   }
 
   return (
     <>
-      <Grid container direction="row" alignItems="center" wrap="nowrap">
-        <Grid item>
-          <div title={resultCount} style={{ whiteSpace: 'nowrap' }}>
-            {pending ? (
-              <i className="fa fa-circle-o-notch fa-spin is-critical-animation" />
-            ) : (
-              ''
-            )}
-            {failed ? <i className="fa fa-warning" /> : ''}
-            {resultCount}
+      <div className="flex flex-row items-center flex-nowrap">
+        <div className="leading-5">
+          <div
+            data-id="results-count-label"
+            title={resultMessage}
+            className=" whitespace-nowrap"
+          >
+            {resultMessage}
           </div>
           <LastRan currentAsOf={currentAsOf} />
-        </Grid>
-        <Grid item>
-          <Dropdown
-            content={({ closeAndRefocus }) => {
-              return (
-                <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper style={{ padding: '20px' }} className="intrigue-table">
-                    <QueryStatus statusBySource={statusBySource} />
-                  </Paper>
-                </BetterClickAwayListener>
-              )
-            }}
-          >
-            {({ handleClick }) => {
-              return (
-                <Button
-                  onClick={handleClick}
-                  className="details-view is-button"
-                  title="Show the full status for the search."
-                  data-help="Show the full status for the search."
+        </div>
+        <div>
+          <div>
+            <div className="relative">
+              <Button
+                data-id="heartbeat-button"
+                title="Show the full status for the search."
+                data-help="Show the full status for the search."
+                {...MuiButtonProps}
+              >
+                {pending && (
+                  <i
+                    className="fa fa-circle-o-notch fa-spin is-critical-animation"
+                    style={{ paddingRight: '2px' }}
+                  />
+                )}
+                {(errors || failed) && (
+                  <ErrorIcon fontSize="inherit" color="error" />
+                )}
+                {warnings && <WarningIcon fontSize="inherit" color="warning" />}
+                <span className="fa fa-heartbeat" />
+              </Button>
+              <Popover {...MuiPopoverProps}>
+                <Paper
+                  data-id="query-status-container"
+                  style={{ padding: '20px' }}
+                  className="intrigue-table"
                 >
-                  <span className="fa fa-heartbeat" />
-                </Button>
-              )
-            }}
-          </Dropdown>
-        </Grid>
-      </Grid>
+                  <QueryStatus
+                    statusBySource={statusBySource}
+                    query={selectionInterface.getCurrentQuery()}
+                  />
+                </Paper>
+              </Popover>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   )
 }

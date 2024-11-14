@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-const _ = require('underscore')
+import _ from 'underscore'
 
-const Clustering = require('../Clustering')
+import Clustering from '../Clustering'
 import { ClusterType } from './geometries'
 import { LazyResultsType } from '../../../selection-interface/hooks'
 import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryResult'
@@ -20,12 +20,12 @@ const CalculateClusters = ({
   isClustering,
   lazyResults,
 }: Props) => {
-  const clusteringAnimationFrameId = React.useRef(undefined as
-    | number
-    | undefined)
+  const clusteringAnimationFrameId = React.useRef(
+    undefined as number | undefined
+  )
 
   const getResultsWithGeometry = () => {
-    return Object.values(lazyResults).filter(lazyResult =>
+    return Object.values(lazyResults).filter((lazyResult) =>
       lazyResult.hasGeometry()
     )
   }
@@ -39,11 +39,11 @@ const CalculateClusters = ({
       ) as LazyQueryResult[][]
       // console.log(`Time to cluster: ${Date.now() - now}`)
       setClusters(
-        calculatedClusters.map(calculatedCluster => {
+        calculatedClusters.map((calculatedCluster) => {
           return {
             results: calculatedCluster,
             id: calculatedCluster
-              .map(result => result['metacard.id'])
+              .map((result) => result['metacard.id'])
               .sort()
               .toString(),
           }
@@ -71,29 +71,23 @@ const CalculateClusters = ({
     calculateClusters()
   }
 
-  React.useEffect(
-    () => {
-      handleResultsChange()
-    },
-    [lazyResults]
-  )
+  React.useEffect(() => {
+    handleResultsChange()
+  }, [lazyResults])
 
-  React.useEffect(
-    () => {
-      if (isClustering) {
-        calculateClusters()
-      } else {
-        setClusters([])
-      }
-      map.onCameraMoveStart(startClusterAnimating)
-      map.onCameraMoveEnd(stopClusterAnimating)
-      return () => {
-        map.offCameraMoveStart(startClusterAnimating)
-        map.offCameraMoveEnd(stopClusterAnimating)
-      }
-    },
-    [isClustering, lazyResults]
-  )
+  React.useEffect(() => {
+    if (isClustering) {
+      calculateClusters()
+    } else {
+      setClusters([])
+    }
+    map.onCameraMoveStart(startClusterAnimating)
+    map.onCameraMoveEnd(stopClusterAnimating)
+    return () => {
+      map.offCameraMoveStart(startClusterAnimating)
+      map.offCameraMoveEnd(stopClusterAnimating)
+    }
+  }, [isClustering, lazyResults])
 
   return <></>
 }

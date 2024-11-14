@@ -12,27 +12,12 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
-const $ = require('jquery')
-import BaseApp from '../component/app/base-app'
 import * as React from 'react'
-import * as ReactDOM from 'react-dom'
-const user = require('../component/singletons/user-instance.js')
-import { providers as Providers } from '../extension-points/providers'
+import { createRoot } from 'react-dom/client'
 
-function attemptToStart() {
-  if (user.fetched) {
-    ReactDOM.render(
-      <Providers>
-        <BaseApp />
-      </Providers>,
-      document.querySelector('#router')
-    )
-  } else if (!user.fetched) {
-    user.once('sync', () => {
-      attemptToStart()
-    })
-  }
+export const attemptToStart = async () => {
+  import('../component/app/base-app').then((BaseApp) => {
+    const root = createRoot(document.querySelector('#router') as any)
+    root.render(<BaseApp.default />)
+  })
 }
-
-attemptToStart()

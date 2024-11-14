@@ -152,7 +152,9 @@ public class CqlQueriesImpl implements CqlQueries {
           (key, value) -> {
             if (key.startsWith(METRICS_SOURCE_ELAPSED_PREFIX)) {
               String source = key.substring(METRICS_SOURCE_ELAPSED_PREFIX.length());
-              elapsedPerSource.put(source, new Long((Integer) value));
+              if (value instanceof Integer) {
+                elapsedPerSource.put(source, new Long((Integer) value));
+              }
             }
           });
 
@@ -215,7 +217,7 @@ public class CqlQueriesImpl implements CqlQueries {
    * @param request Catalog Query Request
    * @param responses List of responses to append to.
    * @return A ResultIterable of results, additionally adding the query response to a mutatable list
-   *     for additional context as we query.
+   *     for additiol context as we query.
    */
   private List<Result> retrieveResults(
       CqlRequest cqlRequest, QueryRequest request, List<QueryResponse> responses) {

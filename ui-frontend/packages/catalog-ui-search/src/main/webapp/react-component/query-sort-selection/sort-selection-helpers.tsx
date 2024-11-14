@@ -13,24 +13,13 @@
  *
  **/
 import { SortItemType } from './sort-selections'
-const metacardDefinitions = require('../../component/singletons/metacard-definitions.js')
-const properties = require('../../js/properties')
 import { Option } from './sort-selections'
+import { StartupDataStore } from '../../js/model/Startup/startup'
 
 const blacklist = ['anyText', 'anyGeo']
 
-type AttributeType = {
-  alias: string
-  hidden: boolean
-  id: string
-  isInjected: boolean
-  multivalued: boolean
-  readOnly: boolean
-  type: string
-}
-
 export const getLabel = (value: string) => {
-  let label = metacardDefinitions.getLabel(value)
+  let label = StartupDataStore.MetacardDefinitions.getAlias(value)
   if (label === 'RELEVANCE') {
     return 'Best Text Match'
   }
@@ -40,13 +29,14 @@ export const getLabel = (value: string) => {
 export const getSortAttributeOptions = (currentSelections: string[]) => {
   const currentAttributes =
     currentSelections && currentSelections.length ? currentSelections : []
-  const attributes = metacardDefinitions.sortedMetacardTypes as AttributeType[]
+  const attributes = StartupDataStore.MetacardDefinitions.getSortedAttributes()
   const options: Option[] = attributes
-    .filter(type => !properties.isHidden(type.id))
-    .filter(type => !metacardDefinitions.isHiddenTypeExceptThumbnail(type.id))
-    .filter(type => !blacklist.includes(type.id))
-    .filter(type => !currentAttributes.includes(type.id))
-    .map(type => ({
+    .filter(
+      (type) => !StartupDataStore.MetacardDefinitions.isHiddenAttribute(type.id)
+    )
+    .filter((type) => !blacklist.includes(type.id))
+    .filter((type) => !currentAttributes.includes(type.id))
+    .map((type) => ({
       label: type.alias || type.id,
       value: type.id,
     }))
@@ -62,33 +52,38 @@ export const getSortAttributeOptions = (currentSelections: string[]) => {
 
 export const getSortDirectionOptions = (attributeVal: string) => {
   let ascendingLabel, descendingLabel
-  if (metacardDefinitions.metacardTypes[attributeVal] === undefined) {
+  if (
+    StartupDataStore.MetacardDefinitions.getAttributeMap()[attributeVal] ===
+    undefined
+  ) {
     ascendingLabel = descendingLabel = ''
   } else {
-    switch (metacardDefinitions.metacardTypes[attributeVal].type) {
+    switch (
+      StartupDataStore.MetacardDefinitions.getAttributeMap()[attributeVal].type
+    ) {
       case 'DATE':
-        ascendingLabel = 'Earliest'
-        descendingLabel = 'Latest'
+        ascendingLabel = 'Oldest to Latest'
+        descendingLabel = 'Latest to Oldest'
         break
       case 'BOOLEAN':
-        ascendingLabel = 'True First' //Truthiest
-        descendingLabel = 'False First' //Falsiest
+        ascendingLabel = 'True to False' //Truthiest
+        descendingLabel = 'False to True' //Falsiest
         break
       case 'LONG':
       case 'DOUBLE':
       case 'FLOAT':
       case 'INTEGER':
       case 'SHORT':
-        ascendingLabel = 'Smallest'
-        descendingLabel = 'Largest'
+        ascendingLabel = 'Smallest to Largest'
+        descendingLabel = 'Largest to Smallest'
         break
       case 'STRING':
         ascendingLabel = 'A to Z'
         descendingLabel = 'Z to A'
         break
       case 'GEOMETRY':
-        ascendingLabel = 'Closest'
-        descendingLabel = 'Furthest'
+        ascendingLabel = 'Closest to Furthest'
+        descendingLabel = 'Furthest to Closest'
         break
       case 'XML':
       case 'BINARY':
@@ -114,7 +109,7 @@ export const getNextAttribute = (
   collection: SortItemType[],
   options: Option[]
 ) => {
-  const attributes = collection.map(type => type.attribute.value)
+  const attributes = collection.map((type) => type.attribute.value)
   for (let option of options) {
     if (!attributes.includes(option.value)) {
       return option.value
@@ -124,5 +119,8 @@ export const getNextAttribute = (
 }
 
 export const isDirectionalSort = (attribute: string) => {
-  return metacardDefinitions.metacardTypes[attribute] !== undefined
+  return (
+    StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute] !==
+    undefined
+  )
 }

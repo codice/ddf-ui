@@ -13,7 +13,7 @@ Add or remove additional *visualizations* to the default view through the *Defau
 Users can customize their individual views as well.
 
 .Available Visualizations
-3D Map _(Default)_:: Display a fully-interactive three-dimensional globe.
+3D Map _(Default)_:: Display a fully interactive three-dimensional globe.
 2D Map:: Display a less resource-intensive two-dimensional map.
 Inspector _(Default)_:: Display a view of detailed information about a search result.
 Histogram:: Compare attributes of items in a search result set as a histogram.

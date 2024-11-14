@@ -56,116 +56,158 @@ public class CqlRequestImpl implements CqlRequest {
 
   private boolean excludeUnnecessaryAttributes = true;
 
+  private boolean fromUI = false;
+
+  private String additionalOptions;
+
+  @Override
   public String getCacheId() {
     return cacheId;
   }
 
+  @Override
   public void setCacheId(String cacheId) {
     this.cacheId = cacheId;
   }
 
+  @Override
   public Set<String> getFacets() {
     return facets;
   }
 
+  @Override
   public void setFacets(Set<String> facets) {
     this.facets = facets;
   }
 
+  @Override
   public List<String> getSrcs() {
     return srcs;
   }
 
+  @Override
   public String getSrc() {
     return src;
   }
 
+  @Override
   public void setQueryType(String queryType) {
     this.queryType = queryType;
   }
 
+  @Override
   public String getQueryType() {
     return queryType;
   }
 
+  @Override
   public void setBatchId(String batchId) {
     this.batchId = batchId;
   }
 
+  @Override
   public String getBatchId() {
     return batchId;
   }
 
+  @Override
   public void setSpellcheck(boolean spellcheck) {
     this.spellcheck = spellcheck;
   }
 
+  @Override
   public boolean getSpellcheck() {
     return spellcheck;
   }
 
+  @Override
   public void setPhonetics(boolean phonetics) {
     this.phonetics = phonetics;
   }
 
+  @Override
   public boolean getPhonetics() {
     return phonetics;
   }
 
+  @Override
   public void setSrc(String src) {
     this.src = src;
   }
 
+  @Override
   public void setSrcs(List<String> srcs) {
     this.srcs = srcs;
   }
 
+  @Override
   public long getTimeout() {
     return timeout;
   }
 
+  @Override
   public void setTimeout(long timeout) {
     this.timeout = timeout;
   }
 
+  @Override
   public int getStart() {
     return start;
   }
 
+  @Override
   public void setStart(int start) {
     this.start = start;
   }
 
+  @Override
   public int getCount() {
     return count;
   }
 
+  @Override
   public void setCount(int count) {
     this.count = count;
   }
 
+  @Override
   public String getCql() {
     return cql;
   }
 
+  @Override
   public void setCql(String cql) {
     this.cql = cql;
   }
 
+  @Override
   public List<Sort> getSorts() {
     return sorts;
   }
 
+  @Override
   public void setSorts(List<Sort> sorts) {
     this.sorts = sorts;
   }
 
+  @Override
   public boolean isNormalize() {
     return normalize;
   }
 
+  @Override
   public void setNormalize(boolean normalize) {
     this.normalize = normalize;
+  }
+
+  @Override
+  public void setAdditionalOptions(String additionalOptions) {
+    this.additionalOptions = additionalOptions;
+  }
+
+  @Override
+  public String getAdditionalOptions() {
+    return additionalOptions;
   }
 
   @Override
@@ -185,6 +227,8 @@ public class CqlRequestImpl implements CqlRequest {
 
     builder.setExcludeUnnecessaryAttributes(excludeUnnecessaryAttributes);
 
+    builder.setFromUI(fromUI);
+
     if (batchId != null) {
       builder.setBatchId(batchId);
     }
@@ -195,6 +239,7 @@ public class CqlRequestImpl implements CqlRequest {
 
     builder.setSpellcheck(spellcheck);
     builder.setPhonetics(phonetics);
+    builder.setAdditionalOptions(additionalOptions);
 
     if (cacheId != null) {
       builder.setCacheId(cacheId);
@@ -216,23 +261,38 @@ public class CqlRequestImpl implements CqlRequest {
     }
   }
 
+  @Override
   public String getSource() {
     return src;
   }
 
+  @Override
   public String getId() {
     return id;
   }
 
+  @Override
   public void setId(String id) {
     this.id = id;
   }
 
+  @Override
   public boolean isExcludeUnnecessaryAttributes() {
     return excludeUnnecessaryAttributes;
   }
 
+  @Override
   public void setExcludeUnnecessaryAttributes(boolean excludeUnnecessaryAttributes) {
     this.excludeUnnecessaryAttributes = excludeUnnecessaryAttributes;
+  }
+
+  @Override
+  public boolean isFromUI() {
+    return fromUI;
+  }
+
+  @Override
+  public void setFromUI(boolean fromUI) {
+    this.fromUI = fromUI;
   }
 }

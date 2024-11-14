@@ -26,5 +26,5 @@ Each workspace can have up to ten searches saved.
 ** *View Sharing*: View and edit settings for sharing this workspace. Users must be signed in to share workspaces or view shared workspaces.
 ** *View Details*: View the current details for a cloud-based workspace. Users must be signed in to view workspace details.
 ** *Duplicate Workspace*: Create a copy of this workspace.
-** *Subscribe*: Selecting *Subscribe* will enable email notifications for search results on this workspace. Selecting *Unsubscribe* will disable email notifications for search results on this workspace.
+** *Subscribe*: Selecting *Subscribe* enables email notifications for search results on this workspace. Selecting *Unsubscribe* disables email notifications for search results on this workspace.
 ** *Delete Workspace*: Delete (archive) this workspace.

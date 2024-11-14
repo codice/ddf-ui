@@ -34,6 +34,8 @@ export class Status {
   cacheMessages: []
   hasReturned: boolean
   message: string
+  warnings: [string]
+  errors: [string]
   constructor({ id }: { id: string }) {
     this.id = id
     this.count = 0
@@ -44,8 +46,8 @@ export class Status {
       StatusBySourceType[0] & { hasReturned: boolean; message: string }
     >
   ) {
-    Object.keys(update).forEach(key => {
-      // @ts-ignore
+    Object.keys(update).forEach((key) => {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       this[key] = update[key]
     })
     this.hasReturned = true

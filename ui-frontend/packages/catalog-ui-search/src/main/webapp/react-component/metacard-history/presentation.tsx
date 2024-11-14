@@ -15,9 +15,9 @@
 
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
+import Button from '@mui/material/Button'
 import styled from 'styled-components'
-import { Button, buttonTypeEnum } from '../presentation/button'
-import LoadingCompanion from '../loading-companion'
+import LinearProgress from '@mui/material/LinearProgress'
 
 type Props = {
   onClick: (event: any) => void
@@ -38,7 +38,7 @@ const Root = styled.div`
     text-align: center;
   }
 
-  ${props => {
+  ${(props) => {
     if (props.theme.screenBelow(props.theme.smallScreenSize)) {
       return `
         .metacardHistory-body {
@@ -52,6 +52,7 @@ const Root = styled.div`
         }
     `
     }
+    return
   }};
 `
 
@@ -60,7 +61,7 @@ const Header = styled.div`
 `
 
 const Row = styled.div`
-  transition: padding ${props => props.theme.transitionTime} linear;
+  transition: padding ${(props) => props.theme.transitionTime} linear;
 `
 
 // prettier-ignore
@@ -100,16 +101,6 @@ const Modified = styled.div`
   text-overflow: ellipsis;
 `
 
-const RevertButton = styled(Button)`
-  margin-top: 10px;
-  width: 100%;
-  text-align: center;
-  height: ${props => props.theme.minimumButtonSize};
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
 const MetacardHistory = (props: Props) => {
   const {
     onClick,
@@ -119,8 +110,10 @@ const MetacardHistory = (props: Props) => {
     loading,
     canEdit,
   } = props
-  return (
-    <LoadingCompanion loading={loading}>
+  return loading ? (
+    <LinearProgress className="w-full h-2" />
+  ) : (
+    <>
       <Root>
         <Header>
           <Row>
@@ -140,8 +133,10 @@ have chosen."
           {history.map((historyItem: any) => {
             return (
               <Row
-                className={`${selectedVersion === historyItem.id &&
-                  'is-selected'}`}
+                className={`${
+                  selectedVersion === historyItem.id &&
+                  ' bg-gray-600 bg-opacity-25'
+                }`}
                 data-id={historyItem.id}
                 key={historyItem.id}
                 onClick={onClick}
@@ -159,17 +154,19 @@ have chosen."
             )
           })}
         </Body>
-        {selectedVersion &&
-          canEdit && (
-            <RevertButton
-              buttonType={buttonTypeEnum.primary}
-              onClick={revertToSelectedVersion}
-              icon="fa fa-undo"
-              text="Revert to Selected Version"
-            />
-          )}
+        {selectedVersion && canEdit && (
+          <Button
+            fullWidth
+            className="p-2"
+            variant="contained"
+            color="primary"
+            onClick={revertToSelectedVersion}
+          >
+            Revert to selected version
+          </Button>
+        )}
       </Root>
-    </LoadingCompanion>
+    </>
   )
 }
 

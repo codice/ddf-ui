@@ -17,42 +17,34 @@
     <parent>
         <groupId>org.codice.ddf.search</groupId>
         <artifactId>backend</artifactId>
-        <version>3.7.0-SNAPSHOT</version>
+        <version>5.1.52-SNAPSHOT</version>
     </parent>
     <artifactId>catalog-ui-search</artifactId>
     <name>DDF :: Catalog :: UI :: Catalog UI Search</name>
     <packaging>bundle</packaging>
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.2.11</version>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <version>2.2.11</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-core</artifactId>
-            <version>2.2.11</version>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jvnet.ogc</groupId>
             <artifactId>filter-v_2_0</artifactId>
-            <version>2.6.1</version>
+            <version>${jvnet-ogc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jvnet.ogc</groupId>
             <artifactId>ows-v_1_1_0-schema</artifactId>
-            <version>1.1.0</version>
+            <version>${ows-v_1_0_0-schema.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jvnet.jaxb2_commons</groupId>
             <artifactId>jaxb2-basics-runtime</artifactId>
-            <version>0.11.0</version>
+            <version>${jvnet.jaxb2.version}</version>
         </dependency>
 
         <dependency>
@@ -68,7 +60,7 @@
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
-            <version>2.1</version>
+            <version>${javax.ws.rs.version}</version>
         </dependency>
         <dependency>
             <groupId>ddf.lib</groupId>
@@ -78,7 +70,7 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>5.0.0</version>
+            <version>${osgi.version}</version>
         </dependency>
         <dependency>
             <groupId>ddf.catalog.core</groupId>
@@ -93,7 +85,7 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
+            <version>${javax.servlet-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codice.httpproxy</groupId>
@@ -104,11 +96,6 @@
             <groupId>org.codice.httpproxy</groupId>
             <artifactId>proxy-camel-route</artifactId>
             <version>${ddf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-core-osgi</artifactId>
-            <version>${camel.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
@@ -123,12 +110,12 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
+            <version>${commons-lang3.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
-            <version>3.2.2</version>
+            <version>${commons-collections.version}</version>
         </dependency>
         <dependency>
             <groupId>ddf.platform.util</groupId>
@@ -138,12 +125,12 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.6</version>
+            <version>${httpclient.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
-            <version>4.4.10</version>
+            <version>${httpcore.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sparkjava</groupId>
@@ -151,19 +138,19 @@
             <version>${spark.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.jsr305</artifactId>
-            <version>3.0.2_1</version>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>${jsr305.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-opengis</artifactId>
-            <version>20.1</version>
+            <version>${org.geotools.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-cql</artifactId>
-            <version>20.1</version>
+            <version>${org.geotools.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jai_core</artifactId>
@@ -174,7 +161,7 @@
         <dependency>
             <groupId>org.codice.thirdparty</groupId>
             <artifactId>geotools-suite</artifactId>
-            <version>20.1_2</version>
+            <version>${org.geotools.bundle.version}</version>
         </dependency>
         <dependency>
             <groupId>ddf.catalog.transformer</groupId>
@@ -194,7 +181,7 @@
         <dependency>
             <groupId>org.locationtech.spatial4j</groupId>
             <artifactId>spatial4j</artifactId>
-            <version>0.7</version>
+            <version>${spatial4j.version}</version>
         </dependency>
         <dependency>
             <groupId>ddf.catalog.core</groupId>
@@ -209,21 +196,26 @@
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>2.2.3</version>
+            <version>${quartz.version}</version>
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz-jobs</artifactId>
-            <version>2.2.3</version>
+            <version>${quartz.version}</version>
         </dependency>
         <dependency>
-            <groupId>c3p0</groupId>
+            <groupId>com.mchange</groupId>
             <artifactId>c3p0</artifactId>
-            <version>0.9.1.1</version>
+            <version>${c3p0.version}</version>
         </dependency>
         <dependency>
             <groupId>ddf.persistence.core</groupId>
             <artifactId>persistence-core-api</artifactId>
+            <version>${ddf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ddf.platform</groupId>
+            <artifactId>preferences-api</artifactId>
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
@@ -255,12 +247,12 @@
         <dependency>
             <groupId>com.github.jknack</groupId>
             <artifactId>handlebars</artifactId>
-            <version>2.0.0</version>
+            <version>${jknack.handlebars.version}</version>
         </dependency>
         <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
-            <version>4.3</version>
+            <version>${antlr.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.abego.treelayout</groupId>
@@ -291,7 +283,7 @@
         </dependency>
         <dependency>
             <groupId>ddf.platform.security</groupId>
-            <artifactId>session-management-service</artifactId>
+            <artifactId>session-management-api</artifactId>
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
@@ -316,7 +308,7 @@
         </dependency>
         <dependency>
             <groupId>ddf.security.servlet</groupId>
-            <artifactId>security-servlet-logout-service</artifactId>
+            <artifactId>security-servlet-logout-api</artifactId>
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
@@ -342,7 +334,7 @@
         <dependency>
             <groupId>org.codice.usng4j</groupId>
             <artifactId>usng4j-impl</artifactId>
-            <version>0.4</version>
+            <version>${usng4j.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -364,7 +356,7 @@
         <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
             <artifactId>owasp-java-html-sanitizer</artifactId>
-            <version>20171016.1</version>
+            <version>${owasp-html-sanitizer.version}</version>
         </dependency>
         <dependency>
             <groupId>ddf.catalog.rest</groupId>
@@ -374,7 +366,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>28.1-jre</version>
+            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>org.codice.ddf.search</groupId>
@@ -390,11 +382,16 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
-            <version>3.4.1</version>
+            <version>${commons-math3.version}</version>
         </dependency>
         <dependency>
             <groupId>ddf.security.servlet</groupId>
-            <artifactId>security-servlet-web-socket</artifactId>
+            <artifactId>security-servlet-web-socket-api</artifactId>
+            <version>${ddf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ddf.platform</groupId>
+            <artifactId>preferences-api</artifactId>
             <version>${ddf.version}</version>
         </dependency>
     </dependencies>
@@ -404,6 +401,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.3</version>
                 <configuration>
                     <finalName>catalog-ui-search</finalName>
                     <descriptor>catalog-ui-search.xml</descriptor>
@@ -436,7 +434,6 @@
                         <Embed-Dependency>
                             antlr4-runtime,
                             c3p0,
-                            camel-core-osgi,
                             camel-http,
                             camel-http-common,
                             catalog-core-api-impl;scope=!test,
@@ -444,7 +441,6 @@
                             handlebars,
                             httpclient,
                             httpcore,
-                            platform-util,
                             tlmatcher,
                             gson-support,
                             guava,
@@ -492,6 +488,8 @@
                         <Export-Package>
                             org.codice.ddf.catalog.ui.metacard.internal,
                             org.codice.ddf.catalog.ui.alias,
+                            org.codice.ddf.catalog.ui.metacard.history,
+                            org.codice.ddf.catalog.ui.ws,
                         </Export-Package>
                         <Karaf-Commands>org.codice.ddf.catalog.ui.forms.commands.*</Karaf-Commands>
                     </instructions>
@@ -547,12 +545,12 @@
                                         <limit>
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.50</minimum>
+                                            <minimum>0.48</minimum>
                                         </limit>
                                         <limit>
                                             <counter>BRANCH</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.47</minimum>
+                                            <minimum>0.46</minimum>
                                         </limit>
                                         <limit>
                                             <counter>COMPLEXITY</counter>

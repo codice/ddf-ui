@@ -13,10 +13,9 @@
  *
  **/
 
+import { StartupDataStore } from '../Startup/startup'
 import { LazyQueryResult } from './LazyQueryResult'
 import { QuerySortType } from './types'
-
-const metacardDefinitions = require('../../../component/singletons/metacard-definitions.js')
 
 function parseMultiValue(value: any) {
   if (value && value.constructor === Array) {
@@ -30,7 +29,8 @@ function isEmpty(value: any) {
 }
 
 function parseValue(value: any, attribute: string) {
-  const attributeDefinition = metacardDefinitions.metacardTypes[attribute]
+  const attributeDefinition =
+    StartupDataStore.MetacardDefinitions.getAttributeMap()[attribute]
   if (!attributeDefinition) {
     return value.toString().toLowerCase()
   }
@@ -78,7 +78,10 @@ function checkSortValue(
 }
 
 export const generateCompareFunction = (sorting: QuerySortType[]) => {
-  return function(a: LazyQueryResult, b: LazyQueryResult) {
+  if (!sorting) {
+    throw new Error(`Sorting can't be undefined!`)
+  }
+  return function (a: LazyQueryResult, b: LazyQueryResult) {
     let sortValue = 0
     for (let i = 0; i <= sorting.length - 1; i++) {
       const sortField = sorting[i].attribute
@@ -89,7 +92,8 @@ export const generateCompareFunction = (sorting: QuerySortType[]) => {
           break
         case 'DISTANCE':
           // this says distance could be null, could be a bug we need to address
-          //@ts-ignore
+
+          // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
           sortValue = sortOrder * (a.plain.distance - b.plain.distance)
           break
         default:

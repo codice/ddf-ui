@@ -15,28 +15,37 @@
 
 import PermanentSearchSort from '../../react-component/query-sort-selection/permanent-search-sort'
 
-const properties = require('../../js/properties.js')
 import * as React from 'react'
 import SourceSelector from './source-selector'
 import SourcesInfo from './sources-info'
 import Phonetics from './phonetics'
 import Spellcheck from './spellcheck'
 import { hot } from 'react-hot-loader'
+import { Memo } from '../memo/memo'
+import { QueryType } from '../../js/model/Query'
+import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 
 type Props = {
-  model: Backbone.Model
+  model: QueryType
+  Extensions?: React.FunctionComponent<any>
 }
 
-const QuerySettings = ({ model }: Props) => {
+/**
+ * This is expensive to rerender, so we memo.  However, if the inner components aren't listening to the query,
+ * this will not work.
+ */
+const QuerySettings = ({ model, Extensions }: Props) => {
+  const { config } = useConfiguration()
   return (
-    <>
+    <Memo dependencies={[model]}>
       <div>
-        {properties.isSpellcheckEnabled ? (
+        {Extensions ? <Extensions {...{ model: model }} /> : null}
+        {config?.isSpellcheckEnabled ? (
           <div className="pb-2">
             <Spellcheck model={model} />
           </div>
         ) : null}
-        {properties.isPhoneticsEnabled ? (
+        {config?.isPhoneticsEnabled ? (
           <div className="pb-2">
             <Phonetics model={model} />
           </div>
@@ -52,7 +61,7 @@ const QuerySettings = ({ model }: Props) => {
           <SourcesInfo />
         </div>
       </div>
-    </>
+    </Memo>
   )
 }
 

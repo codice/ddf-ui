@@ -13,50 +13,59 @@
  *
  **/
 import React, { useEffect } from 'react'
-import { getComparators } from './comparatorUtils'
-import MenuItem from '@material-ui/core/MenuItem'
-import TextField from '@material-ui/core/TextField'
-import { FilterClass } from '../../../component/filter-builder/filter.structure'
+import MenuItem from '@mui/material/MenuItem'
+import TextField, { TextFieldProps } from '@mui/material/TextField'
+import {
+  FilterClass,
+  isBasicDatatypeClass,
+} from '../../../component/filter-builder/filter.structure'
+import { useComparatorsForAttribute } from './comparatorUtils'
 
 type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
+  textFieldProps?: TextFieldProps
 }
 
-const FilterComparator = ({ filter, setFilter }: Props) => {
-  useEffect(
-    () => {
-      const comparators = getComparators(filter.property)
-      if (
-        !comparators.map(comparator => comparator.value).includes(filter.type)
-      ) {
-        setFilter({
+const FilterComparator = ({ filter, setFilter, textFieldProps }: Props) => {
+  const comparators = useComparatorsForAttribute(filter.property)
+  useEffect(() => {
+    if (
+      !comparators.map((comparator) => comparator.value).includes(filter.type)
+    ) {
+      setFilter(
+        new FilterClass({
           ...filter,
-          type: comparators[0].value as FilterClass['type'],
+          type: comparators[0]?.value as FilterClass['type'],
         })
-      }
-    },
-    [filter]
-  )
+      )
+    }
+  }, [filter, setFilter, comparators])
 
-  useEffect(() => {}, [filter])
+  if (isBasicDatatypeClass(filter)) {
+    return null
+  }
 
-  const comparators = getComparators(filter.property)
   return (
     <TextField
+      data-id="filter-comparator-select"
       fullWidth
       variant="outlined"
       select
       value={filter.type}
-      onChange={e => {
+      onChange={(e) => {
         const newType = e.target.value as FilterClass['type']
-        setFilter({
-          ...filter,
-          type: newType,
-        })
+        setFilter(
+          new FilterClass({
+            ...filter,
+            type: newType,
+          })
+        )
       }}
+      size="small"
+      {...textFieldProps}
     >
-      {comparators.map(comparator => (
+      {comparators.map((comparator) => (
         <MenuItem value={comparator.value} key={comparator.label}>
           {comparator.label}
         </MenuItem>

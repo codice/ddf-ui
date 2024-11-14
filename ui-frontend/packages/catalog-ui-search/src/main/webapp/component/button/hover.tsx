@@ -1,12 +1,12 @@
 import * as React from 'react'
-import Button, { ButtonProps } from '@material-ui/core/Button'
+import Button, { ButtonProps } from '@mui/material/Button'
 
 /**
  * Allows a button that displays different components when hovering.
  * Otherwise everything else is the same.
  */
 export const HoverButton = (
-  props: ButtonProps & {
+  props: Omit<ButtonProps, 'children'> & {
     children: ({ hover }: { hover: boolean }) => JSX.Element
   }
 ) => {
@@ -14,6 +14,7 @@ export const HoverButton = (
   const { children: Children, ...buttonProps } = props
   return (
     <Button
+      data-id="hover-button"
       onMouseEnter={() => {
         setHover(true)
       }}

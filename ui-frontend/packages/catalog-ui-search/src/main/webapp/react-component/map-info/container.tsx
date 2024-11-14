@@ -16,18 +16,11 @@ import * as React from 'react'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import MapInfoPresentation from './presentation'
 import { hot } from 'react-hot-loader'
-import { Coordinates, Format, Attribute } from '.'
-
-const user = require('../../component/singletons/user-instance.js')
-const properties = require('properties')
-
-type State = {
-  coordinates: Coordinates
-  format: Format
-  attributes: Attribute[]
-  measurementState: String
-  currentDistance: number
-}
+import { Format, Attribute } from '.'
+import { StartupDataStore } from '../../js/model/Startup/startup'
+import { LayoutContext } from '../../component/golden-layout/visual-settings.provider'
+import { getUserCoordinateFormat } from '../../component/visualization/settings-helpers'
+import user from '../../component/singletons/user-instance'
 
 type Props = {
   map: Backbone.Model
@@ -40,7 +33,6 @@ const mapPropsToState = (props: Props) => {
       lat: map.get('mouseLat'),
       lon: map.get('mouseLon'),
     },
-    format: getCoordinateFormat(),
     attributes: getAttributes(map),
     measurementState: map.get('measurementState'),
     currentDistance: map.get('currentDistance'),
@@ -51,50 +43,51 @@ const getAttributes = (map: Backbone.Model) => {
   if (map.get('targetMetacard') === undefined) {
     return []
   }
-  return properties.summaryShow
+  return StartupDataStore.Configuration.getSummaryShow()
     .map((attribute: string) => {
-      const value = map.get('targetMetacard').plain.metacard.properties[
-        attribute
-      ]
+      const value =
+        map.get('targetMetacard').plain.metacard.properties[attribute]
       return { name: attribute, value }
     })
     .filter(({ value }: Attribute) => value !== undefined)
 }
 
-const getCoordinateFormat = () =>
-  user
-    .get('user')
-    .get('preferences')
-    .get('coordinateFormat')
+const MapInfo = (props: Props) => {
+  const { getValue, onStateChanged, visualTitle, hasLayoutContext } =
+    React.useContext(LayoutContext)
+  const [stateProps, setStateProps] = React.useState(mapPropsToState(props))
+  const [coordFormat, setCoordFormat] = React.useState('degrees')
 
-class MapInfo extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props)
-    this.state = mapPropsToState(props)
-    this.listenToMap()
-  }
+  const { listenTo, map } = props
+  const coordFormatKey = `${visualTitle}-coordFormat`
 
-  listenToMap = () => {
-    const { listenTo, map } = this.props
+  const onChange = () => setStateProps(mapPropsToState(props))
+
+  React.useEffect(() => {
+    const userDefaultFormat = getUserCoordinateFormat()
+    if (hasLayoutContext) {
+      setCoordFormat(getValue(coordFormat, userDefaultFormat))
+      onStateChanged(() => {
+        const coordFormat = getValue(coordFormatKey, getUserCoordinateFormat())
+        setCoordFormat(coordFormat)
+      })
+    } else {
+      setCoordFormat(userDefaultFormat)
+      props.listenTo(
+        user.get('user').get('preferences'),
+        'change:coordinateFormat',
+        () => setCoordFormat(getUserCoordinateFormat())
+      )
+    }
+
     listenTo(
       map,
       'change:mouseLat change:mouseLon change:targetMetacard change:currentDistance',
-      this.handleChange
+      onChange
     )
-    listenTo(
-      user.get('user').get('preferences'),
-      'change:coordinateFormat',
-      this.handleChange
-    )
-  }
+  }, [])
 
-  handleChange = () => {
-    this.setState(mapPropsToState(this.props))
-  }
-
-  render() {
-    return <MapInfoPresentation {...this.state} />
-  }
+  return <MapInfoPresentation {...stateProps} format={coordFormat as Format} />
 }
 
 export default hot(module)(withListenTo(MapInfo))

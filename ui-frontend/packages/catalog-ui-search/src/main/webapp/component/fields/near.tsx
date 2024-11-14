@@ -14,12 +14,13 @@
  **/
 import * as React from 'react'
 
-import TextField from '@material-ui/core/TextField'
-import Grid from '@material-ui/core/Grid'
+import Grid from '@mui/material/Grid'
 import { ValueTypes } from '../filter-builder/filter.structure'
+import { CustomInputOrDefault } from '../../react-component/filter/filter-input/customInputOrDefault'
+import { NumberField } from './number'
 
 type NearFieldProps = {
-  value: ValueTypes['proximity']
+  value: Partial<ValueTypes['proximity']>
   onChange: (val: ValueTypes['proximity']) => void
 }
 
@@ -35,12 +36,15 @@ const validateShape = ({ value, onChange }: NearFieldProps) => {
     value.first === undefined ||
     value.second === undefined
   ) {
-    console.log('defaulted to correct shape')
     onChange(defaultValue)
   }
 }
 
 export const NearField = ({ value, onChange }: NearFieldProps) => {
+  const validValue = {
+    ...defaultValue,
+    ...value,
+  }
   React.useEffect(() => {
     validateShape({ value, onChange })
   }, [])
@@ -53,18 +57,19 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
       wrap="nowrap"
     >
       <Grid item className="w-full pb-2">
-        <TextField
-          fullWidth
-          multiline
-          rowsMax={3}
-          variant="outlined"
-          type="text"
-          value={value.second}
-          onChange={e => {
+        <CustomInputOrDefault
+          value={validValue.second}
+          onChange={(val: any) => {
             onChange({
-              ...value,
-              second: e.target.value,
+              ...validValue,
+              second: val,
             })
+          }}
+          props={{
+            fullWidth: true,
+            variant: 'outlined',
+            type: 'text',
+            size: 'small',
           }}
         />
       </Grid>
@@ -72,35 +77,36 @@ export const NearField = ({ value, onChange }: NearFieldProps) => {
         within
       </Grid>
       <Grid item className="w-full pb-2">
-        <TextField
-          fullWidth
-          type="number"
-          variant="outlined"
-          value={value.distance}
-          onChange={e => {
+        <NumberField
+          type="integer"
+          value={validValue.distance.toString()}
+          onChange={(val) => {
             onChange({
-              ...value,
-              distance: Math.max(1, parseInt(e.target.value) || 0),
+              ...validValue,
+              distance: val,
             })
           }}
+          validation={(val) => val > 0}
+          validationText="Must be greater than 0, using previous value of "
         />
       </Grid>
       <Grid item className="w-full pb-2 pl-2">
         of
       </Grid>
       <Grid item className="w-full">
-        <TextField
-          fullWidth
-          multiline
-          rowsMax={3}
-          variant="outlined"
-          type="text"
-          value={value.first}
-          onChange={e => {
+        <CustomInputOrDefault
+          value={validValue.first}
+          onChange={(val: any) => {
             onChange({
-              ...value,
-              first: e.target.value,
+              ...validValue,
+              first: val,
             })
+          }}
+          props={{
+            fullWidth: true,
+            variant: 'outlined',
+            type: 'text',
+            size: 'small',
           }}
         />
       </Grid>

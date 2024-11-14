@@ -12,59 +12,52 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
-const wreqr = require('../../js/wreqr.js')
+import wreqr from '../../js/wreqr'
 import MapActionsPresentation from './presentation'
-
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 type Props = {
-  model: Backbone.Model
+  model: LazyQueryResult
 }
-
 type State = {
   currentOverlayUrl: string
 }
-
-const getActionsWithIdPrefix = (actions: any, id: string) => {
-  return actions.filter((action: any) => action.get('id').startsWith(id))
+const getActionsWithIdPrefix = (
+  actions: LazyQueryResult['plain']['actions'],
+  id: string
+) => {
+  return actions.filter((action) => action.id.startsWith(id))
 }
-
 class MapActions extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
-
     this.state = {
-      currentOverlayUrl: this.props.model.get('currentOverlayUrl'),
+      currentOverlayUrl: this.props.model.currentOverlayUrl || '',
     }
   }
-
   getActions = () => {
-    return this.props.model.get('actions')
+    return this.props.model.plain.actions
   }
-
   getMapActions = () => {
     return getActionsWithIdPrefix(
       this.getActions(),
       'catalog.data.metacard.map.'
     )
   }
-
   getOverlayActions = () => {
     const modelOverlayActions = getActionsWithIdPrefix(
       this.getActions(),
       'catalog.data.metacard.map.overlay.'
     )
-
-    return modelOverlayActions.map((modelOverlayAction: any) => {
+    return modelOverlayActions.map((modelOverlayAction) => {
       return {
-        description: modelOverlayAction.get('description'),
-        url: modelOverlayAction.get('url'),
-        overlayText: this.getOverlayText(modelOverlayAction.get('url')),
+        description: modelOverlayAction.description,
+        url: modelOverlayAction.url,
+        overlayText: this.getOverlayText(modelOverlayAction.url),
       }
     })
   }
-
   getOverlayText = (actionUrl: String) => {
     const overlayTransformerPrefix = 'overlay.'
     const overlayTransformerIndex = actionUrl.lastIndexOf(
@@ -76,33 +69,24 @@ class MapActions extends React.Component<Props, State> {
       )
       return 'Overlay ' + overlayName + ' on the map'
     }
-
     return ''
   }
-
   overlayImage = (event: any) => {
     const clickedOverlayUrl = event.target.getAttribute('data-url')
     const removeOverlay = clickedOverlayUrl === this.state.currentOverlayUrl
-
     if (removeOverlay) {
-      this.props.model.unset('currentOverlayUrl', { silent: true })
+      this.props.model.currentOverlayUrl = undefined
       this.setState({ currentOverlayUrl: '' })
-      wreqr.vent.trigger(
+      ;(wreqr as any).vent.trigger(
         'metacard:overlay:remove',
-        this.props.model.get('metacard').get('id')
+        this.props.model.plain.id
       )
     } else {
-      this.props.model.set('currentOverlayUrl', clickedOverlayUrl, {
-        silent: true,
-      })
+      this.props.model.currentOverlayUrl = clickedOverlayUrl
       this.setState({ currentOverlayUrl: clickedOverlayUrl })
-      this.props.model
-        .get('metacard')
-        .set('currentOverlayUrl', clickedOverlayUrl)
-      wreqr.vent.trigger('metacard:overlay', this.props.model.get('metacard'))
+      ;(wreqr as any).vent.trigger('metacard:overlay', this.props.model)
     }
   }
-
   render() {
     const hasMapActions = this.getMapActions().length !== 0
     return (
@@ -115,5 +99,4 @@ class MapActions extends React.Component<Props, State> {
     )
   }
 }
-
 export default hot(module)(MapActions)

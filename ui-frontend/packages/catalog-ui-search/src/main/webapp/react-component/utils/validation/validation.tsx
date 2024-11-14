@@ -12,27 +12,33 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
-const React = require('react')
-import { InvalidSearchFormMessage } from '../../../component/announcement/CommonMessages'
+import React from 'react'
 import styled from 'styled-components'
-const announcement = require('../../../component/announcement/index.jsx')
-const usngs = require('usng.js')
+import * as usngs from 'usng.js'
+import _ from 'lodash'
+// @ts-expect-error ts-migrate(2554) FIXME: Expected 1 arguments, but got 0.
 const converter = new usngs.Converter()
 const NORTHING_OFFSET = 10000000
 const LATITUDE = 'latitude'
 const LONGITUDE = 'longitude'
-const DistanceUtils = require('../../../js/DistanceUtils')
-const {
+// 75 meters was determined to be a reasonable min for linestring searches based on testing against known
+// data sources
+export const LINE_BUFFER_MININUM_METERS = 75
+import DistanceUtils from '../../../js/DistanceUtils'
+import {
   parseDmsCoordinate,
   dmsCoordinateToDD,
-} = require('../../../component/location-new/utils/dms-utils.js')
-
+} from '../../../component/location-new/utils/dms-utils'
+import wreqr from '../../../js/wreqr'
+import { errorMessages } from '../../../component/location-new/utils'
 export function showErrorMessages(errors: any) {
   if (errors.length === 0) {
     return
   }
-  let searchErrorMessage = JSON.parse(JSON.stringify(InvalidSearchFormMessage))
+  let searchErrorMessage = {
+    title: '',
+    message: '',
+  }
   if (errors.length > 1) {
     let msg = searchErrorMessage.message
     searchErrorMessage.title =
@@ -46,19 +52,25 @@ export function showErrorMessages(errors: any) {
     searchErrorMessage.title = error.title
     searchErrorMessage.message = error.body
   }
-  announcement.announce(searchErrorMessage)
+  ;(wreqr as any).vent.trigger('snack', {
+    message: `${searchErrorMessage.title} : ${searchErrorMessage.message}`,
+    snackProps: {
+      alertProps: {
+        severity: 'error',
+      },
+    },
+  })
 }
-
 export function getFilterErrors(filters: any) {
   const errors = new Set()
   let geometryErrors = new Set<string>()
   for (let i = 0; i < filters.length; i++) {
     const filter = filters[i]
-    getGeometryErrors(filter).forEach(msg => {
+    getGeometryErrors(filter).forEach((msg) => {
       geometryErrors.add(msg)
     })
   }
-  geometryErrors.forEach(err => {
+  geometryErrors.forEach((err) => {
     errors.add({
       title: 'Invalid geometry filter',
       body: err,
@@ -66,7 +78,7 @@ export function getFilterErrors(filters: any) {
   })
   return Array.from(errors)
 }
-
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
 export function validateGeo(key: string, value: any) {
   switch (key) {
     case 'lat':
@@ -99,31 +111,37 @@ export function validateGeo(key: string, value: any) {
     default:
   }
 }
-
 export const ErrorComponent = (props: any) => {
   const { errorState } = props
   return errorState.error ? (
-    <Invalid>
+    <Invalid className="my-2">
       <WarningIcon className="fa fa-warning" />
       <span>{errorState.message}</span>
     </Invalid>
   ) : null
 }
-
 export function validateListOfPoints(coordinates: any[], mode: string) {
-  let message = ''
+  let message = null
   const isLine = mode.includes('line')
   const numPoints = isLine ? 2 : 4
   if (
     !mode.includes('multi') &&
-    !coordinates.some(coords => coords.length > 2) &&
+    !isLine &&
+    coordinates.length >= numPoints &&
+    !_.isEqual(coordinates[0], coordinates.slice(-1)[0])
+  ) {
+    message = errorMessages.firstLastPointMismatch
+  }
+  if (
+    !mode.includes('multi') &&
+    !coordinates.some((coords) => coords.length > 2) &&
     coordinates.length < numPoints
   ) {
     message = `Minimum of ${numPoints} points needed for ${
       isLine ? 'Line' : 'Polygon'
     }`
   }
-  coordinates.forEach(coordinate => {
+  coordinates.forEach((coordinate) => {
     if (coordinate.length > 2) {
       coordinate.forEach((coord: any) => {
         if (hasPointError(coord))
@@ -139,20 +157,17 @@ export function validateListOfPoints(coordinates: any[], mode: string) {
       }
     }
   })
-  return { error: message.length > 0, message }
+  return { error: !!message, message }
 }
-
 export const initialErrorState = {
   error: false,
   message: '',
 }
-
 export const initialErrorStateWithDefault = {
   error: false,
   message: '',
   defaultValue: '',
 }
-
 function is2DArray(coordinates: any[]) {
   try {
     return Array.isArray(coordinates) && Array.isArray(coordinates[0])
@@ -160,7 +175,6 @@ function is2DArray(coordinates: any[]) {
     return false
   }
 }
-
 function hasPointError(point: any[]) {
   if (
     point.length !== 2 ||
@@ -171,7 +185,6 @@ function hasPointError(point: any[]) {
   }
   return point[0] > 180 || point[0] < -180 || point[1] > 90 || point[1] < -90
 }
-
 function getGeometryErrors(filter: any): Set<string> {
   const geometry = filter.geojson && filter.geojson.geometry
   const errors = new Set<string>()
@@ -244,7 +257,7 @@ function getGeometryErrors(filter: any): Set<string> {
       const { east, west, north, south } = filter.geojson.properties
       if (
         [east, west, north, south].some(
-          direction => direction === '' || direction === undefined
+          (direction) => direction === '' || direction === undefined
         ) ||
         Number(south) >= Number(north) ||
         Number(west) === Number(east)
@@ -255,10 +268,12 @@ function getGeometryErrors(filter: any): Set<string> {
   }
   return errors
 }
-
 function validateLinePolygon(mode: string, currentValue: string) {
   if (currentValue === undefined) {
-    return initialErrorState
+    return {
+      error: true,
+      message: `${mode === 'line' ? 'Line' : 'Polygon'} cannot be empty`,
+    }
   }
   try {
     const parsedCoords = JSON.parse(currentValue)
@@ -270,7 +285,6 @@ function validateLinePolygon(mode: string, currentValue: string) {
     return { error: true, message: 'Not an acceptable value' }
   }
 }
-
 function getDdCoords(value: any) {
   return {
     north: Number(value.north),
@@ -279,7 +293,6 @@ function getDdCoords(value: any) {
     east: Number(value.east),
   }
 }
-
 function getDmsCoords(value: any) {
   const coordinateNorth = parseDmsCoordinate(value.north)
   const coordinateSouth = parseDmsCoordinate(value.south)
@@ -312,18 +325,16 @@ function getDmsCoords(value: any) {
   }
   return { north, south, west, east }
 }
-
 function getUsngCoords(upperLeft: any, lowerRight: any) {
   const upperLeftCoord = converter.USNGtoLL(upperLeft, true)
   const lowerRightCoord = converter.USNGtoLL(lowerRight, true)
   return {
-    north: upperLeftCoord.lat.toFixed(5),
-    south: lowerRightCoord.lat.toFixed(5),
-    west: upperLeftCoord.lon.toFixed(5),
-    east: lowerRightCoord.lon.toFixed(5),
+    north: Number(upperLeftCoord.lat.toFixed(5)),
+    south: Number(lowerRightCoord.lat.toFixed(5)),
+    west: Number(upperLeftCoord.lon.toFixed(5)),
+    east: Number(lowerRightCoord.lon.toFixed(5)),
   }
 }
-
 function getUtmUpsCoords(upperLeft: any, lowerRight: any) {
   const upperLeftParts = {
     easting: parseFloat(upperLeft.easting),
@@ -353,9 +364,12 @@ function getUtmUpsCoords(upperLeft: any, lowerRight: any) {
   const east = Number(converter.UTMUPStoLL(lowerRightParts).lon.toFixed(5))
   return { north, south, west, east }
 }
-
 function validateLatitudes(north: any, south: any, isUsngOrUtmUps: boolean) {
-  if (!isNaN(south) && !isNaN(north) && south >= north) {
+  if (
+    !isNaN(south) &&
+    !isNaN(north) &&
+    parseFloat(south) >= parseFloat(north)
+  ) {
     return {
       error: true,
       message: isUsngOrUtmUps
@@ -365,9 +379,8 @@ function validateLatitudes(north: any, south: any, isUsngOrUtmUps: boolean) {
   }
   return initialErrorState
 }
-
 function validateLongitudes(west: any, east: any, isUsngOrUtmUps: boolean) {
-  if (!isNaN(west) && !isNaN(east) && west === east) {
+  if (!isNaN(west) && !isNaN(east) && parseFloat(west) === parseFloat(east)) {
     return {
       error: true,
       message: isUsngOrUtmUps
@@ -377,7 +390,6 @@ function validateLongitudes(west: any, east: any, isUsngOrUtmUps: boolean) {
   }
   return initialErrorState
 }
-
 function validateBoundingBox(key: string, value: any) {
   let coords, north, south, west, east
   if (value.isDms) {
@@ -409,11 +421,10 @@ function validateBoundingBox(key: string, value: any) {
   }
   return initialErrorState
 }
-
 function validateDDLatLon(label: string, value: string, defaultCoord: number) {
   let message = ''
   let defaultValue
-  if (value !== undefined && value.length === 0) {
+  if (value === undefined || value === null || value === '') {
     message = getEmptyErrorMessage(label)
     return { error: true, message, defaultValue }
   }
@@ -424,12 +435,11 @@ function validateDDLatLon(label: string, value: string, defaultCoord: number) {
   }
   return initialErrorStateWithDefault
 }
-
 function validateDmsLatLon(label: string, value: string) {
   let message = ''
   let defaultValue
   const validator = label === LATITUDE ? 'dd°mm\'ss.s"' : 'ddd°mm\'ss.s"'
-  if (value !== undefined && value.length === 0) {
+  if (value === undefined || value === null || value === '') {
     message = getEmptyErrorMessage(label)
     return { error: true, message, defaultValue }
   }
@@ -441,7 +451,6 @@ function validateDmsLatLon(label: string, value: string) {
   }
   return { error: false, message, defaultValue }
 }
-
 function validateUsng(value: string) {
   if (value === '') {
     return { error: true, message: 'USNG / MGRS coordinates cannot be empty' }
@@ -456,11 +465,9 @@ function validateUsng(value: string) {
     message: isInvalid ? 'Invalid USNG / MGRS coordinates' : '',
   }
 }
-
 function upsValidDistance(distance: number) {
   return distance >= 800000 && distance <= 3200000
 }
-
 function validateUtmUps(key: string, value: any) {
   let { easting, northing, zoneNumber, hemisphere } = value
   const northernHemisphere = hemisphere.toUpperCase() === 'NORTHERN'
@@ -529,14 +536,34 @@ function validateUtmUps(key: string, value: any) {
   }
   return error
 }
-
 function validateRadiusLineBuffer(key: string, value: any) {
+  const parsed = Number(value.value)
+  const buffer = Number.isNaN(parsed) ? 0 : parsed
+  const bufferMeters = DistanceUtils.getDistanceInMeters(buffer, value.units)
+  if (key === 'lineWidth' && bufferMeters < LINE_BUFFER_MININUM_METERS) {
+    const minDistance = DistanceUtils.getDistanceFromMeters(
+      LINE_BUFFER_MININUM_METERS,
+      value.units
+    )
+    const minDistanceDisplay = Number.isInteger(minDistance)
+      ? minDistance.toString()
+      : // Add 0.01 to account for decimal places beyond hundredths. For example, if
+        // the selected unit is feet, then the required value is 246.063, and if we only
+        // showed (246.063).toFixed(2), then the user would see 246.06, but if they typed
+        // that in, they would still be shown this error.
+        (minDistance + 0.01).toFixed(2)
+    return {
+      error: true,
+      message: `Line buffer must be at least ${minDistanceDisplay} ${value.units}`,
+    }
+  }
+
   const label = key === 'radius' ? 'Radius ' : 'Buffer width '
   if (value.value.toString().length === 0) {
     return initialErrorState
   }
-  const buffer = DistanceUtils.getDistanceInMeters(value.value, value.units)
-  if (key.includes('Width') && buffer < 1 && buffer !== 0) {
+
+  if (key.includes('Width') && bufferMeters < 1 && bufferMeters !== 0) {
     return {
       error: true,
       message:
@@ -546,7 +573,7 @@ function validateRadiusLineBuffer(key: string, value: any) {
         ' ' +
         value.units,
     }
-  } else if (key.includes('radius') && buffer < 1) {
+  } else if (key.includes('radius') && bufferMeters < 1) {
     return {
       error: true,
       message:
@@ -559,7 +586,6 @@ function validateRadiusLineBuffer(key: string, value: any) {
   }
   return initialErrorState
 }
-
 const validateDmsInput = (input: any, placeHolder: string) => {
   if (input !== undefined && placeHolder === 'dd°mm\'ss.s"') {
     const corrected = getCorrectedDmsLatInput(input)
@@ -570,7 +596,6 @@ const validateDmsInput = (input: any, placeHolder: string) => {
   }
   return { error: false }
 }
-
 const lat = {
   degreesBegin: 0,
   degreesEnd: 2,
@@ -587,7 +612,6 @@ const lon = {
   secondsBegin: 7,
   secondsEnd: -1,
 }
-
 const getCorrectedDmsLatInput = (input: any) => {
   const degrees = input.slice(lat.degreesBegin, lat.degreesEnd)
   const minutes = input.slice(lat.minutesBegin, lat.minutesEnd)
@@ -625,7 +649,6 @@ const getCorrectedDmsLatInput = (input: any) => {
     return input
   }
 }
-
 const getCorrectedDmsLonInput = (input: any) => {
   const degrees = input.slice(lon.degreesBegin, lon.degreesEnd)
   const minutes = input.slice(lon.minutesBegin, lon.minutesEnd)
@@ -663,7 +686,6 @@ const getCorrectedDmsLonInput = (input: any) => {
     return input
   }
 }
-
 function getDefaultingErrorMessage(
   value: string,
   label: string,
@@ -674,19 +696,16 @@ function getDefaultingErrorMessage(
     '0'
   )} is not an acceptable ${label} value. Defaulting to ${defaultValue}`
 }
-
 function getEmptyErrorMessage(label: string) {
-  return `${label.replace(/^\w/, c => c.toUpperCase())} cannot be empty`
+  return `${label.replace(/^\w/, (c) => c.toUpperCase())} cannot be empty`
 }
-
 const Invalid = styled.div`
-  background-color: ${props => props.theme.negativeColor};
+  border: 1px solid ${(props) => props.theme.negativeColor};
   height: 100%;
   display: block;
   overflow: hidden;
   color: white;
 `
-
 const WarningIcon = styled.span`
   padding: ${({ theme }) => theme.minimumSpacing};
 `

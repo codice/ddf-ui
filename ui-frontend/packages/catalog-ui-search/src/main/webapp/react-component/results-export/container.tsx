@@ -14,44 +14,64 @@
  **/
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import fetch from '../utils/fetch'
 import ResultsExportComponent from './presentation'
-import { exportResult, exportResultSet } from '../utils/export'
+import {
+  exportResultSet,
+  OverridableGetColumnOrder,
+  getExportOptions,
+  Transformer,
+  ExportFormat,
+} from '../utils/export'
 import { getResultSetCql } from '../utils/cql'
-import saveFile from '../utils/save-file'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
-
-const contentDisposition = require('content-disposition')
-
-type ExportFormat = {
-  id: string
-  displayName: string
-}
+import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cont... Remove this comment to see the full error message
+import contentDisposition from 'content-disposition'
+import { StartupDataStore } from '../../js/model/Startup/startup'
+import { OverridableSaveFile } from '../utils/save-file/save-file'
+import { AddSnack } from '../../component/snack/snack.provider'
 
 type Result = {
   id: string
   source: string
+  attributes: string[]
 }
 
 type Props = {
   results: Result[]
+  lazyQueryResults: LazyQueryResults
   isZipped?: boolean
+  onClose?: any
+  exportSuccessful?: boolean
+  setExportSuccessful?: any
+  loading?: boolean
+  setLoading?: any
 } & WithBackboneProps
 
 type State = {
-  downloadDisabled: boolean
+  exportDisabled: boolean
   selectedFormat: string
   exportFormats: ExportFormat[]
+  loading?: boolean
+  exportSuccessful?: boolean
 }
 
 class ResultsExport extends React.Component<Props, State> {
+  setExportSuccessful: any
+  onClose: any
+  setLoading: any
   constructor(props: Props) {
     super(props)
     this.state = {
-      selectedFormat: 'Select an export option',
+      selectedFormat: 'Binary Resource',
       exportFormats: [],
-      downloadDisabled: true,
+      exportDisabled: true,
+      loading: false,
+      exportSuccessful: false,
     }
+    this.onClose = props.onClose
+    this.setExportSuccessful = props.setExportSuccessful
+    this.setLoading = props.setLoading
   }
 
   componentDidUpdate(_prevProps: Props) {
@@ -61,55 +81,41 @@ class ResultsExport extends React.Component<Props, State> {
     ) {
       this.fetchExportOptions()
       this.setState({
-        selectedFormat: 'Select an export option',
-        downloadDisabled: true,
+        selectedFormat: 'Binary Resource',
+        exportDisabled: true,
       })
     }
   }
 
   getTransformerType = () => {
     return !this.props.isZipped && this.props.results.length > 1
-      ? 'query'
-      : 'metacard'
+      ? Transformer.Query
+      : Transformer.Metacard
   }
 
   componentDidMount() {
     this.fetchExportOptions()
   }
 
-  fetchExportOptions = () => {
-    fetch(`./internal/transformers/${this.getTransformerType()}`)
-      .then(response => response.json())
-      .then((exportFormats: ExportFormat[]) => {
-        return exportFormats.sort(
-          (format1: ExportFormat, format2: ExportFormat) => {
-            if (format1.displayName > format2.displayName) {
-              return 1
-            }
-
-            if (format1.displayName < format2.displayName) {
-              return -1
-            }
-
-            return 0
-          }
-        )
-      })
-      .then(exportFormats =>
-        this.setState({
-          exportFormats: exportFormats,
-        })
-      )
+  fetchExportOptions = async () => {
+    const formats = await getExportOptions(this.getTransformerType())
+    this.setState({
+      exportFormats: formats,
+    })
   }
 
   getResultSources() {
-    return new Set(this.props.results.map((result: Result) => result.source))
+    return new Set(
+      this.props.results
+        .map((result: Result) => result.source)
+        .map((source: string) => decodeURIComponent(source))
+    )
   }
 
   getSelectedExportFormatId() {
     const selectedFormat = this.state.selectedFormat
     const format = this.state.exportFormats.find(
-      format => format.displayName === selectedFormat
+      (format) => format.displayName === selectedFormat
     )
 
     if (format !== undefined) {
@@ -119,64 +125,86 @@ class ResultsExport extends React.Component<Props, State> {
     return undefined
   }
 
-  async onDownloadClick() {
+  onExportClick = async (addSnack: AddSnack) => {
     const uriEncodedTransformerId = this.getSelectedExportFormatId()
 
-    if (uriEncodedTransformerId === undefined) {
-      return
-    }
+    try {
+      console.log(this.state.loading)
+      this.setState({ loading: true })
+      console.log(this.state.loading)
 
-    let response = null
-    const count = this.props.results.length
-    const cql = getResultSetCql(
-      this.props.results.map((result: Result) => result.id)
-    )
-    const srcs = Array.from(this.getResultSources())
-    const searches = [
-      {
-        srcs,
-        cql,
-        count,
-      },
-    ]
+      if (uriEncodedTransformerId === undefined) {
+        return
+      }
 
-    if (this.props.isZipped) {
-      response = await exportResultSet('zipCompression', {
-        searches,
-        count,
-        args: {
-          transformerId: uriEncodedTransformerId,
-        },
-      })
-    } else if (this.props.results.length > 1) {
-      response = await exportResultSet(uriEncodedTransformerId, {
-        searches,
-        count,
-      })
-    } else {
-      const result = this.props.results[0]
-
-      response = await exportResult(
-        result.source,
-        result.id,
-        uriEncodedTransformerId
+      let response = null
+      const count = this.props.results.length
+      const cql = getResultSetCql(
+        this.props.results.map((result: Result) => result.id)
       )
-    }
+      const srcs = Array.from(this.getResultSources())
+      const searches = [
+        {
+          srcs,
+          cql,
+          count,
+        },
+      ]
+      const columnOrder = OverridableGetColumnOrder.get()()
+      if (this.props.isZipped) {
+        response = await exportResultSet('zipCompression', {
+          searches,
+          count,
+          sorts: [],
+          args: {
+            transformerId: uriEncodedTransformerId,
+          },
+        })
+      } else {
+        response = await exportResultSet(uriEncodedTransformerId, {
+          searches,
+          count,
+          sorts: this.props.lazyQueryResults?.transformSorts({
+            originalSorts: this.props.lazyQueryResults?.persistantSorts,
+          }),
+          args: {
+            hiddenFields: [],
+            columnOrder: columnOrder,
+            columnAliasMap:
+              StartupDataStore.Configuration.config?.attributeAliases || {},
+          },
+        })
+      }
 
-    if (response.status === 200) {
-      const filename = contentDisposition.parse(
-        response.headers.get('content-disposition')
-      ).parameters.filename
-      const contentType = response.headers.get('content-type')
-      const data = await response.blob()
-
-      saveFile(filename, 'data:' + contentType, data)
+      if (response.status === 200) {
+        const filename = contentDisposition.parse(
+          response.headers.get('content-disposition')
+        ).parameters.filename
+        const contentType = response.headers.get('content-type')
+        const data = await response.blob()
+        OverridableSaveFile.get()(filename, 'data:' + contentType, data)
+        this.setExportSuccessful(true)
+        this.onClose()
+      } else {
+        this.setState({ exportSuccessful: false })
+        this.setState({ loading: false })
+        addSnack('Error: Could not export results.', {
+          alertProps: { severity: 'error' },
+        })
+      }
+    } catch (error) {
+      console.error(error)
+      this.setState({ exportSuccessful: false })
+      this.setState({ loading: false })
+    } finally {
+      this.setState({ loading: false })
     }
   }
+
   handleExportOptionChange(name: string) {
     this.setState({
       selectedFormat: name,
-      downloadDisabled: false,
+      exportDisabled: false,
     })
   }
   render() {
@@ -184,9 +212,14 @@ class ResultsExport extends React.Component<Props, State> {
       <ResultsExportComponent
         selectedFormat={this.state.selectedFormat}
         exportFormats={this.state.exportFormats}
-        downloadDisabled={this.state.downloadDisabled}
-        onDownloadClick={this.onDownloadClick.bind(this)}
+        exportDisabled={this.state.exportDisabled}
+        onExportClick={this.onExportClick.bind(this)}
         handleExportOptionChange={this.handleExportOptionChange.bind(this)}
+        onClose={this.onClose.bind(this)}
+        loading={this.state.loading}
+        setLoading={this.setLoading.bind(this)}
+        exportSuccessful={this.state.exportSuccessful}
+        setExportSuccessful={this.setLoading.bind(this)}
       />
     )
   }

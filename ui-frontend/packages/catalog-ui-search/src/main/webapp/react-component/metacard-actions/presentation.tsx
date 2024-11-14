@@ -18,9 +18,10 @@ import * as React from 'react'
 import styled from 'styled-components'
 import { readableColor } from 'polished'
 import MapActions from '../map-actions'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
 type Props = {
-  model: Backbone.Model
+  model: LazyQueryResult
   exportActions: any
   otherActions: any
 }
@@ -28,31 +29,31 @@ type Props = {
 const Root = styled.div`
   overflow: auto;
   height: 100%;
-  padding: 0px ${props => props.theme.largeSpacing};
+  padding: 0px ${(props) => props.theme.largeSpacing};
 `
 const Header = styled.div`
   text-align: left;
-  font-size: ${props => props.theme.largeFontSize};
+  font-size: ${(props) => props.theme.largeFontSize};
   font-weight: bolder;
   opacity: 0.8;
 `
 
 const MapActionsDiv = styled.div`
-  margin-top: ${props => props.theme.minimumSpacing};
+  margin-top: ${(props) => props.theme.minimumSpacing};
 `
 const Divider = styled.div`
-  height: ${props => props.theme.borderRadius};
-  margin: ${props => props.theme.minimumSpacing} 0px;
-  background: ${props => readableColor(props.theme.backgroundContent)};
+  height: ${(props) => props.theme.borderRadius};
+  margin: ${(props) => props.theme.minimumSpacing} 0px;
+  background: ${(props) => readableColor(props.theme.backgroundContent)};
   opacity: 0.1;
 `
 
 const Actions = styled.div`
-  padding: 0px ${props => props.theme.largeSpacing};
+  padding: 0px ${(props) => props.theme.largeSpacing};
 `
 
 const ActionLink = styled.a`
-  margin-top: ${props => props.theme.minimumSpacing};
+  margin-top: ${(props) => props.theme.minimumSpacing};
   cursor: pointer;
   display: block;
 `
@@ -63,7 +64,7 @@ const ExportActions = (props: any) => {
     <>
       <Header>Export as:</Header>
       <Divider />
-      <Actions>
+      <Actions data-id="export-actions-container">
         {exportActions.map((exportAction: any) => {
           return (
             <ActionLink
@@ -89,7 +90,7 @@ const OtherActions = (props: any) => {
     <>
       <Header>Various:</Header>
       <Divider />
-      <Actions>
+      <Actions data-id="various-actions-container">
         {otherActions.map((otherAction: any) => {
           return (
             <ActionLink

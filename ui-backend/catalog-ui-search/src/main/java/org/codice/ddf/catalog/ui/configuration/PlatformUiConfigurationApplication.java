@@ -34,10 +34,14 @@ public class PlatformUiConfigurationApplication implements SparkApplication {
         "/platform/config/ui",
         APPLICATION_JSON,
         (req, res) -> {
-          String response = platformUiConfigurationService.getConfigAsJsonString();
+          String response = getConfigAsJsonString();
           res.status(200);
           res.header(CONTENT_TYPE, APPLICATION_JSON);
           return response;
         });
+  }
+
+  public String getConfigAsJsonString() {
+    return platformUiConfigurationService.getConfigAsJsonString();
   }
 }

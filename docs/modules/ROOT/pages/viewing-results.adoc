@@ -27,7 +27,7 @@ image::search-results-options.png[search results options]
 .Options for each individual search result
 * *Download*: Downloads the result's associated resource directly to the local machine. This option is only available for results that have resources.
 * *Add to List* &#43;: Adds/removes the results to/from a list.
-* [[_hiding_a_result]]*Hide from Future Searches*: Adds to a list of results that will be hidden from future searches.
+* [[_hiding_a_result]]*Hide from Future Searches*: Adds to a list of results that is hidden from future searches.
 * *Expand Metacard View*: Navigates to a view that only focuses on this particular result.
 * *Export As*: Export the metadata, associated resource, or both.
 
@@ -49,7 +49,7 @@ image::search-results-options.png[search results options]
 ** *Actions*: *Add*, *Remove*, *Show*, or *Rearrange* the visible attributes for this result.
 * *Details*: A detailed view of all attributes available for the result.
 * <<_viewing_revision_history,History>>: View revision history of this record.
-* <<_editing_associations_on_a_record,Associations>>: View or edit the relationship(s) between this record and others in the catalog.
+* <<_editing_associations_on_a_record,Associations>>: View or edit the relationships between this record and others in the catalog.
 * <<_viewing_metadata_quality,Quality>>: View the completeness and accuracy of the metadata for this record.
 * <<_exporting_a_result,Actions>>: Export the metadata/resource to a specific format.
 * <<_archiving_a_result,Archive>>: Remove the selected result from standard search results.
@@ -61,7 +61,7 @@ Results can be edited from the *Summary* or *Details* tabs in the *Inspector* vi
 
 ==== Viewing Text Previews
 
-If a preview for a result is available, an extra tab will appear in the *Inspector* visual that allows you to see a preview of the resource.
+If a preview for a result is available, an extra tab appears in the *Inspector* visual that allows you to see a preview of the resource.
 
 Getting a preview using the metadata can be enabled through *{admin-console} -> Catalog -> Configuration -> Catalog Preview -> Preview From Metadata*
 
@@ -128,7 +128,7 @@ To remove a result from the active search results, archive it.
 . Select the desired result from the *Search* tab.
 . Select the *Inspector* visual.
 . Select the *Archive* tab.
-. Select *Archive item(s)*.
+. Select *Archive items*.
 . Select *Archive*.
 
 ==== Restoring Archived Results
@@ -139,7 +139,7 @@ Restore an archived result to return it to the active search results.
 . Select the desired result from the *Search* tab.
 . Select the *Inspector* visual.
 . Select the *Archive* tab.
-. Select *Restore item(s)*.
+. Select *Restore items*.
 . Select *Restore*.
 
 Restore hidden results to the active search results.

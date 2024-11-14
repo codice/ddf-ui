@@ -2,8 +2,10 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { ClusterType } from './geometries'
 import { useSelectionOfLazyResults } from '../../../../js/model/LazyQueryResult/hooks'
-const _ = require('underscore')
-const calculateConvexHull = require('geo-convex-hull')
+import _ from 'underscore'
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'geo-... Remove this comment to see the full error message
+import calculateConvexHull from 'geo-convex-hull'
+import extension from '../../../../extension-points'
 
 type Props = {
   cluster: ClusterType
@@ -14,54 +16,58 @@ const Cluster = ({ cluster, map }: Props) => {
   const geometries = React.useRef([] as any[])
   const isSelected = useSelectionOfLazyResults({ lazyResults: cluster.results })
 
-  React.useEffect(
-    () => {
-      switch (isSelected) {
-        case 'selected':
-          map.updateCluster(geometries.current, {
-            color: cluster.results[0].getColor(),
-            isSelected,
-            count: cluster.results.length,
-            outline: 'black',
-            textFill: 'black',
-          })
-          break
-        case 'partially':
-          map.updateCluster(geometries.current, {
-            color: cluster.results[0].getColor(),
-            isSelected,
-            count: cluster.results.length,
-            outline: 'black',
-            textFill: 'white',
-          })
-          break
-        case 'unselected':
-          map.updateCluster(geometries.current, {
-            color: cluster.results[0].getColor(),
-            isSelected,
-            count: cluster.results.length,
-            outline: 'white',
-            textFill: 'white',
-          })
-          break
-      }
-    },
-    [isSelected]
-  )
+  React.useEffect(() => {
+    switch (isSelected) {
+      case 'selected':
+        map.updateCluster(geometries.current, {
+          color: 'orange',
+          isSelected,
+          count: cluster.results.length,
+          outline: 'white',
+          textFill: 'white',
+        })
+        break
+      case 'partially':
+        map.updateCluster(geometries.current, {
+          color: cluster.results[0].getColor(),
+          isSelected,
+          count: cluster.results.length,
+          outline: 'black',
+          textFill: 'white',
+        })
+        break
+      case 'unselected':
+        map.updateCluster(geometries.current, {
+          color: cluster.results[0].getColor(),
+          isSelected,
+          count: cluster.results.length,
+          outline: 'white',
+          textFill: 'white',
+        })
+        break
+    }
+  }, [isSelected])
 
   const handleCluster = () => {
     const center = map.getCartographicCenterOfClusterInDegrees(cluster)
+
+    const badgeOptions = extension.customMapBadge({
+      results: cluster.results,
+      isCluster: true,
+    })
+
     geometries.current.push(
       map.addPointWithText(center, {
-        id: cluster.results.map(result => result['metacard.id']),
+        id: cluster.results.map((result) => result['metacard.id']),
         color: cluster.results[0].getColor(),
         isSelected,
+        badgeOptions,
       })
     )
   }
 
   const addConvexHull = () => {
-    const points = cluster.results.map(result => result.getPoints())
+    const points = cluster.results.map((result) => result.getPoints())
     const data = _.flatten(points, true).map((coord: any) => ({
       longitude: coord[0],
       latitude: coord[1],
@@ -72,7 +78,7 @@ const Cluster = ({ cluster, map }: Props) => {
     ])
     convexHull.push(convexHull[0])
     const geometry = map.addLine(convexHull, {
-      id: cluster.results.map(result => result['metacard.id']),
+      id: cluster.results.map((result) => result['metacard.id']),
       color: cluster.results[0].getColor(),
     })
     map.hideGeometry(geometry)
@@ -83,7 +89,7 @@ const Cluster = ({ cluster, map }: Props) => {
     handleCluster()
     addConvexHull()
     return () => {
-      geometries.current.forEach(geometry => {
+      geometries.current.forEach((geometry) => {
         map.removeGeometry(geometry)
       })
     }

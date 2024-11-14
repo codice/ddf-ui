@@ -12,6 +12,17 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import Entry from './js/Entry'
-
-Entry()
+// check browser before loading the rest of the app
+import { isSupportedBrowser } from './check-browser'
+//@ts-ignore
+import { StartupDataStore } from './js/model/Startup/startup'
+import { removeRedirectQueryParams } from './handle-query-params'
+;(async () => {
+  // check if supported browser
+  if (isSupportedBrowser()) {
+    removeRedirectQueryParams()
+    // wait for critical data to be fetched
+    await (await import('./js/WaitForReady')).waitForReady()
+    await import('./app')
+  }
+})()

@@ -21,9 +21,9 @@ const Root = styled.div`
   display: block;
   width: 100%;
   height: auto;
-  font-size: ${props => props.theme.largeFontSize};
+  font-size: ${(props) => props.theme.largeFontSize};
   text-align: center;
-  padding: ${props => props.theme.largeSpacing} 0px;
+  padding: ${(props) => props.theme.largeSpacing} 0px;
 `
 
 type Props = {

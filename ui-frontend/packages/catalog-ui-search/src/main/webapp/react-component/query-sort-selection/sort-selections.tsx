@@ -12,25 +12,21 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
+import Typography from '@mui/material/Typography'
+import AddIcon from '@mui/icons-material/Add'
 import * as React from 'react'
-import { useState } from 'react'
 import { hot } from 'react-hot-loader'
-import styled from 'styled-components'
-import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 import SortItem from './sort-item'
 import {
+  getLabel,
   getNextAttribute,
   getSortAttributeOptions,
   getSortDirectionOptions,
-  getLabel,
 } from './sort-selection-helpers'
-import Button from '@material-ui/core/Button'
-import AddIcon from '@material-ui/icons/Add'
-import Box from '@material-ui/core/Box'
-import Grid from '@material-ui/core/Grid'
-import Typography from '@material-ui/core/Typography'
 
-type SortsType = {
+export type SortsType = {
   attribute: string
   direction: string
 }[]
@@ -51,7 +47,7 @@ export type SortItemType = {
 }
 
 const getCollectionAsJson = (collection: Props['value']) => {
-  const items: SortItemType[] = collection.map(sort => {
+  const items: SortItemType[] = collection.map((sort) => {
     return {
       attribute: {
         label: getLabel(sort.attribute),
@@ -63,7 +59,7 @@ const getCollectionAsJson = (collection: Props['value']) => {
   return items
 }
 
-const SortSelections = ({ value, onChange }: Props) => {
+const SortSelections = ({ value = [], onChange }: Props) => {
   if (!value.length) {
     value.push({
       attribute: 'title',
@@ -75,7 +71,7 @@ const SortSelections = ({ value, onChange }: Props) => {
   const collectionJson = getCollectionAsJson(value)
 
   const sortAttributeOptions = getSortAttributeOptions(
-    collectionJson.map(item => item.attribute.value)
+    collectionJson.map((item) => item.attribute.value)
   )
 
   const updateAttribute = (index: number) => (attribute: string) => {
@@ -100,13 +96,15 @@ const SortSelections = ({ value, onChange }: Props) => {
     })
     onChange(value.slice(0))
   }
-
   return (
-    <div>
-      <Typography className="pb-2">Sort</Typography>
+    <div data-id="root-sort-container">
+      <Typography data-id="Sort-changed" className="pb-2">
+        Sort
+      </Typography>
       {collectionJson.map((sortItem, index) => {
         return (
           <div
+            data-id={`sort-container`}
             key={sortItem.attribute.value}
             className={index > 0 ? 'pt-2' : ''}
           >
@@ -125,14 +123,17 @@ const SortSelections = ({ value, onChange }: Props) => {
         )
       })}
       <div className="pt-2">
-        <Button fullWidth onClick={addSort}>
+        <Button
+          data-id="add-sort-button"
+          color="primary"
+          fullWidth
+          onClick={addSort}
+        >
           <Grid container direction="row" alignItems="center" wrap="nowrap">
             <Grid item>
-              <AddIcon />
+              <AddIcon className="Mui-text-text-primary" />
             </Grid>
-            <Grid item>
-              <Box color="primary.main">Sort</Box>
-            </Grid>
+            <Grid item>Sort</Grid>
           </Grid>
         </Button>
       </div>

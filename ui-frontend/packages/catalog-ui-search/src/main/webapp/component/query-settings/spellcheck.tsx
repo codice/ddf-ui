@@ -1,11 +1,12 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Checkbox from '@mui/material/Checkbox'
+import { QueryType } from '../../js/model/Query'
 
 type Props = {
-  model: Backbone.Model
+  model: QueryType
 }
 
 const Spellcheck = ({ model }: Props) => {
@@ -25,7 +26,7 @@ const Spellcheck = ({ model }: Props) => {
         <Checkbox
           color="default"
           checked={spellcheck}
-          onChange={e => {
+          onChange={(e) => {
             model.set('spellcheck', e.target.checked)
           }}
         />

@@ -13,6 +13,10 @@
  *
  **/
 import fetch from '../fetch'
+import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
+import { StartupDataStore } from '../../../js/model/Startup/startup'
+import { TypedUserInstance } from '../../../component/singletons/TypedUser'
+import { Overridable } from '../../../js/model/Base/base-classes'
 
 export enum Transformer {
   Metacard = 'metacard',
@@ -30,8 +34,13 @@ export type ResultSet = {
 export type ExportBody = {
   searches: ResultSet[]
   count: number
-  sorts?: Object[]
+  sorts: Object[]
   args?: Object
+}
+
+export type ExportFormat = {
+  id: string
+  displayName: string
 }
 
 export interface ExportCountInfo {
@@ -40,55 +49,94 @@ export interface ExportCountInfo {
   customExportCount: number
 }
 
-export type DownloadInfo = {
+export type ExportInfo = {
   exportFormat: string
   exportSize: string
   customExportCount: number
   selectionInterface: any
-  filteredAttributes: any[]
 }
 
-export const getExportResults = (results: any[]) => {
-  return results.map(result => getExportResult(result))
+export const getExportResults = (results: LazyQueryResult[]) => {
+  return results.map((result) => getExportResult(result))
 }
 
-const getResultId = (result: any) => {
-  const id = result
-    .get('metacard')
-    .get('properties')
-    .get('id')
+const getResultId = (result: LazyQueryResult) => {
+  const id = result.plain.id
 
   return encodeURIComponent(id)
 }
 
-const getResultSourceId = (result: any) => {
-  const sourceId = result
-    .get('metacard')
-    .get('properties')
-    .get('source-id')
+const getResultSourceId = (result: LazyQueryResult) => {
+  const sourceId = result.plain.metacard.properties['source-id']
 
   return encodeURIComponent(sourceId)
 }
 
-export const getExportResult = (result: any) => {
+export const getExportResult = (result: LazyQueryResult) => {
   return {
     id: getResultId(result),
     source: getResultSourceId(result),
+    attributes: Object.keys(result.plain.metacard.properties),
   }
 }
 
 export const getExportOptions = async (type: Transformer) => {
   const response = await fetch(`./internal/transformers/${type}`)
-  return await response.json()
+    .then((response) => response.json())
+    .then((exportFormats) => {
+      const configuredFormats =
+        type == Transformer.Metacard
+          ? StartupDataStore.Configuration.getExportMetacardFormatOptions()
+          : StartupDataStore.Configuration.getExportMetacardsFormatOptions()
+
+      if (configuredFormats.length > 0) {
+        const newFormats = configuredFormats
+          .map((configuredFormat: string) => {
+            const validFormat = exportFormats.find(
+              (exportFormat: ExportFormat) =>
+                exportFormat.id === configuredFormat
+            )
+            if (validFormat == undefined)
+              console.log(
+                configuredFormat +
+                  ' does not match any valid transformers; cannot include format in export list.'
+              )
+            return validFormat
+          })
+          .filter((format) => format !== undefined)
+
+        if (newFormats.length > 0) return newFormats
+        else
+          console.log(
+            "Could not match admin's configured export options to any valid transformers. \
+          Returning list of all valid transformers instead."
+          )
+      } else {
+        console.log(
+          'Export formats not configured. Using list of all valid transformers instead.'
+        )
+      }
+      return exportFormats
+    })
+
+  return response
 }
 
-export const exportResult = async (
-  source: string,
-  id: string,
-  transformer: string
-) => {
-  return await fetch(
-    `/services/catalog/sources/${source}/${id}?transform=${transformer}`
+export const getColumnOrder = () => {
+  return TypedUserInstance.getResultsAttributesSummaryShown()
+}
+
+export const OverridableGetColumnOrder = new Overridable(getColumnOrder)
+
+export const aliasMap = () => {
+  return encodeURIComponent(
+    Object.entries(
+      StartupDataStore.Configuration.config?.attributeAliases || {}
+    )
+      .map(([k, v]) => {
+        return `${k}=${v}`
+      })
+      .toString()
   )
 }
 

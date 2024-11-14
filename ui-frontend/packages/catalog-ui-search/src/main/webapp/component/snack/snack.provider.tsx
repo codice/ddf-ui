@@ -1,18 +1,19 @@
 import React, { createContext, useState, useEffect, useMemo } from 'react'
-import Button from '@material-ui/core/Button'
-import SnackBar, { SnackbarProps } from '@material-ui/core/Snackbar'
-import Alert, { AlertProps } from '@material-ui/lab/Alert'
-import IconButton from '@material-ui/core/IconButton'
-import CloseIcon from '@material-ui/icons/Close'
-import Portal from '@material-ui/core/Portal'
+import Button from '@mui/material/Button'
+import SnackBar, { SnackbarProps } from '@mui/material/Snackbar'
+import Alert, { AlertProps } from '@mui/material/Alert'
+import IconButton from '@mui/material/IconButton'
+import CloseIcon from '@mui/icons-material/Close'
+import Portal from '@mui/material/Portal'
 
-type AddSnack = (message: string, props?: SnackProps) => void
+export type AddSnack = (message: string, props?: SnackProps) => () => void
 
 type Snack = {
   message?: string
 } & SnackProps
 
 export type SnackProps = {
+  id?: string
   status?: AlertProps['severity']
   closeable?: boolean
   clickawayCloseable?: boolean
@@ -31,39 +32,48 @@ export function SnackProvider({ children }: any) {
   const [snacks, setSnacks] = useState([] as Snack[])
   const [currentSnack, setCurrentSnack] = useState({} as Snack)
 
-  const addSnack = (message: string, props: SnackProps = {}) => {
-    setSnacks(snacks => [{ message, ...props }, ...snacks])
+  const addSnack: AddSnack = (message, props = {}) => {
+    const newSnack = { message, ...props }
+    setSnacks((snacks) => {
+      if (props.id) {
+        const snackIndex = snacks.findIndex((s) => s.id === props.id)
+        if (snackIndex >= 0) {
+          snacks.splice(snackIndex, 1)
+        }
+      }
+      return [newSnack, ...snacks]
+    })
+
+    const closeSnack = () => {
+      setSnacks((snacks) => snacks.filter((snack) => snack !== newSnack))
+    }
+
+    return closeSnack
   }
 
   // Set current snack to be displayed
-  useEffect(
-    () => {
-      if (snacks.length > 0) {
-        setCurrentSnack(snacks[snacks.length - 1])
-      }
-    },
-    [snacks]
-  )
+  useEffect(() => {
+    if (snacks.length > 0) {
+      setCurrentSnack(snacks[snacks.length - 1])
+    }
+  }, [snacks])
 
   // Remove snack after timeout
-  useEffect(
-    () => {
-      if (currentSnack.message) {
-        const timeout = currentSnack.timeout || AUTO_DISMISS
+  useEffect(() => {
+    if (currentSnack.message) {
+      const timeout = currentSnack.timeout || AUTO_DISMISS
 
-        const timer = setTimeout(() => {
-          removeCurrentSnack()
-        }, timeout)
+      const timer = setTimeout(() => {
+        removeCurrentSnack()
+      }, timeout)
 
-        return () => clearTimeout(timer)
-      }
+      return () => clearTimeout(timer)
+    }
 
-      return
-    },
-    [currentSnack]
-  )
+    return
+  }, [currentSnack])
 
-  const handleClose = (e: any, reason: string) => {
+  const handleClose = (_e: any, reason: string) => {
     if (reason === 'clickaway' && currentSnack.clickawayCloseable) {
       removeCurrentSnack()
     } else if (reason !== 'clickaway' && currentSnack.closeable) {
@@ -78,18 +88,12 @@ export function SnackProvider({ children }: any) {
 
   const removeCurrentSnack = () => {
     setCurrentSnack({})
-    setSnacks(snacks => snacks.slice(0, snacks.length - 1))
+    setSnacks((snacks) => snacks.slice(0, snacks.length - 1))
   }
 
   const value = useMemo(() => addSnack, [])
-  const {
-    message,
-    status,
-    closeable,
-    undo,
-    snackBarProps,
-    alertProps,
-  } = currentSnack
+  const { message, status, closeable, undo, snackBarProps, alertProps } =
+    currentSnack
   return (
     <SnackBarContext.Provider value={value}>
       {children}
@@ -97,6 +101,7 @@ export function SnackProvider({ children }: any) {
         <Portal>
           <SnackBar
             key={message}
+            className="left-0 bottom-0 p-4 max-w-full"
             anchorOrigin={{
               vertical: 'bottom',
               horizontal: 'left',
@@ -123,10 +128,12 @@ export function SnackProvider({ children }: any) {
                     </Button>
                   )}
                   {closeable && (
+                    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
                     <IconButton
                       style={{ padding: '3px' }}
                       color="inherit"
                       onClick={handleClose}
+                      size="large"
                     >
                       <CloseIcon fontSize="small" />
                     </IconButton>

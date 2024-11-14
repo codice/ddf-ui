@@ -12,6 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+// @ts-expect-error ts-migrate(2307) FIXME: Cannot find module '../../sharing' or its correspo... Remove this comment to see the full error message
 import { Item } from '../../sharing'
 
 /**
@@ -25,7 +26,7 @@ import { Item } from '../../sharing'
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-const _ = require('underscore')
+import _ from 'underscore'
 
 export type Entry = {
   value: string

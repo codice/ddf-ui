@@ -17,31 +17,32 @@ import QuerySettings from '../query-settings/query-settings'
 import { FilterBuilderRoot } from '../filter-builder/filter-builder'
 import { hot } from 'react-hot-loader'
 import Swath from '../swath/swath'
+import { ValidationResult } from '../../react-component/location/validators'
 type Props = {
   model: any
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
+  Extensions?: React.FunctionComponent
 }
 
-export const QueryAdvanced = ({ model }: Props) => {
+export const QueryAdvanced = ({ model, errorListener, Extensions }: Props) => {
   return (
     <div className="w-full h-full">
-      <form
-        target="autocomplete"
-        action="/search/catalog/blank.html"
-        noValidate
-        className="w-full h-full"
+      <div
+        data-id="advanced-search-container"
+        className="w-full h-full px-2 pt-2 overflow-auto"
       >
-        <div className="w-full h-full overflow-auto px-3 pt-6">
-          <div className="query-advanced">
-            <FilterBuilderRoot model={model} />
-          </div>
-          <div className="py-5">
-            <Swath className="w-full h-1" />
-          </div>
-          <div className="query-settings">
-            <QuerySettings model={model} />
-          </div>
+        <div className="query-advanced w-full">
+          <FilterBuilderRoot model={model} errorListener={errorListener} />
         </div>
-      </form>
+        <div className="py-5 w-full">
+          <Swath className="w-full h-1" />
+        </div>
+        <div className="query-settings w-full">
+          <QuerySettings model={model} Extensions={Extensions} />
+        </div>
+      </div>
     </div>
   )
 }

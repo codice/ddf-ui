@@ -12,12 +12,12 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
+// @ts-nocheck FIXME: Property 'collection' does not exist on type 'Intr
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import SortSelections from '../query-sort-selection/sort-selections'
-import Button from '@material-ui/core/Button'
-import Grid from '@material-ui/core/Grid'
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
 
 type Props = {
   removeSort: () => void

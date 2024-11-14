@@ -12,51 +12,43 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import fetch from '../utils/fetch'
-const announcement = require('component/announcement')
 import MetacardQualityPresentation from './presentation'
-
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
+import wreqr from '../../js/wreqr'
 type Props = {
-  selectionInterface: any
+  result: LazyQueryResult
 }
-
 type State = {
   attributeValidation: any
   metacardValidation: any
   loading: boolean
 }
-
 class MetacardQuality extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
-
-    const selectionInterface = props.selectionInterface
-    this.model = selectionInterface.getSelectedResults().first()
-
+    this.model = props.result
     this.state = {
       attributeValidation: [],
       metacardValidation: [],
       loading: true,
     }
   }
-  model: Backbone.Model
+  model: LazyQueryResult
   componentDidMount() {
     setTimeout(() => {
-      const metacardId = this.model.get('metacard').get('id')
-
+      const metacardId = this.model.plain.id
+      const storeId = this.model.plain.metacard.properties['source-id']
       const attributeValidationRes = fetch(
-        `./internal/metacard/${metacardId}/attribute/validation`
+        `./internal/metacard/${metacardId}/${storeId}/attribute/validation`
       )
-
       const metacardValidationRes = fetch(
-        `./internal/metacard/${metacardId}/validation`
+        `./internal/metacard/${metacardId}/${storeId}/validation`
       )
-
       Promise.all([attributeValidationRes, metacardValidationRes]).then(
-        async responses => {
+        async (responses) => {
           const attributeValidation = await this.getData(
             responses[0],
             'Attribute'
@@ -72,20 +64,21 @@ class MetacardQuality extends React.Component<Props, State> {
       )
     }, 1000)
   }
-
   getData = (res: any, type: string) => {
     if (!res.ok) {
-      announcement.announce({
-        title: `Unable to retrieve ${type} Validation Issues`,
-        message: 'Something went wrong.',
-        type: 'warn',
+      ;(wreqr as any).vent.trigger('snack', {
+        message: `Unable to retrieve ${type} Validation Issues`,
+        snackProps: {
+          alertProps: {
+            severity: 'warn',
+          },
+        },
       })
       return []
     } else {
       return res.json()
     }
   }
-
   checkForDuplicate = (metacardValidation: any) => {
     metacardValidation.forEach((validationIssue: any) => {
       if (
@@ -102,7 +95,6 @@ class MetacardQuality extends React.Component<Props, State> {
       }
     })
   }
-
   render() {
     const { attributeValidation, metacardValidation, loading } = this.state
     return (
@@ -114,5 +106,4 @@ class MetacardQuality extends React.Component<Props, State> {
     )
   }
 }
-
 export default hot(module)(MetacardQuality)

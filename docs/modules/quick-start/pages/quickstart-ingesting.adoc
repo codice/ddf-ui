@@ -27,7 +27,7 @@ This is one way to ingest into the catalog, for a complete list of the different
 XML metadata for text searching is not automatically generated from GeoJson fields.
 ====
 
-Querying from {catalog-ui} (\{secure_url}/search/catalog) will return the record for the file ingested:
+Querying from {catalog-ui} (\{secure_url}/search/catalog) returns the record for the file ingested:
 
 . Select the Menu icon (image:navigator-icon.png[navigator icon])and return to *Workspaces*.
 . Search for the ingested data.

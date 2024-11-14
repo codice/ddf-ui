@@ -13,3 +13,6 @@ docs/build
 *.classpath
 *.factorypath
 release.properties
+dist/
+yarn-debug.log*
+yarn-error.log*

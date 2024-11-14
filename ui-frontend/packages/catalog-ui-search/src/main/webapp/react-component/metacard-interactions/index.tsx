@@ -13,16 +13,15 @@
  *
  **/
 import * as React from 'react'
-import withListenTo, { WithBackboneProps } from '../backbone-container'
 import { hot } from 'react-hot-loader'
-const user = require('../../component/singletons/user-instance')
 import { Divider } from './metacard-interactions'
 import ExtensionPoints from '../../extension-points'
+import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
-export type Props = {
-  model: {} | any
+export type MetacardInteractionProps = {
+  model?: LazyQueryResult[]
   onClose: () => void
-} & WithBackboneProps
+}
 
 export type Result = {
   get: (key: any) => any
@@ -32,62 +31,19 @@ export type Result = {
   isRemote: () => boolean
 }
 
-export type Model = {
-  map: (
-    result: Result | any
-  ) =>
-    | {
-        id?: any
-        title?: any
-      }
-    | {}
-  toJSON: () => any
-  first: () => any
-  forEach: (result: Result | any) => void
-  find: (result: Result | any) => boolean
-} & Array<any>
-
-type State = {
-  model: any
+const MetacardInteractions = (props: MetacardInteractionProps) => {
+  return (
+    <>
+      {ExtensionPoints.metacardInteractions.map((Component, i) => {
+        const componentName = Component.toString()
+        const key = componentName + '-' + i
+        return <Component key={key} {...props} />
+      })}
+    </>
+  )
 }
 
-const mapPropsToState = (props: Props) => {
-  return {
-    model: props.model,
-  }
-}
-
-class MetacardInteractions extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props)
-    this.state = mapPropsToState(props)
-  }
-  componentDidMount = () => {
-    const setState = (model: Model) => this.setState({ model: model })
-
-    this.props.listenTo(
-      this.props.model,
-      'change:metacard>properties',
-      setState
-    )
-  }
-
-  render = () => {
-    return (
-      <>
-        {ExtensionPoints.metacardInteractions.map(
-          (Component: any, i: number) => {
-            const componentName = Component.toString()
-            const key = componentName + '-' + i
-            return <Component key={key} {...this.props} />
-          }
-        )}
-      </>
-    )
-  }
-}
-
-const Component = withListenTo(MetacardInteractions)
+const Component = MetacardInteractions
 
 export default hot(module)(Component)
 

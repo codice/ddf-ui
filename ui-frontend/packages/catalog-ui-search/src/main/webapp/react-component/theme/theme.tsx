@@ -19,11 +19,12 @@ import {
   SpecificSizingInterface,
   ThemeColorInterface,
 } from '../styles/styled-components'
-const user = require('../../component/singletons/user-instance.js')
-const Common = require('../../js/Common.js')
+import user from '../../component/singletons/user-instance'
+
 import withListenTo, { WithBackboneProps } from '../backbone-container'
-const $ = require('jquery')
-const _ = require('underscore')
+import $ from 'jquery'
+import _ from 'underscore'
+import { v4 } from 'uuid'
 
 type SizingInterface = {
   comfortable: SpecificSizingInterface
@@ -63,7 +64,6 @@ const screenSizes = {
 
 const zIndexes = {
   zIndexMenubar: 101,
-  zIndexLightbox: 101,
   zIndexLoadingCompanion: 101,
   zIndexSlideout: 103,
   zIndexContent: 101,
@@ -114,6 +114,7 @@ type ThemesInterface = {
 }
 
 const themes: ThemesInterface = {
+  // @ts-expect-error ts-migrate(2739) FIXME: Type '{ primaryColor: string; positiveColor: strin... Remove this comment to see the full error message
   dark: {
     primaryColor: '#32a6ad',
     positiveColor: '#5b963e',
@@ -127,6 +128,7 @@ const themes: ThemesInterface = {
     backgroundModal: '#253540',
     backgroundSlideout: '#435059',
   },
+  // @ts-expect-error ts-migrate(2739) FIXME: Type '{ primaryColor: string; positiveColor: strin... Remove this comment to see the full error message
   sea: {
     primaryColor: '#32a6ad',
     positiveColor: '#154e7d',
@@ -140,6 +142,7 @@ const themes: ThemesInterface = {
     backgroundModal: '#e5e6e6',
     backgroundSlideout: '#e5e6e6',
   },
+  // @ts-expect-error ts-migrate(2739) FIXME: Type '{ primaryColor: string; positiveColor: strin... Remove this comment to see the full error message
   light: {
     primaryColor: '#3c6dd5',
     positiveColor: '#428442',
@@ -153,6 +156,7 @@ const themes: ThemesInterface = {
     backgroundModal: '#edf9fc',
     backgroundSlideout: '#edf9fc',
   },
+  // @ts-expect-error ts-migrate(2739) FIXME: Type '{ primaryColor: string; positiveColor: strin... Remove this comment to see the full error message
   custom: {
     primaryColor: '#3c6dd5',
     positiveColor: '#428442',
@@ -176,19 +180,18 @@ type UserTheme = {
 function updateTheme(userTheme: UserTheme) {
   let relevantColorTheme = themes[userTheme.theme]
   if (userTheme.theme === 'custom') {
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
     relevantColorTheme = Object.keys(relevantColorTheme).reduce(
       (newMap: UserTheme, key) => {
         newMap[key] =
-          userTheme[`custom${key.replace(/^\w/, c => c.toUpperCase())}`]
+          userTheme[`custom${key.replace(/^\w/, (c) => c.toUpperCase())}`]
         return newMap
       },
       {}
     ) as ThemeColorInterface
   }
-  let sizingTheme = sizing[userTheme.spacingMode]
+  let sizingTheme = sizing['comfortable']
   return {
-    spacingMode: userTheme.spacingMode as 'comfortable' | 'cozy' | 'compact',
     ...relevantColorTheme,
     ...userTheme,
     ...sizingTheme,
@@ -204,12 +207,7 @@ function updateTheme(userTheme: UserTheme) {
 }
 
 function determineScreenSize() {
-  const fontSize = parseInt(
-    user
-      .get('user')
-      .get('preferences')
-      .get('fontSize')
-  )
+  const fontSize = parseInt(user.get('user').get('preferences').get('fontSize'))
   const screenSize = window.innerWidth / fontSize
   return screenSize
 }
@@ -228,13 +226,7 @@ const sharedState: ThemeInterface = {
     return sharedState.screenSize < parseFloat(specifiedSize)
   },
   background: 'black',
-  ...updateTheme(
-    user
-      .get('user')
-      .get('preferences')
-      .get('theme')
-      .getTheme()
-  ),
+  ...updateTheme(user.get('user').get('preferences').get('theme').toJSON()),
 }
 
 function updateMediaQueries() {
@@ -244,34 +236,22 @@ function updateMediaQueries() {
 function updateSharedTheme() {
   _.extend(
     sharedState,
-    updateTheme(
-      user
-        .get('user')
-        .get('preferences')
-        .get('theme')
-        .getTheme()
-    )
+    updateTheme(user.get('user').get('preferences').get('theme').toJSON())
   )
 }
 
 $(window).on(`resize.themeContainer`, _.throttle(updateMediaQueries, 30))
-user
-  .get('user')
-  .get('preferences')
-  .on('change:theme', updateSharedTheme)
-user
-  .get('user')
-  .get('preferences')
-  .on('change:fontSize', updateMediaQueries)
+user.get('user').get('preferences').on('change:theme', updateSharedTheme)
+user.get('user').get('preferences').on('change:fontSize', updateMediaQueries)
 class ThemeContainer extends React.Component<
-  WithBackboneProps,
+  WithBackboneProps & { children: React.ReactNode },
   ThemeInterface
 > {
-  constructor(props: WithBackboneProps) {
+  constructor(props: WithBackboneProps & { children: React.ReactNode }) {
     super(props)
     this.state = sharedState
   }
-  id = Common.generateUUID()
+  id = v4()
   isDestroyed = false
   componentDidMount() {
     this.listenForUserChanges()
@@ -307,9 +287,7 @@ class ThemeContainer extends React.Component<
   }
   render() {
     return (
-      <ThemeProvider theme={this.state}>
-        {this.props.children as React.ReactElement}
-      </ThemeProvider>
+      <ThemeProvider theme={this.state}>{this.props.children}</ThemeProvider>
     )
   }
 }

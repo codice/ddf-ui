@@ -14,9 +14,9 @@
  **/
 import * as React from 'react'
 
-import TextField from '@material-ui/core/TextField'
+import TextField from '@mui/material/TextField'
 import { ValueTypes } from '../filter-builder/filter.structure'
-import MenuItem from '@material-ui/core/MenuItem'
+import MenuItem from '@mui/material/MenuItem'
 
 type Props = {
   value: ValueTypes['boolean']
@@ -27,7 +27,6 @@ const defaultValue = false
 
 const validateShape = ({ value, onChange }: Props) => {
   if (typeof value !== 'boolean') {
-    console.log('defaulted to correct shape')
     onChange(defaultValue)
   }
 }
@@ -42,9 +41,10 @@ export const BooleanField = ({ value, onChange }: Props) => {
       select
       variant="outlined"
       value={value.toString() === 'true'}
-      onChange={e => {
+      onChange={(e) => {
         onChange(e.target.value === 'true')
       }}
+      size="small"
     >
       <MenuItem value={'false'}>false</MenuItem>
       <MenuItem value={'true'}>true</MenuItem>

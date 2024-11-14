@@ -18,18 +18,15 @@ import * as React from 'react'
 import ResultSortPresentation from './presentation'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 
-const Backbone = require('backbone')
-const user = require('../../component/singletons/user-instance.js')
+import Backbone from 'backbone'
+import user from '../../component/singletons/user-instance'
 
 type Props = {
   closeDropdown: any
 }
 
 const getResultSort = () => {
-  return user
-    .get('user')
-    .get('preferences')
-    .get('resultSort')
+  return user.get('user').get('preferences').get('resultSort')
 }
 
 const ResultSortContainer = ({ closeDropdown }: Props) => {
@@ -46,14 +43,8 @@ const ResultSortContainer = ({ closeDropdown }: Props) => {
     })
   }, [])
   const removeSort = () => {
-    user
-      .get('user')
-      .get('preferences')
-      .set('resultSort', undefined)
-    user
-      .get('user')
-      .get('preferences')
-      .savePreferences()
+    user.get('user').get('preferences').set('resultSort', undefined)
+    user.get('user').get('preferences').savePreferences()
     closeDropdown()
   }
   const saveSort = () => {
@@ -62,10 +53,7 @@ const ResultSortContainer = ({ closeDropdown }: Props) => {
       .get('user')
       .get('preferences')
       .set('resultSort', sorting.length === 0 ? undefined : sorting)
-    user
-      .get('user')
-      .get('preferences')
-      .savePreferences()
+    user.get('user').get('preferences').savePreferences()
     closeDropdown()
   }
   return (

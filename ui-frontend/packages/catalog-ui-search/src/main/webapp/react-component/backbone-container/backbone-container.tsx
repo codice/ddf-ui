@@ -15,7 +15,7 @@
 import * as React from 'react'
 import { Subtract } from '../../typescript'
 
-const Backbone = require('backbone')
+import Backbone from 'backbone'
 
 export type WithBackboneProps = {
   listenTo: (object: any, events: string, callback: Function) => any
@@ -28,20 +28,20 @@ export type WithBackboneProps = {
 }
 
 const withListenTo = <P extends WithBackboneProps>(
-  Component: React.ComponentType<P>
+  Component: React.ComponentType<React.PropsWithChildren<P>>
 ) => {
   return class BackboneContainer extends React.Component<
     Subtract<P, WithBackboneProps>,
     {}
   > {
-    backbone: Backbone.Model = new Backbone.Model({})
+    backbone: any = new Backbone.Model({})
     componentWillUnmount() {
       this.backbone.stopListening()
       this.backbone.destroy()
     }
     render() {
       return (
-        // @ts-ignore
+        // @ts-expect-error ts-migrate(2322) FIXME: Type '{ listenTo: any; stopListening: any; listenT... Remove this comment to see the full error message
         <Component
           listenTo={this.backbone.listenTo.bind(this.backbone)}
           stopListening={this.backbone.stopListening.bind(this.backbone)}

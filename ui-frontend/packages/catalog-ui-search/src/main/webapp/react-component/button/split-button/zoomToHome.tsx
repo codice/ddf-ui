@@ -13,59 +13,68 @@
  *
  **/
 import * as React from 'react'
-import SplitButton from '.'
-import styled from 'styled-components'
+import Button from '@mui/material/Button'
 import { hot } from 'react-hot-loader'
-
+import { useMenuState } from '../../../component/menu-state/menu-state'
+import HomeIcon from '@mui/icons-material/Home'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import Popover from '@mui/material/Popover'
+import RoomIcon from '@mui/icons-material/Room'
+import Paper from '@mui/material/Paper'
+import { Elevations } from '../../../component/theme/theme'
 type voidFunc = () => void
 
 type Props = {
   goHome: voidFunc
   saveHome: voidFunc
 }
-const Button = styled.button`
-  flex: 1;
-  margin-left: ${props => props.theme.mediumSpacing};
-  margin-right: ${props => props.theme.mediumSpacing};
-`
-const Icon = styled.div`
-  display: inline-block;
-  background-color: inherit;
-  margin-left: ${props => props.theme.minimumSpacing};
-  line-height: ${props => `${props.theme.minimumLineSize} !important`};
-  text-align: center;
-  font-size: ${props => props.theme.mediumFontSize};
-`
-
-const renderMenu = (onSelect: voidFunc) => {
-  return (
-    <Button
-      className="old-button"
-      onClick={onSelect}
-      title="Save Current View as Home Location"
-    >
-      <span>
-        Set Home
-        <Icon className="cf cf-map-marker" />
-      </span>
-    </Button>
-  )
-}
 
 const ZoomToHome = (props: Props) => {
   const { saveHome, goHome } = props
+  const menuState = useMenuState()
   return (
-    <SplitButton title="Return To Home Location" onSelect={goHome}>
-      {{
-        label: (
-          <span>
-            Home
-            <Icon className="fa fa-home" />
-          </span>
-        ),
-        menu: renderMenu(saveHome),
-      }}
-    </SplitButton>
+    <>
+      <div className="flex flex-row items-stretch">
+        <Button
+          size="small"
+          data-id="home-button"
+          {...menuState.MuiButtonProps}
+          className="border border-r-2 Mui-border-divider"
+          onClick={goHome}
+        >
+          <div className="flex flex-row items-center">
+            <HomeIcon />
+          </div>
+        </Button>
+        <div className="Mui-bg-default w-min my-2"></div>
+        <Button
+          size="small"
+          data-id="home-dropdown"
+          {...menuState.MuiButtonProps}
+        >
+          <KeyboardArrowDownIcon />
+        </Button>
+      </div>
+      <Popover {...menuState.MuiPopoverProps}>
+        <Paper elevation={Elevations.overlays} className="p-2">
+          <Button
+            size="small"
+            data-id="set-home-button"
+            className="p-2"
+            onClick={() => {
+              saveHome()
+              menuState.handleClose()
+            }}
+            title="Save Current View as Home Location"
+          >
+            <span>
+              Set Home
+              <RoomIcon />
+            </span>
+          </Button>
+        </Paper>
+      </Popover>
+    </>
   )
 }
 

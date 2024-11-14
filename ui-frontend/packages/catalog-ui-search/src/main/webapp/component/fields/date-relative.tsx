@@ -1,7 +1,7 @@
 import * as React from 'react'
-import Grid from '@material-ui/core/Grid'
-import TextField from '@material-ui/core/TextField'
-import MenuItem from '@material-ui/core/MenuItem'
+import Grid from '@mui/material/Grid'
+import TextField from '@mui/material/TextField'
+import MenuItem from '@mui/material/MenuItem'
 import { NumberField } from './number'
 import { ValueTypes } from '../filter-builder/filter.structure'
 
@@ -17,7 +17,6 @@ const defaultValue = {
 
 const validateShape = ({ value, onChange }: Props) => {
   if (isInvalid({ value, onChange })) {
-    console.log('defaulted to correct shape')
     onChange(defaultValue)
   }
 }
@@ -27,6 +26,10 @@ const isInvalid = ({ value }: Props) => {
 }
 
 export const DateRelativeField = ({ value, onChange }: Props) => {
+  const validValue = {
+    ...defaultValue,
+    ...value,
+  }
   React.useEffect(() => {
     validateShape({ value, onChange })
   }, [])
@@ -35,46 +38,42 @@ export const DateRelativeField = ({ value, onChange }: Props) => {
     return null
   }
   return (
-    <Grid container direction="column" className="w-full">
-      <Grid item className="w-full pb-2 pl-2">
-        within the last
-      </Grid>
-      <Grid item className="w-full pb-2">
+    <Grid container direction="row" className="w-full">
+      <Grid item xs={4}>
         <NumberField
           type="float"
-          onChange={val => {
+          onChange={(val) => {
             if (onChange)
               onChange({
-                ...defaultValue,
-                ...value,
-                last: val,
+                ...validValue,
+                last: val.toString(),
               })
           }}
-          {...(value
-            ? {
-                value: value.last,
-              }
-            : {})}
+          validation={(val) => val > 0}
+          validationText="Must be greater than 0, using previous value of "
+          value={validValue.last}
         />
       </Grid>
-      <Grid item className="w-full">
+      <Grid item xs={8} className="pl-2">
         <TextField
           fullWidth
           variant="outlined"
           select
-          onChange={e => {
+          onChange={(e) => {
             if (onChange)
               onChange({
-                ...defaultValue,
-                ...value,
+                ...validValue,
                 unit: e.target.value as ValueTypes['relative']['unit'],
               })
           }}
-          value={value.unit}
+          size="small"
+          value={validValue.unit}
         >
+          <MenuItem value="s">Seconds</MenuItem>
           <MenuItem value="m">Minutes</MenuItem>
           <MenuItem value="h">Hours</MenuItem>
           <MenuItem value="d">Days</MenuItem>
+          <MenuItem value="w">Weeks</MenuItem>
           <MenuItem value="M">Months</MenuItem>
           <MenuItem value="y">Years</MenuItem>
         </TextField>

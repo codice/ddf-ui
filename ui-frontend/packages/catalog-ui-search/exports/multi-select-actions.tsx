@@ -12,6 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-export {
-  MultiSelectAction,
-} from '../src/main/webapp/react-component/multi-select-actions/presentation'
+
+// @ts-nocheck ts-migrate(2307) FIXME: Cannot find module
+export { MultiSelectAction } from '../src/main/webapp/react-component/multi-select-actions/presentation'

@@ -27,6 +27,25 @@
             type="Integer"
             default="1000"/>
 
+        <AD id="requiredExportAttributes"
+            name="Required Export Attributes"
+            description="Specifies the attributes that must be included in exports. These attributes will always by displayed in the inspector (summary shown) as well."
+            type="String"
+            cardinality="10000"
+            default=""/>
+
+        <AD id="exportMetacardFormatOptions"
+            name="Export Metacard Format Options"
+            description="Specifies the export format options available for export of a single metacard. This should be a comma separated list. Valid options are: audio, csv, csw:Record, deployed-harvested-resource, geojson, gmd:MD_Metadata, html, kml, kmz, resource, rtf, thumbnail, txt, xlsx, xml."
+            type="String"
+            default="audio,csv,csw:Record,deployed-harvested-resource,geojson,gmd:MD_Metadata,html,kml,kmz,resource,rtf,thumbnail,txt,xlsx,xml"/>
+
+        <AD id="exportMetacardsFormatOptions"
+            name="Export Multiple Metacard Format Options"
+            description="Specifies the export format options available for export of multiple metacards. This should be a comma separated list. Valid options are: atom, csv, csw:Record, geojson, kml, kmz, xml, html, rtf, xlsx."
+            type="String"
+            default="atom,csv,csw:Record,geojson,kml,kmz,xml,html,rtf,xlsx"/>
+
         <AD id="imageryProviders"
             name="Imagery Providers"
             description='List of imagery providers to use. Valid types are: OSM (OpenStreetMap), AGM (ArcGisMap), BM (BingMap), WMS (WebMapService), WMT (WebMapTile), TMS (TileMapService), and GE (GoogleEarth). Example: {"name": "Example OSM", "show": true, "type": "OSM", "url": "http://a.tile.openstreetmap.org", "fileExtension": "png", "order": 0, "alpha": 1, "proxyEnabled": false}.'
@@ -51,13 +70,6 @@
             description='Visualizations that should be recognized by golden layout in Admin UI. Example: [{"name":"openlayers","title":"2D Map","icon":"map"},{"name":"cesium","title":"3D Map","icon":"globe"},{"name":"inspector","title":"Inspector","icon":"info"},{"name":"histogram","title":"Histogram","icon":"bar-chart"},{"name":"table","title":"Table","icon":"table"}]'
             type="String"
             default='[{"name":"openlayers","title":"2D Map","icon":"map"},{"name":"cesium","title":"3D Map","icon":"globe"},{"name":"inspector","title":"Inspector","icon":"info"},{"name":"histogram","title":"Histogram","icon":"bar-chart"},{"name":"table","title":"Table","icon":"table"}]'/>
-
-        <AD id="listTemplates"
-            name="List Templates"
-            description='Templates for users to quickly create lists that already specify an icon and a filter. Example: {"id":"Pizza Deliveries", "list.icon": "tasks", "list.cql": "(\"anyText\" ILIKE &apos;pizza&apos;)"} '
-            type="String"
-            cardinality="10000"
-            required="false"/>
 
         <AD id="projection"
             name="Map Projection"
@@ -113,13 +125,6 @@
             default="true"
             required="false"/>
 
-        <AD id="ingestEnabled"
-            name="Show Uploader"
-            description="Show upload menu for adding new record."
-            type="Boolean"
-            default="true"
-            required="false"/>
-
         <AD id="cacheEnabled"
             name="Enable Cache"
             description="Locally cached results will be returned in search results."
@@ -138,24 +143,6 @@
             description="Enables queries to the local catalog."
             type="Boolean"
             default="true"/>
-
-        <AD id="historicalSearchEnabled"
-            name="Enable Historical Search"
-            description="Enable searching for historical metacards."
-            type="Boolean"
-            default="true"/>
-
-        <AD id="archiveSearchEnabled"
-            name="Enable Archive Search"
-            description="Enable searching for archived metacards."
-            type="Boolean"
-            default="true"/>
-
-        <AD id="queryFeedbackEnabled"
-            name="Enable Query Feedback"
-            description="Enable the query comments option."
-            type="Boolean"
-            default="false"/>
 
         <AD id="experimentalEnabled"
             name="Enable Experimental Features"
@@ -209,19 +196,25 @@
             type="Boolean"
             default="false"/>
 
+        <AD id="fuzzyResultsEnabled"
+            name="Enable Fuzzy Results"
+            description="Enables result count approximations."
+            type="Boolean"
+            default="true"/>
+
         <AD id="customTextNotationEnabled"
-          name="Show Custom Text Notations"
-          description="Toggle the display of custom text notations next to metacard map markers."
-          type="Boolean"
-          default="false"
-          required="false"/>
+            name="Show Custom Text Notations"
+            description="Toggle the display of custom text notations next to metacard map markers."
+            type="Boolean"
+            default="false"
+            required="false"/>
 
         <AD id="customTextNotationAttribute"
-          name="Custom Text Notation Attribute"
-          description="Set the metacard attribute to display next to the map markers. The default is 'title'."
-          type="String"
-          default="title"
-          required="false"/>
+            name="Custom Text Notation Attribute"
+            description="Set the metacard attribute to display next to the map markers. The default is 'title'."
+            type="String"
+            default="title"
+            required="false"/>
 
         <AD id="basicSearchTemporalSelectionDefault"
             name="Basic Search Temporal Selections"
@@ -253,8 +246,8 @@
             required="false"/>
 
         <AD id="summaryShow"
-            name="Summary Metacard Attributes"
-            description="List of metacard attributes to display in the summary view."
+            name="Summary Metacard Attributes (Inspector)"
+            description="List of metacard attributes to display in the summary (inspector) view by default."
             type="String"
             cardinality="10000"
             default="created,modified,thumbnail"
@@ -282,30 +275,6 @@
             cardinality="10000"
             default="1800,3600,7200,14400,28800,57600,86400"/>
 
-        <AD id="autoMergeTime"
-            name="Auto Merge Time"
-            description="Specifies the interval during which new results can be merged automatically. This is the time allowed since last merge (in milliseconds)."
-            type="Integer"
-            default="1000"/>
-
-        <AD id="queryFeedbackEmailSubjectTemplate"
-            name="Query Feedback Email Subject Template"
-            description="See the documentation for more details about Query Feedback templates."
-            type="String"
-            default="Query Feedback from {{username}}"/>
-
-        <AD id="queryFeedbackEmailBodyTemplate"
-            name="Query Feedback Email Body Template"
-            description="See the documentation for more details about Query Feedback templates."
-            type="String"
-            default="<h2>Query Feedback</h2><p><br><b>Authenticated User</b>: {{{auth_username}}}<br><br><b>User</b>: {{{username}}}<br><br><b>Email</b>: {{{email}}}<br><br><b>Workspace</b>: {{{workspace_name}}} ({{{workspace_id}}})<br><br><b>Query</b>: {{{query}}}<br><br><b>Query time</b>: {{{query_initiated_time}}}<br><br><b>Query status</b>: {{{query_status}}}<br><br><b>Comments</b>: {{{comments}}}<br><br><b>Query_results</b>: <pre>{{{query_results}}}</pre></p>"/>
-
-        <AD id="queryFeedbackEmailDestination"
-            name="Query Feedback Email Destination"
-            description="Email destination to send Query Feedback results."
-            type="String"
-            default=""/>
-
         <AD id="maximumUploadSize"
             name="Maximum Endpoint Upload Size"
             description="The maximum size (in bytes) to allow per client when receiving a POST/PATCH/PUT. Note: This does not affect product upload size, just the maximum size allowed for calls from Intrigue."
@@ -317,12 +286,6 @@
             description='Specifies the default home view for the map by bounding box. The format is "West, South, East, North", where North, East, South, and West are coordinates in degrees. An example is: "-124, 60, -100, 40".'
             type="String"
             required="false"/>
-
-        <AD id="uiName"
-            name="UI Branding Name"
-            description="Specifies a custom UI branding name in the UI."
-            type="String"
-            default="Intrigue"/>
 
         <AD id="attributeEnumMap"
             name="Upload Editor: Attribute Configuration"
@@ -363,11 +326,17 @@
                 default="https://codice.org/ddf/docs/documentation.html"/>
 
         <AD
-                description="The name to display as the branding."
-                name="Branding name"
-                id="brandingName"
+                description="The name to display as the branding name, by default DDF."
+                name="Branding Name"
+                id="customBranding"
                 type="String"
                 default="DDF"/>
+
+        <AD id="product"
+            name="Product Name"
+            description="Specifies a custom product name for the UI, by default Intrigue"
+            type="String"
+            default="Intrigue"/>
 
         <AD
                 description="The Branding."
@@ -375,39 +344,45 @@
                 id="landingPageBackgroundSrc"
                 type="String"
                 default=""
-                />
+        />
 
-         <AD
+        <AD
                 description="The Branding."
                 name="Top Left Logo"
                 id="topLeftLogoSrc"
                 type="String"
                 default=""
-                />
+        />
 
-                 <AD
+        <AD
                 description="The Branding."
                 name="Bottom Left Logo"
                 id="bottomLeftLogoSrc"
                 type="String"
                 default=""
-                />
+        />
 
-                 <AD
+        <AD
                 description="The Branding."
                 name="Bottom Left Background"
                 id="bottomLeftBackgroundSrc"
                 type="String"
                 default=""
-                />
+        />
 
-                <AD
+        <AD
                 description="The Branding."
                 name="Menu Icon"
                 id="menuIconSrc"
                 type="String"
                 default=""
-                />
+        />
+
+        <AD id="extra"
+            name="Extra JSON"
+            description="Arbitrary JSON map for runtime UI configuration."
+            type="String"
+            required="false"/>
     </OCD>
 
     <Designate pid="org.codice.ddf.catalog.ui">

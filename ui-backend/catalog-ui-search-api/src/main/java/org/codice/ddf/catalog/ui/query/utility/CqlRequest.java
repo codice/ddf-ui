@@ -53,6 +53,10 @@ public interface CqlRequest {
 
   boolean getPhonetics();
 
+  void setAdditionalOptions(String additionalOptions);
+
+  String getAdditionalOptions();
+
   void setSrc(String src);
 
   void setSrcs(List<String> srcs);
@@ -95,6 +99,10 @@ public interface CqlRequest {
   boolean isExcludeUnnecessaryAttributes();
 
   void setExcludeUnnecessaryAttributes(boolean excludeUnnecessaryAttributes);
+
+  boolean isFromUI();
+
+  void setFromUI(boolean fromUI);
 
   public static class Sort {
 

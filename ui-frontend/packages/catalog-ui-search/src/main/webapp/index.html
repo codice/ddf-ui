@@ -13,7 +13,7 @@
  **/
  -->
 
-<html class="no-js">
+<html class="no-js bp3-dark theme-dark dark">
 
 <head>
     <meta charset="utf-8">
@@ -23,32 +23,192 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-
-    <link id="favicon" rel="icon" type="image/png" href="../../data:image/png;base64,">
-
 </head>
 
 <body>
-    <header></header>
-    <!--[if lt IE 10]>
-<div id="iewarning" class="iewarning">
-    <div style="color:yellow">
-        Internet Explorer 9 and below are not supported. Please upgrade your browser or use the
-        latest version of Firefox, Chrome, or Safari.
+    <header>
+        <style type=text/css>
+            #incompatible-browser-bg {
+                position: fixed;
+                top: 0;
+                left: 0;
+                text-align: center;
+                line-height: 30px;
+                width: 100%;
+                height: 100%;
+                background-color: #0b1821;
+                overflow: auto;
+                font-family: 'Open Sans', arial, sans-serif;
+            }
+
+            #incompatible-browser {
+                display: table-cell;
+                vertical-align: middle;
+                padding: 20px;
+            }
+
+            #incompatible-browser li {
+                width: 176px;
+                display: inline-block;
+                vertical-align: top;
+                margin: 10px;
+                zoom: 1;
+                *display: inline;
+            }
+        </style>
+        <style type="text/css">
+          #loading.is-open {
+            transform: translateX(0%);
+          }
+
+          #loading .loader {
+            opacity: 1;
+            transition: opacity 0.25s linear;
+          }
+
+          #loading .loading-welcome {
+            display: inline-block;
+            vertical-align: middle;
+            height: auto;
+            line-height: 10em;
+            position: relative;
+            top: -100vh;
+            margin-bottom: 120px;
+            width: 100%;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.25s linear;
+          }
+
+          #loading.show-welcome .loader {
+            opacity: 0.4;
+          }
+          #loading.show-welcome .loading-welcome {
+            opacity: 1;
+          }
+          #loading {
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            line-height: 100vh;
+            font-size: 1.25rem;
+            text-align: center;
+            background: rgb(252, 252, 252);
+            color: inherit;
+            position: fixed;
+            transform: translateX(-100%);
+            transition: transform 0.75s ease-in-out;
+            z-index: 1000;
+          }
+
+          .theme-dark #loading {
+            background: rgb(43, 64, 76);
+            color: white;
+          }
+
+          .loader {
+            display: inline-block;
+          }
+          .loader,
+          .loader:before,
+          .loader:after {
+            background: #3c6dd5;
+            -webkit-animation: load1 1s infinite ease-in-out;
+            animation: load1 1s infinite ease-in-out;
+            width: 1em;
+            height: 4em;
+          }
+          .loader {
+            color: #3c6dd5;
+            text-indent: -9999em;
+            margin: 88px auto;
+            position: relative;
+            font-size: 11px;
+            -webkit-transform: translateZ(0);
+            -ms-transform: translateZ(0);
+            transform: translateZ(0);
+            -webkit-animation-delay: -0.16s;
+            animation-delay: -0.16s;
+          }
+          .loader:before,
+          .loader:after {
+            position: absolute;
+            top: 0;
+            content: '';
+          }
+          .loader:before {
+            left: -1.5em;
+            -webkit-animation-delay: -0.32s;
+            animation-delay: -0.32s;
+          }
+          .loader:after {
+            left: 1.5em;
+          }
+          @-webkit-keyframes load1 {
+            0%,
+            80%,
+            100% {
+              box-shadow: 0 0;
+              height: 4em;
+            }
+            40% {
+              box-shadow: 0 -2em;
+              height: 5em;
+            }
+          }
+          @keyframes load1 {
+            0%,
+            80%,
+            100% {
+              box-shadow: 0 0;
+              height: 4em;
+            }
+            40% {
+              box-shadow: 0 -2em;
+              height: 5em;
+            }
+          }
+
+        </style>
+    </header>
+    <div id="incompatible-browser-bg" style="color: white;">
+      <div style="display: table; width: 100%; height: 100%;">
+        <div id="incompatible-browser">
+          <h1 style="font-size: 20px; margin-bottom: 20px;">Browser Unsupported</h1>
+          <p style="font-size: 16px;">
+            Please use a recent version of one of the following supported browsers to access the
+            system.
+          </p>
+          <ul id="supported-browsers" style="list-style-type:none; padding: 0px">
+            <li class="browser" title=">=91">
+              <img src="./img/edge.png" alt="edge" style="margin-right: 24px;" />
+              <label style="font-size: 12px;">Microsoft Edge</label>
+            </li>
+            <li class="browser" title=">=78">
+              <img src="./img/firefox.png" alt="firefox" style="margin-right: 24px;" />
+              <label style="font-size: 12px;">Mozilla Firefox</label>
+            </li>
+            <li class="browser" title=">=90">
+              <img src="./img/chrome.png" alt="chrome" style="margin-right: 24px;" />
+              <label style="font-size: 12px;">Google Chrome</label>
+            </li>
+          </ul>
+          <div class="">
+            <button  class="px-3 text-base py-2 rounded border-slate-700 border hover:bg-slate-800">
+              Continue anyways?
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div style="color:yellow">
-        Consider using the <a href="/search/simple">Simple Search UI</a> if IE 8 or below is your
-        only option.
-    </div>
-</div>
-<![endif]-->
-    <div id="loading" class="clearfix is-open">
+    <div id="loading" class="flow-root is-open">
         <div class="loader is-critical-animation"></div>
         <div class="loading-welcome">
             Loading <span class="welcome-branding is-bold"></span> <span class="welcome-branding-name"></span>
         </div>
     </div>
-    <div id="router">
+    <div id="router" class="relative z-0 w-full h-full">
     </div>
     <iframe name="autocomplete" style="display:none" src="./blank.html"></iframe>
     <footer></footer>

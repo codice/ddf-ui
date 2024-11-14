@@ -1,18 +1,28 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import Button from '@material-ui/core/Button'
-import { useTheme } from '@material-ui/core'
+import Button from '@mui/material/Button'
+import { useTheme } from '@mui/material/styles'
 import { HoverButton } from '../button/hover'
 import { FilterClass } from './filter.structure'
-import Filter from '../../react-component/filter/filter'
+import FilterPropertyAutocomplete from '../../react-component/filter/filter'
 import { Memo } from '../memo/memo'
+import { ValidationResult } from '../../react-component/location/validators'
 
 type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
 }
 
-const FilterLeaf = ({ filter, setFilter }: Props) => {
+export const FilterNegationControls = ({
+  filter,
+  setFilter,
+  children,
+}: Props & {
+  children: React.ReactNode
+}) => {
   const [hover, setHover] = React.useState(false)
   const theme = useTheme()
   return (
@@ -27,14 +37,17 @@ const FilterLeaf = ({ filter, setFilter }: Props) => {
     >
       {filter.negated ? (
         <HoverButton
+          data-id="remove-not-button"
           className={`absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 py-0 px-1 text-xs z-10`}
           color="primary"
           variant="contained"
           onClick={() => {
-            setFilter({
-              ...filter,
-              negated: !filter.negated,
-            })
+            setFilter(
+              new FilterClass({
+                ...filter,
+                negated: !filter.negated,
+              })
+            )
           }}
         >
           {({ hover }) => {
@@ -47,16 +60,19 @@ const FilterLeaf = ({ filter, setFilter }: Props) => {
         </HoverButton>
       ) : (
         <Button
+          data-id="not-field-button"
           className={`${
             hover ? 'opacity-25' : 'opacity-0'
           } hover:opacity-100 focus:opacity-100 transition-opacity duration-200 absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 py-0 px-1 text-xs z-10`}
           color="primary"
           variant="contained"
           onClick={() => {
-            setFilter({
-              ...filter,
-              negated: !filter.negated,
-            })
+            setFilter(
+              new FilterClass({
+                ...filter,
+                negated: !filter.negated,
+              })
+            )
           }}
         >
           + Not Field
@@ -70,11 +86,23 @@ const FilterLeaf = ({ filter, setFilter }: Props) => {
           borderColor: theme.palette.primary.main,
         }}
       >
-        <Memo dependencies={[filter, setFilter]}>
-          <Filter filter={filter} setFilter={setFilter} />
-        </Memo>
+        {children}
       </div>
     </div>
+  )
+}
+
+const FilterLeaf = ({ filter, setFilter, errorListener }: Props) => {
+  return (
+    <FilterNegationControls filter={filter} setFilter={setFilter}>
+      <Memo dependencies={[filter, setFilter]}>
+        <FilterPropertyAutocomplete
+          filter={filter}
+          setFilter={setFilter}
+          errorListener={errorListener}
+        />
+      </Memo>
+    </FilterNegationControls>
   )
 }
 export default hot(module)(FilterLeaf)

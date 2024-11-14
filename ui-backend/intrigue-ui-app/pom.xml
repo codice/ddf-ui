@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.codice.ddf.search</groupId>
         <artifactId>backend</artifactId>
-        <version>3.7.0-SNAPSHOT</version>
+        <version>5.1.52-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <name>DDF :: UI :: Search UI :: App</name>
@@ -25,6 +25,24 @@
     <packaging>pom</packaging>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Embed-Dependency>
+                            guava,
+                        </Embed-Dependency>
+                        <Import-Package>
+                            !com.fasterxml.jackson.*,
+                            !io.swagger.annotations*,
+                            !org.glassfish.jersey.*,
+                            *
+                        </Import-Package>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                    </instructions>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
@@ -89,6 +107,11 @@
                                     <type>config</type>
                                     <classifier>intrigue-bundle-config</classifier>
                                 </artifact>
+                                <artifact>
+                                    <file>src/main/resources/etc/definitions/ui-preferences-injector.json</file>
+                                    <type>config</type>
+                                    <classifier>ui-preferences-injector</classifier>
+                                </artifact>
                             </artifacts>
                         </configuration>
                     </execution>
@@ -97,6 +120,28 @@
         </plugins>
     </build>
     <dependencies>
+        <dependency>
+            <groupId>com.connexta</groupId>
+            <artifactId>ddf-rpc-api</artifactId>
+            <version>${ddf-jsonrpc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.connexta.jsonrpc</groupId>
+            <artifactId>jsonrpc-features</artifactId>
+            <version>${ddf-jsonrpc.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.codice.ddf.search</groupId>
+            <artifactId>boolean-search-application</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codice.ddf.search</groupId>
+            <artifactId>catalog-plugin-highlight</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.codice.ddf.search</groupId>
             <artifactId>catalog-ui-search</artifactId>
@@ -128,9 +173,34 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.codice.thirdparty</groupId>
+            <artifactId>javalin</artifactId>
+            <version>${javalin.thirdparty.bundle.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codice.ddf.search</groupId>
+            <artifactId>audit-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codice.ddf.search</groupId>
+            <artifactId>audit-application</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codice.ddf.search</groupId>
+            <artifactId>audit-logging</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.ops4j.pax.web</groupId>
             <artifactId>pax-web-jsp</artifactId>
-            <version>7.2.11</version>
+            <version>${pax.web.jsp.version}</version>
         </dependency>
     </dependencies>
 </project>

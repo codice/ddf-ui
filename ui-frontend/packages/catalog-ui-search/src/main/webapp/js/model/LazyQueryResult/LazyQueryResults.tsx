@@ -15,25 +15,110 @@
 import { ResultType } from '../Types'
 import { generateCompareFunction } from './sort'
 import { LazyQueryResult } from './LazyQueryResult'
-import { QuerySortType, FilterType } from './types'
+import { QuerySortType } from './types'
 import { Status } from './status'
-const _ = require('underscore')
-const debounceTime = 50
+import { TransformSortsComposedFunctionType } from '../TypedQuery'
+import _ from 'underscore'
+const debounceTime = 250
 
-const user = require('../../../component/singletons/user-instance.js')
-const Backbone = require('backbone')
+import Backbone from 'backbone'
+import { FilterBuilderClass } from '../../../component/filter-builder/filter.structure'
 
 export type SearchStatus = {
   [key: string]: Status
 }
 
+export type AttributeHighlight = {
+  highlight: string
+  attribute: string
+  endIndex: string
+  startIndex: string
+  valueIndex: string
+}
+
+export type AttributeHighlights = {
+  [key: string]: Array<AttributeHighlight>
+}
+
+/**
+ * Example:
+ * [
+    {
+        "id": "29c0c0e9-b205-49bb-9649-ddf3b31e46f7",
+        "highlights": [
+            {
+                "valueIndex": "0",
+                "highlight": "Windham County, <span class=\"highlight\">Vermont</span>",
+                "startIndex": "16",
+                "endIndex": "23",
+                "attribute": "title"
+            }
+        ]
+    }
+  ]
+ */
+export type ResponseHighlightType = Array<{
+  id: string
+  highlights: Array<AttributeHighlight>
+}>
+
+/** store highlights in a map
+ * Example:
+ * {
+    "29c0c0e9-b205-49bb-9649-ddf3b31e46f7": {
+        "title": [
+            {
+                "valueIndex": "0",
+                "highlight": "Windham County, <span class=\"highlight\">Vermont</span>",
+                "startIndex": "16",
+                "endIndex": "23",
+                "attribute": "title"
+            }
+        ]
+    }
+   }
+ */
+type TransformedHighlightsType = {
+  [key: string]: AttributeHighlights
+}
+
+export const transformResponseHighlightsToMap = ({
+  highlights = [],
+}: {
+  highlights?: ResponseHighlightType
+}) => {
+  return highlights.reduce((blob, highlight) => {
+    blob[highlight.id] = highlight.highlights.reduce(
+      (innerblob, subhighlight) => {
+        innerblob[subhighlight.attribute] = highlight.highlights.filter(
+          (hl) => hl.attribute === subhighlight.attribute
+        )
+        return innerblob
+      },
+      {} as { [key: string]: Array<AttributeHighlight> }
+    )
+    return blob
+  }, {} as TransformedHighlightsType)
+}
+
 type ConstructorProps = {
+  filterTree?: FilterBuilderClass
   results?: ResultType[]
   sorts?: QuerySortType[]
   sources?: string[]
+  transformSorts?: TransformSortsComposedFunctionType
+  status?: SearchStatus
+  highlights?: TransformedHighlightsType
+  showingResultsForFields?: any[]
+  didYouMeanFields?: any[]
 }
 
-type SubscribableType = 'status' | 'filteredResults' | 'selectedResults'
+type SubscribableType =
+  | 'status'
+  | 'filteredResults'
+  | 'selectedResults'
+  | 'results.backboneSync'
+  | 'filterTree'
 type SubscriptionType = { [key: string]: () => void }
 /**
  * Constructed with performance in mind, taking advantage of maps whenever possible.
@@ -44,9 +129,12 @@ type SubscriptionType = { [key: string]: () => void }
 export class LazyQueryResults {
   ['subscriptionsToOthers.result.isSelected']: (() => void)[];
   ['subscriptionsToOthers.result.backboneCreated']: (() => void)[];
+  ['subscriptionsToOthers.result.backboneSync']: (() => void)[];
   ['subscriptionsToMe.status']: SubscriptionType;
   ['subscriptionsToMe.filteredResults']: SubscriptionType;
-  ['subscriptionsToMe.selectedResults']: SubscriptionType
+  ['subscriptionsToMe.selectedResults']: SubscriptionType;
+  ['subscriptionsToMe.filterTree']: SubscriptionType;
+  ['subscriptionsToMe.results.backboneSync']: SubscriptionType
   subscribeTo({
     subscribableThing,
     callback,
@@ -55,19 +143,20 @@ export class LazyQueryResults {
     callback: () => void
   }) {
     const id = Math.random().toString()
-    // @ts-ignore
+
+    // @ts-ignore remove when we upgrade ace to use latest typescript
     this[`subscriptionsToMe.${subscribableThing}`][id] = callback
     return () => {
-      // @ts-ignore
+      // @ts-ignore remove when we upgrade ace to use latest typescript
       delete this[`subscriptionsToMe.${subscribableThing}`][id]
     }
   }
   _notifySubscribers(subscribableThing: SubscribableType) {
-    // @ts-ignore
+    // @ts-ignore remove when we upgrade ace to use latest typescript
     const subscribers = this[
       `subscriptionsToMe.${subscribableThing}`
     ] as SubscriptionType
-    Object.values(subscribers).forEach(callback => callback())
+    Object.values(subscribers).forEach((callback) => callback())
   }
   ['_notifySubscribers.status']() {
     this._notifySubscribers('status')
@@ -77,6 +166,12 @@ export class LazyQueryResults {
   }
   ['_notifySubscribers.selectedResults']() {
     this._notifySubscribers('selectedResults')
+  }
+  ['_notifySubscribers.results.backboneSync']() {
+    this._notifySubscribers('results.backboneSync')
+  }
+  ['_notifySubscribers.filterTree']() {
+    this._notifySubscribers('filterTree')
   }
   _turnOnDebouncing() {
     this['_notifySubscribers.status'] = _.debounce(
@@ -89,6 +184,14 @@ export class LazyQueryResults {
     )
     this['_notifySubscribers.selectedResults'] = _.debounce(
       this['_notifySubscribers.selectedResults'],
+      debounceTime
+    )
+    this['_notifySubscribers.results.backboneSync'] = _.debounce(
+      this['_notifySubscribers.results.backboneSync'],
+      debounceTime
+    )
+    this['_notifySubscribers.filterTree'] = _.debounce(
+      this['_notifySubscribers.filterTree'],
       debounceTime
     )
   }
@@ -152,7 +255,7 @@ export class LazyQueryResults {
    */
   selectByIds(targets: string[]) {
     this.deselect()
-    targets.forEach(id => {
+    targets.forEach((id) => {
       if (this.results[id]) {
         this.results[id].setSelected(true)
       }
@@ -170,7 +273,7 @@ export class LazyQueryResults {
     target.setSelected(isSelected)
   }
   deselect() {
-    Object.values(this.selectedResults).forEach(result => {
+    Object.values(this.selectedResults).forEach((result) => {
       result.setSelected(false)
     })
   }
@@ -181,29 +284,24 @@ export class LazyQueryResults {
    */
   persistantSorts: QuerySortType[]
   /**
-   * on the fly sorts (user prefs), so no distance or best text match
-   * (this is a user pref aka client side only)
+   * Pass a function that returns the sorts to use, allowing such things as substituting ephemeral sorts
    */
-  ephemeralSorts: QuerySortType[]
+  transformSorts: TransformSortsComposedFunctionType = ({ originalSorts }) => {
+    return originalSorts
+  }
   /**
    *  Should really only be set at constructor time (moment a query is done)
    */
   _updatePersistantSorts(sorts: QuerySortType[]) {
     this.persistantSorts = sorts
   }
-  /**
-   *  Should be updated based on user prefs at the current moment,
-   *  And respond to updates to those prefs on the fly.
-   */
-  _updateEphemeralSorts() {
-    this.ephemeralSorts = user.getPreferences().get('resultSort') || []
+  _updateTransformSorts(transformSorts: TransformSortsComposedFunctionType) {
+    this.transformSorts = transformSorts
   }
   _getSortedResults(results: LazyQueryResult[]) {
     return results.sort(
       generateCompareFunction(
-        this.ephemeralSorts.length > 0
-          ? this.ephemeralSorts
-          : this.persistantSorts
+        this.transformSorts({ originalSorts: this.persistantSorts })
       )
     )
   }
@@ -228,43 +326,72 @@ export class LazyQueryResults {
       {} as { [key: string]: LazyQueryResult }
     )
   }
+  /**
+   * This is purely to force a rerender in scenarios where we update result values and want to update views without resorting
+   * (resorting wouldn't make sense to do client side since there could be more results on the server)
+   * It also would be weird since things in tables or lists might jump around while the user is working with them.
+   */
+  _fakeResort() {
+    this.results = Object.values(this.results).reduce(
+      (blob, result, index, results) => {
+        result.index = index
+        result.prev = results[index - 1]
+        result.next = results[index + 1]
+        blob[result['metacard.id']] = result
+        return blob
+      },
+      {} as { [key: string]: LazyQueryResult }
+    )
+  }
+  highlights: TransformedHighlightsType = {}
+  // we can do a shallow merge because there will be no overlap between the two objects (separate queries, seperate results i.e. ids)
+  addHighlights(highlights: TransformedHighlightsType) {
+    this.highlights = { ...this.highlights, ...highlights }
+  }
+  resetHighlights() {
+    this.highlights = {}
+  }
   constructor({
+    filterTree = undefined,
     results = [],
     sorts = [],
     sources = [],
+    transformSorts,
+    status = {},
+    highlights = {},
+    didYouMeanFields = [],
+    showingResultsForFields = [],
   }: ConstructorProps = {}) {
-    this._updateEphemeralSorts()
-    this.reset({ results, sorts, sources })
+    this._turnOnDebouncing()
+    this.reset({
+      filterTree,
+      results,
+      sorts,
+      sources,
+      transformSorts,
+      status,
+      highlights,
+      didYouMeanFields,
+      showingResultsForFields,
+    })
 
     this.backboneModel = new Backbone.Model({
       id: Math.random().toString(),
     })
-    this.backboneModel.listenTo(
-      user,
-      'change:user>preferences>resultSort',
-      () => {
-        this._updateEphemeralSorts()
-        /**
-         * No need to resort because the query will re-execute.  We do need to update things though, so when all sources return we can sort appropriately.
-         */
-        // this._resort()
-        // this['_notifySubscribers.filteredResults']()
-      }
-    )
   }
   init() {
     this.currentAsOf = Date.now()
     if (this['subscriptionsToOthers.result.isSelected'])
-      this['subscriptionsToOthers.result.isSelected'].forEach(unsubscribe => {
+      this['subscriptionsToOthers.result.isSelected'].forEach((unsubscribe) => {
         unsubscribe()
       })
-    if (this['subscriptionsToOthers.result.backboneCreated'])
-      this['subscriptionsToOthers.result.backboneCreated'].forEach(
-        unsubscribe => {
+    if (this['subscriptionsToOthers.result.backboneSync'])
+      this['subscriptionsToOthers.result.backboneSync'].forEach(
+        (unsubscribe) => {
           unsubscribe()
         }
       )
-    this['subscriptionsToOthers.result.backboneCreated'] = []
+    this['subscriptionsToOthers.result.backboneSync'] = []
     this['subscriptionsToOthers.result.isSelected'] = []
     this._resetSelectedResults()
     if (this['subscriptionsToMe.filteredResults'] === undefined)
@@ -273,6 +400,8 @@ export class LazyQueryResults {
       this['subscriptionsToMe.selectedResults'] = {}
     if (this['subscriptionsToMe.status'] === undefined)
       this['subscriptionsToMe.status'] = {}
+    if (this['subscriptionsToMe.filterTree'] === undefined)
+      this['subscriptionsToMe.filterTree'] = {}
     this.results = {}
     this.types = {}
     this.sources = []
@@ -285,13 +414,32 @@ export class LazyQueryResults {
     this.selectedResults = {}
     if (shouldNotify) this['_notifySubscribers.selectedResults']()
   }
-  reset({ results = [], sorts = [], sources = [] }: ConstructorProps = {}) {
+  reset({
+    filterTree = undefined,
+    results = [],
+    sorts = [],
+    sources = [],
+    transformSorts = ({ originalSorts }) => {
+      return originalSorts
+    },
+    status = {},
+    highlights = {},
+    didYouMeanFields = [],
+    showingResultsForFields = [],
+  }: ConstructorProps = {}) {
     this.init()
+    this.resetHighlights()
     this.resetDidYouMeanFields()
     this.resetShowingResultsForFields()
+    this._resetFilterTree(filterTree)
     this._resetSources(sources)
     this._updatePersistantSorts(sorts)
+    this._updateTransformSorts(transformSorts)
+    this.updateDidYouMeanFields(didYouMeanFields)
+    this.updateShowingResultsForFields(showingResultsForFields)
+    this.addHighlights(highlights)
     this.add({ results })
+    this.updateStatus(status)
   }
   destroy() {
     this.backboneModel.stopListening()
@@ -299,9 +447,16 @@ export class LazyQueryResults {
   isEmpty() {
     return Object.keys(this.results).length === 0
   }
-  add({ results = [] }: { results?: ResultType[] } = {}) {
-    results.forEach(result => {
-      const lazyResult = new LazyQueryResult(result)
+  add({
+    results = [],
+  }: {
+    results?: ResultType[]
+  } = {}) {
+    results.forEach((result) => {
+      const lazyResult = new LazyQueryResult(
+        result,
+        this.highlights[result.metacard.properties.id]
+      )
       this.results[lazyResult['metacard.id']] = lazyResult
       lazyResult.parent = this
       /**
@@ -318,22 +473,15 @@ export class LazyQueryResults {
       /**
        * When a backbone model is created we want to start listening for updates so the plain object has the same information
        */
-      this['subscriptionsToOthers.result.backboneCreated'].push(
+      this['subscriptionsToOthers.result.backboneSync'].push(
         lazyResult.subscribeTo({
-          subscribableThing: 'backboneCreated',
+          subscribableThing: 'backboneSync',
           callback: () => {
-            this.backboneModel.listenTo(
-              lazyResult.getBackbone(),
-              'change:metacard>properties refreshdata',
-              () => {
-                lazyResult.syncWithBackbone()
-                /**
-                 * Commenting this part out for now, as this is an expensive thing and I'm not 100% users would actually expect a result to resort on the fly after updating it.
-                 */
-                // this._resort()
-                // this['_notifySubscribers.filteredResults']()
-              }
-            )
+            /**
+             *  In this case we don't want to really resort, just force renders on views by telling them things have changed.
+             */
+            this._fakeResort()
+            this['_notifySubscribers.filteredResults']()
           },
         })
       )
@@ -351,7 +499,10 @@ export class LazyQueryResults {
   }
   types: MetacardTypes
   addTypes(types: MetacardTypes) {
-    this.types = types
+    this.types = {
+      ...this.types,
+      ...types,
+    }
   }
   getCurrentAttributes() {
     return Object.keys(
@@ -369,18 +520,20 @@ export class LazyQueryResults {
     this._resetStatus()
   }
   _resetStatus() {
-    this.status = this.sources.reduce(
-      (blob, source) => {
-        blob[source] = new Status({ id: source })
-        return blob
-      },
-      {} as SearchStatus
-    )
+    this.status = this.sources.reduce((blob, source) => {
+      blob[source] = new Status({ id: source })
+      return blob
+    }, {} as SearchStatus)
     this._updateIsSearching()
     this['_notifySubscribers.status']()
   }
+  filterTree?: FilterBuilderClass
+  _resetFilterTree(filterTree?: FilterBuilderClass) {
+    this.filterTree = filterTree
+    this['_notifySubscribers.filterTree']()
+  }
   cancel() {
-    Object.keys(status).forEach(id => {
+    Object.keys(status).forEach((id) => {
       if (this.status[id].hasReturned === false) {
         this.status[id].updateStatus({
           hasReturned: true,
@@ -393,7 +546,7 @@ export class LazyQueryResults {
     this['_notifySubscribers.status']()
   }
   updateStatus(status: SearchStatus) {
-    Object.keys(status).forEach(id => {
+    Object.keys(status).forEach((id) => {
       this.status[id].updateStatus(status[id])
     })
     this._updateIsSearching()
@@ -406,7 +559,7 @@ export class LazyQueryResults {
     sources: string[]
     message: string
   }) {
-    sources.forEach(id => {
+    sources.forEach((id) => {
       if (this.status[id])
         this.status[id].updateStatus({
           message,
@@ -417,7 +570,7 @@ export class LazyQueryResults {
     this['_notifySubscribers.status']()
   }
   _updateIsSearching() {
-    this.isSearching = Object.values(this.status).some(status => {
+    this.isSearching = Object.values(this.status).some((status) => {
       return !status.hasReturned
     })
   }

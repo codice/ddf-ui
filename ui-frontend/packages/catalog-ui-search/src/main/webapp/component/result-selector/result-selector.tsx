@@ -1,159 +1,240 @@
 import * as React from 'react'
 import Spellcheck from '../spellcheck/spellcheck'
-import Grid from '@material-ui/core/Grid'
+import Grid from '@mui/material/Grid'
 import { hot } from 'react-hot-loader'
 import QueryFeed from './query-feed'
-import LinearProgress from '@material-ui/core/LinearProgress'
+import LinearProgress from '@mui/material/LinearProgress'
 import Paging from './paging'
-import { Dropdown } from '@connexta/atlas/atoms/dropdown'
-import Paper from '@material-ui/core/Paper'
-import { BetterClickAwayListener } from '../better-click-away-listener/better-click-away-listener'
-import Button from '@material-ui/core/Button'
-import FilterListIcon from '@material-ui/icons/FilterList'
-import SortIcon from '@material-ui/icons/Sort'
+import Paper from '@mui/material/Paper'
+import Button from '@mui/material/Button'
+import FilterListIcon from '@mui/icons-material/FilterList'
 import ResultFilter from '../result-filter/result-filter'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import EphemeralSearchSort from '../../react-component/query-sort-selection/ephemeral-search-sort'
-import { useLazyResultsStatusFromSelectionInterface } from '../selection-interface/hooks'
-const user = require('../singletons/user-instance.js')
+import {
+  useLazyResultsStatusFromSelectionInterface,
+  useLazyResultsSelectedResultsFromSelectionInterface,
+} from '../selection-interface/hooks'
 
-const determineHasResultFilter = () => {
+import VisualizationSelector from '../../react-component/visualization-selector/visualization-selector'
+import LayoutDropdownIcon from '@mui/icons-material/ViewComfy'
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import user from '../singletons/user-instance'
+import MoreIcon from '@mui/icons-material/MoreVert'
+
+import LazyMetacardInteractions from '../visualization/results-visual/lazy-metacard-interactions'
+import { Elevations } from '../theme/theme'
+import SelectionRipple from '../golden-layout/selection-ripple'
+import { ResultType } from '../../js/model/Types'
+import Extensions from '../../extension-points'
+import { useMenuState } from '../menu-state/menu-state'
+import Popover from '@mui/material/Popover'
+import Badge from '@mui/material/Badge'
+
+const SelectedResults = ({ selectionInterface }: any) => {
+  const selectedResults = useLazyResultsSelectedResultsFromSelectionInterface({
+    selectionInterface,
+  })
+  const selectedResultsArray = Object.values(selectedResults)
+  const { MuiButtonProps, MuiPopoverProps, handleClose } = useMenuState()
+
   return (
-    user
-      .get('user')
-      .get('preferences')
-      .get('resultFilter') !== undefined
+    <>
+      <Button
+        data-id="result-selector-more-vert-button"
+        className={`relative ${
+          selectedResultsArray.length === 0 ? 'invisible' : ''
+        }`}
+        color="primary"
+        disabled={selectedResultsArray.length === 0}
+        style={{ height: '100%' }}
+        size="small"
+        {...MuiButtonProps}
+      >
+        {selectedResultsArray.length} selected
+        <div
+          className={
+            selectedResultsArray.length === 0 ? '' : 'Mui-text-text-primary'
+          }
+        >
+          <MoreIcon />
+        </div>
+      </Button>
+      <Popover {...MuiPopoverProps} keepMounted={true}>
+        <Paper>
+          <LazyMetacardInteractions
+            lazyResults={selectedResultsArray}
+            onClose={handleClose}
+          />
+        </Paper>
+      </Popover>
+    </>
   )
 }
 
-const determineHasResultSort = () => {
-  return (
-    user
-      .get('user')
-      .get('preferences')
-      .get('resultSort') !== undefined
-  )
+const determineResultFilterSize = () => {
+  const resultFilters = user.get('user').get('preferences').get('resultFilter')
+  if (!resultFilters || !resultFilters.filters) {
+    return 0
+  }
+  return resultFilters.filters.length
+}
+
+const determineResultSortSize = () => {
+  const resultSorts = user.get('user').get('preferences').get('resultSort')
+  if (!resultSorts) {
+    return 0
+  }
+  return resultSorts.length
 }
 
 type Props = {
   selectionInterface: any
   model: any
+  goldenLayout: any
+  layoutResult?: ResultType
+  editLayoutRef?: any
 }
 
-const GridStyles = {
-  padding: '0px 10px',
-}
-
-const ContainerStyles = {
-  position: 'relative',
-  padding: '10px',
-} as React.CSSProperties
-
-const ProgressStyles = {
-  position: 'absolute',
-  width: '100%',
-  height: '10px',
-  left: '0px',
-  bottom: '0px',
-  transition: 'opacity 1s ease-in-out',
-} as React.CSSProperties
-
-const ResultSelector = ({ selectionInterface, model }: Props) => {
+const ResultSelector = ({
+  selectionInterface,
+  model,
+  goldenLayout,
+  layoutResult,
+  editLayoutRef,
+}: Props) => {
   const { isSearching } = useLazyResultsStatusFromSelectionInterface({
     selectionInterface,
   })
-  const [hasResultFilter, setHasResultFilter] = React.useState(
-    determineHasResultFilter()
+  const [resultFilterSize, setResultFilterSize] = React.useState(
+    determineResultFilterSize()
   )
-  const [hasResultSort, setHasResultSort] = React.useState(
-    determineHasResultSort()
+  const [resultSortSize, setResultSortSize] = React.useState(
+    determineResultSortSize()
   )
   const { listenTo } = useBackbone()
-
   React.useEffect(() => {
     listenTo(user.get('user').get('preferences'), 'change:resultFilter', () => {
-      setHasResultFilter(determineHasResultFilter())
+      setResultFilterSize(determineResultFilterSize())
     })
     listenTo(user.get('user').get('preferences'), 'change:resultSort', () => {
-      setHasResultSort(determineHasResultSort())
+      setResultSortSize(determineResultSortSize())
     })
   }, [])
+  const LayoutDropdown = Extensions.layoutDropdown({
+    goldenLayout,
+    layoutResult,
+    editLayoutRef,
+  })
+  const resultFilterMenuState = useMenuState()
+  const resultSortMenuState = useMenuState()
+  const layoutMenuState = useMenuState()
   return (
     <React.Fragment>
       <Grid
         container
         alignItems="center"
-        justify="center"
+        justifyContent="flex-start"
         direction="row"
-        style={ContainerStyles}
       >
-        <LinearProgress
-          variant="query"
-          style={{
-            ...ProgressStyles,
-            opacity: isSearching ? 1 : 0,
-          }}
-        />
+        {isSearching ? (
+          <LinearProgress
+            variant="query"
+            className="opacity-100 absolute w-full h-1 left-0 bottom-0"
+          />
+        ) : null}
 
-        <Grid item style={GridStyles}>
+        <Grid item>
           <Spellcheck
             key={Math.random()}
             selectionInterface={selectionInterface}
             model={model}
           />
         </Grid>
-        <Grid item style={GridStyles}>
+        <Grid item className="relative z-10">
           <QueryFeed selectionInterface={selectionInterface} />
         </Grid>
-        <Grid item style={GridStyles}>
-          <Dropdown
-            content={({ closeAndRefocus }) => {
-              return (
-                <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper className="p-3" elevation={23}>
-                    <ResultFilter closeDropdown={closeAndRefocus} />
-                  </Paper>
-                </BetterClickAwayListener>
-              )
-            }}
-          >
-            {({ handleClick }) => {
-              return (
-                <Button onClick={handleClick}>
-                  Filter{' '}
-                  <FilterListIcon
-                    color={hasResultFilter ? 'secondary' : 'inherit'}
-                  />
-                </Button>
-              )
-            }}
-          </Dropdown>
-        </Grid>
-        <Grid item style={GridStyles}>
-          <Dropdown
-            content={({ closeAndRefocus }) => {
-              return (
-                <BetterClickAwayListener onClickAway={closeAndRefocus}>
-                  <Paper className="p-3" elevation={23}>
-                    <EphemeralSearchSort closeDropdown={closeAndRefocus} />
-                  </Paper>
-                </BetterClickAwayListener>
-              )
-            }}
-          >
-            {({ handleClick }) => {
-              return (
-                <Button onClick={handleClick}>
-                  Sort{' '}
-                  <SortIcon color={hasResultSort ? 'secondary' : 'inherit'} />
-                </Button>
-              )
-            }}
-          </Dropdown>
-        </Grid>
 
-        <Grid item style={GridStyles}>
+        <Grid item className="relative z-0">
+          <SelectionRipple selectionInterface={selectionInterface} />
+          <SelectedResults selectionInterface={selectionInterface} />
+        </Grid>
+        <Grid item className="pl-2 mx-auto">
           <Paging selectionInterface={selectionInterface} />
+        </Grid>
+        <Grid item className="ml-auto">
+          <Button
+            data-id="filter-button"
+            variant="text"
+            color="primary"
+            {...resultFilterMenuState.MuiButtonProps}
+          >
+            <Badge
+              color="secondary"
+              badgeContent={resultFilterSize}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              className="items-center"
+            >
+              <FilterListIcon className="Mui-text-text-primary" />
+              Filter
+            </Badge>
+          </Button>
+          <Popover {...resultFilterMenuState.MuiPopoverProps}>
+            <Paper className="p-3" elevation={Elevations.overlays}>
+              <ResultFilter closeDropdown={resultFilterMenuState.handleClose} />
+            </Paper>
+          </Popover>
+        </Grid>
+        <Grid item className="pl-2">
+          <Button
+            data-id="sort-button"
+            variant="text"
+            color="primary"
+            {...resultSortMenuState.MuiButtonProps}
+          >
+            <Badge
+              color="secondary"
+              badgeContent={resultSortSize}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              className="items-center"
+            >
+              <ArrowDownwardIcon className="Mui-text-text-primary" />
+              Sort
+            </Badge>
+          </Button>
+          <Popover {...resultSortMenuState.MuiPopoverProps}>
+            <Paper className="p-3" elevation={Elevations.overlays}>
+              <EphemeralSearchSort
+                closeDropdown={resultSortMenuState.handleClose}
+              />
+            </Paper>
+          </Popover>
+        </Grid>
+        <Grid item className="pl-2">
+          <Button
+            data-id="layout-button"
+            color="primary"
+            {...layoutMenuState.MuiButtonProps}
+          >
+            <LayoutDropdownIcon className="Mui-text-text-primary" />
+            <div className="pl-1">Layout</div>
+          </Button>
+          <Popover {...layoutMenuState.MuiPopoverProps}>
+            <Paper className="p-3" elevation={Elevations.overlays}>
+              {LayoutDropdown || (
+                <VisualizationSelector
+                  onClose={layoutMenuState.handleClose}
+                  goldenLayout={goldenLayout}
+                />
+              )}
+            </Paper>
+          </Popover>
         </Grid>
       </Grid>
     </React.Fragment>

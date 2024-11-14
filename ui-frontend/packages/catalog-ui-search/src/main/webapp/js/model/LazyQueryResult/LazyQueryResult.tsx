@@ -13,47 +13,25 @@
  *
  **/
 import { ResultType } from '../Types'
-const QueryResult = require('../QueryResult.js')
-import { LazyQueryResults } from './LazyQueryResults'
-
-const _ = require('underscore')
-import Sources from '../../../component/singletons/sources-instance'
-const metacardDefinitions = require('../../../component/singletons/metacard-definitions.js')
-const properties = require('../../properties.js')
-const TurfMeta = require('@turf/meta')
-const wkx = require('wkx')
-const Common = require('../../Common.js')
-import { matchesCql, matchesFilters } from './filter'
-import { FilterType } from './types'
+import QueryResult from '../QueryResult'
+import { LazyQueryResults, AttributeHighlights } from './LazyQueryResults'
+import cql from '../../cql'
+import _ from 'underscore'
+import * as TurfMeta from '@turf/meta'
+import wkx from 'wkx'
+import {
+  FilterBuilderClass,
+  FilterClass,
+} from '../../../component/filter-builder/filter.structure'
+import Common from '../../Common'
 const debounceTime = 50
-
+import $ from 'jquery'
+import { StartupDataStore } from '../Startup/startup'
 function getThumbnailAction(result: ResultType) {
   return result.actions.find(
-    action => action.id === 'catalog.data.metacard.thumbnail'
+    (action) => action.id === 'catalog.data.metacard.thumbnail'
   )
 }
-
-function cacheBustUrl(url: string): string {
-  if (url && url.indexOf('_=') === -1) {
-    let newUrl = url
-    if (url.indexOf('?') >= 0) {
-      newUrl += '&'
-    } else {
-      newUrl += '?'
-    }
-    newUrl += '_=' + Date.now()
-    return newUrl
-  }
-  return url
-}
-
-function cacheBustThumbnail(plain: ResultType) {
-  let url = plain.metacard.properties.thumbnail
-  if (url) {
-    plain.metacard.properties.thumbnail = cacheBustUrl(url)
-  }
-}
-
 function humanizeResourceSize(plain: ResultType) {
   if (plain.metacard.properties['resource-size']) {
     plain.metacard.properties['resource-size'] = Common.getFileSize(
@@ -61,7 +39,6 @@ function humanizeResourceSize(plain: ResultType) {
     )
   }
 }
-
 /**
  * Add defaults, etc.  We need to make sure everything has a tag at the very least
  */
@@ -78,17 +55,73 @@ const transformPlain = ({
     plain.metacard.properties.thumbnail = thumbnailAction.url
   }
   plain.metacardType = plain.metacard.properties['metacard-type']
+  if (
+    plain.metacardType === 'metacard.query' ||
+    (plain.metacard.properties['metacard.deleted.tags'] &&
+      plain.metacard.properties['metacard.deleted.tags'].includes('query'))
+  ) {
+    // since the plain cql search endpoint doesn't understand more complex properties on metacards, we can handle them like this
+    // plain.metacard.properties.filterTree =
+    //   plain.metacard.properties.filterTree &&
+    //   typeof plain.metacard.properties.filterTree === 'string'
+    //     ? JSON.parse(plain.metacard.properties.filterTree)
+    //     : plain.metacard.properties.filterTree
+    // we could do the same thing we do for filterTree in query to get rid of this, but it requires a lot of tech debt cleanup I think
+    try {
+      plain.metacard.properties.sorts =
+        plain.metacard.properties.sorts &&
+        typeof plain.metacard.properties.sorts[0] === 'string'
+          ? (plain.metacard.properties.sorts as string[]).map((sort) => {
+              const attribute = sort
+                .split('attribute=')[1]
+                .split(', direction=')[0]
+              const direction = sort.split(', direction=')[1].slice(0, -1)
+              return {
+                attribute,
+                direction,
+              }
+            })
+          : plain.metacard.properties.sorts
+    } catch (err) {
+      plain.metacard.properties.sorts =
+        plain.metacard.properties.sorts &&
+        typeof plain.metacard.properties.sorts[0] === 'string'
+          ? (plain.metacard.properties.sorts as string[]).map((sort) => {
+              const attribute = sort.split(',')[0]
+              const direction = sort.split(',')[1]
+              return {
+                attribute,
+                direction,
+              }
+            })
+          : plain.metacard.properties.sorts
+    }
+  }
   plain.metacard.id = plain.metacard.properties.id
   plain.id = plain.metacard.properties.id
   return plain
 }
-
-type SubscribableType = 'backboneCreated' | 'selected' | 'filtered'
-type SubscriptionType = { [key: string]: () => void }
+type SubscribableType =
+  | 'backboneCreated'
+  | 'selected'
+  | 'filtered'
+  | 'backboneSync'
+type SubscriptionType = {
+  [key: string]: () => void
+}
 export class LazyQueryResult {
-  ['subscriptionsToMe.backboneCreated']: { [key: string]: () => void };
-  ['subscriptionsToMe.selected']: { [key: string]: () => void };
-  ['subscriptionsToMe.filtered']: { [key: string]: () => void }
+  ['subscriptionsToMe.backboneCreated']: {
+    [key: string]: () => void
+  };
+  ['subscriptionsToMe.backboneSync']: {
+    [key: string]: () => void
+  };
+  ['subscriptionsToMe.selected']: {
+    [key: string]: () => void
+  };
+  ['subscriptionsToMe.filtered']: {
+    [key: string]: () => void
+  }
   subscribeTo({
     subscribableThing,
     callback,
@@ -109,10 +142,13 @@ export class LazyQueryResult {
     const subscribers = this[
       `subscriptionsToMe.${subscribableThing}`
     ] as SubscriptionType
-    Object.values(subscribers).forEach(callback => callback())
+    Object.values(subscribers).forEach((callback) => callback())
   }
   ['_notifySubscribers.backboneCreated']() {
     this._notifySubscribers('backboneCreated')
+  }
+  ['_notifySubscribers.backboneSync']() {
+    this._notifySubscribers('backboneSync')
   }
   ['_notifySubscribers.selected']() {
     this._notifySubscribers('selected')
@@ -123,6 +159,10 @@ export class LazyQueryResult {
   _turnOnDebouncing() {
     this['_notifySubscribers.backboneCreated'] = _.debounce(
       this['_notifySubscribers.backboneCreated'],
+      debounceTime
+    )
+    this['_notifySubscribers.backboneSync'] = _.debounce(
+      this['_notifySubscribers.backboneSync'],
       debounceTime
     )
     this['_notifySubscribers.selected'] = _.debounce(
@@ -141,50 +181,148 @@ export class LazyQueryResult {
   plain: ResultType
   backbone?: any
   isResourceLocal: boolean
+  highlights: AttributeHighlights
   type: 'query-result';
   ['metacard.id']: string
   isSelected: boolean
   isFiltered: boolean
-  constructor(plain: ResultType) {
+  constructor(plain: ResultType, highlights: AttributeHighlights = {}) {
+    this.highlights = highlights
     this.type = 'query-result'
     this.plain = transformPlain({ plain })
     this.isResourceLocal = false || plain.isResourceLocal
     this['subscriptionsToMe.backboneCreated'] = {}
+    this['subscriptionsToMe.backboneSync'] = {}
     this['subscriptionsToMe.selected'] = {}
     this['subscriptionsToMe.filtered'] = {}
     this['metacard.id'] = plain.metacard.properties.id
     this.isSelected = false
     this.isFiltered = false
     humanizeResourceSize(plain)
-    cacheBustThumbnail(plain)
   }
   syncWithBackbone() {
     if (this.backbone) {
       this.plain = transformPlain({ plain: this.backbone.toJSON() })
       humanizeResourceSize(this.plain)
-      cacheBustThumbnail(this.plain)
+      this['_notifySubscribers.backboneSync']()
     }
   }
-  isDownloadable(): boolean {
-    return this.plain.metacard.properties['resource-download-url'] !== undefined
+  syncWithPlain() {
+    this.plain = transformPlain({ plain: { ...this.plain } })
+    humanizeResourceSize(this.plain)
+    this['_notifySubscribers.backboneSync']()
+  }
+  // this is a partial update (like title only or something)
+  refreshFromEditResponse(
+    response: [
+      {
+        ids: string[]
+        attributes: [
+          {
+            attribute: string
+            values: string[]
+          }
+        ]
+      }
+    ]
+  ) {
+    response.forEach((part) =>
+      part.attributes.forEach((attribute) => {
+        this.plain.metacard.properties[attribute.attribute] =
+          StartupDataStore.MetacardDefinitions.isMulti(attribute.attribute)
+            ? attribute.values
+            : attribute.values[0]
+      })
+    )
+    // I think we should update the edit endpoint to include the new metacard modified date, as this is just to force a refresh
+    this.plain.metacard.properties['metacard.modified'] = new Date().toJSON()
+    this.syncWithPlain()
+  }
+  // we have the entire metacard sent back
+  refreshData(
+    metacardProperties: LazyQueryResult['plain']['metacard']['properties']
+  ) {
+    if (metacardProperties !== undefined) {
+      this.plain.metacard.properties = metacardProperties
+      this.syncWithPlain()
+    } else {
+      this.refreshDataOverNetwork()
+    }
+  }
+  // just ask the source of truth
+  refreshDataOverNetwork() {
+    //let solr flush
+    setTimeout(() => {
+      const req = {
+        count: 1,
+        cql: cql.write(
+          new FilterBuilderClass({
+            type: 'AND',
+            filters: [
+              new FilterBuilderClass({
+                type: 'OR',
+                filters: [
+                  new FilterClass({
+                    type: '=',
+                    property: '"id"',
+                    value:
+                      this.plain.metacard.properties['metacard.deleted.id'] ||
+                      this.plain.id,
+                  }),
+                  new FilterClass({
+                    type: '=',
+                    property: '"metacard.deleted.id"',
+                    value: this.plain.id,
+                  }),
+                ],
+              }),
+              new FilterClass({
+                type: 'ILIKE',
+                property: '"metacard-tags"',
+                value: '*',
+              }),
+            ],
+          })
+        ),
+        id: '0',
+        sort: 'modified:desc',
+        src: this.plain.metacard.properties['source-id'],
+      }
+      $.ajax({
+        type: 'POST',
+        url: './internal/cql',
+        data: JSON.stringify(req),
+        contentType: 'application/json',
+      }).then(this.parseRefresh.bind(this), this.handleRefreshError.bind(this))
+    }, 1000)
+  }
+  handleRefreshError() {
+    //do nothing for now, should we announce this?
+  }
+  parseRefresh(response: { results: ResultType[] }) {
+    response.results.forEach((result) => {
+      this.plain = result
+    })
+    this.syncWithPlain()
+  }
+  getDownloadUrl(): string {
+    const downloadAction = this.plain.actions.find(
+      (action) =>
+        action.id === 'catalog.data.metacard.resource.alternate-download'
+    )
+
+    return downloadAction
+      ? downloadAction.url
+      : this.plain.metacard.properties['resource-download-url']
   }
   getPreview(): string {
-    return this.plain.actions.filter(
-      action => action.id === 'catalog.data.metacard.html.preview'
-    )[0].url
+    return this.plain.metacard.properties['ext.extracted.text']
   }
   hasPreview(): boolean {
-    return (
-      this.plain.actions.filter(
-        action => action.id === 'catalog.data.metacard.html.preview'
-      ).length > 0
-    )
+    return this.plain.metacard.properties['ext.extracted.text'] !== undefined
   }
-  matchesFilters(filters: FilterType): boolean {
-    return matchesFilters(this.plain.metacard, filters)
-  }
-  matchesCql(cql: string): boolean {
-    return matchesCql(this.plain.metacard, cql)
+  isSearch(): boolean {
+    return this.plain.metacard.properties['metacard-type'] === 'metacard.query'
   }
   isResource(): boolean {
     return (
@@ -202,7 +340,11 @@ export class LazyQueryResult {
     )
   }
   isRemote(): boolean {
-    return this.plain.metacard.properties['source-id'] !== Sources.localCatalog
+    const harvestedSources = StartupDataStore.Sources.harvestedSources
+    return (
+      harvestedSources.includes(this.plain.metacard.properties['source-id']) ===
+      false
+    )
   }
   hasGeometry(attribute?: any): boolean {
     return (
@@ -210,8 +352,9 @@ export class LazyQueryResult {
         this.plain.metacard.properties,
         (_value: any, key: string) =>
           (attribute === undefined || attribute === key) &&
-          metacardDefinitions.metacardTypes[key] &&
-          metacardDefinitions.metacardTypes[key].type === 'GEOMETRY'
+          StartupDataStore.MetacardDefinitions.getAttributeMap()[key] &&
+          StartupDataStore.MetacardDefinitions.getAttributeMap()[key].type ===
+            'GEOMETRY'
       ).length > 0
     )
   }
@@ -219,24 +362,30 @@ export class LazyQueryResult {
     return _.filter(
       this.plain.metacard.properties,
       (_value: any, key: string) =>
-        !properties.isHidden(key) &&
+        !StartupDataStore.MetacardDefinitions.isHiddenAttribute(key) &&
         (attribute === undefined || attribute === key) &&
-        metacardDefinitions.metacardTypes[key] &&
-        metacardDefinitions.metacardTypes[key].type === 'GEOMETRY'
+        StartupDataStore.MetacardDefinitions.getAttributeMap()[key] &&
+        StartupDataStore.MetacardDefinitions.getAttributeMap()[key].type ===
+          'GEOMETRY'
     )
   }
   getPoints(attribute?: any): any {
-    return this.getGeometries(attribute).reduce(
-      (pointArray: any, wkt: any) =>
-        pointArray.concat(
-          TurfMeta.coordAll(wkx.Geometry.parse(wkt).toGeoJSON())
-        ),
-      []
-    )
+    try {
+      return this.getGeometries(attribute).reduce(
+        (pointArray: any, wkt: any) =>
+          pointArray.concat(
+            TurfMeta.coordAll(wkx.Geometry.parse(wkt).toGeoJSON() as any)
+          ),
+        []
+      )
+    } catch (err) {
+      console.error(err)
+      return []
+    }
   }
   getMapActions() {
     return this.plain.actions.filter(
-      action => action.id.indexOf('catalog.data.metacard.map.') === 0
+      (action) => action.id.indexOf('catalog.data.metacard.map.') === 0
     )
   }
   hasMapActions(): boolean {
@@ -245,8 +394,8 @@ export class LazyQueryResult {
   getExportActions() {
     const otherActions = this.getMapActions()
     return this.plain.actions
-      .filter(action => action.title.indexOf('Export') === 0)
-      .filter(action => otherActions.indexOf(action) === -1)
+      .filter((action) => action.title.indexOf('Export') === 0)
+      .filter((action) => otherActions.indexOf(action) === -1)
   }
   hasExportActions(): boolean {
     return this.getExportActions().length > 0
@@ -254,14 +403,16 @@ export class LazyQueryResult {
   getOtherActions() {
     const otherActions = this.getExportActions().concat(this.getMapActions())
     return this.plain.actions.filter(
-      action => otherActions.indexOf(action) === -1
+      (action) => otherActions.indexOf(action) === -1
     )
   }
   hasRelevance() {
     return Boolean(this.plain.relevance)
   }
   getRoundedRelevance() {
-    return this.plain.relevance.toPrecision(properties.relevancePrecision)
+    return this.plain.relevance.toPrecision(
+      StartupDataStore.Configuration.getRelevancePrecision()
+    )
   }
   hasErrors() {
     return Boolean(this.getErrors())
@@ -321,4 +472,5 @@ export class LazyQueryResult {
       return false
     }
   }
+  currentOverlayUrl?: string
 }

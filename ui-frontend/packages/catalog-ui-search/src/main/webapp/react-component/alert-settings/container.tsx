@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-const user = require('../../component/singletons/user-instance.js')
+import user from '../../component/singletons/user-instance'
 import AlertSettingsComponent from './presentation'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import { hot } from 'react-hot-loader'
@@ -34,13 +34,13 @@ const save = (value: Value) => {
   preferences.savePreferences()
 }
 
-const onExpirationChange = (value: Value) => {
+const onExpirationChange = (value: number) => {
   save({
     alertExpiration: value,
   })
 }
 
-const onPersistenceChange = (value: Value) => {
+const onPersistenceChange = (value: boolean) => {
   save({
     alertPersistence: value,
   })
@@ -48,14 +48,8 @@ const onPersistenceChange = (value: Value) => {
 
 const mapBackboneToState = () => {
   return {
-    persistence: user
-      .get('user')
-      .get('preferences')
-      .get('alertPersistence'),
-    expiration: user
-      .get('user')
-      .get('preferences')
-      .get('alertExpiration'),
+    persistence: user.get('user').get('preferences').get('alertPersistence'),
+    expiration: user.get('user').get('preferences').get('alertExpiration'),
   }
 }
 

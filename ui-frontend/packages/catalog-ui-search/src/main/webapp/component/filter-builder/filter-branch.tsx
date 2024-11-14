@@ -1,22 +1,21 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import Paper from '@material-ui/core/Paper'
-import Box from '@material-ui/core/Box'
-import Button from '@material-ui/core/Button'
-import Grid from '@material-ui/core/Grid'
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
 import FilterLeaf from './filter-leaf'
-import { useTheme } from '@material-ui/core/styles'
+import { useTheme } from '@mui/material/styles'
 import { HoverButton } from '../button/hover'
 import {
   FilterBuilderClass,
   FilterClass,
   isFilterBuilderClass,
 } from './filter.structure'
-import TextField from '@material-ui/core/TextField'
-import MenuItem from '@material-ui/core/MenuItem'
-import AddIcon from '@material-ui/icons/Add'
+import TextField from '@mui/material/TextField'
+import MenuItem from '@mui/material/MenuItem'
+import AddIcon from '@mui/icons-material/Add'
 import _ from 'lodash'
 import { Memo } from '../memo/memo'
+import { ValidationResult } from '../../react-component/location/validators'
 const OperatorData = [
   {
     label: 'AND',
@@ -25,14 +24,6 @@ const OperatorData = [
   {
     label: 'OR',
     value: 'OR',
-  },
-  {
-    label: 'NOT AND',
-    value: 'NOT AND',
-  },
-  {
-    label: 'NOT OR',
-    value: 'NOT OR',
   },
 ]
 
@@ -43,6 +34,9 @@ type ChildFilterProps = {
   index: number
   isFirst: boolean
   isLast: boolean
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
 }
 
 const ChildFilter = ({
@@ -51,33 +45,38 @@ const ChildFilter = ({
   setFilter,
   index,
   isFirst,
-  isLast,
+  errorListener,
 }: ChildFilterProps) => {
   return (
     <>
       {!isFirst ? (
         <Grid
+          data-id={`filter-settings-container`}
           container
           direction="row"
           alignItems="center"
-          justify="center"
+          justifyContent="center"
           wrap="nowrap"
           className="relative"
         >
-          <Grid item className="p-4">
+          <Grid item className="p-2">
             <TextField
+              data-id="filter-operator-select"
               value={parentFilter.type}
-              onChange={e => {
+              onChange={(e) => {
                 const newOperator = e.target.value as FilterBuilderClass['type']
-                setFilter({
-                  ...parentFilter,
-                  type: newOperator,
-                })
+                setFilter(
+                  new FilterBuilderClass({
+                    ...parentFilter,
+                    type: newOperator,
+                  })
+                )
               }}
               select
               variant="outlined"
+              size="small"
             >
-              {OperatorData.map(operatorInfo => {
+              {OperatorData.map((operatorInfo) => {
                 return (
                   <MenuItem key={operatorInfo.value} value={operatorInfo.value}>
                     {operatorInfo.label}
@@ -88,16 +87,20 @@ const ChildFilter = ({
           </Grid>
           <Grid item className="ml-auto position absolute right-0">
             <Button
+              data-id="remove-child-filter-button"
+              color="primary"
               onClick={() => {
                 const newFilters = parentFilter.filters.slice(0)
                 newFilters.splice(index, 1)
-                setFilter({
-                  ...parentFilter,
-                  filters: newFilters,
-                })
+                setFilter(
+                  new FilterBuilderClass({
+                    ...parentFilter,
+                    filters: newFilters,
+                  })
+                )
               }}
             >
-              <Box color="primary.main">Remove</Box>
+              Remove
             </Button>
           </Grid>
         </Grid>
@@ -105,26 +108,32 @@ const ChildFilter = ({
       {isFilterBuilderClass(filter) ? (
         <FilterBranch
           filter={filter}
-          setFilter={newChildFilter => {
+          setFilter={(newChildFilter) => {
             const newFilters = parentFilter.filters.slice(0)
             newFilters.splice(index, 1, newChildFilter)
-            setFilter({
-              ...parentFilter,
-              filters: newFilters,
-            })
+            setFilter(
+              new FilterBuilderClass({
+                ...parentFilter,
+                filters: newFilters,
+              })
+            )
           }}
+          errorListener={errorListener}
         />
       ) : (
         <FilterLeaf
           filter={filter}
-          setFilter={newChildFilter => {
+          setFilter={(newChildFilter) => {
             const newFilters = parentFilter.filters.slice(0)
             newFilters.splice(index, 1, newChildFilter)
-            setFilter({
-              ...parentFilter,
-              filters: newFilters,
-            })
+            setFilter(
+              new FilterBuilderClass({
+                ...parentFilter,
+                filters: newFilters,
+              })
+            )
           }}
+          errorListener={errorListener}
         />
       )}
     </>
@@ -135,33 +144,40 @@ type Props = {
   filter: FilterBuilderClass
   setFilter: (filter: FilterBuilderClass) => void
   root?: boolean
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
 }
 
-const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
+const FilterBranch = ({
+  filter,
+  setFilter,
+  root = false,
+  errorListener,
+}: Props) => {
   const [hover, setHover] = React.useState(false)
   const theme = useTheme()
 
   /**
    * Any non root branches lacking filters are pruned.
    */
-  React.useEffect(
-    () => {
-      filter.filters.forEach((childFilter, index) => {
-        if (
-          isFilterBuilderClass(childFilter) &&
-          childFilter.filters.length === 0
-        ) {
-          const newFilters = filter.filters.slice(0)
-          newFilters.splice(index, 1)
-          setFilter({
+  React.useEffect(() => {
+    filter.filters.forEach((childFilter, index) => {
+      if (
+        isFilterBuilderClass(childFilter) &&
+        childFilter.filters.length === 0
+      ) {
+        const newFilters = filter.filters.slice(0)
+        newFilters.splice(index, 1)
+        setFilter(
+          new FilterBuilderClass({
             ...filter,
             filters: newFilters,
           })
-        }
-      })
-    },
-    [filter]
-  )
+        )
+      }
+    })
+  }, [filter])
 
   return (
     <div
@@ -172,9 +188,18 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
         setHover(false)
       }}
     >
-      <Paper elevation={root ? 0 : 10} className={root ? '' : 'px-3 pt-6 pb-2'}>
+      <div
+        className={
+          root
+            ? ' shadow-none'
+            : 'px-3 py-2 MuiPaper-box-shadow border-black border-2 border-opacity-30'
+        }
+      >
         <div className=" relative">
           <div
+            data-id={
+              root ? 'root-filter-group-container' : 'filter-group-container'
+            }
             className={`${
               filter.negated ? 'border px-3 py-4 mt-2' : ''
             } transition-all duration-200`}
@@ -191,45 +216,57 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
               >
                 <Grid item>
                   <Button
+                    data-id="add-field-button"
+                    color="primary"
                     onClick={() => {
-                      setFilter({
-                        ...filter,
-                        filters: filter.filters.concat([new FilterClass()]),
-                      })
+                      setFilter(
+                        new FilterBuilderClass({
+                          ...filter,
+                          filters: filter.filters.concat([new FilterClass()]),
+                        })
+                      )
                     }}
                   >
-                    <AddIcon />
-                    <Box color="primary.main">Field</Box>
+                    <AddIcon className="Mui-text-text-primary" />
+                    Field
                   </Button>
                 </Grid>
                 <Grid item>
                   <Button
+                    data-id="add-group-button"
+                    color="primary"
                     onClick={() => {
-                      setFilter({
-                        ...filter,
-                        filters: filter.filters.concat([
-                          new FilterBuilderClass(),
-                        ]),
-                      })
+                      setFilter(
+                        new FilterBuilderClass({
+                          ...filter,
+                          filters: filter.filters.concat([
+                            new FilterBuilderClass(),
+                          ]),
+                        })
+                      )
                     }}
                   >
-                    <AddIcon />
-                    <Box color="primary.main">Group</Box>
+                    <AddIcon className="Mui-text-text-primary" />
+                    Group
                   </Button>
                 </Grid>
                 {filter.filters.length !== 0 ? (
                   <Grid item className="ml-auto">
                     <Button
+                      data-id="remove-first-filter-button"
+                      color="primary"
                       onClick={() => {
                         const newFilters = filter.filters.slice(0)
                         newFilters.splice(0, 1)
-                        setFilter({
-                          ...filter,
-                          filters: newFilters,
-                        })
+                        setFilter(
+                          new FilterBuilderClass({
+                            ...filter,
+                            filters: newFilters,
+                          })
+                        )
                       }}
                     >
-                      <Box color="primary.main">Remove</Box>
+                      Remove
                     </Button>
                   </Grid>
                 ) : null}
@@ -242,10 +279,12 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                   color="primary"
                   variant="contained"
                   onClick={() => {
-                    setFilter({
-                      ...filter,
-                      negated: !filter.negated,
-                    })
+                    setFilter(
+                      new FilterBuilderClass({
+                        ...filter,
+                        negated: !filter.negated,
+                      })
+                    )
                   }}
                 >
                   {({ hover }) => {
@@ -260,16 +299,19 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
             ) : (
               <>
                 <Button
+                  data-id="not-group-button"
                   className={`${
                     hover ? 'opacity-25' : 'opacity-0'
                   } hover:opacity-100 focus:opacity-100 transition-opacity duration-200 absolute top-0 left-1/2 transform -translate-y-1/2 -translate-x-1/2 py-0 px-1 text-xs z-10`}
                   color="primary"
                   variant="contained"
                   onClick={() => {
-                    setFilter({
-                      ...filter,
-                      negated: !filter.negated,
-                    })
+                    setFilter(
+                      new FilterBuilderClass({
+                        ...filter,
+                        negated: !filter.negated,
+                      })
+                    )
                   }}
                 >
                   + Not Group
@@ -288,6 +330,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
                       index={index}
                       isFirst={index === 0}
                       isLast={index === filter.filters.length - 1}
+                      errorListener={errorListener}
                     />
                   )
                 })}
@@ -295,7 +338,7 @@ const FilterBranch = ({ filter, setFilter, root = false }: Props) => {
             </Memo>
           </div>
         </div>
-      </Paper>
+      </div>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-const userInstance = require('../singletons/user-instance')
+import userInstance from '../singletons/user-instance'
 
 export const DEFAULT_DATE_TIME_FORMAT = 'DD MMMM YYYY h:mm a Z'
 
@@ -11,7 +11,7 @@ export const getDateTimeFormat = () => {
 
     return dateTimeFormat || DEFAULT_DATE_TIME_FORMAT
   } catch (err) {
-    console.log(
+    console.error(
       "Unable to retrieve user's prefered datetime format. Retrieving default datetime format.",
       err
     )

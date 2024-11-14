@@ -14,56 +14,48 @@
  **/
 import * as React from 'react'
 import styled from 'styled-components'
-import { ChangeBackground } from '../styles/mixins/change-background'
 import SourceItem from '../source-item'
 import SourcesSummary from '../sources-summary'
-import { hot } from 'react-hot-loader'
+import { useSources } from '../../js/model/Startup/sources.hooks'
 
 const Root = styled.div`
   display: block;
   height: 100%;
   width: 100%;
   overflow: hidden;
-  ${props => ChangeBackground(props.theme.backgroundContent)};
 `
 
 const SourcesCenter = styled.div`
   margin: auto;
-  max-width: ${props => {
+  max-width: ${(props) => {
     return props.theme.screenBelow(props.theme.mediumScreenSize)
       ? '100%'
       : '1200px'
   }};
   padding: 0px
-    ${props =>
+    ${(props) =>
       props.theme.screenBelow(props.theme.mediumScreenSize) ? '20px' : '100px'};
   overflow: auto;
   height: 100%;
 `
 
-type Source = {
-  id: string
-  sourceActions: any[]
-  available: boolean
-}
-
-type Props = {
-  sources: Source[]
-  amountDown: number
-  refreshSources: () => void
-}
-
-export default hot(module)(({ sources, amountDown, refreshSources }: Props) => {
+export default () => {
+  const { sources } = useSources()
+  const amountDown = sources.reduce((blob, source) => {
+    if (source.available === false) {
+      return blob + 1
+    }
+    return blob
+  }, 0)
   return (
     <Root>
       <SourcesCenter>
         <SourcesSummary amountDown={amountDown} />
-        {sources.map(source => {
+        {sources.map((source) => {
           return (
             <SourceItem
               key={source.id}
               sourceActions={source.sourceActions}
-              refreshSources={refreshSources}
               id={source.id}
               available={source.available}
             />
@@ -72,4 +64,4 @@ export default hot(module)(({ sources, amountDown, refreshSources }: Props) => {
       </SourcesCenter>
     </Root>
   )
-})
+}

@@ -14,14 +14,11 @@
  **/
 
 import * as React from 'react'
-const Marionette = require('marionette')
-const Query = require('../../js/model/Query.js')
-const user = require('../singletons/user-instance.js')
-import Grid from '@material-ui/core/Grid'
 import QueryBasic from '../../component/query-basic/query-basic.view'
 
 import QueryAdvanced from '../../component/query-advanced/query-advanced'
-import MRC from '../../react-component/marionette-region-container'
+import { useListenTo } from '../selection-checkbox/useBackbone.hook'
+import { ValidationResult } from '../../react-component/location/validators'
 export const queryForms = [
   { id: 'basic', title: 'Basic Search', view: QueryBasic },
   {
@@ -31,55 +28,59 @@ export const queryForms = [
   },
 ]
 
-export default Marionette.LayoutView.extend({
-  template() {
-    const formType = this.model.get('type')
-    const form = queryForms.find(form => form.id === formType) as {
+type QueryAddReactType = {
+  model: any
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
+  Extensions?: React.FunctionComponent
+}
+
+export const QueryAddReact = ({
+  model,
+  errorListener,
+  Extensions,
+}: QueryAddReactType) => {
+  const [, setForceRender] = React.useState(Math.random())
+  useListenTo(model, 'resetToDefaults change:type', () => {
+    setForceRender(Math.random())
+  })
+  const formType = model.get('type')
+  const form =
+    (queryForms.find((form) => form.id === formType) as {
       id: string
       title: string
       view: any
-    }
-    return (
-      <React.Fragment>
-        <form
-          target="autocomplete"
-          action="/search/catalog/blank.html"
-          className="w-full h-full"
-        >
-          <Grid
-            container
-            direction="column"
-            className="w-full h-full"
-            wrap="nowrap"
-          >
-            <Grid item className="w-full h-full">
-              {(() => {
-                if (form.id === 'basic') {
-                  return (
-                    <MRC
-                      view={
-                        new QueryBasic({
-                          model: this.model,
-                        })
-                      }
-                    />
-                  )
-                } else {
-                  return <QueryAdvanced model={this.model} />
-                }
-              })()}
-            </Grid>
-          </Grid>
-        </form>
-      </React.Fragment>
-    )
-  },
-  className: 'h-full w-full overflow-auto',
-  tagName: 'div',
-  regions: {
-    queryContent: 'form .content-form',
-  },
-  onFirstRender() {
-    this.listenTo(this.model, 'resetToDefaults change:type', this.render)
-  },
-})
+    }) || queryForms[0]
+  return (
+    <React.Fragment>
+      <form
+        target="autocomplete"
+        action="/search/catalog/blank.html"
+        className="w-full"
+      >
+        {(() => {
+          if (form.id === 'basic') {
+            return (
+              <QueryBasic
+                model={model}
+                key={model.id}
+                errorListener={errorListener}
+                Extensions={Extensions}
+              />
+            )
+          } else {
+            return (
+              <QueryAdvanced
+                model={model}
+                key={model.id}
+                errorListener={errorListener}
+                Extensions={Extensions}
+              />
+            )
+          }
+        })()}
+      </form>
+    </React.Fragment>
+  )
+}

@@ -7,11 +7,11 @@ import CalculateClusters from './calculate-clusters'
 import Cluster from './cluster'
 import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryResult'
 import ZoomToSelection from './zoom-to-selection'
+import { SHAPE_ID_PREFIX } from '../drawing-and-display'
 type Props = {
   selectionInterface: any
   map: any
   isClustering: boolean
-  mapView: any
 }
 
 export type ClusterType = {
@@ -20,7 +20,7 @@ export type ClusterType = {
 }
 
 const Geometries = (props: Props) => {
-  const { map, selectionInterface, isClustering, mapView } = props
+  const { map, selectionInterface, isClustering } = props
   const lazyResults = useLazyResultsFromSelectionInterface({
     selectionInterface,
   })
@@ -36,7 +36,7 @@ const Geometries = (props: Props) => {
       if (id.constructor === String) {
         lazyResultsRef.current.results[id as string].controlSelect()
       } else {
-        ;(id as string[]).map(subid => {
+        ;(id as string[]).map((subid) => {
           return lazyResultsRef.current.results[subid as string].controlSelect()
         })
       }
@@ -47,11 +47,11 @@ const Geometries = (props: Props) => {
       } else {
         const resultIds = id as string[]
         let shouldJustDeselect = resultIds.some(
-          subid => lazyResultsRef.current.results[subid].isSelected
+          (subid) => lazyResultsRef.current.results[subid].isSelected
         )
         lazyResultsRef.current.deselect()
         if (!shouldJustDeselect) {
-          resultIds.map(subid => {
+          resultIds.map((subid) => {
             return lazyResultsRef.current.results[
               subid as string
             ].controlSelect()
@@ -68,7 +68,7 @@ const Geometries = (props: Props) => {
         // we get click events on normal drawn features from the location drawing
         if (
           mapEvent.mapTarget.constructor === String &&
-          mapEvent.mapTarget.length < 8
+          (mapEvent.mapTarget as string).startsWith(SHAPE_ID_PREFIX)
         ) {
           return
         }
@@ -82,63 +82,43 @@ const Geometries = (props: Props) => {
       }
     }
     map.onLeftClick(handleLeftClick)
-    return () => {
-      console.log('cleanup')
-    }
+    return () => {}
   }, [])
 
-  const IndividualGeometries = React.useMemo(
-    () => {
-      return Object.values(lazyResults.results).map(lazyResult => {
-        return (
-          <Geometry
-            key={lazyResult['metacard.id']}
-            lazyResult={lazyResult}
-            map={map}
-            clusters={clusters}
-          />
-        )
-      })
-    },
-    [lazyResults.results, clusters]
-  )
-
-  const Clusters = React.useMemo(
-    () => {
-      return clusters.map(cluster => {
-        return <Cluster key={cluster.id} cluster={cluster} map={map} />
-      })
-    },
-    [clusters, lazyResults.results]
-  )
-
-  const CalculateClustersMemo = React.useMemo(
-    () => {
+  const IndividualGeometries = React.useMemo(() => {
+    return Object.values(lazyResults.results).map((lazyResult) => {
       return (
-        <CalculateClusters
-          key="clusters"
-          isClustering={isClustering}
+        <Geometry
+          key={lazyResult['metacard.id']}
+          lazyResult={lazyResult}
           map={map}
-          lazyResults={lazyResults.results}
-          setClusters={setClusters}
+          clusters={clusters}
         />
       )
-    },
-    [lazyResults.results, isClustering]
-  )
+    })
+  }, [lazyResults.results, clusters])
 
-  const ZoomToSelectionMemo = React.useMemo(
-    () => {
-      return (
-        <ZoomToSelection
-          map={map}
-          lazyResults={lazyResults}
-          mapView={mapView}
-        />
-      )
-    },
-    [lazyResults]
-  )
+  const Clusters = React.useMemo(() => {
+    return clusters.map((cluster) => {
+      return <Cluster key={cluster.id} cluster={cluster} map={map} />
+    })
+  }, [clusters, lazyResults.results])
+
+  const CalculateClustersMemo = React.useMemo(() => {
+    return (
+      <CalculateClusters
+        key="clusters"
+        isClustering={isClustering}
+        map={map}
+        lazyResults={lazyResults.results}
+        setClusters={setClusters}
+      />
+    )
+  }, [lazyResults.results, isClustering])
+
+  const ZoomToSelectionMemo = React.useMemo(() => {
+    return <ZoomToSelection map={map} lazyResults={lazyResults} />
+  }, [lazyResults])
 
   return (
     <>

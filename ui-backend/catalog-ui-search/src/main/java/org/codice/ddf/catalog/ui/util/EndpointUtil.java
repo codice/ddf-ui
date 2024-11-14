@@ -28,6 +28,7 @@ import ddf.catalog.data.AttributeType;
 import ddf.catalog.data.InjectableAttribute;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.MetacardType;
+import ddf.catalog.data.RequiredAttributesRegistry;
 import ddf.catalog.data.Result;
 import ddf.catalog.data.impl.AttributeImpl;
 import ddf.catalog.data.types.Core;
@@ -50,6 +51,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
@@ -69,6 +71,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import javax.ws.rs.NotFoundException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -108,6 +111,8 @@ public class EndpointUtil implements EndpointUtility {
 
   private final ConfigurationApplication config;
 
+  private final RequiredAttributesRegistry requiredAttributesRegistry;
+
   private static final String ISO_8601_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
   private static final String APPLICATION_JSON = "application/json";
@@ -119,6 +124,8 @@ public class EndpointUtil implements EndpointUtility {
   private static final String ID_KEY = "id";
 
   private static final String ISINJECTED_KEY = "isInjected";
+
+  private static final String REQUIRED_KEY = "required";
 
   private static int pageSize = 250;
 
@@ -140,12 +147,14 @@ public class EndpointUtil implements EndpointUtility {
       FilterBuilder filterBuilder,
       List<InjectableAttribute> injectableAttributes,
       AttributeRegistry attributeRegistry,
+      RequiredAttributesRegistry requiredAttributesRegistry,
       ConfigurationApplication config) {
     this.metacardTypes = metacardTypes;
     this.catalogFramework = catalogFramework;
     this.filterBuilder = filterBuilder;
     this.injectableAttributes = injectableAttributes;
     this.attributeRegistry = attributeRegistry;
+    this.requiredAttributesRegistry = requiredAttributesRegistry;
     this.config = config;
     registerGeoToolsFunctionFactory();
   }
@@ -177,12 +186,34 @@ public class EndpointUtil implements EndpointUtility {
 
   public Metacard getMetacardById(String id)
       throws UnsupportedQueryException, SourceUnavailableException, FederationException {
+    return getMetacardById(id, null, null);
+  }
+
+  public Metacard getMetacardById(String id, Map<String, Serializable> properties)
+      throws UnsupportedQueryException, SourceUnavailableException, FederationException {
+    return getMetacardById(id, null, properties);
+  }
+
+  public Metacard getMetacardById(String id, String storeId)
+      throws UnsupportedQueryException, SourceUnavailableException, FederationException {
+    return getMetacardById(id, storeId, null);
+  }
+
+  public Metacard getMetacardById(String id, String storeId, Map<String, Serializable> properties)
+      throws UnsupportedQueryException, SourceUnavailableException, FederationException {
+    Collection<String> storeIds;
+    if (storeId == null) {
+      storeIds = null;
+    } else {
+      storeIds = Arrays.asList(storeId);
+    }
     Filter idFilter = filterBuilder.attribute(Core.ID).is().equalTo().text(id);
     Filter tagsFilter = filterBuilder.attribute(Core.METACARD_TAGS).is().like().text("*");
     Filter filter = filterBuilder.allOf(idFilter, tagsFilter);
 
     QueryResponse queryResponse =
-        catalogFramework.query(new QueryRequestImpl(new QueryImpl(filter), false));
+        catalogFramework.query(
+            new QueryRequestImpl(new QueryImpl(filter), false, storeIds, properties));
 
     if (queryResponse.getResults().isEmpty()) {
       throw new NotFoundException("Could not find metacard for id: " + id);
@@ -308,6 +339,26 @@ public class EndpointUtil implements EndpointUtility {
 
   public Map<String, Result> getMetacardsWithTagByAttributes(
       String attributeName, Collection<String> attributeValues, Filter tagFilter) {
+    return getMetacardsWithTagByAttributes(attributeName, attributeValues, tagFilter, null);
+  }
+
+  public Map<String, Result> getMetacardsWithTagByAttributes(
+      String attributeName,
+      Collection<String> attributeValues,
+      String tag,
+      @Nullable Set<String> storeIds) {
+    return getMetacardsWithTagByAttributes(
+        attributeName,
+        attributeValues,
+        filterBuilder.attribute(Core.METACARD_TAGS).is().like().text(tag),
+        storeIds);
+  }
+
+  public Map<String, Result> getMetacardsWithTagByAttributes(
+      String attributeName,
+      Collection<String> attributeValues,
+      Filter tagFilter,
+      @Nullable Set<String> storeIds) {
     if (attributeValues.isEmpty()) {
       return new HashMap<>();
     }
@@ -327,7 +378,7 @@ public class EndpointUtil implements EndpointUtility {
                     false,
                     TimeUnit.SECONDS.toMillis(10)),
                 false,
-                null,
+                storeIds,
                 additionalSort(new HashMap<>(), Core.ID, SortOrder.ASCENDING)));
 
     return resultIterable
@@ -388,6 +439,9 @@ public class EndpointUtil implements EndpointUtility {
         attributeProperties.put(MULTIVALUED_KEY, descriptor.isMultiValued());
         attributeProperties.put(ID_KEY, descriptor.getName());
         attributeProperties.put(ISINJECTED_KEY, false);
+        attributeProperties.put(
+            REQUIRED_KEY,
+            requiredAttributesRegistry.isRequired(metacardType.getName(), descriptor.getName()));
         attributes.put(descriptor.getName(), attributeProperties);
       }
       resultTypes.put(metacardType.getName(), attributes);
@@ -426,6 +480,8 @@ public class EndpointUtil implements EndpointUtility {
       String type) {
     Map<String, Object> attributes =
         (Map) resultTypes.getOrDefault(type, new HashMap<String, Object>());
+    attributeProperties.put(
+        REQUIRED_KEY, requiredAttributesRegistry.isRequired(type, attribute.attribute()));
     attributes.put(attribute.attribute(), attributeProperties);
     resultTypes.put(type, attributes);
   }
@@ -488,9 +544,9 @@ public class EndpointUtil implements EndpointUtility {
     return outerMap;
   }
 
-  public String metacardToJson(String id)
+  public String metacardToJson(String id, String storeId)
       throws SourceUnavailableException, UnsupportedQueryException, FederationException {
-    return metacardToJson(getMetacardById(id));
+    return metacardToJson(getMetacardById(id, storeId, null));
   }
 
   public String metacardToJson(Metacard metacard) {

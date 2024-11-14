@@ -15,20 +15,19 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
-import MarionetteRegionContainer from '../marionette-region-container'
-const NotificationGroupView = require('../../component/notification-group/notification-group.view.js')
-const user = require('../../component/singletons/user-instance.js')
-const moment = require('moment')
-const userNotifications = require('../../component/singletons/user-notifications.js')
+import { NotificationGroupViewReact } from '../../component/notification-group/notification-group.view'
+import user from '../../component/singletons/user-instance'
+import moment from 'moment'
+import userNotifications from '../../component/singletons/user-notifications'
 
 type Props = WithBackboneProps
 
 const Empty = styled.div`
-  transition: transform ${props => props.theme.coreTransitionTime} linear;
+  transition: transform ${(props) => props.theme.coreTransitionTime} linear;
   transform: scale(1);
   text-align: center;
-  font-size: ${props => props.theme.largeFontSize};
-  padding: ${props => props.theme.mediumSpacing};
+  font-size: ${(props) => props.theme.largeFontSize};
+  padding: ${(props) => props.theme.mediumSpacing};
 `
 const Root = styled.div`
   height: 100%;
@@ -39,11 +38,14 @@ const Notifications = styled.div`
   height: 100%;
   width: 100%;
   display: block;
-  padding: ${props => props.theme.mediumSpacing};
+  padding: ${(props) => props.theme.mediumSpacing};
 `
 
 const informalName = (daysAgo: any) => {
   switch (daysAgo) {
+    case -1:
+      return 'Future'
+      break
     case 0:
       return 'Today'
       break
@@ -51,32 +53,28 @@ const informalName = (daysAgo: any) => {
       return 'Yesterday'
       break
     default:
-      return moment()
-        .subtract(daysAgo, 'days')
-        .format('dddd')
+      return moment().subtract(daysAgo, 'days').format('dddd')
       break
   }
 }
 
-const listPreviousDays = (numDays: any) => {
-  if (numDays < 7) {
-    return new NotificationGroupView({
-      filter: (model: any) => {
-        return moment().diff(model.get('sentAt'), 'days') === numDays
-      },
-      date: informalName(numDays),
-    })
+const getFilterForDay = (numDays: number) => {
+  if (numDays < 0) {
+    return (model: any) => {
+      return moment().diff(model.get('sentAt'), 'days') < 0
+    }
+  } else if (numDays < 7) {
+    return (model: any) => {
+      return moment().diff(model.get('sentAt'), 'days') === numDays
+    }
   } else {
-    return new NotificationGroupView({
-      filter: (model: any) => {
-        return moment().diff(model.get('sentAt'), 'days') >= 7
-      },
-      date: 'Older',
-    })
+    return (model: any) => {
+      return moment().diff(model.get('sentAt'), 'days') >= 7
+    }
   }
 }
 
-const dayRange = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+const dayRange = [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 class UserNotifications extends React.Component<Props, {}> {
   notificationGroups: any
@@ -85,13 +83,6 @@ class UserNotifications extends React.Component<Props, {}> {
     this.props.listenTo(userNotifications, 'add remove update', () =>
       this.setState({})
     )
-    this.notificationGroups = dayRange.map(i => (
-      <MarionetteRegionContainer
-        key={i.toString()}
-        view={listPreviousDays(i)}
-        viewOptions={{ replaceElement: true }}
-      />
-    ))
   }
   render() {
     return userNotifications.isEmpty() ? (
@@ -101,7 +92,17 @@ class UserNotifications extends React.Component<Props, {}> {
     ) : (
       <Root>
         <div>
-          <Notifications>{this.notificationGroups}</Notifications>
+          <Notifications>
+            {dayRange.map((day) => {
+              return (
+                <NotificationGroupViewReact
+                  key={day}
+                  filter={getFilterForDay(day)}
+                  date={day === 8 ? 'Older' : informalName(day)}
+                />
+              )
+            })}
+          </Notifications>
         </div>
       </Root>
     )

@@ -1,30 +1,25 @@
 import * as React from 'react'
-import Grid from '@material-ui/core/Grid'
+import Grid from '@mui/material/Grid'
 import { Resizable, ResizableProps } from 're-resizable'
 import styled from 'styled-components'
-import Paper from '@material-ui/core/Paper'
-import { createCtx } from '@connexta/atlas/typescript/context'
-
-const wreqr = require('../../js/wreqr.js')
-
+import { createCtx } from '../../typescript/context'
+import wreqr from '../../js/wreqr'
 export const DEFAULT_AUTO_COLLAPSE_LENGTH = 300
 export const DEFAULT_STARTING_LENGTH = 550
 export const DEFAULT_COLLAPSED_LENGTH = 75
-
 type ResizableGridType = React.ComponentType<
-  ResizableProps & {
-    component: any
-    item: any
-  }
+  React.PropsWithChildren<
+    ResizableProps & {
+      component: any
+      item: any
+    }
+  >
 >
-
 const ResizableGrid = Grid as ResizableGridType
-
-export const [
-  useResizableGridContext,
-  UseResizableGridContextProvider,
-] = createCtx<useResizableGridType>()
-
+export const [useResizableGridContext, UseResizableGridContextProvider] =
+  createCtx<useResizableGridType>({
+    closed: false,
+  })
 type useResizableGridType = {
   length: number
   closed: boolean
@@ -35,48 +30,40 @@ type useResizableGridType = {
   dragging: boolean
   setDragging: React.Dispatch<React.SetStateAction<boolean>>
 }
-
 export const useResizableGrid = ({
-  startingLength,
-  collapsedLength,
-  autoCollapseLength,
+  startingLength = DEFAULT_STARTING_LENGTH,
+  collapsedLength = DEFAULT_COLLAPSED_LENGTH,
+  autoCollapseLength = DEFAULT_AUTO_COLLAPSE_LENGTH,
 }: {
-  startingLength: number
-  collapsedLength: number
-  autoCollapseLength: number
-}): useResizableGridType => {
+  startingLength?: number
+  collapsedLength?: number
+  autoCollapseLength?: number
+} = {}): useResizableGridType => {
   const [closed, setClosed] = React.useState(false)
   const [length, setLength] = React.useState(startingLength)
   const [lastLength, setLastLength] = React.useState(startingLength)
   const [dragging, setDragging] = React.useState(false)
-  React.useEffect(
-    () => {
-      if (!dragging) {
-        if (length < autoCollapseLength) {
-          setClosed(true)
-          setLength(collapsedLength)
-        } else {
-          setLastLength(length)
-          setClosed(false)
-        }
-      }
-
-      setTimeout(() => {
-        wreqr.vent.trigger('gl-updateSize')
-        wreqr.vent.trigger('resize')
-      }, 0)
-    },
-    [length, dragging]
-  )
-  React.useEffect(
-    () => {
-      if (closed && length !== collapsedLength) {
-        setLastLength(length)
+  React.useEffect(() => {
+    if (!dragging) {
+      if (length < autoCollapseLength) {
+        setClosed(true)
         setLength(collapsedLength)
+      } else {
+        setLastLength(length)
+        setClosed(false)
       }
-    },
-    [closed]
-  )
+    }
+    setTimeout(() => {
+      ;(wreqr as any).vent.trigger('gl-updateSize')
+      ;(wreqr as any).vent.trigger('resize')
+    }, 500)
+  }, [length, dragging])
+  React.useEffect(() => {
+    if (closed && length !== collapsedLength) {
+      setLastLength(length)
+      setLength(collapsedLength)
+    }
+  }, [closed])
   return {
     length,
     closed,
@@ -88,7 +75,6 @@ export const useResizableGrid = ({
     setDragging,
   }
 }
-
 export const CustomResizableGrid = styled(ResizableGrid)`
   .actions {
     opacity: 0;
@@ -109,7 +95,6 @@ export const CustomResizableGrid = styled(ResizableGrid)`
     margin-top: 10px;
   }
 `
-
 type SplitPaneProps = {
   firstStyle?: React.CSSProperties | undefined
   secondStyle?: React.CSSProperties | undefined
@@ -118,16 +103,17 @@ type SplitPaneProps = {
   collapsedLength?: number
   autoCollapseLength?: number
   startingLength?: number
+  controlled?: useResizableGridType // useful to have immediate access to closed without needing to split out components
 }
 
 export const SplitPane = ({
-  firstStyle,
   secondStyle,
   variant,
   children,
   collapsedLength = DEFAULT_COLLAPSED_LENGTH,
   autoCollapseLength = DEFAULT_AUTO_COLLAPSE_LENGTH,
   startingLength = DEFAULT_STARTING_LENGTH,
+  controlled,
 }: SplitPaneProps) => {
   const {
     length,
@@ -138,9 +124,14 @@ export const SplitPane = ({
     setLastLength,
     dragging,
     setDragging,
-  } = useResizableGrid({ collapsedLength, startingLength, autoCollapseLength })
+  } =
+    controlled ||
+    useResizableGrid({
+      startingLength,
+      collapsedLength,
+      autoCollapseLength,
+    })
   const [First, Second] = children
-
   return (
     <UseResizableGridContextProvider
       value={{
@@ -212,47 +203,33 @@ export const SplitPane = ({
             }
           })()}
           style={{
-            flexShrink: 1,
+            flexShrink: 0,
           }}
-          onResizeStop={e => {
+          onResizeStop={() => {
             setDragging(false)
           }}
           onResizeStart={() => {
             setDragging(true)
           }}
-          onResize={e => {
+          onResize={(e) => {
             switch (variant) {
               case 'horizontal':
                 setLength(
-                  e.clientX - e.target.parentElement.getBoundingClientRect().x
+                  (e as any).clientX -
+                    (e.target as any).parentElement.getBoundingClientRect().x
                 )
                 break
               case 'vertical':
                 setLength(
-                  e.clientY - e.target.parentElement.getBoundingClientRect().y
+                  (e as any).clientY -
+                    (e.target as any).parentElement.getBoundingClientRect().y
                 )
                 break
             }
           }}
-          className="z-10"
+          className="z-10 pr-2"
         >
-          <Grid
-            container
-            style={{ height: '100%', width: '100%' }}
-            wrap="nowrap"
-          >
-            <Paper
-              style={{
-                height: '100%',
-                width: '100%',
-                position: 'relative',
-                ...firstStyle,
-              }}
-              elevation={0}
-            >
-              {First}
-            </Paper>
-          </Grid>
+          {First}
         </CustomResizableGrid>
         <Grid
           item

@@ -27,4 +27,4 @@ regarding these configurations.
 
 .Disabling
 The editor only appears if it has attributes to show. If the upload editing capability is not
-desired, simply remove all entries from the attribute configuration and the editor will be hidden.
+desired, removing all entries from the attribute configuration hides the editor.

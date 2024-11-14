@@ -17,133 +17,53 @@ import * as React from 'react'
 
 import FilterComparator from './filter-comparator'
 import FilterInput from './filter-input'
-import { getAttributeType, getFilteredAttributeList } from './filterHelper'
-import Grid from '@material-ui/core/Grid'
-import Autocomplete from '@material-ui/lab/Autocomplete'
+import { Attribute } from './filterHelper'
+import Grid from '@mui/material/Grid'
 
 import { hot } from 'react-hot-loader'
-import TextField from '@material-ui/core/TextField'
 import { FilterClass } from '../../component/filter-builder/filter.structure'
+import { ValidationResult } from '../location/validators'
+import { FilterProperty } from './filter-property'
+import { DefaultComparatorProvider } from './filter-comparator/comparatorUtils'
+import { DefaultFilterInputProvider } from './filter-input/filter-input'
 
-type Props = {
+export type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
 }
 
-const Filter = ({ filter, setFilter }: Props) => {
-  const { property } = filter
-  const attributeList = getFilteredAttributeList()
-  const currentSelectedAttribute = attributeList.find(
-    attrInfo => attrInfo.value === property
-  )
-  console.log('filter rendering')
+export const FilterContext = React.createContext({
+  limitedAttributeList: undefined as undefined | Attribute[],
+})
+const Filter = ({ filter, setFilter, errorListener }: Props) => {
   return (
     <Grid container direction="column" alignItems="center" className="w-full">
       <Grid item className="w-full pb-2">
-        <Autocomplete
-          fullWidth
-          options={attributeList}
-          getOptionLabel={option => option.label}
-          getOptionSelected={(option, value) => option.value === value.value}
-          onChange={(e, newValue) => {
-            const newProperty = newValue.value as FilterClass['property']
-            setFilter({
-              ...filter,
-              property: newProperty,
-            })
-          }}
-          disableClearable
-          value={currentSelectedAttribute}
-          renderInput={params => <TextField {...params} variant="outlined" />}
+        <FilterProperty
+          filter={filter}
+          setFilter={setFilter}
+          errorListener={errorListener}
         />
       </Grid>
       <Grid item className="w-full pb-2">
-        <FilterComparator filter={filter} setFilter={setFilter} />
+        <DefaultComparatorProvider>
+          <FilterComparator filter={filter} setFilter={setFilter} />
+        </DefaultComparatorProvider>
       </Grid>
-      <Grid item className="w-full pb-2">
-        <FilterInput filter={filter} setFilter={setFilter} />
+      <Grid data-id="filter-input" item className="w-full">
+        <DefaultFilterInputProvider>
+          <FilterInput
+            filter={filter}
+            setFilter={setFilter}
+            errorListener={errorListener}
+          />
+        </DefaultFilterInputProvider>
       </Grid>
     </Grid>
   )
 }
-
-// class Filter extends React.Component<Props, {}> {
-//   constructor(props: Props) {
-//     super(props)
-//     const comparator = props.comparator || 'CONTAINS'
-//     let attribute = props.attribute || 'anyText'
-//     if (
-//       props.includedAttributes &&
-//       !props.includedAttributes.includes(attribute)
-//     ) {
-//       attribute = props.includedAttributes[0]
-//     }
-
-//     this.state = {
-//       comparator,
-//       attribute,
-//       value: props.value !== undefined ? props.value : '',
-//     }
-//     props.onChange(this.state)
-//   }
-
-//   render() {
-//     const attributeList = getFilteredAttributeList()
-//     const currentSelectedAttribute = attributeList.find(
-//       attrInfo => attrInfo.value === this.state.attribute
-//     )
-//     return (
-//       <Grid container direction="column" alignItems="center" className="w-full">
-//         <Grid item className="w-full pb-2">
-//           <Autocomplete
-//             fullWidth
-//             options={attributeList}
-//             getOptionLabel={option => option.label}
-//             getOptionSelected={option => option.value}
-//             onChange={(e, newValue) => {
-//               this.updateAttribute(newValue.value)
-//             }}
-//             disableClearable
-//             value={currentSelectedAttribute}
-//             renderInput={params => <TextField {...params} variant="outlined" />}
-//           />
-//         </Grid>
-//         <Grid item className="w-full pb-2">
-//           <FilterComparator
-//             comparator={this.state.comparator}
-//             attribute={this.state.attribute}
-//             onChange={comparator =>
-//               this.setState({ comparator }, this.onChange)
-//             }
-//           />
-//         </Grid>
-//         <Grid item className="w-full pb-2">
-//           <FilterInput
-//             attribute={this.state.attribute}
-//             comparator={this.state.comparator}
-//             onChange={value => {
-//               this.setState({ value }, () => this.props.onChange(this.state))
-//             }}
-//             value={this.state.value}
-//           />
-//         </Grid>
-//       </Grid>
-//     )
-//   }
-
-//   onChange = () => {
-//     this.props.onChange(this.state)
-//   }
-
-//   updateAttribute = attribute => {
-//     const prevType = getAttributeType(this.state.attribute)
-//     const newType = getAttributeType(attribute)
-//     let value = this.state.value
-//     if (prevType !== newType) {
-//       value = ''
-//     }
-//     this.setState({ attribute, value }, this.onChange)
-//   }
-// }
 
 export default hot(module)(Filter)

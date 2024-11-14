@@ -13,47 +13,38 @@
  *
  **/
 import * as React from 'react'
-import { MetacardInteraction } from './metacard-interactions'
-const router = require('../../component/router/router')
-import { Props } from '.'
+import { MetacardInteractionProps } from '.'
 import { hot } from 'react-hot-loader'
-const wreqr = require('wreqr')
+import Button from '@mui/material/Button'
+import { Link } from '../../component/link/link'
+import { Divider } from './metacard-interactions'
 
-const ExpandMetacard = (props: Props) => {
-  const isRouted = router && router.toJSON().name === 'openMetacard'
-
-  if (isRouted || props.model.length > 1) {
+const ExpandMetacard = (props: MetacardInteractionProps) => {
+  if (!props.model || props.model.length !== 1) {
     return null
   }
+  let id = props.model[0].plain.id
+
+  const to =
+    props.model[0].plain.metacardType === 'metacard.query'
+      ? `/search/${id}`
+      : `/metacards/${id}`
 
   return (
-    <MetacardInteraction
-      text="Expand Metacard View"
-      help={`Takes you to a
-              view that only focuses on this particular result. Bookmarking it will allow
-              you to come back to this result directly.`}
-      icon="fa fa-expand"
-      onClick={() => handleExpand(props)}
-    />
+    <>
+      <Button
+        fullWidth
+        component={Link}
+        to={to}
+        variant="text"
+        color="primary"
+        target="_blank"
+      >
+        Open Metacard View
+      </Button>
+      <Divider />
+    </>
   )
-}
-
-const handleExpand = (props: Props) => {
-  props.onClose()
-  let id = props.model
-    .first()
-    .get('metacard')
-    .get('properties')
-    .get('id')
-
-  id = encodeURIComponent(id)
-
-  wreqr.vent.trigger('router:navigate', {
-    fragment: 'metacards/' + id,
-    options: {
-      trigger: true,
-    },
-  })
 }
 
 export default hot(module)(ExpandMetacard)

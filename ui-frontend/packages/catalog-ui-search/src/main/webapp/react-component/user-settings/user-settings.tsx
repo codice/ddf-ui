@@ -16,37 +16,45 @@ import * as React from 'react'
 import { createGlobalStyle } from 'styled-components'
 import ThemeSettings from '../theme-settings'
 import AlertSettings from '../alert-settings'
+import AttributeSettings from '../attribute-settings'
 import SearchSettings from '../search-settings'
-const MapSettings = require('../../component/layers/layers.view.js')
 import TimeSettings from '../time-settings'
-
 import { hot } from 'react-hot-loader'
-import MarionetteRegionContainer from '../marionette-region-container'
-import Button from '@material-ui/core/Button'
-import ChevronRight from '@material-ui/icons/ChevronRight'
-
-import Grid from '@material-ui/core/Grid'
-import Typography from '@material-ui/core/Typography'
-import Divider from '@material-ui/core/Divider'
+import Button from '@mui/material/Button'
+import ChevronRight from '@mui/icons-material/ChevronRight'
+import Grid from '@mui/material/Grid'
+import Typography from '@mui/material/Typography'
+import Divider from '@mui/material/Divider'
 import { useLocation } from 'react-router-dom'
 import queryString from 'query-string'
 import { Link } from '../../component/link/link'
-
-type ComponentType = () => JSX.Element
+import { MapUserSettings } from '../map-user-settings/map-user-settings'
 
 const ThemeGlobalStyle = createGlobalStyle`
 .MuiBackdrop-root {
   opacity: 0 !important;
 }
 .MuiDrawer-root > .MuiPaper-root {
-  transform: scale(.8) translateY(40%) translateX(-10%) !important;
+  transform: scale(.8) translateY(10%) translateX(-10%) !important;
 }
 `
 
+type IndividualSettingsComponentType = ({
+  SettingsComponents,
+}: {
+  SettingsComponents: SettingsComponentType
+}) => JSX.Element
+
+export type SettingsComponentType = {
+  [key: string]: {
+    component: IndividualSettingsComponentType
+  }
+}
+
 export const BaseSettings = {
   Settings: {
-    component: () => {
-      return <SettingsScreen />
+    component: ({ SettingsComponents }) => {
+      return <SettingsScreen SettingsComponents={SettingsComponents} />
     },
   },
   Theme: {
@@ -66,7 +74,7 @@ export const BaseSettings = {
   },
   Map: {
     component: () => {
-      return <MarionetteRegionContainer view={MapSettings} />
+      return <MapUserSettings />
     },
   },
   'Search Options': {
@@ -74,27 +82,32 @@ export const BaseSettings = {
       return <SearchSettings />
     },
   },
+  'Attribute Options': {
+    component: () => {
+      return <AttributeSettings />
+    },
+  },
   Time: {
     component: () => {
       return <TimeSettings />
     },
   },
-} as {
-  [key: string]: {
-    component: ComponentType
-  }
-}
+} as SettingsComponentType
 
-const SettingsScreen = () => {
+const SettingsScreen = ({
+  SettingsComponents,
+}: {
+  SettingsComponents: SettingsComponentType
+}) => {
   const location = useLocation()
   const queryParams = queryString.parse(location.search)
   return (
     <Grid container direction="column" className="w-full h-full">
-      {Object.keys(BaseSettings)
-        .filter(name => name !== 'Settings')
-        .map(name => {
+      {Object.keys(SettingsComponents)
+        .filter((name) => name !== 'Settings')
+        .map((name) => {
           return (
-            <Grid item className="w-full">
+            <Grid key={name} item className="w-full">
               <Button
                 component={Link}
                 to={`${location.pathname}?${queryString.stringify({
@@ -112,9 +125,15 @@ const SettingsScreen = () => {
   )
 }
 
-const getName = (setting: ComponentType) => {
-  const matchedSetting = Object.entries(BaseSettings).find(entry => {
-    return entry[1].component === setting
+const getName = ({
+  CurrentSetting,
+  SettingsComponents,
+}: {
+  CurrentSetting: IndividualSettingsComponentType
+  SettingsComponents: SettingsComponentType
+}) => {
+  const matchedSetting = Object.entries(SettingsComponents).find((entry) => {
+    return entry[1].component === CurrentSetting
   })
   if (matchedSetting) {
     return matchedSetting[0]
@@ -122,23 +141,35 @@ const getName = (setting: ComponentType) => {
   return ''
 }
 
-const getComponent = (name: string) => {
-  const matchedSetting = Object.entries(BaseSettings).find(entry => {
+const getComponent = ({
+  name,
+  SettingsComponents,
+}: {
+  name: string
+  SettingsComponents: SettingsComponentType
+}) => {
+  const matchedSetting = Object.entries(SettingsComponents).find((entry) => {
     return entry[0] === name
   })
   if (matchedSetting) {
     return matchedSetting[1].component
   }
-  return BaseSettings.Settings.component
+  return SettingsComponents.Settings.component
 }
 
-const UserSettings = () => {
+type UserSettingsProps = {
+  SettingsComponents: SettingsComponentType
+}
+
+const UserSettings = ({ SettingsComponents }: UserSettingsProps) => {
   const location = useLocation()
   const queryParams = queryString.parse(location.search)
 
-  const CurrentSetting = getComponent((queryParams['global-settings'] ||
-    '') as string)
-  const name = getName(CurrentSetting)
+  const CurrentSetting = getComponent({
+    name: (queryParams['global-settings'] || '') as string,
+    SettingsComponents,
+  })
+  const name = getName({ CurrentSetting, SettingsComponents })
   return (
     <Grid container direction="column" className="w-full h-full" wrap="nowrap">
       <Grid item className="w-full p-3">
@@ -173,7 +204,7 @@ const UserSettings = () => {
         <Divider />
       </Grid>
       <Grid item className="w-full h-full p-3">
-        <CurrentSetting />
+        <CurrentSetting SettingsComponents={SettingsComponents} />
       </Grid>
     </Grid>
   )

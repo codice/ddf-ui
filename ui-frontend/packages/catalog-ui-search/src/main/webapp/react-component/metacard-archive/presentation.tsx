@@ -15,52 +15,88 @@
 
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
-import styled from 'styled-components'
-import LoadingCompanion from '../loading-companion'
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
+import ProgressButton from '../progress-button'
+import { useDialog } from '../../component/dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
+import useSnack from '../../component/hooks/useSnack'
+
 type Props = {
-  handleArchive: () => void
-  handleRestore: () => void
+  onArchiveConfirm: () => Promise<void>
+  onRestoreConfirm: () => Promise<void>
   isDeleted: boolean
   loading: boolean
 }
 
-const SubText = styled.span`
-  display: block;
-  font-size: ${props => props.theme.mediumFontSize};
-`
-
 const render = (props: Props) => {
-  const { handleArchive, handleRestore, isDeleted, loading } = props
+  const { onArchiveConfirm, onRestoreConfirm, isDeleted, loading } = props
+  const addSnack = useSnack()
+  const dialogContext = useDialog()
   return (
-    <LoadingCompanion loading={loading}>
-      {!isDeleted ? (
+    <>
+      <DialogTitle>{isDeleted ? 'Restore' : 'Delete'} Item(s)</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Are you sure you want to {isDeleted ? 'restore' : 'delete'}?
+        </DialogContentText>
+        <DialogContentText>
+          Doing so will {isDeleted ? 'include' : 'remove'} the item(s){' '}
+          {isDeleted ? 'in' : 'from'} future search results.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
         <Button
-          fullWidth
-          variant="contained"
-          color="secondary"
-          onClick={handleArchive}
-          data-help="This will remove the item(s) from standard search results.
-To restore archived items, you can click on 'File' in the toolbar,
-and then click 'Restore Archived Items'."
+          onClick={() => {
+            dialogContext.setProps({ open: false })
+          }}
         >
-          <div className="w-full">Archive item(s)</div>
-          <div>
-            WARNING: This will remove the item(s) from standard search results.
-          </div>
+          Cancel
         </Button>
-      ) : (
-        <Button
-          fullWidth
+        <ProgressButton
+          dataId="archive-confirm"
+          onClick={async () => {
+            try {
+              dialogContext.setProps({
+                onClose: (_event, reason) => {
+                  if (
+                    reason === 'backdropClick' ||
+                    reason === 'escapeKeyDown'
+                  ) {
+                    return
+                  }
+                  dialogContext.setProps({
+                    open: false,
+                  })
+                },
+              })
+              isDeleted ? await onRestoreConfirm() : await onArchiveConfirm()
+              addSnack(`Successfully ${isDeleted ? `restored` : `deleted`}`)
+            } catch (err) {
+              console.log('Error: ', err)
+              addSnack(
+                `An error occurred while trying to ${
+                  isDeleted ? 'restore' : 'delete'
+                }.`,
+                {
+                  status: 'error',
+                }
+              )
+            } finally {
+              if (!loading) dialogContext.setProps({ open: false })
+            }
+          }}
           variant="contained"
           color="primary"
-          onClick={handleRestore}
-          data-help="This will restore the item(s) to standard search results."
+          disabled={loading}
+          loading={loading}
         >
-          <div>Restore item(s)</div>
-        </Button>
-      )}
-    </LoadingCompanion>
+          {isDeleted ? 'Restore' : 'Delete'}
+        </ProgressButton>
+      </DialogActions>
+    </>
   )
 }
 

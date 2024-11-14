@@ -13,6 +13,6 @@
  *
  **/
 export const getResultSetCql = (ids: string[]) => {
-  const queries = ids.map(id => `(("id" ILIKE '${id}'))`)
-  return `(${queries.join(' OR ')})`
+  const queries = ids.map((id) => `(("id" = '${id}'))`)
+  return `((${queries.join(' OR ')}) AND ("metacard-tags" ILIKE '%'))`
 }

@@ -13,7 +13,6 @@
  */
 package org.codice.ddf.catalog.ui.metacard;
 
-import static ddf.catalog.util.impl.ResultIterable.resultIterable;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
@@ -30,21 +29,12 @@ import static spark.Spark.post;
 import static spark.Spark.put;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.common.io.ByteSource;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import ddf.catalog.CatalogFramework;
-import ddf.catalog.content.data.ContentItem;
-import ddf.catalog.content.data.impl.ContentItemImpl;
-import ddf.catalog.content.operation.impl.CreateStorageRequestImpl;
-import ddf.catalog.content.operation.impl.UpdateStorageRequestImpl;
-import ddf.catalog.core.versioning.DeletedMetacard;
 import ddf.catalog.core.versioning.MetacardVersion;
-import ddf.catalog.core.versioning.MetacardVersion.Action;
 import ddf.catalog.core.versioning.impl.MetacardVersionImpl;
 import ddf.catalog.data.Attribute;
 import ddf.catalog.data.AttributeDescriptor;
@@ -59,26 +49,15 @@ import ddf.catalog.data.impl.MetacardImpl;
 import ddf.catalog.data.impl.ResultImpl;
 import ddf.catalog.data.impl.types.SecurityAttributes;
 import ddf.catalog.data.types.Core;
-import ddf.catalog.federation.FederationException;
-import ddf.catalog.filter.FilterBuilder;
 import ddf.catalog.operation.DeleteResponse;
-import ddf.catalog.operation.QueryResponse;
-import ddf.catalog.operation.ResourceResponse;
 import ddf.catalog.operation.UpdateResponse;
 import ddf.catalog.operation.impl.CreateRequestImpl;
 import ddf.catalog.operation.impl.DeleteRequestImpl;
-import ddf.catalog.operation.impl.QueryImpl;
-import ddf.catalog.operation.impl.QueryRequestImpl;
-import ddf.catalog.operation.impl.ResourceRequestById;
 import ddf.catalog.operation.impl.SourceResponseImpl;
 import ddf.catalog.operation.impl.UpdateRequestImpl;
-import ddf.catalog.resource.ResourceNotFoundException;
-import ddf.catalog.resource.ResourceNotSupportedException;
 import ddf.catalog.source.IngestException;
 import ddf.catalog.source.SourceUnavailableException;
-import ddf.catalog.source.UnsupportedQueryException;
 import ddf.catalog.transform.QueryResponseTransformer;
-import ddf.catalog.util.impl.ResultIterable;
 import ddf.security.SubjectIdentity;
 import ddf.security.SubjectOperations;
 import ddf.security.audit.SecurityLogger;
@@ -88,7 +67,9 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.time.Instant;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -100,24 +81,20 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPOutputStream;
 import javax.ws.rs.NotFoundException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.ExecutionException;
 import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
 import org.codice.ddf.catalog.ui.enumeration.ExperimentalEnumerationExtractor;
 import org.codice.ddf.catalog.ui.metacard.associations.Associated;
 import org.codice.ddf.catalog.ui.metacard.edit.AttributeChange;
 import org.codice.ddf.catalog.ui.metacard.edit.MetacardChanges;
 import org.codice.ddf.catalog.ui.metacard.history.HistoryResponse;
+import org.codice.ddf.catalog.ui.metacard.history.MetacardHistoryService;
 import org.codice.ddf.catalog.ui.metacard.notes.NoteConstants;
 import org.codice.ddf.catalog.ui.metacard.notes.NoteMetacard;
 import org.codice.ddf.catalog.ui.metacard.notes.NoteUtil;
@@ -129,15 +106,11 @@ import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceMetacardImpl;
 import org.codice.ddf.catalog.ui.metacard.workspace.transformer.WorkspaceTransformer;
 import org.codice.ddf.catalog.ui.metacard.workspace.transformer.impl.AssociatedQueryMetacardsHandler;
 import org.codice.ddf.catalog.ui.query.monitor.api.WorkspaceService;
-import org.codice.ddf.catalog.ui.security.Constants;
-import org.codice.ddf.catalog.ui.security.accesscontrol.AccessControlSecurityConfiguration;
 import org.codice.ddf.catalog.ui.subscription.SubscriptionsPersistentStore;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
 import org.codice.ddf.security.Security;
 import org.codice.gsonsupport.GsonTypeAdapters.DateLongFormatTypeAdapter;
 import org.codice.gsonsupport.GsonTypeAdapters.LongDoubleTypeAdapter;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.servlet.SparkApplication;
@@ -147,12 +120,6 @@ public class MetacardApplication implements SparkApplication {
   private static final Logger LOGGER = LoggerFactory.getLogger(MetacardApplication.class);
 
   private static final String UPDATE_ERROR_MESSAGE = "Item is either restricted or not found.";
-
-  private static final Set<Action> CONTENT_ACTIONS =
-      ImmutableSet.of(Action.VERSIONED_CONTENT, Action.DELETED_CONTENT);
-
-  private static final Set<Action> DELETE_ACTIONS =
-      ImmutableSet.of(Action.DELETED, Action.DELETED_CONTENT);
 
   private static final String ERROR_RESPONSE_TYPE = "error";
 
@@ -168,8 +135,6 @@ public class MetacardApplication implements SparkApplication {
   private static final Type ASSOCIATED_EDGE_LIST_TYPE =
       new TypeToken<List<Associated.Edge>>() {}.getType();
 
-  private static int pageSize = 250;
-
   private static final Gson GSON =
       new GsonBuilder()
           .disableHtmlEscaping()
@@ -179,7 +144,6 @@ public class MetacardApplication implements SparkApplication {
           .create();
 
   private final CatalogFramework catalogFramework;
-  private final FilterBuilder filterBuilder;
   private final EndpointUtil util;
   private final Validator validator;
   private final WorkspaceTransformer transformer;
@@ -196,21 +160,18 @@ public class MetacardApplication implements SparkApplication {
 
   private final NoteUtil noteUtil;
 
-  private final AccessControlSecurityConfiguration accessControlSecurityConfiguration;
-
   private final WorkspaceService workspaceService;
 
   private final AssociatedQueryMetacardsHandler queryMetacardsHandler;
-
-  private final Security security;
 
   private SubjectOperations subjectOperations;
 
   private SecurityLogger securityLogger;
 
+  private MetacardHistoryService metacardHistoryService;
+
   public MetacardApplication(
       CatalogFramework catalogFramework,
-      FilterBuilder filterBuilder,
       EndpointUtil endpointUtil,
       Validator validator,
       WorkspaceTransformer transformer,
@@ -223,12 +184,11 @@ public class MetacardApplication implements SparkApplication {
       ConfigurationApplication configuration,
       NoteUtil noteUtil,
       SubjectIdentity subjectIdentity,
-      AccessControlSecurityConfiguration accessControlSecurityConfiguration,
       WorkspaceService workspaceService,
       AssociatedQueryMetacardsHandler queryMetacardsHandler,
-      Security security) {
+      Security security,
+      MetacardHistoryService metacardHistoryService) {
     this.catalogFramework = catalogFramework;
-    this.filterBuilder = filterBuilder;
     this.util = endpointUtil;
     this.validator = validator;
     this.transformer = transformer;
@@ -241,24 +201,20 @@ public class MetacardApplication implements SparkApplication {
     this.configuration = configuration;
     this.noteUtil = noteUtil;
     this.subjectIdentity = subjectIdentity;
-    this.accessControlSecurityConfiguration = accessControlSecurityConfiguration;
     this.workspaceService = workspaceService;
     this.queryMetacardsHandler = queryMetacardsHandler;
-    this.security = security;
+    this.metacardHistoryService = metacardHistoryService;
   }
 
   private String getSubjectEmail() {
     return subjectOperations.getEmailAddress(SecurityUtils.getSubject());
   }
 
-  private List<String> getSubjectRoles() {
-    return subjectOperations.getAttribute(SecurityUtils.getSubject(), Constants.ROLES_CLAIM_URI);
-  }
-
   private String getSubjectIdentifier() {
     return subjectIdentity.getUniqueIdentifier(SecurityUtils.getSubject());
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void init() {
     get("/metacardtype", (req, res) -> util.getJson(util.getMetacardTypeMap()));
@@ -267,7 +223,8 @@ public class MetacardApplication implements SparkApplication {
         "/metacard/:id",
         (req, res) -> {
           String id = req.params(":id");
-          return util.metacardToJson(id);
+          String storeId = req.queryParams("storeId");
+          return util.metacardToJson(id, storeId);
         });
 
     get(
@@ -283,7 +240,21 @@ public class MetacardApplication implements SparkApplication {
           String id = req.params(":id");
           return util.getJson(validator.getFullValidation(util.getMetacardById(id)));
         });
+    get(
+        "/metacard/:id/:storeId/attribute/validation",
+        (req, res) -> {
+          String id = req.params(":id");
+          String storeId = req.params(":storeId");
+          return util.getJson(validator.getValidation(util.getMetacardById(id, storeId)));
+        });
 
+    get(
+        "/metacard/:id/:storeId/validation",
+        (req, res) -> {
+          String id = req.params(":id");
+          String storeId = req.params(":storeId");
+          return util.getJson(validator.getFullValidation(util.getMetacardById(id, storeId)));
+        });
     post(
         "/prevalidate",
         APPLICATION_JSON,
@@ -306,9 +277,8 @@ public class MetacardApplication implements SparkApplication {
           List<String> ids = GSON.fromJson(util.safeGetBody(req), LIST_STRING);
           List<Metacard> metacards =
               util.getMetacardsWithTagById(ids, "*")
-                  .entrySet()
+                  .values()
                   .stream()
-                  .map(Map.Entry::getValue)
                   .map(Result::getMetacard)
                   .collect(Collectors.toList());
 
@@ -339,8 +309,14 @@ public class MetacardApplication implements SparkApplication {
         (req, res) -> {
           String body = util.safeGetBody(req);
           List<MetacardChanges> metacardChanges = GSON.fromJson(body, METACARD_CHANGES_LIST_TYPE);
-
-          UpdateResponse updateResponse = patchMetacards(metacardChanges, getSubjectIdentifier());
+          Set<String> storeIds =
+              Optional.ofNullable(req.queryParams("storeId"))
+                  .map(sourceListCSV -> sourceListCSV.split(","))
+                  .map(Arrays::asList)
+                  .map(list -> list.stream().map(String::trim).collect(Collectors.toSet()))
+                  .orElse(null);
+          UpdateResponse updateResponse =
+              patchMetacards(metacardChanges, getSubjectIdentifier(), storeIds);
           if (updateResponse.getProcessingErrors() != null
               && !updateResponse.getProcessingErrors().isEmpty()) {
             res.status(500);
@@ -360,10 +336,11 @@ public class MetacardApplication implements SparkApplication {
         });
 
     get(
-        "/history/:id",
+        "/history/:id/:storeId",
         (req, res) -> {
           String id = req.params(":id");
-          List<Result> queryResponse = getMetacardHistory(id);
+          String storeId = req.params(":storeId");
+          List<Result> queryResponse = metacardHistoryService.getMetacardHistory(id, storeId);
           if (queryResponse.isEmpty()) {
             res.status(204);
             return "[]";
@@ -384,43 +361,13 @@ public class MetacardApplication implements SparkApplication {
         });
 
     get(
-        "/history/revert/:id/:revertid",
+        "/history/revert/:id/:revertid/:storeId",
         (req, res) -> {
           String id = req.params(":id");
           String revertId = req.params(":revertid");
-
-          Metacard versionMetacard = util.getMetacardById(revertId);
-
-          List<Result> queryResponse = getMetacardHistory(id);
-          if (queryResponse == null || queryResponse.isEmpty()) {
-            throw new NotFoundException("Could not find metacard with id: " + id);
-          }
-
-          Optional<Metacard> contentVersion =
-              queryResponse
-                  .stream()
-                  .map(Result::getMetacard)
-                  .filter(
-                      mc ->
-                          getVersionedOnDate(mc).isAfter(getVersionedOnDate(versionMetacard))
-                              || getVersionedOnDate(mc).equals(getVersionedOnDate(versionMetacard)))
-                  .filter(mc -> CONTENT_ACTIONS.contains(Action.ofMetacard(mc)))
-                  .filter(mc -> mc.getResourceURI() != null)
-                  .filter(mc -> ContentItem.CONTENT_SCHEME.equals(mc.getResourceURI().getScheme()))
-                  .sorted(
-                      Comparator.comparing(
-                          (Metacard mc) ->
-                              util.parseToDate(
-                                  mc.getAttribute(MetacardVersion.VERSIONED_ON).getValue())))
-                  .findFirst();
-
-          if (!contentVersion.isPresent()) {
-            /* no content versions, just restore metacard */
-            revertMetacard(versionMetacard, id, false);
-          } else {
-            revertContentandMetacard(contentVersion.get(), versionMetacard, id);
-          }
-          return util.metacardToJson(MetacardVersionImpl.toMetacard(versionMetacard, types));
+          String storeId = req.params(":storeId");
+          Metacard versionMetacard = metacardHistoryService.revert(id, revertId, storeId);
+          return util.metacardToJson(MetacardVersionImpl.toMetacard(versionMetacard));
         });
 
     get(
@@ -510,9 +457,8 @@ public class MetacardApplication implements SparkApplication {
               isEmpty(email) ? Collections.emptySet() : subscriptions.getSubscriptions(email);
 
           return util.getMetacardsByTag(WorkspaceConstants.WORKSPACE_TAG)
-              .entrySet()
+              .values()
               .stream()
-              .map(Map.Entry::getValue)
               .map(Result::getMetacard)
               .map(
                   metacard -> {
@@ -644,24 +590,25 @@ public class MetacardApplication implements SparkApplication {
         util::getJson);
 
     get(
+        "/enumerations/deprecated/:type",
+        APPLICATION_JSON,
+        (req, res) -> util.getJson(enumExtractor.getDeprecatedEnumerations(req.params(":type"))));
+
+    get(
         "/enumerations/metacardtype/:type",
         APPLICATION_JSON,
-        (req, res) -> {
-          return util.getJson(enumExtractor.getEnumerations(req.params(":type")));
-        });
+        (req, res) -> util.getJson(enumExtractor.getEnumerations(req.params(":type"))));
 
     get(
         "/enumerations/attribute/:attribute",
         APPLICATION_JSON,
-        (req, res) -> {
-          return util.getJson(enumExtractor.getAttributeEnumerations(req.params(":attribute")));
-        });
+        (req, res) ->
+            util.getJson(enumExtractor.getAttributeEnumerations(req.params(":attribute"))));
 
     get(
         "/localcatalogid",
-        (req, res) -> {
-          return String.format("{\"%s\":\"%s\"}", "local-catalog-id", catalogFramework.getId());
-        });
+        (req, res) ->
+            String.format("{\"%s\":\"%s\"}", "local-catalog-id", catalogFramework.getId()));
 
     post(
         "/transform/csv",
@@ -699,32 +646,15 @@ public class MetacardApplication implements SparkApplication {
 
           BinaryContent content = csvQueryResponseTransformer.transform(response, arguments);
 
-          String acceptEncoding = req.headers("Accept-Encoding");
-          // Very naive way to handle accept encoding, does not respect full spec
-          boolean shouldGzip =
-              StringUtils.isNotBlank(acceptEncoding)
-                  && acceptEncoding.toLowerCase().contains("gzip");
-
           // Respond with content
           res.type("text/csv");
           String attachment =
               String.format("attachment;filename=export-%s.csv", Instant.now().toString());
           res.header("Content-Disposition", attachment);
-          if (shouldGzip) {
-            res.raw().addHeader("Content-Encoding", "gzip");
-          }
 
-          try ( //
-          OutputStream servletOutputStream = res.raw().getOutputStream();
+          try (OutputStream servletOutputStream = res.raw().getOutputStream();
               InputStream resultStream = content.getInputStream()) {
-            if (shouldGzip) {
-              try (OutputStream gzipServletOutputStream =
-                  new GZIPOutputStream(servletOutputStream)) {
-                IOUtils.copy(resultStream, gzipServletOutputStream);
-              }
-            } else {
-              IOUtils.copy(resultStream, servletOutputStream);
-            }
+            IOUtils.copy(resultStream, servletOutputStream);
           }
           return "";
         });
@@ -860,10 +790,7 @@ public class MetacardApplication implements SparkApplication {
           return util.getResponseWrapper(ERROR_RESPONSE_TYPE, "Could not delete note metacard!");
         });
 
-    after(
-        (req, res) -> {
-          res.type(APPLICATION_JSON);
-        });
+    after((req, res) -> res.type(APPLICATION_JSON));
 
     exception(
         IngestException.class,
@@ -924,148 +851,6 @@ public class MetacardApplication implements SparkApplication {
     return matchedHiddenFields;
   }
 
-  private void revertMetacard(Metacard versionMetacard, String id, boolean alreadyCreated)
-      throws SourceUnavailableException, IngestException, FederationException,
-          UnsupportedQueryException {
-    LOGGER.trace("Reverting metacard [{}] to version [{}]", id, versionMetacard.getId());
-    Metacard revertMetacard = MetacardVersionImpl.toMetacard(versionMetacard, types);
-    Action action =
-        Action.fromKey((String) versionMetacard.getAttribute(MetacardVersion.ACTION).getValue());
-
-    if (DELETE_ACTIONS.contains(action)) {
-      attemptDeleteDeletedMetacard(id);
-      if (!alreadyCreated) {
-        catalogFramework.create(new CreateRequestImpl(revertMetacard));
-      }
-    } else {
-      tryUpdate(
-          4,
-          () -> {
-            catalogFramework.update(new UpdateRequestImpl(id, revertMetacard));
-            return true;
-          });
-    }
-  }
-
-  private void revertContentandMetacard(Metacard latestContent, Metacard versionMetacard, String id)
-      throws SourceUnavailableException, IngestException, ResourceNotFoundException, IOException,
-          ResourceNotSupportedException, FederationException, UnsupportedQueryException {
-    LOGGER.trace(
-        "Reverting content and metacard for metacard [{}]. \nLatest content: [{}] \nVersion metacard: [{}]",
-        id,
-        latestContent.getId(),
-        versionMetacard.getId());
-    Map<String, Serializable> properties = new HashMap<>();
-    properties.put("no-default-tags", true);
-    ResourceResponse latestResource =
-        catalogFramework.getLocalResource(
-            new ResourceRequestById(latestContent.getId(), properties));
-
-    ContentItemImpl contentItem =
-        new ContentItemImpl(
-            id,
-            new ByteSourceWrapper(() -> latestResource.getResource().getInputStream()),
-            latestResource.getResource().getMimeTypeValue(),
-            latestResource.getResource().getName(),
-            latestResource.getResource().getSize(),
-            MetacardVersionImpl.toMetacard(versionMetacard, types));
-
-    // Try to delete the "deleted metacard" marker first.
-    boolean alreadyCreated = false;
-    Action action =
-        Action.fromKey((String) versionMetacard.getAttribute(MetacardVersion.ACTION).getValue());
-    if (DELETE_ACTIONS.contains(action)) {
-      alreadyCreated = true;
-      catalogFramework.create(
-          new CreateStorageRequestImpl(
-              Collections.singletonList(contentItem), id, new HashMap<>()));
-    } else {
-      // Currently we can't guarantee the metacard will exist yet because of the 1 second
-      // soft commit in solr. this busy wait loop should be fixed when alternate solution
-      // is found.
-      tryUpdate(
-          4,
-          () -> {
-            catalogFramework.update(
-                new UpdateStorageRequestImpl(
-                    Collections.singletonList(contentItem), id, new HashMap<>()));
-            return true;
-          });
-    }
-    LOGGER.trace("Successfully reverted metacard content for [{}]", id);
-    revertMetacard(versionMetacard, id, alreadyCreated);
-  }
-
-  private void trySleep(long millis) {
-    try {
-      Thread.sleep(millis);
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-    }
-  }
-
-  private void tryUpdate(int retries, Callable<Boolean> func)
-      throws IngestException, SourceUnavailableException {
-    if (retries <= 0) {
-      throw new IngestException("Could not update metacard!");
-    }
-    LOGGER.trace("Trying to update metacard.");
-    try {
-      func.call();
-      LOGGER.trace("Successfully updated metacard.");
-    } catch (Exception e) {
-      LOGGER.trace("Failed to update metacard");
-      trySleep(350);
-      tryUpdate(retries - 1, func);
-    }
-  }
-
-  private void attemptDeleteDeletedMetacard(String id)
-      throws UnsupportedQueryException, SourceUnavailableException, FederationException {
-    LOGGER.trace("Attemping to delete metacard [{}]", id);
-    Filter tags =
-        filterBuilder.attribute(Metacard.TAGS).is().like().text(DeletedMetacard.DELETED_TAG);
-    Filter deletion = filterBuilder.attribute(DeletedMetacard.DELETION_OF_ID).is().like().text(id);
-    Filter filter = filterBuilder.allOf(tags, deletion);
-
-    QueryResponse response = null;
-    try {
-      response = catalogFramework.query(new QueryRequestImpl(new QueryImpl(filter), false));
-    } catch (UnsupportedQueryException | SourceUnavailableException | FederationException e) {
-      LOGGER.debug("Could not find the deleted metacard marker to delete", e);
-    }
-
-    if (response == null || response.getResults() == null || response.getResults().size() != 1) {
-      LOGGER.debug("There should have been one deleted metacard marker");
-      return;
-    }
-
-    final DeleteRequestImpl deleteRequest =
-        new DeleteRequestImpl(response.getResults().get(0).getMetacard().getId());
-    deleteRequest.getProperties().put("operation.query-tags", ImmutableSet.of("*"));
-    try {
-      executeAsSystem(() -> catalogFramework.delete(deleteRequest));
-    } catch (ExecutionException e) {
-      LOGGER.debug("Could not delete the deleted metacard marker", e);
-    }
-    LOGGER.trace("Deleted delete marker metacard successfully");
-  }
-
-  /**
-   * Caution should be used with this, as it elevates the permissions to the System user.
-   *
-   * @param func What to execute as the System
-   * @param <T> Generic return type of func
-   * @return result of the callable func
-   */
-  private <T> T executeAsSystem(Callable<T> func) {
-    return security.runAsAdmin(() -> security.getSystemSubject().execute(func));
-  }
-
-  private Instant getVersionedOnDate(Metacard mc) {
-    return util.parseToDate(mc.getAttribute(MetacardVersion.VERSIONED_ON).getValue());
-  }
-
   private AttributeDescriptor getDescriptor(Metacard target, String attribute) {
     return Optional.ofNullable(target)
         .map(Metacard::getMetacardType)
@@ -1075,12 +860,13 @@ public class MetacardApplication implements SparkApplication {
   }
 
   protected UpdateResponse patchMetacards(
-      List<MetacardChanges> metacardChanges, String subjectIdentifer)
+      List<MetacardChanges> metacardChanges, String subjectIdentifer, Set<String> storeIds)
       throws SourceUnavailableException, IngestException {
     Set<String> changedIds =
         metacardChanges.stream().flatMap(mc -> mc.getIds().stream()).collect(Collectors.toSet());
 
-    Map<String, Result> results = util.getMetacardsWithTagById(changedIds, "*");
+    Map<String, Result> results =
+        util.getMetacardsWithTagByAttributes(Core.ID, changedIds, "*", storeIds);
 
     for (MetacardChanges changeset : metacardChanges) {
       for (AttributeChange attributeChange : changeset.getAttributes()) {
@@ -1117,8 +903,16 @@ public class MetacardApplication implements SparkApplication {
         results.values().stream().map(Result::getMetacard).collect(Collectors.toList());
     return catalogFramework.update(
         new UpdateRequestImpl(
-            changedMetacards.stream().map(Metacard::getId).toArray(String[]::new),
-            changedMetacards));
+            changedMetacards
+                .stream()
+                .map(
+                    metacard ->
+                        new AbstractMap.SimpleEntry<Serializable, Metacard>(
+                            metacard.getId(), metacard))
+                .collect(Collectors.toList()),
+            Core.ID,
+            new HashMap<>(),
+            storeIds));
   }
 
   private boolean isChangeTypeDate(AttributeChange attributeChange, Metacard result) {
@@ -1126,28 +920,6 @@ public class MetacardApplication implements SparkApplication {
         .getType()
         .getAttributeFormat()
         .equals(AttributeType.AttributeFormat.DATE);
-  }
-
-  private List<Result> getMetacardHistory(String id) {
-    Filter historyFilter =
-        filterBuilder.attribute(Metacard.TAGS).is().equalTo().text(MetacardVersion.VERSION_TAG);
-    Filter idFilter =
-        filterBuilder.attribute(MetacardVersion.VERSION_OF_ID).is().equalTo().text(id);
-
-    Filter filter = filterBuilder.allOf(historyFilter, idFilter);
-    ResultIterable resultIterable =
-        resultIterable(
-            catalogFramework,
-            new QueryRequestImpl(
-                new QueryImpl(
-                    filter,
-                    1,
-                    pageSize,
-                    SortBy.NATURAL_ORDER,
-                    false,
-                    TimeUnit.SECONDS.toMillis(10)),
-                false));
-    return Lists.newArrayList(resultIterable);
   }
 
   private Metacard updateMetacard(String id, Metacard metacard)
@@ -1176,18 +948,5 @@ public class MetacardApplication implements SparkApplication {
 
   public void setSecurityLogger(SecurityLogger securityLogger) {
     this.securityLogger = securityLogger;
-  }
-
-  private static class ByteSourceWrapper extends ByteSource {
-    Supplier<InputStream> supplier;
-
-    ByteSourceWrapper(Supplier<InputStream> supplier) {
-      this.supplier = supplier;
-    }
-
-    @Override
-    public InputStream openStream() throws IOException {
-      return supplier.get();
-    }
   }
 }

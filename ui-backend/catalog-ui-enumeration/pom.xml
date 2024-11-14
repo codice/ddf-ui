@@ -17,7 +17,7 @@
     <parent>
         <artifactId>backend</artifactId>
         <groupId>org.codice.ddf.search</groupId>
-        <version>3.7.0-SNAPSHOT</version>
+        <version>5.1.52-SNAPSHOT</version>
     </parent>
     <packaging>bundle</packaging>
 
@@ -43,12 +43,17 @@
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
+            <version>${commons-lang.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.jsr305</artifactId>
-            <version>3.0.2_1</version>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>${jsr305.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codice.ddf.search</groupId>
+            <artifactId>deprecatable-enumeration-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

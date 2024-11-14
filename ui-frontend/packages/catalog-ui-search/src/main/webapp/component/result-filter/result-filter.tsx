@@ -20,15 +20,13 @@ import {
   FilterBuilderClass,
   FilterClass,
 } from '../filter-builder/filter.structure'
-import Button from '@material-ui/core/Button'
-import Grid from '@material-ui/core/Grid'
-const user = require('../singletons/user-instance.js')
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
+import user from '../singletons/user-instance'
+import { useListenToEnterKeySubmitEvent } from '../custom-events/enter-key-submit'
 
 const getResultFilter = () => {
-  return user
-    .get('user')
-    .get('preferences')
-    .get('resultFilter')
+  return user.get('user').get('preferences').get('resultFilter')
 }
 
 const getBaseFilter = () => {
@@ -58,36 +56,30 @@ const getBaseFilter = () => {
 }
 
 const removeFilter = () => {
-  user
-    .get('user')
-    .get('preferences')
-    .set('resultFilter', undefined)
-  user
-    .get('user')
-    .get('preferences')
-    .savePreferences()
+  user.get('user').get('preferences').set('resultFilter', '')
+  user.get('user').get('preferences').savePreferences()
 }
 
 const saveFilter = ({ filter }: any) => {
-  user
-    .get('user')
-    .get('preferences')
-    .set('resultFilter', filter)
-  user
-    .get('user')
-    .get('preferences')
-    .savePreferences()
+  user.get('user').get('preferences').set('resultFilter', filter)
+  user.get('user').get('preferences').savePreferences()
 }
 
 const ResultFilter = ({ closeDropdown }: { closeDropdown: () => void }) => {
   const [filter, setFilter] = React.useState(getBaseFilter())
+  const { setElement } = useListenToEnterKeySubmitEvent({
+    callback: () => {
+      saveFilter({ filter })
+      closeDropdown()
+    },
+  })
   return (
     <>
-      <div className="min-w-120 max-w-120">
+      <div className="min-w-120 max-w-120" ref={setElement}>
         <FilterBranch root={true} filter={filter} setFilter={setFilter} />
       </div>
       <Grid
-        className="w-full"
+        className="w-full pt-2"
         container
         direction="row"
         alignItems="center"
@@ -95,6 +87,7 @@ const ResultFilter = ({ closeDropdown }: { closeDropdown: () => void }) => {
       >
         <Grid item className="w-full">
           <Button
+            data-id="remove-all-results-filters-button"
             fullWidth
             variant="text"
             color="secondary"
@@ -108,6 +101,7 @@ const ResultFilter = ({ closeDropdown }: { closeDropdown: () => void }) => {
         </Grid>
         <Grid item className="w-full">
           <Button
+            data-id="save-results-filters-button"
             fullWidth
             variant="contained"
             color="primary"

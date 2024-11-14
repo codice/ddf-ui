@@ -13,38 +13,38 @@
  *
  **/
 import * as React from 'react'
-const user = require('../../component/singletons/user-instance.js')
-const properties = require('../../js/properties.js')
+import user from '../../component/singletons/user-instance'
 import QuerySettings from '../../component/query-settings/query-settings'
-const QueryModel = require('../../js/model/Query.js')
+import { UserQuery } from '../../js/model/TypedQuery'
 import styled from 'styled-components'
 import { hot } from 'react-hot-loader'
-import Typography from '@material-ui/core/Typography'
-import Grid from '@material-ui/core/Grid'
-import Slider from '@material-ui/core/Slider'
-import Input from '@material-ui/core/Input'
+import Typography from '@mui/material/Typography'
+import Grid from '@mui/material/Grid'
+import Slider from '@mui/material/Slider'
+import Input from '@mui/material/Input'
 import Swath from '../../component/swath/swath'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
-import { MuiOutlinedInputBorderClasses } from '../../component/theme/theme'
-import Tooltip from '@material-ui/core/Tooltip'
-import Paper from '@material-ui/core/Paper'
-
+import {
+  MuiOutlinedInputBorderClasses,
+  Elevations,
+} from '../../component/theme/theme'
+import Tooltip from '@mui/material/Tooltip'
+import Paper from '@mui/material/Paper'
+import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 const Root = styled.div`
   overflow: hidden;
-  padding: ${props => props.theme.minimumSpacing};
+  padding: ${(props) => props.theme.minimumSpacing};
 `
-
 const getResultCount = () => {
-  return user
-    .get('user')
-    .get('preferences')
-    .get('resultCount') as number
+  return user.get('user').get('preferences').get('resultCount') as number
 }
-
 const SearchSettings = () => {
-  const [queryModel] = React.useState(new QueryModel.Model())
+  const { config } = useConfiguration()
+  const configuredMaxResultCount = config?.resultCount || 250
+  const [queryModel] = React.useState(
+    UserQuery() // we pass this to query settings
+  )
   const [resultCount, setResultCount] = React.useState(getResultCount())
-
   const { listenTo } = useBackbone()
   React.useEffect(() => {
     listenTo(user.get('user').get('preferences'), 'change:resultCount', () => {
@@ -54,25 +54,21 @@ const SearchSettings = () => {
   React.useEffect(() => {
     return () => {
       const { sorts, phonetics, spellcheck, sources } = queryModel.toJSON()
-      user
-        .getPreferences()
-        .get('querySettings')
-        .set({
-          sorts,
-          phonetics,
-          spellcheck,
-          sources,
-        })
+      user.getPreferences().get('querySettings').set({
+        sorts,
+        phonetics,
+        spellcheck,
+        sources,
+      })
       user.savePreferences()
     }
   }, [])
-
   return (
     <Root>
       <Tooltip
         placement="right"
         title={
-          <Paper elevation={23} className="p-3">
+          <Paper elevation={Elevations.overlays} className="p-3">
             <Typography variant="h6">For example:</Typography>
             <Typography>
               Searching 3 data sources with the current setting could return as
@@ -97,11 +93,11 @@ const SearchSettings = () => {
                 fullWidth
                 value={resultCount}
                 margin="dense"
-                onChange={e => {
+                onChange={(e) => {
                   user.getPreferences().set({
                     resultCount: Math.min(
                       parseInt(e.target.value),
-                      properties.resultCount
+                      configuredMaxResultCount
                     ),
                   })
                 }}
@@ -109,7 +105,7 @@ const SearchSettings = () => {
                   className: 'text-center',
                   step: 10,
                   min: 1,
-                  max: properties.resultCount,
+                  max: configuredMaxResultCount,
                   type: 'number',
                   'aria-labelledby': 'resultcount-slider',
                 }}
@@ -125,7 +121,7 @@ const SearchSettings = () => {
                 }}
                 aria-labelledby="input-slider"
                 min={1}
-                max={properties.resultCount}
+                max={configuredMaxResultCount}
                 step={10}
                 marks={[
                   {
@@ -133,8 +129,8 @@ const SearchSettings = () => {
                     label: '1',
                   },
                   {
-                    value: properties.resultCount,
-                    label: `${properties.resultCount}`,
+                    value: configuredMaxResultCount,
+                    label: `${configuredMaxResultCount}`,
                   },
                 ]}
               />
@@ -150,5 +146,4 @@ const SearchSettings = () => {
     </Root>
   )
 }
-
 export default hot(module)(SearchSettings)

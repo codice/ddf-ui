@@ -1,38 +1,45 @@
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
-import TextField from '@material-ui/core/TextField'
-import MenuItem from '@material-ui/core/MenuItem'
-import sourcesInstance from '../../component/singletons/sources-instance'
-import Typography from '@material-ui/core/Typography'
+import TextField from '@mui/material/TextField'
+import MenuItem from '@mui/material/MenuItem'
+import Typography from '@mui/material/Typography'
 import Swath from '../swath/swath'
-import Grid from '@material-ui/core/Grid'
-import HomeIcon from '@material-ui/icons/Home'
-import CloudIcon from '@material-ui/icons/Cloud'
-import WarningIcon from '@material-ui/icons/Warning'
-import Box from '@material-ui/core/Box'
-import CheckIcon from '@material-ui/icons/Check'
-
+import Grid from '@mui/material/Grid'
+import HomeIcon from '@mui/icons-material/Home'
+import CloudIcon from '@mui/icons-material/Cloud'
+import WarningIcon from '@mui/icons-material/Warning'
+import CheckBoxIcon from '@mui/icons-material/CheckBox'
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank'
+import Chip from '@mui/material/Chip'
+import _ from 'lodash'
+import { useSources } from '../../js/model/Startup/sources.hooks'
 type Props = {
   search: any
 }
 
-type SourcesType = ('remote' | 'local' | 'enterprise' | string)[]
+type SourcesType = ('all' | 'fast' | 'slow' | string)[]
 
-const getHumanReadableSourceName = (sourceId: string) => {
+export const getHumanReadableSourceName = (sourceId: string) => {
   if (sourceId === 'all') {
     return 'All'
   } else if (sourceId === 'remote') {
     return (
-      <>
-        Slow (offsite) <CloudIcon />
-      </>
+      <div className="flex flex-row items-center">
+        <div>Slow (offsite)</div>{' '}
+        <div>
+          <CloudIcon />
+        </div>
+      </div>
     )
   } else if (sourceId === 'local') {
     return (
-      <>
-        Fast (onsite) <HomeIcon />
-      </>
+      <div className="flex flex-row items-center">
+        <div>Fast (onsite)</div>{' '}
+        <div>
+          <HomeIcon />
+        </div>
+      </div>
     )
   }
   return sourceId
@@ -42,16 +49,14 @@ const getSourcesFromSearch = ({ search }: Props): SourcesType => {
   return search.get('sources') || []
 }
 
-const isHarvested = (sourceId: string) => {
-  return sourcesInstance.getHarvested().includes(sourceId)
-}
-
 const shouldBeSelected = ({
   srcId,
   sources,
+  isHarvested,
 }: {
   srcId: string
   sources: SourcesType
+  isHarvested: (source: string) => boolean
 }) => {
   if (sources.includes('all')) {
     return true
@@ -80,47 +85,35 @@ const shouldBeSelected = ({
  * If it includes 'remote', that that means everything remote.  All other values are singular selections of a source.
  */
 const SourceSelector = ({ search }: Props) => {
-  const inputRef = React.useRef()
-  const [federation, setFederation] = React.useState(search.get(
-    'federation'
-  ) as 'enterprise' | 'selected' | 'local')
-  const [availableSources, setAvailableSources] = React.useState(
-    sourcesInstance.toJSON()
-  )
+  const { sources: availableSources } = useSources()
   const [sources, setSources] = React.useState(getSourcesFromSearch({ search }))
-  const sourceIds = availableSources.map(source => source.id)
-  const defaultSources = search.get('sources') as string[]
-  const validDefaultSources =
-    defaultSources && defaultSources.filter(src => sourceIds.includes(src))
-  const hasValidDefaultSources =
-    validDefaultSources && validDefaultSources.length
   const { listenTo } = useBackbone()
   React.useEffect(() => {
-    listenTo(search, 'change:federation change:sources', () => {
-      setFederation(search.get('federation'))
+    listenTo(search, 'change:sources', () => {
       setSources(getSourcesFromSearch({ search }))
     })
-    listenTo(sourcesInstance, 'change', () => {
-      setAvailableSources(sourcesInstance.toJSON())
-    })
   }, [])
-  React.useEffect(
-    () => {
-      search.set('sources', sources)
-    },
-    [sources]
-  )
-  const availableLocalSources = availableSources.filter(availableSource => {
-    return sourcesInstance.getHarvested().includes(availableSource.id)
+  React.useEffect(() => {
+    search.set('sources', sources)
+  }, [sources])
+  const availableLocalSources = availableSources.filter((availableSource) => {
+    return availableSource.harvested
   })
-  const availableRemoteSources = availableSources.filter(availableSource => {
-    return !sourcesInstance.getHarvested().includes(availableSource.id)
+  const availableRemoteSources = availableSources.filter((availableSource) => {
+    return !availableSource.harvested
   })
+
+  const isHarvested = (source: string): boolean => {
+    return availableLocalSources.some((availableSource) => {
+      return availableSource.id === source
+    })
+  }
 
   return (
     <div>
       <Typography className="pb-2">Data Sources</Typography>
       <TextField
+        data-id="data-sources-select"
         fullWidth
         variant="outlined"
         select
@@ -128,22 +121,47 @@ const SourceSelector = ({ search }: Props) => {
           multiple: true,
           renderValue: (selected: string[]) => {
             return (
-              <>
-                {selected.map((src, index) => {
-                  return (
-                    <>
-                      {index > 0 ? ', ' : ''} {getHumanReadableSourceName(src)}
-                    </>
-                  )
-                })}
-              </>
+              <Grid container alignItems="center" direction="row">
+                {selected
+                  .sort((a, b) => {
+                    return a.toLowerCase().localeCompare(b.toLowerCase()) // case insensitive sort
+                  })
+                  .sort((a) => {
+                    if (a === 'local' || a === 'remote') {
+                      return -1 // move these subcategories upwards to front
+                    }
+                    return 0
+                  })
+                  .map((src) => {
+                    return (
+                      <Grid item key={src} className="mr-2">
+                        <Chip
+                          variant="outlined"
+                          color="default"
+                          className="cursor-pointer"
+                          label={getHumanReadableSourceName(src)}
+                        />
+                      </Grid>
+                    )
+                  })}
+              </Grid>
             )
           },
+          MenuProps: {},
         }}
         value={sources}
-        onChange={e => {
-          let newSources = (e.target.value as unknown) as string[]
+        onChange={(e) => {
+          // first of all I'm sorry, second of all, order matters in these cases.  Should really just make a state machine out of this.
+          // https://xstate.js.org/docs/  perhaps?
+          let newSources = e.target.value as unknown as string[]
           // these first three if only apply if the value didn't previous exist (user is going from not all to 'all', etc.)
+          const newLocalSources = newSources
+            .filter((src) => !['all', 'remote', 'local'].includes(src))
+            .filter((src) => isHarvested(src))
+          const newRemoteSources = newSources
+            .filter((src) => !['all', 'remote', 'local'].includes(src))
+            .filter((src) => !isHarvested(src))
+
           if (
             (newSources.includes('all') && !sources.includes('all')) ||
             (newSources.includes('local') &&
@@ -152,12 +170,51 @@ const SourceSelector = ({ search }: Props) => {
               !sources.includes('all'))
           ) {
             setSources(['all'])
+          } else if (sources.includes('all') && newSources.includes('local')) {
+            setSources(['remote'])
+          } else if (sources.includes('all') && newSources.includes('remote')) {
+            setSources(['local'])
+          } else if (sources.includes('all') && newLocalSources.length > 0) {
+            setSources(
+              _.difference(
+                availableLocalSources.map((src) => src.id).concat(['remote']),
+                newLocalSources
+              )
+            )
+          } else if (sources.includes('all') && newRemoteSources.length > 0) {
+            setSources(
+              _.difference(
+                availableRemoteSources.map((src) => src.id).concat(['local']),
+                newRemoteSources
+              )
+            )
+          } else if (sources.includes('local') && newLocalSources.length > 0) {
+            setSources(
+              _.difference(
+                sources
+                  .filter((src) => src !== 'local')
+                  .concat(availableLocalSources.map((src) => src.id)),
+                newLocalSources
+              )
+            )
+          } else if (
+            sources.includes('remote') &&
+            newRemoteSources.length > 0
+          ) {
+            setSources(
+              _.difference(
+                sources
+                  .filter((src) => src !== 'remote')
+                  .concat(availableRemoteSources.map((src) => src.id)),
+                newRemoteSources
+              )
+            )
           } else if (
             newSources.includes('local') &&
             !sources.includes('local')
           ) {
             setSources(
-              newSources.filter(val => !isHarvested(val) && val !== 'all')
+              newSources.filter((val) => !isHarvested(val) && val !== 'all')
             )
           } else if (
             newSources.includes('remote') &&
@@ -165,50 +222,96 @@ const SourceSelector = ({ search }: Props) => {
           ) {
             setSources(
               ['remote'].concat(
-                newSources.filter(val => isHarvested(val) && val !== 'all')
+                newSources.filter((val) => isHarvested(val) && val !== 'all')
               )
+            )
+          } else if (
+            newSources.length ===
+              availableLocalSources.length + availableRemoteSources.length ||
+            (newSources.includes('local') &&
+              newSources.length === availableRemoteSources.length + 1) ||
+            (newSources.includes('remote') &&
+              newSources.length === availableLocalSources.length + 1)
+          ) {
+            setSources(['all'])
+          } else if (
+            availableLocalSources.length > 0 &&
+            _.difference(
+              availableLocalSources.map((src) => src.id),
+              newSources.filter((src) => isHarvested(src))
+            ).length === 0
+          ) {
+            setSources(
+              ['local'].concat(newSources.filter((src) => !isHarvested(src)))
+            )
+          } else if (
+            availableRemoteSources.length > 0 &&
+            _.difference(
+              availableRemoteSources.map((src) => src.id),
+              newSources.filter((src) => !isHarvested(src))
+            ).length === 0
+          ) {
+            setSources(
+              ['remote'].concat(newSources.filter((src) => isHarvested(src)))
             )
           } else {
             // in these case, we now have to determine if we should remove all, remote, or local based on what is in newSources
             // no matter what all should be removed
-            newSources = newSources.filter(src => src !== 'all')
-            if (newSources.find(src => isHarvested(src))) {
-              newSources = newSources.filter(src => src !== 'local')
+            newSources = newSources.filter((src) => src !== 'all')
+            if (newSources.find((src) => isHarvested(src))) {
+              newSources = newSources.filter((src) => src !== 'local')
             }
-            if (newSources.find(src => !isHarvested(src))) {
-              newSources = newSources.filter(src => src !== 'remote')
+            if (
+              newSources.find((src) => src !== 'remote' && !isHarvested(src))
+            ) {
+              newSources = newSources.filter((src) => src !== 'remote')
             }
             setSources(newSources)
           }
         }}
+        size="small"
       >
-        <MenuItem value="all">
+        <MenuItem data-id="all-option" value="all">
           <Grid container alignItems="stretch" direction="row" wrap="nowrap">
             <Grid container direction="row" alignItems="center">
-              <Grid item>All</Grid>
-              <Grid item className="pl-2">
-                {shouldBeSelected({ srcId: 'all', sources }) ? (
-                  <CheckIcon />
-                ) : null}
+              <Grid item className="pr-2">
+                {shouldBeSelected({ srcId: 'all', sources, isHarvested }) ? (
+                  <CheckBoxIcon />
+                ) : (
+                  <CheckBoxOutlineBlankIcon />
+                )}
               </Grid>
+              <Grid item>All</Grid>
             </Grid>
           </Grid>
         </MenuItem>
         {availableLocalSources.length > 0 ? (
-          <MenuItem value="local">
-            <Grid container alignItems="stretch" direction="row" wrap="nowrap">
+          <MenuItem data-id="onsite-option" value="local">
+            <Grid
+              container
+              alignItems="stretch"
+              direction="row"
+              wrap="nowrap"
+              className="pl-3"
+            >
               <Grid item className="pr-2">
                 <Swath className="w-1 h-full" />
               </Grid>
               <Grid container direction="row" alignItems="center">
+                <Grid item className="pr-2">
+                  {shouldBeSelected({
+                    srcId: 'local',
+                    sources,
+                    isHarvested,
+                  }) ? (
+                    <CheckBoxIcon />
+                  ) : (
+                    <CheckBoxOutlineBlankIcon />
+                  )}
+                </Grid>
                 <Grid item>Fast (onsite)</Grid>
                 <Grid item className="pl-2">
                   <HomeIcon />
-                </Grid>
-                <Grid item className="pl-2">
-                  {shouldBeSelected({ srcId: 'local', sources }) ? (
-                    <CheckIcon />
-                  ) : null}
                 </Grid>
               </Grid>
             </Grid>
@@ -217,33 +320,46 @@ const SourceSelector = ({ search }: Props) => {
         {availableLocalSources.length > 0
           ? availableLocalSources.map((source: any) => {
               return (
-                <MenuItem key={source.id} value={source.id}>
+                <MenuItem
+                  data-id={`source-${source.id}-option`}
+                  key={source.id}
+                  value={source.id}
+                >
                   <Grid
                     container
                     alignItems="stretch"
                     direction="row"
                     wrap="nowrap"
+                    className="pl-6"
                   >
-                    <Grid item className="pl-2 pr-2">
+                    <Grid item className="pl-3 pr-3">
                       <Swath className="w-1 h-full" />
                     </Grid>
                     <Grid container direction="row" alignItems="center">
+                      <Grid item className="pr-2">
+                        {shouldBeSelected({
+                          srcId: source.id,
+                          sources,
+                          isHarvested,
+                        }) ? (
+                          <CheckBoxIcon />
+                        ) : (
+                          <CheckBoxOutlineBlankIcon />
+                        )}
+                      </Grid>
                       <Grid item>
-                        <Box
-                          color={
-                            source.available ? 'text.primary' : 'secondary.main'
+                        <div
+                          className={
+                            source.available
+                              ? 'Mui-text-text-primary'
+                              : 'Mui-text-warning'
                           }
                         >
                           {source.id}
-                        </Box>
+                        </div>
                       </Grid>
                       <Grid item className="pl-2">
                         {source.available ? null : <WarningIcon />}
-                      </Grid>
-                      <Grid item className="pl-2">
-                        {shouldBeSelected({ srcId: source.id, sources }) ? (
-                          <CheckIcon />
-                        ) : null}
                       </Grid>
                     </Grid>
                   </Grid>
@@ -251,21 +367,33 @@ const SourceSelector = ({ search }: Props) => {
               )
             })
           : null}
-        {availableRemoteSources.length > 0 ? (
-          <MenuItem value="remote">
-            <Grid container alignItems="stretch" direction="row" wrap="nowrap">
+        {availableRemoteSources.length > -1 ? (
+          <MenuItem data-id="offsite-option" value="remote">
+            <Grid
+              container
+              alignItems="stretch"
+              direction="row"
+              wrap="nowrap"
+              className="pl-3"
+            >
               <Grid item className="pr-2">
                 <Swath className="w-1 h-full" />
               </Grid>
               <Grid container direction="row" alignItems="center">
+                <Grid item className="pr-2">
+                  {shouldBeSelected({
+                    srcId: 'remote',
+                    sources,
+                    isHarvested,
+                  }) ? (
+                    <CheckBoxIcon />
+                  ) : (
+                    <CheckBoxOutlineBlankIcon />
+                  )}
+                </Grid>
                 <Grid item>Slow (offsite)</Grid>
                 <Grid item className="pl-2">
                   <CloudIcon />
-                </Grid>
-                <Grid item className="pl-2">
-                  {shouldBeSelected({ srcId: 'remote', sources }) ? (
-                    <CheckIcon />
-                  ) : null}
                 </Grid>
               </Grid>
             </Grid>
@@ -274,33 +402,46 @@ const SourceSelector = ({ search }: Props) => {
         {availableRemoteSources.length > 0
           ? availableRemoteSources.map((source: any) => {
               return (
-                <MenuItem key={source.id} value={source.id}>
+                <MenuItem
+                  data-id={`source-${source.id}-option`}
+                  key={source.id}
+                  value={source.id}
+                >
                   <Grid
                     container
                     alignItems="stretch"
                     direction="row"
                     wrap="nowrap"
+                    className="pl-6"
                   >
-                    <Grid item className="pl-2 pr-2">
+                    <Grid item className="pl-3 pr-3">
                       <Swath className="w-1 h-full" />
                     </Grid>
                     <Grid container direction="row" alignItems="center">
+                      <Grid item className="pr-2">
+                        {shouldBeSelected({
+                          srcId: source.id,
+                          sources,
+                          isHarvested,
+                        }) ? (
+                          <CheckBoxIcon />
+                        ) : (
+                          <CheckBoxOutlineBlankIcon />
+                        )}
+                      </Grid>
                       <Grid item>
-                        <Box
-                          color={
-                            source.available ? 'text.primary' : 'secondary.main'
+                        <div
+                          className={
+                            source.available
+                              ? 'Mui-text-text-primary'
+                              : 'Mui-text-warning'
                           }
                         >
                           {source.id}
-                        </Box>
+                        </div>
                       </Grid>
                       <Grid item className="pl-2">
                         {source.available ? null : <WarningIcon />}
-                      </Grid>
-                      <Grid item className="pl-2">
-                        {shouldBeSelected({ srcId: source.id, sources }) ? (
-                          <CheckIcon />
-                        ) : null}
                       </Grid>
                     </Grid>
                   </Grid>

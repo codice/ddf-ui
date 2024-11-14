@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import ddf.catalog.configuration.HistorianConfiguration;
 import ddf.platform.resource.bundle.locator.ResourceBundleLocator;
 import java.io.IOException;
@@ -32,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -112,8 +114,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   private Boolean onlineGazetteerEnabled = true;
 
-  private Boolean ingestEnabled = true;
-
   private Boolean cacheEnabled = true;
 
   private Boolean unknownErrorBoxEnabled = true;
@@ -124,15 +124,9 @@ public class ConfigurationApplication implements SparkApplication {
 
   private Boolean localCatalogEnabled = true;
 
-  private Boolean queryFeedbackEnabled = false;
-
   private Boolean relevanceScoresEnabled = false;
 
   private Boolean logoEnabled = false;
-
-  private Boolean historicalSearchEnabled = true;
-
-  private Boolean archiveSearchEnabled = true;
 
   private Boolean metacardPreviewEnabled = true;
 
@@ -144,13 +138,11 @@ public class ConfigurationApplication implements SparkApplication {
 
   private Boolean phoneticsEnabled = false;
 
+  private Boolean fuzzyResultsEnabled = true;
+
   private BrandingPlugin branding;
 
   private Integer timeout = 300000;
-
-  private Integer zoomPercentage = 100;
-
-  private String spacingMode = "comfortable";
 
   private HttpProxyService httpProxy;
 
@@ -160,6 +152,12 @@ public class ConfigurationApplication implements SparkApplication {
 
   private Integer exportResultLimit = 1000;
 
+  private List<String> requiredExportAttributes = Collections.emptyList();
+
+  private Set<String> exportMetacardFormatOptions = new HashSet<>();
+
+  private Set<String> exportMetacardsFormatOptions = new HashSet<>();
+
   private String projection = "EPSG:4326";
 
   private String bingKey = "";
@@ -168,15 +166,7 @@ public class ConfigurationApplication implements SparkApplication {
 
   private Map<String, Set<String>> typeNameMapping = new HashMap<>();
 
-  private Integer autoMergeTime = 1000;
-
   private String mapHome = "";
-
-  private String queryFeedbackEmailSubjectTemplate;
-
-  private String queryFeedbackEmailBodyTemplate;
-
-  private String queryFeedbackEmailDestination;
 
   private int maximumUploadSize = 1_048_576;
 
@@ -199,13 +189,13 @@ public class ConfigurationApplication implements SparkApplication {
 
   private List<String> attributeSuggestionList = Collections.emptyList();
 
-  private Map<String, String> attributeDescriptions = Collections.emptyMap();
+  private List<String> commonAttributes = Collections.emptyList();
 
-  private List<String> listTemplates = Collections.emptyList();
+  private Map<String, String> attributeDescriptions = Collections.emptyMap();
 
   private int sourcePollInterval = 60000;
 
-  private String uiName;
+  private String product;
 
   private Integer relevancePrecision = 5;
 
@@ -214,28 +204,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   private String theme;
 
-  private String customPrimaryColor;
-
-  private String customPositiveColor;
-
-  private String customNegativeColor;
-
-  private String customWarningColor;
-
-  private String customFavoriteColor;
-
-  private String customBackgroundNavigation;
-
-  private String customBackgroundAccentContent;
-
-  private String customBackgroundDropdown;
-
-  private String customBackgroundContent;
-
-  private String customBackgroundModal;
-
-  private String customBackgroundSlideout;
-
   private List<String> basicSearchTemporalSelectionDefault;
 
   private String basicSearchMatchType;
@@ -243,7 +211,7 @@ public class ConfigurationApplication implements SparkApplication {
   private List<String> defaultSources = Collections.emptyList();
   private List<String> defaultTableColumns = Collections.emptyList();
 
-  private String brandingName;
+  private String customBranding;
 
   private String helpUrl;
 
@@ -260,6 +228,8 @@ public class ConfigurationApplication implements SparkApplication {
   private Set<String> editorAttributes = Collections.emptySet();
   private Set<String> requiredAttributes = Collections.emptySet();
   private Map<String, Set<String>> attributeEnumMap = Collections.emptyMap();
+
+  private Map<String, Object> extra;
 
   private static final String INTRIGUE_BASE_NAME = "IntrigueBundle";
 
@@ -366,6 +336,23 @@ public class ConfigurationApplication implements SparkApplication {
     setAttributeEnumMap(mergedEntryMap);
   }
 
+  public void setExtra(String json) {
+    if (StringUtils.isBlank(json)) {
+      extra = Collections.emptyMap();
+      return;
+    }
+    try {
+      extra = GSON.fromJson(json, Map.class);
+    } catch (JsonSyntaxException e) {
+      LOGGER.warn("Extra is not valid map JSON: {}", json, e);
+      extra = Collections.emptyMap();
+    }
+  }
+
+  public Map<String, Object> getExtra() {
+    return extra;
+  }
+
   public ConfigurationApplication(UuidGenerator uuidGenerator, AttributeAliases attributeAliases) {
     this.uuidGenerator = uuidGenerator;
     this.attributeAliases = attributeAliases;
@@ -389,10 +376,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   public List<String> getHiddenAttributes() {
     return hiddenAttributes;
-  }
-
-  public List<String> getListTemplates() {
-    return listTemplates;
   }
 
   public List<String> getAttributeDescriptions() {
@@ -435,8 +418,8 @@ public class ConfigurationApplication implements SparkApplication {
     this.attributeSuggestionList = list;
   }
 
-  public void setListTemplates(List<String> listTemplates) {
-    this.listTemplates = listTemplates;
+  public void setCommonAttributes(List<String> commonAttributes) {
+    this.commonAttributes = commonAttributes;
   }
 
   public void setAttributeDescriptions(List<String> attributeDescriptions) {
@@ -527,70 +510,49 @@ public class ConfigurationApplication implements SparkApplication {
 
     config.put("branding", getProductName());
     config.put("version", getProductVersion());
-    config.put("showWelcome", signInEnabled);
-    config.put("showTask", taskEnabled);
     config.put("format", format);
     config.put("timeout", timeout);
     config.put("resultCount", resultCount);
     config.put("exportResultLimit", exportResultLimit);
+    config.put("requiredExportAttributes", requiredExportAttributes);
+    config.put("exportMetacardFormatOptions", exportMetacardFormatOptions);
+    config.put("exportMetacardsFormatOptions", exportMetacardsFormatOptions);
     config.put("typeNameMapping", typeNameMapping);
     config.put("terrainProvider", proxiedTerrainProvider);
     config.put("imageryProviders", getConfigImageryProviders());
     config.put("gazetteer", gazetteerEnabled);
     config.put("onlineGazetteer", onlineGazetteerEnabled);
-    config.put("showIngest", ingestEnabled);
     config.put("projection", projection);
     config.put("bingKey", bingKey);
     config.put("readOnly", readOnly);
     config.put("summaryShow", summaryShow);
     config.put("resultShow", resultShow);
     config.put("hiddenAttributes", hiddenAttributes);
-    config.put("listTemplates", listTemplates);
     config.put("attributeDescriptions", attributeDescriptions);
     config.put("attributeAliases", attributeAliases.getAliasMap());
     config.put("sourcePollInterval", sourcePollInterval);
     config.put("scheduleFrequencyList", scheduleFrequencyList);
     config.put("isCacheDisabled", !cacheEnabled);
     config.put("disableLocalCatalog", !localCatalogEnabled);
-    config.put("queryFeedbackEnabled", queryFeedbackEnabled);
-    config.put("queryFeedbackEmailSubjectTemplate", queryFeedbackEmailSubjectTemplate);
-    config.put("queryFeedbackEmailBodyTemplate", queryFeedbackEmailBodyTemplate);
-    config.put("queryFeedbackEmailDestination", queryFeedbackEmailDestination);
-    config.put("zoomPercentage", zoomPercentage);
-    config.put("spacingMode", spacingMode);
     config.put("defaultLayout", getDefaultLayoutConfig());
     config.put("visualizations", getVisualizationsConfig());
     config.put("isExperimental", experimentalEnabled);
-    config.put("autoMergeTime", autoMergeTime);
     config.put("webSocketsEnabled", webSocketsEnabled);
     config.put("iconConfig", iconConfig);
     config.put("mapHome", mapHome);
-    config.put("product", uiName);
+    config.put("product", product);
     config.put("showRelevanceScores", relevanceScoresEnabled);
     config.put("relevancePrecision", relevancePrecision);
     config.put("showLogo", logoEnabled);
-    config.put("isHistoricalSearchDisabled", !historicalSearchEnabled);
-    config.put("isArchiveSearchDisabled", !archiveSearchEnabled);
-    config.put("isMetacardPreviewDisabled", !metacardPreviewEnabled);
     config.put("isCustomTextNotationEnabled", customTextNotationEnabled);
     config.put("customTextNotationAttribute", customTextNotationAttribute);
     config.put("isSpellcheckEnabled", spellcheckEnabled);
     config.put("isPhoneticsEnabled", phoneticsEnabled);
+    config.put("isFuzzyResultsEnabled", fuzzyResultsEnabled);
     config.put(
         "isVersioningEnabled",
         historianConfiguration != null && historianConfiguration.isHistoryEnabled());
     config.put("theme", theme);
-    config.put("customPrimaryColor", customPrimaryColor);
-    config.put("customPositiveColor", customPositiveColor);
-    config.put("customNegativeColor", customNegativeColor);
-    config.put("customWarningColor", customWarningColor);
-    config.put("customFavoriteColor", customFavoriteColor);
-    config.put("customBackgroundNavigation", customBackgroundNavigation);
-    config.put("customBackgroundAccentContent", customBackgroundAccentContent);
-    config.put("customBackgroundDropdown", customBackgroundDropdown);
-    config.put("customBackgroundContent", customBackgroundContent);
-    config.put("customBackgroundModal", customBackgroundModal);
-    config.put("customBackgroundSlideout", customBackgroundSlideout);
     config.put("disableUnknownErrorBox", !unknownErrorBoxEnabled);
     config.put("editorAttributes", getEditorAttributes());
     config.put("requiredAttributes", getRequiredAttributes());
@@ -600,6 +562,7 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("useHyphensInUuid", uuidGenerator.useHyphens());
     config.put("i18n", i18n);
     config.put("attributeSuggestionList", attributeSuggestionList);
+    config.put("commonAttributes", commonAttributes);
     config.put("defaultSources", defaultSources);
     config.put("defaultTableColumns", defaultTableColumns);
     config.put("helpUrl", helpUrl);
@@ -608,7 +571,8 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("bottomLeftLogoSrc", bottomLeftLogoSrc);
     config.put("bottomLeftBackgroundSrc", bottomLeftBackgroundSrc);
     config.put("menuIconSrc", menuIconSrc);
-    config.put("brandingName", brandingName);
+    config.put("customBranding", customBranding);
+    config.put("extra", extra);
 
     return config;
   }
@@ -914,6 +878,34 @@ public class ConfigurationApplication implements SparkApplication {
     this.exportResultLimit = exportResultLimit;
   }
 
+  public List<String> getRequiredExportAttributes() {
+    return requiredExportAttributes;
+  }
+
+  public void setRequiredExportAttributes(List<String> requiredExportAttributes) {
+    this.requiredExportAttributes = requiredExportAttributes;
+  }
+
+  public Set<String> getExportMetacardFormatOptions() {
+    return exportMetacardFormatOptions;
+  }
+
+  public void setExportMetacardFormatOptions(String exportMetacardFormatOptions) {
+    this.exportMetacardFormatOptions =
+        Arrays.stream(exportMetacardFormatOptions.replaceAll("\\s+", "").split(","))
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+  }
+
+  public Set<String> getExportMetacardsFormatOptions() {
+    return exportMetacardsFormatOptions;
+  }
+
+  public void setExportMetacardsFormatOptions(String exportMetacardsFormatOptions) {
+    this.exportMetacardsFormatOptions =
+        Arrays.stream(exportMetacardsFormatOptions.replaceAll("\\s+", "").split(","))
+            .collect(Collectors.toCollection(LinkedHashSet::new));
+  }
+
   public Boolean getSignInEnabled() {
     return signInEnabled;
   }
@@ -944,14 +936,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setOnlineGazetteerEnabled(Boolean onlineGazetteerEnabled) {
     this.onlineGazetteerEnabled = onlineGazetteerEnabled;
-  }
-
-  public Boolean getIngestEnabled() {
-    return this.ingestEnabled;
-  }
-
-  public void setIngestEnabled(Boolean ingestEnabled) {
-    this.ingestEnabled = ingestEnabled;
   }
 
   public void setCacheEnabled(Boolean cacheEnabled) {
@@ -1028,40 +1012,12 @@ public class ConfigurationApplication implements SparkApplication {
     this.localCatalogEnabled = localCatalogEnabled;
   }
 
-  public void setQueryFeedbackEnabled(Boolean queryFeedbackEnabled) {
-    this.queryFeedbackEnabled = queryFeedbackEnabled;
+  public String getProduct() {
+    return product;
   }
 
-  public String getQueryFeedbackEmailSubjectTemplate() {
-    return queryFeedbackEmailSubjectTemplate;
-  }
-
-  public void setQueryFeedbackEmailSubjectTemplate(String queryFeedbackEmailSubjectTemplate) {
-    this.queryFeedbackEmailSubjectTemplate = queryFeedbackEmailSubjectTemplate;
-  }
-
-  public String getQueryFeedbackEmailBodyTemplate() {
-    return queryFeedbackEmailBodyTemplate;
-  }
-
-  public void setQueryFeedbackEmailBodyTemplate(String queryFeedbackEmailBodyTemplate) {
-    this.queryFeedbackEmailBodyTemplate = queryFeedbackEmailBodyTemplate;
-  }
-
-  public String getQueryFeedbackEmailDestination() {
-    return queryFeedbackEmailDestination;
-  }
-
-  public void setQueryFeedbackEmailDestination(String queryFeedbackEmailDestination) {
-    this.queryFeedbackEmailDestination = queryFeedbackEmailDestination;
-  }
-
-  public String getUiName() {
-    return uiName;
-  }
-
-  public void setUiName(String uiName) {
-    this.uiName = uiName;
+  public void setProduct(String product) {
+    this.product = product;
   }
 
   public Boolean getRelevanceScoresEnabled() {
@@ -1090,30 +1046,6 @@ public class ConfigurationApplication implements SparkApplication {
     this.logoEnabled = logoEnabled;
   }
 
-  public String getSpacingMode() {
-    return spacingMode;
-  }
-
-  public void setSpacingMode(String spacingMode) {
-    this.spacingMode = spacingMode;
-  }
-
-  public Integer getZoomPercentage() {
-    return zoomPercentage;
-  }
-
-  public void setZoomPercentage(Integer zoomPercentage) {
-    this.zoomPercentage = zoomPercentage;
-  }
-
-  public Integer getAutoMergeTime() {
-    return autoMergeTime;
-  }
-
-  public void setAutoMergeTime(Integer autoMergeTime) {
-    this.autoMergeTime = autoMergeTime;
-  }
-
   public Boolean getWebSocketsEnabled() {
     return webSocketsEnabled;
   }
@@ -1136,22 +1068,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setMapHome(String mapHome) {
     this.mapHome = mapHome;
-  }
-
-  public Boolean getHistoricalSearchEnabled() {
-    return historicalSearchEnabled;
-  }
-
-  public void setHistoricalSearchEnabled(Boolean historicalSearchEnabled) {
-    this.historicalSearchEnabled = historicalSearchEnabled;
-  }
-
-  public Boolean getArchiveSearchEnabled() {
-    return archiveSearchEnabled;
-  }
-
-  public void setArchiveSearchEnabled(Boolean archiveSearchEnabled) {
-    this.archiveSearchEnabled = archiveSearchEnabled;
   }
 
   public Boolean getMetacardPreviewEnabled() {
@@ -1194,6 +1110,14 @@ public class ConfigurationApplication implements SparkApplication {
     this.phoneticsEnabled = phoneticsEnabled;
   }
 
+  public Boolean getFuzzyResultsEnabled() {
+    return fuzzyResultsEnabled;
+  }
+
+  public void setFuzzyResultsEnabled(Boolean fuzzyResultsEnabled) {
+    this.fuzzyResultsEnabled = fuzzyResultsEnabled;
+  }
+
   public void setHistorianConfiguration(HistorianConfiguration historian) {
     if (historian != null) {
       LOGGER.trace("Historian provided, enabled = {}", historian.isHistoryEnabled());
@@ -1209,94 +1133,6 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setTheme(String theme) {
     this.theme = theme;
-  }
-
-  public String getCustomPrimaryColor() {
-    return customPrimaryColor;
-  }
-
-  public void setCustomPrimaryColor(String customPrimaryColor) {
-    this.customPrimaryColor = customPrimaryColor;
-  }
-
-  public String getCustomPositiveColor() {
-    return customPositiveColor;
-  }
-
-  public void setCustomPositiveColor(String customPositiveColor) {
-    this.customPositiveColor = customPositiveColor;
-  }
-
-  public String getCustomNegativeColor() {
-    return customNegativeColor;
-  }
-
-  public void setCustomNegativeColor(String customNegativeColor) {
-    this.customNegativeColor = customNegativeColor;
-  }
-
-  public String getCustomWarningColor() {
-    return customWarningColor;
-  }
-
-  public void setCustomWarningColor(String customWarningColor) {
-    this.customWarningColor = customWarningColor;
-  }
-
-  public String getCustomFavoriteColor() {
-    return customFavoriteColor;
-  }
-
-  public void setCustomFavoriteColor(String customFavoriteColor) {
-    this.customFavoriteColor = customFavoriteColor;
-  }
-
-  public String getCustomBackgroundNavigation() {
-    return customBackgroundNavigation;
-  }
-
-  public void setCustomBackgroundNavigation(String customBackgroundNavigation) {
-    this.customBackgroundNavigation = customBackgroundNavigation;
-  }
-
-  public String getCustomBackgroundAccentContent() {
-    return customBackgroundAccentContent;
-  }
-
-  public void setCustomBackgroundAccentContent(String customBackgroundAccentContent) {
-    this.customBackgroundAccentContent = customBackgroundAccentContent;
-  }
-
-  public String getCustomBackgroundDropdown() {
-    return customBackgroundDropdown;
-  }
-
-  public void setCustomBackgroundDropdown(String customBackgroundDropdown) {
-    this.customBackgroundDropdown = customBackgroundDropdown;
-  }
-
-  public String getCustomBackgroundContent() {
-    return customBackgroundContent;
-  }
-
-  public void setCustomBackgroundContent(String customBackgroundContent) {
-    this.customBackgroundContent = customBackgroundContent;
-  }
-
-  public String getCustomBackgroundModal() {
-    return customBackgroundModal;
-  }
-
-  public void setCustomBackgroundModal(String customBackgroundModal) {
-    this.customBackgroundModal = customBackgroundModal;
-  }
-
-  public String getCustomBackgroundSlideout() {
-    return customBackgroundSlideout;
-  }
-
-  public void setCustomBackgroundSlideout(String customBackgroundSlideout) {
-    this.customBackgroundSlideout = customBackgroundSlideout;
   }
 
   public void setBasicSearchTemporalSelectionDefault(
@@ -1381,12 +1217,12 @@ public class ConfigurationApplication implements SparkApplication {
     this.helpUrl = url;
   }
 
-  public String getBrandingName() {
-    return brandingName;
+  public String getCustomBranding() {
+    return customBranding;
   }
 
-  public void setBrandingName(String brandingName) {
-    this.brandingName = brandingName;
+  public void setCustomBranding(String customBranding) {
+    this.customBranding = customBranding;
   }
 
   public String getLandingPageBackgroundSrc() {

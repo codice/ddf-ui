@@ -2,17 +2,12 @@ import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import SortSelections from './sort-selections'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
-import Grid from '@material-ui/core/Grid'
-import Button from '@material-ui/core/Button'
-const user = require('../../component/singletons/user-instance.js')
+import Grid from '@mui/material/Grid'
+import Button from '@mui/material/Button'
+import user from '../../component/singletons/user-instance'
 
 const getResultSort = () => {
-  return (
-    user
-      .get('user')
-      .get('preferences')
-      .get('resultSort') || []
-  )
+  return user.get('user').get('preferences').get('resultSort') || []
 }
 
 type Props = {
@@ -32,14 +27,8 @@ const PermanentSearchSort = ({ closeDropdown }: Props) => {
     })
   }, [])
   const removeSort = () => {
-    user
-      .get('user')
-      .get('preferences')
-      .set('resultSort', undefined)
-    user
-      .get('user')
-      .get('preferences')
-      .savePreferences()
+    user.get('user').get('preferences').set('resultSort', '')
+    user.get('user').get('preferences').savePreferences()
     closeDropdown()
   }
   const saveSort = () => {
@@ -48,23 +37,17 @@ const PermanentSearchSort = ({ closeDropdown }: Props) => {
       .get('preferences')
       .set('resultSort', sorts.length === 0 ? undefined : sorts)
 
-    user
-      .get('user')
-      .get('preferences')
-      .savePreferences()
+    user.get('user').get('preferences').savePreferences()
     closeDropdown()
     // once again, something is weird with arrays and backbone?
-    user
-      .get('user')
-      .get('preferences')
-      .trigger('change:resultSort')
+    user.get('user').get('preferences').trigger('change:resultSort')
   }
   return (
-    <div className="min-w-120">
+    <div data-id="results-sort-container" className="min-w-120">
       <div className="pb-2">
         <SortSelections
           value={sorts}
-          onChange={newVal => {
+          onChange={(newVal) => {
             setSorts(newVal)
           }}
         />
@@ -73,6 +56,7 @@ const PermanentSearchSort = ({ closeDropdown }: Props) => {
         {hasSort ? (
           <Grid item className="w-full">
             <Button
+              data-id="remove-all-results-sorts-button"
               fullWidth
               onClick={removeSort}
               variant="text"
@@ -84,6 +68,7 @@ const PermanentSearchSort = ({ closeDropdown }: Props) => {
         ) : null}
         <Grid item className="w-full">
           <Button
+            data-id="save-results-sorts-button"
             fullWidth
             onClick={saveSort}
             variant="contained"

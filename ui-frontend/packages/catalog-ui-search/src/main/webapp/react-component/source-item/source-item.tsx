@@ -14,10 +14,7 @@
  **/
 import * as React from 'react'
 import styled from 'styled-components'
-import { Button, buttonTypeEnum } from '../presentation/button'
 import { hot } from 'react-hot-loader'
-const lightboxInstance = require('../../component/lightbox/lightbox.view.instance.js')
-const SourceAppView = require('../../component/source-app/source-app.view.js')
 
 type RootProps = {
   available: boolean
@@ -27,7 +24,7 @@ const Root = styled.div<RootProps>`
   width: 100%;
   height: auto;
   white-space: nowrap;
-  padding: ${props => props.theme.minimumSpacing};
+  padding: ${(props) => props.theme.minimumSpacing};
   overflow: hidden;
 
   .source-name,
@@ -35,25 +32,25 @@ const Root = styled.div<RootProps>`
     white-space: normal;
     display: inline-block;
     vertical-align: top;
-    font-size: ${props => props.theme.largeFontSize};
-    line-height: ${props => props.theme.minimumButtonSize};
+    font-size: ${(props) => props.theme.largeFontSize};
+    line-height: ${(props) => props.theme.minimumButtonSize};
   }
 
   .source-name {
-    padding: 0px ${props => props.theme.minimumSpacing};
-    max-width: calc(100% - ${props => props.theme.minimumButtonSize});
+    padding: 0px ${(props) => props.theme.minimumSpacing};
+    max-width: calc(100% - ${(props) => props.theme.minimumButtonSize});
     word-break: break-all;
   }
 
   .source-actions {
     display: block;
-    padding-left: calc(2 * ${props => props.theme.minimumButtonSize});
+    padding-left: calc(2 * ${(props) => props.theme.minimumButtonSize});
   }
 
   .source-action > button {
     width: 100%;
     text-align: left;
-    padding: 0px ${props => props.theme.minimumSpacing};
+    padding: 0px ${(props) => props.theme.minimumSpacing};
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -73,13 +70,13 @@ const Root = styled.div<RootProps>`
   }
 
   .is-available {
-    display: ${props => (props.available ? 'inline' : 'none')};
-    color: ${props => props.theme.positiveColor};
+    display: ${(props) => (props.available ? 'inline' : 'none')};
+    color: ${(props) => props.theme.positiveColor};
   }
 
   .is-not-available {
-    display: ${props => (props.available ? 'none' : 'inline')};
-    color: ${props => props.theme.warningColor};
+    display: ${(props) => (props.available ? 'none' : 'inline')};
+    color: ${(props) => props.theme.warningColor};
   }
 `
 
@@ -93,75 +90,18 @@ type SourceAction = {
 type Props = {
   sourceActions?: SourceAction[]
   id: string
-  refreshSources: () => void
 } & RootProps
 
-const windowWidth = '520'
-const windowHeight = '570'
-
-export default hot(module)(
-  ({ id, sourceActions, available, refreshSources }: Props) => {
-    return (
-      <Root available={available}>
-        <div className="source-available">
-          <span className="is-available fa fa-check" />
-          <span className="is-not-available fa fa-bolt" />
-        </div>
-        <div className="source-name" title={id}>
-          {id}
-        </div>
-        <div className="source-actions">
-          {sourceActions !== undefined
-            ? sourceActions.map(sourceAction => {
-                return (
-                  <div className="source-action" key={sourceAction.url}>
-                    <Button
-                      icon="fa fa-external-link"
-                      text={sourceAction.title}
-                      buttonType={buttonTypeEnum.neutral}
-                      fadeUntilHover
-                      title={`${sourceAction.title}: ${
-                        sourceAction.description
-                      }`}
-                      data-help={`${sourceAction.title}: ${
-                        sourceAction.description
-                      }`}
-                      onClick={() => {
-                        if (
-                          sourceAction.id.startsWith(
-                            'catalog.data.source.window'
-                          )
-                        ) {
-                          const windowFeatures = `location=yes,height=${windowHeight},width=${windowWidth},scrollbars=yes,status=yes`
-                          const popup = window.open(
-                            sourceAction.url,
-                            '_blank',
-                            windowFeatures
-                          )
-                          if (popup) {
-                            popup.addEventListener('beforeunload', () =>
-                              refreshSources()
-                            )
-                          }
-                        } else if (
-                          sourceAction.id.startsWith(
-                            'catalog.data.source.iframe'
-                          )
-                        ) {
-                          lightboxInstance.model.updateTitle(sourceAction.title)
-                          lightboxInstance.model.open()
-                          lightboxInstance.showContent(
-                            new SourceAppView({ url: sourceAction.url })
-                          )
-                        }
-                      }}
-                    />
-                  </div>
-                )
-              })
-            : null}
-        </div>
-      </Root>
-    )
-  }
-)
+export default hot(module)(({ id, available }: Props) => {
+  return (
+    <Root available={available}>
+      <div className="source-available">
+        <span className="is-available fa fa-check" />
+        <span className="is-not-available fa fa-bolt" />
+      </div>
+      <div className="source-name" title={id}>
+        {id}
+      </div>
+    </Root>
+  )
+})

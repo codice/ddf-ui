@@ -19,28 +19,28 @@ import ThemeContainer from '../../react-component/theme'
 import { IntlProvider } from 'react-intl'
 import { Provider as ThemeProvider } from '../../component/theme/theme'
 import { SnackProvider } from '../../component/snack/snack.provider'
-import { DialogProvider } from '@connexta/atlas/atoms/dialog'
+import { DialogProvider } from '../../component/dialog'
 import { HashRouter as Router } from 'react-router-dom'
-
-const properties = require('properties')
+import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 
 export type Props = {
   children: React.ReactNode
 }
 
 const ProviderContainer = (props: Props) => {
+  const { getI18n } = useConfiguration()
   return (
     <React.Fragment>
       <ThemeContainer>
-        <IntlProvider locale={navigator.language} messages={properties.i18n}>
+        <IntlProvider locale={navigator.language} messages={getI18n()}>
           <ThemeProvider>
-            <SnackProvider>
-              <DialogProvider>
-                <Router>
+            <Router>
+              <SnackProvider>
+                <DialogProvider>
                   <>{props.children}</>
-                </Router>
-              </DialogProvider>
-            </SnackProvider>
+                </DialogProvider>
+              </SnackProvider>
+            </Router>
           </ThemeProvider>
         </IntlProvider>
       </ThemeContainer>

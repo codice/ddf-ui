@@ -22,16 +22,17 @@ const Interactions = styled.div`
 `
 
 const InteractionsButton = styled.button`
-  ${props => IsButton(props.theme)};
-  ${props => HighlightBehavior({ initialOpacity: props.theme.minimumOpacity })};
-  width: ${props => props.theme.minimumButtonSize};
-  height: ${props => props.theme.minimumButtonSize};
+  ${(props) => IsButton(props.theme)};
+  ${(props) =>
+    HighlightBehavior({ initialOpacity: props.theme.minimumOpacity })};
+  width: ${(props) => props.theme.minimumButtonSize};
+  height: ${(props) => props.theme.minimumButtonSize};
   vertical-align: top;
 `
 
 const Warning = styled(InteractionsButton)`
   display: inline-block;
-  color: ${props => props.theme.warningColor};
+  color: ${(props) => props.theme.warningColor};
   cursor: default;
 `
 /* stylelint-disable block-no-empty */
@@ -62,13 +63,18 @@ const render = (props: PresentationProps) => {
   return (
     <Interactions>
       {warning !== '' && (
-        <Warning data-help="View map layer warnings." title={warning}>
+        <Warning
+          data-id="view-warnings-button"
+          data-help="View map layer warnings."
+          title={warning}
+        >
           <span className=" fa fa-warning" />
         </Warning>
       )}
 
       {isRemovable && (
         <Remove
+          data-id="remove-layer-button"
           data-help="Remove map layer from user preferences."
           title="Remove map layer from user preferences."
           onClick={onRemove}
@@ -78,6 +84,7 @@ const render = (props: PresentationProps) => {
       )}
 
       <Show
+        data-id="visibility-button"
         data-help="Toggle layer visibility."
         title="Toggle layer visibility."
         onClick={updateLayerShow}

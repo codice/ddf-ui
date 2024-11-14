@@ -5,6 +5,7 @@ import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResult
 import {
   useStatusOfLazyResults,
   useSelectedResults,
+  useFilterTreeOfLazyResults,
 } from '../../js/model/LazyQueryResult/hooks'
 
 type useLazyResultsProps = {
@@ -51,11 +52,23 @@ export const useLazyResultsStatusFromSelectionInterface = ({
   return status
 }
 
+export const useLazyResultsFilterTreeFromSelectionInterface = ({
+  selectionInterface,
+}: useLazyResultsProps) => {
+  const lazyResults = useLazyResultsFromSelectionInterface({
+    selectionInterface,
+  })
+  const filterTree = useFilterTreeOfLazyResults({ lazyResults })
+
+  return filterTree
+}
+
 export const useLazyResultsFromSelectionInterface = ({
   selectionInterface,
 }: useLazyResultsProps) => {
   const { listenToOnce, stopListening } = useBackbone()
-  //@ts-ignore
+
+  // @ts-expect-error ts-migrate(6133) FIXME: 'forceRender' is declared but its value is never r... Remove this comment to see the full error message
   const [forceRender, setForceRender] = React.useState(Math.random())
   const [lazyResults, setLazyResults] = React.useState(
     getLazyResultsFromSelectionInterface({
@@ -63,39 +76,31 @@ export const useLazyResultsFromSelectionInterface = ({
     })
   )
 
-  React.useEffect(
-    () => {
-      const unsubscribe = lazyResults.subscribeTo({
-        subscribableThing: 'filteredResults',
-        callback: () => {
-          setForceRender(Math.random())
-        },
-      })
-      return () => {
-        unsubscribe()
+  React.useEffect(() => {
+    const unsubscribe = lazyResults.subscribeTo({
+      subscribableThing: 'filteredResults',
+      callback: () => {
+        setForceRender(Math.random())
+      },
+    })
+    return () => {
+      unsubscribe()
+    }
+  }, [lazyResults])
+  React.useEffect(() => {
+    setLazyResults(getLazyResultsFromSelectionInterface({ selectionInterface }))
+    listenToOnce(selectionInterface, 'change:currentQuery>result', () => {
+      const currentQuery = selectionInterface.get('currentQuery')
+      const result = currentQuery.get('result')
+      if (result) {
+        setLazyResults(
+          getLazyResultsFromSelectionInterface({ selectionInterface })
+        )
       }
-    },
-    [lazyResults]
-  )
-  React.useEffect(
-    () => {
-      setLazyResults(
-        getLazyResultsFromSelectionInterface({ selectionInterface })
-      )
-      listenToOnce(selectionInterface, 'change:currentQuery>result', () => {
-        const currentQuery = selectionInterface.get('currentQuery')
-        const result = currentQuery.get('result')
-        if (result) {
-          setLazyResults(
-            getLazyResultsFromSelectionInterface({ selectionInterface })
-          )
-        }
-      })
-      return () => {
-        stopListening(selectionInterface)
-      }
-    },
-    [selectionInterface]
-  )
+    })
+    return () => {
+      stopListening(selectionInterface)
+    }
+  }, [selectionInterface])
   return lazyResults
 }

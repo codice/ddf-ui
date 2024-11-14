@@ -32,6 +32,8 @@ Services (OSGi) that catalog-ui-search CONSUMES from DDF
     <reference id="attributeRegistry" interface="ddf.catalog.data.AttributeRegistry"/>
 
     <reference id="persistentStore" interface="org.codice.ddf.persistence.PersistentStore"/>
+    <reference id="preferences" interface="org.codice.ddf.preferences.Preferences"/>
+
     <reference id="subjectIdentity" interface="ddf.security.SubjectIdentity"/>
 
     <reference id="uuidGenerator"
@@ -142,6 +144,10 @@ Services (OSGi) that catalog-ui-search CONSUMES from DDF
 
     <reference id="csvQueryResponseTransformer"
                interface="ddf.catalog.transform.QueryResponseTransformer" filter="(id=csv)"/>
+
+    <reference-list id="deprecatableEnumerations"
+                    interface="org.codice.ddf.catalog.ui.enumeration.api.DeprecatableEnumeration"
+                    availability="optional"/>
 
     <!--
     =============================================================

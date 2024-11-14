@@ -1,41 +1,67 @@
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
+import Paper from '@mui/material/Paper'
+import Popover, { PopoverActions } from '@mui/material/Popover'
+import StorageIcon from '@mui/icons-material/Storage'
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
-import StorageIcon from '@material-ui/icons/Storage'
-import Grid from '@material-ui/core/Grid'
-import { Link } from '../../component/link/link'
-import Button from '@material-ui/core/Button'
-import Box from '@material-ui/core/Box'
-import Tooltip from '@material-ui/core/Tooltip'
-import SourcesPage from '../../react-component/sources'
-import Paper from '@material-ui/core/Paper'
+import ExtensionPoints from '../../extension-points'
+import SourcesPage from '../../react-component/sources/presentation'
+import { Elevations } from '../theme/theme'
+import { useMenuState } from '../menu-state/menu-state'
 
 const SourcesInfo = () => {
+  const { anchorRef, handleClick, handleClose, open } = useMenuState()
+  const popoverActions = React.useRef<PopoverActions>(null)
+
+  const onChange = () => {
+    if (popoverActions.current) {
+      popoverActions.current.updatePosition()
+    }
+  }
+
   return (
-    <Tooltip
-      title={
-        <Paper elevation={23} className="min-w-120">
-          <SourcesPage />
-        </Paper>
-      }
-    >
+    <React.Fragment>
       <Button
+        component="div"
+        data-id="sources-button"
         fullWidth
-        component={Link}
-        to="/sources"
         variant="text"
-        color="inherit"
-        target="_blank"
+        color="primary"
+        onClick={handleClick}
+        ref={anchorRef}
       >
         <Grid container direction="row" alignItems="center" wrap="nowrap">
-          <Grid item>
-            <StorageIcon />
+          <Grid item className="pr-1">
+            <StorageIcon className="Mui-text-text-primary" />
           </Grid>
-          <Grid item>
-            <Box color="primary.main">Sources</Box>
-          </Grid>
+          <Grid item>Sources</Grid>
         </Grid>
       </Button>
-    </Tooltip>
+      <Popover
+        action={popoverActions}
+        open={open}
+        anchorEl={anchorRef.current}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        className="max-h-screen-1/2"
+      >
+        <Paper elevation={Elevations.overlays} className="min-w-120">
+          {ExtensionPoints.customSourcesPage ? (
+            <ExtensionPoints.customSourcesPage onChange={onChange} />
+          ) : (
+            <SourcesPage />
+          )}
+        </Paper>
+      </Popover>
+    </React.Fragment>
   )
 }
 

@@ -46,5 +46,5 @@ Schedule a standing search.
 
 [NOTE]
 ====
-Notifications for the search will persist until the user logs out or refreshes the page.
+Notifications for the search persist until the user logs out or refreshes the page.
 ====

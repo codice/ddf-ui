@@ -5,21 +5,26 @@
     <parent>
         <groupId>org.codice.ddf.search</groupId>
         <artifactId>catalog-ui</artifactId>
-        <version>3.7.0-SNAPSHOT</version>
+        <version>5.1.52-SNAPSHOT</version>
     </parent>
 
     <groupId>org.codice.ddf.search</groupId>
     <artifactId>backend</artifactId>
-    <version>3.7.0-SNAPSHOT</version>
+    <version>5.1.52-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
     <modules>
+        <module>boolean-search</module>
         <module>catalog-ui-search-api</module>
         <module>catalog-ui-enumeration</module>
         <module>catalog-ui-search</module>
         <module>catalog-ui-oauth</module>
         <module>catalog-ui-splitter</module>
+        <module>catalog-plugin-highlight</module>
         <module>intrigue-ui-app</module>
+        <module>audit</module>
+        <module>javalin-utils</module>
+        <module>deprecatable-enumeration-api</module>
     </modules>
 </project>

@@ -13,71 +13,99 @@
  *
  **/
 import * as React from 'react'
-import styled from 'styled-components'
+import { useState, useEffect } from 'react'
 import MapSettingsPresentation from './presentation'
-import Dropdown from '../presentation/dropdown'
 import { hot } from 'react-hot-loader'
 import withListenTo, {
   WithBackboneProps,
 } from '../../react-component/backbone-container'
-const user = require('../../component/singletons/user-instance.js')
+import Paper from '@mui/material/Paper'
+import { useMenuState } from '../../component/menu-state/menu-state'
+import Button from '@mui/material/Button'
+import Popover from '@mui/material/Popover'
+import user from '../../component/singletons/user-instance'
+import SettingsIcon from '@mui/icons-material/Settings'
+import { Elevations } from '../../component/theme/theme'
+import { getUserCoordinateFormat } from '../../component/visualization/settings-helpers'
+import { LayoutContext } from '../../component/golden-layout/visual-settings.provider'
 
-const save = (newFormat: string) => {
-  const preferences = user.get('user').get('preferences')
-  preferences.set({
-    coordinateFormat: newFormat,
-  })
-  preferences.savePreferences()
-}
+const MapSettings = (props: WithBackboneProps) => {
+  const { getValue, setValue, onStateChanged, visualTitle, hasLayoutContext } =
+    React.useContext(LayoutContext)
 
-const Span = styled.span`
-  padding-right: 5px;
-`
-type State = {
-  selected: string
-}
+  const [coordFormat, setCoordFormat] = useState('degrees')
 
-class MapSettings extends React.Component<WithBackboneProps, State> {
-  constructor(props: WithBackboneProps) {
-    super(props)
-    this.state = {
-      selected: user
+  const [autoPan, setAutoPan] = useState(
+    user.get('user').get('preferences').get('autoPan')
+  )
+  const menuState = useMenuState()
+  const coordFormatKey = `${visualTitle}-coordFormat`
+
+  useEffect(() => {
+    const userDefaultFormat = getUserCoordinateFormat()
+    if (hasLayoutContext) {
+      setCoordFormat(getValue(coordFormatKey, userDefaultFormat))
+      onStateChanged(() => {
+        const coordFormat = getValue(coordFormatKey, getUserCoordinateFormat())
+        setCoordFormat(coordFormat)
+      })
+    } else {
+      setCoordFormat(userDefaultFormat)
+      props.listenTo(
+        user.get('user').get('preferences'),
+        'change:coordinateFormat',
+        () => setCoordFormat(getUserCoordinateFormat())
+      )
+    }
+
+    props.listenTo(
+      user.get('user').get('preferences'),
+      'change:autoPan',
+      (_prefs: any, value: boolean) => setAutoPan(value)
+    )
+  }, [])
+
+  const updateCoordFormat = (coordinateFormat: string) => {
+    if (hasLayoutContext) {
+      setValue(coordFormatKey, coordinateFormat)
+    } else {
+      const preferences = user
         .get('user')
         .get('preferences')
-        .get('coordinateFormat'),
+        .set({ coordinateFormat })
+      preferences.savePreferences()
     }
   }
 
-  componentDidMount = () =>
-    this.props.listenTo(
-      user.get('user').get('preferences'),
-      'change:coordinateFormat',
-      (_prefs: any, value: string) => this.setState({ selected: value })
-    )
-
-  update(newFormat: string) {
-    save(newFormat)
-    this.setState({ selected: newFormat })
+  const updateAutoPan = (
+    _event: React.ChangeEvent<HTMLInputElement>,
+    autoPan: boolean
+  ) => {
+    const preferences = user.get('user').get('preferences').set({ autoPan })
+    preferences.savePreferences()
   }
 
-  render() {
-    const { selected } = this.state
-
-    const mapSettingsProps = {
-      selected,
-      update: (newFormat: string) => this.update(newFormat),
-    }
-
-    const mapSettings = <MapSettingsPresentation {...mapSettingsProps} />
-
-    return (
-      <Dropdown content={mapSettings}>
-        <Span className="interaction-text">Settings</Span>
-        <Span className="interaction-icon fa fa-cog" />
-      </Dropdown>
-    )
-  }
+  return (
+    <>
+      <Button
+        size="small"
+        data-id="settings-button"
+        {...menuState.MuiButtonProps}
+      >
+        <SettingsIcon />
+      </Button>
+      <Popover {...menuState.MuiPopoverProps}>
+        <Paper elevation={Elevations.overlays}>
+          <MapSettingsPresentation
+            coordFormat={coordFormat}
+            updateCoordFormat={updateCoordFormat}
+            autoPan={autoPan}
+            updateAutoPan={updateAutoPan}
+          />
+        </Paper>
+      </Popover>
+    </>
+  )
 }
 
 export default hot(module)(withListenTo(MapSettings))
-export const testComponent = withListenTo(MapSettings)

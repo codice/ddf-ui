@@ -15,8 +15,8 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { CustomElement } from '../styles/mixins'
-import { ChangeBackground } from '../styles/mixins'
 import { hot } from 'react-hot-loader'
+import Divider from '@mui/material/Divider'
 
 interface Props {
   branding: string
@@ -29,20 +29,18 @@ interface Props {
 }
 
 const Root = styled.div`
-  ${CustomElement} ${props =>
-    ChangeBackground(props.theme.backgroundContent)}
-  overflow: auto;
-  padding: ${props => props.theme.minimumSpacing} 0px;
+  ${CustomElement} overflow: auto;
+  padding: ${(props) => props.theme.minimumSpacing} 0px;
 
   .about-content {
     margin: auto;
-    max-width: ${props => {
+    max-width: ${(props) => {
       return props.theme.screenBelow(props.theme.mediumScreenSize)
         ? '100%'
         : '1200px'
     }};
     padding: 0px
-      ${props =>
+      ${(props) =>
         props.theme.screenBelow(props.theme.mediumScreenSize)
           ? '20px'
           : '100px'};
@@ -50,7 +48,7 @@ const Root = styled.div`
 
   .content-version,
   .version-message {
-    padding: ${props => props.theme.minimumSpacing};
+    padding: ${(props) => props.theme.minimumSpacing};
   }
 `
 
@@ -59,28 +57,53 @@ export default hot(module)((props: Props) => {
     <Root>
       <div className="about-content is-large-font">
         <div>
-          <span className="is-bold">{props.branding}</span>
-          <span> {props.product}</span>
+          <span data-id="branding-label" className="is-bold">
+            {props.branding}
+          </span>
+          <span data-id="product-label"> {props.product}</span>
         </div>
-        <div className="is-divider" />
+        <Divider
+          orientation="horizontal"
+          variant="fullWidth"
+          className="my-3"
+        />
         <div className="content-version">
           <div>
             <div className="version-title">Version</div>
-            <div className="version-message is-medium-font">
+            <div
+              data-id="version-label"
+              className="version-message is-medium-font"
+            >
               {props.version}
             </div>
           </div>
-          <div className="is-divider" />
+          <Divider
+            orientation="horizontal"
+            variant="fullWidth"
+            className="my-3"
+          />
           <div>
             <div className="version-title">Unique Identifier</div>
-            <div className="version-message is-medium-font">
+            <div
+              data-id="unique-identifier-label"
+              className="version-message is-medium-font"
+            >
               {`${props.commitHash} ${props.isDirty ? 'with Changes' : ''}`}
             </div>
           </div>
-          <div className="is-divider" />
+          <Divider
+            orientation="horizontal"
+            variant="fullWidth"
+            className="my-3"
+          />
           <div>
             <div className="version-title">Release Date</div>
-            <div className="version-message is-medium-font">{props.date}</div>
+            <div
+              data-id="release-date-label"
+              className="version-message is-medium-font"
+            >
+              {props.date}
+            </div>
           </div>
         </div>
       </div>

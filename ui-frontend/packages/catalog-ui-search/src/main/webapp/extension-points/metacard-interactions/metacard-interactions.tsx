@@ -12,18 +12,18 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import CreateLocationSearch from '../../react-component/metacard-interactions/location-interaction'
 import ExpandMetacard from '../../react-component/metacard-interactions/expand-interaction'
 import DownloadProduct from '../../react-component/metacard-interactions/download-interaction'
 import ExportActions from '../../react-component/metacard-interactions/export-interaction'
-import { Divider } from '../../react-component/metacard-interactions/metacard-interactions'
+import OverwriteAction from '../../react-component/metacard-interactions/overwrite-interaction'
+import ArchiveAction from '../../react-component/metacard-interactions/archive-interaction'
 
 const DefaultItems = [
   ExpandMetacard,
-  Divider,
   DownloadProduct,
-  CreateLocationSearch,
   ExportActions,
+  OverwriteAction,
+  ArchiveAction,
 ]
 
-export default DefaultItems as any[]
+export default DefaultItems

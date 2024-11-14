@@ -17,23 +17,21 @@
     <parent>
         <artifactId>catalog-ui</artifactId>
         <groupId>org.codice.ddf.search</groupId>
-        <version>3.7.0-SNAPSHOT</version>
+        <version>5.1.52-SNAPSHOT</version>
     </parent>
-
     <groupId>org.codice.ddf.search</groupId>
     <artifactId>ui-frontend</artifactId>
     <name>DDF :: UI</name>
     <packaging>pom</packaging>
-
     <properties>
         <buildEnv>production</buildEnv>
     </properties>
-
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.3</version>
                 <configuration>
                     <finalName>packages</finalName>
                     <descriptor>packages.xml</descriptor>
@@ -51,7 +49,7 @@
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.6.CODICE</version>
+                <version>1.12.1</version>
                 <executions>
                     <execution>
                         <id>install node and yarn</id>
@@ -75,7 +73,19 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>build</id>
+                        <id>yarn test</id>
+                        <goals>
+                            <goal>yarn</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run test</arguments>
+                            <environmentVariables>
+                                <NODE_ENV>${buildEnv}</NODE_ENV>
+                            </environmentVariables>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>yarn build</id>
                         <goals>
                             <goal>yarn</goal>
                         </goals>
@@ -127,13 +137,28 @@
                                     <classifier>kanri</classifier>
                                 </artifact>
                                 <artifact>
+                                    <file>packages/admin/target/kanri.tgz</file>
+                                    <type>tgz</type>
+                                    <classifier>kanri</classifier>
+                                </artifact>
+                                <artifact>
                                     <file>packages/catalog-ui-search/target/catalog-ui-search.jar</file>
                                     <type>jar</type>
                                     <classifier>catalog-ui-search</classifier>
                                 </artifact>
                                 <artifact>
+                                    <file>packages/catalog-ui-search/dist/catalog-ui-search.tgz</file>
+                                    <type>tgz</type>
+                                    <classifier>catalog-ui-search-src</classifier>
+                                </artifact>
+                                <artifact>
                                     <file>packages/cesium-assets/target/cesium-assets.jar</file>
                                     <type>jar</type>
+                                    <classifier>cesium-assets</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>packages/cesium-assets/target/cesium-assets.tgz</file>
+                                    <type>tgz</type>
                                     <classifier>cesium-assets</classifier>
                                 </artifact>
                             </artifacts>

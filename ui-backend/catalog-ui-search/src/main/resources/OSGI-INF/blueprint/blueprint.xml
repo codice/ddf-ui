@@ -32,6 +32,8 @@ Implementation details
 
     <reference id="subjectOperations1" interface="ddf.security.SubjectOperations" />
 
+    <reference id="requiredAttributesRegistry" interface="ddf.catalog.data.RequiredAttributesRegistry"/>
+
     <bean id="metacardActionRegistry" class="ddf.action.impl.ActionRegistryImpl">
         <argument ref="metacardActionProviders"/>
         <argument ref="metacardMultiActionProviders"/>
@@ -55,6 +57,7 @@ Implementation details
         <argument ref="filterBuilder"/>
         <argument ref="injectableAttributes"/>
         <argument ref="attributeRegistry"/>
+        <argument ref="requiredAttributesRegistry"/>
         <argument ref="configurationApplication"/>
         <property name="whiteListedMetacardTypes">
             <array/>
@@ -117,10 +120,13 @@ Implementation details
                 update-strategy="container-managed"/>
 
         <cm:managed-properties
+                persistent-id="org.codice.ddf.catalog.ui.attribute.commonAttributes"
+                update-strategy="container-managed"/>
+
+        <cm:managed-properties
                 persistent-id="org.codice.ddf.catalog.ui.attribute.descriptions"
                 update-strategy="container-managed"/>
 
-        <property name="uiName" value="Intrigue"/>
         <property name="branding" ref="webBranding"/>
         <property name="httpProxy" ref="httpProxyService"/>
         <property name="historianConfiguration" ref="historianConfiguration"/>
@@ -148,17 +154,6 @@ Implementation details
         <argument ref="platformConfigurationService"/>
     </bean>
 
-    <bean id="feedbackApplication" class="org.codice.ddf.catalog.ui.query.FeedbackApplication">
-        <cm:managed-properties
-                persistent-id="org.codice.ddf.catalog.ui"
-                update-strategy="component-managed"
-                update-method="refresh"/>
-        <property name="configurationApplication" ref="configurationApplication"/>
-        <property name="smtpClient" ref="smtpClient"/>
-        <property name="endpointUtil" ref="endpointUtil"/>
-        <property name="subjectOperations" ref="subjectOperations1" />
-    </bean>
-
     <bean id="geoCoderApplication" class="org.codice.ddf.catalog.ui.spatial.GeoCoderApplication">
         <argument ref="geoCoderService"/>
     </bean>
@@ -173,8 +168,9 @@ Implementation details
     </bean>
 
     <bean id="userApplication" class="org.codice.ddf.catalog.ui.security.app.UserApplication">
-        <argument ref="persistentStore"/>
         <argument ref="endpointUtil"/>
+        <argument ref="persistentStore"/>
+        <argument ref="preferences"/>
         <argument ref="subjectIdentity"/>
         <argument ref="filterBuilder"/>
         <property name="subjectOperations" ref="subjectOperations1" />
@@ -231,6 +227,7 @@ Implementation details
         <argument ref="defaultAttributeValidatorRegistry"/>
         <argument ref="metacardTypes"/>
         <argument ref="attributeInjectors"/>
+        <argument ref="deprecatableEnumerations"/>
     </bean>
 
     <bean id="workspacePersistentStore"
@@ -253,7 +250,48 @@ Implementation details
         <argument ref="catalogFramework"/>
     </bean>
 
+    <!-- Note: if we ever need to supply multiple instances of OperationPropertySupplier, then use the decorator
+     pattern by creating an instance of OperationPropertySupplier that is constructed from a list of suppliers,
+     which merges the results together. -->
+    <reference id="revertProperties"
+               interface="org.codice.ddf.catalog.ui.metacard.internal.OperationPropertySupplier"
+               availability="optional"
+               filter="(type=revert)">
+        <reference-listener
+                ref="metacardHistoryService"
+                bind-method="addOperationPropertySupplier"
+                unbind-method="removeOperationPropertySupplier"/>
+    </reference>
+
+    <bean id="metacardHistoryService" class="org.codice.ddf.catalog.ui.metacard.history.MetacardHistoryService">
+        <argument ref="catalogFramework"/>
+        <argument ref="filterBuilder"/>
+        <property name="securityLogger" ref="securityLogger" />
+    </bean>
+
     <bean id="metacardApplication" class="org.codice.ddf.catalog.ui.metacard.MetacardApplication">
+        <argument ref="catalogFramework"/>
+        <argument ref="endpointUtil"/>
+        <argument ref="validator"/>
+        <argument ref="workspaceTransformer"/>
+        <argument ref="enumerationExtractor"/>
+        <argument ref="workspacePersistentStore"/>
+        <argument ref="metacardTypes"/>
+        <argument ref="associated"/>
+        <argument ref="csvQueryResponseTransformer"/>
+        <argument ref="attributeRegistry"/>
+        <argument ref="configurationApplication"/>
+        <argument ref="noteUtil"/>
+        <argument ref="subjectIdentity"/>
+        <argument ref="queryWorkspaceService"/>
+        <argument ref="queryMetacardsHandler"/>
+        <argument ref="ddfSecurity" />
+        <argument ref="metacardHistoryService" />
+        <property name="subjectOperations" ref="subjectOperations1" />
+        <property name="securityLogger" ref="securityLogger" />
+    </bean>
+
+    <bean id="composeApplication" class="org.codice.ddf.catalog.ui.compose.ComposeApplication">
         <argument ref="catalogFramework"/>
         <argument ref="filterBuilder"/>
         <argument ref="endpointUtil"/>
@@ -268,12 +306,12 @@ Implementation details
         <argument ref="configurationApplication"/>
         <argument ref="noteUtil"/>
         <argument ref="subjectIdentity"/>
-        <argument ref="accessControlSecurityConfiguration"/>
         <argument ref="queryWorkspaceService"/>
         <argument ref="queryMetacardsHandler"/>
         <argument ref="ddfSecurity" />
-        <property name="subjectOperations" ref="subjectOperations1" />
-        <property name="securityLogger" ref="securityLogger" />
+        <argument ref="userApplication"/>
+        <argument ref="platformApplication"/>
+        <argument ref="catalogApplication"/>
     </bean>
 
     <!--
@@ -294,6 +332,7 @@ Implementation details
         <argument ref="blueprintBundleContext"/>
         <argument ref="endpointUtil"/>
         <argument ref="cqlQueryUtil"/>
+        <argument ref="securityLogger"/>
     </bean>
 
     <bean id="queryValidators" class="org.codice.ddf.catalog.ui.query.validate.QueryValidators"/>
@@ -377,10 +416,13 @@ Implementation details
         <argument ref="socketThreadFactory"/>
     </bean>
 
+    <reference-list id="sessionPlugins" interface="org.codice.ddf.security.servlet.web.socket.SessionPlugin" availability="optional"/>
+
     <bean id="socketServlet" destroy-method="destroy"
           class="org.codice.ddf.security.servlet.web.socket.SecureWebSocketServlet">
         <argument ref="socketThreadPool"/>
         <argument ref="jsonRpc"/>
+        <argument ref="sessionPlugins"/>
     </bean>
 
     <!--
@@ -428,13 +470,13 @@ Implementation details
             <list>
                 <ref component-id="queryApplication"/>
                 <ref component-id="metacardApplication"/>
+                <ref component-id="composeApplication"/>
                 <ref component-id="platformApplication"/>
                 <ref component-id="userApplication"/>
                 <ref component-id="catalogApplication"/>
                 <ref component-id="logoutApplication"/>
                 <ref component-id="configurationApplication"/>
                 <ref component-id="sessionManagementApplication"/>
-                <ref component-id="feedbackApplication"/>
                 <ref component-id="searchFormsApplication"/>
                 <ref component-id="listApplication"/>
                 <ref component-id="buildApplication"/>
@@ -554,5 +596,11 @@ Implementation details
     <bean id="queryFactory" class="org.codice.ddf.catalog.ui.query.cql.QueryRequestFactoryImpl"/>
 
     <service ref="queryFactory" interface="org.codice.ddf.catalog.ui.query.utility.QueryRequestFactory"/>
+
+    <bean id="defaultPreferenceSettings" class="org.codice.ddf.catalog.ui.preferences.DefaultCatalogUiPreferences">
+        <argument ref="configurationApplication"/>
+    </bean>
+
+    <service ref="defaultPreferenceSettings" interface="org.codice.ddf.preferences.DefaultPreferencesSupplier"/>
 
 </blueprint>

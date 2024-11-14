@@ -16,7 +16,7 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import styled from 'styled-components'
-import LoadingCompanion from '../loading-companion'
+import LinearProgress from '@mui/material/LinearProgress'
 
 type Props = {
   metacardValidation: any
@@ -26,7 +26,7 @@ type Props = {
 
 const Header = styled.h4`
   text-align: left;
-  padding: ${props => props.theme.minimumSpacing};
+  padding: ${(props) => props.theme.minimumSpacing};
 `
 
 const Root = styled.div`
@@ -75,15 +75,15 @@ const MetacardValidation = (props: any) => {
         <tbody>
           {metacardValidation.map((validation: any, i: number) => {
             return (
-              <tr key={i}>
-                <td>
+              <tr data-id="metacard-validation-issue-container" key={i}>
+                <td data-id="attribute-value">
                   {validation.attributes.map((attribute: string, j: number) => {
                     return <div key={attribute + j}>{attribute}</div>
                   })}
                 </td>
-                <td>{validation.severity}</td>
+                <td data-id="severity-value">{validation.severity}</td>
                 {validation.duplicate ? (
-                  <td>
+                  <td data-id="message-value">
                     {validation.duplicate.message[0]}
                     {validation.duplicate.ids.map((id: any, index: number) => {
                       return (
@@ -98,7 +98,7 @@ const MetacardValidation = (props: any) => {
                     {validation.duplicate.message[1]}
                   </td>
                 ) : (
-                  <td>{validation.message}</td>
+                  <td data-id="message-value">{validation.message}</td>
                 )}
               </tr>
             )
@@ -123,14 +123,14 @@ const AttributeValidation = (props: any) => {
         <tbody>
           {attributeValidation.map((validation: any, i: number) => {
             return (
-              <tr key={i}>
-                <td>{validation.attribute}</td>
-                <td>
+              <tr data-id="attribute-validation-issue-container" key={i}>
+                <td data-id="attribute-value">{validation.attribute}</td>
+                <td data-id="warnings-value">
                   {validation.warnings.map((warning: string, j: number) => {
                     return <div key={warning + j}>{warning}</div>
                   })}
                 </td>
-                <td>
+                <td data-id="errors-value">
                   {validation.errors.map((error: string, j: number) => {
                     return <div key={error + j}>{error}</div>
                   })}
@@ -146,8 +146,12 @@ const AttributeValidation = (props: any) => {
 
 const render = (props: Props) => {
   const { metacardValidation, attributeValidation, loading } = props
-  return (
-    <LoadingCompanion loading={loading}>
+  return loading ? (
+    <>
+      <LinearProgress className="w-full h-2" />
+    </>
+  ) : (
+    <>
       <Root>
         {metacardValidation.length > 0 ? (
           <MetacardValidation metacardValidation={metacardValidation} />
@@ -161,7 +165,7 @@ const render = (props: Props) => {
           <Header>No Attribute Validation Issues to Report</Header>
         )}
       </Root>
-    </LoadingCompanion>
+    </>
   )
 }
 

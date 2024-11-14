@@ -13,10 +13,10 @@
  *
  **/
 
+import Button from '@mui/material/Button'
 import * as React from 'react'
 import styled from 'styled-components'
-const sessionTimeoutModel = require('../../component/singletons/session-timeout')
-import { Button, buttonTypeEnum } from '../presentation/button'
+import sessionTimeoutModel from '../../component/singletons/session-timeout'
 
 const SessionTimeoutRoot = styled.div`
   height: 100%;
@@ -28,12 +28,8 @@ const Message = styled.div`
   max-height: calc(100% - 2.25rem);
   height: auto;
   text-align: center;
-  padding: ${props => props.theme.mediumSpacing};
+  padding: ${(props) => props.theme.mediumSpacing};
 `
-const ButtonStyling = {
-  height: '2.75rem',
-  width: '100%',
-}
 
 type State = {
   timeLeft: number
@@ -45,7 +41,7 @@ const renewSession = () => {
 
 class SessionTimeout extends React.Component<{}, State> {
   interval: any
-  constructor(props: any) {
+  constructor(props: {}) {
     super(props)
     this.state = {
       timeLeft: sessionTimeoutModel.getIdleSeconds(),
@@ -76,9 +72,10 @@ class SessionTimeout extends React.Component<{}, State> {
           <div>Press "Continue Working" to remain logged in.</div>
         </Message>
         <Button
-          buttonType={buttonTypeEnum.primary}
           onClick={renewSession}
-          style={ButtonStyling}
+          variant="contained"
+          color="primary"
+          fullWidth
         >
           Continue Working
         </Button>

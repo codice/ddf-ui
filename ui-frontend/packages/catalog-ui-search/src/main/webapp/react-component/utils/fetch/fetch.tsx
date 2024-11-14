@@ -12,19 +12,46 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import url from 'url'
+import qs from 'querystring'
+import { Environment } from '../../../js/Environment'
+import { v4 } from 'uuid'
 
-const url = require('url')
-const qs = require('querystring')
+export type QueryResponseType = {
+  results: any
+  statusBySource: {
+    [key: string]: {
+      hits: number
+      count: number
+      elapsed: number
+      id: string
+      successful: boolean
+      warnings: any[]
+      errors: string[]
+    }
+  }
+  types: any
+  highlights: any
+  didYouMeanFields: any
+  showingResultsForFields: any
+}
 
-type Options = {
-  headers?: object
-  [key: string]: unknown
+export function checkForErrors(response: QueryResponseType) {
+  const { statusBySource } = response
+
+  if (statusBySource) {
+    const errors = Object.values(statusBySource).flatMap(
+      (source) => source.errors
+    )
+
+    if (errors.length > 0) {
+      throwFetchErrorEvent(errors)
+    }
+  }
 }
 
 const fetch = window.fetch
-// @ts-ignore
-window.__global__fetch = fetch
-
+;(window as any).__global__fetch = fetch
 // patch global fetch to warn about usage during development
 if (process.env.NODE_ENV !== 'production') {
   window.fetch = (...args: any[]) => {
@@ -37,20 +64,63 @@ if (process.env.NODE_ENV !== 'production') {
       ].join(' ')
     )
     console.warn(error)
-    // @ts-ignore
+    // @ts-expect-error ts-migrate(2556) FIXME: Expected 1-2 arguments, but got 0 or more.
     return fetch(...args)
   }
 }
-
 const cacheBust = (urlString: string) => {
   const { query, ...rest } = url.parse(urlString)
   return url.format({
     ...rest,
+    // @ts-expect-error ts-migrate(2345) FIXME: Argument of type 'string | null' is not assignable... Remove this comment to see the full error message
     search: '?' + qs.stringify({ ...qs.parse(query), _: Date.now() }),
   })
 }
 
-export default function(url: string, { headers, ...opts }: Options = {}) {
+export type FetchErrorEventType = CustomEvent<{
+  errors: string[]
+}>
+
+const fetchErrorEventName = v4() // ensure we don't clash with other events
+
+export function throwFetchErrorEvent(errors: string[] = []) {
+  if (typeof window !== 'undefined') {
+    const customEvent: FetchErrorEventType = new CustomEvent(
+      fetchErrorEventName,
+      {
+        detail: {
+          errors,
+        },
+      }
+    )
+    window.dispatchEvent(customEvent)
+  }
+}
+
+export function listenForFetchErrorEvent(
+  callback: (event: FetchErrorEventType) => void
+) {
+  if (typeof window !== 'undefined') {
+    window.addEventListener(fetchErrorEventName, callback)
+    return () => {
+      window.removeEventListener(fetchErrorEventName, callback)
+    }
+  }
+  return () => {}
+}
+
+export default async function (
+  url: string,
+  { headers, ...opts }: RequestInit = {}
+): Promise<Response> {
+  if (Environment.isTest()) {
+    const { default: MockApi } = await import('../../../test/mock-api')
+    return Promise.resolve({
+      json: await function () {
+        return MockApi(url)
+      },
+    }) as Promise<Response>
+  }
   return fetch(cacheBust(url), {
     credentials: 'same-origin',
     cache: 'no-cache',
@@ -59,5 +129,10 @@ export default function(url: string, { headers, ...opts }: Options = {}) {
       'X-Requested-With': 'XMLHttpRequest',
       ...headers,
     },
+  }).then((response) => {
+    if (response.status === 500) {
+      throwFetchErrorEvent([response.statusText || 'Internal Server Error'])
+    }
+    return response
   })
 }

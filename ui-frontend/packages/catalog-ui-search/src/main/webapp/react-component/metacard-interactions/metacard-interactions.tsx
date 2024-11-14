@@ -14,28 +14,33 @@
  **/
 import * as React from 'react'
 import styled from 'styled-components'
+import MuiDivider from '@mui/material/Divider'
 
-export const Divider = () => <div className="is-divider composed-menu" />
+export const Divider = () => {
+  return (
+    <MuiDivider variant="fullWidth" orientation="horizontal" className="my-3" />
+  )
+}
 
 const InteractionIcon = styled.div`
   text-align: center;
-  width: ${props => props.theme.minimumButtonSize};
+  width: ${(props) => props.theme.minimumButtonSize};
   display: inline-block;
-  line-height: ${props => props.theme.minimumButtonSize};
-  height: ${props => props.theme.minimumButtonSize};
+  line-height: ${(props) => props.theme.minimumButtonSize};
+  height: ${(props) => props.theme.minimumButtonSize};
 `
 
 const InteractionText = styled.div`
-  line-height: ${props => props.theme.minimumButtonSize};
-  height: ${props => props.theme.minimumButtonSize};
+  line-height: ${(props) => props.theme.minimumButtonSize};
+  height: ${(props) => props.theme.minimumButtonSize};
   display: inline-block;
 `
 
 const Interaction = styled.div`
-  line-height: ${props => props.theme.minimumButtonSize};
-  height: ${props => props.theme.minimumButtonSize};
+  line-height: ${(props) => props.theme.minimumButtonSize};
+  height: ${(props) => props.theme.minimumButtonSize};
   white-space: nowrap;
-  padding: ${props => `0px ${props.theme.minimumSpacing}`};
+  padding: ${(props) => `0px ${props.theme.minimumSpacing}`};
   cursor: pointer;
   overflow: hidden;
 `
@@ -50,7 +55,11 @@ type MetacardInteractionProps = {
 
 export const MetacardInteraction = (props: MetacardInteractionProps) => {
   return (
-    <Interaction data-help={props.help} onClick={() => props.onClick(props)}>
+    <Interaction
+      data-id="interaction-container"
+      data-help={props.help}
+      onClick={() => props.onClick(props)}
+    >
       <InteractionIcon className={props.icon} />
       <InteractionText>{props.text}</InteractionText>
       {props.children}

@@ -20,7 +20,6 @@ export type SpecificSizingInterface = {
 }
 
 type SizingInterface = {
-  spacingMode: 'comfortable' | 'cozy' | 'compact'
   mediumSpacing: string
   largeSpacing: string
 }
@@ -38,7 +37,6 @@ type ScreenSizes = {
 
 type ZIndexes = {
   zIndexMenubar: number
-  zIndexLightbox: number
   zIndexLoadingCompanion: number
   zIndexSlideout: number
   zIndexContent: number
@@ -82,6 +80,9 @@ export type ThemeColorInterface = {
   backgroundContent: string
   backgroundModal: string
   backgroundSlideout: string
+  primary: string
+  secondary: string
+  palette: 'default' | 'custom'
 }
 
 type Current = {

@@ -14,298 +14,128 @@
  **/
 /*global require*/
 import * as React from 'react'
-import styled from 'styled-components'
-import MarionetteRegionContainer from '../marionette-region-container'
-const PropertyView = require('../../component/property/property.view.js')
-const user = require('../../component/singletons/user-instance.js')
-const Property = require('../../component/property/property.js')
-const ThemeUtils = require('../../js/ThemeUtils.js')
-
-const getFontSize = () => {
-  return getPreferences().get('fontSize')
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Checkbox from '@mui/material/Checkbox'
+import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
+import user from '../../component/singletons/user-instance'
+import { hot } from 'react-hot-loader'
+import Grid from '@mui/material/Grid'
+import ColorTool from './color-tool'
+;(window as any).user = user
+type ThemeType = {
+  theme: 'dark' | 'light'
+  palette: 'default' | 'custom'
 }
-
 const getPreferences = () => {
   return user.get('user').get('preferences')
 }
-
 const getAnimationMode = () => {
-  return getPreferences().get('animation')
+  return Boolean(getPreferences().get('animation'))
 }
-
-const getSpacingMode = () => {
-  return getPreferences()
-    .get('theme')
-    .getSpacingMode()
+const getCurrentTheme = (): ThemeType => {
+  return getPreferences().get('theme').toJSON()
 }
-
-const getTheme = () => {
-  return getPreferences()
-    .get('theme')
-    .getColorMode()
-}
-
-const getCustomColorNames = () => {
-  return getPreferences()
-    .get('theme')
-    .getCustomColorNames()
-}
-
-const getCustomColors = () => {
-  return getCustomColorNames().map((colorVariable: any) => {
-    return new Property({
-      isEditing: true,
-      label: colorVariable,
-      value: [
-        getPreferences()
-          .get('theme')
-          .get(colorVariable),
-      ],
-      type: 'COLOR',
+const AnimationSetting = () => {
+  const [animationMode, setAnimationMode] = React.useState(getAnimationMode())
+  const { listenTo } = useBackbone()
+  React.useEffect(() => {
+    listenTo(user.get('user').get('preferences'), 'change:animation', () => {
+      setAnimationMode(getAnimationMode())
     })
-  })
-}
-
-const Root = styled.div`
-  position: relative;
-  display: block;
-  text-align: center;
-`
-const ThemeCustom = styled.div`
-  display: block;
-`
-
-const saveFontChanges = (fontSize: string) => {
-  getPreferences().set('fontSize', ThemeUtils.getFontSize(fontSize))
-}
-
-const saveSpacingChanges = (spacingMode: string) => {
-  getPreferences()
-    .get('theme')
-    .set('spacingMode', spacingMode)
-  getPreferences().savePreferences()
-}
-
-const saveAnimationChanges = (animationMode: string) => {
-  getPreferences().set('animation', animationMode)
-  getPreferences().savePreferences()
-}
-
-const saveThemeChanges = (themeValue: string) => {
-  getPreferences()
-    .get('theme')
-    .set('theme', themeValue)
-  getPreferences().savePreferences()
-}
-
-const saveCustomColorVariable = (
-  colorVariable: string,
-  selectedValue: string
-) => {
-  getPreferences()
-    .get('theme')
-    .set(colorVariable, selectedValue)
-  getPreferences().savePreferences()
-}
-
-const spacingEnum = [
-  {
-    label: 'Comfortable',
-    value: 'comfortable',
-  },
-  {
-    label: 'Cozy',
-    value: 'cozy',
-  },
-  {
-    label: 'Compact',
-    value: 'compact',
-  },
-]
-
-const animationEnum = [
-  {
-    label: 'On',
-    value: true,
-  },
-  {
-    label: 'Off',
-    value: false,
-  },
-]
-
-const themeEnum = [
-  {
-    label: 'Dark',
-    value: 'dark',
-  },
-  {
-    label: 'Light',
-    value: 'light',
-  },
-  {
-    label: 'Sea',
-    value: 'sea',
-  },
-  {
-    label: 'Custom',
-    value: 'custom',
-  },
-]
-
-class ThemeSettings extends React.Component<
-  {},
-  {
-    fontSizeModel: any
-    spacingModeModel: any
-    animationModel: any
-    themeModel: any
-    customToggle: boolean
-    customColors: any[]
-  }
-> {
-  constructor(props: any) {
-    super(props)
-    const themeScale = ThemeUtils.getZoomScale(getFontSize())
-    this.state = {
-      fontSizeModel: new Property({
-        isEditing: true,
-        label: 'Zoom Percentage',
-        value: [themeScale],
-        min: 62,
-        max: 200,
-        units: '%',
-        type: 'RANGE',
-      }),
-      spacingModeModel: new Property({
-        isEditing: true,
-        enum: spacingEnum,
-        value: [getSpacingMode()],
-        id: 'Spacing',
-      }),
-      animationModel: new Property({
-        isEditing: true,
-        label: 'Animation',
-        value: [getAnimationMode()],
-        enum: animationEnum,
-        id: 'Animation',
-      }),
-      themeModel: new Property({
-        isEditing: true,
-        enum: themeEnum,
-        value: [getTheme()],
-        id: 'Theme',
-      }),
-      customToggle: this.isCustomSet(getTheme()),
-      customColors: getCustomColors(),
-    }
-
-    this.state.fontSizeModel.on('change:value', () => {
-      saveFontChanges(this.state.fontSizeModel.getValue()[0])
-    })
-    this.state.spacingModeModel.on('change:value', () => {
-      saveSpacingChanges(this.state.spacingModeModel.getValue()[0])
-    })
-    this.state.animationModel.on('change:value', () => {
-      saveAnimationChanges(this.state.animationModel.getValue()[0])
-    })
-    this.state.themeModel.on('change:value', () => {
-      let themeValue = this.state.themeModel.getValue()[0]
-      saveThemeChanges(themeValue)
-      this.setState({
-        customToggle: this.isCustomSet(themeValue),
-      })
-    })
-  }
-  isCustomSet(themeValue: string) {
-    return themeValue === 'custom' ? true : false
-  }
-  render() {
-    return (
-      <Root>
-        <MarionetteRegionContainer
-          view={PropertyView}
-          viewOptions={() => {
-            return {
-              model: this.state.fontSizeModel,
-            }
+  }, [])
+  return (
+    <FormControlLabel
+      labelPlacement="start"
+      control={
+        <Checkbox
+          color="default"
+          checked={animationMode}
+          onChange={(e) => {
+            getPreferences().set('animation', e.target.checked)
+            getPreferences().savePreferences()
           }}
-          replaceElement={false}
         />
-        <MarionetteRegionContainer
-          view={PropertyView}
-          viewOptions={() => {
-            return {
-              model: this.state.spacingModeModel,
-            }
-          }}
-          replaceElement={false}
-        />
-        <MarionetteRegionContainer
-          view={PropertyView}
-          viewOptions={() => {
-            return {
-              model: this.state.animationModel,
-            }
-          }}
-          replaceElement={false}
-        />
-        <MarionetteRegionContainer
-          view={PropertyView}
-          viewOptions={() => {
-            return {
-              model: this.state.themeModel,
-            }
-          }}
-          replaceElement={false}
-        />
-        {this.state.customToggle ? <ThemeCustomComponent /> : null}
-      </Root>
-    )
-  }
+      }
+      label="Animation"
+    />
+  )
 }
-
-class ThemeCustomComponent extends React.Component<
-  {},
-  {
-    customColorArray: any[]
-  }
-> {
-  constructor(props: any) {
-    super(props)
-    this.state = {
-      customColorArray: getCustomColors(),
-    }
-  }
-  componentWillMount() {
-    this.state.customColorArray.map((colorVariable: any) => {
-      colorVariable.on('change:value', () => {
-        saveCustomColorVariable(
-          colorVariable.get('label'),
-          colorVariable.getValue()[0]
-        )
-      })
+const ThemeMode = () => {
+  const [darkMode, setDarkMode] = React.useState(
+    getCurrentTheme().theme === 'dark'
+  )
+  const { listenTo } = useBackbone()
+  React.useEffect(() => {
+    listenTo(user.get('user').get('preferences'), 'change:theme', () => {
+      setDarkMode(getCurrentTheme().theme === 'dark')
     })
-  }
-  render() {
-    return (
-      <ThemeCustom>
-        {this.state.customColorArray.map((colorVariable: any) => {
-          return (
-            <MarionetteRegionContainer
-              key={colorVariable.get('label')}
-              view={PropertyView}
-              viewOptions={() => {
-                return {
-                  model: colorVariable,
-                }
+  }, [])
+  return (
+    <FormControlLabel
+      labelPlacement="start"
+      control={
+        <Checkbox
+          color="default"
+          checked={darkMode}
+          onChange={(e) => {
+            getPreferences()
+              .get('theme')
+              .set('theme', e.target.checked ? 'dark' : 'light')
+            getPreferences().savePreferences()
+          }}
+        />
+      }
+      label="Dark Mode"
+    />
+  )
+}
+const ThemePalette = () => {
+  const [palette, setPalette] = React.useState(
+    getCurrentTheme().palette === 'custom'
+  )
+  const { listenTo } = useBackbone()
+  React.useEffect(() => {
+    listenTo(user.get('user').get('preferences'), 'change:theme', () => {
+      setPalette(getCurrentTheme().palette === 'custom')
+    })
+  }, [])
+  return (
+    <>
+      <Grid item>
+        <FormControlLabel
+          labelPlacement="start"
+          control={
+            <Checkbox
+              color="default"
+              checked={palette}
+              onChange={(e) => {
+                getPreferences()
+                  .get('theme')
+                  .set('palette', e.target.checked ? 'custom' : 'default')
+                getPreferences().savePreferences()
               }}
-              replaceElement={false}
             />
-          )
-        })}
-      </ThemeCustom>
-    )
-  }
+          }
+          label="Custom Palette"
+        />
+      </Grid>
+      <Grid item className={`w-full ${palette ? '' : 'hidden'}`}>
+        <ColorTool />
+      </Grid>
+    </>
+  )
 }
-export default ThemeSettings
+const ThemeSettings = () => {
+  return (
+    <Grid container direction="column" wrap="nowrap">
+      <Grid item className="w-full">
+        <AnimationSetting />
+      </Grid>
+      <Grid item className="w-full">
+        <ThemeMode />
+      </Grid>
+      <ThemePalette />
+    </Grid>
+  )
+}
+export default hot(module)(ThemeSettings)

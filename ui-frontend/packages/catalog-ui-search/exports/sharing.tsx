@@ -12,6 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+// @ts-nocheck ts-migrate(2307) FIXME: Cannot find module
 export {
   Sharing,
   Item,

@@ -14,12 +14,13 @@
  **/
 import * as React from 'react'
 
-import TextField from '@material-ui/core/TextField'
-import Grid from '@material-ui/core/Grid'
+import Grid from '@mui/material/Grid'
 import { ValueTypes } from '../filter-builder/filter.structure'
+import { EnterKeySubmitProps } from '../custom-events/enter-key-submit'
+import { NumberField } from './number'
 
 type NumberRangeFieldProps = {
-  value: ValueTypes['between']
+  value: Partial<ValueTypes['between']>
   onChange: (val: ValueTypes['between']) => void
   type: 'integer' | 'float'
 }
@@ -40,6 +41,10 @@ export const NumberRangeField = ({
   onChange,
   type,
 }: NumberRangeFieldProps) => {
+  const validValue = {
+    ...defaultValue,
+    ...value,
+  }
   React.useEffect(() => {
     validateShape({ value, onChange, type })
   }, [])
@@ -49,44 +54,38 @@ export const NumberRangeField = ({
         <div>from</div>
       </Grid>
       <Grid item>
-        <TextField
-          fullWidth
-          variant="outlined"
-          value={value.start}
-          placeholder="lower bound"
-          type="number"
-          onChange={e => {
-            const newVal =
-              type === 'integer'
-                ? parseInt(e.target.value)
-                : parseFloat(e.target.value)
+        <NumberField
+          value={validValue.start.toString()}
+          TextFieldProps={{
+            placeholder: 'lower bound',
+          }}
+          type={type}
+          onChange={(val) => {
             onChange({
-              ...value,
-              start: newVal,
+              ...validValue,
+              start: val,
             })
           }}
+          {...EnterKeySubmitProps}
         />
       </Grid>
       <Grid item className="w-full py-1">
         <div>to</div>
       </Grid>
       <Grid item>
-        <TextField
-          fullWidth
-          variant="outlined"
-          placeholder="upper bound"
-          value={value.end}
-          type="number"
-          onChange={e => {
-            const newVal =
-              type === 'integer'
-                ? parseInt(e.target.value)
-                : parseFloat(e.target.value)
+        <NumberField
+          TextFieldProps={{
+            placeholder: 'upper bound',
+          }}
+          value={validValue.end.toString()}
+          type={type}
+          onChange={(val) => {
             onChange({
-              ...value,
-              end: newVal,
+              ...validValue,
+              end: val,
             })
           }}
+          {...EnterKeySubmitProps}
         />
       </Grid>
     </Grid>

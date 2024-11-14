@@ -14,11 +14,14 @@
  **/
 export {
   getExportOptions,
-  exportResult,
   exportResultSet,
   ExportBody,
   Transformer,
   ResultSet,
   ExportCountInfo,
-  DownloadInfo,
+  ExportInfo,
+  OverridableGetColumnOrder,
+  getColumnOrder,
+  aliasMap,
+  ExportFormat,
 } from './export'

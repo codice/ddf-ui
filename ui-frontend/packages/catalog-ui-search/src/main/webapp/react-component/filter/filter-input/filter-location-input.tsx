@@ -13,179 +13,20 @@
  *
  **/
 import React from 'react'
-import withListenTo from '../../backbone-container'
-const LocationView = require('../../location/index.js')
-const LocationOldModel = require('../../../component/location-old/location-old')
-const ShapeUtils = require('../../../js/ShapeUtils.js')
-const CQLUtils = require('../../../js/CQLUtils.js')
-const wreqr = require('../../../js/wreqr.js')
-const wkx = require('wkx')
-import { Drawing } from '../../../component/singletons/drawing'
-import { deserialize } from '../../../component/location-old/location-serialization'
+import LocationView from '../../location/location'
+import { hot } from 'react-hot-loader'
 
-const typesToDisplays = {
-  BBOX: 'bboxdisplay',
-  MULTIPOLYGON: 'polydisplay',
-  POLYGON: 'polydisplay',
-  POINTRADIUS: 'circledisplay',
-  LINE: 'linedisplay',
+/**
+ * consolidated with location since there is no reason for indirection here, we should delete this
+ */
+const LocationInput = ({ onChange, value, errorListener }: any) => {
+  return (
+    <LocationView
+      onChange={onChange}
+      value={value}
+      errorListener={errorListener}
+    />
+  )
 }
 
-const filterToLocationOldModel = filter => {
-  if (typeof filter.geojson === 'object') {
-    return deserialize(filter.geojson)
-  }
-
-  // for backwards compatability with wkt
-  if (filter.value && typeof filter.value === 'string') {
-    const geometry = wkx.Geometry.parse(filter.value).toGeoJSON()
-    return deserialize({
-      type: 'Feature',
-      geometry,
-      properties: {
-        type: geometry.type,
-        buffer: {
-          width: filter.distance,
-          unit: 'meters',
-        },
-      },
-    })
-  }
-}
-
-// may need to move some of this logic for deserliazing
-class LocationInput extends React.Component {
-  locationModel
-  constructor(props) {
-    super(props)
-    this.locationModel = new LocationOldModel(props.value)
-    this.state = this.locationModel.toJSON()
-    // this.deserialize()
-    this.onChange()
-  }
-  setModelState() {
-    this.setState(this.locationModel.toJSON())
-    this.onChange()
-  }
-  componentWillMount() {
-    this.locationModel.on('change', this.setModelState, this)
-  }
-  componentDidMount() {
-    this.props.listenTo(
-      this.locationModel,
-      'change:mapNorth change:mapSouth change:mapEast change:mapWest',
-      this.locationModel.setLatLon
-    )
-    this.props.listenTo(this.locationModel, 'change', this.updateMap)
-    this.props.listenTo(this.locationModel, 'change:mode', () => {
-      this.clearLocation()
-    })
-  }
-  componentWillUnmount() {
-    this.locationModel.off('change', this.setModelState)
-    this.locationModel.set(new LocationOldModel().toJSON())
-    wreqr.vent.trigger('search:drawend', this.locationModel)
-  }
-  updateMap = () => {
-    const mode = this.locationModel.get('mode')
-    if (mode !== undefined && Drawing.isDrawing() !== true) {
-      wreqr.vent.trigger('search:' + mode + 'display', this.locationModel)
-    }
-  }
-  deserialize = () => {
-    const filter = this.props.value
-    if (!filter) {
-      return
-    }
-
-    this.locationModel.set(filterToLocationOldModel(filter))
-
-    switch (filter.type) {
-      // these cases are for when the model matches the filter model
-      case 'DWITHIN':
-        if (CQLUtils.isPointRadiusFilter(filter)) {
-          wreqr.vent.trigger('search:circledisplay', this.locationModel)
-        } else if (CQLUtils.isPolygonFilter(filter)) {
-          wreqr.vent.trigger('search:polydisplay', this.locationModel)
-        } else {
-          wreqr.vent.trigger('search:linedisplay', this.locationModel)
-        }
-        break
-      case 'INTERSECTS':
-        if (CQLUtils.isLineFilter(filter)) {
-          wreqr.vent.trigger('search:linedisplay', this.locationModel)
-        } else {
-          wreqr.vent.trigger('search:polydisplay', this.locationModel)
-        }
-        break
-      // these cases are for when the model matches the location model
-      default:
-        wreqr.vent.trigger(
-          `search:${typesToDisplays[filter.type]}`,
-          this.locationModel
-        )
-        break
-    }
-  }
-  clearLocation() {
-    this.locationModel.set(new LocationOldModel().toJSON())
-    wreqr.vent.trigger('search:drawend', this.locationModel)
-    this.setState(this.locationModel.toJSON())
-  }
-  getCurrentValue() {
-    const modelJSON = this.locationModel.toJSON()
-    let type
-    if (modelJSON.polygon !== undefined) {
-      type = ShapeUtils.isArray3D(modelJSON.polygon)
-        ? 'MULTIPOLYGON'
-        : 'POLYGON'
-    } else if (
-      modelJSON.lat !== undefined &&
-      modelJSON.lon !== undefined &&
-      modelJSON.radius !== undefined
-    ) {
-      type = 'POINTRADIUS'
-    } else if (
-      modelJSON.line !== undefined &&
-      modelJSON.lineWidth !== undefined
-    ) {
-      type = 'LINE'
-    } else if (
-      modelJSON.north !== undefined &&
-      modelJSON.south !== undefined &&
-      modelJSON.east !== undefined &&
-      modelJSON.west !== undefined
-    ) {
-      type = 'BBOX'
-    }
-
-    return Object.assign(modelJSON, {
-      type,
-      lineWidth: modelJSON.lineWidth,
-      radius: modelJSON.radius,
-    })
-  }
-  onChange = () => {
-    const value = this.getCurrentValue()
-    this.props.onChange(value)
-  }
-  render() {
-    const options = {
-      onDraw: drawingType => {
-        wreqr.vent.trigger(
-          'search:draw' + this.locationModel.get('mode'),
-          this.locationModel
-        )
-      },
-    }
-    return (
-      <LocationView
-        state={this.state}
-        options={options}
-        setState={(...args) => this.locationModel.set(...args)}
-      />
-    )
-  }
-}
-
-export default withListenTo(LocationInput)
+export default hot(module)(LocationInput)

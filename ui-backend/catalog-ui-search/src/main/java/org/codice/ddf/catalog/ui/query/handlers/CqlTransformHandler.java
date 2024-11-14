@@ -13,12 +13,15 @@
  */
 package org.codice.ddf.catalog.ui.query.handlers;
 
+import static java.util.stream.Collectors.toList;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import ddf.catalog.data.Attribute;
 import ddf.catalog.data.AttributeType;
 import ddf.catalog.data.BinaryContent;
+import ddf.catalog.data.Metacard;
 import ddf.catalog.data.Result;
 import ddf.catalog.federation.FederationException;
 import ddf.catalog.operation.QueryResponse;
@@ -32,12 +35,15 @@ import ddf.catalog.transform.QueryResponseTransformer;
 import ddf.catalog.util.impl.CollectionResultComparator;
 import ddf.catalog.util.impl.DistanceResultComparator;
 import ddf.catalog.util.impl.RelevanceResultComparator;
+import ddf.security.audit.SecurityLogger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -46,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPOutputStream;
 import javax.ws.rs.core.HttpHeaders;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -79,7 +84,6 @@ public class CqlTransformHandler implements Route {
   public static final String TRANSFORMER_ID_PROPERTY = "id";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CqlTransformHandler.class);
-  private static final String GZIP = "gzip";
 
   private static final Gson GSON =
       new GsonBuilder()
@@ -93,16 +97,19 @@ public class CqlTransformHandler implements Route {
   private List<ServiceReference> queryResponseTransformers;
   private BundleContext bundleContext;
   private CqlQueriesImpl cqlQueryUtil;
+  private SecurityLogger securityLogger;
 
   public CqlTransformHandler(
       List<ServiceReference> queryResponseTransformers,
       BundleContext bundleContext,
       EndpointUtil endpointUtil,
-      CqlQueriesImpl cqlQueryUtil) {
+      CqlQueriesImpl cqlQueryUtil,
+      SecurityLogger securityLogger) {
     this.queryResponseTransformers = queryResponseTransformers;
     this.bundleContext = bundleContext;
     this.util = endpointUtil;
     this.cqlQueryUtil = cqlQueryUtil;
+    this.securityLogger = securityLogger;
   }
 
   public class Arguments {
@@ -138,10 +145,14 @@ public class CqlTransformHandler implements Route {
   }
 
   public class CqlTransformRequest {
+    private String exportTitle = String.format("export-%s", Instant.now().toString());
     private List<CqlRequestImpl> searches = Collections.emptyList();
     private int count = 0;
     private List<CqlRequest.Sort> sorts = Collections.emptyList();
+    private boolean phonetics = false;
+    private boolean spellcheck = false;
     private List<String> hiddenResults = Collections.emptyList();
+    private String additionalOptions = null;
 
     public void setSearches(List<CqlRequestImpl> searches) {
       this.searches = searches;
@@ -159,6 +170,22 @@ public class CqlTransformHandler implements Route {
       return this.count;
     }
 
+    public void setPhonetics(boolean phonetics) {
+      this.phonetics = phonetics;
+    }
+
+    public boolean getPhonetics() {
+      return this.phonetics;
+    }
+
+    public void setSpellcheck(boolean spellcheck) {
+      this.spellcheck = spellcheck;
+    }
+
+    public boolean getSpellcheck() {
+      return this.spellcheck;
+    }
+
     public void setSorts(List<CqlRequest.Sort> sorts) {
       this.sorts = sorts;
     }
@@ -173,6 +200,14 @@ public class CqlTransformHandler implements Route {
 
     public List<String> getHiddenResults() {
       return this.hiddenResults;
+    }
+
+    public void setAdditionalOptions(String additionalOptions) {
+      this.additionalOptions = additionalOptions;
+    }
+
+    public String getAdditionalOptions() {
+      return this.additionalOptions;
     }
   }
 
@@ -199,11 +234,14 @@ public class CqlTransformHandler implements Route {
                     cqlRequest.getCql() != null
                         && (cqlRequest.getSrc() != null
                             || CollectionUtils.isNotEmpty(cqlRequest.getSrcs())))
-            .collect(Collectors.toList());
+            .collect(toList());
 
     cqlRequests.forEach(
         cqlRequest -> {
           cqlRequest.setSorts(cqlTransformRequest.getSorts());
+          cqlRequest.setPhonetics((cqlTransformRequest.getPhonetics()));
+          cqlRequest.setSpellcheck((cqlTransformRequest.getSpellcheck()));
+          cqlRequest.setAdditionalOptions(cqlTransformRequest.getAdditionalOptions());
         });
 
     if (CollectionUtils.isEmpty(cqlRequests)) {
@@ -251,7 +289,7 @@ public class CqlTransformHandler implements Route {
                 })
             .filter(cqlResults -> CollectionUtils.isNotEmpty(cqlResults))
             .flatMap(cqlResults -> cqlResults.stream())
-            .collect(Collectors.toList());
+            .collect(toList());
 
     results.sort(getResultComparators(cqlTransformRequest.getSorts()));
 
@@ -270,7 +308,31 @@ public class CqlTransformHandler implements Route {
                         !cqlTransformRequest
                             .getHiddenResults()
                             .contains(result.getMetacard().getId()))
-                .collect(Collectors.toList());
+                .collect(toList());
+
+    String exportTitle =
+        (results.size() == 1)
+            ? results.get(0).getMetacard().getId()
+            : String.format("export-%s", Instant.now().toString());
+
+    Map<String, List<String>> exportsBySource =
+        results
+            .stream()
+            .collect(
+                Collectors.toMap(
+                    result -> result.getMetacard().getSourceId(),
+                    result -> new ArrayList<>(Arrays.asList(result.getMetacard().getId())),
+                    (existing, replacement) -> {
+                      existing.addAll(replacement);
+                      return existing;
+                    }));
+
+    for (Map.Entry sourceExportMap : exportsBySource.entrySet()) {
+      securityLogger.audit(
+          String.format(
+              "exported metacards: %s from source: %s to format: %s",
+              sourceExportMap.getValue(), sourceExportMap.getKey(), transformerId));
+    }
 
     QueryResponse combinedResponse =
         new QueryResponseImpl(
@@ -283,15 +345,36 @@ public class CqlTransformHandler implements Route {
     List<String> mimeTypeServiceProperty =
         queryResponseTransformer.getProperty("mime-type") instanceof List
             ? (List) queryResponseTransformer.getProperty("mime-type")
-            : Collections.emptyList();
+            : Collections.singletonList((String) queryResponseTransformer.getProperty("mime-type"));
 
-    if (mimeTypeServiceProperty.contains("text/csv")) {
+    if (mimeTypeServiceProperty.contains("text/csv")
+        || mimeTypeServiceProperty.contains(
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        || mimeTypeServiceProperty.contains("application/rtf")) {
       arguments = csvTransformArgumentsAdapter(arguments);
     } else if (schema != null && schema.toString().equals(CswConstants.CSW_NAMESPACE_URI)) {
       arguments = cswTransformArgumentsAdapter();
     }
 
-    attachFileToResponse(request, response, queryResponseTransformer, combinedResponse, arguments);
+    List<String> metacardIds =
+        results.stream().map(Result::getMetacard).map(Metacard::getId).collect(toList());
+
+    Set<String> sources =
+        results
+            .stream()
+            .map(Result::getMetacard)
+            .map(Metacard::getSourceId)
+            .collect(Collectors.toSet());
+
+    attachFileToResponse(
+        response,
+        queryResponseTransformer,
+        combinedResponse,
+        arguments,
+        exportTitle,
+        metacardIds,
+        sources,
+        transformerId);
 
     return "";
   }
@@ -300,7 +383,7 @@ public class CqlTransformHandler implements Route {
     return queryResponseTransformers;
   }
 
-  private void setHttpHeaders(Request request, Response response, BinaryContent content)
+  private void setHttpHeaders(Response response, BinaryContent content, String exportTitle)
       throws MimeTypeException {
     String mimeType = content.getMimeTypeValue();
 
@@ -311,14 +394,8 @@ public class CqlTransformHandler implements Route {
 
     String fileExt = getFileExtFromMimeType(mimeType);
 
-    if (containsGzip(request)) {
-      LOGGER.trace("Request header accepts gzip");
-      response.header(HttpHeaders.CONTENT_ENCODING, GZIP);
-    }
-
     response.type(mimeType);
-    String attachment =
-        String.format("attachment;filename=\"export-%s%s\"", Instant.now().toString(), fileExt);
+    String attachment = String.format("attachment;filename=\"%s%s\"", exportTitle, fileExt);
     response.header(HttpHeaders.CONTENT_DISPOSITION, attachment);
   }
 
@@ -331,36 +408,28 @@ public class CqlTransformHandler implements Route {
     return fileExt;
   }
 
-  private Boolean containsGzip(Request request) {
-    String acceptEncoding = request.headers(HttpHeaders.ACCEPT_ENCODING);
-    if (acceptEncoding != null) {
-      return acceptEncoding.toLowerCase().contains(GZIP);
-    }
-    LOGGER.debug("Request header Accept-Encoding is null");
-    return false;
-  }
-
   private void attachFileToResponse(
-      Request request,
       Response response,
       ServiceReference<QueryResponseTransformer> queryResponseTransformer,
       QueryResponse cqlQueryResponse,
-      Map<String, Serializable> arguments)
+      Map<String, Serializable> arguments,
+      String exportTitle,
+      List<String> metacardIds,
+      Set<String> sources,
+      String transformerId)
       throws CatalogTransformerException, IOException, MimeTypeException {
     BinaryContent content =
         bundleContext.getService(queryResponseTransformer).transform(cqlQueryResponse, arguments);
 
-    setHttpHeaders(request, response, content);
+    setHttpHeaders(response, content, exportTitle);
 
     try (OutputStream servletOutputStream = response.raw().getOutputStream();
         InputStream resultStream = content.getInputStream()) {
-      if (containsGzip(request)) {
-        try (OutputStream gzipServletOutputStream = new GZIPOutputStream(servletOutputStream)) {
-          IOUtils.copy(resultStream, gzipServletOutputStream);
-        }
-      } else {
-        IOUtils.copy(resultStream, servletOutputStream);
-      }
+      long byteCount = IOUtils.copyLarge(resultStream, servletOutputStream);
+      securityLogger.audit(
+          String.format(
+              "exported metacards: %s from source(s): %s to format: %s with output size: %d bytes",
+              metacardIds, sources, transformerId, byteCount));
     }
 
     response.status(HttpStatus.OK_200);
@@ -372,6 +441,9 @@ public class CqlTransformHandler implements Route {
 
   private CollectionResultComparator getResultComparators(List<CqlRequest.Sort> sorts) {
     CollectionResultComparator resultComparator = new CollectionResultComparator();
+    if (sorts == null) {
+      return resultComparator;
+    }
     for (CqlRequest.Sort sort : sorts) {
       Comparator<Result> comparator;
 

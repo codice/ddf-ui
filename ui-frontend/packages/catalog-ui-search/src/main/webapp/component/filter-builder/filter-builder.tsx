@@ -13,19 +13,28 @@
  *
  **/
 import * as React from 'react'
-const cql = require('../../js/cql.js')
-// @ts-ignore
-import { serialize, deserialize } from './filter-serialization'
+
 import FilterBranch from './filter-branch'
 
-import { FilterBuilderClass } from './filter.structure'
+import { FilterBuilderClass, isFilterBuilderClass } from './filter.structure'
+import { useBackbone } from '../selection-checkbox/useBackbone.hook'
+import { ValidationResult } from '../../react-component/location/validators'
 
 type Props = {
   model: any
+  errorListener?: (validationResults: {
+    [key: string]: ValidationResult | undefined
+  }) => void
 }
 
-const getBaseFilter = ({ model }: { model: any }): FilterBuilderClass => {
-  const filter = model.get('filterTree')
+const convertToFilterIfNecessary = ({
+  filter,
+}: {
+  filter: any
+}): FilterBuilderClass => {
+  if (isFilterBuilderClass(filter)) {
+    return filter
+  }
   if (filter.filters === undefined) {
     return new FilterBuilderClass({
       type: 'AND',
@@ -38,23 +47,37 @@ const getBaseFilter = ({ model }: { model: any }): FilterBuilderClass => {
   })
 }
 
-export const FilterBuilderRoot = ({ model }: Props) => {
+const getBaseFilter = ({ model }: { model: any }): FilterBuilderClass => {
+  const filter = model.get('filterTree')
+  return convertToFilterIfNecessary({ filter })
+}
+
+/**
+ * We use the filterTree of the model as the single source of truth, so it's always up to date.
+ * As a result, we have to listen to updates to it.
+ */
+export const FilterBuilderRoot = ({ model, errorListener }: Props) => {
   const [filter, setFilter] = React.useState(getBaseFilter({ model }))
-  React.useEffect(
-    () => {
-      model.set('cql', cql.write(filter))
-      model.set('filterTree', filter)
-    },
-    [filter]
-  )
-  console.log(filter)
+  const { listenTo, stopListening } = useBackbone()
+  React.useEffect(() => {
+    const callback = () => {
+      setFilter(getBaseFilter({ model }))
+    }
+    listenTo(model, 'change:filterTree', callback)
+    return () => {
+      stopListening(model, 'change:filterTree', callback)
+    }
+  }, [model])
   return (
-    <FilterBranch
-      filter={filter}
-      setFilter={update => {
-        setFilter(update)
-      }}
-      root={true}
-    />
+    <div>
+      <FilterBranch
+        filter={filter}
+        setFilter={(update) => {
+          model.set('filterTree', update) // update the filterTree directly so it's always in sync and we're ready to search
+        }}
+        root={true}
+        errorListener={errorListener}
+      />
+    </div>
   )
 }

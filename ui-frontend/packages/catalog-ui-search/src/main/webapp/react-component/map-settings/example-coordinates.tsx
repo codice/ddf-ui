@@ -15,7 +15,8 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import { hot } from 'react-hot-loader'
-const mtgeo = require('mt-geo')
+// @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'mt-g... Remove this comment to see the full error message
+import mtgeo from 'mt-geo'
 
 type Props = {
   selected: string
@@ -26,7 +27,7 @@ const Root = styled.div`
   display: block;
   width: 100%;
   white-space: nowrap;
-  padding: ${props => props.theme.minimumSpacing};
+  padding: ${(props) => props.theme.minimumSpacing};
   position: relative;
 
   &.example-label,
@@ -47,11 +48,11 @@ const Label = styled.label`
     vertical-align: middle;
     cursor: auto;
     font-weight: bolder;
-    max-width: calc(100% - ${props => props.theme.minimumButtonSize});
+    max-width: calc(100% - ${(props) => props.theme.minimumButtonSize});
     margin: 0px;
     line-height: 1.4;
-    padding: ${props => props.theme.minimumSpacing} 0px;
-    min-height: ${props => props.theme.minimumButtonSize};
+    padding: ${(props) => props.theme.minimumSpacing} 0px;
+    min-height: ${(props) => props.theme.minimumButtonSize};
     overflow: hidden;
     text-overflow: ellipsis;
     word-wrap: normal;
@@ -65,6 +66,9 @@ const defaultExamples = {
   decimal: `${exampleLat} ${exampleLon}`,
   mgrs: '4Q FL 23009 12331',
   utm: '14N 1925mE 1513mN',
+  wkt: 'POINT (50 40)',
+} as {
+  [index: string]: string
 }
 
 const render = (props: Props) => {

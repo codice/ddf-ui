@@ -14,8 +14,9 @@
  **/
 import * as React from 'react'
 
-import TextField from '@material-ui/core/TextField'
 import { ValueTypes } from '../filter-builder/filter.structure'
+import { EnterKeySubmitProps } from '../custom-events/enter-key-submit'
+import { NumberField } from './number'
 
 type IntegerFieldProps = {
   value: ValueTypes['integer']
@@ -26,7 +27,6 @@ const defaultValue = 0
 
 const validateShape = ({ value, onChange }: IntegerFieldProps) => {
   if (typeof value !== 'number') {
-    console.log('defaulted to correct shape')
     onChange(defaultValue)
   }
 }
@@ -36,16 +36,13 @@ export const IntegerField = ({ value, onChange }: IntegerFieldProps) => {
     validateShape({ value, onChange })
   }, [])
   return (
-    <TextField
-      fullWidth
-      multiline
-      rowsMax={3}
-      variant="outlined"
-      placeholder="Use * for wildcard."
-      value={value}
-      onChange={e => {
-        onChange(parseInt(e.target.value))
+    <NumberField
+      type="integer"
+      value={value.toString()}
+      onChange={(e) => {
+        onChange(e)
       }}
+      {...EnterKeySubmitProps}
     />
   )
 }

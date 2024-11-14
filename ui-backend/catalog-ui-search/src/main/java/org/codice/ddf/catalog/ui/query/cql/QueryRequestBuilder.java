@@ -27,6 +27,7 @@ import ddf.catalog.operation.impl.FacetedQueryRequest;
 import ddf.catalog.operation.impl.QueryImpl;
 import ddf.catalog.operation.impl.QueryRequestImpl;
 import ddf.catalog.operation.impl.TermFacetPropertiesImpl;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -76,6 +77,8 @@ public class QueryRequestBuilder {
 
   private boolean excludeUnnecessaryAttributes = true;
 
+  private boolean fromUI = false;
+
   private final String id;
 
   private String batchId;
@@ -89,6 +92,8 @@ public class QueryRequestBuilder {
   private String cacheId;
 
   private Set<String> facets = Collections.emptySet();
+
+  private String additionalOptions;
 
   private final String cql;
 
@@ -127,6 +132,11 @@ public class QueryRequestBuilder {
     return this;
   }
 
+  public QueryRequestBuilder setFromUI(boolean fromUI) {
+    this.fromUI = fromUI;
+    return this;
+  }
+
   public QueryRequestBuilder setBatchId(String batchId) {
     this.batchId = batchId;
     return this;
@@ -147,6 +157,11 @@ public class QueryRequestBuilder {
     return this;
   }
 
+  public QueryRequestBuilder setAdditionalOptions(String additionalOptions) {
+    this.additionalOptions = additionalOptions;
+    return this;
+  }
+
   public QueryRequestBuilder setCacheId(String cacheId) {
     this.cacheId = cacheId;
     return this;
@@ -160,14 +175,16 @@ public class QueryRequestBuilder {
   public QueryRequest build() throws CqlParseException {
 
     List<SortBy> sortBys =
-        sorts
-            .stream()
-            .filter(
-                s ->
-                    StringUtils.isNotEmpty(s.getAttribute())
-                        && StringUtils.isNotEmpty(s.getDirection()))
-            .map(s -> parseSort(s.getAttribute(), s.getDirection()))
-            .collect(Collectors.toList());
+        sorts == null
+            ? new ArrayList<>()
+            : sorts
+                .stream()
+                .filter(
+                    s ->
+                        StringUtils.isNotEmpty(s.getAttribute())
+                            && StringUtils.isNotEmpty(s.getDirection()))
+                .map(s -> parseSort(s.getAttribute(), s.getDirection()))
+                .collect(Collectors.toList());
     if (sortBys.isEmpty()) {
       sortBys.add(new SortByImpl(Result.TEMPORAL, DEFAULT_SORT_ORDER));
     }
@@ -222,9 +239,15 @@ public class QueryRequestBuilder {
       queryRequest.getProperties().put("phonetics", phonetics);
     }
 
+    if (additionalOptions != null) {
+      queryRequest.getProperties().put("additionalOptions", additionalOptions);
+    }
+
     if (cacheId != null) {
       queryRequest.getProperties().put("cacheId", cacheId);
     }
+
+    queryRequest.getProperties().put("fromUI", fromUI);
 
     return queryRequest;
   }
