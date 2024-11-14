@@ -50,64 +50,65 @@ const validateDate = ({ value, onChange, isNullable }: DateFieldProps) => {
   }
 }
 
-export const DateField = ({
-  value,
-  onChange,
-  BPDateProps,
-  isNullable,
-}: DateFieldProps) => {
-  const blueprintDateRef = useRef<DateInput>(null)
+export const DateField = React.forwardRef<DateInput, DateFieldProps>(
+  ({ value, onChange, BPDateProps, isNullable }, ref) => {
+    const blueprintDateRef = useRef<DateInput>(null)
 
-  useTimePrefs(() => {
-    const shiftedDate = DateHelpers.Blueprint.DateProps.generateValue(value)
-    const unshiftedDate =
-      DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(shiftedDate)
-    onChange(unshiftedDate.toISOString())
-  })
-  React.useEffect(() => {
-    validateDate({ onChange, value, isNullable })
-  }, [])
+    React.useImperativeHandle(ref, () => blueprintDateRef.current!, [])
 
-  return (
-    <>
-      <DateInput
-        ref={blueprintDateRef}
-        className={MuiOutlinedInputBorderClasses}
-        minDate={DefaultMinDate}
-        maxDate={DefaultMaxDate}
-        closeOnSelection={false}
-        fill
-        formatDate={DateHelpers.Blueprint.commonProps.formatDate}
-        onChange={DateHelpers.Blueprint.DateProps.generateOnChange((value) => {
-          onChange(value)
-        })}
-        parseDate={DateHelpers.Blueprint.commonProps.parseDate}
-        placeholder={DateHelpers.General.getDateFormat()}
-        shortcuts
-        timePrecision={DateHelpers.General.getTimePrecision()}
-        outOfRangeMessage="Out of range"
-        timePickerProps={{
-          useAmPm: user.getAmPmDisplay(),
-        }}
-        inputProps={{
-          ...EnterKeySubmitProps,
-        }}
-        popoverProps={{
-          boundary: 'viewport',
-          position: 'bottom',
-          onClose: () => {
-            setTimeout(() => {
-              blueprintDateRef.current?.setState({ isOpen: false })
-            }, 0)
-          },
-        }}
-        {...(value
-          ? {
-              value: DateHelpers.Blueprint.DateProps.generateValue(value),
+    useTimePrefs(() => {
+      const shiftedDate = DateHelpers.Blueprint.DateProps.generateValue(value)
+      const unshiftedDate =
+        DateHelpers.Blueprint.converters.UntimeshiftFromDatePicker(shiftedDate)
+      onChange(unshiftedDate.toISOString())
+    })
+    React.useEffect(() => {
+      validateDate({ onChange, value, isNullable })
+    }, [])
+
+    return (
+      <>
+        <DateInput
+          ref={blueprintDateRef}
+          className={MuiOutlinedInputBorderClasses}
+          minDate={DefaultMinDate}
+          maxDate={DefaultMaxDate}
+          closeOnSelection={false}
+          fill
+          formatDate={DateHelpers.Blueprint.commonProps.formatDate}
+          onChange={DateHelpers.Blueprint.DateProps.generateOnChange(
+            (value) => {
+              onChange(value)
             }
-          : {})}
-        {...BPDateProps}
-      />
-    </>
-  )
-}
+          )}
+          parseDate={DateHelpers.Blueprint.commonProps.parseDate}
+          placeholder={DateHelpers.General.getDateFormat()}
+          shortcuts
+          timePrecision={DateHelpers.General.getTimePrecision()}
+          outOfRangeMessage="Out of range"
+          timePickerProps={{
+            useAmPm: user.getAmPmDisplay(),
+          }}
+          inputProps={{
+            ...EnterKeySubmitProps,
+          }}
+          popoverProps={{
+            boundary: 'viewport',
+            position: 'bottom',
+            onClose: () => {
+              setTimeout(() => {
+                blueprintDateRef.current?.setState({ isOpen: false })
+              }, 0)
+            },
+          }}
+          {...(value
+            ? {
+                value: DateHelpers.Blueprint.DateProps.generateValue(value),
+              }
+            : {})}
+          {...BPDateProps}
+        />
+      </>
+    )
+  }
+)
