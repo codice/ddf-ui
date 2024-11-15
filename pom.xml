@@ -117,7 +117,7 @@
     <node.version>v18.20.5</node.version>
     <picocontainer.version>1.3_1</picocontainer.version>
     <underscore.version>1.8.3</underscore.version>
-    <yarn.version>v1.22.4</yarn.version>
+    <yarn.version>v1.22.22</yarn.version>
 
     <project.report.output.directory>project-info</project.report.output.directory>
   </properties>
