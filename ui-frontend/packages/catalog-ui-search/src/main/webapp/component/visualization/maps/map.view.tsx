@@ -321,7 +321,7 @@ const handleMapHover = ({
     Boolean(
       mapEvent.mapTarget &&
         mapEvent.mapTarget !== 'userDrawing' &&
-        (mapEvent.mapTarget.constructor === Array ||
+        (Array.isArray(mapEvent.mapTarget) ||
           (mapEvent.mapTarget.constructor === String &&
             !(mapEvent.mapTarget as string).startsWith(SHAPE_ID_PREFIX)))
     )

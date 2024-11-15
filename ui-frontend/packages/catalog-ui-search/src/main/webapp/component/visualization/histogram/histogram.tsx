@@ -284,7 +284,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
       const matchedResults = findMatchesForAttributeValues(
         results,
         attributeToBin,
-        category.constructor === Array ? category : [category]
+        Array.isArray(category) ? category : [category]
       )
 
       if (
@@ -484,7 +484,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
           findMatchesForAttributeValues(
             activeSearchResults,
             attributeToCheck,
-            category.constructor === Array ? category : [category]
+            Array.isArray(category) ? category : [category]
           )
         )
         return results

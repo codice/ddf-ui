@@ -18,7 +18,7 @@ import { LazyQueryResult } from './LazyQueryResult'
 import { QuerySortType } from './types'
 
 function parseMultiValue(value: any) {
-  if (value && value.constructor === Array) {
+  if (value && Array.isArray(value)) {
     return value[0]
   }
   return value

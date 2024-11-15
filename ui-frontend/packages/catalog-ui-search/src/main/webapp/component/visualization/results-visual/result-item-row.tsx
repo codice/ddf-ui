@@ -293,7 +293,7 @@ const RowComponent = ({
                   if (value === undefined) {
                     value = ''
                   }
-                  if (value.constructor !== Array) {
+                  if (!Array.isArray(value)) {
                     value = [value]
                   }
                   if (

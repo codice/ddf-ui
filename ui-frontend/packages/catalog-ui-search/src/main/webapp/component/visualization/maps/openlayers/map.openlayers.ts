@@ -370,7 +370,7 @@ export default function (
       this.panToExtent(coordinates)
     },
     panToExtent(coords: [number, number][]) {
-      if (coords.constructor === Array && coords.length > 0) {
+      if (Array.isArray(coords) && coords.length > 0) {
         const lineObject = coords.map((coordinate) =>
           convertPointCoordinate(coordinate)
         )
@@ -810,7 +810,7 @@ export default function (
              Options passed in are color and isSelected.
              */
     updateCluster(geometry: any, options: any) {
-      if (geometry.constructor === Array) {
+      if (Array.isArray(geometry)) {
         geometry.forEach((innerGeometry) => {
           this.updateCluster(innerGeometry, options)
         })
@@ -856,7 +856,7 @@ export default function (
               Options passed in are color and isSelected.
             */
     updateGeometry(geometry: any, options: any) {
-      if (geometry.constructor === Array) {
+      if (Array.isArray(geometry)) {
         geometry.forEach((innerGeometry) => {
           this.updateGeometry(innerGeometry, options)
         })

@@ -96,7 +96,7 @@ const matchesRoute = ({
     )
   } else if (
     routeInfo.routeProps.path &&
-    routeInfo.routeProps.path.constructor === Array
+    Array.isArray(routeInfo.routeProps.path)
   ) {
     return routeInfo.routeProps.path.some(
       (possibleRoute) =>
