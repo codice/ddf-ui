@@ -55,7 +55,6 @@
     "@types/react-window": "^1.8.1",
     "@types/styled-components": "5.1.26",
     "@types/uuid": "8.3.3",
-    "@welldone-software/why-did-you-render": "4.2.2",
     "autoprefixer": "10.4.20",
     "chai": "4.1.1",
     "chokidar": "3.5.0",
