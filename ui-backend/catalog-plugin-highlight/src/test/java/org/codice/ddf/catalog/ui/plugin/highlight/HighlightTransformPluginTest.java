@@ -1,23 +1,13 @@
 /* Copyright (c) Connexta, LLC */
 package org.codice.ddf.catalog.ui.plugin.highlight;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import static org.mockito.Mockito.mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.ImmutableMap;
-
 import ddf.catalog.Constants;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.data.Result;
@@ -33,6 +23,14 @@ import ddf.catalog.operation.impl.HighlightImpl;
 import ddf.catalog.operation.impl.QueryResponseImpl;
 import ddf.catalog.operation.impl.ResultAttributeHighlightImpl;
 import ddf.catalog.operation.impl.ResultHighlightImpl;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HighlightTransformPluginTest {
@@ -191,7 +189,10 @@ public class HighlightTransformPluginTest {
         new ResultHighlightImpl(
             id,
             Arrays.asList(
-                resultAttributeHighlight, missingAttributeHighlight, emptyStringRedactedAttributeHighlight, redactedAttributeHighlight));
+                resultAttributeHighlight,
+                missingAttributeHighlight,
+                emptyStringRedactedAttributeHighlight,
+                redactedAttributeHighlight));
 
     response
         .getProperties()
