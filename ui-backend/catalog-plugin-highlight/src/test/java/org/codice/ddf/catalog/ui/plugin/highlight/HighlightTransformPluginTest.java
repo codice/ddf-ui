@@ -172,6 +172,7 @@ public class HighlightTransformPluginTest {
     metacard.setAttribute(new AttributeImpl("title", "REDACTED DATA"));
     metacard.setAttribute(new AttributeImpl("description", value));
     metacard.setAttribute(new AttributeImpl("id", "123456789"));
+    metacard.setAttribute(new AttributeImpl("source", ""));
     Result result = new ResultImpl(metacard);
 
     QueryResponse response = new QueryResponseImpl(request, Arrays.asList(result), 1);
@@ -179,6 +180,8 @@ public class HighlightTransformPluginTest {
         new ResultAttributeHighlightImpl("description", Arrays.asList(highlight));
     ResultAttributeHighlight missingAttributeHighlight =
         new ResultAttributeHighlightImpl("extra", Arrays.asList(new HighlightImpl(6, 20)));
+    ResultAttributeHighlight emptyStringRedactedAttributeHighlight =
+        new ResultAttributeHighlightImpl("source", Arrays.asList(new HighlightImpl(6, 20)));
     ResultAttributeHighlight redactedAttributeHighlight =
         new ResultAttributeHighlightImpl("title", Arrays.asList(new HighlightImpl(10, 20)));
 
@@ -186,7 +189,10 @@ public class HighlightTransformPluginTest {
         new ResultHighlightImpl(
             id,
             Arrays.asList(
-                resultAttributeHighlight, missingAttributeHighlight, redactedAttributeHighlight));
+                resultAttributeHighlight,
+                missingAttributeHighlight,
+                emptyStringRedactedAttributeHighlight,
+                redactedAttributeHighlight));
 
     response
         .getProperties()
