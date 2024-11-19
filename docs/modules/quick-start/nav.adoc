@@ -1,3 +1,0 @@
-
-.Quick Start
-* xref:quickstart-ingesting.adoc[Quickstart Ingesting]

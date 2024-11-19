@@ -1,0 +1,34 @@
+import { __assign } from "tslib";
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+import * as React from 'react';
+import Button from '@mui/material/Button';
+import Popover from '@mui/material/Popover';
+import { useMenuState } from '../menu-state/menu-state';
+import LayersView from './layers.view';
+import LayersIcon from '@mui/icons-material/Layers';
+import Paper from '@mui/material/Paper';
+import { Elevations } from '../theme/theme';
+export var LayersDropdown = function (props) {
+    var menuState = useMenuState();
+    return (React.createElement(React.Fragment, null,
+        React.createElement(Button, __assign({ size: "small", "data-id": "layers-button" }, menuState.MuiButtonProps),
+            React.createElement("div", { className: "flex flex-row items-center" },
+                React.createElement(LayersIcon, null))),
+        React.createElement(Popover, __assign({}, menuState.MuiPopoverProps),
+            React.createElement(Paper, { elevation: Elevations.overlays, className: "px-2" },
+                React.createElement(LayersView, { layers: props.layers })))));
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibGF5ZXJzLWRyb3Bkb3duLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL21haW4vd2ViYXBwL2NvbXBvbmVudC9sYXllcnMvbGF5ZXJzLWRyb3Bkb3duLnRzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUE7Ozs7Ozs7Ozs7Ozs7SUFhSTtBQUNKLE9BQU8sS0FBSyxLQUFLLE1BQU0sT0FBTyxDQUFBO0FBQzlCLE9BQU8sTUFBTSxNQUFNLHNCQUFzQixDQUFBO0FBQ3pDLE9BQU8sT0FBTyxNQUFNLHVCQUF1QixDQUFBO0FBQzNDLE9BQU8sRUFBRSxZQUFZLEVBQUUsTUFBTSwwQkFBMEIsQ0FBQTtBQUN2RCxPQUFPLFVBQVUsTUFBTSxlQUFlLENBQUE7QUFDdEMsT0FBTyxVQUFVLE1BQU0sNEJBQTRCLENBQUE7QUFDbkQsT0FBTyxLQUFLLE1BQU0scUJBQXFCLENBQUE7QUFDdkMsT0FBTyxFQUFFLFVBQVUsRUFBRSxNQUFNLGdCQUFnQixDQUFBO0FBTTNDLE1BQU0sQ0FBQyxJQUFNLGNBQWMsR0FBRyxVQUFDLEtBQTBCO0lBQ3ZELElBQU0sU0FBUyxHQUFHLFlBQVksRUFBRSxDQUFBO0lBRWhDLE9BQU8sQ0FDTDtRQUNFLG9CQUFDLE1BQU0sYUFDTCxJQUFJLEVBQUMsT0FBTyxhQUNKLGVBQWUsSUFDbkIsU0FBUyxDQUFDLGNBQWM7WUFFNUIsNkJBQUssU0FBUyxFQUFDLDRCQUE0QjtnQkFDekMsb0JBQUMsVUFBVSxPQUFHLENBQ1YsQ0FDQztRQUNULG9CQUFDLE9BQU8sZUFBSyxTQUFTLENBQUMsZUFBZTtZQUNwQyxvQkFBQyxLQUFLLElBQUMsU0FBUyxFQUFFLFVBQVUsQ0FBQyxRQUFRLEVBQUUsU0FBUyxFQUFDLE1BQU07Z0JBQ3JELG9CQUFDLFVBQVUsSUFBQyxNQUFNLEVBQUUsS0FBSyxDQUFDLE1BQU0sR0FBSSxDQUM5QixDQUNBLENBQ1QsQ0FDSixDQUFBO0FBQ0gsQ0FBQyxDQUFBIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBDb3B5cmlnaHQgKGMpIENvZGljZSBGb3VuZGF0aW9uXG4gKlxuICogVGhpcyBpcyBmcmVlIHNvZnR3YXJlOiB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IgbW9kaWZ5IGl0IHVuZGVyIHRoZSB0ZXJtcyBvZiB0aGUgR05VIExlc3NlclxuICogR2VuZXJhbCBQdWJsaWMgTGljZW5zZSBhcyBwdWJsaXNoZWQgYnkgdGhlIEZyZWUgU29mdHdhcmUgRm91bmRhdGlvbiwgZWl0aGVyIHZlcnNpb24gMyBvZiB0aGVcbiAqIExpY2Vuc2UsIG9yIGFueSBsYXRlciB2ZXJzaW9uLlxuICpcbiAqIFRoaXMgcHJvZ3JhbSBpcyBkaXN0cmlidXRlZCBpbiB0aGUgaG9wZSB0aGF0IGl0IHdpbGwgYmUgdXNlZnVsLCBidXQgV0lUSE9VVCBBTlkgV0FSUkFOVFk7IHdpdGhvdXRcbiAqIGV2ZW4gdGhlIGltcGxpZWQgd2FycmFudHkgb2YgTUVSQ0hBTlRBQklMSVRZIG9yIEZJVE5FU1MgRk9SIEEgUEFSVElDVUxBUiBQVVJQT1NFLiBTZWUgdGhlIEdOVVxuICogTGVzc2VyIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgZm9yIG1vcmUgZGV0YWlscy4gQSBjb3B5IG9mIHRoZSBHTlUgTGVzc2VyIEdlbmVyYWwgUHVibGljIExpY2Vuc2VcbiAqIGlzIGRpc3RyaWJ1dGVkIGFsb25nIHdpdGggdGhpcyBwcm9ncmFtIGFuZCBjYW4gYmUgZm91bmQgYXRcbiAqIDxodHRwOi8vd3d3LmdudS5vcmcvbGljZW5zZXMvbGdwbC5odG1sPi5cbiAqXG4gKiovXG5pbXBvcnQgKiBhcyBSZWFjdCBmcm9tICdyZWFjdCdcbmltcG9ydCBCdXR0b24gZnJvbSAnQG11aS9tYXRlcmlhbC9CdXR0b24nXG5pbXBvcnQgUG9wb3ZlciBmcm9tICdAbXVpL21hdGVyaWFsL1BvcG92ZXInXG5pbXBvcnQgeyB1c2VNZW51U3RhdGUgfSBmcm9tICcuLi9tZW51LXN0YXRlL21lbnUtc3RhdGUnXG5pbXBvcnQgTGF5ZXJzVmlldyBmcm9tICcuL2xheWVycy52aWV3J1xuaW1wb3J0IExheWVyc0ljb24gZnJvbSAnQG11aS9pY29ucy1tYXRlcmlhbC9MYXllcnMnXG5pbXBvcnQgUGFwZXIgZnJvbSAnQG11aS9tYXRlcmlhbC9QYXBlcidcbmltcG9ydCB7IEVsZXZhdGlvbnMgfSBmcm9tICcuLi90aGVtZS90aGVtZSdcblxudHlwZSBMYXllcnNEcm9wZG93blByb3BzID0ge1xuICBsYXllcnM6IEFycmF5PGFueT5cbn1cblxuZXhwb3J0IGNvbnN0IExheWVyc0Ryb3Bkb3duID0gKHByb3BzOiBMYXllcnNEcm9wZG93blByb3BzKSA9PiB7XG4gIGNvbnN0IG1lbnVTdGF0ZSA9IHVzZU1lbnVTdGF0ZSgpXG5cbiAgcmV0dXJuIChcbiAgICA8PlxuICAgICAgPEJ1dHRvblxuICAgICAgICBzaXplPVwic21hbGxcIlxuICAgICAgICBkYXRhLWlkPVwibGF5ZXJzLWJ1dHRvblwiXG4gICAgICAgIHsuLi5tZW51U3RhdGUuTXVpQnV0dG9uUHJvcHN9XG4gICAgICA+XG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmxleCBmbGV4LXJvdyBpdGVtcy1jZW50ZXJcIj5cbiAgICAgICAgICA8TGF5ZXJzSWNvbiAvPlxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvQnV0dG9uPlxuICAgICAgPFBvcG92ZXIgey4uLm1lbnVTdGF0ZS5NdWlQb3BvdmVyUHJvcHN9PlxuICAgICAgICA8UGFwZXIgZWxldmF0aW9uPXtFbGV2YXRpb25zLm92ZXJsYXlzfSBjbGFzc05hbWU9XCJweC0yXCI+XG4gICAgICAgICAgPExheWVyc1ZpZXcgbGF5ZXJzPXtwcm9wcy5sYXllcnN9IC8+XG4gICAgICAgIDwvUGFwZXI+XG4gICAgICA8L1BvcG92ZXI+XG4gICAgPC8+XG4gIClcbn1cbiJdfQ==
