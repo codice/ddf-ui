@@ -1,4 +1,4 @@
-import * as React from 'react'
+
 import styled from 'styled-components'
 
 const Root = styled.div<{ pos: { x: number; y: number } }>`

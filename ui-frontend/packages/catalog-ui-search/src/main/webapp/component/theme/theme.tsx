@@ -11,7 +11,7 @@ import {
   alpha,
   ThemeOptions,
 } from '@mui/material/styles'
-import { ThemeContext } from 'styled-components'
+import { DefaultTheme, ThemeContext } from 'styled-components'
 import { createGlobalStyle } from 'styled-components'
 import { meetsContrastGuidelines } from 'polished'
 import { useRemoveFocusStyle } from '../app/blueprint.adjust'
@@ -414,7 +414,7 @@ declare module '@mui/material' {
 }
 
 export const Provider = ({ children }: { children: any }) => {
-  const styledTheme = React.useContext(ThemeContext)
+  const styledTheme = React.useContext(ThemeContext) as DefaultTheme
   const darkMode = styledTheme.theme === 'dark'
   const paperColor = darkMode ? dark.paper : light.paper
   const backgroundColor = darkMode ? dark.background : light.background

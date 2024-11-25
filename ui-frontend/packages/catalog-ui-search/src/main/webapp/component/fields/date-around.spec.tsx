@@ -1,4 +1,3 @@
-import React from 'react'
 import { render, waitFor } from '@testing-library/react'
 import { DateAroundField } from './date-around'
 import { expect } from 'chai'

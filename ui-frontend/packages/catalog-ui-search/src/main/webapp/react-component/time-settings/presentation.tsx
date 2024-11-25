@@ -1,4 +1,3 @@
-//DELETE AFTER CATALOG-UI-SEARCH CUT
 import * as React from 'react'
 import { hot } from 'react-hot-loader'
 import styled from 'styled-components'

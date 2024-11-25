@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
+
 import MetacardArchive from '../metacard-archive'
 import { MetacardInteractionProps } from '.'
 import { MetacardInteraction } from './metacard-interactions'

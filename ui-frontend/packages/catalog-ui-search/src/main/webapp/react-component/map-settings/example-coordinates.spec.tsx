@@ -12,7 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react'
 import { expect } from 'chai'
 import { testComponent as ExampleCoordinates } from './example-coordinates'
 import { render } from '@testing-library/react'

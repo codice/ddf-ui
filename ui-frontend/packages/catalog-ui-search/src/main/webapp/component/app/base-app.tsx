@@ -1,4 +1,4 @@
-import * as React from 'react'
+
 import App, { IndividualRouteType, useDefaultWelcome } from './app'
 import Help from '../help/help.view'
 

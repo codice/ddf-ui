@@ -3,7 +3,7 @@ import { expect } from 'chai'
 import { render, fireEvent } from '@testing-library/react'
 
 import { DateRangeField, defaultValue } from './date-range'
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 import user from '../singletons/user-instance'
 import { ValueTypes } from '../filter-builder/filter.structure'

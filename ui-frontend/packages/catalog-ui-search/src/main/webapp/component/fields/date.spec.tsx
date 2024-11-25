@@ -1,7 +1,7 @@
 import React from 'react'
 
 import { DateField } from './date'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import { expect } from 'chai'
 
 import user from '../singletons/user-instance'

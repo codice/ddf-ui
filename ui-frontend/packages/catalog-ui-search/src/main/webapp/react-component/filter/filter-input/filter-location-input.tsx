@@ -12,7 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react'
 import LocationView from '../../location/location'
 import { hot } from 'react-hot-loader'
 

@@ -271,7 +271,6 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
                   color={state.color}
                   {...MuiButtonProps}
                   {...useTheme()}
-                  size={'1.8rem'}
                 />
                 <Popover {...MuiPopoverProps}>
                   <LocationColorSelector setColor={setColor} />

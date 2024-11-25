@@ -12,7 +12,7 @@ import wreqr from '../../../js/wreqr'
 import $ from 'jquery'
 import _ from 'underscore'
 import Plotly from 'plotly.js'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import extension from '../../../extension-points'
 import { useTheme } from '@mui/material/styles'
 import {

@@ -12,7 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react'
 import styled from 'styled-components'
 import * as usngs from 'usng.js'
 import _ from 'lodash'

@@ -13,7 +13,7 @@
  *
  **/
 
-import * as React from 'react'
+
 import { hot } from 'react-hot-loader'
 import MetacardInteractions from '../../../react-component/metacard-interactions'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'

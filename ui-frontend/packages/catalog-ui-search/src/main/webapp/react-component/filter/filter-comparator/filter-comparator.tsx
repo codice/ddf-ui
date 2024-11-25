@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import MenuItem from '@mui/material/MenuItem'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import {

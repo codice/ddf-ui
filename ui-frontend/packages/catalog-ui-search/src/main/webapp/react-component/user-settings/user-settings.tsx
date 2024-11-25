@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
+
 import { createGlobalStyle } from 'styled-components'
 import ThemeSettings from '../theme-settings'
 import AlertSettings from '../alert-settings'

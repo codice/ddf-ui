@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
+
 import Button from '@mui/material/Button'
 import { hot } from 'react-hot-loader'
 import { useMenuState } from '../../../component/menu-state/menu-state'

@@ -15,7 +15,7 @@
 import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import fetch from '../utils/fetch'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import MetacardHistoryPresentation from './presentation'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { TypedUserInstance } from '../../component/singletons/TypedUser'

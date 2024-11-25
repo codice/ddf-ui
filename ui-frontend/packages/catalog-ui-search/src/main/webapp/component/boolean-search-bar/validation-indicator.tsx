@@ -4,7 +4,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Tooltip from '@mui/material/Tooltip'
 import Check from '@mui/icons-material/Check'
 import Close from '@mui/icons-material/Close'
-import * as React from 'react'
+
 import Paper from '@mui/material/Paper'
 import { Elevations } from '../theme/theme'
 

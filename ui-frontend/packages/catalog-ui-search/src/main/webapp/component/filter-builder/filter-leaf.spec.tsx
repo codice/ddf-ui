@@ -1,4 +1,4 @@
-import * as React from 'react'
+
 import { expect } from 'chai'
 import FilterLeaf from './filter-leaf'
 import {
@@ -7,7 +7,7 @@ import {
   PointRadiusLocation,
   PolygonLocation,
 } from './filter.structure'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import user from '../singletons/user-instance'
 import { StartupDataStore } from '../../js/model/Startup/startup'
 import { BasicDataTypePropertyName } from './reserved.properties'
