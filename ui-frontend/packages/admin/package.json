@@ -2,7 +2,7 @@
   "name": "kanri",
   "author": "Codice",
   "description": "An administration UI for DDF",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "LGPL-3.0",
   "keywords": [],
   "repository": {
@@ -19,7 +19,7 @@
     "@connexta/ace": "git+https://github.com/connexta/ace.git#4cc376863e82757699cdaa1301f30266e66a1efe"
   },
   "dependencies": {
-    "@connexta/kanri": "connexta/kanri#3218c8bc07b22d1c583c504acbdbb2fb0b099339",
+    "@connexta/kanri": "git+https://github.com/alexabird/kanri.git#3c339d9b3e0d765214d77c157ef573e2764c27ef",
     "@material-ui/core": "4.9.12",
     "@material-ui/icons": "4.9.1",
     "@material-ui/lab": "4.0.0-alpha.51",
