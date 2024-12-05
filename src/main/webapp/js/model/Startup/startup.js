@@ -1,0 +1,44 @@
+import { __extends } from "tslib";
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+import { Subscribable } from '../Base/base-classes'; // Import Subscribable from base-classes module
+import { Sources } from './sources';
+import fetch from '../../../react-component/utils/fetch/fetch';
+import { Configuration } from './configuration';
+import { MetacardDefinitions } from './metacard-definitions';
+var StartupData = /** @class */ (function (_super) {
+    __extends(StartupData, _super);
+    function StartupData() {
+        var _this = _super.call(this) || this;
+        _this.Configuration = new Configuration(_this);
+        _this.Sources = new Sources(_this);
+        _this.MetacardDefinitions = new MetacardDefinitions(_this);
+        _this.fetch();
+        return _this;
+    }
+    StartupData.prototype.fetch = function () {
+        var _this = this;
+        fetch('./internal/compose/startup')
+            .then(function (response) { return response.json(); })
+            .then(function (startupPayload) {
+            _this.data = startupPayload;
+            _this._notifySubscribers({ thing: 'fetched', args: startupPayload });
+        });
+    };
+    return StartupData;
+}(Subscribable));
+export { StartupData };
+export var StartupDataStore = new StartupData();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic3RhcnR1cC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uL3NyYy9tYWluL3dlYmFwcC9qcy9tb2RlbC9TdGFydHVwL3N0YXJ0dXAudHN4Il0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7QUFBQTs7Ozs7Ozs7Ozs7OztJQWFJO0FBQ0osT0FBTyxFQUFFLFlBQVksRUFBRSxNQUFNLHNCQUFzQixDQUFBLENBQUMsK0NBQStDO0FBRW5HLE9BQU8sRUFBRSxPQUFPLEVBQUUsTUFBTSxXQUFXLENBQUE7QUFDbkMsT0FBTyxLQUFLLE1BQU0sNENBQTRDLENBQUE7QUFDOUQsT0FBTyxFQUFFLGFBQWEsRUFBRSxNQUFNLGlCQUFpQixDQUFBO0FBQy9DLE9BQU8sRUFBRSxtQkFBbUIsRUFBRSxNQUFNLHdCQUF3QixDQUFBO0FBRTVEO0lBQWlDLCtCQUcvQjtJQWVBO1FBQUEsWUFDRSxpQkFBTyxTQUtSO1FBSkMsS0FBSSxDQUFDLGFBQWEsR0FBRyxJQUFJLGFBQWEsQ0FBQyxLQUFJLENBQUMsQ0FBQTtRQUM1QyxLQUFJLENBQUMsT0FBTyxHQUFHLElBQUksT0FBTyxDQUFDLEtBQUksQ0FBQyxDQUFBO1FBQ2hDLEtBQUksQ0FBQyxtQkFBbUIsR0FBRyxJQUFJLG1CQUFtQixDQUFDLEtBQUksQ0FBQyxDQUFBO1FBQ3hELEtBQUksQ0FBQyxLQUFLLEVBQUUsQ0FBQTs7SUFDZCxDQUFDO0lBQ0QsMkJBQUssR0FBTDtRQUFBLGlCQU9DO1FBTkMsS0FBSyxDQUFDLDRCQUE0QixDQUFDO2FBQ2hDLElBQUksQ0FBQyxVQUFDLFFBQVEsSUFBSyxPQUFBLFFBQVEsQ0FBQyxJQUFJLEVBQUUsRUFBZixDQUFlLENBQUM7YUFDbkMsSUFBSSxDQUFDLFVBQUMsY0FBa0M7WUFDdkMsS0FBSSxDQUFDLElBQUksR0FBRyxjQUFjLENBQUE7WUFDMUIsS0FBSSxDQUFDLGtCQUFrQixDQUFDLEVBQUUsS0FBSyxFQUFFLFNBQVMsRUFBRSxJQUFJLEVBQUUsY0FBYyxFQUFFLENBQUMsQ0FBQTtRQUNyRSxDQUFDLENBQUMsQ0FBQTtJQUNOLENBQUM7SUFDSCxrQkFBQztBQUFELENBQUMsQUFqQ0QsQ0FBaUMsWUFBWSxHQWlDNUM7O0FBRUQsTUFBTSxDQUFDLElBQU0sZ0JBQWdCLEdBQUcsSUFBSSxXQUFXLEVBQUUsQ0FBQSIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQ29weXJpZ2h0IChjKSBDb2RpY2UgRm91bmRhdGlvblxuICpcbiAqIFRoaXMgaXMgZnJlZSBzb2Z0d2FyZTogeW91IGNhbiByZWRpc3RyaWJ1dGUgaXQgYW5kL29yIG1vZGlmeSBpdCB1bmRlciB0aGUgdGVybXMgb2YgdGhlIEdOVSBMZXNzZXJcbiAqIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgYXMgcHVibGlzaGVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24sIGVpdGhlciB2ZXJzaW9uIDMgb2YgdGhlXG4gKiBMaWNlbnNlLCBvciBhbnkgbGF0ZXIgdmVyc2lvbi5cbiAqXG4gKiBUaGlzIHByb2dyYW0gaXMgZGlzdHJpYnV0ZWQgaW4gdGhlIGhvcGUgdGhhdCBpdCB3aWxsIGJlIHVzZWZ1bCwgYnV0IFdJVEhPVVQgQU5ZIFdBUlJBTlRZOyB3aXRob3V0XG4gKiBldmVuIHRoZSBpbXBsaWVkIHdhcnJhbnR5IG9mIE1FUkNIQU5UQUJJTElUWSBvciBGSVRORVNTIEZPUiBBIFBBUlRJQ1VMQVIgUFVSUE9TRS4gU2VlIHRoZSBHTlVcbiAqIExlc3NlciBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGZvciBtb3JlIGRldGFpbHMuIEEgY29weSBvZiB0aGUgR05VIExlc3NlciBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlXG4gKiBpcyBkaXN0cmlidXRlZCBhbG9uZyB3aXRoIHRoaXMgcHJvZ3JhbSBhbmQgY2FuIGJlIGZvdW5kIGF0XG4gKiA8aHR0cDovL3d3dy5nbnUub3JnL2xpY2Vuc2VzL2xncGwuaHRtbD4uXG4gKlxuICoqL1xuaW1wb3J0IHsgU3Vic2NyaWJhYmxlIH0gZnJvbSAnLi4vQmFzZS9iYXNlLWNsYXNzZXMnIC8vIEltcG9ydCBTdWJzY3JpYmFibGUgZnJvbSBiYXNlLWNsYXNzZXMgbW9kdWxlXG5pbXBvcnQgeyBTdGFydHVwUGF5bG9hZFR5cGUgfSBmcm9tICcuL3N0YXJ0dXAudHlwZXMnXG5pbXBvcnQgeyBTb3VyY2VzIH0gZnJvbSAnLi9zb3VyY2VzJ1xuaW1wb3J0IGZldGNoIGZyb20gJy4uLy4uLy4uL3JlYWN0LWNvbXBvbmVudC91dGlscy9mZXRjaC9mZXRjaCdcbmltcG9ydCB7IENvbmZpZ3VyYXRpb24gfSBmcm9tICcuL2NvbmZpZ3VyYXRpb24nXG5pbXBvcnQgeyBNZXRhY2FyZERlZmluaXRpb25zIH0gZnJvbSAnLi9tZXRhY2FyZC1kZWZpbml0aW9ucydcblxuZXhwb3J0IGNsYXNzIFN0YXJ0dXBEYXRhIGV4dGVuZHMgU3Vic2NyaWJhYmxlPHtcbiAgdGhpbmc6ICdmZXRjaGVkJ1xuICBhcmdzOiBTdGFydHVwUGF5bG9hZFR5cGVcbn0+IHtcbiAgZGF0YT86IE9taXQ8XG4gICAgU3RhcnR1cFBheWxvYWRUeXBlLFxuICAgIHwgJ3NvdXJjZXMnXG4gICAgfCAnaGFydmVzdGVkU291cmNlcydcbiAgICB8ICdsb2NhbFNvdXJjZUlkJ1xuICAgIHwgJ2NvbmZpZydcbiAgICB8ICdwbGF0Zm9ybVVJQ29uZmlndXJhdGlvbidcbiAgICB8ICdhdHRyaWJ1dGVNYXAnXG4gICAgfCAnc29ydGVkQXR0cmlidXRlcydcbiAgICB8ICdtZXRhY2FyZFR5cGVzJ1xuICA+XG4gIFNvdXJjZXM6IFNvdXJjZXNcbiAgQ29uZmlndXJhdGlvbjogQ29uZmlndXJhdGlvblxuICBNZXRhY2FyZERlZmluaXRpb25zOiBNZXRhY2FyZERlZmluaXRpb25zXG4gIGNvbnN0cnVjdG9yKCkge1xuICAgIHN1cGVyKClcbiAgICB0aGlzLkNvbmZpZ3VyYXRpb24gPSBuZXcgQ29uZmlndXJhdGlvbih0aGlzKVxuICAgIHRoaXMuU291cmNlcyA9IG5ldyBTb3VyY2VzKHRoaXMpXG4gICAgdGhpcy5NZXRhY2FyZERlZmluaXRpb25zID0gbmV3IE1ldGFjYXJkRGVmaW5pdGlvbnModGhpcylcbiAgICB0aGlzLmZldGNoKClcbiAgfVxuICBmZXRjaCgpIHtcbiAgICBmZXRjaCgnLi9pbnRlcm5hbC9jb21wb3NlL3N0YXJ0dXAnKVxuICAgICAgLnRoZW4oKHJlc3BvbnNlKSA9PiByZXNwb25zZS5qc29uKCkpXG4gICAgICAudGhlbigoc3RhcnR1cFBheWxvYWQ6IFN0YXJ0dXBQYXlsb2FkVHlwZSkgPT4ge1xuICAgICAgICB0aGlzLmRhdGEgPSBzdGFydHVwUGF5bG9hZFxuICAgICAgICB0aGlzLl9ub3RpZnlTdWJzY3JpYmVycyh7IHRoaW5nOiAnZmV0Y2hlZCcsIGFyZ3M6IHN0YXJ0dXBQYXlsb2FkIH0pXG4gICAgICB9KVxuICB9XG59XG5cbmV4cG9ydCBjb25zdCBTdGFydHVwRGF0YVN0b3JlID0gbmV3IFN0YXJ0dXBEYXRhKClcbiJdfQ==
