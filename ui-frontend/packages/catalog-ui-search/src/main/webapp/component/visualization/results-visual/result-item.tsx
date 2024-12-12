@@ -494,11 +494,21 @@ export const ResultItem = ({
           }
           break
         case 'GEOMETRY':
-          value = convertToFormat(value)
+          if (value.constructor === Array) {
+            value = value.map((val: any) => convertToFormat(val))
+          } else {
+            value = convertToFormat(value)
+          }
+          break
         case 'LONG':
         case 'DOUBLE':
         case 'FLOAT':
-          value = convertToPrecision(value)
+          if (value.constructor === Array) {
+            value = value.map((val: any) => convertToPrecision(val))
+          } else {
+            value = convertToPrecision(value)
+          }
+          break
       }
     }
     if (Array.isArray(value)) {
