@@ -1,9 +1,0 @@
-
-.xref:configuring-intrigue.adoc[Configuring Intrigue]
-* xref:default-layout-intrigue.adoc[Set Default Layout]
-* xref:map-layers-intrigue.adoc[Configuring Map Layers]
-* xref:map-configuration-intrigue.adoc[Map Configuration]
-* xref:uploading-and-editing.adoc[Configuring User Access]
-* xref:upload-editor-intrigue.adoc[Configuring the Upload Editor]
-* xref:search-options.adoc[Configuring Search Options]
-* xref:query-feedback.adoc[Configuring Query Feedback]
