@@ -558,7 +558,7 @@ const useMapListeners = ({
 
   const addSnack = useSnack()
 
-  const upCallbackRef = React.useRef<() => void>()
+  const upCallbackRef = React.useRef<(() => void) | null>(null)
 
   React.useEffect(() => {
     upCallbackRef.current = () => {

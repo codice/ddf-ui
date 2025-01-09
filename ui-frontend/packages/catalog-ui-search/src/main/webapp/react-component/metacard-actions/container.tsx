@@ -13,8 +13,6 @@
  *
  **/
 
-import { hot } from 'react-hot-loader'
-
 import _ from 'underscore'
 import MetacardActionsPresentation from './presentation'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
@@ -53,4 +51,4 @@ const MetacardActions = (props: Props) => {
   )
 }
 
-export default hot(module)(MetacardActions)
+export default MetacardActions

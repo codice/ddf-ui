@@ -14,7 +14,7 @@
  **/
 
 import Button from '@mui/material/Button'
-import { hot } from 'react-hot-loader'
+
 import { useMenuState } from '../../../component/menu-state/menu-state'
 import HomeIcon from '@mui/icons-material/Home'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
@@ -78,4 +78,4 @@ const ZoomToHome = (props: Props) => {
   )
 }
 
-export default hot(module)(ZoomToHome)
+export default ZoomToHome

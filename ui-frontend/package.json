@@ -13,8 +13,11 @@
     "mvn:create-archive": "mvn org.apache.maven.plugins:maven-assembly-plugin:single@create-archive",
     "mvn:install-file": "mvn org.apache.maven.plugins:maven-install-plugin:install-file -Dfile=target/packages-packages.zip -DpomFile=pom.xml -Dclassifier=packages -Dpackaging=zip"
   },
+  "engines": {
+    "node": "20.x.x"
+  },
   "devDependencies": {
-    "@connexta/ace": "git+https://github.com/connexta/ace.git#db11c38f68a73afe8229ac6f87b82e7ae7fc5758",
+    "@connexta/ace": "git+https://github.com/connexta/ace.git#45cc73f03a3f52662e48e6070139992045753974",
     "cpr": "3.0.1",
     "lerna": "3.20.2",
     "mkdirp": "0.5.1",

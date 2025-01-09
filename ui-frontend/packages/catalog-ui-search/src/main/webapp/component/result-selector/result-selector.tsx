@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Spellcheck from '../spellcheck/spellcheck'
 import Grid from '@mui/material/Grid'
-import { hot } from 'react-hot-loader'
+
 import QueryFeed from './query-feed'
 import LinearProgress from '@mui/material/LinearProgress'
 import Paging from './paging'
@@ -241,4 +241,4 @@ const ResultSelector = ({
   )
 }
 
-export default hot(module)(ResultSelector)
+export default ResultSelector

@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper'
 import { Elevations } from '../theme/theme'
 
 type ValidationIndicatorProps = {
-  helperMessage?: string | JSX.Element
+  helperMessage?: string | React.ReactNode
   error?: boolean
 }
 

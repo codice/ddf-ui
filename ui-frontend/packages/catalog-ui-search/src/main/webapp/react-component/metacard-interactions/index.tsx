@@ -13,7 +13,6 @@
  *
  **/
 
-import { hot } from 'react-hot-loader'
 import { Divider } from './metacard-interactions'
 import ExtensionPoints from '../../extension-points'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
@@ -45,7 +44,7 @@ const MetacardInteractions = (props: MetacardInteractionProps) => {
 
 const Component = MetacardInteractions
 
-export default hot(module)(Component)
+export default Component
 
 export { Divider }
 

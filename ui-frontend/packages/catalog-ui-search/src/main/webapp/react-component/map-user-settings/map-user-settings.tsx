@@ -1,4 +1,3 @@
-
 import CoordinateSettings from './coordinate-settings'
 import MapLayerSettings from '../../component/layers/layers.view'
 
@@ -10,3 +9,5 @@ export const MapUserSettings = () => {
     </>
   )
 }
+
+export default MapUserSettings

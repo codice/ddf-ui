@@ -14,7 +14,6 @@
  **/
 
 import styled from 'styled-components'
-import { hot } from 'react-hot-loader'
 
 type RootProps = {
   available: boolean
@@ -92,7 +91,7 @@ type Props = {
   id: string
 } & RootProps
 
-export default hot(module)(({ id, available }: Props) => {
+export default ({ id, available }: Props) => {
   return (
     <Root available={available}>
       <div className="source-available">
@@ -104,4 +103,4 @@ export default hot(module)(({ id, available }: Props) => {
       </div>
     </Root>
   )
-})
+}

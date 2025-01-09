@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import { LazyQueryResults } from '../../../js/model/LazyQueryResult/LazyQueryResults'
 import _ from 'underscore'
 import user from '../../singletons/user-instance'
@@ -382,4 +382,4 @@ export const Header = ({
   )
 }
 
-export default hot(module)(Header)
+export default Header

@@ -2,7 +2,7 @@ import WithListenTo, {
   WithBackboneProps,
 } from './../../../react-component/backbone-container'
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import styled from 'styled-components'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import { useLazyResultsFromSelectionInterface } from '../../selection-interface/hooks'
@@ -225,4 +225,4 @@ const TimelineVisualization = (props: Props) => {
     </TimelineWrapper>
   )
 }
-export default hot(module)(WithListenTo(TimelineVisualization))
+export default WithListenTo(TimelineVisualization)

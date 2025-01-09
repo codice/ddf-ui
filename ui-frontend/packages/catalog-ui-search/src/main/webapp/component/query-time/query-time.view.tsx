@@ -15,7 +15,7 @@
 import * as React from 'react'
 import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
-import { hot } from 'react-hot-loader'
+
 import Autocomplete from '@mui/material/Autocomplete'
 import Chip from '@mui/material/Chip'
 import Grid from '@mui/material/Grid'
@@ -214,4 +214,4 @@ const QueryTime = ({ value, onChange }: QueryTimeProps) => {
   )
 }
 
-export default hot(module)(QueryTime)
+export default QueryTime

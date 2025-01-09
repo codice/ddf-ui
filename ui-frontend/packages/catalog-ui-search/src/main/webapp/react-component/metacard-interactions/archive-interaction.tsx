@@ -16,7 +16,7 @@
 import MetacardArchive from '../metacard-archive'
 import { MetacardInteractionProps } from '.'
 import { MetacardInteraction } from './metacard-interactions'
-import { hot } from 'react-hot-loader'
+
 import { useDialog } from '../../component/dialog'
 import { Divider } from './metacard-interactions'
 import { TypedUserInstance } from '../../component/singletons/TypedUser'
@@ -66,4 +66,4 @@ export const ArchiveAction = (props: MetacardInteractionProps) => {
   )
 }
 
-export default hot(module)(ArchiveAction)
+export default ArchiveAction

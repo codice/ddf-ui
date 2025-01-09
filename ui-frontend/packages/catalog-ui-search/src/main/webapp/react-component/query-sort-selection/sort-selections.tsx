@@ -17,7 +17,6 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import AddIcon from '@mui/icons-material/Add'
 
-import { hot } from 'react-hot-loader'
 import SortItem from './sort-item'
 import {
   getLabel,
@@ -141,4 +140,4 @@ const SortSelections = ({ value = [], onChange }: Props) => {
   )
 }
 
-export default hot(module)(SortSelections)
+export default SortSelections

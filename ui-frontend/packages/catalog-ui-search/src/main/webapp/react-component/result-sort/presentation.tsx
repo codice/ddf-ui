@@ -13,7 +13,6 @@
  *
  **/
 // @ts-nocheck FIXME: Property 'collection' does not exist on type 'Intr
-import { hot } from 'react-hot-loader'
 
 import SortSelections from '../query-sort-selection/sort-selections'
 import Button from '@mui/material/Button'
@@ -58,4 +57,4 @@ const render = ({ removeSort, saveSort, hasSort, collection }: Props) => {
   )
 }
 
-export default hot(module)(render)
+export default render

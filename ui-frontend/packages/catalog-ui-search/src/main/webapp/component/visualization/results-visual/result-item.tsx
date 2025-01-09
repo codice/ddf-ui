@@ -20,7 +20,7 @@ import Button from '@mui/material/Button'
 import LinkIcon from '@mui/icons-material/Link'
 import GetAppIcon from '@mui/icons-material/GetApp'
 import Grid from '@mui/material/Grid'
-import { hot } from 'react-hot-loader'
+
 import Paper from '@mui/material/Paper'
 import Tooltip from '@mui/material/Tooltip'
 import MoreIcon from '@mui/icons-material/MoreVert'
@@ -115,7 +115,7 @@ export const getIconClassName = ({
   }
   return IconHelper.getClassByMetacardObject(lazyResult.plain)
 }
-// @ts-expect-error ts-migrate(6133) FIXME: 'MultiSelectActions' is declared but its value is ... Remove this comment to see the full error message
+// @ts-ignore
 const MultiSelectActions = ({
   selectionInterface,
 }: {
@@ -256,14 +256,15 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
       <Extensions.resultItemTitleAddOn lazyResult={lazyResult} />
       <Grid item className={dynamicActionClasses}>
         {lazyResult.isSearch() ? (
-          <Link
-            component={Button}
+          <Button
+            component={Link}
             data-id="edit-button"
             to={`/search/${lazyResult.plain.id}`}
             style={{ height: '100%' }}
+            size="small"
           >
             <EditIcon />
-          </Link>
+          </Button>
         ) : null}
       </Grid>
       {/** add inline editing later */}
@@ -307,7 +308,7 @@ const IconButton = ({
 }: {
   lazyResult: LazyQueryResult
   selectionInterface: any
-  itemContentRef: React.RefObject<HTMLElement>
+  itemContentRef: React.RefObject<HTMLElement | null>
 }) => {
   const MetacardDefinitions = useMetacardDefinitions()
   const isSelected = useSelectionOfLazyResult({ lazyResult })
@@ -805,4 +806,4 @@ export const ResultItem = ({
     </button>
   )
 }
-export default hot(module)(ResultItem)
+export default ResultItem

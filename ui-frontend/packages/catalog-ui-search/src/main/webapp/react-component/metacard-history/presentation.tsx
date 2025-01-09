@@ -13,8 +13,6 @@
  *
  **/
 
-import { hot } from 'react-hot-loader'
-
 import Button from '@mui/material/Button'
 import styled from 'styled-components'
 import LinearProgress from '@mui/material/LinearProgress'
@@ -170,4 +168,4 @@ have chosen."
   )
 }
 
-export default hot(module)(MetacardHistory)
+export default MetacardHistory

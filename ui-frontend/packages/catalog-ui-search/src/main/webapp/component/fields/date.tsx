@@ -14,7 +14,7 @@
  **/
 import * as React from 'react'
 import { useRef } from 'react'
-import { DateInput, IDateInputProps } from '@blueprintjs/datetime'
+import { DateInput, DateInputProps } from '@blueprintjs/datetime'
 
 import {
   DateHelpers,
@@ -36,7 +36,7 @@ type DateFieldProps = {
   /**
    * Override if you absolutely must
    */
-  BPDateProps?: Partial<IDateInputProps>
+  BPDateProps?: Partial<DateInputProps>
   isNullable?: boolean
 }
 

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 
 import TimeSettingsPresentation from './presentation'
@@ -131,4 +131,4 @@ class TimeSettingsContainer extends React.Component<WithBackboneProps, State> {
   )
 }
 
-export default hot(module)(withListenTo(TimeSettingsContainer))
+export default withListenTo(TimeSettingsContainer)

@@ -14,7 +14,7 @@
  **/
 
 import { MetacardInteractionProps } from '.'
-import { hot } from 'react-hot-loader'
+
 import Button from '@mui/material/Button'
 import { Link } from '../../component/link/link'
 import { Divider } from './metacard-interactions'
@@ -47,4 +47,4 @@ const ExpandMetacard = (props: MetacardInteractionProps) => {
   )
 }
 
-export default hot(module)(ExpandMetacard)
+export default ExpandMetacard

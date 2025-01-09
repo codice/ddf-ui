@@ -13,7 +13,6 @@
  *
  **/
 import LocationView from '../../location/location'
-import { hot } from 'react-hot-loader'
 
 /**
  * consolidated with location since there is no reason for indirection here, we should delete this
@@ -28,4 +27,4 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
   )
 }
 
-export default hot(module)(LocationInput)
+export default LocationInput

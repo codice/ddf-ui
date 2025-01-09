@@ -13,7 +13,6 @@
  *
  **/
 
-import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import FilterBranch from '../filter-builder/filter-branch'
 import {
@@ -118,4 +117,4 @@ const ResultFilter = ({ closeDropdown }: { closeDropdown: () => void }) => {
   )
 }
 
-export default hot(module)(ResultFilter)
+export default ResultFilter

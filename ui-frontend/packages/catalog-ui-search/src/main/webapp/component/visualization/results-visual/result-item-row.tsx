@@ -15,7 +15,7 @@
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import { CellComponent } from './table-header'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import {
@@ -389,4 +389,4 @@ const RowComponent = ({
     </div>
   )
 }
-export default hot(module)(RowComponent)
+export default RowComponent

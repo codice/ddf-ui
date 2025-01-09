@@ -2,7 +2,7 @@ import React from 'react'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import type { GoldenLayoutViewProps } from './golden-layout.view'
 import { LazyQueryResults } from '../../js/model/LazyQueryResult/LazyQueryResults'
-import { useHistory } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import _cloneDeep from 'lodash.clonedeep'
 import _isEqualWith from 'lodash.isequalwith'
 import { TypedUserInstance } from '../singletons/TypedUser'
@@ -478,9 +478,11 @@ export const UseSubwindowConsumeNavigationChange = ({
 }: {
   goldenLayout: any
 }) => {
-  const history = useHistory()
+  const navigate = useNavigate()
+  const location = useLocation()
+
   React.useEffect(() => {
-    if (goldenLayout && history && goldenLayout.isSubWindow) {
+    if (goldenLayout && navigate && goldenLayout.isSubWindow) {
       const callback = (e: MouseEvent) => {
         if (
           e.target?.constructor === HTMLAnchorElement &&
@@ -496,28 +498,38 @@ export const UseSubwindowConsumeNavigationChange = ({
         }
       }
       document.addEventListener('click', callback)
-      history.replace = (...args) => {
+      // Override navigate functions
+      const replaceWrapper = (to: string, options?: { state?: any }) => {
         goldenLayout.eventHub.emit(
           GoldenLayoutWindowCommunicationEvents.consumeNavigationChange,
           {
-            replace: args,
+            replace: [to, { ...options, replace: true }],
           }
         )
       }
-      history.push = (...args) => {
+      const pushWrapper = (to: string, options?: { state?: any }) => {
         goldenLayout.eventHub.emit(
           GoldenLayoutWindowCommunicationEvents.consumeNavigationChange,
           {
-            push: args,
+            push: [to, options],
           }
         )
       }
+      // Attach the wrapper functions
+      Object.defineProperty(navigate, 'replace', {
+        value: replaceWrapper,
+        writable: true,
+      })
+      Object.defineProperty(navigate, 'push', {
+        value: pushWrapper,
+        writable: true,
+      })
       return () => {
         document.removeEventListener('click', callback)
       }
     }
     return () => {}
-  }, [history, goldenLayout])
+  }, [navigate, location, goldenLayout])
   return null
 }
 
@@ -532,19 +544,26 @@ const useWindowConsumeNavigationChange = ({
   goldenLayout: any
   isInitialized: boolean
 }) => {
-  const history = useHistory()
+  const navigate = useNavigate()
+  const location = useLocation()
+
   React.useEffect(() => {
-    if (isInitialized && goldenLayout && history && !goldenLayout.isSubWindow) {
+    if (
+      isInitialized &&
+      goldenLayout &&
+      navigate &&
+      !goldenLayout.isSubWindow
+    ) {
       const callback = (params: any) => {
         if (params.href && params.href.startsWith('http')) {
           // didn't not see a way to handle full urls with react router dom, but location works just as well I think
-          location = params.href
+          window.location.href = params.href
         } else if (params.href) {
-          history.location = params.href
+          navigate(params.href)
         } else if (params.replace) {
-          history.replace.apply(undefined, params.replace)
+          navigate(params.replace[0], params.replace[1])
         } else if (params.push) {
-          history.push.apply(undefined, params.push)
+          navigate(params.push[0], params.push[1])
         }
       }
       goldenLayout.eventHub.on(
@@ -560,7 +579,7 @@ const useWindowConsumeNavigationChange = ({
       }
     }
     return () => {}
-  }, [history, goldenLayout, isInitialized])
+  }, [navigate, location, goldenLayout, isInitialized])
   return null
 }
 

@@ -13,7 +13,6 @@
  *
  **/
 
-import { hot } from 'react-hot-loader'
 import Button from '@mui/material/Button'
 import { useMenuState } from '../../component/menu-state/menu-state'
 import Popover from '@mui/material/Popover'
@@ -152,4 +151,4 @@ const render = (props: Props) => {
   )
 }
 
-export default hot(module)(render)
+export default render

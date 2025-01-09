@@ -14,7 +14,7 @@
  **/
 import * as React from 'react'
 import styled from 'styled-components'
-import { hot } from 'react-hot-loader'
+
 import ExampleCoordinates from './example-coordinates'
 import FormGroup from '@mui/material/FormGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -117,5 +117,5 @@ const render = ({
   )
 }
 
-export default hot(module)(render)
+export default render
 export const testComponent = render

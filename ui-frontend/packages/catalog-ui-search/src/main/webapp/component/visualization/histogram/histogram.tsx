@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import { useLazyResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import { LazyQueryResults } from '../../../js/model/LazyQueryResult/LazyQueryResults'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
@@ -239,7 +239,7 @@ export const Histogram = ({ selectionInterface }: Props) => {
   const theme = useTheme()
   const isDarkTheme = theme.palette.mode === 'dark'
   const [noMatchingData, setNoMatchingData] = React.useState(false)
-  const plotlyRef = React.useRef<HTMLDivElement>()
+  const plotlyRef = React.useRef<HTMLDivElement | null>(null)
   const plotlyReadyForUpdatesRef = React.useRef(false)
   const lazyResults = useLazyResultsFromSelectionInterface({
     selectionInterface,
@@ -673,4 +673,4 @@ export const Histogram = ({ selectionInterface }: Props) => {
     </>
   )
 }
-export default hot(module)(Histogram)
+export default Histogram

@@ -15,7 +15,7 @@
 import * as React from 'react'
 import Button from '@mui/material/Button'
 import user from '../../singletons/user-instance'
-import { hot } from 'react-hot-loader'
+
 import { AutoVariableSizeList } from 'react-window-components'
 import Grid from '@mui/material/Grid'
 import { Header } from './table-header'
@@ -316,4 +316,4 @@ const TableVisual = ({ selectionInterface, mode, setMode }: Props) => {
     </Grid>
   )
 }
-export default hot(module)(TableVisual)
+export default TableVisual

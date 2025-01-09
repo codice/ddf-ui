@@ -10,16 +10,16 @@
     "url": "https://github.com/codice/ddf.git"
   },
   "engines": {
-    "node": "18.x.x"
+    "node": "20.x.x"
   },
   "devDependencies": {
     "@types/react": "16.9.34",
     "@types/react-dom": "16.9.7",
     "@types/styled-components": "5.1.0",
-    "@connexta/ace": "git+https://github.com/connexta/ace.git#db11c38f68a73afe8229ac6f87b82e7ae7fc5758"
+    "@connexta/ace": "git+https://github.com/connexta/ace.git#45cc73f03a3f52662e48e6070139992045753974"
   },
   "dependencies": {
-    "@connexta/kanri": "connexta/kanri#3218c8bc07b22d1c583c504acbdbb2fb0b099339",
+    "@connexta/kanri": "git+https://github.com/connexta/kanri.git#6f1f0bc9ad113bf0c3e65e680613c2cd10c74305",
     "@material-ui/core": "4.9.12",
     "@material-ui/icons": "4.9.1",
     "@material-ui/lab": "4.0.0-alpha.51",

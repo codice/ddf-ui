@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-import { DateRangeInput, IDateRangeInputProps } from '@blueprintjs/datetime'
+import { DateRangeInput, DateRangeInputProps } from '@blueprintjs/datetime'
 import { DateHelpers, DefaultMaxDate, DefaultMinDate } from './date-helpers'
 import { ValueTypes } from '../filter-builder/filter.structure'
 import { MuiOutlinedInputBorderClasses } from '../theme/theme'
@@ -30,7 +30,7 @@ type Props = {
   /**
    * Override if you absolutely must
    */
-  BPDateRangeProps?: Partial<IDateRangeInputProps>
+  BPDateRangeProps?: Partial<DateRangeInputProps>
   /**
    * Optional ref to access the underlying Blueprint DateRangeInput component
    */

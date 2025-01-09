@@ -13,8 +13,6 @@
  *
  **/
 
-
-import { hot } from 'react-hot-loader'
 import MetacardInteractions from '../../../react-component/metacard-interactions'
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 
@@ -31,4 +29,4 @@ const LazyMetacardInteractions = ({ lazyResults, onClose }: Props) => {
   )
 }
 
-export default hot(module)(LazyMetacardInteractions)
+export default LazyMetacardInteractions

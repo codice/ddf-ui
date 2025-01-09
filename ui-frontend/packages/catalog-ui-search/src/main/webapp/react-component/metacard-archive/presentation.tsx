@@ -13,8 +13,6 @@
  *
  **/
 
-import { hot } from 'react-hot-loader'
-
 import Button from '@mui/material/Button'
 import ProgressButton from '../progress-button'
 import { useDialog } from '../../component/dialog'
@@ -100,4 +98,4 @@ const render = (props: Props) => {
   )
 }
 
-export default hot(module)(render)
+export default render

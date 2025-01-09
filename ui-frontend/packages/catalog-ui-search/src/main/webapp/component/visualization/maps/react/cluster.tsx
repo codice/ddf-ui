@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import { ClusterType } from './geometries'
 import { useSelectionOfLazyResults } from '../../../../js/model/LazyQueryResult/hooks'
 import _ from 'underscore'
@@ -97,4 +97,4 @@ const Cluster = ({ cluster, map }: Props) => {
   return <></>
 }
 
-export default hot(module)(Cluster)
+export default Cluster

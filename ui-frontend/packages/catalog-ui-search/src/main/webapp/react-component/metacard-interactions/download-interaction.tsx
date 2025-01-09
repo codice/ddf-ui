@@ -15,7 +15,7 @@
 
 import { MetacardInteractionProps } from '.'
 import { MetacardInteraction } from './metacard-interactions'
-import { hot } from 'react-hot-loader'
+
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { StartupDataStore } from '../../js/model/Startup/startup'
 import { useDialog } from '../../component/dialog'
@@ -68,4 +68,4 @@ const isRemoteResourceCached = (model: LazyQueryResult[]): boolean => {
   )
 }
 
-export default hot(module)(DownloadProduct)
+export default DownloadProduct

@@ -8,7 +8,6 @@ import Autocomplete, {
   createFilterOptions,
 } from '@mui/material/Autocomplete'
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
 import { useState } from 'react'
 import { BooleanTextType } from '../filter-builder/filter.structure'
 import useBooleanSearchError from './useBooleanSearchError'
@@ -85,7 +84,7 @@ const BooleanSearchBar = ({
   const [id] = React.useState(getRandomId())
   const [cursorLocation, setCursorLocation] = React.useState(0)
   const [tokens, setTokens] = React.useState<string[]>([])
-  const inputRef = React.useRef<HTMLInputElement>()
+  const inputRef = React.useRef<HTMLInputElement | null>(null)
   const optionToValue = (option: any) => option.token
   const [options, setOptions] = useState<Option[]>([])
   const isValidBeginningToken = (query: string) => {
@@ -369,4 +368,4 @@ const BooleanSearchBar = ({
     </FormControl>
   )
 }
-export default hot(module)(ShapeValidator)
+export default ShapeValidator

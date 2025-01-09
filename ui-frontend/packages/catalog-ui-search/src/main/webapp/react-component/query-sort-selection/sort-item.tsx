@@ -13,7 +13,6 @@
  *
  **/
 
-
 import { isDirectionalSort } from './sort-selection-helpers'
 import { SortItemType, Option } from './sort-selections'
 import TextField from '@mui/material/TextField'

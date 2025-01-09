@@ -16,7 +16,6 @@ import * as React from 'react'
 import user from '../../component/singletons/user-instance'
 import AlertSettingsComponent from './presentation'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
-import { hot } from 'react-hot-loader'
 
 type Props = {} & WithBackboneProps
 type State = {
@@ -79,4 +78,4 @@ class AlertSettings extends React.Component<Props, State> {
   }
 }
 
-export default hot(module)(withListenTo(AlertSettings))
+export default withListenTo(AlertSettings)

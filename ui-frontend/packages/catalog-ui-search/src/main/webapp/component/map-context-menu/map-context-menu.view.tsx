@@ -14,7 +14,7 @@
  **/
 
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import { useMenuState } from '../menu-state/menu-state'
 import Popover from '@mui/material/Popover'
 import Paper from '@mui/material/Paper'
@@ -72,4 +72,4 @@ const MapContextDropdown = ({ mapModel }: { mapModel: any }) => {
   )
 }
 
-export default hot(module)(MapContextDropdown)
+export default MapContextDropdown
