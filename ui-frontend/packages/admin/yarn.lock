@@ -1217,11 +1217,11 @@
     whatwg-fetch "3.6.2"
     worker-loader "3.0.8"
 
-"@connexta/kanri@git+https://github.com/alexabird/kanri.git#3c339d9b3e0d765214d77c157ef573e2764c27ef":
+"@connexta/kanri@git+https://github.com/connexta/kanri.git#a4ab2ff37806a36bd06b40f9ebf3cf0137fd66ca":
   version "0.0.15"
-  resolved "git+https://github.com/alexabird/kanri.git#3c339d9b3e0d765214d77c157ef573e2764c27ef"
+  resolved "git+https://github.com/connexta/kanri.git#a4ab2ff37806a36bd06b40f9ebf3cf0137fd66ca"
   dependencies:
-    "@connexta/logviewer" "git+https://github.com/alexabird/logviewer.git#bd9c142a447dc67411262b1d2d19f3629b4154c0"
+    "@connexta/logviewer" "git+https://github.com/connexta/logviewer.git#c55ba445e875d3aa99afc8aa9cbec0037c787fa3"
     dropzone "5.5.1"
     formik "2.3.3"
     fuse.js "3.4.5"
@@ -1231,9 +1231,9 @@
     scroll-into-view-if-needed "2.2.20"
     yup "1.4.0"
 
-"@connexta/logviewer@git+https://github.com/alexabird/logviewer.git#bd9c142a447dc67411262b1d2d19f3629b4154c0":
+"@connexta/logviewer@git+https://github.com/connexta/logviewer.git#c55ba445e875d3aa99afc8aa9cbec0037c787fa3":
   version "0.2.0"
-  resolved "git+https://github.com/alexabird/logviewer.git#bd9c142a447dc67411262b1d2d19f3629b4154c0"
+  resolved "git+https://github.com/connexta/logviewer.git#c55ba445e875d3aa99afc8aa9cbec0037c787fa3"
   dependencies:
     es6-promise "3.2.1"
     isomorphic-fetch "3.0.0"
