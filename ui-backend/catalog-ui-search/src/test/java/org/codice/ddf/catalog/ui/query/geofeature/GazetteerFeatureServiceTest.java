@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
 
@@ -110,16 +111,16 @@ public class GazetteerFeatureServiceTest {
     assertThat(geometry.getGeometryType(), is("Polygon"));
 
     GeoResult geoResult = GeoResultCreator.createGeoResult(GEO_ENTRY_1);
-    double[] p0 = geoResult.getBbox().get(0).getDirectPosition().getCoordinate();
-    double[] p1 = geoResult.getBbox().get(1).getDirectPosition().getCoordinate();
+    Point p0 = geoResult.getBbox().get(0);
+    Point p1 = geoResult.getBbox().get(1);
 
     Coordinate[] expectedCoordinates =
         new Coordinate[] {
-          new Coordinate(p0[0], p1[1]),
-          new Coordinate(p1[0], p1[1]),
-          new Coordinate(p1[0], p0[1]),
-          new Coordinate(p0[0], p0[1]),
-          new Coordinate(p0[0], p1[1]),
+          new Coordinate(p0.getX(), p1.getY()),
+          new Coordinate(p1.getX(), p1.getY()),
+          new Coordinate(p1.getX(), p0.getY()),
+          new Coordinate(p0.getX(), p0.getY()),
+          new Coordinate(p0.getX(), p1.getY()),
         };
     assertThat(geometry.getCoordinates(), is(expectedCoordinates));
   }

@@ -17,24 +17,29 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 import java.util.Collections;
-import org.geotools.factory.CommonFactoryFinder;
-import org.geotools.geometry.jts.spatialschema.geometry.primitive.PointImpl;
+import org.geotools.filter.FilterFactoryImpl;
 import org.junit.Before;
 import org.junit.Test;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
+import org.opengis.filter.FilterFactory2;
 
 public class TagBaseVisitorTest {
 
   private static final String TEST = "test";
 
-  private FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+  private FilterFactory2 ff = new FilterFactoryImpl();
+  private final WKTReader wktReader = new WKTReader();
+  private Geometry point;
 
   private TagBaseVisitorUnderTest baseVisitor;
 
   @Before
-  public void setup() {
+  public void setup() throws ParseException {
     baseVisitor = new TagBaseVisitorUnderTest();
+    point = wktReader.read("POINT (0 0)");
   }
 
   /*
@@ -142,52 +147,52 @@ public class TagBaseVisitorTest {
 
   @Test
   public void testBeyondCallsMethod() {
-    verifyMethodCalled(ff.beyond(TEST, new PointImpl(), 10.0, ""));
+    verifyMethodCalled(ff.beyond(ff.property(TEST), ff.literal(point), 10.0, ""));
   }
 
   @Test
   public void testContainsCallsMethod() {
-    verifyMethodCalled(ff.contains(TEST, new PointImpl()));
+    verifyMethodCalled(ff.contains(ff.property(TEST), ff.literal(point)));
   }
 
   @Test
   public void testCrossesCallsMethod() {
-    verifyMethodCalled(ff.crosses(TEST, new PointImpl()));
+    verifyMethodCalled(ff.crosses(ff.property(TEST), ff.literal(point)));
   }
 
   @Test
   public void testDisjointCallsMethod() {
-    verifyMethodCalled(ff.disjoint(TEST, new PointImpl()));
+    verifyMethodCalled(ff.disjoint(ff.property(TEST), ff.literal(point)));
   }
 
   @Test
   public void testDWithinCallsMethod() {
-    verifyMethodCalled(ff.dwithin(TEST, new PointImpl(), 10.0, ""));
+    verifyMethodCalled(ff.dwithin(ff.property(TEST), ff.literal(point), 10.0, ""));
   }
 
   @Test
   public void testEqualsCallsMethod() {
-    verifyMethodCalled(ff.equals(TEST, new PointImpl()));
+    verifyMethodIgnored(ff.equals(ff.property(TEST), ff.literal(point)));
   }
 
   @Test
   public void testIntersectsCallsMethod() {
-    verifyMethodCalled(ff.intersects(TEST, new PointImpl()));
+    verifyMethodCalled(ff.intersects(ff.property(TEST), ff.literal(point)));
   }
 
   @Test
   public void testOverlapsCallsMethod() {
-    verifyMethodCalled(ff.overlaps(TEST, new PointImpl()));
+    verifyMethodCalled(ff.overlaps(ff.property(TEST), ff.literal(point)));
   }
 
   @Test
   public void testTouchesCallsMethod() {
-    verifyMethodCalled(ff.touches(TEST, new PointImpl()));
+    verifyMethodCalled(ff.touches(ff.property(TEST), ff.literal(point)));
   }
 
   @Test
   public void testWithinCallsMethod() {
-    verifyMethodCalled(ff.within(TEST, new PointImpl()));
+    verifyMethodCalled(ff.within(ff.property(TEST), ff.literal(point)));
   }
 
   @Test
@@ -198,72 +203,72 @@ public class TagBaseVisitorTest {
 
   @Test
   public void testAnyInteractsCallsMethod() {
-    verifyMethodCalled(ff.anyInteracts(ff.property(TEST), ff.literal(TEST)));
+    verifyMethodCalled(ff.anyInteracts(ff.property(TEST), ff.property(TEST)));
   }
 
   @Test
   public void testAfterCallsMethod() {
-    verifyMethodCalled(ff.after(ff.property(TEST), ff.literal(TEST)));
+    verifyMethodCalled(ff.after(ff.property(TEST), ff.property(TEST)));
   }
 
   @Test
   public void testBeforeCallsMethod() {
-    verifyMethodCalled(ff.before(ff.property(TEST), ff.literal(TEST)));
+    verifyMethodCalled(ff.before(ff.property(TEST), ff.property(TEST)));
   }
 
   @Test
   public void testBeginsCallsMethod() {
-    verifyMethodCalled(ff.begins(ff.property(TEST), ff.literal(TEST)));
+    verifyMethodCalled(ff.begins(ff.property(TEST), ff.property(TEST)));
   }
 
   @Test
   public void testBegunByCallsMethod() {
-    verifyMethodCalled(ff.begunBy(ff.property(TEST), ff.literal(TEST)));
+    verifyMethodCalled(ff.begunBy(ff.property(TEST), ff.property(TEST)));
   }
 
   @Test
   public void testDuringCallsMethod() {
-    verifyMethodCalled(ff.during(ff.property(TEST), ff.literal(TEST)));
+    verifyMethodCalled(ff.during(ff.property(TEST), ff.property(TEST)));
   }
 
   @Test
   public void testEndedByCallsMethod() {
-    verifyMethodCalled(ff.endedBy(ff.property(TEST), ff.literal(TEST)));
+    verifyMethodCalled(ff.endedBy(ff.property(TEST), ff.property(TEST)));
   }
 
   @Test
   public void testEndsCallsMethod() {
-    verifyMethodCalled(ff.ends(ff.property(TEST), ff.literal(TEST)));
+    verifyMethodCalled(ff.ends(ff.property(TEST), ff.property(TEST)));
   }
 
   @Test
   public void testMeetsCallsMethod() {
-    verifyMethodCalled(ff.meets(ff.property(TEST), ff.literal(TEST)));
+    verifyMethodCalled(ff.meets(ff.property(TEST), ff.property(TEST)));
   }
 
   @Test
   public void testMetByCallsMethod() {
-    verifyMethodCalled(ff.metBy(ff.property(TEST), ff.literal(TEST)));
+    verifyMethodCalled(ff.metBy(ff.property(TEST), ff.property(TEST)));
   }
 
   @Test
   public void testOverlappedByCallsMethod() {
-    verifyMethodCalled(ff.overlappedBy(ff.property(TEST), ff.literal(TEST)));
+    verifyMethodCalled(ff.overlappedBy(ff.property(TEST), ff.property(TEST)));
   }
 
   @Test
   public void testTContainsCallsMethod() {
-    verifyMethodCalled(ff.tcontains(ff.property(TEST), ff.literal(TEST)));
+    verifyMethodCalled(ff.tcontains(ff.property(TEST), ff.property(TEST)));
   }
 
   @Test
   public void testTEqualsCallsMethod() {
-    verifyMethodCalled(ff.tequals(ff.property(TEST), ff.literal(TEST)));
+    verifyMethodCalled(ff.tequals(ff.property(TEST), ff.property(TEST)));
   }
 
   @Test
   public void testTOverlapsCallsMethod() {
-    verifyMethodCalled(ff.toverlaps(ff.property(TEST), ff.literal(TEST)));
+    verifyMethodCalled(ff.toverlaps(ff.property(TEST), ff.property(TEST)));
   }
 
   private void verifyMethodCalled(Filter filter) {

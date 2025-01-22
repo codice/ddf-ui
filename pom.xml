@@ -64,7 +64,7 @@
     <fmt.maven.plugin.version>2.3.0</fmt.maven.plugin.version>
 
     <!--Backend properties-->
-    <ddf.version>2.29.2</ddf.version>
+    <ddf.version>2.29.4-SNAPSHOT</ddf.version>
     <ddf-jsonrpc.version>0.9</ddf-jsonrpc.version>
     <ddf.support.version>2.3.16</ddf.support.version>
     <antlr.version>4.3</antlr.version>
@@ -85,10 +85,10 @@
     <jsr305.version>3.0.2</jsr305.version>
     <jvnet.jaxb2.version>0.11.0</jvnet.jaxb2.version>
     <jvnet-ogc.version>2.6.1</jvnet-ogc.version>
-    <karaf.version>4.3.7</karaf.version>
+    <karaf.version>4.3.10</karaf.version>
     <nimbus.version>8.14.1</nimbus.version>
     <nimbus.oidc.version>8.22</nimbus.oidc.version>
-    <org.geotools.version>24.6</org.geotools.version>
+    <org.geotools.version>28.2</org.geotools.version>
     <osgi.version>5.0.0</osgi.version>
     <owasp-html-sanitizer.version>20220608.1</owasp-html-sanitizer.version>
     <ows-v_1_0_0-schema.version>1.1.0</ows-v_1_0_0-schema.version>
