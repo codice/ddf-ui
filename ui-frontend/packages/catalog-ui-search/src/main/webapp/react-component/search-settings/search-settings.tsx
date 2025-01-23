@@ -17,7 +17,7 @@ import user from '../../component/singletons/user-instance'
 import QuerySettings from '../../component/query-settings/query-settings'
 import { UserQuery } from '../../js/model/TypedQuery'
 import styled from 'styled-components'
-import { hot } from 'react-hot-loader'
+
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
 import Slider from '@mui/material/Slider'
@@ -146,4 +146,4 @@ const SearchSettings = () => {
     </Root>
   )
 }
-export default hot(module)(SearchSettings)
+export default SearchSettings

@@ -12,14 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
+
 import { createGlobalStyle } from 'styled-components'
-import ThemeSettings from '../theme-settings'
-import AlertSettings from '../alert-settings'
-import AttributeSettings from '../attribute-settings'
-import SearchSettings from '../search-settings'
-import TimeSettings from '../time-settings'
-import { hot } from 'react-hot-loader'
+
 import Button from '@mui/material/Button'
 import ChevronRight from '@mui/icons-material/ChevronRight'
 import Grid from '@mui/material/Grid'
@@ -27,8 +22,18 @@ import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import { useLocation } from 'react-router-dom'
 import queryString from 'query-string'
-import { Link } from '../../component/link/link'
-import { MapUserSettings } from '../map-user-settings/map-user-settings'
+import { Link } from 'react-router-dom'
+import { SuspenseWrapper } from '../../component/app/suspense'
+import { lazy } from 'react'
+
+const ThemeSettings = lazy(() => import('../theme-settings'))
+const AlertSettings = lazy(() => import('../alert-settings'))
+const AttributeSettings = lazy(() => import('../attribute-settings'))
+const SearchSettings = lazy(() => import('../search-settings'))
+const TimeSettings = lazy(() => import('../time-settings'))
+const MapUserSettings = lazy(
+  () => import('../map-user-settings/map-user-settings')
+)
 
 const ThemeGlobalStyle = createGlobalStyle`
 .MuiBackdrop-root {
@@ -43,7 +48,7 @@ type IndividualSettingsComponentType = ({
   SettingsComponents,
 }: {
   SettingsComponents: SettingsComponentType
-}) => JSX.Element
+}) => React.ReactNode
 
 export type SettingsComponentType = {
   [key: string]: {
@@ -109,7 +114,7 @@ const SettingsScreen = ({
           return (
             <Grid key={name} item className="w-full">
               <Button
-                component={Link}
+                component={Link as any}
                 to={`${location.pathname}?${queryString.stringify({
                   ...queryParams,
                   'global-settings': name,
@@ -176,7 +181,7 @@ const UserSettings = ({ SettingsComponents }: UserSettingsProps) => {
         <Grid container direction="row" alignItems="center">
           <Grid item>
             <Button
-              component={Link}
+              component={Link as any}
               to={`${location.pathname}?${queryString.stringify({
                 ...queryParams,
                 'global-settings': 'Settings',
@@ -204,10 +209,12 @@ const UserSettings = ({ SettingsComponents }: UserSettingsProps) => {
         <Divider />
       </Grid>
       <Grid item className="w-full h-full p-3">
-        <CurrentSetting SettingsComponents={SettingsComponents} />
+        <SuspenseWrapper>
+          <CurrentSetting SettingsComponents={SettingsComponents} />
+        </SuspenseWrapper>
       </Grid>
     </Grid>
   )
 }
 
-export default hot(module)(UserSettings)
+export default UserSettings

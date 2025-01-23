@@ -12,7 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react'
 
 const Group = (props: any) => (
   <div className="flex flex-row items-center flex-nowrap w-full" {...props}>

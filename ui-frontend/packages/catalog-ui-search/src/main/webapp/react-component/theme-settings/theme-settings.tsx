@@ -18,7 +18,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Checkbox from '@mui/material/Checkbox'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 import user from '../../component/singletons/user-instance'
-import { hot } from 'react-hot-loader'
+
 import Grid from '@mui/material/Grid'
 import ColorTool from './color-tool'
 ;(window as any).user = user
@@ -138,4 +138,4 @@ const ThemeSettings = () => {
     </Grid>
   )
 }
-export default hot(module)(ThemeSettings)
+export default ThemeSettings

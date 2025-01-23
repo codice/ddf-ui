@@ -7,7 +7,7 @@ import Button, { ButtonProps } from '@mui/material/Button'
  */
 export const HoverButton = (
   props: Omit<ButtonProps, 'children'> & {
-    children: ({ hover }: { hover: boolean }) => JSX.Element
+    children: ({ hover }: { hover: boolean }) => React.ReactNode
   }
 ) => {
   const [hover, setHover] = React.useState(false)

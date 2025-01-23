@@ -12,22 +12,16 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react'
 
-import Enzyme from 'enzyme'
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17'
 import { expect } from 'chai'
 
-Enzyme.configure({ adapter: new Adapter() })
-
 import TextField from './text-field'
-
-const { mount } = Enzyme
+import { fireEvent, render } from '@testing-library/react'
 
 describe('<TextField />', () => {
   it('<input /> should have the right value', () => {
-    const wrapper = mount(<TextField value="test" />)
-    expect(wrapper.find('input').prop('value')).to.equal('test')
+    const wrapper = render(<TextField value="test" />)
+    expect(wrapper.getByDisplayValue('test')).to.exist
   })
 
   it('should update input on change', (done) => {
@@ -35,8 +29,9 @@ describe('<TextField />', () => {
       expect(value).to.equal('test')
       done()
     }
-    const wrapper = mount(<TextField onChange={onChange} />)
-    // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
-    wrapper.find('input').prop('onChange')({ target: { value: 'test' } })
+    const wrapper = render(<TextField onChange={onChange} />)
+    fireEvent.change(wrapper.getByDisplayValue(''), {
+      target: { value: 'test' },
+    })
   })
 })

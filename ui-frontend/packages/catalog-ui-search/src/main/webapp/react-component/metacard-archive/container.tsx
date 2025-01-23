@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import fetch from '../utils/fetch'
@@ -126,4 +126,4 @@ class MetacardArchive extends React.Component<Props, State> {
     )
   }
 }
-export default hot(module)(withListenTo(MetacardArchive))
+export default withListenTo(MetacardArchive)

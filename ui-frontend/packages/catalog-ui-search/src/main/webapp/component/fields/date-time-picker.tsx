@@ -1,10 +1,10 @@
 import * as React from 'react'
-import { IDateInputProps } from '@blueprintjs/datetime'
+import { DateInputProps } from '@blueprintjs/datetime'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { DateField } from './date'
 import CalendarIcon from '@mui/icons-material/Event'
 import ClearIcon from '@mui/icons-material/Clear'
-import { hot } from 'react-hot-loader'
+
 import InputAdornment from '@mui/material/InputAdornment'
 
 type DateFieldProps = {
@@ -20,7 +20,7 @@ type DateFieldProps = {
    * min or max. The true min/max is set in dateHelpers. We should probably update this at some
    * point to be passed down by this component.
    */
-  BPDateProps?: Partial<IDateInputProps>
+  BPDateProps?: Partial<DateInputProps>
 }
 
 /**
@@ -75,7 +75,7 @@ const DateTimePicker = ({
       onChange={onChange as any}
       ref={inputRef}
       InputProps={{
-        inputComponent: inputComponent,
+        inputComponent: inputComponent as any,
         endAdornment: (
           <InputAdornment
             component="button"
@@ -106,4 +106,4 @@ const DateTimePicker = ({
   )
 }
 
-export default hot(module)(DateTimePicker)
+export default DateTimePicker

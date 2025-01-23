@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
 import { TimeZone } from './types'
@@ -47,4 +47,4 @@ const TimeZoneSelector = (props: Props) => {
   )
 }
 
-export default hot(module)(TimeZoneSelector)
+export default TimeZoneSelector

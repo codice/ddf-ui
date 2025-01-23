@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import { useParams } from 'react-router-dom'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { GoldenLayout } from '../golden-layout/golden-layout'
@@ -69,7 +69,7 @@ const MetacardRoute = () => {
     setId(params.metacardId || params.id)
   }, [params.metacardId])
   const [query] = useUserQuery({
-    attributes: getFilterTreeForId({ id }),
+    attributes: getFilterTreeForId({ id: id || '' }),
     options: {
       transformDefaults: DEFAULT_QUERY_OPTIONS.transformDefaults,
     },
@@ -121,4 +121,4 @@ const MetacardRoute = () => {
   return <GoldenLayout selectionInterface={selectionInterface} />
 }
 
-export default hot(module)(MetacardRoute)
+export default MetacardRoute

@@ -2,7 +2,7 @@ import * as React from 'react'
 import FakeIcon from '@mui/icons-material/AcUnit'
 import Button, { ButtonProps } from '@mui/material/Button'
 import { LinkProps, Link } from 'react-router-dom'
-import { hot } from 'react-hot-loader'
+
 import Tooltip from '@mui/material/Tooltip'
 import Paper from '@mui/material/Paper'
 import { Elevations } from '../theme/theme'
@@ -122,4 +122,4 @@ const ExpandingButton = ({
   )
 }
 
-export default hot(module)(ExpandingButton)
+export default ExpandingButton

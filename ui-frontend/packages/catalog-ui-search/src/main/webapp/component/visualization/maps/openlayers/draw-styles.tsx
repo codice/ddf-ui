@@ -12,7 +12,14 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as ol from 'openlayers'
+import Style from 'ol/style/Style'
+import { Stroke, Fill, Circle } from 'ol/style'
+import Geometry from 'ol/geom/Geometry'
+import { MultiPoint } from 'ol/geom'
+import Polygon from 'ol/geom/Polygon'
+import LineString from 'ol/geom/LineString'
+import Feature from 'ol/Feature'
+import { Coordinate } from 'ol/coordinate'
 import { transparentize } from 'polished'
 import { geometry } from 'geospatialdraw'
 import { contrastingColor } from '../../../../react-component/location/location-color-selector'
@@ -27,100 +34,98 @@ const LINE_WIDTH = 2.5
 const POINT_SIZE = 4.5
 const SCALE_FACTOR = 1.5
 
-const RENDERER_STYLE = (feature: ol.Feature): ol.style.Style =>
-  new ol.style.Style({
-    stroke: new ol.style.Stroke({
+const RENDERER_STYLE = (feature: Feature): Style =>
+  new Style({
+    stroke: new Stroke({
       color: feature.get('color'),
       width: LINE_WIDTH,
     }),
-    fill: new ol.style.Fill({
+    fill: new Fill({
       color: 'rgba(0, 0, 0, 0)',
     }),
     ...(feature.get(BUFFER_SHAPE_PROPERTY) === CIRCLE_BUFFER_PROPERTY_VALUE
       ? {}
       : {
-          image: new ol.style.Circle({
+          image: new Circle({
             radius: POINT_SIZE,
-            fill: new ol.style.Fill({
+            fill: new Fill({
               color: feature.get('color'),
             }),
           }),
         }),
   })
 
-const CIRCLE_DRAWING_STYLE = (feature: ol.Feature): ol.style.Style =>
-  new ol.style.Style({
-    stroke: new ol.style.Stroke({
+const CIRCLE_DRAWING_STYLE = (feature: Feature): Style =>
+  new Style({
+    stroke: new Stroke({
       color: 'rgba(0, 0, 0, 0)',
     }),
-    fill: new ol.style.Fill({
+    fill: new Fill({
       color: 'rgba(0, 0, 0, 0)',
     }),
-    image: new ol.style.Circle({
+    image: new Circle({
       radius: POINT_SIZE,
-      fill: new ol.style.Fill({
+      fill: new Fill({
         color: feature.get('color'),
       }),
     }),
   })
 
-const CIRCLE_BUFFER_PROPERTY_VALUE_DRAWING_STYLE = (
-  feature: ol.Feature
-): ol.style.Style =>
-  new ol.style.Style({
-    stroke: new ol.style.Stroke({
+const CIRCLE_BUFFER_PROPERTY_VALUE_DRAWING_STYLE = (feature: Feature): Style =>
+  new Style({
+    stroke: new Stroke({
       color: feature.get('color'),
       width: LINE_WIDTH * SCALE_FACTOR,
     }),
-    fill: new ol.style.Fill({
+    fill: new Fill({
       color: transparentize(0.95, feature.get('color') || contrastingColor),
     }),
   })
 
-const GENERIC_DRAWING_STYLE = (feature: ol.Feature): ol.style.Style[] => [
-  new ol.style.Style({
-    stroke: new ol.style.Stroke({
+const GENERIC_DRAWING_STYLE = (feature: Feature): Style[] => [
+  new Style({
+    stroke: new Stroke({
       color: feature.get('color'),
       width: LINE_WIDTH * SCALE_FACTOR,
     }),
-    fill: new ol.style.Fill({
+    fill: new Fill({
       color: transparentize(0.95, feature.get('color') || contrastingColor),
     }),
-    ...(feature.getGeometry().getType() === 'Point' && feature.get('buffer') > 0
+    ...(feature.getGeometry()?.getType() === 'Point' &&
+    feature.get('buffer') > 0
       ? {}
       : {
-          image: new ol.style.Circle({
+          image: new Circle({
             radius: POINT_SIZE * SCALE_FACTOR,
-            fill: new ol.style.Fill({
+            fill: new Fill({
               color: feature.get('color'),
             }),
           }),
         }),
   }),
-  new ol.style.Style({
-    image: new ol.style.Circle({
+  new Style({
+    image: new Circle({
       radius: POINT_SIZE,
-      fill: new ol.style.Fill({
+      fill: new Fill({
         color: feature.get('color'),
       }),
     }),
-    geometry: (feature: ol.Feature): ol.geom.Geometry => {
+    geometry: (feature): Geometry | undefined => {
       const geometry = feature.getGeometry()
-      let coordinates: [number, number][] = []
+      if (!geometry) return undefined
+      let coordinates: Coordinate[] = []
       if (geometry.getType() === 'Polygon') {
-        coordinates = (geometry as ol.geom.Polygon).getCoordinates()[0]
+        coordinates = (geometry as Polygon).getCoordinates()[0]
       } else if (geometry.getType() === 'LineString') {
-        coordinates = (geometry as ol.geom.LineString).getCoordinates()
+        coordinates = (geometry as LineString).getCoordinates()
       }
-      return new ol.geom.MultiPoint(coordinates)
+      return new MultiPoint(coordinates)
     },
   }),
 ]
 
-const DRAWING_STYLE = (
-  feature: ol.Feature
-): ol.style.Style[] | ol.style.Style => {
-  if (feature.getGeometry().getType() === 'Circle') {
+const DRAWING_STYLE = (feature: Feature): Style[] | Style => {
+  if (feature.getGeometry()?.getType() === 'Circle') {
     return CIRCLE_DRAWING_STYLE(feature)
   } else {
     const bufferShape = feature.get(BUFFER_SHAPE_PROPERTY)

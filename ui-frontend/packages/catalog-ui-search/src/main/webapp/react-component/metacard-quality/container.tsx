@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import { hot } from 'react-hot-loader'
+
 import * as React from 'react'
 import fetch from '../utils/fetch'
 import MetacardQualityPresentation from './presentation'
@@ -106,4 +106,4 @@ class MetacardQuality extends React.Component<Props, State> {
     )
   }
 }
-export default hot(module)(MetacardQuality)
+export default MetacardQuality

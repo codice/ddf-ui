@@ -15,7 +15,7 @@
 import * as React from 'react'
 import { useState, useEffect } from 'react'
 import MapSettingsPresentation from './presentation'
-import { hot } from 'react-hot-loader'
+
 import withListenTo, {
   WithBackboneProps,
 } from '../../react-component/backbone-container'
@@ -108,4 +108,4 @@ const MapSettings = (props: WithBackboneProps) => {
   )
 }
 
-export default hot(module)(withListenTo(MapSettings))
+export default withListenTo(MapSettings)

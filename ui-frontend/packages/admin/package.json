@@ -10,16 +10,17 @@
     "url": "https://github.com/codice/ddf.git"
   },
   "engines": {
-    "node": "16.x.x"
+    "node": "20.x.x"
   },
   "devDependencies": {
     "@types/react": "16.9.34",
     "@types/react-dom": "16.9.7",
     "@types/styled-components": "5.1.0",
-    "@connexta/ace": "git+https://github.com/connexta/ace.git#4cc376863e82757699cdaa1301f30266e66a1efe"
+    "@connexta/ace": "git+https://github.com/connexta/ace.git#37a0052298d788aff5836551a4d578a758ea3575",
+    "npm": "10.9.2"
   },
   "dependencies": {
-    "@connexta/kanri": "connexta/kanri#3218c8bc07b22d1c583c504acbdbb2fb0b099339",
+    "@connexta/kanri": "git+https://github.com/connexta/kanri.git#6f1f0bc9ad113bf0c3e65e680613c2cd10c74305",
     "@material-ui/core": "4.9.12",
     "@material-ui/icons": "4.9.1",
     "@material-ui/lab": "4.0.0-alpha.51",
@@ -33,7 +34,7 @@
   },
   "scripts": {
     "start": "ace start",
-    "build": "node --max_old_space_size=16384 ./node_modules/@connexta/ace/bin.js bundle --tsTranspileOnly true && ace package",
+    "build": "ace bundle --tsTranspileOnly true && ace package",
     "postbuild": "npm pack && mv kanri-0.0.1.tgz target/kanri.tgz",
     "m2": "yarn install:m2"
   },

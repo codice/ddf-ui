@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
+
 import styled from 'styled-components'
 import MuiDivider from '@mui/material/Divider'
 
