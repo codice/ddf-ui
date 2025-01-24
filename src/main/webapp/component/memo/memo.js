@@ -1,0 +1,8 @@
+import * as React from 'react';
+export var Memo = function (_a) {
+    var _b = _a.dependencies, dependencies = _b === void 0 ? [] : _b, children = _a.children;
+    return React.useMemo(function () {
+        return React.createElement(React.Fragment, null, children);
+    }, dependencies);
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibWVtby5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uL3NyYy9tYWluL3dlYmFwcC9jb21wb25lbnQvbWVtby9tZW1vLnRzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxPQUFPLEtBQUssS0FBSyxNQUFNLE9BQU8sQ0FBQTtBQVM5QixNQUFNLENBQUMsSUFBTSxJQUFJLEdBQUcsVUFBQyxFQUEwQztRQUF4QyxvQkFBaUIsRUFBakIsWUFBWSxtQkFBRyxFQUFFLEtBQUEsRUFBRSxRQUFRLGNBQUE7SUFDaEQsT0FBTyxLQUFLLENBQUMsT0FBTyxDQUFDO1FBQ25CLE9BQU8sMENBQUcsUUFBUSxDQUFJLENBQUE7SUFDeEIsQ0FBQyxFQUFFLFlBQVksQ0FBQyxDQUFBO0FBQ2xCLENBQUMsQ0FBQSIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCAqIGFzIFJlYWN0IGZyb20gJ3JlYWN0J1xuXG4vLyBDb252ZW5pZW5jZSB3cmFwcGVyIGFyb3VuZCBtZW1vXG5cbnR5cGUgTWVtb1Byb3BzID0ge1xuICBjaGlsZHJlbjogSlNYLkVsZW1lbnQgfCBKU1guRWxlbWVudFtdXG4gIGRlcGVuZGVuY2llcz86IGFueVtdXG59XG5cbmV4cG9ydCBjb25zdCBNZW1vID0gKHsgZGVwZW5kZW5jaWVzID0gW10sIGNoaWxkcmVuIH06IE1lbW9Qcm9wcykgPT4ge1xuICByZXR1cm4gUmVhY3QudXNlTWVtbygoKSA9PiB7XG4gICAgcmV0dXJuIDw+e2NoaWxkcmVufTwvPlxuICB9LCBkZXBlbmRlbmNpZXMpXG59XG4iXX0=
