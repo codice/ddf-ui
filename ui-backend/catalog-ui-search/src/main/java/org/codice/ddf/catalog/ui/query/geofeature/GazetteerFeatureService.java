@@ -33,10 +33,10 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.geometry.primitive.Point;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,11 +133,9 @@ public class GazetteerFeatureService implements FeatureService {
   }
 
   private static Polygon getPolygonFromBBox(List<Point> bbox) {
-    double[] p0 = bbox.get(0).getDirectPosition().getCoordinate();
-    double[] p1 = bbox.get(1).getDirectPosition().getCoordinate();
     Envelope envelope = new Envelope();
-    envelope.expandToInclude(p0[0], p0[1]);
-    envelope.expandToInclude(p1[0], p1[1]);
+    envelope.expandToInclude(bbox.get(0).getX(), bbox.get(0).getY());
+    envelope.expandToInclude(bbox.get(1).getX(), bbox.get(1).getY());
     return JTS.toGeometry(envelope);
   }
 }
