@@ -1,0 +1,61 @@
+import { __makeTemplateObject } from "tslib";
+import { jsx as _jsx } from "react/jsx-runtime";
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+import React from 'react';
+import styled from 'styled-components';
+import { readableColor, rgba } from 'polished';
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
+var foreground = function (props) {
+    if (props.theme.backgroundDropdown !== undefined) {
+        return readableColor(props.theme.backgroundDropdown);
+    }
+};
+// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
+var background = function (props, alpha) {
+    if (alpha === void 0) { alpha = 0.4; }
+    if (props.theme.backgroundDropdown !== undefined) {
+        return rgba(readableColor(props.theme.backgroundDropdown), alpha);
+    }
+};
+var Root = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  border-radius: ", ";\n  white-space: nowrap;\n  background-color: inherit;\n  border: 1px solid ", ";\n  display: inline-block;\n"], ["\n  border-radius: ", ";\n  white-space: nowrap;\n  background-color: inherit;\n  border: 1px solid ", ";\n  display: inline-block;\n"])), function (props) { return props.theme.borderRadius; }, background);
+var Button = styled.button(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  vertical-align: top;\n  opacity: ", ";\n  min-width: ", ";\n  min-height: ", ";\n  border: none;\n  border-left: ", ";\n  background-color: inherit;\n  padding: 0px 10px;\n  cursor: pointer;\n  font-size: ", ";\n  color: ", ";\n  ", ";\n"], ["\n  vertical-align: top;\n  opacity: ", ";\n  min-width: ", ";\n  min-height: ", ";\n  border: none;\n  border-left: ", ";\n  background-color: inherit;\n  padding: 0px 10px;\n  cursor: pointer;\n  font-size: ", ";\n  color: ", ";\n  ", ";\n"])), function (props) { return props.theme.minimumOpacity; }, function (props) { return props.theme.minimumButtonSize; }, function (props) { return props.theme.minimumButtonSize; }, function (props) {
+    return !props.first ? '1px solid ' + background(props) : 'none';
+}, function (props) { return props.theme.minimumFontSize; }, foreground, function (props) {
+    return props.selected
+        ? "\n    opacity: 1;\n    font-weight: bolder;\n    background: ".concat(background(props, 0.1), ";\n  ")
+        : '';
+});
+var Radio = function (props) {
+    var value = props.value, children = props.children, onChange = props.onChange;
+    var childrenWithProps = React.Children.map(children, function (child, i) {
+        // @ts-expect-error ts-migrate(2769) FIXME: No overload matches this call.
+        return React.cloneElement(child, {
+            first: i === 0,
+            selected: value === child.props.value,
+            // @ts-expect-error ts-migrate(2722) FIXME: Cannot invoke an object which is possibly 'undefin... Remove this comment to see the full error message
+            onClick: function () { return onChange(child.props.value); },
+        });
+    });
+    return _jsx(Root, { children: childrenWithProps });
+};
+var RadioItem = function (props) {
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'first' does not exist on type 'RadioItem... Remove this comment to see the full error message
+    var value = props.value, first = props.first, children = props.children, selected = props.selected, onClick = props.onClick;
+    return (_jsx(Button, { first: first, selected: selected, onClick: function () { return onClick(value); }, children: children || value }));
+};
+export { Radio, RadioItem };
+var templateObject_1, templateObject_2;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicmFkaW8uanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi9zcmMvbWFpbi93ZWJhcHAvcmVhY3QtY29tcG9uZW50L3JhZGlvL3JhZGlvLnRzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBOzs7Ozs7Ozs7Ozs7O0lBYUk7QUFDSixPQUFPLEtBQUssTUFBTSxPQUFPLENBQUE7QUFDekIsT0FBTyxNQUFNLE1BQU0sbUJBQW1CLENBQUE7QUFDdEMsT0FBTyxFQUFFLGFBQWEsRUFBRSxJQUFJLEVBQUUsTUFBTSxVQUFVLENBQUE7QUFDOUMsOEVBQThFO0FBQzlFLElBQU0sVUFBVSxHQUFHLFVBQUMsS0FBVTtJQUM1QixJQUFJLEtBQUssQ0FBQyxLQUFLLENBQUMsa0JBQWtCLEtBQUssU0FBUyxFQUFFLENBQUM7UUFDakQsT0FBTyxhQUFhLENBQUMsS0FBSyxDQUFDLEtBQUssQ0FBQyxrQkFBa0IsQ0FBQyxDQUFBO0lBQ3RELENBQUM7QUFDSCxDQUFDLENBQUE7QUFDRCw4RUFBOEU7QUFDOUUsSUFBTSxVQUFVLEdBQUcsVUFBQyxLQUFVLEVBQUUsS0FBVztJQUFYLHNCQUFBLEVBQUEsV0FBVztJQUN6QyxJQUFJLEtBQUssQ0FBQyxLQUFLLENBQUMsa0JBQWtCLEtBQUssU0FBUyxFQUFFLENBQUM7UUFDakQsT0FBTyxJQUFJLENBQUMsYUFBYSxDQUFDLEtBQUssQ0FBQyxLQUFLLENBQUMsa0JBQWtCLENBQUMsRUFBRSxLQUFLLENBQUMsQ0FBQTtJQUNuRSxDQUFDO0FBQ0gsQ0FBQyxDQUFBO0FBQ0QsSUFBTSxJQUFJLEdBQUcsTUFBTSxDQUFDLEdBQUcsME1BQUEscUJBQ0osRUFBbUMsK0VBR2hDLEVBQVUsK0JBRS9CLEtBTGtCLFVBQUMsS0FBSyxJQUFLLE9BQUEsS0FBSyxDQUFDLEtBQUssQ0FBQyxZQUFZLEVBQXhCLENBQXdCLEVBR2hDLFVBQVUsQ0FFL0IsQ0FBQTtBQUNELElBQU0sTUFBTSxHQUFHLE1BQU0sQ0FBQyxNQUFNLHNUQUF1Qyx1Q0FFdEQsRUFBcUMsa0JBQ25DLEVBQXdDLG1CQUN2QyxFQUF3QyxxQ0FFdkMsRUFDb0QsMEZBSXRELEVBQXNDLGNBQzFDLEVBQVUsT0FDakIsRUFPTSxLQUNULEtBbkJZLFVBQUMsS0FBSyxJQUFLLE9BQUEsS0FBSyxDQUFDLEtBQUssQ0FBQyxjQUFjLEVBQTFCLENBQTBCLEVBQ25DLFVBQUMsS0FBSyxJQUFLLE9BQUEsS0FBSyxDQUFDLEtBQUssQ0FBQyxpQkFBaUIsRUFBN0IsQ0FBNkIsRUFDdkMsVUFBQyxLQUFLLElBQUssT0FBQSxLQUFLLENBQUMsS0FBSyxDQUFDLGlCQUFpQixFQUE3QixDQUE2QixFQUV2QyxVQUFDLEtBQUs7SUFDbkIsT0FBQSxDQUFFLEtBQWEsQ0FBQyxLQUFLLENBQUMsQ0FBQyxDQUFDLFlBQVksR0FBRyxVQUFVLENBQUMsS0FBSyxDQUFDLENBQUMsQ0FBQyxDQUFDLE1BQU07QUFBakUsQ0FBaUUsRUFJdEQsVUFBQyxLQUFLLElBQUssT0FBQSxLQUFLLENBQUMsS0FBSyxDQUFDLGVBQWUsRUFBM0IsQ0FBMkIsRUFDMUMsVUFBVSxFQUNqQixVQUFDLEtBQUs7SUFDTixPQUFDLEtBQWEsQ0FBQyxRQUFRO1FBQ3JCLENBQUMsQ0FBQyx1RUFHVSxVQUFVLENBQUMsS0FBSyxFQUFFLEdBQUcsQ0FBQyxVQUNyQztRQUNHLENBQUMsQ0FBQyxFQUFFO0FBTk4sQ0FNTSxDQUNULENBQUE7QUFNRCxJQUFNLEtBQUssR0FBRyxVQUFDLEtBQWlCO0lBQ3RCLElBQUEsS0FBSyxHQUF5QixLQUFLLE1BQTlCLEVBQUUsUUFBUSxHQUFlLEtBQUssU0FBcEIsRUFBRSxRQUFRLEdBQUssS0FBSyxTQUFWLENBQVU7SUFDM0MsSUFBTSxpQkFBaUIsR0FBRyxLQUFLLENBQUMsUUFBUSxDQUFDLEdBQUcsQ0FBQyxRQUFRLEVBQUUsVUFBQyxLQUFLLEVBQUUsQ0FBQztRQUM5RCwwRUFBMEU7UUFDMUUsT0FBTyxLQUFLLENBQUMsWUFBWSxDQUFDLEtBQUssRUFBRTtZQUMvQixLQUFLLEVBQUUsQ0FBQyxLQUFLLENBQUM7WUFDZCxRQUFRLEVBQUUsS0FBSyxLQUFNLEtBQWEsQ0FBQyxLQUFLLENBQUMsS0FBSztZQUM5QyxtSkFBbUo7WUFDbkosT0FBTyxFQUFFLGNBQU0sT0FBQSxRQUFRLENBQUUsS0FBYSxDQUFDLEtBQUssQ0FBQyxLQUFLLENBQUMsRUFBcEMsQ0FBb0M7U0FDcEQsQ0FBQyxDQUFBO0lBQ0osQ0FBQyxDQUFDLENBQUE7SUFDRixPQUFPLEtBQUMsSUFBSSxjQUFFLGlCQUFpQixHQUFRLENBQUE7QUFDekMsQ0FBQyxDQUFBO0FBS0QsSUFBTSxTQUFTLEdBQUcsVUFBQyxLQUFxQjtJQUN0QyxtSkFBbUo7SUFDM0ksSUFBQSxLQUFLLEdBQXlDLEtBQUssTUFBOUMsRUFBRSxLQUFLLEdBQWtDLEtBQUssTUFBdkMsRUFBRSxRQUFRLEdBQXdCLEtBQUssU0FBN0IsRUFBRSxRQUFRLEdBQWMsS0FBSyxTQUFuQixFQUFFLE9BQU8sR0FBSyxLQUFLLFFBQVYsQ0FBVTtJQUMzRCxPQUFPLENBQ0wsS0FBQyxNQUFNLElBQUMsS0FBSyxFQUFFLEtBQUssRUFBRSxRQUFRLEVBQUUsUUFBUSxFQUFFLE9BQU8sRUFBRSxjQUFNLE9BQUEsT0FBTyxDQUFDLEtBQUssQ0FBQyxFQUFkLENBQWMsWUFDcEUsUUFBUSxJQUFJLEtBQUssR0FDWCxDQUNWLENBQUE7QUFDSCxDQUFDLENBQUE7QUFDRCxPQUFPLEVBQUUsS0FBSyxFQUFFLFNBQVMsRUFBRSxDQUFBIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBDb3B5cmlnaHQgKGMpIENvZGljZSBGb3VuZGF0aW9uXG4gKlxuICogVGhpcyBpcyBmcmVlIHNvZnR3YXJlOiB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3IgbW9kaWZ5IGl0IHVuZGVyIHRoZSB0ZXJtcyBvZiB0aGUgR05VIExlc3NlclxuICogR2VuZXJhbCBQdWJsaWMgTGljZW5zZSBhcyBwdWJsaXNoZWQgYnkgdGhlIEZyZWUgU29mdHdhcmUgRm91bmRhdGlvbiwgZWl0aGVyIHZlcnNpb24gMyBvZiB0aGVcbiAqIExpY2Vuc2UsIG9yIGFueSBsYXRlciB2ZXJzaW9uLlxuICpcbiAqIFRoaXMgcHJvZ3JhbSBpcyBkaXN0cmlidXRlZCBpbiB0aGUgaG9wZSB0aGF0IGl0IHdpbGwgYmUgdXNlZnVsLCBidXQgV0lUSE9VVCBBTlkgV0FSUkFOVFk7IHdpdGhvdXRcbiAqIGV2ZW4gdGhlIGltcGxpZWQgd2FycmFudHkgb2YgTUVSQ0hBTlRBQklMSVRZIG9yIEZJVE5FU1MgRk9SIEEgUEFSVElDVUxBUiBQVVJQT1NFLiBTZWUgdGhlIEdOVVxuICogTGVzc2VyIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgZm9yIG1vcmUgZGV0YWlscy4gQSBjb3B5IG9mIHRoZSBHTlUgTGVzc2VyIEdlbmVyYWwgUHVibGljIExpY2Vuc2VcbiAqIGlzIGRpc3RyaWJ1dGVkIGFsb25nIHdpdGggdGhpcyBwcm9ncmFtIGFuZCBjYW4gYmUgZm91bmQgYXRcbiAqIDxodHRwOi8vd3d3LmdudS5vcmcvbGljZW5zZXMvbGdwbC5odG1sPi5cbiAqXG4gKiovXG5pbXBvcnQgUmVhY3QgZnJvbSAncmVhY3QnXG5pbXBvcnQgc3R5bGVkIGZyb20gJ3N0eWxlZC1jb21wb25lbnRzJ1xuaW1wb3J0IHsgcmVhZGFibGVDb2xvciwgcmdiYSB9IGZyb20gJ3BvbGlzaGVkJ1xuLy8gQHRzLWV4cGVjdC1lcnJvciB0cy1taWdyYXRlKDcwMzApIEZJWE1FOiBOb3QgYWxsIGNvZGUgcGF0aHMgcmV0dXJuIGEgdmFsdWUuXG5jb25zdCBmb3JlZ3JvdW5kID0gKHByb3BzOiBhbnkpID0+IHtcbiAgaWYgKHByb3BzLnRoZW1lLmJhY2tncm91bmREcm9wZG93biAhPT0gdW5kZWZpbmVkKSB7XG4gICAgcmV0dXJuIHJlYWRhYmxlQ29sb3IocHJvcHMudGhlbWUuYmFja2dyb3VuZERyb3Bkb3duKVxuICB9XG59XG4vLyBAdHMtZXhwZWN0LWVycm9yIHRzLW1pZ3JhdGUoNzAzMCkgRklYTUU6IE5vdCBhbGwgY29kZSBwYXRocyByZXR1cm4gYSB2YWx1ZS5cbmNvbnN0IGJhY2tncm91bmQgPSAocHJvcHM6IGFueSwgYWxwaGEgPSAwLjQpID0+IHtcbiAgaWYgKHByb3BzLnRoZW1lLmJhY2tncm91bmREcm9wZG93biAhPT0gdW5kZWZpbmVkKSB7XG4gICAgcmV0dXJuIHJnYmEocmVhZGFibGVDb2xvcihwcm9wcy50aGVtZS5iYWNrZ3JvdW5kRHJvcGRvd24pLCBhbHBoYSlcbiAgfVxufVxuY29uc3QgUm9vdCA9IHN0eWxlZC5kaXZgXG4gIGJvcmRlci1yYWRpdXM6ICR7KHByb3BzKSA9PiBwcm9wcy50aGVtZS5ib3JkZXJSYWRpdXN9O1xuICB3aGl0ZS1zcGFjZTogbm93cmFwO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiBpbmhlcml0O1xuICBib3JkZXI6IDFweCBzb2xpZCAke2JhY2tncm91bmR9O1xuICBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XG5gXG5jb25zdCBCdXR0b24gPSBzdHlsZWQuYnV0dG9uPHsgZmlyc3Q6IGJvb2xlYW47IHNlbGVjdGVkOiBib29sZWFuIH0+YFxuICB2ZXJ0aWNhbC1hbGlnbjogdG9wO1xuICBvcGFjaXR5OiAkeyhwcm9wcykgPT4gcHJvcHMudGhlbWUubWluaW11bU9wYWNpdHl9O1xuICBtaW4td2lkdGg6ICR7KHByb3BzKSA9PiBwcm9wcy50aGVtZS5taW5pbXVtQnV0dG9uU2l6ZX07XG4gIG1pbi1oZWlnaHQ6ICR7KHByb3BzKSA9PiBwcm9wcy50aGVtZS5taW5pbXVtQnV0dG9uU2l6ZX07XG4gIGJvcmRlcjogbm9uZTtcbiAgYm9yZGVyLWxlZnQ6ICR7KHByb3BzKSA9PlxuICAgICEocHJvcHMgYXMgYW55KS5maXJzdCA/ICcxcHggc29saWQgJyArIGJhY2tncm91bmQocHJvcHMpIDogJ25vbmUnfTtcbiAgYmFja2dyb3VuZC1jb2xvcjogaW5oZXJpdDtcbiAgcGFkZGluZzogMHB4IDEwcHg7XG4gIGN1cnNvcjogcG9pbnRlcjtcbiAgZm9udC1zaXplOiAkeyhwcm9wcykgPT4gcHJvcHMudGhlbWUubWluaW11bUZvbnRTaXplfTtcbiAgY29sb3I6ICR7Zm9yZWdyb3VuZH07XG4gICR7KHByb3BzKSA9PlxuICAgIChwcm9wcyBhcyBhbnkpLnNlbGVjdGVkXG4gICAgICA/IGBcbiAgICBvcGFjaXR5OiAxO1xuICAgIGZvbnQtd2VpZ2h0OiBib2xkZXI7XG4gICAgYmFja2dyb3VuZDogJHtiYWNrZ3JvdW5kKHByb3BzLCAwLjEpfTtcbiAgYFxuICAgICAgOiAnJ307XG5gXG50eXBlIFJhZGlvUHJvcHMgPSB7XG4gIHZhbHVlPzogc3RyaW5nXG4gIG9uQ2hhbmdlPzogKC4uLmFyZ3M6IGFueVtdKSA9PiBhbnlcbiAgY2hpbGRyZW4/OiBSZWFjdC5SZWFjdE5vZGVcbn1cbmNvbnN0IFJhZGlvID0gKHByb3BzOiBSYWRpb1Byb3BzKSA9PiB7XG4gIGNvbnN0IHsgdmFsdWUsIGNoaWxkcmVuLCBvbkNoYW5nZSB9ID0gcHJvcHNcbiAgY29uc3QgY2hpbGRyZW5XaXRoUHJvcHMgPSBSZWFjdC5DaGlsZHJlbi5tYXAoY2hpbGRyZW4sIChjaGlsZCwgaSkgPT4ge1xuICAgIC8vIEB0cy1leHBlY3QtZXJyb3IgdHMtbWlncmF0ZSgyNzY5KSBGSVhNRTogTm8gb3ZlcmxvYWQgbWF0Y2hlcyB0aGlzIGNhbGwuXG4gICAgcmV0dXJuIFJlYWN0LmNsb25lRWxlbWVudChjaGlsZCwge1xuICAgICAgZmlyc3Q6IGkgPT09IDAsXG4gICAgICBzZWxlY3RlZDogdmFsdWUgPT09IChjaGlsZCBhcyBhbnkpLnByb3BzLnZhbHVlLFxuICAgICAgLy8gQHRzLWV4cGVjdC1lcnJvciB0cy1taWdyYXRlKDI3MjIpIEZJWE1FOiBDYW5ub3QgaW52b2tlIGFuIG9iamVjdCB3aGljaCBpcyBwb3NzaWJseSAndW5kZWZpbi4uLiBSZW1vdmUgdGhpcyBjb21tZW50IHRvIHNlZSB0aGUgZnVsbCBlcnJvciBtZXNzYWdlXG4gICAgICBvbkNsaWNrOiAoKSA9PiBvbkNoYW5nZSgoY2hpbGQgYXMgYW55KS5wcm9wcy52YWx1ZSksXG4gICAgfSlcbiAgfSlcbiAgcmV0dXJuIDxSb290PntjaGlsZHJlbldpdGhQcm9wc308L1Jvb3Q+XG59XG50eXBlIFJhZGlvSXRlbVByb3BzID0ge1xuICB2YWx1ZT86IHN0cmluZ1xuICBjaGlsZHJlbj86IGFueVxufVxuY29uc3QgUmFkaW9JdGVtID0gKHByb3BzOiBSYWRpb0l0ZW1Qcm9wcykgPT4ge1xuICAvLyBAdHMtZXhwZWN0LWVycm9yIHRzLW1pZ3JhdGUoMjMzOSkgRklYTUU6IFByb3BlcnR5ICdmaXJzdCcgZG9lcyBub3QgZXhpc3Qgb24gdHlwZSAnUmFkaW9JdGVtLi4uIFJlbW92ZSB0aGlzIGNvbW1lbnQgdG8gc2VlIHRoZSBmdWxsIGVycm9yIG1lc3NhZ2VcbiAgY29uc3QgeyB2YWx1ZSwgZmlyc3QsIGNoaWxkcmVuLCBzZWxlY3RlZCwgb25DbGljayB9ID0gcHJvcHNcbiAgcmV0dXJuIChcbiAgICA8QnV0dG9uIGZpcnN0PXtmaXJzdH0gc2VsZWN0ZWQ9e3NlbGVjdGVkfSBvbkNsaWNrPXsoKSA9PiBvbkNsaWNrKHZhbHVlKX0+XG4gICAgICB7Y2hpbGRyZW4gfHwgdmFsdWV9XG4gICAgPC9CdXR0b24+XG4gIClcbn1cbmV4cG9ydCB7IFJhZGlvLCBSYWRpb0l0ZW0gfVxuIl19
