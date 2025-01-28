@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryResult'
 import { ClusterType } from './geometries'
 import _ from 'underscore'
@@ -234,4 +234,4 @@ const Geometry = ({ lazyResult, map, clusters }: Props) => {
   return null
 }
 
-export default hot(module)(Geometry)
+export default Geometry

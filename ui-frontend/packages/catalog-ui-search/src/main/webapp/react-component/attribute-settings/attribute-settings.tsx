@@ -17,7 +17,6 @@ import user from '../../component/singletons/user-instance'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
 import styled from 'styled-components'
-import { hot } from 'react-hot-loader'
 
 const Root = styled.div`
   overflow: hidden;
@@ -113,4 +112,4 @@ const AttributeSettings = () => {
     </Root>
   )
 }
-export default hot(module)(AttributeSettings)
+export default AttributeSettings

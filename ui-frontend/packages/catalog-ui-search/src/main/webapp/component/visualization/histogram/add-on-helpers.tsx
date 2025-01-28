@@ -38,9 +38,9 @@ export const getCustomHoverTemplates = (
 
 export const getCustomHoverLabels = (customHoverArray: CustomHover[]) => {
   return {
-    bgcolor: customHoverArray.map((customHover) => customHover.bgColor),
+    bgcolor: customHoverArray.map((customHover) => customHover.bgColor)[0],
     font: {
-      color: customHoverArray.map((customHover) => customHover.fontColor),
+      color: customHoverArray.map((customHover) => customHover.fontColor)[0],
     },
   }
 }

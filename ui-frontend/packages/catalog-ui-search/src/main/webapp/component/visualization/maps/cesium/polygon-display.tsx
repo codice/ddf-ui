@@ -28,7 +28,6 @@ import {
 } from './line-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import * as Turf from '@turf/turf'
-import { Position } from '@turf/turf'
 import _ from 'underscore'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import utility from './utility'
@@ -41,6 +40,16 @@ const CAMERA_MAGNITUDE_THRESHOLD = 8000000
 
 const getCurrentMagnitudeFromMap = ({ map }: { map: any }) => {
   return map.getMap().camera.getMagnitude()
+}
+
+// typeguard for GeoJSON.Position
+const isPositionArray = (value: any): value is GeoJSON.Position[] => {
+  return (
+    Array.isArray(value) &&
+    value.length === 2 &&
+    typeof value[0] === 'number' &&
+    typeof value[1] === 'number'
+  )
 }
 
 const needsRedraw = ({
@@ -89,7 +98,7 @@ const positionsToPolygon = (
   }
 }
 
-const validateAndFixPolygon = (polygonPoints: Position[]): boolean => {
+const validateAndFixPolygon = (polygonPoints: GeoJSON.Position[]): boolean => {
   if (!polygonPoints || polygonPoints.length < 3) {
     return false
   }
@@ -107,6 +116,21 @@ const validateAndFixPolygon = (polygonPoints: Position[]): boolean => {
     point[1] = DistanceUtils.coordinateRound(point[1])
   })
   return true
+}
+
+const extractBufferedPolygons = (
+  bufferedPolygonPoints: GeoJSON.Feature<GeoJSON.MultiPolygon | GeoJSON.Polygon>
+): GeoJSON.Feature<GeoJSON.Polygon>[] => {
+  return (bufferedPolygonPoints.geometry.coordinates as any)
+    .filter((set: any) => {
+      return Array.isArray(set) && set.length > 0
+    })
+    .map((set: any) => {
+      if (isPositionArray(set)) {
+        return Turf.polygon([set])
+      }
+      return Turf.multiPolygon([set])
+    }) as GeoJSON.Feature<GeoJSON.Polygon>[]
 }
 
 const drawGeometry = ({
@@ -133,7 +157,7 @@ const drawGeometry = ({
   }
   const isMultiPolygon = ShapeUtils.isArray3D(json.polygon)
   // Create a deep copy since we may modify some of these positions for display purposes
-  const polygons: Position[][] = JSON.parse(
+  const polygons: GeoJSON.Position[][] = JSON.parse(
     JSON.stringify(isMultiPolygon ? json.polygon : [json.polygon])
   )
 
@@ -207,12 +231,12 @@ const drawGeometry = ({
         // need to adjust the points again AFTER buffering, since buffering undoes the antimeridian adjustments
         utility.adjustGeoCoords(bufferedPolygonPoints)
 
-        const bufferedPolygons = bufferedPolygonPoints.geometry.coordinates.map(
-          (set) => Turf.polygon([set])
-        )
-
+        const bufferedPolygons = extractBufferedPolygons(bufferedPolygonPoints)
         const bufferedPolygon = bufferedPolygons.reduce(
-          (a, b) => Turf.union(a, b),
+          (a, b) =>
+            Turf.union(Turf.featureCollection([a, b])) as GeoJSON.Feature<
+              GeoJSON.Polygon | GeoJSON.MultiPolygon
+            >,
           bufferedPolygons[0]
         )
 

@@ -14,7 +14,7 @@
  **/
 import * as React from 'react'
 import ResultItem from './result-item'
-import { hot } from 'react-hot-loader'
+
 import { AutoVariableSizeList } from 'react-window-components'
 import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
@@ -319,4 +319,4 @@ const ResultCards = ({ mode, setMode, selectionInterface }: Props) => {
   )
 }
 
-export default hot(module)(ResultCards)
+export default ResultCards

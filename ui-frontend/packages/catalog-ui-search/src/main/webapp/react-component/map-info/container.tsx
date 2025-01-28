@@ -15,7 +15,7 @@
 import * as React from 'react'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import MapInfoPresentation from './presentation'
-import { hot } from 'react-hot-loader'
+
 import { Format, Attribute } from '.'
 import { StartupDataStore } from '../../js/model/Startup/startup'
 import { LayoutContext } from '../../component/golden-layout/visual-settings.provider'
@@ -90,4 +90,4 @@ const MapInfo = (props: Props) => {
   return <MapInfoPresentation {...stateProps} format={coordFormat as Format} />
 }
 
-export default hot(module)(withListenTo(MapInfo))
+export default withListenTo(MapInfo)

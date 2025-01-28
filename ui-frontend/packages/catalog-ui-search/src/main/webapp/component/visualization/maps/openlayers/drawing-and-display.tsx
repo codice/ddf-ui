@@ -27,7 +27,7 @@ import { OpenlayersLineDisplay } from './line-display'
 import { OpenlayersPolygonDisplay } from './polygon-display'
 import { Editor } from '../draw-menu'
 import { DRAWING_STYLE } from './draw-styles'
-import { menu, geometry } from 'geospatialdraw'
+import { menu, geometry } from 'geospatialdraw/target/webapp'
 import { Shape } from 'geospatialdraw/target/webapp/shape-utils'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import {
@@ -37,11 +37,10 @@ import {
   makeLineGeo,
   makeBBoxGeo,
 } from 'geospatialdraw/target/webapp/geometry'
-import * as ol from 'openlayers'
+import Map from 'ol/Map'
 import Common from '../../../../js/Common'
 import wreqr from '../../../../js/wreqr'
 import * as Turf from '@turf/turf'
-import { Point, Polygon, LineString } from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import ShapeUtils from '../../../../js/ShapeUtils'
 import _ from 'lodash'
@@ -67,7 +66,7 @@ const SHAPES: Shape[] = [
 const DEFAULT_SHAPE = 'Polygon'
 const DRAWING_COLOR = 'blue'
 
-export const removeOldDrawing = ({ map, id }: { map: ol.Map; id: string }) => {
+export const removeOldDrawing = ({ map, id }: { map: Map; id: string }) => {
   const oldLayers = map
     .getLayers()
     .getArray()
@@ -95,8 +94,8 @@ const getGeoType = (geo: GeometryJSON) => {
 
 const createPolygonModel = (geo: GeometryJSON) => {
   // Ignore Z coordinate if exists
-  const polygon = (geo.geometry as Polygon).coordinates[0].map((position) =>
-    position.length > 2 ? position.slice(0, 2) : position
+  const polygon = (geo.geometry as GeoJSON.Polygon).coordinates[0].map(
+    (position) => (position.length > 2 ? position.slice(0, 2) : position)
   )
   return {
     polygon: Common.wrapMapCoordinatesArray(polygon as any).map((coords) =>
@@ -109,8 +108,8 @@ const createPolygonModel = (geo: GeometryJSON) => {
 
 const createLineStringModel = (geo: GeometryJSON) => {
   // Ignore Z coordinate if exists
-  const line = (geo.geometry as LineString).coordinates.map((position) =>
-    position.length > 2 ? position.slice(0, 2) : position
+  const line = (geo.geometry as GeoJSON.LineString).coordinates.map(
+    (position) => (position.length > 2 ? position.slice(0, 2) : position)
   )
   return {
     line: Common.wrapMapCoordinatesArray(line as any).map((coords) =>
@@ -123,7 +122,7 @@ const createLineStringModel = (geo: GeometryJSON) => {
 
 const createPointRadiusModel = (geo: GeometryJSON) => {
   const wrapped = Common.wrapMapCoordinatesArray([
-    (geo.geometry as Point).coordinates,
+    (geo.geometry as GeoJSON.Point).coordinates,
   ] as any)
   return {
     lon: Number(wrapped[0][0].toFixed(6)),
@@ -569,7 +568,7 @@ export const OpenlayersDrawings = ({
             disabledShapes={SHAPES.filter((shape) => shape !== drawingShape)}
             onUpdate={updateGeo}
             saveAndContinue={false}
-            mapStyle={DRAWING_STYLE}
+            mapStyle={DRAWING_STYLE as any}
           />
         </Editor>
       )}

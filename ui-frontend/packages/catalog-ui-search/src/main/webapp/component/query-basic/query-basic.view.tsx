@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import _ from 'underscore'
 import cql from '../../js/cql'
 import CQLUtils from '../../js/CQLUtils'
@@ -285,7 +285,7 @@ const useBasicFilterFromModel = ({ model }: QueryBasicProps) => {
 
 const QueryBasic = ({ model, errorListener, Extensions }: QueryBasicProps) => {
   const MetacardDefinitions = useMetacardDefinitions()
-  const inputRef = React.useRef<HTMLDivElement>()
+  const inputRef = React.useRef<HTMLDivElement | null>(null)
   const basicFilter = useBasicFilterFromModel({ model })
 
   /**
@@ -474,4 +474,4 @@ const QueryBasic = ({ model, errorListener, Extensions }: QueryBasicProps) => {
     </>
   )
 }
-export default hot(module)(QueryBasic)
+export default QueryBasic

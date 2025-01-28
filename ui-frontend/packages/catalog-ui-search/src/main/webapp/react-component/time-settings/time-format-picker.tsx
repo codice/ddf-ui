@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
 import { TimeFormat } from './types'
@@ -55,4 +55,4 @@ const TimeFormatSelector = (props: Props) => {
   )
 }
 
-export default hot(module)(TimeFormatSelector)
+export default TimeFormatSelector

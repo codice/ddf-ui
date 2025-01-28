@@ -1,5 +1,5 @@
 /* https://material-ui.com/components/transfer-list/ */
-import { hot } from 'react-hot-loader'
+
 import React from 'react'
 import Grid from '@mui/material/Grid'
 import List from '@mui/material/List'
@@ -936,4 +936,4 @@ const TransferList = ({
     </>
   )
 }
-export default hot(module)(TransferList)
+export default TransferList

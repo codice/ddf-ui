@@ -13,7 +13,7 @@
  **/
  -->
 
-<html class="no-js bp3-dark theme-dark dark">
+<html class="no-js bp3-dark bp4-dark theme-dark dark">
 
 <head>
     <meta charset="utf-8">
@@ -182,15 +182,24 @@
           </p>
           <ul id="supported-browsers" style="list-style-type:none; padding: 0px">
             <li class="browser" title=">=91">
-              <img src="./img/edge.png" alt="edge" style="margin-right: 24px;" />
+              <img src="./img/edge.png" alt="edge" style="margin-right: 24px;" loading="lazy" width="48" 
+              height="48"
+              decoding="async"
+              fetchpriority="low"/>
               <label style="font-size: 12px;">Microsoft Edge</label>
             </li>
             <li class="browser" title=">=78">
-              <img src="./img/firefox.png" alt="firefox" style="margin-right: 24px;" />
+              <img src="./img/firefox.png" alt="firefox" style="margin-right: 24px;" loading="lazy" width="48" 
+              height="48"
+              decoding="async"
+              fetchpriority="low"/>
               <label style="font-size: 12px;">Mozilla Firefox</label>
             </li>
             <li class="browser" title=">=90">
-              <img src="./img/chrome.png" alt="chrome" style="margin-right: 24px;" />
+              <img src="./img/chrome.png" alt="chrome" style="margin-right: 24px;" loading="lazy" width="48" 
+              height="48"
+              decoding="async"
+              fetchpriority="low"/>
               <label style="font-size: 12px;">Google Chrome</label>
             </li>
           </ul>
@@ -208,7 +217,7 @@
             Loading <span class="welcome-branding is-bold"></span> <span class="welcome-branding-name"></span>
         </div>
     </div>
-    <div id="router" class="relative z-0 w-full h-full">
+    <div id="router" class="relative z-0 w-full h-full overflow-hidden Mui-bg-default flex flex-col items-center flex-nowrap">
     </div>
     <iframe name="autocomplete" style="display:none" src="./blank.html"></iframe>
     <footer></footer>

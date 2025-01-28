@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import Button from '@mui/material/Button'
 import { useTheme } from '@mui/material/styles'
 import { HoverButton } from '../button/hover'
@@ -105,4 +105,4 @@ const FilterLeaf = ({ filter, setFilter, errorListener }: Props) => {
     </FilterNegationControls>
   )
 }
-export default hot(module)(FilterLeaf)
+export default FilterLeaf

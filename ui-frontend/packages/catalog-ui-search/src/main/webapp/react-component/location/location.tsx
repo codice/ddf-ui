@@ -17,7 +17,7 @@ import LocationOldModel from '../../component/location-old/location-old'
 import wreqr from '../../js/wreqr'
 import { Drawing, useIsDrawing } from '../../component/singletons/drawing'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
-import { hot } from 'react-hot-loader'
+
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
@@ -271,7 +271,6 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
                   color={state.color}
                   {...MuiButtonProps}
                   {...useTheme()}
-                  size={'1.8rem'}
                 />
                 <Popover {...MuiPopoverProps}>
                   <LocationColorSelector setColor={setColor} />
@@ -304,4 +303,4 @@ const LocationInput = ({ onChange, value, errorListener }: any) => {
     </div>
   )
 }
-export default hot(module)(LocationInput)
+export default LocationInput

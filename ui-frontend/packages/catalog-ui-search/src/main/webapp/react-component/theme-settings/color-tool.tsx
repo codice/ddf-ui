@@ -2,7 +2,7 @@
  * Adapted from https://github.com/mui-org/material-ui/blob/master/docs/src/pages/customization/color/ColorTool.js
  */
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import { rgbToHex, useTheme } from '@mui/material/styles'
 import colors from './typed-colors'
 import Grid from '@mui/material/Grid'
@@ -316,4 +316,4 @@ function ColorTool(props: any) {
   )
 }
 
-export default hot(module)(ColorTool)
+export default ColorTool

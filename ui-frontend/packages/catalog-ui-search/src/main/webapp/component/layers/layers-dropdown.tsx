@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
+
 import Button from '@mui/material/Button'
 import Popover from '@mui/material/Popover'
 import { useMenuState } from '../menu-state/menu-state'

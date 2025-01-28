@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import styled from 'styled-components'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 
@@ -312,4 +312,4 @@ const HookPopupPreview = (props: Props) => {
   )
 }
 
-export default hot(module)(HookPopupPreview)
+export default HookPopupPreview

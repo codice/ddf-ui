@@ -12,9 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
+
 import styled from 'styled-components'
-import { hot } from 'react-hot-loader'
+
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'mt-g... Remove this comment to see the full error message
 import mtgeo from 'mt-geo'
 
@@ -89,5 +89,5 @@ const render = (props: Props) => {
   )
 }
 
-export default hot(module)(render)
+export default render
 export const testComponent = render

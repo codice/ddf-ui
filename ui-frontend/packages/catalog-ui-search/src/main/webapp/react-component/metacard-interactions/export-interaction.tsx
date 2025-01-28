@@ -16,7 +16,7 @@ import * as React from 'react'
 import ResultsExport from '../results-export'
 import { MetacardInteractionProps } from '.'
 import { MetacardInteraction } from './metacard-interactions'
-import { hot } from 'react-hot-loader'
+
 import { getExportResults } from '../utils/export/export'
 import { useDialogState } from '../../component/hooks/useDialogState'
 import Button from '@mui/material/Button'
@@ -102,4 +102,4 @@ export const ExportActions = (props: MetacardInteractionProps) => {
   )
 }
 
-export default hot(module)(ExportActions)
+export default ExportActions

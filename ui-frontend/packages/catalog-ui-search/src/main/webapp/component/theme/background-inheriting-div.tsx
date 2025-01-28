@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
 
 /**
  * CSS is a bit lacking when it comes to inheriting backgrounds, so this let's the dev do so a bit easier
@@ -34,4 +33,4 @@ const BackgroundInheritingDiv = (props: React.ComponentProps<'div'>) => {
   )
 }
 
-export default hot(module)(BackgroundInheritingDiv)
+export default BackgroundInheritingDiv

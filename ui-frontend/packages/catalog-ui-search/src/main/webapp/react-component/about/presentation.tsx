@@ -12,10 +12,10 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
+
 import styled from 'styled-components'
 import { CustomElement } from '../styles/mixins'
-import { hot } from 'react-hot-loader'
+
 import Divider from '@mui/material/Divider'
 
 interface Props {
@@ -52,7 +52,7 @@ const Root = styled.div`
   }
 `
 
-export default hot(module)((props: Props) => {
+export default (props: Props) => {
   return (
     <Root>
       <div className="about-content is-large-font">
@@ -109,4 +109,4 @@ export default hot(module)((props: Props) => {
       </div>
     </Root>
   )
-})
+}

@@ -15,7 +15,7 @@
 import * as React from 'react'
 import QuerySettings from '../query-settings/query-settings'
 import { FilterBuilderRoot } from '../filter-builder/filter-builder'
-import { hot } from 'react-hot-loader'
+
 import Swath from '../swath/swath'
 import { ValidationResult } from '../../react-component/location/validators'
 type Props = {
@@ -47,4 +47,4 @@ export const QueryAdvanced = ({ model, errorListener, Extensions }: Props) => {
   )
 }
 
-export default hot(module)(QueryAdvanced)
+export default QueryAdvanced

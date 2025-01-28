@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { useTheme } from '@mui/material/styles'
 
@@ -39,4 +39,4 @@ const SelectionRipple = ({
   )
 }
 
-export default hot(module)(SelectionRipple)
+export default SelectionRipple

@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import Paper from '@mui/material/Paper'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import styled from 'styled-components'
 import Button from '@mui/material/Button'
 import { Status } from '../../js/model/LazyQueryResult/status'
@@ -317,4 +317,4 @@ const QueryFeed = ({ selectionInterface }: Props) => {
   )
 }
 
-export default hot(module)(QueryFeed)
+export default QueryFeed

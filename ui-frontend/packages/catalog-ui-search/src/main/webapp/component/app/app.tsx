@@ -1,15 +1,13 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader/root'
 import {
-  Switch,
+  Routes,
   Route,
   useLocation,
-  useHistory,
+  useNavigate,
   RouteProps,
   LinkProps,
 } from 'react-router-dom'
 import CssBaseline from '@mui/material/CssBaseline'
-import Grid from '@mui/material/Grid'
 import $ from 'jquery'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
@@ -37,7 +35,6 @@ import UserView, { RoleDisplay } from '../../react-component/user/user'
 import UserSettings, {
   SettingsComponentType,
 } from '../../react-component/user-settings/user-settings'
-import { GlobalStyles } from './global-styles'
 import { PermissiveComponentType } from '../../typescript'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import { Elevations } from '../theme/theme'
@@ -59,7 +56,7 @@ import { WreqrSnacks } from './wreqr-snacks'
 import sessionTimeoutModel from '../singletons/session-timeout'
 import Extensions from '../../extension-points'
 import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
-
+import { SuspenseWrapper } from './suspense'
 export const handleBase64EncodedImages = (url: string) => {
   if (url && url.startsWith('data:')) {
     return url
@@ -68,14 +65,17 @@ export const handleBase64EncodedImages = (url: string) => {
 }
 type ForNavButtonType = Omit<BaseProps, 'expanded'> &
   Required<Pick<BaseProps, 'dataId'>>
+
+type CustomRouteProps = Omit<RouteProps, 'element'>
+
 export type RouteShownInNavType = {
-  routeProps: RouteProps
+  routeProps: CustomRouteProps
   linkProps: LinkProps
   showInNav: true
   navButtonProps: ForNavButtonType
 }
 export type RouteNotShownInNavType = {
-  routeProps: RouteProps
+  routeProps: CustomRouteProps
   showInNav: false
 }
 export type IndividualRouteType = RouteShownInNavType | RouteNotShownInNavType
@@ -99,7 +99,7 @@ const matchesRoute = ({
     Array.isArray(routeInfo.routeProps.path)
   ) {
     return routeInfo.routeProps.path.some(
-      (possibleRoute) =>
+      (possibleRoute: string) =>
         pathname.startsWith(`${possibleRoute}/`) ||
         pathname.endsWith(`${possibleRoute}`)
     )
@@ -145,7 +145,7 @@ const AsyncTasksComponent = () => {
   const [showBar, setShowBar] = React.useState(false)
   useRenderOnAsyncTasksAddOrRemove()
   const addSnack = useSnack()
-  const history = useHistory()
+  const navigate = useNavigate()
   React.useEffect(() => {
     let timeoutid = undefined as number | undefined
     timeoutid = window.setTimeout(() => {
@@ -204,10 +204,7 @@ const AsyncTasksComponent = () => {
               `Delete of ${task.lazyResult.plain.metacard.properties.title} complete.`,
               {
                 undo: () => {
-                  history.push({
-                    pathname: `/search/${task.lazyResult.plain.id}`,
-                    search: '',
-                  })
+                  navigate(`/search/${task.lazyResult.plain.id}`)
                   AsyncTasks.restore({ lazyResult: task.lazyResult })
                 },
               }
@@ -325,7 +322,7 @@ const HelpButton = () => {
 
 function DrawerWrapperComponent({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <SuspenseWrapper>
       <div className="w-full h-full flex flex-col flex-nowrap overflow-hidden">
         {Extensions.includeNavigationButtons ? (
           <div className="w-full shrink-0 grow-0 overflow-hidden">
@@ -337,14 +334,14 @@ function DrawerWrapperComponent({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       </div>
-    </>
+    </SuspenseWrapper>
   )
 }
 
 const SettingsButton = () => {
   const { SettingsComponents } = useTopLevelAppContext()
   const location = useLocation()
-  const history = useHistory()
+  const navigate = useNavigate()
   const queryParams = queryString.parse(location.search)
   const open = Boolean(queryParams['global-settings'])
   const { navOpen } = useNavContextProvider()
@@ -372,9 +369,7 @@ const SettingsButton = () => {
         open={open}
         onClose={() => {
           delete queryParams['global-settings']
-          history.push(
-            `${location.pathname}?${queryString.stringify(queryParams)}`
-          )
+          navigate(`${location.pathname}?${queryString.stringify(queryParams)}`)
         }}
         PaperProps={{
           className: 'min-w-120 max-w-4/5 ',
@@ -391,7 +386,7 @@ const NotificationsButton = () => {
   const hasUnseenNotifications = useIndicateHasUnseenNotifications()
   const { NotificationsComponent } = useTopLevelAppContext()
   const location = useLocation()
-  const history = useHistory()
+  const navigate = useNavigate()
   const queryParams = queryString.parse(location.search)
   const open = Boolean(queryParams['global-notifications'])
   const { navOpen } = useNavContextProvider()
@@ -428,9 +423,7 @@ const NotificationsButton = () => {
         open={open}
         onClose={() => {
           delete queryParams['global-notifications']
-          history.push(
-            `${location.pathname}?${queryString.stringify(queryParams)}`
-          )
+          navigate(`${location.pathname}?${queryString.stringify(queryParams)}`)
           notifications.setSeen()
           userInstance.savePreferences()
         }}
@@ -447,7 +440,7 @@ const NotificationsButton = () => {
 }
 const UserButton = () => {
   const location = useLocation()
-  const history = useHistory()
+  const navigate = useNavigate()
   const queryParams = queryString.parse(location.search)
   const open = Boolean(queryParams['global-user'])
   const { navOpen } = useNavContextProvider()
@@ -487,9 +480,7 @@ const UserButton = () => {
         open={open}
         onClose={() => {
           delete queryParams['global-user']
-          history.push(
-            `${location.pathname}?${queryString.stringify(queryParams)}`
-          )
+          navigate(`${location.pathname}?${queryString.stringify(queryParams)}`)
         }}
         PaperProps={{
           className: 'min-w-120 max-w-4/5 ',
@@ -532,12 +523,9 @@ const RouteButton = ({ routeInfo }: { routeInfo: RouteShownInNavType }) => {
 const SideBarRoutes = () => {
   const { RouteInformation } = useTopLevelAppContext()
   return (
-    <Grid
-      item
+    <div
       className="overflow-auto p-0 shrink-0 scrollbars-min"
-      style={{
-        maxHeight: `calc(100% - ${7 * 4}rem)`, //
-      }}
+      style={{ maxHeight: `calc(100% - ${7 * 4}rem)` }}
     >
       {RouteInformation.filter((routeInfo) => routeInfo.showInNav).map(
         (routeInfo: RouteShownInNavType) => {
@@ -550,37 +538,33 @@ const SideBarRoutes = () => {
         }
       )}
       {<Extensions.extraRoutes />}
-    </Grid>
+    </div>
   )
 }
 const SideBarNavigationButtons = ({
   showText = false,
 }: { showText?: boolean } = {}) => {
+  const navigate = useNavigate()
   const { navOpen } = useNavContextProvider()
   const showExpandedText = navOpen || showText
   return (
     <>
-      <Grid item className="w-full p-2 shrink-0">
-        <Grid
-          container
-          wrap="nowrap"
-          alignItems="center"
-          className="w-full h-full overflow-hidden"
-        >
-          <Grid item className="mr-auto">
-            <Button onClick={() => history.back()}>
+      <div className="w-full p-2 shrink-0">
+        <div className="w-full h-full overflow-hidden flex items-center flex-nowrap">
+          <div className="mr-auto">
+            <Button onClick={() => navigate(-1)}>
               <ArrowBackIcon fontSize="small" />
               {showExpandedText && 'Back'}
             </Button>
-          </Grid>
-          <Grid item className="ml-auto">
-            <Button onClick={() => history.forward()}>
+          </div>
+          <div className="ml-auto">
+            <Button onClick={() => navigate(1)}>
               {showExpandedText && 'Forward'}
               <ArrowForwardIcon fontSize="small" />
             </Button>
-          </Grid>
-        </Grid>
-      </Grid>
+          </div>
+        </div>
+      </div>
     </>
   )
 }
@@ -591,49 +575,37 @@ const SideBarToggleButton = () => {
     useConfiguration()
   return (
     <>
-      <Grid item className="w-full h-16 shrink-0">
+      <div className="w-full h-16 shrink-0">
         {navOpen ? (
           <>
-            <Grid
-              container
-              wrap="nowrap"
-              alignItems="center"
-              className="w-full h-full overflow-hidden"
-            >
-              <Grid item className="pl-3 py-1 pr-1 w-full relative h-full">
+            <div className="w-full h-full overflow-hidden flex items-center flex-nowrap">
+              <div className="pl-3 py-1 pr-1 w-full relative h-full">
                 {getTopLeftLogoSrc() ? (
                   <img
                     className="max-h-full max-w-full absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 top-1/2 p-4"
                     src={handleBase64EncodedImages(getTopLeftLogoSrc())}
                   />
                 ) : (
-                  <Grid
-                    container
-                    direction="column"
-                    className="pl-3"
-                    justifyContent="center"
-                  >
-                    <Grid item>
+                  <div className="pl-3 flex flex-col justify-center">
+                    <div>
                       <Typography>{getCustomBranding()}</Typography>
-                    </Grid>
-                    <Grid item>
+                    </div>
+                    <div>
                       <Typography>{getProduct()}</Typography>
-                    </Grid>
-                  </Grid>
+                    </div>
+                  </div>
                 )}
-              </Grid>
-              <Grid item className="ml-auto">
+              </div>
+              <div className="ml-auto">
                 <IconButton
                   className="h-auto"
-                  onClick={() => {
-                    setNavOpen(false)
-                  }}
+                  onClick={() => setNavOpen(false)}
                   size="large"
                 >
                   <ChevronLeftIcon />
                 </IconButton>
-              </Grid>
-            </Grid>
+              </div>
+            </div>
           </>
         ) : (
           <Button
@@ -656,15 +628,14 @@ const SideBarToggleButton = () => {
             )}
           </Button>
         )}
-      </Grid>
+      </div>
     </>
   )
 }
 const SideBar = () => {
   const { navOpen } = useNavContextProvider()
   return (
-    <Grid
-      item
+    <div
       className={`${
         navOpen ? 'w-64' : 'w-20'
       } transition-all duration-200 ease-in-out relative z-10 mr-2 shrink-0 pb-2 pt-2 pl-2 group`}
@@ -673,12 +644,7 @@ const SideBar = () => {
       }}
     >
       <Paper elevation={Elevations.navbar} className="h-full">
-        <Grid
-          container
-          direction="column"
-          className="h-full w-full"
-          wrap="nowrap"
-        >
+        <div className="h-full w-full flex flex-col flex-nowrap overflow-hidden">
           {Extensions.includeNavigationButtons && (
             <>
               <SideBarNavigationButtons />
@@ -691,7 +657,7 @@ const SideBar = () => {
           <Divider />
           <SideBarBackground />
           <Divider />
-          <Grid item className="mt-auto overflow-hidden w-full shrink-0 grow-0">
+          <div className="mt-auto overflow-hidden w-full shrink-0 grow-0">
             {Extensions.extraSidebarButtons && (
               <Extensions.extraSidebarButtons />
             )}
@@ -699,17 +665,17 @@ const SideBar = () => {
             <SettingsButton />
             <NotificationsButton />
             <UserButton />
-          </Grid>
-        </Grid>
+          </div>
+        </div>
       </Paper>
-    </Grid>
+    </div>
   )
 }
 const Header = () => {
   const { getPlatformBackground, getPlatformColor, getPlatformHeader } =
     useConfiguration()
   return (
-    <Grid item className="w-full">
+    <div className="w-full">
       {getPlatformHeader() ? (
         <Typography
           align="center"
@@ -721,14 +687,14 @@ const Header = () => {
           {getPlatformHeader()}
         </Typography>
       ) : null}
-    </Grid>
+    </div>
   )
 }
 const Footer = () => {
   const { getPlatformBackground, getPlatformColor, getPlatformFooter } =
     useConfiguration()
   return (
-    <Grid item className="w-full">
+    <div className="w-full">
       {getPlatformFooter() ? (
         <Typography
           align="center"
@@ -740,20 +706,20 @@ const Footer = () => {
           {getPlatformFooter()}
         </Typography>
       ) : null}
-    </Grid>
+    </div>
   )
 }
 const SideBarBackground = () => {
   const { getBottomLeftBackgroundSrc } = useConfiguration()
   return (
-    <Grid item className="relative overflow-hidden shrink-1 h-full min-w-full">
+    <div className="relative overflow-hidden shrink-1 h-full min-w-full">
       {getBottomLeftBackgroundSrc() ? (
         <img
           className={`group-hover:opacity-100 opacity-50 duration-200 ease-in-out transition-all w-auto h-full absolute max-w-none m-auto min-h-80`}
           src={handleBase64EncodedImages(getBottomLeftBackgroundSrc())}
         />
       ) : null}
-    </Grid>
+    </div>
   )
 }
 const RouteContents = () => {
@@ -769,27 +735,21 @@ const RouteContents = () => {
    * Just add pb-2 for the correct bottom spacing, pt-2 for correct top spacing, etc. etc.
    */
   return (
-    <Grid
-      item
-      className="w-full h-full relative z-0 shrink-1 overflow-x-hidden" // do not remove this overflow hidden, see comment above for more
-    >
+    <div className="w-full h-full relative z-0 shrink-1 overflow-x-hidden">
       <Memo>
-        <Switch>
+        <Routes>
           {RouteInformation.map((routeInfo: RouteNotShownInNavType) => {
             return (
               <Route
-                key={
-                  routeInfo.routeProps.path
-                    ? routeInfo.routeProps.path.toString()
-                    : Math.random()
-                }
-                {...routeInfo.routeProps}
+                key={routeInfo.routeProps.path?.toString() || Math.random()}
+                path={routeInfo.routeProps.path}
+                Component={routeInfo.routeProps.Component}
               />
             )
           })}
-        </Switch>
+        </Routes>
       </Memo>
-    </Grid>
+    </div>
   )
 }
 const NavContextProvider = React.createContext({
@@ -895,42 +855,24 @@ const App = ({
       value={{ RouteInformation, NotificationsComponent, SettingsComponents }}
     >
       <NavContextProvider.Provider value={{ navOpen, setNavOpen }}>
-        <div className="h-full w-full overflow-hidden Mui-bg-default">
-          {/* Don't move CSSBaseline or GlobalStyles to providers, since we have multiple react roots.   */}
-          <CssBaseline />
-          <GlobalStyles />
-          <SystemUsageModal />
-          <SessionTimeoutComponent />
-          <AjaxErrorHandling />
-          <WreqrSnacks />
-          <Grid
-            container
-            alignItems="center"
-            className="h-full w-full overflow-hidden"
-            direction="column"
-            wrap="nowrap"
-          >
-            <Header />
-            <Extensions.extraHeader />
-            <Grid item className="w-full h-full relative overflow-hidden">
-              <AsyncTasksComponent />
-              <Grid
-                container
-                direction="row"
-                wrap="nowrap"
-                alignItems="stretch"
-                className="w-full h-full"
-              >
-                <SideBar />
-                <RouteContents />
-              </Grid>
-            </Grid>
-            <Extensions.extraFooter />
-            <Footer />
-          </Grid>
+        <CssBaseline />
+        <SystemUsageModal />
+        <SessionTimeoutComponent />
+        <AjaxErrorHandling />
+        <WreqrSnacks />
+        <Header />
+        <Extensions.extraHeader />
+        <div className="w-full h-full relative overflow-hidden">
+          <AsyncTasksComponent />
+          <div className="w-full h-full flex flex-row flex-nowrap items-stretch">
+            <SideBar />
+            <RouteContents />
+          </div>
         </div>
+        <Extensions.extraFooter />
+        <Footer />
       </NavContextProvider.Provider>
     </TopLevelAppContext.Provider>
   )
 }
-export default hot(App)
+export default App

@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { useState } from 'react'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'

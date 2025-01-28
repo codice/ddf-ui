@@ -224,8 +224,8 @@ const drawGeometry = ({
   }
 
   const turfLine = Turf.lineString(setArr) as
-    | Turf.Feature<Turf.LineString>
-    | Turf.Feature<Turf.Polygon | Turf.MultiPolygon>
+    | GeoJSON.Feature<GeoJSON.LineString>
+    | GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon>
   const lineWidth = DistanceUtils.getDistanceInMeters(
     json.lineWidth,
     model.get('lineUnits')
@@ -260,12 +260,13 @@ const drawGeometry = ({
     const isBuffered = lineWidth > 0
     if (isBuffered) {
       utility.adjustGeoCoords(turfLine)
-      bufferedLine = Turf.buffer(turfLine, Math.max(lineWidth, 1), {
+      const buffered = Turf.buffer(turfLine, Math.max(lineWidth, 1), {
         units: 'meters',
       })
-      if (!bufferedLine) {
+      if (!buffered) {
         return
       }
+      bufferedLine = buffered
       // need to adjust the points again AFTER buffering, since buffering undoes the antimeridian adjustments
       utility.adjustGeoCoords(bufferedLine)
     }

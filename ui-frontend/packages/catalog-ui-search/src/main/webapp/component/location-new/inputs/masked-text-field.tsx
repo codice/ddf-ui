@@ -65,7 +65,6 @@ class MaskedTextField extends React.Component<MaskedInputProps> {
   }
   render() {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'label' does not exist on type 'Readonly<... Remove this comment to see the full error message
-    // eslint-disable-next-line no-unused-vars
     const { label, addon, onChange, value, ...args } = this.props
     return (
       <div className="flex-1">

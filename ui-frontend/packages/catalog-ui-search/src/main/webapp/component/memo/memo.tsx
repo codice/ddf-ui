@@ -3,7 +3,7 @@ import * as React from 'react'
 // Convenience wrapper around memo
 
 type MemoProps = {
-  children: JSX.Element | JSX.Element[]
+  children: React.ReactNode | React.ReactNode[]
   dependencies?: any[]
 }
 

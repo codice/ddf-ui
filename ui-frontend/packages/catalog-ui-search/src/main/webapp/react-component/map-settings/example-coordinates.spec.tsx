@@ -12,10 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react'
 import { expect } from 'chai'
-import { mount } from 'enzyme'
 import { testComponent as ExampleCoordinates } from './example-coordinates'
+import { render } from '@testing-library/react'
 
 describe('<ExampleCoordinates />', () => {
   const props = {
@@ -23,20 +22,18 @@ describe('<ExampleCoordinates />', () => {
     examples: { mgrs: '4Q FL 23009 12331' },
   }
 
-  it('renders', () => {
-    const wrapper = mount(<ExampleCoordinates selected="foo" />)
-    expect(wrapper.find({ selected: 'foo' }).length).to.equal(1)
-  })
-
   it('displays empty example for unknown coordinate type', () => {
-    const wrapper = mount(<ExampleCoordinates selected="foo" />)
-    expect(wrapper.containsMatchingElement(<span />)).to.equal(true)
+    const wrapper = render(<ExampleCoordinates selected="foo" />)
+    // look for empty span, just one
+    const span = wrapper.container.querySelector('span')
+    expect(span).to.exist
+    if (span) {
+      expect(span.textContent).to.equal('')
+    }
   })
 
   it('displays the correct example', () => {
-    const wrapper = mount(<ExampleCoordinates {...props} />)
-    expect(
-      wrapper.containsMatchingElement(<span>4Q FL 23009 12331</span>)
-    ).to.equal(true)
+    const wrapper = render(<ExampleCoordinates {...props} />)
+    expect(wrapper.getByText('4Q FL 23009 12331')).to.exist
   })
 })

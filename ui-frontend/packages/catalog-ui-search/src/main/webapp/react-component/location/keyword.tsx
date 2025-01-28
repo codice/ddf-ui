@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
+
 import { useState } from 'react'
 import ExtensionPoints from '../../extension-points'
 import GazetteerAutoComplete from '../auto-complete/gazetteer-autocomplete'

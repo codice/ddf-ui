@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import Button from '@mui/material/Button'
 import { DarkDivider } from '../../component/dark-divider/dark-divider'
 import PersonIcon from '@mui/icons-material/Person'
@@ -161,4 +161,4 @@ const UserComponent = () => {
   )
 }
 
-export default hot(module)(UserComponent)
+export default UserComponent

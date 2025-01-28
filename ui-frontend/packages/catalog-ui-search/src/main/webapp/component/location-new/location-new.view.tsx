@@ -15,7 +15,6 @@
 import * as React from 'react'
 import LocationComponent, { LocationInputPropsType } from './location'
 import { ddToWkt, dmsToWkt, usngToWkt } from './utils'
-import { hot } from 'react-hot-loader'
 
 import LocationNewModel from './location-new'
 
@@ -71,4 +70,4 @@ export const LocationInputReact = ({
   return <LocationComponent state={state} options={{}} setState={setState} />
 }
 
-export default hot(module)(LocationInputReact)
+export default LocationInputReact

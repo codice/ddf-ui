@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import Button from '@mui/material/Button'
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import { useLazyResultsStatusFromSelectionInterface } from '../selection-interface/hooks'
@@ -146,4 +146,4 @@ const Paging = ({ selectionInterface }: Props) => {
   )
 }
 
-export default hot(module)(Paging)
+export default Paging

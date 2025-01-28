@@ -14,7 +14,7 @@
  **/
 /*jshint bitwise: false*/
 import $ from 'jquery'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import './requestAnimationFramePolyfill'
 import { TimePrecision } from '@blueprintjs/datetime'
 import { cacheBustUrl } from './cache-bust-url'

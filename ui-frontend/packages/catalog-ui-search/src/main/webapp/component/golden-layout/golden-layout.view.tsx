@@ -629,3 +629,5 @@ export const GoldenLayoutViewReact = (options: GoldenLayoutViewProps) => {
     </div>
   )
 }
+
+export default GoldenLayoutViewReact

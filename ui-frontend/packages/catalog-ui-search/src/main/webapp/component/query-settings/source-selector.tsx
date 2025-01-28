@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import TextField from '@mui/material/TextField'
 import MenuItem from '@mui/material/MenuItem'
@@ -454,4 +454,4 @@ const SourceSelector = ({ search }: Props) => {
   )
 }
 
-export default hot(module)(SourceSelector)
+export default SourceSelector

@@ -12,9 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
+
 import styled from 'styled-components'
-import { hot } from 'react-hot-loader'
+
 import { Attribute, Coordinates, Format, validCoordinates } from '.'
 import { formatAttribute, formatCoordinates } from './formatting'
 import DistanceUtils from '../../js/DistanceUtils'
@@ -111,4 +111,4 @@ const render = (props: Props) => {
   )
 }
 
-export default hot(module)(render)
+export default render

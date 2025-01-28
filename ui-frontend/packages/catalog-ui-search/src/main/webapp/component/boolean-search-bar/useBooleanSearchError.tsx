@@ -1,5 +1,5 @@
 /* Copyright (c) Connexta, LLC */
-import * as React from 'react'
+
 import { useState, useEffect } from 'react'
 import { BooleanTextType } from '../filter-builder/filter.structure'
 

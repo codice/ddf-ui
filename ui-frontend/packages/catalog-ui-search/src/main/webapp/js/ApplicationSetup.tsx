@@ -31,10 +31,6 @@ import $ from 'jquery'
 import { StartupDataStore } from './model/Startup/startup'
 if (process.env.NODE_ENV !== 'production') {
   $('html').addClass('is-development')
-  if ((module as any)?.hot) {
-    import('react-hot-loader')
-    $('html').addClass('is-hot-reloading')
-  }
 }
 // @ts-ignore disable all react-beautiful-dnd development warnings (we have some spurious ones, but if you're working a component with this you can re-enable)
 window['__react-beautiful-dnd-disable-dev-warnings'] = true
@@ -60,12 +56,17 @@ $(window.document).ready(() => {
     StartupDataStore.Configuration.config?.customBranding +
     ' ' +
     StartupDataStore.Configuration.config?.product
-  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-  window.document.querySelector('.welcome-branding').textContent =
-    StartupDataStore.Configuration.config?.customBranding
-  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-  window.document.querySelector('.welcome-branding-name').textContent =
-    StartupDataStore.Configuration.config?.product
-  // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-  window.document.querySelector('#loading').classList.add('show-welcome')
+  const welcomeBranding = window.document.querySelector('.welcome-branding')
+  if (welcomeBranding) {
+    welcomeBranding.textContent =
+      StartupDataStore.Configuration.config?.customBranding + ''
+  }
+  const welcomeBrandingName = window.document.querySelector(
+    '.welcome-branding-name'
+  )
+  if (welcomeBrandingName) {
+    welcomeBrandingName.textContent =
+      StartupDataStore.Configuration.config?.product + ''
+  }
+  window.document.querySelector('#loading')?.classList.add('show-welcome')
 })

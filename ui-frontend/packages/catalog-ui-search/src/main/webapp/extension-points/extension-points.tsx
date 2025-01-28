@@ -53,26 +53,26 @@ export type ExtensionPointsType = {
     lazyResult,
   }: {
     lazyResult: LazyQueryResult
-  }) => JSX.Element | null
+  }) => React.ReactNode | null
   resultItemRowAddOn: ({
     lazyResult,
     isTableView,
   }: {
     lazyResult: LazyQueryResult
     isTableView?: boolean
-  }) => JSX.Element | null
+  }) => React.ReactNode | null
   resultTitleIconAddOn: ({
     lazyResult,
   }: {
     lazyResult: LazyQueryResult
-  }) => JSX.Element | null
+  }) => React.ReactNode | null
   layoutDropdown: (props: {
     goldenLayout: any
     layoutResult?: ResultType
     editLayoutRef?: any
-  }) => JSX.Element | null
+  }) => React.ReactNode | null
   customSourcesPage:
-    | ((props: { onChange?: () => void }) => JSX.Element | null)
+    | ((props: { onChange?: () => void }) => React.ReactNode | null)
     | null
   serializeLocation: (
     property: string,
@@ -106,7 +106,7 @@ export type ExtensionPointsType = {
   }: {
     lazyResult: LazyQueryResult
     selectionInterface: any
-    itemContentRef: React.RefObject<HTMLElement>
+    itemContentRef: React.RefObject<HTMLElement | null>
     className?: string
   }) => null | PermissiveComponentType
   attributeEditor: (
@@ -119,7 +119,7 @@ export type ExtensionPointsType = {
   timelineItemAddOn: (props: {
     results: LazyQueryResult[]
     isSingleItem: boolean
-  }) => JSX.Element | null
+  }) => React.ReactNode | null
   extraSidebarButtons?: PermissiveComponentType
   includeNavigationButtons?: boolean
 }

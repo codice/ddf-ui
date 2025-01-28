@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import { Drawing } from '../../../singletons/drawing'
 import { useLazyResultsFromSelectionInterface } from '../../../selection-interface/hooks'
 import Geometry from './geometry'
@@ -130,4 +130,4 @@ const Geometries = (props: Props) => {
   )
 }
 
-export default hot(module)(Geometries)
+export default Geometries

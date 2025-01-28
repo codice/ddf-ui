@@ -21,7 +21,6 @@
  * www.metaaps.com
  *
  */
-/* eslint-disable */
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
 import Cesium from 'cesium/Build/Cesium/Cesium'
 import * as Turf from '@turf/turf'
@@ -729,7 +728,6 @@ const DrawHelper = (function () {
         return i
       }
       if (callbacks.dragHandlers) {
-        // eslint-disable-next-line no-redeclare
         var _self = this
         setListener(billboard, 'leftDown', (position: any) => {
           // TODO - start the drag handlers here
@@ -852,7 +850,6 @@ const DrawHelper = (function () {
     this._scene.primitives.raiseToTop(this._billboards)
   }
   _.prototype.startDrawingMarker = function (options: any) {
-    // eslint-disable-next-line no-redeclare
     var options = copyOptions(options, defaultBillboard)
     this.startDrawing(() => {
       markers.remove()
@@ -904,12 +901,10 @@ const DrawHelper = (function () {
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
   }
   _.prototype.startDrawingPolygon = function (options: any) {
-    // eslint-disable-next-line no-redeclare
     var options = copyOptions(options, defaultSurfaceOptions)
     this.startDrawingPolyshape(true, options)
   }
   _.prototype.startDrawingPolyline = function (options: any) {
-    // eslint-disable-next-line no-redeclare
     var options = copyOptions(options, defaultPolylineOptions)
     this.startDrawingPolyshape(false, options)
   }
@@ -1041,7 +1036,6 @@ const DrawHelper = (function () {
     ])
   }
   _.prototype.startDrawingExtent = function (options: any) {
-    // eslint-disable-next-line no-redeclare
     var options = copyOptions(options, defaultSurfaceOptions)
     this.startDrawing(() => {
       if (extent != null) {
@@ -1138,7 +1132,6 @@ const DrawHelper = (function () {
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE)
   }
   _.prototype.startDrawingCircle = function (options: any) {
-    // eslint-disable-next-line no-redeclare
     var options = copyOptions(options, defaultSurfaceOptions)
     this.startDrawing(function cleanUp() {
       if (circle != null) {

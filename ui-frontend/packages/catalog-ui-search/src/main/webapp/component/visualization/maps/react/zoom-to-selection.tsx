@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import { useSelectedResults } from '../../../../js/model/LazyQueryResult/hooks'
 import { LazyQueryResults } from '../../../../js/model/LazyQueryResult/LazyQueryResults'
 
@@ -22,4 +22,4 @@ const ZoomToSelection = ({ lazyResults, map }: Props) => {
   return null
 }
 
-export default hot(module)(ZoomToSelection)
+export default ZoomToSelection

@@ -1,7 +1,7 @@
 import TextField from '@mui/material/TextField'
 import Paper from '@mui/material/Paper'
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import { DarkDivider } from '../dark-divider/dark-divider'
 import {
   FilterBuilderClass,
@@ -208,13 +208,12 @@ const SavedSearches = () => {
               setFilter(e.target.value)
             }}
           />
-          {/* <div className="text-lg">Sort by</div> */}
           <Autocomplete
             className="w-48 ml-2"
             options={['title', 'last modified'] as SortAttributeType[]}
-            renderOption={(option) => {
-              return <>{option}</>
-            }}
+            // renderOption={(option) => {
+            //   return <>{option}</>
+            // }}
             value={sortAttribute}
             onChange={(_e, newValue) => {
               setSortAttribute(newValue || 'title')
@@ -281,4 +280,4 @@ const SavedSearches = () => {
   )
 }
 
-export default hot(module)(SavedSearches)
+export default SavedSearches

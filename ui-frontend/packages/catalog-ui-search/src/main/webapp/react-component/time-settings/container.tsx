@@ -1,7 +1,5 @@
-//DELETE AFTER CATALOG-UI-SEARCH CUT
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
-import moment from 'moment'
+
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 
 import TimeSettingsPresentation from './presentation'
@@ -50,7 +48,7 @@ const getCurrentTimeZone = () => getUserPreferences().get('timeZone')
 const getCurrentTime = (
   format: string = getCurrentDateTimeFormat(),
   timeZone: string = getCurrentTimeZone()
-) => momentTimezone.tz(moment(), timeZone).format(format)
+) => momentTimezone.tz(momentTimezone(), timeZone).format(format)
 
 const generateZoneObjects = (): TimeZone[] => {
   const zoneNames = momentTimezone.tz.names()
@@ -61,8 +59,7 @@ const generateZoneObjects = (): TimeZone[] => {
     const zone = momentTimezone.tz.zone(zoneName)
     const zonedDate = momentTimezone.tz(timestamp, zoneName)
     const offsetAsString = zonedDate.format('Z')
-    // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
-    const abbr = zone.abbr(timestamp)
+    const abbr = zone?.abbr(timestamp) || ''
 
     return {
       timestamp: timestamp,
@@ -134,4 +131,4 @@ class TimeSettingsContainer extends React.Component<WithBackboneProps, State> {
   )
 }
 
-export default hot(module)(withListenTo(TimeSettingsContainer))
+export default withListenTo(TimeSettingsContainer)

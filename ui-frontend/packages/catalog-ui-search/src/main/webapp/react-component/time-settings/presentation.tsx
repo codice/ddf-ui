@@ -1,6 +1,5 @@
-//DELETE AFTER CATALOG-UI-SEARCH CUT
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import styled from 'styled-components'
 
 import TimeZoneSelector from './time-zone-picker'
@@ -70,4 +69,4 @@ class TimeSettingsPresentation extends React.Component<Props, {}> {
   }
 }
 
-export default hot(module)(TimeSettingsPresentation)
+export default TimeSettingsPresentation

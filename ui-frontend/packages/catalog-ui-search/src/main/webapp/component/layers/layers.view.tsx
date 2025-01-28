@@ -18,7 +18,7 @@ import _ from 'underscore'
 import Backbone from 'backbone'
 import { LayerItemCollectionViewReact } from '../layer-item/layer-item.collection.view'
 import user from '../singletons/user-instance'
-import { hot } from 'react-hot-loader'
+
 import Button from '@mui/material/Button'
 import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 import { useListenTo } from '../../component/selection-checkbox/useBackbone.hook'
@@ -130,4 +130,4 @@ const LayersViewReact = (props: LayersViewReactProps) => {
   )
 }
 
-export default hot(module)(LayersViewReact)
+export default LayersViewReact

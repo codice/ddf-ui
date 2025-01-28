@@ -15,5 +15,5 @@
 export { default as Omit } from './omit'
 export { default as Subtract } from './subtract'
 export type PermissiveComponentType =
-  | (() => JSX.Element)
+  | (() => React.ReactNode)
   | React.ComponentType<React.PropsWithChildren<any>>

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -108,4 +108,4 @@ const SystemUsageModal = () => {
   }
   return <></>
 }
-export default hot(module)(SystemUsageModal)
+export default SystemUsageModal

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import _cloneDeep from 'lodash.clonedeep'
-import { hot } from 'react-hot-loader'
+
 import SortSelections from './sort-selections'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 import { QueryType } from '../../js/model/Query'
@@ -38,4 +38,4 @@ const PermanentSearchSort = ({ model }: Props) => {
   )
 }
 
-export default hot(module)(PermanentSearchSort)
+export default PermanentSearchSort

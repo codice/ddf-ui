@@ -167,7 +167,6 @@ function arrayFromPartialWkt(partialWkt: any) {
   // change parentheses to array brackets
   result = result.replace(/\(/g, '[').replace(/\)/g, ']')
   // change each space-separated coordinate pair to a two-element array
-  // eslint-disable-next-line no-useless-escape
   result = result.replace(/([^,\[\]]+)\s+([^,\[\]]+)/g, '[$1,$2]')
   // build nested arrays from the string
   return JSON.parse(result)

@@ -1,7 +1,7 @@
 import { ButtonProps } from '@mui/material/Button'
 import { PopoverActions, PopoverProps } from '@mui/material/Popover'
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import debounce from 'lodash.debounce'
 
 type Props = {
@@ -37,7 +37,7 @@ const useListenForChildUpdates = ({
   action,
 }: {
   popoverRef: HTMLDivElement | undefined
-  action: React.MutableRefObject<PopoverActions | undefined>
+  action: React.MutableRefObject<PopoverActions | null>
 }) => {
   React.useEffect(() => {
     let lastWidth = 0
@@ -87,7 +87,7 @@ const useListenForChildUpdates = ({
 export const useMenuState = ({ maxHeight }: Props = {}) => {
   const anchorRef = React.useRef<HTMLDivElement>(null)
   const popoverRef = useRerenderingRef<HTMLDivElement>()
-  const action = React.useRef<PopoverActions>()
+  const action = React.useRef<PopoverActions | null>(null)
   const [open, setOpen] = React.useState(false)
   useListenForChildUpdates({ popoverRef: popoverRef.current, action })
   const handleClick = () => {
@@ -161,4 +161,4 @@ export const POPOVER_DEFAULTS = ({ maxHeight }: Props = {}) => {
   >
 }
 
-export default hot(module)(useMenuState)
+export default useMenuState

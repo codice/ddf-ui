@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Checkbox from '@mui/material/Checkbox'
@@ -36,4 +36,4 @@ const Phonetics = ({ model }: Props) => {
   )
 }
 
-export default hot(module)(Phonetics)
+export default Phonetics

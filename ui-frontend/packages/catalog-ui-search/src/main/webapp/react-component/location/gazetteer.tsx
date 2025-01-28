@@ -13,7 +13,7 @@
  *
  **/
 import { TextFieldProps } from '@mui/material/TextField'
-import * as React from 'react'
+
 import defaultFetch from '../utils/fetch'
 import Keyword from './keyword'
 import { StartupDataStore } from '../../js/model/Startup/startup'

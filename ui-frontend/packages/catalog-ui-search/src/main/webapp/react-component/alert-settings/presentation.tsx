@@ -12,8 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
 
@@ -140,4 +139,4 @@ const render = (props: Props) => {
   )
 }
 
-export default hot(module)(render)
+export default render

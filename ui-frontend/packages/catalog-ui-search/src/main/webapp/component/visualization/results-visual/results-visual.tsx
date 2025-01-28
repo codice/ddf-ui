@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import ResultItemCollection from './result-item.collection'
 import Grid from '@mui/material/Grid'
 import TableVisual from './table'
@@ -88,4 +88,4 @@ const ResultsView = ({ selectionInterface, componentState }: Props) => {
   )
 }
 
-export default hot(module)(ResultsView)
+export default ResultsView

@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
+
 import { createRoot } from 'react-dom/client'
 
 export const attemptToStart = async () => {

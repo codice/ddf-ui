@@ -20,7 +20,7 @@ import { useBackbone } from '../selection-checkbox/useBackbone.hook'
 import {
   Link,
   LinkProps,
-  useHistory,
+  useNavigate,
   useLocation,
   useParams,
 } from 'react-router-dom'
@@ -36,10 +36,7 @@ import {
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import Skeleton from '@mui/material/Skeleton'
 import CircularProgress from '@mui/material/CircularProgress'
-import {
-  useRerenderOnBackboneSync,
-  useStatusOfLazyResults,
-} from '../../js/model/LazyQueryResult/hooks'
+import { useRerenderOnBackboneSync } from '../../js/model/LazyQueryResult/hooks'
 import CloudDoneIcon from '@mui/icons-material/CloudDone'
 import SaveIcon from '@mui/icons-material/Save'
 import { useMenuState } from '../menu-state/menu-state'
@@ -49,7 +46,6 @@ import { TypedUserInstance } from '../singletons/TypedUser'
 import useSnack from '../hooks/useSnack'
 import Popover from '@mui/material/Popover'
 import Autocomplete, { AutocompleteProps } from '@mui/material/Autocomplete'
-import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import OverflowTooltip, {
   OverflowTooltipHTMLElement,
 } from '../overflow-tooltip/overflow-tooltip'
@@ -61,6 +57,7 @@ import {
 } from '../../js/model/AsyncTask/async-task'
 import { Memo } from '../memo/memo'
 import { useListenToEnterKeySubmitEvent } from '../custom-events/enter-key-submit'
+import { useSearchResults } from '../hooks/useSearchResults'
 
 type SaveFormType = {
   selectionInterface: any
@@ -191,110 +188,6 @@ const ButtonWithTwoStates = (props: ButtonWithMultipleStatesType) => {
       ) : null}
     </Button>
   )
-}
-
-const useSearchResults = ({
-  searchText,
-  archived = false,
-}: {
-  searchText: string
-  archived?: boolean
-}) => {
-  const [state, setState] = React.useState({
-    lazyResults: [],
-    loading: true,
-  } as { lazyResults: LazyQueryResult[]; loading: boolean })
-  const [hasSearched, setHasSearched] = React.useState(false)
-  const [queryModel] = useQuery({
-    attributes: {
-      sorts: [{ attribute: 'metacard.modified', direction: 'descending' }],
-      filterTree: new FilterBuilderClass({
-        type: 'AND',
-        filters: [
-          new FilterClass({
-            property: 'title',
-            value: `*${searchText}*`,
-            type: 'ILIKE',
-          }),
-          new FilterClass({
-            property: archived ? 'metacard.deleted.tags' : 'metacard-tags',
-            value: 'query',
-            type: 'ILIKE',
-          }),
-          ...(archived
-            ? [
-                new FilterClass({
-                  property: 'metacard-tags',
-                  value: '*',
-                  type: 'ILIKE',
-                }),
-              ]
-            : []),
-        ],
-      }),
-    },
-  })
-
-  const [selectionInterface] = React.useState(
-    new SelectionInterfaceModel({
-      currentQuery: queryModel,
-    })
-  )
-  React.useEffect(() => {
-    selectionInterface.getCurrentQuery().set(
-      'filterTree',
-      new FilterBuilderClass({
-        type: 'AND',
-        filters: [
-          new FilterClass({
-            property: 'title',
-            value: `*${searchText}*`,
-            type: 'ILIKE',
-          }),
-          new FilterClass({
-            property: archived ? 'metacard.deleted.tags' : 'metacard-tags',
-            value: 'query',
-            type: 'ILIKE',
-          }),
-          ...(archived
-            ? [
-                new FilterClass({
-                  property: 'metacard-tags',
-                  value: '*',
-                  type: 'ILIKE',
-                }),
-              ]
-            : []),
-        ],
-      })
-    )
-    selectionInterface.getCurrentQuery().cancelCurrentSearches()
-    setState({
-      lazyResults: [],
-      loading: true,
-    })
-    const timeoutId = window.setTimeout(() => {
-      if (searchText.length >= 0) {
-        selectionInterface.getCurrentQuery().startSearchFromFirstPage()
-        setHasSearched(true)
-      }
-    }, 500)
-
-    return () => {
-      window.clearTimeout(timeoutId)
-    }
-  }, [searchText])
-  const lazyResults = useLazyResultsFromSelectionInterface({
-    selectionInterface,
-  })
-  const { isSearching } = useStatusOfLazyResults({ lazyResults })
-  React.useEffect(() => {
-    setState({
-      lazyResults: Object.values(lazyResults.results),
-      loading: hasSearched ? isSearching : true,
-    })
-  }, [lazyResults, isSearching])
-  return state
 }
 
 export const OpenSearch = ({
@@ -455,7 +348,7 @@ const OptionsButton = () => {
   const menuStateRename = useMenuState()
   const menuStateRestore = useMenuState()
   const addSnack = useSnack()
-  const history = useHistory()
+  const navigate = useNavigate()
   const [encodedQueryModelJSON, setEncodedQueryModelJSON] = React.useState('')
 
   React.useEffect(() => {
@@ -508,10 +401,12 @@ const OptionsButton = () => {
             onFinish={(result) => {
               AsyncTasks.restore({ lazyResult: result })
               // replace because technically they get the link in constructLink put into history as well unfortunately, will need to fix this more generally
-              history.replace({
-                pathname: `/search/${result.plain.metacard.properties['metacard.deleted.id']}`,
-                search: '',
-              })
+              navigate(
+                `/search/${result.plain.metacard.properties['metacard.deleted.id']}`,
+                {
+                  replace: true,
+                }
+              )
               menuStateRestore.handleClose()
             }}
           />
@@ -537,10 +432,7 @@ const OptionsButton = () => {
                 .toJSON()
               currentQueryJSON.title = title
               const task = AsyncTasks.createSearch({ data: currentQueryJSON })
-              history.push({
-                pathname: `/search/${task.data.id}`,
-                search: '',
-              })
+              navigate(`/search/${task.data.id}`)
 
               addSnack(`Making a copy of ${title}`, {
                 alertProps: { severity: 'info' },
@@ -606,10 +498,15 @@ const OptionsButton = () => {
               delete copy.title
               const encodedQueryModel = encodeURIComponent(JSON.stringify(copy))
               // replace because technically they get the link in constructLink put into history as well unfortunately, will need to fix this more generally
-              history.replace({
-                pathname: '/search',
-                search: `?defaultQuery=${encodedQueryModel}`,
-              })
+              navigate(
+                {
+                  pathname: '/search',
+                  search: `?defaultQuery=${encodedQueryModel}`,
+                },
+                {
+                  replace: true,
+                }
+              )
               selectionInterface.getCurrentQuery().set({
                 ...copy,
                 id: null,
@@ -641,9 +538,8 @@ const OptionsButton = () => {
               }}
               onFinish={(value) => {
                 // replace because technically they get the link in constructLink put into history as well unfortunately, will need to fix this more generally
-                history.replace({
-                  pathname: `/search/${value.plain.id}`,
-                  search: '',
+                navigate(`/search/${value.plain.id}`, {
+                  replace: true,
                 })
                 addSnack(
                   `Search '${value.plain.metacard.properties.title}' opened`,
@@ -750,10 +646,7 @@ const OptionsButton = () => {
           onClick={() => {
             if (typeof data !== 'boolean') {
               AsyncTasks.delete({ lazyResult: data })
-              history.push({
-                pathname: `/search`,
-                search: '',
-              })
+              navigate(`/search`)
             }
             menuState.handleClose()
           }}
@@ -1030,7 +923,7 @@ const LeftTop = () => {
   useRerenderOnBackboneSync({
     lazyResult: typeof data !== 'boolean' ? data : undefined,
   })
-  const history = useHistory()
+  const navigate = useNavigate()
   const adhocMenuState = useMenuState()
   const savedMenuState = useMenuState()
   return (
@@ -1070,10 +963,7 @@ const LeftTop = () => {
                       const task = AsyncTasks.createSearch({
                         data: searchData,
                       })
-                      history.push({
-                        pathname: `/search/${task.data.id}`,
-                        search: '',
-                      })
+                      navigate(`/search/${task.data.id}`)
                     } else if (typeof data !== 'boolean') {
                       AsyncTasks.saveSearch({
                         lazyResult: data,
@@ -1240,7 +1130,7 @@ const useKeepSearchInUrl = ({
   queryModel: any
   on: boolean
 }) => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const { listenTo, stopListening } = useBackbone()
   React.useEffect(() => {
     // this is fairly expensive, so keep it heavily debounced
@@ -1249,11 +1139,11 @@ const useKeepSearchInUrl = ({
         const encodedQueryModel = encodeURIComponent(
           JSON.stringify(queryModel.toJSON())
         )
-        history.replace({
-          search: `${queryString.stringify({
+        navigate(
+          `?${queryString.stringify({
             defaultQuery: encodedQueryModel,
-          })}`,
-        })
+          })}`
+        )
       }
     }, 2000)
     listenTo(queryModel, 'change', debouncedUpdate)
@@ -1403,7 +1293,7 @@ const decodeUrlIfValid = (search: string) => {
   }
 }
 
-export const HomePage = () => {
+export default function HomePage() {
   const location = useLocation()
   const [queryModel] = useUserQuery({
     attributes: decodeUrlIfValid(location.search),

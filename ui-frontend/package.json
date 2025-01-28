@@ -1,38 +1,42 @@
 {
   "private": true,
   "scripts": {
-    "test": "lerna run test",
+    "audit:catalog": "cd packages/catalog-ui-search && yarn audit",
+    "audit:admin": "cd packages/admin && yarn audit",
+    "audit:cesium": "cd packages/cesium-assets && yarn audit",
+    "audit:all": "yarn audit:catalog && yarn audit:admin && yarn audit:cesium",
+    "test": "yarn test:catalog",
+    "test:catalog": "cd packages/catalog-ui-search && yarn test",
     "fmt": "ace format -w",
     "format": "ace format",
     "posttest": "ace pom",
-    "prebuild": "lerna run clean",
-    "build": "yarn format && lerna run build",
-    "build:transpile": "yarn format && lerna run build -- --tsTranspileOnly true",
+    "build": "yarn format && yarn build:catalog && yarn build:admin && yarn build:cesium",
+    "build:catalog": "cd packages/catalog-ui-search && yarn build",
+    "build:admin": "cd packages/admin && yarn build",
+    "build:cesium": "cd packages/cesium-assets && yarn build",
     "postbuild": "mkdirp target && ace gen-feature",
-    "postinstall": "lerna bootstrap",
-    "m2": "yarn install:m2",
-    "install:m2": "yarn mvn:create-archive && yarn mvn:install-file",
     "mvn:create-archive": "mvn org.apache.maven.plugins:maven-assembly-plugin:single@create-archive",
-    "mvn:install-file": "mvn org.apache.maven.plugins:maven-install-plugin:install-file -Dfile=target/packages-packages.zip -DpomFile=pom.xml -Dclassifier=packages -Dpackaging=zip"
+    "mvn:install-file": "mvn org.apache.maven.plugins:maven-install-plugin:install-file -Dfile=target/packages-packages.zip -DpomFile=pom.xml -Dclassifier=packages -Dpackaging=zip",
+    "postinstall": "yarn install:all && yarn audit && yarn audit:all",
+    "install:catalog": "cd packages/catalog-ui-search && yarn install",
+    "install:admin": "cd packages/admin && yarn install",
+    "install:cesium": "cd packages/cesium-assets && yarn install",
+    "install:all": "yarn install:catalog && yarn install:admin && yarn install:cesium",
+    "clean:all": "yarn rimraf packages/*/node_modules"
+  },
+  "engines": {
+    "node": "20.x.x"
   },
   "devDependencies": {
-    "@connexta/ace": "git+https://github.com/connexta/ace.git#4cc376863e82757699cdaa1301f30266e66a1efe",
-    "@connexta/eslint-config-connexta": "git+https://github.com/connexta/eslint-config-connexta.git#105393617ec845b009b682882c95313ba50144b1",
-    "@connexta/eslint-plugin-connexta": "git+https://github.com/connexta/eslint-plugin-connexta.git#9b366b8924c3dbe03aedcfe6d25c8eb3567cc061",
-    "bootstrap-sass": "3.4.1",
-    "bootswatch": "3.3.7",
-    "compass-mixins": "0.12.10",
-    "cpr": "3.0.1",
-    "lerna": "3.20.2",
-    "mkdirp": "0.5.1",
-    "npm": "6.13.4",
-    "rimraf": "2.6.2",
-    "sass-lint": "1.12.1"
+    "@connexta/ace": "git+https://github.com/connexta/ace.git#37a0052298d788aff5836551a4d578a758ea3575",
+    "mkdirp": "3.0.1",
+    "rimraf": "6.0.1"
   },
   "ace": {
     "features": [
       "packages/*"
     ]
   },
-  "name": "ui"
+  "name": "ui",
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

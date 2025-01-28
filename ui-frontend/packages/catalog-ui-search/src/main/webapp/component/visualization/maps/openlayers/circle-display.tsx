@@ -13,7 +13,13 @@
  *
  **/
 import React from 'react'
-import ol from 'openlayers'
+import { LineString, Circle } from 'ol/geom'
+import { transform as projTransform } from 'ol/proj'
+import { Vector as VectorSource } from 'ol/source'
+import { Vector as VectorLayer } from 'ol/layer'
+import Feature from 'ol/Feature'
+import { Stroke, Style } from 'ol/style'
+import Map from 'ol/Map'
 import _ from 'underscore'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { removeOldDrawing } from './drawing-and-display'
@@ -25,14 +31,14 @@ import { StartupDataStore } from '../../../../js/model/Startup/startup'
 import { Translation } from '../interactions.provider'
 import { contrastingColor } from '../../../../react-component/location/location-color-selector'
 export function translateFromOpenlayersCoordinate(coord: any) {
-  return ol.proj.transform(
+  return projTransform(
     [Number(coord[0]), Number(coord[1])],
     StartupDataStore.Configuration.getProjection(),
     'EPSG:4326'
   )
 }
 function translateToOpenlayersCoordinate(coord: any) {
-  return ol.proj.transform(
+  return projTransform(
     [Number(coord[0]), Number(coord[1])],
     'EPSG:4326',
     StartupDataStore.Configuration.getProjection()
@@ -49,7 +55,7 @@ const modelToCircle = ({ model, map }: { model: any; map: any }) => {
   if (model.get('lon') === undefined || model.get('lat') === undefined) {
     return undefined
   }
-  const rectangle = new ol.geom.Circle(
+  const rectangle = new Circle(
     translateToOpenlayersCoordinate([model.get('lon'), model.get('lat')]),
     DistanceUtils.getDistanceInMeters(
       model.get('radius'),
@@ -89,30 +95,30 @@ export const drawCircle = ({
       map.getMap().getView().getProjection().getMetersPerUnit(),
     { steps: 64, units: 'meters' }
   )
-  const geometryRepresentation = new ol.geom.LineString(
+  const geometryRepresentation = new LineString(
     translateToOpenlayersCoordinates(turfCircle.geometry.coordinates[0])
   )
-  const billboard = new ol.Feature({
+  const billboard = new Feature({
     geometry: geometryRepresentation,
   })
   billboard.setId(id)
   billboard.set('locationId', model.get('locationId'))
   const color = model.get('color')
-  const iconStyle = new ol.style.Style({
-    stroke: new ol.style.Stroke({
+  const iconStyle = new Style({
+    stroke: new Stroke({
       color: isInteractive ? contrastingColor : color ? color : '#914500',
       width: isInteractive ? 6 : 4,
     }),
   })
   billboard.setStyle(iconStyle)
-  const vectorSource = new ol.source.Vector({
+  const vectorSource = new VectorSource({
     features: [billboard],
   })
-  let vectorLayer = new ol.layer.Vector({
+  let vectorLayer = new VectorLayer({
     source: vectorSource,
   })
   vectorLayer.set('id', id)
-  const mapRef = map.getMap() as ol.Map
+  const mapRef = map.getMap() as Map
   removeOldDrawing({ map: mapRef, id })
   mapRef.addLayer(vectorLayer)
 }

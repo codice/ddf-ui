@@ -18,10 +18,13 @@ import { ThemeInterface } from '../../src/main/webapp/react-component/styles/sty
 
 // and extend them!
 declare module 'styled-components' {
+  // In v6, we directly use the theme type instead of extending DefaultTheme
+  type Theme = ThemeInterface
   export interface DefaultTheme extends ThemeInterface {}
 
+  // Updated keyframes signature for v6
   export function keyframes(
-    strings: TemplateStringsArray,
-    ...interpolations: FlattenInterpolation<ThemeProps<ThemeInterface>>[]
-  ): Keyframes
+    strings: TemplateStringsArray | string,
+    ...interpolations: any[]
+  ): string
 }

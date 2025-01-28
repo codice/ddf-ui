@@ -12,7 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react'
 
 import TextField from '../../../react-component/text-field/index'
 import MaskedTextField from '../inputs/masked-text-field'

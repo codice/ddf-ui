@@ -13,9 +13,9 @@
  *
  **/
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import queryString from 'query-string'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useMenuState, useRerenderingRef } from '../menu-state/menu-state'
 import Popover from '@mui/material/Popover'
 import Button from '@mui/material/Button'
@@ -274,7 +274,7 @@ type PaintedHintType = {
 
 const HintsComponent = () => {
   const location = useLocation()
-  const history = useHistory()
+  const navigate = useNavigate()
   const [showHints, setShowHints] = React.useState(false)
   const [paintedHints, setPaintedHints] = React.useState(
     [] as PaintedHintType[]
@@ -296,7 +296,7 @@ const HintsComponent = () => {
     if (!showHints) {
       window.cancelAnimationFrame(animationFrameId)
       delete queryParams['global-help']
-      history.push({
+      navigate({
         pathname: location.pathname,
         search: `${queryString.stringify({
           ...queryParams,
@@ -417,4 +417,4 @@ const PaintedHint = ({ width, height, top, left, text }: PaintedHintType) => {
   )
 }
 
-export default hot(module)(HintsComponent)
+export default HintsComponent

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import SortSelections from './sort-selections'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
 import Grid from '@mui/material/Grid'
@@ -82,4 +82,4 @@ const PermanentSearchSort = ({ closeDropdown }: Props) => {
   )
 }
 
-export default hot(module)(PermanentSearchSort)
+export default PermanentSearchSort

@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
+
 import Button from '@mui/material/Button'
 import user from '../../component/singletons/user-instance'
 import TransferList from '../../component/tabs/metacard/transfer-list'

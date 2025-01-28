@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import styled from 'styled-components'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 
@@ -166,4 +166,4 @@ const Spellcheck = (props: Props) => {
   return null
 }
 
-export default hot(module)(Spellcheck)
+export default Spellcheck

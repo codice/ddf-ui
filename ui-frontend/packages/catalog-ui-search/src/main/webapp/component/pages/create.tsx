@@ -3,8 +3,8 @@ import MenuItem from '@mui/material/MenuItem'
 import Paper from '@mui/material/Paper'
 import Popover from '@mui/material/Popover'
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
-import { useHistory } from 'react-router-dom'
+
+import { useNavigate } from 'react-router-dom'
 import { AsyncTasks } from '../../js/model/AsyncTask/async-task'
 import { useQuery, UserQuery } from '../../js/model/TypedQuery'
 import { useMenuState } from '../menu-state/menu-state'
@@ -16,7 +16,7 @@ import SelectionInterfaceModel from '../selection-interface/selection-interface.
 const selectionInterface = new SelectionInterfaceModel()
 
 const Open = () => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const openMenuState = useMenuState()
   const titleMenuState = useMenuState()
   const fromExistingMenuState = useMenuState()
@@ -55,10 +55,7 @@ const Open = () => {
               const searchData = UserQuery().toJSON()
               searchData.title = title
               const task = AsyncTasks.createSearch({ data: searchData })
-              history.push({
-                pathname: `/search/${task.data.id}`,
-                search: '',
-              })
+              navigate(`/search/${task.data.id}`)
             }}
           />
         </Paper>
@@ -82,10 +79,8 @@ const Open = () => {
               delete copy.id
               copy.title = `New from '${copy.title}'`
               const task = AsyncTasks.createSearch({ data: copy })
-              // replace because technically they get the link in constructLink put into history as well unfortunately, will need to fix this more generally
-              history.replace({
-                pathname: `/search/${task.data.id}`,
-                search: '',
+              navigate(`/search/${task.data.id}`, {
+                replace: true,
               })
             }}
             autocompleteProps={{
@@ -124,4 +119,4 @@ const Open = () => {
   )
 }
 
-export default hot(module)(Open)
+export default Open

@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import {
   ErrorComponent,
   validateGeo,

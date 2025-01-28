@@ -1,37 +1,125 @@
-import * as React from 'react'
+import { lazy, SuspenseProps } from 'react'
 import App, { IndividualRouteType, useDefaultWelcome } from './app'
-import Help from '../help/help.view'
 
-import { hot } from 'react-hot-loader/root'
-import { IngestDetailsViewReact } from '../ingest-details/ingest-details.view'
-import { HomePage } from '../pages/search'
-
-import SourcesPage from '../../react-component/sources/presentation'
 import SourcesPageIcon from '@mui/icons-material/Cloud'
-import AboutPage from '../../react-component/about'
 import AboutPageIcon from '@mui/icons-material/Info'
 import FolderIcon from '@mui/icons-material/Folder'
 import TrashIcon from '@mui/icons-material/Delete'
 import SearchIcon from '@mui/icons-material/Search'
 import ImageSearch from '@mui/icons-material/ImageSearch'
-import UserNotifications from '../../react-component/user-notifications/user-notifications'
-import { BaseSettings } from '../../react-component/user-settings/user-settings'
 import ExtensionPoints from '../../extension-points/extension-points'
+import { BaseSettings } from '../../react-component/user-settings/user-settings'
 import Paper from '@mui/material/Paper'
 import { Elevations } from '../theme/theme'
-import { Redirect } from 'react-router-dom'
-import Grid from '@mui/material/Grid'
-import MetacardNavRoute from '../pages/metacard-nav'
-import MetacardRoute from '../pages/metacard'
-import SavedSearches from '../pages/browse'
-import Open from '../pages/open'
-import Restore from '../pages/restore'
-import Create from '../pages/create'
+import { Navigate } from 'react-router-dom'
 import AddIcon from '@mui/icons-material/Add'
 import ViewListIcon from '@mui/icons-material/ViewList'
-import { GoldenLayoutViewReact } from '../golden-layout/golden-layout.view'
 import selectionInterfaceModel from '../selection-interface/selection-interface.model'
 import { Query } from '../../js/model/TypedQuery'
+import { SuspenseWrapper } from './suspense'
+import Skeleton from '@mui/material/Skeleton'
+
+const UserNotifications = lazy(
+  () => import('../../react-component/user-notifications/user-notifications')
+)
+const Help = lazy(() => import('../help/help.view'))
+const HomePage = lazy(() => import('../pages/search'))
+const IngestDetailsViewReact = lazy(() =>
+  import('../ingest-details/ingest-details.view').then((m) => ({
+    default: m.IngestDetailsViewReact,
+  }))
+)
+const SourcesPage = lazy(
+  () => import('../../react-component/sources/presentation')
+)
+const AboutPage = lazy(() => import('../../react-component/about'))
+const MetacardNavRoute = lazy(() => import('../pages/metacard-nav'))
+const MetacardRoute = lazy(() => import('../pages/metacard'))
+const SavedSearches = lazy(() => import('../pages/browse'))
+const Open = lazy(() => import('../pages/open'))
+const Restore = lazy(() => import('../pages/restore'))
+const Create = lazy(() => import('../pages/create'))
+const GoldenLayoutViewReact = lazy(
+  () => import('../golden-layout/golden-layout.view')
+)
+
+/**
+ *  Wraps each route in suspense and provides a loading fallback - use the provided components that wrap this (CommonRouteContainer, ComplexRouteContainer)
+ */
+const RouteContainer = ({
+  children,
+  className,
+  isSingleContainer = true,
+  suspenseProps,
+}: {
+  children: React.ReactNode
+  className?: string
+  isSingleContainer?: boolean
+  suspenseProps?: SuspenseProps
+}) => {
+  return (
+    <div
+      className={`w-full h-full overflow-hidden ${
+        isSingleContainer ? 'pb-2 pt-2 pr-2' : ''
+      } ${className}`}
+    >
+      <SuspenseWrapper
+        {...suspenseProps}
+        fallback={
+          suspenseProps?.fallback || (
+            <Paper elevation={Elevations.panels} className="w-full h-full">
+              <Skeleton variant="rectangular" width="100%" height="100%" />
+            </Paper>
+          )
+        }
+      >
+        {isSingleContainer ? (
+          <Paper elevation={Elevations.panels} className="w-full h-full">
+            {children}
+          </Paper>
+        ) : (
+          children
+        )}
+      </SuspenseWrapper>
+    </div>
+  )
+}
+
+// for routes that are just a single paper element
+export const CommonRouteContainer = ({
+  children,
+  className,
+  suspenseProps,
+}: {
+  children: React.ReactNode
+  className?: string
+  suspenseProps?: SuspenseProps
+}) => {
+  return (
+    <RouteContainer
+      isSingleContainer={true}
+      className={className}
+      suspenseProps={suspenseProps}
+    >
+      {children}
+    </RouteContainer>
+  )
+}
+
+// for routes that need finer control over the layout (separate header and content for example)
+export const ComplexRouteContainer = ({
+  children,
+  suspenseProps,
+}: {
+  children: React.ReactNode
+  suspenseProps?: SuspenseProps
+}) => {
+  return (
+    <RouteContainer isSingleContainer={false} suspenseProps={suspenseProps}>
+      {children}
+    </RouteContainer>
+  )
+}
 
 /**
  * The issue with the original golden layout code for popout is that it will go to the current route and then load gl and all that.
@@ -45,20 +133,18 @@ import { Query } from '../../js/model/TypedQuery'
 export const GoldenLayoutPopoutRoute: IndividualRouteType = {
   routeProps: {
     path: '/_gl_popout',
-    children: () => {
+    Component: () => {
       const baseQuery = Query()
       return (
-        <div className="w-full h-full pb-2 pt-2 pr-2">
-          <Paper elevation={Elevations.panels} className="w-full h-full">
-            <GoldenLayoutViewReact
-              selectionInterface={
-                new selectionInterfaceModel({ currentQuery: baseQuery })
-              }
-              setGoldenLayout={() => {}}
-              configName="goldenLayout"
-            />
-          </Paper>
-        </div>
+        <CommonRouteContainer>
+          <GoldenLayoutViewReact
+            selectionInterface={
+              new selectionInterfaceModel({ currentQuery: baseQuery })
+            }
+            setGoldenLayout={() => {}}
+            configName="goldenLayout"
+          />
+        </CommonRouteContainer>
       )
     },
   },
@@ -69,61 +155,46 @@ const RouteInformation: IndividualRouteType[] = [
   {
     showInNav: false,
     routeProps: {
-      exact: true,
       path: '/',
-      children: () => {
-        return <Redirect to="/search" />
-      },
+      Component: () => <Navigate to="/search" replace />,
     },
   },
   {
     showInNav: false,
     routeProps: {
-      exact: true,
       path: '/uploads/:uploadId',
-      children: () => {
-        return (
-          <Grid
-            container
-            direction="column"
-            className="w-full h-full"
-            wrap="nowrap"
-          >
-            <Grid item className="w-full h-full z-0 relative overflow-hidden">
-              <MetacardRoute />
-            </Grid>
-          </Grid>
-        )
-      },
+      Component: () => (
+        <CommonRouteContainer>
+          <MetacardRoute />
+        </CommonRouteContainer>
+      ),
     },
   },
   {
     showInNav: false,
     routeProps: {
-      exact: true,
       path: '/metacards/:metacardId',
-      children: () => {
-        return (
-          <Grid
-            container
-            direction="column"
-            className="w-full h-full"
-            wrap="nowrap"
-          >
-            <Grid item className="w-full h-16 z-1 relative pt-2 pr-2">
+      Component: () => (
+        <ComplexRouteContainer>
+          <div className="flex flex-col w-full h-full">
+            <div className="w-full h-16 z-1 relative pt-2 pr-2">
               <Paper
                 elevation={Elevations.panels}
                 className="w-full h-full px-3"
               >
-                <MetacardNavRoute />
+                <SuspenseWrapper>
+                  <MetacardNavRoute />
+                </SuspenseWrapper>
               </Paper>
-            </Grid>
-            <Grid item className="w-full h-full z-0 relative overflow-hidden">
-              <MetacardRoute />
-            </Grid>
-          </Grid>
-        )
-      },
+            </div>
+            <div className="w-full h-full z-0 relative overflow-hidden">
+              <SuspenseWrapper>
+                <MetacardRoute />
+              </SuspenseWrapper>
+            </div>
+          </div>
+        </ComplexRouteContainer>
+      ),
     },
   },
   {
@@ -134,16 +205,90 @@ const RouteInformation: IndividualRouteType[] = [
       dataId: 'search',
     },
     routeProps: {
-      exact: false,
-      path: ['/search/:id', '/search'],
-      children: () => {
-        return <HomePage />
-      },
+      path: '/search',
+      Component: () => (
+        <ComplexRouteContainer
+          suspenseProps={{
+            fallback: (
+              <div className="w-full h-full flex flex-row flex-nowrap">
+                <div className="w-[550px] h-full py-2 shrink-0 grow-0">
+                  <Paper
+                    elevation={Elevations.panels}
+                    className="w-full h-full"
+                  >
+                    <Skeleton
+                      variant="rectangular"
+                      width="100%"
+                      height="100%"
+                    />
+                  </Paper>
+                </div>
+                <div className="w-full h-full shrink grow py-2 px-2">
+                  <Paper
+                    elevation={Elevations.panels}
+                    className="w-full h-full"
+                  >
+                    <Skeleton
+                      variant="rectangular"
+                      width="100%"
+                      height="100%"
+                    />
+                  </Paper>
+                </div>
+              </div>
+            ),
+          }}
+        >
+          <HomePage />
+        </ComplexRouteContainer>
+      ),
     },
     linkProps: {
       to: '/search',
     },
     showInNav: true,
+  },
+  {
+    showInNav: false,
+    routeProps: {
+      path: '/search/:id',
+      Component: () => (
+        <ComplexRouteContainer
+          suspenseProps={{
+            fallback: (
+              <div className="w-full h-full flex flex-row flex-nowrap">
+                <div className="w-[550px] h-full py-2 shrink-0 grow-0">
+                  <Paper
+                    elevation={Elevations.panels}
+                    className="w-full h-full"
+                  >
+                    <Skeleton
+                      variant="rectangular"
+                      width="100%"
+                      height="100%"
+                    />
+                  </Paper>
+                </div>
+                <div className="w-full h-full shrink grow py-2 px-2">
+                  <Paper
+                    elevation={Elevations.panels}
+                    className="w-full h-full"
+                  >
+                    <Skeleton
+                      variant="rectangular"
+                      width="100%"
+                      height="100%"
+                    />
+                  </Paper>
+                </div>
+              </div>
+            ),
+          }}
+        >
+          <HomePage />
+        </ComplexRouteContainer>
+      ),
+    },
   },
   {
     navButtonProps: {
@@ -153,17 +298,12 @@ const RouteInformation: IndividualRouteType[] = [
       dataId: 'create',
     },
     routeProps: {
-      exact: true,
-      path: ['/create'],
-      children: () => {
-        return (
-          <div className="py-2 pr-2 w-full h-full">
-            <Paper elevation={Elevations.panels} className="w-full h-full">
-              <Create />
-            </Paper>
-          </div>
-        )
-      },
+      path: '/create',
+      Component: () => (
+        <CommonRouteContainer>
+          <Create />
+        </CommonRouteContainer>
+      ),
     },
     linkProps: {
       to: '/create',
@@ -178,17 +318,12 @@ const RouteInformation: IndividualRouteType[] = [
       dataId: 'open',
     },
     routeProps: {
-      exact: true,
-      path: ['/open'],
-      children: () => {
-        return (
-          <div className="py-2 pr-2 w-full h-full">
-            <Paper elevation={Elevations.panels} className="w-full h-full">
-              <Open />
-            </Paper>
-          </div>
-        )
-      },
+      path: '/open',
+      Component: () => (
+        <CommonRouteContainer>
+          <Open />
+        </CommonRouteContainer>
+      ),
     },
     linkProps: {
       to: '/open',
@@ -203,15 +338,12 @@ const RouteInformation: IndividualRouteType[] = [
       dataId: 'browse',
     },
     routeProps: {
-      exact: true,
-      path: ['/browse'],
-      children: () => {
-        return (
-          <div className="w-full h-full">
-            <SavedSearches />
-          </div>
-        )
-      },
+      path: '/browse',
+      Component: () => (
+        <CommonRouteContainer>
+          <SavedSearches />
+        </CommonRouteContainer>
+      ),
     },
     linkProps: {
       to: '/browse',
@@ -227,15 +359,11 @@ const RouteInformation: IndividualRouteType[] = [
     },
     routeProps: {
       path: '/upload',
-      children: () => {
-        return (
-          <div className="w-full h-full pb-2 pt-2 pr-2">
-            <Paper elevation={Elevations.panels} className="w-full h-full">
-              <IngestDetailsViewReact />
-            </Paper>
-          </div>
-        )
-      },
+      Component: () => (
+        <CommonRouteContainer>
+          <IngestDetailsViewReact />
+        </CommonRouteContainer>
+      ),
     },
     linkProps: {
       to: '/upload',
@@ -251,15 +379,11 @@ const RouteInformation: IndividualRouteType[] = [
     },
     routeProps: {
       path: '/sources',
-      children: () => {
-        return (
-          <div className="w-full h-full pb-2 pt-2 pr-2">
-            <Paper elevation={Elevations.panels} className="w-full h-full">
-              <SourcesPage />
-            </Paper>
-          </div>
-        )
-      },
+      Component: () => (
+        <CommonRouteContainer>
+          <SourcesPage />
+        </CommonRouteContainer>
+      ),
     },
     linkProps: {
       to: '/sources',
@@ -274,17 +398,12 @@ const RouteInformation: IndividualRouteType[] = [
       dataId: 'restore',
     },
     routeProps: {
-      exact: true,
-      path: ['/restore'],
-      children: () => {
-        return (
-          <div className="py-2 pr-2 w-full h-full">
-            <Paper elevation={Elevations.panels} className="w-full h-full">
-              <Restore />
-            </Paper>
-          </div>
-        )
-      },
+      path: '/restore',
+      Component: () => (
+        <CommonRouteContainer>
+          <Restore />
+        </CommonRouteContainer>
+      ),
     },
     linkProps: {
       to: '/restore',
@@ -300,15 +419,11 @@ const RouteInformation: IndividualRouteType[] = [
     },
     routeProps: {
       path: '/about',
-      children: () => {
-        return (
-          <div className="w-full h-full pb-2 pt-2 pr-2">
-            <Paper elevation={Elevations.panels} className="w-full h-full">
-              <AboutPage />
-            </Paper>
-          </div>
-        )
-      },
+      Component: () => (
+        <CommonRouteContainer>
+          <AboutPage />
+        </CommonRouteContainer>
+      ),
     },
     linkProps: {
       to: '/about',
@@ -325,10 +440,12 @@ const BaseApp = () => {
   useDefaultWelcome()
   return (
     <>
-      <Help />
+      <SuspenseWrapper>
+        <Help />
+      </SuspenseWrapper>
       <App
         RouteInformation={RouteInformation}
-        NotificationsComponent={UserNotifications}
+        NotificationsComponent={() => <UserNotifications />}
         SettingsComponents={BaseSettings}
       />
     </>
@@ -343,4 +460,4 @@ const WrappedWithProviders = () => {
   )
 }
 
-export default hot(WrappedWithProviders)
+export default WrappedWithProviders

@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import DistanceInfoPresentation from './presentation'
 const LEFT_OFFSET = 390
@@ -83,4 +83,4 @@ class DistanceInfo extends React.Component<Props, State> {
   }
 }
 
-export default hot(module)(withListenTo(DistanceInfo))
+export default withListenTo(DistanceInfo)

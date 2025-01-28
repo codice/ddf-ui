@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import ResultsExportComponent from './presentation'
 import {
   exportResultSet,
@@ -225,4 +225,4 @@ class ResultsExport extends React.Component<Props, State> {
   }
 }
 
-export default hot(module)(withListenTo(ResultsExport))
+export default withListenTo(ResultsExport)
