@@ -18,7 +18,10 @@ Endpoints.xml
 Services (HTTP/WS) that catalog-ui-search provides for the UI
 =============================================================
 -->
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+<blueprint xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+           http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd"
            xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs">
 
     <!--
@@ -35,15 +38,21 @@ Services (HTTP/WS) that catalog-ui-search provides for the UI
 
     <service ref="sparkServlet" interface="javax.servlet.Servlet">
         <service-properties>
-            <entry key="urlPatterns" value="/search/catalog/internal/*"/>
-            <entry key="async-supported" value="true"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/internal/*"/>
+            <entry key="osgi.http.whiteboard.servlet.name" value="searchCatalogInternal"/>
+            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.path=/*)"/>
+            <entry key="osgi.http.whiteboard.servlet.asyncSupported" value="true"/>
         </service-properties>
     </service>
 
     <service ref="socketServlet" interface="javax.servlet.Servlet">
         <service-properties>
-            <entry key="urlPatterns" value="/search/catalog/ws"/>
-            <entry key="async-supported" value="true"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/search/catalog/ws"/>
+            <entry key="osgi.http.whiteboard.servlet.name" value="searchCatalogWS"/>
+            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.path=/*)"/>
+            <entry key="osgi.http.whiteboard.servlet.asyncSupported" value="true"/>
+<!--            <entry key="urlPatterns" value="/search/catalog/ws"/>-->
+<!--            <entry key="async-supported" value="true"/>-->
         </service-properties>
     </service>
 
@@ -55,9 +64,12 @@ Services (HTTP/WS) that catalog-ui-search provides for the UI
 
     <service interface="javax.servlet.Servlet">
         <service-properties>
-            <entry key="alias" value="/search/catalog/proxy"/>
-            <entry key="servlet-name" value="uiProxyServlet"/>
-            <entry key="async-supported" value="true"/>
+<!--            <entry key="alias" value="/search/catalog/proxy"/>-->
+<!--            <entry key="servlet-name" value="uiProxyServlet"/>-->
+<!--            <entry key="async-supported" value="true"/>-->
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/search/catalog/proxy"/>
+            <entry key="osgi.http.whiteboard.servlet.name" value="searchCatalogProxy"/>
+            <entry key="osgi.http.whiteboard.servlet.asyncSupported" value="true"/>
         </service-properties>
         <ref component-id="servlet"/>
     </service>
