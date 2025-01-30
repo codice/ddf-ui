@@ -384,6 +384,11 @@
             <version>${commons-math3.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.ops4j.pax.web</groupId>
+            <artifactId>pax-web-extender-whiteboard</artifactId>
+            <version>${pax.web.version}</version>
+        </dependency>
+        <dependency>
             <groupId>ddf.security.servlet</groupId>
             <artifactId>security-servlet-web-socket-api</artifactId>
             <version>${ddf.version}</version>
@@ -512,7 +517,7 @@
                         <configuration>
                             <rules>
                                 <ArtifactSizeEnforcerRule implementation="org.codice.maven.artifactsize.ArtifactSizeEnforcerRule">
-                                    <maxArtifactSize>8_MB</maxArtifactSize>
+                                    <maxArtifactSize>15_MB</maxArtifactSize>
                                 </ArtifactSizeEnforcerRule>
                             </rules>
                         </configuration>
