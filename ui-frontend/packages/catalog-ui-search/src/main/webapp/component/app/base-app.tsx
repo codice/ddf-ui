@@ -155,7 +155,7 @@ const RouteInformation: IndividualRouteType[] = [
   {
     showInNav: false,
     routeProps: {
-      path: '/',
+      path: ['/', '/#'],
       Component: () => <Navigate to="/search" replace />,
     },
   },
