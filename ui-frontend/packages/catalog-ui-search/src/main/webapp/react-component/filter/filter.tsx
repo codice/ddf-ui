@@ -20,7 +20,6 @@ import FilterInput from './filter-input'
 import { Attribute } from './filterHelper'
 import Grid from '@mui/material/Grid'
 
-import { hot } from 'react-hot-loader'
 import { FilterClass } from '../../component/filter-builder/filter.structure'
 import { ValidationResult } from '../location/validators'
 import { FilterProperty } from './filter-property'
@@ -66,4 +65,4 @@ const Filter = ({ filter, setFilter, errorListener }: Props) => {
   )
 }
 
-export default hot(module)(Filter)
+export default Filter

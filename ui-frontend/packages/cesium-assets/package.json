@@ -9,15 +9,19 @@
     "build": "ace package",
     "postbuild": "npm pack && mv cesium-assets-1.0.0.tgz target/cesium-assets.tgz"
   },
+  "engines": {
+    "node": "20.x.x"
+  },
   "dependencies": {
-    "cesium": "1.44",
-    "mkdirp": "0.5.1"
+    "cesium": "1.44"
   },
   "files": [
     "node_modules/cesium/Build/Cesium"
   ],
   "context-path": "/search/catalog/cesium/assets",
   "devDependencies": {
-    "@connexta/ace": "git+https://github.com/connexta/ace.git#4cc376863e82757699cdaa1301f30266e66a1efe"
+    "@connexta/ace": "git+https://github.com/connexta/ace.git#37a0052298d788aff5836551a4d578a758ea3575",
+    "mkdirp": "3.0.1",
+    "npm": "10.9.2"
   }
 }

@@ -12,9 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
+
 import About from './presentation'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import { Environment } from '../../js/Environment'
 import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 

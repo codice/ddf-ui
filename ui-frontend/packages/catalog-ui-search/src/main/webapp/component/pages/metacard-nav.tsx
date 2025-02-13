@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import { useParams } from 'react-router-dom'
 import { useLazyResultsFromSelectionInterface } from '../selection-interface/hooks'
 import { useStatusOfLazyResults } from '../../js/model/LazyQueryResult/hooks'
@@ -41,7 +41,7 @@ const MetacardNavRoute = () => {
   }, [params.metacardId])
   const [query] = useUserQuery({
     attributes: {
-      filterTree: getFilterTreeForId({ id }),
+      filterTree: getFilterTreeForId({ id: id || '' }),
     },
     options: {
       transformDefaults: DEFAULT_QUERY_OPTIONS.transformDefaults,
@@ -55,7 +55,7 @@ const MetacardNavRoute = () => {
   )
 
   React.useEffect(() => {
-    query.set('filterTree', getFilterTreeForId({ id }))
+    query.set('filterTree', getFilterTreeForId({ id: id || '' }))
     query.cancelCurrentSearches()
     query.startSearchFromFirstPage()
     return () => {
@@ -107,4 +107,4 @@ const MetacardNavRoute = () => {
   }
 }
 
-export default hot(module)(MetacardNavRoute)
+export default MetacardNavRoute

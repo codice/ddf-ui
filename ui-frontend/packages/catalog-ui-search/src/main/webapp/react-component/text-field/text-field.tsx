@@ -12,7 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react'
 
 import Group from '../group'
 import TextFieldMui from '@mui/material/TextField'

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import FilterLeaf from './filter-leaf'
@@ -342,4 +342,4 @@ const FilterBranch = ({
     </div>
   )
 }
-export default hot(module)(FilterBranch)
+export default FilterBranch

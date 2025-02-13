@@ -19,7 +19,6 @@ import ShapeUtils from '../../../../js/ShapeUtils'
 // @ts-expect-error ts-migrate(7016) FIXME: Could not find a declaration file for module 'cesi... Remove this comment to see the full error message
 import Cesium from 'cesium/Build/Cesium/Cesium'
 import * as Turf from '@turf/turf'
-import { Feature, Geometry } from '@turf/turf'
 
 const METERS = 'meters'
 
@@ -156,7 +155,7 @@ export default {
   featureIsValid(feature: FeatureWithCoords) {
     return feature?.geometry?.coordinates?.length
   },
-  adjustGeoCoords(geo: Feature<Geometry>) {
+  adjustGeoCoords(geo: GeoJSON.Feature<GeoJSON.Geometry>) {
     const geometry = geo.geometry
     const bbox = geo.bbox || Turf.bbox(geometry)
     const width = Math.abs(bbox[0] - bbox[2])

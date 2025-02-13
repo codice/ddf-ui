@@ -249,3 +249,41 @@ export const useRerenderOnBackboneSync = ({
     }
   }, [lazyResult])
 }
+
+/**
+ * If a view cares about the status of a LazyQueryResults object
+ */
+export const useResultsAndStatus = ({
+  lazyResults,
+}: {
+  lazyResults: LazyQueryResults
+}) => {
+  const [status, setStatus] = React.useState(
+    getStatusFromLazyResults({ lazyResults })
+  )
+  const [results, setResults] = React.useState(
+    Object.values(lazyResults.results)
+  )
+  React.useEffect(() => {
+    setStatus(getStatusFromLazyResults({ lazyResults }))
+    setResults(Object.values(lazyResults.results))
+    const unsubscribeFromResults = lazyResults.subscribeTo({
+      subscribableThing: 'filteredResults',
+      callback: () => {
+        setResults(Object.values(lazyResults.results))
+      },
+    })
+    const unsubscribeFromStatus = lazyResults.subscribeTo({
+      subscribableThing: 'status',
+      callback: () => {
+        setStatus(getStatusFromLazyResults({ lazyResults }))
+      },
+    })
+    return () => {
+      unsubscribeFromResults()
+      unsubscribeFromStatus()
+    }
+  }, [lazyResults])
+
+  return { status, results }
+}

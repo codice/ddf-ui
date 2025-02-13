@@ -54,6 +54,27 @@ pipeline {
             }
             steps {
                 withMaven(maven: 'maven-latest', jdk: 'jdk17', globalMavenSettingsConfig: 'default-global-settings', mavenSettingsConfig: 'codice-maven-settings', mavenOpts: '${LARGE_MVN_OPTS} ${LINUX_MVN_RANDOM}') {
+                    sh '''
+                    # Create directory for node
+                    mkdir -p /root/.m2/repository/com/github/eirslett/node/20.18.1/
+                    
+                    # Create a temporary directory for restructuring
+                    TEMP_DIR=$(mktemp -d)
+                    
+                    # Download and extract the glibc-compatible node
+                    curl -L https://unofficial-builds.nodejs.org/download/release/v20.18.1/node-v20.18.1-linux-x64-glibc-217.tar.gz | tar xz -C "$TEMP_DIR"
+                    
+                    # Repackage with the expected structure
+                    cd "$TEMP_DIR"
+                    mv node-v20.18.1-linux-x64-glibc-217 node-v20.18.1-linux-x64
+                    tar czf node-20.18.1-linux-x64.tar.gz node-v20.18.1-linux-x64
+                    
+                    # Move to the maven repository location
+                    mv node-20.18.1-linux-x64.tar.gz /root/.m2/repository/com/github/eirslett/node/20.18.1/
+                    
+                    # Cleanup
+                    rm -rf "$TEMP_DIR"
+                    '''
                     sh 'mvn clean install -B $DISABLE_DOWNLOAD_PROGRESS_OPTS'
                 }
             }

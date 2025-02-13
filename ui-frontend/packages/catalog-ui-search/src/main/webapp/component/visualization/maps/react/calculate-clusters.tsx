@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import _ from 'underscore'
 
 import Clustering from '../Clustering'
@@ -92,4 +92,4 @@ const CalculateClusters = ({
   return <></>
 }
 
-export default hot(module)(CalculateClusters)
+export default CalculateClusters

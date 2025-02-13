@@ -12,7 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import React from 'react'
 
 import { Radio, RadioItem } from '../../../react-component/radio/radio'
 import TextField from '../../../react-component/text-field/index'

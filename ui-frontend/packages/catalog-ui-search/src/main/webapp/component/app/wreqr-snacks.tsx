@@ -1,4 +1,3 @@
-import React from 'react'
 import useSnack from '../hooks/useSnack'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
 import { SnackProps } from '../snack/snack.provider'

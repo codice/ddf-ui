@@ -427,7 +427,7 @@ export const CesiumDrawings = ({
             disabledShapes={SHAPES.filter((shape) => shape !== drawingShape)}
             onUpdate={() => {}}
             saveAndContinue={false}
-            mapStyle={DRAWING_STYLE}
+            mapStyle={DRAWING_STYLE as any}
           />
         </Editor>
       )}

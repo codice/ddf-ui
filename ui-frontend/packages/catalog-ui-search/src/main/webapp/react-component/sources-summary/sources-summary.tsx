@@ -12,9 +12,9 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
+
 import styled from 'styled-components'
-import { hot } from 'react-hot-loader'
+
 import { FormattedMessage } from 'react-intl'
 
 const Root = styled.div`
@@ -30,7 +30,7 @@ type Props = {
   amountDown: number
 }
 
-export default hot(module)(({ amountDown }: Props) => {
+export default ({ amountDown }: Props) => {
   return (
     <Root>
       {amountDown == 0 ? (
@@ -47,4 +47,4 @@ export default hot(module)(({ amountDown }: Props) => {
       )}
     </Root>
   )
-})
+}

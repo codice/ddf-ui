@@ -17,7 +17,7 @@ import styled from 'styled-components'
 import withListenTo, { WithBackboneProps } from '../backbone-container'
 import { NotificationGroupViewReact } from '../../component/notification-group/notification-group.view'
 import user from '../../component/singletons/user-instance'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import userNotifications from '../../component/singletons/user-notifications'
 
 type Props = WithBackboneProps

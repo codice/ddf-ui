@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import Button from '@mui/material/Button'
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
@@ -130,4 +130,4 @@ const ResultsExportComponent = ({
   )
 }
 
-export default hot(module)(ResultsExportComponent)
+export default ResultsExportComponent

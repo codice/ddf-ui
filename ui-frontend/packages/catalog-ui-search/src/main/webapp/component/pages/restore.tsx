@@ -1,11 +1,9 @@
-import * as React from 'react'
-import { hot } from 'react-hot-loader'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { AsyncTasks } from '../../js/model/AsyncTask/async-task'
 import { OpenSearch } from './search'
 
 const Open = () => {
-  const history = useHistory()
+  const navigate = useNavigate()
   return (
     <div className="w-full h-full p-2">
       <div className="text-2xl pb-2">Restore a search</div>
@@ -34,10 +32,12 @@ const Open = () => {
         onFinish={(result) => {
           AsyncTasks.restore({ lazyResult: result })
           // replace because technically they get the link in constructLink put into history as well unfortunately, will need to fix this more generally
-          history.replace({
-            pathname: `/search/${result.plain.metacard.properties['metacard.deleted.id']}`,
-            search: '',
-          })
+          navigate(
+            `/search/${result.plain.metacard.properties['metacard.deleted.id']}`,
+            {
+              replace: true,
+            }
+          )
         }}
         autocompleteProps={{
           fullWidth: true,
@@ -48,4 +48,4 @@ const Open = () => {
   )
 }
 
-export default hot(module)(Open)
+export default Open

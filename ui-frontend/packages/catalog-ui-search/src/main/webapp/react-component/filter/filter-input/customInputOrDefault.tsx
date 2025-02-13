@@ -69,7 +69,7 @@ export const CustomInputOrDefaultPostValidation = ({
     onChange: onChange,
   })
   if (componentToReturn) {
-    return componentToReturn as JSX.Element
+    return componentToReturn as React.ReactNode
   } else {
     return (
       <TextField

@@ -13,7 +13,6 @@
  *
  **/
 
-import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import styled from 'styled-components'
 import LinearProgress from '@mui/material/LinearProgress'
@@ -169,4 +168,4 @@ const render = (props: Props) => {
   )
 }
 
-export default hot(module)(render)
+export default render

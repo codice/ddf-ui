@@ -1,6 +1,6 @@
 import Button from '@mui/material/Button'
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import MapSettings from '../../../react-component/map-settings'
 import ZoomToHomeButton from '../../../react-component/button/split-button/zoomToHome'
 import Gazetteer from '../../../react-component/location/gazetteer'
@@ -128,4 +128,4 @@ export const MapToolbar = (props: Props) => {
   )
 }
 
-export default hot(module)(MapToolbar)
+export default MapToolbar

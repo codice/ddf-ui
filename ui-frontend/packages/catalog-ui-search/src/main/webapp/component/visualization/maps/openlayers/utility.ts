@@ -13,22 +13,21 @@
  *
  **/
 import _ from 'lodash'
-import Openlayers from 'openlayers'
 import * as Turf from '@turf/turf'
-import { Position, LineString, Polygon } from '@turf/turf'
 import { GeometryJSON } from 'geospatialdraw/target/webapp/geometry'
 import { StartupDataStore } from '../../../../js/model/Startup/startup'
-
+import { transform as projTransform } from 'ol/proj'
+import { boundingExtent, getCenter } from 'ol/extent'
 function convertPointCoordinate(point: any) {
   const coords = [point[0], point[1]]
-  return Openlayers.proj.transform(
+  return projTransform(
     coords as any,
     'EPSG:4326',
     StartupDataStore.Configuration.getProjection()
   )
 }
 function unconvertPointCoordinate(point: any) {
-  return Openlayers.proj.transform(
+  return projTransform(
     point,
     StartupDataStore.Configuration.getProjection(),
     'EPSG:4326'
@@ -45,8 +44,8 @@ export default {
     const lineObject = propertyModel
       .getPoints()
       .map((coordinate: any) => convertPointCoordinate(coordinate))
-    const extent = Openlayers.extent.boundingExtent(lineObject)
-    return Openlayers.extent.getCenter(extent)
+    const extent = boundingExtent(lineObject)
+    return getCenter(extent)
   },
   /*
         Calculates the center of given a geometry (WKT)
@@ -63,8 +62,8 @@ export default {
     const allPoints = _.flatten(
       propertyModels.map((propertyModel: any) => propertyModel.getPoints())
     ).map((coordinate) => convertPointCoordinate(coordinate))
-    const extent = Openlayers.extent.boundingExtent(allPoints)
-    return Openlayers.extent.getCenter(extent)
+    const extent = boundingExtent(allPoints)
+    return getCenter(extent)
   },
   /*
         Calculates the center of given geometries (WKT)
@@ -74,7 +73,7 @@ export default {
       this.calculateOpenlayersCenterOfGeometries(propertyModels)
     return unconvertPointCoordinate(openlayersCenter)
   },
-  convertCoordsToDisplay(coordinates: Position[]) {
+  convertCoordsToDisplay(coordinates: GeoJSON.Position[]) {
     const coords = _.cloneDeep(coordinates)
     coords.forEach((coord) => {
       if (coord[0] < 0) {
@@ -90,13 +89,13 @@ export default {
     const crossesAntiMeridian = width > 180
     if (crossesAntiMeridian) {
       if (geo.properties.shape === 'Line') {
-        const lineStringCoords = (geometry as LineString).coordinates
+        const lineStringCoords = (geometry as GeoJSON.LineString).coordinates
         geometry.coordinates = this.convertCoordsToDisplay(lineStringCoords)
       } else if (
         geo.properties.shape === 'Bounding Box' ||
         geo.properties.shape === 'Polygon'
       ) {
-        const coords = (geometry as Polygon).coordinates[0]
+        const coords = (geometry as GeoJSON.Polygon).coordinates[0]
         geometry.coordinates[0] = this.convertCoordsToDisplay(coords)
       }
     }

@@ -12,7 +12,6 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
 
 import { isDirectionalSort } from './sort-selection-helpers'
 import { SortItemType, Option } from './sort-selections'

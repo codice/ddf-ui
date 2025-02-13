@@ -1,5 +1,5 @@
 /* Copyright (c) Connexta, LLC */
-import * as React from 'react'
+
 import styled from 'styled-components'
 import { Grid } from '@mui/material'
 import Tooltip from '@mui/material/Tooltip/Tooltip'

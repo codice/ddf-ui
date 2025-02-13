@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
@@ -948,4 +948,4 @@ const Summary = ({ result: selection }: Props) => {
     </Grid>
   )
 }
-export default hot(module)(Summary)
+export default Summary

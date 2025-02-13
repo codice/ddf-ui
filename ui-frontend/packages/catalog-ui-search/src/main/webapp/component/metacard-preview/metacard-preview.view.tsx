@@ -14,7 +14,6 @@
  **/
 
 import Paper from '@mui/material/Paper'
-import React from 'react'
 import Common from '../../js/Common'
 import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 
