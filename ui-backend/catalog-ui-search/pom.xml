@@ -487,6 +487,7 @@
                             !com.google.common.io.*,
                             !com.google.errorprone.*,
                             !org.checkerframework.*,
+                            !android.*,
                             *
                         </Import-Package>
                         <Export-Package>

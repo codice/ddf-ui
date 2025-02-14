@@ -64,7 +64,7 @@
     <fmt.maven.plugin.version>2.3.0</fmt.maven.plugin.version>
 
     <!--Backend properties-->
-    <ddf.version>2.29.4</ddf.version>
+    <ddf.version>2.29.5</ddf.version>
     <ddf-jsonrpc.version>0.9</ddf-jsonrpc.version>
     <ddf.support.version>2.3.16</ddf.support.version>
     <antlr.version>4.3</antlr.version>
@@ -75,7 +75,7 @@
     <commons-lang3.version>3.17.0</commons-lang3.version>
     <commons-math3.version>3.6.1</commons-math3.version>
     <gson.version>2.11.0</gson.version>
-    <guava.version>29.0-jre</guava.version>
+    <guava.version>33.4.0-jre</guava.version>
     <httpclient.version>4.5.13</httpclient.version>
     <httpcore.version>4.4.15</httpcore.version>
     <jackson.version>2.17.2</jackson.version>
@@ -92,13 +92,13 @@
     <osgi.version>5.0.0</osgi.version>
     <owasp-html-sanitizer.version>20220608.1</owasp-html-sanitizer.version>
     <ows-v_1_0_0-schema.version>1.1.0</ows-v_1_0_0-schema.version>
-    <pac4j.version>4.5.6</pac4j.version>
+    <pac4j.version>4.5.8</pac4j.version>
     <pax.web.version>7.3.29</pax.web.version>
     <quartz.version>2.3.2</quartz.version>
     <restassured.version>3.3.0</restassured.version>
-    <spark.version>2.9.2</spark.version>
+    <spark.version>2.9.4</spark.version>
     <spatial4j.version>0.8</spatial4j.version>
-    <tika.version>1.28.4</tika.version>
+    <tika.version>2.4.0</tika.version>
     <usng4j.version>0.4</usng4j.version>
     <org.slf4j.version>1.7.29</org.slf4j.version>
 
