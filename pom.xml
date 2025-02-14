@@ -46,8 +46,8 @@
   <properties>
     <!--Project properties-->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
     <compiler.fork>false</compiler.fork>
     <maven.bundle.plugin.version>5.1.4</maven.bundle.plugin.version>
     <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
@@ -64,7 +64,7 @@
     <fmt.maven.plugin.version>2.3.0</fmt.maven.plugin.version>
 
     <!--Backend properties-->
-    <ddf.version>2.29.4</ddf.version>
+    <ddf.version>2.29.5-SNAPSHOT</ddf.version>
     <ddf-jsonrpc.version>0.9</ddf-jsonrpc.version>
     <ddf.support.version>2.3.16</ddf.support.version>
     <antlr.version>4.3</antlr.version>
@@ -93,7 +93,8 @@
     <owasp-html-sanitizer.version>20220608.1</owasp-html-sanitizer.version>
     <ows-v_1_0_0-schema.version>1.1.0</ows-v_1_0_0-schema.version>
     <pac4j.version>4.5.6</pac4j.version>
-    <pax.web.version>7.3.29</pax.web.version>
+    <pax.web.version>8.0.27</pax.web.version>
+    <jetty.version>9.4.54.v20240208</jetty.version>
     <quartz.version>2.3.2</quartz.version>
     <restassured.version>3.3.0</restassured.version>
     <spark.version>2.9.2</spark.version>
@@ -338,6 +339,20 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>${maven.bundle.plugin.version}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <!-- Disabled OBR to increase build speed -->
+          <obrRepository>NONE</obrRepository>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <_noee>true</_noee>
+          </instructions>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.gmavenplus</groupId>
