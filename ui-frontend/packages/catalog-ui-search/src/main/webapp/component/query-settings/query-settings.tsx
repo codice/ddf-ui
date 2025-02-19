@@ -20,7 +20,7 @@ import SourceSelector from './source-selector'
 import SourcesInfo from './sources-info'
 import Phonetics from './phonetics'
 import Spellcheck from './spellcheck'
-import { hot } from 'react-hot-loader'
+
 import { Memo } from '../memo/memo'
 import { QueryType } from '../../js/model/Query'
 import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
@@ -65,4 +65,4 @@ const QuerySettings = ({ model, Extensions }: Props) => {
   )
 }
 
-export default hot(module)(QuerySettings)
+export default QuerySettings

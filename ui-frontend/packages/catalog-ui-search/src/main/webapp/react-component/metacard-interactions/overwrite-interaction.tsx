@@ -12,10 +12,10 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import * as React from 'react'
+
 import { MetacardInteractionProps } from '.'
 import { MetacardInteraction } from './metacard-interactions'
-import { hot } from 'react-hot-loader'
+
 import { useDialog } from '../../component/dialog'
 import { TypedUserInstance } from '../../component/singletons/TypedUser'
 import { MetacardOverwrite } from '../../component/metacard-overwrite/metacard-overwrite.view'
@@ -57,4 +57,4 @@ export const OverwriteAction = (props: MetacardInteractionProps) => {
   )
 }
 
-export default hot(module)(OverwriteAction)
+export default OverwriteAction

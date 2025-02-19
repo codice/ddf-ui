@@ -18,7 +18,16 @@ import $ from 'jquery'
 import _ from 'underscore'
 import utility from './utility'
 import DrawingUtility from '../DrawingUtility'
-import Openlayers from 'openlayers'
+import { MultiLineString, LineString, Polygon, Point } from 'ol/geom'
+import { get, transform as projTransform } from 'ol/proj'
+import { Vector as VectorSource } from 'ol/source'
+import { Vector as VectorLayer } from 'ol/layer'
+import Feature from 'ol/Feature'
+import { Stroke, Icon, Text as olText, Fill } from 'ol/style'
+import Style from 'ol/style/Style'
+import { Image as ImageLayer } from 'ol/layer'
+import { ImageStatic as ImageStaticSource } from 'ol/source'
+import { DragPan } from 'ol/interaction'
 import { OpenlayersLayers } from '../../../../js/controllers/openlayers.layers'
 import wreqr from '../../../../js/wreqr'
 import { validateGeo } from '../../../../react-component/utils/validation'
@@ -26,6 +35,13 @@ import { ClusterType } from '../react/geometries'
 import { LazyQueryResult } from '../../../../js/model/LazyQueryResult/LazyQueryResult'
 import { StartupDataStore } from '../../../../js/model/Startup/startup'
 import _debounce from 'lodash.debounce'
+import { ProjectionLike } from 'ol/proj'
+import Group from 'ol/layer/Group'
+import { Coordinate } from 'ol/coordinate'
+import Map from 'ol/Map'
+import { boundingExtent, createEmpty, extend } from 'ol/extent'
+import { getLength } from 'ol/sphere'
+
 const defaultColor = '#3c6dd5'
 const rulerColor = '#506f85'
 function createMap(insertionElement: any, mapLayers: any) {
@@ -38,7 +54,7 @@ function createMap(insertionElement: any, mapLayers: any) {
     center: [0, 0],
     element: insertionElement,
   })
-  return map
+  return map as Map
 }
 function determineIdFromPosition(position: any, map: any) {
   const features: any = []
@@ -63,14 +79,14 @@ function determineIdsFromPosition(position: any, map: any) {
 }
 function convertPointCoordinate(point: [number, number]) {
   const coords = [point[0], point[1]]
-  return Openlayers.proj.transform(
-    coords as Openlayers.Coordinate,
+  return projTransform(
+    coords as Coordinate,
     'EPSG:4326',
     StartupDataStore.Configuration.getProjection()
   )
 }
 function unconvertPointCoordinate(point: [number, number]) {
-  return Openlayers.proj.transform(
+  return projTransform(
     point,
     StartupDataStore.Configuration.getProjection(),
     'EPSG:4326'
@@ -98,7 +114,7 @@ export default function (
   function setupTooltip(map: any) {
     map.on('pointermove', (e: any) => {
       const point = unconvertPointCoordinate(e.coordinate)
-      if (!offMap(point)) {
+      if (!offMap(point as any)) {
         mapModel.updateMouseCoordinates({
           lat: point[1],
           lon: point[0],
@@ -212,7 +228,7 @@ export default function (
     }) {
       // disable panning of the map
       map.getInteractions().forEach((interaction: any) => {
-        if (interaction instanceof Openlayers.interaction.DragPan) {
+        if (interaction instanceof DragPan) {
           interaction.setActive(false)
         }
       })
@@ -224,7 +240,7 @@ export default function (
         const position = { latitude: coordinates[1], longitude: coordinates[0] }
         down({ position: position, mapLocationId: locationId })
       }
-      map.on('pointerdown', geoDragDownListener)
+      map.on('pointerdown' as any, geoDragDownListener)
 
       geoDragMoveListener = function (event: any) {
         const { locationId } = determineIdsFromPosition(event.pixel, map)
@@ -240,18 +256,24 @@ export default function (
       map.on('pointerdrag', geoDragMoveListener)
 
       geoDragUpListener = up
-      map.on('pointerup', geoDragUpListener)
+      map.on('pointerup' as any, geoDragUpListener)
     },
     clearMouseTrackingForGeoDrag() {
       // re-enable panning
       map.getInteractions().forEach((interaction: any) => {
-        if (interaction instanceof Openlayers.interaction.DragPan) {
+        if (interaction instanceof DragPan) {
           interaction.setActive(true)
         }
       })
-      map.un('pointerdown', geoDragDownListener)
-      map.un('pointerdrag', geoDragMoveListener)
-      map.un('pointerup', geoDragUpListener)
+      if (geoDragDownListener) {
+        map.un('pointerdown' as any, geoDragDownListener)
+      }
+      if (geoDragMoveListener) {
+        map.un('pointerdrag', geoDragMoveListener)
+      }
+      if (geoDragUpListener) {
+        map.un('pointerup' as any, geoDragUpListener)
+      }
     },
     onLeftClickMapAPI(callback: any) {
       leftClickMapAPIListener = function (event: any) {
@@ -374,7 +396,7 @@ export default function (
         const lineObject = coords.map((coordinate) =>
           convertPointCoordinate(coordinate)
         )
-        const extent = Openlayers.extent.boundingExtent(lineObject)
+        const extent = boundingExtent(lineObject)
         map.getView().fit(extent, {
           size: map.getSize(),
           maxZoom: map.getView().getZoom(),
@@ -383,14 +405,11 @@ export default function (
       }
     },
     getExtentOfIds(ids: string[]) {
-      var extent = Openlayers.extent.createEmpty()
+      var extent = createEmpty()
       map.getLayers().forEach((layer: any) => {
         // might need to handle groups later, but no reason to yet
-        if (
-          layer instanceof Openlayers.layer.Vector &&
-          ids.includes(layer.get('id'))
-        ) {
-          Openlayers.extent.extend(extent, layer.getSource().getExtent())
+        if (layer instanceof VectorLayer && ids.includes(layer.get('id'))) {
+          extend(extent, layer.getSource().getExtent())
         }
       })
       if (extent[0] === Infinity) {
@@ -404,22 +423,16 @@ export default function (
       })
     },
     panToShapesExtent({ duration = 500 }: { duration?: number } = {}) {
-      var extent = Openlayers.extent.createEmpty()
+      var extent = createEmpty()
       map.getLayers().forEach((layer: any) => {
-        if (layer instanceof Openlayers.layer.Group) {
-          layer.getLayers().forEach(function (groupLayer) {
+        if (layer instanceof Group) {
+          layer.getLayers().forEach(function (groupLayer: any) {
             //If this is a vector layer, add it to our extent
-            if (layer instanceof Openlayers.layer.Vector)
-              Openlayers.extent.extend(
-                extent,
-                (groupLayer as any).getSource().getExtent()
-              )
+            if (layer instanceof VectorLayer)
+              extend(extent, (groupLayer as any).getSource().getExtent())
           })
-        } else if (
-          layer instanceof Openlayers.layer.Vector &&
-          layer.get('id')
-        ) {
-          Openlayers.extent.extend(extent, layer.getSource().getExtent())
+        } else if (layer instanceof VectorLayer && layer.get('id')) {
+          extend(extent, layer.getSource().getExtent())
         }
       })
       if (extent[0] !== Infinity) {
@@ -435,7 +448,7 @@ export default function (
       const lineObject = coords.map((coordinate: any) =>
         convertPointCoordinate(coordinate)
       )
-      const extent = Openlayers.extent.boundingExtent(lineObject)
+      const extent = boundingExtent(lineObject)
       map.getView().fit(extent, {
         size: map.getSize(),
         maxZoom: map.getView().getZoom(),
@@ -472,16 +485,13 @@ export default function (
       this.removeOverlay(metacardId)
       const coords = model.getPoints('location')
       const array = _.map(coords, (coord) => convertPointCoordinate(coord))
-      const polygon = new Openlayers.geom.Polygon([array])
+      const polygon = new Polygon([array])
       const extent = polygon.getExtent()
-      const projection = Openlayers.proj.get(
-        StartupDataStore.Configuration.getProjection()
-      )
-      const overlayLayer = new Openlayers.layer.Image({
-        source: new Openlayers.source.ImageStatic({
-          // @ts-expect-error ts-migrate(2322) FIXME: Type 'string | undefined' is not assignable to typ... Remove this comment to see the full error message
-          url: model.currentOverlayUrl,
-          projection,
+      const projection = get(StartupDataStore.Configuration.getProjection())
+      const overlayLayer = new ImageLayer({
+        source: new ImageStaticSource({
+          url: model.currentOverlayUrl || '',
+          projection: projection as ProjectionLike,
           imageExtent: extent,
         }),
       })
@@ -529,8 +539,8 @@ export default function (
      * Coordinates.
      */
     calculateDistanceBetweenPositions(coords: any) {
-      const line = new Openlayers.geom.LineString(coords)
-      const sphereLength = Openlayers.Sphere.getLength(line)
+      const line = new LineString(coords)
+      const sphereLength = getLength(line)
       return sphereLength
     },
     /*
@@ -553,7 +563,10 @@ export default function (
     removeRulerPoint(pointLayer: any) {
       map.removeLayer(pointLayer)
     },
-    rulerLine: null as null | Openlayers.layer.Vector,
+    rulerLine: null as null | VectorLayer<
+      VectorSource<Feature<LineString>>,
+      Feature<LineString>
+    >,
     /*
      * Draws a line on the map between the points in the given array of point Vectors.
      */
@@ -582,7 +595,9 @@ export default function (
      * Removes the given line Layer from the map.
      */
     removeRulerLine() {
-      map.removeLayer(this.rulerLine)
+      if (this.rulerLine) {
+        map.removeLayer(this.rulerLine)
+      }
     },
     /*
             Adds a billboard point utilizing the passed in point and options.
@@ -590,63 +605,75 @@ export default function (
         */
     addPointWithText(point: any, options: any) {
       const pointObject = convertPointCoordinate(point)
-      const feature = new Openlayers.Feature({
-        geometry: new Openlayers.geom.Point(pointObject),
+      const feature = new Feature({
+        geometry: new Point(pointObject),
       })
       const badgeOffset = options.badgeOptions ? 8 : 0
       const imgWidth = 44 + badgeOffset
       const imgHeight = 44 + badgeOffset
 
       feature.setId(options.id)
-      ;(feature as any).unselectedStyle = new Openlayers.style.Style({
-        image: new Openlayers.style.Icon({
-          img: DrawingUtility.getCircleWithText({
-            fillColor: options.color,
-            text: options.id.length,
-            badgeOptions: options.badgeOptions,
+      feature.set(
+        'unselectedStyle',
+        new Style({
+          image: new Icon({
+            img: DrawingUtility.getCircleWithText({
+              fillColor: options.color,
+              text: options.id.length,
+              badgeOptions: options.badgeOptions,
+            }),
+            width: imgWidth,
+            height: imgHeight,
           }),
-          imgSize: [imgWidth, imgHeight],
-        }),
-      })
-      ;(feature as any).partiallySelectedStyle = new Openlayers.style.Style({
-        image: new Openlayers.style.Icon({
-          img: DrawingUtility.getCircleWithText({
-            fillColor: options.color,
-            text: options.id.length,
-            strokeColor: 'black',
-            textColor: 'white',
-            badgeOptions: options.badgeOptions,
+        })
+      )
+      feature.set(
+        'partiallySelectedStyle',
+        new Style({
+          image: new Icon({
+            img: DrawingUtility.getCircleWithText({
+              fillColor: options.color,
+              text: options.id.length,
+              strokeColor: 'black',
+              textColor: 'white',
+              badgeOptions: options.badgeOptions,
+            }),
+            width: imgWidth,
+            height: imgHeight,
           }),
-          imgSize: [imgWidth, imgHeight],
-        }),
-      })
-      ;(feature as any).selectedStyle = new Openlayers.style.Style({
-        image: new Openlayers.style.Icon({
-          img: DrawingUtility.getCircleWithText({
-            fillColor: 'orange',
-            text: options.id.length,
-            strokeColor: 'white',
-            textColor: 'white',
-            badgeOptions: options.badgeOptions,
+        })
+      )
+      feature.set(
+        'selectedStyle',
+        new Style({
+          image: new Icon({
+            img: DrawingUtility.getCircleWithText({
+              fillColor: 'orange',
+              text: options.id.length,
+              strokeColor: 'white',
+              textColor: 'white',
+              badgeOptions: options.badgeOptions,
+            }),
+            width: imgWidth,
+            height: imgHeight,
           }),
-          imgSize: [imgWidth, imgHeight],
-        }),
-      })
+        })
+      )
       switch (options.isSelected) {
         case 'selected':
-          feature.setStyle((feature as any).selectedStyle)
+          feature.setStyle(feature.get('selectedStyle'))
           break
         case 'partially':
-          feature.setStyle((feature as any).partiallySelectedStyle)
+          feature.setStyle(feature.get('partiallySelectedStyle'))
           break
         case 'unselected':
-          feature.setStyle((feature as any).unselectedStyle)
+          feature.setStyle(feature.get('unselectedStyle'))
           break
       }
-      const vectorSource = new Openlayers.source.Vector({
+      const vectorSource = new VectorSource({
         features: [feature],
       })
-      const vectorLayer = new Openlayers.layer.Vector({
+      const vectorLayer = new VectorLayer({
         source: vectorSource,
         zIndex: 1,
       })
@@ -659,8 +686,8 @@ export default function (
             */
     addPoint(point: any, options: any) {
       const pointObject = convertPointCoordinate(point)
-      const feature = new Openlayers.Feature({
-        geometry: new Openlayers.geom.Point(pointObject),
+      const feature = new Feature({
+        geometry: new Point(pointObject),
         name: options.title,
       })
       feature.setId(options.id)
@@ -671,43 +698,51 @@ export default function (
         x = options.size.x
         y = options.size.y
       }
-      ;(feature as any).unselectedStyle = new Openlayers.style.Style({
-        image: new Openlayers.style.Icon({
-          img: DrawingUtility.getPin({
-            fillColor: options.color,
-            icon: options.icon,
-            badgeOptions: options.badgeOptions,
+      feature.set(
+        'unselectedStyle',
+        new Style({
+          image: new Icon({
+            img: DrawingUtility.getPin({
+              fillColor: options.color,
+              icon: options.icon,
+              badgeOptions: options.badgeOptions,
+            }),
+            width: x,
+            height: y,
+            anchor: [x / 2 - badgeOffset / 2, 0],
+            anchorOrigin: 'bottom-left',
+            anchorXUnits: 'pixels',
+            anchorYUnits: 'pixels',
           }),
-          imgSize: [x, y],
-          anchor: [x / 2 - badgeOffset / 2, 0],
-          anchorOrigin: 'bottom-left',
-          anchorXUnits: 'pixels',
-          anchorYUnits: 'pixels',
-        }),
-      })
-      ;(feature as any).selectedStyle = new Openlayers.style.Style({
-        image: new Openlayers.style.Icon({
-          img: DrawingUtility.getPin({
-            fillColor: 'orange',
-            icon: options.icon,
-            badgeOptions: options.badgeOptions,
+        })
+      )
+      feature.set(
+        'selectedStyle',
+        new Style({
+          image: new Icon({
+            img: DrawingUtility.getPin({
+              fillColor: 'orange',
+              icon: options.icon,
+              badgeOptions: options.badgeOptions,
+            }),
+            width: x,
+            height: y,
+            anchor: [x / 2 - badgeOffset / 2, 0],
+            anchorOrigin: 'bottom-left',
+            anchorXUnits: 'pixels',
+            anchorYUnits: 'pixels',
           }),
-          imgSize: [x, y],
-          anchor: [x / 2 - badgeOffset / 2, 0],
-          anchorOrigin: 'bottom-left',
-          anchorXUnits: 'pixels',
-          anchorYUnits: 'pixels',
-        }),
-      })
+        })
+      )
       feature.setStyle(
         options.isSelected
-          ? (feature as any).selectedStyle
-          : (feature as any).unselectedStyle
+          ? feature.get('selectedStyle')
+          : feature.get('unselectedStyle')
       )
-      const vectorSource = new Openlayers.source.Vector({
+      const vectorSource = new VectorSource({
         features: [feature],
       })
-      const vectorLayer = new Openlayers.layer.Vector({
+      const vectorLayer = new VectorLayer({
         source: vectorSource,
         zIndex: 1,
       })
@@ -720,28 +755,27 @@ export default function (
             */
     addLabel(point: any, options: any) {
       const pointObject = convertPointCoordinate(point)
-      const feature = new Openlayers.Feature({
-        geometry: new Openlayers.geom.Point(pointObject),
+      const feature = new Feature({
+        geometry: new Point(pointObject),
         name: options.text,
         isLabel: true,
       })
       feature.setId(options.id)
       feature.setStyle(
-        new Openlayers.style.Style({
-          text: new Openlayers.style.Text({
+        new Style({
+          text: new olText({
             text: options.text,
-            // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ text: any; overflow: boolean; ... Remove this comment to see the full error message
             overflow: true,
           }),
         })
       )
-      const vectorSource = new Openlayers.source.Vector({
+      const vectorSource = new VectorSource({
         features: [feature],
       })
-      const vectorLayer = new Openlayers.layer.Vector({
+      const vectorLayer = new VectorLayer({
         source: vectorSource,
         zIndex: 1,
-        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ source: Openlayers.source.Vect... Remove this comment to see the full error message
+        // @ts-ignore
         id: options.id,
         isSelected: false,
       })
@@ -757,20 +791,20 @@ export default function (
       const lineObject = line.map((coordinate: any) =>
         convertPointCoordinate(coordinate)
       )
-      const feature = new Openlayers.Feature({
-        geometry: new Openlayers.geom.LineString(lineObject),
+      const feature = new Feature({
+        geometry: new LineString(lineObject),
         name: options.title,
       })
       feature.setId(options.id)
-      const commonStyle = new Openlayers.style.Style({
-        stroke: new Openlayers.style.Stroke({
+      const commonStyle = new Style({
+        stroke: new Stroke({
           color: options.color || defaultColor,
           width: 4,
         }),
       })
       ;(feature as any).unselectedStyle = [
-        new Openlayers.style.Style({
-          stroke: new Openlayers.style.Stroke({
+        new Style({
+          stroke: new Stroke({
             color: 'white',
             width: 8,
           }),
@@ -778,8 +812,8 @@ export default function (
         commonStyle,
       ]
       ;(feature as any).selectedStyle = [
-        new Openlayers.style.Style({
-          stroke: new Openlayers.style.Stroke({
+        new Style({
+          stroke: new Stroke({
             color: 'black',
             width: 8,
           }),
@@ -791,10 +825,10 @@ export default function (
           ? (feature as any).selectedStyle
           : (feature as any).unselectedStyle
       )
-      const vectorSource = new Openlayers.source.Vector({
+      const vectorSource = new VectorSource({
         features: [feature],
       })
-      const vectorLayer = new Openlayers.layer.Vector({
+      const vectorLayer = new VectorLayer({
         source: vectorSource,
       })
       map.addLayer(vectorLayer)
@@ -817,31 +851,29 @@ export default function (
       } else {
         const feature = geometry.getSource().getFeatures()[0]
         const geometryInstance = feature.getGeometry()
-        if (geometryInstance.constructor === Openlayers.geom.Point) {
+        if (geometryInstance.constructor === Point) {
           geometry.setZIndex(options.isSelected ? 2 : 1)
           switch (options.isSelected) {
             case 'selected':
-              feature.setStyle(feature.selectedStyle)
+              feature.setStyle(feature.get('selectedStyle'))
               break
             case 'partially':
-              feature.setStyle(feature.partiallySelectedStyle)
+              feature.setStyle(feature.get('partiallySelectedStyle'))
               break
             case 'unselected':
-              feature.setStyle(feature.unselectedStyle)
+              feature.setStyle(feature.get('unselectedStyle'))
               break
           }
-        } else if (
-          geometryInstance.constructor === Openlayers.geom.LineString
-        ) {
+        } else if (geometryInstance.constructor === LineString) {
           const styles = [
-            new Openlayers.style.Style({
-              stroke: new Openlayers.style.Stroke({
+            new Style({
+              stroke: new Stroke({
                 color: 'rgba(255,255,255, .1)',
                 width: 8,
               }),
             }),
-            new Openlayers.style.Style({
-              stroke: new Openlayers.style.Stroke({
+            new Style({
+              stroke: new Stroke({
                 color: 'rgba(0,0,0, .1)',
                 width: 4,
               }),
@@ -863,16 +895,18 @@ export default function (
       } else {
         const feature = geometry.getSource().getFeatures()[0]
         const geometryInstance = feature.getGeometry()
-        if (geometryInstance.constructor === Openlayers.geom.Point) {
+        if (geometryInstance.constructor === Point) {
           geometry.setZIndex(options.isSelected ? 2 : 1)
           feature.setStyle(
-            options.isSelected ? feature.selectedStyle : feature.unselectedStyle
+            options.isSelected
+              ? feature.get('selectedStyle')
+              : feature.get('unselectedStyle')
           )
-        } else if (
-          geometryInstance.constructor === Openlayers.geom.LineString
-        ) {
+        } else if (geometryInstance.constructor === LineString) {
           feature.setStyle(
-            options.isSelected ? feature.selectedStyle : feature.unselectedStyle
+            options.isSelected
+              ? feature.get('selectedStyle')
+              : feature.get('unselectedStyle')
           )
         }
       }
@@ -889,14 +923,15 @@ export default function (
         geometry.setZIndex(options.isSelected ? 2 : 1)
         if (!feature.getProperties().isLabel) {
           feature.setStyle(
-            new Openlayers.style.Style({
-              image: new Openlayers.style.Icon({
+            new Style({
+              image: new Icon({
                 img: DrawingUtility.getPin({
                   fillColor: options.isSelected ? 'orange' : options.color,
                   strokeColor: 'white',
                   icon: options.icon,
                 }),
-                imgSize: [pointWidth, pointHeight],
+                width: pointWidth,
+                height: pointHeight,
                 anchor: [pointWidth / 2, 0],
                 anchorOrigin: 'bottom-left',
                 anchorXUnits: 'pixels',
@@ -906,7 +941,7 @@ export default function (
           )
         } else {
           feature.setStyle(
-            new Openlayers.style.Style({
+            new Style({
               text: this.createTextStyle(
                 feature,
                 map.getView().getResolution()
@@ -921,14 +956,14 @@ export default function (
         }
       } else if (geometryInstance.getType() === 'LineString') {
         const styles = [
-          new Openlayers.style.Style({
-            stroke: new Openlayers.style.Stroke({
+          new Style({
+            stroke: new Stroke({
               color: 'white',
               width: 8,
             }),
           }),
-          new Openlayers.style.Style({
-            stroke: new Openlayers.style.Stroke({
+          new Style({
+            stroke: new Stroke({
               color: options.color || defaultColor,
               width: 4,
             }),
@@ -941,16 +976,15 @@ export default function (
       const fillColor = '#000000'
       const outlineColor = '#ffffff'
       const outlineWidth = 3
-      return new Openlayers.style.Text({
+      return new olText({
         text: this.getText(feature, resolution),
-        fill: new Openlayers.style.Fill({ color: fillColor }),
-        stroke: new Openlayers.style.Stroke({
+        fill: new Fill({ color: fillColor }),
+        stroke: new Stroke({
           color: outlineColor,
           width: outlineWidth,
         }),
         offsetX: 20,
         offsetY: -15,
-        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ text: any; fill: Openlayers.st... Remove this comment to see the full error message
         placement: 'point',
         maxAngle: 45,
         overflow: true,
@@ -1006,13 +1040,13 @@ export default function (
       lineObject = lineObject.map((line: any) =>
         line.map((coords: any) => convertPointCoordinate(coords))
       )
-      let feature = new Openlayers.Feature({
-        geometry: new Openlayers.geom.MultiLineString(lineObject),
+      let feature = new Feature({
+        geometry: new MultiLineString(lineObject),
       })
       feature.setId(locationModel.cid)
       const styles = [
-        new Openlayers.style.Style({
-          stroke: new Openlayers.style.Stroke({
+        new Style({
+          stroke: new Stroke({
             color: locationModel.get('color') || defaultColor,
             width: 4,
           }),
@@ -1022,10 +1056,10 @@ export default function (
       return this.createVectorLayer(locationModel, feature)
     },
     createVectorLayer(locationModel: any, feature: any) {
-      let vectorSource = new Openlayers.source.Vector({
+      let vectorSource = new VectorSource({
         features: [feature],
       })
-      let vectorLayer = new Openlayers.layer.Vector({
+      let vectorLayer = new VectorLayer({
         source: vectorSource,
       })
       map.addLayer(vectorLayer)
@@ -1054,12 +1088,16 @@ export default function (
     zoomIn() {
       const view = map.getView()
       const zoom = view.getZoom()
-      view.setZoom(zoom + 1)
+      if (zoom) {
+        view.setZoom(zoom + 1)
+      }
     },
     zoomOut() {
       const view = map.getView()
       const zoom = view.getZoom()
-      view.setZoom(zoom - 1)
+      if (zoom) {
+        view.setZoom(zoom - 1)
+      }
     },
     destroy() {
       unlistenToResize()

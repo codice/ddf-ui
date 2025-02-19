@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
 
 const Swath = (
   props: React.DetailedHTMLProps<
@@ -16,4 +15,4 @@ const Swath = (
   )
 }
 
-export default hot(module)(Swath)
+export default Swath

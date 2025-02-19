@@ -11,7 +11,7 @@ import {
   alpha,
   ThemeOptions,
 } from '@mui/material/styles'
-import { ThemeContext } from 'styled-components'
+import { DefaultTheme, ThemeContext } from 'styled-components'
 import { createGlobalStyle } from 'styled-components'
 import { meetsContrastGuidelines } from 'polished'
 import { useRemoveFocusStyle } from '../app/blueprint.adjust'
@@ -217,6 +217,45 @@ const GlobalStyles = createGlobalStyle<ThemeInterface>`
       .bp3-table-quadrant, .bp3-table-cell-client, .bp3-table-row-headers {
         background: inherit !important;
       }
+      .bp4-portal {
+        z-index: 101 !important;
+      }
+      .bp4-popover-wrapper,.bp4-popover-target, .bp4-control-group {
+        width: 100%;
+      }
+      .bp4-control-group {
+        flex-wrap: wrap;
+      }
+      .bp4-control-group > div:first-of-type::after {
+        content: 'and';
+        display:block;
+        position: absolute;
+        left: 14px;
+        bottom: -25px;
+      }
+      .bp4-control-group > div:nth-of-type(2) {
+        margin-top: 30px;
+      }
+      .bp4-input-group input {
+        background: transparent !important; 
+        box-shadow: none !important;
+        font-size: 1.1428571428571428rem !important;
+        padding: 0px !important;
+        height: 1.3125rem !important;
+        line-height: 1.15 !important;
+      }
+      .bp4-popover .bp4-popover-content, .bp4-popover .bp4-popover-content, .bp4-datepicker, .bp4-menu{
+        background: ${(props) => props.palette.background.paper} !important;
+      }
+      .bp4-popover-arrow {
+        display: none !important;
+      }
+      .bp4-datepicker .DayPicker-Day.DayPicker-Day--selected, .bp4-active {
+        background-color: ${(props) => props.palette.primary.dark} !important;
+      }
+      .bp4-table-quadrant, .bp4-table-cell-client, .bp4-table-row-headers {
+        background: inherit !important;
+      }
       // for whatever reason they have a height of 0 sometimes, maybe MUI will fix this in v5
       textarea.MuiInputBase-input {
         min-height: 21px;
@@ -414,7 +453,7 @@ declare module '@mui/material' {
 }
 
 export const Provider = ({ children }: { children: any }) => {
-  const styledTheme = React.useContext(ThemeContext)
+  const styledTheme = React.useContext(ThemeContext) as DefaultTheme
   const darkMode = styledTheme.theme === 'dark'
   const paperColor = darkMode ? dark.paper : light.paper
   const backgroundColor = darkMode ? dark.background : light.background
@@ -629,10 +668,12 @@ export const Provider = ({ children }: { children: any }) => {
     const htmlElement = document.querySelector('html') as HTMLElement
     if (styledTheme.theme === 'dark') {
       htmlElement.classList.add('bp3-dark')
+      htmlElement.classList.add('bp4-dark')
       htmlElement.classList.add('theme-dark')
       htmlElement.classList.add('dark')
     } else {
       htmlElement.classList.remove('bp3-dark')
+      htmlElement.classList.remove('bp4-dark')
       htmlElement.classList.remove('theme-dark')
       htmlElement.classList.remove('dark')
     }

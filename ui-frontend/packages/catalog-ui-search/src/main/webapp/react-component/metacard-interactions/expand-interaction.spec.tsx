@@ -1,27 +1,25 @@
-import React from 'react'
 import { HashRouter as Router } from 'react-router-dom'
 import ExpandInteraction from './expand-interaction'
-import Enzyme, { mount } from 'enzyme'
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17'
-Enzyme.configure({ adapter: new Adapter() })
+
 import { expect } from 'chai'
+import { render } from '@testing-library/react'
 
 describe('smoke test', () => {
   it('it handles undefined', () => {
-    const wrapper = mount(
+    const wrapper = render(
       <Router>
         <ExpandInteraction onClose={() => {}} model={undefined} />
       </Router>
     )
-    expect(wrapper.html()).to.eq('')
+    expect(wrapper.container.innerHTML).to.eq('')
   })
 
   it('it handles empty array', () => {
-    const wrapper = mount(
+    const wrapper = render(
       <Router>
         <ExpandInteraction onClose={() => {}} model={[]} />
       </Router>
     )
-    expect(wrapper.html()).to.eq('')
+    expect(wrapper.container.innerHTML).to.eq('')
   })
 })

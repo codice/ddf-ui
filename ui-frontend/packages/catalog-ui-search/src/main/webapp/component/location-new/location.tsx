@@ -20,7 +20,6 @@ import Gazetteer from '../../react-component/location/gazetteer'
 import CQLUtils from '../../js/CQLUtils'
 import immer from 'immer.1.5.0'
 const produce = immer
-import { hot } from 'react-hot-loader'
 
 const inputs = {
   wkt: {
@@ -184,7 +183,7 @@ const LocationInput = (props: LocationInputPropsType) => {
   )
 }
 
-export default hot(module)(({ state, setState }: any) => (
+export default ({ state, setState }: any) => (
   <LocationInput
     {...state}
     setState={(producer: any) => (value: any) => {
@@ -194,4 +193,4 @@ export default hot(module)(({ state, setState }: any) => (
       setState(nextState)
     }}
   />
-))
+)

@@ -13,7 +13,7 @@
  *
  **/
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import Autocomplete from '@mui/material/Autocomplete'
 import TextField from '@mui/material/TextField'
 import { TimePrecision } from '@blueprintjs/datetime'
@@ -76,4 +76,4 @@ const TimePrecisionSelector = (props: Props) => {
   )
 }
 
-export default hot(module)(TimePrecisionSelector)
+export default TimePrecisionSelector

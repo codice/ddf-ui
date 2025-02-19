@@ -13,7 +13,6 @@
  *
  **/
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
 
 import ThemeContainer from '../../react-component/theme'
 import { IntlProvider } from 'react-intl'
@@ -34,7 +33,11 @@ const ProviderContainer = (props: Props) => {
       <ThemeContainer>
         <IntlProvider locale={navigator.language} messages={getI18n()}>
           <ThemeProvider>
-            <Router>
+            <Router
+              future={{
+                v7_startTransition: true,
+              }}
+            >
               <SnackProvider>
                 <DialogProvider>
                   <>{props.children}</>
@@ -48,4 +51,4 @@ const ProviderContainer = (props: Props) => {
   )
 }
 
-export default hot(module)(ProviderContainer)
+export default ProviderContainer

@@ -12,7 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import { hot } from 'react-hot-loader'
+
 import * as React from 'react'
 import wreqr from '../../js/wreqr'
 import MapActionsPresentation from './presentation'
@@ -99,4 +99,4 @@ class MapActions extends React.Component<Props, State> {
     )
   }
 }
-export default hot(module)(MapActions)
+export default MapActions

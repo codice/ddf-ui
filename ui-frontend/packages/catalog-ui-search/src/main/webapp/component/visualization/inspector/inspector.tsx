@@ -15,7 +15,7 @@
 
 import Button from '@mui/material/Button'
 import * as React from 'react'
-import { hot } from 'react-hot-loader'
+
 import { LazyQueryResult } from '../../../js/model/LazyQueryResult/LazyQueryResult'
 import { useLazyResultsSelectedResultsFromSelectionInterface } from '../../selection-interface/hooks'
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft'
@@ -253,4 +253,4 @@ const Inspector = ({ selectionInterface }: InspectorType) => {
   )
 }
 
-export default hot(module)(Inspector)
+export default Inspector

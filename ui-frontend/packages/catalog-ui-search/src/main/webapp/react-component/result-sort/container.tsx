@@ -13,7 +13,6 @@
  *
  **/
 
-import { hot } from 'react-hot-loader'
 import * as React from 'react'
 import ResultSortPresentation from './presentation'
 import { useBackbone } from '../../component/selection-checkbox/useBackbone.hook'
@@ -67,4 +66,4 @@ const ResultSortContainer = ({ closeDropdown }: Props) => {
   )
 }
 
-export default hot(module)(ResultSortContainer)
+export default ResultSortContainer

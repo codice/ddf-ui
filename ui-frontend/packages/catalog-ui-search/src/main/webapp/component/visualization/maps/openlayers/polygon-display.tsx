@@ -14,9 +14,26 @@
  **/
 import React from 'react'
 import DistanceUtils from '../../../../js/DistanceUtils'
-import ol from 'openlayers'
+import { Coordinate } from 'ol/coordinate'
+import { transform as projTransform } from 'ol/proj'
+import { Vector as VectorSource } from 'ol/source'
+import { Vector as VectorLayer } from 'ol/layer'
+import Feature from 'ol/Feature'
+import Style from 'ol/style/Style'
+import { Stroke } from 'ol/style'
+import Map from 'ol/Map'
+import MultiPolygon from 'ol/geom/MultiPolygon'
+import Polygon from 'ol/geom/Polygon'
 import _ from 'underscore'
-import * as Turf from '@turf/turf'
+import {
+  multiLineString,
+  buffer,
+  bbox,
+  polygon as turfPolygon,
+  union,
+  coordEach,
+  featureCollection,
+} from '@turf/turf'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { removeOldDrawing } from './drawing-and-display'
@@ -29,7 +46,7 @@ export const translateFromOpenlayersCoordinates = (coords: any) => {
   return coords
     .map((value: any) =>
       value.map((point: any) => {
-        const mappedPoint = ol.proj.transform(
+        const mappedPoint = projTransform(
           [
             DistanceUtils.coordinateRound(point[0]),
             DistanceUtils.coordinateRound(point[1]),
@@ -53,7 +70,7 @@ const coordsToLineString = (rawCoords: any) => {
     return
   }
   const coords = setArr.map((item: any) =>
-    ol.proj.transform(
+    projTransform(
       [item[0], item[1]],
       'EPSG:4326',
       StartupDataStore.Configuration.getProjection()
@@ -69,7 +86,7 @@ const modelToPolygon = (model: any) => {
   const coords = model.get('polygon')
 
   if (coords && coords.length === 0) {
-    return new ol.geom.MultiPolygon([])
+    return new MultiPolygon([])
   }
 
   if (
@@ -88,16 +105,16 @@ const modelToPolygon = (model: any) => {
   }
   const isMultiPolygon = ShapeUtils.isArray3D(coords)
   const multiPolygon = isMultiPolygon ? coords : [coords]
-  const polygons: ol.Coordinate[][][] = []
+  const polygons: Coordinate[][][] = []
   multiPolygon.forEach((polygon: any) => {
     const lineString = coordsToLineString(polygon)
     if (lineString) {
       polygons.push(lineString)
     }
   })
-  return new ol.geom.MultiPolygon(polygons)
+  return new MultiPolygon(polygons)
 }
-const adjustPolygonPoints = (polygon: ol.geom.Polygon) => {
+const adjustPolygonPoints = (polygon: Polygon) => {
   const extent = polygon.getExtent()
   const lon1 = extent[0]
   const lon2 = extent[2]
@@ -114,8 +131,8 @@ const adjustPolygonPoints = (polygon: ol.geom.Polygon) => {
     polygon.setCoordinates(adjusted)
   }
 }
-const adjustMultiPolygonPoints = (polygons: ol.geom.MultiPolygon) => {
-  const adjusted: ol.Coordinate[][][] = []
+const adjustMultiPolygonPoints = (polygons: MultiPolygon) => {
+  const adjusted: Coordinate[][][] = []
   polygons.getPolygons().forEach((polygon) => {
     adjustPolygonPoints(polygon)
     adjusted.push(polygon.getCoordinates())
@@ -132,7 +149,7 @@ export const drawPolygon = ({
 }: {
   map: any
   model: any
-  polygon: ol.geom.MultiPolygon
+  polygon: MultiPolygon
   id: string
   isInteractive?: boolean
   translation?: Translation
@@ -152,21 +169,24 @@ export const drawPolygon = ({
       model.get('polygonBufferUnits')
     ) || 1
   const drawnPolygonSegments = coordinates.map((set) => {
-    return Turf.multiLineString([translateFromOpenlayersCoordinates(set)])
-      .geometry.coordinates
+    return multiLineString([translateFromOpenlayersCoordinates(set)]).geometry
+      .coordinates
   })
   const bufferPolygonSegments = coordinates.map((set) => {
-    const polySegment = Turf.multiLineString([
+    const polySegment = multiLineString([
       translateFromOpenlayersCoordinates(set),
     ])
-    const bufferedSegment = Turf.buffer(polySegment, bufferWidth, {
+    const bufferedSegment = buffer(polySegment, bufferWidth, {
       units: 'meters',
     })
-    const extent = Turf.bbox(bufferedSegment)
+    if (!bufferedSegment) {
+      return
+    }
+    const extent = bbox(bufferedSegment)
     const width = Math.abs(extent[0] - extent[2])
     // need to adjust the points again AFTER buffering, since buffering undoes the antimeridian adjustments
     if (width > 180) {
-      Turf.coordEach(bufferedSegment, (coord) => {
+      coordEach(bufferedSegment, (coord) => {
         if (coord[0] < 0) {
           coord[0] += 360
         }
@@ -174,36 +194,38 @@ export const drawPolygon = ({
     }
     const bufferPolygons = bufferedSegment.geometry.coordinates.map(
       (set: any) => {
-        return Turf.polygon([set])
+        return turfPolygon([set])
       }
     )
-    return bufferPolygons.reduce((a, b) => Turf.union(a, b), bufferPolygons[0])
-      ?.geometry.coordinates
+    return bufferPolygons.reduce(
+      (a, b) => union(featureCollection([a, b])),
+      bufferPolygons[0]
+    )?.geometry.coordinates
   })
-  const bufferGeometryRepresentation = new ol.geom.MultiPolygon(
+  const bufferGeometryRepresentation = new MultiPolygon(
     bufferPolygonSegments as any
   )
-  const drawnGeometryRepresentation = new ol.geom.MultiPolygon(
+  const drawnGeometryRepresentation = new MultiPolygon(
     drawnPolygonSegments as any
   )
-  const billboard = new ol.Feature({
+  const billboard = new Feature({
     geometry: bufferGeometryRepresentation,
   })
   billboard.setId(id)
   billboard.set('locationId', model.get('locationId'))
-  const drawnPolygonFeature = new ol.Feature({
+  const drawnPolygonFeature = new Feature({
     geometry: drawnGeometryRepresentation,
   })
   const color = model.get('color')
-  const bufferPolygonIconStyle = new ol.style.Style({
-    stroke: new ol.style.Stroke({
+  const bufferPolygonIconStyle = new Style({
+    stroke: new Stroke({
       color: isInteractive ? contrastingColor : color ? color : '#914500',
       width: isInteractive ? 6 : 4,
     }),
     zIndex: 1,
   })
-  const drawnPolygonIconStyle = new ol.style.Style({
-    stroke: new ol.style.Stroke({
+  const drawnPolygonIconStyle = new Style({
+    stroke: new Stroke({
       color: isInteractive ? contrastingColor : color ? color : '#914500',
       width: isInteractive ? 5 : 3,
       lineDash: [10, 5],
@@ -212,13 +234,13 @@ export const drawPolygon = ({
   })
   billboard.setStyle(bufferPolygonIconStyle)
   drawnPolygonFeature.setStyle(drawnPolygonIconStyle)
-  const vectorSource = new ol.source.Vector({
+  const vectorSource = new VectorSource({
     features: [billboard, drawnPolygonFeature],
   })
-  const vectorLayer = new ol.layer.Vector({
+  const vectorLayer = new VectorLayer({
     source: vectorSource,
   })
-  const mapRef = map.getMap() as ol.Map
+  const mapRef = map.getMap() as Map
   removeOldDrawing({ map: mapRef, id })
   vectorLayer.set('id', id)
   mapRef.addLayer(vectorLayer)

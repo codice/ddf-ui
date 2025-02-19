@@ -3,7 +3,7 @@ import { LazyQueryResult } from '../../js/model/LazyQueryResult/LazyQueryResult'
 import { SortType } from '../../js/model/Query.shared-types'
 import { FilterBuilderClass } from '../filter-builder/filter.structure'
 import { useListenTo } from '../selection-checkbox/useBackbone.hook'
-import moment from 'moment'
+import moment from 'moment-timezone'
 
 import userInstance from './user-instance'
 import { StartupDataStore } from '../../js/model/Startup/startup'

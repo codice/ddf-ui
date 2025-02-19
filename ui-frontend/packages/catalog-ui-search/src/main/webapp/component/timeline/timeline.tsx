@@ -324,7 +324,7 @@ export const Timeline = (props: TimelineProps) => {
     if (left < right) {
       const newXAxis = xAxis.scale(xScale)
       setXAxis(() => newXAxis)
-      d3.select('.axis--x').call(newXAxis)
+      d3.select('.axis--x').call(newXAxis as any)
     }
   }, [xScale, props.timezone, props.format])
   useEffect(() => {
@@ -361,22 +361,22 @@ export const Timeline = (props: TimelineProps) => {
    * When a zoom event is triggered, use the transform event to create a new xScale,
    * then create a new xAxis using the scale and update existing xAxis
    */
-  const handleZoom = () => {
+  const handleZoom = (event: any) => {
     // Tooltip sticks around without this.
     setTooltip(null)
-    const transform = d3.event.transform
+    const transform = event.transform
     if (width != 0) {
       const newXScale = transform.rescaleX(timescale)
       setXScale(() => newXScale)
       const newXAxis = xAxis.scale(newXScale)
       setXAxis(() => newXAxis)
       // Apply the new xAxis
-      d3.select('.axis--x').call(xAxis)
+      d3.select('.axis--x').call(xAxis as any)
     }
   }
   const zoomBehavior = d3
     .zoom()
-    .scaleExtent([1, 24 * 60 * 60]) // Allows selections down to the minute at full zoom
+    .scaleExtent([1, 24 * 60 * 60])
     .translateExtent([
       [0, 0],
       [width, height],
@@ -385,21 +385,18 @@ export const Timeline = (props: TimelineProps) => {
       [0, 0],
       [width, height],
     ])
-    .filter(() => {
-      // If event triggered below xAxis, let default zoom behavior handle it (allows panning by dragging on axis)
-      console.debug('Click/Drag Event: ', d3.event)
-      const axisOffset = heightOffset ? heightOffset - 50 : -10
-      if (d3.event.layerY > height + AXIS_MARGIN - AXIS_HEIGHT - axisOffset) {
-        console.debug('Drag below xAxis, ignore')
+    .filter((event: any) => {
+      // Allow wheel events, on axis or not
+      if (event.type === 'wheel') {
         return true
-      } else {
-        console.debug("Drag above xAxis, don't ignore")
       }
-      const shouldFilterEvent = d3.event.type !== 'mousedown'
-      if (!shouldFilterEvent) {
-        console.debug('Ignoring event type: ', d3.event.type)
-      }
-      return shouldFilterEvent
+
+      // Check if event is on axis
+      const clickedOnAxis = event.target.closest('#axis') !== null
+      console.debug('Clicked On Axis: ', clickedOnAxis)
+
+      // Block all pan behavior if not clicking on axis (we are brushing instead)
+      return clickedOnAxis
     })
     .on('zoom', handleZoom)
   const zoomIn = () => {
@@ -431,7 +428,7 @@ export const Timeline = (props: TimelineProps) => {
           'transform',
           `translate(0 ${height - (AXIS_MARGIN + AXIS_HEIGHT + heightOffset)})`
         )
-        .call(xAxis)
+        .call(xAxis as any)
     }
     if (d3ContainerRef.current) {
       renderInitialXAxis()
@@ -441,9 +438,8 @@ export const Timeline = (props: TimelineProps) => {
   }, [height, width])
   // Add mouse handlers to listen to d3 mouse events
   useEffect(() => {
-    // When the d3Container mousemove event triggers, show the hover line
-    d3.select(d3ContainerRef.current).on('mousemove', function () {
-      const coord = d3.mouse(this as any)
+    d3.select(d3ContainerRef.current).on('mousemove', (event: any) => {
+      const coord = d3.pointer(event)
       d3.select(hoverLineRef.current)
         .attr('transform', `translate(${coord[0]}, ${markerHeight})`)
         .attr('style', 'display: block')
@@ -522,17 +518,16 @@ export const Timeline = (props: TimelineProps) => {
   useEffect(() => {
     d3.select('.data-holder')
       .selectAll('.data')
-      .on('mouseleave', function () {
+      .on('mouseleave', () => {
         setTooltip(null)
       })
-      .on('mousemove', function () {
-        const id = (d3.select(this).node() as any).id
-        const x = d3.event.layerX
-        const y = d3.event.layerY
+      .on('mousemove', (event: any) => {
+        const id = (event.target as any).id
+        const x = event.offsetX
+        const y = event.offsetY
         const tooltipInBounds = x <= width * 0.75
         setTooltip({
-          // If the tooltip will overflow off the timeline, set x to left of the cursor instead of right.
-          x: tooltipInBounds ? x + 25 : x - width * 0.25,
+          x: tooltipInBounds ? x + 25 : x - width * 0.25, // handles tooltip going off screen
           y: y - 20,
           message: props.renderTooltip
             ? props.renderTooltip(dataBuckets[id].items)
@@ -573,7 +568,6 @@ export const Timeline = (props: TimelineProps) => {
   }, [isDragging])
   useEffect(() => {
     /**
-     *
      * Selection Drag does two things:
      * 1. When the user drags across the timeline, a range selection will be created.
      * 2. If the drag event is only 5 pixels or less from start to finish AND ends on a rect object,
@@ -581,64 +575,77 @@ export const Timeline = (props: TimelineProps) => {
      */
     const getSelectionDrag = () => {
       let clickStart: number
-      return (
-        d3
-          .drag()
-          .on('start', () => {
-            clickStart = d3.event.x
-            const newLeftDate = moment.tz(
+      return d3
+        .drag()
+        .filter((event: any) => {
+          // block events if they're on the axis
+          const clickedOnAxis = event.target.closest('#axis') !== null
+          console.debug('Clicked On Axis: ', clickedOnAxis)
+
+          // Allow all events not on the axis
+          return !clickedOnAxis
+        })
+        .on('start', (event) => {
+          clickStart = event.x
+          const newLeftDate = moment.tz(
+            xScale.invert(clickStart),
+            props.timezone
+          )
+          if (props.mode === 'single') {
+            setSelectionRange([newLeftDate])
+          } else {
+            setIsDragging(true)
+            hideElement(d3.select(hoverLineRef.current))
+            hideElement(d3.select(hoverLineTextRef.current))
+            setSelectionRange([newLeftDate])
+          }
+        })
+        .on('drag', (event: any) => {
+          if (props.mode !== 'single') {
+            const diff = event.x - event.subject.x
+            const initialDate = moment.tz(
               xScale.invert(clickStart),
               props.timezone
             )
-            if (props.mode === 'single') {
-              setSelectionRange([newLeftDate])
+            let dragCurrent = clickStart + diff
+            const dragDate = moment.tz(
+              xScale.invert(dragCurrent),
+              props.timezone
+            )
+            if (diff > 0) {
+              setSelectionRange([initialDate, dragDate])
             } else {
-              setIsDragging(true)
-              hideElement(d3.select(hoverLineRef.current))
-              hideElement(d3.select(hoverLineTextRef.current))
-              setSelectionRange([newLeftDate])
+              setSelectionRange([dragDate, initialDate])
             }
-          })
-          // Set isDragging to false to trigger a selection update, additionally check if user meant to click.
-          .on('end', () => {
-            if (!props.mode) {
-              showElement(d3.select(hoverLineRef.current))
-              setIsDragging(false)
-              const clickDistance = clickStart - d3.event.x
-              const sourceEvent = d3.event.sourceEvent
-              if (Math.abs(clickDistance) < 5) {
-                const nodeName = sourceEvent.srcElement.nodeName
-                setSelectionRange([])
-                if (nodeName === 'rect' || nodeName === 'line') {
-                  const x = d3.event.x
-                  const bucket = dataBuckets.find((b) => b.x1 < x && x <= b.x2)
-                  bucket && props.onSelect && props.onSelect(bucket.items)
-                }
+          }
+        })
+        .on('end', (event) => {
+          if (!props.mode) {
+            showElement(d3.select(hoverLineRef.current))
+            setIsDragging(false)
+            const clickDistance = clickStart - event.x
+            const sourceEvent = event.sourceEvent
+            if (Math.abs(clickDistance) < 5) {
+              const nodeName = sourceEvent.target.nodeName
+              setSelectionRange([])
+              if (nodeName === 'rect' || nodeName === 'line') {
+                const x = event.x
+                const bucket = dataBuckets.find((b) => b.x1 < x && x <= b.x2)
+                bucket && props.onSelect && props.onSelect(bucket.items)
               }
             }
-          })
-          .on('drag', () => {
-            if (props.mode !== 'single') {
-              const diff = d3.event.x - d3.event.subject.x
-              const initialDate = moment.tz(
-                xScale.invert(clickStart),
-                props.timezone
-              )
-              let dragCurrent = clickStart + diff
-              const dragDate = moment.tz(
-                xScale.invert(dragCurrent),
-                props.timezone
-              )
-              if (diff > 0) {
-                setSelectionRange([initialDate, dragDate])
-              } else {
-                setSelectionRange([dragDate, initialDate])
-              }
-            }
-          }) as any
-      )
+          }
+        })
     }
-    d3.select(d3ContainerRef.current).call(getSelectionDrag())
+
+    // Apply drag behavior to both the overlay and data-holder
+    d3.select(d3ContainerRef.current)
+      .select('.brush-overlay')
+      .call(getSelectionDrag() as any)
+
+    d3.select(d3ContainerRef.current)
+      .select('.data-holder')
+      .call(getSelectionDrag() as any)
   }, [dataBuckets, selectionRange, xScale, props.timezone, props.format])
   useEffect(() => {
     /**
@@ -659,18 +666,18 @@ export const Timeline = (props: TimelineProps) => {
           setIsDragging(true)
         })
         .on('end', () => setIsDragging(false))
-        .on('drag', () => {
-          const dragValue = xScale.invert(d3.event.x)
+        .on('drag', (event: any) => {
+          const dragValue = xScale.invert(event.x)
           const dateWithTimezone = moment.tz(dragValue, props.timezone)
           const BUFFER = 10 // Buffer in pixels to keep sliders from overlapping/crossing
           if (slider === 'LEFT') {
             const maximumX = xScale(selectionRange[1]) - BUFFER
-            if (d3.event.x <= maximumX) {
+            if (event.x <= maximumX) {
               setSelectionRange([dateWithTimezone, selectionRange[1]])
             }
           } else if (slider === 'RIGHT') {
             const minimumX = xScale(selectionRange[0]) + BUFFER
-            if (d3.event.x >= minimumX) {
+            if (event.x >= minimumX) {
               setSelectionRange([selectionRange[0], dateWithTimezone])
             }
           }
@@ -693,8 +700,8 @@ export const Timeline = (props: TimelineProps) => {
           hideElement(d3.select(hoverLineTextRef.current))
         })
         .on('end', () => setIsDragging(false))
-        .on('drag', () => {
-          const value = d3.event.x - d3.event.subject.x
+        .on('drag', (event: any) => {
+          const value = event.x - event.subject.x
           const currentLeft = xScale(selectionRange[0])
           const currentRight = xScale(selectionRange[1])
           const newLeft = currentLeft + value
@@ -847,6 +854,14 @@ export const Timeline = (props: TimelineProps) => {
         <Tooltip message={tooltip.message} x={tooltip.x} y={tooltip.y} />
       )}
       <svg ref={d3ContainerRef}>
+        <rect
+          className="brush-overlay"
+          x={AXIS_MARGIN}
+          y={0}
+          width={width - 2 * AXIS_MARGIN}
+          height={height - (AXIS_MARGIN + AXIS_HEIGHT + heightOffset)}
+          fill="transparent"
+        />
         <g className="data-holder" />
 
         <rect ref={brushBarRef} className="brushBar" />
