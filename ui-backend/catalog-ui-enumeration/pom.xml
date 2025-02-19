@@ -65,7 +65,6 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Require-Capability>osgi.ee;filter:="(&amp;(osgi.ee=JavaSE)(version=1.8))"</Require-Capability>
                         <Export-Package>
                             org.codice.ddf.catalog.ui.enumeration
                         </Export-Package>
