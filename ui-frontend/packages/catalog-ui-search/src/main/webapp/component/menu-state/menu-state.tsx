@@ -84,7 +84,7 @@ const useListenForChildUpdates = ({
   }, [action.current, popoverRef])
 }
 
-export const useMenuState = ({ maxHeight }: Props = {}) => {
+export function useMenuState({ maxHeight }: Props = {}) {
   const anchorRef = React.useRef<HTMLDivElement>(null)
   const popoverRef = useRerenderingRef<HTMLDivElement>()
   const action = React.useRef<PopoverActions | null>(null)
@@ -140,6 +140,8 @@ export const useMenuState = ({ maxHeight }: Props = {}) => {
   }
 }
 
+export default useMenuState
+
 export const POPOVER_DEFAULTS = ({ maxHeight }: Props = {}) => {
   return {
     anchorOrigin: {
@@ -161,4 +163,12 @@ export const POPOVER_DEFAULTS = ({ maxHeight }: Props = {}) => {
   >
 }
 
-export default useMenuState
+const MenuStateContext = React.createContext<ReturnType<typeof useMenuState>>(
+  {} as ReturnType<typeof useMenuState>
+)
+
+export const MenuStateProvider = MenuStateContext.Provider
+
+export function useMenuStateContext() {
+  return React.useContext(MenuStateContext)
+}
