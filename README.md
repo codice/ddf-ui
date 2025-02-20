@@ -4,12 +4,12 @@ Welcome to ddf-ui, the home of Intrigue.
 
 ## Installing in DDF
 
-Note: Change `<VERSION>` to the desired or most recent version of ddf-ui.
+Note: Change `5.2.4-SNAPSHOT` to the desired or most recent version of ddf-ui.
 
 1. Inside of a DDF karaf console run the following commands:
 
    ```
-   feature:repo-add mvn:org.codice.ddf.search/intrigue-ui-app/<VERSION>/xml/features
+   feature:repo-add mvn:org.codice.ddf.search/intrigue-ui-app/5.2.4-SNAPSHOT/xml/features
    ```
 
    ```
@@ -19,7 +19,7 @@ Note: Change `<VERSION>` to the desired or most recent version of ddf-ui.
    This will add the backend repo and then install the app.
 
    ```
-   feature:repo-add mvn:org.codice.ddf.search/ui-frontend/<VERSION>/xml/features
+   feature:repo-add mvn:org.codice.ddf.search/ui-frontend/5.2.4-SNAPSHOT/xml/features
    ```
 
    ```
@@ -31,7 +31,7 @@ Note: Change `<VERSION>` to the desired or most recent version of ddf-ui.
 
 2. (Optional) Add the following bundle to `bundleLocations` in `etc/application-definitions/search-ui.json`:
    ```
-   "mvn:org.codice.ddf.search/catalog-ui-search/<VERSION>"
+   "mvn:org.codice.ddf.search/catalog-ui-search/5.2.4-SNAPSHOT"
    ```
    This configures the Intrigue configurations to appear under the `Search UI` app in the DDF Admin Console.
 3. (Optional) Add a configuration file at `etc/org.codice.ddf.ui.searchui.filter.RedirectServlet.config` with the following contents:

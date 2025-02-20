@@ -16,6 +16,7 @@
           xmlns="http://karaf.apache.org/xmlns/features/v1.3.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
+    <repository>mvn:org.ops4j.pax.web/pax-web-features/${pax.web.version}/xml/features</repository>
     <repository>mvn:com.connexta.jsonrpc/jsonrpc-features/${ddf-jsonrpc.version}/xml/features</repository>
     <repository>mvn:org.codice.ddf.search/ui-frontend/${project.version}/xml/features</repository>
     <repository>mvn:ddf.features/apps/${ddf.version}/xml/features</repository>
@@ -31,6 +32,7 @@
 
     <feature name="catalog-ui" version="${project.version}" description="Catalog UI">
         <feature>pax-web-jetty</feature>
+        <feature>pax-web-jetty-websockets</feature>
         <feature>spatial-app</feature>
         <feature>offline-gazetteer</feature>
         <feature>camel-http</feature>
