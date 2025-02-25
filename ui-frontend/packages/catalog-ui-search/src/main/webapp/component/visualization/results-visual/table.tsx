@@ -65,12 +65,6 @@ export const ResultsCommonControls = ({
           data-id="manage-attributes-button"
           onClick={() => {
             dialogContext.setProps({
-              PaperProps: {
-                style: {
-                  minWidth: 'none',
-                },
-                elevation: Elevations.panels,
-              },
               open: true,
               disableEnforceFocus: true,
               children: (
