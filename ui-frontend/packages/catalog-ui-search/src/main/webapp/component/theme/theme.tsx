@@ -647,13 +647,6 @@ export const Provider = ({ children }: { children: any }) => {
           },
         },
       },
-      MuiDialog: {
-        styleOverrides: {
-          paper: {
-            maxWidth: 'none',
-          },
-        },
-      },
       MuiPaper: {
         styleOverrides: {
           root: { backgroundImage: 'unset' },

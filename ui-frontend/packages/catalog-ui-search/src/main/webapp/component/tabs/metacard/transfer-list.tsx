@@ -238,11 +238,6 @@ const ItemRow = ({
           }}
           onClick={() => {
             dialogContext.setProps({
-              PaperProps: {
-                style: {
-                  minWidth: 'none',
-                },
-              },
               open: true,
               children: CustomAttributeEditor ? (
                 <CustomAttributeEditor
@@ -805,14 +800,8 @@ const TransferList = ({
       </div>
       <DarkDivider className="w-full h-min" />
       <DialogContent>
-        <Grid
-          container
-          spacing={2}
-          justifyContent="center"
-          alignItems="center"
-          className="m-auto"
-        >
-          <Grid item>
+        <div className="flex flex-row justify-center items-center space-x-2 flex-nowrap w-full">
+          <div>
             <CustomList
               title="Active"
               items={left}
@@ -829,9 +818,9 @@ const TransferList = ({
               totalPossible={totalPossible}
               mode={mode}
             />
-          </Grid>
-          <Grid item>
-            <Grid container direction="column" alignItems="center">
+          </div>
+          <div>
+            <div className="flex flex-col items-center">
               <Button
                 data-id="move-right-button"
                 variant="outlined"
@@ -852,9 +841,9 @@ const TransferList = ({
               >
                 <LeftArrowIcon />
               </Button>
-            </Grid>
-          </Grid>
-          <Grid item>
+            </div>
+          </div>
+          <div>
             <CustomList
               title="Hidden"
               items={right}
@@ -869,8 +858,8 @@ const TransferList = ({
               mode={mode}
               totalPossible={totalPossible}
             />
-          </Grid>
-        </Grid>
+          </div>
+        </div>
       </DialogContent>
       <DarkDivider className="w-full h-min" />
       <DialogActions>

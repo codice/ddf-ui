@@ -16,6 +16,7 @@ export const useDialog = useDialogContext
 
 export const DialogProvider = (props: DialogProviderProps) => {
   const [dialogProps, setDialogProps] = React.useState({
+    maxWidth: 'lg',
     children: <></>,
     open: false,
     onClose: () => {
