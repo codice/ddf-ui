@@ -89,7 +89,7 @@
     <nimbus.version>8.14.1</nimbus.version>
     <nimbus.oidc.version>8.22</nimbus.oidc.version>
     <org.geotools.version>28.2</org.geotools.version>
-    <osgi.version>5.0.0</osgi.version>
+    <osgi.version>7.0.0</osgi.version>
     <owasp-html-sanitizer.version>20220608.1</owasp-html-sanitizer.version>
     <ows-v_1_0_0-schema.version>1.1.0</ows-v_1_0_0-schema.version>
     <pac4j.version>5.0.0</pac4j.version>
