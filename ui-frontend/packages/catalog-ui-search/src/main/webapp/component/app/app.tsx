@@ -57,6 +57,7 @@ import sessionTimeoutModel from '../singletons/session-timeout'
 import Extensions from '../../extension-points'
 import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 import { SuspenseWrapper } from './suspense'
+import { SyncReactRouterContextToVariables } from './react-router.patches'
 export const handleBase64EncodedImages = (url: string) => {
   if (url && url.startsWith('data:')) {
     return url
@@ -743,7 +744,18 @@ const RouteContents = () => {
               <Route
                 key={routeInfo.routeProps.path?.toString() || Math.random()}
                 path={routeInfo.routeProps.path}
-                Component={routeInfo.routeProps.Component}
+                Component={() => {
+                  // due to how Components work in v6 react router, we'll want to memo these to avoid unnecessary component rerenders
+                  const Component = routeInfo.routeProps.Component
+                  if (!Component) {
+                    return null
+                  }
+                  return (
+                    <Memo>
+                      <Component />
+                    </Memo>
+                  )
+                }}
               />
             )
           })}
@@ -764,11 +776,12 @@ export const useNavContextProvider = () => {
  * Keep the current route visible to the user since it's useful info.
  * This also ensures it's visible upon first load of the page.
  */
-const useScrollCurrentRouteIntoViewOnLocationChange = () => {
+const ScrollCurrentRouteIntoViewOnLocationChange = () => {
   const location = useLocation()
   React.useEffect(() => {
     scrollCurrentRouteIntoView()
   }, [location])
+  return <></>
 }
 const useIndicateHasUnseenNotifications = () => {
   const { listenTo } = useBackbone()
@@ -783,6 +796,7 @@ const useIndicateHasUnseenNotifications = () => {
   return hasUnseenNotifications
 }
 
+// @ts-ignore
 const useFaviconBranding = () => {
   // todo favicon branding
   // $(window.document).ready(() => {
@@ -848,13 +862,13 @@ const App = ({
   SettingsComponents,
 }: AppPropsType) => {
   const { navOpen, setNavOpen } = useNavOpen()
-  useFaviconBranding()
-  useScrollCurrentRouteIntoViewOnLocationChange()
   return (
     <TopLevelAppContext.Provider
       value={{ RouteInformation, NotificationsComponent, SettingsComponents }}
     >
       <NavContextProvider.Provider value={{ navOpen, setNavOpen }}>
+        <SyncReactRouterContextToVariables />
+        <ScrollCurrentRouteIntoViewOnLocationChange />
         <CssBaseline />
         <SystemUsageModal />
         <SessionTimeoutComponent />

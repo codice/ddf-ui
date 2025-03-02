@@ -466,9 +466,6 @@ const useConsumeWreqrEvents = ({
 /**
  *  Overrides navigation functionality within subwindows of golden layout, so that navigation is handled by the main window.
  *
- *  Notice we do this as a component rather than a hook so we can override the same useHistory instance that the visualization is using.
- *  (we temporarily eject from react to use golden layout, and rewrap each visual in it's own instance of the various providers, like react router)
- *
  *  We could rewrite it as a hook and put it further down in the tree, but this is the same thing so no need.
  *
  *  Also notice we attach this at the visual level for that reason, rather than at the single golden layout instance level.
@@ -478,11 +475,8 @@ export const UseSubwindowConsumeNavigationChange = ({
 }: {
   goldenLayout: any
 }) => {
-  const navigate = useNavigate()
-  const location = useLocation()
-
   React.useEffect(() => {
-    if (goldenLayout && navigate && goldenLayout.isSubWindow) {
+    if (goldenLayout && goldenLayout.isSubWindow) {
       const callback = (e: MouseEvent) => {
         if (
           e.target?.constructor === HTMLAnchorElement &&
@@ -498,38 +492,12 @@ export const UseSubwindowConsumeNavigationChange = ({
         }
       }
       document.addEventListener('click', callback)
-      // Override navigate functions
-      const replaceWrapper = (to: string, options?: { state?: any }) => {
-        goldenLayout.eventHub.emit(
-          GoldenLayoutWindowCommunicationEvents.consumeNavigationChange,
-          {
-            replace: [to, { ...options, replace: true }],
-          }
-        )
-      }
-      const pushWrapper = (to: string, options?: { state?: any }) => {
-        goldenLayout.eventHub.emit(
-          GoldenLayoutWindowCommunicationEvents.consumeNavigationChange,
-          {
-            push: [to, options],
-          }
-        )
-      }
-      // Attach the wrapper functions
-      Object.defineProperty(navigate, 'replace', {
-        value: replaceWrapper,
-        writable: true,
-      })
-      Object.defineProperty(navigate, 'push', {
-        value: pushWrapper,
-        writable: true,
-      })
       return () => {
         document.removeEventListener('click', callback)
       }
     }
     return () => {}
-  }, [navigate, location, goldenLayout])
+  }, [goldenLayout])
   return null
 }
 
