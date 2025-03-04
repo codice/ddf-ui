@@ -1,0 +1,22 @@
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+// some systems like keycloak attach query params which interfere with react router / golden layout and their use of query params (when using hash routing)
+export function removeRedirectQueryParams() {
+    if (location.href.includes("".concat(location.pathname, "?"))) {
+        var preHashStuff = location.href.split('?')[0];
+        location.href = preHashStuff + location.hash;
+    }
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaGFuZGxlLXF1ZXJ5LXBhcmFtcy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uL3NyYy9tYWluL3dlYmFwcC9oYW5kbGUtcXVlcnktcGFyYW1zLnRzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7Ozs7Ozs7OztJQWFJO0FBRUosMkpBQTJKO0FBQzNKLE1BQU0sVUFBVSx5QkFBeUI7SUFDdkMsSUFBSSxRQUFRLENBQUMsSUFBSSxDQUFDLFFBQVEsQ0FBQyxVQUFHLFFBQVEsQ0FBQyxRQUFRLE1BQUcsQ0FBQyxFQUFFLENBQUM7UUFDcEQsSUFBTSxZQUFZLEdBQUcsUUFBUSxDQUFDLElBQUksQ0FBQyxLQUFLLENBQUMsR0FBRyxDQUFDLENBQUMsQ0FBQyxDQUFDLENBQUE7UUFDaEQsUUFBUSxDQUFDLElBQUksR0FBRyxZQUFZLEdBQUcsUUFBUSxDQUFDLElBQUksQ0FBQTtJQUM5QyxDQUFDO0FBQ0gsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQ29weXJpZ2h0IChjKSBDb2RpY2UgRm91bmRhdGlvblxuICpcbiAqIFRoaXMgaXMgZnJlZSBzb2Z0d2FyZTogeW91IGNhbiByZWRpc3RyaWJ1dGUgaXQgYW5kL29yIG1vZGlmeSBpdCB1bmRlciB0aGUgdGVybXMgb2YgdGhlIEdOVSBMZXNzZXJcbiAqIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgYXMgcHVibGlzaGVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24sIGVpdGhlciB2ZXJzaW9uIDMgb2YgdGhlXG4gKiBMaWNlbnNlLCBvciBhbnkgbGF0ZXIgdmVyc2lvbi5cbiAqXG4gKiBUaGlzIHByb2dyYW0gaXMgZGlzdHJpYnV0ZWQgaW4gdGhlIGhvcGUgdGhhdCBpdCB3aWxsIGJlIHVzZWZ1bCwgYnV0IFdJVEhPVVQgQU5ZIFdBUlJBTlRZOyB3aXRob3V0XG4gKiBldmVuIHRoZSBpbXBsaWVkIHdhcnJhbnR5IG9mIE1FUkNIQU5UQUJJTElUWSBvciBGSVRORVNTIEZPUiBBIFBBUlRJQ1VMQVIgUFVSUE9TRS4gU2VlIHRoZSBHTlVcbiAqIExlc3NlciBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGZvciBtb3JlIGRldGFpbHMuIEEgY29weSBvZiB0aGUgR05VIExlc3NlciBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlXG4gKiBpcyBkaXN0cmlidXRlZCBhbG9uZyB3aXRoIHRoaXMgcHJvZ3JhbSBhbmQgY2FuIGJlIGZvdW5kIGF0XG4gKiA8aHR0cDovL3d3dy5nbnUub3JnL2xpY2Vuc2VzL2xncGwuaHRtbD4uXG4gKlxuICoqL1xuXG4vLyBzb21lIHN5c3RlbXMgbGlrZSBrZXljbG9hayBhdHRhY2ggcXVlcnkgcGFyYW1zIHdoaWNoIGludGVyZmVyZSB3aXRoIHJlYWN0IHJvdXRlciAvIGdvbGRlbiBsYXlvdXQgYW5kIHRoZWlyIHVzZSBvZiBxdWVyeSBwYXJhbXMgKHdoZW4gdXNpbmcgaGFzaCByb3V0aW5nKVxuZXhwb3J0IGZ1bmN0aW9uIHJlbW92ZVJlZGlyZWN0UXVlcnlQYXJhbXMoKSB7XG4gIGlmIChsb2NhdGlvbi5ocmVmLmluY2x1ZGVzKGAke2xvY2F0aW9uLnBhdGhuYW1lfT9gKSkge1xuICAgIGNvbnN0IHByZUhhc2hTdHVmZiA9IGxvY2F0aW9uLmhyZWYuc3BsaXQoJz8nKVswXVxuICAgIGxvY2F0aW9uLmhyZWYgPSBwcmVIYXNoU3R1ZmYgKyBsb2NhdGlvbi5oYXNoXG4gIH1cbn1cbiJdfQ==

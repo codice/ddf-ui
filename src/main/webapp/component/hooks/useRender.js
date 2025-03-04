@@ -1,0 +1,12 @@
+import { __read } from "tslib";
+import React from 'react';
+/**
+ *  Force your component to render
+ */
+export var useRender = function () {
+    var _a = __read(React.useState(Math.random()), 2), setRender = _a[1];
+    return function () {
+        setRender(Math.random());
+    };
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidXNlUmVuZGVyLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL21haW4vd2ViYXBwL2NvbXBvbmVudC9ob29rcy91c2VSZW5kZXIudHN4Il0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7QUFBQSxPQUFPLEtBQUssTUFBTSxPQUFPLENBQUE7QUFFekI7O0dBRUc7QUFDSCxNQUFNLENBQUMsSUFBTSxTQUFTLEdBQUc7SUFDakIsSUFBQSxLQUFBLE9BQWdCLEtBQUssQ0FBQyxRQUFRLENBQUMsSUFBSSxDQUFDLE1BQU0sRUFBRSxDQUFDLElBQUEsRUFBMUMsU0FBUyxRQUFpQyxDQUFBO0lBRW5ELE9BQU87UUFDTCxTQUFTLENBQUMsSUFBSSxDQUFDLE1BQU0sRUFBRSxDQUFDLENBQUE7SUFDMUIsQ0FBQyxDQUFBO0FBQ0gsQ0FBQyxDQUFBIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IFJlYWN0IGZyb20gJ3JlYWN0J1xuXG4vKipcbiAqICBGb3JjZSB5b3VyIGNvbXBvbmVudCB0byByZW5kZXJcbiAqL1xuZXhwb3J0IGNvbnN0IHVzZVJlbmRlciA9ICgpID0+IHtcbiAgY29uc3QgWywgc2V0UmVuZGVyXSA9IFJlYWN0LnVzZVN0YXRlKE1hdGgucmFuZG9tKCkpXG5cbiAgcmV0dXJuICgpID0+IHtcbiAgICBzZXRSZW5kZXIoTWF0aC5yYW5kb20oKSlcbiAgfVxufVxuIl19

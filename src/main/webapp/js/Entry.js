@@ -1,0 +1,39 @@
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+/**
+ * ApplicationSetup needs to happen first.
+ * This ensures styles are applied correctly,
+ * because some of our styles have the same specificity as vendor
+ * styles.
+ */
+;
+(function verifyFirstImport() {
+    if (document.querySelector('[data-styled-components]')) {
+        var firstImportErrorMessage = "The entry import has to be the first (top) import for your application, otherwise styles won't be applied properly.\n    If you're seeing this, it probably means you need to move your import of the Entry file to the top of whatever file it's in.\n    ";
+        alert(firstImportErrorMessage);
+        throw Error(firstImportErrorMessage);
+    }
+})();
+import '../js/ApplicationSetup';
+import ExtensionPoints from '../extension-points';
+import { attemptToStart } from './ApplicationStart';
+var entry = function (extensionPoints, startFunction) {
+    if (extensionPoints === void 0) { extensionPoints = {}; }
+    if (startFunction === void 0) { startFunction = attemptToStart; }
+    Object.assign(ExtensionPoints, extensionPoints);
+    startFunction();
+};
+export default entry;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiRW50cnkuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi9zcmMvbWFpbi93ZWJhcHAvanMvRW50cnkudHN4Il0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOzs7Ozs7Ozs7Ozs7O0lBYUk7QUFDSjs7Ozs7R0FLRztBQUNILENBQUM7QUFBQSxDQUFDLFNBQVMsaUJBQWlCO0lBQzFCLElBQUksUUFBUSxDQUFDLGFBQWEsQ0FBQywwQkFBMEIsQ0FBQyxFQUFFLENBQUM7UUFDdkQsSUFBTSx1QkFBdUIsR0FBRyw2UEFFL0IsQ0FBQTtRQUNELEtBQUssQ0FBQyx1QkFBdUIsQ0FBQyxDQUFBO1FBQzlCLE1BQU0sS0FBSyxDQUFDLHVCQUF1QixDQUFDLENBQUE7SUFDdEMsQ0FBQztBQUNILENBQUMsQ0FBQyxFQUFFLENBQUE7QUFDSixPQUFPLHdCQUF3QixDQUFBO0FBQy9CLE9BQU8sZUFBd0MsTUFBTSxxQkFBcUIsQ0FBQTtBQUUxRSxPQUFPLEVBQUUsY0FBYyxFQUFFLE1BQU0sb0JBQW9CLENBQUE7QUFFbkQsSUFBTSxLQUFLLEdBQUcsVUFDWixlQUFrRCxFQUNsRCxhQUF3QztJQUR4QyxnQ0FBQSxFQUFBLG9CQUFrRDtJQUNsRCw4QkFBQSxFQUFBLDhCQUF3QztJQUV4QyxNQUFNLENBQUMsTUFBTSxDQUFDLGVBQWUsRUFBRSxlQUFlLENBQUMsQ0FBQTtJQUMvQyxhQUFhLEVBQUUsQ0FBQTtBQUNqQixDQUFDLENBQUE7QUFFRCxlQUFlLEtBQUssQ0FBQSIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQ29weXJpZ2h0IChjKSBDb2RpY2UgRm91bmRhdGlvblxuICpcbiAqIFRoaXMgaXMgZnJlZSBzb2Z0d2FyZTogeW91IGNhbiByZWRpc3RyaWJ1dGUgaXQgYW5kL29yIG1vZGlmeSBpdCB1bmRlciB0aGUgdGVybXMgb2YgdGhlIEdOVSBMZXNzZXJcbiAqIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgYXMgcHVibGlzaGVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24sIGVpdGhlciB2ZXJzaW9uIDMgb2YgdGhlXG4gKiBMaWNlbnNlLCBvciBhbnkgbGF0ZXIgdmVyc2lvbi5cbiAqXG4gKiBUaGlzIHByb2dyYW0gaXMgZGlzdHJpYnV0ZWQgaW4gdGhlIGhvcGUgdGhhdCBpdCB3aWxsIGJlIHVzZWZ1bCwgYnV0IFdJVEhPVVQgQU5ZIFdBUlJBTlRZOyB3aXRob3V0XG4gKiBldmVuIHRoZSBpbXBsaWVkIHdhcnJhbnR5IG9mIE1FUkNIQU5UQUJJTElUWSBvciBGSVRORVNTIEZPUiBBIFBBUlRJQ1VMQVIgUFVSUE9TRS4gU2VlIHRoZSBHTlVcbiAqIExlc3NlciBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGZvciBtb3JlIGRldGFpbHMuIEEgY29weSBvZiB0aGUgR05VIExlc3NlciBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlXG4gKiBpcyBkaXN0cmlidXRlZCBhbG9uZyB3aXRoIHRoaXMgcHJvZ3JhbSBhbmQgY2FuIGJlIGZvdW5kIGF0XG4gKiA8aHR0cDovL3d3dy5nbnUub3JnL2xpY2Vuc2VzL2xncGwuaHRtbD4uXG4gKlxuICoqL1xuLyoqXG4gKiBBcHBsaWNhdGlvblNldHVwIG5lZWRzIHRvIGhhcHBlbiBmaXJzdC5cbiAqIFRoaXMgZW5zdXJlcyBzdHlsZXMgYXJlIGFwcGxpZWQgY29ycmVjdGx5LFxuICogYmVjYXVzZSBzb21lIG9mIG91ciBzdHlsZXMgaGF2ZSB0aGUgc2FtZSBzcGVjaWZpY2l0eSBhcyB2ZW5kb3JcbiAqIHN0eWxlcy5cbiAqL1xuOyhmdW5jdGlvbiB2ZXJpZnlGaXJzdEltcG9ydCgpIHtcbiAgaWYgKGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoJ1tkYXRhLXN0eWxlZC1jb21wb25lbnRzXScpKSB7XG4gICAgY29uc3QgZmlyc3RJbXBvcnRFcnJvck1lc3NhZ2UgPSBgVGhlIGVudHJ5IGltcG9ydCBoYXMgdG8gYmUgdGhlIGZpcnN0ICh0b3ApIGltcG9ydCBmb3IgeW91ciBhcHBsaWNhdGlvbiwgb3RoZXJ3aXNlIHN0eWxlcyB3b24ndCBiZSBhcHBsaWVkIHByb3Blcmx5LlxuICAgIElmIHlvdSdyZSBzZWVpbmcgdGhpcywgaXQgcHJvYmFibHkgbWVhbnMgeW91IG5lZWQgdG8gbW92ZSB5b3VyIGltcG9ydCBvZiB0aGUgRW50cnkgZmlsZSB0byB0aGUgdG9wIG9mIHdoYXRldmVyIGZpbGUgaXQncyBpbi5cbiAgICBgXG4gICAgYWxlcnQoZmlyc3RJbXBvcnRFcnJvck1lc3NhZ2UpXG4gICAgdGhyb3cgRXJyb3IoZmlyc3RJbXBvcnRFcnJvck1lc3NhZ2UpXG4gIH1cbn0pKClcbmltcG9ydCAnLi4vanMvQXBwbGljYXRpb25TZXR1cCdcbmltcG9ydCBFeHRlbnNpb25Qb2ludHMsIHsgRXh0ZW5zaW9uUG9pbnRzVHlwZSB9IGZyb20gJy4uL2V4dGVuc2lvbi1wb2ludHMnXG5cbmltcG9ydCB7IGF0dGVtcHRUb1N0YXJ0IH0gZnJvbSAnLi9BcHBsaWNhdGlvblN0YXJ0J1xuXG5jb25zdCBlbnRyeSA9IChcbiAgZXh0ZW5zaW9uUG9pbnRzOiBQYXJ0aWFsPEV4dGVuc2lvblBvaW50c1R5cGU+ID0ge30sXG4gIHN0YXJ0RnVuY3Rpb246IEZ1bmN0aW9uID0gYXR0ZW1wdFRvU3RhcnRcbikgPT4ge1xuICBPYmplY3QuYXNzaWduKEV4dGVuc2lvblBvaW50cywgZXh0ZW5zaW9uUG9pbnRzKVxuICBzdGFydEZ1bmN0aW9uKClcbn1cblxuZXhwb3J0IGRlZmF1bHQgZW50cnlcbiJdfQ==
