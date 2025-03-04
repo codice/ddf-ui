@@ -44,5 +44,5 @@
     "src/main/resources"
   ],
   "main": "src/components/entry/entry",
-  "context-path": "/admin/beta"
+  "context-path": "/admin"
 }
