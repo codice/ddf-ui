@@ -227,7 +227,7 @@ const BrandingContents = () => {
   }
 
   return (
-    <>
+    <div className="p-4 pb-[25%]">
       <Grid container spacing={3} direction="column">
         <Grid item>
           <Typography variant="h2">Branding</Typography>
@@ -334,7 +334,7 @@ const BrandingContents = () => {
           </Button>
         </Grid>
       </Grid>
-    </>
+    </div>
   )
 }
 
