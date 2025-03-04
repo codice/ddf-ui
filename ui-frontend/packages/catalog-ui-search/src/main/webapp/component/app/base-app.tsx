@@ -1,4 +1,4 @@
-import { lazy, SuspenseProps } from 'react'
+import React, { lazy, SuspenseProps } from 'react'
 import App, { IndividualRouteType, useDefaultWelcome } from './app'
 
 import SourcesPageIcon from '@mui/icons-material/Cloud'
@@ -11,7 +11,7 @@ import ExtensionPoints from '../../extension-points/extension-points'
 import { BaseSettings } from '../../react-component/user-settings/user-settings'
 import Paper from '@mui/material/Paper'
 import { Elevations } from '../theme/theme'
-import { Navigate } from 'react-router-dom'
+import { HashRouter, Navigate } from 'react-router-dom'
 import AddIcon from '@mui/icons-material/Add'
 import ViewListIcon from '@mui/icons-material/ViewList'
 import selectionInterfaceModel from '../selection-interface/selection-interface.model'
@@ -454,9 +454,15 @@ const BaseApp = () => {
 
 const WrappedWithProviders = () => {
   return (
-    <ExtensionPoints.providers>
-      <BaseApp />
-    </ExtensionPoints.providers>
+    <HashRouter
+      future={{
+        v7_startTransition: true,
+      }}
+    >
+      <ExtensionPoints.providers>
+        <BaseApp />
+      </ExtensionPoints.providers>
+    </HashRouter>
   )
 }
 

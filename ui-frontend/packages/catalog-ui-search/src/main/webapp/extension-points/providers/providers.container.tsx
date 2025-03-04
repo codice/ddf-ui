@@ -19,7 +19,6 @@ import { IntlProvider } from 'react-intl'
 import { Provider as ThemeProvider } from '../../component/theme/theme'
 import { SnackProvider } from '../../component/snack/snack.provider'
 import { DialogProvider } from '../../component/dialog'
-import { HashRouter as Router } from 'react-router-dom'
 import { useConfiguration } from '../../js/model/Startup/configuration.hooks'
 
 export type Props = {
@@ -33,17 +32,9 @@ const ProviderContainer = (props: Props) => {
       <ThemeContainer>
         <IntlProvider locale={navigator.language} messages={getI18n()}>
           <ThemeProvider>
-            <Router
-              future={{
-                v7_startTransition: true,
-              }}
-            >
-              <SnackProvider>
-                <DialogProvider>
-                  <>{props.children}</>
-                </DialogProvider>
-              </SnackProvider>
-            </Router>
+            <SnackProvider>
+              <DialogProvider>{props.children}</DialogProvider>
+            </SnackProvider>
           </ThemeProvider>
         </IntlProvider>
       </ThemeContainer>

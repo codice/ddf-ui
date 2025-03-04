@@ -54,7 +54,9 @@ import { getGoldenLayoutSettings } from './golden-layout.layout-config-handling'
  */
 import { getDefaultComponentState } from '../visualization/settings-helpers'
 import { ComponentNameType } from './golden-layout.types'
-;(function preventRemovalFromStorage() {
+import { PatchReactRouterContextForGoldenLayoutSubwindows } from '../app/react-router.patches'
+
+function preventRemovalFromStorage() {
   const normalRemoveItem = window.localStorage.removeItem
   window.localStorage.removeItem = (key: string) => {
     if (key.includes('gl-window')) {
@@ -63,7 +65,8 @@ import { ComponentNameType } from './golden-layout.types'
       normalRemoveItem(key)
     }
   }
-})()
+}
+preventRemovalFromStorage()
 
 /**
  *  We attach this at the component level due to how popouts work.
@@ -125,22 +128,29 @@ const GoldenLayoutComponent = ({
   }, [componentState])
 
   return (
-    <ExtensionPoints.providers>
-      <VisualSettingsProvider container={container} goldenLayout={goldenLayout}>
-        <UseSubwindowConsumeNavigationChange goldenLayout={goldenLayout} />
-        <UseMissingParentWindow goldenLayout={goldenLayout} />
-        <Paper
-          elevation={Elevations.panels}
-          className={`w-full h-full ${isMinimized ? 'hidden' : ''}`}
-          square
+    <PatchReactRouterContextForGoldenLayoutSubwindows
+      goldenLayout={goldenLayout}
+    >
+      <ExtensionPoints.providers>
+        <VisualSettingsProvider
+          container={container}
+          goldenLayout={goldenLayout}
         >
-          <ComponentView
-            selectionInterface={options.selectionInterface}
-            componentState={normalizedComponentState}
-          />
-        </Paper>
-      </VisualSettingsProvider>
-    </ExtensionPoints.providers>
+          <UseSubwindowConsumeNavigationChange goldenLayout={goldenLayout} />
+          <UseMissingParentWindow goldenLayout={goldenLayout} />
+          <Paper
+            elevation={Elevations.panels}
+            className={`w-full h-full ${isMinimized ? 'hidden' : ''}`}
+            square
+          >
+            <ComponentView
+              selectionInterface={options.selectionInterface}
+              componentState={normalizedComponentState}
+            />
+          </Paper>
+        </VisualSettingsProvider>
+      </ExtensionPoints.providers>
+    </PatchReactRouterContextForGoldenLayoutSubwindows>
   )
 }
 // see https://github.com/deepstreamIO/golden-layout/issues/239 for details on why the setTimeout is necessary
