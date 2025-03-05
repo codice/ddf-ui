@@ -12,7 +12,7 @@
     <parent>
         <artifactId>backend</artifactId>
         <groupId>org.codice.ddf.search</groupId>
-        <version>5.2.8-SNAPSHOT</version>
+        <version>5.2.8</version>
     </parent>
 
     <artifactId>boolean-search</artifactId>
