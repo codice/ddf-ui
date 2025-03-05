@@ -16,7 +16,6 @@
 import Button from '@mui/material/Button'
 import user from '../../component/singletons/user-instance'
 import TransferList from '../../component/tabs/metacard/transfer-list'
-import { Elevations } from '../../component/theme/theme'
 import { useDialog } from '../../component/dialog'
 import { TypedUserInstance } from '../../component/singletons/TypedUser'
 import { StartupDataStore } from '../../js/model/Startup/startup'
@@ -30,12 +29,6 @@ export default ({ isExport = false }: { isExport?: boolean }) => {
       data-id="manage-attributes-button"
       onClick={() => {
         dialogContext.setProps({
-          PaperProps: {
-            style: {
-              minWidth: 'none',
-            },
-            elevation: Elevations.panels,
-          },
           open: true,
           disableEnforceFocus: true,
           children: (

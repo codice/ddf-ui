@@ -20,7 +20,7 @@
   <name>DDF :: UI</name>
   <artifactId>catalog-ui</artifactId>
   <groupId>org.codice.ddf.search</groupId>
-  <version>5.2.5-SNAPSHOT</version>
+  <version>5.2.9-SNAPSHOT</version>
 
   <organization>
     <name>Codice Foundation</name>
@@ -64,7 +64,7 @@
     <fmt.maven.plugin.version>2.3.0</fmt.maven.plugin.version>
 
     <!--Backend properties-->
-    <ddf.version>2.29.7-SNAPSHOT</ddf.version>
+    <ddf.version>2.29.9-SNAPSHOT</ddf.version>
     <ddf-jsonrpc.version>0.9</ddf-jsonrpc.version>
     <ddf.support.version>2.3.16</ddf.support.version>
     <antlr.version>4.3</antlr.version>
