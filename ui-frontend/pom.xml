@@ -165,6 +165,16 @@
                                     <type>tgz</type>
                                     <classifier>cesium-assets</classifier>
                                 </artifact>
+                                <artifact>
+                                    <file>packages/logout/target/logout.jar</file>
+                                    <type>jar</type>
+                                    <classifier>logout</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>packages/logout/target/logout.tgz</file>
+                                    <type>tgz</type>
+                                    <classifier>logout</classifier>
+                                </artifact>
                             </artifacts>
                         </configuration>
                     </execution>

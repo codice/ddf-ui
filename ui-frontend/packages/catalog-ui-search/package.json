@@ -32,7 +32,7 @@
   },
   "peerDependencies": {},
   "devDependencies": {
-    "@connexta/ace": "git+https://github.com/connexta/ace.git#37a0052298d788aff5836551a4d578a758ea3575",
+    "@connexta/ace": "git+https://github.com/connexta/ace.git#bb962daca0a8ee025588b614b7bb1f45f63e270e",
     "@testing-library/jest-dom": "6.6.3",
     "@testing-library/dom": "10.4.0",
     "@testing-library/react": "16.0.1",

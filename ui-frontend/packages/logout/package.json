@@ -1,0 +1,48 @@
+{
+  "name": "logout",
+  "author": "Codice",
+  "description": "An logout UI for DDF",
+  "version": "0.0.1",
+  "license": "LGPL-3.0",
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codice/ddf.git"
+  },
+  "engines": {
+    "node": "20.x.x"
+  },
+  "devDependencies": {
+    "@connexta/ace": "git+https://github.com/connexta/ace.git#bb962daca0a8ee025588b614b7bb1f45f63e270e",
+    "@types/react": "19.0.10",
+    "@types/react-dom": "19.0.04",
+    "autoprefixer": "10.4.20",
+    "npm": "10.9.2"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@fontsource/roboto": "^5.2.5",
+    "@mui/icons-material": "^6.4.6",
+    "@mui/material": "^6.4.6",
+    "postcss-focus-visible": "8.0.2",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-router-dom": "7.2.0",
+    "tailwindcss": "3.4.17"
+  },
+  "scripts": {
+    "start": "ace start",
+    "build": "ace bundle --tsTranspileOnly true && ace package",
+    "build:prod": "ace bundle --env=prod --tsTranspileOnly true && ace package",
+    "postbuild": "npm pack && mv logout-0.0.1.tgz target/logout.tgz",
+    "m2": "yarn install:m2"
+  },
+  "files": [
+    "src/main/webapp",
+    "target/webapp",
+    "src/main/resources"
+  ],
+  "main": "src/main/webapp/components/index",
+  "context-path": "/logout"
+}
