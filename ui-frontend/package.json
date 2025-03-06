@@ -28,7 +28,7 @@
     "node": "20.x.x"
   },
   "devDependencies": {
-    "@connexta/ace": "git+https://github.com/connexta/ace.git#37a0052298d788aff5836551a4d578a758ea3575",
+    "@connexta/ace": "git+https://github.com/connexta/ace.git#20166c642d60c5c67626f89108c6b72d1451e62f",
     "mkdirp": "3.0.1",
     "rimraf": "6.0.1"
   },
