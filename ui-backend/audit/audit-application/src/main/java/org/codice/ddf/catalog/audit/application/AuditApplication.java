@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 )
 public class AuditApplication extends HttpServlet {
 
-  static final String LOOKUP_PATH = "/search/catalog/internal/audit";
+  static final String LOOKUP_PATH = "/audit";
 
   private final Javalin javalin = JavalinUtils.create(LOOKUP_PATH);
 
