@@ -93,7 +93,7 @@
     <owasp-html-sanitizer.version>20220608.1</owasp-html-sanitizer.version>
     <ows-v_1_0_0-schema.version>1.1.0</ows-v_1_0_0-schema.version>
     <pac4j.version>5.0.0</pac4j.version>
-    <pax.web.version>8.0.27</pax.web.version>
+    <pax.web.version>8.0.24</pax.web.version>
     <jetty.version>9.4.53.v20231009</jetty.version>
     <quartz.version>2.3.2</quartz.version>
     <restassured.version>3.3.0</restassured.version>
