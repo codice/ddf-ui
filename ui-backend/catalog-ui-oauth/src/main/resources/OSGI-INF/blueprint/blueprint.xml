@@ -25,13 +25,16 @@
             <ref component-id="oauthApplication"/>
         </property>
         <property name="requestSupplier" ref="rootReqSupplier"/>
+<!--        TODO verify-->
         <property name="filterMappingPattern" value="/search/catalog/internal/oauth/*"/>
     </bean>
 
     <service ref="sparkServlet" interface="javax.servlet.Servlet">
         <service-properties>
-            <entry key="urlPatterns" value="/search/catalog/internal/oauth/*"/>
-            <entry key="async-supported" value="true"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/oauth/*"/>
+            <entry key="osgi.http.whiteboard.servlet.name" value="oauthSparkServlet"/>
+            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.name=searchCatalogInternalContextHelper)"/>
+            <entry key="osgi.http.whiteboard.servlet.asyncSupported" value="true"/>
         </service-properties>
     </service>
 </blueprint>

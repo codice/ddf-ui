@@ -321,7 +321,7 @@ public class ComposeApplication implements SparkApplication {
   public void init() {
 
     get(
-        "/internal/compose/startup",
+        "/compose/startup",
         APPLICATION_JSON,
         (req, res) -> {
           Map<String, Object> payload = new HashMap<>();
