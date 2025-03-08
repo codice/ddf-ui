@@ -20,7 +20,7 @@
   ],
   "context-path": "/search/catalog/cesium/assets",
   "devDependencies": {
-    "@connexta/ace": "git+https://github.com/connexta/ace.git#37a0052298d788aff5836551a4d578a758ea3575",
+    "@connexta/ace": "git+https://github.com/connexta/ace.git#bb962daca0a8ee025588b614b7bb1f45f63e270e",
     "mkdirp": "3.0.1",
     "npm": "10.9.2"
   }
