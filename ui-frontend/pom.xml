@@ -17,7 +17,7 @@
     <parent>
         <artifactId>catalog-ui</artifactId>
         <groupId>org.codice.ddf.search</groupId>
-        <version>5.2.9-SNAPSHOT</version>
+        <version>5.2.10-SNAPSHOT</version>
     </parent>
     <groupId>org.codice.ddf.search</groupId>
     <artifactId>ui-frontend</artifactId>
@@ -165,6 +165,16 @@
                                     <file>packages/cesium-assets/target/cesium-assets.tgz</file>
                                     <type>tgz</type>
                                     <classifier>cesium-assets</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>packages/logout/target/logout.jar</file>
+                                    <type>jar</type>
+                                    <classifier>logout</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>packages/logout/target/logout.tgz</file>
+                                    <type>tgz</type>
+                                    <classifier>logout</classifier>
                                 </artifact>
                             </artifacts>
                         </configuration>
