@@ -31,10 +31,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.3</version>
                 <configuration>
                     <finalName>packages</finalName>
-                    <descriptor>packages.xml</descriptor>
+                    <descriptors>
+                        <descriptor>packages.xml</descriptor>
+                    </descriptors>
                 </configuration>
                 <executions>
                     <execution>

@@ -51,11 +51,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.3</version>
                 <executions>
                     <execution>
                         <configuration>
-                            <descriptor>${project.basedir}/src/assembly/asciidocs.xml</descriptor>
+                            <descriptors>
+                                <descriptor>${project.basedir}/src/assembly/asciidocs.xml</descriptor>
+                            </descriptors>
                             <outputDirectory>${project.build.directory}/adoc-files</outputDirectory>
                         </configuration>
                         <id>include-adocs</id>
@@ -66,7 +67,9 @@
                     </execution>
                     <execution>
                         <configuration>
-                            <descriptor>${project.basedir}/src/assembly/images.xml</descriptor>
+                            <descriptors>
+                                <descriptor>${project.basedir}/src/assembly/images.xml</descriptor>
+                            </descriptors>
                             <outputDirectory>${project.build.directory}/images</outputDirectory>
                         </configuration>
                         <id>include-images</id>
