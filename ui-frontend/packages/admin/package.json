@@ -20,7 +20,7 @@
     "npm": "10.9.2"
   },
   "dependencies": {
-    "@connexta/kanri": "0.0.17",
+    "@connexta/kanri": "0.0.18",
     "@material-ui/core": "4.9.12",
     "@material-ui/icons": "4.9.1",
     "@material-ui/lab": "4.0.0-alpha.51",
