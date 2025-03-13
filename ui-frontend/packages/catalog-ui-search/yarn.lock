@@ -13283,11 +13283,6 @@ vary@~1.1.2:
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
 
-vis@4.15.0:
-  version "4.15.0"
-  resolved "https://registry.yarnpkg.com/vis/-/vis-4.15.0.tgz#a35eb32a8e07536df1a35d0435a3c8adff32675b"
-  integrity sha512-4p9HuzOez1sBQWfsRUfswfydtFQR2x25v7kp2vb6ZI1yiYRCbo2RlZkT6NFkBUNTT7/K6VpQx8zhc5LaKoXVmw==
-
 vkbeautify@0.99.3:
   version "0.99.3"
   resolved "https://registry.yarnpkg.com/vkbeautify/-/vkbeautify-0.99.3.tgz#4769b3238c5d772c6ea967545dd1df5582f23297"
