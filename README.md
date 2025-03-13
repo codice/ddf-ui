@@ -4,28 +4,27 @@ Welcome to ddf-ui, the home of Intrigue.
 
 ## Installing in DDF
 
-Note: Change `5.2.10-SNAPSHOT` to the desired or most recent version of ddf-ui.
+Note: Change `<VERSION>` to the desired or most recent version of ddf-ui.
 
-1. Inside of a DDF karaf console run the following commands:
-
+1. To install the backend and frontend features, run the following commands inside a DDF karaf console:
    ```
-   feature:repo-add mvn:org.codice.ddf.search/intrigue-ui-app/5.2.10-SNAPSHOT/xml/features
+   feature:repo-add mvn:org.codice.ddf.search/intrigue-ui-app/<VERSION>/xml/features
    feature:install catalog-ui-app
-   feature:repo-add mvn:org.codice.ddf.search/ui-frontend/5.2.10-SNAPSHOT/xml/features
+   feature:repo-add mvn:org.codice.ddf.search/ui-frontend/<VERSION>/xml/features
    feature:install ui-frontend
    ```
 
-
-2. (Optional) Add the following bundle to `bundleLocations` in `etc/application-definitions/search-ui.json`:
+2. (Optional) To configure the Intrigue configurations to appear under the `Search UI` app in the DDF Admin Console, 
+   add the following bundle to `bundleLocations` in `etc/application-definitions/search-ui.json`:
    ```
-   "mvn:org.codice.ddf.search/catalog-ui-search/5.2.10-SNAPSHOT"
+   "mvn:org.codice.ddf.search/catalog-ui-search/<VERSION>"
    ```
-   This configures the Intrigue configurations to appear under the `Search UI` app in the DDF Admin Console.
-3. (Optional) Add a configuration file at `etc/org.codice.ddf.ui.searchui.filter.RedirectServlet.config` with the following contents:
+   
+3. (Optional) To configure `/search` to redirect to `/search/catalog` (the URI for Intrigue), 
+   add a configuration file at `etc/org.codice.ddf.ui.searchui.filter.RedirectServlet.config` with the contents:
    ```
    defaultUri="${org.codice.ddf.external.context}/search/catalog/"
    ```
-   This configures `/search` to redirect to `/search/catalog`, which is the URI for Intrigue.
 
 ## Developer Notes
 

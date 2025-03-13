@@ -25,7 +25,6 @@
             <ref component-id="oauthApplication"/>
         </property>
         <property name="requestSupplier" ref="rootReqSupplier"/>
-<!--        TODO verify-->
         <property name="filterMappingPattern" value="/search/catalog/internal/oauth/*"/>
     </bean>
 
