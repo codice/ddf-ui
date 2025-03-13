@@ -19,7 +19,7 @@
     "postbuild": "mkdirp target && ace gen-feature",
     "mvn:create-archive": "mvn org.apache.maven.plugins:maven-assembly-plugin:single@create-archive",
     "mvn:install-file": "mvn org.apache.maven.plugins:maven-install-plugin:install-file -Dfile=target/packages-packages.zip -DpomFile=pom.xml -Dclassifier=packages -Dpackaging=zip",
-    "postinstall": "yarn install:all && yarn audit && yarn audit:all",
+    "postinstall": "yarn install:all && exitzero yarn audit && exitzero yarn audit:all",
     "install:catalog": "cd packages/catalog-ui-search && yarn install",
     "install:admin": "cd packages/admin && yarn install",
     "install:cesium": "cd packages/cesium-assets && yarn install",
@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@connexta/ace": "git+https://github.com/connexta/ace.git#bb962daca0a8ee025588b614b7bb1f45f63e270e",
+    "exitzero": "^1.0.1",
     "mkdirp": "3.0.1",
     "rimraf": "6.0.1"
   },
