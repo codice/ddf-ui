@@ -43,7 +43,6 @@ import { boundingExtent, createEmpty, extend } from 'ol/extent'
 import { getLength } from 'ol/sphere'
 
 const defaultColor = '#3c6dd5'
-const rulerColor = '#506f85'
 function createMap(insertionElement: any, mapLayers: any) {
   const layerCollectionController = new OpenlayersLayers({
     collection: mapLayers,
@@ -137,79 +136,6 @@ export default function (
     window.removeEventListener('resize', debouncedResizeMap)
   }
   listenToResize()
-  /*
-   * Returns a visible label that is in the same location as the provided label (geometryInstance) if one exists.
-   * If findSelected is true, the function will also check for hidden labels in the same location but are selected.
-   */
-  function findOverlappingLabel(findSelected: any, geometryInstance: any) {
-    return _.find(
-      mapModel.get('labels'),
-      (label) =>
-        label.getSource().getFeatures()[0].getGeometry().getCoordinates()[0] ===
-          geometryInstance.getCoordinates()[0] &&
-        label.getSource().getFeatures()[0].getGeometry().getCoordinates()[1] ===
-          geometryInstance.getCoordinates()[1] &&
-        ((findSelected && label.get('isSelected')) || label.getVisible())
-    )
-  }
-  /*
-        Only shows one label if there are multiple labels in the same location.
-  
-        Show the label in the following importance:
-          - it is selected
-          - there is no other label displayed at the same location
-          - it is the label that was found by findOverlappingLabel
-  
-        Arguments are:
-          - the label to show/hide (geometry, feature)
-          - if the label is selected
-          - if the search for overlapping label should include hidden selected labels
-        */
-  function showHideLabel({ geometry, feature, findSelected = false }: any) {
-    const isSelected = geometry.get('isSelected')
-    const geometryInstance = feature.getGeometry()
-    const labelWithSamePosition = findOverlappingLabel(
-      findSelected,
-      geometryInstance
-    )
-    if (
-      isSelected &&
-      labelWithSamePosition &&
-      !labelWithSamePosition.get('isSelected')
-    ) {
-      labelWithSamePosition.setVisible(false)
-    }
-    const otherLabelNotSelected = labelWithSamePosition
-      ? !labelWithSamePosition.get('isSelected')
-      : true
-    const visible =
-      (isSelected && otherLabelNotSelected) ||
-      !labelWithSamePosition ||
-      geometry.get('id') === labelWithSamePosition.get('id')
-    geometry.setVisible(visible)
-  }
-  /*
-        Shows a hidden label. Used when deleting a label that is shown.
-        */
-  function showHiddenLabel(geometry: any) {
-    if (!geometry.getVisible()) {
-      return
-    }
-    const geometryInstance = geometry.getSource().getFeatures()[0].getGeometry()
-    const hiddenLabel = _.find(
-      mapModel.get('labels'),
-      (label) =>
-        label.getSource().getFeatures()[0].getGeometry().getCoordinates()[0] ===
-          geometryInstance.getCoordinates()[0] &&
-        label.getSource().getFeatures()[0].getGeometry().getCoordinates()[1] ===
-          geometryInstance.getCoordinates()[1] &&
-        label.get('id') !== geometry.get('id') &&
-        !label.getVisible()
-    )
-    if (hiddenLabel) {
-      hiddenLabel.setVisible(true)
-    }
-  }
   let geoDragDownListener: any
   let geoDragMoveListener: any
   let geoDragUpListener: any
@@ -544,62 +470,6 @@ export default function (
       return sphereLength
     },
     /*
-     * Draws a marker on the map designating a start/end point for the ruler measurement. The given
-     * coordinates should be an object with 'lat' and 'lon' keys with degrees values. The given
-     * marker label should be a single character or digit that is displayed on the map marker.
-     */
-    addRulerPoint(coordinates: any, markerLabel: any) {
-      const { lat, lon } = coordinates
-      const point = [lon, lat]
-      const options = {
-        id: markerLabel,
-        color: rulerColor,
-      }
-      return this.addPoint(point, options)
-    },
-    /*
-     * Removes the given point Layer from the map.
-     */
-    removeRulerPoint(pointLayer: any) {
-      map.removeLayer(pointLayer)
-    },
-    rulerLine: null as null | VectorLayer<
-      VectorSource<Feature<LineString>>,
-      Feature<LineString>
-    >,
-    /*
-     * Draws a line on the map between the points in the given array of point Vectors.
-     */
-    addRulerLine(point: any) {
-      const options = {
-        id: 'ruler-line',
-        title: 'Line for ruler measurement',
-        color: '#506F85',
-      }
-      const startingCoordinates = mapModel.get('startingCoordinates')
-      const linePoints = [
-        [startingCoordinates['lon'], startingCoordinates['lat']],
-        [point['lon'], point['lat']],
-      ]
-      this.rulerLine = this.addLine(linePoints, options)
-      return this.rulerLine
-    },
-    /*
-     * Update the position of the ruler line
-     */
-    setRulerLine(point: any) {
-      this.removeRulerLine()
-      this.addRulerLine(point)
-    },
-    /*
-     * Removes the given line Layer from the map.
-     */
-    removeRulerLine() {
-      if (this.rulerLine) {
-        map.removeLayer(this.rulerLine)
-      }
-    },
-    /*
             Adds a billboard point utilizing the passed in point and options.
             Options are a view to relate to, and an id, and a color.
         */
@@ -750,40 +620,6 @@ export default function (
       return vectorLayer
     },
     /*
-              Adds a label utilizing the passed in point and options.
-              Options are an id and text.
-            */
-    addLabel(point: any, options: any) {
-      const pointObject = convertPointCoordinate(point)
-      const feature = new Feature({
-        geometry: new Point(pointObject),
-        name: options.text,
-        isLabel: true,
-      })
-      feature.setId(options.id)
-      feature.setStyle(
-        new Style({
-          text: new olText({
-            text: options.text,
-            overflow: true,
-          }),
-        })
-      )
-      const vectorSource = new VectorSource({
-        features: [feature],
-      })
-      const vectorLayer = new VectorLayer({
-        source: vectorSource,
-        zIndex: 1,
-        // @ts-ignore
-        id: options.id,
-        isSelected: false,
-      })
-      map.addLayer(vectorLayer)
-      mapModel.addLabel(vectorLayer)
-      return vectorLayer
-    },
-    /*
               Adds a polyline utilizing the passed in line and options.
               Options are a view to relate to, and an id, and a color.
             */
@@ -921,39 +757,23 @@ export default function (
           pointHeight = options.size.y
         }
         geometry.setZIndex(options.isSelected ? 2 : 1)
-        if (!feature.getProperties().isLabel) {
-          feature.setStyle(
-            new Style({
-              image: new Icon({
-                img: DrawingUtility.getPin({
-                  fillColor: options.isSelected ? 'orange' : options.color,
-                  strokeColor: 'white',
-                  icon: options.icon,
-                }),
-                width: pointWidth,
-                height: pointHeight,
-                anchor: [pointWidth / 2, 0],
-                anchorOrigin: 'bottom-left',
-                anchorXUnits: 'pixels',
-                anchorYUnits: 'pixels',
+        feature.setStyle(
+          new Style({
+            image: new Icon({
+              img: DrawingUtility.getPin({
+                fillColor: options.isSelected ? 'orange' : options.color,
+                strokeColor: 'white',
+                icon: options.icon,
               }),
-            })
-          )
-        } else {
-          feature.setStyle(
-            new Style({
-              text: this.createTextStyle(
-                feature,
-                map.getView().getResolution()
-              ),
-            })
-          )
-          geometry.set('isSelected', options.isSelected)
-          showHideLabel({
-            geometry,
-            feature,
+              width: pointWidth,
+              height: pointHeight,
+              anchor: [pointWidth / 2, 0],
+              anchorOrigin: 'bottom-left',
+              anchorXUnits: 'pixels',
+              anchorYUnits: 'pixels',
+            }),
           })
-        }
+        )
       } else if (geometryInstance.getType() === 'LineString') {
         const styles = [
           new Style({
@@ -1012,23 +832,9 @@ export default function (
              Updates a passed in geometry to be shown
              */
     showGeometry(geometry: any) {
-      const feature = geometry.getSource().getFeatures()[0]
-      if (feature.getProperties().isLabel) {
-        showHideLabel({
-          geometry,
-          feature,
-          findSelected: true,
-        })
-      } else {
-        geometry.setVisible(true)
-      }
+      geometry.setVisible(true)
     },
     removeGeometry(geometry: any) {
-      const feature = geometry.getSource().getFeatures()[0]
-      if (feature.getProperties().isLabel) {
-        mapModel.removeLabel(geometry)
-        showHiddenLabel(geometry)
-      }
       map.removeLayer(geometry)
     },
     showMultiLineShape(locationModel: any) {

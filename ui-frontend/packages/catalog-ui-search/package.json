@@ -101,7 +101,6 @@
     "focus-visible": "5.1.0",
     "font-awesome": "4.7",
     "geo-convex-hull": "1.2.0",
-    "geolib": "^3.2.1",
     "geospatialdraw": "0.4.17",
     "golden-layout": "1.5.9",
     "immer.1.5.0": "https://registry.npmjs.org/immer/-/immer-1.5.0.tgz",
