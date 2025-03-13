@@ -1133,10 +1133,10 @@
     whatwg-fetch "3.6.20"
     worker-loader "3.0.8"
 
-"@connexta/kanri@0.0.17":
-  version "0.0.17"
-  resolved "https://registry.yarnpkg.com/@connexta/kanri/-/kanri-0.0.17.tgz#1d54e3f8ede580f385e8b74b7e88005a998ab0a4"
-  integrity sha512-TlmwuW52F8vAY0BR11jz2bGWYGE/PAc3fyjnzM2Xt2Nn3l+YTV6ZTd2EJYpxNel3l63crK2T0pROaTctqsw2IQ==
+"@connexta/kanri@0.0.18":
+  version "0.0.18"
+  resolved "https://registry.yarnpkg.com/@connexta/kanri/-/kanri-0.0.18.tgz#94aea2750e4859c8349efe409e748cc2df520203"
+  integrity sha512-pd+WlPiTCNM8mRsX/wGmB+SIuzBPVF4GZ1/d+QsINCxdYIxHTUAcEsJ6nvt0x0MeRzOhgqZaOb6+pPQX+L9/nQ==
   dependencies:
     "@connexta/logviewer" "0.3.0"
     ace-builds "1.39.0"
