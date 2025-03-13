@@ -16,7 +16,7 @@
     "@types/react": "16.9.34",
     "@types/react-dom": "16.9.7",
     "@types/styled-components": "5.1.0",
-    "@connexta/ace": "git+https://github.com/connexta/ace.git#bd460d4ed16d34edd608fe59126bf306ec0282ff",
+    "@connexta/ace": "git+https://github.com/connexta/ace.git#20166c642d60c5c67626f89108c6b72d1451e62f",
     "npm": "10.9.2"
   },
   "dependencies": {

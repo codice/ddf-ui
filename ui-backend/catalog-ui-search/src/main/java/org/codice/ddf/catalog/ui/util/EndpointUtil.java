@@ -134,6 +134,7 @@ public class EndpointUtil implements EndpointUtility {
           .disableHtmlEscaping()
           .serializeNulls()
           .registerTypeAdapterFactory(LongDoubleTypeAdapter.FACTORY)
+          .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
           .setDateFormat(ISO_8601_DATE_FORMAT)
           .create();
 
