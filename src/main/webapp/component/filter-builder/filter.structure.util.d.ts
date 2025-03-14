@@ -1,0 +1,15 @@
+import { FilterClass, ValueType, ValueTypes } from './filter.structure';
+export declare const isRelativeValue: (value: ValueType) => value is ValueTypes["relative"];
+export declare const isAroundValue: (value: ValueType) => value is ValueTypes["around"];
+export declare const isProximityValue: (value: ValueType) => value is ValueTypes["proximity"];
+export declare const isDateValue: (value: ValueType) => value is ValueTypes["date"];
+export declare const isBooleanValue: (value: ValueType) => value is ValueTypes["boolean"];
+export declare const isTextValue: (value: ValueType) => value is ValueTypes["text"];
+export declare const isFloatValue: (value: ValueType) => value is ValueTypes["float"];
+export declare const isIntegerValue: (value: ValueType) => value is ValueTypes["integer"];
+export declare const isDuringValue: (value: ValueType) => value is ValueTypes["during"];
+export declare const isBetweenValue: (value: ValueType) => value is ValueTypes["between"];
+export declare const isMultivalue: (value: ValueType) => value is ValueTypes["multivalue"];
+export declare const isBooleanTextValue: (value: ValueType) => value is ValueTypes["booleanText"];
+export declare const isLocationValue: (value: ValueType) => value is ValueTypes["location"];
+export declare const isValueEmpty: (filter: FilterClass) => boolean;
