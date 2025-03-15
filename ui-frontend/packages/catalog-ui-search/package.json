@@ -101,7 +101,6 @@
     "focus-visible": "5.1.0",
     "font-awesome": "4.7",
     "geo-convex-hull": "1.2.0",
-    "geolib": "^3.2.1",
     "geospatialdraw": "0.4.17",
     "golden-layout": "1.5.9",
     "immer.1.5.0": "https://registry.npmjs.org/immer/-/immer-1.5.0.tgz",
@@ -111,7 +110,6 @@
     "lodash.debounce": "4.0.8",
     "lodash.get": "4.4.2",
     "lodash.isequalwith": "4.4.0",
-    "modern-normalize": "1.1.0",
     "moment": "2.30.1",
     "moment-timezone": "0.5.46",
     "mt-geo": "1.0.1",
@@ -119,7 +117,6 @@
     "plotly.js": "2.35.3",
     "polished": "4.3.1",
     "postcss-focus-visible": "8.0.2",
-    "prop-types": "15.7.2",
     "query-string": "6.13.1",
     "re-resizable": "6.1.0",
     "react": "18.3.1",
@@ -141,7 +138,6 @@
     "use-resize-observer": "6.1.0",
     "usng.js": "0.4.5",
     "uuid": "9.0.0",
-    "vis": "4.15.0",
     "wkx": "0.4.5"
   },
   "resolutions": {

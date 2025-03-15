@@ -17,8 +17,6 @@ import wreqr from '../../../js/wreqr'
 import user from '../../singletons/user-instance'
 import MapModel from './map.model'
 import MapInfo from '../../../react-component/map-info'
-import DistanceInfo from '../../../react-component/distance-info'
-import getDistance from 'geolib/es/getDistance'
 import { Drawing } from '../../singletons/drawing'
 import MapToolbar from './map-toolbar'
 import MapContextDropdown from '../../map-context-menu/map-context-menu.view'
@@ -97,104 +95,6 @@ const useMapModel = () => {
   const [mapModel] = React.useState<any>(new MapModel())
   return mapModel
 }
-/*
-    Handles drawing or clearing the ruler as needed by the measurement state.
-
-    START indicates that a starting point should be drawn,
-    so the map clears any previous points drawn and draws a new start point.
-
-    END indicates that an ending point should be drawn,
-    so the map draws an end point and a line, and calculates the distance.
-
-    NONE indicates that the ruler should be cleared.
-  */
-const handleMeasurementStateChange = ({
-  map,
-  mapModel,
-}: {
-  map: any
-  mapModel: any
-}) => {
-  const state = mapModel.get('measurementState')
-  let point = null
-  switch (state) {
-    case 'START':
-      clearRuler({ map, mapModel })
-      point = map.addRulerPoint(mapModel.get('coordinateValues'))
-      mapModel.addPoint(point)
-      mapModel.setStartingCoordinates({
-        lat: mapModel.get('coordinateValues')['lat'],
-        lon: mapModel.get('coordinateValues')['lon'],
-      })
-      const polyline = map.addRulerLine(mapModel.get('coordinateValues'))
-      mapModel.setLine(polyline)
-      break
-    case 'END':
-      point = map.addRulerPoint(mapModel.get('coordinateValues'))
-      mapModel.addPoint(point)
-      map.setRulerLine({
-        lat: mapModel.get('coordinateValues')['lat'],
-        lon: mapModel.get('coordinateValues')['lon'],
-      })
-      break
-    case 'NONE':
-      clearRuler({ map, mapModel })
-      break
-    default:
-      break
-  }
-}
-/*
-    Handles tasks for clearing the ruler, which include removing all points
-    (endpoints of the line) and the line.
-  */
-const clearRuler = ({ map, mapModel }: { map: any; mapModel: any }) => {
-  const points = mapModel.get('points')
-  points.forEach((point: any) => {
-    map.removeRulerPoint(point)
-  })
-  mapModel.clearPoints()
-  const line = mapModel.removeLine()
-  map.removeRulerLine(line)
-}
-/*
- *  Redraw and recalculate the ruler line and distanceInfo tooltip. Will not redraw while the menu is currently
- *  displayed updateOnMenu allows updating while the menu is up
- */
-const updateDistance = ({
-  map,
-  mapModel,
-  updateOnMenu = false,
-}: {
-  map: any
-  mapModel: any
-  updateOnMenu?: boolean
-}) => {
-  if (mapModel.get('measurementState') === 'START') {
-    const openMenu = true // TODO: investigate this
-    const lat = mapModel.get('mouseLat')
-    const lon = mapModel.get('mouseLon')
-    if ((updateOnMenu === true || !openMenu) && lat && lon) {
-      // redraw ruler line
-      const mousePoint = { lat, lon }
-      map.setRulerLine(mousePoint)
-      // update distance info
-      const startingCoordinates = mapModel.get('startingCoordinates')
-      const dist = getDistance(
-        { latitude: lat, longitude: lon },
-        {
-          latitude: startingCoordinates['lat'],
-          longitude: startingCoordinates['lon'],
-        }
-      )
-      mapModel.setDistanceInfoPosition(
-        (event as any).clientX,
-        (event as any).clientY
-      )
-      mapModel.setCurrentDistance(dist)
-    }
-  }
-}
 const useWreqrMapListeners = ({ map }: { map: any }) => {
   useListenTo(map ? (wreqr as any).vent : undefined, 'metacard:overlay', () => {
     map.overlayImage.bind(map)()
@@ -230,28 +130,6 @@ const useSelectionInterfaceMapListeners = ({
     'reset:activeSearchResults',
     () => {
       map.removeAllOverlays.bind(map)()
-    }
-  )
-}
-const useListenToMapModel = ({
-  map,
-  mapModel,
-}: {
-  map: any
-  mapModel: any
-}) => {
-  useListenTo(
-    map && mapModel ? mapModel : undefined,
-    'change:measurementState',
-    () => {
-      handleMeasurementStateChange({ map, mapModel })
-    }
-  )
-  useListenTo(
-    map && mapModel ? mapModel : undefined,
-    'change:mouseLat change:mouseLon',
-    () => {
-      updateDistance({ map, mapModel })
     }
   )
 }
@@ -671,7 +549,6 @@ const useMapListeners = ({
             open: true,
           })
           mapModel.updateClickCoordinates()
-          updateDistance({ map, mapModel, updateOnMenu: true })
         })
       }
 
@@ -822,7 +699,6 @@ export const MapViewReact = (props: MapViewReactType) => {
     map,
     selectionInterface: props.selectionInterface,
   })
-  useListenToMapModel({ map, mapModel })
   const { isHoveringResult, hoverGeo, interactiveGeo, moveFrom } =
     useMapListeners({
       map,
@@ -929,9 +805,6 @@ export const MapViewReact = (props: MapViewReactType) => {
       ></div>
       <div className="mapInfo">
         {mapModel ? <MapInfo map={mapModel} /> : null}
-      </div>
-      <div className="distanceInfo">
-        {mapModel ? <DistanceInfo map={mapModel} /> : null}
       </div>
       <div className="popupPreview">
         {map && mapModel && props.selectionInterface ? (

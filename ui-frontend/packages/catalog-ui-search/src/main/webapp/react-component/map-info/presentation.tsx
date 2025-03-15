@@ -17,14 +17,11 @@ import styled from 'styled-components'
 
 import { Attribute, Coordinates, Format, validCoordinates } from '.'
 import { formatAttribute, formatCoordinates } from './formatting'
-import DistanceUtils from '../../js/DistanceUtils'
 
 type Props = {
   format: Format
   attributes: Attribute[]
   coordinates: Coordinates
-  measurementState: String
-  currentDistance: number
 }
 
 const Root = styled.div<Props>`
@@ -68,32 +65,6 @@ const metacardInfo = ({ attributes }: Props) =>
     }
   })
 
-/*
- * Formats the current distance value to a string with the appropriate unit of measurement.
- */
-const getDistanceText = (distance: number) => {
-  // use meters when distance is under 1000m and convert to kilometers when ≥1000m
-  const distanceText =
-    distance < 1000
-      ? `${distance.toFixed(2)} m`
-      : `${DistanceUtils.getDistanceFromMeters(distance, 'kilometers').toFixed(
-          2
-        )} km`
-
-  return distanceText
-}
-
-// @ts-expect-error ts-migrate(7030) FIXME: Not all code paths return a value.
-const distanceInfo = (props: Props) => {
-  if (props.measurementState !== 'NONE') {
-    return (
-      <MetacardInfo>
-        distance: {getDistanceText(props.currentDistance)}
-      </MetacardInfo>
-    )
-  }
-}
-
 const render = (props: Props) => {
   if (!validCoordinates(props.coordinates)) {
     return null
@@ -103,7 +74,6 @@ const render = (props: Props) => {
   return (
     <Root {...props}>
       {metacardInfo(props)}
-      {distanceInfo(props)}
       <CoordinateInfo>
         <span data-id="coordinates-label">{coordinates}</span>
       </CoordinateInfo>
