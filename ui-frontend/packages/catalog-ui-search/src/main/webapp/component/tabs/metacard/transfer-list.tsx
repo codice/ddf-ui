@@ -21,7 +21,6 @@ import {
   Droppable,
   Draggable,
 } from 'react-beautiful-dnd'
-import extension from '../../../extension-points'
 import { Elevations } from '../../theme/theme'
 import { DarkDivider } from '../../dark-divider/dark-divider'
 import LeftArrowIcon from '@mui/icons-material/ChevronLeft'
@@ -41,6 +40,8 @@ import ExtensionPoints from '../../../extension-points/extension-points'
 import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
 import { StartupDataStore } from '../../../js/model/Startup/startup'
 import { useConfiguration } from '../../../js/model/Startup/configuration.hooks'
+import { useCanWritePermission } from '../../overridable/overridable-can-write-permission'
+import { useCustomEditableAttributes } from '../../overridable/overridable-editable-attributes'
 const getAmountChecked = (items: CheckedType) => {
   return Object.values(items).filter((a) => a).length
 }
@@ -138,17 +139,17 @@ const ItemRow = ({
   const dialogContext = useDialog()
   const { setItems, items, filteredItemArray } =
     React.useContext(CustomListContext)
-  const { isNotWritable } = useCustomReadOnlyCheck()
+  const { isWritable } = useCustomReadOnlyCheck()
   React.useEffect(() => {
     if (measure) measure()
   }, [])
   const alias = MetacardDefinitions.getAlias(value)
-  const isReadonly = lazyResult
-    ? isNotWritable({
+  const isReadonly = !lazyResult
+    ? true
+    : isWritable({
         attribute: value,
         lazyResult,
       })
-    : true
   if (filter && !alias.toLowerCase().includes(filter.toLowerCase())) {
     return null
   }
@@ -600,50 +601,28 @@ const CustomList = ({
     </CustomListContext.Provider>
   )
 }
+
 export const useCustomReadOnlyCheck = () => {
   const Configuration = useConfiguration()
-  const [customEditableAttributes, setCustomEditableAttributes] =
-    React.useState([] as string[])
-  const isMounted = React.useRef<boolean>(true)
-  const [loading, setLoading] = React.useState(true)
-  const initializeCustomEditableAttributes = async () => {
-    const attrs = await extension.customEditableAttributes()
-    if (isMounted.current) {
-      if (attrs !== undefined) {
-        setCustomEditableAttributes(attrs)
-      }
-      setLoading(false)
-    }
-  }
-  React.useEffect(() => {
-    initializeCustomEditableAttributes()
-    return () => {
-      isMounted.current = false
-    }
-  }, [])
+  const canWritePermission = useCanWritePermission()
+  const { loading, customEditableAttributes } = useCustomEditableAttributes()
   return {
     loading,
-    isNotWritable: ({
+    isWritable: ({
       attribute,
       lazyResult,
     }: {
       attribute: string
       lazyResult: LazyQueryResult
     }) => {
-      const perm = extension.customCanWritePermission({
+      return canWritePermission({
         attribute,
         lazyResult,
         user,
-        editableAttributes: customEditableAttributes,
+        editableAttributes: customEditableAttributes || [],
+        typedUserInstance: TypedUserInstance,
+        configuration: Configuration,
       })
-      if (perm !== undefined) {
-        return !perm
-      }
-      const determination =
-        lazyResult.isRemote() ||
-        !TypedUserInstance.canWrite(lazyResult) ||
-        Configuration.isReadOnly(attribute)
-      return determination
     },
   }
 }
