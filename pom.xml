@@ -41,6 +41,7 @@
     <module>ui-backend</module>
     <module>ui-frontend</module>
     <module>docs</module>
+    <module>software-list</module>
   </modules>
 
   <properties>
