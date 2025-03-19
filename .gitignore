@@ -16,3 +16,4 @@ release.properties
 dist/
 yarn-debug.log*
 yarn-error.log*
+ddf-ui-deplist.out
