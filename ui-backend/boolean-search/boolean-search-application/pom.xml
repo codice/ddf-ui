@@ -5,7 +5,7 @@
     <parent>
         <artifactId>boolean-search</artifactId>
         <groupId>org.codice.ddf.search</groupId>
-        <version>5.2.13-SNAPSHOT</version>
+        <version>5.2.13</version>
     </parent>
 
     <packaging>bundle</packaging>
