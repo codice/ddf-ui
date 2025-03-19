@@ -211,9 +211,11 @@ public class CqlQueriesImpl implements CqlQueries {
             properties,
             processingDetails);
 
-    response.getProperties().put("start-time", startTime);
-    response.getProperties().put(QM_TOTAL_ELAPSED, System.nanoTime() - start);
-    QUERY_LOGGER.info("QueryMetrics: {}", getQueryMetricsLog(response));
+    if (!responses.isEmpty()) {
+      responses.get(0).getProperties().put("start-time", startTime);
+      responses.get(0).getProperties().put(QM_TOTAL_ELAPSED, System.nanoTime() - start);
+      QUERY_LOGGER.info("QueryMetrics: {}", getQueryMetricsLog(responses));
+    }
 
     return new CqlQueryResponseImpl(
         cqlRequest.getId(),
@@ -226,7 +228,7 @@ public class CqlQueriesImpl implements CqlQueries {
         descriptors);
   }
 
-  protected static Map<String, Serializable> collectQueryProperties(
+  private Map<String, Serializable> collectQueryProperties(
       Map<String, Serializable> requestProps, Map<String, Serializable> responseProps) {
     Map<String, Serializable> allProperties = new HashMap<>();
     if (requestProps != null) {
@@ -238,38 +240,61 @@ public class CqlQueriesImpl implements CqlQueries {
     return allProperties;
   }
 
-  protected static String getQueryMetricsLog(QueryResponse queryResponse) {
-    Map<String, Serializable> requestProperties =
-        queryResponse.getRequest() == null ? null : queryResponse.getRequest().getProperties();
-    Map<String, Serializable> properties =
-        collectQueryProperties(requestProperties, queryResponse.getProperties());
+  private String getQueryMetricsLog(List<QueryResponse> queryResponses) {
     Map<String, Serializable> metricsMap = new HashMap<>();
-    // Combine the request and response metrics to log
-    metricsMap.put("start-time", properties.get("start-time"));
-    metricsMap.put("total-duration", properties.get(QM_TOTAL_ELAPSED));
-    metricsMap.put("prequery-duration", properties.get(QM_PRE_QUERY));
-    metricsMap.put("query-duration", properties.get(QM_DO_QUERY));
-    metricsMap.put("postquery-duration", properties.get(QM_POST_QUERY));
-    HashMap<String, Serializable> sourceDurationMap = new HashMap<>();
-    properties
-        .entrySet()
-        .stream()
-        .filter(e -> e.getKey() != null && e.getKey().startsWith(QM_TIMED_SOURCE))
-        .forEach(e -> sourceDurationMap.put(e.getKey().split(QM_TIMED_SOURCE)[1], e.getValue()));
-    Serializable cacheSourceValue = sourceDurationMap.remove("cache");
-    if (cacheSourceValue != null) {
-      String sourceName = (String) properties.get(CACHE_SOURCES_KEY);
-      sourceDurationMap.put(sourceName == null ? "Unknown Source" : sourceName, cacheSourceValue);
+    metricsMap.put("start-time", queryResponses.get(0).getProperties().get("start-time"));
+    for (QueryResponse queryResponse : queryResponses) {
+      Map<String, Serializable> requestProperties =
+          queryResponse.getRequest() == null ? null : queryResponse.getRequest().getProperties();
+      Map<String, Serializable> properties =
+          collectQueryProperties(requestProperties, queryResponse.getProperties());
+      // Combine the request and response metrics to log
+
+      addMetric(metricsMap, "total-duration", properties.get(QM_TOTAL_ELAPSED));
+      addMetric(metricsMap, "prequery-duration", properties.get(QM_PRE_QUERY));
+      addMetric(metricsMap, "query-duration", properties.get(QM_DO_QUERY));
+      addMetric(metricsMap, "postquery-duration", properties.get(QM_POST_QUERY));
+      HashMap<String, Serializable> sourceDurationMap = new HashMap<>();
+      properties
+          .entrySet()
+          .stream()
+          .filter(e -> e.getKey() != null && e.getKey().startsWith(QM_TIMED_SOURCE))
+          .forEach(e -> sourceDurationMap.put(e.getKey().split(QM_TIMED_SOURCE)[1], e.getValue()));
+      Serializable cacheSourceValue = sourceDurationMap.remove("cache");
+      if (cacheSourceValue != null) {
+        String sourceName = properties.get(CACHE_SOURCES_KEY).toString();
+        sourceDurationMap.put(sourceName == null ? "Unknown Source" : sourceName, cacheSourceValue);
+      }
+      Map<String, Serializable> oldSourceDurationMap =
+          (Map<String, Serializable>) metricsMap.remove("source-duration");
+      if (oldSourceDurationMap != null) {
+        oldSourceDurationMap.forEach((key, value) -> addMetric(sourceDurationMap, key, value));
+      }
+      metricsMap.put("source-duration", sourceDurationMap);
     }
-    metricsMap.put("source-duration", sourceDurationMap);
+
     HashMap<String, Serializable> additionalQueryMetrics =
-        (HashMap<String, Serializable>) properties.get("additional-query-metrics");
+        (HashMap<String, Serializable>)
+            queryResponses.get(0).getProperties().get("additional-query-metrics");
     if (additionalQueryMetrics != null) {
       metricsMap.putAll(additionalQueryMetrics);
     }
 
     Gson gson = new GsonBuilder().disableHtmlEscaping().create();
     return gson.toJson(metricsMap);
+  }
+
+  private void addMetric(
+      Map<String, Serializable> metricsMap, String metricName, Serializable metricValue) {
+    if (metricValue == null) {
+      return;
+    }
+    Serializable oldMetricValue = metricsMap.remove(metricName);
+    if (oldMetricValue != null) {
+      metricsMap.put(metricName, (long) metricValue + (long) oldMetricValue);
+    }
+
+    metricsMap.put(metricName, metricValue);
   }
 
   private List<Result> retrieveHitCount(QueryRequest request, List<QueryResponse> responses)
