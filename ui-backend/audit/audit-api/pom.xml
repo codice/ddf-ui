@@ -17,7 +17,7 @@
     <parent>
         <artifactId>audit</artifactId>
         <groupId>org.codice.ddf.search</groupId>
-        <version>5.2.13-SNAPSHOT</version>
+        <version>5.2.14-SNAPSHOT</version>
     </parent>
 
     <packaging>bundle</packaging>
