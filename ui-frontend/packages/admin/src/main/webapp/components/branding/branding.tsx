@@ -2,18 +2,18 @@ import * as React from 'react'
 import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
 import Divider from '@material-ui/core/Divider'
-import { ExtractedServicesProvider } from '@connexta/kanri/src/main/webapp/components/services/services.provider'
-import { useServicesContext } from '@connexta/kanri/src/main/webapp/components/services/services.pure'
+import { ExtractedServicesProvider } from '../services/services.provider'
+import { useServicesContext } from '../services/services.pure'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import LinearProgress from '@material-ui/core/LinearProgress'
 
 import Button from '@material-ui/core/Button'
 import UploadIcon from '@material-ui/icons/CloudUpload'
-import { COMMANDS } from '@connexta/kanri/src/main/webapp/components/fetch/fetch'
+import { COMMANDS } from '../fetch/fetch'
 import {
   useSnackbar,
   generateDismissSnackbarAction,
-} from '@connexta/kanri/src/main/webapp/components/snackbar/snackbar.provider'
+} from '../snackbar/snackbar.provider'
 
 type ImageInputType = {
   src: string
