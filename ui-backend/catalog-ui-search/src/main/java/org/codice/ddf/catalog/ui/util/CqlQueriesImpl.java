@@ -13,6 +13,15 @@
  */
 package org.codice.ddf.catalog.ui.util;
 
+import static ddf.catalog.Constants.QUERY_LOGGER_NAME;
+import static ddf.catalog.impl.operations.QueryOperations.QM_DO_QUERY;
+import static ddf.catalog.impl.operations.QueryOperations.QM_POST_QUERY;
+import static ddf.catalog.impl.operations.QueryOperations.QM_PRE_QUERY;
+import static ddf.catalog.impl.operations.QueryOperations.QM_TIMED_SOURCE;
+import static ddf.catalog.impl.operations.QueryOperations.QM_TOTAL_ELAPSED;
+import static java.time.ZoneOffset.UTC;
+import static java.time.format.DateTimeFormatter.ISO_DATE_TIME;
+
 import com.google.common.base.Stopwatch;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -54,8 +63,12 @@ import org.codice.ddf.catalog.ui.query.utility.CsvTransform;
 import org.codice.ddf.catalog.ui.query.utility.Status;
 import org.codice.ddf.catalog.ui.transformer.TransformerDescriptors;
 import org.codice.gsonsupport.GsonTypeAdapters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CqlQueriesImpl implements CqlQueries {
+
+  private static final Logger QUERY_LOGGER = LoggerFactory.getLogger(QUERY_LOGGER_NAME);
 
   private final CatalogFramework catalogFramework;
 
@@ -68,6 +81,8 @@ public class CqlQueriesImpl implements CqlQueries {
   private FilterAdapter filterAdapter;
 
   private static final String METRICS_SOURCE_ELAPSED_PREFIX = "metrics.source.elapsed.";
+
+  private static final String CACHE_SOURCES_KEY = "cache-sources";
 
   private static final Gson GSON =
       new GsonBuilder()
@@ -92,6 +107,8 @@ public class CqlQueriesImpl implements CqlQueries {
   public CqlQueryResponse executeCqlQuery(CqlRequest cqlRequest)
       throws UnsupportedQueryException, SourceUnavailableException, FederationException,
           CqlParseException {
+    long start = System.nanoTime();
+    String startTime = (new Date()).toInstant().atOffset(UTC).format(ISO_DATE_TIME);
     QueryRequest request = cqlRequest.createQueryRequest(catalogFramework.getId(), filterBuilder);
     Stopwatch stopwatch = Stopwatch.createStarted();
 
@@ -194,6 +211,12 @@ public class CqlQueriesImpl implements CqlQueries {
             properties,
             processingDetails);
 
+    if (!responses.isEmpty()) {
+      responses.get(0).getProperties().put("start-time", startTime);
+      responses.get(0).getProperties().put(QM_TOTAL_ELAPSED, System.nanoTime() - start);
+      QUERY_LOGGER.info("QueryMetrics: {}", getQueryMetricsLog(responses));
+    }
+
     return new CqlQueryResponseImpl(
         cqlRequest.getId(),
         request,
@@ -203,6 +226,75 @@ public class CqlQueriesImpl implements CqlQueries {
         filterAdapter,
         actionRegistry,
         descriptors);
+  }
+
+  private Map<String, Serializable> collectQueryProperties(
+      Map<String, Serializable> requestProps, Map<String, Serializable> responseProps) {
+    Map<String, Serializable> allProperties = new HashMap<>();
+    if (requestProps != null) {
+      allProperties.putAll(requestProps);
+    }
+    if (responseProps != null) {
+      allProperties.putAll(responseProps);
+    }
+    return allProperties;
+  }
+
+  private String getQueryMetricsLog(List<QueryResponse> queryResponses) {
+    Map<String, Serializable> metricsMap = new HashMap<>();
+    metricsMap.put("start-time", queryResponses.get(0).getProperties().get("start-time"));
+    for (QueryResponse queryResponse : queryResponses) {
+      Map<String, Serializable> requestProperties =
+          queryResponse.getRequest() == null ? null : queryResponse.getRequest().getProperties();
+      Map<String, Serializable> properties =
+          collectQueryProperties(requestProperties, queryResponse.getProperties());
+      // Combine the request and response metrics to log
+
+      addMetric(metricsMap, "total-duration", properties.get(QM_TOTAL_ELAPSED));
+      addMetric(metricsMap, "prequery-duration", properties.get(QM_PRE_QUERY));
+      addMetric(metricsMap, "query-duration", properties.get(QM_DO_QUERY));
+      addMetric(metricsMap, "postquery-duration", properties.get(QM_POST_QUERY));
+      HashMap<String, Serializable> sourceDurationMap = new HashMap<>();
+      properties
+          .entrySet()
+          .stream()
+          .filter(e -> e.getKey() != null && e.getKey().startsWith(QM_TIMED_SOURCE))
+          .forEach(e -> sourceDurationMap.put(e.getKey().split(QM_TIMED_SOURCE)[1], e.getValue()));
+      Serializable cacheSourceValue = sourceDurationMap.remove("cache");
+      if (cacheSourceValue != null) {
+        String sourceName = properties.get(CACHE_SOURCES_KEY).toString();
+        sourceDurationMap.put(sourceName == null ? "Unknown Source" : sourceName, cacheSourceValue);
+      }
+      Map<String, Serializable> oldSourceDurationMap =
+          (Map<String, Serializable>) metricsMap.remove("source-duration");
+      if (oldSourceDurationMap != null) {
+        oldSourceDurationMap.forEach((key, value) -> addMetric(sourceDurationMap, key, value));
+      }
+      metricsMap.put("source-duration", sourceDurationMap);
+    }
+
+    HashMap<String, Serializable> additionalQueryMetrics =
+        (HashMap<String, Serializable>)
+            queryResponses.get(0).getProperties().get("additional-query-metrics");
+    if (additionalQueryMetrics != null) {
+      metricsMap.putAll(additionalQueryMetrics);
+    }
+
+    Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+    return gson.toJson(metricsMap);
+  }
+
+  private void addMetric(
+      Map<String, Serializable> metricsMap, String metricName, Serializable metricValue) {
+    if (metricValue == null) {
+      return;
+    }
+    Serializable oldMetricValue = metricsMap.remove(metricName);
+    if (oldMetricValue != null) {
+      metricsMap.put(metricName, (long) metricValue + (long) oldMetricValue);
+    }
+
+    metricsMap.put(metricName, metricValue);
   }
 
   private List<Result> retrieveHitCount(QueryRequest request, List<QueryResponse> responses)
