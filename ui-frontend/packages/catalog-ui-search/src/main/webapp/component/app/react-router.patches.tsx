@@ -28,7 +28,6 @@ class SubscribableNavigationContextClass extends Subscribable<{
   ) {
     this.navigationContext = navigationContext
     this._notifySubscribers({ thing: 'update' })
-    console.log('updateNavigationContext', navigationContext)
   }
 }
 
@@ -42,7 +41,6 @@ class SubscribableLocationContextClass extends Subscribable<{
   ) {
     this.locationContext = locationContext
     this._notifySubscribers({ thing: 'update' })
-    console.log('updateLocationContext', locationContext)
   }
 }
 
