@@ -1,0 +1,24 @@
+import { jsx as _jsx } from "react/jsx-runtime";
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+import Paper from '@mui/material/Paper';
+import Common from '../../js/Common';
+export var MetacardPreviewReact = function (_a) {
+    var result = _a.result;
+    return (_jsx(Paper, { className: "p-4 w-full h-full overflow-auto", children: _jsx("span", { className: " whitespace-pre-wrap", dangerouslySetInnerHTML: {
+                __html: Common.escapeHTML(result.getPreview()),
+            } }) }));
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibWV0YWNhcmQtcHJldmlldy52aWV3LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL21haW4vd2ViYXBwL2NvbXBvbmVudC9tZXRhY2FyZC1wcmV2aWV3L21ldGFjYXJkLXByZXZpZXcudmlldy50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBOzs7Ozs7Ozs7Ozs7O0lBYUk7QUFFSixPQUFPLEtBQUssTUFBTSxxQkFBcUIsQ0FBQTtBQUN2QyxPQUFPLE1BQU0sTUFBTSxpQkFBaUIsQ0FBQTtBQUdwQyxNQUFNLENBQUMsSUFBTSxvQkFBb0IsR0FBRyxVQUFDLEVBSXBDO1FBSEMsTUFBTSxZQUFBO0lBSU4sT0FBTyxDQUNMLEtBQUMsS0FBSyxJQUFDLFNBQVMsRUFBQyxpQ0FBaUMsWUFDaEQsZUFDRSxTQUFTLEVBQUMsc0JBQXNCLEVBQ2hDLHVCQUF1QixFQUFFO2dCQUN2QixNQUFNLEVBQUUsTUFBTSxDQUFDLFVBQVUsQ0FBQyxNQUFNLENBQUMsVUFBVSxFQUFFLENBQUM7YUFDL0MsR0FDRCxHQUNJLENBQ1QsQ0FBQTtBQUNILENBQUMsQ0FBQSIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQ29weXJpZ2h0IChjKSBDb2RpY2UgRm91bmRhdGlvblxuICpcbiAqIFRoaXMgaXMgZnJlZSBzb2Z0d2FyZTogeW91IGNhbiByZWRpc3RyaWJ1dGUgaXQgYW5kL29yIG1vZGlmeSBpdCB1bmRlciB0aGUgdGVybXMgb2YgdGhlIEdOVSBMZXNzZXJcbiAqIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgYXMgcHVibGlzaGVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24sIGVpdGhlciB2ZXJzaW9uIDMgb2YgdGhlXG4gKiBMaWNlbnNlLCBvciBhbnkgbGF0ZXIgdmVyc2lvbi5cbiAqXG4gKiBUaGlzIHByb2dyYW0gaXMgZGlzdHJpYnV0ZWQgaW4gdGhlIGhvcGUgdGhhdCBpdCB3aWxsIGJlIHVzZWZ1bCwgYnV0IFdJVEhPVVQgQU5ZIFdBUlJBTlRZOyB3aXRob3V0XG4gKiBldmVuIHRoZSBpbXBsaWVkIHdhcnJhbnR5IG9mIE1FUkNIQU5UQUJJTElUWSBvciBGSVRORVNTIEZPUiBBIFBBUlRJQ1VMQVIgUFVSUE9TRS4gU2VlIHRoZSBHTlVcbiAqIExlc3NlciBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGZvciBtb3JlIGRldGFpbHMuIEEgY29weSBvZiB0aGUgR05VIExlc3NlciBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlXG4gKiBpcyBkaXN0cmlidXRlZCBhbG9uZyB3aXRoIHRoaXMgcHJvZ3JhbSBhbmQgY2FuIGJlIGZvdW5kIGF0XG4gKiA8aHR0cDovL3d3dy5nbnUub3JnL2xpY2Vuc2VzL2xncGwuaHRtbD4uXG4gKlxuICoqL1xuXG5pbXBvcnQgUGFwZXIgZnJvbSAnQG11aS9tYXRlcmlhbC9QYXBlcidcbmltcG9ydCBDb21tb24gZnJvbSAnLi4vLi4vanMvQ29tbW9uJ1xuaW1wb3J0IHsgTGF6eVF1ZXJ5UmVzdWx0IH0gZnJvbSAnLi4vLi4vanMvbW9kZWwvTGF6eVF1ZXJ5UmVzdWx0L0xhenlRdWVyeVJlc3VsdCdcblxuZXhwb3J0IGNvbnN0IE1ldGFjYXJkUHJldmlld1JlYWN0ID0gKHtcbiAgcmVzdWx0LFxufToge1xuICByZXN1bHQ6IExhenlRdWVyeVJlc3VsdFxufSkgPT4ge1xuICByZXR1cm4gKFxuICAgIDxQYXBlciBjbGFzc05hbWU9XCJwLTQgdy1mdWxsIGgtZnVsbCBvdmVyZmxvdy1hdXRvXCI+XG4gICAgICA8c3BhblxuICAgICAgICBjbGFzc05hbWU9XCIgd2hpdGVzcGFjZS1wcmUtd3JhcFwiXG4gICAgICAgIGRhbmdlcm91c2x5U2V0SW5uZXJIVE1MPXt7XG4gICAgICAgICAgX19odG1sOiBDb21tb24uZXNjYXBlSFRNTChyZXN1bHQuZ2V0UHJldmlldygpKSxcbiAgICAgICAgfX1cbiAgICAgIC8+XG4gICAgPC9QYXBlcj5cbiAgKVxufVxuIl19
