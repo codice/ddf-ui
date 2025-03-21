@@ -31,9 +31,6 @@ import { StartupDataStore } from '../../../../js/model/Startup/startup'
 const defaultColor = '#3c6dd5'
 const eyeOffset = new Cesium.Cartesian3(0, 0, 0)
 const pixelOffset = new Cesium.Cartesian2(0.0, 0)
-const rulerColor = new Cesium.Color(0.31, 0.43, 0.52)
-const rulerPointColor = '#506f85'
-const rulerLineHeight = 0
 Cesium.BingMapsApi.defaultKey = StartupDataStore.Configuration.getBingKey() || 0
 const imageryProviderTypes = CesiumImageryProviderTypes
 function setupTerrainProvider(viewer: any, terrainProvider: any) {
@@ -192,7 +189,6 @@ export default function CesiumMap(
   const drawHelper = new (DrawHelper as any)(map)
   map.drawHelper = drawHelper
   const billboardCollection = setupBillboardCollection()
-  const labelCollection = setupLabelCollection()
   setupTooltip(map, selectionInterface)
   function updateCoordinatesTooltip(position: any) {
     const cartesian = map.camera.pickEllipsoid(
@@ -224,74 +220,6 @@ export default function CesiumMap(
     const billboardCollection = new Cesium.BillboardCollection()
     map.scene.primitives.add(billboardCollection)
     return billboardCollection
-  }
-  function setupLabelCollection() {
-    const labelCollection = new Cesium.LabelCollection()
-    map.scene.primitives.add(labelCollection)
-    return labelCollection
-  }
-  /*
-   * Returns a visible label that is in the same location as the provided label (geometryInstance) if one exists.
-   * If findSelected is true, the function will also check for hidden labels in the same location but are selected.
-   */
-  function findOverlappingLabel(findSelected: any, geometry: any) {
-    return _.find(
-      mapModel.get('labels'),
-      (label) =>
-        label.position.x === geometry.position.x &&
-        label.position.y === geometry.position.y &&
-        ((findSelected && label.isSelected) || label.show)
-    )
-  }
-  /*
-        Only shows one label if there are multiple labels in the same location.
-
-        Show the label in the following importance:
-          - it is selected and the existing label is not
-          - there is no other label displayed at the same location
-          - it is the label that was found by findOverlappingLabel
-
-        Arguments are:
-          - the label to show/hide
-          - if the label is selected
-          - if the search for overlapping label should include hidden selected labels
-        */
-  function showHideLabel({ geometry, findSelected = false }: any) {
-    const isSelected = geometry.isSelected
-    const labelWithSamePosition = findOverlappingLabel(findSelected, geometry)
-    if (
-      isSelected &&
-      labelWithSamePosition &&
-      !labelWithSamePosition.isSelected
-    ) {
-      labelWithSamePosition.show = false
-    }
-    const otherLabelNotSelected = labelWithSamePosition
-      ? !labelWithSamePosition.isSelected
-      : true
-    geometry.show =
-      (isSelected && otherLabelNotSelected) ||
-      !labelWithSamePosition ||
-      geometry.id === labelWithSamePosition.id
-  }
-  /*
-        Shows a hidden label. Used when deleting a label that is shown.
-        */
-  function showHiddenLabel(geometry: any) {
-    if (!geometry.show) {
-      return
-    }
-    const hiddenLabel = _.find(
-      mapModel.get('labels'),
-      (label) =>
-        label.position.x === geometry.position.x &&
-        label.position.y === geometry.position.y &&
-        label.id !== geometry.id &&
-        !label.show
-    )
-    if (hiddenLabel) {
-      hiddenLabel.show = true
-    }
   }
 
   const minimumHeightAboveTerrain = 2
@@ -714,81 +642,6 @@ export default function CesiumMap(
       })
     },
     /*
-     * Draws a marker on the map designating a start/end point for the ruler measurement. The given
-     * coordinates should be an object with 'lat' and 'lon' keys with degrees values. The given
-     * marker label should be a single character or digit that is displayed on the map marker.
-     */
-    addRulerPoint(coordinates: any) {
-      const { lat, lon } = coordinates
-      // a point requires an altitude value so just use 0
-      const point = [lon, lat, 0]
-      const options = {
-        id: ' ',
-        title: `Selected ruler coordinate`,
-        image: DrawingUtility.getCircle({
-          fillColor: rulerPointColor,
-          icon: null,
-        }),
-        view: this,
-      }
-      return this.addPoint(point, options)
-    },
-    /*
-     * Removes the given Billboard from the map.
-     */
-    removeRulerPoint(billboardRef: any) {
-      billboardCollection.remove(billboardRef)
-      map.scene.requestRender()
-    },
-    /*
-     * Draws a line on the map between the points in the given array of points.
-     */
-    addRulerLine(point: any) {
-      let startingCoordinates = mapModel.get('startingCoordinates')
-      // creates an array of Cartesian3 points
-      // a PolylineGeometry allows the line to follow the curvature of the surface
-      map.coordArray = [
-        startingCoordinates['lon'],
-        startingCoordinates['lat'],
-        rulerLineHeight,
-        point['lon'],
-        point['lat'],
-        rulerLineHeight,
-      ]
-      return map.entities.add({
-        polyline: {
-          positions: new Cesium.CallbackProperty(function () {
-            return Cesium.Cartesian3.fromDegreesArrayHeights(map.coordArray)
-          }, false),
-          width: 5,
-          show: true,
-          material: rulerColor,
-        },
-      })
-    },
-    /*
-     * Update the position of the ruler line
-     */
-    setRulerLine(point: any) {
-      let startingCoordinates = mapModel.get('startingCoordinates')
-      map.coordArray = [
-        startingCoordinates['lon'],
-        startingCoordinates['lat'],
-        rulerLineHeight,
-        point['lon'],
-        point['lat'],
-        rulerLineHeight,
-      ]
-      map.scene.requestRender()
-    },
-    /*
-     * Removes the given polyline entity from the map.
-     */
-    removeRulerLine(polyline: any) {
-      map.entities.remove(polyline)
-      map.scene.requestRender()
-    },
-    /*
                 Adds a billboard point utilizing the passed in point and options.
                 Options are a view to relate to, and an id, and a color.
               */
@@ -913,41 +766,6 @@ export default function CesiumMap(
       }
       map.scene.requestRender()
       return billboardRef
-    },
-    /*
-              Adds a label utilizing the passed in point and options.
-              Options are a view to an id and text.
-            */
-    addLabel(point: any, options: any) {
-      const pointObject = convertPointCoordinate(point)
-      const cartographicPosition = Cesium.Cartographic.fromDegrees(
-        pointObject.longitude,
-        pointObject.latitude,
-        pointObject.altitude
-      )
-      const cartesianPosition =
-        map.scene.globe.ellipsoid.cartographicToCartesian(cartographicPosition)
-      // X, Y offset values for the label
-      const offset = new Cesium.Cartesian2(20, -15)
-      // Cesium measurement for determining how to render the size of the label based on zoom
-      const scaleZoom = new Cesium.NearFarScalar(1.5e4, 1.0, 8.0e6, 0.0)
-      // Cesium measurement for determining how to render the translucency of the label based on zoom
-      const translucencyZoom = new Cesium.NearFarScalar(1.5e6, 1.0, 8.0e6, 0.0)
-      const labelRef = labelCollection.add({
-        text: options.text,
-        position: cartesianPosition,
-        id: options.id,
-        pixelOffset: offset,
-        scale: 1.0,
-        scaleByDistance: scaleZoom,
-        translucencyByDistance: translucencyZoom,
-        fillColor: Cesium.Color.BLACK,
-        outlineColor: Cesium.Color.WHITE,
-        outlineWidth: 10,
-        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-      })
-      mapModel.addLabel(labelRef)
-      return labelRef
     },
     /*
               Adds a polyline utilizing the passed in line and options.
@@ -1136,11 +954,6 @@ export default function CesiumMap(
           0,
           options.isSelected ? -1 : 0
         )
-      } else if (geometry.constructor === Cesium.Label) {
-        geometry.isSelected = options.isSelected
-        showHideLabel({
-          geometry,
-        })
       } else if (geometry.constructor === Cesium.PolylineCollection) {
         geometry._polylines.forEach((polyline: any) => {
           polyline.material = options.isSelected
@@ -1158,10 +971,7 @@ export default function CesiumMap(
              Updates a passed in geometry to be hidden
              */
     hideGeometry(geometry: any) {
-      if (
-        geometry.constructor === Cesium.Billboard ||
-        geometry.constructor === Cesium.Label
-      ) {
+      if (geometry.constructor === Cesium.Billboard) {
         geometry.show = false
       } else if (geometry.constructor === Cesium.PolylineCollection) {
         geometry._polylines.forEach((polyline: any) => {
@@ -1175,11 +985,6 @@ export default function CesiumMap(
     showGeometry(geometry: any) {
       if (geometry.constructor === Cesium.Billboard) {
         geometry.show = true
-      } else if (geometry.constructor === Cesium.Label) {
-        showHideLabel({
-          geometry,
-          findSelected: true,
-        })
       } else if (geometry.constructor === Cesium.PolylineCollection) {
         geometry._polylines.forEach((polyline: any) => {
           polyline.show = true
@@ -1189,15 +994,10 @@ export default function CesiumMap(
     },
     removeGeometry(geometry: any) {
       billboardCollection.remove(geometry)
-      labelCollection.remove(geometry)
       map.scene.primitives.remove(geometry)
       //unminified cesium chokes if you feed a geometry with id as an Array
       if (geometry.constructor === Cesium.Entity) {
         map.entities.remove(geometry)
-      }
-      if (geometry.constructor === Cesium.Label) {
-        mapModel.removeLabel(geometry)
-        showHiddenLabel(geometry)
       }
       map.scene.requestRender()
     },

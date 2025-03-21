@@ -34,8 +34,6 @@ const mapPropsToState = (props: Props) => {
       lon: map.get('mouseLon'),
     },
     attributes: getAttributes(map),
-    measurementState: map.get('measurementState'),
-    currentDistance: map.get('currentDistance'),
   }
 }
 
@@ -82,7 +80,7 @@ const MapInfo = (props: Props) => {
 
     listenTo(
       map,
-      'change:mouseLat change:mouseLon change:targetMetacard change:currentDistance',
+      'change:mouseLat change:mouseLon change:targetMetacard',
       onChange
     )
   }, [])
