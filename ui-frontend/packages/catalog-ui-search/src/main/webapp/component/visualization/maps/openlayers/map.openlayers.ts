@@ -638,7 +638,7 @@ export default function (
           width: 4,
         }),
       })
-      ;(feature as any).unselectedStyle = [
+      feature.set('unselectedStyle', [
         new Style({
           stroke: new Stroke({
             color: 'white',
@@ -646,8 +646,8 @@ export default function (
           }),
         }),
         commonStyle,
-      ]
-      ;(feature as any).selectedStyle = [
+      ])
+      feature.set('selectedStyle', [
         new Style({
           stroke: new Stroke({
             color: 'black',
@@ -655,11 +655,11 @@ export default function (
           }),
         }),
         commonStyle,
-      ]
+      ])
       feature.setStyle(
         options.isSelected
-          ? (feature as any).selectedStyle
-          : (feature as any).unselectedStyle
+          ? feature.get('selectedStyle')
+          : feature.get('unselectedStyle')
       )
       const vectorSource = new VectorSource({
         features: [feature],
