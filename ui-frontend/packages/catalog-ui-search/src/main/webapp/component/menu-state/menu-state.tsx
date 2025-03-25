@@ -1,8 +1,10 @@
 import { ButtonProps } from '@mui/material/Button'
 import { PopoverActions, PopoverProps } from '@mui/material/Popover'
+import Paper from '@mui/material/Paper'
 import * as React from 'react'
 
 import debounce from 'lodash.debounce'
+import { Elevations } from '../theme/theme'
 
 type Props = {
   /**
@@ -84,31 +86,96 @@ const useListenForChildUpdates = ({
   }, [action.current, popoverRef])
 }
 
+interface MenuStateContextType {
+  handleClose: () => void
+  handleCascadeClose: () => void
+  parentMenuStateContext?: MenuStateContextType | null
+}
+
+/**
+ *  Notice we do not export this, as we want full control over parentMenuStateContext in order to make the dev experience smooth.
+ *  Devs should be using the provider instance that gets returned with useMenuState.
+ */
+const MenuStateContext = React.createContext<MenuStateContextType>({
+  handleClose: () => {
+    console.warn(
+      `No menu state context found, check to make sure you're wrapping the component with the menu state provider.  This handleClose call will be a noop.`
+    )
+  },
+  handleCascadeClose: () => {
+    console.warn(
+      `No menu state context found, check to make sure you're wrapping the component with the menu state provider.  This handleCascadeClose call will be a noop.`
+    )
+  },
+})
+
+export function useMenuStateContext() {
+  const menuState = React.useContext(MenuStateContext)
+  return menuState
+}
+
 export function useMenuState({ maxHeight }: Props = {}) {
+  const parentMenuStateContext = useMenuStateContext()
   const anchorRef = React.useRef<HTMLDivElement>(null)
   const popoverRef = useRerenderingRef<HTMLDivElement>()
   const action = React.useRef<PopoverActions | null>(null)
   const [open, setOpen] = React.useState(false)
   useListenForChildUpdates({ popoverRef: popoverRef.current, action })
-  const handleClick = () => {
-    setOpen(!open)
-  }
+  const handleClick = React.useCallback(() => {
+    setOpen((currentValue) => {
+      return !currentValue
+    })
+  }, [])
 
-  const handleClose = () => {
+  const handleClose = React.useCallback(() => {
     setOpen(false)
-  }
-  return {
+  }, [])
+
+  const handleCascadeClose = React.useCallback(() => {
+    handleClose()
+    if (parentMenuStateContext.parentMenuStateContext) {
+      parentMenuStateContext.handleCascadeClose()
+    }
+  }, [])
+
+  // preconstruct this for convenience
+  const MenuStateProviderInstance = React.useMemo(() => {
+    return ({ children }: { children: React.ReactNode }) => {
+      return (
+        <MenuStateContext.Provider
+          value={{
+            handleClose,
+            handleCascadeClose,
+            parentMenuStateContext,
+          }}
+        >
+          {children}
+        </MenuStateContext.Provider>
+      )
+    }
+  }, [])
+
+  // if the MuiPopover props get used, then the children will automatically get access to the menustate
+  const MuiPopoverMenuStateProviderInstance = React.useMemo(() => {
+    return React.forwardRef<HTMLDivElement>((props, ref) => {
+      return (
+        <MenuStateProviderInstance>
+          <Paper {...props} ref={ref} elevation={Elevations.overlays}></Paper>
+        </MenuStateProviderInstance>
+      )
+    })
+  }, [])
+
+  const menuState = {
     anchorRef,
     open,
     handleClick,
     handleClose,
     /**
-     * Handy prop bundles for passing to common components
+     *  For menus that are nested within other menus, this will ripple up the menu tree and close parent menus
      */
-    dropdownProps: {
-      open,
-      handleClose,
-    },
+    handleCascadeClose,
+    // these can also be used directly with the MuiPopper if desired
     MuiPopoverProps: {
       open,
       onClose: handleClose,
@@ -116,6 +183,11 @@ export function useMenuState({ maxHeight }: Props = {}) {
       action,
       ref: popoverRef.ref,
       ...POPOVER_DEFAULTS({ maxHeight }),
+      slotProps: {
+        paper: {
+          component: MuiPopoverMenuStateProviderInstance,
+        },
+      },
     } as Required<
       Pick<
         PopoverProps,
@@ -127,6 +199,7 @@ export function useMenuState({ maxHeight }: Props = {}) {
         | 'transformOrigin'
         | 'action'
         | 'ref'
+        | 'slotProps'
       >
     >,
     MuiButtonProps: {
@@ -137,7 +210,10 @@ export function useMenuState({ maxHeight }: Props = {}) {
       ref: anchorRef,
       onClick: handleClick,
     },
+    MenuStateProviderInstance,
   }
+
+  return menuState
 }
 
 export default useMenuState
@@ -161,14 +237,4 @@ export const POPOVER_DEFAULTS = ({ maxHeight }: Props = {}) => {
   } as Required<
     Pick<PopoverProps, 'anchorOrigin' | 'transformOrigin' | 'TransitionProps'>
   >
-}
-
-const MenuStateContext = React.createContext<ReturnType<typeof useMenuState>>(
-  {} as ReturnType<typeof useMenuState>
-)
-
-export const MenuStateProvider = MenuStateContext.Provider
-
-export function useMenuStateContext() {
-  return React.useContext(MenuStateContext)
 }
