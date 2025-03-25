@@ -13,7 +13,7 @@
     "node": "20.x.x"
   },
   "devDependencies": {
-    "@connexta/ace": "git+https://github.com/connexta/ace.git#bb962daca0a8ee025588b614b7bb1f45f63e270e",
+    "@connexta/ace": "git+https://github.com/connexta/ace.git#20166c642d60c5c67626f89108c6b72d1451e62f",
     "@types/react": "19.0.10",
     "@types/react-dom": "19.0.04",
     "autoprefixer": "10.4.20",
