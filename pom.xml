@@ -120,7 +120,6 @@
     <backbone.modelbinder.version>1.1.0</backbone.modelbinder.version>
     <html5shiv.version>3.7.2</html5shiv.version>
     <iframe-resizer.version>2.6.2</iframe-resizer.version>
-    <jknack.handlebars.version>2.0.0</jknack.handlebars.version>
     <marionette.version>2.4.5</marionette.version>
     <moment.version>2.20.1</moment.version>
     <node.version>v20.18.1</node.version>
