@@ -37,3 +37,5 @@ export const useConfiguration = () => {
   )
   return configuration
 }
+
+export type useConfigurationType = typeof useConfiguration
