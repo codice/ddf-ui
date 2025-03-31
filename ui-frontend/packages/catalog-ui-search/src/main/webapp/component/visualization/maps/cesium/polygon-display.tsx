@@ -19,7 +19,10 @@ import Cesium from 'cesium/Build/Cesium/Cesium'
 import { validateGeo } from '../../../../react-component/utils/validation'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
-import { removeOldDrawing, removeOrLockOldDrawing } from './drawing-and-display'
+import {
+  makeOldDrawingNonEditable,
+  removeOldDrawing,
+} from './drawing-and-display'
 import ShapeUtils from '../../../../js/ShapeUtils'
 import {
   constructSolidLinePrimitive,
@@ -163,8 +166,6 @@ const drawGeometry = ({
 
   const cameraMagnitude = map.getMap().camera.getMagnitude()
   setDrawnMagnitude(cameraMagnitude)
-
-  removeOrLockOldDrawing(Boolean(isInteractive), id, map, model)
 
   const buffer = DistanceUtils.getDistanceInMeters(
     json.polygonBufferWidth,
@@ -332,6 +333,10 @@ const useListenToLineModel = ({
           // want to update the existing model unless the user clicks Apply.
           const newModel = model.clone()
           newModel.set(newPoly)
+          makeOldDrawingNonEditable({
+            map,
+            id: getIdFromModelForDisplay({ model }),
+          })
           drawGeometry({
             map,
             model: newModel,
@@ -340,6 +345,7 @@ const useListenToLineModel = ({
             onDraw,
           })
         } else if (model) {
+          removeOldDrawing({ map, id: getIdFromModelForDisplay({ model }) })
           drawGeometry({
             map,
             model,
