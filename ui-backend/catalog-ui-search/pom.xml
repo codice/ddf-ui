@@ -268,11 +268,6 @@
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.github.jknack</groupId>
-            <artifactId>handlebars</artifactId>
-            <version>${jknack.handlebars.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>antlr4-runtime</artifactId>
             <version>${antlr.version}</version>
@@ -466,7 +461,6 @@
                             camel-http-common,
                             catalog-core-api-impl;scope=!test,
                             commons-lang3,
-                            handlebars,
                             httpclient,
                             httpcore,
                             tlmatcher,
