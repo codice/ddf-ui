@@ -114,9 +114,9 @@ describe('verify date range field works', () => {
 
     const handleChange = (validValue: ValueTypes['during']) => {
       // verify these are one day apart, as should happen when fed overlapping dates or invalid values
-      const start = new Date(validValue.start)
-      const end = new Date(validValue.end)
-      expect(start.getDate()).to.equal(end.getDate() - 1)
+      const start = moment(validValue.start)
+      const end = moment(validValue.end)
+      expect(start.diff(end, 'days')).to.equal(-1)
     }
 
     render(
