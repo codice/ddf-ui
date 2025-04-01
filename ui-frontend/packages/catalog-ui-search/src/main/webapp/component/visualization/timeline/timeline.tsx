@@ -1,6 +1,3 @@
-import WithListenTo, {
-  WithBackboneProps,
-} from './../../../react-component/backbone-container'
 import * as React from 'react'
 
 import styled from 'styled-components'
@@ -19,10 +16,12 @@ import Extensions from '../../../extension-points'
 import _ from 'lodash'
 import { useConfiguration } from '../../../js/model/Startup/configuration.hooks'
 import { StartupDataStore } from '../../../js/model/Startup/startup'
+import _debounce from 'lodash.debounce'
+
 const maxDate = moment().tz(user.getTimeZone())
 type Props = {
   selectionInterface: any
-} & WithBackboneProps
+}
 const TimelineWrapper = styled.div`
   padding: 40px 40px 60px 40px;
   height: 100%;
@@ -118,6 +117,18 @@ const renderTooltip = (timelineItems: TimelineItem[]) => {
     </React.Fragment>
   )
 }
+
+function useListenToResize({ callback }: { callback: () => void }) {
+  React.useEffect(() => {
+    ;(wreqr as any).vent.on('resize', callback)
+    window.addEventListener('resize', callback)
+    return () => {
+      ;(wreqr as any).vent.off('resize', callback)
+      window.removeEventListener('resize', callback)
+    }
+  }, [callback])
+}
+
 const TimelineVisualization = (props: Props) => {
   const { selectionInterface } = props
   const { config } = useConfiguration()
@@ -133,24 +144,20 @@ const TimelineVisualization = (props: Props) => {
   const [dateAttributeAliases, setDateAttributeAliases] = React.useState({})
   const [height, setHeight] = React.useState(0)
   const [pause, setPause] = React.useState(false)
-  const rootRef = React.useRef(null)
-  const [resized, setResized] = React.useState(false)
+  const rootRef = React.useRef<HTMLDivElement>(null)
   const addSnack = useSnack()
-  React.useEffect(() => {
-    props.listenTo((wreqr as any).vent, 'resize', () => {
+  const resizeCallback = React.useCallback(
+    _debounce(() => {
       if (rootRef.current) {
-        // @ts-expect-error ts-migrate(2531) FIXME: Object is possibly 'null'.
         const rect = rootRef.current.getBoundingClientRect()
         setHeight(rect.height)
       }
-      setResized(true)
-    })
-  }, [])
-  React.useEffect(() => {
-    if (resized) {
-      setResized(false)
-    }
-  }, [resized])
+    }, 250),
+    []
+  )
+  useListenToResize({
+    callback: resizeCallback,
+  })
   React.useEffect(() => {
     const selectedIds = Object.values(selectedResults).map(
       (result) => result.plain.metacard.properties.id
@@ -225,4 +232,4 @@ const TimelineVisualization = (props: Props) => {
     </TimelineWrapper>
   )
 }
-export default WithListenTo(TimelineVisualization)
+export default TimelineVisualization
