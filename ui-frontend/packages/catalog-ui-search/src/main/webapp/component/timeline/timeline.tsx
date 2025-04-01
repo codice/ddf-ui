@@ -500,6 +500,9 @@ export const Timeline = (props: TimelineProps) => {
       const heightPerItem = (height - (heightOffset + 75)) / mostItemsInABucket
       setDataBuckets(buckets)
       buckets.forEach((b, i) => {
+        if (b.items.length === 0 || heightPerItem <= 0) {
+          return
+        }
         const rectangleHeight = b.items.length * heightPerItem
         const x = (b.x1 + b.x2) / 2 - 15
         const y =
@@ -834,6 +837,11 @@ export const Timeline = (props: TimelineProps) => {
       return attribute
     }
   }
+  const brushOverlayWidth = Math.max(width - 2 * AXIS_MARGIN, 0)
+  const brushOverlayHeight = Math.max(
+    height - (AXIS_MARGIN + AXIS_HEIGHT + heightOffset),
+    0
+  )
   return (
     <Root ref={rootRef} style={{ height: '100%' }}>
       <div>
@@ -858,8 +866,8 @@ export const Timeline = (props: TimelineProps) => {
           className="brush-overlay"
           x={AXIS_MARGIN}
           y={0}
-          width={width - 2 * AXIS_MARGIN}
-          height={height - (AXIS_MARGIN + AXIS_HEIGHT + heightOffset)}
+          width={brushOverlayWidth}
+          height={brushOverlayHeight}
           fill="transparent"
         />
         <g className="data-holder" />
