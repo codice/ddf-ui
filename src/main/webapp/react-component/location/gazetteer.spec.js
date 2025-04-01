@@ -1,0 +1,41 @@
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+import { expect } from 'chai';
+import { mock as mockProperties, unmock as unmockProperties, } from '../../test/mock-api/mock-properties';
+import { getLargestBbox } from './gazetteer';
+var GetLargestBbox;
+// @ts-expect-error ts-migrate(2732) FIXME: Cannot find module './gazetteer-france-test-data.j... Remove this comment to see the full error message
+import testData from './gazetteer-france-test-data.json';
+describe('getLargestBbox', function () {
+    before(function () {
+        mockProperties();
+        GetLargestBbox = getLargestBbox;
+    });
+    after(function () {
+        unmockProperties();
+    });
+    var expectedAnswer = {
+        maxX: 7.8125,
+        minX: -5.1953125,
+        maxY: 50.77891890432069,
+        minY: 43.37399002495726,
+    };
+    it('Largest bounding box for France should equal  ' +
+        JSON.stringify(expectedAnswer), function () {
+        var result = GetLargestBbox(testData[0].geojson.coordinates, true);
+        expect(result).to.deep.equal(expectedAnswer);
+    });
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZ2F6ZXR0ZWVyLnNwZWMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi9zcmMvbWFpbi93ZWJhcHAvcmVhY3QtY29tcG9uZW50L2xvY2F0aW9uL2dhemV0dGVlci5zcGVjLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOzs7Ozs7Ozs7Ozs7O0lBYUk7QUFDSixPQUFPLEVBQUUsTUFBTSxFQUFFLE1BQU0sTUFBTSxDQUFBO0FBRTdCLE9BQU8sRUFDTCxJQUFJLElBQUksY0FBYyxFQUN0QixNQUFNLElBQUksZ0JBQWdCLEdBQzNCLE1BQU0scUNBQXFDLENBQUE7QUFDNUMsT0FBTyxFQUFFLGNBQWMsRUFBRSxNQUFNLGFBQWEsQ0FBQTtBQUM1QyxJQUFJLGNBQW1CLENBQUE7QUFFdkIsbUpBQW1KO0FBQ25KLE9BQU8sUUFBUSxNQUFNLG1DQUFtQyxDQUFBO0FBRXhELFFBQVEsQ0FBQyxnQkFBZ0IsRUFBRTtJQUN6QixNQUFNLENBQUM7UUFDTCxjQUFjLEVBQUUsQ0FBQTtRQUNoQixjQUFjLEdBQUcsY0FBYyxDQUFBO0lBQ2pDLENBQUMsQ0FBQyxDQUFBO0lBQ0YsS0FBSyxDQUFDO1FBQ0osZ0JBQWdCLEVBQUUsQ0FBQTtJQUNwQixDQUFDLENBQUMsQ0FBQTtJQUNGLElBQU0sY0FBYyxHQUFHO1FBQ3JCLElBQUksRUFBRSxNQUFNO1FBQ1osSUFBSSxFQUFFLENBQUMsU0FBUztRQUNoQixJQUFJLEVBQUUsaUJBQWlCO1FBQ3ZCLElBQUksRUFBRSxpQkFBaUI7S0FDeEIsQ0FBQTtJQUNELEVBQUUsQ0FDQSxnREFBZ0Q7UUFDOUMsSUFBSSxDQUFDLFNBQVMsQ0FBQyxjQUFjLENBQUMsRUFDaEM7UUFDRSxJQUFNLE1BQU0sR0FBRyxjQUFjLENBQUMsUUFBUSxDQUFDLENBQUMsQ0FBQyxDQUFDLE9BQU8sQ0FBQyxXQUFXLEVBQUUsSUFBSSxDQUFDLENBQUE7UUFDcEUsTUFBTSxDQUFDLE1BQU0sQ0FBQyxDQUFDLEVBQUUsQ0FBQyxJQUFJLENBQUMsS0FBSyxDQUFDLGNBQWMsQ0FBQyxDQUFBO0lBQzlDLENBQUMsQ0FDRixDQUFBO0FBQ0gsQ0FBQyxDQUFDLENBQUEiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIENvcHlyaWdodCAoYykgQ29kaWNlIEZvdW5kYXRpb25cbiAqXG4gKiBUaGlzIGlzIGZyZWUgc29mdHdhcmU6IHlvdSBjYW4gcmVkaXN0cmlidXRlIGl0IGFuZC9vciBtb2RpZnkgaXQgdW5kZXIgdGhlIHRlcm1zIG9mIHRoZSBHTlUgTGVzc2VyXG4gKiBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGFzIHB1Ymxpc2hlZCBieSB0aGUgRnJlZSBTb2Z0d2FyZSBGb3VuZGF0aW9uLCBlaXRoZXIgdmVyc2lvbiAzIG9mIHRoZVxuICogTGljZW5zZSwgb3IgYW55IGxhdGVyIHZlcnNpb24uXG4gKlxuICogVGhpcyBwcm9ncmFtIGlzIGRpc3RyaWJ1dGVkIGluIHRoZSBob3BlIHRoYXQgaXQgd2lsbCBiZSB1c2VmdWwsIGJ1dCBXSVRIT1VUIEFOWSBXQVJSQU5UWTsgd2l0aG91dFxuICogZXZlbiB0aGUgaW1wbGllZCB3YXJyYW50eSBvZiBNRVJDSEFOVEFCSUxJVFkgb3IgRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UuIFNlZSB0aGUgR05VXG4gKiBMZXNzZXIgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSBmb3IgbW9yZSBkZXRhaWxzLiBBIGNvcHkgb2YgdGhlIEdOVSBMZXNzZXIgR2VuZXJhbCBQdWJsaWMgTGljZW5zZVxuICogaXMgZGlzdHJpYnV0ZWQgYWxvbmcgd2l0aCB0aGlzIHByb2dyYW0gYW5kIGNhbiBiZSBmb3VuZCBhdFxuICogPGh0dHA6Ly93d3cuZ251Lm9yZy9saWNlbnNlcy9sZ3BsLmh0bWw+LlxuICpcbiAqKi9cbmltcG9ydCB7IGV4cGVjdCB9IGZyb20gJ2NoYWknXG5cbmltcG9ydCB7XG4gIG1vY2sgYXMgbW9ja1Byb3BlcnRpZXMsXG4gIHVubW9jayBhcyB1bm1vY2tQcm9wZXJ0aWVzLFxufSBmcm9tICcuLi8uLi90ZXN0L21vY2stYXBpL21vY2stcHJvcGVydGllcydcbmltcG9ydCB7IGdldExhcmdlc3RCYm94IH0gZnJvbSAnLi9nYXpldHRlZXInXG5sZXQgR2V0TGFyZ2VzdEJib3g6IGFueVxuXG4vLyBAdHMtZXhwZWN0LWVycm9yIHRzLW1pZ3JhdGUoMjczMikgRklYTUU6IENhbm5vdCBmaW5kIG1vZHVsZSAnLi9nYXpldHRlZXItZnJhbmNlLXRlc3QtZGF0YS5qLi4uIFJlbW92ZSB0aGlzIGNvbW1lbnQgdG8gc2VlIHRoZSBmdWxsIGVycm9yIG1lc3NhZ2VcbmltcG9ydCB0ZXN0RGF0YSBmcm9tICcuL2dhemV0dGVlci1mcmFuY2UtdGVzdC1kYXRhLmpzb24nXG5cbmRlc2NyaWJlKCdnZXRMYXJnZXN0QmJveCcsICgpID0+IHtcbiAgYmVmb3JlKCgpID0+IHtcbiAgICBtb2NrUHJvcGVydGllcygpXG4gICAgR2V0TGFyZ2VzdEJib3ggPSBnZXRMYXJnZXN0QmJveFxuICB9KVxuICBhZnRlcigoKSA9PiB7XG4gICAgdW5tb2NrUHJvcGVydGllcygpXG4gIH0pXG4gIGNvbnN0IGV4cGVjdGVkQW5zd2VyID0ge1xuICAgIG1heFg6IDcuODEyNSxcbiAgICBtaW5YOiAtNS4xOTUzMTI1LFxuICAgIG1heFk6IDUwLjc3ODkxODkwNDMyMDY5LFxuICAgIG1pblk6IDQzLjM3Mzk5MDAyNDk1NzI2LFxuICB9XG4gIGl0KFxuICAgICdMYXJnZXN0IGJvdW5kaW5nIGJveCBmb3IgRnJhbmNlIHNob3VsZCBlcXVhbCAgJyArXG4gICAgICBKU09OLnN0cmluZ2lmeShleHBlY3RlZEFuc3dlciksXG4gICAgKCkgPT4ge1xuICAgICAgY29uc3QgcmVzdWx0ID0gR2V0TGFyZ2VzdEJib3godGVzdERhdGFbMF0uZ2VvanNvbi5jb29yZGluYXRlcywgdHJ1ZSlcbiAgICAgIGV4cGVjdChyZXN1bHQpLnRvLmRlZXAuZXF1YWwoZXhwZWN0ZWRBbnN3ZXIpXG4gICAgfVxuICApXG59KVxuIl19
