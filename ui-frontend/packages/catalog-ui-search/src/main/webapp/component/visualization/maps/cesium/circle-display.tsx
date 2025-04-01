@@ -20,7 +20,10 @@ import _ from 'underscore'
 import * as Turf from '@turf/turf'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
-import { removeOldDrawing, removeOrLockOldDrawing } from './drawing-and-display'
+import {
+  removeOldDrawing,
+  makeOldDrawingNonEditable,
+} from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import TurfCircle from '@turf/circle'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
@@ -133,8 +136,6 @@ const drawGeometry = ({
     modelProp.lon += translation.longitude
     modelProp.lat += translation.latitude
   }
-
-  removeOrLockOldDrawing(Boolean(isInteractive), id, map, model)
 
   let primitive
 
@@ -255,6 +256,10 @@ const useListenToModel = ({
           // want to update the existing model unless the user clicks Apply.
           const newModel = model.clone()
           newModel.set(newCircle)
+          makeOldDrawingNonEditable({
+            map,
+            id: getIdFromModelForDisplay({ model }),
+          })
           drawGeometry({
             map,
             model: newModel,
@@ -263,6 +268,7 @@ const useListenToModel = ({
             onDraw,
           })
         } else if (model) {
+          removeOldDrawing({ map, id: getIdFromModelForDisplay({ model }) })
           drawGeometry({
             map,
             model,
