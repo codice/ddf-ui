@@ -40,6 +40,7 @@ import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-defin
 import Common from '../../../js/Common'
 import SummaryManageAttributes from '../../../react-component/summary-manage-attributes/summary-manage-attributes'
 import moment from 'moment-timezone'
+import CircularProgress from '@mui/material/CircularProgress'
 
 type Props = {
   result: LazyQueryResult
@@ -499,7 +500,7 @@ const AttributeComponent = ({
   }
   const { getAlias, getType } = useMetacardDefinitions()
   let label = getAlias(attr)
-  const { isNotWritable } = useCustomReadOnlyCheck()
+  const { isWritable, loading } = useCustomReadOnlyCheck()
   const dialogContext = useDialog()
   const convertToFormat = useCoordinateFormat()
   const convertToPrecision = (value: any) => {
@@ -540,7 +541,7 @@ const AttributeComponent = ({
         wrap={'nowrap'}
         className="group relative"
       >
-        {isNotWritable({ attribute: attr, lazyResult }) ? null : (
+        {!loading && isWritable({ attribute: attr, lazyResult }) ? (
           <div className="p-1 hidden group-hover:block absolute right-0 top-0">
             <Button
               onClick={() => {
@@ -568,8 +569,14 @@ const AttributeComponent = ({
               <EditIcon />
             </Button>
           </div>
-        )}
-
+        ) : null}
+        {loading ? (
+          <>
+            <div className="p-1 hidden group-hover:block absolute right-0 top-0">
+              <CircularProgress />
+            </div>
+          </>
+        ) : null}
         <Grid
           item
           xs={4}
@@ -703,7 +710,7 @@ const AttributeComponent = ({
         </Grid>
       </Grid>
     )
-  }, [summaryShown, forceRender, isNotWritable])
+  }, [summaryShown, forceRender, isWritable, loading])
   return (
     <div style={{ display: isFiltered ? 'none' : 'block' }}>{MemoItem}</div>
   )

@@ -223,3 +223,5 @@ type QuerySettingsModelType = {
   set: (attr: any, value?: any) => void
   toJSON: () => QuerySettingsType
 }
+
+export type TypedUserInstanceType = typeof TypedUserInstance
