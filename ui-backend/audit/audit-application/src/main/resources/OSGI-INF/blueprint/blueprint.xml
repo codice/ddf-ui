@@ -30,16 +30,16 @@
     </bean>
 
     <bean id="auditApplication"
-          class="org.codice.ddf.catalog.audit.application.AuditApplication">
+          class="org.codice.ddf.catalog.audit.application.AuditApplication" scope="prototype">
         <argument ref="auditHandler"/>
         <argument ref="simpleAuditHandler"/>
     </bean>
 
     <service ref="auditApplication" interface="javax.servlet.Servlet">
         <service-properties>
-            <entry key="osgi.http.whiteboard.servlet.pattern" value="/audit/*"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/search/catalog/internal/audit/*"/>
             <entry key="osgi.http.whiteboard.servlet.name" value="auditServlet"/>
-            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.name=searchCatalogInternalContextHelper)"/>
+            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.name=ddfDefaultContext)"/>
         </service-properties>
     </service>
 

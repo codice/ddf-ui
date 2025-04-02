@@ -38,13 +38,21 @@ Services (HTTP/WS) that catalog-ui-search provides for the UI
 
     <service ref="sparkServlet" interface="javax.servlet.Servlet">
         <service-properties>
-            <entry key="osgi.http.whiteboard.servlet.pattern" value="/*"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/search/catalog/internal/*"/>
             <entry key="osgi.http.whiteboard.servlet.name" value="searchCatalogInternalServlet"/>
-            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.name=searchCatalogInternalContextHelper)"/>
+            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.name=ddfDefaultContext)"/>
             <entry key="osgi.http.whiteboard.servlet.asyncSupported" value="true"/>
         </service-properties>
     </service>
 
+    <service ref="socketServlet" interface="javax.servlet.Servlet">
+        <service-properties>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/search/catalog/ws/*"/>
+            <entry key="osgi.http.whiteboard.servlet.name" value="websocketServlet"/>
+            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.path=default)"/>
+            <entry key="osgi.http.whiteboard.servlet.asyncSupported" value="true"/>
+        </service-properties>
+    </service>
 
     <!--
     =============================================================
@@ -54,9 +62,9 @@ Services (HTTP/WS) that catalog-ui-search provides for the UI
 
     <service interface="javax.servlet.Servlet">
         <service-properties>
-            <entry key="osgi.http.whiteboard.servlet.pattern" value="/*"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/search/catalog/proxy/*"/>
             <entry key="osgi.http.whiteboard.servlet.name" value="searchCatalogProxyServlet"/>
-            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.name=searchCatalogProxyContextHelper)"/>
+            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.name=ddfDefaultContext)"/>
             <entry key="osgi.http.whiteboard.servlet.asyncSupported" value="true"/>
         </service-properties>
         <ref component-id="servlet"/>
