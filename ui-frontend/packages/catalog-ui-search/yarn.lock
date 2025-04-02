@@ -906,9 +906,8 @@
   dependencies:
     commander "^2.15.1"
 
-"@connexta/ace@git+https://github.com/connexta/ace.git#20166c642d60c5c67626f89108c6b72d1451e62f":
+"@connexta/ace@file:../../../../ace":
   version "1.0.0"
-  resolved "git+https://github.com/connexta/ace.git#20166c642d60c5c67626f89108c6b72d1451e62f"
   dependencies:
     "@babel/core" "7.26.0"
     "@babel/preset-env" "7.26.0"

@@ -20,7 +20,7 @@
     </bean>
 
     <bean id="rootReqSupplier" class="org.codice.ddf.catalog.ui.RootContextRequestSupplier"/>
-    <bean id="sparkServlet" class="org.codice.ddf.catalog.ui.SparkServlet">
+    <bean id="sparkServlet" class="org.codice.ddf.catalog.ui.SparkServlet" scope="prototype">
         <property name="sparkApplication">
             <ref component-id="oauthApplication"/>
         </property>
@@ -30,9 +30,9 @@
 
     <service ref="sparkServlet" interface="javax.servlet.Servlet">
         <service-properties>
-            <entry key="osgi.http.whiteboard.servlet.pattern" value="/oauth/*"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/search/catalog/internal/oauth/*"/>
             <entry key="osgi.http.whiteboard.servlet.name" value="oauthSparkServlet"/>
-            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.name=searchCatalogInternalContextHelper)"/>
+            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.name=ddfDefaultContext)"/>
             <entry key="osgi.http.whiteboard.servlet.asyncSupported" value="true"/>
         </service-properties>
     </service>

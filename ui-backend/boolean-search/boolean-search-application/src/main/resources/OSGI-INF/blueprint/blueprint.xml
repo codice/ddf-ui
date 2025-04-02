@@ -8,13 +8,13 @@
            http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
            http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
 
-    <bean id="booleanSearchApplication" class="org.codice.ddf.catalog.search.application.BooleanSearchApplication"/>
+    <bean id="booleanSearchApplication" class="org.codice.ddf.catalog.search.application.BooleanSearchApplication" scope="prototype"/>
 
     <service ref="booleanSearchApplication" interface="javax.servlet.Servlet">
         <service-properties>
-            <entry key="osgi.http.whiteboard.servlet.pattern" value="/boolean-search/*"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/search/catalog/internal/boolean-search/*"/>
             <entry key="osgi.http.whiteboard.servlet.name" value="booleanSearchServlet"/>
-            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.name=searchCatalogInternalContextHelper)"/>
+            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.name=ddfDefaultContext)"/>
         </service-properties>
     </service>
 
