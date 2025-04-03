@@ -280,7 +280,7 @@ const useListenToModel = ({
   }, [model, map, newBbox, translation, isInteractive])
   useListenTo(
     model,
-    'change:mapNorth change:mapSouth change:mapEast change:mapWest',
+    'change:mapNorth change:mapSouth change:mapEast change:mapWest change:color',
     callback
   )
   React.useEffect(() => {

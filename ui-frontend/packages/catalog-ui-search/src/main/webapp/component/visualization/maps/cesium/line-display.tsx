@@ -379,7 +379,11 @@ const useListenToLineModel = ({
       }
     }
   }, [model, map, newLine, translation, isInteractive])
-  useListenTo(model, 'change:line change:lineWidth change:lineUnits', callback)
+  useListenTo(
+    model,
+    'change:line change:lineWidth change:lineUnits change:color',
+    callback
+  )
   React.useEffect(() => {
     if (map && needsRedraw({ map, drawnMagnitude })) {
       callback()

@@ -361,7 +361,7 @@ const useListenToLineModel = ({
   }, [model, map, newPoly, translation, isInteractive])
   useListenTo(
     model,
-    'change:polygon change:polygonBufferWidth change:polygonBufferUnits',
+    'change:polygon change:polygonBufferWidth change:polygonBufferUnits change:color',
     callback
   )
   React.useEffect(() => {
