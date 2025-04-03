@@ -276,7 +276,11 @@ const useListenToModel = ({
       }
     }
   }, [model, map, newCircle, translation, isInteractive])
-  useListenTo(model, 'change:lat change:lon change:radius', callback)
+  useListenTo(
+    model,
+    'change:lat change:lon change:radius change:color',
+    callback
+  )
   React.useEffect(() => {
     if (map && needsRedraw({ map, drawnMagnitude })) {
       callback()
