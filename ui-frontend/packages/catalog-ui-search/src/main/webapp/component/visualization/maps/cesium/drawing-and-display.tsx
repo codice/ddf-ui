@@ -61,7 +61,13 @@ export const removeOldDrawing = ({ map, id }: { map: any; id: string }) => {
   relevantPrimitives.length > 0 && map.getMap().scene.requestRender()
 }
 
-const makeOldDrawingNonEditable = ({ map, id }: { map: any; id: string }) => {
+export const makeOldDrawingNonEditable = ({
+  map,
+  id,
+}: {
+  map: any
+  id: string
+}) => {
   const relevantPrimitives = map
     .getMap()
     .scene.primitives._primitives.filter((prim: any) => {
@@ -76,102 +82,6 @@ const makeOldDrawingNonEditable = ({ map, id }: { map: any; id: string }) => {
     }
   })
   relevantPrimitives.length > 0 && map.getMap().scene.requestRender()
-}
-
-const nestedArraysOverlap = (arrayA: any[], arrayB: any[]) => {
-  return arrayA.some((elemA) =>
-    arrayB.some((elemB) => JSON.stringify(elemA) === JSON.stringify(elemB))
-  )
-}
-
-const isNewShape = (model: any) => {
-  const mode = model.get('mode')
-  switch (mode) {
-    case 'bbox':
-      const box = {
-        north: model.get('north'),
-        east: model.get('east'),
-        west: model.get('west'),
-        south: model.get('south'),
-      }
-      let prevModel = model.previousAttributes()
-      if (box.north && prevModel) {
-        const prevBox = {
-          north: prevModel['north'],
-          east: prevModel['east'],
-          west: prevModel['west'],
-          south: prevModel['south'],
-        }
-        if (prevBox.north) {
-          return !(
-            box.north === prevBox.north ||
-            box.east === prevBox.east ||
-            box.west === prevBox.west ||
-            box.south === prevBox.south
-          )
-        }
-      }
-    case 'circle':
-      const circle = { lon: model.get('lon'), lat: model.get('lat') }
-      prevModel = model.previousAttributes()
-      if (circle && prevModel) {
-        const prevCircle = { lon: prevModel['lon'], lat: prevModel['lat'] }
-        if (prevCircle.lat && prevCircle.lon) {
-          return !(
-            circle.lat === prevCircle.lat || circle.lon === prevCircle.lon
-          )
-        }
-      }
-    case 'line':
-      const line = model.get('line')
-      prevModel = model.previousAttributes()
-      if (line && prevModel) {
-        const prevLine = prevModel['line']
-        if (prevLine) {
-          return !nestedArraysOverlap(line, prevLine)
-        }
-      }
-    case 'poly':
-      const poly = model.get('polygon')
-      prevModel = model.previousAttributes()
-      if (prevModel) {
-        const prevPoly = prevModel['polygon']
-        if (prevPoly) {
-          return !nestedArraysOverlap(poly, prevPoly)
-        }
-      }
-    default:
-      return false
-  }
-}
-
-export const removeOrLockOldDrawing = (
-  isInteractive: boolean,
-  id: any,
-  map: any,
-  model: any
-) => {
-  const canChange = [
-    'isInteractive',
-    'polygonBufferWidth',
-    'lineWidth',
-    'line',
-    'polygon',
-    'usng',
-    'bbox',
-  ]
-
-  // remove previous shape from map after updating attributes, dragging shape, or exiting interactive mode
-  if (
-    isInteractive ||
-    (!isInteractive &&
-      Object.keys(model.changed).some((change) => canChange.includes(change)) &&
-      !isNewShape(model))
-  ) {
-    removeOldDrawing({ map, id })
-  } else {
-    makeOldDrawingNonEditable({ map, id })
-  }
 }
 
 let drawingLocation: any

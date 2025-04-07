@@ -18,7 +18,10 @@ import Cesium from 'cesium/Build/Cesium/Cesium'
 import _ from 'underscore'
 import { useListenTo } from '../../../selection-checkbox/useBackbone.hook'
 import { useRender } from '../../../hooks/useRender'
-import { removeOldDrawing, removeOrLockOldDrawing } from './drawing-and-display'
+import {
+  removeOldDrawing,
+  makeOldDrawingNonEditable,
+} from './drawing-and-display'
 import { getIdFromModelForDisplay } from '../drawing-and-display'
 import DrawHelper from '../../../../lib/cesium-drawhelper/DrawHelper'
 import DistanceUtils from '../../../../js/DistanceUtils'
@@ -150,8 +153,6 @@ const drawGeometry = ({
     }
   }
 
-  removeOrLockOldDrawing(Boolean(isInteractive), id, map, model)
-
   let primitive
 
   if (onDraw) {
@@ -251,6 +252,10 @@ const useListenToModel = ({
           // want to update the existing model unless the user clicks Apply.
           const newModel = model.clone()
           newModel.set(newBbox)
+          makeOldDrawingNonEditable({
+            map,
+            id: getIdFromModelForDisplay({ model }),
+          })
           drawGeometry({
             map,
             model: newModel,
@@ -259,6 +264,7 @@ const useListenToModel = ({
             onDraw,
           })
         } else if (model) {
+          removeOldDrawing({ map, id: getIdFromModelForDisplay({ model }) })
           drawGeometry({
             map,
             model,
