@@ -474,3 +474,5 @@ export class LazyQueryResult {
   }
   currentOverlayUrl?: string
 }
+
+export type LazyQueryResultType = typeof LazyQueryResult

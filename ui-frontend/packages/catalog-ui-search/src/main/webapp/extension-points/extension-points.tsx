@@ -42,13 +42,6 @@ export type ExtensionPointsType = {
     value: string
     onChange: (val: any) => void
   }) => React.ReactNode | undefined
-  customCanWritePermission: (props: {
-    attribute: string
-    lazyResult: LazyQueryResult
-    user: any
-    editableAttributes: string[]
-  }) => boolean | undefined
-  customEditableAttributes: () => Promise<any>
   resultItemTitleAddOn: ({
     lazyResult,
   }: {
@@ -128,8 +121,6 @@ const ExtensionPoints: ExtensionPointsType = {
   providers,
   metacardInteractions,
   customFilterInput: () => undefined,
-  customCanWritePermission: () => undefined,
-  customEditableAttributes: async () => undefined,
   resultItemTitleAddOn: () => null,
   resultTitleIconAddOn: () => null,
   resultItemRowAddOn: () => null,
