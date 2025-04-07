@@ -129,6 +129,16 @@ function useListenToResize({ callback }: { callback: () => void }) {
   }, [callback])
 }
 
+function useInitializeHeight({
+  updateHeightCallback,
+}: {
+  updateHeightCallback: () => void
+}) {
+  React.useEffect(() => {
+    updateHeightCallback()
+  }, [updateHeightCallback])
+}
+
 const TimelineVisualization = (props: Props) => {
   const { selectionInterface } = props
   const { config } = useConfiguration()
@@ -146,7 +156,7 @@ const TimelineVisualization = (props: Props) => {
   const [pause, setPause] = React.useState(false)
   const rootRef = React.useRef<HTMLDivElement>(null)
   const addSnack = useSnack()
-  const resizeCallback = React.useCallback(
+  const updateHeightCallback = React.useCallback(
     _debounce(() => {
       if (rootRef.current) {
         const rect = rootRef.current.getBoundingClientRect()
@@ -155,8 +165,11 @@ const TimelineVisualization = (props: Props) => {
     }, 250),
     []
   )
+  useInitializeHeight({
+    updateHeightCallback: updateHeightCallback,
+  })
   useListenToResize({
-    callback: resizeCallback,
+    callback: updateHeightCallback,
   })
   React.useEffect(() => {
     const selectedIds = Object.values(selectedResults).map(
