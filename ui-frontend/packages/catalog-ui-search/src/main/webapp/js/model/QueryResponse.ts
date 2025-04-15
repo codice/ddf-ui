@@ -35,7 +35,7 @@ if (StartupDataStore.Configuration.getWebSocketsEnabled() && window.WebSocket) {
   // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   const url = `${protocol[location.protocol]}//${location.hostname}:${
     location.port
-  }${location.pathname}ws`
+  }${location.pathname}ws/`
   rpcInitial = new Client(url, { autoconnect: false })
 
   // Only set rpc if the connection succeeds

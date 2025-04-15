@@ -25,5 +25,6 @@
         <module>audit</module>
         <module>javalin-utils</module>
         <module>deprecatable-enumeration-api</module>
+        <module>catalog-ui-websockets</module>
     </modules>
 </project>

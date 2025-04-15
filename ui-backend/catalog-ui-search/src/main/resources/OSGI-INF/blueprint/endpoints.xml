@@ -45,14 +45,22 @@ Services (HTTP/WS) that catalog-ui-search provides for the UI
         </service-properties>
     </service>
 
-    <service ref="socketServlet" interface="javax.servlet.Servlet">
-        <service-properties>
-            <entry key="osgi.http.whiteboard.servlet.pattern" value="/*"/>
-            <entry key="osgi.http.whiteboard.servlet.name" value="websocketServlet"/>
-            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.path=websocketContextHelper)"/>
-            <entry key="osgi.http.whiteboard.servlet.asyncSupported" value="true"/>
-        </service-properties>
-    </service>
+<!--    <service ref="socketServlet" interface="org.eclipse.jetty.websocket.servlet.WebSocketServlet">-->
+<!--        <service-properties>-->
+<!--            <entry key="org.ops4j.pax.web.http.whiteboard.websocket" value="true"/>-->
+<!--            <entry key="websocket" value="true"/>-->
+<!--            <entry key="javax.websocket.server.ServerEndpoint" value="/*"/>-->
+<!--            <entry key="osgi.http.whiteboard.servlet.pattern" value="/*"/>-->
+<!--            <entry key="osgi.http.whiteboard.servlet.name" value="websocketServlet"/>-->
+<!--            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.path=websocketContextHelper)"/>-->
+<!--            <entry key="osgi.http.whiteboard.servlet.asyncSupported" value="true"/>-->
+<!--        </service-properties>-->
+<!--    </service>-->
+
+    <bean id="websocketStart" class="org.codice.ddf.catalog.ui.ws.WebSocketStart">
+        <argument ref="blueprintBundleContext"/>
+        <argument ref="socketServlet"/>
+    </bean>
 
     <!--
     =============================================================
@@ -62,9 +70,9 @@ Services (HTTP/WS) that catalog-ui-search provides for the UI
 
     <service interface="javax.servlet.Servlet">
         <service-properties>
-            <entry key="osgi.http.whiteboard.servlet.pattern" value="/*"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/search/catalog/proxy/*"/>
             <entry key="osgi.http.whiteboard.servlet.name" value="searchCatalogProxyServlet"/>
-            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.name=searchCatalogProxyContextHelper)"/>
+            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.name=ddfDefaultContext)"/>
             <entry key="osgi.http.whiteboard.servlet.asyncSupported" value="true"/>
         </service-properties>
         <ref component-id="servlet"/>
