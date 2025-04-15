@@ -11,13 +11,20 @@
  * License is distributed along with this program and can be found at
  * <http://www.gnu.org/licenses/lgpl.html>.
  */
-package org.codice.ddf.catalog.ui;
+package org.codice.ddf.catalog.ui.websockets;
 
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ServiceScope;
-import org.osgi.service.http.context.ServletContextHelper;
-import org.osgi.service.http.whiteboard.propertytypes.HttpWhiteboardContext;
+import javax.servlet.annotation.WebServlet;
+import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
+import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 
-@Component(service = ServletContextHelper.class, scope = ServiceScope.BUNDLE)
-@HttpWhiteboardContext(name = "websocketContextHelper", path = "/search/catalog/ws")
-public class WebSocketContextHelper extends ServletContextHelper {}
+@WebServlet(
+  name = "SearchCatalogWebsockets",
+  urlPatterns = {"/*", "/"},
+  asyncSupported = true
+)
+public class SearchCatalogWebSocket extends WebSocketServlet {
+  @Override
+  public void configure(WebSocketServletFactory factory) {
+    factory.setCreator(new CustomWebSocketCreator());
+  }
+}
