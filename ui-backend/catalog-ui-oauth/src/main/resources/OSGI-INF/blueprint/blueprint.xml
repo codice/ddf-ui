@@ -20,7 +20,7 @@
     </bean>
 
     <bean id="rootReqSupplier" class="org.codice.ddf.catalog.ui.RootContextRequestSupplier"/>
-    <bean id="sparkServlet" class="org.codice.ddf.catalog.ui.SparkServlet" scope="prototype">
+    <bean id="sparkServlet" class="org.codice.ddf.catalog.ui.SparkServlet">
         <property name="sparkApplication">
             <ref component-id="oauthApplication"/>
         </property>

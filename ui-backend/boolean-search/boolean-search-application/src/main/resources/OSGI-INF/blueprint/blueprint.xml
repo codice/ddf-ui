@@ -8,7 +8,7 @@
            http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
            http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
 
-    <bean id="booleanSearchApplication" class="org.codice.ddf.catalog.search.application.BooleanSearchApplication" scope="prototype"/>
+    <bean id="booleanSearchApplication" class="org.codice.ddf.catalog.search.application.BooleanSearchApplication"/>
 
     <service ref="booleanSearchApplication" interface="javax.servlet.Servlet">
         <service-properties>
