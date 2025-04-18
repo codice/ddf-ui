@@ -30,9 +30,9 @@
 
     <service ref="sparkServlet" interface="javax.servlet.Servlet">
         <service-properties>
-            <entry key="osgi.http.whiteboard.servlet.pattern" value="/oauth/*"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/search/catalog/internal/oauth/*"/>
             <entry key="osgi.http.whiteboard.servlet.name" value="oauthSparkServlet"/>
-            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.name=searchCatalogInternalContextHelper)"/>
+            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.path=/)"/>
             <entry key="osgi.http.whiteboard.servlet.asyncSupported" value="true"/>
         </service-properties>
     </service>

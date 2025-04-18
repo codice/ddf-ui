@@ -5,7 +5,6 @@ import io.javalin.Javalin;
 import io.javalin.http.JavalinServlet;
 import java.io.IOException;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,13 +13,9 @@ import org.codice.ddf.catalog.javalin.utils.JavalinUtils;
 import org.codice.ddf.catalog.search.handlers.QueryHandler;
 import org.codice.ddf.catalog.search.handlers.SuggestionHandler;
 
-@WebServlet(
-  urlPatterns = {BooleanSearchApplication.BOOLEAN_SEARCH_PATH + "/*"},
-  name = "BooleanSearchApplication"
-)
 public class BooleanSearchApplication extends HttpServlet {
 
-  static final String BOOLEAN_SEARCH_PATH = "/boolean-search";
+  static final String BOOLEAN_SEARCH_PATH = "/search/catalog/internal/boolean-search";
 
   private final Javalin javalin = JavalinUtils.create(BOOLEAN_SEARCH_PATH);
 

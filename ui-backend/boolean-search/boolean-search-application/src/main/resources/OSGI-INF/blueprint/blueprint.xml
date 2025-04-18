@@ -12,9 +12,9 @@
 
     <service ref="booleanSearchApplication" interface="javax.servlet.Servlet">
         <service-properties>
-            <entry key="osgi.http.whiteboard.servlet.pattern" value="/boolean-search/*"/>
+            <entry key="osgi.http.whiteboard.servlet.pattern" value="/search/catalog/internal/boolean-search/*"/>
             <entry key="osgi.http.whiteboard.servlet.name" value="booleanSearchServlet"/>
-            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.name=searchCatalogInternalContextHelper)"/>
+            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.path=/)"/>
         </service-properties>
     </service>
 

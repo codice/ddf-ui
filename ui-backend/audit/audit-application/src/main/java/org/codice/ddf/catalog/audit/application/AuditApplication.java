@@ -18,20 +18,15 @@ import io.javalin.http.Handler;
 import io.javalin.http.JavalinServlet;
 import java.io.IOException;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.codice.ddf.catalog.javalin.utils.JavalinUtils;
 import org.jetbrains.annotations.NotNull;
 
-@WebServlet(
-  urlPatterns = {AuditApplication.LOOKUP_PATH + "/*"},
-  name = "AuditApplication"
-)
 public class AuditApplication extends HttpServlet {
 
-  static final String LOOKUP_PATH = "/audit";
+  static final String LOOKUP_PATH = "/search/catalog/internal/audit";
 
   private final Javalin javalin = JavalinUtils.create(LOOKUP_PATH);
 
