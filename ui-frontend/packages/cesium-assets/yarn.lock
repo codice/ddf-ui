@@ -851,8 +851,9 @@
     "@babel/helper-string-parser" "^7.25.9"
     "@babel/helper-validator-identifier" "^7.25.9"
 
-"@connexta/ace@file:../../../../ace":
+"@connexta/ace@git+https://github.com/connexta/ace.git#3ae3c5c8c2deff00ad9912dc47fbea19d12e30dd":
   version "1.0.0"
+  resolved "git+https://github.com/connexta/ace.git#3ae3c5c8c2deff00ad9912dc47fbea19d12e30dd"
   dependencies:
     "@babel/core" "7.26.0"
     "@babel/preset-env" "7.26.0"
