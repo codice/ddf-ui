@@ -30,7 +30,7 @@
     </bean>
 
     <bean id="auditApplication"
-          class="org.codice.ddf.catalog.audit.application.AuditApplication" scope="prototype">
+          class="org.codice.ddf.catalog.audit.application.AuditApplication">
         <argument ref="auditHandler"/>
         <argument ref="simpleAuditHandler"/>
     </bean>
