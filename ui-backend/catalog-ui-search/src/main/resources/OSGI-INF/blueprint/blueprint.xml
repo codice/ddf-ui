@@ -393,6 +393,7 @@ Implementation details
         <argument ref="sourceWarningsFilterManager"/>
     </bean>
 
+
     <bean id="jsonRpc" class="org.codice.ddf.catalog.ui.ws.JsonRpc">
         <argument>
             <map>
@@ -424,6 +425,13 @@ Implementation details
         <argument ref="jsonRpc"/>
         <argument ref="sessionPlugins"/>
     </bean>
+
+    <service interface="org.eclipse.jetty.websocket.servlet.WebSocketCreator" ref="socketServlet">
+        <service-properties>
+            <entry key="name" value="secureWebsocketCreatorSearchCatalog"/>
+        </service-properties>
+    </service>
+
 
     <!--
     =============================================================

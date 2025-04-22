@@ -76,6 +76,7 @@
         <bundle>mvn:org.codice.ddf.search/catalog-ui-enumeration/${project.version}</bundle>
         <bundle>mvn:com.google.code.gson/gson/${gson.version}</bundle>
         <bundle>mvn:org.codice.ddf.search/catalog-ui-splitter/${project.version}</bundle>
+        <bundle>mvn:org.codice.ddf.search/catalog-ui-websockets/${project.version}</bundle>
         <bundle>mvn:org.apache.commons/commons-math3/${commons-math3.version}</bundle>
         <bundle>mvn:org.codice.ddf.search/audit-api/${project.version}</bundle>
         <bundle>mvn:org.codice.ddf.search/audit-application/${project.version}</bundle>
