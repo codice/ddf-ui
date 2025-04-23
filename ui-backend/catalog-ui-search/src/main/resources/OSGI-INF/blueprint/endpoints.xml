@@ -45,15 +45,6 @@ Services (HTTP/WS) that catalog-ui-search provides for the UI
         </service-properties>
     </service>
 
-    <service ref="socketServlet" interface="javax.servlet.Servlet">
-        <service-properties>
-            <entry key="osgi.http.whiteboard.servlet.pattern" value="/search/catalog/ws/*"/>
-            <entry key="osgi.http.whiteboard.servlet.name" value="websocketServlet"/>
-            <entry key="osgi.http.whiteboard.context.select" value="(osgi.http.whiteboard.context.path=/)"/>
-            <entry key="osgi.http.whiteboard.servlet.asyncSupported" value="true"/>
-        </service-properties>
-    </service>
-
     <!--
     =============================================================
     MAP LAYERS DYNAMIC PROXY
