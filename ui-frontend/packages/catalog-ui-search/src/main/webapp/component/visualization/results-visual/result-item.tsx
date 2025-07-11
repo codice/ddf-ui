@@ -17,9 +17,6 @@ import LazyMetacardInteractions from './lazy-metacard-interactions'
 import IconHelper from '../../../js/IconHelper'
 import user from '../../singletons/user-instance'
 import Button from '@mui/material/Button'
-import LinkIcon from '@mui/icons-material/Link'
-import GetAppIcon from '@mui/icons-material/GetApp'
-import Grid from '@mui/material/Grid'
 
 import Paper from '@mui/material/Paper'
 import Tooltip from '@mui/material/Tooltip'
@@ -50,13 +47,14 @@ import ExtensionPoints from '../../../extension-points/extension-points'
 import { StartupDataStore } from '../../../js/model/Startup/startup'
 import { useMetacardDefinitions } from '../../../js/model/Startup/metacard-definitions.hooks'
 import wreqr from '../../../js/wreqr'
-import { useDialog } from '../../dialog'
-import { useDownloadComponent } from '../../download/download'
 import { LayoutContext } from '../../golden-layout/visual-settings.provider'
 import {
   RESULTS_ATTRIBUTES_LIST,
   getDefaultResultsShownList,
 } from '../settings-helpers'
+import { Grid2 } from '@mui/material'
+import { LinkButton } from '../../button/link-button'
+import { DownloadButton } from '../../button/download-button'
 
 const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
   return (
@@ -72,6 +70,13 @@ const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
     />
   )
 }
+/**
+ * Defines the basic properties for a ResultItem component.
+ * 
+ * @property lazyResults - An array of LazyQueryResult objects representing multiple query results.
+ * @property lazyResult - A single LazyQueryResult object representing an individual result.
+ * @property selectionInterface - An object providing selection functionality for results.
+ */
 type ResultItemBasicProps = {
   lazyResults: LazyQueryResult[]
   lazyResult: LazyQueryResult
@@ -115,6 +120,20 @@ export const getIconClassName = ({
   }
   return IconHelper.getClassByMetacardObject(lazyResult.plain)
 }
+
+/**
+ * A React component that provides multi-select actions for managing a collection of selected results.
+ *
+ * @param {Object} props - The component properties.
+ * @param {any} props.selectionInterface - An interface for managing the selection of results.
+ *
+ * The component displays the number of selected results and provides access
+ * to actions for the selected items via a contextual menu.
+ * 
+ * - Disables actions if no results are selected.
+ * - Allows interaction with selected results through a popover menu.
+ * - Uses `LazyMetacardInteractions` to display actions for the selected results.
+ */
 // @ts-ignore
 const MultiSelectActions = ({
   selectionInterface,
@@ -155,14 +174,48 @@ const MultiSelectActions = ({
     </>
   )
 }
+/**
+ * A CSS class string for setting the height of a component to fill its container.
+ * Used to ensure consistent full-height styling across dynamic action elements.
+ */
 const dynamicActionClasses = 'h-full'
-const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
-  const { setProps } = useDialog()
-  const metacardInteractionMenuState = useMenuState()
-  const DownloadComponent = useDownloadComponent()
+
+const HorizontalFixedActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
   return (
-    <Grid container direction="column" wrap="nowrap" alignItems="center">
-      <Grid item className="h-full">
+    <Grid2 container direction="row" wrap="nowrap" data-id="row-actions-container">
+        <LinkButton lazyResult={lazyResult} />
+        <DownloadButton lazyResult={lazyResult} />
+        <Grid2 className="h-full">
+          <Button
+            component="div"
+            data-id="result-item-more-vert-button"
+            style={{ height: '100%' }}
+            size="small"
+          >
+            <MoreIcon />
+          </Button>
+        </Grid2>
+      </Grid2>
+  )
+}
+
+/**
+ * A component that displays a set of dynamic action buttons for a given result (lazyResult).
+ * Includes options for more actions, download, validation errors/warnings, external links, and editing search results.
+ * 
+ * - Utilizes a popover menu for extended interactions through `LazyMetacardInteractions`.
+ * - Displays visual indicators for validation errors or warnings.
+ * - Provides buttons for result-specific actions such as opening external links, downloading resources,
+ *   and editing search-based results.
+ * 
+ * Props:
+ * - `lazyResult` (LazyQueryResult): The result object for which actions are displayed.
+ */
+const VerticalDynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
+  const metacardInteractionMenuState = useMenuState()
+  return (
+    <Grid2 container direction="column" wrap="nowrap" alignItems="center" data-id="column-actions-container">
+      <Grid2 className="h-full">
         <Button
           component="div"
           data-id="result-item-more-vert-button"
@@ -187,8 +240,8 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
             />
           </Paper>
         </Popover>
-      </Grid>
-      <Grid item className={dynamicActionClasses}>
+      </Grid2>
+      <Grid2 className={dynamicActionClasses}>
         {lazyResult.hasErrors() ? (
           <div
             data-id="validation-errors-icon"
@@ -202,8 +255,8 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
         ) : (
           ''
         )}
-      </Grid>
-      <Grid item className={dynamicActionClasses}>
+      </Grid2>
+      <Grid2 className={dynamicActionClasses}>
         {!lazyResult.hasErrors() && lazyResult.hasWarnings() ? (
           <div
             data-id="validation-warnings-icon"
@@ -217,44 +270,11 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
         ) : (
           ''
         )}
-      </Grid>
-      <Grid item className={dynamicActionClasses}>
-        {lazyResult.plain.metacard.properties['ext.link'] ? (
-          <Button
-            component="div"
-            title={lazyResult.plain.metacard.properties['ext.link']}
-            onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-              e.stopPropagation()
-              window.open(lazyResult.plain.metacard.properties['ext.link'])
-            }}
-            style={{ height: '100%' }}
-            size="small"
-          >
-            <LinkIcon />
-          </Button>
-        ) : null}
-      </Grid>
-      <Grid item className={dynamicActionClasses}>
-        {lazyResult.getDownloadUrl() ? (
-          <Button
-            component="div"
-            data-id="download-button"
-            onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-              e.stopPropagation()
-              setProps({
-                open: true,
-                children: <DownloadComponent lazyResults={[lazyResult]} />,
-              })
-            }}
-            style={{ height: '100%' }}
-            size="small"
-          >
-            <GetAppIcon />
-          </Button>
-        ) : null}
-      </Grid>
+      </Grid2>
+      <LinkButton lazyResult={lazyResult} />
+      <DownloadButton lazyResult={lazyResult} />
       <Extensions.resultItemTitleAddOn lazyResult={lazyResult} />
-      <Grid item className={dynamicActionClasses}>
+      <Grid2 className={dynamicActionClasses}>
         {lazyResult.isSearch() ? (
           <Button
             component={Link}
@@ -266,7 +286,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
             <EditIcon />
           </Button>
         ) : null}
-      </Grid>
+      </Grid2>
       {/** add inline editing later */}
       {/* <Grid item className="h-full">
            {lazyResult.isSearch() ? (
@@ -282,7 +302,7 @@ const DynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
              </Button>
            ) : null}
          </Grid> */}
-    </Grid>
+    </Grid2>
   )
 }
 export const SelectionBackground = ({
@@ -578,6 +598,7 @@ export const ResultItem = ({
          * thus making the dynamic actions stay visible when the user starts to mouse away.
          */
         try {
+          setRenderExtras(false)
           if (
             document.activeElement &&
             buttonRef.current &&
@@ -772,33 +793,29 @@ export const ResultItem = ({
             </div>
           </div>
         </div>
-        {renderExtras ? (
+      {renderExtras ? 
+        null :
+        (
           <>
             {' '}
-            {/* trick to keep the dropdown visible over an arc of the cursor, so users have some leeway if going diagonal to the actions dropdowns **/}
             <div
-              className={`${diagonalHoverClasses} w-full transform translate-y-1`}
-            />
-            <div
-              className={`${diagonalHoverClasses} w-9/12 transform translate-y-2 `}
-            />
-            <div
-              className={`${diagonalHoverClasses} w-6/12 transform translate-y-3`}
-            />
-            <div
-              className={`${diagonalHoverClasses} w-5/12 transform translate-y-4`}
-            />
-            <div
-              className={`${diagonalHoverClasses} w-4/12 transform translate-y-5`}
-            />
-            <div
-              className={`${diagonalHoverClasses} w-3/12 transform translate-y-6`}
-            />
-            <div
-              className={`${diagonalHoverClasses} w-2/12 transform translate-y-8`}
-            />
-            <div
-              className={`absolute z-40 group-hover:z-50 focus-within:z-50 right-0 top-0 focus-within:opacity-100 group-hover:opacity-100 hover:opacity-100 opacity-0 cursor-auto transform focus-within:scale-100 transition-all hover:scale-100 ease-in-out duration-200 hover:translate-x-0 hover:scale-x-100`}
+              className={`absolute z-40 
+                group-hover:z-50 
+                focus-within:z-50 
+                right-0 
+                top-0 
+                focus-within:opacity-100 
+                group-hover:opacity-100 
+                hover:opacity-100 
+                opacity-100 
+                cursor-auto transform 
+                focus-within:scale-100 
+                transition-all 
+                hover:scale-100 
+                ease-in-out 
+                duration-200 
+                hover:translate-x-0 
+                hover:scale-x-100`}
             >
               <Paper
                 onClick={(e) => {
@@ -807,10 +824,67 @@ export const ResultItem = ({
                 elevation={Elevations.overlays}
                 className="p-2"
               >
-                <DynamicActions lazyResult={lazyResult} />
+                <HorizontalFixedActions lazyResult={lazyResult} />
               </Paper>
             </div>
           </>
+        ) 
+      }
+      {renderExtras ? (
+        <>
+          {' '}
+          {/* trick to keep the dropdown visible over an arc of the cursor, so users have some leeway if going diagonal to the actions dropdowns **/}
+          <div
+            className={`${diagonalHoverClasses} w-full transform translate-y-1`}
+          />
+          <div
+            className={`${diagonalHoverClasses} w-9/12 transform translate-y-2 `}
+          />
+          <div
+            className={`${diagonalHoverClasses} w-6/12 transform translate-y-3`}
+          />
+          <div
+            className={`${diagonalHoverClasses} w-5/12 transform translate-y-4`}
+          />
+          <div
+            className={`${diagonalHoverClasses} w-4/12 transform translate-y-5`}
+          />
+          <div
+            className={`${diagonalHoverClasses} w-3/12 transform translate-y-6`}
+          />
+          <div
+            className={`${diagonalHoverClasses} w-2/12 transform translate-y-8`}
+          />
+          <div
+            className={`absolute z-40 
+              group-hover:z-50 
+              focus-within:z-50 
+              right-0 
+              top-0 
+              focus-within:opacity-100 
+              group-hover:opacity-100 
+              hover:opacity-100 
+              opacity-0 
+              cursor-auto transform 
+              focus-within:scale-100 
+              transition-all 
+              hover:scale-100 
+              ease-in-out 
+              duration-200 
+              hover:translate-x-0 
+              hover:scale-x-100`}
+          >
+            <Paper
+              onClick={(e) => {
+                e.stopPropagation()
+              }}
+              elevation={Elevations.overlays}
+              className="p-2"
+            >
+              <VerticalDynamicActions lazyResult={lazyResult} />
+            </Paper>
+          </div>
+        </>
         ) : null}
       </div>
     </button>
