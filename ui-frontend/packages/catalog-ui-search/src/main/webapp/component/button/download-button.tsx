@@ -11,27 +11,27 @@ type DownloadButtonProps = {
 }
 
 export const DownloadButton = ({ lazyResult }: DownloadButtonProps) => {
-    const DownloadComponent = useDownloadComponent()
-    const { setProps } = useDialog()
+  const DownloadComponent = useDownloadComponent()
+  const { setProps } = useDialog()
 
-    return (
-        <Grid2 className="h-full">
-            <Button
-            component="div"
-            data-id="download-button"
-            onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-                e.stopPropagation()
-                setProps({
-                open: true,
-                children: <DownloadComponent lazyResults={[lazyResult]} />,
-                })
-            }}
-            style={{ height: '100%' }}
-            size="small"
-            disabled={lazyResult.getDownloadUrl() ? false : true}
-            >
-            <GetAppIcon />
-            </Button>
-        </Grid2>
-    )
+  return (
+    <Grid2 className="h-full">
+      <Button
+        component="div"
+        data-id="download-button"
+        onClick={(e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+          e.stopPropagation()
+          setProps({
+            open: true,
+            children: <DownloadComponent lazyResults={[lazyResult]} />,
+          })
+        }}
+        style={{ height: '100%' }}
+        size="small"
+        disabled={lazyResult.getDownloadUrl() ? false : true}
+      >
+        <GetAppIcon />
+      </Button>
+    </Grid2>
+  )
 }

@@ -20,7 +20,9 @@ export const LinkButton = ({ lazyResult }: LinkButtonProps) => {
         }}
         style={{ height: '100%' }}
         size="small"
-        disabled={lazyResult.plain.metacard.properties['ext.link'] ? false : true}
+        disabled={
+          lazyResult.plain.metacard.properties['ext.link'] ? false : true
+        }
       >
         <LinkIcon />
       </Button>

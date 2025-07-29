@@ -72,7 +72,7 @@ const PropertyComponent = (props: React.AllHTMLAttributes<HTMLDivElement>) => {
 }
 /**
  * Defines the basic properties for a ResultItem component.
- * 
+ *
  * @property lazyResults - An array of LazyQueryResult objects representing multiple query results.
  * @property lazyResult - A single LazyQueryResult object representing an individual result.
  * @property selectionInterface - An object providing selection functionality for results.
@@ -129,7 +129,7 @@ export const getIconClassName = ({
  *
  * The component displays the number of selected results and provides access
  * to actions for the selected items via a contextual menu.
- * 
+ *
  * - Disables actions if no results are selected.
  * - Allows interaction with selected results through a popover menu.
  * - Uses `LazyMetacardInteractions` to display actions for the selected results.
@@ -180,41 +180,60 @@ const MultiSelectActions = ({
  */
 const dynamicActionClasses = 'h-full'
 
-const HorizontalFixedActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
+const HorizontalFixedActions = ({
+  lazyResult,
+}: {
+  lazyResult: LazyQueryResult
+}) => {
   return (
-    <Grid2 container direction="row" wrap="nowrap" data-id="row-actions-container">
-        <LinkButton lazyResult={lazyResult} />
-        <DownloadButton lazyResult={lazyResult} />
-        <Grid2 className="h-full">
-          <Button
-            component="div"
-            data-id="result-item-more-vert-button"
-            style={{ height: '100%' }}
-            size="small"
-          >
-            <MoreIcon />
-          </Button>
-        </Grid2>
+    <Grid2
+      container
+      direction="row"
+      wrap="nowrap"
+      data-id="row-actions-container"
+    >
+      <LinkButton lazyResult={lazyResult} />
+      <DownloadButton lazyResult={lazyResult} />
+      <Grid2 className="h-full">
+        <Button
+          component="div"
+          data-id="result-item-more-vert-button"
+          style={{ height: '100%' }}
+          size="small"
+        >
+          <MoreIcon />
+        </Button>
       </Grid2>
+    </Grid2>
   )
 }
 
 /**
  * A component that displays a set of dynamic action buttons for a given result (lazyResult).
  * Includes options for more actions, download, validation errors/warnings, external links, and editing search results.
- * 
+ *
  * - Utilizes a popover menu for extended interactions through `LazyMetacardInteractions`.
  * - Displays visual indicators for validation errors or warnings.
  * - Provides buttons for result-specific actions such as opening external links, downloading resources,
  *   and editing search-based results.
- * 
+ *
  * Props:
  * - `lazyResult` (LazyQueryResult): The result object for which actions are displayed.
  */
-const VerticalDynamicActions = ({ lazyResult }: { lazyResult: LazyQueryResult }) => {
+const VerticalDynamicActions = ({
+  lazyResult,
+}: {
+  lazyResult: LazyQueryResult
+}) => {
   const metacardInteractionMenuState = useMenuState()
   return (
-    <Grid2 container direction="column" wrap="nowrap" alignItems="center" data-id="column-actions-container">
+    <Grid2
+      container
+      direction="column"
+      wrap="nowrap"
+      alignItems="center"
+      data-id="column-actions-container"
+    >
       <Grid2 className="h-full">
         <Button
           component="div"
@@ -793,9 +812,7 @@ export const ResultItem = ({
             </div>
           </div>
         </div>
-      {renderExtras ? 
-        null :
-        (
+        {renderExtras ? null : (
           <>
             {' '}
             <div
@@ -828,35 +845,34 @@ export const ResultItem = ({
               </Paper>
             </div>
           </>
-        ) 
-      }
-      {renderExtras ? (
-        <>
-          {' '}
-          {/* trick to keep the dropdown visible over an arc of the cursor, so users have some leeway if going diagonal to the actions dropdowns **/}
-          <div
-            className={`${diagonalHoverClasses} w-full transform translate-y-1`}
-          />
-          <div
-            className={`${diagonalHoverClasses} w-9/12 transform translate-y-2 `}
-          />
-          <div
-            className={`${diagonalHoverClasses} w-6/12 transform translate-y-3`}
-          />
-          <div
-            className={`${diagonalHoverClasses} w-5/12 transform translate-y-4`}
-          />
-          <div
-            className={`${diagonalHoverClasses} w-4/12 transform translate-y-5`}
-          />
-          <div
-            className={`${diagonalHoverClasses} w-3/12 transform translate-y-6`}
-          />
-          <div
-            className={`${diagonalHoverClasses} w-2/12 transform translate-y-8`}
-          />
-          <div
-            className={`absolute z-40 
+        )}
+        {renderExtras ? (
+          <>
+            {' '}
+            {/* trick to keep the dropdown visible over an arc of the cursor, so users have some leeway if going diagonal to the actions dropdowns **/}
+            <div
+              className={`${diagonalHoverClasses} w-full transform translate-y-1`}
+            />
+            <div
+              className={`${diagonalHoverClasses} w-9/12 transform translate-y-2 `}
+            />
+            <div
+              className={`${diagonalHoverClasses} w-6/12 transform translate-y-3`}
+            />
+            <div
+              className={`${diagonalHoverClasses} w-5/12 transform translate-y-4`}
+            />
+            <div
+              className={`${diagonalHoverClasses} w-4/12 transform translate-y-5`}
+            />
+            <div
+              className={`${diagonalHoverClasses} w-3/12 transform translate-y-6`}
+            />
+            <div
+              className={`${diagonalHoverClasses} w-2/12 transform translate-y-8`}
+            />
+            <div
+              className={`absolute z-40 
               group-hover:z-50 
               focus-within:z-50 
               right-0 
@@ -873,18 +889,18 @@ export const ResultItem = ({
               duration-200 
               hover:translate-x-0 
               hover:scale-x-100`}
-          >
-            <Paper
-              onClick={(e) => {
-                e.stopPropagation()
-              }}
-              elevation={Elevations.overlays}
-              className="p-2"
             >
-              <VerticalDynamicActions lazyResult={lazyResult} />
-            </Paper>
-          </div>
-        </>
+              <Paper
+                onClick={(e) => {
+                  e.stopPropagation()
+                }}
+                elevation={Elevations.overlays}
+                className="p-2"
+              >
+                <VerticalDynamicActions lazyResult={lazyResult} />
+              </Paper>
+            </div>
+          </>
         ) : null}
       </div>
     </button>
