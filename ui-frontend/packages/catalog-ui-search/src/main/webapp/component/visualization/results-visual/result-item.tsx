@@ -817,22 +817,16 @@ export const ResultItem = ({
             {' '}
             <div
               className={`absolute z-40 
-                group-hover:z-50 
                 focus-within:z-50 
                 right-0 
                 top-0 
                 focus-within:opacity-100 
-                group-hover:opacity-100 
-                hover:opacity-100 
                 opacity-100 
                 cursor-auto transform 
                 focus-within:scale-100 
                 transition-all 
-                hover:scale-100 
                 ease-in-out 
-                duration-200 
-                hover:translate-x-0 
-                hover:scale-x-100`}
+                duration-200`}
             >
               <Paper
                 onClick={(e) => {
