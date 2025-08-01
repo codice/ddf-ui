@@ -192,8 +192,8 @@ const HorizontalFixedActions = ({
       wrap="nowrap"
       data-id="row-actions-container"
     >
-      <LinkButton lazyResult={lazyResult} />
       <DownloadButton lazyResult={lazyResult} />
+      <LinkButton lazyResult={lazyResult} />
       <Grid2 className="h-full">
         <Button
           component="div"
@@ -220,7 +220,7 @@ const HorizontalFixedActions = ({
  * Props:
  * - `lazyResult` (LazyQueryResult): The result object for which actions are displayed.
  */
-const VerticalDynamicActions = ({
+const HorizontalDynamicActions = ({
   lazyResult,
 }: {
   lazyResult: LazyQueryResult
@@ -229,11 +229,58 @@ const VerticalDynamicActions = ({
   return (
     <Grid2
       container
-      direction="column"
+      direction="row"
       wrap="nowrap"
       alignItems="center"
-      data-id="column-actions-container"
+      spacing={0.03}
+      data-id="row-dynamic-actions-container"
     >
+      <Grid2 className={dynamicActionClasses}>
+        {!lazyResult.hasErrors() && lazyResult.hasWarnings() ? (
+          <div
+            data-id="validation-warnings-icon"
+            className="h-full"
+            title="Has validation warnings."
+            data-help="Indicates the given result has a validation warning.
+                     See the 'Quality' tab of the result for more details."
+          >
+            <WarningIcon />
+          </div>
+        ) : (
+          ''
+        )}
+      </Grid2>
+      <Grid2 className={dynamicActionClasses}>
+        {lazyResult.hasErrors() ? (
+          <div
+            data-id="validation-errors-icon"
+            className="h-full"
+            title="Has validation errors."
+            data-help="Indicates the given result has a validation error.
+                     See the 'Quality' tab of the result for more details."
+          >
+            <WarningIcon />
+          </div>
+        ) : (
+          ''
+        )}
+      </Grid2>
+      <Grid2 className={dynamicActionClasses}>
+        {lazyResult.isSearch() ? (
+          <Button
+            component={Link}
+            data-id="edit-button"
+            to={`/search/${lazyResult.plain.id}`}
+            style={{ height: '100%' }}
+            size="small"
+          >
+            <EditIcon />
+          </Button>
+        ) : null}
+      </Grid2>
+      <Extensions.resultItemTitleAddOn lazyResult={lazyResult} />
+      <DownloadButton lazyResult={lazyResult} />
+      <LinkButton lazyResult={lazyResult} />
       <Grid2 className="h-full">
         <Button
           component="div"
@@ -259,52 +306,6 @@ const VerticalDynamicActions = ({
             />
           </Paper>
         </Popover>
-      </Grid2>
-      <Grid2 className={dynamicActionClasses}>
-        {lazyResult.hasErrors() ? (
-          <div
-            data-id="validation-errors-icon"
-            className="h-full"
-            title="Has validation errors."
-            data-help="Indicates the given result has a validation error.
-                     See the 'Quality' tab of the result for more details."
-          >
-            <WarningIcon />
-          </div>
-        ) : (
-          ''
-        )}
-      </Grid2>
-      <Grid2 className={dynamicActionClasses}>
-        {!lazyResult.hasErrors() && lazyResult.hasWarnings() ? (
-          <div
-            data-id="validation-warnings-icon"
-            className="h-full"
-            title="Has validation warnings."
-            data-help="Indicates the given result has a validation warning.
-                     See the 'Quality' tab of the result for more details."
-          >
-            <WarningIcon />
-          </div>
-        ) : (
-          ''
-        )}
-      </Grid2>
-      <LinkButton lazyResult={lazyResult} />
-      <DownloadButton lazyResult={lazyResult} />
-      <Extensions.resultItemTitleAddOn lazyResult={lazyResult} />
-      <Grid2 className={dynamicActionClasses}>
-        {lazyResult.isSearch() ? (
-          <Button
-            component={Link}
-            data-id="edit-button"
-            to={`/search/${lazyResult.plain.id}`}
-            style={{ height: '100%' }}
-            size="small"
-          >
-            <EditIcon />
-          </Button>
-        ) : null}
       </Grid2>
       {/** add inline editing later */}
       {/* <Grid item className="h-full">
@@ -891,7 +892,7 @@ export const ResultItem = ({
                 elevation={Elevations.overlays}
                 className="p-2"
               >
-                <VerticalDynamicActions lazyResult={lazyResult} />
+                <HorizontalDynamicActions lazyResult={lazyResult} />
               </Paper>
             </div>
           </>
