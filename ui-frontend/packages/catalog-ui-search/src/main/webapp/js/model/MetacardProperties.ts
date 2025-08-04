@@ -66,6 +66,6 @@ export default Backbone.AssociatedModel.extend({
         StartupDataStore.MetacardDefinitions.getAttributeMap()[key] &&
         StartupDataStore.MetacardDefinitions.getAttributeMap()[key].type ===
           'GEOMETRY'
-    )
+    ).flat()
   },
 })

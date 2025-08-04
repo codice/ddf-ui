@@ -367,7 +367,7 @@ export class LazyQueryResult {
         StartupDataStore.MetacardDefinitions.getAttributeMap()[key] &&
         StartupDataStore.MetacardDefinitions.getAttributeMap()[key].type ===
           'GEOMETRY'
-    )
+    ).flat()
   }
   getPoints(attribute?: any): any {
     try {
