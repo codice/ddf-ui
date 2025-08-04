@@ -33,6 +33,8 @@ import MaterialTab from '@mui/material/Tab'
 import MetacardTabs, { TabNames } from '../../tabs/metacard/tabs-metacard'
 import { useRerenderOnBackboneSync } from '../../../js/model/LazyQueryResult/hooks'
 import Extensions from '../../../extension-points'
+import { LinkButton } from '../../button/link-button'
+import { DownloadButton } from '../../button/download-button'
 
 type InspectorType = {
   selectionInterface: any
@@ -69,6 +71,8 @@ export const TitleView = ({ lazyResult }: TitleViewType) => {
       <OverflowTooltip className={'truncate'}>
         {lazyResult.plain.metacard.properties.title}
       </OverflowTooltip>
+      <LinkButton lazyResult={lazyResult} />
+      <DownloadButton lazyResult={lazyResult} />
       <Button {...menuState.MuiButtonProps}>
         <MoreVertIcon />
       </Button>
