@@ -75,6 +75,7 @@ const WMT = async (opts: any) => {
     ...opts,
     layer,
     matrixSet,
+    wrapX: true,
   })
   if (options === null) {
     throw new Error('WMTS map layer source could not be setup.')
