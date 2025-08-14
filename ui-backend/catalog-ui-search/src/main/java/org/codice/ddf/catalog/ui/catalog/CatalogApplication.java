@@ -17,14 +17,12 @@ import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.head;
 import static spark.Spark.post;
-import static spark.Spark.put;
 
 import com.google.common.collect.ImmutableList;
 import ddf.catalog.data.BinaryContent;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.resource.DataUsageLimitExceededException;
 import ddf.catalog.resource.Resource;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -32,7 +30,6 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.MediaType;
@@ -50,6 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
+import spark.Spark;
 import spark.servlet.SparkApplication;
 
 public class CatalogApplication implements SparkApplication {
@@ -80,6 +78,8 @@ public class CatalogApplication implements SparkApplication {
 
   @Override
   public void init() {
+
+    LOGGER.info("PATPAT: port", Spark.port());
     head(
         "/catalog/",
         (req, res) -> {
@@ -140,69 +140,70 @@ public class CatalogApplication implements SparkApplication {
           }
         });
 
-    post(
-        "/catalog/",
-        (req, res) -> {
-          if (req.contentType().startsWith("multipart/")) {
-            req.attribute(
-                ECLIPSE_MULTIPART_CONFIG,
-                new MultipartConfigElement(System.getProperty(JAVA_IO_TMPDIR)));
-
-            return addDocument(
-                res,
-                req.raw().getRequestURL(),
-                req.contentType(),
-                req.queryParams(TRANSFORM),
-                req.raw(),
-                new ByteArrayInputStream(req.bodyAsBytes()));
-          }
-
-          if (req.contentType().startsWith("text/")
-              || req.contentType().startsWith("application/")) {
-            return addDocument(
-                res,
-                req.raw().getRequestURL(),
-                req.contentType(),
-                req.queryParams(TRANSFORM),
-                null,
-                new ByteArrayInputStream(req.bodyAsBytes()));
-          }
-
-          res.status(HttpStatus.SC_NOT_FOUND);
-          return res;
-        });
-
-    put(
-        CATALOG_ID_PATH,
-        (req, res) -> {
-          if (req.contentType().startsWith("multipart/")) {
-            req.attribute(
-                ECLIPSE_MULTIPART_CONFIG,
-                new MultipartConfigElement(System.getProperty(JAVA_IO_TMPDIR)));
-
-            return updateDocument(
-                res,
-                req.params(":id"),
-                req.contentType(),
-                req.queryParams(TRANSFORM),
-                req.raw(),
-                new ByteArrayInputStream(req.bodyAsBytes()));
-          }
-
-          if (req.contentType().startsWith("text/")
-              || req.contentType().startsWith("application/")) {
-            return updateDocument(
-                res,
-                req.params(":id"),
-                req.contentType(),
-                req.queryParams(TRANSFORM),
-                null,
-                new ByteArrayInputStream(req.bodyAsBytes()));
-          }
-
-          res.status(HttpStatus.SC_NOT_FOUND);
-          return res;
-        });
+    //    post(
+    //        "/catalog/",
+    //        (req, res) -> {
+    //          LOGGER.info("PATPAT: port", Spark.port());
+    //          if (req.contentType().startsWith("multipart/")) {
+    //            req.attribute(
+    //                ECLIPSE_MULTIPART_CONFIG,
+    //                new MultipartConfigElement(System.getProperty(JAVA_IO_TMPDIR)));
+    //
+    //            return addDocument(
+    //                res,
+    //                req.raw().getRequestURL(),
+    //                req.contentType(),
+    //                req.queryParams(TRANSFORM),
+    //                req.raw(),
+    //                new ByteArrayInputStream(req.bodyAsBytes()));
+    //          }
+    //
+    //          if (req.contentType().startsWith("text/")
+    //              || req.contentType().startsWith("application/")) {
+    //            return addDocument(
+    //                res,
+    //                req.raw().getRequestURL(),
+    //                req.contentType(),
+    //                req.queryParams(TRANSFORM),
+    //                null,
+    //                new ByteArrayInputStream(req.bodyAsBytes()));
+    //          }
+    //
+    //          res.status(HttpStatus.SC_NOT_FOUND);
+    //          return res;
+    //        });
+    //
+    //    put(
+    //        CATALOG_ID_PATH,
+    //        (req, res) -> {
+    //          if (req.contentType().startsWith("multipart/")) {
+    //            req.attribute(
+    //                ECLIPSE_MULTIPART_CONFIG,
+    //                new MultipartConfigElement(System.getProperty(JAVA_IO_TMPDIR)));
+    //
+    //            return updateDocument(
+    //                res,
+    //                req.params(":id"),
+    //                req.contentType(),
+    //                req.queryParams(TRANSFORM),
+    //                req.raw(),
+    //                new ByteArrayInputStream(req.bodyAsBytes()));
+    //          }
+    //
+    //          if (req.contentType().startsWith("text/")
+    //              || req.contentType().startsWith("application/")) {
+    //            return updateDocument(
+    //                res,
+    //                req.params(":id"),
+    //                req.contentType(),
+    //                req.queryParams(TRANSFORM),
+    //                null,
+    //                new ByteArrayInputStream(req.bodyAsBytes()));
+    //          }
+    //
+    //          res.status(HttpStatus.SC_NOT_FOUND);
+    //          return res;
+    //        });
 
     delete(
         CATALOG_ID_PATH,

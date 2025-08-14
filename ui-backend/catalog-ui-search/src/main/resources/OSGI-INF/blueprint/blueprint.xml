@@ -149,6 +149,14 @@ Implementation details
         <argument ref="catalogService"/>
     </bean>
 
+    <bean id="restEndpoint" class="org.codice.ddf.endpoints.rest">
+        <argument ref="catalogService"/>
+    </bean>
+
+    <bean id="catalogCxfApplication" class="org.codice.ddf.catalog.ui.catalog.CatalogCxfApplication">
+        <argument ref="restEndpoint"/>
+    </bean>
+
     <bean id="platformApplication"
           class="org.codice.ddf.catalog.ui.configuration.PlatformUiConfigurationApplication">
         <argument ref="platformConfigurationService"/>

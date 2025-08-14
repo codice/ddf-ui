@@ -47,6 +47,18 @@ Services (HTTP/WS) that catalog-ui-search provides for the UI
 
     <!--
     =============================================================
+    CATALOG UPLOAD/EDIT
+    =============================================================
+    -->
+
+    <jaxrs:server id="catalogCfxServer" address="/catalog">
+        <jaxrs:serviceBeans>
+            <ref bean="catalogCxfApplication"/>
+        </jaxrs:serviceBeans>
+    </jaxrs:server>
+
+    <!--
+    =============================================================
     MAP LAYERS DYNAMIC PROXY
     =============================================================
     -->
