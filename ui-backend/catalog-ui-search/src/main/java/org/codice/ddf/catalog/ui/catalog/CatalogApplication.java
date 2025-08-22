@@ -17,12 +17,14 @@ import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.head;
 import static spark.Spark.post;
+import static spark.Spark.put;
 
 import com.google.common.collect.ImmutableList;
 import ddf.catalog.data.BinaryContent;
 import ddf.catalog.data.Metacard;
 import ddf.catalog.resource.DataUsageLimitExceededException;
 import ddf.catalog.resource.Resource;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -30,17 +32,25 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.cxf.jaxrs.impl.UriBuilderImpl;
 import org.apache.http.HttpStatus;
+import org.codice.ddf.catalog.ui.util.spark.SparkHttpHeaders;
+import org.codice.ddf.catalog.ui.util.spark.SparkMultipartAdapter;
+import org.codice.ddf.catalog.ui.util.spark.SparkUriInfo;
+import org.codice.ddf.endpoints.rest.RESTEndpoint;
 import org.codice.ddf.rest.api.CatalogService;
 import org.codice.ddf.rest.api.CatalogServiceException;
 import org.slf4j.Logger;
@@ -71,18 +81,21 @@ public class CatalogApplication implements SparkApplication {
   private static final String TRANSFORM = "transform";
 
   private CatalogService catalogService;
+  private RESTEndpoint restEndpoint;
 
-  public CatalogApplication(CatalogService catalogService) {
+  public CatalogApplication(CatalogService catalogService, RESTEndpoint restEndpoint) {
     this.catalogService = catalogService;
+    this.restEndpoint = restEndpoint;
   }
 
   @Override
   public void init() {
 
-    LOGGER.info("PATPAT: port", Spark.port());
+    LOGGER.info("PATPAT: port: {}", Spark.port());
     head(
         "/catalog/",
         (req, res) -> {
+          LOGGER.info("PATPAT: head(): /catalog/");
           LOGGER.trace("Ping!");
           res.status(HttpStatus.SC_OK);
           return res;
@@ -140,70 +153,133 @@ public class CatalogApplication implements SparkApplication {
           }
         });
 
-    //    post(
-    //        "/catalog/",
-    //        (req, res) -> {
-    //          LOGGER.info("PATPAT: port", Spark.port());
-    //          if (req.contentType().startsWith("multipart/")) {
-    //            req.attribute(
-    //                ECLIPSE_MULTIPART_CONFIG,
-    //                new MultipartConfigElement(System.getProperty(JAVA_IO_TMPDIR)));
+    //        post(
+    //            "/catalog/",
+    //            (req, res) -> {
+    //              LOGGER.info("PATPAT: port: {}", Spark.port());
+    //              LOGGER.info("PATPAT: post(): /catalog/");
+    //              if (req.contentType().startsWith("multipart/")) {
+    //                req.attribute(
+    //                    ECLIPSE_MULTIPART_CONFIG,
+    //                    new MultipartConfigElement(System.getProperty(JAVA_IO_TMPDIR)));
     //
-    //            return addDocument(
-    //                res,
-    //                req.raw().getRequestURL(),
-    //                req.contentType(),
-    //                req.queryParams(TRANSFORM),
-    //                req.raw(),
-    //                new ByteArrayInputStream(req.bodyAsBytes()));
-    //          }
+    //                return addDocument(
+    //                    res,
+    //                    req.raw().getRequestURL(),
+    //                    req.contentType(),
+    //                    req.queryParams(TRANSFORM),
+    //                    req.raw(),
+    //                    new ByteArrayInputStream(req.bodyAsBytes()));
+    //              }
     //
-    //          if (req.contentType().startsWith("text/")
-    //              || req.contentType().startsWith("application/")) {
-    //            return addDocument(
-    //                res,
-    //                req.raw().getRequestURL(),
-    //                req.contentType(),
-    //                req.queryParams(TRANSFORM),
-    //                null,
-    //                new ByteArrayInputStream(req.bodyAsBytes()));
-    //          }
+    //              if (req.contentType().startsWith("text/")
+    //                  || req.contentType().startsWith("application/")) {
+    //                return addDocument(
+    //                    res,
+    //                    req.raw().getRequestURL(),
+    //                    req.contentType(),
+    //                    req.queryParams(TRANSFORM),
+    //                    null,
+    //                    new ByteArrayInputStream(req.bodyAsBytes()));
+    //              }
     //
-    //          res.status(HttpStatus.SC_NOT_FOUND);
-    //          return res;
-    //        });
-    //
-    //    put(
-    //        CATALOG_ID_PATH,
-    //        (req, res) -> {
-    //          if (req.contentType().startsWith("multipart/")) {
-    //            req.attribute(
-    //                ECLIPSE_MULTIPART_CONFIG,
-    //                new MultipartConfigElement(System.getProperty(JAVA_IO_TMPDIR)));
-    //
-    //            return updateDocument(
-    //                res,
-    //                req.params(":id"),
-    //                req.contentType(),
-    //                req.queryParams(TRANSFORM),
-    //                req.raw(),
-    //                new ByteArrayInputStream(req.bodyAsBytes()));
-    //          }
-    //
-    //          if (req.contentType().startsWith("text/")
-    //              || req.contentType().startsWith("application/")) {
-    //            return updateDocument(
-    //                res,
-    //                req.params(":id"),
-    //                req.contentType(),
-    //                req.queryParams(TRANSFORM),
-    //                null,
-    //                new ByteArrayInputStream(req.bodyAsBytes()));
-    //          }
-    //
-    //          res.status(HttpStatus.SC_NOT_FOUND);
-    //          return res;
-    //        });
+    //              res.status(HttpStatus.SC_NOT_FOUND);
+    //              return res;
+    //            });
+
+    post(
+        "/catalog/",
+        "application/json",
+        (req, res) -> {
+          LOGGER.info("PATPAT: Received POST request on /catalog/");
+          LOGGER.info("PATPAT: Content-Type: {}", req.contentType());
+          LOGGER.info("PATPAT: Accept: {}", req.headers("Accept"));
+
+          // Access RESTEndpoint (used by JAX-RS CatalogCxfApplication)
+          //          RESTEndpoint restEndpoint = getRestEndpoint();
+
+          // Extract the required request components
+          HttpServletRequest httpRequest = req.raw(); // Raw Servlet Request
+          HttpHeaders headers = new SparkHttpHeaders(req); // Extract headers from Spark request
+          UriInfo uriInfo = new SparkUriInfo(req); // Build UriInfo object from request
+          String transformerParam = req.queryParams("transform"); // Extract query parameter
+
+          try {
+            // Handle "multipart/*" requests
+            if (req.contentType().startsWith("multipart/")) {
+
+              MultipartBody multipartBody = SparkMultipartAdapter.adapt(httpRequest);
+
+              javax.ws.rs.core.Response response =
+                  restEndpoint.addDocument(
+                      headers,
+                      uriInfo,
+                      httpRequest,
+                      multipartBody,
+                      transformerParam,
+                      new ByteArrayInputStream(req.bodyAsBytes()));
+
+              LOGGER.info("PATPAT: after addDocument()");
+              res.status(response.getStatus());
+              return response.getEntity();
+            }
+
+            // Handle "text/*" or "application/*" requests
+            if (req.contentType().startsWith("text/")
+                || req.contentType().startsWith("application/")) {
+              InputStream message = new ByteArrayInputStream(req.bodyAsBytes());
+
+              javax.ws.rs.core.Response response =
+                  restEndpoint.addDocument(
+                      headers, uriInfo, httpRequest, transformerParam, message);
+
+              res.status(response.getStatus());
+              return response.getEntity();
+            }
+
+            // Unsupported content type
+            res.status(HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE);
+            return "{\"error\":\"Unsupported content type\"}";
+            //            return "{\"test\":\"PATPAT\"}";
+          } catch (Exception e) {
+            LOGGER.error("Error processing request", e);
+            res.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+            return "{\"error\":\"An unexpected error occurred\"}";
+          }
+        });
+
+    put(
+        CATALOG_ID_PATH,
+        (req, res) -> {
+          LOGGER.info("PATPAT: put(): {}", CATALOG_ID_PATH);
+          if (req.contentType().startsWith("multipart/")) {
+            req.attribute(
+                ECLIPSE_MULTIPART_CONFIG,
+                new MultipartConfigElement(System.getProperty(JAVA_IO_TMPDIR)));
+
+            return updateDocument(
+                res,
+                req.params(":id"),
+                req.contentType(),
+                req.queryParams(TRANSFORM),
+                req.raw(),
+                new ByteArrayInputStream(req.bodyAsBytes()));
+          }
+
+          if (req.contentType().startsWith("text/")
+              || req.contentType().startsWith("application/")) {
+            return updateDocument(
+                res,
+                req.params(":id"),
+                req.contentType(),
+                req.queryParams(TRANSFORM),
+                null,
+                new ByteArrayInputStream(req.bodyAsBytes()));
+          }
+
+          res.status(HttpStatus.SC_NOT_FOUND);
+          return res;
+        });
 
     delete(
         CATALOG_ID_PATH,

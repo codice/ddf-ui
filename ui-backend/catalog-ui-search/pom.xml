@@ -497,7 +497,8 @@
                             ows-v_1_1_0-schema,
                             jaxb2-basics-runtime,
                             catalog-rest-service,
-                            owasp-java-html-sanitizer
+                            owasp-java-html-sanitizer,
+                            catalog-rest-endpoint
                         </Embed-Dependency>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
