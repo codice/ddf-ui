@@ -12,28 +12,47 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
-import WMTSCapabilities from "ol/format/WMTSCapabilities"
+import WMTSCapabilities from 'ol/format/WMTSCapabilities'
 
-function ensureValidLayer({layerIdentifier, result}: {layerIdentifier: string, result: any}) {
-  const layer = result.Contents.Layer.find((l: any) => l.Identifier === layerIdentifier)
+function ensureValidLayer({
+  layerIdentifier,
+  result,
+}: {
+  layerIdentifier: string
+  result: any
+}) {
+  const layer = result.Contents.Layer.find(
+    (l: any) => l.Identifier === layerIdentifier
+  )
   if (!layer) {
     const firstLayer = result.Contents.Layer[0]
-    console.error(`WMTS map layer source has no layer ${layerIdentifier}. Using first layer ${firstLayer.Identifier}.`)
+    console.error(
+      `WMTS map layer source has no layer ${layerIdentifier}. Using first layer ${firstLayer.Identifier}.`
+    )
     return firstLayer.Identifier
   }
   return layer.Identifier
 }
 
-function ensureValidMatrixSet({matrixSetIdentifier, result}: {matrixSetIdentifier: string, result: any}) {
-  const matrixSet = result.Contents.TileMatrixSet.find((m: any) => m.Identifier === matrixSetIdentifier)
+function ensureValidMatrixSet({
+  matrixSetIdentifier,
+  result,
+}: {
+  matrixSetIdentifier: string
+  result: any
+}) {
+  const matrixSet = result.Contents.TileMatrixSet.find(
+    (m: any) => m.Identifier === matrixSetIdentifier
+  )
   if (!matrixSet) {
     const firstMatrixSet = result.Contents.TileMatrixSet[0]
-    console.error(`WMTS map layer source has no matrix set ${matrixSetIdentifier}. Using first matrix set ${firstMatrixSet.Identifier}.`)
+    console.error(
+      `WMTS map layer source has no matrix set ${matrixSetIdentifier}. Using first matrix set ${firstMatrixSet.Identifier}.`
+    )
     return firstMatrixSet.Identifier
   }
-  return matrixSet.Identifier 
+  return matrixSet.Identifier
 }
-
 
 export async function getWMTSCapabilities(opts: any) {
   const { url, withCredentials, proxyEnabled } = opts
@@ -56,12 +75,12 @@ export async function getWMTSCapabilities(opts: any) {
   if (opts.tileMatrixSetID) {
     matrixSet = opts.tileMatrixSetID
   }
-  layer = ensureValidLayer({layerIdentifier: layer, result})
-  matrixSet = ensureValidMatrixSet({matrixSetIdentifier: matrixSet, result})
+  layer = ensureValidLayer({ layerIdentifier: layer, result })
+  matrixSet = ensureValidMatrixSet({ matrixSetIdentifier: matrixSet, result })
   return {
     layer,
     matrixSet,
     result,
-    originalUrl
+    originalUrl,
   }
 }

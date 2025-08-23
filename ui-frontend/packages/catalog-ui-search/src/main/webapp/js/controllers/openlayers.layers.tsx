@@ -50,7 +50,9 @@ const WMS = (opts: any) => {
 
 const WMT = async (opts: any) => {
   const { proxyEnabled } = opts
-  const { result, layer, matrixSet, originalUrl } = await getWMTSCapabilities(opts)
+  const { result, layer, matrixSet, originalUrl } = await getWMTSCapabilities(
+    opts
+  )
 
   const options = optionsFromCapabilities(result, {
     ...opts,
