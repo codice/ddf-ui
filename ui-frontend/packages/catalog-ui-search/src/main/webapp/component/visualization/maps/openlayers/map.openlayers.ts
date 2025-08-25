@@ -312,7 +312,7 @@ export default function (
     },
     panToResults(results: any) {
       const coordinates = _.flatten(
-        results.map((result: any) => result.getPoints('location')),
+        results.map((result: any) => result.getPoints()),
         true
       )
       this.panToExtent(coordinates)
@@ -327,6 +327,7 @@ export default function (
           size: map.getSize(),
           maxZoom: map.getView().getZoom(),
           duration: 500,
+          padding: [50, 50, 50, 50],
         })
       }
     },
