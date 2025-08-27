@@ -11,10 +11,10 @@ import { Map } from 'ol'
 import Backbone from 'backbone'
 import { StartupDataStore } from '../model/Startup/startup'
 import { optionsFromCapabilities } from 'ol/source/WMTS'
-import WMTSCapabilities from 'ol/format/WMTSCapabilities'
 import { ProjectionLike } from 'ol/proj'
 import Layer from 'ol/layer/Layer'
 import { View } from 'ol'
+import { getWMTSCapabilities } from './wmts'
 const createTile = (
   { show, alpha, ...options }: any,
   Source: any,
@@ -47,30 +47,13 @@ const WMS = (opts: any) => {
   }
   return createTile({ ...opts, params }, TileWMS)
 }
+
 const WMT = async (opts: any) => {
-  const { url, withCredentials, proxyEnabled } = opts
-  const originalUrl = proxyEnabled
-    ? new URL(url, window.location.origin + window.location.pathname)
-    : new URL(url)
-  const getCapabilitiesUrl = new URL(originalUrl)
-  getCapabilitiesUrl.searchParams.set('request', 'GetCapabilities')
-  const res = await window.fetch(getCapabilitiesUrl, {
-    credentials: withCredentials ? 'include' : 'same-origin',
-  })
-  const text = await res.text()
-  const parser = new WMTSCapabilities()
-  const result = parser.read(text)
-  if ((result as any).Contents.Layer.length === 0) {
-    throw new Error('WMTS map layer source has no layers.')
-  }
-  let { layer, matrixSet } = opts
-  /* If tileMatrixSetID is present (Cesium WMTS keyword) set matrixSet (OpenLayers WMTS keyword) */
-  if (opts.tileMatrixSetID) {
-    matrixSet = opts.tileMatrixSetID
-  }
-  if (!layer) {
-    layer = (result as any).Contents.Layer[0].Identifier
-  }
+  const { proxyEnabled } = opts
+  const { result, layer, matrixSet, originalUrl } = await getWMTSCapabilities(
+    opts
+  )
+
   const options = optionsFromCapabilities(result, {
     ...opts,
     layer,
@@ -79,6 +62,9 @@ const WMT = async (opts: any) => {
   if (options === null) {
     throw new Error('WMTS map layer source could not be setup.')
   }
+  // always set to true, as optionsFromCapabilities is too strict in how it determines wrapX
+  options.wrapX = true
+
   if (proxyEnabled) {
     // Set this to the proxy URL. Otherwise, OpenLayers will use the URL provided by the
     // GetCapabilities response.
