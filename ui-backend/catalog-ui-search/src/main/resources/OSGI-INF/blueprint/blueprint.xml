@@ -148,6 +148,7 @@ Implementation details
     <bean id="catalogApplication" class="org.codice.ddf.catalog.ui.catalog.CatalogApplication">
         <argument ref="catalogService"/>
         <argument ref="restEndpoint"/>
+        <argument ref="configurationApplication"/>
     </bean>
 
     <bean id="restEndpoint" class="org.codice.ddf.endpoints.rest.RESTEndpoint">

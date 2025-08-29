@@ -1,61 +1,82 @@
 package org.codice.ddf.catalog.ui.util.spark;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 import javax.ws.rs.core.MediaType;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
-import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
+import org.codice.ddf.catalog.ui.catalog.CleanableMultipartBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SparkMultipartAdapter {
-
   private static final Logger LOGGER = LoggerFactory.getLogger(SparkMultipartAdapter.class);
 
-  public static MultipartBody adapt(HttpServletRequest httpRequest) {
-    // Configure the request for multipart processing
+  private static final String ECLIPSE_MULTIPART_CONFIG = "org.eclipse.jetty.multipartConfig";
+  private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
+
+  private SparkMultipartAdapter() {}
+
+  /**
+   * Adapt a HttpServletRequest object into a Cleanable MultipartBody
+   *
+   * @param httpRequest the request object
+   * @param maxUploadSize the maximum allowed uploaded file size
+   * @param fileSizeThreshold the file size threshold stored in memory before written to disk
+   * @return a Cleanable MultipartBody
+   * @throws ServletException
+   * @throws IOException
+   */
+  public static CleanableMultipartBody adapt(
+      HttpServletRequest httpRequest, long maxUploadSize, int fileSizeThreshold)
+      throws ServletException, IOException {
+    String location = System.getProperty(JAVA_IO_TMPDIR);
     MultipartConfigElement multipartConfigElement =
-        new MultipartConfigElement(System.getProperty("java.io.tmpdir"));
-    httpRequest.setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
+        new MultipartConfigElement(location, maxUploadSize, maxUploadSize, fileSizeThreshold);
 
+    LOGGER.debug(
+        "Multipart Config Element: location={}, maxFileSize={}, maxRequestSize={}, fileSizeThreshold={}",
+        location,
+        maxUploadSize,
+        maxUploadSize,
+        fileSizeThreshold);
+
+    httpRequest.setAttribute(ECLIPSE_MULTIPART_CONFIG, multipartConfigElement);
     List<Attachment> attachments = new ArrayList<>();
-    try {
-      // Get all parts from the request
-      Collection<Part> parts = httpRequest.getParts();
-      LOGGER.info("PATPAT: SparkMultipartAdapter.adapt(): totalParts: {}", parts.size());
-      for (Part part : parts) {
+    Collection<Part> parts;
 
-        String name = part.getName();
-        String fileName = part.getSubmittedFileName();
-        long size = part.getSize();
-        String contentType = part.getContentType();
+    parts = httpRequest.getParts();
 
-        LOGGER.info(
-            "PATPAT: Processing part: name={}, fileName={}, size={}, contentType={}",
-            name,
-            fileName,
-            size,
-            contentType);
-        if (size > 0) {
-          InputStream partStream = part.getInputStream();
-          ContentDisposition contentDisposition =
-              new ContentDisposition(
-                  "form-data; name=\"" + name + "\"; filename=\"" + fileName + "\"");
+    for (Part part : parts) {
+      String name = part.getName();
+      String fileName = part.getSubmittedFileName();
+      long size = part.getSize();
+      String contentType = part.getContentType();
 
-          // Add attachment to MultipartBody
-          attachments.add(new Attachment(name, partStream, contentDisposition));
-        } else {
-          LOGGER.warn(
-              "PATPAT: Ignored part with empty content: name={}, fileName={}", name, fileName);
-        }
+      LOGGER.debug(
+          "Processing part: name={}, fileName={}, size={}, contentType={}",
+          name,
+          fileName,
+          size,
+          contentType);
+
+      if (size > 0) {
+        InputStream partStream = part.getInputStream();
+        ContentDisposition contentDisposition =
+            new ContentDisposition(
+                "form-data; name=\"" + name + "\"; filename=\"" + fileName + "\"");
+
+        attachments.add(new Attachment(name, partStream, contentDisposition));
+      } else {
+        LOGGER.warn("Ignored part with empty content: name={}, fileName={}", name, fileName);
       }
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to process multipart request", e);
     }
-    return new MultipartBody(attachments, MediaType.MULTIPART_FORM_DATA_TYPE, true);
+
+    return new CleanableMultipartBody(attachments, parts, MediaType.MULTIPART_FORM_DATA_TYPE, true);
   }
 }

@@ -168,7 +168,8 @@ public class ConfigurationApplication implements SparkApplication {
 
   private String mapHome = "";
 
-  private int maximumUploadSize = 1_048_576;
+  private long maximumUploadSize = 1_048_576;
+  private int maxFileSizeInMemory = 50 * 1024 * 1024; // 50 MB
 
   private List<String> readOnly =
       ImmutableList.of(
@@ -402,11 +403,11 @@ public class ConfigurationApplication implements SparkApplication {
     this.resultShow = resultShow;
   }
 
-  public void setMaximumUploadSize(int size) {
+  public void setMaximumUploadSize(long size) {
     this.maximumUploadSize = size;
   }
 
-  public int getMaximumUploadSize() {
+  public long getMaximumUploadSize() {
     return maximumUploadSize;
   }
 
@@ -573,6 +574,8 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("menuIconSrc", menuIconSrc);
     config.put("customBranding", customBranding);
     config.put("extra", extra);
+    config.put("maximumUploadSize", maximumUploadSize);
+    config.put("maxFileSizeInMemory", maxFileSizeInMemory);
 
     return config;
   }
@@ -1263,5 +1266,13 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setMenuIconSrc(String menuIconSrc) {
     this.menuIconSrc = menuIconSrc;
+  }
+
+  public void setMaxFileSizeInMemory(int size) {
+    this.maxFileSizeInMemory = size;
+  }
+
+  public int getMaxFileSizeInMemory() {
+    return maxFileSizeInMemory;
   }
 }

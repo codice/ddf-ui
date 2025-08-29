@@ -211,7 +211,7 @@ public class SearchFormsSymbolsIT {
 
   @Before
   public void setUp() {
-    when(MOCK_CONFIG.getMaximumUploadSize()).thenReturn(1024);
+    when(MOCK_CONFIG.getMaximumUploadSize()).thenReturn(1024L);
   }
 
   @After

@@ -44,9 +44,9 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.cxf.jaxrs.impl.UriBuilderImpl;
 import org.apache.http.HttpStatus;
+import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
 import org.codice.ddf.catalog.ui.util.spark.SparkHttpHeaders;
 import org.codice.ddf.catalog.ui.util.spark.SparkMultipartAdapter;
 import org.codice.ddf.catalog.ui.util.spark.SparkUriInfo;
@@ -57,7 +57,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
-import spark.Spark;
 import spark.servlet.SparkApplication;
 
 public class CatalogApplication implements SparkApplication {
@@ -74,28 +73,35 @@ public class CatalogApplication implements SparkApplication {
 
   private static final String HEADER_ACCEPT_RANGES = "Accept-Ranges";
 
+  private static final String HEADER_ID = "id";
+
   private static final String BYTES = "bytes";
+
+  private static final String CATALOG_PATH = "/catalog/";
 
   private static final String CATALOG_ID_PATH = "/catalog/:id";
 
   private static final String TRANSFORM = "transform";
 
+  private final ConfigurationApplication config;
+
   private CatalogService catalogService;
+
   private RESTEndpoint restEndpoint;
 
-  public CatalogApplication(CatalogService catalogService, RESTEndpoint restEndpoint) {
+  public CatalogApplication(
+      CatalogService catalogService, RESTEndpoint restEndpoint, ConfigurationApplication config) {
     this.catalogService = catalogService;
     this.restEndpoint = restEndpoint;
+    this.config = config;
   }
 
   @Override
   public void init() {
 
-    LOGGER.info("PATPAT: port: {}", Spark.port());
     head(
         "/catalog/",
         (req, res) -> {
-          LOGGER.info("PATPAT: head(): /catalog/");
           LOGGER.trace("Ping!");
           res.status(HttpStatus.SC_OK);
           return res;
@@ -153,106 +159,57 @@ public class CatalogApplication implements SparkApplication {
           }
         });
 
-    //        post(
-    //            "/catalog/",
-    //            (req, res) -> {
-    //              LOGGER.info("PATPAT: port: {}", Spark.port());
-    //              LOGGER.info("PATPAT: post(): /catalog/");
-    //              if (req.contentType().startsWith("multipart/")) {
-    //                req.attribute(
-    //                    ECLIPSE_MULTIPART_CONFIG,
-    //                    new MultipartConfigElement(System.getProperty(JAVA_IO_TMPDIR)));
-    //
-    //                return addDocument(
-    //                    res,
-    //                    req.raw().getRequestURL(),
-    //                    req.contentType(),
-    //                    req.queryParams(TRANSFORM),
-    //                    req.raw(),
-    //                    new ByteArrayInputStream(req.bodyAsBytes()));
-    //              }
-    //
-    //              if (req.contentType().startsWith("text/")
-    //                  || req.contentType().startsWith("application/")) {
-    //                return addDocument(
-    //                    res,
-    //                    req.raw().getRequestURL(),
-    //                    req.contentType(),
-    //                    req.queryParams(TRANSFORM),
-    //                    null,
-    //                    new ByteArrayInputStream(req.bodyAsBytes()));
-    //              }
-    //
-    //              res.status(HttpStatus.SC_NOT_FOUND);
-    //              return res;
-    //            });
-
     post(
-        "/catalog/",
-        "application/json",
+        CATALOG_PATH,
         (req, res) -> {
-          LOGGER.info("PATPAT: Received POST request on /catalog/");
-          LOGGER.info("PATPAT: Content-Type: {}", req.contentType());
-          LOGGER.info("PATPAT: Accept: {}", req.headers("Accept"));
+          LOGGER.debug("POST Path: {}", CATALOG_PATH);
+          String contentType = req.contentType();
 
-          // Access RESTEndpoint (used by JAX-RS CatalogCxfApplication)
-          //          RESTEndpoint restEndpoint = getRestEndpoint();
+          // Convert req and res for RESTEndpoint
+          HttpServletRequest httpRequest = req.raw();
+          HttpHeaders headers = new SparkHttpHeaders(req);
+          UriInfo uriInfo = new SparkUriInfo(req);
+          String transformerParam = req.queryParams(TRANSFORM);
+          InputStream inputStream = httpRequest.getInputStream();
 
-          // Extract the required request components
-          HttpServletRequest httpRequest = req.raw(); // Raw Servlet Request
-          HttpHeaders headers = new SparkHttpHeaders(req); // Extract headers from Spark request
-          UriInfo uriInfo = new SparkUriInfo(req); // Build UriInfo object from request
-          String transformerParam = req.queryParams("transform"); // Extract query parameter
+          if (contentType.startsWith("multipart/")) {
+            LOGGER.debug("POST Path: {} multipart", CATALOG_PATH);
+            CleanableMultipartBody multipartBody =
+                SparkMultipartAdapter.adapt(
+                    httpRequest, config.getMaximumUploadSize(), config.getMaxFileSizeInMemory());
 
-          try {
-            // Handle "multipart/*" requests
-            if (req.contentType().startsWith("multipart/")) {
+            javax.ws.rs.core.Response response =
+                restEndpoint.addDocument(
+                    headers, uriInfo, httpRequest, multipartBody, transformerParam, inputStream);
 
-              MultipartBody multipartBody = SparkMultipartAdapter.adapt(httpRequest);
+            setResponse(res, httpRequest.getRequestURL(), response.getHeaderString(HEADER_ID));
+            multipartBody.cleanup();
 
-              javax.ws.rs.core.Response response =
-                  restEndpoint.addDocument(
-                      headers,
-                      uriInfo,
-                      httpRequest,
-                      multipartBody,
-                      transformerParam,
-                      new ByteArrayInputStream(req.bodyAsBytes()));
-
-              LOGGER.info("PATPAT: after addDocument()");
-              res.status(response.getStatus());
-              return response.getEntity();
-            }
-
-            // Handle "text/*" or "application/*" requests
-            if (req.contentType().startsWith("text/")
-                || req.contentType().startsWith("application/")) {
-              InputStream message = new ByteArrayInputStream(req.bodyAsBytes());
-
-              javax.ws.rs.core.Response response =
-                  restEndpoint.addDocument(
-                      headers, uriInfo, httpRequest, transformerParam, message);
-
-              res.status(response.getStatus());
-              return response.getEntity();
-            }
-
-            // Unsupported content type
-            res.status(HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE);
-            return "{\"error\":\"Unsupported content type\"}";
-            //            return "{\"test\":\"PATPAT\"}";
-          } catch (Exception e) {
-            LOGGER.error("Error processing request", e);
-            res.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-            return "{\"error\":\"An unexpected error occurred\"}";
+            return "";
           }
+
+          if (contentType.startsWith("text/") || contentType.startsWith("application/")) {
+            LOGGER.debug("POST Path: {} text/application", CATALOG_PATH);
+            javax.ws.rs.core.Response response =
+                restEndpoint.addDocument(
+                    headers, uriInfo, httpRequest, transformerParam, inputStream);
+
+            setResponse(res, httpRequest.getRequestURL(), response.getHeaderString(HEADER_ID));
+
+            return "";
+          }
+
+          res.status(HttpStatus.SC_NOT_FOUND);
+          return res;
         });
 
     put(
         CATALOG_ID_PATH,
         (req, res) -> {
-          LOGGER.info("PATPAT: put(): {}", CATALOG_ID_PATH);
-          if (req.contentType().startsWith("multipart/")) {
+          LOGGER.debug("PUT Path: {}", CATALOG_ID_PATH);
+          String contentType = req.contentType();
+
+          if (contentType.startsWith("multipart/")) {
             req.attribute(
                 ECLIPSE_MULTIPART_CONFIG,
                 new MultipartConfigElement(System.getProperty(JAVA_IO_TMPDIR)));
@@ -260,18 +217,17 @@ public class CatalogApplication implements SparkApplication {
             return updateDocument(
                 res,
                 req.params(":id"),
-                req.contentType(),
+                contentType,
                 req.queryParams(TRANSFORM),
                 req.raw(),
                 new ByteArrayInputStream(req.bodyAsBytes()));
           }
 
-          if (req.contentType().startsWith("text/")
-              || req.contentType().startsWith("application/")) {
+          if (contentType.startsWith("text/") || contentType.startsWith("application/")) {
             return updateDocument(
                 res,
                 req.params(":id"),
-                req.contentType(),
+                contentType,
                 req.queryParams(TRANSFORM),
                 null,
                 new ByteArrayInputStream(req.bodyAsBytes()));
@@ -450,30 +406,14 @@ public class CatalogApplication implements SparkApplication {
     }
   }
 
-  private String addDocument(
-      Response res,
-      StringBuffer requestUrl,
-      String contentType,
-      String transformerParam,
-      HttpServletRequest httpServletRequest,
-      InputStream inputStream) {
-    try {
-      List<String> contentTypeList = ImmutableList.of(contentType);
-      String id =
-          catalogService.addDocument(
-              contentTypeList, httpServletRequest, transformerParam, inputStream);
+  private void setResponse(Response res, StringBuffer requestUrl, String id)
+      throws URISyntaxException {
+    URI uri = new URI(requestUrl.toString());
+    UriBuilder uriBuilder = new UriBuilderImpl(uri).path("/" + id);
 
-      URI uri = new URI(requestUrl.toString());
-      UriBuilder uriBuilder = new UriBuilderImpl(uri).path("/" + id);
-
-      res.status(HttpStatus.SC_CREATED);
-      res.header("Location", uriBuilder.build().toString());
-      res.header(Metacard.ID, id);
-      return "";
-
-    } catch (CatalogServiceException | URISyntaxException e) {
-      return createBadRequestResponse(res, e.getMessage());
-    }
+    res.status(HttpStatus.SC_CREATED);
+    res.header("Location", uriBuilder.build().toString());
+    res.header(Metacard.ID, id);
   }
 
   private MultivaluedMap<String, String> getQueryParamsMap(Request request) {
