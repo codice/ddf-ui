@@ -207,9 +207,8 @@ public class CatalogApplication implements SparkApplication {
         CATALOG_ID_PATH,
         (req, res) -> {
           LOGGER.debug("PUT Path: {}", CATALOG_ID_PATH);
-          String contentType = req.contentType();
 
-          if (contentType.startsWith("multipart/")) {
+          if (req.contentType().startsWith("multipart/")) {
             req.attribute(
                 ECLIPSE_MULTIPART_CONFIG,
                 new MultipartConfigElement(System.getProperty(JAVA_IO_TMPDIR)));
@@ -217,17 +216,18 @@ public class CatalogApplication implements SparkApplication {
             return updateDocument(
                 res,
                 req.params(":id"),
-                contentType,
+                req.contentType(),
                 req.queryParams(TRANSFORM),
                 req.raw(),
                 new ByteArrayInputStream(req.bodyAsBytes()));
           }
 
-          if (contentType.startsWith("text/") || contentType.startsWith("application/")) {
+          if (req.contentType().startsWith("text/")
+              || req.contentType().startsWith("application/")) {
             return updateDocument(
                 res,
                 req.params(":id"),
-                contentType,
+                req.contentType(),
                 req.queryParams(TRANSFORM),
                 null,
                 new ByteArrayInputStream(req.bodyAsBytes()));
