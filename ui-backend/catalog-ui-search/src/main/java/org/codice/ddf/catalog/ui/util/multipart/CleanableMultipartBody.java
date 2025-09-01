@@ -1,4 +1,4 @@
-package org.codice.ddf.catalog.ui.catalog;
+package org.codice.ddf.catalog.ui.util.multipart;
 
 import java.util.Collection;
 import java.util.List;

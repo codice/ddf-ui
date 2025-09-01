@@ -1,4 +1,4 @@
-package org.codice.ddf.catalog.ui.util.spark;
+package org.codice.ddf.catalog.ui.util.multipart;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,20 +10,19 @@ import javax.servlet.http.Part;
 import javax.ws.rs.core.MediaType;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
-import org.codice.ddf.catalog.ui.catalog.CleanableMultipartBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SparkMultipartAdapter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(SparkMultipartAdapter.class);
+public class CleanableMultipartBodyFactory {
+  private static final Logger LOGGER = LoggerFactory.getLogger(CleanableMultipartBodyFactory.class);
 
   private static final String ECLIPSE_MULTIPART_CONFIG = "org.eclipse.jetty.multipartConfig";
   private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
 
-  private SparkMultipartAdapter() {}
+  private CleanableMultipartBodyFactory() {}
 
   /**
-   * Adapt a HttpServletRequest object into a Cleanable MultipartBody
+   * Creates a Cleanable MultipartBody object from HttpServletRequest
    *
    * @param httpRequest the request object
    * @param maxUploadSize the maximum allowed uploaded file size
@@ -32,7 +31,7 @@ public class SparkMultipartAdapter {
    * @throws ServletException
    * @throws IOException
    */
-  public static CleanableMultipartBody adapt(
+  public static CleanableMultipartBody create(
       HttpServletRequest httpRequest, long maxUploadSize, int fileSizeThreshold)
       throws ServletException, IOException {
     String location = System.getProperty(JAVA_IO_TMPDIR);

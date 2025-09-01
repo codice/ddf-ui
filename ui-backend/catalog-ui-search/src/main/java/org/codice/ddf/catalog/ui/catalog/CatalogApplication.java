@@ -47,9 +47,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.impl.UriBuilderImpl;
 import org.apache.http.HttpStatus;
 import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
-import org.codice.ddf.catalog.ui.util.spark.SparkHttpHeaders;
-import org.codice.ddf.catalog.ui.util.spark.SparkMultipartAdapter;
-import org.codice.ddf.catalog.ui.util.spark.SparkUriInfo;
+import org.codice.ddf.catalog.ui.util.jaxrs.JaxRsHttpHeaders;
+import org.codice.ddf.catalog.ui.util.multipart.CleanableMultipartBody;
+import org.codice.ddf.catalog.ui.util.multipart.CleanableMultipartBodyFactory;
+import org.codice.ddf.catalog.ui.util.jaxrs.JaxRsUriInfo;
 import org.codice.ddf.endpoints.rest.RESTEndpoint;
 import org.codice.ddf.rest.api.CatalogService;
 import org.codice.ddf.rest.api.CatalogServiceException;
@@ -167,15 +168,15 @@ public class CatalogApplication implements SparkApplication {
 
           // Convert req and res for RESTEndpoint
           HttpServletRequest httpRequest = req.raw();
-          HttpHeaders headers = new SparkHttpHeaders(req);
-          UriInfo uriInfo = new SparkUriInfo(req);
+          HttpHeaders headers = new JaxRsHttpHeaders(req);
+          UriInfo uriInfo = new JaxRsUriInfo(req);
           String transformerParam = req.queryParams(TRANSFORM);
           InputStream inputStream = httpRequest.getInputStream();
 
           if (contentType.startsWith("multipart/")) {
             LOGGER.debug("POST Path: {} multipart", CATALOG_PATH);
             CleanableMultipartBody multipartBody =
-                SparkMultipartAdapter.adapt(
+                CleanableMultipartBodyFactory.create(
                     httpRequest, config.getMaximumUploadSize(), config.getMaxFileSizeInMemory());
 
             javax.ws.rs.core.Response response =
