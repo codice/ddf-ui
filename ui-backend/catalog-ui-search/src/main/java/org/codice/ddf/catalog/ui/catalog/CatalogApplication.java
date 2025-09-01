@@ -206,8 +206,6 @@ public class CatalogApplication implements SparkApplication {
     put(
         CATALOG_ID_PATH,
         (req, res) -> {
-          LOGGER.debug("PUT Path: {}", CATALOG_ID_PATH);
-
           if (req.contentType().startsWith("multipart/")) {
             req.attribute(
                 ECLIPSE_MULTIPART_CONFIG,
