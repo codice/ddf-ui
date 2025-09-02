@@ -48,9 +48,9 @@ import org.apache.cxf.jaxrs.impl.UriBuilderImpl;
 import org.apache.http.HttpStatus;
 import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
 import org.codice.ddf.catalog.ui.util.jaxrs.JaxRsHttpHeaders;
+import org.codice.ddf.catalog.ui.util.jaxrs.JaxRsUriInfo;
 import org.codice.ddf.catalog.ui.util.multipart.CleanableMultipartBody;
 import org.codice.ddf.catalog.ui.util.multipart.CleanableMultipartBodyFactory;
-import org.codice.ddf.catalog.ui.util.jaxrs.JaxRsUriInfo;
 import org.codice.ddf.endpoints.rest.RESTEndpoint;
 import org.codice.ddf.rest.api.CatalogService;
 import org.codice.ddf.rest.api.CatalogServiceException;
@@ -163,45 +163,50 @@ public class CatalogApplication implements SparkApplication {
     post(
         CATALOG_PATH,
         (req, res) -> {
-          LOGGER.debug("POST Path: {}", CATALOG_PATH);
-          String contentType = req.contentType();
+          try {
+            LOGGER.debug("POST Path: {}", CATALOG_PATH);
+            String contentType = req.contentType();
 
-          // Convert req and res for RESTEndpoint
-          HttpServletRequest httpRequest = req.raw();
-          HttpHeaders headers = new JaxRsHttpHeaders(req);
-          UriInfo uriInfo = new JaxRsUriInfo(req);
-          String transformerParam = req.queryParams(TRANSFORM);
-          InputStream inputStream = httpRequest.getInputStream();
+            // Convert req and res for RESTEndpoint
+            HttpServletRequest httpRequest = req.raw();
+            HttpHeaders headers = new JaxRsHttpHeaders(req);
+            UriInfo uriInfo = new JaxRsUriInfo(req);
+            String transformerParam = req.queryParams(TRANSFORM);
+            InputStream inputStream = httpRequest.getInputStream();
 
-          if (contentType.startsWith("multipart/")) {
-            LOGGER.debug("POST Path: {} multipart", CATALOG_PATH);
-            CleanableMultipartBody multipartBody =
-                CleanableMultipartBodyFactory.create(
-                    httpRequest, config.getMaximumUploadSize(), config.getMaxFileSizeInMemory());
+            if (contentType.startsWith("multipart/")) {
+              LOGGER.debug("POST Path: {} multipart", CATALOG_PATH);
+              CleanableMultipartBody multipartBody =
+                  CleanableMultipartBodyFactory.create(
+                      httpRequest, config.getMaximumUploadSize(), config.getMaxFileSizeInMemory());
 
-            javax.ws.rs.core.Response response =
-                restEndpoint.addDocument(
-                    headers, uriInfo, httpRequest, multipartBody, transformerParam, inputStream);
+              javax.ws.rs.core.Response response =
+                  restEndpoint.addDocument(
+                      headers, uriInfo, httpRequest, multipartBody, transformerParam, inputStream);
 
-            setResponse(res, httpRequest.getRequestURL(), response.getHeaderString(HEADER_ID));
-            multipartBody.cleanup();
+              multipartBody.cleanup();
 
-            return "";
+              return setResponse(
+                  res, httpRequest.getRequestURL(), response.getHeaderString(HEADER_ID));
+            }
+
+            if (contentType.startsWith("text/") || contentType.startsWith("application/")) {
+              LOGGER.debug("POST Path: {} text/application", CATALOG_PATH);
+              javax.ws.rs.core.Response response =
+                  restEndpoint.addDocument(
+                      headers, uriInfo, httpRequest, transformerParam, inputStream);
+
+              return setResponse(
+                  res, httpRequest.getRequestURL(), response.getHeaderString(HEADER_ID));
+            }
+
+            res.status(HttpStatus.SC_NOT_FOUND);
+            return res;
+          } catch (Exception e) {
+            LOGGER.error("Unexpected error in request handler", e);
+            res.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+            return res;
           }
-
-          if (contentType.startsWith("text/") || contentType.startsWith("application/")) {
-            LOGGER.debug("POST Path: {} text/application", CATALOG_PATH);
-            javax.ws.rs.core.Response response =
-                restEndpoint.addDocument(
-                    headers, uriInfo, httpRequest, transformerParam, inputStream);
-
-            setResponse(res, httpRequest.getRequestURL(), response.getHeaderString(HEADER_ID));
-
-            return "";
-          }
-
-          res.status(HttpStatus.SC_NOT_FOUND);
-          return res;
         });
 
     put(
@@ -405,14 +410,19 @@ public class CatalogApplication implements SparkApplication {
     }
   }
 
-  private void setResponse(Response res, StringBuffer requestUrl, String id)
-      throws URISyntaxException {
-    URI uri = new URI(requestUrl.toString());
-    UriBuilder uriBuilder = new UriBuilderImpl(uri).path("/" + id);
+  private String setResponse(Response res, StringBuffer requestUrl, String id) {
+    try {
+      URI uri = new URI(requestUrl.toString());
+      UriBuilder uriBuilder = new UriBuilderImpl(uri).path("/" + id);
 
-    res.status(HttpStatus.SC_CREATED);
-    res.header("Location", uriBuilder.build().toString());
-    res.header(Metacard.ID, id);
+      res.status(HttpStatus.SC_CREATED);
+      res.header("Location", uriBuilder.build().toString());
+      res.header(Metacard.ID, id);
+      return "";
+
+    } catch (URISyntaxException e) {
+      return createBadRequestResponse(res, e.getMessage());
+    }
   }
 
   private MultivaluedMap<String, String> getQueryParamsMap(Request request) {
