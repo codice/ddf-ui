@@ -99,7 +99,6 @@ public class CatalogApplication implements SparkApplication {
 
   @Override
   public void init() {
-
     head(
         "/catalog/",
         (req, res) -> {
