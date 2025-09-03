@@ -37,7 +37,12 @@ const LogoutProcess: React.FC = () => {
         .then((res) => res.json())
         .then((action: LogoutAction) => {
           if (action.url) {
-            window.location.href = action.url
+            const url = new URL(action.url);
+            const params = url.searchParams;
+            const redirect = params.get("post_logout_redirect_uri")
+            const newRedirect = redirect.replace("oidc\/logout\?", "oidc/logout?no-cache=" + Date.now() + "&")
+            params.set("post_logout_redirect_uri", newRedirect)
+            window.location.href = url
           } else {
             setState('error')
           }
