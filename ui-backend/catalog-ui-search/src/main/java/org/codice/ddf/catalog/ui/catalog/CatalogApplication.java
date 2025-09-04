@@ -200,11 +200,11 @@ public class CatalogApplication implements SparkApplication {
             }
 
             res.status(HttpStatus.SC_NOT_FOUND);
-            return res;
+            return "Not Found";
           } catch (Exception e) {
             LOGGER.error("Unexpected error in request handler", e);
             res.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-            return res;
+            return "Internal Server Error";
           }
         });
 
