@@ -42,8 +42,11 @@ import javax.ws.rs.core.UriBuilder;
 import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.cxf.jaxrs.impl.UriBuilderImpl;
 import org.apache.http.HttpStatus;
+import org.codice.ddf.catalog.ui.util.multipart.CloseableMultipartBody;
+import org.codice.ddf.catalog.ui.util.multipart.CloseableMultipartBodyFactory;
 import org.codice.ddf.rest.api.CatalogService;
 import org.codice.ddf.rest.api.CatalogServiceException;
 import org.slf4j.Logger;
@@ -144,17 +147,28 @@ public class CatalogApplication implements SparkApplication {
         "/catalog/",
         (req, res) -> {
           if (req.contentType().startsWith("multipart/")) {
+            long MAX_UPLOAD_SIZE = 5L * 1024 * 1024 * 1024;
+            int FILE_SIZE_THRESHOLD = 50 * 1024 * 1024;
             req.attribute(
                 ECLIPSE_MULTIPART_CONFIG,
-                new MultipartConfigElement(System.getProperty(JAVA_IO_TMPDIR)));
+                new MultipartConfigElement(
+                    System.getProperty(JAVA_IO_TMPDIR),
+                    MAX_UPLOAD_SIZE,
+                    MAX_UPLOAD_SIZE,
+                    FILE_SIZE_THRESHOLD));
 
-            return addDocument(
-                res,
-                req.raw().getRequestURL(),
-                req.contentType(),
-                req.queryParams(TRANSFORM),
-                req.raw(),
-                new ByteArrayInputStream(req.bodyAsBytes()));
+            try (CloseableMultipartBody multipartBody =
+                CloseableMultipartBodyFactory.create(
+                    req.raw(), MAX_UPLOAD_SIZE, FILE_SIZE_THRESHOLD)) {
+
+              return addDocument(
+                  res,
+                  req.raw().getRequestURL(),
+                  req.contentType(),
+                  req.queryParams(TRANSFORM),
+                  multipartBody,
+                  req.raw().getInputStream());
+            }
           }
 
           if (req.contentType().startsWith("text/")
@@ -165,7 +179,7 @@ public class CatalogApplication implements SparkApplication {
                 req.contentType(),
                 req.queryParams(TRANSFORM),
                 null,
-                new ByteArrayInputStream(req.bodyAsBytes()));
+                req.raw().getInputStream());
           }
 
           res.status(HttpStatus.SC_NOT_FOUND);
@@ -378,13 +392,13 @@ public class CatalogApplication implements SparkApplication {
       StringBuffer requestUrl,
       String contentType,
       String transformerParam,
-      HttpServletRequest httpServletRequest,
+      MultipartBody multipartBody,
+      //      HttpServletRequest httpServletRequest,
       InputStream inputStream) {
     try {
       List<String> contentTypeList = ImmutableList.of(contentType);
       String id =
-          catalogService.addDocument(
-              contentTypeList, httpServletRequest, transformerParam, inputStream);
+          catalogService.addDocument(contentTypeList, multipartBody, transformerParam, inputStream);
 
       URI uri = new URI(requestUrl.toString());
       UriBuilder uriBuilder = new UriBuilderImpl(uri).path("/" + id);

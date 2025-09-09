@@ -91,7 +91,7 @@ public class CqlQueriesImplTest {
     when(attributeBuilderMock.like()).thenReturn(contextualExpressionBuilderMock);
     when(contextualExpressionBuilderMock.text(anyString())).thenReturn(filterMock);
     when(catalogFrameworkMock.query(any(QueryRequestImpl.class))).thenReturn(responseMock);
-    when(configurationApplicationMock.getMaximumUploadSize()).thenReturn(1 << 20);
+    when(configurationApplicationMock.getMaximumUploadSize()).thenReturn(1L << 20);
 
     cqlQueryUtil =
         new CqlQueriesImpl(
