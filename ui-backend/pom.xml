@@ -26,5 +26,6 @@
         <module>javalin-utils</module>
         <module>deprecatable-enumeration-api</module>
         <module>catalog-ui-websockets</module>
+        <module>multipart-utils</module>
     </modules>
 </project>

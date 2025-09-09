@@ -113,7 +113,7 @@ public class OAuthApplicationTest {
 
     String jwk = "{\"keys\": [" + sigJwk.toPublicJWK().toJSONString() + "] }";
     validAlgorithm = Algorithm.RSA256(publicKey, privateKey);
-    invalidAlgorithm = Algorithm.HMAC256("WRONG");
+    invalidAlgorithm = Algorithm.HMAC256("THIS_IS_DEFINITELY_WRONG");
 
     ResourceRetriever resourceRetriever = mock(ResourceRetriever.class);
     Resource jwkResource = new Resource(jwk, APPLICATION_JSON);

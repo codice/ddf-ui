@@ -147,6 +147,7 @@ Implementation details
 
     <bean id="catalogApplication" class="org.codice.ddf.catalog.ui.catalog.CatalogApplication">
         <argument ref="catalogService"/>
+        <argument ref="configurationApplication"/>
     </bean>
 
     <bean id="platformApplication"
