@@ -289,12 +289,7 @@ public class OAuthApplicationTest {
     }
 
     @Override
-    OIDCTokens getTokens(
-        String code,
-        String clientId,
-        String clientSecret,
-        String redirectUri,
-        OIDCProviderMetadata metadata) {
+    OIDCTokens getTokens(String clientSecret, String redirectUri, OIDCProviderMetadata metadata) {
       return oidcTokens;
     }
   }

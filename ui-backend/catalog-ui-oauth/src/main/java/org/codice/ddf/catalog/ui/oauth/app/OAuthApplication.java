@@ -28,10 +28,6 @@ import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.AuthorizationCodeGrant;
 import com.nimbusds.oauth2.sdk.AuthorizationGrant;
 import com.nimbusds.oauth2.sdk.ParseException;
-import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
-import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
-import com.nimbusds.oauth2.sdk.auth.Secret;
-import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.oauth2.sdk.token.RefreshToken;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
@@ -44,12 +40,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import javax.servlet.http.HttpSession;
 import org.codice.ddf.configuration.SystemBaseUrl;
+import org.codice.ddf.security.handler.api.OidcHandlerConfiguration;
 import org.codice.ddf.security.oidc.resolver.OidcCredentialsResolver;
 import org.codice.ddf.security.oidc.validator.OidcTokenValidator;
 import org.codice.ddf.security.oidc.validator.OidcValidationException;
 import org.codice.ddf.security.token.storage.api.TokenInformation;
 import org.codice.ddf.security.token.storage.api.TokenStorage;
 import org.pac4j.core.exception.TechnicalException;
+import org.pac4j.oidc.client.OidcClient;
+import org.pac4j.oidc.config.OidcConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.QueryParamsMap;
@@ -71,6 +70,7 @@ public class OAuthApplication implements SparkApplication {
       SystemBaseUrl.EXTERNAL.constructUrl("/search/catalog/internal/oauth");
 
   private final TokenStorage tokenStorage;
+  private OidcHandlerConfiguration oidcHandlerConfiguration;
   private ResourceRetriever resourceRetriever;
 
   public OAuthApplication(TokenStorage tokenStorage) {
@@ -229,7 +229,7 @@ public class OAuthApplication implements SparkApplication {
       metadata =
           OIDCProviderMetadata.parse(
               resourceRetriever.retrieveResource(new URL(discoveryUrl)).getContent());
-      oidcTokens = getTokens(code, clientId, clientSecret, redirectUri, metadata);
+      oidcTokens = getTokens(code, redirectUri, metadata);
 
     } catch (TechnicalException | IOException | com.nimbusds.oauth2.sdk.ParseException e) {
       LOGGER.warn("Error getting tokens.", e);
@@ -287,15 +287,8 @@ public class OAuthApplication implements SparkApplication {
   }
 
   @VisibleForTesting
-  OIDCTokens getTokens(
-      String code,
-      String clientId,
-      String clientSecret,
-      String redirectUri,
-      OIDCProviderMetadata metadata)
+  OIDCTokens getTokens(String code, String redirectUri, OIDCProviderMetadata metadata)
       throws IOException, ParseException {
-    ClientAuthentication clientAuthentication =
-        new ClientSecretBasic(new ClientID(clientId), new Secret(clientSecret));
 
     String redirect = REDIRECT_URL;
     if (redirectUri != null) {
@@ -309,7 +302,17 @@ public class OAuthApplication implements SparkApplication {
 
     AuthorizationGrant grant =
         new AuthorizationCodeGrant(new AuthorizationCode(code), URI.create(redirect));
-    return OidcCredentialsResolver.getOidcTokens(grant, metadata, clientAuthentication);
+
+    OidcConfiguration oidcConfiguration = oidcHandlerConfiguration.getOidcConfiguration();
+    OidcClient oidcClient = oidcHandlerConfiguration.getOidcClient(redirect);
+    int connectTimeout = oidcHandlerConfiguration.getConnectTimeout();
+    int readTimeout = oidcHandlerConfiguration.getReadTimeout();
+
+    OidcCredentialsResolver oidcCredentialsResolver =
+        new OidcCredentialsResolver(
+            oidcConfiguration, oidcClient, metadata, connectTimeout, readTimeout);
+
+    return oidcCredentialsResolver.getOidcTokens(grant);
   }
 
   @VisibleForTesting
