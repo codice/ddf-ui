@@ -45,6 +45,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.cxf.jaxrs.impl.UriBuilderImpl;
 import org.apache.http.HttpStatus;
+import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
 import org.codice.ddf.catalog.ui.util.multipart.CloseableMultipartBody;
 import org.codice.ddf.catalog.ui.util.multipart.CloseableMultipartBodyFactory;
 import org.codice.ddf.rest.api.CatalogService;
@@ -71,14 +72,17 @@ public class CatalogApplication implements SparkApplication {
 
   private static final String BYTES = "bytes";
 
+  private static final String CATALOG_PATH = "/catalog/";
   private static final String CATALOG_ID_PATH = "/catalog/:id";
 
   private static final String TRANSFORM = "transform";
 
   private CatalogService catalogService;
+  private ConfigurationApplication config;
 
-  public CatalogApplication(CatalogService catalogService) {
+  public CatalogApplication(CatalogService catalogService, ConfigurationApplication config) {
     this.catalogService = catalogService;
+    this.config = config;
   }
 
   @Override
@@ -144,46 +148,45 @@ public class CatalogApplication implements SparkApplication {
         });
 
     post(
-        "/catalog/",
+        CATALOG_PATH,
         (req, res) -> {
-          if (req.contentType().startsWith("multipart/")) {
-            long MAX_UPLOAD_SIZE = 5L * 1024 * 1024 * 1024;
-            int FILE_SIZE_THRESHOLD = 50 * 1024 * 1024;
-            req.attribute(
-                ECLIPSE_MULTIPART_CONFIG,
-                new MultipartConfigElement(
-                    System.getProperty(JAVA_IO_TMPDIR),
-                    MAX_UPLOAD_SIZE,
-                    MAX_UPLOAD_SIZE,
-                    FILE_SIZE_THRESHOLD));
+          LOGGER.trace("POST Path: {}", CATALOG_PATH);
+          try {
+            if (req.contentType().startsWith("multipart/")) {
+              LOGGER.trace("POST Path: {} multipart/*", CATALOG_PATH);
+              try (CloseableMultipartBody multipartBody =
+                  CloseableMultipartBodyFactory.create(
+                      req.raw(), config.getMaximumUploadSize(), config.getMaxFileSizeInMemory())) {
 
-            try (CloseableMultipartBody multipartBody =
-                CloseableMultipartBodyFactory.create(
-                    req.raw(), MAX_UPLOAD_SIZE, FILE_SIZE_THRESHOLD)) {
+                return addDocument(
+                    res,
+                    req.raw().getRequestURL(),
+                    req.contentType(),
+                    req.queryParams(TRANSFORM),
+                    multipartBody,
+                    req.raw().getInputStream());
+              }
+            }
 
+            if (req.contentType().startsWith("text/")
+                || req.contentType().startsWith("application/")) {
+              LOGGER.trace("POST Path: {} text/* or application/*", CATALOG_PATH);
               return addDocument(
                   res,
                   req.raw().getRequestURL(),
                   req.contentType(),
                   req.queryParams(TRANSFORM),
-                  multipartBody,
+                  null,
                   req.raw().getInputStream());
             }
-          }
 
-          if (req.contentType().startsWith("text/")
-              || req.contentType().startsWith("application/")) {
-            return addDocument(
-                res,
-                req.raw().getRequestURL(),
-                req.contentType(),
-                req.queryParams(TRANSFORM),
-                null,
-                req.raw().getInputStream());
+            res.status(HttpStatus.SC_NOT_FOUND);
+            return res;
+          } catch (Exception e) {
+            res.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+            LOGGER.error("Failed to upload file", e);
+            return "Internal Server Error";
           }
-
-          res.status(HttpStatus.SC_NOT_FOUND);
-          return res;
         });
 
     put(
@@ -393,7 +396,6 @@ public class CatalogApplication implements SparkApplication {
       String contentType,
       String transformerParam,
       MultipartBody multipartBody,
-      //      HttpServletRequest httpServletRequest,
       InputStream inputStream) {
     try {
       List<String> contentTypeList = ImmutableList.of(contentType);

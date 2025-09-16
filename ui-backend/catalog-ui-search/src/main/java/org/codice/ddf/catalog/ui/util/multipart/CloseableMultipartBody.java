@@ -20,6 +20,7 @@ public class CloseableMultipartBody extends MultipartBody implements AutoCloseab
     this.parts = parts;
   }
 
+  @Override
   public void close() {
     try {
       for (Part part : parts) {
@@ -29,5 +30,9 @@ public class CloseableMultipartBody extends MultipartBody implements AutoCloseab
     } catch (Exception e) {
       LOGGER.error("Failed to delete temporary files", e);
     }
+  }
+
+  public Collection<Part> getParts() {
+    return parts;
   }
 }
