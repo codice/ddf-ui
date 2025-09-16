@@ -46,8 +46,8 @@ import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.cxf.jaxrs.impl.UriBuilderImpl;
 import org.apache.http.HttpStatus;
 import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
-import org.codice.ddf.catalog.ui.util.multipart.CloseableMultipartBody;
-import org.codice.ddf.catalog.ui.util.multipart.CloseableMultipartBodyFactory;
+import org.codice.ddf.catalog.ui.util.multipart.AutoCloseableMultipartBody;
+import org.codice.ddf.catalog.ui.util.multipart.AutoCloseableMultipartBodyFactory;
 import org.codice.ddf.rest.api.CatalogService;
 import org.codice.ddf.rest.api.CatalogServiceException;
 import org.slf4j.Logger;
@@ -154,8 +154,8 @@ public class CatalogApplication implements SparkApplication {
           try {
             if (req.contentType().startsWith("multipart/")) {
               LOGGER.trace("POST Path: {} multipart/*", CATALOG_PATH);
-              try (CloseableMultipartBody multipartBody =
-                  CloseableMultipartBodyFactory.create(
+              try (AutoCloseableMultipartBody multipartBody =
+                  AutoCloseableMultipartBodyFactory.create(
                       req.raw(), config.getMaximumUploadSize(), config.getMaxFileSizeInMemory())) {
 
                 return addDocument(

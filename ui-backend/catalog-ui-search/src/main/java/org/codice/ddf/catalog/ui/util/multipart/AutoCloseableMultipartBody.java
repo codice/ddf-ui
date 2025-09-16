@@ -9,12 +9,12 @@ import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CloseableMultipartBody extends MultipartBody implements AutoCloseable {
+public class AutoCloseableMultipartBody extends MultipartBody implements AutoCloseable {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(CloseableMultipartBody.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AutoCloseableMultipartBody.class);
   private final Collection<Part> parts;
 
-  public CloseableMultipartBody(
+  public AutoCloseableMultipartBody(
       List<Attachment> atts, Collection<Part> parts, MediaType mt, boolean outbound) {
     super(atts, mt, outbound);
     this.parts = parts;

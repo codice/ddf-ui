@@ -13,13 +13,14 @@ import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CloseableMultipartBodyFactory {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CloseableMultipartBodyFactory.class);
+public class AutoCloseableMultipartBodyFactory {
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(AutoCloseableMultipartBodyFactory.class);
 
   private static final String ECLIPSE_MULTIPART_CONFIG = "org.eclipse.jetty.multipartConfig";
   private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
 
-  private CloseableMultipartBodyFactory() {}
+  private AutoCloseableMultipartBodyFactory() {}
 
   /**
    * Creates a Cleanable MultipartBody object from HttpServletRequest
@@ -31,7 +32,7 @@ public class CloseableMultipartBodyFactory {
    * @throws ServletException
    * @throws IOException
    */
-  public static CloseableMultipartBody create(
+  public static AutoCloseableMultipartBody create(
       HttpServletRequest httpRequest, long maxUploadSize, int fileSizeThreshold)
       throws ServletException, IOException {
     String location = System.getProperty(JAVA_IO_TMPDIR);
@@ -76,6 +77,7 @@ public class CloseableMultipartBodyFactory {
       }
     }
 
-    return new CloseableMultipartBody(attachments, parts, MediaType.MULTIPART_FORM_DATA_TYPE, true);
+    return new AutoCloseableMultipartBody(
+        attachments, parts, MediaType.MULTIPART_FORM_DATA_TYPE, true);
   }
 }
