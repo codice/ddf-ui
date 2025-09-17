@@ -50,8 +50,8 @@
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <compiler.fork>false</compiler.fork>
-    <maven.bundle.plugin.version>5.1.4</maven.bundle.plugin.version>
-    <maven.compiler.plugin.version>3.8.1</maven.compiler.plugin.version>
+    <maven.bundle.plugin.version>5.1.9</maven.bundle.plugin.version>
+    <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
     <maven.deploy.plugin.version>3.0.0-M1</maven.deploy.plugin.version>
     <maven.enforcer.plugin.version>3.5.0</maven.enforcer.plugin.version>
     <maven.release.plugin.version>3.0.0-M1</maven.release.plugin.version>
@@ -61,16 +61,16 @@
     <kotlin-osgi.version>1.3.71</kotlin-osgi.version>
     <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
     <errorprone.version>2.4.0</errorprone.version>
-    <jacoco.maven.plugin.version>0.8.12</jacoco.maven.plugin.version>
+    <jacoco.maven.plugin.version>0.8.13</jacoco.maven.plugin.version>
     <fmt.maven.plugin.version>2.3.0</fmt.maven.plugin.version>
 
     <!--Backend properties-->
-    <ddf.version>2.29.23</ddf.version>
+    <ddf.version>2.29.24</ddf.version>
     <ddf-jsonrpc.version>0.9</ddf-jsonrpc.version>
     <ddf.support.version>2.3.16</ddf.support.version>
     <antlr.version>4.3</antlr.version>
     <c3p0.version>0.9.5.5</c3p0.version>
-    <camel.version>3.18.8</camel.version>
+    <camel.version>3.22.4</camel.version>
     <commons-collections.version>3.2.2</commons-collections.version>
     <commons-lang.version>2.6</commons-lang.version>
     <commons-lang3.version>3.17.0</commons-lang3.version>
@@ -79,7 +79,7 @@
     <guava.version>33.4.0-jre</guava.version>
     <httpclient.version>4.5.13</httpclient.version>
     <httpcore.version>4.4.15</httpcore.version>
-    <jackson.version>2.17.2</jackson.version>
+    <jackson.version>2.18.4</jackson.version>
     <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
     <javax.ws.rs.version>2.1</javax.ws.rs.version>
     <jaxb.version>2.3.2</jaxb.version>
@@ -89,7 +89,7 @@
     <karaf.version>4.4.7</karaf.version>
     <nimbus.oidc.version>11.24</nimbus.oidc.version>
     <nimbus.jose.jwt.version>10.3</nimbus.jose.jwt.version>
-    <org.geotools.version>28.6</org.geotools.version>
+    <org.geotools.version>33.1</org.geotools.version>
     <osgi.version>7.0.0</osgi.version>
     <owasp-html-sanitizer.version>20220608.1</owasp-html-sanitizer.version>
     <ows-v_1_0_0-schema.version>1.1.0</ows-v_1_0_0-schema.version>

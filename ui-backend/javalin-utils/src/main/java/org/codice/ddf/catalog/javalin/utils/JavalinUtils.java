@@ -23,7 +23,7 @@ import io.javalin.http.NotFoundResponse;
 import io.javalin.plugin.json.JavalinJson;
 import java.util.Map;
 import java.util.Set;
-import org.opengis.filter.sort.SortOrder;
+import org.geotools.api.filter.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

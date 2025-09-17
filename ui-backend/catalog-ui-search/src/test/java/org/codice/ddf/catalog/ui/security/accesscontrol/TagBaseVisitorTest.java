@@ -17,20 +17,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 import java.util.Collections;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.filter.FilterFactoryImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory2;
 
 public class TagBaseVisitorTest {
 
   private static final String TEST = "test";
 
-  private FilterFactory2 ff = new FilterFactoryImpl();
+  private FilterFactory ff = new FilterFactoryImpl();
   private final WKTReader wktReader = new WKTReader();
   private Geometry point;
 

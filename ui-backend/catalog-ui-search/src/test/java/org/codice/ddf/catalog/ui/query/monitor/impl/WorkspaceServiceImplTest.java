@@ -50,6 +50,7 @@ import org.codice.ddf.catalog.ui.metacard.workspace.transformer.impl.WorkspaceTr
 import org.codice.ddf.catalog.ui.query.monitor.api.SecurityService;
 import org.codice.ddf.persistence.PersistenceException;
 import org.codice.ddf.persistence.PersistentStore;
+import org.geotools.api.filter.Filter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +58,6 @@ import org.mockito.Answers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opengis.filter.Filter;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WorkspaceServiceImplTest {

@@ -34,8 +34,8 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.SecurityUtils;
+import org.geotools.api.filter.Filter;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
-import org.opengis.filter.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,8 +68,10 @@ import org.slf4j.LoggerFactory;
  * below are true:
  *
  * <ul>
- *   <li>The predicate is a negative check, such as {@link org.opengis.filter.PropertyIsNotEqualTo}.
- *   <li>The predicate falls under the logical composite {@link org.opengis.filter.Not} operator.
+ *   <li>The predicate is a negative check, such as {@link
+ *       org.geotools.api.filter.PropertyIsNotEqualTo}.
+ *   <li>The predicate falls under the logical composite {@link org.geotools.api.filter.Not}
+ *       operator.
  * </ul>
  */
 public class AccessControlPreQueryPlugin implements PreQueryPlugin {
