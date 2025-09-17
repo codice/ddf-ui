@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.codice.ddf.catalog.ui.metacard.query.data.metacard.QueryMetacardTypeImpl;
 import org.codice.ddf.catalog.ui.metacard.query.util.QueryAttributes;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortOrder;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.sort.SortOrder;
 import spark.Request;
 
 public class RetreiveAllQueryRequests {

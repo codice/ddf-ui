@@ -14,7 +14,7 @@
 package org.codice.ddf.catalog.ui.query.monitor.api;
 
 import java.util.Date;
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 
 public interface FilterService {
 

@@ -40,10 +40,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import org.geotools.api.filter.Filter;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 public class AccessControlPreQueryPluginTest {
   private static final Set<String> ACCESS_CONTROLLED_TAGS =

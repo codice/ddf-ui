@@ -39,9 +39,9 @@ import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
 import org.codice.ddf.catalog.ui.query.cql.CqlRequestImpl;
 import org.codice.ddf.catalog.ui.query.utility.CqlQueryResponse;
 import org.codice.ddf.catalog.ui.query.utility.CqlResult;
+import org.geotools.api.filter.Filter;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 
 public class CqlQueriesImplTest {
 
