@@ -73,9 +73,11 @@ public class OAuthApplication implements SparkApplication {
   private OidcHandlerConfiguration oidcHandlerConfiguration;
   private ResourceRetriever resourceRetriever;
 
-  public OAuthApplication(TokenStorage tokenStorage) {
+  public OAuthApplication(
+      TokenStorage tokenStorage, OidcHandlerConfiguration oidcHandlerConfiguration) {
     this.tokenStorage = tokenStorage;
     this.resourceRetriever = new DefaultResourceRetriever();
+    this.oidcHandlerConfiguration = oidcHandlerConfiguration;
   }
 
   @Override
