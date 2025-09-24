@@ -63,7 +63,7 @@ import org.codice.ddf.catalog.ui.forms.model.pojo.FormTemplate;
 import org.codice.ddf.catalog.ui.util.EndpointUtil;
 import org.codice.gsonsupport.GsonTypeAdapters.DateLongFormatTypeAdapter;
 import org.codice.gsonsupport.GsonTypeAdapters.LongDoubleTypeAdapter;
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;

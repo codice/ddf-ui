@@ -68,12 +68,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
+import org.geotools.api.filter.And;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.Or;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.opengis.filter.And;
-import org.opengis.filter.Filter;
-import org.opengis.filter.Or;
 
 public class EndpointUtilTest {
 

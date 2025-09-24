@@ -56,8 +56,8 @@ import org.codice.ddf.catalog.ui.query.monitor.api.WorkspaceService;
 import org.codice.ddf.persistence.PersistenceException;
 import org.codice.ddf.persistence.PersistentStore;
 import org.codice.ddf.persistence.PersistentStore.PersistenceType;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortOrder;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

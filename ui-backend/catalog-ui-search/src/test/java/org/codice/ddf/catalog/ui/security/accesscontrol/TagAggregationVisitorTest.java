@@ -23,11 +23,11 @@ import ddf.catalog.data.types.Core;
 import ddf.catalog.filter.FilterBuilder;
 import ddf.catalog.filter.proxy.builder.GeotoolsFilterBuilder;
 import java.util.Date;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 import org.junit.Before;
 import org.junit.Test;
-import org.opengis.filter.Filter;
-import org.opengis.filter.FilterFactory;
 
 /**
  * Validates the guarantee made by the {@link TagAggregationVisitor}'s javadoc.

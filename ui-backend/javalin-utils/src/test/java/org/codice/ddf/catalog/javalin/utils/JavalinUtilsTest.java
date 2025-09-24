@@ -19,8 +19,8 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Collections;
 import java.util.Map;
+import org.geotools.api.filter.sort.SortOrder;
 import org.junit.Test;
-import org.opengis.filter.sort.SortOrder;
 
 public class JavalinUtilsTest {
 

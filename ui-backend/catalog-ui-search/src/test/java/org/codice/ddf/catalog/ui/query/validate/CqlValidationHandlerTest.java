@@ -34,8 +34,8 @@ import java.util.Map;
 import org.codice.ddf.catalog.ui.validation.QueryValidator;
 import org.codice.ddf.catalog.ui.validation.impl.violation.QueryValidationViolationImpl;
 import org.codice.ddf.catalog.ui.validation.violation.QueryValidationViolation;
+import org.geotools.api.filter.Filter;
 import org.junit.Test;
-import org.opengis.filter.Filter;
 import spark.Request;
 import spark.Response;
 
