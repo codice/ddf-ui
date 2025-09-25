@@ -42,8 +42,12 @@ import javax.ws.rs.core.UriBuilder;
 import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.cxf.jaxrs.impl.UriBuilderImpl;
 import org.apache.http.HttpStatus;
+import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
+import org.codice.ddf.catalog.ui.util.multipart.AutoCloseableMultipartBody;
+import org.codice.ddf.catalog.ui.util.multipart.AutoCloseableMultipartBodyFactory;
 import org.codice.ddf.rest.api.CatalogService;
 import org.codice.ddf.rest.api.CatalogServiceException;
 import org.slf4j.Logger;
@@ -68,14 +72,17 @@ public class CatalogApplication implements SparkApplication {
 
   private static final String BYTES = "bytes";
 
+  private static final String CATALOG_PATH = "/catalog/";
   private static final String CATALOG_ID_PATH = "/catalog/:id";
 
   private static final String TRANSFORM = "transform";
 
   private CatalogService catalogService;
+  private ConfigurationApplication config;
 
-  public CatalogApplication(CatalogService catalogService) {
+  public CatalogApplication(CatalogService catalogService, ConfigurationApplication config) {
     this.catalogService = catalogService;
+    this.config = config;
   }
 
   @Override
@@ -141,35 +148,45 @@ public class CatalogApplication implements SparkApplication {
         });
 
     post(
-        "/catalog/",
+        CATALOG_PATH,
         (req, res) -> {
-          if (req.contentType().startsWith("multipart/")) {
-            req.attribute(
-                ECLIPSE_MULTIPART_CONFIG,
-                new MultipartConfigElement(System.getProperty(JAVA_IO_TMPDIR)));
+          LOGGER.trace("POST Path: {}", CATALOG_PATH);
+          try {
+            if (req.contentType().startsWith("multipart/")) {
+              LOGGER.trace("POST Path: {} multipart/*", CATALOG_PATH);
+              try (AutoCloseableMultipartBody multipartBody =
+                  AutoCloseableMultipartBodyFactory.create(
+                      req.raw(), config.getMaximumUploadSize(), config.getMaxFileSizeInMemory())) {
 
-            return addDocument(
-                res,
-                req.raw().getRequestURL(),
-                req.contentType(),
-                req.queryParams(TRANSFORM),
-                req.raw(),
-                new ByteArrayInputStream(req.bodyAsBytes()));
+                return addDocument(
+                    res,
+                    req.raw().getRequestURL(),
+                    req.contentType(),
+                    req.queryParams(TRANSFORM),
+                    multipartBody,
+                    req.raw().getInputStream());
+              }
+            }
+
+            if (req.contentType().startsWith("text/")
+                || req.contentType().startsWith("application/")) {
+              LOGGER.trace("POST Path: {} text/* or application/*", CATALOG_PATH);
+              return addDocument(
+                  res,
+                  req.raw().getRequestURL(),
+                  req.contentType(),
+                  req.queryParams(TRANSFORM),
+                  null,
+                  req.raw().getInputStream());
+            }
+
+            res.status(HttpStatus.SC_NOT_FOUND);
+            return res;
+          } catch (Exception e) {
+            res.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+            LOGGER.error("Failed to upload file", e);
+            return "Internal Server Error";
           }
-
-          if (req.contentType().startsWith("text/")
-              || req.contentType().startsWith("application/")) {
-            return addDocument(
-                res,
-                req.raw().getRequestURL(),
-                req.contentType(),
-                req.queryParams(TRANSFORM),
-                null,
-                new ByteArrayInputStream(req.bodyAsBytes()));
-          }
-
-          res.status(HttpStatus.SC_NOT_FOUND);
-          return res;
         });
 
     put(
@@ -378,13 +395,12 @@ public class CatalogApplication implements SparkApplication {
       StringBuffer requestUrl,
       String contentType,
       String transformerParam,
-      HttpServletRequest httpServletRequest,
+      MultipartBody multipartBody,
       InputStream inputStream) {
     try {
       List<String> contentTypeList = ImmutableList.of(contentType);
       String id =
-          catalogService.addDocument(
-              contentTypeList, httpServletRequest, transformerParam, inputStream);
+          catalogService.addDocument(contentTypeList, multipartBody, transformerParam, inputStream);
 
       URI uri = new URI(requestUrl.toString());
       UriBuilder uriBuilder = new UriBuilderImpl(uri).path("/" + id);
