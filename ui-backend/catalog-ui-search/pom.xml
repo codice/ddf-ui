@@ -391,6 +391,11 @@
             <version>${ddf.version}</version>
         </dependency>
         <dependency>
+            <groupId>ddf.catalog.rest</groupId>
+            <artifactId>catalog-rest-endpoint</artifactId>
+            <version>${ddf.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
@@ -492,7 +497,8 @@
                             ows-v_1_1_0-schema,
                             jaxb2-basics-runtime,
                             catalog-rest-service,
-                            owasp-java-html-sanitizer
+                            owasp-java-html-sanitizer,
+                            catalog-rest-endpoint
                         </Embed-Dependency>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
