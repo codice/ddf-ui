@@ -35,15 +35,23 @@ import java.util.List;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.impl.UriBuilderImpl;
 import org.apache.http.HttpStatus;
+import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
+import org.codice.ddf.catalog.ui.util.jaxrs.JaxRsHttpHeaders;
+import org.codice.ddf.catalog.ui.util.jaxrs.JaxRsUriInfo;
+import org.codice.ddf.catalog.ui.util.multipart.CleanableMultipartBody;
+import org.codice.ddf.catalog.ui.util.multipart.CleanableMultipartBodyFactory;
+import org.codice.ddf.endpoints.rest.RESTEndpoint;
 import org.codice.ddf.rest.api.CatalogService;
 import org.codice.ddf.rest.api.CatalogServiceException;
 import org.slf4j.Logger;
@@ -66,16 +74,27 @@ public class CatalogApplication implements SparkApplication {
 
   private static final String HEADER_ACCEPT_RANGES = "Accept-Ranges";
 
+  private static final String HEADER_ID = "id";
+
   private static final String BYTES = "bytes";
+
+  private static final String CATALOG_PATH = "/catalog/";
 
   private static final String CATALOG_ID_PATH = "/catalog/:id";
 
   private static final String TRANSFORM = "transform";
 
+  private final ConfigurationApplication config;
+
   private CatalogService catalogService;
 
-  public CatalogApplication(CatalogService catalogService) {
+  private RESTEndpoint restEndpoint;
+
+  public CatalogApplication(
+      CatalogService catalogService, RESTEndpoint restEndpoint, ConfigurationApplication config) {
     this.catalogService = catalogService;
+    this.restEndpoint = restEndpoint;
+    this.config = config;
   }
 
   @Override
@@ -141,35 +160,52 @@ public class CatalogApplication implements SparkApplication {
         });
 
     post(
-        "/catalog/",
+        CATALOG_PATH,
         (req, res) -> {
-          if (req.contentType().startsWith("multipart/")) {
-            req.attribute(
-                ECLIPSE_MULTIPART_CONFIG,
-                new MultipartConfigElement(System.getProperty(JAVA_IO_TMPDIR)));
+          try {
+            LOGGER.debug("POST Path: {}", CATALOG_PATH);
+            String contentType = req.contentType();
 
-            return addDocument(
-                res,
-                req.raw().getRequestURL(),
-                req.contentType(),
-                req.queryParams(TRANSFORM),
-                req.raw(),
-                new ByteArrayInputStream(req.bodyAsBytes()));
+            // Convert req and res for RESTEndpoint
+            HttpServletRequest httpRequest = req.raw();
+            HttpHeaders headers = new JaxRsHttpHeaders(req);
+            UriInfo uriInfo = new JaxRsUriInfo(req);
+            String transformerParam = req.queryParams(TRANSFORM);
+            InputStream inputStream = httpRequest.getInputStream();
+
+            if (contentType.startsWith("multipart/")) {
+              LOGGER.debug("POST Path: {} multipart", CATALOG_PATH);
+              CleanableMultipartBody multipartBody =
+                  CleanableMultipartBodyFactory.create(
+                      httpRequest, config.getMaximumUploadSize(), config.getMaxFileSizeInMemory());
+
+              javax.ws.rs.core.Response response =
+                  restEndpoint.addDocument(
+                      headers, uriInfo, httpRequest, multipartBody, transformerParam, inputStream);
+
+              multipartBody.cleanup();
+
+              return setResponse(
+                  res, httpRequest.getRequestURL(), response.getHeaderString(HEADER_ID));
+            }
+
+            if (contentType.startsWith("text/") || contentType.startsWith("application/")) {
+              LOGGER.debug("POST Path: {} text/application", CATALOG_PATH);
+              javax.ws.rs.core.Response response =
+                  restEndpoint.addDocument(
+                      headers, uriInfo, httpRequest, transformerParam, inputStream);
+
+              return setResponse(
+                  res, httpRequest.getRequestURL(), response.getHeaderString(HEADER_ID));
+            }
+
+            res.status(HttpStatus.SC_NOT_FOUND);
+            return "Not Found";
+          } catch (Exception e) {
+            LOGGER.error("Unexpected error in request handler", e);
+            res.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+            return "Internal Server Error";
           }
-
-          if (req.contentType().startsWith("text/")
-              || req.contentType().startsWith("application/")) {
-            return addDocument(
-                res,
-                req.raw().getRequestURL(),
-                req.contentType(),
-                req.queryParams(TRANSFORM),
-                null,
-                new ByteArrayInputStream(req.bodyAsBytes()));
-          }
-
-          res.status(HttpStatus.SC_NOT_FOUND);
-          return res;
         });
 
     put(
@@ -373,19 +409,8 @@ public class CatalogApplication implements SparkApplication {
     }
   }
 
-  private String addDocument(
-      Response res,
-      StringBuffer requestUrl,
-      String contentType,
-      String transformerParam,
-      HttpServletRequest httpServletRequest,
-      InputStream inputStream) {
+  private String setResponse(Response res, StringBuffer requestUrl, String id) {
     try {
-      List<String> contentTypeList = ImmutableList.of(contentType);
-      String id =
-          catalogService.addDocument(
-              contentTypeList, httpServletRequest, transformerParam, inputStream);
-
       URI uri = new URI(requestUrl.toString());
       UriBuilder uriBuilder = new UriBuilderImpl(uri).path("/" + id);
 
@@ -394,7 +419,7 @@ public class CatalogApplication implements SparkApplication {
       res.header(Metacard.ID, id);
       return "";
 
-    } catch (CatalogServiceException | URISyntaxException e) {
+    } catch (URISyntaxException e) {
       return createBadRequestResponse(res, e.getMessage());
     }
   }
