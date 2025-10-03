@@ -17,7 +17,7 @@
     <parent>
         <artifactId>catalog-ui</artifactId>
         <groupId>org.codice.ddf.search</groupId>
-        <version>5.2.27</version>
+        <version>5.2.28-SNAPSHOT</version>
     </parent>
     <groupId>org.codice.ddf.search</groupId>
     <artifactId>ui-frontend</artifactId>
