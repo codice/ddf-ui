@@ -54,6 +54,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.io.IOUtils;
+import org.codice.ddf.security.handler.api.OidcHandlerConfiguration;
 import org.codice.ddf.security.token.storage.api.TokenInformation;
 import org.codice.ddf.security.token.storage.api.TokenInformationImpl;
 import org.codice.ddf.security.token.storage.api.TokenStorage;
@@ -80,6 +81,7 @@ public class OAuthApplicationTest {
 
   private OAuthApplicationWithMockCredentialResolver oauthApplication;
   private TokenStorage tokenStorage;
+  private OidcHandlerConfiguration oidcHandlerConfiguration;
   private Algorithm validAlgorithm;
   private Algorithm invalidAlgorithm;
   private Request request;
@@ -127,7 +129,9 @@ public class OAuthApplicationTest {
         .thenReturn(metadataResource);
 
     tokenStorage = mock(TokenStorage.class);
-    oauthApplication = new OAuthApplicationWithMockCredentialResolver(tokenStorage);
+    oidcHandlerConfiguration = mock(OidcHandlerConfiguration.class);
+    oauthApplication =
+        new OAuthApplicationWithMockCredentialResolver(tokenStorage, oidcHandlerConfiguration);
     oauthApplication.setResourceRetriever(resourceRetriever);
   }
 
@@ -284,17 +288,13 @@ public class OAuthApplicationTest {
   private static class OAuthApplicationWithMockCredentialResolver extends OAuthApplication {
     OIDCTokens oidcTokens;
 
-    OAuthApplicationWithMockCredentialResolver(TokenStorage tokenStorage) {
-      super(tokenStorage);
+    OAuthApplicationWithMockCredentialResolver(
+        TokenStorage tokenStorage, OidcHandlerConfiguration oidcHandlerConfiguration) {
+      super(tokenStorage, oidcHandlerConfiguration);
     }
 
     @Override
-    OIDCTokens getTokens(
-        String code,
-        String clientId,
-        String clientSecret,
-        String redirectUri,
-        OIDCProviderMetadata metadata) {
+    OIDCTokens getTokens(String clientSecret, String redirectUri, OIDCProviderMetadata metadata) {
       return oidcTokens;
     }
   }
