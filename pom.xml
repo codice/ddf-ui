@@ -65,7 +65,7 @@
     <fmt.maven.plugin.version>2.3.0</fmt.maven.plugin.version>
 
     <!--Backend properties-->
-    <ddf.version>2.29.24</ddf.version>
+    <ddf.version>2.29.27</ddf.version>
     <ddf-jsonrpc.version>0.10.2</ddf-jsonrpc.version>
     <ddf.support.version>2.3.16</ddf.support.version>
     <antlr.version>4.3</antlr.version>
@@ -73,7 +73,7 @@
     <camel.version>3.22.4</camel.version>
     <commons-collections.version>3.2.2</commons-collections.version>
     <commons-lang.version>2.6</commons-lang.version>
-    <commons-lang3.version>3.17.0</commons-lang3.version>
+    <commons-lang3.version>3.18.0</commons-lang3.version>
     <commons-math3.version>3.6.1</commons-math3.version>
     <gson.version>2.11.0</gson.version>
     <guava.version>33.4.0-jre</guava.version>
@@ -86,7 +86,7 @@
     <jsr305.version>3.0.2</jsr305.version>
     <jvnet.jaxb2.version>0.11.0</jvnet.jaxb2.version>
     <jvnet-ogc.version>2.6.1</jvnet-ogc.version>
-    <karaf.version>4.4.7</karaf.version>
+    <karaf.version>4.4.8</karaf.version>
     <nimbus.oidc.version>11.24</nimbus.oidc.version>
     <nimbus.jose.jwt.version>10.3</nimbus.jose.jwt.version>
     <org.geotools.version>33.1</org.geotools.version>
@@ -94,13 +94,13 @@
     <owasp-html-sanitizer.version>20220608.1</owasp-html-sanitizer.version>
     <ows-v_1_0_0-schema.version>1.1.0</ows-v_1_0_0-schema.version>
     <pac4j.version>6.1.2</pac4j.version>
-    <pax.web.version>8.0.30</pax.web.version>
-    <jetty.version>9.4.57.v20241219</jetty.version>
+    <pax.web.version>8.0.33</pax.web.version>
+    <jetty.version>9.4.58.v20250814</jetty.version>
     <quartz.version>2.3.2</quartz.version>
     <restassured.version>3.3.0</restassured.version>
     <spark.version>2.9.4</spark.version>
     <spatial4j.version>0.8</spatial4j.version>
-    <tika.version>2.4.0</tika.version>
+    <tika.version>3.2.2</tika.version>
     <usng4j.version>0.4</usng4j.version>
     <org.slf4j.version>1.7.32</org.slf4j.version>
 
