@@ -389,6 +389,19 @@
             description="Arbitrary JSON map for runtime UI configuration."
             type="String"
             required="false"/>
+
+        <AD id="connectionTimeout"
+            name="Connection Timeout"
+            description="The maximum time (in ms) for making a connection."
+            type="Integer"
+            default="30000"/>
+
+
+        <AD id="receiveTimeout"
+            name="Receive Timeout"
+            description="The maximum time (in ms) for making a transfer."
+            type="Integer"
+            default="60000"/>
     </OCD>
 
     <Designate pid="org.codice.ddf.catalog.ui">

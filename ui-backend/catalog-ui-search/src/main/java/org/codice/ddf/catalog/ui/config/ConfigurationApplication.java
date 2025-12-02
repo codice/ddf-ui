@@ -236,6 +236,9 @@ public class ConfigurationApplication implements SparkApplication {
 
   private volatile Map<String, String> i18n = Collections.emptyMap();
 
+  private int connectionTimeout = 30000; // 30s
+  private int receiveTimeout = 60000; // 60s
+
   public void setI18n(ResourceBundleLocator resourceBundleLocator) {
     try {
       ResourceBundle resourceBundle = resourceBundleLocator.getBundle(INTRIGUE_BASE_NAME);
@@ -576,6 +579,8 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("extra", extra);
     config.put("maximumUploadSize", maximumUploadSize);
     config.put("maxFileSizeInMemory", maxFileSizeInMemory);
+    config.put("connectionTimeout", connectionTimeout);
+    config.put("receiveTimeout", receiveTimeout);
 
     return config;
   }
@@ -1274,5 +1279,21 @@ public class ConfigurationApplication implements SparkApplication {
 
   public int getMaxFileSizeInMemory() {
     return maxFileSizeInMemory;
+  }
+
+  public void setConnectionTimeout(int connectionTimeout) {
+    this.connectionTimeout = connectionTimeout;
+  }
+
+  public int getConnectionTimeout() {
+    return connectionTimeout;
+  }
+
+  public void setReceiveTimeout(int receiveTimeout) {
+    this.receiveTimeout = receiveTimeout;
+  }
+
+  public int getReceiveTimeout() {
+    return receiveTimeout;
   }
 }
