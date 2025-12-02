@@ -168,7 +168,7 @@ public class ConfigurationApplication implements SparkApplication {
 
   private String mapHome = "";
 
-  private long maximumUploadSize = 10737418240L;
+  private long maximumUploadSize = 1073741824L; // 1 GB
   private int maxFileSizeInMemory = 50 * 1024 * 1024; // 50 MB
 
   private List<String> readOnly =
