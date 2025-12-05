@@ -1,5 +1,6 @@
 package org.codice.ddf.catalog.ui.util.multipart;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import javax.servlet.http.Part;
@@ -27,7 +28,7 @@ public class AutoCloseableMultipartBody extends MultipartBody implements AutoClo
         part.delete();
         LOGGER.debug("Temporary file '{}' deleted successfully", part.getName());
       }
-    } catch (Exception e) {
+    } catch (IOException e) {
       LOGGER.error("Failed to delete temporary files", e);
     }
   }
