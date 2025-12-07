@@ -78,8 +78,8 @@ public class CatalogApplication implements SparkApplication {
 
   private static final String TRANSFORM = "transform";
 
+  private final ConfigurationApplication config;
   private CatalogService catalogService;
-  private ConfigurationApplication config;
 
   public CatalogApplication(CatalogService catalogService, ConfigurationApplication config) {
     this.catalogService = catalogService;
