@@ -431,6 +431,11 @@
             <artifactId>rest-assured</artifactId>
             <version>${restassured.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.codice.ddf.search</groupId>
+            <artifactId>multipart-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -501,6 +506,7 @@
                             javax.servlet.http;version="[3,4)",
                             javax.servlet;version="[3,4)",
                             org.apache.commons.logging; version="[1.1.0,2.0.0)",
+                            org.codice.ddf.catalog.multipart.utils,
                             !sun.reflect,
                             !com.sun.management,
                             !org.noggit,

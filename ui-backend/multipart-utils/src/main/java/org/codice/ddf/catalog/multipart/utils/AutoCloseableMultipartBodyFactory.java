@@ -1,4 +1,4 @@
-package org.codice.ddf.catalog.ui.util.multipart;
+package org.codice.ddf.catalog.multipart.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +22,7 @@ public class AutoCloseableMultipartBodyFactory {
   private static final String ECLIPSE_MULTIPART_CONFIG = "org.eclipse.jetty.multipartConfig";
   private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
 
-  private AutoCloseableMultipartBodyFactory() {}
+  AutoCloseableMultipartBodyFactory() {}
 
   /**
    * Creates a Cleanable MultipartBody object from HttpServletRequest

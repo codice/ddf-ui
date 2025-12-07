@@ -33,6 +33,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.MediaType;
@@ -45,9 +46,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.cxf.jaxrs.impl.UriBuilderImpl;
 import org.apache.http.HttpStatus;
+import org.codice.ddf.catalog.multipart.utils.AutoCloseableMultipartBody;
+import org.codice.ddf.catalog.multipart.utils.AutoCloseableMultipartBodyFactory;
 import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
-import org.codice.ddf.catalog.ui.util.multipart.AutoCloseableMultipartBody;
-import org.codice.ddf.catalog.ui.util.multipart.AutoCloseableMultipartBodyFactory;
 import org.codice.ddf.rest.api.CatalogService;
 import org.codice.ddf.rest.api.CatalogServiceException;
 import org.slf4j.Logger;
@@ -151,42 +152,7 @@ public class CatalogApplication implements SparkApplication {
         CATALOG_PATH,
         (req, res) -> {
           LOGGER.trace("POST Path: {}", CATALOG_PATH);
-          try {
-            if (req.contentType().startsWith("multipart/")) {
-              LOGGER.trace("POST Path: {} multipart/*", CATALOG_PATH);
-              try (AutoCloseableMultipartBody multipartBody =
-                  AutoCloseableMultipartBodyFactory.create(
-                      req.raw(), config.getMaximumUploadSize(), config.getMaxFileSizeInMemory())) {
-
-                return addDocument(
-                    res,
-                    req.raw().getRequestURL(),
-                    req.contentType(),
-                    req.queryParams(TRANSFORM),
-                    multipartBody,
-                    req.raw().getInputStream());
-              }
-            }
-
-            if (req.contentType().startsWith("text/")
-                || req.contentType().startsWith("application/")) {
-              LOGGER.trace("POST Path: {} text/* or application/*", CATALOG_PATH);
-              return addDocument(
-                  res,
-                  req.raw().getRequestURL(),
-                  req.contentType(),
-                  req.queryParams(TRANSFORM),
-                  null,
-                  req.raw().getInputStream());
-            }
-
-            res.status(HttpStatus.SC_NOT_FOUND);
-            return res;
-          } catch (Exception e) {
-            res.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-            LOGGER.error("Failed to upload file", e);
-            return "Internal Server Error";
-          }
+          return handleCatalogPost(req, res);
         });
 
     put(
@@ -425,5 +391,50 @@ public class CatalogApplication implements SparkApplication {
     response.status(HttpStatus.SC_BAD_REQUEST);
     response.type(MediaType.TEXT_HTML);
     return "<pre>" + entityMessage + "</pre>";
+  }
+
+  private String handleCatalogPost(Request req, Response res) {
+    if (req.contentType().startsWith("multipart/")) {
+      LOGGER.trace("POST Path: {} multipart/*", CATALOG_PATH);
+
+      try (AutoCloseableMultipartBody multipartBody =
+          AutoCloseableMultipartBodyFactory.create(
+              req.raw(), config.getMaximumUploadSize(), config.getMaxFileSizeInMemory())) {
+        return addDocument(
+            res,
+            req.raw().getRequestURL(),
+            req.contentType(),
+            req.queryParams(TRANSFORM),
+            multipartBody,
+            req.raw().getInputStream());
+      } catch (ServletException | IOException e) {
+        res.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        LOGGER.error("Failed to upload file", e);
+        return "Internal Server Error";
+      }
+
+    } else if (req.contentType().startsWith("text/")
+        || req.contentType().startsWith("application/")) {
+      LOGGER.trace("POST Path: {} text/* or application/*", CATALOG_PATH);
+
+      try {
+        return addDocument(
+            res,
+            req.raw().getRequestURL(),
+            req.contentType(),
+            req.queryParams(TRANSFORM),
+            null,
+            req.raw().getInputStream());
+      } catch (IOException e) {
+        res.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        LOGGER.error("Failed to get input stream", e);
+        return "Internal Server Error";
+      }
+
+    } else {
+      res.status(HttpStatus.SC_BAD_REQUEST);
+      LOGGER.error("Unsupported content type: {}", req.contentType());
+      return createBadRequestResponse(res, "Bad Request");
+    }
   }
 }
