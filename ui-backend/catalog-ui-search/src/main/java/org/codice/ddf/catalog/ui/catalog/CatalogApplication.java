@@ -394,47 +394,47 @@ public class CatalogApplication implements SparkApplication {
   }
 
   private String handleCatalogPost(Request req, Response res) {
-      if (req.contentType().startsWith("multipart/")) {
-          LOGGER.trace("POST Path: {} multipart/*", CATALOG_PATH);
+    if (req.contentType().startsWith("multipart/")) {
+      LOGGER.trace("POST Path: {} multipart/*", CATALOG_PATH);
 
-          try (AutoCloseableMultipartBody multipartBody =
-                       AutoCloseableMultipartBodyFactory.create(
-                               req.raw(), config.getMaximumUploadSize(), config.getMaxFileSizeInMemory())) {
-              return addDocument(
-                      res,
-                      req.raw().getRequestURL(),
-                      req.contentType(),
-                      req.queryParams(TRANSFORM),
-                      multipartBody,
-                      req.raw().getInputStream());
-          } catch (ServletException | IOException e) {
-              res.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-              LOGGER.error("Failed to upload file", e);
-              return "Internal Server Error";
-          }
-
-      } else if (req.contentType().startsWith("text/")
-              || req.contentType().startsWith("application/")) {
-          LOGGER.trace("POST Path: {} text/* or application/*", CATALOG_PATH);
-
-          try {
-              return addDocument(
-                      res,
-                      req.raw().getRequestURL(),
-                      req.contentType(),
-                      req.queryParams(TRANSFORM),
-                      null,
-                      req.raw().getInputStream());
-          } catch (IOException e) {
-              res.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
-              LOGGER.error("Failed to get input stream", e);
-              return "Internal Server Error";
-          }
-
-      } else {
-          res.status(HttpStatus.SC_BAD_REQUEST);
-          LOGGER.error("Unsupported content type: {}", req.contentType());
-          return createBadRequestResponse(res, "Bad Request");
+      try (AutoCloseableMultipartBody multipartBody =
+          AutoCloseableMultipartBodyFactory.create(
+              req.raw(), config.getMaximumUploadSize(), config.getMaxFileSizeInMemory())) {
+        return addDocument(
+            res,
+            req.raw().getRequestURL(),
+            req.contentType(),
+            req.queryParams(TRANSFORM),
+            multipartBody,
+            req.raw().getInputStream());
+      } catch (ServletException | IOException e) {
+        res.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        LOGGER.error("Failed to upload file", e);
+        return "Internal Server Error";
       }
+
+    } else if (req.contentType().startsWith("text/")
+        || req.contentType().startsWith("application/")) {
+      LOGGER.trace("POST Path: {} text/* or application/*", CATALOG_PATH);
+
+      try {
+        return addDocument(
+            res,
+            req.raw().getRequestURL(),
+            req.contentType(),
+            req.queryParams(TRANSFORM),
+            null,
+            req.raw().getInputStream());
+      } catch (IOException e) {
+        res.status(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        LOGGER.error("Failed to get input stream", e);
+        return "Internal Server Error";
+      }
+
+    } else {
+      res.status(HttpStatus.SC_BAD_REQUEST);
+      LOGGER.error("Unsupported content type: {}", req.contentType());
+      return createBadRequestResponse(res, "Bad Request");
+    }
   }
 }
