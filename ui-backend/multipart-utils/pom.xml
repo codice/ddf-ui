@@ -62,6 +62,58 @@
             <version>${osgi.version}</version>
             <scope>compile</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.cxf</groupId>-->
+<!--            <artifactId>cxf-rt-rs-client</artifactId>-->
+<!--            <version>${apache.cxf.version}</version> &lt;!&ndash; Use the correct version based on your runtime environment &ndash;&gt;-->
+<!--        </dependency>-->
+        <!--        <dependency>-->
+<!--            <groupId>com.fasterxml.woodstox</groupId>-->
+<!--            <artifactId>woodstox-core</artifactId>-->
+<!--            <version>${woodstox.core.version}</version>-->
+<!--        </dependency>-->
+        <dependency>
+            <groupId>net.java.dev.msv</groupId>
+            <artifactId>msv-core</artifactId>
+            <version>${msv.core.version}</version>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.sun.msv.datatype.xsd</groupId>-->
+<!--            <artifactId>xsdlib</artifactId>-->
+<!--            <version>${xsdlib.version}</version>-->
+<!--        </dependency>-->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+            <version>2.3.2</version> <!-- equals to <jaxb.version> -->
+<!--            <version>4.0.6</version>-->
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.sun.xml.bind</groupId>-->
+<!--            <artifactId>jaxb-xjc</artifactId>-->
+<!--&lt;!&ndash;            <version>2.2.11</version> &lt;!&ndash; I have to use an earlier version because something keeps looking for com.sun.tools.internal.xjc.api. &ndash;&gt;&ndash;&gt;-->
+<!--            <version>2.3.2</version> &lt;!&ndash; I have to use an earlier version because something keeps looking for com.sun.tools.internal.xjc.api. &ndash;&gt;-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.sun</groupId>-->
+<!--            <artifactId>tools</artifactId>-->
+<!--            <version>21</version> &lt;!&ndash; Match your JDK version &ndash;&gt;-->
+<!--        </dependency>-->
+        <dependency>
+            <groupId>com.sun.istack</groupId>
+            <artifactId>istack-commons-tools</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>xml-resolver</groupId>
+            <artifactId>xml-resolver</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -72,9 +124,28 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Embed-Dependency>
+                            cxf-core,
+                            cxf-rt-frontend-jaxrs,
+                            javax.ws.rs-api,
+                            javax.servlet-api,
+                            slf4j-api,
+                            woodstox-core,
+                            msv-core,
+                            xsdlib,
+                            jaxb-xjc
                         </Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                         <Import-Package>
+                            org.apache.cxf.jaxrs.ext.multipart,
+                            org.apache.cxf.jaxrs,
+                            javax.ws.rs.core,
+                            javax.servlet,
+                            com.ctc.wstx.msv,
+                            com.sun.msv.grammar,
+                            com.sun.msv.datatype,
+                            !com.sun.tools.internal.xjc.api,
+                            com.sun.istack.tools,
+                            *
                         </Import-Package>
                         <Export-Package>
                             org.codice.ddf.catalog.multipart.utils
