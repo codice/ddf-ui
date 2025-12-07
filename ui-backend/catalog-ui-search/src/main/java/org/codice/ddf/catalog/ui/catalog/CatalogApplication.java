@@ -74,7 +74,7 @@ public class CatalogApplication implements SparkApplication {
   private static final String BYTES = "bytes";
 
   private static final String CATALOG_PATH = "/catalog/";
-  private static final String CATALOG_ID_PATH = "/catalog/:id";
+  private static final String CATALOG_ID_PATH = CATALOG_PATH + ":id";
 
   private static final String TRANSFORM = "transform";
 
