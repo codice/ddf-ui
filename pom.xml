@@ -65,6 +65,7 @@
     <fmt.maven.plugin.version>2.3.0</fmt.maven.plugin.version>
 
     <!--Backend properties-->
+    <org.apache.cxf.version>3.6.7</org.apache.cxf.version>
     <ddf.version>2.29.23</ddf.version>
     <ddf-jsonrpc.version>0.9</ddf-jsonrpc.version>
     <ddf.support.version>2.3.16</ddf.support.version>

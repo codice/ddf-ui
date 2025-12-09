@@ -1,4 +1,4 @@
-package org.codice.ddf.catalog.ui.util.multipart;
+package org.codice.ddf.catalog.multipart.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,8 +31,6 @@ public class AutoCloseableMultipartBodyFactory {
    * @param maxUploadSize the maximum allowed uploaded file size
    * @param fileSizeThreshold the file size threshold stored in memory before written to disk
    * @return a Cleanable MultipartBody
-   * @throws ServletException
-   * @throws IOException
    */
   public static AutoCloseableMultipartBody create(
       HttpServletRequest httpRequest, long maxUploadSize, int fileSizeThreshold)

@@ -46,9 +46,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.cxf.jaxrs.impl.UriBuilderImpl;
 import org.apache.http.HttpStatus;
+import org.codice.ddf.catalog.multipart.utils.AutoCloseableMultipartBody;
+import org.codice.ddf.catalog.multipart.utils.AutoCloseableMultipartBodyFactory;
 import org.codice.ddf.catalog.ui.config.ConfigurationApplication;
-import org.codice.ddf.catalog.ui.util.multipart.AutoCloseableMultipartBody;
-import org.codice.ddf.catalog.ui.util.multipart.AutoCloseableMultipartBodyFactory;
 import org.codice.ddf.rest.api.CatalogService;
 import org.codice.ddf.rest.api.CatalogServiceException;
 import org.slf4j.Logger;
@@ -78,8 +78,8 @@ public class CatalogApplication implements SparkApplication {
 
   private static final String TRANSFORM = "transform";
 
+  private final ConfigurationApplication config;
   private CatalogService catalogService;
-  private ConfigurationApplication config;
 
   public CatalogApplication(CatalogService catalogService, ConfigurationApplication config) {
     this.catalogService = catalogService;

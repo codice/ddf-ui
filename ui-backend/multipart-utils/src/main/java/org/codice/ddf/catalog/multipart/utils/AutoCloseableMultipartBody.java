@@ -1,4 +1,4 @@
-package org.codice.ddf.catalog.ui.util.multipart;
+package org.codice.ddf.catalog.multipart.utils;
 
 import java.io.IOException;
 import java.util.Collection;
