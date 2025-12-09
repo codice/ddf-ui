@@ -13,43 +13,43 @@
  */
 package org.codice.ddf.catalog.ui.security.accesscontrol;
 
+import org.geotools.api.filter.ExcludeFilter;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.Id;
+import org.geotools.api.filter.IncludeFilter;
+import org.geotools.api.filter.PropertyIsBetween;
+import org.geotools.api.filter.PropertyIsGreaterThan;
+import org.geotools.api.filter.PropertyIsGreaterThanOrEqualTo;
+import org.geotools.api.filter.PropertyIsLessThan;
+import org.geotools.api.filter.PropertyIsLessThanOrEqualTo;
+import org.geotools.api.filter.PropertyIsNil;
+import org.geotools.api.filter.PropertyIsNull;
+import org.geotools.api.filter.spatial.BBOX;
+import org.geotools.api.filter.spatial.Beyond;
+import org.geotools.api.filter.spatial.Contains;
+import org.geotools.api.filter.spatial.Crosses;
+import org.geotools.api.filter.spatial.DWithin;
+import org.geotools.api.filter.spatial.Disjoint;
+import org.geotools.api.filter.spatial.Equals;
+import org.geotools.api.filter.spatial.Intersects;
+import org.geotools.api.filter.spatial.Overlaps;
+import org.geotools.api.filter.spatial.Touches;
+import org.geotools.api.filter.spatial.Within;
+import org.geotools.api.filter.temporal.After;
+import org.geotools.api.filter.temporal.AnyInteracts;
+import org.geotools.api.filter.temporal.Before;
+import org.geotools.api.filter.temporal.Begins;
+import org.geotools.api.filter.temporal.BegunBy;
+import org.geotools.api.filter.temporal.During;
+import org.geotools.api.filter.temporal.EndedBy;
+import org.geotools.api.filter.temporal.Ends;
+import org.geotools.api.filter.temporal.Meets;
+import org.geotools.api.filter.temporal.MetBy;
+import org.geotools.api.filter.temporal.OverlappedBy;
+import org.geotools.api.filter.temporal.TContains;
+import org.geotools.api.filter.temporal.TEquals;
+import org.geotools.api.filter.temporal.TOverlaps;
 import org.geotools.filter.visitor.DefaultFilterVisitor;
-import org.opengis.filter.ExcludeFilter;
-import org.opengis.filter.Filter;
-import org.opengis.filter.Id;
-import org.opengis.filter.IncludeFilter;
-import org.opengis.filter.PropertyIsBetween;
-import org.opengis.filter.PropertyIsGreaterThan;
-import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
-import org.opengis.filter.PropertyIsLessThan;
-import org.opengis.filter.PropertyIsLessThanOrEqualTo;
-import org.opengis.filter.PropertyIsNil;
-import org.opengis.filter.PropertyIsNull;
-import org.opengis.filter.spatial.BBOX;
-import org.opengis.filter.spatial.Beyond;
-import org.opengis.filter.spatial.Contains;
-import org.opengis.filter.spatial.Crosses;
-import org.opengis.filter.spatial.DWithin;
-import org.opengis.filter.spatial.Disjoint;
-import org.opengis.filter.spatial.Equals;
-import org.opengis.filter.spatial.Intersects;
-import org.opengis.filter.spatial.Overlaps;
-import org.opengis.filter.spatial.Touches;
-import org.opengis.filter.spatial.Within;
-import org.opengis.filter.temporal.After;
-import org.opengis.filter.temporal.AnyInteracts;
-import org.opengis.filter.temporal.Before;
-import org.opengis.filter.temporal.Begins;
-import org.opengis.filter.temporal.BegunBy;
-import org.opengis.filter.temporal.During;
-import org.opengis.filter.temporal.EndedBy;
-import org.opengis.filter.temporal.Ends;
-import org.opengis.filter.temporal.Meets;
-import org.opengis.filter.temporal.MetBy;
-import org.opengis.filter.temporal.OverlappedBy;
-import org.opengis.filter.temporal.TContains;
-import org.opengis.filter.temporal.TEquals;
-import org.opengis.filter.temporal.TOverlaps;
 
 /**
  * Provides both default traversal behavior and a {@link #preProcessNonTagPredicate(Filter, Object)}
@@ -66,13 +66,13 @@ public abstract class TagBaseVisitor extends DefaultFilterVisitor {
    * <p>The following types <b>do not</b> call this function prior to a visit:
    *
    * <ul>
-   *   <li>{@link org.opengis.filter.And}
-   *   <li>{@link org.opengis.filter.Or}
-   *   <li>{@link org.opengis.filter.Not}
-   *   <li>{@link org.opengis.filter.PropertyIsEqualTo}
-   *   <li>{@link org.opengis.filter.PropertyIsNotEqualTo}
-   *   <li>{@link org.opengis.filter.PropertyIsLike}
-   *   <li>Any {@link org.opengis.filter.expression.Expression}
+   *   <li>{@link org.geotools.api.filter.And}
+   *   <li>{@link org.geotools.api.filter.Or}
+   *   <li>{@link org.geotools.api.filter.Not}
+   *   <li>{@link org.geotools.api.filter.PropertyIsEqualTo}
+   *   <li>{@link org.geotools.api.filter.PropertyIsNotEqualTo}
+   *   <li>{@link org.geotools.api.filter.PropertyIsLike}
+   *   <li>Any {@link org.geotools.api.filter.expression.Expression}
    * </ul>
    *
    * @param filter the filter about to be visited.

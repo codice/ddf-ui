@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.codice.ddf.search</groupId>
         <artifactId>backend</artifactId>
-        <version>5.2.25</version>
+        <version>5.2.28-SNAPSHOT</version>
     </parent>
     <artifactId>catalog-ui-search</artifactId>
     <name>DDF :: Catalog :: UI :: Catalog UI Search</name>
@@ -177,7 +177,7 @@
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
-            <artifactId>gt-opengis</artifactId>
+            <artifactId>gt-api</artifactId>
             <version>${org.geotools.version}</version>
         </dependency>
         <dependency>

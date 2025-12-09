@@ -18,14 +18,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * While visiting a {@link org.opengis.filter.Filter} it is important to validate that the query
- * does not target data that the access control policy does not apply to. A {@link
+ * While visiting a {@link org.geotools.api.filter.Filter} it is important to validate that the
+ * query does not target data that the access control policy does not apply to. A {@link
  * TagAggregationRule} may be used to keep track of the tags it has been given and a flag indicating
  * if some filter predicate was encountered that does not concern {@link
  * ddf.catalog.data.types.Core#METACARD_TAGS}.
  *
- * <p>This is useful when validating the {@link org.opengis.filter.Or} branches of filters to make
- * sure that tagging predicates apply to entire result set.
+ * <p>This is useful when validating the {@link org.geotools.api.filter.Or} branches of filters to
+ * make sure that tagging predicates apply to entire result set.
  */
 public class TagAggregationRule {
   private final Set<String> tags;

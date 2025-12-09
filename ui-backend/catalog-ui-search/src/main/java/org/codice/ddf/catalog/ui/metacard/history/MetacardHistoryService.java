@@ -67,8 +67,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import javax.ws.rs.NotFoundException;
 import org.codice.ddf.catalog.ui.metacard.internal.OperationPropertySupplier;
-import org.opengis.filter.Filter;
-import org.opengis.filter.sort.SortBy;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.sort.SortBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

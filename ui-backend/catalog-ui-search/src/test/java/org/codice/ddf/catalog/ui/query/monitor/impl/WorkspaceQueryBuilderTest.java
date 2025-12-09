@@ -20,13 +20,13 @@ import static org.mockito.Mockito.when;
 import ddf.catalog.filter.FilterBuilder;
 import java.util.Collections;
 import org.codice.ddf.catalog.ui.query.monitor.api.FilterService;
+import org.geotools.api.filter.And;
+import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.Or;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opengis.filter.And;
-import org.opengis.filter.Filter;
-import org.opengis.filter.Or;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WorkspaceQueryBuilderTest {

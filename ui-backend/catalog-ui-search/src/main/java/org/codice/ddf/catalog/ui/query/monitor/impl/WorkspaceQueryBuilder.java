@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.codice.ddf.catalog.ui.query.monitor.api.FilterService;
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 
 public class WorkspaceQueryBuilder {
   private final FilterBuilder filterBuilder;

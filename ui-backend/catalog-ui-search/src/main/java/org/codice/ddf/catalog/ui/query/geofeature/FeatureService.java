@@ -15,7 +15,7 @@ package org.codice.ddf.catalog.ui.query.geofeature;
 
 import java.util.List;
 import org.codice.ddf.spatial.geocoding.Suggestion;
-import org.opengis.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeature;
 
 /**
  * <b> This code is experimental. While this interface is functional and tested, it may change or be

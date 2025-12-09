@@ -18,7 +18,7 @@ import ddf.catalog.filter.FilterBuilder;
 import java.util.Date;
 import org.codice.ddf.catalog.ui.metacard.workspace.WorkspaceConstants;
 import org.codice.ddf.catalog.ui.query.monitor.api.FilterService;
-import org.opengis.filter.Filter;
+import org.geotools.api.filter.Filter;
 
 public class FilterServiceImpl implements FilterService {
 
