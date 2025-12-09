@@ -22,7 +22,7 @@ public class AutoCloseableMultipartBodyFactory {
   private static final String ECLIPSE_MULTIPART_CONFIG = "org.eclipse.jetty.multipartConfig";
   private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
 
-  AutoCloseableMultipartBodyFactory() {}
+  private AutoCloseableMultipartBodyFactory() {}
 
   /**
    * Creates a Cleanable MultipartBody object from HttpServletRequest

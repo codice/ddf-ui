@@ -497,7 +497,8 @@
                             ows-v_1_1_0-schema,
                             jaxb2-basics-runtime,
                             catalog-rest-service,
-                            owasp-java-html-sanitizer
+                            owasp-java-html-sanitizer,
+                            multipart-utils;scope=!test,
                         </Embed-Dependency>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
@@ -506,7 +507,6 @@
                             javax.servlet.http;version="[3,4)",
                             javax.servlet;version="[3,4)",
                             org.apache.commons.logging; version="[1.1.0,2.0.0)",
-                            org.codice.ddf.catalog.multipart.utils,
                             !sun.reflect,
                             !com.sun.management,
                             !org.noggit,

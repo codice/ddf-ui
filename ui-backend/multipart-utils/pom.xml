@@ -70,30 +70,6 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Embed-Dependency>
-                            cxf-core,
-                            cxf-rt-frontend-jaxrs,
-                            javax.ws.rs-api,
-                            javax.servlet-api,
-                            slf4j-api,
-                            woodstox-core,
-                            msv-core,
-                            xsdlib,
-                            jaxb-xjc
-                        </Embed-Dependency>
-                        <Embed-Transitive>true</Embed-Transitive>
-                        <Import-Package>
-                            org.apache.cxf.jaxrs.ext.multipart,
-                            org.apache.cxf.jaxrs,
-                            javax.ws.rs.core,
-                            javax.servlet,
-                            com.ctc.wstx.msv,
-                            com.sun.msv.grammar,
-                            com.sun.msv.datatype,
-                            !com.sun.tools.internal.xjc.api,
-                            com.sun.istack.tools,
-                            *
-                        </Import-Package>
                         <Export-Package>
                             org.codice.ddf.catalog.multipart.utils
                         </Export-Package>

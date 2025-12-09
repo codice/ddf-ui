@@ -65,6 +65,7 @@
     <fmt.maven.plugin.version>2.3.0</fmt.maven.plugin.version>
 
     <!--Backend properties-->
+    <org.apache.cxf.version>3.6.7</org.apache.cxf.version>
     <ddf.version>2.29.23</ddf.version>
     <ddf-jsonrpc.version>0.9</ddf-jsonrpc.version>
     <ddf.support.version>2.3.16</ddf.support.version>
@@ -103,7 +104,6 @@
     <tika.version>2.4.0</tika.version>
     <usng4j.version>0.4</usng4j.version>
     <org.slf4j.version>1.7.32</org.slf4j.version>
-      <org.apache.cxf.version>3.6.7</org.apache.cxf.version>
 
     <!-- Command line argument properties for the maven-surefire-plugin -->
     <codice-test.version>0.3</codice-test.version>
