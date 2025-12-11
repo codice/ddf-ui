@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.codice.ddf.search</groupId>
         <artifactId>backend</artifactId>
-        <version>5.2.25</version>
+        <version>5.2.28-SNAPSHOT</version>
     </parent>
 
     <artifactId>multipart-utils</artifactId>
@@ -58,7 +58,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
+            <version>6.0.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
