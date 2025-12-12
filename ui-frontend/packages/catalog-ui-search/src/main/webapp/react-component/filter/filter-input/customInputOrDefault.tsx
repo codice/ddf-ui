@@ -73,7 +73,7 @@ export const CustomInputOrDefaultPostValidation = ({
   } else {
     return (
       <TextField
-        value={textValue}
+        defaultValue={textValue}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           onChange(e.target.value)
         }}
