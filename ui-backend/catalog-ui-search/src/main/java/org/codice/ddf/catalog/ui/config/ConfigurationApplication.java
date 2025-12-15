@@ -168,7 +168,8 @@ public class ConfigurationApplication implements SparkApplication {
 
   private String mapHome = "";
 
-  private int maximumUploadSize = 1_048_576;
+  private long maximumUploadSize = 100 * 1024 * 1024; // 100 MB
+  private int maxFileSizeInMemory = 50 * 1024 * 1024; // 50 MB
 
   private List<String> readOnly =
       ImmutableList.of(
@@ -234,6 +235,9 @@ public class ConfigurationApplication implements SparkApplication {
   private static final String INTRIGUE_BASE_NAME = "IntrigueBundle";
 
   private volatile Map<String, String> i18n = Collections.emptyMap();
+
+  private int connectionTimeout = 30000; // 30s
+  private int receiveTimeout = 60000; // 60s
 
   public void setI18n(ResourceBundleLocator resourceBundleLocator) {
     try {
@@ -402,11 +406,11 @@ public class ConfigurationApplication implements SparkApplication {
     this.resultShow = resultShow;
   }
 
-  public void setMaximumUploadSize(int size) {
+  public void setMaximumUploadSize(long size) {
     this.maximumUploadSize = size;
   }
 
-  public int getMaximumUploadSize() {
+  public long getMaximumUploadSize() {
     return maximumUploadSize;
   }
 
@@ -573,6 +577,10 @@ public class ConfigurationApplication implements SparkApplication {
     config.put("menuIconSrc", menuIconSrc);
     config.put("customBranding", customBranding);
     config.put("extra", extra);
+    config.put("maximumUploadSize", maximumUploadSize);
+    config.put("maxFileSizeInMemory", maxFileSizeInMemory);
+    config.put("connectionTimeout", connectionTimeout);
+    config.put("receiveTimeout", receiveTimeout);
 
     return config;
   }
@@ -1263,5 +1271,29 @@ public class ConfigurationApplication implements SparkApplication {
 
   public void setMenuIconSrc(String menuIconSrc) {
     this.menuIconSrc = menuIconSrc;
+  }
+
+  public void setMaxFileSizeInMemory(int size) {
+    this.maxFileSizeInMemory = size;
+  }
+
+  public int getMaxFileSizeInMemory() {
+    return maxFileSizeInMemory;
+  }
+
+  public void setConnectionTimeout(int connectionTimeout) {
+    this.connectionTimeout = connectionTimeout;
+  }
+
+  public int getConnectionTimeout() {
+    return connectionTimeout;
+  }
+
+  public void setReceiveTimeout(int receiveTimeout) {
+    this.receiveTimeout = receiveTimeout;
+  }
+
+  public int getReceiveTimeout() {
+    return receiveTimeout;
   }
 }

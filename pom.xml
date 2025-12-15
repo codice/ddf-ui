@@ -89,6 +89,7 @@
     <karaf.version>4.4.7</karaf.version>
     <nimbus.oidc.version>11.24</nimbus.oidc.version>
     <nimbus.jose.jwt.version>10.3</nimbus.jose.jwt.version>
+    <org.apache.cxf.version>3.6.7</org.apache.cxf.version>
     <org.geotools.version>33.1</org.geotools.version>
     <osgi.version>7.0.0</osgi.version>
     <owasp-html-sanitizer.version>20220608.1</owasp-html-sanitizer.version>

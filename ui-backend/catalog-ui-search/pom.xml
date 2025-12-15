@@ -431,6 +431,11 @@
             <artifactId>rest-assured</artifactId>
             <version>${restassured.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.codice.ddf.search</groupId>
+            <artifactId>multipart-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -492,7 +497,8 @@
                             ows-v_1_1_0-schema,
                             jaxb2-basics-runtime,
                             catalog-rest-service,
-                            owasp-java-html-sanitizer
+                            owasp-java-html-sanitizer,
+                            multipart-utils;scope=!test,
                         </Embed-Dependency>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Import-Package>

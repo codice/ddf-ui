@@ -278,8 +278,14 @@
         <AD id="maximumUploadSize"
             name="Maximum Endpoint Upload Size"
             description="The maximum size (in bytes) to allow per client when receiving a POST/PATCH/PUT. Note: This does not affect product upload size, just the maximum size allowed for calls from Intrigue."
-            type="Integer"
+            type="Long"
             default="1048576"/>
+
+        <AD id="maxFileSizeInMemory"
+            name="Maximum File Size In Memory"
+            description="The maximum file size (in bytes) in memory before being written to disk."
+            type="Integer"
+            default="52428800"/>
 
         <AD id="mapHome"
             name="Map Home"
@@ -383,6 +389,19 @@
             description="Arbitrary JSON map for runtime UI configuration."
             type="String"
             required="false"/>
+
+        <AD id="connectionTimeout"
+            name="Connection Timeout"
+            description="The maximum time (in ms) for making a connection."
+            type="Integer"
+            default="30000"/>
+
+
+        <AD id="receiveTimeout"
+            name="Receive Timeout"
+            description="The maximum time (in ms) for making a transfer."
+            type="Integer"
+            default="60000"/>
     </OCD>
 
     <Designate pid="org.codice.ddf.catalog.ui">
