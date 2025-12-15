@@ -1,0 +1,9 @@
+import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+import * as React from 'react';
+export var Memo = function (_a) {
+    var _b = _a.dependencies, dependencies = _b === void 0 ? [] : _b, children = _a.children;
+    return React.useMemo(function () {
+        return _jsx(_Fragment, { children: children });
+    }, dependencies);
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibWVtby5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uL3NyYy9tYWluL3dlYmFwcC9jb21wb25lbnQvbWVtby9tZW1vLnRzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUEsT0FBTyxLQUFLLEtBQUssTUFBTSxPQUFPLENBQUE7QUFTOUIsTUFBTSxDQUFDLElBQU0sSUFBSSxHQUFHLFVBQUMsRUFBMEM7UUFBeEMsb0JBQWlCLEVBQWpCLFlBQVksbUJBQUcsRUFBRSxLQUFBLEVBQUUsUUFBUSxjQUFBO0lBQ2hELE9BQU8sS0FBSyxDQUFDLE9BQU8sQ0FBQztRQUNuQixPQUFPLDRCQUFHLFFBQVEsR0FBSSxDQUFBO0lBQ3hCLENBQUMsRUFBRSxZQUFZLENBQUMsQ0FBQTtBQUNsQixDQUFDLENBQUEiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgKiBhcyBSZWFjdCBmcm9tICdyZWFjdCdcblxuLy8gQ29udmVuaWVuY2Ugd3JhcHBlciBhcm91bmQgbWVtb1xuXG50eXBlIE1lbW9Qcm9wcyA9IHtcbiAgY2hpbGRyZW46IFJlYWN0LlJlYWN0Tm9kZSB8IFJlYWN0LlJlYWN0Tm9kZVtdXG4gIGRlcGVuZGVuY2llcz86IGFueVtdXG59XG5cbmV4cG9ydCBjb25zdCBNZW1vID0gKHsgZGVwZW5kZW5jaWVzID0gW10sIGNoaWxkcmVuIH06IE1lbW9Qcm9wcykgPT4ge1xuICByZXR1cm4gUmVhY3QudXNlTWVtbygoKSA9PiB7XG4gICAgcmV0dXJuIDw+e2NoaWxkcmVufTwvPlxuICB9LCBkZXBlbmRlbmNpZXMpXG59XG4iXX0=
