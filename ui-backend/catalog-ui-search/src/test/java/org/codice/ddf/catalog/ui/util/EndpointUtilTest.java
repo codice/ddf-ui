@@ -142,7 +142,7 @@ public class EndpointUtilTest {
     when(attributeBuilderMock.like()).thenReturn(contextualExpressionBuilderMock);
     when(contextualExpressionBuilderMock.text(anyString())).thenReturn(filterMock);
     when(catalogFrameworkMock.query(any(QueryRequestImpl.class))).thenReturn(responseMock);
-    when(configurationApplicationMock.getMaximumUploadSize()).thenReturn(1 << 20);
+    when(configurationApplicationMock.getMaximumUploadSize()).thenReturn(1L << 20);
 
     when(resultMock.getMetacard()).thenReturn(metacardMock);
     when(metacardMock.getId()).thenReturn("MOCK METACARD");
