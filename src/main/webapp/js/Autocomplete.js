@@ -1,0 +1,37 @@
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+/*jshint latedef: nofunc*/
+/*
+    Chrome only lets us pull off this trick once per loaded iframe.  So we need to detach and reattach it after every submit.
+    Luckily, we can put it on the load event, and keep the logic centralized here.
+*/
+import $ from 'jquery';
+function waitForInitialAttachLoad($iframe) {
+    $iframe.on('load', function () {
+        $iframe.off('load');
+        attachSubmitListener($iframe);
+    });
+}
+function attachSubmitListener($iframe) {
+    $iframe.on('load', function () {
+        $iframe.off('load');
+        $iframe.detach();
+        waitForInitialAttachLoad($iframe);
+        $('body').append($iframe);
+    });
+}
+var $iframe = $('iframe[name=autocomplete]');
+attachSubmitListener($iframe);
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiQXV0b2NvbXBsZXRlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vc3JjL21haW4vd2ViYXBwL2pzL0F1dG9jb21wbGV0ZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7Ozs7Ozs7Ozs7OztJQWFJO0FBRUosMEJBQTBCO0FBQzFCOzs7RUFHRTtBQUVGLE9BQU8sQ0FBQyxNQUFNLFFBQVEsQ0FBQTtBQUV0QixTQUFTLHdCQUF3QixDQUFDLE9BQVk7SUFDNUMsT0FBTyxDQUFDLEVBQUUsQ0FBQyxNQUFNLEVBQUU7UUFDakIsT0FBTyxDQUFDLEdBQUcsQ0FBQyxNQUFNLENBQUMsQ0FBQTtRQUNuQixvQkFBb0IsQ0FBQyxPQUFPLENBQUMsQ0FBQTtJQUMvQixDQUFDLENBQUMsQ0FBQTtBQUNKLENBQUM7QUFFRCxTQUFTLG9CQUFvQixDQUFDLE9BQVk7SUFDeEMsT0FBTyxDQUFDLEVBQUUsQ0FBQyxNQUFNLEVBQUU7UUFDakIsT0FBTyxDQUFDLEdBQUcsQ0FBQyxNQUFNLENBQUMsQ0FBQTtRQUNuQixPQUFPLENBQUMsTUFBTSxFQUFFLENBQUE7UUFDaEIsd0JBQXdCLENBQUMsT0FBTyxDQUFDLENBQUE7UUFDakMsQ0FBQyxDQUFDLE1BQU0sQ0FBQyxDQUFDLE1BQU0sQ0FBQyxPQUFPLENBQUMsQ0FBQTtJQUMzQixDQUFDLENBQUMsQ0FBQTtBQUNKLENBQUM7QUFFRCxJQUFJLE9BQU8sR0FBRyxDQUFDLENBQUMsMkJBQTJCLENBQUMsQ0FBQTtBQUM1QyxvQkFBb0IsQ0FBQyxPQUFPLENBQUMsQ0FBQSIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQ29weXJpZ2h0IChjKSBDb2RpY2UgRm91bmRhdGlvblxuICpcbiAqIFRoaXMgaXMgZnJlZSBzb2Z0d2FyZTogeW91IGNhbiByZWRpc3RyaWJ1dGUgaXQgYW5kL29yIG1vZGlmeSBpdCB1bmRlciB0aGUgdGVybXMgb2YgdGhlIEdOVSBMZXNzZXJcbiAqIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgYXMgcHVibGlzaGVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24sIGVpdGhlciB2ZXJzaW9uIDMgb2YgdGhlXG4gKiBMaWNlbnNlLCBvciBhbnkgbGF0ZXIgdmVyc2lvbi5cbiAqXG4gKiBUaGlzIHByb2dyYW0gaXMgZGlzdHJpYnV0ZWQgaW4gdGhlIGhvcGUgdGhhdCBpdCB3aWxsIGJlIHVzZWZ1bCwgYnV0IFdJVEhPVVQgQU5ZIFdBUlJBTlRZOyB3aXRob3V0XG4gKiBldmVuIHRoZSBpbXBsaWVkIHdhcnJhbnR5IG9mIE1FUkNIQU5UQUJJTElUWSBvciBGSVRORVNTIEZPUiBBIFBBUlRJQ1VMQVIgUFVSUE9TRS4gU2VlIHRoZSBHTlVcbiAqIExlc3NlciBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGZvciBtb3JlIGRldGFpbHMuIEEgY29weSBvZiB0aGUgR05VIExlc3NlciBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlXG4gKiBpcyBkaXN0cmlidXRlZCBhbG9uZyB3aXRoIHRoaXMgcHJvZ3JhbSBhbmQgY2FuIGJlIGZvdW5kIGF0XG4gKiA8aHR0cDovL3d3dy5nbnUub3JnL2xpY2Vuc2VzL2xncGwuaHRtbD4uXG4gKlxuICoqL1xuXG4vKmpzaGludCBsYXRlZGVmOiBub2Z1bmMqL1xuLypcbiAgICBDaHJvbWUgb25seSBsZXRzIHVzIHB1bGwgb2ZmIHRoaXMgdHJpY2sgb25jZSBwZXIgbG9hZGVkIGlmcmFtZS4gIFNvIHdlIG5lZWQgdG8gZGV0YWNoIGFuZCByZWF0dGFjaCBpdCBhZnRlciBldmVyeSBzdWJtaXQuXG4gICAgTHVja2lseSwgd2UgY2FuIHB1dCBpdCBvbiB0aGUgbG9hZCBldmVudCwgYW5kIGtlZXAgdGhlIGxvZ2ljIGNlbnRyYWxpemVkIGhlcmUuXG4qL1xuXG5pbXBvcnQgJCBmcm9tICdqcXVlcnknXG5cbmZ1bmN0aW9uIHdhaXRGb3JJbml0aWFsQXR0YWNoTG9hZCgkaWZyYW1lOiBhbnkpIHtcbiAgJGlmcmFtZS5vbignbG9hZCcsICgpID0+IHtcbiAgICAkaWZyYW1lLm9mZignbG9hZCcpXG4gICAgYXR0YWNoU3VibWl0TGlzdGVuZXIoJGlmcmFtZSlcbiAgfSlcbn1cblxuZnVuY3Rpb24gYXR0YWNoU3VibWl0TGlzdGVuZXIoJGlmcmFtZTogYW55KSB7XG4gICRpZnJhbWUub24oJ2xvYWQnLCAoKSA9PiB7XG4gICAgJGlmcmFtZS5vZmYoJ2xvYWQnKVxuICAgICRpZnJhbWUuZGV0YWNoKClcbiAgICB3YWl0Rm9ySW5pdGlhbEF0dGFjaExvYWQoJGlmcmFtZSlcbiAgICAkKCdib2R5JykuYXBwZW5kKCRpZnJhbWUpXG4gIH0pXG59XG5cbmxldCAkaWZyYW1lID0gJCgnaWZyYW1lW25hbWU9YXV0b2NvbXBsZXRlXScpXG5hdHRhY2hTdWJtaXRMaXN0ZW5lcigkaWZyYW1lKVxuIl19
