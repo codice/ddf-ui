@@ -2,6 +2,25 @@
 
 Welcome to ddf-ui, the home of Intrigue.
 
+## Building ddf-ui prereqs
+This repository depends on Codice and Connexta artifacts available in their GitHub repository packages.
+To pull these artifacts, you will need create a [Personal Access Token (PAT) in GitHub](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic)
+with `packages:read` permissions, and configure maven's ~/.m2/settings.xml:
+```
+<servers>
+   <server>
+       <id>codice</id>
+       <username>$USERNAME</username>
+       <password>$TOKEN</password>
+   </server>
+   <server>
+       <id>connexta</id>
+       <username>$USERNAME</username>
+       <password>$TOKEN</password>
+   </server>
+</servers>
+```
+
 ## Installing in DDF
 
 Note: Change `<VERSION>` to the desired or most recent version of ddf-ui.
