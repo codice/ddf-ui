@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+      - '[0-9]+.[0-9]+.x'  # Patch branches like 2.10.x, 2.9.x
+  pull_request:
+    branches:
+      - master
+      - '[0-9]+.[0-9]+.x'
+  schedule:
+    # Nightly build on master (same as Jenkins: H H(17-19) * * *)
+    - cron: '0 18 * * *'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  MAVEN_OPTS: '-Xmx4G -Xms1G -XX:+ClassUnloadingWithConcurrentMark -Djava.security.egd=file:/dev/./urandom'
+  MAVEN_CLI_OPTS: '-B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn'
+
+jobs:
+  full-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          df -h
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Configure Maven settings
+        uses: s4u/maven-settings-action@v3.0.0
+        with:
+          servers: |
+            [{
+              "id": "codice",
+              "username": "${{ github.actor }}",
+              "password": "${{ secrets.READ_PACKAGES }}"
+            },
+            {
+              "id": "connexta",
+              "username": "${{ github.actor }}",
+              "password": "${{ secrets.READ_PACKAGES }}"
+            },{
+              "id": "alexabird",
+              "username": "${{ github.actor }}",
+              "password": "${{ secrets.READ_PACKAGES }}"
+            }]
+
+      - name: Full build
+        run: mvn clean install $MAVEN_CLI_OPTS
+
+  # Deploy artifacts (master and patch branches only, in production)
+  deploy:
+    needs: [full-build]
+    if: |
+      always() &&
+      github.event_name != 'pull_request' &&
+      (github.ref == 'refs/heads/master' || contains(github.ref, '.x')) &&
+      needs.full-build.result == 'success'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Deploy
+        run: |
+          mvn deploy $MAVEN_CLI_OPTS \
+            -DskipStatic=true \
+            -DskipTests=true \
+            -DretryFailedDeploymentCount=10 \
+            -Dreleases.repository.url=https://maven.pkg.github.com/codice/ddf-ui \
+            -Dsnapshots.repository.url=https://maven.pkg.github.com/codice/ddf-ui

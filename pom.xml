@@ -391,9 +391,33 @@
       </snapshots>
     </repository>
     <repository>
+      <id>alexabird</id>
+      <name>Codice Repository</name>
+      <url>https://maven.pkg.github.com/alexabird/ddf</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
       <id>codice</id>
       <name>Codice Repository</name>
-      <url>https://artifacts.codice.org/content/groups/public/</url>
+      <url>https://maven.pkg.github.com/codice/*</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>connexta</id>
+      <name>Connexta Repository</name>
+      <url>https://maven.pkg.github.com/connexta/*</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>osgeo</id>
+      <name>OSGeo Release Repository</name>
+      <url>https://repo.osgeo.org/repository/release/</url>
     </repository>
   </repositories>
   <pluginRepositories>
@@ -409,7 +433,7 @@
     <pluginRepository>
       <id>codice</id>
       <name>Codice Repository</name>
-      <url>https://artifacts.codice.org/content/groups/public/</url>
+      <url>https://maven.pkg.github.com/codice/*</url>
     </pluginRepository>
   </pluginRepositories>
   <dependencies>
