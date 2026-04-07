@@ -65,7 +65,7 @@
     <fmt.maven.plugin.version>2.3.0</fmt.maven.plugin.version>
 
     <!--Backend properties-->
-    <ddf.version>2.29.26</ddf.version>
+    <ddf.version>2.29.29</ddf.version>
     <ddf-jsonrpc.version>0.10.2</ddf-jsonrpc.version>
     <ddf.support.version>2.3.16</ddf.support.version>
     <antlr.version>4.3</antlr.version>
@@ -96,12 +96,12 @@
     <ows-v_1_0_0-schema.version>1.1.0</ows-v_1_0_0-schema.version>
     <pac4j.version>6.1.2</pac4j.version>
     <pax.web.version>8.0.33</pax.web.version>
-    <jetty.version>9.4.57.v20241219</jetty.version>
+    <jetty.version>9.4.58.v20250814</jetty.version>
     <quartz.version>2.3.2</quartz.version>
     <restassured.version>3.3.0</restassured.version>
     <spark.version>2.9.4</spark.version>
     <spatial4j.version>0.8</spatial4j.version>
-    <tika.version>2.4.0</tika.version>
+    <tika.version>3.2.2</tika.version>
     <usng4j.version>0.4</usng4j.version>
     <org.slf4j.version>1.7.32</org.slf4j.version>
 
