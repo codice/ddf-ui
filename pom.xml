@@ -65,7 +65,7 @@
     <fmt.maven.plugin.version>2.3.0</fmt.maven.plugin.version>
 
     <!--Backend properties-->
-    <ddf.version>2.29.29</ddf.version>
+    <ddf.version>2.29.32</ddf.version>
     <ddf-jsonrpc.version>0.10.2</ddf-jsonrpc.version>
     <ddf.support.version>2.3.16</ddf.support.version>
     <antlr.version>4.3</antlr.version>
@@ -102,7 +102,7 @@
     <spark.version>2.9.4</spark.version>
     <spatial4j.version>0.8</spatial4j.version>
     <tika.version>3.2.2</tika.version>
-    <usng4j.version>0.4</usng4j.version>
+    <usng4j.version>0.5</usng4j.version>
     <org.slf4j.version>1.7.32</org.slf4j.version>
 
     <!-- Command line argument properties for the maven-surefire-plugin -->
