@@ -38,6 +38,9 @@ import CQLUtils from './CQLUtils'
 import _cloneDeep from 'lodash/cloneDeep'
 import wkx from 'wkx'
 import { StartupDataStore } from './model/Startup/startup'
+import { isKeyDisseminatorsFilterClass } from '../component/filter-builder/basic-search-filters/key-disseminators-filter/filter.structure'
+import { KeyDisseminatorsPropertyName } from '../component/filter-builder/basic-search-filters/key-disseminators-filter/property-name'
+import { getFilterConfiguration } from '../component/filter-builder/basic-search-filters/basic-search-filter-helper-functions'
 
 const getPointRadiusFilter = (
   point: [number, number],
@@ -966,6 +969,41 @@ function handleAllFilterTypes(
         new CQLStandardFilterBuilderClass({
           type: 'OR',
           filters: datatypeFilters,
+        }),
+      ],
+    })
+  } else if (isKeyDisseminatorsFilterClass(cqlAst)) {
+    const disseminationFilterConfiguration = getFilterConfiguration({
+      Configuration: StartupDataStore.Configuration,
+      MetacardDefinitions: StartupDataStore.MetacardDefinitions,
+      filterName: KeyDisseminatorsPropertyName,
+    })
+    const filters: FilterClass[] = []
+    cqlAst.value.map((value) => {
+      const relevantAttributes =
+        disseminationFilterConfiguration.valueMap[value]
+      if (relevantAttributes) {
+        Object.keys(relevantAttributes.attributes).map((attribute) => {
+          const relevantValues = relevantAttributes.attributes[attribute]
+          relevantValues.forEach((relevantValue) => {
+            filters.push(
+              new FilterClass({
+                property: attribute,
+                value: relevantValue,
+                type: 'ILIKE',
+              })
+            )
+          })
+        })
+      }
+    })
+
+    return new CQLStandardFilterBuilderClass({
+      type: 'AND',
+      filters: [
+        new CQLStandardFilterBuilderClass({
+          type: 'OR',
+          filters: filters,
         }),
       ],
     })

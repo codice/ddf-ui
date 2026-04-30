@@ -43,6 +43,13 @@ import { StartupDataStore } from '../../js/model/Startup/startup'
 import { useMetacardDefinitions } from '../../js/model/Startup/metacard-definitions.hooks'
 import { ReservedBasicDatatype } from '../reserved-basic-datatype/reserved.basic-datatype'
 import { BasicDataTypePropertyName } from '../filter-builder/reserved.properties'
+import { KeyDisseminatorsPropertyName } from '../filter-builder/basic-search-filters/key-disseminators-filter/property-name'
+import {
+  KeyDisseminatorsFilter,
+  isKeyDisseminatorsFilterClass,
+} from '../filter-builder/basic-search-filters/key-disseminators-filter/filter.structure'
+import { KeyDisseminatorsFilterAutoComplete } from '../filter-builder/basic-search-filters/key-disseminators-filter/autocomplete'
+
 function isNested(filter: any) {
   let nested = false
   filter.filters.forEach((subfilter: any) => {
@@ -60,7 +67,7 @@ function isAnyDate(filter: any) {
     return (
       StartupDataStore.MetacardDefinitions.getAttributeMap()[
         stripQuotes(filter.property)
-      ].type === 'DATE'
+      ]?.type === 'DATE'
     )
   }
   let typesFound = {} as any
@@ -117,7 +124,10 @@ type PropertyValueMapType = {
     on: boolean
     value: BasicDatatypeFilter
   }
-
+  [KeyDisseminatorsPropertyName]: {
+    on: boolean
+    value: KeyDisseminatorsFilter
+  }
   [key: string]: any
 }
 export function downgradeFilterTreeToBasic(
@@ -138,6 +148,12 @@ export function translateFilterToBasicMap(filter: FilterBuilderClass) {
         value: [],
       }),
     },
+    [KeyDisseminatorsPropertyName]: {
+      on: false,
+      value: new KeyDisseminatorsFilter({
+        value: [],
+      }),
+    },
   } as PropertyValueMapType
   let downConversion = false
   if (!filter.filters && isAnyDate(filter)) {
@@ -153,6 +169,12 @@ export function translateFilterToBasicMap(filter: FilterBuilderClass) {
       ) {
         propertyValueMap[BasicDataTypePropertyName].on = true
         propertyValueMap[BasicDataTypePropertyName].value = subfilter
+      } else if (
+        !isFilterBuilderClass(subfilter) &&
+        isKeyDisseminatorsFilterClass(subfilter)
+      ) {
+        propertyValueMap[KeyDisseminatorsPropertyName].on = true
+        propertyValueMap[KeyDisseminatorsPropertyName].value = subfilter
       } else if (!isFilterBuilderClass(subfilter)) {
         if (['anyDate', 'anyText', 'anyGeo'].includes(subfilter.property)) {
           propertyValueMap[CQLUtils.getProperty(subfilter)] =
@@ -240,19 +262,23 @@ export const constructFilterFromBasicFilter = ({
   if (basicFilter.anyGeo[0] !== undefined) {
     filters.push(basicFilter.anyGeo[0])
   }
-  if (
-    basicFilter[BasicDataTypePropertyName].on &&
-    basicFilter[BasicDataTypePropertyName].value.value.length > 0
-  ) {
-    filters.push(basicFilter[BasicDataTypePropertyName].value)
-  } else if (basicFilter[BasicDataTypePropertyName].on) {
-    // a bit of an unfortunate hack so we can depend directly on filterTree (this will only happen if properties is blank!)
-    // see the anyDate part of translateFilterToBasicMap for more details
-    filters.push(
-      new BasicDatatypeFilter({
-        value: [],
-      })
-    )
+  if (basicFilter[BasicDataTypePropertyName].on) {
+    if (basicFilter[BasicDataTypePropertyName].value.value.length > 0) {
+      filters.push(basicFilter[BasicDataTypePropertyName].value)
+    } else {
+      filters.push(new BasicDatatypeFilter({ value: [] }))
+    }
+  }
+  if (basicFilter[KeyDisseminatorsPropertyName].on) {
+    if (basicFilter[KeyDisseminatorsPropertyName].value.value.length > 0) {
+      filters.push(basicFilter[KeyDisseminatorsPropertyName].value)
+    } else {
+      filters.push(
+        new KeyDisseminatorsFilter({
+          value: [],
+        })
+      )
+    }
   }
   return new FilterBuilderClass({
     type: 'AND',
@@ -453,6 +479,52 @@ const QueryBasic = ({ model, errorListener, Extensions }: QueryBasicProps) => {
                   value={basicFilter[BasicDataTypePropertyName].value.value}
                   onChange={(newValue) => {
                     basicFilter[BasicDataTypePropertyName].value.value =
+                      newValue
+                    model.set(
+                      'filterTree',
+                      constructFilterFromBasicFilter({ basicFilter })
+                    )
+                  }}
+                />
+              </Grid>
+            </Grid>
+          ) : null}
+        </div>
+        <div className="">
+          <FormControlLabel
+            labelPlacement="end"
+            control={
+              <Checkbox
+                color="default"
+                checked={basicFilter[KeyDisseminatorsPropertyName].on}
+                onChange={(e) => {
+                  basicFilter[KeyDisseminatorsPropertyName].on =
+                    e.target.checked
+                  model.set(
+                    'filterTree',
+                    constructFilterFromBasicFilter({ basicFilter })
+                  )
+                }}
+              />
+            }
+            label="Key Disseminators"
+          />
+          {basicFilter[KeyDisseminatorsPropertyName].on ? (
+            <Grid
+              container
+              alignItems="stretch"
+              direction="row"
+              wrap="nowrap"
+              className="pt-2"
+            >
+              <Grid item>
+                <Swath className="w-1 h-full" />
+              </Grid>
+              <Grid item className="w-full pl-2">
+                <KeyDisseminatorsFilterAutoComplete
+                  value={basicFilter[KeyDisseminatorsPropertyName].value.value}
+                  onChange={(newValue) => {
+                    basicFilter[KeyDisseminatorsPropertyName].value.value =
                       newValue
                     model.set(
                       'filterTree',
