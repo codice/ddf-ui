@@ -391,6 +391,11 @@
       </snapshots>
     </repository>
     <repository>
+      <id>osgeo</id>
+      <name>OSGeo Release Respository</name>
+      <url>https://repo.osgeo.org/repository/release/</url>
+    </repository>
+    <repository>
       <id>codice</id>
       <name>Codice Repository</name>
       <url>https://repo.codice.org/repository/maven-public/</url>
