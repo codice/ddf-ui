@@ -388,7 +388,7 @@ const TableExports = ({
             {['csv'].includes(exportFormat) ? (
                 <div className="csv-format-warning text-center pt-1" style={{ marginTop: '10px'}}>
                   <span>
-                    NOTE: Complex data exported as CSV may not be formattedorrectly if opened directly.
+                    NOTE: Complex data exported as CSV may not be formatted correctly if opened directly.
                     For best results, open Excel first and then select the file using File → Open.
                   </span>
                 </div>
