@@ -43,6 +43,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Configure Maven settings
+        run: mkdir -p ~/.m2 && cp .github/maven-settings.xml ~/.m2/settings.xml
+
       - name: Build
         run: mvn clean install $MAVEN_CLI_OPTS -DskipTests
 
@@ -66,6 +69,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Configure Maven settings
+        run: mkdir -p ~/.m2 && cp .github/maven-settings.xml ~/.m2/settings.xml
+
       - name: Build
         run: mvn clean install $MAVEN_CLI_OPTS -DskipTests
 
@@ -76,8 +82,6 @@ jobs:
       (github.ref == 'refs/heads/master' || contains(github.ref, '.x'))
     runs-on: ubuntu-latest
     environment: production
-    permissions:
-      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -95,24 +99,15 @@ jobs:
           node-version: '20'
 
       - name: Configure Maven settings
-        uses: s4u/maven-settings-action@v3.0.0
-        with:
-          servers: |
-            [{
-              "id": "releases",
-              "username": "${{ github.actor }}",
-              "password": "${{ secrets.GITHUB_TOKEN }}"
-            },
-            {
-              "id": "snapshots",
-              "username": "${{ github.actor }}",
-              "password": "${{ secrets.GITHUB_TOKEN }}"
-            }]
+        run: mkdir -p ~/.m2 && cp .github/maven-settings.xml ~/.m2/settings.xml
 
       - name: Deploy
+        env:
+          NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
         run: |
           mvn deploy $MAVEN_CLI_OPTS \
             -DskipTests=true \
             -DretryFailedDeploymentCount=10 \
-            -Dreleases.repository.url=https://maven.pkg.github.com/codice/ddf-ui \
-            -Dsnapshots.repository.url=https://maven.pkg.github.com/codice/ddf-ui
+            -Dreleases.repository.url=https://repo.codice.org/repository/maven-releases/ \
+            -Dsnapshots.repository.url=https://repo.codice.org/repository/maven-snapshots/

@@ -65,8 +65,8 @@
     <fmt.maven.plugin.version>2.3.0</fmt.maven.plugin.version>
 
     <!--Backend properties-->
-    <ddf.version>2.29.29</ddf.version>
-    <ddf-jsonrpc.version>0.10.2</ddf-jsonrpc.version>
+    <ddf.version>2.29.32</ddf.version>
+    <ddf-jsonrpc.version>0.10.5</ddf-jsonrpc.version>
     <ddf.support.version>2.3.16</ddf.support.version>
     <antlr.version>4.3</antlr.version>
     <c3p0.version>0.9.5.5</c3p0.version>
@@ -102,7 +102,7 @@
     <spark.version>2.9.4</spark.version>
     <spatial4j.version>0.8</spatial4j.version>
     <tika.version>3.2.2</tika.version>
-    <usng4j.version>0.4</usng4j.version>
+    <usng4j.version>0.5</usng4j.version>
     <org.slf4j.version>1.7.32</org.slf4j.version>
 
     <!-- Command line argument properties for the maven-surefire-plugin -->
@@ -391,9 +391,14 @@
       </snapshots>
     </repository>
     <repository>
+      <id>osgeo</id>
+      <name>OSGeo Release Respository</name>
+      <url>https://repo.osgeo.org/repository/release/</url>
+    </repository>
+    <repository>
       <id>codice</id>
       <name>Codice Repository</name>
-      <url>https://artifacts.codice.org/content/groups/public/</url>
+      <url>https://repo.codice.org/repository/maven-public/</url>
     </repository>
   </repositories>
   <pluginRepositories>
@@ -409,7 +414,7 @@
     <pluginRepository>
       <id>codice</id>
       <name>Codice Repository</name>
-      <url>https://artifacts.codice.org/content/groups/public/</url>
+      <url>https://repo.codice.org/repository/maven-public/</url>
     </pluginRepository>
   </pluginRepositories>
   <dependencies>

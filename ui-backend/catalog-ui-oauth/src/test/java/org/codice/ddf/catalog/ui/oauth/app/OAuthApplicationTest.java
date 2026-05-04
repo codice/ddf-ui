@@ -53,7 +53,6 @@ import java.util.Objects;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.apache.commons.io.IOUtils;
 import org.codice.ddf.security.handler.api.OidcHandlerConfiguration;
 import org.codice.ddf.security.token.storage.api.TokenInformation;
 import org.codice.ddf.security.token.storage.api.TokenInformationImpl;
@@ -120,9 +119,9 @@ public class OAuthApplicationTest {
     when(resourceRetriever.retrieveResource(eq(new URL(JWK_ENDPOINT)))).thenReturn(jwkResource);
 
     String content =
-        IOUtils.toString(
+        new String(
             Objects.requireNonNull(
-                getClass().getClassLoader().getResourceAsStream("metadata.json")),
+                getClass().getClassLoader().getResourceAsStream("metadata.json").readAllBytes()),
             StandardCharsets.UTF_8);
     Resource metadataResource = new Resource(content, APPLICATION_JSON);
     when(resourceRetriever.retrieveResource(eq(new URL(METADATA_ENDPOINT))))
