@@ -20,11 +20,16 @@ import {
   isBasicDatatypeClass,
 } from '../../../component/filter-builder/filter.structure'
 import { useComparatorsForAttribute } from './comparatorUtils'
+import { isKeyDisseminatorsFilterClass } from '../../../component/filter-builder/basic-search-filters/key-disseminators-filter/filter.structure'
 
 type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
   textFieldProps?: TextFieldProps
+}
+
+const hideComparator = (filter: FilterClass): boolean => {
+  return isBasicDatatypeClass(filter) || isKeyDisseminatorsFilterClass(filter)
 }
 
 const FilterComparator = ({ filter, setFilter, textFieldProps }: Props) => {
@@ -42,7 +47,7 @@ const FilterComparator = ({ filter, setFilter, textFieldProps }: Props) => {
     }
   }, [filter, setFilter, comparators])
 
-  if (isBasicDatatypeClass(filter)) {
+  if (hideComparator(filter)) {
     return null
   }
 

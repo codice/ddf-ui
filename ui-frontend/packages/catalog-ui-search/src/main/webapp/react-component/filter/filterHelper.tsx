@@ -12,6 +12,7 @@
  * <http://www.gnu.org/licenses/lgpl.html>.
  *
  **/
+import { KeyDisseminatorsPropertyName } from '../../component/filter-builder/basic-search-filters/key-disseminators-filter/property-name'
 import { BasicDataTypePropertyName } from '../../component/filter-builder/reserved.properties'
 import { StartupDataStore } from '../../js/model/Startup/startup'
 import {
@@ -66,9 +67,17 @@ export const getGroupedFilteredAttributes = (): {
       BasicDataTypePropertyName
     ) as AttributeDefinitionType
 
+  const keyDisseminatorsAttributeDefinition = 
+    StartupDataStore.MetacardDefinitions.getAttributeDefinition(
+      KeyDisseminatorsPropertyName
+    ) as AttributeDefinitionType
+
   const groupedFilteredAttributes = validCommonAttributes
     .concat([
       toAttribute(basicDataTypeAttributeDefinition, 'Special Attributes'),
+    ])
+    .concat([
+      toAttribute(keyDisseminatorsAttributeDefinition, 'Special Attributes'),
     ])
     .concat(getFilteredAttributeList('All Attributes'))
   const groups =

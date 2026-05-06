@@ -41,6 +41,9 @@ import { BasicDataTypePropertyName } from '../../../component/filter-builder/res
 import { ResourceSizeField } from '../../../component/fields/resource-size'
 import { ResourceSizeRangeField } from '../../../component/fields/resource-size-range'
 import { useConfiguration } from '../../../js/model/Startup/configuration.hooks'
+import { KeyDisseminatorsPropertyName } from '../../../component/filter-builder/basic-search-filters/key-disseminators-filter/property-name'
+import { KeyDisseminatorsFilterAutoComplete } from '../../../component/filter-builder/basic-search-filters/key-disseminators-filter/autocomplete'
+import { KeyDisseminatorsFilter } from '../../../component/filter-builder/basic-search-filters/key-disseminators-filter/filter.structure'
 export type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
@@ -109,6 +112,15 @@ const FilterInput = ({
       <ReservedBasicDatatype
         onChange={onChange}
         value={value as BasicDatatypeFilter['value']}
+      />
+    )
+  }
+
+  if (filter.property === KeyDisseminatorsPropertyName) {
+    return (
+      <KeyDisseminatorsFilterAutoComplete
+        onChange={onChange}
+        value={value as KeyDisseminatorsFilter['value']}
       />
     )
   }

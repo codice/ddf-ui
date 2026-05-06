@@ -184,6 +184,13 @@ public class ComposeApplication implements SparkApplication {
     reservedBasicDatatype.put("hidden", true);
     reservedBasicDatatype.put("alias", "Types");
 
+    Map<String, Object> KeyDisseminator = new HashMap<>();
+    KeyDisseminator.put("id", "reserved.ext.isr.producing-org");
+    KeyDisseminator.put("type", "STRING");
+    KeyDisseminator.put("multivalued", false);
+    KeyDisseminator.put("hidden", true);
+    KeyDisseminator.put("alias", "Key Disseminators");
+
     Map<String, Object> metacardType = new HashMap<>();
     metacardType.put("id", "metacard-type");
     metacardType.put("type", "STRING");
@@ -210,6 +217,7 @@ public class ComposeApplication implements SparkApplication {
     attributeMap.put("anyGeo", anyGeo);
     attributeMap.put("anyDate", anyDate);
     attributeMap.put("reserved.basic-datatype", reservedBasicDatatype);
+    attributeMap.put("reserved.ext.isr.producing-org", KeyDisseminator);
     attributeMap.put("metacard-type", metacardType);
     attributeMap.put("source-id", sourceId);
     attributeMap.put("cached", cached);

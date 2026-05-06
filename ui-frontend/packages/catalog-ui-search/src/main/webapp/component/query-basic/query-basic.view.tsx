@@ -507,7 +507,7 @@ const QueryBasic = ({ model, errorListener, Extensions }: QueryBasicProps) => {
                 }}
               />
             }
-            label="Key Disseminators"
+            label={MetacardDefinitions.getAlias(KeyDisseminatorsPropertyName)}
           />
           {basicFilter[KeyDisseminatorsPropertyName].on ? (
             <Grid
