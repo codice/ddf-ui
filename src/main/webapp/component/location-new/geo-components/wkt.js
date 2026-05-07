@@ -1,0 +1,25 @@
+import { jsx as _jsx } from "react/jsx-runtime";
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+import TextField from '../../../react-component/text-field/index';
+import { roundWktCoords } from '../utils';
+var WKT = function (props) {
+    var wkt = props.wkt, setState = props.setState;
+    return (_jsx("div", { className: "input-location", children: _jsx(TextField, { value: roundWktCoords(wkt), onChange: setState(function (draft, value) {
+                return roundWktCoords((draft.wkt = value));
+            }) }) }));
+};
+export default WKT;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoid2t0LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vc3JjL21haW4vd2ViYXBwL2NvbXBvbmVudC9sb2NhdGlvbi1uZXcvZ2VvLWNvbXBvbmVudHMvd2t0LnRzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUE7Ozs7Ozs7Ozs7Ozs7SUFhSTtBQUVKLE9BQU8sU0FBUyxNQUFNLDJDQUEyQyxDQUFBO0FBQ2pFLE9BQU8sRUFBRSxjQUFjLEVBQUUsTUFBTSxVQUFVLENBQUE7QUFFekMsSUFBTSxHQUFHLEdBQUcsVUFBQyxLQUFVO0lBQ2IsSUFBQSxHQUFHLEdBQWUsS0FBSyxJQUFwQixFQUFFLFFBQVEsR0FBSyxLQUFLLFNBQVYsQ0FBVTtJQUUvQixPQUFPLENBQ0wsY0FBSyxTQUFTLEVBQUMsZ0JBQWdCLFlBQzdCLEtBQUMsU0FBUyxJQUNSLEtBQUssRUFBRSxjQUFjLENBQUMsR0FBRyxDQUFDLEVBQzFCLFFBQVEsRUFBRSxRQUFRLENBQUMsVUFBQyxLQUFVLEVBQUUsS0FBVTtnQkFDeEMsT0FBQSxjQUFjLENBQUMsQ0FBQyxLQUFLLENBQUMsR0FBRyxHQUFHLEtBQUssQ0FBQyxDQUFDO1lBQW5DLENBQW1DLENBQ3BDLEdBQ0QsR0FDRSxDQUNQLENBQUE7QUFDSCxDQUFDLENBQUE7QUFFRCxlQUFlLEdBQUcsQ0FBQSIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQ29weXJpZ2h0IChjKSBDb2RpY2UgRm91bmRhdGlvblxuICpcbiAqIFRoaXMgaXMgZnJlZSBzb2Z0d2FyZTogeW91IGNhbiByZWRpc3RyaWJ1dGUgaXQgYW5kL29yIG1vZGlmeSBpdCB1bmRlciB0aGUgdGVybXMgb2YgdGhlIEdOVSBMZXNzZXJcbiAqIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgYXMgcHVibGlzaGVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24sIGVpdGhlciB2ZXJzaW9uIDMgb2YgdGhlXG4gKiBMaWNlbnNlLCBvciBhbnkgbGF0ZXIgdmVyc2lvbi5cbiAqXG4gKiBUaGlzIHByb2dyYW0gaXMgZGlzdHJpYnV0ZWQgaW4gdGhlIGhvcGUgdGhhdCBpdCB3aWxsIGJlIHVzZWZ1bCwgYnV0IFdJVEhPVVQgQU5ZIFdBUlJBTlRZOyB3aXRob3V0XG4gKiBldmVuIHRoZSBpbXBsaWVkIHdhcnJhbnR5IG9mIE1FUkNIQU5UQUJJTElUWSBvciBGSVRORVNTIEZPUiBBIFBBUlRJQ1VMQVIgUFVSUE9TRS4gU2VlIHRoZSBHTlVcbiAqIExlc3NlciBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGZvciBtb3JlIGRldGFpbHMuIEEgY29weSBvZiB0aGUgR05VIExlc3NlciBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlXG4gKiBpcyBkaXN0cmlidXRlZCBhbG9uZyB3aXRoIHRoaXMgcHJvZ3JhbSBhbmQgY2FuIGJlIGZvdW5kIGF0XG4gKiA8aHR0cDovL3d3dy5nbnUub3JnL2xpY2Vuc2VzL2xncGwuaHRtbD4uXG4gKlxuICoqL1xuXG5pbXBvcnQgVGV4dEZpZWxkIGZyb20gJy4uLy4uLy4uL3JlYWN0LWNvbXBvbmVudC90ZXh0LWZpZWxkL2luZGV4J1xuaW1wb3J0IHsgcm91bmRXa3RDb29yZHMgfSBmcm9tICcuLi91dGlscydcblxuY29uc3QgV0tUID0gKHByb3BzOiBhbnkpID0+IHtcbiAgY29uc3QgeyB3a3QsIHNldFN0YXRlIH0gPSBwcm9wc1xuXG4gIHJldHVybiAoXG4gICAgPGRpdiBjbGFzc05hbWU9XCJpbnB1dC1sb2NhdGlvblwiPlxuICAgICAgPFRleHRGaWVsZFxuICAgICAgICB2YWx1ZT17cm91bmRXa3RDb29yZHMod2t0KX1cbiAgICAgICAgb25DaGFuZ2U9e3NldFN0YXRlKChkcmFmdDogYW55LCB2YWx1ZTogYW55KSA9PlxuICAgICAgICAgIHJvdW5kV2t0Q29vcmRzKChkcmFmdC53a3QgPSB2YWx1ZSkpXG4gICAgICAgICl9XG4gICAgICAvPlxuICAgIDwvZGl2PlxuICApXG59XG5cbmV4cG9ydCBkZWZhdWx0IFdLVFxuIl19

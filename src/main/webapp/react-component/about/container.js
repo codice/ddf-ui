@@ -1,0 +1,25 @@
+import { jsx as _jsx } from "react/jsx-runtime";
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+import About from './presentation';
+import moment from 'moment-timezone';
+import { Environment } from '../../js/Environment';
+import { useConfiguration } from '../../js/model/Startup/configuration.hooks';
+var AboutContainer = function () {
+    var config = useConfiguration().config;
+    return (_jsx(About, { date: moment(Environment.commitDate).format('MMMM Do YYYY'), branding: (config === null || config === void 0 ? void 0 : config.customBranding) || '', isDirty: Environment.isDirty, commitHash: Environment.commitHash, commitDate: Environment.commitDate, product: (config === null || config === void 0 ? void 0 : config.product) || '', version: (config === null || config === void 0 ? void 0 : config.version) || '' }));
+};
+export default AboutContainer;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY29udGFpbmVyLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL21haW4vd2ViYXBwL3JlYWN0LWNvbXBvbmVudC9hYm91dC9jb250YWluZXIudHN4Il0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7QUFBQTs7Ozs7Ozs7Ozs7OztJQWFJO0FBRUosT0FBTyxLQUFLLE1BQU0sZ0JBQWdCLENBQUE7QUFDbEMsT0FBTyxNQUFNLE1BQU0saUJBQWlCLENBQUE7QUFDcEMsT0FBTyxFQUFFLFdBQVcsRUFBRSxNQUFNLHNCQUFzQixDQUFBO0FBQ2xELE9BQU8sRUFBRSxnQkFBZ0IsRUFBRSxNQUFNLDRDQUE0QyxDQUFBO0FBRTdFLElBQU0sY0FBYyxHQUFHO0lBQ2IsSUFBQSxNQUFNLEdBQUssZ0JBQWdCLEVBQUUsT0FBdkIsQ0FBdUI7SUFDckMsT0FBTyxDQUNMLEtBQUMsS0FBSyxJQUNKLElBQUksRUFBRSxNQUFNLENBQUMsV0FBVyxDQUFDLFVBQVUsQ0FBQyxDQUFDLE1BQU0sQ0FBQyxjQUFjLENBQUMsRUFDM0QsUUFBUSxFQUFFLENBQUEsTUFBTSxhQUFOLE1BQU0sdUJBQU4sTUFBTSxDQUFFLGNBQWMsS0FBSSxFQUFFLEVBQ3RDLE9BQU8sRUFBRSxXQUFXLENBQUMsT0FBTyxFQUM1QixVQUFVLEVBQUUsV0FBVyxDQUFDLFVBQVUsRUFDbEMsVUFBVSxFQUFFLFdBQVcsQ0FBQyxVQUFVLEVBQ2xDLE9BQU8sRUFBRSxDQUFBLE1BQU0sYUFBTixNQUFNLHVCQUFOLE1BQU0sQ0FBRSxPQUFPLEtBQUksRUFBRSxFQUM5QixPQUFPLEVBQUUsQ0FBQSxNQUFNLGFBQU4sTUFBTSx1QkFBTixNQUFNLENBQUUsT0FBTyxLQUFJLEVBQUUsR0FDOUIsQ0FDSCxDQUFBO0FBQ0gsQ0FBQyxDQUFBO0FBRUQsZUFBZSxjQUFjLENBQUEiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIENvcHlyaWdodCAoYykgQ29kaWNlIEZvdW5kYXRpb25cbiAqXG4gKiBUaGlzIGlzIGZyZWUgc29mdHdhcmU6IHlvdSBjYW4gcmVkaXN0cmlidXRlIGl0IGFuZC9vciBtb2RpZnkgaXQgdW5kZXIgdGhlIHRlcm1zIG9mIHRoZSBHTlUgTGVzc2VyXG4gKiBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGFzIHB1Ymxpc2hlZCBieSB0aGUgRnJlZSBTb2Z0d2FyZSBGb3VuZGF0aW9uLCBlaXRoZXIgdmVyc2lvbiAzIG9mIHRoZVxuICogTGljZW5zZSwgb3IgYW55IGxhdGVyIHZlcnNpb24uXG4gKlxuICogVGhpcyBwcm9ncmFtIGlzIGRpc3RyaWJ1dGVkIGluIHRoZSBob3BlIHRoYXQgaXQgd2lsbCBiZSB1c2VmdWwsIGJ1dCBXSVRIT1VUIEFOWSBXQVJSQU5UWTsgd2l0aG91dFxuICogZXZlbiB0aGUgaW1wbGllZCB3YXJyYW50eSBvZiBNRVJDSEFOVEFCSUxJVFkgb3IgRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UuIFNlZSB0aGUgR05VXG4gKiBMZXNzZXIgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSBmb3IgbW9yZSBkZXRhaWxzLiBBIGNvcHkgb2YgdGhlIEdOVSBMZXNzZXIgR2VuZXJhbCBQdWJsaWMgTGljZW5zZVxuICogaXMgZGlzdHJpYnV0ZWQgYWxvbmcgd2l0aCB0aGlzIHByb2dyYW0gYW5kIGNhbiBiZSBmb3VuZCBhdFxuICogPGh0dHA6Ly93d3cuZ251Lm9yZy9saWNlbnNlcy9sZ3BsLmh0bWw+LlxuICpcbiAqKi9cblxuaW1wb3J0IEFib3V0IGZyb20gJy4vcHJlc2VudGF0aW9uJ1xuaW1wb3J0IG1vbWVudCBmcm9tICdtb21lbnQtdGltZXpvbmUnXG5pbXBvcnQgeyBFbnZpcm9ubWVudCB9IGZyb20gJy4uLy4uL2pzL0Vudmlyb25tZW50J1xuaW1wb3J0IHsgdXNlQ29uZmlndXJhdGlvbiB9IGZyb20gJy4uLy4uL2pzL21vZGVsL1N0YXJ0dXAvY29uZmlndXJhdGlvbi5ob29rcydcblxuY29uc3QgQWJvdXRDb250YWluZXIgPSAoKSA9PiB7XG4gIGNvbnN0IHsgY29uZmlnIH0gPSB1c2VDb25maWd1cmF0aW9uKClcbiAgcmV0dXJuIChcbiAgICA8QWJvdXRcbiAgICAgIGRhdGU9e21vbWVudChFbnZpcm9ubWVudC5jb21taXREYXRlKS5mb3JtYXQoJ01NTU0gRG8gWVlZWScpfVxuICAgICAgYnJhbmRpbmc9e2NvbmZpZz8uY3VzdG9tQnJhbmRpbmcgfHwgJyd9XG4gICAgICBpc0RpcnR5PXtFbnZpcm9ubWVudC5pc0RpcnR5fVxuICAgICAgY29tbWl0SGFzaD17RW52aXJvbm1lbnQuY29tbWl0SGFzaH1cbiAgICAgIGNvbW1pdERhdGU9e0Vudmlyb25tZW50LmNvbW1pdERhdGV9XG4gICAgICBwcm9kdWN0PXtjb25maWc/LnByb2R1Y3QgfHwgJyd9XG4gICAgICB2ZXJzaW9uPXtjb25maWc/LnZlcnNpb24gfHwgJyd9XG4gICAgLz5cbiAgKVxufVxuXG5leHBvcnQgZGVmYXVsdCBBYm91dENvbnRhaW5lclxuIl19
