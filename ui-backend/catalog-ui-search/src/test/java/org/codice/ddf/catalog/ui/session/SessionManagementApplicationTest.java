@@ -13,41 +13,36 @@
  */
 package org.codice.ddf.catalog.ui.session;
 
-import static spark.Spark.get;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.net.URI;
 import javax.servlet.http.HttpServletRequest;
 import org.codice.ddf.security.session.management.service.SessionManagementService;
-import spark.servlet.SparkApplication;
+import org.junit.Before;
+import org.junit.Test;
 
-public class SessionManagementApplication implements SparkApplication {
+public class SessionManagementApplicationTest {
 
   private SessionManagementService sessionManagement;
+  private SessionManagementApplication app;
 
-  public SessionManagementApplication(SessionManagementService sessionManagementService) {
-    sessionManagement = sessionManagementService;
+  @Before
+  public void setup() {
+    sessionManagement = mock(SessionManagementService.class);
+    app = new SessionManagementApplication(sessionManagement);
   }
 
-  @Override
-  public void init() {
-    get(
-        "/session/expiry",
-        (req, res) -> {
-          String body = sessionManagement.getExpiry(req.raw());
-          res.status(200);
-          return body;
-        });
+  @Test
+  public void invalidateReturnsLogoutUri() throws Exception {
+    URI logoutUri = URI.create("https://localhost/logout?service=https://localhost/search");
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    when(sessionManagement.getInvalidate(request)).thenReturn(logoutUri);
 
-    get(
-        "/session/invalidate",
-        (req, res) -> {
-          res.status(200);
-          return handleInvalidate(req.raw());
-        });
-  }
+    String result = app.handleInvalidate(request);
 
-  String handleInvalidate(HttpServletRequest request) {
-    URI uri = sessionManagement.getInvalidate(request);
-    return uri.toString();
+    assertThat(result, is(logoutUri.toString()));
   }
 }

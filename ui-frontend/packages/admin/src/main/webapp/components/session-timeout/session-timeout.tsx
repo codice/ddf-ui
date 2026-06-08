@@ -30,8 +30,19 @@ function isLocalStorageAvailable() {
 
 const localStorageAvailable = isLocalStorageAvailable()
 
-const logout = () => {
-  window.location.replace(URLS.SESSION.INVALIDATE + window.location.href)
+const navigate = (url: string) => {
+  window.location.href = url
+}
+
+const logout = async () => {
+  try {
+    const res = await fetch(
+      URLS.SESSION.INVALIDATE + encodeURIComponent(window.location.href)
+    )
+    navigate(await res.text())
+  } catch {
+    window.location.reload()
+  }
 }
 
 const handleLocalStorageChange = ({
