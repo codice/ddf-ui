@@ -1,0 +1,19 @@
+import { __assign, __read } from "tslib";
+import { Fragment as _Fragment, jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import * as React from 'react';
+import Dialog from '@mui/material/Dialog';
+import { createCtx } from './../../typescript/context';
+var _a = __read(createCtx(), 2), useDialogContext = _a[0], DialogContextProvider = _a[1];
+export var useDialog = useDialogContext;
+export var DialogProvider = function (props) {
+    var _a = __read(React.useState(__assign({ maxWidth: 'lg', children: _jsx(_Fragment, {}), open: false, onClose: function () {
+            setDialogProps(__assign(__assign({}, dialogProps), { open: false }));
+        } }, props.initialDialogProps)), 2), dialogProps = _a[0], setDialogProps = _a[1];
+    var setProps = function (newProps) {
+        setDialogProps(__assign(__assign({}, dialogProps), newProps));
+    };
+    return (_jsxs(DialogContextProvider, { value: {
+            setProps: setProps,
+        }, children: [props.children, _jsx(Dialog, __assign({}, dialogProps))] }));
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZGlhbG9nLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL21haW4vd2ViYXBwL2NvbXBvbmVudC9kaWFsb2cvZGlhbG9nLnRzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLE9BQU8sS0FBSyxLQUFLLE1BQU0sT0FBTyxDQUFBO0FBQzlCLE9BQU8sTUFBdUIsTUFBTSxzQkFBc0IsQ0FBQTtBQUMxRCxPQUFPLEVBQUUsU0FBUyxFQUFFLE1BQU0sNEJBQTRCLENBQUE7QUFHaEQsSUFBQSxLQUFBLE9BQTRDLFNBQVMsRUFFdkQsSUFBQSxFQUZHLGdCQUFnQixRQUFBLEVBQUUscUJBQXFCLFFBRTFDLENBQUE7QUFPSixNQUFNLENBQUMsSUFBTSxTQUFTLEdBQUcsZ0JBQWdCLENBQUE7QUFFekMsTUFBTSxDQUFDLElBQU0sY0FBYyxHQUFHLFVBQUMsS0FBMEI7SUFDakQsSUFBQSxLQUFBLE9BQWdDLEtBQUssQ0FBQyxRQUFRLENBQUMsV0FDbkQsUUFBUSxFQUFFLElBQUksRUFDZCxRQUFRLEVBQUUsbUJBQUssRUFDZixJQUFJLEVBQUUsS0FBSyxFQUNYLE9BQU8sRUFBRTtZQUNQLGNBQWMsdUJBQ1QsV0FBVyxLQUNkLElBQUksRUFBRSxLQUFLLElBQ1gsQ0FBQTtRQUNKLENBQUMsSUFDRSxLQUFLLENBQUMsa0JBQWtCLENBQ2IsQ0FBQyxJQUFBLEVBWFYsV0FBVyxRQUFBLEVBQUUsY0FBYyxRQVdqQixDQUFBO0lBRWpCLElBQU0sUUFBUSxHQUFHLFVBQUMsUUFBcUI7UUFDckMsY0FBYyx1QkFDVCxXQUFXLEdBQ1gsUUFBUSxFQUNYLENBQUE7SUFDSixDQUFDLENBQUE7SUFFRCxPQUFPLENBQ0wsTUFBQyxxQkFBcUIsSUFDcEIsS0FBSyxFQUFFO1lBQ0wsUUFBUSxVQUFBO1NBQ1QsYUFFQSxLQUFLLENBQUMsUUFBUSxFQUNmLEtBQUMsTUFBTSxlQUFLLFdBQVcsRUFBSSxJQUNMLENBQ3pCLENBQUE7QUFDSCxDQUFDLENBQUEiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgKiBhcyBSZWFjdCBmcm9tICdyZWFjdCdcbmltcG9ydCBEaWFsb2csIHsgRGlhbG9nUHJvcHMgfSBmcm9tICdAbXVpL21hdGVyaWFsL0RpYWxvZydcbmltcG9ydCB7IGNyZWF0ZUN0eCB9IGZyb20gJy4vLi4vLi4vdHlwZXNjcmlwdC9jb250ZXh0J1xuaW1wb3J0IHsgc2V0VHlwZSB9IGZyb20gJy4uLy4uL3R5cGVzY3JpcHQvaG9va3MnXG5cbmNvbnN0IFt1c2VEaWFsb2dDb250ZXh0LCBEaWFsb2dDb250ZXh0UHJvdmlkZXJdID0gY3JlYXRlQ3R4PHtcbiAgc2V0UHJvcHM6IHNldFR5cGU8UGFydGlhbDxEaWFsb2dQcm9wcz4+XG59PigpXG5cbnR5cGUgRGlhbG9nUHJvdmlkZXJQcm9wcyA9IHtcbiAgY2hpbGRyZW4/OiBSZWFjdC5SZWFjdE5vZGVcbiAgaW5pdGlhbERpYWxvZ1Byb3BzPzogRGlhbG9nUHJvcHNcbn1cblxuZXhwb3J0IGNvbnN0IHVzZURpYWxvZyA9IHVzZURpYWxvZ0NvbnRleHRcblxuZXhwb3J0IGNvbnN0IERpYWxvZ1Byb3ZpZGVyID0gKHByb3BzOiBEaWFsb2dQcm92aWRlclByb3BzKSA9PiB7XG4gIGNvbnN0IFtkaWFsb2dQcm9wcywgc2V0RGlhbG9nUHJvcHNdID0gUmVhY3QudXNlU3RhdGUoe1xuICAgIG1heFdpZHRoOiAnbGcnLFxuICAgIGNoaWxkcmVuOiA8PjwvPixcbiAgICBvcGVuOiBmYWxzZSxcbiAgICBvbkNsb3NlOiAoKSA9PiB7XG4gICAgICBzZXREaWFsb2dQcm9wcyh7XG4gICAgICAgIC4uLmRpYWxvZ1Byb3BzLFxuICAgICAgICBvcGVuOiBmYWxzZSxcbiAgICAgIH0pXG4gICAgfSxcbiAgICAuLi5wcm9wcy5pbml0aWFsRGlhbG9nUHJvcHMsXG4gIH0gYXMgRGlhbG9nUHJvcHMpXG5cbiAgY29uc3Qgc2V0UHJvcHMgPSAobmV3UHJvcHM6IERpYWxvZ1Byb3BzKSA9PiB7XG4gICAgc2V0RGlhbG9nUHJvcHMoe1xuICAgICAgLi4uZGlhbG9nUHJvcHMsXG4gICAgICAuLi5uZXdQcm9wcyxcbiAgICB9KVxuICB9XG5cbiAgcmV0dXJuIChcbiAgICA8RGlhbG9nQ29udGV4dFByb3ZpZGVyXG4gICAgICB2YWx1ZT17e1xuICAgICAgICBzZXRQcm9wcyxcbiAgICAgIH19XG4gICAgPlxuICAgICAge3Byb3BzLmNoaWxkcmVufVxuICAgICAgPERpYWxvZyB7Li4uZGlhbG9nUHJvcHN9IC8+XG4gICAgPC9EaWFsb2dDb250ZXh0UHJvdmlkZXI+XG4gIClcbn1cbiJdfQ==

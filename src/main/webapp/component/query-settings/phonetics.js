@@ -1,0 +1,21 @@
+import { __read } from "tslib";
+import { jsx as _jsx } from "react/jsx-runtime";
+import * as React from 'react';
+import { useBackbone } from '../selection-checkbox/useBackbone.hook';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+var Phonetics = function (_a) {
+    var model = _a.model;
+    var _b = __read(React.useState(Boolean(model.get('phonetics'))), 2), phonetics = _b[0], setPhonetics = _b[1];
+    var listenTo = useBackbone().listenTo;
+    React.useEffect(function () {
+        listenTo(model, 'change:phonetics', function () {
+            setPhonetics(model.get('phonetics'));
+        });
+    }, []);
+    return (_jsx(FormControlLabel, { labelPlacement: "start", control: _jsx(Checkbox, { color: "default", checked: phonetics, onChange: function (e) {
+                model.set('phonetics', e.target.checked);
+            } }), label: "Similar word matching" }));
+};
+export default Phonetics;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicGhvbmV0aWNzLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL21haW4vd2ViYXBwL2NvbXBvbmVudC9xdWVyeS1zZXR0aW5ncy9waG9uZXRpY3MudHN4Il0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsT0FBTyxLQUFLLEtBQUssTUFBTSxPQUFPLENBQUE7QUFFOUIsT0FBTyxFQUFFLFdBQVcsRUFBRSxNQUFNLHdDQUF3QyxDQUFBO0FBQ3BFLE9BQU8sZ0JBQWdCLE1BQU0sZ0NBQWdDLENBQUE7QUFDN0QsT0FBTyxRQUFRLE1BQU0sd0JBQXdCLENBQUE7QUFPN0MsSUFBTSxTQUFTLEdBQUcsVUFBQyxFQUFnQjtRQUFkLEtBQUssV0FBQTtJQUNsQixJQUFBLEtBQUEsT0FBNEIsS0FBSyxDQUFDLFFBQVEsQ0FDOUMsT0FBTyxDQUFDLEtBQUssQ0FBQyxHQUFHLENBQUMsV0FBVyxDQUFDLENBQUMsQ0FDaEMsSUFBQSxFQUZNLFNBQVMsUUFBQSxFQUFFLFlBQVksUUFFN0IsQ0FBQTtJQUNPLElBQUEsUUFBUSxHQUFLLFdBQVcsRUFBRSxTQUFsQixDQUFrQjtJQUNsQyxLQUFLLENBQUMsU0FBUyxDQUFDO1FBQ2QsUUFBUSxDQUFDLEtBQUssRUFBRSxrQkFBa0IsRUFBRTtZQUNsQyxZQUFZLENBQUMsS0FBSyxDQUFDLEdBQUcsQ0FBQyxXQUFXLENBQUMsQ0FBQyxDQUFBO1FBQ3RDLENBQUMsQ0FBQyxDQUFBO0lBQ0osQ0FBQyxFQUFFLEVBQUUsQ0FBQyxDQUFBO0lBQ04sT0FBTyxDQUNMLEtBQUMsZ0JBQWdCLElBQ2YsY0FBYyxFQUFDLE9BQU8sRUFDdEIsT0FBTyxFQUNMLEtBQUMsUUFBUSxJQUNQLEtBQUssRUFBQyxTQUFTLEVBQ2YsT0FBTyxFQUFFLFNBQVMsRUFDbEIsUUFBUSxFQUFFLFVBQUMsQ0FBQztnQkFDVixLQUFLLENBQUMsR0FBRyxDQUFDLFdBQVcsRUFBRSxDQUFDLENBQUMsTUFBTSxDQUFDLE9BQU8sQ0FBQyxDQUFBO1lBQzFDLENBQUMsR0FDRCxFQUVKLEtBQUssRUFBQyx1QkFBdUIsR0FDN0IsQ0FDSCxDQUFBO0FBQ0gsQ0FBQyxDQUFBO0FBRUQsZUFBZSxTQUFTLENBQUEiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgKiBhcyBSZWFjdCBmcm9tICdyZWFjdCdcblxuaW1wb3J0IHsgdXNlQmFja2JvbmUgfSBmcm9tICcuLi9zZWxlY3Rpb24tY2hlY2tib3gvdXNlQmFja2JvbmUuaG9vaydcbmltcG9ydCBGb3JtQ29udHJvbExhYmVsIGZyb20gJ0BtdWkvbWF0ZXJpYWwvRm9ybUNvbnRyb2xMYWJlbCdcbmltcG9ydCBDaGVja2JveCBmcm9tICdAbXVpL21hdGVyaWFsL0NoZWNrYm94J1xuaW1wb3J0IHsgUXVlcnlUeXBlIH0gZnJvbSAnLi4vLi4vanMvbW9kZWwvUXVlcnknXG5cbnR5cGUgUHJvcHMgPSB7XG4gIG1vZGVsOiBRdWVyeVR5cGVcbn1cblxuY29uc3QgUGhvbmV0aWNzID0gKHsgbW9kZWwgfTogUHJvcHMpID0+IHtcbiAgY29uc3QgW3Bob25ldGljcywgc2V0UGhvbmV0aWNzXSA9IFJlYWN0LnVzZVN0YXRlKFxuICAgIEJvb2xlYW4obW9kZWwuZ2V0KCdwaG9uZXRpY3MnKSlcbiAgKVxuICBjb25zdCB7IGxpc3RlblRvIH0gPSB1c2VCYWNrYm9uZSgpXG4gIFJlYWN0LnVzZUVmZmVjdCgoKSA9PiB7XG4gICAgbGlzdGVuVG8obW9kZWwsICdjaGFuZ2U6cGhvbmV0aWNzJywgKCkgPT4ge1xuICAgICAgc2V0UGhvbmV0aWNzKG1vZGVsLmdldCgncGhvbmV0aWNzJykpXG4gICAgfSlcbiAgfSwgW10pXG4gIHJldHVybiAoXG4gICAgPEZvcm1Db250cm9sTGFiZWxcbiAgICAgIGxhYmVsUGxhY2VtZW50PVwic3RhcnRcIlxuICAgICAgY29udHJvbD17XG4gICAgICAgIDxDaGVja2JveFxuICAgICAgICAgIGNvbG9yPVwiZGVmYXVsdFwiXG4gICAgICAgICAgY2hlY2tlZD17cGhvbmV0aWNzfVxuICAgICAgICAgIG9uQ2hhbmdlPXsoZSkgPT4ge1xuICAgICAgICAgICAgbW9kZWwuc2V0KCdwaG9uZXRpY3MnLCBlLnRhcmdldC5jaGVja2VkKVxuICAgICAgICAgIH19XG4gICAgICAgIC8+XG4gICAgICB9XG4gICAgICBsYWJlbD1cIlNpbWlsYXIgd29yZCBtYXRjaGluZ1wiXG4gICAgLz5cbiAgKVxufVxuXG5leHBvcnQgZGVmYXVsdCBQaG9uZXRpY3NcbiJdfQ==

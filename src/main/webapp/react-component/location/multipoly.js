@@ -1,0 +1,26 @@
+import { __assign } from "tslib";
+import { jsx as _jsx } from "react/jsx-runtime";
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+import BaseLine from './base.line';
+var options = {
+    label: 'MultiPolygon',
+    geometryKey: 'polygon',
+    unitKey: 'polygonBufferUnits',
+    widthKey: 'polygonBufferWidth',
+};
+var MultiPolygon = function (props) { return _jsx(BaseLine, __assign({}, props, options)); };
+export default MultiPolygon;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXVsdGlwb2x5LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL21haW4vd2ViYXBwL3JlYWN0LWNvbXBvbmVudC9sb2NhdGlvbi9tdWx0aXBvbHkudHN4Il0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUE7Ozs7Ozs7Ozs7Ozs7SUFhSTtBQUVKLE9BQU8sUUFBUSxNQUFNLGFBQWEsQ0FBQTtBQUVsQyxJQUFNLE9BQU8sR0FBRztJQUNkLEtBQUssRUFBRSxjQUFjO0lBQ3JCLFdBQVcsRUFBRSxTQUFTO0lBQ3RCLE9BQU8sRUFBRSxvQkFBb0I7SUFDN0IsUUFBUSxFQUFFLG9CQUFvQjtDQUMvQixDQUFBO0FBRUQsSUFBTSxZQUFZLEdBQUcsVUFBQyxLQUFVLElBQUssT0FBQSxLQUFDLFFBQVEsZUFBSyxLQUFLLEVBQU0sT0FBTyxFQUFJLEVBQXBDLENBQW9DLENBQUE7QUFFekUsZUFBZSxZQUFZLENBQUEiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIENvcHlyaWdodCAoYykgQ29kaWNlIEZvdW5kYXRpb25cbiAqXG4gKiBUaGlzIGlzIGZyZWUgc29mdHdhcmU6IHlvdSBjYW4gcmVkaXN0cmlidXRlIGl0IGFuZC9vciBtb2RpZnkgaXQgdW5kZXIgdGhlIHRlcm1zIG9mIHRoZSBHTlUgTGVzc2VyXG4gKiBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGFzIHB1Ymxpc2hlZCBieSB0aGUgRnJlZSBTb2Z0d2FyZSBGb3VuZGF0aW9uLCBlaXRoZXIgdmVyc2lvbiAzIG9mIHRoZVxuICogTGljZW5zZSwgb3IgYW55IGxhdGVyIHZlcnNpb24uXG4gKlxuICogVGhpcyBwcm9ncmFtIGlzIGRpc3RyaWJ1dGVkIGluIHRoZSBob3BlIHRoYXQgaXQgd2lsbCBiZSB1c2VmdWwsIGJ1dCBXSVRIT1VUIEFOWSBXQVJSQU5UWTsgd2l0aG91dFxuICogZXZlbiB0aGUgaW1wbGllZCB3YXJyYW50eSBvZiBNRVJDSEFOVEFCSUxJVFkgb3IgRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UuIFNlZSB0aGUgR05VXG4gKiBMZXNzZXIgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSBmb3IgbW9yZSBkZXRhaWxzLiBBIGNvcHkgb2YgdGhlIEdOVSBMZXNzZXIgR2VuZXJhbCBQdWJsaWMgTGljZW5zZVxuICogaXMgZGlzdHJpYnV0ZWQgYWxvbmcgd2l0aCB0aGlzIHByb2dyYW0gYW5kIGNhbiBiZSBmb3VuZCBhdFxuICogPGh0dHA6Ly93d3cuZ251Lm9yZy9saWNlbnNlcy9sZ3BsLmh0bWw+LlxuICpcbiAqKi9cblxuaW1wb3J0IEJhc2VMaW5lIGZyb20gJy4vYmFzZS5saW5lJ1xuXG5jb25zdCBvcHRpb25zID0ge1xuICBsYWJlbDogJ011bHRpUG9seWdvbicsXG4gIGdlb21ldHJ5S2V5OiAncG9seWdvbicsXG4gIHVuaXRLZXk6ICdwb2x5Z29uQnVmZmVyVW5pdHMnLFxuICB3aWR0aEtleTogJ3BvbHlnb25CdWZmZXJXaWR0aCcsXG59XG5cbmNvbnN0IE11bHRpUG9seWdvbiA9IChwcm9wczogYW55KSA9PiA8QmFzZUxpbmUgey4uLnByb3BzfSB7Li4ub3B0aW9uc30gLz5cblxuZXhwb3J0IGRlZmF1bHQgTXVsdGlQb2x5Z29uXG4iXX0=
