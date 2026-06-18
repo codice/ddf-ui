@@ -39,7 +39,7 @@
     "formik": "2.3.3",
     "fuse.js": "3.4.5",
     "golden-layout": "1.5.9",
-    "immutable": "3.8.2",
+    "immutable": "3.8.3",
     "lodash": "4.17.21",
     "moment": "2.29.4",
     "notistack": "0.9.11",
