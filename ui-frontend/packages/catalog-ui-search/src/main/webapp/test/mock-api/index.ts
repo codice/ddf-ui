@@ -323,6 +323,7 @@ const mockDataMap = {
 }
 const mockDataGlobs = {
   './internal/enumerations': Enumerations,
+  './internal/session/invalidate': '/logout?service=test-logout',
 }
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'url' implicitly has an 'any' type.
 export default (url) => {

@@ -105,15 +105,21 @@ const sessionTimeoutModel = new (Backbone.Model.extend({
   stopListeningForUserActivity() {
     $(document).off('keydown.sessionTimeout mousedown.sessionTimeout')
   },
-  logout() {
+  navigate(url: string) {
+    window.location.href = url
+  },
+  async logout(): Promise<void> {
     if (window.onbeforeunload != null) {
       window.onbeforeunload = null
     }
-    fetch(invalidateUrl + window.location.href, {
-      redirect: 'manual',
-    }).finally(() => {
+    try {
+      const res = await fetch(
+        invalidateUrl + encodeURIComponent(window.location.href)
+      )
+      this.navigate(await res.text())
+    } catch {
       window.location.reload()
-    })
+    }
   },
   renew() {
     this.hidePrompt()

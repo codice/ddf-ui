@@ -115,11 +115,19 @@ export default async function (
 ): Promise<Response> {
   if (Environment.isTest()) {
     const { default: MockApi } = await import('../../../test/mock-api')
-    return Promise.resolve({
-      json: await function () {
-        return MockApi(url)
+    const data = MockApi(url)
+    type MockResponse = Pick<Response, 'json' | 'text'>
+    const mockResponse: MockResponse = {
+      json(): Promise<any> {
+        return Promise.resolve(data)
       },
-    }) as Promise<Response>
+      text(): Promise<string> {
+        return Promise.resolve(
+          typeof data === 'string' ? data : JSON.stringify(data)
+        )
+      },
+    }
+    return Promise.resolve(mockResponse as Response)
   }
   return fetch(cacheBust(url), {
     credentials: 'same-origin',
