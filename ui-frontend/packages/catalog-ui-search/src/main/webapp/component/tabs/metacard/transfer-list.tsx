@@ -648,6 +648,7 @@ const TransferList = ({
   startingHideEmpty,
   lazyResult,
   onSave,
+  onClose,
 }: {
   startingLeft: string[]
   requiredAttributes?: string[]
@@ -655,6 +656,7 @@ const TransferList = ({
   startingHideEmpty?: boolean
   lazyResult?: LazyQueryResult
   onSave: (arg: string[], hideEmpty: boolean | undefined) => void
+  onClose?: () => void
 }) => {
   const dialogContext = useDialog()
   const [mode, setMode] = React.useState(
@@ -757,6 +759,13 @@ const TransferList = ({
       ),
     })
   }
+  const handleClose = () => {
+    if (onClose) {
+      onClose()
+    } else {
+      dialogContext.setProps({ open: false, children: null })
+    }
+  }
   const totalPossible = startingLeft.length + startingRight.length
   return (
     <>
@@ -767,12 +776,7 @@ const TransferList = ({
           className="absolute right-0 top-0 mr-1 mt-1"
           variant="text"
           size="small"
-          onClick={() => {
-            dialogContext.setProps({
-              open: false,
-              children: null,
-            })
-          }}
+          onClick={handleClose}
         >
           <CloseIcon />
         </Button>
@@ -860,12 +864,7 @@ const TransferList = ({
         <Button
           data-id="dialog-save-button"
           disabled={mode === 'saving'}
-          onClick={() => {
-            dialogContext.setProps({
-              open: false,
-              children: null,
-            })
-          }}
+          onClick={handleClose}
           variant="text"
           color="secondary"
           className="mr-2"
@@ -878,10 +877,7 @@ const TransferList = ({
           onClick={() => {
             setMode('saving')
             onSave(Object.keys(left), hideEmpty)
-            dialogContext.setProps({
-              open: false,
-              children: null,
-            })
+            handleClose()
           }}
           variant="contained"
           color="primary"
