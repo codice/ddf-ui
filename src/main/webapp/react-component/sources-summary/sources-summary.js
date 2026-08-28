@@ -1,0 +1,25 @@
+import { __makeTemplateObject } from "tslib";
+import { jsx as _jsx } from "react/jsx-runtime";
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+import styled from 'styled-components';
+import { FormattedMessage } from 'react-intl';
+var Root = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  display: block;\n  width: 100%;\n  height: auto;\n  font-size: ", ";\n  text-align: center;\n  padding: ", " 0px;\n"], ["\n  display: block;\n  width: 100%;\n  height: auto;\n  font-size: ", ";\n  text-align: center;\n  padding: ", " 0px;\n"])), function (props) { return props.theme.largeFontSize; }, function (props) { return props.theme.largeSpacing; });
+export default (function (_a) {
+    var amountDown = _a.amountDown;
+    return (_jsx(Root, { children: amountDown == 0 ? (_jsx(FormattedMessage, { id: "sources.available", defaultMessage: "All sources are currently up" })) : (_jsx(FormattedMessage, { id: "sources.unavailable", defaultMessage: "{amountDown} {amountDown, plural, one {source is} other {sources are}} currently down", values: { amountDown: amountDown } })) }));
+});
+var templateObject_1;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic291cmNlcy1zdW1tYXJ5LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vc3JjL21haW4vd2ViYXBwL3JlYWN0LWNvbXBvbmVudC9zb3VyY2VzLXN1bW1hcnkvc291cmNlcy1zdW1tYXJ5LnRzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBOzs7Ozs7Ozs7Ozs7O0lBYUk7QUFFSixPQUFPLE1BQU0sTUFBTSxtQkFBbUIsQ0FBQTtBQUV0QyxPQUFPLEVBQUUsZ0JBQWdCLEVBQUUsTUFBTSxZQUFZLENBQUE7QUFFN0MsSUFBTSxJQUFJLEdBQUcsTUFBTSxDQUFDLEdBQUcsNExBQUEscUVBSVIsRUFBb0MsdUNBRXRDLEVBQW1DLFNBQy9DLEtBSGMsVUFBQyxLQUFLLElBQUssT0FBQSxLQUFLLENBQUMsS0FBSyxDQUFDLGFBQWEsRUFBekIsQ0FBeUIsRUFFdEMsVUFBQyxLQUFLLElBQUssT0FBQSxLQUFLLENBQUMsS0FBSyxDQUFDLFlBQVksRUFBeEIsQ0FBd0IsQ0FDL0MsQ0FBQTtBQU1ELGdCQUFlLFVBQUMsRUFBcUI7UUFBbkIsVUFBVSxnQkFBQTtJQUMxQixPQUFPLENBQ0wsS0FBQyxJQUFJLGNBQ0YsVUFBVSxJQUFJLENBQUMsQ0FBQyxDQUFDLENBQUMsQ0FDakIsS0FBQyxnQkFBZ0IsSUFDZixFQUFFLEVBQUMsbUJBQW1CLEVBQ3RCLGNBQWMsRUFBQyw4QkFBOEIsR0FDN0MsQ0FDSCxDQUFDLENBQUMsQ0FBQyxDQUNGLEtBQUMsZ0JBQWdCLElBQ2YsRUFBRSxFQUFDLHFCQUFxQixFQUN4QixjQUFjLEVBQUMsdUZBQXVGLEVBQ3RHLE1BQU0sRUFBRSxFQUFFLFVBQVUsWUFBQSxFQUFFLEdBQ3RCLENBQ0gsR0FDSSxDQUNSLENBQUE7QUFDSCxDQUFDLEVBQUEiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIENvcHlyaWdodCAoYykgQ29kaWNlIEZvdW5kYXRpb25cbiAqXG4gKiBUaGlzIGlzIGZyZWUgc29mdHdhcmU6IHlvdSBjYW4gcmVkaXN0cmlidXRlIGl0IGFuZC9vciBtb2RpZnkgaXQgdW5kZXIgdGhlIHRlcm1zIG9mIHRoZSBHTlUgTGVzc2VyXG4gKiBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGFzIHB1Ymxpc2hlZCBieSB0aGUgRnJlZSBTb2Z0d2FyZSBGb3VuZGF0aW9uLCBlaXRoZXIgdmVyc2lvbiAzIG9mIHRoZVxuICogTGljZW5zZSwgb3IgYW55IGxhdGVyIHZlcnNpb24uXG4gKlxuICogVGhpcyBwcm9ncmFtIGlzIGRpc3RyaWJ1dGVkIGluIHRoZSBob3BlIHRoYXQgaXQgd2lsbCBiZSB1c2VmdWwsIGJ1dCBXSVRIT1VUIEFOWSBXQVJSQU5UWTsgd2l0aG91dFxuICogZXZlbiB0aGUgaW1wbGllZCB3YXJyYW50eSBvZiBNRVJDSEFOVEFCSUxJVFkgb3IgRklUTkVTUyBGT1IgQSBQQVJUSUNVTEFSIFBVUlBPU0UuIFNlZSB0aGUgR05VXG4gKiBMZXNzZXIgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSBmb3IgbW9yZSBkZXRhaWxzLiBBIGNvcHkgb2YgdGhlIEdOVSBMZXNzZXIgR2VuZXJhbCBQdWJsaWMgTGljZW5zZVxuICogaXMgZGlzdHJpYnV0ZWQgYWxvbmcgd2l0aCB0aGlzIHByb2dyYW0gYW5kIGNhbiBiZSBmb3VuZCBhdFxuICogPGh0dHA6Ly93d3cuZ251Lm9yZy9saWNlbnNlcy9sZ3BsLmh0bWw+LlxuICpcbiAqKi9cblxuaW1wb3J0IHN0eWxlZCBmcm9tICdzdHlsZWQtY29tcG9uZW50cydcblxuaW1wb3J0IHsgRm9ybWF0dGVkTWVzc2FnZSB9IGZyb20gJ3JlYWN0LWludGwnXG5cbmNvbnN0IFJvb3QgPSBzdHlsZWQuZGl2YFxuICBkaXNwbGF5OiBibG9jaztcbiAgd2lkdGg6IDEwMCU7XG4gIGhlaWdodDogYXV0bztcbiAgZm9udC1zaXplOiAkeyhwcm9wcykgPT4gcHJvcHMudGhlbWUubGFyZ2VGb250U2l6ZX07XG4gIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgcGFkZGluZzogJHsocHJvcHMpID0+IHByb3BzLnRoZW1lLmxhcmdlU3BhY2luZ30gMHB4O1xuYFxuXG50eXBlIFByb3BzID0ge1xuICBhbW91bnREb3duOiBudW1iZXJcbn1cblxuZXhwb3J0IGRlZmF1bHQgKHsgYW1vdW50RG93biB9OiBQcm9wcykgPT4ge1xuICByZXR1cm4gKFxuICAgIDxSb290PlxuICAgICAge2Ftb3VudERvd24gPT0gMCA/IChcbiAgICAgICAgPEZvcm1hdHRlZE1lc3NhZ2VcbiAgICAgICAgICBpZD1cInNvdXJjZXMuYXZhaWxhYmxlXCJcbiAgICAgICAgICBkZWZhdWx0TWVzc2FnZT1cIkFsbCBzb3VyY2VzIGFyZSBjdXJyZW50bHkgdXBcIlxuICAgICAgICAvPlxuICAgICAgKSA6IChcbiAgICAgICAgPEZvcm1hdHRlZE1lc3NhZ2VcbiAgICAgICAgICBpZD1cInNvdXJjZXMudW5hdmFpbGFibGVcIlxuICAgICAgICAgIGRlZmF1bHRNZXNzYWdlPVwie2Ftb3VudERvd259IHthbW91bnREb3duLCBwbHVyYWwsIG9uZSB7c291cmNlIGlzfSBvdGhlciB7c291cmNlcyBhcmV9fSBjdXJyZW50bHkgZG93blwiXG4gICAgICAgICAgdmFsdWVzPXt7IGFtb3VudERvd24gfX1cbiAgICAgICAgLz5cbiAgICAgICl9XG4gICAgPC9Sb290PlxuICApXG59XG4iXX0=

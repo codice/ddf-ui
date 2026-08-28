@@ -1,0 +1,8 @@
+import { __assign, __rest } from "tslib";
+import { jsx as _jsx } from "react/jsx-runtime";
+var Swath = function (props) {
+    var className = props.className, otherProps = __rest(props, ["className"]);
+    return (_jsx("div", __assign({ className: "".concat(className ? className : '', " Mui-bg-divider") }, otherProps)));
+};
+export default Swath;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic3dhdGguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi9zcmMvbWFpbi93ZWJhcHAvY29tcG9uZW50L3N3YXRoL3N3YXRoLnRzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUVBLElBQU0sS0FBSyxHQUFHLFVBQ1osS0FHQztJQUVPLElBQUEsU0FBUyxHQUFvQixLQUFLLFVBQXpCLEVBQUssVUFBVSxVQUFLLEtBQUssRUFBcEMsYUFBNEIsQ0FBRixDQUFVO0lBQzFDLE9BQU8sQ0FDTCx1QkFDRSxTQUFTLEVBQUUsVUFBRyxTQUFTLENBQUMsQ0FBQyxDQUFDLFNBQVMsQ0FBQyxDQUFDLENBQUMsRUFBRSxvQkFBaUIsSUFDckQsVUFBVSxFQUNkLENBQ0gsQ0FBQTtBQUNILENBQUMsQ0FBQTtBQUVELGVBQWUsS0FBSyxDQUFBIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0ICogYXMgUmVhY3QgZnJvbSAncmVhY3QnXG5cbmNvbnN0IFN3YXRoID0gKFxuICBwcm9wczogUmVhY3QuRGV0YWlsZWRIVE1MUHJvcHM8XG4gICAgUmVhY3QuSFRNTEF0dHJpYnV0ZXM8SFRNTERpdkVsZW1lbnQ+LFxuICAgIEhUTUxEaXZFbGVtZW50XG4gID5cbikgPT4ge1xuICBjb25zdCB7IGNsYXNzTmFtZSwgLi4ub3RoZXJQcm9wcyB9ID0gcHJvcHNcbiAgcmV0dXJuIChcbiAgICA8ZGl2XG4gICAgICBjbGFzc05hbWU9e2Ake2NsYXNzTmFtZSA/IGNsYXNzTmFtZSA6ICcnfSBNdWktYmctZGl2aWRlcmB9XG4gICAgICB7Li4ub3RoZXJQcm9wc31cbiAgICAvPlxuICApXG59XG5cbmV4cG9ydCBkZWZhdWx0IFN3YXRoXG4iXX0=
