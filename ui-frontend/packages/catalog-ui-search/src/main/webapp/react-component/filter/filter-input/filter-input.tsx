@@ -41,6 +41,8 @@ import { BasicDataTypePropertyName } from '../../../component/filter-builder/res
 import { ResourceSizeField } from '../../../component/fields/resource-size'
 import { ResourceSizeRangeField } from '../../../component/fields/resource-size-range'
 import { useConfiguration } from '../../../js/model/Startup/configuration.hooks'
+import Extensions from '../../../extension-points'
+
 export type Props = {
   filter: FilterClass
   setFilter: (filter: FilterClass) => void
@@ -111,6 +113,10 @@ const FilterInput = ({
         value={value as BasicDatatypeFilter['value']}
       />
     )
+  }
+
+  if (Extensions.extraFilters?.filterPropertyNames.includes(filter.property)) {
+    return Extensions.extraFilters?.getFilterInput(filter.property)
   }
 
   if (resourceSizeIdentifiers.includes(filter.property)) {

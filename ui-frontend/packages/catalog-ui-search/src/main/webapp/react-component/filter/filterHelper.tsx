@@ -19,6 +19,8 @@ import {
   AttributeMapType,
   AttributeTypes,
 } from '../../js/model/Startup/startup.types'
+import Extensions from '../../extension-points'
+
 export type Attribute = {
   label: string
   value: string
@@ -70,6 +72,7 @@ export const getGroupedFilteredAttributes = (): {
     .concat([
       toAttribute(basicDataTypeAttributeDefinition, 'Special Attributes'),
     ])
+    .concat(Extensions.extraFilters?.attributes ?? [])
     .concat(getFilteredAttributeList('All Attributes'))
   const groups =
     validCommonAttributes.length > 0
