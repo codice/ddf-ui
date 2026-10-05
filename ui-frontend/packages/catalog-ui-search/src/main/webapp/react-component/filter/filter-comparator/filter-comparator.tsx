@@ -20,6 +20,7 @@ import {
   isBasicDatatypeClass,
 } from '../../../component/filter-builder/filter.structure'
 import { useComparatorsForAttribute } from './comparatorUtils'
+import Extensions from '../../../extension-points'
 
 type Props = {
   filter: FilterClass
@@ -42,7 +43,10 @@ const FilterComparator = ({ filter, setFilter, textFieldProps }: Props) => {
     }
   }, [filter, setFilter, comparators])
 
-  if (isBasicDatatypeClass(filter)) {
+  if (
+    isBasicDatatypeClass(filter) ||
+    Extensions.extraFilters?.isExtraFilterClass(filter)
+  ) {
     return null
   }
 

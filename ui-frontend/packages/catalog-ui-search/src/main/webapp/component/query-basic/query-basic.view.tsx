@@ -43,6 +43,8 @@ import { StartupDataStore } from '../../js/model/Startup/startup'
 import { useMetacardDefinitions } from '../../js/model/Startup/metacard-definitions.hooks'
 import { ReservedBasicDatatype } from '../reserved-basic-datatype/reserved.basic-datatype'
 import { BasicDataTypePropertyName } from '../filter-builder/reserved.properties'
+import Extensions from '../../extension-points'
+
 function isNested(filter: any) {
   let nested = false
   filter.filters.forEach((subfilter: any) => {
@@ -60,7 +62,7 @@ function isAnyDate(filter: any) {
     return (
       StartupDataStore.MetacardDefinitions.getAttributeMap()[
         stripQuotes(filter.property)
-      ].type === 'DATE'
+      ]?.type === 'DATE'
     )
   }
   let typesFound = {} as any
@@ -137,6 +139,7 @@ export function translateFilterToBasicMap(filter: FilterBuilderClass) {
       value: new BasicDatatypeFilter({
         value: [],
       }),
+      ...Extensions.extraFilters?.extraPropertyValueMaps,
     },
   } as PropertyValueMapType
   let downConversion = false
@@ -153,6 +156,11 @@ export function translateFilterToBasicMap(filter: FilterBuilderClass) {
       ) {
         propertyValueMap[BasicDataTypePropertyName].on = true
         propertyValueMap[BasicDataTypePropertyName].value = subfilter
+      } else if (Extensions.extraFilters?.isExtraFilterClass(subfilter)) {
+        Extensions.extraFilters.translateExtraFilterToBasicMap(
+          propertyValueMap,
+          subfilter
+        )
       } else if (!isFilterBuilderClass(subfilter)) {
         if (['anyDate', 'anyText', 'anyGeo'].includes(subfilter.property)) {
           propertyValueMap[CQLUtils.getProperty(subfilter)] =
@@ -205,7 +213,7 @@ type QueryBasicProps = {
   errorListener?: (validationResults: {
     [key: string]: ValidationResult | undefined
   }) => void
-  Extensions?: React.FunctionComponent
+  QueryBasicPropsExtensions?: React.FunctionComponent
 }
 export const constructFilterFromBasicFilter = ({
   basicFilter,
@@ -254,6 +262,7 @@ export const constructFilterFromBasicFilter = ({
       })
     )
   }
+  Extensions.extraFilters?.constructExtraFilters(basicFilter, filters)
   return new FilterBuilderClass({
     type: 'AND',
     filters,
@@ -283,7 +292,11 @@ const useBasicFilterFromModel = ({ model }: QueryBasicProps) => {
   return basicFilter
 }
 
-const QueryBasic = ({ model, errorListener, Extensions }: QueryBasicProps) => {
+const QueryBasic = ({
+  model,
+  errorListener,
+  QueryBasicPropsExtensions,
+}: QueryBasicProps) => {
   const MetacardDefinitions = useMetacardDefinitions()
   const inputRef = React.useRef<HTMLDivElement | null>(null)
   const basicFilter = useBasicFilterFromModel({ model })
@@ -464,11 +477,17 @@ const QueryBasic = ({ model, errorListener, Extensions }: QueryBasicProps) => {
             </Grid>
           ) : null}
         </div>
+        {Extensions.extraFilters?.queryBasicCheckboxFilters && (
+          <Extensions.extraFilters.queryBasicCheckboxFilters
+            model
+            basicFilter
+          />
+        )}
         <div className="py-2 w-full">
           <Swath className="w-full h-1" />
         </div>
         <div className="basic-settings">
-          <QuerySettings model={model} Extensions={Extensions} />
+          <QuerySettings model={model} Extensions={QueryBasicPropsExtensions} />
         </div>
       </div>
     </>

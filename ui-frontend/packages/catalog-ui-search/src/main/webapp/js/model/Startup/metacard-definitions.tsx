@@ -10,6 +10,7 @@ import {
   SearchResultMetacardDefinitionType,
   StartupPayloadType,
 } from './startup.types'
+import Extensions from '../../../extension-points'
 
 function sortMetacardTypes(metacardTypes: AttributeMapType = {}) {
   return Object.values(metacardTypes).sort((a, b) => {
@@ -189,7 +190,13 @@ class MetacardDefinitions extends Subscribable<{
     return this.attributeMap?.[attributeName]?.enumerations || []
   }
   getSearchOnlyAttributes = () => {
-    return ['anyText', 'anyGeo', 'anyDate', BasicDataTypePropertyName]
+    return [
+      'anyText',
+      'anyGeo',
+      'anyDate',
+      BasicDataTypePropertyName,
+      ...(Extensions.extraFilters?.filterPropertyNames ?? []),
+    ]
   }
   getSortedAttributes = () => {
     return this.sortedAttributes || []

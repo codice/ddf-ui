@@ -18,12 +18,19 @@ import { providers, Props as ProviderProps } from './providers'
 import metacardInteractions from './metacard-interactions'
 import { LazyQueryResult } from '../js/model/LazyQueryResult/LazyQueryResult'
 import { MetacardAttribute, ResultType } from '../js/model/Types'
-import { ValueTypes } from '../component/filter-builder/filter.structure'
+import {
+  CQLStandardFilterBuilderClass,
+  FilterBuilderClass,
+  FilterClass,
+  ValueTypes,
+} from '../component/filter-builder/filter.structure'
 import { Suggestion } from '../react-component/location/gazetteer'
 import { MetacardInteractionProps } from '../react-component/metacard-interactions'
 import { PermissiveComponentType } from '../typescript'
 import { InputsType } from '../react-component/location/location'
 import { CustomHover } from '../component/visualization/histogram/add-on-helpers'
+import { AttributeMapType } from '../js/model/Startup/startup.types'
+import { Attribute } from '../react-component/filter/filterHelper'
 
 type EditorProps = {
   result: LazyQueryResult
@@ -115,6 +122,29 @@ export type ExtensionPointsType = {
   }) => React.ReactNode | null
   extraSidebarButtons?: PermissiveComponentType
   includeNavigationButtons?: boolean
+  extraFilters?: {
+    filterTypesHandler: (
+      cqlAst: FilterBuilderClass | FilterClass | CQLStandardFilterBuilderClass
+    ) => CQLStandardFilterBuilderClass | FilterClass | null
+    isExtraFilterClass: (subfilter: any) => boolean
+    translateExtraFilterToBasicMap: (
+      propertyFilterMap: any,
+      subfilter: any
+    ) => null
+    constructExtraFilters: (basicfilter: any, filters: any[]) => null
+    typeDefinitions: AttributeMapType
+    filterPropertyNames: string[]
+    getFilterInput: (property: string) => React.ReactNode | null
+    attributes: Attribute[]
+    queryBasicCheckboxFilters?: ({
+      model,
+      basicFilter,
+    }: {
+      model: any
+      basicFilter: any
+    }) => React.ReactNode | null
+    extraPropertyValueMaps?: any[]
+  }
 }
 
 const ExtensionPoints: ExtensionPointsType = {
@@ -146,6 +176,7 @@ const ExtensionPoints: ExtensionPointsType = {
   timelineItemAddOn: () => null,
   extraSidebarButtons: () => null,
   includeNavigationButtons: false,
+  extraFilters: undefined,
 }
 
 export default ExtensionPoints
