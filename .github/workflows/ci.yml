@@ -49,6 +49,10 @@ jobs:
       - name: Build
         run: mvn clean install $MAVEN_CLI_OPTS -DskipTests
 
+      - name: Frontend tests
+        working-directory: ui-frontend/packages/catalog-ui-search
+        run: yarn test
+
   full-build:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
@@ -74,6 +78,10 @@ jobs:
 
       - name: Build
         run: mvn clean install $MAVEN_CLI_OPTS -DskipTests
+
+      - name: Frontend tests
+        working-directory: ui-frontend/packages/catalog-ui-search
+        run: yarn test
 
   deploy:
     needs: full-build
