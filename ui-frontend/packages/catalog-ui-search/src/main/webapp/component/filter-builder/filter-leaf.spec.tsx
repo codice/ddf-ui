@@ -11,6 +11,7 @@ import user from '../singletons/user-instance'
 import { StartupDataStore } from '../../js/model/Startup/startup'
 import { BasicDataTypePropertyName } from './reserved.properties'
 import { render } from '@testing-library/react'
+import Extensions from '../../extension-points'
 
 // trim whitespace, lowercase
 function customNormalizer(text: string) {
@@ -108,6 +109,7 @@ function addTestDefs() {
         isInjected: false,
         hidden: true,
       },
+      ...Extensions.extraFilters?.typeDefinitions,
     },
   })
 }
