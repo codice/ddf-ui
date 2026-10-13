@@ -47,7 +47,7 @@ jobs:
         run: mkdir -p ~/.m2 && cp .github/maven-settings.xml ~/.m2/settings.xml
 
       - name: Build
-        run: mvn clean install $MAVEN_CLI_OPTS -DskipTests
+        run: mvn clean install $MAVEN_CLI_OPTS
 
   full-build:
     if: github.event_name != 'pull_request'
@@ -73,7 +73,7 @@ jobs:
         run: mkdir -p ~/.m2 && cp .github/maven-settings.xml ~/.m2/settings.xml
 
       - name: Build
-        run: mvn clean install $MAVEN_CLI_OPTS -DskipTests
+        run: mvn clean install $MAVEN_CLI_OPTS
 
   deploy:
     needs: full-build
