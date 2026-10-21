@@ -1,0 +1,32 @@
+import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+import * as React from 'react';
+import { useDialog } from '../dialog';
+import { Overridable } from '../../js/model/Base/base-classes';
+import { useOverridable } from '../../js/model/Base/base-classes.hooks';
+export var normalDownload = function (_a) {
+    var result = _a.result;
+    var downloadUrl = result.getDownloadUrl();
+    // append new query param to prevent downloading cached resource
+    downloadUrl =
+        downloadUrl +
+            (downloadUrl.includes('?') ? '&t=' : '?t=') +
+            new Date().getTime().toString();
+    downloadUrl && window.open(downloadUrl);
+};
+// in ddf-ui, we just open the download url and immediately close the dialog, so it should act as before
+export var BaseDownload = function (_a) {
+    var lazyResults = _a.lazyResults;
+    var setProps = useDialog().setProps;
+    React.useEffect(function () {
+        lazyResults.forEach(function (lazyResult) {
+            normalDownload({ result: lazyResult });
+        });
+        setProps({ open: false });
+    }, []);
+    return _jsx(_Fragment, {});
+};
+export var OverridableDownload = new Overridable(BaseDownload);
+export var useDownloadComponent = function () {
+    return useOverridable(OverridableDownload);
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZG93bmxvYWQuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi9zcmMvbWFpbi93ZWJhcHAvY29tcG9uZW50L2Rvd25sb2FkL2Rvd25sb2FkLnRzeCJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUEsT0FBTyxLQUFLLEtBQUssTUFBTSxPQUFPLENBQUE7QUFFOUIsT0FBTyxFQUFFLFNBQVMsRUFBRSxNQUFNLFdBQVcsQ0FBQTtBQUNyQyxPQUFPLEVBQUUsV0FBVyxFQUFFLE1BQU0sa0NBQWtDLENBQUE7QUFDOUQsT0FBTyxFQUFFLGNBQWMsRUFBRSxNQUFNLHdDQUF3QyxDQUFBO0FBRXZFLE1BQU0sQ0FBQyxJQUFNLGNBQWMsR0FBRyxVQUFDLEVBQXVDO1FBQXJDLE1BQU0sWUFBQTtJQUNyQyxJQUFJLFdBQVcsR0FBRyxNQUFNLENBQUMsY0FBYyxFQUFFLENBQUE7SUFDekMsZ0VBQWdFO0lBQ2hFLFdBQVc7UUFDVCxXQUFXO1lBQ1gsQ0FBQyxXQUFXLENBQUMsUUFBUSxDQUFDLEdBQUcsQ0FBQyxDQUFDLENBQUMsQ0FBQyxLQUFLLENBQUMsQ0FBQyxDQUFDLEtBQUssQ0FBQztZQUMzQyxJQUFJLElBQUksRUFBRSxDQUFDLE9BQU8sRUFBRSxDQUFDLFFBQVEsRUFBRSxDQUFBO0lBQ2pDLFdBQVcsSUFBSSxNQUFNLENBQUMsSUFBSSxDQUFDLFdBQVcsQ0FBQyxDQUFBO0FBQ3pDLENBQUMsQ0FBQTtBQUVELHdHQUF3RztBQUN4RyxNQUFNLENBQUMsSUFBTSxZQUFZLEdBQUcsVUFBQyxFQUk1QjtRQUhDLFdBQVcsaUJBQUE7SUFJSCxJQUFBLFFBQVEsR0FBSyxTQUFTLEVBQUUsU0FBaEIsQ0FBZ0I7SUFFaEMsS0FBSyxDQUFDLFNBQVMsQ0FBQztRQUNkLFdBQVcsQ0FBQyxPQUFPLENBQUMsVUFBQyxVQUFVO1lBQzdCLGNBQWMsQ0FBQyxFQUFFLE1BQU0sRUFBRSxVQUFVLEVBQUUsQ0FBQyxDQUFBO1FBQ3hDLENBQUMsQ0FBQyxDQUFBO1FBQ0YsUUFBUSxDQUFDLEVBQUUsSUFBSSxFQUFFLEtBQUssRUFBRSxDQUFDLENBQUE7SUFDM0IsQ0FBQyxFQUFFLEVBQUUsQ0FBQyxDQUFBO0lBRU4sT0FBTyxtQkFBSyxDQUFBO0FBQ2QsQ0FBQyxDQUFBO0FBRUQsTUFBTSxDQUFDLElBQU0sbUJBQW1CLEdBQUcsSUFBSSxXQUFXLENBQUMsWUFBWSxDQUFDLENBQUE7QUFFaEUsTUFBTSxDQUFDLElBQU0sb0JBQW9CLEdBQUc7SUFDbEMsT0FBTyxjQUFjLENBQUMsbUJBQW1CLENBQUMsQ0FBQTtBQUM1QyxDQUFDLENBQUEiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgKiBhcyBSZWFjdCBmcm9tICdyZWFjdCdcbmltcG9ydCB7IExhenlRdWVyeVJlc3VsdCB9IGZyb20gJy4uLy4uL2pzL21vZGVsL0xhenlRdWVyeVJlc3VsdC9MYXp5UXVlcnlSZXN1bHQnXG5pbXBvcnQgeyB1c2VEaWFsb2cgfSBmcm9tICcuLi9kaWFsb2cnXG5pbXBvcnQgeyBPdmVycmlkYWJsZSB9IGZyb20gJy4uLy4uL2pzL21vZGVsL0Jhc2UvYmFzZS1jbGFzc2VzJ1xuaW1wb3J0IHsgdXNlT3ZlcnJpZGFibGUgfSBmcm9tICcuLi8uLi9qcy9tb2RlbC9CYXNlL2Jhc2UtY2xhc3Nlcy5ob29rcydcblxuZXhwb3J0IGNvbnN0IG5vcm1hbERvd25sb2FkID0gKHsgcmVzdWx0IH06IHsgcmVzdWx0OiBMYXp5UXVlcnlSZXN1bHQgfSkgPT4ge1xuICBsZXQgZG93bmxvYWRVcmwgPSByZXN1bHQuZ2V0RG93bmxvYWRVcmwoKVxuICAvLyBhcHBlbmQgbmV3IHF1ZXJ5IHBhcmFtIHRvIHByZXZlbnQgZG93bmxvYWRpbmcgY2FjaGVkIHJlc291cmNlXG4gIGRvd25sb2FkVXJsID1cbiAgICBkb3dubG9hZFVybCArXG4gICAgKGRvd25sb2FkVXJsLmluY2x1ZGVzKCc/JykgPyAnJnQ9JyA6ICc/dD0nKSArXG4gICAgbmV3IERhdGUoKS5nZXRUaW1lKCkudG9TdHJpbmcoKVxuICBkb3dubG9hZFVybCAmJiB3aW5kb3cub3Blbihkb3dubG9hZFVybClcbn1cblxuLy8gaW4gZGRmLXVpLCB3ZSBqdXN0IG9wZW4gdGhlIGRvd25sb2FkIHVybCBhbmQgaW1tZWRpYXRlbHkgY2xvc2UgdGhlIGRpYWxvZywgc28gaXQgc2hvdWxkIGFjdCBhcyBiZWZvcmVcbmV4cG9ydCBjb25zdCBCYXNlRG93bmxvYWQgPSAoe1xuICBsYXp5UmVzdWx0cyxcbn06IHtcbiAgbGF6eVJlc3VsdHM6IExhenlRdWVyeVJlc3VsdFtdXG59KSA9PiB7XG4gIGNvbnN0IHsgc2V0UHJvcHMgfSA9IHVzZURpYWxvZygpXG5cbiAgUmVhY3QudXNlRWZmZWN0KCgpID0+IHtcbiAgICBsYXp5UmVzdWx0cy5mb3JFYWNoKChsYXp5UmVzdWx0KSA9PiB7XG4gICAgICBub3JtYWxEb3dubG9hZCh7IHJlc3VsdDogbGF6eVJlc3VsdCB9KVxuICAgIH0pXG4gICAgc2V0UHJvcHMoeyBvcGVuOiBmYWxzZSB9KVxuICB9LCBbXSlcblxuICByZXR1cm4gPD48Lz5cbn1cblxuZXhwb3J0IGNvbnN0IE92ZXJyaWRhYmxlRG93bmxvYWQgPSBuZXcgT3ZlcnJpZGFibGUoQmFzZURvd25sb2FkKVxuXG5leHBvcnQgY29uc3QgdXNlRG93bmxvYWRDb21wb25lbnQgPSAoKSA9PiB7XG4gIHJldHVybiB1c2VPdmVycmlkYWJsZShPdmVycmlkYWJsZURvd25sb2FkKVxufVxuIl19
