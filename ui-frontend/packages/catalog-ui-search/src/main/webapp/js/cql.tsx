@@ -936,7 +936,9 @@ function getDataTypesConfigurationUsingStartupStore() {
 function handleAllFilterTypes(
   cqlAst: FilterBuilderClass | FilterClass | CQLStandardFilterBuilderClass
 ): CQLStandardFilterBuilderClass | FilterClass {
-  let extraFilterClass: CQLStandardFilterBuilderClass | FilterClass | null
+  const extraFilterClass = Extensions.extraFilters
+    ? Extensions.extraFilters.filterTypesHandler(cqlAst)
+    : null
   if (isCQLStandardFilterBuilderClass(cqlAst) || isFilterBuilderClass(cqlAst)) {
     return new CQLStandardFilterBuilderClass({
       type: cqlAst.type,
@@ -971,10 +973,7 @@ function handleAllFilterTypes(
         }),
       ],
     })
-  } else if (
-    Extensions.extraFilters &&
-    (extraFilterClass = Extensions.extraFilters.filterTypesHandler(cqlAst))
-  ) {
+  } else if (extraFilterClass) {
     return extraFilterClass
   } else if (isResourceSizeFilterClass(cqlAst)) {
     const bytesValue = convertResourceSizeFilterClassValueToBytes(cqlAst)

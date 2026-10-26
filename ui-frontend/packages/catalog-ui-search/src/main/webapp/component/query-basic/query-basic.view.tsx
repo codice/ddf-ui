@@ -62,7 +62,7 @@ function isAnyDate(filter: any) {
     return (
       StartupDataStore.MetacardDefinitions.getAttributeMap()[
         stripQuotes(filter.property)
-      ]?.type === 'DATE'
+      ].type === 'DATE'
     )
   }
   let typesFound = {} as any
@@ -156,7 +156,10 @@ export function translateFilterToBasicMap(filter: FilterBuilderClass) {
       ) {
         propertyValueMap[BasicDataTypePropertyName].on = true
         propertyValueMap[BasicDataTypePropertyName].value = subfilter
-      } else if (ExtensionPoints.extraFilters?.isExtraFilterClass(subfilter)) {
+      } else if (
+        !isFilterBuilderClass(subfilter) &&
+        ExtensionPoints.extraFilters?.isExtraFilterClass(subfilter)
+      ) {
         ExtensionPoints.extraFilters.translateExtraFilterToBasicMap(
           propertyValueMap,
           subfilter

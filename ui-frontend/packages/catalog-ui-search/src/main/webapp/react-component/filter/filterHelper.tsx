@@ -68,11 +68,21 @@ export const getGroupedFilteredAttributes = (): {
       BasicDataTypePropertyName
     ) as AttributeDefinitionType
 
-  const groupedFilteredAttributes = validCommonAttributes
+  const basicDataTypeGroupedFilteredAttributes = validCommonAttributes.concat([
+    toAttribute(basicDataTypeAttributeDefinition, 'Special Attributes'),
+  ])
+
+  const extraGroupedFilteredAttributes =
+    basicDataTypeGroupedFilteredAttributes.concat(
+      (Extensions.extraFilters?.specialAttributesDefinitions ?? []).map(
+        (definition) => toAttribute(definition, 'Special Attributes')
+      )
+    )
+
+  const groupedFilteredAttributes = extraGroupedFilteredAttributes
     .concat([
       toAttribute(basicDataTypeAttributeDefinition, 'Special Attributes'),
     ])
-    .concat(Extensions.extraFilters?.attributes ?? [])
     .concat(getFilteredAttributeList('All Attributes'))
   const groups =
     validCommonAttributes.length > 0

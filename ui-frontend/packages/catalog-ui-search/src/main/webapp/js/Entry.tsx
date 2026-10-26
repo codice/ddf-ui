@@ -29,6 +29,7 @@
 })()
 import '../js/ApplicationSetup'
 import ExtensionPoints, { ExtensionPointsType } from '../extension-points'
+import { OverridableExtensionPointExtraFiltersAttributeMap } from './model/Startup/metacard-definitions'
 
 import { attemptToStart } from './ApplicationStart'
 
@@ -37,6 +38,9 @@ const entry = (
   startFunction: Function = attemptToStart
 ) => {
   Object.assign(ExtensionPoints, extensionPoints)
+  OverridableExtensionPointExtraFiltersAttributeMap.override(
+    ExtensionPoints.extraFilters?.typeDefinitions ?? {}
+  )
   startFunction()
 }
 

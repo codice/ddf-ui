@@ -29,8 +29,10 @@ import { MetacardInteractionProps } from '../react-component/metacard-interactio
 import { PermissiveComponentType } from '../typescript'
 import { InputsType } from '../react-component/location/location'
 import { CustomHover } from '../component/visualization/histogram/add-on-helpers'
-import { AttributeMapType } from '../js/model/Startup/startup.types'
-import { Attribute } from '../react-component/filter/filterHelper'
+import {
+  AttributeDefinitionType,
+  AttributeMapType,
+} from '../js/model/Startup/startup.types'
 
 type EditorProps = {
   result: LazyQueryResult
@@ -126,16 +128,15 @@ export type ExtensionPointsType = {
     filterTypesHandler: (
       cqlAst: FilterBuilderClass | FilterClass | CQLStandardFilterBuilderClass
     ) => CQLStandardFilterBuilderClass | FilterClass | null
-    isExtraFilterClass: (subfilter: any) => boolean
+    isExtraFilterClass: (filter: any) => boolean
     translateExtraFilterToBasicMap: (
-      propertyFilterMap: any,
+      propertyValueMap: any,
       subfilter: any
     ) => null
-    constructExtraFilters: (basicfilter: any, filters: any[]) => null
+    constructExtraFilters: (basicFilter: any, filters: any[]) => null
     typeDefinitions: AttributeMapType
-    filterPropertyNames: string[]
     getFilterInput: (property: string) => React.ReactNode | null
-    attributes: Attribute[]
+    specialAttributesDefinitions: AttributeDefinitionType[]
     queryBasicCheckboxFilters?: ({
       model,
       basicFilter,

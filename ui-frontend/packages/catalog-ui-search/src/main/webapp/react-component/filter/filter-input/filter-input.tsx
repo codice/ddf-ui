@@ -115,7 +115,7 @@ const FilterInput = ({
     )
   }
 
-  if (Extensions.extraFilters?.filterPropertyNames.includes(filter.property)) {
+  if (Extensions.extraFilters?.isExtraFilterClass(filter)) {
     return Extensions.extraFilters?.getFilterInput(filter.property)
   }
 

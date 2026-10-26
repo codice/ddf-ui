@@ -8,19 +8,6 @@ import moment from 'moment-timezone'
 import userInstance from './user-instance'
 import { StartupDataStore } from '../../js/model/Startup/startup'
 
-import { BasicDataTypePropertyName } from '../../component/filter-builder/reserved.properties'
-import Extensions from '../../extension-points'
-
-const getSearchOnlyAttributes = () => {
-  return [
-    'anyText',
-    'anyGeo',
-    'anyDate',
-    BasicDataTypePropertyName,
-    ...(Extensions.extraFilters?.filterPropertyNames ?? []),
-  ]
-}
-
 export const TypedUserInstance = {
   getUserInstance: () => {
     return userInstance
@@ -76,7 +63,8 @@ export const TypedUserInstance = {
       TypedUserInstance.getResultsAttributesSummaryShown()
     const allKnownAttributes =
       StartupDataStore.MetacardDefinitions.getSortedAttributes()
-    const searchOnlyAttributes = getSearchOnlyAttributes()
+    const searchOnlyAttributes =
+      StartupDataStore.MetacardDefinitions.getSearchOnlyAttributes()
     const attributesPossible = allKnownAttributes.filter((attr) => {
       return (
         !currentAttributesShown.includes(attr.id) &&
@@ -93,7 +81,8 @@ export const TypedUserInstance = {
       currentAttributes ?? TypedUserInstance.getResultsAttributesShownTable()
     const allKnownAttributes =
       StartupDataStore.MetacardDefinitions.getSortedAttributes()
-    const searchOnlyAttributes = getSearchOnlyAttributes()
+    const searchOnlyAttributes =
+      StartupDataStore.MetacardDefinitions.getSearchOnlyAttributes()
     const attributesPossible = allKnownAttributes.filter((attr) => {
       return (
         !currentAttributesShown.includes(attr.id) &&
@@ -111,7 +100,8 @@ export const TypedUserInstance = {
       currentAttributes ?? TypedUserInstance.getResultsAttributesShownList()
     const allKnownAttributes =
       StartupDataStore.MetacardDefinitions.getSortedAttributes()
-    const searchOnlyAttributes = getSearchOnlyAttributes()
+    const searchOnlyAttributes =
+      StartupDataStore.MetacardDefinitions.getSearchOnlyAttributes()
     const attributesPossible = allKnownAttributes.filter((attr) => {
       return (
         !currentAttributesShown.includes(attr.id) &&

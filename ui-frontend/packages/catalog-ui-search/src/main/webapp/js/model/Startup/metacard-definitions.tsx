@@ -1,4 +1,5 @@
-import { Subscribable } from '../Base/base-classes'
+import { BasicDataTypePropertyName } from '../../../component/filter-builder/reserved.properties'
+import { Overridable, Subscribable } from '../Base/base-classes'
 import { StartupData } from './startup'
 import {
   AttributeDefinitionType,
@@ -9,6 +10,9 @@ import {
   SearchResultMetacardDefinitionType,
   StartupPayloadType,
 } from './startup.types'
+
+export const OverridableExtensionPointExtraFiltersAttributeMap =
+  new Overridable<AttributeMapType>({})
 
 function sortMetacardTypes(metacardTypes: AttributeMapType = {}) {
   return Object.values(metacardTypes).sort((a, b) => {
@@ -30,14 +34,32 @@ class MetacardDefinitions extends Subscribable<{
   attributeMap?: StartupPayloadType['attributeMap']
   sortedAttributes?: StartupPayloadType['sortedAttributes']
   metacardTypes?: StartupPayloadType['metacardTypes']
+  extensionPointExtraFiltersAttributeMap: AttributeMapType =
+    OverridableExtensionPointExtraFiltersAttributeMap.get()
   constructor(startupData?: StartupData) {
     super()
     startupData?.subscribeTo({
       subscribableThing: 'fetched',
       callback: (startupPayload) => {
-        this.attributeMap = startupPayload.attributeMap
+        // startupPayload overrides extension points on clash
+        this.attributeMap = {
+          ...this.extensionPointExtraFiltersAttributeMap,
+          ...startupPayload.attributeMap,
+        }
         this.sortedAttributes = startupPayload.sortedAttributes
         this.metacardTypes = startupPayload.metacardTypes
+        this._notifySubscribers({ thing: 'metacard-definitions-update' })
+      },
+    })
+    OverridableExtensionPointExtraFiltersAttributeMap.subscribeTo({
+      subscribableThing: 'override',
+      callback: (extensionPointExtraFiltersAttributeMap) => {
+        this.extensionPointExtraFiltersAttributeMap =
+          extensionPointExtraFiltersAttributeMap
+        this.attributeMap = {
+          ...this.extensionPointExtraFiltersAttributeMap,
+          ...this.attributeMap,
+        }
         this._notifySubscribers({ thing: 'metacard-definitions-update' })
       },
     })
@@ -187,7 +209,15 @@ class MetacardDefinitions extends Subscribable<{
   getEnum = (attributeName: string) => {
     return this.attributeMap?.[attributeName]?.enumerations || []
   }
-
+  getSearchOnlyAttributes = () => {
+    return [
+      'anyText',
+      'anyGeo',
+      'anyDate',
+      BasicDataTypePropertyName,
+      ...Object.keys(this.extensionPointExtraFiltersAttributeMap),
+    ]
+  }
   getSortedAttributes = () => {
     return this.sortedAttributes || []
   }
