@@ -72,18 +72,23 @@ export const getGroupedFilteredAttributes = (): {
     toAttribute(basicDataTypeAttributeDefinition, 'Special Attributes'),
   ])
 
-  const extraGroupedFilteredAttributes =
-    basicDataTypeGroupedFilteredAttributes.concat(
-      (Extensions.extraFilters?.specialAttributesDefinitions ?? []).map(
-        (definition) => toAttribute(definition, 'Special Attributes')
+  const extraGroupedFilteredAttributes = Extensions.extraFilters
+    ?.specialAttributes
+    ? basicDataTypeGroupedFilteredAttributes.concat(
+        Extensions.extraFilters?.specialAttributes.map((attribute) =>
+          toAttribute(
+            StartupDataStore.MetacardDefinitions.getAttributeDefinition(
+              attribute
+            ) as AttributeDefinitionType,
+            'Special Attributes'
+          )
+        )
       )
-    )
+    : basicDataTypeGroupedFilteredAttributes
 
-  const groupedFilteredAttributes = extraGroupedFilteredAttributes
-    .concat([
-      toAttribute(basicDataTypeAttributeDefinition, 'Special Attributes'),
-    ])
-    .concat(getFilteredAttributeList('All Attributes'))
+  const groupedFilteredAttributes = extraGroupedFilteredAttributes.concat(
+    getFilteredAttributeList('All Attributes')
+  )
   const groups =
     validCommonAttributes.length > 0
       ? ['Commonly Used Attributes', 'Special Attributes', 'All Attributes']

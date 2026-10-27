@@ -29,10 +29,7 @@ import { MetacardInteractionProps } from '../react-component/metacard-interactio
 import { PermissiveComponentType } from '../typescript'
 import { InputsType } from '../react-component/location/location'
 import { CustomHover } from '../component/visualization/histogram/add-on-helpers'
-import {
-  AttributeDefinitionType,
-  AttributeMapType,
-} from '../js/model/Startup/startup.types'
+import { AttributeMapType } from '../js/model/Startup/startup.types'
 
 type EditorProps = {
   result: LazyQueryResult
@@ -132,11 +129,15 @@ export type ExtensionPointsType = {
     translateExtraFilterToBasicMap: (
       propertyValueMap: any,
       subfilter: any
-    ) => null
-    constructExtraFilters: (basicFilter: any, filters: any[]) => null
+    ) => void
+    constructExtraFilters: (basicFilter: any, filters: any[]) => void
     typeDefinitions: AttributeMapType
-    getFilterInput: (property: string) => React.ReactNode | null
-    specialAttributesDefinitions: AttributeDefinitionType[]
+    getFilterInput: (
+      property: string,
+      onChange: any,
+      value: any
+    ) => React.ReactNode | null
+    specialAttributes: string[]
     queryBasicCheckboxFilters?: ({
       model,
       basicFilter,
@@ -144,7 +145,7 @@ export type ExtensionPointsType = {
       model: any
       basicFilter: any
     }) => React.ReactNode | null
-    extraPropertyValueMaps?: any[]
+    extraPropertyValueMaps?: { [key: string]: any }
   }
 }
 

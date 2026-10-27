@@ -476,12 +476,11 @@ const QueryBasic = ({ model, errorListener, Extensions }: QueryBasicProps) => {
             </Grid>
           ) : null}
         </div>
-        {ExtensionPoints.extraFilters?.queryBasicCheckboxFilters && (
-          <ExtensionPoints.extraFilters.queryBasicCheckboxFilters
-            model={model}
-            basicFilter={basicFilter}
-          />
-        )}
+        {ExtensionPoints.extraFilters?.queryBasicCheckboxFilters &&
+          ExtensionPoints.extraFilters.queryBasicCheckboxFilters({
+            basicFilter,
+            model,
+          })}
         <div className="py-2 w-full">
           <Swath className="w-full h-1" />
         </div>

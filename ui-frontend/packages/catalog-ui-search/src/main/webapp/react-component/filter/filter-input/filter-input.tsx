@@ -116,7 +116,11 @@ const FilterInput = ({
   }
 
   if (Extensions.extraFilters?.isExtraFilterClass(filter)) {
-    return Extensions.extraFilters?.getFilterInput(filter.property)
+    return Extensions.extraFilters?.getFilterInput(
+      filter.property,
+      onChange,
+      value
+    )
   }
 
   if (resourceSizeIdentifiers.includes(filter.property)) {
