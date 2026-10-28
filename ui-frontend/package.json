@@ -16,7 +16,7 @@
     "build:admin": "cd packages/admin && yarn build",
     "build:cesium": "cd packages/cesium-assets && yarn build",
     "build:logout": "cd packages/logout && yarn build",
-    "postbuild": "mkdirp target && ace gen-feature",
+    "postbuild": "mkdirp target && ace gen-feature --exclude jetty,pax-web-api,pax-web-extender-whiteboard",
     "mvn:create-archive": "mvn org.apache.maven.plugins:maven-assembly-plugin:single@create-archive",
     "mvn:install-file": "mvn org.apache.maven.plugins:maven-install-plugin:install-file -Dfile=target/packages-packages.zip -DpomFile=pom.xml -Dclassifier=packages -Dpackaging=zip",
     "postinstall": "yarn install:all && exitzero yarn audit && exitzero yarn audit:all",
