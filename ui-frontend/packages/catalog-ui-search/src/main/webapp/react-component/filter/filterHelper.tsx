@@ -19,6 +19,8 @@ import {
   AttributeMapType,
   AttributeTypes,
 } from '../../js/model/Startup/startup.types'
+import Extensions from '../../extension-points'
+
 export type Attribute = {
   label: string
   value: string
@@ -66,11 +68,27 @@ export const getGroupedFilteredAttributes = (): {
       BasicDataTypePropertyName
     ) as AttributeDefinitionType
 
-  const groupedFilteredAttributes = validCommonAttributes
-    .concat([
-      toAttribute(basicDataTypeAttributeDefinition, 'Special Attributes'),
-    ])
-    .concat(getFilteredAttributeList('All Attributes'))
+  const basicDataTypeGroupedFilteredAttributes = validCommonAttributes.concat([
+    toAttribute(basicDataTypeAttributeDefinition, 'Special Attributes'),
+  ])
+
+  const extraGroupedFilteredAttributes = Extensions.extraFilters
+    ?.specialAttributes
+    ? basicDataTypeGroupedFilteredAttributes.concat(
+        Extensions.extraFilters?.specialAttributes.map((attribute) =>
+          toAttribute(
+            StartupDataStore.MetacardDefinitions.getAttributeDefinition(
+              attribute
+            ) as AttributeDefinitionType,
+            'Special Attributes'
+          )
+        )
+      )
+    : basicDataTypeGroupedFilteredAttributes
+
+  const groupedFilteredAttributes = extraGroupedFilteredAttributes.concat(
+    getFilteredAttributeList('All Attributes')
+  )
   const groups =
     validCommonAttributes.length > 0
       ? ['Commonly Used Attributes', 'Special Attributes', 'All Attributes']

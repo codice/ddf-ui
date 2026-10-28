@@ -38,6 +38,7 @@ import CQLUtils from './CQLUtils'
 import _cloneDeep from 'lodash/cloneDeep'
 import wkx from 'wkx'
 import { StartupDataStore } from './model/Startup/startup'
+import Extensions from '../extension-points'
 
 const getPointRadiusFilter = (
   point: [number, number],
@@ -935,6 +936,9 @@ function getDataTypesConfigurationUsingStartupStore() {
 function handleAllFilterTypes(
   cqlAst: FilterBuilderClass | FilterClass | CQLStandardFilterBuilderClass
 ): CQLStandardFilterBuilderClass | FilterClass {
+  const extraFilterClass = Extensions.extraFilters
+    ? Extensions.extraFilters.filterTypesHandler(cqlAst)
+    : null
   if (isCQLStandardFilterBuilderClass(cqlAst) || isFilterBuilderClass(cqlAst)) {
     return new CQLStandardFilterBuilderClass({
       type: cqlAst.type,
@@ -969,6 +973,8 @@ function handleAllFilterTypes(
         }),
       ],
     })
+  } else if (extraFilterClass) {
+    return extraFilterClass
   } else if (isResourceSizeFilterClass(cqlAst)) {
     const bytesValue = convertResourceSizeFilterClassValueToBytes(cqlAst)
     return new FilterClass({

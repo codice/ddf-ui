@@ -43,6 +43,8 @@ import { StartupDataStore } from '../../js/model/Startup/startup'
 import { useMetacardDefinitions } from '../../js/model/Startup/metacard-definitions.hooks'
 import { ReservedBasicDatatype } from '../reserved-basic-datatype/reserved.basic-datatype'
 import { BasicDataTypePropertyName } from '../filter-builder/reserved.properties'
+import ExtensionPoints from '../../extension-points'
+
 function isNested(filter: any) {
   let nested = false
   filter.filters.forEach((subfilter: any) => {
@@ -138,6 +140,7 @@ export function translateFilterToBasicMap(filter: FilterBuilderClass) {
         value: [],
       }),
     },
+    ...ExtensionPoints.extraFilters?.extraPropertyValueMaps,
   } as PropertyValueMapType
   let downConversion = false
   if (!filter.filters && isAnyDate(filter)) {
@@ -153,6 +156,14 @@ export function translateFilterToBasicMap(filter: FilterBuilderClass) {
       ) {
         propertyValueMap[BasicDataTypePropertyName].on = true
         propertyValueMap[BasicDataTypePropertyName].value = subfilter
+      } else if (
+        !isFilterBuilderClass(subfilter) &&
+        ExtensionPoints.extraFilters?.isExtraFilterClass(subfilter)
+      ) {
+        ExtensionPoints.extraFilters.translateExtraFilterToBasicMap(
+          propertyValueMap,
+          subfilter
+        )
       } else if (!isFilterBuilderClass(subfilter)) {
         if (['anyDate', 'anyText', 'anyGeo'].includes(subfilter.property)) {
           propertyValueMap[CQLUtils.getProperty(subfilter)] =
@@ -254,6 +265,7 @@ export const constructFilterFromBasicFilter = ({
       })
     )
   }
+  ExtensionPoints.extraFilters?.constructExtraFilters(basicFilter, filters)
   return new FilterBuilderClass({
     type: 'AND',
     filters,
@@ -464,6 +476,11 @@ const QueryBasic = ({ model, errorListener, Extensions }: QueryBasicProps) => {
             </Grid>
           ) : null}
         </div>
+        {ExtensionPoints.extraFilters?.queryBasicCheckboxFilters &&
+          ExtensionPoints.extraFilters.queryBasicCheckboxFilters({
+            basicFilter,
+            model,
+          })}
         <div className="py-2 w-full">
           <Swath className="w-full h-1" />
         </div>
