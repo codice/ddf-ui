@@ -1,0 +1,42 @@
+/**
+ * Copyright (c) Codice Foundation
+ *
+ * This is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser
+ * General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details. A copy of the GNU Lesser General Public License
+ * is distributed along with this program and can be found at
+ * <http://www.gnu.org/licenses/lgpl.html>.
+ *
+ **/
+/**
+ * ApplicationSetup needs to happen first.
+ * This ensures styles are applied correctly,
+ * because some of our styles have the same specificity as vendor
+ * styles.
+ */
+;
+(function verifyFirstImport() {
+    if (document.querySelector('[data-styled-components]')) {
+        var firstImportErrorMessage = "The entry import has to be the first (top) import for your application, otherwise styles won't be applied properly.\n    If you're seeing this, it probably means you need to move your import of the Entry file to the top of whatever file it's in.\n    ";
+        alert(firstImportErrorMessage);
+        throw Error(firstImportErrorMessage);
+    }
+})();
+import '../js/ApplicationSetup';
+import ExtensionPoints from '../extension-points';
+import { OverridableExtensionPointExtraFiltersAttributeMap } from './model/Startup/metacard-definitions';
+import { attemptToStart } from './ApplicationStart';
+var entry = function (extensionPoints, startFunction) {
+    var _a, _b;
+    if (extensionPoints === void 0) { extensionPoints = {}; }
+    if (startFunction === void 0) { startFunction = attemptToStart; }
+    Object.assign(ExtensionPoints, extensionPoints);
+    OverridableExtensionPointExtraFiltersAttributeMap.override((_b = (_a = ExtensionPoints.extraFilters) === null || _a === void 0 ? void 0 : _a.typeDefinitions) !== null && _b !== void 0 ? _b : {});
+    startFunction();
+};
+export default entry;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiRW50cnkuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi9zcmMvbWFpbi93ZWJhcHAvanMvRW50cnkudHN4Il0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOzs7Ozs7Ozs7Ozs7O0lBYUk7QUFDSjs7Ozs7R0FLRztBQUNILENBQUM7QUFBQSxDQUFDLFNBQVMsaUJBQWlCO0lBQzFCLElBQUksUUFBUSxDQUFDLGFBQWEsQ0FBQywwQkFBMEIsQ0FBQyxFQUFFLENBQUM7UUFDdkQsSUFBTSx1QkFBdUIsR0FBRyw2UEFFL0IsQ0FBQTtRQUNELEtBQUssQ0FBQyx1QkFBdUIsQ0FBQyxDQUFBO1FBQzlCLE1BQU0sS0FBSyxDQUFDLHVCQUF1QixDQUFDLENBQUE7SUFDdEMsQ0FBQztBQUNILENBQUMsQ0FBQyxFQUFFLENBQUE7QUFDSixPQUFPLHdCQUF3QixDQUFBO0FBQy9CLE9BQU8sZUFBd0MsTUFBTSxxQkFBcUIsQ0FBQTtBQUMxRSxPQUFPLEVBQUUsaURBQWlELEVBQUUsTUFBTSxzQ0FBc0MsQ0FBQTtBQUV4RyxPQUFPLEVBQUUsY0FBYyxFQUFFLE1BQU0sb0JBQW9CLENBQUE7QUFFbkQsSUFBTSxLQUFLLEdBQUcsVUFDWixlQUFrRCxFQUNsRCxhQUF3Qzs7SUFEeEMsZ0NBQUEsRUFBQSxvQkFBa0Q7SUFDbEQsOEJBQUEsRUFBQSw4QkFBd0M7SUFFeEMsTUFBTSxDQUFDLE1BQU0sQ0FBQyxlQUFlLEVBQUUsZUFBZSxDQUFDLENBQUE7SUFDL0MsaURBQWlELENBQUMsUUFBUSxDQUN4RCxNQUFBLE1BQUEsZUFBZSxDQUFDLFlBQVksMENBQUUsZUFBZSxtQ0FBSSxFQUFFLENBQ3BELENBQUE7SUFDRCxhQUFhLEVBQUUsQ0FBQTtBQUNqQixDQUFDLENBQUE7QUFFRCxlQUFlLEtBQUssQ0FBQSIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQ29weXJpZ2h0IChjKSBDb2RpY2UgRm91bmRhdGlvblxuICpcbiAqIFRoaXMgaXMgZnJlZSBzb2Z0d2FyZTogeW91IGNhbiByZWRpc3RyaWJ1dGUgaXQgYW5kL29yIG1vZGlmeSBpdCB1bmRlciB0aGUgdGVybXMgb2YgdGhlIEdOVSBMZXNzZXJcbiAqIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgYXMgcHVibGlzaGVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24sIGVpdGhlciB2ZXJzaW9uIDMgb2YgdGhlXG4gKiBMaWNlbnNlLCBvciBhbnkgbGF0ZXIgdmVyc2lvbi5cbiAqXG4gKiBUaGlzIHByb2dyYW0gaXMgZGlzdHJpYnV0ZWQgaW4gdGhlIGhvcGUgdGhhdCBpdCB3aWxsIGJlIHVzZWZ1bCwgYnV0IFdJVEhPVVQgQU5ZIFdBUlJBTlRZOyB3aXRob3V0XG4gKiBldmVuIHRoZSBpbXBsaWVkIHdhcnJhbnR5IG9mIE1FUkNIQU5UQUJJTElUWSBvciBGSVRORVNTIEZPUiBBIFBBUlRJQ1VMQVIgUFVSUE9TRS4gU2VlIHRoZSBHTlVcbiAqIExlc3NlciBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlIGZvciBtb3JlIGRldGFpbHMuIEEgY29weSBvZiB0aGUgR05VIExlc3NlciBHZW5lcmFsIFB1YmxpYyBMaWNlbnNlXG4gKiBpcyBkaXN0cmlidXRlZCBhbG9uZyB3aXRoIHRoaXMgcHJvZ3JhbSBhbmQgY2FuIGJlIGZvdW5kIGF0XG4gKiA8aHR0cDovL3d3dy5nbnUub3JnL2xpY2Vuc2VzL2xncGwuaHRtbD4uXG4gKlxuICoqL1xuLyoqXG4gKiBBcHBsaWNhdGlvblNldHVwIG5lZWRzIHRvIGhhcHBlbiBmaXJzdC5cbiAqIFRoaXMgZW5zdXJlcyBzdHlsZXMgYXJlIGFwcGxpZWQgY29ycmVjdGx5LFxuICogYmVjYXVzZSBzb21lIG9mIG91ciBzdHlsZXMgaGF2ZSB0aGUgc2FtZSBzcGVjaWZpY2l0eSBhcyB2ZW5kb3JcbiAqIHN0eWxlcy5cbiAqL1xuOyhmdW5jdGlvbiB2ZXJpZnlGaXJzdEltcG9ydCgpIHtcbiAgaWYgKGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3IoJ1tkYXRhLXN0eWxlZC1jb21wb25lbnRzXScpKSB7XG4gICAgY29uc3QgZmlyc3RJbXBvcnRFcnJvck1lc3NhZ2UgPSBgVGhlIGVudHJ5IGltcG9ydCBoYXMgdG8gYmUgdGhlIGZpcnN0ICh0b3ApIGltcG9ydCBmb3IgeW91ciBhcHBsaWNhdGlvbiwgb3RoZXJ3aXNlIHN0eWxlcyB3b24ndCBiZSBhcHBsaWVkIHByb3Blcmx5LlxuICAgIElmIHlvdSdyZSBzZWVpbmcgdGhpcywgaXQgcHJvYmFibHkgbWVhbnMgeW91IG5lZWQgdG8gbW92ZSB5b3VyIGltcG9ydCBvZiB0aGUgRW50cnkgZmlsZSB0byB0aGUgdG9wIG9mIHdoYXRldmVyIGZpbGUgaXQncyBpbi5cbiAgICBgXG4gICAgYWxlcnQoZmlyc3RJbXBvcnRFcnJvck1lc3NhZ2UpXG4gICAgdGhyb3cgRXJyb3IoZmlyc3RJbXBvcnRFcnJvck1lc3NhZ2UpXG4gIH1cbn0pKClcbmltcG9ydCAnLi4vanMvQXBwbGljYXRpb25TZXR1cCdcbmltcG9ydCBFeHRlbnNpb25Qb2ludHMsIHsgRXh0ZW5zaW9uUG9pbnRzVHlwZSB9IGZyb20gJy4uL2V4dGVuc2lvbi1wb2ludHMnXG5pbXBvcnQgeyBPdmVycmlkYWJsZUV4dGVuc2lvblBvaW50RXh0cmFGaWx0ZXJzQXR0cmlidXRlTWFwIH0gZnJvbSAnLi9tb2RlbC9TdGFydHVwL21ldGFjYXJkLWRlZmluaXRpb25zJ1xuXG5pbXBvcnQgeyBhdHRlbXB0VG9TdGFydCB9IGZyb20gJy4vQXBwbGljYXRpb25TdGFydCdcblxuY29uc3QgZW50cnkgPSAoXG4gIGV4dGVuc2lvblBvaW50czogUGFydGlhbDxFeHRlbnNpb25Qb2ludHNUeXBlPiA9IHt9LFxuICBzdGFydEZ1bmN0aW9uOiBGdW5jdGlvbiA9IGF0dGVtcHRUb1N0YXJ0XG4pID0+IHtcbiAgT2JqZWN0LmFzc2lnbihFeHRlbnNpb25Qb2ludHMsIGV4dGVuc2lvblBvaW50cylcbiAgT3ZlcnJpZGFibGVFeHRlbnNpb25Qb2ludEV4dHJhRmlsdGVyc0F0dHJpYnV0ZU1hcC5vdmVycmlkZShcbiAgICBFeHRlbnNpb25Qb2ludHMuZXh0cmFGaWx0ZXJzPy50eXBlRGVmaW5pdGlvbnMgPz8ge31cbiAgKVxuICBzdGFydEZ1bmN0aW9uKClcbn1cblxuZXhwb3J0IGRlZmF1bHQgZW50cnlcbiJdfQ==
